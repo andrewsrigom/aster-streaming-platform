@@ -24,6 +24,10 @@
       "entry": ["src/index.ts", "src/check-object-storage.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
+    "packages/broker-kafka": {
+      "entry": ["src/index.ts", "src/check-broker.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
     "packages/config": {
       "entry": ["src/index.ts", "src/check-runtime-config.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]

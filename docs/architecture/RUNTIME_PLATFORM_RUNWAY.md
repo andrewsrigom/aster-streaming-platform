@@ -108,7 +108,7 @@ Create one package per operational dependency rather than one kitchen-sink adapt
 |---|---|---|---|
 | PostgreSQL | exact `pg@8.23.0` local candidate | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, bounded pool snapshot and operation telemetry, close | product schema, migrations, repositories, typed SQL selection, real-container proof |
 | Redis | exact `@redis/client@6.2.1` local candidate | connect, `PING`, disabled offline queue, bounded command/reconnect policy, cancellation recovery, telemetry, idempotent close | generic commands, cache keys, Lua scripts, rate limits, leases, real-container proof |
-| Broker | Confluent JavaScript client and KafkaJS compared at the item gate | connect, metadata, bounded producer send, one bounded consumer, stop, telemetry | product events, outbox relay, replay policy |
+| Broker | exact provisional `kafkajs@2.2.4` local candidate | connect, bounded topic metadata probe, keyed producer send, one sequential at-least-once consumer, stop, telemetry | product events, outbox relay, replay policy, real-broker proof |
 | Object storage | exact AWS SDK `3.1118.0` plus Smithy Node HTTP handler `4.11.3` local candidate | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy, real-container proof |
 | Clock | Node.js built-ins | current instant and deterministic fake | domain-specific scheduling |
 | IDs | `crypto.randomUUID` | UUID generation and deterministic fake | aggregate-specific identity rules |
@@ -143,20 +143,15 @@ The adapter uses path-style addressing for local S3-compatible runtimes, disable
 
 Caller cancellation returns promptly while the retired SDK generation receives a bounded grace period to finish multipart-abort cleanup before forced destruction. Sixteen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, client policy, probe/head, exact-length streaming writes, bounded reads, capacity, generation recovery, safe deletion, finite shutdown even when vendor work ignores cancellation, sanitized lifecycle failures, and vendor-free declarations. These are controlled local proofs; P01-R09 owns authentication, checksum interoperability, multipart abort/cleanup, backpressure, and handle-exit confirmation against the selected S3-compatible container.
 
-### Kafka selection gate
+### Kafka-compatible broker checkpoint
 
-The broker client remains unresolved. The maintained Confluent client has current releases and production `librdkafka` behavior, but adds a native install boundary and its KafkaJS-compatible disconnect currently uses a fixed five-second native close. KafkaJS is small and pure JavaScript but its latest registry release is from 2023. P01-R07 must compare:
+P01-R07 compares exact `@confluentinc/kafka-javascript@1.10.0` with `kafkajs@2.2.4`. The Confluent client is actively maintained, installed and loaded on Node.js 24, supports Linux x64/arm64 through `librdkafka`, and has a larger native dependency boundary. In the isolated unavailable-broker lifecycle spike, the caller reached its outer timeout after `1.255` seconds but disconnect completed only after `31.129` seconds, exceeding Aster's ten-second shutdown deadline. It is rejected for this checkpoint without making a broker-compatibility judgment.
 
-- Node.js 24 and amd64/arm64 installation;
-- broker protocol compatibility;
-- startup and operation deadline behavior;
-- cancellation and forced close;
-- producer idempotence and retry controls;
-- consumer stop and rebalance behavior;
-- log redaction and endpoint disclosure;
-- dependency size, license, maintenance, and exit path.
+KafkaJS is MIT, pure JavaScript, has no runtime dependency, and the equivalent unavailable-broker connect/disconnect spike completed in `127` milliseconds with natural process exit. Its last release is from February 2023, so it is selected only provisionally. P01-R09 must confirm it against the selected real broker and replace it before Phase 01 closeout if authentication, metadata, idempotent delivery, retry timing, rebalance, manual commit, stop, recovery, or process-exit evidence fails.
 
-P01-R07 may select and implement one provisional client only after current registry, license, Node.js 24 installation, process-lifecycle, deadline, redaction, dependency-cost, and removal evidence. P01-R09 then confirms that candidate against a real broker; if bounded stop cannot fit the service lifecycle budget, the candidate must be replaced and the affected adapter gates repeated before Phase 01 closeout. This separates an implementable adapter checkpoint from the later real-platform proof without treating preflight metadata as verification.
+The local `@aster/broker-kafka` candidate copies bounded inputs only after accepting finite capacity, disables auto-topic creation and vendor logs, caps request concurrency and retry attempts, and uses keyed `acks=-1` idempotent sends without claiming exactly-once delivery. A publish timeout or cancellation is explicitly delivery-ambiguous: the generation is retired and the adapter never performs an external retry. The single consumer processes one partition callback at a time, exposes an adapter-owned cancellation signal, commits the next offset only after handler success, leaves failures uncommitted, disables automatic crash restart, and requires explicit recovery.
+
+Seventeen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, finite configuration, metadata/publish telemetry, copied bytes, capacity, ambiguous-generation recovery, consumer bounds, at-least-once failure behavior, crash retirement, caller-local stop/close, finite shutdown with stalled work, sanitized lifecycle failure, and vendor-free declarations. These are controlled local proofs; P01-R09 owns real protocol and lifecycle verification.
 
 ## P01-R08 — Deadlines and readiness composition
 

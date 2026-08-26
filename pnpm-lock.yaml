@@ -33,6 +33,22 @@ importers:
         specifier: 8.68.0
         version: 8.68.0(eslint@10.9.1(jiti@2.7.0))(typescript@6.0.3)
 
+  packages/broker-kafka:
+    dependencies:
+      '@aster/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
+      kafkajs:
+        specifier: 2.2.4
+        version: 2.2.4
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
   packages/config:
     dependencies:
       zod:
@@ -1336,6 +1352,10 @@ packages:
 
   json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
+
+  kafkajs@2.2.4:
+    resolution: {integrity: sha512-j/YeapB1vfPT2iOIUn/vxdyKEuhuY2PxMBvf5JWux6iSaukAccrMtXEY/Lb7OvavDhOWME589bpLrEdnVHjfjA==}
+    engines: {node: '>=14.0.0'}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -3011,6 +3031,8 @@ snapshots:
   json-schema-traverse@0.4.1: {}
 
   json-stable-stringify-without-jsonify@1.0.1: {}
+
+  kafkajs@2.2.4: {}
 
   keyv@4.5.4:
     dependencies:

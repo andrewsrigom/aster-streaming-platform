@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented provisional bounded Kafka adapter candidate
+
+### Completed
+
+- Compared current `@confluentinc/kafka-javascript@1.10.0` with `kafkajs@2.2.4` through live registry, source, official support, install, license, dependency, audit, log, retry, cancellation, lifecycle, and removal evidence.
+- Rejected Confluent for this checkpoint after its unavailable-broker lifecycle took `31.129` seconds against Aster's ten-second shutdown budget; selected exact provisional KafkaJS because the equivalent lifecycle completed in `127` milliseconds with natural process exit.
+- Added `@aster/broker-kafka` with bounded connect/metadata/keyed publish, finite-attempt idempotence, one sequential manual-commit consumer, no automatic crash restart, stable telemetry/results, ambiguous-generation retirement, explicit stop, and lifecycle close without product events, outbox, or replay policy.
+
+### Evidence
+
+- Broker typecheck/build, 17 of 17 focused tests, refused-loopback diagnostic, ESLint, Prettier, Knip, architecture validation, vendor-free declarations, exact MIT dependency inventory, high-severity audit, and finite stalled-work shutdown pass.
+- `pnpm check:changed` passes 46 of 46 selected tasks, 32 cached, in `13.832` seconds of Turborepo time and `14.91` seconds elapsed.
+- Raw comparison and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Commit the broker checkpoint, then run the stabilized complete graph and clean-checkout proof for P01-R07.
+
 ## 2026-08-26 — Implemented bounded S3-compatible storage candidate
 
 ### Completed
