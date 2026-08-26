@@ -20,6 +20,8 @@ P01-R03 exact-pins the first production source dependency. It remains under its 
 
 The frozen lockfile records the registry integrity. The P01-R03 dependency review, installed size, generated public boundary, and vulnerability-audit result are recorded in [`evidence/phase-01/runtime-configuration.txt`](evidence/phase-01/runtime-configuration.txt).
 
+P01-R07 adds separately licensed runtime dependency graphs for PostgreSQL, Redis, Kafka-compatible messaging, and S3-compatible storage. The S3 graph includes unmodified transitive `bowser@2.14.1` through `@aws-sdk/core@3.977.9`. Although its manifest declares MIT, GitHub classifies the complete distributed license as `MIT AND MITNFA`. Aster preserves the upstream notice and recognizes the SPDX `MITNFA` identifier without relicensing the package or exempting it from dependency review. Any later modification, fork, or notice-stripping bundle requires a new review. [ADR-0012](docs/adr/0012-mitnfa-dependency-license.md) records the condition, alternatives, validation, and rollback; this record is not legal advice.
+
 ## Local runtime dependencies
 
 P01-R01 references unmodified Docker Official Images by exact digest. These runtime artifacts are pulled from their publishers and are not relicensed under Aster's MIT License.

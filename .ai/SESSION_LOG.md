@@ -2,6 +2,26 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Identified the hosted MITNFA license blocker
+
+### Completed
+
+- Published exact evidence head `811857b` once as pull request 14.
+- Observed run `33023269145`: source quality, frozen install, high-severity audit, documentation, repository memory, security, and classification pass; Dependency review and the aggregate fail only on transitive `bowser@2.14.1` classified as `MIT AND MITNFA`.
+- Confirmed the transitive path through `@aws-sdk/core@3.977.9`, inspected the distributed license, the SPDX `MITNFA` record, GitHub configuration guidance, and the pinned action's compound-expression implementation.
+- Accepted ADR-0012: recognize only SPDX `MITNFA`, preserve notices, require new review before modified/bundled use, and keep package-level license checking plus all vulnerability scopes enabled.
+
+### Evidence
+
+- Hosted run: `33023269145`; exact head: `811857ba3be5886b469055d097ed083c9d20bedc`.
+- Dependency review reports no high-or-higher vulnerability. Seven low Scorecard messages and workspace-license notices are informational; `MIT AND MITNFA` is the only blocking finding.
+- The pinned action's own tests prove a compound `AND` dependency is accepted only when both simple identifiers are allowed; a compound allowlist item is ignored.
+- Targeted formatting, lint, CI policy, 11/11 focused tests, documentation over 136 documents and 364 links, repository memory, and the 46/46 affected gate pass; the gate used 33 cached tasks, `16.015` seconds of Turborepo time, and `17.10` seconds elapsed.
+
+### Next action
+
+Pass the affected local gate, commit and push one policy remediation to pull request 14, then require the protected exact-head dependency review and stable aggregate before merge.
+
 ## 2026-08-26 — Remediated and confirmed the platform adapter candidate
 
 ### Completed

@@ -94,6 +94,12 @@ test("rejects a missing repository-memory check", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
 });
 
+test("rejects removal of the reviewed MITNFA license", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const weakened = source.replace(", MIT, MITNFA", ", MIT");
+  assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
 test("requires both bounded weekly dependency ecosystems", () => {
   assert.deepEqual(
     validateDependabotPolicy(`version: 2

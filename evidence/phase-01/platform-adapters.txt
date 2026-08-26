@@ -1,5 +1,5 @@
 Evidence: P01-R07 narrow runtime platform adapters
-Status: IMPLEMENTED; local, clean-checkout, and confirmation-review gates pass; hosted gates pending
+Status: IMPLEMENTED; local, clean-checkout, and confirmation-review gates pass; hosted license remediation active
 Date: 2026-08-26
 Source base: 8dff9d8d57572b2eac944ae98406f3da2979682c
 Branch: feat/p01-r07-platform-adapters
@@ -159,3 +159,12 @@ Initial review, remediation, and confirmation evidence
 - After evidence and repository-memory consolidation, the final affected candidate gate passes 46 of 46 tasks with 35 cached in 14.658 seconds of Turborepo time and 15.78 seconds elapsed, with 841600 KiB maximum RSS.
 - The confirmation review of exact source candidate 3e55990 found no blocking requirement, security/data invariant, availability, lifecycle, or public-contract issue. The written stopping rule is satisfied; no second remediation round is warranted.
 - The frozen clean checkout and cold standalone-lint experiments were not repeated because the remediation changes no dependency, lockfile, workspace, package export, generated declaration contract, install script, native module, bootstrap path, or public command. Their exact 8361f11 evidence remains applicable to those boundaries. Lifecycle and hostile-input behavior did change, so the affected and forced complete graphs repeated all four refused-loopback subprocess diagnostics plus the focused adapter suites at the exact remediated source.
+
+Hosted dependency-license blocker and decision
+- Pull request 14 published exact evidence head 811857ba3be5886b469055d097ed083c9d20bedc. Run 33023269145 passed Classify change, Install and source quality including the high-severity audit, and Documentation and security. The stable aggregate failed only because Dependency review rejected one license expression.
+- GitHub classified `bowser@2.14.1` in the lockfile as `MIT AND MITNFA`. The package is an unmodified transitive dependency of `@aws-sdk/core@3.977.9` in the selected S3 graph. Its installed manifest declares MIT, while its distributed LICENSE includes the no-false-attribution condition identified by SPDX as `MITNFA`; the stricter compound classification governs this review.
+- The seven low OpenSSF Scorecard annotations are informational under the checked policy and did not cause failure. Dependency review reported no vulnerability at high severity or above. Workspace-package unknown-license notices also did not fail the action.
+- SPDX publishes `MITNFA` as a distinct identifier with the MIT grant and notice plus a condition preventing materially modified distributions from leaving original-author bug-reporting contacts in place. Aster uses Bowser unmodified, preserves third-party terms, and does not relicense it. This is an engineering policy record, not legal advice.
+- ADR-0012 accepts only SPDX `MITNFA` in addition to the existing allowlist. Package exclusion, reliance on the shorter manifest label, and replacement of the S3 client were rejected. The pinned action source proves that compound dependency expressions are satisfied from simple allowed identifiers, so both `MIT` and `MITNFA` are required and a compound allowlist entry would be ignored.
+- Targeted formatting, lint, CI-policy validation, 11 of 11 focused CI-policy tests, documentation validation over 136 documents and 364 links, and repository-memory validation pass. The affected candidate gate passes 46 of 46 tasks with 33 cached in 16.015 seconds of Turborepo time and 17.10 seconds elapsed, with 840580 KiB maximum RSS; the combined CI suite passes 19 of 19 tests.
+- Protected exact-head confirmation remains required. No dependency, lockfile, adapter source, runtime behavior, or prior clean-checkout boundary changes in this policy remediation, so the written heavyweight repeat trigger is not met.

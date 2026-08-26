@@ -12,10 +12,12 @@ The first exact no-local checkout at `a932822` reused all 329 packages and passe
 
 The complete initial review at `37e6db8` found one bounded remediation batch. Source candidate `3e55990` now maps normal S3 not-found telemetry to success, safely rejects hostile S3 write input, prevents late Redis/Kafka completion from reviving closed state, waits active Kafka wrappers during close, and consumes broker records only through own data descriptors. Focused suites pass at S3 16/16, Redis 14/14, and Kafka 20/20. The affected graph passes 46/46 with 24 cached in 19.93 seconds elapsed; the forced complete graph passes 46/46 uncached in 33.42 seconds elapsed. Confirmation review found no blocker. Clean-checkout evidence remains applicable because no dependency, lockfile, workspace, export, declaration contract, install, bootstrap, or public command changed; lifecycle subprocess diagnostics were repeated in the affected and complete gates.
 
+Pull request 14 published exact evidence head `811857b`. Hosted run `33023269145` passed classification, source quality, high-severity audit, documentation, memory, and security but failed Dependency review because transitive `bowser@2.14.1` was classified `MIT AND MITNFA`. ADR-0012 records the deliberate response: add only SPDX `MITNFA` to the reviewed allowlist, keep all scopes/vulnerability checks, preserve upstream notices, prohibit silent modified use, and freeze the rule locally. The 11 focused policy tests and 46/46 affected gate pass. No dependency or adapter source changes.
+
 ## Resume point
 
-1. For P01-R07, commit the consolidated review evidence without changing source behavior, then push the branch once and open one pull request.
-2. Wait for protected CI on the exact evidence head, treat only requirement/security/data/availability/lifecycle/public-contract blockers, and squash-merge when the required check passes.
+1. For P01-R07, pass the local affected gate for ADR-0012 and its CI-policy remediation, commit one coherent blocker fix, and push it once to pull request 14.
+2. Wait for protected CI on the exact remediation head, require Dependency review and `CI required` to pass, and treat only requirement/security/data/availability/lifecycle/public-contract blockers before squash merge.
 3. Verify the exact post-merge `main` run, record the release, then activate P01-R08 from clean released `main`. Keep every real-container interoperability claim for P01-R09.
 
 ## Do not do yet
