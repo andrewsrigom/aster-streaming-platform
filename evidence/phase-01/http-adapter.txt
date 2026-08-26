@@ -112,7 +112,8 @@ The current production license inventory resolves only MIT, ISC, and BSD-3-Claus
 - Protected run `32972076199` passed every applicable job at `9ddf8d6`. Evidence reply `3862985546` records the strict-route fix and tests, and discussion `PRRT_kwDOUEkeis6cd2GQ` is resolved.
 - Follow-up independent review comment `3863047553` found that Express's parser accepts valid UTF-16 JSON, so the prior ISO-8859-1 rejection did not enforce the documented UTF-8-only policy. The local remediation uses Node.js `MIMEType` before body parsing and accepts only absent charset or explicit `utf-8`; a valid UTF-16LE JSON body now proves `415` before GraphQL middleware.
 - The UTF-8 gate remediation passed the complete local graph with 31 of 31 uncached tasks in `17.701s` (`18.33s` wall clock), including eight HTTP adapter tests, type checking, lint, formatting, dependency analysis, architecture, documentation, repository-memory, and secret checks.
-- Final local graph, clean public checkout, protected CI, review closeout, and verified candidate: pending after UTF-8 gate remediation.
+- UTF-8 candidate `35b307a` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `25.339s`, audit, secret scanning, and clean Git; protected run `32973291227` passed. Independent review comment `3863154140` then found duplicate `charset` parameters could make Node.js validate the first value while Express decoded with the last. The local remediation rejects duplicate charset parameters before parsing, respects quoted semicolons to avoid false positives, adds both bypass and valid quoted-parameter cases, and passes the complete local graph with 31 of 31 uncached tasks in `17.16s` (`17.71s` wall clock).
+- Final local graph, clean public checkout, protected CI, review closeout, and verified candidate: pending after duplicate-charset remediation.
 
 ## Clean public checkout
 
@@ -126,6 +127,8 @@ After review remediation, the same procedure cloned exact public commit `cb5a0fa
 
 The final exact-route procedure cloned public commit `9ddf8d6a15f3cf87a9846bf0d4a66194620c4eb4` into a new `/tmp/aster-p01-r11-exact-route-*` root. Frozen install reused 259 packages with zero download in `1s`; `http:test` passed eight assertions through two uncached tasks in `5.443s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `14.22s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked.
 
+The UTF-8 procedure cloned public commit `35b307ab2ac9b8a4a6c30b6cab8af07130c64ebd` into a new `/tmp/aster-p01-r11-utf8-*` root. Frozen install reused 259 packages with zero download in `1.4s`; `http:test` passed eight assertions through two uncached tasks in `5.103s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `25.339s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later duplicate-charset finding means this is supporting rather than final candidate evidence.
+
 ## Interpretation
 
 The current local evidence supports Express 5 as an implemented bounded transport candidate for Apollo Server on the named runtime and host. It proves the reviewed functional and failure contracts without creating a deployable service. The maintained Apollo integration, executable drain path, and replaceable package boundary support ADR-0011.
@@ -134,7 +137,7 @@ The process pair is a compatibility and startup-cost observation only. It does n
 
 ## Limitations
 
-- Four protected runs, dependency review, two actionable review-thread closeouts, and the exact-route clean checkout pass. UTF-8 gate remediation still requires final clean-checkout, protected, review-closeout, and release evidence.
+- Five protected runs, dependency review, three actionable review-thread closeouts, and the UTF-8 clean checkout pass. Duplicate-charset remediation still requires final clean-checkout, protected, review-closeout, and release evidence.
 - Nine Express transitives have informational OpenSSF Scorecard values below the hosted threshold. They are not current vulnerability findings, but future dependency changes must re-evaluate them and preserve the adapter replacement boundary.
 - The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
 - Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.

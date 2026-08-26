@@ -29,6 +29,8 @@ Append new entries at the top. Keep entries factual and concise.
 - Exact-route public candidate `9ddf8d6` passed frozen install with 259 packages reused and zero downloaded, eight focused tests, the diagnostic, 31 of 31 forced tasks in `14.22` seconds, audit, secret scan, clean Git, and exact temporary-clone removal.
 - Protected run `32972076199` passed every applicable job. Evidence reply `3862985546` was posted, discussion `PRRT_kwDOUEkeis6cd2GQ` is resolved, and final review was requested at `9ddf8d6`.
 - Follow-up independent review comment `3863047553` found valid UTF-16 JSON was accepted despite the documented UTF-8-only policy. The local remediation parses `Content-Type` with Node.js `MIMEType` before body parsing, accepts only absent charset or explicit UTF-8, and adds a valid UTF-16LE JSON body that returns stable `415`; the complete local graph passes 31 of 31 uncached tasks in `17.701` seconds.
+- UTF-8 candidate `35b307a` passed a frozen empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `25.339` seconds, audit, secret scan, and clean Git; protected run `32973291227` passed.
+- Follow-up independent review comment `3863154140` found duplicate charset parameters could let Node.js admit the first value while Express decoded using the last. The local remediation rejects duplicates while respecting quoted semicolons, covers both the bypass and false-positive boundary, and passes 31 of 31 uncached local tasks in `17.16` seconds.
 
 ### Evidence
 
@@ -42,13 +44,15 @@ Append new entries at the top. Keep entries factual and concise.
 - Follow-up review: actionable comment `3862956772`; exact-route remediation pending commit.
 - Exact-route remediation: `9ddf8d6a15f3cf87a9846bf0d4a66194620c4eb4`; clean checkout 31 tasks in `14.22s`; protected run `32972076199`; resolved reply `3862985546`.
 - Follow-up review: actionable comment `3863047553`; UTF-8 media-gate remediation pending commit.
+- UTF-8 remediation: `35b307ab2ac9b8a4a6c30b6cab8af07130c64ebd`; clean checkout 31 tasks in `25.339s`; protected run `32973291227`; review finding `3863154140` remains open.
+- Follow-up review: actionable comment `3863154140`; duplicate-charset remediation pending commit.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Run and publish the UTF-8 gate remediation, close comment `3863047553`, and request final independent review at the new head.
+Run and publish the duplicate-charset remediation, close comment `3863154140`, and request final independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 

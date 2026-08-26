@@ -102,6 +102,7 @@ Status: **IN_PROGRESS**
 - Follow-up review comment `3862956772` proved Express's defaults also accept `/graphql/` and `/GRAPHQL`. The local remediation enables strict, case-sensitive routing before mount, adds stable `404` assertions for trailing-slash and case variants, and passes 31 of 31 forced local tasks in `14.951` seconds. Final gates must use this exact-route candidate.
 - Exact-route candidate `9ddf8d6` passed an empty public clone with eight focused tests, the diagnostic, 31 of 31 forced uncached tasks in `14.22` seconds, audit, secret scan, and clean state; protected run `32972076199` passed. Evidence reply `3862985546` is posted and the second discussion is resolved. Final independent review is pending at the exact head.
 - Follow-up review comment `3863047553` proved the Express parser accepts valid UTF-16 JSON despite the documented UTF-8-only boundary. The local remediation validates `Content-Type` through Node.js `MIMEType` before the parser, accepts only absent charset or explicit `utf-8`, and adds a real UTF-16LE JSON body that returns `415` before middleware; the complete local graph passes 31 of 31 uncached tasks in `17.701` seconds.
+- UTF-8 candidate `35b307a` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced uncached tasks in `25.339` seconds, audit, secret scan, and clean Git; protected run `32973291227` passed. Review comment `3863154140` then found a parser disagreement for duplicate charset parameters. The local remediation rejects duplicate charset parameters while respecting quoted semicolons, covers the bypass plus a non-duplicate quoted-value case, and passes 31 of 31 uncached local tasks in `17.16` seconds.
 
 ## Not implemented
 
@@ -116,7 +117,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the UTF-8 media gate remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
+Verify the duplicate-charset remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
 
 ## Current risks
 

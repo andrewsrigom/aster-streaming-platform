@@ -208,6 +208,50 @@ const notFoundHandler: RequestHandler = (_request: Request, response: Response):
   writeError(response, 404, "HTTP_NOT_FOUND");
 };
 
+function hasDuplicateCharsetParameter(rawContentType: string): boolean {
+  let parameterStart = -1;
+  let charsetCount = 0;
+  let inQuotes = false;
+  let escaped = false;
+
+  const inspectParameter = (end: number): boolean => {
+    if (parameterStart < 0) {
+      return false;
+    }
+    const parameter = rawContentType.slice(parameterStart, end);
+    const equals = parameter.indexOf("=");
+    if (equals > 0 && parameter.slice(0, equals).trim().toLowerCase() === "charset") {
+      charsetCount += 1;
+    }
+    return charsetCount > 1;
+  };
+
+  for (let index = 0; index <= rawContentType.length; index += 1) {
+    const character = rawContentType[index];
+    if (index === rawContentType.length || (character === ";" && !inQuotes)) {
+      if (inspectParameter(index)) {
+        return true;
+      }
+      parameterStart = index + 1;
+      continue;
+    }
+    if (!inQuotes) {
+      if (character === '"') {
+        inQuotes = true;
+      }
+      continue;
+    }
+    if (escaped) {
+      escaped = false;
+    } else if (character === "\\") {
+      escaped = true;
+    } else if (character === '"') {
+      inQuotes = false;
+    }
+  }
+  return false;
+}
+
 const requireJsonContentType: RequestHandler = (
   request: Request,
   response: Response,
@@ -219,7 +263,7 @@ const requireJsonContentType: RequestHandler = (
   }
   try {
     const rawContentType = request.get("content-type");
-    if (rawContentType) {
+    if (rawContentType && !hasDuplicateCharsetParameter(rawContentType)) {
       const contentType = new MIMEType(rawContentType);
       const charset = contentType.params.get("charset");
       if (
