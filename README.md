@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation is verified. The first Phase 01 local-platform checkpoint is implemented, and explicit project-name remediation is locally validated in [P01-R01 evidence](evidence/phase-01/local-platform-checkpoint.txt) after automated review; its corrected clean public clone and protected hosted execution remain pending. Application implementation has not started.**
+**The Phase 00 repository foundation and first Phase 01 local-platform checkpoint are verified. [P01-R01 evidence](evidence/phase-01/local-platform-checkpoint.txt) includes explicit project scoping, a hostile-environment clean public clone, protected hosted execution, and resolved automated review; application implementation has not started.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

@@ -4,9 +4,9 @@ ASTER P01-R01 LOCAL PLATFORM CHECKPOINT EVIDENCE
 Work item: P01-R01 first Docker-only local platform checkpoint
 Evidence date: 2026-08-26
 Branch: feat/phase-01-local-platform
-Verified implementation commit: 563d09fde2de4c515d7dab02dfe68ee7484fa7e4
+Verified implementation commits: 563d09fde2de4c515d7dab02dfe68ee7484fa7e4; project-scope remediation c246051783f19cc1d6f4481725163caec5fb7e6b
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; linux/amd64 containers
-Acceptance: IMPLEMENTED; explicit project-name remediation is local-only pending public and hosted repetition
+Acceptance: VERIFIED
 
 QUESTION AND SCOPE
 ------------------
@@ -285,7 +285,7 @@ Hostile-environment runtime:
 - ran the corrected normal stop and proved aster_postgres-data remained with exact ownership labels;
 - removed only the verified Aster volume and observed Aster and collision resource counts return to zero.
 
-Result: PASS_LOCAL. Corrected clean public-checkout and protected hosted repetitions remain pending.
+Result: PASS_LOCAL before public and hosted repetition.
 
 INITIAL CLEAN PUBLIC-CHECKOUT ACCEPTANCE
 ----------------------------------------
@@ -317,6 +317,34 @@ The exact documented normal stop completed in 0.65 seconds and retained aster_po
 
 After that persistence proof, verification-only cleanup removed the exactly labeled Aster volume. Project container, network, and volume counts returned to zero; the 4 unrelated stopped containers remained unchanged. The temporary clone path was resolved below /tmp, its public origin and exact commit were rechecked, and only then was it removed.
 
+CORRECTED HOSTILE-ENVIRONMENT PUBLIC ACCEPTANCE
+-----------------------------------------------
+
+Initial state:
+- public source and branch: the same public repository and feature branch;
+- cloned commit: c246051783f19cc1d6f4481725163caec5fb7e6b;
+- exported environment: COMPOSE_PROJECT_NAME=foreign-collision;
+- Aster project containers, networks, and volumes before start: 0;
+- collision-project containers before start: 0;
+- host Node.js or pnpm invocation: none.
+
+The new clone ran the corrected README command:
+
+$ docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+result: PASS
+elapsed with locally cached immutable images: 7.40 seconds
+maximum resident set observed for Compose: 44,196 KiB
+
+Observed result:
+- PostgreSQL 18.6, Redis 8.10.0, initializer exit 0, and ongoing status healthy;
+- status printed the corrected --project-name aster diagnostic;
+- Aster-labeled containers: 4;
+- foreign-collision-labeled containers: 0;
+- host ports: none;
+- public clone Git status: clean.
+
+The corrected normal stop completed in 0.61 seconds and preserved aster_postgres-data with the exact Aster project and ownership labels despite the hostile environment variable. Verification-only cleanup then returned Aster container, network, and volume counts to zero and left collision counts at zero. The 4 unrelated stopped containers remained unchanged. The clone's resolved /tmp path, origin, exact commit, and clean Git state were verified before only that clone was removed.
+
 CI CONTRACT
 -----------
 
@@ -340,21 +368,24 @@ Protected pull request 6 run 32947483503 at commit 563d09fde2de4c515d7dab02dfe68
 
 The hosted Local platform job used unique project aster-ci-32947483503-1. Its runner pulled the immutable images, reached healthy status, observed PostgreSQL 18.6 and Redis 8.10.0, found the initializer success line, and removed its 4 containers, PostgreSQL volume, and internal network through the always-run scoped cleanup step.
 
+Protected remediation run 32948639792 at commit c246051783f19cc1d6f4481725163caec5fb7e6b also passed every job. Its governance path passed all 8 platform tests, and its Local platform job passed immutable pull, health, exact versions, corrected status initialization, and unique CI project cleanup. The owner replied with the local and clean-public corrective evidence and resolved automated review discussion 3860940991.
+
 ACCEPTANCE STATUS
 -----------------
 
-- One Docker-only command starts from empty project state: IMPLEMENTED; project-name remediation is locally verified.
+- One Docker-only command starts from empty project state: VERIFIED, including hostile inherited project-name state.
 - Dependencies use exact versions and immutable multi-platform digests: PASS.
 - Health checks and one-shot initialization gate ongoing status: PASS.
 - PostgreSQL state persists across recreation and normal stop: PASS.
 - Redis state is explicitly disposable: PASS.
 - CPU, memory, PID, health, wait, and shutdown behavior are bounded: PASS.
 - No hosted credential, host port, product data, or unrelated Docker mutation exists: PASS.
-- Static/adverse policy and Compose syntax pass: PASS_LOCAL after remediation.
+- Static/adverse policy and Compose syntax pass: VERIFIED after remediation.
 - Complete 22-task repository gate and high-severity dependency audit: VERIFIED.
 - Failure detection and recovery pass: VERIFIED.
-- Initial protected hosted smoke: PASS; corrected repetition PENDING.
-- Initial clean public-checkout repeat: PASS; corrected repetition PENDING.
+- Initial and corrected protected hosted smoke: VERIFIED.
+- Initial and corrected clean public-checkout repeat: VERIFIED.
+- Automated review finding: ADDRESSED and RESOLVED.
 
 LIMITATIONS AND NEXT ACTION
 ---------------------------
@@ -367,4 +398,4 @@ LIMITATIONS AND NEXT ACTION
 - The public normal stop preserves PostgreSQL. P01-R02 must provide and test the destructive reset before users receive one.
 - Broker, object storage, telemetry, application runtime, and HTTP adapter remain pending Phase 01 work.
 - The exact local and clean-public-checkout verification projects were removed after label validation; hosted logs confirm the unique CI project cleanup also completed.
-- Review remediation remains incomplete until the corrected public-clone and protected hosted paths pass and discussion 3860940991 is resolved.
+- Public commands must retain explicit --project-name aster; the eighth adverse test protects this scope contract from regression.

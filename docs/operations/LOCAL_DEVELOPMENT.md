@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Phase 00 repository foundation is verified. P01-R01 implements the first Docker-only infrastructure checkpoint with exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. Explicit project-name remediation is locally validated in [P01-R01 evidence](../../evidence/phase-01/local-platform-checkpoint.txt) after automated review; its corrected clean public-checkout and protected hosted repetition remain pending. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
+The Phase 00 repository foundation and P01-R01 are verified. The first Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R01 evidence](../../evidence/phase-01/local-platform-checkpoint.txt) includes a hostile-environment clean public checkout, protected hosted repetition, and resolved automated review. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
 
 ## Current foundation tools
 

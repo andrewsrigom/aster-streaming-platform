@@ -53,6 +53,7 @@ Status: **IN_PROGRESS**
 - A unique empty local Compose project passed immutable pull, 9.80-second health-gated startup, one-shot PostgreSQL and Redis protocol initialization, ongoing status, exact version checks, persistence and disposal semantics, 13.945-second dependency-failure detection, 2.834-second recovery, data-preserving stop/restart, resource inspection, and unrelated-project isolation.
 - Public candidate commit `563d09f` started through the exact README Docker-only command from a new public clone with no existing Aster project resources; status became healthy in 7.39 seconds, exact dependency versions passed, the normal stop preserved PostgreSQL, and exact verification cleanup returned all Aster project resource counts to zero.
 - Protected pull request 6 run `32947483503` passed change classification, dependency review, documentation/security, frozen source quality and audit, the first hosted `Local platform` pull/start/protocol/cleanup job, and the stable required aggregate.
+- Automated review discussion `3860940991` identified inherited project-name override risk. Corrected candidate `c246051` explicitly pins every public operation to `aster`, passes 8 adverse platform tests, starts from a clean public clone with a hostile `COMPOSE_PROJECT_NAME` while creating 4 Aster and 0 collision containers, preserves PostgreSQL on normal stop, cleans exact project state to zero, passes protected run `32948639792`, and has the review thread resolved.
 
 ## Not implemented
 
@@ -67,7 +68,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Close the automated P01-R01 project-name finding by verifying every corrected public operation against a conflicting `COMPOSE_PROJECT_NAME`, a clean public checkout, final protected CI, and the resolved review thread.
+Start P01-R02 with a new active change plan and implement only an explicit destructive reset that proves local scope, exact project identity, confirmation behavior, and refusal of hosted targets.
 
 ## Current risks
 

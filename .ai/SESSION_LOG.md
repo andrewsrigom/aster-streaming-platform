@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Core local platform review remediation
+## 2026-08-26 — Verified core local platform checkpoint
 
 ### Completed
 
@@ -17,16 +17,18 @@ Append new entries at the top. Keep entries factual and concise.
 - Observed protected pull request 6 run `32947483503` pass classification, dependency review, documentation/security, complete source quality and audit, the `Local platform` job, unique CI project cleanup, and the stable required aggregate.
 - Observed final-state run `32947882904` pass, then reopened P01-R01 when automated review discussion `3860940991` proved inherited `COMPOSE_PROJECT_NAME` could redirect the public commands.
 - Added explicit `--project-name aster` to every public operation and status diagnostic, made both command documents platform-policy inputs, added the eighth adverse test, and passed a real hostile-environment startup with 4 Aster containers and 0 collision-project containers before exact cleanup.
+- Cloned corrected public candidate `c246051`, exported `COMPOSE_PROJECT_NAME=foreign-collision`, reached healthy status in `7.40` seconds with 4 Aster and 0 collision containers, passed exact versions and diagnostics, preserved PostgreSQL through the scoped normal stop, cleaned project resources to zero, and removed only the verified temporary clone.
+- Observed protected remediation run `32948639792` pass all jobs, replied to automated review with the corrective evidence, and resolved discussion `3860940991`.
 
 ### Evidence
 
 - First immutable pull: `11.79` seconds; clean startup to health: `9.80` seconds; warm restart after normal stop: `7.38` seconds.
 - One idle sample: PostgreSQL `37.94 MiB`, Redis `6.445 MiB`, and status `1.566 MiB`; initialized PostgreSQL volume `65.39 MB`.
-- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`IMPLEMENTED`; corrected public and hosted repeats pending).
+- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`VERIFIED`).
 
 ### Next action
 
-Publish the project-name remediation, repeat the corrected command from a clean public checkout with a hostile override, require protected CI, resolve review discussion `3860940991`, and only then close P01-R01 again.
+After final branch integration is confirmed, create a new active plan for P01-R02 and implement only the explicit destructive local reset with exact scope and refusal tests.
 
 ## 2026-08-26 — Verified clean public checkout and Phase 00 closeout
 
