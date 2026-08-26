@@ -8,13 +8,13 @@ This report validates the static specification package and the current Phase 00 
 
 ## Inventory
 
-- Markdown files: **127**
+- Markdown files: **129**
 - Documentation directories: **15**
 - Delivery phase specifications: **15**
 - Specialized agent skills: **16**
 - Architecture decision records, including the template: **11**
-- Total Markdown size: **477,874 bytes**
-- Local Markdown links checked: **237**
+- Total Markdown size: **490,759 bytes**
+- Local Markdown links checked: **254**
 
 ## Checks
 

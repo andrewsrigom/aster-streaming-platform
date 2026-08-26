@@ -35,6 +35,26 @@ test("rejects missing titles, mismatched fences, merge markers, and terminology 
   );
 });
 
+test("accepts closed issue-template front matter without weakening title checks", () => {
+  const valid = analyzeMarkdown(
+    ".github/ISSUE_TEMPLATE/bug-report.md",
+    '---\nname: Bug report\nabout: Report behavior\ntitle: "[Bug] "\nlabels: ""\nassignees: ""\n---\n\n# Bug report\n',
+  );
+  assert.deepEqual(valid.violations, []);
+
+  const missingTitle = analyzeMarkdown(
+    ".github/ISSUE_TEMPLATE/bug-report.md",
+    "---\nname: Bug report\n---\n\nDescribe the bug.\n",
+  );
+  assert.equal(missingTitle.violations[0]?.rule, "missing-title");
+
+  const unrelatedFrontmatter = analyzeMarkdown(
+    "docs/status.md",
+    "---\nname: Status\n---\n\n# Status\n",
+  );
+  assert.equal(unrelatedFrontmatter.violations[0]?.rule, "missing-title");
+});
+
 test("rejects unqualified absolute maturity claims", () => {
   const analysis = analyzeMarkdown(
     "docs/status.md",

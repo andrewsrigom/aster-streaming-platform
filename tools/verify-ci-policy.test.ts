@@ -52,6 +52,15 @@ test("rejects a weakened or missing aggregate decision", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "aggregate"));
 });
 
+test("rejects a missing public contribution check", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const weakened = source.replace(
+    "node ./tools/verify-community-files.ts",
+    "node ./tools/verify-documentation.ts",
+  );
+  assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
 test("requires both bounded weekly dependency ecosystems", () => {
   assert.deepEqual(
     validateDependabotPolicy(`version: 2

@@ -223,6 +223,8 @@ export function validateWorkflowPolicy(
   );
   for (const [pattern, detail] of [
     [/node \.\/tools\/verify-documentation\.ts/u, "documentation check is required"],
+    [/node \.\/tools\/verify-community-files\.ts/u, "community-file check is required"],
+    [/\.\/tools\/verify-community-files\.test\.ts/u, "community-file policy tests are required"],
     [/node \.\/tools\/scan-secrets\.ts --all/u, "secret scan is required"],
     [/node \.\/tools\/verify-ci-policy\.ts/u, "CI policy check is required"],
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],

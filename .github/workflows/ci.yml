@@ -55,6 +55,8 @@ jobs:
           package-manager-cache: false
       - name: Validate documentation
         run: node ./tools/verify-documentation.ts
+      - name: Validate public contribution contract
+        run: node ./tools/verify-community-files.ts
       - name: Scan tracked files for secrets
         run: node ./tools/scan-secrets.ts --all
       - name: Validate CI policy
@@ -63,6 +65,7 @@ jobs:
         run: >-
           node --test
           ./tools/verify-documentation.test.ts
+          ./tools/verify-community-files.test.ts
           ./tools/scan-secrets.test.ts
           ./tools/classify-ci-change.test.ts
           ./tools/verify-ci-policy.test.ts

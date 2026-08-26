@@ -71,9 +71,15 @@ A change should state:
 - rollback path;
 - documentation updates.
 
-The pull request template will be added during Phase 00.
+The active [pull-request template](.github/PULL_REQUEST_TEMPLATE.md) requests these fields and the contribution declaration. Use a Conventional Commit-shaped pull-request title because the repository squash-merges one coherent result to `main`; title enforcement remains a review responsibility until the hosted repository gate proves otherwise.
 
 Draft pull requests may be used without running the complete merge gate. Mark the pull request ready when its coherent work item is ready for authoritative validation.
+
+## Reporting bugs and proposing changes
+
+Use the structured [bug report](.github/ISSUE_TEMPLATE/bug-report.md) for reproducible incorrect behavior and the [change proposal](.github/ISSUE_TEMPLATE/change-proposal.md) for one bounded product, architecture, reliability, security, or operational outcome. Search existing issues first and remove credentials, tokens, personal data, private exploit details, and unrestricted signed media URLs from logs, screenshots, traces, or reproduction data.
+
+Do not report a vulnerability through a public issue. Follow [`SECURITY.md`](SECURITY.md). Private vulnerability reporting and hosted template rendering are verified only after the public repository is created and its settings are audited.
 
 ## Review checklist
 

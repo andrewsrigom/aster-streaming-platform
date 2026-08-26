@@ -1,0 +1,139 @@
+ASTER PHASE 00 PUBLIC CONTRIBUTION GOVERNANCE EVIDENCE
+======================================================
+
+Work item: P00-R07 contribution governance and templates
+Evidence date: 2026-08-26
+Commit: local candidate tree; hosted rendering is observed after authorized publication
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Runtime: Node.js 24.19.0; pnpm 11.24.0; Docker daemon 26.0.0
+Acceptance: PASS_LOCAL
+
+OFFICIAL GITHUB CONTRACT
+------------------------
+
+Primary sources consulted on 2026-08-26:
+- https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates
+- https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+- https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository
+- https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/add-security-policy
+- https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository
+
+GitHub recognizes Markdown issue templates under .github/ISSUE_TEMPLATE and a default pull-request template under .github. Issue forms remain documented as public preview. This work item uses stable Markdown front matter and does not depend on the preview form schema.
+
+PUBLIC SURFACES
+---------------
+
+Active reviewed files:
+- .github/PULL_REQUEST_TEMPLATE.md
+- .github/ISSUE_TEMPLATE/bug-report.md
+- .github/ISSUE_TEMPLATE/change-proposal.md
+- .github/ISSUE_TEMPLATE/config.yml
+- CONTRIBUTING.md
+- SECURITY.md
+
+The prior internal draft pull-request template was removed so the active GitHub file is authoritative. Blank contributor issues are disabled. Labels, assignees, external contact links, private vulnerability reporting, and hosted rendering are not invented or claimed before remote governance.
+
+The pull-request contract requires a requirement or defect, behavior, ownership and trust boundaries, failure and recovery behavior, security and privacy impact, data and migration impact, observability, tests, evidence, rollback or roll-forward, documentation, coherent scope, MIT contribution rights, and third-party provenance.
+
+The bug and proposal templates redirect vulnerability details away from public issues and prohibit credentials, tokens, personal data, private exploit details, and unrestricted signed media URLs in public evidence.
+
+FOCUSED VALIDATION
+------------------
+
+$ pnpm community:check
+result: PASS
+files: 6
+violations: 0
+
+$ pnpm community:test
+result: PASS
+tests: 7 passed, 0 failed
+
+Combined actual check and adverse tests:
+- elapsed: 0.23 seconds;
+- maximum resident set observed: 83800 KiB.
+
+Adverse fixtures cover missing and unexpected files, malformed or drifted issue front matter, missing pull-request topics, enabled blank issues, weakened MIT contribution terms, unsafe public security guidance, oversized input, malformed UTF-8, and symbolic community files.
+
+$ pnpm ci:test
+result: PASS
+tests: 14 passed, 0 failed
+
+$ pnpm ci:check
+result: PASS
+violations: 0
+
+The CI policy now requires both the public-contribution command and its tests in the dependency-free governance path.
+
+WORKFLOW SYNTAX
+---------------
+
+actionlint: 1.7.12
+linux amd64 archive SHA-256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+checksum verification: PASS
+workflow parse and actionlint rules: PASS, 0 errors
+
+Optional shellcheck and pyflakes executables were absent. The workflow contains no Python; its shell fragments remain covered by actionlint parsing, the repository policy, and focused local execution.
+
+FINAL LOCAL GATES
+-----------------
+
+Dependency-free governance path:
+- documentation, community contract, repository secrets, CI policy, and 36 adverse tests;
+- result: PASS;
+- elapsed: 0.71 seconds;
+- maximum resident set observed: 88984 KiB.
+
+Frozen installation:
+- result: PASS, already up to date;
+- package, lockfile, workspace, Turbo, CI, and Dependabot hashes unchanged.
+
+Forced complete local graph:
+- result: PASS, 18 of 18 tasks, 0 cached;
+- focused built-in tests: 61 passed, 0 failed;
+- Turbo task duration: 4.826 seconds;
+- wrapper elapsed: 5.30 seconds;
+- maximum resident set observed: 432676 KiB.
+
+Registry audit:
+- result: PASS, no known vulnerabilities found;
+- elapsed: 0.78 seconds;
+- maximum resident set observed: 149608 KiB.
+
+Documentation validation:
+- result: PASS, 0 violations;
+- documents: 129;
+- headings: 1780;
+- local links: 254;
+- evidence-supported status claims: 2;
+- Markdown inventory: 129 files and 490759 bytes outside dependency, Git, and Turbo state directories.
+
+Steady cached complete graph:
+- result: PASS, 18 of 18 tasks;
+- 15 cached; exact toolchain checks and repository secret scan remain uncached;
+- Turbo task duration: 0.582 seconds;
+- wrapper elapsed: 1.02 seconds;
+- maximum resident set observed: 142288 KiB.
+
+Repository and host checks:
+- restricted private-context vocabulary: absent;
+- Zone.Identifier files: 0;
+- Git diff whitespace and conflict check: PASS;
+- configured Git remotes: 0;
+- Docker client and daemon: responsive at 26.0.0;
+- Docker containers: 4 present, 0 running.
+
+Representative staged hook over the 29-file work-item change:
+- staged index secret scan plus applicable Prettier and ESLint checks;
+- result: PASS, 0 secret findings and no formatting or lint violation;
+- elapsed: 3.30 seconds;
+- maximum resident set observed: 405280 KiB.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- No GitHub repository, issue chooser, rendered template, label, assignee, contact link, private report, workflow run, or remote setting is claimed by this local evidence.
+- Markdown template validation proves the checked-in contract, not how a future GitHub interface will render it.
+- Public reports remain untrusted contributor input; templates reduce ambiguity but do not sanitize or authorize submitted content.
+- Private vulnerability reporting is enabled and audited only after the authorized public repository exists.
+- P00-R10 repeats every Phase 00 gate from a clean public checkout.

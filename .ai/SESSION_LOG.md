@@ -2,6 +2,26 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Public contribution governance
+
+### Completed
+
+- Added active Markdown templates for bug reports, bounded change proposals, and pull requests plus an issue chooser that disables blank contributor issues without inventing labels, assignees, or contact channels.
+- Defined requirement, ownership, failure, security, data, observability, evidence, recovery, documentation, coherent-scope, MIT contribution, and third-party provenance expectations.
+- Added a bounded dependency-free validator for the exact community file set, front matter, required topics, licensing, and safe disclosure; removed the duplicate internal pull-request draft.
+- Integrated community validation into the root Turbo graph and the dependency-free CI governance path, and scoped documentation front-matter support to GitHub issue templates.
+
+### Evidence
+
+- Passed 7 community tests, 9 documentation tests, 14 CI-policy and classifier tests, and the actual six-file public contribution scan with zero violation.
+- Passed checksum-verified actionlint `1.7.12`, frozen installation without manifest drift, the forced eighteen-task graph with 61 focused tests, and registry audit with no known vulnerability.
+- Measured the focused community path at `0.23` seconds and the full dependency-free governance path with 36 adverse tests at `0.71` seconds in the recorded environment.
+- Raw evidence: `evidence/phase-00/community-governance.txt`.
+
+### Next action
+
+Confirm the configured GitHub identity and target absence, then create and audit the authorized public repository without claiming settings before they are observed.
+
 ## 2026-08-26 — Efficient and secure CI foundation
 
 ### Completed

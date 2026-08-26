@@ -36,6 +36,10 @@ This index lists repository governance artifacts and every Markdown source in th
 ## .github
 
 - [`.github/dependabot.yml`](../../.github/dependabot.yml) — Low-Noise Dependency Update Policy
+- [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md) — Active Pull-Request Contract
+- [`.github/ISSUE_TEMPLATE/bug-report.md`](../../.github/ISSUE_TEMPLATE/bug-report.md) — Public Bug Report Template
+- [`.github/ISSUE_TEMPLATE/change-proposal.md`](../../.github/ISSUE_TEMPLATE/change-proposal.md) — Public Change Proposal Template
+- [`.github/ISSUE_TEMPLATE/config.yml`](../../.github/ISSUE_TEMPLATE/config.yml) — Issue Chooser Policy
 - [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — Pull-Request and Main CI Decision
 
 ## .ai
@@ -76,6 +80,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`tools/check-staged-files.test.ts`](../../tools/check-staged-files.test.ts) — Staged-File Dispatcher Tests
 - [`tools/classify-ci-change.ts`](../../tools/classify-ci-change.ts) — Fail-Safe CI Change Classifier
 - [`tools/classify-ci-change.test.ts`](../../tools/classify-ci-change.test.ts) — CI Change Classifier Tests
+- [`tools/verify-community-files.ts`](../../tools/verify-community-files.ts) — Public Contribution Contract Validator
+- [`tools/verify-community-files.test.ts`](../../tools/verify-community-files.test.ts) — Public Contribution Contract Tests
 - [`tools/scan-secrets.ts`](../../tools/scan-secrets.ts) — Bounded Redacting Secret Scanner
 - [`tools/scan-secrets.test.ts`](../../tools/scan-secrets.test.ts) — Secret Scanner Tests
 - [`tools/validate-commit-message.ts`](../../tools/validate-commit-message.ts) — Commit Message Validator
@@ -201,7 +207,6 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/templates/HANDOFF_TEMPLATE.md`](../templates/HANDOFF_TEMPLATE.md) — Handoff: <Work Item>
 - [`docs/templates/LOCAL_AGENTS_TEMPLATE.md`](../templates/LOCAL_AGENTS_TEMPLATE.md) — Local Agent Contract: <Area>
 - [`docs/templates/POSTMORTEM_TEMPLATE.md`](../templates/POSTMORTEM_TEMPLATE.md) — Incident Review: <Title>
-- [`docs/templates/PULL_REQUEST_TEMPLATE.md`](../templates/PULL_REQUEST_TEMPLATE.md) — Change Summary
 - [`docs/templates/RFC_TEMPLATE.md`](../templates/RFC_TEMPLATE.md) — RFC: <Title>
 - [`docs/templates/RUNBOOK_TEMPLATE.md`](../templates/RUNBOOK_TEMPLATE.md) — Runbook: <Condition>
 - [`docs/templates/WORK_ITEM_TEMPLATE.md`](../templates/WORK_ITEM_TEMPLATE.md) — Work Item: <Outcome>
@@ -222,5 +227,6 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`evidence/phase-00/source-quality-foundation.txt`](../../evidence/phase-00/source-quality-foundation.txt) — Source Quality Foundation Evidence
 - [`evidence/phase-00/documentation-validation.txt`](../../evidence/phase-00/documentation-validation.txt) — Documentation Validation Evidence
 - [`evidence/phase-00/ci-security-foundation.txt`](../../evidence/phase-00/ci-security-foundation.txt) — CI and Security Foundation Evidence
+- [`evidence/phase-00/community-governance.txt`](../../evidence/phase-00/community-governance.txt) — Public Contribution Governance Evidence
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence

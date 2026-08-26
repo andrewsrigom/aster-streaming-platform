@@ -17,11 +17,12 @@
 | Add strict and tiered source-quality gates | P00-R04 | PASS | [`source-quality-foundation.txt`](source-quality-foundation.txt) |
 | Make documentation truthfulness executable | P00-R05 | PASS | [`documentation-validation.txt`](documentation-validation.txt) |
 | Establish efficient and secure CI | P00-R06 | PASS_LOCAL | [`ci-security-foundation.txt`](ci-security-foundation.txt) |
+| Establish public contribution governance | P00-R07 templates | PASS_LOCAL | [`community-governance.txt`](community-governance.txt) |
 
 P00-R08 is not complete as a phase requirement. A later work item integrates `.ai/` state validation into the executable contribution workflow.
 
 ## Limitations
 
 - Git now exists locally, but the public remote and public-clone result remain pending.
-- The toolchain, workspace, source/documentation/security task graph, staged hooks, CI workflow, and dependency policy are implemented and locally verified. GitHub templates, hosted workflow observations, remote security settings, and remote governance remain future Phase 00 work.
+- The toolchain, workspace, source/documentation/security/community task graph, staged hooks, CI workflow, dependency policy, and GitHub community templates are implemented and locally verified. Hosted template and workflow observations, remote security settings, and remote governance remain future Phase 00 work.
 - P00-R10 will rerun every Phase 00 check through documented commands from a clean checkout and replace these limitations with final evidence.

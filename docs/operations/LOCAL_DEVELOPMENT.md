@@ -101,6 +101,8 @@ Focused commands are available for diagnosis:
 
 ```bash
 pnpm check:source
+pnpm community:check
+pnpm community:test
 pnpm security:check
 pnpm security:test
 pnpm security:staged
@@ -108,11 +110,11 @@ pnpm ci:check
 pnpm ci:test
 ```
 
-`security:check` scans tracked and non-ignored untracked text without printing matched values. `security:staged` reads bytes from the Git index, so an unstaged working-tree edit cannot hide a staged finding. High-confidence provider patterns, private-key headers, credential-bearing data URLs, and non-placeholder credential assignments fail; binary or invalid-UTF-8 files are skipped and require their owning format-specific scanner later.
+`community:check` validates the exact bounded UTF-8 contribution, security, issue, chooser, and pull-request contract; its adverse fixtures run through `community:test`. `security:check` scans tracked and non-ignored untracked text without printing matched values. `security:staged` reads bytes from the Git index, so an unstaged working-tree edit cannot hide a staged finding. High-confidence provider patterns, private-key headers, credential-bearing data URLs, and non-placeholder credential assignments fail; binary or invalid-UTF-8 files are skipped and require their owning format-specific scanner later.
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs documentation, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The dependency-review action requires a public pull-request context and therefore remains configured but not hosted-verified until publication.
+The configured GitHub governance job runs documentation, public-contribution, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The dependency-review action requires a public pull-request context and therefore remains configured but not hosted-verified until publication.
 
 ## Local endpoints
 

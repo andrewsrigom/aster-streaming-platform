@@ -2,7 +2,7 @@
 
 ## Current status
 
-Local Git is initialized on `main`; deterministic attributes and ignores, strict source and documentation gates, executable architecture boundaries, staged secret/file and commit-message hooks, the pinned workspace check, and the CI workflow are implemented and locally validated with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), and [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt). GitHub templates, the public remote, hosted workflow results, and hosted protections remain planned Phase 00 work.
+Local Git is initialized on `main`; deterministic attributes and ignores, strict source, documentation, and public-contribution gates, executable architecture boundaries, staged secret/file and commit-message hooks, the pinned workspace check, the CI workflow, and active GitHub community templates are implemented and locally validated with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [community-governance evidence](../../evidence/phase-00/community-governance.txt). The public remote, hosted template and workflow results, and hosted protections remain planned Phase 00 work.
 
 The repository owner has authorized creation of the public target `andrewsrigom/aster-streaming-platform`. Supported tool selection and local Git initialization are complete; creation remains ordered after the initial quality workflows and a final remote-existence check.
 
@@ -98,6 +98,14 @@ Draft pull requests may be used for visibility without running the complete merg
 
 For a single-maintainer repository, the initial ruleset requires the pull-request path and status checks but does not require an unavailable external approval. Review approvals can become mandatory when an eligible collaborator exists.
 
+## Public contribution surfaces
+
+GitHub automatically applies [the pull-request template](../../.github/PULL_REQUEST_TEMPLATE.md). It asks for the requirement or defect, ownership and trust boundaries, observable and failure behavior, security and data impact, tests, evidence, recovery, documentation, a coherent-change declaration, and confirmation that the contributor can provide the work under MIT.
+
+The issue chooser offers a [bug report](../../.github/ISSUE_TEMPLATE/bug-report.md) and a [bounded change proposal](../../.github/ISSUE_TEMPLATE/change-proposal.md). Blank contributor issues are disabled. No label, assignee, external contact, or private-reporting capability is invented before the remote audit. Both issue paths redirect vulnerability details away from public disclosure and require sanitized evidence.
+
+The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and truthful security guidance. Seven adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, and symbolic inputs. GitHub rendering remains hosted-unverified until publication.
+
 ## CI execution policy
 
 - Feature-branch pushes do not also run a second full workflow when the same revision is covered by a pull-request workflow.
@@ -120,7 +128,7 @@ The checked-in `CI` workflow has one authoritative event policy and one stable a
 | Job | When | Dependency install | Responsibility |
 |---|---|---:|---|
 | Classify change | Every run | No | Fail-safe full versus documentation-only path |
-| Documentation and security | Every run | No | Documentation, tracked secret, CI policy, and governance-tool tests |
+| Documentation and security | Every run | No | Documentation, community contract, tracked secret, CI policy, and governance-tool tests |
 | Install and source quality | Non-draft executable/configuration changes, `main`, and manual fallback | Yes | Frozen install, source gates, and high-severity registry audit |
 | Dependency review | Non-draft pull requests | No | New dependency vulnerability, scope, and reviewed-license policy |
 | CI required | Every run | No | Stable result over every applicable prerequisite |
@@ -159,12 +167,12 @@ Required status-check names are configured only after the workflows have run and
 
 ## Authorized creation sequence
 
-Steps 1 through 4 are implemented locally. The public remote remains absent and steps 5 through 10 remain pending.
+Steps 1 through 4 are implemented locally, including the public community templates. The public remote remains absent and steps 5 through 10 remain pending.
 
 1. Complete P00-R03 and record supported Node.js and pnpm versions.
 2. Complete the local Git and ignore-policy part of P00-R02 with `main` as the initial branch.
 3. Add the initial workspace and repository checks without future-service scaffolding.
-4. Define and validate the first GitHub Actions workflows locally where possible.
+4. Define and validate the first GitHub Actions workflow and public community templates locally where possible.
 5. Confirm the target does not already exist and the configured GitHub account is still `andrewsrigom`.
 6. Create `andrewsrigom/aster-streaming-platform` as public from the existing local repository and add `origin` without generating a second README, license, or ignore file.
 7. Push the reviewed local `main`, observe the first workflows, and keep the remote unclaimed as protected until their results are known.

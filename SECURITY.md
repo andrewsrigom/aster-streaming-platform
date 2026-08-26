@@ -8,7 +8,9 @@ Security controls must exist at multiple layers. A client-side restriction is ne
 
 ## Reporting
 
-Until a dedicated private reporting channel exists, do not publish exploit details in a public issue. Repository maintainers should configure a private security-advisory workflow before the first public deployment.
+Do not publish vulnerabilities, exploit details, credentials, personal data, or unrestricted signed media URLs in a public issue or pull request. Until a dedicated private reporting channel exists, retain the minimum report privately and wait for the repository maintainer to publish a verified private channel. Repository maintainers configure and audit GitHub private vulnerability reporting during public-repository governance and before any public deployment.
+
+Public bug and proposal templates redirect security-sensitive reports here. That redirect is implemented locally; private vulnerability reporting remains planned until the public repository setting is enabled and observed.
 
 ## Core controls
 

@@ -29,6 +29,8 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | CI event and aggregation policy | Use pull-request validation, `main` post-merge push, manual dispatch, superseded-run cancellation, path classification, and one stable `CI required` result | `evidence/phase-00/ci-security-foundation.txt` |
 | CI action supply chain | Pin checkout `v7.0.1`, setup-node `v7.0.0`, cache `v6.1.0`, and dependency-review `v5.0.0` to reviewed full verified commits | `evidence/phase-00/ci-security-foundation.txt` |
 | Secret and dependency review | Use a bounded redacting repository scanner locally and in CI, high-severity pnpm audit after frozen install, and GitHub pull-request dependency/license review; add hosted secret protection during remote governance | `evidence/phase-00/ci-security-foundation.txt` |
+| Public contribution surfaces | Use stable Markdown bug, proposal, and pull-request templates plus a blank-issue-disabled chooser; avoid preview issue forms and unverified labels, assignees, or contact channels | `evidence/phase-00/community-governance.txt` |
+| Community contract enforcement | Use a bounded dependency-free validator for exact files, front matter, required topics, MIT contribution terms, separate media rights, and safe vulnerability guidance | `evidence/phase-00/community-governance.txt` |
 
 ## Pending decisions
 

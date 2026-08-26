@@ -222,6 +222,11 @@ export function analyzeMarkdown(file: string, sourceText: string): MarkdownAnaly
   const referenceDefinitions = new Map<string, MarkdownLink>();
   const referenceUses: Array<{ label: string; line: number }> = [];
   const lines = sourceText.replace(/\r\n?/gu, "\n").split("\n");
+  const issueTemplateWithFrontmatter =
+    /^\.github\/ISSUE_TEMPLATE\/[^/]+\.md$/u.test(file) && lines[0] === "---";
+  const frontmatterEndIndex = issueTemplateWithFrontmatter
+    ? lines.findIndex((line, index) => index > 0 && line === "---")
+    : -1;
   let fence: FenceState | undefined;
   let firstContentSeen = false;
   let currentSection = "";
@@ -245,6 +250,9 @@ export function analyzeMarkdown(file: string, sourceText: string): MarkdownAnaly
         rule: "line-limit",
         detail: `line exceeds ${MAX_LINE_CHARACTERS} characters`,
       });
+      continue;
+    }
+    if (frontmatterEndIndex > 0 && lineIndex <= frontmatterEndIndex) {
       continue;
     }
     if (fence) {

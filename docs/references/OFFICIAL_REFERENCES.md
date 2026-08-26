@@ -68,6 +68,14 @@ Do not infer that every film or asset uses the same license. Review each officia
 - dependency-review-action `v5.0.0`: https://github.com/actions/dependency-review-action/releases/tag/v5.0.0
 - actionlint `v1.7.12`: https://github.com/rhysd/actionlint/releases/tag/v1.7.12
 
+## Public repository governance
+
+- GitHub issue and pull-request templates: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates
+- Configuring issue templates and the chooser: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+- Creating a pull-request template: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository
+- Adding a repository security policy: https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/add-security-policy
+- Configuring private vulnerability reporting: https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository
+
 ## GraphQL and Apollo
 
 - GraphQL specification: https://spec.graphql.org/
