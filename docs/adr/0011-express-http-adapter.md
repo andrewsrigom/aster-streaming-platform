@@ -58,7 +58,7 @@ Fastify's richer built-in server behavior is valuable, but the current slice has
 
 ### Operational
 
-- `POST /graphql` without supported JSON media type returns `415`.
+- `POST /graphql` without supported UTF-8 JSON media type or with unsupported content encoding returns `415`.
 - Malformed JSON returns `400`; a body above the configured bound returns `413` before Apollo runs.
 - Requests before mount return `503`; unmatched and nested paths return `404`.
 - The adapter disables Express disclosure and ETag generation. CORS is intentionally absent until an owning deployment or application requirement defines it.

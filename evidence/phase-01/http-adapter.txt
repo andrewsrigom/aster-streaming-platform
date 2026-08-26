@@ -102,7 +102,9 @@ The current production license inventory resolves only MIT, ISC, and BSD-3-Claus
 - Initial protected candidate `8f05669` passed run `32969827929`, including hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`; the unrelated Docker lane was skipped.
 - Hosted dependency review emitted informational low OpenSSF Scorecard warnings for nine Express transitives: `bytes`, `cookie-signature`, `depd`, `ee-first`, `escape-html`, `safe-buffer`, `safer-buffer`, `toidentifier`, and `unpipe`. The gate passed and the registry audit reports no known vulnerability.
 - Self-review found that the original drain test released its resolver before Apollo's next-turn HTTP close, so it did not prove ordering. The hardened test waits one event-loop turn, proves the listener is closed while stop and response remain pending, refuses a new connection, and only then releases the resolver. Five consecutive focused runs passed all eight tests.
-- Final clean public checkout, protected CI, independent review, and verified candidate: pending after drain-test hardening.
+- Independent review comment `3862878496` found that Express parser errors `charset.unsupported` and `encoding.unsupported` retained their client-side `415` semantics but the adapter's fallback converted them to `500`. The remediation classifies only those parser-originated types as stable `415 UNSUPPORTED_MEDIA_TYPE`; adverse charset and content-encoding canary cases pass with no header reflection.
+- The review remediation passed the complete local graph with 31 of 31 uncached tasks in `27.634s`, including all eight HTTP tests, type-aware lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, and existing package checks.
+- Final clean public checkout, protected CI, review closeout, and verified candidate: pending after the review remediation.
 
 ## Clean public checkout
 
@@ -120,7 +122,7 @@ The process pair is a compatibility and startup-cost observation only. It does n
 
 ## Limitations
 
-- The first protected run and dependency review passed, but the final clean checkout, protected rerun, independent review, and release evidence remain pending after drain-test hardening.
+- The first two protected runs and dependency review passed, but the final clean checkout, protected rerun, review closeout, and release evidence remain pending after the unsupported-encoding remediation.
 - Nine Express transitives have informational OpenSSF Scorecard values below the hosted threshold. They are not current vulnerability findings, but future dependency changes must re-evaluate them and preserve the adapter replacement boundary.
 - The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
 - Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.

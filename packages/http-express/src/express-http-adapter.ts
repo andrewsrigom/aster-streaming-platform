@@ -196,6 +196,10 @@ const jsonParserErrorHandler: ErrorRequestHandler = (
     writeError(response, 400, "INVALID_JSON_BODY");
     return;
   }
+  if (type === "charset.unsupported" || type === "encoding.unsupported") {
+    writeError(response, 415, "UNSUPPORTED_MEDIA_TYPE");
+    return;
+  }
   writeError(response, 500, "INTERNAL_HTTP_ERROR");
 };
 

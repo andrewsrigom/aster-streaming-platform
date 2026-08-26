@@ -19,6 +19,9 @@ Append new entries at the top. Keep entries factual and concise.
 - The clean public candidate also passed audit, secret scanning, and clean-Git checks. Its resolved temporary path, public origin, exact SHA, and clean state were revalidated before only that root was removed; Docker was not invoked.
 - Opened pull request 10 at candidate `8f05669`; protected run `32969827929` passed hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`. Dependency review emitted nine informational low Scorecard warnings for Express transitives while the gate and vulnerability audit passed.
 - Self-review found the drain test released its resolver before Apollo's documented next-turn server close. Hardened it to wait one event-loop turn, prove the listener is closed while both stop and response remain pending, refuse a new connection, then release and verify the drained response. Five consecutive eight-test runs plus type, lint, formatting, and secret checks pass.
+- Hardened public candidate `a610697` passed frozen install, eight focused tests, the diagnostic, 31 of 31 uncached tasks in `22.673` seconds, audit, secret scanning, clean Git, and exact temporary-clone removal; protected run `32970353368` passed every applicable job.
+- Independent review comment `3862878496` found unsupported parser charset and content-encoding failures were incorrectly converted from `415` to `500`. The remediation maps only `charset.unsupported` and `encoding.unsupported` from the parser-local handler to stable `415 UNSUPPORTED_MEDIA_TYPE`; adverse charset and encoding-canary assertions pass without reflection.
+- The review remediation passed the complete local graph with 31 of 31 uncached tasks in `27.634` seconds.
 
 ### Evidence
 
@@ -26,13 +29,15 @@ Append new entries at the top. Keep entries factual and concise.
 - Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
 - Clean public checkout: `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`; 31 tasks, 0 cached, `20.594s`.
 - Initial protected run: `32969827929` at `8f056693735d8d18109db148a04f37a10c93a409`.
+- Hardened clean checkout and protected run: `a610697112b1c507ef13628d13c6bc2032e8d1a5`; 31 tasks in `22.673s`; run `32970353368`.
+- Independent review: actionable comment `3862878496`; local remediation pending commit.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Commit and push the hardened drain verification, then repeat the clean public candidate, protected CI, and independent review at the new head.
+Commit and push the parser remediation, then repeat the clean public candidate, protected CI, and independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 

@@ -47,14 +47,14 @@ The fixed route stack is:
 7. caller-supplied GraphQL middleware;
 8. stable not-found and terminal error handlers.
 
-The default JSON bound is `65,536` bytes. A composition root may lower it or raise it only to the package maximum of `262,144` bytes. The bound is enforced before Apollo executes. `POST` requires `application/json`; `GET` remains available for GraphQL query semantics and does not require a body media type. Nested paths such as `/graphql/internal` do not enter the GraphQL middleware.
+The default JSON bound is `65,536` bytes. A composition root may lower it or raise it only to the package maximum of `262,144` bytes. The bound is enforced before Apollo executes. `POST` requires UTF-8 `application/json`; unsupported charsets or content encodings return the same stable `415` category without reflecting the header. `GET` remains available for GraphQL query semantics and does not require a body media type. Nested paths such as `/graphql/internal` do not enter the GraphQL middleware.
 
 ## Stable responses
 
 | Condition | Status | Response code |
 |---|---:|---|
 | Adapter not mounted | 503 | `HTTP_ADAPTER_NOT_READY` |
-| Unsupported or missing `POST` media type | 415 | `UNSUPPORTED_MEDIA_TYPE` |
+| Unsupported or missing `POST` media type, charset, or content encoding | 415 | `UNSUPPORTED_MEDIA_TYPE` |
 | Malformed strict JSON | 400 | `INVALID_JSON_BODY` |
 | JSON body over the configured bound | 413 | `REQUEST_BODY_TOO_LARGE` |
 | Unmatched route | 404 | `HTTP_NOT_FOUND` |
