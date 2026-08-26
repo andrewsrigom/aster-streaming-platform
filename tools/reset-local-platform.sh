@@ -102,6 +102,46 @@ if ! configured_volumes=$(compose_local config --volumes 2>/dev/null); then
 fi
 [ "$configured_volumes" = "postgres-data" ] || fail 'the Compose volume set is not the reviewed local platform slice'
 
+if ! prefixed_container_ids=$(docker_local container ls --all --quiet --filter "name=^/${PROJECT_NAME}[-_]" 2>/dev/null); then
+  fail 'Aster-prefixed containers cannot be listed'
+fi
+for container_id in $prefixed_container_ids; do
+  if ! container_name=$(docker_local container inspect --format '{{.Name}}' "$container_id" 2>/dev/null); then
+    fail 'an Aster-prefixed container cannot be inspected'
+  fi
+  container_name=${container_name#/}
+  if ! container_project=$(docker_local container inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}' "$container_id" 2>/dev/null); then
+    fail "container $container_name project ownership cannot be inspected"
+  fi
+  [ "$container_project" = "$PROJECT_NAME" ] ||
+    fail "container $container_name uses the Aster name prefix without exact project ownership"
+done
+
+if ! prefixed_network_ids=$(docker_local network ls --quiet --filter "name=^${PROJECT_NAME}[-_]" 2>/dev/null); then
+  fail 'Aster-prefixed networks cannot be listed'
+fi
+for network_id in $prefixed_network_ids; do
+  if ! network_name=$(docker_local network inspect --format '{{.Name}}' "$network_id" 2>/dev/null); then
+    fail 'an Aster-prefixed network cannot be inspected'
+  fi
+  if ! network_project=$(docker_local network inspect --format '{{ index .Labels "com.docker.compose.project" }}' "$network_id" 2>/dev/null); then
+    fail "network $network_name project ownership cannot be inspected"
+  fi
+  [ "$network_project" = "$PROJECT_NAME" ] ||
+    fail "network $network_name uses the Aster name prefix without exact project ownership"
+done
+
+if ! prefixed_volume_names=$(docker_local volume ls --quiet --filter "name=^${PROJECT_NAME}[-_]" 2>/dev/null); then
+  fail 'Aster-prefixed volumes cannot be listed'
+fi
+for volume_name in $prefixed_volume_names; do
+  if ! volume_project=$(docker_local volume inspect --format '{{ index .Labels "com.docker.compose.project" }}' "$volume_name" 2>/dev/null); then
+    fail "volume $volume_name project ownership cannot be inspected"
+  fi
+  [ "$volume_project" = "$PROJECT_NAME" ] ||
+    fail "volume $volume_name uses the Aster name prefix without exact project ownership"
+done
+
 if ! container_ids=$(docker_local container ls --all --quiet --filter "label=com.docker.compose.project=$PROJECT_NAME" 2>/dev/null); then
   fail 'Aster containers cannot be listed'
 fi
@@ -118,9 +158,17 @@ for container_id in $container_ids; do
   if ! container_labels=$(docker_local container inspect --format '{{ index .Config.Labels "com.docker.compose.project" }}|{{ index .Config.Labels "com.docker.compose.service" }}|{{ index .Config.Labels "com.aster.environment" }}|{{ index .Config.Labels "com.aster.scope" }}|{{ index .Config.Labels "com.docker.compose.project.config_files" }}' "$container_id" 2>/dev/null); then
     fail "container $container_name labels cannot be inspected"
   fi
+  container_project=$(printf '%s\n' "$container_labels" | cut -d '|' -f 1)
   container_service=$(printf '%s\n' "$container_labels" | cut -d '|' -f 2)
-  [ "$container_labels" = "$PROJECT_NAME|$container_service|local|platform|$compose_file" ] ||
-    fail "container $container_name has unexpected project, environment, scope, or Compose-file labels"
+  container_environment=$(printf '%s\n' "$container_labels" | cut -d '|' -f 3)
+  container_scope=$(printf '%s\n' "$container_labels" | cut -d '|' -f 4)
+  container_compose_file=$(printf '%s\n' "$container_labels" | cut -d '|' -f 5)
+  [ "$container_project" = "$PROJECT_NAME" ] || fail "container $container_name has unexpected project ownership"
+  [ "$container_compose_file" = "$compose_file" ] || fail "container $container_name has an unexpected Compose-file label"
+  case "$container_environment|$container_scope" in
+    'local|platform' | '|') ;;
+    *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
+  esac
   case "$container_service" in
     platform-init)
       [ "$seen_platform_init" -eq 0 ] || fail 'duplicate platform-init container is prohibited'

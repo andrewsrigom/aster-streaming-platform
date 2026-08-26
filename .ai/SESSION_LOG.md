@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Verified destructive local reset
+## 2026-08-26 — Initial destructive local reset candidate and reopened review
 
 ### Completed
 
@@ -19,11 +19,11 @@ Append new entries at the top. Keep entries factual and concise.
 
 - Populated reset: `1.79` seconds; clean recovery: `7.40` seconds; stopped-volume reset: `0.86` seconds.
 - Clean public-checkout startup: `7.33` seconds; reset: `1.79` seconds.
-- Raw evidence: `evidence/phase-01/local-reset.txt` (`VERIFIED`).
+- Raw evidence: `evidence/phase-01/local-reset.txt` (`REOPENED` after review).
 
 ### Next action
 
-Integrate P01-R02 through the protected pull-request path, confirm post-merge `main`, then create a new active plan for P01-R03 process-start configuration validation.
+Complete P01-R02 legacy-label and hidden-prefix remediation, repeat the same-checkout public upgrade and all gates, resolve review comment `3861318803`, and integrate before starting P01-R03.
 
 ## 2026-08-26 — Verified core local platform checkpoint
 

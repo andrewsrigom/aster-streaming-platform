@@ -1,6 +1,6 @@
 # Handoff
 
-Phase 00 is verified and released at `da7e6d0`, and P01-R01 is released on `main` at `b4082e6`. P01-R02 is verified at implementation commit `3fa3994` on `feat/p01-r02-local-reset`: fixed-target and hosted-path refusals, populated and partial-state reset, zero postconditions, clean recovery, 18 focused tests, 18 CI tests, 22 uncached repository tasks, audit, unrelated-resource preservation, and a Docker-only clean public checkout passed. P01-R02 is `DONE`, no work item is active, and P01-R03 is the first `READY` item. No application code exists.
+Phase 00 is verified and released at `da7e6d0`, and P01-R01 is released on `main` at `b4082e6`. P01-R02 fresh-state implementation and evidence passed at `3fa3994`/`fc8d826`, but automated review comment `3861318803` proved that released P01-R01 containers lack the new service-level Aster labels and are refused by the reset. Manual review also found that Aster-prefixed resources without a project label can be hidden from label-only discovery. P01-R02 is reopened and `IN_PROGRESS`; P01-R03 remains queued but must not start. No application code exists.
 
 The verified checkpoint contains exact official PostgreSQL `18.6` and Redis `8.10.0` images, explicit public project `aster`, no host ports, an internal network, persistent PostgreSQL state, disposable Redis state, finite resources, protocol health, one-shot initialization, ongoing status, protected CI policy, operator documentation, separate third-party notices, and Phase 01 evidence. Its destructive reset requires explicit local intent and confirmation, rejects common hosted and ambiguous targets, validates exact resource ownership, preserves images and unrelated Docker state, and proves zero Aster resources.
 
@@ -9,11 +9,11 @@ Every local Compose verification project was inspected by exact project labels a
 ## Resume point
 
 1. Read `AGENTS.md`, `.ai/CONTEXT.md`, and `.ai/CURRENT_STATE.md`.
-2. Confirm whether P01-R02 has passed its protected pull request and post-merge `main` run; if not, finish only that integration and do not start another implementation while its state is ambiguous.
+2. Continue only active P01-R02 remediation in `.ai/CHANGE_PLAN.md`; do not start P01-R03 while review comment `3861318803` remains unresolved.
 3. Read `docs/specs/phase-01-local-platform.md`, `docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`, `SECURITY.md`, and the configuration, security, testing, Node runtime, documentation, and agent skills.
-4. Select only P01-R03, move it to `IN_PROGRESS`, and create `.ai/CHANGE_PLAN.md` before implementation.
-5. Resolve the pending configuration-library decision with current compatibility, maintenance, license, security, runtime-cost, and exit-strategy evidence; do not select unrelated Phase 01 dependencies.
-6. Implement only bounded process-start validation, secret classification and redaction metadata, safe startup diagnostics, adverse tests, and the smallest reusable package boundary needed by P01-R03.
+4. Accept only the exact legacy empty or current `local|platform` service-label pair while preserving exact Compose project, service, file, network, volume, authority, environment, scope, and owner checks.
+5. Refuse any Aster-prefixed physical container, network, or volume whose project label is absent or different before label-filtered discovery.
+6. Prove a same-checkout public upgrade from released P01-R01 startup to corrected P01-R02 reset, then update evidence, repeat all gates and protected CI, reply to and resolve the review, and merge before selecting P01-R03.
 
 ## Do not do yet
 

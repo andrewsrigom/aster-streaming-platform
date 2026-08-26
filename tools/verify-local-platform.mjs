@@ -203,6 +203,22 @@ export function validateLocalReset(source) {
     'compose --project-name "$PROJECT_NAME" --file "$compose_file"',
     "Compose mutations must pin the project and file",
   );
+  requireText(
+    "scope",
+    "name=^/${PROJECT_NAME}[-_]",
+    "Aster-prefixed containers must be checked before label-filtered discovery",
+  );
+  if (occurrences(source, "name=^${PROJECT_NAME}[-_]") !== 2) {
+    violations.push({
+      detail: "Aster-prefixed networks and volumes must be checked before label-filtered discovery",
+      rule: "scope",
+    });
+  }
+  requireText(
+    "compatibility",
+    "'local|platform' | '|'",
+    "reset must accept only the complete current or released P01-R01 service-label pair",
+  );
   for (const label of [
     "com.docker.compose.project",
     "com.docker.compose.service",

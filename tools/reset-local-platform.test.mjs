@@ -98,8 +98,12 @@ fi
 if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
   if [ "$4" = "{{.Name}}" ]; then
     printf '%s\\n' /aster-postgres-1
+  elif [ "$4" = "{{ index .Config.Labels \\"com.docker.compose.project\\" }}" ]; then
+    printf '%s\\n' aster
   elif [ "$FAKE_DOCKER_SCENARIO" = "label-mismatch" ]; then
-    printf '%s\\n' 'aster|postgres|hosted|platform|wrong-compose.yml'
+    printf 'aster|postgres|local||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "previous-revision" ]; then
+    printf 'aster|postgres|||%s\\n' "$FAKE_COMPOSE_FILE"
   else
     printf 'aster|postgres|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
   fi
@@ -114,6 +118,8 @@ fi
 if [ "$1" = "network" ] && [ "$2" = "inspect" ]; then
   if [ "$4" = "{{.Name}}" ]; then
     printf '%s\\n' aster_platform
+  elif [ "$4" = "{{ index .Labels \\"com.docker.compose.project\\" }}" ]; then
+    printf '%s\\n' aster
   else
     printf '%s\\n' 'aster|platform|local|platform'
   fi
@@ -121,12 +127,22 @@ if [ "$1" = "network" ] && [ "$2" = "inspect" ]; then
 fi
 if [ "$1" = "volume" ] && [ "$2" = "ls" ]; then
   if [ "$resource_present" = true ]; then
-    printf '%s\\n' aster_postgres-data
+    if [ "$FAKE_DOCKER_SCENARIO" != "missing-project-label" ] || printf '%s' "$*" | grep -q 'name='; then
+      printf '%s\\n' aster_postgres-data
+    fi
   fi
   exit 0
 fi
 if [ "$1" = "volume" ] && [ "$2" = "inspect" ]; then
-  printf '%s\\n' 'aster|postgres-data|durable-local|local|platform'
+  if [ "$4" = "{{ index .Labels \\"com.docker.compose.project\\" }}" ]; then
+    if [ "$FAKE_DOCKER_SCENARIO" = "missing-project-label" ]; then
+      printf '%s\\n' foreign-project
+    else
+      printf '%s\\n' aster
+    fi
+  else
+    printf '%s\\n' 'aster|postgres-data|durable-local|local|platform'
+  fi
   exit 0
 fi
 
@@ -232,8 +248,13 @@ test("refuses a remote active Docker endpoint before Compose", async (t) => {
 test("refuses unexpected resource labels without teardown", async (t) => {
   const result = await runReset(t, { scenario: "label-mismatch" });
   assert.equal(result.code, 1);
-  assert.match(result.stderr, /unexpected project, environment, scope, or Compose-file labels/u);
+  assert.match(result.stderr, /incomplete or unexpected environment and scope label pair/u);
   assert.doesNotMatch(result.log, / down --volumes/u);
+
+  const missingProjectLabel = await runReset(t, { scenario: "missing-project-label" });
+  assert.equal(missingProjectLabel.code, 1);
+  assert.match(missingProjectLabel.stderr, /Aster name prefix without exact project ownership/u);
+  assert.doesNotMatch(missingProjectLabel.log, / down --volumes/u);
 });
 
 test("removes only the fixed populated Aster project and proves postconditions", async (t) => {
@@ -249,6 +270,11 @@ test("removes only the fixed populated Aster project and proves postconditions",
     ),
   );
   assert.doesNotMatch(result.log, /prune|--remove-orphans|--rmi/u);
+
+  const previousRevision = await runReset(t, { scenario: "previous-revision" });
+  assert.equal(previousRevision.code, 0);
+  assert.match(previousRevision.stdout, /reset complete/u);
+  assert.match(previousRevision.stdout, /containers=1 networks=1 volumes=1/u);
 });
 
 test("is idempotent when Aster has no local resources", async (t) => {

@@ -49,11 +49,15 @@ test("rejects weakened reset confirmation and hosted-target controls", () => {
 
 test("rejects a redirectable or broad reset", () => {
   const redirectable = validReset.replace("PROJECT_NAME=aster", "PROJECT_NAME=$1");
+  const noPrefixOwnership = validReset.replaceAll("name=^${PROJECT_NAME}[-_]", "name=aster");
+  const noLegacyCompatibility = validReset.replace("'local|platform' | '|'", "'local|platform'");
   const broadCleanup = validReset.replace(
     "compose_local down --volumes",
     "docker system prune --all --force",
   );
   assert.ok(validateLocalReset(redirectable).some(({ rule }) => rule === "scope"));
+  assert.ok(validateLocalReset(noPrefixOwnership).some(({ rule }) => rule === "scope"));
+  assert.ok(validateLocalReset(noLegacyCompatibility).some(({ rule }) => rule === "compatibility"));
   assert.ok(
     validateLocalReset(broadCleanup).some(
       ({ rule }) => rule === "deletion" || rule === "destructive-scope",

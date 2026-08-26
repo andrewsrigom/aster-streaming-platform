@@ -73,7 +73,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-After P01-R02 protected integration is unambiguous, start P01-R03 by selecting and recording the configuration-validation approach and implementing only process-start validation with explicit secret classification.
+Complete active P01-R02 remediation for released P01-R01 label compatibility and hidden Aster-prefixed resources, then repeat local, public-checkout, review, protected CI, and post-merge verification before starting P01-R03.
 
 ## Current risks
 

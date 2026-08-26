@@ -6,7 +6,7 @@ Evidence date: 2026-08-26
 Implementation commit: 3fa3994efe1663b57fe8c982092a95dd79c86b8d
 Branch: feat/p01-r02-local-reset
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; linux/amd64 containers
-Acceptance: VERIFIED
+Acceptance: REOPENED — released P01-R01 upgrade remediation pending
 
 QUESTION AND SCOPE
 ------------------
@@ -246,6 +246,6 @@ LIMITATIONS
 ACCEPTANCE
 ----------
 
-P01-R02: PASS / VERIFIED
+P01-R02: REOPENED
 
-The repository provides one explicit destructive reset command. It requires deliberate local intent, uses an immutable project and Compose target, refuses common hosted and ambiguous execution paths, verifies exact current resource ownership, removes only the current Aster project and named local volume, proves zero Aster resources afterward, preserves unrelated Docker state and images, recovers through a clean startup, and is idempotent from empty state.
+The fresh-state candidate provides one explicit destructive reset command and passed the recorded refusal, teardown, recovery, and isolation checks. Final acceptance is reopened because review comment `3861318803` proved that released P01-R01 service containers lack the new service-level Aster labels. The same-checkout legacy upgrade and hidden-prefix remediation must pass before this requirement returns to `VERIFIED`.
