@@ -22,7 +22,7 @@ Only one item may be `IN_PROGRESS`.
 | 16 | Validate process-start configuration and classify secrets | P01-R03 | DONE |
 | 17 | Implement structured logging with redaction and trace correlation | P01-R04 | DONE |
 | 18 | Select the HTTP adapter through an ADR and create the transport boundary | P01-R11 | DONE |
-| 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | WAITING_EXTERNAL |
+| 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | DONE |
 | 20 | Implement lifecycle, health, and bounded graceful shutdown | P01-R05 | IN_PROGRESS |
 | 21 | Define the bounded telemetry contract and runtime metrics | P01-R06 | READY |
 | 22 | Implement narrow PostgreSQL, Redis, broker, object-storage, clock, ID, and telemetry adapters | P01-R07 | READY |

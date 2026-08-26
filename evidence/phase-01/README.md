@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Active Phase 01 work item: P01-R05 is implemented locally behind the frozen P00-R06 `WAITING_EXTERNAL` predecessor
+- Active Phase 01 work item: P01-R05 is implemented locally on a branch rebased onto released `main`
 
 ## Work items
 
@@ -17,7 +17,7 @@
 | Runtime lifecycle, health state, and bounded shutdown | P01-R05 | IMPLEMENTED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 is released through `e33f90b`; P01-R11 is released through `93147ac` with post-merge run `32982613740` passing. P01-R05 implementation `4d4eb92` passes 33 focused tests, affected and complete local gates, and an exact isolated checkout; it remains unpublished until the frozen P00-R06 predecessor is released and the dependent branch is rebased and reverified. The runway preflight records only candidate research for P01-R06 through P01-R10. Broker, object storage, OpenTelemetry SDK/backend, Identity service composition, product schemas, and migrations remain unimplemented.
+P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 is released through `e33f90b`; P01-R11 is released through `93147ac` with post-merge run `32982613740` passing. P00-R06 is released through `92d3531` with post-merge run `32999467446` passing. P01-R05 implementation `60e9808` has been replayed onto that released base; the rebased focused 33-test gate, 15-task affected gate, audit, documentation, memory, and security checks pass. Its prior exact isolated checkout remains supporting evidence because lifecycle source and bootstrap inputs are unchanged. The runway preflight records only candidate research for P01-R06 through P01-R10. Broker, object storage, OpenTelemetry SDK/backend, Identity service composition, product schemas, and migrations remain unimplemented.
 
 ## Current limitations
 

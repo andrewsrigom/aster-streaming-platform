@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED
 - Date: 2026-08-26
-- Source: Implementation commit `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea` on local `feat/p01-r05-lifecycle`, based on frozen predecessor `dd9f2822969e042364f641c7a2bd5f5b84285a3d`
+- Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e` on local `feat/p01-r05-lifecycle`, replayed without lifecycle-source or bootstrap changes from original commit `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea` onto released `main` `92d3531b684ea259b840942f858584e5e364937c`
 - Owner: Aster shared runtime infrastructure
 - Related requirement: P01-R05
 - Environment: Docker Desktop host with WSL2; no Docker resource used by this experiment
@@ -20,7 +20,7 @@ A small state machine in `@aster/runtime`, combined with narrow process and Node
 - kernel: `Linux devbox 6.18.33.2-microsoft-standard-WSL2`, x86_64;
 - runtime: Node.js `24.19.0`, pnpm `11.24.0`;
 - branch: `feat/p01-r05-lifecycle`;
-- exact base: `dd9f2822969e042364f641c7a2bd5f5b84285a3d`;
+- exact base: `92d3531b684ea259b840942f858584e5e364937c`;
 - database, Redis, broker, object storage, telemetry backend, and Docker containers: not used;
 - network: Node.js test servers bind only to `127.0.0.1` on operating-system-assigned ephemeral ports.
 
@@ -40,7 +40,7 @@ The real-socket cases use one graceful request and one deliberately stuck reques
 
 ## Results
 
-The focused typecheck, build, and all 33 tests pass. The candidate-focused test process completed in `262.02635 ms` before the repository gates.
+The focused typecheck, build, and all 33 tests pass after the rebase. The rebased focused test process completed in `249.703607 ms` before the repository gate.
 
 | Observation | Result |
 |---|---|
@@ -50,8 +50,8 @@ The focused typecheck, build, and all 33 tests pass. The candidate-focused test 
 | Hook rejection | Stable failed stage, remaining eligible stages execute, raw canary absent |
 | Deterministic deadline | Shared signal aborted, force close called once, forced result returned |
 | Graceful real socket | Existing request completed; new connection refused after drain began |
-| Stuck real socket | Forced at the 100 ms configured deadline; latest observation `106.068766 ms` |
-| Real `SIGTERM` subprocess | `STOP_TRAFFIC`, then `CLOSE_DEPENDENCIES`; exit code `143`; no force close; latest observation `114.070995 ms` |
+| Stuck real socket | Forced at the 100 ms configured deadline; latest observation `106.075123 ms` |
+| Real `SIGTERM` subprocess | `STOP_TRAFFIC`, then `CLOSE_DEPENDENCIES`; exit code `143`; no force close; latest observation `73.040916 ms` |
 | Throwing logger | Shutdown remains completed and bounded |
 | Generated lifecycle declarations | No Express, Apollo, Fastify, Pino, PostgreSQL, Redis, broker, or telemetry SDK reference |
 
@@ -84,6 +84,12 @@ Official references:
 - exact local clean checkout `62b3e4ce1f1fe4a024c0794f92c6afc3f0e99b66` installed from the frozen lockfile in offline mode with 260 packages reused, zero downloaded, and `1.53s` elapsed; all 33 focused tests passed;
 - the clean checkout passed 31 of 31 complete tasks with zero cache in `21.102s`; wrapper elapsed `22.19s`, audit and full secret scan passed, and Git remained clean;
 - the exact WSL temporary root `/tmp/aster-p01-r05-clean.MfY5If` was revalidated by path and commit before removal; no Windows-side temporary clone was created;
+- protected PR run `32999250730`, squash `92d3531b684ea259b840942f858584e5e364937c`, and post-merge run `32999467446` released the predecessor before this branch was replayed;
+- an exact Git path comparison between original implementation `4d4eb92` and replayed implementation `60e9808` found no difference in `packages/runtime`, `docs/operations/RUNTIME_LIFECYCLE.md`, the lockfile, manifests, workspace definition, or TypeScript configuration;
+- after targeted removal of only ignored `packages/runtime/dist`, the rebased focused typecheck, build, and 33 tests passed; wrapper test elapsed was `0.73s` with `141,896` KiB maximum observed RSS;
+- the rebased `pnpm check:changed` gate selected the root and `@aster/runtime` scopes and passed 15 of 15 tasks with 3 cached in `8.186s` of Turbo task time; wrapper elapsed was `9.26s` with `620,012` KiB maximum observed RSS;
+- the high-severity audit after rebase reports no known vulnerability;
+- the previous clean-checkout evidence remains applicable: the rebase changes no dependency, lockfile, bootstrap, packaging, lifecycle source/test, generated-declaration input, or successful full-gate path. The predecessor's later runner changes affect interrupted execution and affected-mode ownership, both covered by P00-R06 protected evidence and the rebased affected gate, so they cannot invalidate the measured clean lifecycle build and execution;
 - protected CI and bounded review gates remain pending.
 
 ## Limitations and next evidence
@@ -93,5 +99,5 @@ Official references:
 - P01-R06 still owns process metrics, export queues, and drop metrics.
 - Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
 - Native Windows signal semantics are not claimed; the supported WSL path is measured.
-- The branch cannot publish or merge before frozen P00-R06 predecessor PR #11 completes. Its exact-head run `32990397338` passed, but the official Actions incident remains open during queue recovery. A predecessor change requires rebase and affected verification.
-- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until the affected candidate gate, complete acceptance gate, exact-source protected CI, and bounded review pass.
+- The original isolated checkout predates the squash rebase; its applicability is limited to unchanged bootstrap, lifecycle build, declarations, real socket/process behavior, and complete successful gate execution as reasoned above.
+- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until exact-source protected CI and the bounded review pass.

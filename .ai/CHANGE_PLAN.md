@@ -15,7 +15,7 @@ Provide one reusable Node.js lifecycle coordinator that makes startup, liveness,
 
 `@aster/runtime` provides structured logging with redaction and trace correlation. `@aster/http-express` provides a bounded Express request listener, request-local cancellation, and an Apollo compatibility test that drains one synthetic in-flight operation. No package currently owns process signals, startup/readiness transitions, generalized in-flight tracking, dependency closure order, one overall shutdown deadline, timeout logging, or forced termination.
 
-P00-R06 is released through protected squash `92d3531`, and post-merge run `32999467446` passes. This P01-R05 branch is being rebased from predecessor head `dd9f282` onto released `main`; focused real-socket/process evidence and the affected gate must repeat before publication.
+P00-R06 is released through protected squash `92d3531`, and post-merge run `32999467446` passes. This P01-R05 branch has been rebased from predecessor head `dd9f282` onto released `main`; focused real-socket/process evidence and the affected gate must repeat before publication.
 
 ## Proposed behavior
 
@@ -101,7 +101,7 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 ## Evidence
 
 - Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
-- Acceptance result: Local implementation and pre-rebase evidence pass; rebased focused, affected, protected, review, merge, and post-merge evidence remain pending.
+- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable by unchanged-path evidence. Protected CI, review, merge, and post-merge evidence remain pending.
 - Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
 - Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
 - Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.
