@@ -266,7 +266,7 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
       return stopWithTooManyVariables(issues, input, "<owned-variables>");
     }
 
-    if (!KNOWN_VARIABLE_SET.has(name)) {
+    if (name.length > MAX_VARIABLE_NAME_LENGTH || !KNOWN_VARIABLE_SET.has(name)) {
       issues.push(
         Object.freeze({
           variable: safeUnexpectedVariableName(name),

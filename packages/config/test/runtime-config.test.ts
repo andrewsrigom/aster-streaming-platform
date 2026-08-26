@@ -208,6 +208,17 @@ test("rejects owned-prefix typos while ignoring unrelated host variables", () =>
   assert.deepEqual(duplicateKnownError.issues, [
     { variable: "ASTER_ENV", classification: "non-secret", reason: "invalid" },
   ]);
+
+  const oversizedNameSource = [
+    ...environmentEntries(validEnvironment()),
+    [`ASTER_${"X".repeat(10_000)}`, "ignored"] as const,
+  ];
+  const oversizedNameError = captureRuntimeConfigError(() =>
+    loadReferenceRuntimeConfig(oversizedNameSource),
+  );
+  assert.deepEqual(oversizedNameError.issues, [
+    { variable: "<unexpected-variable>", classification: "unknown", reason: "unexpected" },
+  ]);
 });
 
 test("bounds oversized values and excessive owned variables before schema parsing", () => {
