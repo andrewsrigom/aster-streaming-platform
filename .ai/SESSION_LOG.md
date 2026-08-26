@@ -2,6 +2,31 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented fail-fast reference runtime configuration
+
+### Completed
+
+- Selected exact-pinned `zod@4.4.3` after current compatibility, maintenance, MIT license, security-policy, zero-dependency, registry-integrity, installed-cost, and exit-strategy review; kept Zod private behind repository-owned generated declarations.
+- Added `@aster/config` as the first real workspace package and integrated package build, typecheck, and tests into the existing Turborepo source gate without adding a new commit hook or CI workflow.
+- Added the Phase 01 reference-runtime schema for explicit `ASTER_ENV`, bounded service identity, PostgreSQL URL, and Redis URL with per-field non-secret or secret classification.
+- Added frozen typed output, owned-prefix typo rejection, bounded values, owned-variable and issue counts, stable sanitized errors, configured-only secret diagnostics, and process exit 1 before other initialization.
+- Added 10 direct and subprocess tests covering success, missing and empty fields, invalid environment/service/protocol/whitespace, unrelated host entries, owned typos, limit enforcement, credential-position canaries, stdout/stderr redaction, and exit 0/1.
+- Corrected the first-package ESLint global ignore so nested `dist` output is excluded and registered the package library plus diagnostic entry points with Knip.
+- Passed the initial 15-task uncached source gate, frozen install, high-severity registry audit, MIT production-license inventory, isolated success/failure execution, and focused tests.
+- Passed the implementation, documentation, evidence, and active-memory closeout through 25 of 25 forced uncached tasks in `9.911` seconds; clean-checkout, protected CI, and review remain pending.
+
+### Evidence
+
+- Candidate implementation: `027539f5f410821352908f27aff30a56d1c54251`.
+- Isolated valid process: exit 0, `0.09` seconds, `62,984` KiB maximum RSS; empty Node.js baseline: exit 0, `0.03` seconds, `45,040` KiB maximum RSS.
+- Invalid secret canaries: exit 1 with two classified issues and no canary in output.
+- Complete local gate: 25 tasks, 0 cached, `9.911` seconds.
+- Raw evidence: `evidence/phase-01/runtime-configuration.txt` (`IMPLEMENTED` locally).
+
+### Next action
+
+Publish the branch, run the clean public-checkout repeat at its exact SHA, then open the protected P01-R03 pull request and update evidence only after hosted CI and review results exist.
+
 ## 2026-08-26 — Verified destructive local reset and review remediation
 
 ### Completed

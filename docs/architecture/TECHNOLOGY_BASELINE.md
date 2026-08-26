@@ -57,13 +57,13 @@ pnpm enforces a 24-hour release-maturity window in strict mode. Because Turborep
 - PostgreSQL uses the Docker Official Image `18.6-alpine3.23` at multi-platform digest `sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f`. PostgreSQL 18 is supported upstream through November 2030, and the selected patch was current during verification.
 - Redis Open Source uses the Docker Official Image `8.10.0-alpine` at multi-platform digest `sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241`. The unmodified local runtime uses the AGPLv3 option from the Redis 8 tri-license and remains separate from MIT-licensed Aster code.
 - The core checkpoint publishes no database or cache port, uses an internal Compose network, persists PostgreSQL 18 at its official `/var/lib/postgresql` parent mount, and makes Redis disposable with bounded memory and `allkeys-lfu` eviction.
+- Process-start configuration validation uses exact-pinned `zod@4.4.3` behind the repository-owned `@aster/config` API. The selected MIT package has zero runtime dependencies, a published private vulnerability-reporting policy, active Zod 4 releases, registry integrity and signature metadata, and no Zod type in the generated public declarations. The package reads injected environment entries directly and does not add a `.env` loader.
 
-The selection evidence and measured limits are in [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt).
+The container selection evidence is in [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt). Configuration compatibility, dependency, redaction, process-cost, and removal evidence is in [`evidence/phase-01/runtime-configuration.txt`](../../evidence/phase-01/runtime-configuration.txt).
 
 ## Decisions deferred to Phase 01
 
 - exact broker, object-storage, and observability container versions;
-- concrete configuration library;
 - concrete typed SQL library;
 - concrete Kafka client;
 - OpenTelemetry package compatibility;

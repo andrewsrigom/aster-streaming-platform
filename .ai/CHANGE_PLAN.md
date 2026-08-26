@@ -2,14 +2,14 @@
 
 - Status: IN_PROGRESS
 - Owner: repository maintainer
-- Phase: 01 — Local platform and runtime skeleton
+- Phase: 01
 - Requirement IDs: P01-R03; supports OPS-R01, OPS-R02, OPS-R03, QLT-R01, QLT-R04
 - Created: 2026-08-26
 - Updated: 2026-08-26
 
 ## Outcome
 
-Provide a small `@aster/config` workspace package that validates each runtime unit's injected environment before other initialization, returns typed configuration, explicitly classifies secret and non-secret variables, and emits bounded diagnostics that never disclose values classified as secret.
+Provide a small `@aster/config` workspace package that validates the Phase 01 reference runtime's injected environment before other initialization, returns typed configuration, explicitly classifies secret and non-secret variables, and emits bounded diagnostics that never disclose values classified as secret. Future runtime units with different dependencies retain their own schemas.
 
 ## Current behavior
 
@@ -17,7 +17,7 @@ P01-R01 and P01-R02 provide the verified Docker-only PostgreSQL and Redis checkp
 
 ## Proposed behavior
 
-Select exact-pinned Zod 4 as the internal schema engine after a Node.js 24 and TypeScript 6 compatibility spike. Add only the reusable configuration boundary, one concrete process-start diagnostic fixture, focused failure/redaction tests, and operator/dependency-decision documentation. Do not add an HTTP server, service scaffold, database client, Redis client, telemetry, `.env` loader, hosted secret integration, or product behavior.
+Select exact-pinned Zod 4 as the internal schema engine after a Node.js 24 and TypeScript 6 compatibility spike. Add only the reference-runtime configuration boundary, one concrete process-start diagnostic, focused failure/redaction tests, and operator/dependency-decision documentation. Do not add a universal configuration schema, HTTP server, service scaffold, database client, Redis client, telemetry, `.env` loader, hosted secret integration, or product behavior.
 
 ## Boundaries
 

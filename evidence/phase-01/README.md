@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Next work item: P01-R03
+- Active work item: P01-R03
 
 ## Work items
 
@@ -11,8 +11,9 @@
 |---|---|---|---|
 | First Docker-only PostgreSQL and Redis checkpoint | P01-R01 | VERIFIED | [`local-platform-checkpoint.txt`](local-platform-checkpoint.txt) |
 | Explicit project-scoped destructive local reset | P01-R02 | VERIFIED | [`local-reset.txt`](local-reset.txt) |
+| Process-start validation and secret classification | P01-R03 | IMPLEMENTED (local) | [`runtime-configuration.txt`](runtime-configuration.txt) |
 
-P01-R01 candidate commit `563d09f` passed the initial clean public-checkout repeat and protected run `32947483503`. Automated review then identified project-name override risk; corrected candidate `c246051` passed the hostile-environment clean public-checkout, protected remediation run `32948639792`, exact cleanup, and resolved review. P01-R02 implementation commit `3fa3994` passed fixed-target refusals, populated and partial-state resets, clean restart, empty idempotence, unrelated-resource preservation, and a Docker-only public-checkout repeat. Review then identified released P01-R01 label compatibility; remediation `d5f857c` passed a same-checkout upgrade from released `main`, exact legacy and current label tests, and real hidden-prefix refusal. Broker, object storage, telemetry, application runtime, HTTP adapter, and product schemas remain outside these checkpoints.
+P01-R01 candidate commit `563d09f` passed the initial clean public-checkout repeat and protected run `32947483503`. Automated review then identified project-name override risk; corrected candidate `c246051` passed the hostile-environment clean public-checkout, protected remediation run `32948639792`, exact cleanup, and resolved review. P01-R02 implementation commit `3fa3994` passed fixed-target refusals, populated and partial-state resets, clean restart, empty idempotence, unrelated-resource preservation, and a Docker-only public-checkout repeat. Review then identified released P01-R01 label compatibility; remediation `d5f857c` passed a same-checkout upgrade from released `main`, exact legacy and current label tests, and real hidden-prefix refusal. P01-R03 candidate `027539f` passes ten local configuration tests, Node.js 24 and TypeScript 6 compatibility, frozen install, registry audit, license review, isolated process success/failure, and secret-canary redaction; protected and clean-checkout verification remain pending. Broker, object storage, telemetry, application runtime, HTTP adapter, and product schemas remain outside these checkpoints.
 
 ## Current limitations
 

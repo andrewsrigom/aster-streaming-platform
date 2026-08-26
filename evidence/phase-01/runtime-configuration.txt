@@ -1,0 +1,189 @@
+P01-R03 RUNTIME CONFIGURATION EVIDENCE
+======================================
+
+Status
+------
+
+IMPLEMENTED locally at candidate commit 027539f5f410821352908f27aff30a56d1c54251.
+Protected pull-request CI and post-merge verification remain pending.
+
+Requirement and scope
+---------------------
+
+Requirement: P01-R03 — validate environment configuration at process start and distinguish secret from non-secret values.
+
+Owning boundary: cross-cutting Phase 01 runtime infrastructure. No bounded-context data, database schema, Redis state, event, HTTP adapter, application process, hosted resource, or credential is created.
+
+Trust boundary: operator or orchestrator environment entries are untrusted until @aster/config returns a frozen typed object. Terminal and future log output are separate disclosure boundaries and receive only repository-owned redacted diagnostics.
+
+Measured environment
+--------------------
+
+Date: 2026-08-26
+Host path: WSL2 on a Windows host
+Kernel: Linux 6.18.33.2-microsoft-standard-WSL2 x86_64
+Userspace: Ubuntu 24.04.4 LTS
+Logical processors visible to WSL: 6
+Memory visible to WSL: 12,249,200 KiB
+Node.js: v24.19.0
+pnpm: 11.24.0
+Candidate commit: 027539f5f410821352908f27aff30a56d1c54251
+
+Configuration-library decision
+------------------------------
+
+Selection: exact-pinned zod@4.4.3 as a private implementation detail of @aster/config.
+
+Problem statement:
+
+- Node.js provides process.env and URL parsing but no typed runtime schema, issue aggregation, or static inference.
+- Hand-written per-field parsing would duplicate enum, length, pattern, and URL-protocol behavior while creating separate runtime and TypeScript contracts.
+- P01-R03 needs one small schema engine; it does not need a .env loader, framework integration, dynamic configuration service, or schema DSL owned by Aster.
+
+Current primary-source review on 2026-08-26:
+
+- The npm registry reported 4.4.3 as the stable version selected by this work item. It was published on 2026-05-04, outside the repository's 24-hour maturity window.
+- The package metadata reports MIT, zero runtime dependencies, registry integrity sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==, and an npm registry signature.
+- The upstream v4.4.3 release and repository show active Zod 4 maintenance: https://github.com/colinhacks/zod/releases/tag/v4.4.3
+- The upstream package manifest confirms the MIT license, ESM exports, and sideEffects=false: https://github.com/colinhacks/zod/blob/v4.4.3/packages/zod/package.json
+- The upstream security policy accepts private GitHub advisory reports and states that fixes are published on the latest line: https://github.com/colinhacks/zod/blob/v4.4.3/SECURITY.md
+- GitHub reported no published Zod security advisory during the review. pnpm audit also reported no known vulnerability for the resolved workspace graph.
+
+Compatibility and exit strategy:
+
+- The package compiles with strict TypeScript 6.0.3 and generated declarations contain no Zod import or Zod type.
+- Node.js 24.19.0 executed success and failure paths as separate processes.
+- Repository-owned ReferenceRuntimeConfig, ReferenceRuntimeConfigError, classifications, issues, and diagnostics form the public package boundary.
+- Replacing Zod requires changing the private parser, keeping the public declarations, and passing the same focused adverse suite. No persisted data or network contract requires migration.
+
+Registry and installed cost
+---------------------------
+
+Command:
+
+  corepack pnpm view zod@4.4.3 version license dependencies dist.unpackedSize dist.integrity --json
+
+Result:
+
+  version=4.4.3
+  license=MIT
+  dependencies=none
+  registry unpacked size=4,558,122 bytes
+  integrity=sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==
+
+Command:
+
+  du -sk node_modules/.pnpm/zod@4.4.3/node_modules/zod packages/config/dist
+
+Result:
+
+  installed Zod package=5,900 KiB
+  complete configuration build including tests, declarations, maps, and TypeScript build metadata=168 KiB
+
+Process-start success
+---------------------
+
+Command:
+
+  /usr/bin/time -f "elapsed_seconds=%e max_rss_kib=%M exit=%x" \
+    /usr/bin/env -i \
+    ASTER_ENV=local \
+    ASTER_SERVICE_NAME=config-check \
+    DATABASE_URL=postgresql://postgres:5432/aster \
+    REDIS_URL=redis://redis:6379/0 \
+    /home/andrews/.local/bin/node \
+    ./packages/config/dist/src/check-runtime-config.js
+
+Raw result:
+
+  {"event":"aster.configuration.valid","status":"ok","variables":[{"name":"ASTER_ENV","classification":"non-secret","status":"configured","value":"local"},{"name":"ASTER_SERVICE_NAME","classification":"non-secret","status":"configured","value":"config-check"},{"name":"DATABASE_URL","classification":"secret","status":"configured"},{"name":"REDIS_URL","classification":"secret","status":"configured"}]}
+  elapsed_seconds=0.09 max_rss_kib=62984 exit=0
+
+Node.js baseline command:
+
+  /usr/bin/time -f "elapsed_seconds=%e max_rss_kib=%M exit=%x" \
+    /usr/bin/env -i \
+    /home/andrews/.local/bin/node \
+    --input-type=module \
+    --eval 'process.stdout.write(JSON.stringify({status:"baseline"}) + "\n")'
+
+Raw baseline result:
+
+  {"status":"baseline"}
+  elapsed_seconds=0.03 max_rss_kib=45040 exit=0
+
+Observed delta for this single process pair: 0.06 seconds wall time and 17,944 KiB maximum RSS. This includes Node.js module loading, Zod, schema construction, validation, JSON serialization, and process noise. It is a bounded compatibility observation, not a throughput or steady-state service benchmark.
+
+Process-start failure and redaction
+-----------------------------------
+
+Workload: exact isolated environment with two synthetic canary strings embedded in malformed secret fields.
+
+Raw result:
+
+  {"event":"aster.configuration.invalid","status":"error","code":"ASTER_CONFIGURATION_INVALID","issues":[{"variable":"DATABASE_URL","classification":"secret","reason":"invalid"},{"variable":"REDIS_URL","classification":"secret","reason":"invalid"}]}
+  exit=1
+
+The output contained neither synthetic canary. Direct tests also place synthetic canaries in database and Redis credential positions, then check the success diagnostic, error object, error message, stack, JSON serialization, stdout, and stderr without comparing or printing the secret strings.
+
+Focused verification
+--------------------
+
+Command:
+
+  corepack pnpm config:test
+
+Result at the candidate implementation: 10 tests passed, 0 failed, 0 skipped. The suite covers a frozen typed success result, explicit non-secret output, secret configured-only status, all missing fields, empty input, invalid protocols, ambiguous environment and service names, URL whitespace, owned-prefix typo rejection, unrelated host-variable tolerance, maximum value size, owned-variable count, issue-count bounds, process exit 0, process exit 1, and secret-canary redaction.
+
+Command:
+
+  corepack pnpm install --frozen-lockfile
+  corepack pnpm audit --audit-level=high
+  corepack pnpm licenses list --prod --json
+
+Result:
+
+- Frozen install passed for both workspace projects.
+- Registry audit reported no known vulnerabilities.
+- The only production package reported by the license command was zod@4.4.3 under MIT.
+
+Complete local repository gate
+------------------------------
+
+Command:
+
+  TURBO_FORCE=true corepack pnpm check
+
+Result after the implementation, documentation, evidence, and active repository-memory update:
+
+  Tasks: 25 successful, 25 total
+  Cached: 0
+  Turbo elapsed: 9.911 seconds
+
+This included @aster/config build, strict typecheck, and 10 tests plus root toolchain, lint, formatting, unused-code, architecture, local-platform policy, documentation, repository-memory, community, secret, CI-policy, staged-file, and commit-policy checks and their focused adverse tests. Documentation covered 130 Markdown files and 311 local links; secret scanning reported zero finding; repository-memory validation identified P01-R03 as the only active item.
+
+Acceptance interpretation
+-------------------------
+
+- Process start succeeds only after explicit typed validation.
+- Missing, empty, malformed, oversized, and unexpected owned variables fail closed.
+- ASTER_ENV never defaults to production or any other environment.
+- Every accepted variable has an explicit non-secret or secret classification.
+- Success diagnostics omit secret values; failure diagnostics use stable repository-owned issues and omit both values and Zod messages.
+- Unrelated host environment entries are outside the owned boundary and remain ignored.
+- The implementation performs no network operation and creates no partial dependency or application state.
+
+Remaining verification
+----------------------
+
+- Pass protected pull-request CI, dependency review, and automated review.
+- Re-run the public diagnostic and complete gate from a clean checkout at the final candidate commit.
+- Pass post-merge main CI before marking P01-R03 DONE and VERIFIED.
+
+Limitations
+-----------
+
+- The timing and RSS observations are one process pair on one WSL2 host with warm filesystem and pnpm stores; they do not predict service throughput, container memory, native Windows, macOS, or other Linux hosts.
+- Environment-variable confidentiality still depends on the host, orchestrator, process inspection policy, crash handling, and future log callers. P01-R03 proves only the repository-owned loader and diagnostic surfaces.
+- The current schema belongs to the Phase 01 reference runtime and deliberately requires PostgreSQL and Redis. Future runtime units with different dependencies require their own schema.
+- Dynamic secret retrieval, rotation, hosted secret stores, client-bundle analysis, and runtime logging redaction belong to later owning work.
