@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Released telemetry and activated platform adapters
+
+### Completed
+
+- Protected P01-R06 closeout run `33012535152` passed; pull request 13 was squash-merged as `8dff9d8d57572b2eac944ae98406f3da2979682c`, and exact post-merge run `33012664408` passed every applicable job.
+- Synchronized clean `main`, created `feat/p01-r07-platform-adapters` from exact released head `8dff9d8`, and moved P01-R07 to `IN_PROGRESS` with no product context or durable data change.
+- Reconciled the broker gate: P01-R07 may implement one evidence-backed provisional client, while P01-R09 owns real-broker confirmation and mandatory replacement before Phase 01 closeout if bounded lifecycle fails.
+- Defined separate clock/ID, PostgreSQL, Redis, S3, and broker checkpoints with focused iteration gates, one stabilized complete gate, exact dependency evidence, rollback, and bounded review.
+
+### Evidence
+
+- P01-R06 evidence now records protected closeout, exact squash, post-merge success, and `RELEASED` status.
+- P01-R07 activation evidence is in `evidence/phase-01/platform-adapters.txt`; no P01-R07 package or client is claimed implemented.
+
+### Next action
+
+Pass the repository-memory/documentation activation gate, then implement the dependency-free P01-R07 clock and ID checkpoint before selecting external clients.
+
 ## 2026-08-26 — Verified bounded runtime telemetry
 
 ### Completed

@@ -1,5 +1,5 @@
 Evidence: P01-R06 bounded runtime telemetry candidate
-Status: VERIFIED; release merge and post-merge verification pending
+Status: RELEASED
 Date: 2026-08-26
 Source base: 4d243351bb46ae6b63a80a9ca3b9186baa3c68ac
 Candidate commit: fbac8cc0f893b01392683549e86f47d6230fb0fe
@@ -133,7 +133,8 @@ Public-contract evidence
 - The repository architecture scanner reports zero violations; OpenTelemetry imports occur only in infrastructure paths.
 
 Current interpretation
-- The P01-R06 implementation exists and focused plus changed-scope gates pass.
-- Local complete and exact isolated-checkout gates now pass at cancellation-remediation candidate fbac8cc0f893b01392683549e86f47d6230fb0fe.
-- Initial review, both remediation runs, all discussion resolutions, and final blocking-boundary confirmation are proven. This artifact does not yet prove merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
-- Collector and Prometheus evidence belongs to P01-R09. Release evidence will be appended only after the exact merge and post-merge checks pass.
+- P01-R06 is RELEASED with focused, changed-scope, complete, isolated-checkout, audit, secret, review, protected CI, merge, and post-merge evidence.
+- Documentation-only verification closeout ebcde22f0c348bd4181e999961eb74e7124a007d passed protected run 33012535152 without changing source, dependencies, lockfile, package exports, metric vocabulary, or diagnostic behavior.
+- Pull request 13 was squash-merged to main as 8dff9d8d57572b2eac944ae98406f3da2979682c; exact post-merge run 33012664408 passed every applicable job at that SHA.
+- This artifact does not prove Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
+- Collector and Prometheus evidence belongs to P01-R09. Dependency adapters belong to active P01-R07.

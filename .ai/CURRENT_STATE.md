@@ -116,7 +116,8 @@ Status: **IN_PROGRESS**
 - The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
 - Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
-- P01-R06 is `VERIFIED` at source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe` and exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405` on pull request 13. The package shares one bounded flush/shutdown operation while each waiter retains caller-local cancellation and classifies absorbed exporter failure on the shared result. Nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, clean Git, and validated cleanup pass. Protected runs `33009107927`, `33010364854`, and `33011704716` passed; evidence replies `3866468924` and `3866572642` are posted; both discussions are resolved; final review comment `5430926105` reports no major issue at exact head `068f9fd`. Merge and post-merge release verification remain pending.
+- P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
+- P01-R07 is active on `feat/p01-r07-platform-adapters` from exact clean released `main` at `8dff9d8`. Its owner is shared runtime and dependency-adapter infrastructure; no product bounded context or durable data changes. The active plan separates clock/ID, PostgreSQL, Redis, S3, and broker checkpoints, keeps vendor types private, and reserves real dependency interoperability for P01-R09.
 
 ## Not implemented
 
@@ -131,16 +132,16 @@ Status: **IN_PROGRESS**
 
 ## Planned Phase 01 runway
 
-- P01-R06 verifies and releases the implemented repository-owned metric contract before HTTP and dependency adapters emit telemetry.
+- P01-R06 released the repository-owned metric contract before dependency adapters emit telemetry.
 - P01-R07 creates separate PostgreSQL, Redis, Kafka-compatible broker, S3-compatible object-storage, clock, ID, and telemetry adapters without product logic.
 - P01-R08 composes propagated deadlines, recoverable readiness gates, stable health routes, and an Identity reference service with no account, profile, session, schema, or resolver behavior.
 - P01-R09 selects the remaining local images and proves the runtime against real dependencies, OTLP export, Prometheus scrape, failure transitions, and bounded shutdown.
 - P01-R10 publishes measured core, runtime, integration, observability, and full profiles plus the clean Docker-only evaluator path.
-- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06 package versions and local behavior are implemented but not yet verified or released; the P01-R07 through P01-R10 clients, container candidates, budgets, and paths remain unimplemented until their owning item records evidence.
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06 is released; P01-R07 client versions remain unselected until current owning-item evidence, and the P01-R08 through P01-R10 composition, container candidates, budgets, and paths remain unimplemented until their owning items record evidence.
 
 ## Next outcome
 
-Pass protected CI for the documentation-only P01-R06 verification closeout, squash-merge pull request 13, verify the exact post-merge `main` run, and then activate P01-R07 from clean released `main`.
+Implement and verify the first P01-R07 checkpoint: deterministic system/fake clock and ID contracts, followed by current dependency-client selection evidence and the narrow PostgreSQL adapter.
 
 ## Current risks
 
@@ -166,11 +167,11 @@ Pass protected CI for the documentation-only P01-R06 verification closeout, squa
 - P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. P01-R06 now implements bounded metrics and OTLP/HTTP failure behavior separately; retention and a real Collector/backend remain unimplemented.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
-- P01-R05 has no application composition or public health route yet. Dependency-specific startup/readiness remains P01-R08; P01-R06 metrics are implemented but not composed into a service; native Windows signal semantics are intentionally unclaimed, while the supported WSL path has real socket and subprocess evidence.
+- P01-R05 has no application composition or public health route yet. Dependency-specific startup/readiness remains P01-R08; released P01-R06 metrics are not composed into a service; native Windows signal semantics are intentionally unclaimed, while the supported WSL path has real socket and subprocess evidence.
 - P01-R06 measures one warm process-local diagnostic and loopback exporter behavior, not representative throughput, long-running overhead, a Collector scrape, another operating system, or another architecture. The direct SDK contract includes development-status semantic conventions and exact pins that require deliberate upgrade evidence.
-- Current P01-R07 through P01-R10 package and container versions are preflight candidates only. The owning work item must repeat registry, license, engine, audit, multi-platform, resource, failure, and real integration evidence before selection.
+- Current P01-R07 package versions and P01-R09/P01-R10 container versions are preflight candidates only. P01-R07 must repeat registry, license, engine, audit, install, failure, cancellation, and lifecycle evidence before selecting client candidates; P01-R09 owns real dependency and multi-platform runtime confirmation.
 - The official MinIO repository is archived. VersityGW is the primary local S3-compatible candidate and SeaweedFS is the fallback, but neither is selected or pulled yet.
-- The maintained Confluent Kafka client adds a native boundary and its KafkaJS-compatible producer close uses a fixed five-second native timeout; KafkaJS is much smaller but its registry release is from 2023. P01-R07 must resolve this through Node.js 24, multi-architecture, deadline, redaction, and real broker shutdown evidence.
+- The maintained Confluent Kafka client adds a native boundary and its KafkaJS-compatible producer close uses a fixed five-second native timeout; KafkaJS is much smaller but its registry release is from 2023. P01-R07 must select only a provisional candidate through Node.js 24 install, lifecycle, deadline, redaction, and removal evidence; P01-R09 must confirm it against a real broker and trigger replacement before Phase 01 closeout if the lifecycle budget fails.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for nine Express transitives. They are not known-vulnerability findings, but the exact graph remains a reviewed cost and ADR-0011 keeps a replacement path.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.

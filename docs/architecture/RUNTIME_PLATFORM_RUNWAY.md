@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the implementation path for the remaining Phase 01 work. P01-R06 has an implemented local candidate; it does not claim that a Collector, dependency client, Identity service, broker, object storage, or observability backend exists. Exact dependencies and container images outside the telemetry package remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
+This document defines the implementation path for the remaining Phase 01 work. P01-R06 is released with a repository-owned telemetry package; it does not claim that a Collector, dependency client, Identity service, broker, object storage, or observability backend exists. Exact adapter dependencies and container images remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -36,7 +36,7 @@ This order prevents three expensive forms of rework:
 
 | Path | Owning item | Planned responsibility |
 |---|---|---|
-| `packages/telemetry/` | P01-R06 | Implemented repository-owned metrics API with OpenTelemetry infrastructure hidden behind it; protected verification and release are pending |
+| `packages/telemetry/` | P01-R06 | Released repository-owned metrics API with OpenTelemetry infrastructure hidden behind it |
 | `packages/runtime/src/clock.ts` | P01-R07 | Deterministic test clock contract and system-clock implementation |
 | `packages/runtime/src/ids.ts` | P01-R07 | Deterministic test identifier contract and random UUID implementation |
 | `packages/postgres/` | P01-R07 | PostgreSQL connection, probe, cancellation, telemetry, and close behavior without product repositories |
@@ -96,7 +96,7 @@ Metric attributes never contain account, profile, title, user, request, event, t
 
 ### P01-R06 exit
 
-The implemented candidate has generated declarations free of OpenTelemetry SDK types, deterministic metric tests, bounded stalled and successful loopback exporter tests, finite dimensions, and one compatibility diagnostic on Node.js `24.19.0`. The item is not verified or released until its complete candidate gate, clean-checkout proof, review, protected CI, and merge gates pass. It does not add Grafana dashboards or SLOs.
+Protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` released the package after generated-declaration isolation, deterministic metric tests, bounded stalled and successful loopback exporter tests, finite dimensions, a Node.js `24.19.0` compatibility diagnostic, complete and clean-checkout gates, bounded review, protected CI, and post-merge run `33012664408` passed. It does not add Grafana dashboards or SLOs.
 
 ## P01-R07 — Narrow platform adapters
 
@@ -128,7 +128,7 @@ The broker client remains unresolved. The maintained Confluent client has curren
 - log redaction and endpoint disclosure;
 - dependency size, license, maintenance, and exit path.
 
-No client is selected until the real broker smoke proves the chosen shutdown path can fit inside the service lifecycle budget.
+P01-R07 may select and implement one provisional client only after current registry, license, Node.js 24 installation, process-lifecycle, deadline, redaction, dependency-cost, and removal evidence. P01-R09 then confirms that candidate against a real broker; if bounded stop cannot fit the service lifecycle budget, the candidate must be replaced and the affected adapter gates repeated before Phase 01 closeout. This separates an implementable adapter checkpoint from the later real-platform proof without treating preflight metadata as verification.
 
 ## P01-R08 — Deadlines and readiness composition
 

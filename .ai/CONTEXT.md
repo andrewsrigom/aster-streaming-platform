@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-The planned path after the current lifecycle candidate is P01-R06 telemetry, P01-R07 platform adapters, P01-R08 deadline/readiness composition, P01-R09 real integration, and P01-R10 resource-aware closeout. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` defines the boundaries without claiming those capabilities are implemented.
+P01-R05 lifecycle and P01-R06 telemetry are released. P01-R07 platform adapters is active, followed by P01-R08 deadline/readiness composition, P01-R09 real integration, and P01-R10 resource-aware closeout. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` distinguishes the released telemetry baseline, active adapter plan, and later unimplemented capabilities.

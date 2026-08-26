@@ -1,0 +1,29 @@
+Evidence: P01-R07 narrow runtime platform adapters
+Status: PLANNED; active implementation
+Date: 2026-08-26
+Source base: 8dff9d8d57572b2eac944ae98406f3da2979682c
+Branch: feat/p01-r07-platform-adapters
+Environment: Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace; amd64
+Runtime: Node.js v24.19.0; pnpm 11.24.0
+
+Requirement and boundary
+- Requirement: P01-R07.
+- Owner: shared runtime and dependency-adapter infrastructure.
+- Product bounded contexts and durable data owners changed: none.
+- Planned packages: clock and IDs in @aster/runtime plus separate @aster/postgres, @aster/redis, @aster/broker-kafka, and @aster/object-storage-s3 packages.
+- Explicit exclusions: product schema, migration, repository, typed SQL, Redis key or cache policy, product event, outbox, replay, media rights or publication, application service, public endpoint, Docker Compose dependency, dashboard, alert, and SLO.
+
+Activation evidence
+- P01-R06 is released through protected squash 8dff9d8d57572b2eac944ae98406f3da2979682c.
+- Protected P01-R06 closeout run 33012535152 and exact post-merge run 33012664408 passed every applicable job.
+- Branch feat/p01-r07-platform-adapters was created from clean main at the exact released squash.
+- The active plan defines one package per operational dependency, repository-owned declarations, finite deadlines and capacity, caller cancellation, stable telemetry, idempotent close, iteration/candidate gates, heavyweight repeat triggers, review stopping rules, and independent removal.
+
+Selection state
+- No P01-R07 dependency version is selected by this activation record. Prior runtime-runway metadata is preflight only.
+- Live registry, official documentation, license, engine, install-script, dependency, audit, cancellation, deadline, redaction, shutdown, and removal evidence must precede installation.
+- A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
+
+Current interpretation
+- P01-R07 is active but no adapter capability is implemented or verified yet.
+- Clock/ID contracts are the first dependency-free implementation checkpoint.
