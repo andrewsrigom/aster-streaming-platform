@@ -4,7 +4,7 @@ ASTER PHASE 00 RISK-PROPORTIONATE VERIFICATION EVIDENCE
 Work item: P00-R06 corrective maintenance
 Evidence date: 2026-08-26
 Status: IMPLEMENTED
-Candidate: local working tree based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
+Candidate: 4184fa178b43121910b47d1ba8a961f5aa5ba98f based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04
 Runtime: Node.js 24.19.0; pnpm 11.24.0; Turborepo 2.10.12
 
@@ -38,9 +38,15 @@ IMPLEMENTED CONTRACT
   and emits bounded errors without reflecting process or environment details.
   A timeout force-terminates the detached POSIX process group or the complete
   Windows process tree, with a five-second bounded close fallback.
+- SIGINT and SIGTERM use the same process-tree termination path, remove both
+  wrapper signal handlers, and return conventional statuses 130 and 143 with
+  the same bounded close fallback.
 - Task-input-aware affected selection is enabled. Root lint owns application,
   package, service, tool, and worker source; formatting owns Markdown; security
   scanning owns every changed repository file.
+- Pull-request template duplicate suppression accepts only a non-symbolic
+  case-insensitive alias of the canonical entry. A symbolic alternate path that
+  resolves to the canonical template remains a file-set violation.
 - Work plans now name iteration, candidate, heavyweight-repeat, and review-stop
   gates. The default review cadence is one complete review plus one confirmation.
 
@@ -49,14 +55,15 @@ FOCUSED AND FAILURE EVIDENCE
 
 $ pnpm toolchain:test
 result: PASS
-tests: 17 passed, 0 failed
+tests: 18 passed, 0 failed
 
-The five quality-runner tests prove:
+The six quality-runner tests prove:
 - exact full and changed arguments use one canonical task list;
 - Windows cmd.exe and POSIX pnpm invocation plus fixed SCM refs;
 - rejection of unknown and duplicate flags;
 - exact child-status propagation and sanitized spawn failure;
 - POSIX group and Windows tree termination plus stable timeout classification;
+- SIGINT/SIGTERM tree termination, conventional exit status, and listener cleanup;
 - manifest scripts, Turbo future flag, and root input ownership remain aligned.
 
 Additional focused results:
@@ -119,8 +126,38 @@ Initial review comment 3864234278 correctly found that the original synchronous
 timeout could leave Turbo descendants running. The remediation isolates the
 gate, kills the POSIX group or Windows tree on timeout, and adds the seventeenth
 toolchain test. The remediated WSL graph passes 31 of 31 forced tasks with zero
-cache in 18.097 seconds of Turbo task time and 19.32 seconds elapsed. The final
-post-review public/native repeat is pending.
+cache in 18.097 seconds of Turbo task time and 19.32 seconds elapsed.
+
+Intermediate protected run 32987293757 passed every applicable job at b7363ea
+after the GitHub Actions service began accepting work during its public incident.
+Confirmation review at that head produced two blocking findings:
+- comment 3864537199 found that terminal signals could leave the detached gate
+  group alive before the 15-minute timeout;
+- comment 3864537208 found that a symbolic alternate pull-request template could
+  be mistaken for a case-only alias of the canonical entry.
+
+Candidate 4184fa178b43121910b47d1ba8a961f5aa5ba98f remediates both findings in
+one batch. The focused WSL suites pass 18 toolchain tests and 10 community tests.
+The complete WSL gate passes 31 of 31 forced tasks with zero cache in 24.622
+seconds of Turbo task time.
+
+Native-Windows public candidate 4184fa178b43121910b47d1ba8a961f5aa5ba98f:
+- empty HTTPS clone and frozen install: PASS with Node.js 24.19.0, pnpm 11.24.0,
+  260 packages reused, zero downloaded, and 6.5 seconds install time;
+- complete pnpm check --force: PASS, 31 of 31 tasks, 0 cached, 1 minute 11.643
+  seconds of Turbo task time;
+- 18 toolchain tests pass, including both signal contracts; the four adverse
+  symbolic-link fixtures skip on the unprivileged host after Windows returns
+  EPERM, while their WSL executions pass;
+- high-severity audit reports no known vulnerability; Git remains clean at the
+  exact public SHA;
+- the resolved origin, SHA, and temporary-root scope were verified before the
+  candidate clone was moved to the Windows Recycle Bin.
+
+Evidence replies 3864697962 and 3864698302 are posted and both confirmation
+review discussions are resolved. Because these remediations change named
+availability and public-contract boundaries, the written stopping rule permits
+one final confirmation at the exact closeout head.
 
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities
@@ -129,8 +166,10 @@ elapsed: 1.01 seconds
 PENDING RELEASE EVIDENCE
 ------------------------
 
-- Final post-review public candidate SHA and native-Windows repeat.
-- Protected pull-request workflow and bounded initial/confirmation review.
+- Protected pull-request workflow at the final closeout head. GitHub Actions
+  remains under an official external incident and no run exists yet for 4184fa1.
+- Final confirmation review at the exact closeout head.
+- Protected squash merge and post-merge main run.
 
 BOUNDARIES AND LIMITATIONS
 --------------------------

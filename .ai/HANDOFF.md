@@ -6,14 +6,14 @@ P01-R11 is `RELEASED` through protected squash `93147ac`; post-merge run `329826
 
 ## Resume point
 
-1. Complete the P00-R06 change plan and implement one repository-owned quality-gate runner with full and affected modes.
-2. Add adverse tests for invocation, fixed SCM refs, task-list parity, task-level affected inputs, and failure propagation; measure the focused versus full path.
-3. Update the operating contract, agent loop, governance, quality-gate, local-development, delivery-model, and work-item-template text without adding ceremony.
-4. Verify and release the correction, return the active phase to Phase 01, and start P01-R05 from clean `main`.
+1. Publish the P00-R06 evidence and repository-memory closeout on top of implementation candidate `4184fa1`.
+2. While the official GitHub Actions incident persists, do not duplicate runs. After recovery, reemit one pull-request event only if the final SHA still has no valid run.
+3. Pass protected CI and the permitted final confirmation review, treating only requirement, security/data, availability, and public-contract blockers; then squash-merge and verify the post-merge `main` run.
+4. Return the active phase to Phase 01 and start P01-R05 from clean `main`.
 
 ## Do not do yet
 
 - Do not add an application service, product resolver/schema, process-signal coordinator, OpenTelemetry SDK, Collector, dashboard, broker, object store, or hosted resource to P01-R11.
 - Do not expose arbitrary caller objects, raw errors, request bodies, headers, GraphQL documents, configuration URLs, personal identifiers, or signed media URLs through the logging contract.
 - Do not merge or close Dependabot pull request 1 without its dedicated compatibility work and an authorized disposition.
-- Do not mark P01-R11 `RELEASED` before protected squash merge and post-merge verification.
+- Do not bypass `CI required`, duplicate outage-era runs, or start P01-R05 before the P00-R06 correction is released.
