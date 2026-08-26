@@ -8,7 +8,11 @@ const MAX_SOURCE_ENTRIES = 256;
 const MAX_VARIABLE_NAME_LENGTH = 128;
 const MAX_VALUE_LENGTH = 2_048;
 const SERVICE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
-const OWNED_PREFIXES = ["ASTER_", "DATABASE_", "REDIS_"] as const;
+export const REFERENCE_RUNTIME_CONFIG_OWNED_PREFIXES = Object.freeze([
+  "ASTER_",
+  "DATABASE_",
+  "REDIS_",
+] as const);
 const POSTGRES_PROTOCOLS = new Set(["postgres:", "postgresql:"]);
 const REDIS_PROTOCOLS = new Set(["redis:", "rediss:"]);
 
@@ -123,7 +127,7 @@ function hasAsciiControl(value: string): boolean {
 }
 
 function isOwnedVariable(name: string): boolean {
-  return OWNED_PREFIXES.some((prefix) => name.startsWith(prefix));
+  return REFERENCE_RUNTIME_CONFIG_OWNED_PREFIXES.some((prefix) => name.startsWith(prefix));
 }
 
 function safeUnexpectedVariableName(name: string): string {

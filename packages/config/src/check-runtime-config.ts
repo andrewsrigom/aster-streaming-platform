@@ -1,4 +1,5 @@
 import {
+  REFERENCE_RUNTIME_CONFIG_OWNED_PREFIXES,
   ReferenceRuntimeConfigError,
   createReferenceRuntimeConfigDiagnostic,
   loadReferenceRuntimeConfig,
@@ -9,7 +10,10 @@ function writeJson(stream: NodeJS.WriteStream, value: unknown): void {
 }
 
 try {
-  const configuration = loadReferenceRuntimeConfig(Object.entries(process.env));
+  const ownedEnvironmentEntries = Object.entries(process.env).filter(([name]) =>
+    REFERENCE_RUNTIME_CONFIG_OWNED_PREFIXES.some((prefix) => name.startsWith(prefix)),
+  );
+  const configuration = loadReferenceRuntimeConfig(ownedEnvironmentEntries);
   writeJson(process.stdout, createReferenceRuntimeConfigDiagnostic(configuration));
 } catch (error) {
   if (error instanceof ReferenceRuntimeConfigError) {

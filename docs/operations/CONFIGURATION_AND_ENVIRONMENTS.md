@@ -17,11 +17,11 @@ P01-R03 implements the first server-only configuration contract in `@aster/confi
 The process-start order is:
 
 1. receive environment entries from the operator or runtime orchestrator;
-2. convert the operating-system-bounded process environment with `Object.entries(process.env)` and pass those entries to `loadReferenceRuntimeConfig` before initializing logging, telemetry, transports, or dependency clients;
+2. convert the operating-system-bounded process environment with `Object.entries(process.env)`, retain only names beginning with the contract-owned prefixes, and pass those entries to `loadReferenceRuntimeConfig` before initializing logging, telemetry, transports, or dependency clients;
 3. stop with a classified configuration error when validation fails;
 4. continue initialization only with the returned frozen typed object.
 
-The CLI captures the real process environment into entries once. The public loader accepts only an actual array of at most 256 own two-item tuples, snapshots its length once, and rejects sparse, inherited, malformed, duplicate-known, excessive, or throwing input before schema parsing. This externally bounded representation prevents an arbitrary record or proxy from forcing eager materialization of an unbounded key list inside the loader. The package does not load `.env` files, contact a secret manager, connect to PostgreSQL or Redis, infer an environment, or start a service.
+The CLI captures the real process environment into entries once and filters unrelated host names before applying the package bound; unexpected names with an owned prefix remain present so typos fail closed. The public loader accepts only an actual array of at most 256 own two-item tuples, snapshots its length once, and rejects sparse, inherited, malformed, duplicate-known, excessive, or throwing input before schema parsing. This externally bounded representation prevents an arbitrary record or proxy from forcing eager materialization of an unbounded key list inside the loader. The package does not load `.env` files, contact a secret manager, connect to PostgreSQL or Redis, infer an environment, or start a service.
 
 ### Implemented variables
 

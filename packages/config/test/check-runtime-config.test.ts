@@ -42,7 +42,11 @@ function assertCanariesRedacted(value: string): void {
 }
 
 test("process-start diagnostic exits zero and redacts configured secrets", () => {
-  const result = runDiagnostic(validEnvironment());
+  const environment = validEnvironment();
+  for (let index = 0; index < 300; index += 1) {
+    environment[`HOST_UNRELATED_${index}`] = `value-${index}`;
+  }
+  const result = runDiagnostic(environment);
 
   assert.equal(result.error, undefined);
   assert.equal(result.status, 0);
