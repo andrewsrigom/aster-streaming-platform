@@ -103,6 +103,7 @@ This index lists repository governance artifacts and every Markdown source in th
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
 - [`evidence/phase-00/ai-state-workflow.txt`](../../evidence/phase-00/ai-state-workflow.txt) — Repository Memory Workflow Evidence
+- [`evidence/phase-00/clean-checkout-closeout.txt`](../../evidence/phase-00/clean-checkout-closeout.txt) — Clean Checkout and Phase Closeout Evidence
 - [`evidence/phase-00/developer-command-contract.txt`](../../evidence/phase-00/developer-command-contract.txt) — Developer Command Contract Evidence
 - [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
 
@@ -236,6 +237,7 @@ This index lists repository governance artifacts and every Markdown source in th
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
 - [`evidence/phase-00/ai-state-workflow.txt`](../../evidence/phase-00/ai-state-workflow.txt) — Repository Memory Workflow Evidence
+- [`evidence/phase-00/clean-checkout-closeout.txt`](../../evidence/phase-00/clean-checkout-closeout.txt) — Clean Checkout and Phase Closeout Evidence
 - [`evidence/phase-00/source-quality-foundation.txt`](../../evidence/phase-00/source-quality-foundation.txt) — Source Quality Foundation Evidence
 - [`evidence/phase-00/documentation-validation.txt`](../../evidence/phase-00/documentation-validation.txt) — Documentation Validation Evidence
 - [`evidence/phase-00/ci-security-foundation.txt`](../../evidence/phase-00/ci-security-foundation.txt) — CI and Security Foundation Evidence

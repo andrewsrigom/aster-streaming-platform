@@ -12,7 +12,7 @@ Provide a reproducible local environment and one production-ready Node.js servic
 ## Prerequisites
 
 - Phase 00 is verified.
-- Supported container runtime and FFmpeg prerequisites are documented.
+- Container runtime and FFmpeg capabilities are available and documented; P01-R01 selects and records the exact supported versions before implementation depends on them.
 
 ## Deliverables
 

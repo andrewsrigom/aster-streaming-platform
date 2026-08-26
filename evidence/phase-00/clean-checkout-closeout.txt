@@ -1,0 +1,351 @@
+ASTER PHASE 00 CLEAN CHECKOUT AND CLOSEOUT EVIDENCE
+====================================================
+
+Work item: P00-R10 clean public checkout and Phase 00 closeout
+Evidence date: 2026-08-26
+Public main revision tested: 91dbc7a907e0fd30b6f0b17519aa717d9d945495
+Candidate commit: 8b45b297dadc31185387722c7833dad846f486e6
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
+Acceptance: PASS_HOSTED; corrected public candidate and protected workflow passed
+
+ENVIRONMENT AND NEXT-PHASE CAPABILITY OBSERVATION
+-------------------------------------------------
+
+- Node.js: 24.19.0
+- Corepack: 0.35.0
+- pnpm: 11.24.0
+- Docker client and daemon: 26.0.0
+- Docker Compose: v2.26.1-desktop.1
+- FFmpeg and FFprobe: 6.1.1-3ubuntu5
+- WSL memory available before the run: approximately 10 GiB
+- WSL swap used: 0 B
+- WSL root filesystem available: 70 GiB
+- Docker containers: 4 present, 0 running
+
+These Docker, Compose, FFmpeg, and FFprobe versions prove that the current machine can begin Phase 01 compatibility work. They are observations, not the supported version selections owned by Phase 01.
+
+PUBLIC MAIN RESOLUTION AND CLONE
+--------------------------------
+
+$ git ls-remote https://github.com/andrewsrigom/aster-streaming-platform.git refs/heads/main
+remote main: 91dbc7a907e0fd30b6f0b17519aa717d9d945495
+local main before the clone: 91dbc7a907e0fd30b6f0b17519aa717d9d945495
+result: PASS, exact match
+
+Temporary root: /tmp/aster-p00-r10-osJQaC
+Clone target: /tmp/aster-p00-r10-osJQaC/aster-streaming-platform
+
+Before cloning, the temporary root resolved below /tmp and contained no entry.
+
+$ git clone --branch main --single-branch --no-tags https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-p00-r10-osJQaC/aster-streaming-platform
+result: PASS
+elapsed: 0.80 seconds
+maximum resident set observed: 17804 KiB
+
+Clone observations:
+- origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+- HEAD: 91dbc7a907e0fd30b6f0b17519aa717d9d945495
+- tracked working tree: clean
+- node_modules: absent
+- .turbo: absent
+- Zone.Identifier files: 0
+- private-context vocabulary findings: 0
+
+DISCOVERED BOOTSTRAP GAP AND REMEDIATION
+----------------------------------------
+
+The fresh clone reported core.hooksPath as unset. The tracked hooks existed with executable Git modes, but the root bootstrap did not activate them. This made the README statement that repository hooks automatically inspect commits incomplete for a new clone.
+
+The candidate adds this explicit, clone-local command to the root and detailed bootstrap paths:
+
+$ git config --local core.hooksPath .githooks
+
+The command was exercised in the clean clone:
+- resulting value: .githooks
+- global Git configuration: unchanged
+- tracked working tree after configuration: clean
+
+This gap is not hidden. The initial public-main run remains classified PASS_LOCAL_WITH_REMEDIATION. Hosted acceptance depends on the separate corrected public-candidate result recorded below.
+
+PINNED BOOTSTRAP FROM THE PUBLIC CLONE
+--------------------------------------
+
+$ node --version
+v24.19.0
+
+$ corepack --version
+0.35.0
+
+$ corepack enable
+$ corepack install
+$ pnpm --version
+11.24.0
+
+$ pnpm install --frozen-lockfile
+result: PASS
+packages materialized: 110
+packages reused from warm content-addressable store: 110
+packages downloaded: 0
+elapsed: 0.78 seconds
+maximum resident set observed: 332656 KiB
+
+$ pnpm toolchain:check
+result: PASS
+Node.js: 24.19.0
+pnpm: 11.24.0
+
+The checkout was new and contained no repository-local cache. The host Corepack and pnpm stores were warm; this is not a cold-machine or cold-network measurement.
+
+FIRST COMPLETE CLEAN-CHECKOUT GATE
+----------------------------------
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 8.715 seconds
+wrapper elapsed: 9.18 seconds
+maximum resident set observed: 462112 KiB
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities found
+elapsed: 0.76 seconds
+maximum resident set observed: 148604 KiB
+
+The complete graph included exact toolchain validation, strict TypeScript, type-aware lint, formatting, unused-code analysis, architecture checks and adverse fixtures, documentation and link validation, repository-memory validation, contribution-contract validation, redacting secret scans, CI-policy validation, staged-file selection, commit policy, and every focused test.
+
+REAL CLEANUP AND RECOVERY IN THE PUBLIC CLONE
+---------------------------------------------
+
+Read-only resolution before cleanup:
+- repository: /tmp/aster-p00-r10-osJQaC/aster-streaming-platform
+- target: /tmp/aster-p00-r10-osJQaC/aster-streaming-platform/.turbo
+- target: /tmp/aster-p00-r10-osJQaC/aster-streaming-platform/node_modules
+- both targets were directories ignored by the tracked policy;
+- package.json and pnpm-lock.yaml were regular files;
+- tracked working tree was clean.
+
+$ pnpm clean:foundation
+result: PASS
+removed: .turbo, node_modules
+elapsed: 0.63 seconds
+maximum resident set observed: 142604 KiB
+
+Post-cleanup assertions:
+- .turbo: absent
+- node_modules: absent
+- core.hooksPath: .githooks
+- tracked working tree: clean
+
+$ corepack enable
+$ corepack install
+$ pnpm install --frozen-lockfile
+result: PASS
+packages materialized: 110
+packages reused: 110
+packages downloaded: 0
+elapsed: 0.85 seconds
+maximum resident set observed: 332124 KiB
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 5.615 seconds
+wrapper elapsed: 6.09 seconds
+maximum resident set observed: 454716 KiB
+
+FINAL PUBLIC-MAIN CLONE INTEGRITY
+---------------------------------
+
+- Git HEAD remained 91dbc7a907e0fd30b6f0b17519aa717d9d945495.
+- origin remained the authorized public HTTPS repository.
+- Git working tree and index were clean.
+- git fsck --no-dangling passed.
+- tracked files: 183.
+- documentation: 129 documents, 1802 headings, 280 local links, 3 evidence-supported status claims, 0 violations.
+- repository secret scan: 0 findings.
+- Zone.Identifier files: 0.
+- restricted private-context vocabulary: absent.
+- future application/service scaffolding: absent.
+
+CORRECTED PUBLIC-CANDIDATE CLONE
+--------------------------------
+
+Temporary root: /tmp/aster-p00-r10-candidate-tBShpD
+Clone target: /tmp/aster-p00-r10-candidate-tBShpD/aster-streaming-platform
+Public branch: chore/phase-00-closeout
+
+$ git clone --branch chore/phase-00-closeout --single-branch --no-tags https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-p00-r10-candidate-tBShpD/aster-streaming-platform
+result: PASS
+elapsed: 0.82 seconds
+maximum resident set observed: 17844 KiB
+
+Initial assertions:
+- HEAD: 8b45b297dadc31185387722c7833dad846f486e6
+- origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+- tracked working tree: clean
+- node_modules: absent
+- .turbo: absent
+- root README contains the explicit clone-local hook command
+
+The new clone initially reported core.hooksPath as unset, as Git clone semantics require. Following the README exactly configured `.githooks`; no manual command absent from the documentation and no global Git change was required.
+
+$ git config --local core.hooksPath .githooks
+$ corepack enable
+$ corepack install
+$ pnpm install --frozen-lockfile
+result: PASS
+packages materialized: 110
+packages reused from warm content-addressable store: 110
+packages downloaded: 0
+elapsed: 0.78 seconds
+maximum resident set observed: 328360 KiB
+
+$ pnpm toolchain:check
+result: PASS
+Node.js: 24.19.0
+pnpm: 11.24.0
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 8.058 seconds
+wrapper elapsed: 8.50 seconds
+maximum resident set observed: 458496 KiB
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities found
+elapsed: 0.83 seconds
+maximum resident set observed: 149732 KiB
+
+$ pnpm clean:foundation
+result: PASS
+removed: .turbo, node_modules
+elapsed: 0.75 seconds
+maximum resident set observed: 142480 KiB
+
+The candidate cleanup preserved `.githooks`, the clean Git state, and every tracked file. Its two targets resolved inside the recorded clone before deletion.
+
+FINAL CANDIDATE RECOVERY REPEAT
+-------------------------------
+
+The recovery path was repeated after clearing repository-local state once more so its final result had bounded output and an unambiguous exit status.
+
+$ pnpm clean:foundation
+result: PASS
+elapsed: 0.66 seconds
+maximum resident set observed: 141840 KiB
+
+$ pnpm install --frozen-lockfile
+result: PASS
+elapsed: 0.85 seconds
+maximum resident set observed: 334860 KiB
+
+$ pnpm toolchain:check
+result: PASS
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 5.498 seconds
+wrapper elapsed: 5.95 seconds
+maximum resident set observed: 455668 KiB
+
+FINAL CANDIDATE INTEGRITY
+-------------------------
+
+- Git HEAD remained 8b45b297dadc31185387722c7833dad846f486e6.
+- origin remained the authorized public HTTPS repository.
+- core.hooksPath remained .githooks.
+- Git working tree and index were clean.
+- git fsck --no-dangling passed.
+- documentation: 129 documents, 1820 headings, 284 local links, 3 evidence-supported status claims, 0 violations.
+- repository secret scan: 0 findings.
+- Zone.Identifier files: 0.
+- restricted private-context vocabulary: absent.
+- node_modules and .turbo were present only as ignored recovered state.
+
+PHASE 00 REQUIREMENT AND EVIDENCE MATRIX
+----------------------------------------
+
+P00-R01 PASS: canonical MIT repository license and separate media rights; evidence/phase-00/license-audit.txt
+P00-R02 PASS: Git, deterministic ignores, root-only pnpm workspace and Turborepo; evidence/phase-00/workspace-foundation.txt
+P00-R03 PASS: exact Node.js and integrity-pinned pnpm; evidence/phase-00/toolchain-selection.txt plus this clean clone
+P00-R04 PASS: strict and tiered source-quality gates and hooks; evidence/phase-00/source-quality-foundation.txt plus 78 clean-clone tests
+P00-R05 PASS: executable documentation truthfulness and link validation; evidence/phase-00/documentation-validation.txt plus this scan
+P00-R06 PASS_HOSTED: efficient secure CI, audit, and dependency review; evidence/phase-00/ci-security-foundation.txt and public-repository-governance.txt
+P00-R07 PASS_HOSTED: public contribution governance, repository settings, security controls, and protected main; evidence/phase-00/community-governance.txt and public-repository-governance.txt
+P00-R08 PASS_HOSTED: executable repository-memory workflow; evidence/phase-00/ai-state-workflow.txt
+P00-R09 PASS_HOSTED: exact developer commands and bounded cleanup; evidence/phase-00/developer-command-contract.txt plus the hook activation remediation here
+P00-R10 PASS_HOSTED: the corrected public candidate passed the documented bootstrap, complete clean-checkout and recovery gates, integrity checks, and protected workflow
+P00-R11 PASS: engineering coverage, progressive demo, and governance contracts; evidence/phase-00/plan-clarity-audit.txt
+
+PHASE 00 REQUIRED-TEST REVIEW
+-----------------------------
+
+- License and media separation: PASS through license audit, documentation scan, contribution contract, and clean tree review.
+- Generated/local ignore policy: PASS for node_modules, .turbo, environment files, and Zone.Identifier; evidence remains tracked.
+- Frozen clean install: PASS.
+- Intentional architecture violation: PASS through six architecture tests including forbidden framework and outward dependency fixtures.
+- Broken Markdown link: PASS through nine documentation tests and the 129-document scan.
+- Injected secret: PASS through six redacting scanner tests and the repository scan.
+- Unsupported Node.js: PASS through the toolchain adverse tests.
+- Changed-scope hooks: PASS through six staged dispatcher tests, commit tests, executable hook modes, and clone-local activation remediation.
+- CI cancellation, path classification, and aggregate: PASS through fifteen CI tests and protected public runs.
+- Engineering subject coverage and progressive checkpoint mapping: PASS through plan-clarity evidence and current documentation.
+- Public governance without unsupported claims: PASS through community, CI, remote settings, and documentation evidence.
+- Every documented command from a fresh checkout: PASS in the corrected public-candidate clone without manual supplementation.
+
+PHASE 01 ENTRY-PREREQUISITE REVIEW
+----------------------------------
+
+- Phase 00 verification: PASS with corrected public-candidate and protected hosted evidence.
+- Container runtime prerequisite: Docker client and daemon respond at 26.0.0; Compose responds at v2.26.1-desktop.1.
+- FFmpeg prerequisite: FFmpeg and FFprobe respond at 6.1.1-3ubuntu5.
+- Documentation: root and local-development documents distinguish current foundation requirements from future container, FFmpeg, browser, resource, diagnostics, and reset requirements.
+- Version selection boundary: exact supported container, Compose, FFmpeg, dependency image, and resource-profile versions remain intentionally owned by Phase 01 and are not selected by this closeout.
+- Framework boundary: Express 5 remains only the preferred Phase 01 HTTP adapter candidate and still requires its ADR and compatibility evidence.
+
+The observed host is eligible to begin Phase 01 selection work. The observations do not pre-approve any dependency, framework, image, port, or resource limit.
+
+PUBLIC REPOSITORY HYGIENE
+-------------------------
+
+- Public main matched the tested revision.
+- The P00-R09 post-merge main workflow 32942673762 passed.
+- Dependabot pull request 1 attempted the grouped major upgrades TypeScript 6 to 7 and @types/node 24 to 26.
+- Pull request 1 was initially closed without exact owner authorization. Automated review identified the scope violation; its original head branch at 7317f49046aaa147ec984610f73415e954651173 was restored and the pull request was reopened before closeout.
+- Pull request 1 remains open and unmerged because the grouped majors require dedicated compatibility evidence and an authorized disposition; the registry audit reports no known high-severity vulnerability requiring an emergency baseline change.
+- No dependency version changed during P00-R10.
+- Pull request 5 candidate run 32943620872 passed change classification, documentation and security, dependency review, and the stable `CI required` aggregate.
+
+EXIT-GATE STATUS
+----------------
+
+- Every Phase 00 requirement has implementation and evidence: PASS_HOSTED.
+- All required tests pass from a clean public checkout: PASS.
+- Evidence is stored and linked: PASS.
+- Security, accessibility, failure, and operational effects are documented: PASS for the repository-only scope; no application UI exists.
+- No planned application behavior is claimed as implemented: PASS.
+- Repository memory is current: PASS with P00-R10 done and P01-R01 ready.
+- Phase 01 prerequisites are explicitly checked: PASS as observed capabilities and documented selection boundaries.
+- Protected candidate validation: PASS in workflow 32943620872.
+- Release observation: the final-state commit still requires squash merge and a post-merge `main` workflow; this does not relabel the already accepted candidate as released.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- The public-main clone exposed an omitted clone-local hook activation command; the separate public-candidate clone proves the corrected README and detailed local guide without manual supplementation.
+- The host Corepack and pnpm content-addressable caches were warm, so this evidence does not claim cold-registry latency or full offline bootstrap on an empty machine.
+- The run covers the named WSL environment. GitHub Actions separately covers the public Ubuntu 24.04 runner; Windows-native and macOS execution are not yet claimed.
+- Deterministic documentation checks do not fetch external links.
+- Pattern-based secret scanning cannot inspect arbitrary binary or invalid-UTF-8 formats; later formats require their owning scanners.
+- No application, service, database, broker, object store, media asset, telemetry backend, container, image, or Docker volume was created by the Phase 00 gate.
+- Phase 00 is VERIFIED. The final-state pull request must still merge and pass its post-merge `main` workflow before the repository state is reported as released.
