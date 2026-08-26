@@ -391,6 +391,28 @@ test("a timed-out connect retires its generation and remains recoverable", async
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
+test("a late connect completion cannot reopen a closing broker adapter", async () => {
+  const telemetry = new RecordingTelemetry();
+  const bundle = new FakeBundle();
+  const connected = deferred<undefined>();
+  bundle.producer.connectHandler = () => connected.promise;
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(telemetry, { connectionTimeoutMs: 200, closeTimeoutMs: 20 }),
+    () => bundle,
+  );
+
+  const connecting = adapter.connect();
+  await nextTurn();
+  assert.deepEqual(await adapter.close(), { status: "timed_out" });
+  assert.equal(adapter.snapshot().state, "closing");
+
+  connected.resolve(undefined);
+  assert.deepEqual(await connecting, { status: "rejected", reason: "adapter_closed" });
+  await nextTurn();
+  assert.equal(adapter.snapshot().state, "closed");
+  assert.deepEqual(await adapter.close(), { status: "already_completed" });
+});
+
 test("consumer handles one bounded copied record with an adapter-owned signal", async () => {
   const telemetry = new RecordingTelemetry();
   const consumer = new FakeConsumer();
@@ -496,8 +518,23 @@ test("rejects a second consumer and retires malformed broker records", async () 
     reason: "consumer_already_running",
   });
 
-  await assert.rejects(consumer.emit({ key: null, value: null, partition: -1, offset: "invalid" }));
+  let accessorReads = 0;
+  const hostileRecord = Object.create(null) as AsterKafkaRawRecord;
+  Object.defineProperties(hostileRecord, {
+    key: { enumerable: true, value: null },
+    value: {
+      enumerable: true,
+      get(): Uint8Array {
+        accessorReads += 1;
+        return Uint8Array.from([1]);
+      },
+    },
+    partition: { enumerable: true, value: -1 },
+    offset: { enumerable: true, value: "invalid" },
+  });
+  await assert.rejects(consumer.emit(hostileRecord));
   await nextTurn();
+  assert.equal(accessorReads, 0);
   assert.equal(consumer.disconnectCalls, 1);
   assert.equal(adapter.snapshot().consumerState, "degraded");
   assert.deepEqual(await adapter.close(), { status: "completed" });
@@ -569,6 +606,63 @@ test("close is concurrent, caller-local, idempotent, and finite on later vendor 
   await nextTurn();
   assert.equal(adapter.snapshot().state, "closed");
   assert.deepEqual(await adapter.close(), { status: "already_completed" });
+});
+
+test("close accounts for a late publish without reviving broker readiness", async () => {
+  const telemetry = new RecordingTelemetry();
+  const producer = new FakeProducer();
+  const published = deferred<undefined>();
+  producer.publishHandler = () => published.promise;
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(telemetry, { operationTimeoutMs: 200, closeTimeoutMs: 20 }),
+    () => new FakeBundle(producer),
+  );
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
+
+  const publishing = adapter.publish({
+    topic: "aster.events",
+    key: Uint8Array.from([1]),
+    value: Uint8Array.from([2]),
+  });
+  await nextTurn();
+  assert.deepEqual(await adapter.close(), { status: "timed_out" });
+  assert.equal(adapter.snapshot().state, "closing");
+
+  published.resolve(undefined);
+  assert.deepEqual(await publishing, { status: "completed" });
+  await nextTurn();
+  assert.deepEqual(adapter.snapshot(), {
+    state: "closed",
+    consumerState: "idle",
+    inFlightPublishes: 0,
+    inFlightHandlers: 0,
+  });
+});
+
+test("a late consumer start cannot revive consumer state after close", async () => {
+  const telemetry = new RecordingTelemetry();
+  const consumer = new FakeConsumer();
+  const started = deferred<undefined>();
+  consumer.startHandler = () => started.promise;
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(telemetry, { operationTimeoutMs: 200, closeTimeoutMs: 20 }),
+    () => new FakeBundle(new FakeProducer(), [consumer]),
+  );
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
+
+  const starting = adapter.startConsumer({
+    topic: "aster.events",
+    handle: () => Promise.resolve(),
+  });
+  await nextTurn();
+  assert.deepEqual(await adapter.close(), { status: "timed_out" });
+  assert.equal(adapter.snapshot().state, "closing");
+
+  started.resolve(undefined);
+  assert.deepEqual(await starting, { status: "rejected", reason: "adapter_closed" });
+  await nextTurn();
+  assert.equal(adapter.snapshot().state, "closed");
+  assert.notEqual(adapter.snapshot().consumerState, "running");
 });
 
 test("close remains finite while a consumer handler ignores cancellation", async () => {

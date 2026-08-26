@@ -12,6 +12,7 @@ import {
   AsterObjectStorageLifecycleError,
   type AsterObjectStorageOptions,
   type AsterObjectStorageTelemetry,
+  type AsterObjectWriteInput,
 } from "../src/index.js";
 import {
   type AsterS3Client,
@@ -254,7 +255,7 @@ test("probe and head use finite telemetry while a missing object remains a norma
     telemetry.attempts.map(({ input, outcome }) => ({ operation: input.operation, outcome })),
     [
       { operation: "probe", outcome: "success" },
-      { operation: "read", outcome: "unavailable" },
+      { operation: "read", outcome: "success" },
     ],
   );
   assert.deepEqual(await adapter.close(), { status: "completed" });
@@ -323,6 +324,10 @@ test("rejects invalid or oversized writes before taking source ownership", async
   );
   assert.equal(oversized.destroyed, false);
   assert.deepEqual(await adapter.write(accessorInput), {
+    status: "rejected",
+    reason: "invalid_request",
+  });
+  assert.deepEqual(await adapter.write(null as unknown as AsterObjectWriteInput), {
     status: "rejected",
     reason: "invalid_request",
   });

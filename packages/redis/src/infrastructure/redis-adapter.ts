@@ -570,6 +570,9 @@ export function createAsterRedisAdapterWithClientFactory(
     const work = waitFor(raw, undefined, options.connectionTimeoutMs).then(
       (result): AsterRedisOperationResult => {
         try {
+          if (state === "closing" || state === "closed" || current?.client !== client) {
+            return CLOSED_REJECTED;
+          }
           if (result.status === "completed" && client.isReady) {
             state = "ready";
             return COMPLETED;

@@ -285,6 +285,32 @@ test("a timed-out connect destroys its generation and a later connect creates a 
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
+test("a late connect completion cannot revive an adapter that is closing", async () => {
+  const telemetry = new RecordingTelemetry();
+  const client = new FakeClient();
+  const connection = deferred<undefined>();
+  client.connectHandler = async () => {
+    await connection.promise;
+    client.isReady = true;
+    client.emit("ready");
+  };
+  const adapter = createAsterRedisAdapterWithClientFactory(
+    options(telemetry, { connectionTimeoutMs: 200, closeTimeoutMs: 20 }),
+    () => client,
+  );
+
+  const connecting = adapter.connect();
+  await nextTurn();
+  assert.deepEqual(await adapter.close(), { status: "timed_out" });
+  assert.equal(adapter.snapshot().state, "closed");
+
+  connection.resolve(undefined);
+  assert.deepEqual(await connecting, { status: "rejected", reason: "adapter_closed" });
+  await nextTurn();
+  assert.equal(adapter.snapshot().state, "closed");
+  assert.deepEqual(await adapter.close(), { status: "already_completed" });
+});
+
 test("rejects excess in-flight probes without extending the vendor queue", async () => {
   const telemetry = new RecordingTelemetry();
   const client = new FakeClient();

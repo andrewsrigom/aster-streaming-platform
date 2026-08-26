@@ -90,7 +90,7 @@ PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution,
 6. [completed checkpoint] Implement S3-compatible storage with streaming put/get, head/probe, bounded fixture deletion, abort and owned-stream cleanup, telemetry, and equivalent boundary tests.
 7. [completed checkpoint] Compare the Kafka candidates with install and process-lifecycle diagnostics, select one provisional client, implement bounded producer/consumer lifecycle, and document the mandatory real-broker confirmation gate for P01-R09.
 8. [completed checkpoint] Consolidate dependency, failure, cancellation, handle-cleanup, declaration, audit, and package evidence; update architecture and operations documentation without claiming real-container interoperability.
-9. [in progress] Perform the initial review at exact clean candidate `8361f11`, batch blocking remediation if required, then run confirmation review, protected CI, merge, and post-merge verification.
+9. [review remediation in progress] The complete initial review at candidate `37e6db8` found one bounded batch: preserve normal S3 not-found availability telemetry, reject hostile write input without throwing, prevent late Redis/Kafka completions from reviving closing state, account for active Kafka wrappers during close, and consume broker records only from own data properties. Add focused regressions, rerun affected/complete gates, then perform confirmation review, protected CI, merge, and post-merge verification.
 
 ## Tests
 

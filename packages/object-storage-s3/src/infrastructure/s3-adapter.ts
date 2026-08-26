@@ -189,11 +189,15 @@ function issue(
 }
 
 function ownDataValue(source: object, key: string): unknown {
-  const descriptor = Object.getOwnPropertyDescriptor(source, key);
-  if (!descriptor || "get" in descriptor) {
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(source, key);
+    if (!descriptor || "get" in descriptor) {
+      return undefined;
+    }
+    return descriptor.value as unknown;
+  } catch {
     return undefined;
   }
-  return descriptor.value as unknown;
 }
 
 function containsControlCharacter(value: string): boolean {
@@ -540,6 +544,7 @@ function outcomeFor(result: AsterObjectStorageOperationResult): AsterObservation
     case "aborted":
       return "cancelled";
     case "not_found":
+      return "success";
     case "unavailable":
       return "unavailable";
     case "rejected":

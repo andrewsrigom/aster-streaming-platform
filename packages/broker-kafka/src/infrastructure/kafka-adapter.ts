@@ -175,11 +175,15 @@ function issue(
 }
 
 function ownDataValue(source: object, key: string): unknown {
-  const descriptor = Object.getOwnPropertyDescriptor(source, key);
-  if (!descriptor || "get" in descriptor) {
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(source, key);
+    if (!descriptor || "get" in descriptor) {
+      return undefined;
+    }
+    return descriptor.value as unknown;
+  } catch {
     return undefined;
   }
-  return descriptor.value as unknown;
 }
 
 function containsControlCharacter(value: string): boolean {
@@ -596,16 +600,24 @@ function recordFrom(
   signal: AbortSignal,
 ): AsterKafkaConsumedRecord | undefined {
   try {
-    const keyView = input.key === null ? null : byteViewFrom(input.key, 0, MAXIMUM_KEY_BYTES);
-    const valueView = input.value === null ? undefined : byteViewFrom(input.value, 1, maximumBytes);
+    if (!validPlainInput(input, ["key", "value", "partition", "offset"])) {
+      return undefined;
+    }
+    const rawKey = ownDataValue(input, "key");
+    const rawValue = ownDataValue(input, "value");
+    const partition = ownDataValue(input, "partition");
+    const offset = ownDataValue(input, "offset");
+    const keyView = rawKey === null ? null : byteViewFrom(rawKey, 0, MAXIMUM_KEY_BYTES);
+    const valueView = rawValue === null ? undefined : byteViewFrom(rawValue, 1, maximumBytes);
     if (
-      (input.key !== null && !keyView) ||
+      (rawKey !== null && !keyView) ||
       !valueView ||
       (keyView?.byteLength ?? 0) + valueView.byteLength > maximumBytes ||
-      !Number.isSafeInteger(input.partition) ||
-      input.partition < 0 ||
-      !boundedText(input.offset, 1, MAXIMUM_OFFSET_LENGTH) ||
-      !/^\d+$/u.test(input.offset)
+      typeof partition !== "number" ||
+      !Number.isSafeInteger(partition) ||
+      partition < 0 ||
+      !boundedText(offset, 1, MAXIMUM_OFFSET_LENGTH) ||
+      !/^\d+$/u.test(offset)
     ) {
       return undefined;
     }
@@ -614,8 +626,8 @@ function recordFrom(
     return Object.freeze({
       key: key ?? null,
       value,
-      partition: input.partition,
-      offset: input.offset,
+      partition,
+      offset,
       signal,
     });
   } catch {
@@ -773,8 +785,11 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
   let inFlightHandlers = 0;
   let closeWork: Promise<AsterKafkaBrokerCloseResult> | undefined;
   let retirementFailed = false;
+  const activeOperations = new Set<Promise<void>>();
   const backgroundWork = new Set<Promise<unknown>>();
   const retirementTimeoutMs = Math.max(1, Math.floor(options.closeTimeoutMs / 2));
+
+  const isShuttingDown = (): boolean => state === "closing" || state === "closed";
 
   const trackBackground = (work: Promise<unknown>): void => {
     backgroundWork.add(work);
@@ -826,20 +841,33 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
     }
     state = "connecting";
     const raw = Promise.resolve().then(() => owned.producer.connect());
-    connectWork = waitFor(raw, undefined, options.connectionTimeoutMs).then((result) => {
+    const work = waitFor(raw, undefined, options.connectionTimeoutMs).then((result) => {
       if (result.status === "completed") {
+        if (isShuttingDown() || bundle !== owned) {
+          return CLOSED_REJECTED;
+        }
         state = "ready";
         return COMPLETED;
+      }
+      if (isShuttingDown()) {
+        return CLOSED_REJECTED;
       }
       retireProducer(owned);
       return result.status === "timed_out" ? TIMED_OUT : UNAVAILABLE;
     });
-    return connectWork;
+    connectWork = work;
+    trackBackground(work);
+    return work;
   };
 
   const connect = async (signal?: AbortSignal): Promise<AsterKafkaBrokerOperationResult> => {
     const observation = observationFor(options.telemetry, "connect");
     let finalResult: AsterKafkaBrokerOperationResult = FAILED;
+    let completeOperation: (() => void) | undefined;
+    const settlement = new Promise<void>((resolve) => {
+      completeOperation = resolve;
+    });
+    activeOperations.add(settlement);
     try {
       if (!validSignal(signal)) {
         finalResult = INVALID_SIGNAL_REJECTED;
@@ -866,6 +894,8 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
       return finalResult;
     } finally {
       completeObservation(observation, outcomeFor(finalResult));
+      completeOperation?.();
+      activeOperations.delete(settlement);
     }
   };
 
@@ -880,6 +910,11 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
     let finalResult: AsterKafkaBrokerOperationResult = FAILED;
     let owned: AsterKafkaClientBundle | undefined;
     let capacityClaimed = false;
+    let completeOperation: (() => void) | undefined;
+    const settlement = new Promise<void>((resolve) => {
+      completeOperation = resolve;
+    });
+    activeOperations.add(settlement);
     try {
       if (!validSignal(signal)) {
         finalResult = INVALID_SIGNAL_REJECTED;
@@ -910,7 +945,9 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
       const raw = Promise.resolve().then(() => work(owned?.producer as AsterKafkaProducerClient));
       const result = await waitFor(raw, signal, options.operationTimeoutMs);
       if (result.status === "completed") {
-        state = "ready";
+        if (bundle === owned && !isShuttingDown()) {
+          state = "ready";
+        }
         finalResult = COMPLETED;
       } else if (result.status === "aborted" || result.status === "timed_out") {
         retireProducer(owned);
@@ -931,6 +968,8 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
         inFlightPublishes -= 1;
       }
       completeObservation(observation, outcomeFor(finalResult));
+      completeOperation?.();
+      activeOperations.delete(settlement);
     }
   };
 
@@ -1015,6 +1054,11 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
     const observation = observationFor(options.telemetry, "consume");
     let finalResult: AsterKafkaBrokerOperationResult = FAILED;
     let session: ConsumerSession | undefined;
+    let completeOperation: (() => void) | undefined;
+    const settlement = new Promise<void>((resolve) => {
+      completeOperation = resolve;
+    });
+    activeOperations.add(settlement);
     try {
       if (!validSignal(signal)) {
         finalResult = INVALID_SIGNAL_REJECTED;
@@ -1087,8 +1131,14 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
       );
       const result = await waitFor(raw, signal, options.operationTimeoutMs);
       if (result.status === "completed") {
-        consumerState = "running";
-        finalResult = COMPLETED;
+        if (isShuttingDown()) {
+          finalResult = CLOSED_REJECTED;
+        } else if (consumerSession !== ownedSession || ownedSession.aborter.signal.aborted) {
+          finalResult = UNAVAILABLE;
+        } else {
+          consumerState = "running";
+          finalResult = COMPLETED;
+        }
       } else if (result.status === "aborted" || result.status === "timed_out") {
         retireConsumer(ownedSession);
         finalResult = result.status === "aborted" ? ABORTED : TIMED_OUT;
@@ -1105,6 +1155,8 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
       return finalResult;
     } finally {
       completeObservation(observation, outcomeFor(finalResult));
+      completeOperation?.();
+      activeOperations.delete(settlement);
     }
   };
 
@@ -1183,7 +1235,7 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
       if (currentBundle) {
         work.push(currentBundle.producer.disconnect());
       }
-      const direct = await Promise.allSettled(work);
+      const direct = await Promise.allSettled([...work, ...activeOperations]);
       const retirements = await Promise.allSettled([...backgroundWork]);
       const completed =
         direct.every(
