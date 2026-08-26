@@ -13,7 +13,7 @@ Provide reusable, independently removable packages for system clock and identifi
 
 ## Current behavior
 
-P01-R06 is released through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c`; exact post-merge run `33012664408` passed every applicable job. This branch starts from that clean released `main` head. The first P01-R07 checkpoint now adds repository-owned system/fixed clock and UUID/deterministic ID contracts to `@aster/runtime`; 46 runtime tests, including seven focused new tests, plus typecheck, build, lint, format, architecture, cause-free failure, accessor-safety, and declaration-isolation checks pass. No database, Redis, broker, S3 client, product schema, event payload, object, or application service exists.
+P01-R06 is released through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c`; exact post-merge run `33012664408` passed every applicable job. This branch starts from that clean released `main` head. Commit `2309f94` adds repository-owned system/fixed clock and UUID/deterministic ID contracts to `@aster/runtime`; 46 runtime tests and all 13 affected tasks pass. The local PostgreSQL checkpoint now selects exact `pg@8.23.0` behind `@aster/postgres` and implements bounded connect/probe, capacity, cancellation recovery, telemetry, pool snapshot, and close with 11 focused tests passing. It creates no database, schema, migration, repository, transaction policy, Redis/broker/S3 client, event, object, or application service; real PostgreSQL interoperability remains P01-R09.
 
 ## Proposed behavior
 
@@ -81,10 +81,10 @@ PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution,
 
 ## Implementation steps
 
-1. Record the P01-R06 release, activate P01-R07, reconcile the broker selection/confirmation boundary, and create the raw evidence ledger.
-2. Implement repository-owned system/fake clock and UUID/deterministic ID contracts with focused deterministic tests and no new dependency.
-3. Repeat live registry and official compatibility research for `pg`, `@redis/client`, the AWS S3 client modules, and Kafka candidates; record exact versions, licenses, engines, scripts, dependency cost, known advisories, cancellation/deadline seams, redaction, and removal paths before installation.
-4. Implement PostgreSQL as the first network adapter, including bounded pool acquisition, probe/query cancellation recovery, telemetry, close, hostile construction tests, and vendor-free public declarations.
+1. [completed] Record the P01-R06 release, activate P01-R07, reconcile the broker selection/confirmation boundary, and create the raw evidence ledger.
+2. [completed] Implement repository-owned system/fake clock and UUID/deterministic ID contracts with focused deterministic tests and no new dependency.
+3. [in progress] Repeat live registry and official compatibility research for `pg`, `@redis/client`, the AWS S3 client modules, and Kafka candidates; record exact versions, licenses, engines, scripts, dependency cost, known advisories, cancellation/deadline seams, redaction, and removal paths before installation. PostgreSQL evidence is complete; the other three selections remain.
+4. [local candidate] Implement PostgreSQL as the first network adapter, including bounded pool acquisition, probe/query cancellation recovery, telemetry, close, hostile construction tests, and vendor-free public declarations.
 5. Implement Redis with bounded offline/reconnect behavior, abortable probe/command execution, telemetry, availability state, close, and equivalent boundary tests.
 6. Implement S3-compatible storage with streaming put/get, head/probe, bounded fixture deletion, abort and owned-stream cleanup, telemetry, and equivalent boundary tests.
 7. Compare the Kafka candidates with install and process-lifecycle diagnostics, select one provisional client, implement bounded producer/consumer lifecycle, and document the mandatory real-broker confirmation gate for P01-R09.

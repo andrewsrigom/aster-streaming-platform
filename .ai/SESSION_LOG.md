@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented bounded PostgreSQL connectivity candidate
+
+### Completed
+
+- Selected exact `pg@8.23.0` and development-only `@types/pg@8.23.1` after current registry, official documentation, exact source, license, engine, install-script, dependency, audit, cancellation, lifecycle, and removal review.
+- Added `@aster/postgres` with bounded pool reservations, finite connection/server/query/operation/close deadlines, a fixed probe, stable sanitized outcomes, released dependency telemetry, a bounded pool snapshot, one shared close, and runtime lifecycle hooks.
+- Destroyed clients after abort, timeout, SQLSTATE `57014`, or unknown probe failure because the selected client does not prove native `AbortSignal` cancellation or reusable protocol state after its query timeout. Kept product schema, migration, repository, typed SQL, transaction policy, and real-container claims out of scope.
+
+### Evidence
+
+- PostgreSQL typecheck/build, 11 of 11 focused tests, targeted ESLint/Prettier, refused-loopback diagnostic, public declaration isolation, exact MIT/ISC graph, and high-severity audit pass. The affected graph passes 37 of 37 tasks, 23 cached, in `9.435` seconds of Turborepo time and `10.46` seconds elapsed; the coherent source commit remains next.
+- Raw selection and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Pass and record the affected-scope gate, commit the PostgreSQL checkpoint, then start the Redis adapter.
+
 ## 2026-08-26 — Implemented deterministic clock and identifier checkpoint
 
 ### Completed

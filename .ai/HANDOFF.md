@@ -6,14 +6,14 @@ P01-R06 was squash-merged through pull request 13 as `8dff9d8d57572b2eac944ae984
 
 P01-R07 is active on `feat/p01-r07-platform-adapters` from exact clean released head `8dff9d8`. Its owner is shared runtime and dependency-adapter infrastructure; no product bounded context or durable data owner changes. The active plan defines dependency-free system/fake clock and ID contracts followed by separate PostgreSQL, Redis, S3, and broker packages. Every vendor dependency stays behind repository-owned types with finite deadlines/capacity, caller cancellation, stable sanitized failures, telemetry, idempotent close, focused iteration gates, and an independent removal path.
 
-The Kafka decision is deliberately two-stage. P01-R07 may implement one provisional client only after current install, lifecycle, deadline, redaction, license, dependency-cost, and removal evidence. P01-R09 must confirm it against a real broker and replace it before Phase 01 closeout if bounded stop fails. The dependency-free clock/ID checkpoint is implemented locally with 46 passing runtime tests; no P01-R07 external dependency or network adapter is selected yet.
+The Kafka decision is deliberately two-stage. P01-R07 may implement one provisional client only after current install, lifecycle, deadline, redaction, license, dependency-cost, and removal evidence. P01-R09 must confirm it against a real broker and replace it before Phase 01 closeout if bounded stop fails. Clock/ID commit `2309f94` has 46 passing runtime tests. The local PostgreSQL candidate exact-pins `pg@8.23.0` behind a vendor-free contract with bounded capacity/deadlines, destructive cancellation recovery, stable telemetry and shared close; 11 focused tests and the refused-loopback diagnostic pass. Real PostgreSQL compatibility remains P01-R09.
 
 ## Resume point
 
-1. Run the P01-R07 activation documentation and repository-memory gate, fix only current-plan inconsistencies, and commit the release/activation record as one coherent documentation commit.
-2. Commit the green P01-R07 clock/ID source and evidence as one coherent block; its focused and 13/13 changed-scope gates already pass.
-3. Record live official and registry evidence for `pg`, `@redis/client`, AWS S3 SDK modules, and Kafka candidates before changing the lockfile.
-4. Implement PostgreSQL first, then Redis, S3, and the provisional broker package as separate coherent checkpoints; keep real-container interoperability for P01-R09.
+1. Commit the green PostgreSQL package, lockfile, documentation, memory, and evidence as one coherent checkpoint; 11 focused tests and 37 of 37 affected tasks pass.
+2. Use the already captured live `@redis/client` registry preflight as a starting point, repeat the exact selected-version source/lifecycle checks, and implement Redis without cache keys, TTL policy, leases, Lua, or rate limiting.
+3. Select and implement the S3 adapter, then perform the explicit Kafka candidate install/lifecycle comparison before the provisional broker package.
+4. Keep every real-container interoperability claim for P01-R09 and run the first forced complete graph only when all P01-R07 packages stabilize.
 
 ## Do not do yet
 

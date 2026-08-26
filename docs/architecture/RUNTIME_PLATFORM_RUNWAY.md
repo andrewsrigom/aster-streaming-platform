@@ -106,7 +106,7 @@ Create one package per operational dependency rather than one kitchen-sink adapt
 
 | Adapter | Current candidate | First complete slice | Explicitly deferred |
 |---|---|---|---|
-| PostgreSQL | `pg` | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, pool telemetry, close | product schema, migrations, repositories, typed SQL selection |
+| PostgreSQL | exact `pg@8.23.0` local candidate | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, bounded pool snapshot and operation telemetry, close | product schema, migrations, repositories, typed SQL selection, real-container proof |
 | Redis | `@redis/client` | connect, `PING`, bounded offline behavior, abortable command, reconnect policy, telemetry, idempotent close | cache keys, Lua scripts, rate limits, leases |
 | Broker | Confluent JavaScript client and KafkaJS compared at the item gate | connect, metadata, bounded producer send, one bounded consumer, stop, telemetry | product events, outbox relay, replay policy |
 | Object storage | AWS SDK S3 client | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy |
@@ -118,6 +118,14 @@ The PostgreSQL client and typed SQL decision are intentionally separate. Phase 0
 ### Clock and identifier checkpoint
 
 The local P01-R07 candidate now exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package gates pass; the complete work-item and release gates remain pending.
+
+### PostgreSQL connectivity checkpoint
+
+The local `@aster/postgres` candidate exact-pins `pg@8.23.0` after current registry, license, engine, install, audit, source, lifecycle, cancellation, and removal review. Its public contract is deliberately smaller than `pg`: bounded connect, a fixed `SELECT 1 AS aster_probe` probe, a bounded process-local pool snapshot, stable outcomes, one shared close, and lifecycle hooks. It exposes no generic query method because no context-owned schema or second concrete repository use case exists.
+
+Node-postgres does not currently provide the adapter a reliable `AbortSignal` query-cancellation seam, and its client-side query timeout can finish before the server-side work. A caller abort, local timeout, query read timeout, SQLSTATE `57014`, or unknown probe failure therefore destroys the reserved connection instead of returning possibly busy protocol state to the pool. Adapter-owned reservations cap acquisitions before the vendor FIFO; timed-out acquisitions retain capacity until their eventual connection is destroyed or the acquisition fails. Connection, idle, server-statement, client-query, operation, and close budgets are finite.
+
+Eleven focused tests and a refused-loopback diagnostic prove the repository boundary, hostile configuration handling, capacity, stable telemetry, cancellation, timeout, concurrent/idempotent shutdown, side-effect-free pre-aborted close, later completion of a timed-out drain, sanitized failures, and vendor-free declarations. These are controlled local proofs, not real PostgreSQL compatibility; P01-R09 owns container startup, authentication, protocol, failure/recovery, and handle-exit confirmation.
 
 ### Kafka selection gate
 

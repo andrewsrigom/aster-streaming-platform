@@ -1,5 +1,5 @@
 Evidence: P01-R07 narrow runtime platform adapters
-Status: PLANNED; active implementation
+Status: IMPLEMENTED local candidates; active implementation
 Date: 2026-08-26
 Source base: 8dff9d8d57572b2eac944ae98406f3da2979682c
 Branch: feat/p01-r07-platform-adapters
@@ -20,12 +20,12 @@ Activation evidence
 - The active plan defines one package per operational dependency, repository-owned declarations, finite deadlines and capacity, caller cancellation, stable telemetry, idempotent close, iteration/candidate gates, heavyweight repeat triggers, review stopping rules, and independent removal.
 
 Selection state
-- No P01-R07 dependency version is selected by this activation record. Prior runtime-runway metadata is preflight only.
+- The activation record selected no dependency. The PostgreSQL checkpoint now selects exact pg 8.23.0 and @types/pg 8.23.1 after the live evidence below; Redis, S3, and broker clients remain unselected.
 - Live registry, official documentation, license, engine, install-script, dependency, audit, cancellation, deadline, redaction, shutdown, and removal evidence must precede installation.
 - A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
 
 Current interpretation
-- P01-R07 is active. The dependency-free clock/ID local candidate is implemented; no external dependency or network adapter is selected yet.
+- P01-R07 is active. The dependency-free clock/ID local candidate and narrow PostgreSQL connectivity adapter are implemented; Redis, S3, and broker adapters remain planned.
 - @aster/runtime exposes a frozen system clock returning current fresh Date values, a fixed clock returning isolated deterministic Date values, a UUID v4 generator backed by crypto.randomUUID, and a finite deterministic generator that copies a bounded unique safe identifier sequence without invoking accessors.
 - Invalid clock and deterministic-ID configuration uses repository-owned cause-free errors with one stable issue. Deterministic sequence exhaustion uses a fixed cause-free error.
 
@@ -41,5 +41,28 @@ Clock and identifier focused evidence
 - No dependency, lockfile, package manifest, Docker resource, service, schema, cache, event, object, hosted setting, or public command changed.
 
 Pending checkpoint evidence
-- The exact clock/ID source commit remains pending at this record point.
-- External client selection and every network adapter remain planned.
+- Clock/ID source commit 2309f94 is the current coherent checkpoint.
+- Redis, S3, and broker client selection and adapters remain planned. Real PostgreSQL interoperability remains P01-R09 and is not claimed by the controlled-fake and refused-loopback evidence below.
+
+PostgreSQL client selection evidence
+- Registry metadata inspected live on 2026-08-26 selected exact pg 8.23.0, published 2026-08-08 under MIT with Node.js >=16 support, no install script, and a 100044-byte unpacked package. Exact @types/pg 8.23.1, published 2026-08-17 under MIT, supplies development-only declarations.
+- The exact resolved pg production graph is pg-cloudflare 1.4.0, pg-connection-string 2.14.0, pg-pool 3.14.0, pg-protocol 1.16.0, pg-types 2.2.0, pgpass 1.0.5, pg-int8 1.0.1, postgres-array 2.0.0, postgres-bytea 1.0.1, postgres-date 1.0.7, postgres-interval 1.2.0, split2 4.2.0, and xtend 4.0.2. Its licenses are MIT or ISC and it adds no native build or install-script boundary.
+- pnpm install completed on Node.js 24.19.0 with the repository supply-chain policy passing 324 entries. pnpm audit --audit-level=high reports no known vulnerability.
+- Official node-postgres pool documentation and exact 8.23.0 source establish finite pool configuration, release(true) destruction, pool counts, pool.end(), per-query query_timeout, and server statement_timeout behavior.
+- Native AbortSignal query cancellation remains unresolved in node-postgres issue 2774. Exact 8.23.0 source shows that a client-side Query read timeout can return before a non-pipeline server query has finished. The repository adapter therefore destroys, rather than returns, a reserved client after caller abort, local operation timeout, query read timeout, SQLSTATE 57014, or any unknown probe failure.
+- Exit path: @aster/postgres owns the sole pg dependency and exports no pg, Pool, PoolClient, or QueryResult type. Removing the package and its lockfile graph removes the client without changing a product schema or repository because none exists.
+
+PostgreSQL implemented contract
+- @aster/postgres accepts only a bounded plain own-data configuration, validates a PostgreSQL URL without reflecting it, caps the pool at 32 connections, and applies finite connection, idle, statement, query, operation, and close deadlines.
+- The public slice exposes connect, a fixed SELECT 1 AS aster_probe probe, a bounded process-local pool snapshot, stable sanitized results, one shared close operation with caller-local cancellation, and lifecycle hooks compatible with @aster/runtime. It exposes no general SQL function, query builder, migration, product repository, schema, transaction policy, or credential-bearing error.
+- Adapter-owned capacity prevents an unbounded vendor wait queue. A timed-out or cancelled acquisition keeps its slot reserved until the eventual client is destroyed or acquisition fails. Probe cancellation and timeout destroy the client before releasing the slot.
+- Dependency telemetry uses only the released finite postgresql/connect and postgresql/probe vocabulary and outcomes. Snapshot counts are bounded process-local observations; no backend metric, dashboard, or SLO is claimed.
+- Close rejects an already-aborted owner without starting shutdown, destroys active owned clients, waits settled adapter work, calls pool.end once, returns within its configured caller deadline, and may remain visibly closing until the underlying vendor drain finishes.
+
+PostgreSQL focused evidence
+- @aster/postgres typecheck and build: PASS; generated public declarations contain no pg, pg-pool, PoolClient, or QueryResult reference.
+- @aster/postgres test: PASS, 11 of 11 tests. Coverage includes hostile/accessor-backed configuration, exact finite pool config, healthy connect/probe, capacity retention during abandoned acquisition, query timeout, caller abort, concurrent close, side-effect-free pre-aborted close, bounded close timeout with later drain, cause-free lifecycle failure, refused-loopback diagnostic, and public declaration isolation.
+- Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:postgres_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no endpoint, credential, vendor error, or stack is emitted.
+- Targeted ESLint and Prettier checks: PASS.
+- pnpm check:changed: PASS; 37 of 37 selected tasks, 23 cached, in 9.435 seconds of Turborepo time and 10.46 seconds elapsed. The gate includes package build/typecheck/tests plus repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, CI, local-platform, and secret validation.
+- The coherent PostgreSQL source commit remains pending at this evidence checkpoint. Real-container and clean-checkout evidence are deferred by the written P01-R07 repeat triggers until all adapter package and lockfile changes stabilize.
