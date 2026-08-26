@@ -2,6 +2,28 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented risk-proportionate verification feedback
+
+### Completed
+
+- Confirmed P01-R11 was released through protected squash `93147ac`; post-merge run `32982613740` passed every applicable job and the remote feature branch was removed.
+- Reopened Phase 00 only for bounded P00-R06 corrective maintenance after the retrospective found that governance promised `pnpm check:changed` without exposing the command and did not define review or heavyweight-evidence stopping rules.
+- Added one typed quality-gate runner shared by full and changed modes, fixed changed-mode SCM refs, bounded invocation and failure behavior, task-list parity tests, and task-input-aware Turbo ownership.
+- Updated the operating contract, agent loop, governance, delivery model, quality gates, local-development guide, reusable prompt, and work-item template with focused, candidate, merge, and heavyweight checkpoints plus one-review/one-confirmation stopping rules.
+- Kept the correction outside product contexts, dependencies, lockfile, Docker, hosted resources, durable state, and application behavior.
+
+### Evidence
+
+- Focused toolchain suite: 16 passed, 0 failed; root typecheck, ESLint, Prettier, documentation, repository-memory, CI-policy, security, and Git whitespace checks pass.
+- Candidate affected gate: 31 of 31 tasks passed with 28 cached in `1.151` seconds of Turbo task time and `2.28` seconds elapsed; global manifest/config changes correctly selected the complete graph.
+- Complete forced candidate gate: 31 of 31 tasks passed uncached in `18.413` seconds of Turbo task time and `20.04` seconds elapsed.
+- High-severity registry audit: no known vulnerability in `1.01` seconds.
+- Raw artifact: `evidence/phase-00/risk-proportionate-verification.txt` (`IMPLEMENTED`).
+
+### Next action
+
+Commit and publish the coherent candidate, prove narrow affected selection and the documented public command from an isolated checkout, pass protected CI and bounded review, release the correction, then resume P01-R05 from clean `main`.
+
 ## 2026-08-26 — Verified the bounded Express HTTP transport
 
 ### Completed

@@ -24,7 +24,9 @@ Restore context according to AGENTS.md. Select only the first READY item in .ai/
 
 Populate .ai/CHANGE_PLAN.md from docs/templates/WORK_ITEM_TEMPLATE.md. Implement the smallest complete vertical slice. Preserve context boundaries, data ownership, security, cancellation, bounded resources, failure behavior, and observability.
 
-Run the required quality gates and capture evidence. Do not claim success without passing output. Update .ai/CURRENT_STATE.md, .ai/WORK_QUEUE.md, .ai/SESSION_LOG.md, .ai/HANDOFF.md, and relevant documentation before finishing.
+Name the focused iteration gate, affected-scope candidate gate, heavyweight-evidence repeat triggers, and review stopping rule. Use focused checks during edits, `pnpm check:changed` for the coherent candidate, and the complete acceptance gate once stable. Collect a full review round, batch related remediation, and use one confirmation; extend review only for a changed or newly discovered blocking boundary.
+
+Capture evidence at candidate and closeout checkpoints. Do not claim success without passing output. Update .ai/CURRENT_STATE.md, .ai/WORK_QUEUE.md, .ai/SESSION_LOG.md, .ai/HANDOFF.md, and relevant documentation before finishing.
 
 Do not begin a second work item.
 ```

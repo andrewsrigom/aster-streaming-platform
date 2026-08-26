@@ -101,6 +101,12 @@ Repository controls are tiered by feedback speed and risk. A coherent work item 
 
 The complete policy is in [`Repository Governance`](../operations/REPOSITORY_GOVERNANCE.md).
 
+## Sufficient verification
+
+A work item stops when its written requirements, acceptance behavior, named failure modes, and applicable security, data, availability, and public-contract boundaries pass. Lower-risk hardening that does not protect one of those boundaries is recorded for its owning future work.
+
+Use focused checks during edits, `pnpm check:changed` for a stable candidate, and the complete work-item gate before merge. Collect a full review round before remediation, batch related findings, and use one confirmation review. Repeat review or heavyweight evidence only when a later change can invalidate the protected behavior. This is scope control, not permission to ignore a failed requirement or material risk.
+
 ## Decision timing
 
 Resolve decisions at the last responsible moment, not after implementation has already depended on them.

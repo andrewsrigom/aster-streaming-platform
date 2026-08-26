@@ -3,6 +3,9 @@
   "ui": "stream",
   "noUpdateNotifier": true,
   "cacheDir": ".turbo/cache",
+  "futureFlags": {
+    "affectedUsingTaskInputs": true
+  },
   "globalDependencies": [".node-version", ".nvmrc"],
   "tasks": {
     "build": {
@@ -21,13 +24,29 @@
       "cache": false
     },
     "//#toolchain:test": {
-      "cache": false
+      "cache": false,
+      "inputs": [
+        "tools/clean-foundation.test.mjs",
+        "tools/run-quality-gate.test.ts",
+        "tools/run-quality-gate.ts",
+        "tools/verify-toolchain.mjs",
+        "tools/verify-toolchain.test.mjs"
+      ]
     },
     "//#typecheck": {
       "inputs": ["tools/**/*.ts", "tsconfig.json", "tsconfig.base.json", "package.json"]
     },
     "//#lint": {
-      "inputs": ["tools/**", "eslint.config.mjs", "package.json", "tsconfig*.json"]
+      "inputs": [
+        "apps/**",
+        "eslint.config.mjs",
+        "package.json",
+        "packages/**",
+        "services/**",
+        "tools/**",
+        "tsconfig*.json",
+        "workers/**"
+      ]
     },
     "//#format:check": {
       "inputs": [
@@ -117,7 +136,8 @@
       ]
     },
     "//#security:check": {
-      "cache": false
+      "cache": false,
+      "inputs": ["**/*"]
     },
     "//#security:test": {
       "inputs": ["tools/scan-secrets.ts", "tools/scan-secrets.test.ts"]

@@ -72,6 +72,10 @@ State the smallest complete change.
 - Commands:
 - Raw artifact path:
 - Acceptance result:
+- Iteration gate:
+- Candidate gate:
+- Heavyweight repeat triggers:
+- Review stopping rule:
 
 ## Rollback or recovery
 

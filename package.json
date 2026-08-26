@@ -15,7 +15,8 @@
     "ai:test": "node --test ./tools/verify-ai-state.test.ts",
     "architecture:check": "node ./tools/verify-architecture.ts",
     "architecture:test": "node --test ./tools/verify-architecture.test.ts",
-    "check": "turbo run build test toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test platform:check platform:test docs:check docs:test ai:check ai:test community:check community:test security:check security:test ci:check ci:test staged:test commit:test",
+    "check": "node ./tools/run-quality-gate.ts",
+    "check:changed": "node ./tools/run-quality-gate.ts --changed",
     "check:source": "turbo run build test toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test platform:check platform:test staged:test commit:test",
     "clean:foundation": "node ./tools/clean-foundation.mjs",
     "ci:check": "node ./tools/verify-ci-policy.ts",
@@ -44,7 +45,7 @@
     "staged:check": "node ./tools/check-staged-files.ts",
     "staged:test": "node --test ./tools/check-staged-files.test.ts",
     "toolchain:check": "node ./tools/verify-toolchain.mjs",
-    "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs",
+    "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs ./tools/run-quality-gate.test.ts",
     "typecheck": "tsc --project ./tsconfig.json --noEmit",
     "unused:check": "knip --no-config-hints"
   },

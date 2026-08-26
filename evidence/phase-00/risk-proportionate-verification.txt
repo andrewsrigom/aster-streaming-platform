@@ -1,0 +1,108 @@
+ASTER PHASE 00 RISK-PROPORTIONATE VERIFICATION EVIDENCE
+=======================================================
+
+Work item: P00-R06 corrective maintenance
+Evidence date: 2026-08-26
+Status: IMPLEMENTED
+Candidate: local working tree based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Runtime: Node.js 24.19.0; pnpm 11.24.0; Turborepo 2.10.12
+
+PURPOSE AND RETROSPECTIVE
+-------------------------
+
+The written governance model already required focused edit checks, an affected
+pre-push gate, and a complete merge gate. The affected command was not exposed
+by package.json, and the review and heavyweight-evidence stopping rules were not
+explicit. P01-R11 therefore accumulated 14 branch commits between released main
+e33f90b and closeout head 21bdfcf, including repeated complete gates, public
+clones, hosted runs, and review requests for progressively narrower boundaries.
+
+This correction does not weaken requirement, security, data, availability, or
+public-contract gates. It makes the promised candidate command executable and
+defines when already-passing heavyweight evidence can remain applicable.
+
+IMPLEMENTED CONTRACT
+--------------------
+
+- pnpm check and pnpm check:changed use one repository-owned canonical list of
+  24 Turbo tasks.
+- pnpm check preserves the existing complete repository graph.
+- pnpm check:changed adds Turbo affected execution and fixes TURBO_SCM_BASE to
+  main and TURBO_SCM_HEAD to HEAD, overwriting inherited caller values.
+- Only one --changed and one --force flag are accepted. Unknown or repeated
+  narrowing arguments fail before spawning Turbo.
+- Child execution has a 15-minute bound, preserves the selected nonzero status,
+  and emits bounded errors without reflecting process or environment details.
+- Task-input-aware affected selection is enabled. Root lint owns application,
+  package, service, tool, and worker source; security scanning owns every changed
+  repository file.
+- Work plans now name iteration, candidate, heavyweight-repeat, and review-stop
+  gates. The default review cadence is one complete review plus one confirmation.
+
+FOCUSED AND FAILURE EVIDENCE
+----------------------------
+
+$ pnpm toolchain:test
+result: PASS
+tests: 16 passed, 0 failed
+
+The four quality-runner tests prove:
+- exact full and changed arguments use one canonical task list;
+- Windows and POSIX executable selection and fixed SCM refs;
+- rejection of unknown and duplicate flags;
+- exact child-status propagation and sanitized spawn failure;
+- manifest scripts, Turbo future flag, and root input ownership remain aligned.
+
+Additional focused results:
+- strict root TypeScript check: PASS
+- complete type-aware ESLint check: PASS
+- deterministic Prettier check: PASS
+- documentation check: PASS, 133 documents, 1,903 headings, 328 local links,
+  0 violations
+- repository-memory check: PASS, 20 queue items and one active P00-R06 item
+- CI policy and security checks: PASS, 0 violations/findings
+- Git whitespace check: PASS
+
+CANDIDATE GATES
+---------------
+
+$ pnpm check:changed
+result: PASS
+tasks: 31 successful, 31 total; 28 cached
+Turbo task time: 1.151 seconds
+wrapper elapsed: 2.28 seconds
+selection note: package.json and turbo.json are global graph inputs in this
+candidate, so the complete graph is the expected conservative selection.
+
+$ pnpm check --force
+result: PASS
+tasks: 31 successful, 31 total; 0 cached
+Turbo task time: 18.413 seconds
+wrapper elapsed: 20.04 seconds
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities
+elapsed: 1.01 seconds
+
+PENDING RELEASE EVIDENCE
+------------------------
+
+- Commit and public candidate SHA.
+- Documentation-only and representative package-source affected selections from
+  an isolated checkout, without retaining synthetic fixture changes.
+- One final clean public checkout because this change adds a documented public
+  command.
+- Protected pull-request workflow and bounded initial/confirmation review.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- No dependency, lockfile, product package behavior, Docker resource, hosted
+  resource, durable state, or application architecture boundary changed.
+- Affected selection depends on resolvable Git comparison history. If the local
+  main ref or history is unavailable, the operator must refresh it or run the
+  complete pnpm check gate; an affected result is never a replacement for the
+  final work-item acceptance gate.
+- The elapsed observations describe one warm local environment and are workflow
+  evidence, not general performance benchmarks.

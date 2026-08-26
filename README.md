@@ -51,7 +51,13 @@ pnpm docs:check
 pnpm ai:check
 ```
 
-Before considering a Phase 00 change complete, run the authoritative local repository gate and the registry-backed vulnerability audit:
+When the related edits form a coherent candidate, run the affected-scope pre-push gate:
+
+```bash
+pnpm check:changed
+```
+
+Before considering a work item complete, run its authoritative local gate and the registry-backed vulnerability audit:
 
 ```bash
 pnpm check

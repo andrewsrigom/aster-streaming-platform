@@ -6,7 +6,7 @@ Last updated: 2026-08-26
 
 **Phase 00 — Foundation corrective maintenance**
 
-Status: **READY**
+Status: **IN_PROGRESS**
 
 ## Verified
 
@@ -110,6 +110,7 @@ Status: **READY**
 - Empty-body candidate `cd572ad` passed a frozen exact public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70` seconds, audit, secret scan, clean Git, and exact temporary-root removal; protected run `32980849863` passed. Evidence reply `3863818928` is posted and the eighth discussion is resolved. Confirmation review then found that an unframed empty request with `Content-Encoding: gzip` bypassed parser-owned encoding validation.
 - Final candidate `487b403` validates request content encoding before the parser can short-circuit on body framing and adds a deadline-bounded real-socket regression that preserves stable `415 UNSUPPORTED_MEDIA_TYPE`. Eight focused tests, the diagnostic, audit, and 31 of 31 forced local tasks in `20.70` seconds pass. Protected run `32981788859` passed, evidence reply `3863902900` is posted, all nine review discussions are resolved, and no dependency, bootstrap, packaging, Docker, or public-command input changed after the exact clean checkout.
 - P01-R11 is `VERIFIED`: the bounded Express adapter, ADR, real-socket/Apollo tests, local and clean-checkout gates, dependency/license checks, protected CI, and review remediation satisfy the requirement without creating a product service, schema, lifecycle coordinator, hosted resource, or durable state.
+- P01-R11 is `RELEASED` through protected squash `93147accfae07f9cde9ff73b8080f2edd99bed8a`; post-merge run `32982613740` passed every applicable job and the remote feature branch was removed.
 
 ## Not implemented
 

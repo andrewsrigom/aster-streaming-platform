@@ -64,6 +64,23 @@ Local hooks are convenience controls and may be bypassed during diagnosis. CI is
 
 Full integration, browser, container, media, load, soak, CodeQL, and failure-injection work must not run on every local commit.
 
+`pnpm check:changed` is the pre-push candidate gate. It uses the same canonical task inventory as `pnpm check`, fixes the affected comparison to repository `main...HEAD`, and lets pinned Turborepo select tasks from declared inputs. Root-owned lint, formatting, unused-code, architecture, documentation, repository-memory, security, CI, and platform tasks retain explicit file ownership. Changes to global configuration or the lockfile conservatively select the complete graph. The local `main` ref and comparison history must resolve; refresh them or use `pnpm check` when they do not.
+
+## Verification and review stopping
+
+A work item defines four verification checkpoints before implementation:
+
+1. the focused iteration gate;
+2. the affected-scope candidate gate;
+3. changes that require repeating heavyweight evidence;
+4. the review stopping rule.
+
+The work item is sufficient when written requirements, acceptance behavior, named failure modes, and applicable security, data, availability, and public-contract boundaries pass. A possible improvement does not block merge unless it protects one of those boundaries or the work item explicitly accepted it.
+
+Collect a complete review round before changing the candidate. Batch related remediation into a coherent revision and run one confirmation review. Start another review round only when the remediation changes a blocking boundary or the confirmation identifies a requirement, security/data invariant, availability, or public-contract violation. Record other hardening under its owning future work.
+
+Do not repeat a clean checkout, container start, browser suite, media job, load test, soak, or failure experiment merely because source text changed. Repeat it when dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, documented public-command, or relevant behavior changes can invalidate the prior result. Record the exact reason when earlier evidence remains applicable to a later candidate.
+
 ## Static and architecture gates
 
 The following source gates are implemented:
@@ -96,6 +113,8 @@ A pull request represents one work item, not one tiny edit. It includes:
 - documentation and `.ai/` state updates.
 
 Draft pull requests may be used for visibility without running the complete merge gate. The authoritative pipeline runs when the pull request becomes ready for review and when its head changes afterward.
+
+Keep a pull request draft while its implementation or review-remediation batch is still changing. Mark it ready when the coherent candidate should receive the authoritative gate; do not publish one revision per isolated review comment when the round can be handled together.
 
 For a single-maintainer repository, the initial ruleset requires the pull-request path and status checks but does not require an unavailable external approval. Review approvals can become mandatory when an eligible collaborator exists.
 
