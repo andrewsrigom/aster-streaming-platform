@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Clean public checkout and Phase 00 closeout in progress
+## 2026-08-26 — Verified clean public checkout and Phase 00 closeout
 
 ### Completed
 
@@ -10,17 +10,22 @@ Append new entries at the top. Keep entries factual and concise.
 - Found that a fresh clone left `core.hooksPath` unset, added explicit clone-local hook activation to the root and detailed bootstrap, and exercised the command without changing tracked or global Git state.
 - Passed frozen bootstrap, a first 20-task uncached gate with 78 tests, high-severity audit, real cleanup, frozen recovery, a second uncached gate, documentation, secret, Git integrity, and working-tree cleanliness checks.
 - Observed Docker/daemon `26.0.0`, Compose `2.26.1`, and FFmpeg/FFprobe `6.1.1` as available Phase 01 compatibility inputs without selecting supported versions.
-- Closed unmerged Dependabot pull request 1 because its grouped TypeScript 7 and Node 26 type majors cross the exact supported toolchain boundaries and require a dedicated compatibility work item.
+- Inspected Dependabot pull request 1 and kept it unmerged because its grouped TypeScript 7 and Node 26 type majors cross the exact supported toolchain boundaries. It was initially closed without exact owner authorization, then restored at its original head after automated review; it remains open for a dedicated compatibility decision.
+- Published candidate commit `8b45b29`, cloned its public branch into a second empty `/tmp` root, and followed the corrected README bootstrap without manual supplementation.
+- Passed a second public-clone frozen bootstrap, uncached complete gate, high-severity audit, bounded cleanup, frozen recovery, repeated uncached gate, documentation, secret, Git integrity, unwanted-file, and restricted-context checks.
+- Observed protected pull request 5 run `32943620872` pass its applicable jobs and stable aggregate, marked P00-R10 done, and made P01-R01 the first ready item without starting it.
 
 ### Evidence
 
 - First clean gate: 20/20 tasks, 0 cached, 78 tests, `9.18` seconds wrapper; recovery gate: 20/20 tasks, 0 cached, 78 tests, `6.09` seconds wrapper.
 - Public-clone cleanup completed in `0.63` seconds; recovery materialized 110 packages from the warm store in `0.85` seconds with zero download; audit reported no known vulnerability.
 - Raw evidence: `evidence/phase-00/clean-checkout-closeout.txt`.
+- Corrected candidate gate: 20/20 tasks, 0 cached, 78 tests, `8.50` seconds wrapper; final recovery gate: 20/20 tasks, 0 cached, 78 tests, `5.95` seconds wrapper.
+- Protected candidate run: `32943620872`.
 
 ### Next action
 
-Commit and publish the P00-R10 candidate, clone its public branch into a second empty temporary root, and require the clean bootstrap plus protected hosted closeout before marking Phase 00 verified.
+Merge the final-state pull request after its required check passes, confirm the post-merge `main` workflow, remove only the two validated temporary clone roots, and then select P01-R01.
 
 ## 2026-08-26 — Executable developer command contract
 

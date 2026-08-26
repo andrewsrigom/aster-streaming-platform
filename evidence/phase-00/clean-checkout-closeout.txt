@@ -4,9 +4,9 @@ ASTER PHASE 00 CLEAN CHECKOUT AND CLOSEOUT EVIDENCE
 Work item: P00-R10 clean public checkout and Phase 00 closeout
 Evidence date: 2026-08-26
 Public main revision tested: 91dbc7a907e0fd30b6f0b17519aa717d9d945495
-Candidate commit: pending initial P00-R10 commit
+Candidate commit: 8b45b297dadc31185387722c7833dad846f486e6
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
-Acceptance: PASS_LOCAL_WITH_REMEDIATION; public candidate clone and protected hosted validation remain pending
+Acceptance: PASS_HOSTED; corrected public candidate and protected workflow passed
 
 ENVIRONMENT AND NEXT-PHASE CAPABILITY OBSERVATION
 -------------------------------------------------
@@ -65,7 +65,7 @@ The command was exercised in the clean clone:
 - global Git configuration: unchanged
 - tracked working tree after configuration: clean
 
-This gap is not hidden. The initial public-main run is classified PASS_LOCAL_WITH_REMEDIATION, and a second fresh public clone of the candidate branch is required before hosted acceptance.
+This gap is not hidden. The initial public-main run remains classified PASS_LOCAL_WITH_REMEDIATION. Hosted acceptance depends on the separate corrected public-candidate result recorded below.
 
 PINNED BOOTSTRAP FROM THE PUBLIC CLONE
 --------------------------------------
@@ -171,6 +171,107 @@ FINAL PUBLIC-MAIN CLONE INTEGRITY
 - restricted private-context vocabulary: absent.
 - future application/service scaffolding: absent.
 
+CORRECTED PUBLIC-CANDIDATE CLONE
+--------------------------------
+
+Temporary root: /tmp/aster-p00-r10-candidate-tBShpD
+Clone target: /tmp/aster-p00-r10-candidate-tBShpD/aster-streaming-platform
+Public branch: chore/phase-00-closeout
+
+$ git clone --branch chore/phase-00-closeout --single-branch --no-tags https://github.com/andrewsrigom/aster-streaming-platform.git /tmp/aster-p00-r10-candidate-tBShpD/aster-streaming-platform
+result: PASS
+elapsed: 0.82 seconds
+maximum resident set observed: 17844 KiB
+
+Initial assertions:
+- HEAD: 8b45b297dadc31185387722c7833dad846f486e6
+- origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+- tracked working tree: clean
+- node_modules: absent
+- .turbo: absent
+- root README contains the explicit clone-local hook command
+
+The new clone initially reported core.hooksPath as unset, as Git clone semantics require. Following the README exactly configured `.githooks`; no manual command absent from the documentation and no global Git change was required.
+
+$ git config --local core.hooksPath .githooks
+$ corepack enable
+$ corepack install
+$ pnpm install --frozen-lockfile
+result: PASS
+packages materialized: 110
+packages reused from warm content-addressable store: 110
+packages downloaded: 0
+elapsed: 0.78 seconds
+maximum resident set observed: 328360 KiB
+
+$ pnpm toolchain:check
+result: PASS
+Node.js: 24.19.0
+pnpm: 11.24.0
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 8.058 seconds
+wrapper elapsed: 8.50 seconds
+maximum resident set observed: 458496 KiB
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities found
+elapsed: 0.83 seconds
+maximum resident set observed: 149732 KiB
+
+$ pnpm clean:foundation
+result: PASS
+removed: .turbo, node_modules
+elapsed: 0.75 seconds
+maximum resident set observed: 142480 KiB
+
+The candidate cleanup preserved `.githooks`, the clean Git state, and every tracked file. Its two targets resolved inside the recorded clone before deletion.
+
+FINAL CANDIDATE RECOVERY REPEAT
+-------------------------------
+
+The recovery path was repeated after clearing repository-local state once more so its final result had bounded output and an unambiguous exit status.
+
+$ pnpm clean:foundation
+result: PASS
+elapsed: 0.66 seconds
+maximum resident set observed: 141840 KiB
+
+$ pnpm install --frozen-lockfile
+result: PASS
+elapsed: 0.85 seconds
+maximum resident set observed: 334860 KiB
+
+$ pnpm toolchain:check
+result: PASS
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 5.498 seconds
+wrapper elapsed: 5.95 seconds
+maximum resident set observed: 455668 KiB
+
+FINAL CANDIDATE INTEGRITY
+-------------------------
+
+- Git HEAD remained 8b45b297dadc31185387722c7833dad846f486e6.
+- origin remained the authorized public HTTPS repository.
+- core.hooksPath remained .githooks.
+- Git working tree and index were clean.
+- git fsck --no-dangling passed.
+- documentation: 129 documents, 1820 headings, 284 local links, 3 evidence-supported status claims, 0 violations.
+- repository secret scan: 0 findings.
+- Zone.Identifier files: 0.
+- restricted private-context vocabulary: absent.
+- node_modules and .turbo were present only as ignored recovered state.
+
 PHASE 00 REQUIREMENT AND EVIDENCE MATRIX
 ----------------------------------------
 
@@ -183,7 +284,7 @@ P00-R06 PASS_HOSTED: efficient secure CI, audit, and dependency review; evidence
 P00-R07 PASS_HOSTED: public contribution governance, repository settings, security controls, and protected main; evidence/phase-00/community-governance.txt and public-repository-governance.txt
 P00-R08 PASS_HOSTED: executable repository-memory workflow; evidence/phase-00/ai-state-workflow.txt
 P00-R09 PASS_HOSTED: exact developer commands and bounded cleanup; evidence/phase-00/developer-command-contract.txt plus the hook activation remediation here
-P00-R10 PASS_LOCAL_WITH_REMEDIATION: this public-main clone passed after the newly documented hook activation; candidate public clone remains required
+P00-R10 PASS_HOSTED: the corrected public candidate passed the documented bootstrap, complete clean-checkout and recovery gates, integrity checks, and protected workflow
 P00-R11 PASS: engineering coverage, progressive demo, and governance contracts; evidence/phase-00/plan-clarity-audit.txt
 
 PHASE 00 REQUIRED-TEST REVIEW
@@ -200,19 +301,19 @@ PHASE 00 REQUIRED-TEST REVIEW
 - CI cancellation, path classification, and aggregate: PASS through fifteen CI tests and protected public runs.
 - Engineering subject coverage and progressive checkpoint mapping: PASS through plan-clarity evidence and current documentation.
 - Public governance without unsupported claims: PASS through community, CI, remote settings, and documentation evidence.
-- Every documented command from a fresh checkout: PASS after the explicit hook activation remediation; a candidate-branch clone must repeat it without manual supplementation.
+- Every documented command from a fresh checkout: PASS in the corrected public-candidate clone without manual supplementation.
 
 PHASE 01 ENTRY-PREREQUISITE REVIEW
 ----------------------------------
 
-- Phase 00 verification: locally complete except the candidate public-clone and protected hosted closeout still required.
+- Phase 00 verification: PASS with corrected public-candidate and protected hosted evidence.
 - Container runtime prerequisite: Docker client and daemon respond at 26.0.0; Compose responds at v2.26.1-desktop.1.
 - FFmpeg prerequisite: FFmpeg and FFprobe respond at 6.1.1-3ubuntu5.
 - Documentation: root and local-development documents distinguish current foundation requirements from future container, FFmpeg, browser, resource, diagnostics, and reset requirements.
 - Version selection boundary: exact supported container, Compose, FFmpeg, dependency image, and resource-profile versions remain intentionally owned by Phase 01 and are not selected by this closeout.
 - Framework boundary: Express 5 remains only the preferred Phase 01 HTTP adapter candidate and still requires its ADR and compatibility evidence.
 
-The observed host is eligible to begin Phase 01 selection work after Phase 00 is verified. The observations do not pre-approve any dependency, framework, image, port, or resource limit.
+The observed host is eligible to begin Phase 01 selection work. The observations do not pre-approve any dependency, framework, image, port, or resource limit.
 
 PUBLIC REPOSITORY HYGIENE
 -------------------------
@@ -220,28 +321,31 @@ PUBLIC REPOSITORY HYGIENE
 - Public main matched the tested revision.
 - The P00-R09 post-merge main workflow 32942673762 passed.
 - Dependabot pull request 1 attempted the grouped major upgrades TypeScript 6 to 7 and @types/node 24 to 26.
-- Pull request 1 was closed without merge because it crossed the exact supported runtime/type/toolchain boundaries and requires a dedicated compatibility work item; the registry audit reports no known high-severity vulnerability requiring the change.
+- Pull request 1 was initially closed without exact owner authorization. Automated review identified the scope violation; its original head branch at 7317f49046aaa147ec984610f73415e954651173 was restored and the pull request was reopened before closeout.
+- Pull request 1 remains open and unmerged because the grouped majors require dedicated compatibility evidence and an authorized disposition; the registry audit reports no known high-severity vulnerability requiring an emergency baseline change.
 - No dependency version changed during P00-R10.
+- Pull request 5 candidate run 32943620872 passed change classification, documentation and security, dependency review, and the stable `CI required` aggregate.
 
 EXIT-GATE STATUS
 ----------------
 
-- Every Phase 00 requirement has implementation and evidence: PASS_LOCAL_WITH_REMEDIATION.
+- Every Phase 00 requirement has implementation and evidence: PASS_HOSTED.
 - All required tests pass from a clean public checkout: PASS.
-- Evidence is stored and linked: PASS_LOCAL; candidate and hosted links remain pending.
+- Evidence is stored and linked: PASS.
 - Security, accessibility, failure, and operational effects are documented: PASS for the repository-only scope; no application UI exists.
 - No planned application behavior is claimed as implemented: PASS.
-- Repository memory is current: PASS for active P00-R10.
+- Repository memory is current: PASS with P00-R10 done and P01-R01 ready.
 - Phase 01 prerequisites are explicitly checked: PASS as observed capabilities and documented selection boundaries.
-- Protected candidate and post-merge validation: PENDING.
+- Protected candidate validation: PASS in workflow 32943620872.
+- Release observation: the final-state commit still requires squash merge and a post-merge `main` workflow; this does not relabel the already accepted candidate as released.
 
 BOUNDARIES AND LIMITATIONS
 --------------------------
 
-- The public-main clone exposed an omitted clone-local hook activation command. The candidate fixes the README and detailed local guide; a new candidate-branch clone must prove the correction without manual supplementation.
+- The public-main clone exposed an omitted clone-local hook activation command; the separate public-candidate clone proves the corrected README and detailed local guide without manual supplementation.
 - The host Corepack and pnpm content-addressable caches were warm, so this evidence does not claim cold-registry latency or full offline bootstrap on an empty machine.
 - The run covers the named WSL environment. GitHub Actions separately covers the public Ubuntu 24.04 runner; Windows-native and macOS execution are not yet claimed.
 - Deterministic documentation checks do not fetch external links.
 - Pattern-based secret scanning cannot inspect arbitrary binary or invalid-UTF-8 formats; later formats require their owning scanners.
 - No application, service, database, broker, object store, media asset, telemetry backend, container, image, or Docker volume was created by the Phase 00 gate.
-- Phase 00 remains IN_PROGRESS until the public candidate clone, protected pull request, final state commit, squash merge, and post-merge main workflow pass.
+- Phase 00 is VERIFIED. The final-state pull request must still merge and pass its post-merge `main` workflow before the repository state is reported as released.

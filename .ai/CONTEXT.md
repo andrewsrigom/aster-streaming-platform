@@ -35,7 +35,7 @@ Media processing is an asynchronous worker capability that cooperates with Catal
 - OpenTelemetry, Prometheus, Grafana, Tempo, and Loki
 - Vitest, Playwright, integration containers, schema checks, and k6
 
-Exact dependency versions are selected and pinned during Phase 00 after compatibility verification.
+Repository tool versions are selected and pinned in Phase 00. Application, container, and infrastructure dependency versions are selected in the phase that first owns them after current compatibility verification.
 
 ## Non-negotiable behavior
 
@@ -50,6 +50,6 @@ Exact dependency versions are selected and pinned during Phase 00 after compatib
 
 ## Delivery state
 
-Active phase: **Phase 00 — Repository foundation**
+Active phase: **Phase 01 — Local platform and runtime skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.

@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**Specification baseline complete. Phase 00 governance work is in progress; application implementation has not started.**
+**The Phase 00 repository foundation is verified by the [clean-checkout evidence](evidence/phase-00/clean-checkout-closeout.txt). Phase 01 is ready to begin; application implementation has not started.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -162,7 +162,7 @@ Read these files in order:
 8. [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md)
 9. [`.ai/WORK_QUEUE.md`](.ai/WORK_QUEUE.md)
 
-The first implementation unit is defined in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
+The next implementation unit is defined in [`docs/specs/phase-01-local-platform.md`](docs/specs/phase-01-local-platform.md). The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
 
 ## Repository shape
 

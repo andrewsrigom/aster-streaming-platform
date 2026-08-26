@@ -4,9 +4,9 @@ Last updated: 2026-08-26
 
 ## Active phase
 
-**Phase 00 — Repository foundation and execution harness**
+**Phase 01 — Local platform and runtime skeleton**
 
-Status: **IN_PROGRESS**
+Status: **READY**
 
 ## Verified
 
@@ -43,7 +43,10 @@ Status: **IN_PROGRESS**
 - `pnpm clean:foundation` accepts no path argument, validates regular repository markers, removes only `.turbo` and `node_modules`, and passes five focused cleanup tests including an external symlink target; a real cleanup, frozen recovery, twenty-task uncached gate with 78 tests, and registry audit pass locally.
 - The first public P00-R09 pull-request run passed repository-memory validation, documentation/security, complete source quality including cleanup tests, dependency review, and the stable aggregate check.
 - A new public `main` clone at `91dbc7a` started without repository-local dependencies or Turbo state, passed frozen bootstrap, two uncached twenty-task gates with 78 tests, registry audit, bounded cleanup, frozen recovery, Git integrity, documentation, and secret validation.
-- The clean clone exposed that tracked Git hooks are not activated automatically by clone; the P00-R10 candidate adds an explicit clone-local `core.hooksPath` bootstrap command and requires a second public candidate clone before acceptance.
+- The first clean clone exposed that tracked Git hooks are not activated automatically by clone; the bootstrap now configures clone-local `core.hooksPath` explicitly.
+- A second public clone at candidate commit `8b45b29` followed the README without manual supplementation, passed frozen bootstrap, a twenty-task uncached gate with 78 tests, registry audit, bounded cleanup, frozen recovery, repeated uncached validation, Git integrity, documentation, secret, unwanted-file, and restricted-context checks.
+- Protected pull request 5 run `32943620872` passed classification, documentation and security, dependency review, and the stable required aggregate for the clean-checkout candidate.
+- Every Phase 00 requirement has linked acceptance evidence; the repository foundation is `VERIFIED`, and no application behavior is claimed.
 - Docker/daemon `26.0.0`, Compose `2.26.1`, and FFmpeg/FFprobe `6.1.1` are available on the recorded host for Phase 01 compatibility work; no supported Phase 01 version or dependency is selected yet.
 
 ## Not implemented
@@ -58,7 +61,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Publish the P00-R10 candidate, clone that public branch into a second empty temporary root, repeat the documented bootstrap without manual supplementation, and close Phase 00 only after clean-clone, protected pull-request, final-state, merge, and post-merge checks pass.
+Select the exact Phase 01 local dependency versions and resource bounds, record the decisions and rollback in a new active change plan for P01-R01, and implement only the smallest Docker-only runtime checkpoint owned by that requirement.
 
 ## Current risks
 
@@ -68,10 +71,11 @@ Publish the P00-R10 candidate, clone that public branch into a second empty temp
 - GitHub APIs prove that community templates are recognized but do not prove every browser-specific rendering detail; Markdown issue forms avoid dependence on the preview issue-form schema.
 - Secret-scanning validity checks and non-provider patterns are disabled and unclaimed; CodeQL remains deliberately deferred until representative application source exists.
 - Repository-memory validation proves explicit structure and cross-file targets, not the semantic truth of arbitrary prose or append-only history across Git revisions.
-- The P00-R09 recovery measurement reused a warm pnpm content-addressable store; P00-R10 still owns final execution from a clean public clone.
+- Open Dependabot pull request 1 proposes grouped TypeScript 7 and Node 26 type-major changes across the verified baseline; it requires dedicated compatibility evidence and must not be merged ad hoc.
 - Foundation cleanup intentionally does not remove Docker state or future durable local data; Phase 01 must implement and verify a separate explicit project-scoped reset.
-- The first P00-R10 clone reused warm Corepack and pnpm stores and required the newly documented hook-activation remediation; cold-registry, public candidate, and final hosted results remain unclaimed.
+- Both P00-R10 clones reused warm Corepack and pnpm content-addressable stores; cold-registry latency and full offline bootstrap on an empty machine remain unmeasured.
 - Native Windows and macOS foundation execution are not measured; the verified local path is the named WSL environment and hosted CI covers Ubuntu 24.04.
+- Docker, Compose, FFmpeg, and FFprobe capabilities are observed on the current host, but supported Phase 01 versions, images, ports, resource limits, health behavior, and reset scope remain deliberately unselected.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

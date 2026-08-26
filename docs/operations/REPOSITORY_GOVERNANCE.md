@@ -171,7 +171,7 @@ GitHub also reports a dependency graph with 162 packages and 234 relationships. 
 
 ## Authorized creation sequence
 
-Steps 1 through 9 are implemented and audited. Step 10 remains the final Phase 00 clean-checkout gate owned by P00-R10.
+Steps 1 through 10 are implemented and audited. The final clean-checkout gate is recorded in the [Phase 00 closeout evidence](../../evidence/phase-00/clean-checkout-closeout.txt).
 
 1. Complete P00-R03 and record supported Node.js and pnpm versions.
 2. Complete the local Git and ignore-policy part of P00-R02 with `main` as the initial branch.
