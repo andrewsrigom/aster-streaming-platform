@@ -116,9 +116,39 @@ Sensitive values are redacted at logger configuration and reviewed in tests.
 
 ### Current Phase 01 baseline
 
-P01-R04 is implemented through `@aster/runtime`. It emits bounded Pino-backed JSON to standard output with fixed service, environment, and version context; reviewed sensitive-key redaction; sanitized error causes; and optional validated trace/span IDs supplied through a repository-owned active-context provider. Invalid per-call data produces a safe stable event, while an invalid or throwing trace provider is omitted without failing application work.
+P01-R04 is released through `@aster/runtime`. It emits bounded Pino-backed JSON to standard output with fixed service, environment, and version context; reviewed sensitive-key redaction; sanitized error causes; and optional validated trace/span IDs supplied through a repository-owned active-context provider. Invalid per-call data produces a safe stable event, while an invalid or throwing trace provider is omitted without failing application work.
 
-The current implementation has structured runtime logging and a bounded lifecycle flush hook, but no OpenTelemetry SDK, network transport, Collector, log backend, retention, export queue, or drop metric. Those remain planned under their owning Phase 01 requirements.
+The P01-R06 candidate adds `@aster/telemetry` as the only package that imports OpenTelemetry metrics infrastructure. Repository-owned declarations expose finite HTTP, dependency, outcome, environment, collection, export-health, flush, and shutdown contracts without OpenTelemetry types. In process-local mode, a manual reader makes metrics inspectable without a Collector or network. Optional OTLP/HTTP export uses one periodic reader, one in-flight export, finite interval and timeout, a bounded batch size, and a cardinality ceiling.
+
+The candidate collects the official Node.js runtime instrumentation for event-loop time, utilization and delay, V8 garbage collection, heap spaces, and active resources. It adds process CPU time, CPU utilization normalized by CPUs available to the process, resident memory, and uptime through Node.js built-ins. `process.cpu.time` is the canonical CPU measurement; `process.cpu.utilization` remains a derived convenience metric because the current OpenTelemetry convention classifies it as opt-in.
+
+No Collector, scrape endpoint, log backend, trace SDK, retention policy, dashboard, alert, SLO, service composition, or hosted resource is implemented by P01-R06. The real Collector and Prometheus proof remains owned by P01-R09.
+
+### Implemented metric contract
+
+| Metric | Unit | Dimensions |
+|---|---|---|
+| `http.server.request.duration` | `s` | method, repository route, status class, outcome |
+| `http.server.active_requests` | `{request}` | method, repository route |
+| `aster.dependency.operation.duration` | `s` | dependency, operation, outcome |
+| `aster.dependency.operation.active` | `{operation}` | dependency, operation |
+| `aster.dependency.operation.outcomes` | `{operation}` | dependency, operation, outcome |
+| `aster.telemetry.export.attempts` | `{attempt}` | export result |
+| `aster.telemetry.dropped_observations` | `{observation}` | bounded drop reason |
+| `process.cpu.time` | `s` | CPU mode `user` or `system` |
+| `process.cpu.utilization` | `1` | CPU mode `user` or `system` |
+| `process.memory.usage` | `By` | none |
+| `process.uptime` | `s` | none |
+
+HTTP duration uses the OpenTelemetry recommended server boundaries from 5 milliseconds through 10 seconds. Dependency duration uses explicit boundaries from 1 millisecond through 10 seconds. The selected metric reader applies a configurable ceiling from 16 through 512 series per instrument; the default is 128 and the SDK's overflow series absorbs observations beyond it.
+
+Allowed HTTP routes are `/graphql`, `/health/live`, and `/health/ready`. Dependency and operation values come from exported finite sets; changing either set is a reviewed public-contract change. Unknown, accessor-backed, excessive, or invalid observations fail closed and increment one bounded drop category. Completion leases are one-shot, so active metrics cannot decrement twice or become negative.
+
+### Export and shutdown behavior
+
+OTLP endpoints accept only bounded HTTP(S) URLs without embedded credentials. Export failures and timeouts update process-local health and drop counters without exposing endpoint text or exporter errors. A late exporter callback is ignored after the package-owned timeout, and the OpenTelemetry reader also owns a finite timeout and a single in-flight export.
+
+`forceFlush` and `shutdown` return sanitized bounded results. The `lifecycleHooks().flushTelemetry` adapter composes with the released P01-R05 lifecycle and never reflects an exporter error into product behavior or readiness. Runtime observers are disabled before provider shutdown, repeated shutdown is idempotent, and the lifecycle deadline remains authoritative if an exporter does not cooperate.
 
 ## SLIs
 

@@ -2,6 +2,44 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented the bounded telemetry candidate
+
+### Completed
+
+- Added `@aster/telemetry` behind repository-owned declarations with finite environment, HTTP, dependency, operation, outcome, export, and drop dimensions; no product context or durable data owner changed.
+- Exact-pinned OpenTelemetry API `1.9.1`, core/resources/metrics SDK `2.10.0`, OTLP HTTP metrics exporter `0.221.0`, and runtime-node instrumentation `0.34.0`; omitted host metrics, aggregate SDK packages, and a direct semantic-conventions dependency.
+- Implemented process-local manual collection, Node.js runtime/event-loop/GC/heap/active-resource metrics, process CPU/RSS/uptime metrics, HTTP and dependency leases, bounded optional OTLP/HTTP export, health/drop accounting, and lifecycle-compatible flush/shutdown.
+- Documented the exact metric contract, selection rationale, failure behavior, privacy/cardinality rules, deferred Collector path, and removal boundary without adding a service, dashboard, SLO, Docker resource, or hosted setting.
+
+### Evidence
+
+- Nine focused tests pass for hostile/accessor/proxy configuration, frozen finite dimensions, one-shot active counts, explicit SDK overflow aggregation, runtime collection, monotonic durations, stalled and successful shared OTLP export, aborted flush, shared shutdown, and declaration isolation.
+- The public diagnostic collects 16 metrics and shuts down cleanly on Node.js `24.19.0`; one warm run observed `0.15` seconds and `71,624` KiB maximum RSS as a compatibility observation, not a benchmark.
+- `pnpm check:changed` passed 34 of 34 tasks in `10.107s` before review hardening; the zero-cache complete graph then passed 34 of 34 tasks in `32.343s` with architecture, lint, format, unused-code, documentation, repository memory, secret scanning, and high-severity audit green.
+- Raw candidate evidence: `evidence/phase-01/runtime-telemetry.txt` (`IMPLEMENTED`; complete, clean-checkout, review, protected CI, and release gates pending).
+
+### Next action
+
+Run the complete forced candidate gate, review the full implementation once, commit and prove an exact clean checkout, then perform the bounded review and protected publication sequence.
+
+## 2026-08-26 — Released lifecycle and activated telemetry work
+
+### Completed
+
+- Protected closeout run `33004817099` passed at exact P01-R05 head `87e3fe6`; pull request 12 was squash-merged as `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`, and local `main` was fast-forwarded cleanly.
+- Post-merge run `33004926766` passed every applicable job, including the delayed `CI required` aggregate; P01-R05 is `RELEASED`.
+- Created `feat/p01-r06-telemetry` from clean released squash `4d24335`; no predecessor source, dependency, lockfile, Docker resource, product state, or hosted setting changed.
+- Activated P01-R06 with shared telemetry/runtime ownership, finite metric dimensions, privacy and cardinality controls, bounded exporter failure, lifecycle integration, deterministic tests, evidence, rollback, and review stopping rules.
+
+### Evidence
+
+- P01-R05 protected PR run `33004817099` and exact post-merge run `33004926766` pass at their exact heads.
+- Git was clean on synchronized `main` before branch creation; `feat/p01-r06-telemetry` begins at `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`.
+
+### Next action
+
+Select the minimal exact OpenTelemetry dependency set and implement the P01-R06 contract from clean released `main`.
+
 ## 2026-08-26 — Verified the bounded runtime lifecycle
 
 ### Completed

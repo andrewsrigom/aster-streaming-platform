@@ -45,13 +45,14 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Process-start configuration validation | Exact-pin `zod@4.4.3` behind repository-owned types and sanitized errors; read injected environment entries directly, classify every accepted field, and expose no secret value in diagnostics | `evidence/phase-01/runtime-configuration.txt` |
 | Structured runtime logging | Exact-pin Pino `10.3.1` behind repository-owned declarations; emit bounded JSON to standard output with reviewed sensitive-key redaction, sanitized errors, and injected validated trace context | `evidence/phase-01/runtime-logging.txt` |
 | Service HTTP adapter | Use exact-pinned Express `5.2.1` behind `@aster/http-express`; use Apollo's maintained Express 5 integration at service composition roots and keep framework types out of domain and application layers | `docs/adr/0011-express-http-adapter.md`; `evidence/phase-01/http-adapter.txt` |
+| Runtime metrics implementation | Exact-pin the OpenTelemetry API `1.9.1`, core/resources/metrics SDK `2.10.0`, OTLP HTTP metrics exporter `0.221.0`, and Node.js runtime instrumentation `0.34.0` behind repository-owned `@aster/telemetry`; omit host metrics and aggregate SDK packages | `evidence/phase-01/runtime-telemetry.txt` |
 
 ## Pending decisions
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Local broker, object-storage, and telemetry versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint is claimed | Phase 01 verification |
-| PostgreSQL, Redis, Kafka, object-storage, and telemetry client libraries | 01 | Node.js 24 compatibility, deadline and cancellation behavior, close semantics, maintenance, license, security, runtime cost, exit strategy, and focused real-dependency spike | Use only repository-owned ports and the currently released local core | Affected Phase 01 work item |
+| Local broker, object-storage, and observability-container versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint and process-local telemetry candidate are claimed | Phase 01 verification |
+| PostgreSQL, Redis, Kafka, and object-storage client libraries | 01 | Node.js 24 compatibility, deadline and cancellation behavior, close semantics, maintenance, license, security, runtime cost, exit strategy, and focused real-dependency spike | Use only repository-owned ports and the currently released local core | Affected Phase 01 work item |
 | Typed SQL library | 02 | First real context-owned schema, transaction, query, migration, generated-type, compatibility, maintenance, and removal evidence | Phase 01 uses its selected PostgreSQL connectivity adapter without product tables or a synthetic query abstraction | Phase 02 persistence implementation |
 | Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
@@ -70,7 +71,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
 Pending decisions are resolved only by their owning phase. A work item stops when it needs a pending decision whose required evidence is unavailable; it does not select a dependency implicitly.
 
-The current Phase 01 preflight narrows candidates but resolves none of the rows above. It records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, the explicit OpenTelemetry package set, current Node.js client metadata, and the Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`.
+The current Phase 01 preflight narrows the remaining candidates but resolves none of the rows above. It records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, current Node.js client metadata, and the Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 separately resolves the process-local OpenTelemetry package set in `evidence/phase-01/runtime-telemetry.txt`; Collector/backend images remain pending.
 
 ## Repository governance decisions
 

@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the planned implementation path for the remaining Phase 01 work. It does not claim that telemetry, dependency clients, an Identity service, a broker, object storage, or an observability backend exists. Exact dependencies and container images remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
+This document defines the implementation path for the remaining Phase 01 work. P01-R06 has an implemented local candidate; it does not claim that a Collector, dependency client, Identity service, broker, object storage, or observability backend exists. Exact dependencies and container images outside the telemetry package remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -36,7 +36,7 @@ This order prevents three expensive forms of rework:
 
 | Path | Owning item | Planned responsibility |
 |---|---|---|
-| `packages/telemetry/` | P01-R06 | Repository-owned metrics and trace-context API with an OpenTelemetry implementation hidden behind it |
+| `packages/telemetry/` | P01-R06 | Implemented repository-owned metrics API with OpenTelemetry infrastructure hidden behind it; protected verification and release are pending |
 | `packages/runtime/src/clock.ts` | P01-R07 | Deterministic test clock contract and system-clock implementation |
 | `packages/runtime/src/ids.ts` | P01-R07 | Deterministic test identifier contract and random UUID implementation |
 | `packages/postgres/` | P01-R07 | PostgreSQL connection, probe, cancellation, telemetry, and close behavior without product repositories |
@@ -54,7 +54,7 @@ These are planned paths, not permission to scaffold every directory at once. Eac
 
 ### Runtime sources
 
-The first telemetry slice will expose:
+The P01-R06 candidate exposes:
 
 - Node.js event-loop time, utilization, delay percentiles, garbage-collection duration, heap-space use, and active resources;
 - process CPU time and utilization;
@@ -63,7 +63,9 @@ The first telemetry slice will expose:
 - dependency operation duration, active operations, and stable outcomes;
 - telemetry export failures and dropped observations.
 
-The current package candidates are the OpenTelemetry API, metrics SDK, OTLP HTTP metrics exporter, Node.js runtime instrumentation, and host metrics instrumentation. The broad `@opentelemetry/sdk-node` and auto-instrumentation aggregators are not the default because the current slice needs a smaller explicit metrics composition.
+The exact direct selection is `@opentelemetry/api@1.9.1`, `@opentelemetry/core@2.10.0`, `@opentelemetry/resources@2.10.0`, `@opentelemetry/sdk-metrics@2.10.0`, `@opentelemetry/exporter-metrics-otlp-http@0.221.0`, and `@opentelemetry/instrumentation-runtime-node@0.34.0`. All use Apache-2.0, support the pinned Node.js runtime through their published engine ranges, and remain internal to `@aster/telemetry`.
+
+The deprecated host-metrics package and its broader replacement are not selected. Process CPU, resident memory, and uptime need only Node.js built-ins, while the host package would collect unrelated machine/network data and introduce an OS-command-sensitive dependency. The broad `@opentelemetry/sdk-node`, auto-instrumentation aggregator, and direct semantic-conventions package are also unnecessary for this metrics-only slice.
 
 ### Metric contract
 
@@ -72,13 +74,13 @@ Use OpenTelemetry semantic-convention instruments where an applicable stable or 
 | Dimension | Allowed shape |
 |---|---|
 | service | validated service name from process configuration |
-| environment | `local`, `integration`, `staging`, or `production` |
+| environment | `local`, `test`, `development`, `staging`, or `production` |
 | dependency | `postgresql`, `redis`, `broker`, `object_storage`, or `telemetry` |
-| operation | a reviewed finite operation name owned by the adapter |
+| operation | `connect`, `probe`, `query`, `command`, `publish`, `consume`, `read`, `write`, `delete`, `export`, or `flush` |
 | outcome | `success`, `timeout`, `cancelled`, `unavailable`, `rejected`, or `error` |
-| HTTP route | a repository-owned route template such as `/graphql` or `/health/ready` |
-| HTTP method | a normalized supported method |
-| HTTP status | numeric status code or bounded status class according to the selected convention |
+| HTTP route | `/graphql`, `/health/live`, or `/health/ready` |
+| HTTP method | `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`, or `OPTIONS` |
+| HTTP status | validated `100` through `599`, emitted only as a bounded status class |
 
 Metric attributes never contain account, profile, title, user, request, event, trace, span, topic, bucket, object key, URL, query text, GraphQL document, exception message, or credential values. The implementation configures an explicit cardinality ceiling and proves overflow aggregation with hostile inputs.
 
@@ -89,11 +91,11 @@ Metric attributes never contain account, profile, title, user, request, event, t
 - Export failure never fails a product request or readiness.
 - `forceFlush` and shutdown participate in the existing lifecycle `flushTelemetry` stage.
 - A missing or stalled Collector produces a stable failure and drop signal but cannot hold shutdown beyond the lifecycle deadline.
-- Tests use an in-memory metric reader first; the real Collector path belongs to P01-R09.
+- Tests use a manual process-local metric reader first; the real Collector path belongs to P01-R09.
 
 ### P01-R06 exit
 
-The item exits with generated declarations free of OpenTelemetry SDK types, deterministic metric tests, a bounded unreachable-exporter test, no high-cardinality labels, and one compatibility diagnostic on Node.js `24.19.0`. It does not add Grafana dashboards or SLOs.
+The implemented candidate has generated declarations free of OpenTelemetry SDK types, deterministic metric tests, bounded stalled and successful loopback exporter tests, finite dimensions, and one compatibility diagnostic on Node.js `24.19.0`. The item is not verified or released until its complete candidate gate, clean-checkout proof, review, protected CI, and merge gates pass. It does not add Grafana dashboards or SLOs.
 
 ## P01-R07 — Narrow platform adapters
 

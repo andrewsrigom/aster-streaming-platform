@@ -1,0 +1,95 @@
+Evidence: P01-R06 bounded runtime telemetry candidate
+Status: IMPLEMENTED; complete candidate, review, protected CI, and release verification pending
+Date: 2026-08-26
+Source base: 4d243351bb46ae6b63a80a9ca3b9186baa3c68ac
+Branch: feat/p01-r06-telemetry
+Environment: Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace; amd64
+Runtime: Node.js v24.19.0; pnpm 11.24.0
+
+Requirement and boundary
+- Requirement: P01-R06.
+- Owner: shared telemetry and runtime infrastructure.
+- Product bounded contexts and durable data owners changed: none.
+- Public contract: repository-owned finite metric dimensions, observation leases, process-local collection, export-health snapshot, and bounded flush/shutdown results.
+- OpenTelemetry imports are confined to packages/telemetry/src/infrastructure.
+- Explicit exclusions: Collector, scrape endpoint, traces, log export, dashboard, alert, SLO, product metric, service composition, dependency adapter, Docker change, and hosted resource.
+
+Exact direct dependency selection
+- @opentelemetry/api 1.9.1
+- @opentelemetry/core 2.10.0
+- @opentelemetry/resources 2.10.0
+- @opentelemetry/sdk-metrics 2.10.0
+- @opentelemetry/exporter-metrics-otlp-http 0.221.0
+- @opentelemetry/instrumentation-runtime-node 0.34.0
+
+Selection interpretation
+- Registry and official package metadata checked on 2026-08-26 report Apache-2.0 for every direct package.
+- SDK, resources, exporter, and runtime instrumentation publish Node.js engine ranges ^18.19.0 || >=20.6.0; API 1.9.1 publishes >=8.0.0. The pinned Node.js 24.19.0 satisfies each range.
+- Metrics SDK 2.10.0 requires @opentelemetry/api >=1.9.0 <1.10.0; selected API 1.9.1 satisfies it.
+- Exporter 0.221.0 resolves SDK/resources/core 2.10.0 and experimental OTLP components 0.221.0, avoiding a mixed supported line.
+- Runtime instrumentation 0.34.0 provides event-loop time/utilization/delay, V8 GC duration, heap-space metrics, and bounded active-resource aggregation from Node.js performance APIs.
+- @opentelemetry/host-metrics is deprecated. Its instrumentation-host-metrics replacement is also not selected because Node.js built-ins cover the required process CPU, RSS, and uptime metrics without broader host/network collection or systeminformation.
+- @opentelemetry/sdk-node, auto-instrumentation aggregates, and a direct semantic-conventions dependency are not needed for this metrics-only slice.
+- Removal path: delete @aster/telemetry and its six direct dependencies. No domain, application, database, Redis, broker, object-storage, HTTP-framework, product-data, or Docker contract changes.
+
+Implemented contract
+- Manual process-local reader when export.mode is none; instrument creation and collection require no network or Collector.
+- Optional OTLP/HTTP exporter accepts only HTTP(S) endpoints without embedded credentials.
+- Periodic export has explicit interval, timeout, one in-flight attempt, cardinality ceiling, and bounded batch size.
+- HTTP route, method, dependency, operation, outcome, status-class, export-result, and drop-reason dimensions are finite.
+- HTTP and dependency leases complete once and active counters cannot decrement twice.
+- Caller IDs, URLs, query text, GraphQL documents, request/trace/span IDs, headers, errors, credentials, endpoints, buckets, and object keys are absent from metric attributes.
+- Process CPU time is canonical. CPU utilization is derived from CPU-time delta divided by elapsed monotonic time and CPUs available to the process, then bounded from zero through one.
+- Runtime observers stop before provider shutdown. Repeated and concurrent shutdown is idempotent and flush/shutdown results are sanitized.
+- Export timeout/failure increments process-local attempt/drop health without reflecting endpoint or error details and without changing readiness or product work.
+
+Metric names and units
+- http.server.request.duration: seconds; official HTTP server boundaries 0.005 through 10 seconds.
+- http.server.active_requests: requests.
+- aster.dependency.operation.duration: seconds; explicit boundaries 0.001 through 10 seconds.
+- aster.dependency.operation.active: operations.
+- aster.dependency.operation.outcomes: operations.
+- aster.telemetry.export.attempts: attempts.
+- aster.telemetry.dropped_observations: observations.
+- process.cpu.time: seconds, user/system modes.
+- process.cpu.utilization: ratio, user/system modes.
+- process.memory.usage: bytes, resident memory.
+- process.uptime: seconds.
+- Runtime instrumentation additionally supplies nodejs.eventloop.*, v8js.gc.duration, v8js.memory.heap.*, and v8js.resource.active.
+
+Focused commands and results
+- pnpm --filter=@aster/telemetry typecheck
+  PASS.
+- pnpm --filter=@aster/telemetry build
+  PASS; generated declarations emitted.
+- pnpm --filter=@aster/telemetry test
+  PASS; 9 of 9 tests. Covered accessor/proxy/unknown/excessive configuration rejection, frozen finite vocabularies, bounded dimensions and active capacity, one-shot active counters, explicit SDK overflow aggregation at a 16-series ceiling, HTTP/dependency histograms, process/runtime instruments, monotonic duration, stalled OTLP timeout/drop health, successful and shared concurrent OTLP export, aborted flush, shared concurrent and repeated shutdown, and public declaration isolation.
+- pnpm --filter=@aster/telemetry check
+  PASS; emitted one JSON line with event telemetry_diagnostic_passed, metricCount 16, exportMode none, shutdown completed.
+- /usr/bin/time -f "elapsed=%e max_rss_kib=%M user=%U system=%S" node packages/telemetry/dist/src/check-telemetry.js
+  PASS; one warm WSL process observed elapsed 0.15 seconds, maximum RSS 71,624 KiB, user CPU 0.13 seconds, and system CPU 0.05 seconds. This is a single compatibility observation, not a startup, throughput, steady-state, or cross-platform benchmark.
+- pnpm exec eslint packages/telemetry
+  PASS.
+- pnpm check:changed
+  PASS after review hardening and evidence update; 34 of 34 selected tasks with 23 cached in 10.053 seconds. Included five workspace packages, full source lint/format/unused/architecture/security/AI/docs/community/policy checks, 39 runtime tests, 8 HTTP tests, 12 configuration tests, and 9 telemetry tests.
+- pnpm check --force
+  PASS after review hardening; 34 of 34 tasks, zero cached, in 32.343 seconds of Turbo task time. Included 9 telemetry, 39 runtime, 8 HTTP, 12 configuration, and every repository source, architecture, documentation, memory, security, community, CI, platform, staged, commit, toolchain, unused-code, type, lint, and format gate.
+- pnpm audit --audit-level=high
+  PASS; no known vulnerabilities found.
+- pnpm licenses list --prod --json
+  PASS; exact direct and resolved OpenTelemetry packages report Apache-2.0. Existing workspace production dependencies report their previously reviewed licenses.
+
+Failure evidence
+- A loopback HTTP server deliberately accepted an OTLP request without responding. forceFlush returned inside the 1-second test ceiling; exporter health recorded one bounded failure and a positive dropped-observation count; no endpoint or error entered a metric attribute.
+- A loopback OTLP server returned HTTP 200. forceFlush completed, exactly one request arrived at the assertion point, and health recorded one success with no drop.
+- An already-aborted signal returned aborted. Two concurrent shutdown calls shared one provider shutdown and returned completed/already_completed.
+- The test process exited after runtime instrumentation, periodic readers, loopback sockets, and providers shut down, providing handle-cleanup evidence for the exercised path.
+
+Public-contract evidence
+- dist/src/index.d.ts contains repository-owned exports only and contains no OpenTelemetry, Express, Apollo, PostgreSQL, Redis client, Kafka, or object-storage type.
+- The repository architecture scanner reports zero violations; OpenTelemetry imports occur only in infrastructure paths.
+
+Current interpretation
+- The P01-R06 implementation exists and focused plus changed-scope gates pass.
+- This artifact does not yet prove a complete forced graph, exact clean-checkout install/package diagnostic, review, protected CI, merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, or another operating system/architecture.
+- Complete candidate and clean-checkout results will be appended only after their exact commands pass. Collector and Prometheus evidence belongs to P01-R09.

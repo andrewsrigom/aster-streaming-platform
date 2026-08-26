@@ -1,6 +1,6 @@
 # Experiment P01-R05-L01: Runtime Lifecycle and Bounded Shutdown
 
-- Status: VERIFIED
+- Status: RELEASED
 - Date: 2026-08-26
 - Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e` plus availability remediations through hard-fallback commit `fc448925260994517d4eb42328c2fb4970506e21` on `feat/p01-r05-lifecycle`, based on released `main` `92d3531b684ea259b840942f858584e5e364937c`
 - Owner: Aster shared runtime infrastructure
@@ -118,4 +118,4 @@ Official references:
 - Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
 - Native Windows signal semantics are not claimed; the supported WSL path is measured.
 - The original isolated checkout predates the squash rebase; its applicability is limited to unchanged bootstrap, lifecycle build, declarations, real socket/process behavior, and complete successful gate execution as reasoned above.
-- Acceptance is `VERIFIED`; protected squash merge and the exact post-merge `main` run remain release conditions.
+- Acceptance is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`; exact post-merge run `33004926766` passed every applicable job.
