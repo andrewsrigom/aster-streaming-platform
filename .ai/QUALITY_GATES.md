@@ -6,7 +6,7 @@ These gates become executable during Phase 00 and expand in later phases.
 
 Formatting, linting, strict TypeScript compilation, focused repository-tool tests, documentation-link and structure validation, canonical terminology, unsupported status-claim checks, unresolved merge-marker checks, public-contribution contract validation, redacting secret scans, and CI-policy checks are executable through `pnpm check`. Current evidence is in [`evidence/phase-00/source-quality-foundation.txt`](../evidence/phase-00/source-quality-foundation.txt), [`evidence/phase-00/documentation-validation.txt`](../evidence/phase-00/documentation-validation.txt), [`evidence/phase-00/ci-security-foundation.txt`](../evidence/phase-00/ci-security-foundation.txt), [`evidence/phase-00/community-governance.txt`](../evidence/phase-00/community-governance.txt), and [`evidence/phase-00/public-repository-governance.txt`](../evidence/phase-00/public-repository-governance.txt).
 
-High-severity registry audit is executable locally and the hosted `main` decision has passed. Pull-request dependency and license review is configured; its first protected pull-request result is recorded before this work item closes. Later-phase gates remain planned until their owning phase implements and verifies them.
+High-severity registry audit is executable locally, and the hosted `main` and protected pull-request decisions passed. Pull-request dependency and license review is configured and its first hosted execution passed. Later-phase gates remain planned until their owning phase implements and verifies them.
 
 ## Always required
 

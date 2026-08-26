@@ -35,6 +35,7 @@ Status: **IN_PROGRESS**
 - The authorized public repository exists at `andrewsrigom/aster-streaming-platform`; GitHub recognizes both issue templates and the pull-request template, and its dependency graph reports the initial published software bill of materials.
 - GitHub repository settings are audited: squash-only merging, automatic branch cleanup, read-only Actions defaults, immutable action SHA pinning, vulnerability alerts and fixes, Dependabot security updates, secret scanning with push protection, and private vulnerability reporting are enabled.
 - The active no-bypass `Protect main` ruleset requires the pull-request path, review-thread resolution, strict `CI required` success, linear history, and protection from non-fast-forward updates and deletion.
+- The first protected pull-request workflow passed its classification, documentation/security, full source-quality, dependency-review, and stable aggregate jobs.
 
 ## Not implemented
 
@@ -48,13 +49,13 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Run this governance change through the protected pull-request path, record the dependency-review result, and close the second P00-R07 work item before starting `.ai/` state validation.
+Integrate `.ai/` consistency checks into the normal contribution workflow for P00-R08 without broadening the current Phase 00 scope.
 
 ## Current risks
 
 - Static documentation validation does not fetch external URLs and intentionally applies only high-confidence terminology and status rules; nuanced truthfulness remains a review responsibility.
 - Pattern-based and hosted secret scanning cannot prove that arbitrary binary or invalid-UTF-8 content contains no secret; later source and artifact formats still require their owning scanners.
-- Dependency and license review is configured from current official action documentation; its first public pull-request result remains pending on this governance branch.
+- Dependency and license review passed its first public pull-request execution; future changes can still expose dependency or license policy failures and remain gated by `CI required`.
 - GitHub APIs prove that community templates are recognized but do not prove every browser-specific rendering detail; Markdown issue forms avoid dependence on the preview issue-form schema.
 - Secret-scanning validity checks and non-provider patterns are disabled and unclaimed; CodeQL remains deliberately deferred until representative application source exists.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.

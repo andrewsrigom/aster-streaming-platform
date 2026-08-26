@@ -114,7 +114,7 @@ pnpm ci:test
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs documentation, public-contribution, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The first hosted `main` execution passed. The dependency-review action runs only in a public pull-request context; its first hosted result is recorded when this governance change enters the protected pull-request path.
+The configured GitHub governance job runs documentation, public-contribution, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The first hosted `main` and protected pull-request executions passed. The dependency-review action ran in its required public pull-request context and passed.
 
 ## Local endpoints
 

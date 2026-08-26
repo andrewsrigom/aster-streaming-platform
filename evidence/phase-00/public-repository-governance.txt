@@ -7,7 +7,7 @@ Initial published commit: 4bb0ad47269f5ae9616a0363a599afa655e42ce9
 Repository: https://github.com/andrewsrigom/aster-streaming-platform
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04
 GitHub CLI: 2.87.3
-Acceptance: PENDING_PROTECTED_PR
+Acceptance: PASS_HOSTED
 
 AUTHORIZATION AND CREATION PRECONDITIONS
 ----------------------------------------
@@ -50,6 +50,21 @@ FIRST HOSTED WORKFLOW
 - Stable check provider: GitHub Actions application ID 15368
 
 The dependency graph returned a generated software bill of materials with 162 packages and 234 relationships. This count describes the observed initial published commit and is not a permanent dependency target.
+
+FIRST PROTECTED PULL REQUEST
+----------------------------
+
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/2
+- Workflow run ID: 32937757207
+- Workflow URL: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937757207
+- Head commit: 62cb7d4
+- Classify change: success, 6 seconds
+- Documentation and security: success, 8 seconds
+- Install and source quality: success, 20 seconds
+- Dependency review: success, 7 seconds
+- CI required: success, 4 seconds
+
+The pull-request event exercised the full source path because the governance validator changed. The dependency-review action ran in its required public pull-request context and passed. The second and final evidence commit is accepted only after the same protected aggregate check runs again.
 
 PUBLIC CONTRIBUTION SURFACES
 ----------------------------
@@ -116,7 +131,7 @@ BOUNDARIES AND LIMITATIONS
 - No token, authentication header, credential value, private email, or private account setting is stored in this artifact.
 - GitHub API and GraphQL results prove configured state and recognized templates; they do not prove every browser-specific rendering detail.
 - Secret scanning does not replace repository-owned redacting scans, credential rotation, dependency review, or later source-specific analysis.
-- The first protected pull-request workflow and hosted dependency-review conclusion remain pending when this initial evidence revision is committed.
+- The protected pull-request workflow and hosted dependency review passed. The required check remains authoritative for the final evidence commit and merge.
 - P00-R10 later repeats the complete gate from a clean public checkout.
 
 OFFICIAL PRIMARY REFERENCES

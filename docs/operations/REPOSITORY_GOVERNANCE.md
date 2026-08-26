@@ -4,7 +4,7 @@
 
 Local Git is initialized on `main`; deterministic attributes and ignores, strict source, documentation, and public-contribution gates, executable architecture boundaries, staged secret/file and commit-message hooks, the pinned workspace check, the CI workflow, and active GitHub community templates are implemented and locally validated with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [community-governance evidence](../../evidence/phase-00/community-governance.txt).
 
-The authorized [public repository](https://github.com/andrewsrigom/aster-streaming-platform) is implemented and audited. Its first hosted `main` workflow passed, GitHub recognizes both issue templates and the pull-request template, and the repository uses squash-only merging, read-only default workflow permissions, automated branch cleanup, supported security features, and an active no-bypass `main` ruleset. Exact observed settings and remaining capability limits are recorded in [public-repository evidence](../../evidence/phase-00/public-repository-governance.txt). The first protected pull-request run remains the final acceptance step for this work item.
+The authorized [public repository](https://github.com/andrewsrigom/aster-streaming-platform) is implemented and audited. Its first hosted `main` and protected pull-request workflows passed, including hosted dependency review. GitHub recognizes both issue templates and the pull-request template, and the repository uses squash-only merging, read-only default workflow permissions, automated branch cleanup, supported security features, and an active no-bypass `main` ruleset. Exact observed settings and remaining capability limits are recorded in [public-repository evidence](../../evidence/phase-00/public-repository-governance.txt).
 
 ## Goals
 
@@ -78,7 +78,7 @@ The following source gates are implemented:
 - Conventional Commit validation for local commit messages.
 - Markdown UTF-8, title, fence, unresolved-merge-marker, local-link, heading-fragment, canonical-terminology, and evidence-supported current-status validation.
 
-Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the hosted full CI path. Pull-request dependency and license review is configured; its first hosted pull-request result remains pending until this governance branch runs through the protected path. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
+Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the hosted full CI path. Pull-request dependency and license review is configured and its first hosted execution passed. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
 
 Auto-fix commands remain separate from check commands. CI runs checks and does not rewrite source.
 
