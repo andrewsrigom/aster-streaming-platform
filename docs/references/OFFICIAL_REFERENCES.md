@@ -68,6 +68,14 @@ Do not infer that every film or asset uses the same license. Review each officia
 - dependency-review-action `v5.0.0`: https://github.com/actions/dependency-review-action/releases/tag/v5.0.0
 - actionlint `v1.7.12`: https://github.com/rhysd/actionlint/releases/tag/v1.7.12
 
+## Local containers
+
+- Docker Compose startup order and health conditions: https://docs.docker.com/compose/how-tos/startup-order/
+- Docker Compose `up --wait`: https://docs.docker.com/reference/cli/docker/compose/up/
+- Docker Compose resource limits: https://docs.docker.com/reference/compose-file/deploy/
+- PostgreSQL Docker Official Image: https://hub.docker.com/_/postgres
+- Redis Docker Official Image: https://hub.docker.com/_/redis
+
 ## Public repository governance
 
 - GitHub CLI repository creation: https://cli.github.com/manual/gh_repo_create
@@ -96,6 +104,8 @@ Do not infer that every film or asset uses the same license. Review each officia
 ## Redis
 
 - Redis documentation: https://redis.io/docs/latest/
+- Redis Open Source 8.10 release notes: https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.10-release-notes/
+- Redis licensing: https://redis.io/legal/licenses/
 - Client-side caching concepts: https://redis.io/docs/latest/develop/use/client-side-caching/
 - Distributed locks: https://redis.io/docs/latest/develop/use/patterns/distributed-locks/
 - Rate limiting patterns: https://redis.io/learn/howtos/ratelimiting/
@@ -105,6 +115,8 @@ Do not infer that every film or asset uses the same license. Review each officia
 ## PostgreSQL
 
 - PostgreSQL documentation: https://www.postgresql.org/docs/current/
+- PostgreSQL versioning and support: https://www.postgresql.org/support/versioning/
+- PostgreSQL License: https://www.postgresql.org/about/licence/
 - Transaction isolation: https://www.postgresql.org/docs/current/transaction-iso.html
 - Explicit locking: https://www.postgresql.org/docs/current/explicit-locking.html
 - Indexes: https://www.postgresql.org/docs/current/indexes.html

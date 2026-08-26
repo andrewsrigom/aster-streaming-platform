@@ -96,6 +96,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`tools/verify-documentation.test.ts`](../../tools/verify-documentation.test.ts) — Documentation Validator Tests
 - [`tools/verify-ci-policy.ts`](../../tools/verify-ci-policy.ts) — GitHub Actions and Dependabot Policy Validator
 - [`tools/verify-ci-policy.test.ts`](../../tools/verify-ci-policy.test.ts) — CI Policy Validator Tests
+- [`tools/verify-local-platform.mjs`](../../tools/verify-local-platform.mjs) — Local Platform Policy Validator
+- [`tools/verify-local-platform.test.mjs`](../../tools/verify-local-platform.test.mjs) — Local Platform Policy Tests
 - [`tools/verify-toolchain.mjs`](../../tools/verify-toolchain.mjs) — Dependency-Free Toolchain Guard
 - [`tools/verify-toolchain.test.mjs`](../../tools/verify-toolchain.test.mjs) — Toolchain Guard Tests
 
@@ -106,6 +108,11 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`evidence/phase-00/clean-checkout-closeout.txt`](../../evidence/phase-00/clean-checkout-closeout.txt) — Clean Checkout and Phase Closeout Evidence
 - [`evidence/phase-00/developer-command-contract.txt`](../../evidence/phase-00/developer-command-contract.txt) — Developer Command Contract Evidence
 - [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
+
+## evidence/phase-01
+
+- [`evidence/phase-01/README.md`](../../evidence/phase-01/README.md) — Phase 01 Evidence Index
+- [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt) — Local Platform Checkpoint Evidence
 
 ## docs/00-start-here
 
@@ -246,3 +253,5 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence
+- [`evidence/phase-01/README.md`](../../evidence/phase-01/README.md) — Phase 01 Evidence Index
+- [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt) — Local Platform Checkpoint Evidence

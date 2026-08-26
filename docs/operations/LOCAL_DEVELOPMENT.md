@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript policy, source formatting and linting, unused-code analysis, architecture-boundary validation, static documentation validation, redacting secret scan, repository-local Git hooks, CI workflow, and Turborepo task graph are implemented and verified by [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [hosted repository evidence](../../evidence/phase-00/public-repository-governance.txt). The first `main` workflow completed successfully on GitHub. The root README contains the currently executable bootstrap, check, and bounded foundation-cleanup commands. Application, infrastructure, Docker runtime, and playable demonstration commands remain planned for their owning phases.
+The Phase 00 repository foundation and P01-R01 are verified. The first Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R01 evidence](../../evidence/phase-01/local-platform-checkpoint.txt) includes a hostile-environment clean public checkout, protected hosted repetition, and resolved automated review. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
 
 ## Current foundation tools
 
@@ -10,11 +10,15 @@ The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript
 - pnpm `11.24.0`, provisioned through Corepack from the integrity-pinned `packageManager` field;
 - Git;
 
-## Future checkpoint tools
+## Current local-platform tools
 
-The following tools are not required to execute the Phase 00 repository checkpoint. Their exact supported versions and operating constraints belong to the phases that first use them:
+The P01-R01 Docker-only checkpoint supports:
 
-- container runtime with Compose support;
+- Docker Engine `26.0.0` or a newer compatible release;
+- Docker Compose `2.26.1` or a newer compatible release.
+
+The Phase 00 repository checkpoint still does not require Docker. The following tools remain future checkpoint inputs whose exact operating constraints belong to the phases that first use them:
+
 - FFmpeg and FFprobe compatible with the media recipe;
 - enough disk for source and generated media;
 - a browser supported by the current test matrix.
@@ -43,6 +47,9 @@ pnpm lint
 pnpm format:check
 pnpm unused:check
 pnpm architecture:check
+pnpm platform:check
+pnpm platform:test
+pnpm platform:compose:check
 pnpm docs:check
 pnpm ai:check
 pnpm check
@@ -54,6 +61,8 @@ pnpm check
 
 `pnpm ai:check` validates the bounded durable repository-memory files, ordered queue and blockers, active-plan binding, current-state and handoff resume target, and reverse-chronological session shape. `pnpm ai:test` exercises safe malformed, stale, oversized, invalid-UTF-8, and symbolic fixtures. These structural checks do not replace review of narrative truth.
 
+`pnpm platform:check` and `pnpm platform:test` are dependency-free policy gates for immutable images, network isolation, persistence ownership, readiness ordering, resource bounds, and lifecycle behavior. `pnpm platform:compose:check` additionally asks the installed Docker Compose CLI to parse and normalize the actual model; it is intentionally outside the ordinary no-Docker source gate.
+
 Local Git is configured with `core.hooksPath=.githooks`. The `pre-commit` hook reads bounded NUL-delimited staged paths and runs only Prettier and ESLint when their file types apply. The `commit-msg` hook validates the bounded Conventional Commit-shaped subject. Neither hook installs dependencies nor runs repository-wide type checking, Knip, tests, documentation, Turbo, containers, media, or integration suites.
 
 On the measured Phase 00 WSL environment, a documentation-only pre-commit completed in `0.07` seconds, a staged configuration-and-TypeScript check completed in `2.37` seconds, the cold full gate completed in `3.67` seconds, and its cached repeat completed in `0.96` seconds. These observations establish the current feedback tier; they are not portable performance guarantees.
@@ -64,13 +73,36 @@ The root README is the copy-paste entrypoint for the currently executable founda
 
 ### Development lane
 
-The current development lane uses `pnpm install --frozen-lockfile`, focused checks, `pnpm check`, `pnpm audit --audit-level=high`, and `pnpm clean:foundation` as documented in the root README. Phase 01 will add canonical interfaces for dependency startup, readiness, diagnostics, migrations, seed data, integration tests, shutdown, and destructive local reset. Later phases add browser, media, failure, and load commands only when they have executable implementations.
+The current development lane uses `pnpm install --frozen-lockfile`, focused checks, `pnpm check`, `pnpm audit --audit-level=high`, and `pnpm clean:foundation` as documented in the root README. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. Later Phase 01 work adds broker, object storage, telemetry, runtime configuration, migrations, seed data, integration suites, and the explicit destructive reset. Later phases add browser, media, failure, and load commands only when they have executable implementations.
 
 The fast changed-scope gate will not run every integration, browser, media, failure, or load suite on each commit. Each owning phase selects its final script names and affected-graph behavior only when the implementation exists.
 
 ### Docker-only demo lane
 
-Phase 01 will expose one Compose command for its runtime-laboratory slice that requires no host Node.js, pnpm, database, broker, object storage, telemetry, FFmpeg, or hosted credentials. The command is recorded only after the Compose layout and minimum version are verified. It must build or pull pinned images, run one-shot initialization, wait for health, print the useful status or URL and diagnostics, and support explicit project-scoped cleanup. Phase 07 expands the same lane into the first playable HLS checkpoint.
+P01-R01 exposes one Compose command for the current runtime-laboratory slice. It requires no host Node.js, pnpm, database, Redis, broker, object storage, telemetry, FFmpeg, or hosted credentials:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+```
+
+The command pulls immutable images when absent, creates the `aster` project, waits for PostgreSQL and Redis health, requires `platform-init` to complete, and leaves `platform-status` healthy. The synthetic `aster-test-only` database credential is fixed, local-only, inaccessible through a published host port, and not accepted as a hosted configuration pattern.
+
+Inspect the ongoing state and bounded initialization output:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml ps --all
+docker compose --project-name aster --file infra/compose/compose.yml logs --no-color platform-init platform-status
+docker compose --project-name aster --file infra/compose/compose.yml exec postgres psql --username=aster --dbname=aster
+docker compose --project-name aster --file infra/compose/compose.yml exec redis redis-cli
+```
+
+Stop containers and the internal network while preserving PostgreSQL data:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml down
+```
+
+The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`; use it on every public operation so diagnostics and lifecycle commands target the same Aster project. P01-R02 later adds the explicit project-scoped destructive reset. Do not append `--volumes` to the normal stop command. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
 
 ### Laboratory lane
 
@@ -110,11 +142,13 @@ pnpm ci:test
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The first hosted `main` and protected pull-request executions passed. The dependency-review action ran in its required public pull-request context and passed.
+The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Protected run `32947483503` passed the first hosted execution.
 
 ## Local endpoints
 
-Phase 01 records the final ports in generated local documentation. Expected categories:
+P01-R01 intentionally publishes no host port. PostgreSQL, Redis, the initializer, and status communicate only through the internal `platform` network. Use `docker compose exec` and `docker compose ps` rather than relying on a host port.
+
+Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 
 - web;
 - Apollo Router;
@@ -159,21 +193,32 @@ Do not commit full source films or generated HLS packages to the source reposito
 
 ## Troubleshooting sequence
 
-After Phase 01 implements the runtime-laboratory commands:
+For the implemented P01-R01 checkpoint:
 
-1. run the documented infrastructure-status command;
-2. inspect service readiness;
-3. validate configuration;
-4. check migration state;
-5. inspect router composition version;
-6. inspect trace and structured logs;
-7. inspect dependency health;
-8. reset only the affected local volume when safe;
-9. use full local reset last.
+1. run `docker compose --project-name aster --file infra/compose/compose.yml ps --all`;
+2. require PostgreSQL, Redis, and `platform-status` to report `healthy` and `platform-init` to report exit code `0`;
+3. inspect bounded logs with `docker compose --project-name aster --file infra/compose/compose.yml logs --no-color --tail 200`;
+4. validate the static policy with `pnpm platform:check` when Node.js is available;
+5. validate the resolved Compose model with `pnpm platform:compose:check` or the equivalent raw Docker command;
+6. use the normal `down` command to preserve PostgreSQL state;
+7. wait for P01-R02 before deleting the project volume through a supported reset.
+
+Migration, router, telemetry, and targeted volume-recovery diagnostics become executable only in their owning work items.
 
 ## Resource constraints
 
-Local infrastructure uses conservative defaults. Media processing concurrency is one unless explicitly raised. Observability retention is short. Broker and database volumes have documented cleanup.
+The P01-R01 limits are:
+
+| Service | CPU limit | Memory limit | PID limit | Retention |
+|---|---:|---:|---:|---|
+| PostgreSQL | `1.00` | `768 MiB` | `128` | named persistent volume |
+| Redis | `0.50` | `256 MiB` | `64` | disposable container state |
+| Initializer | `0.25` | `128 MiB` | `32` | one-shot, read-only filesystem |
+| Status | `0.25` | `128 MiB` | `32` | read-only filesystem |
+
+On the recorded WSL host, the first local pull completed in `11.79` seconds, clean startup reached health in `9.80` seconds, the PostgreSQL image occupied `302,294,786` bytes, the Redis image occupied `118,619,095` bytes, and the initialized PostgreSQL volume occupied `65.39 MB`. One idle sample observed approximately `37.94 MiB` for PostgreSQL, `6.45 MiB` for Redis, and `1.57 MiB` for status. These values are evidence-scoped observations, not portable requirements.
+
+Media processing concurrency, observability retention, broker resources, and their cleanup remain planned.
 
 Developers with limited resources may start a profile containing only dependencies required by the active phase.
 

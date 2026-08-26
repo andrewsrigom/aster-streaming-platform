@@ -48,8 +48,33 @@ test("rejects a weakened or missing aggregate decision", async () => {
   const weakened = source
     .replace("name: CI required", "name: Optional summary")
     .replace("if: always()", "if: success()")
-    .replace("FULL_PATH: ${{ needs.classify.outputs.full }}", "FULL_PATH: false");
+    .replace("FULL_PATH: ${{ needs.classify.outputs.full }}", "FULL_PATH: false")
+    .replace("PLATFORM_PATH: ${{ needs.classify.outputs.platform }}", "PLATFORM_PATH: false");
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "aggregate"));
+});
+
+test("rejects a missing local-platform decision path", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const weakened = source
+    .replace("node ./tools/verify-local-platform.mjs", "node ./tools/verify-ci-policy.ts")
+    .replace("./tools/verify-local-platform.test.mjs", "./tools/verify-ci-policy.test.ts")
+    .replace("PLATFORM_PATH: ${{ needs.classify.outputs.platform }}", "PLATFORM_PATH: false");
+  assert.ok(
+    validateWorkflowPolicy(weakened).some(
+      ({ rule }) => rule === "commands" || rule === "aggregate",
+    ),
+  );
+});
+
+test("rejects weakened local-platform execution or broad Docker cleanup", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const weakened = source
+    .replace("--wait --wait-timeout 120 platform-status", "platform-status")
+    .replace(
+      'docker compose --file "$COMPOSE_FILE" down --volumes --remove-orphans --timeout 10',
+      "docker system prune --all --force",
+    );
+  assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
 });
 
 test("rejects a missing public contribution check", async () => {

@@ -4,17 +4,17 @@ Last verified: 2026-08-26
 
 ## Scope
 
-This report validates the static specification package and verified executable repository foundation before application implementation begins.
+This report validates the static specification package, verified repository foundation, and locally verified P01-R01 container checkpoint before application implementation begins.
 
 ## Inventory
 
-- Markdown files: **129**
+- Markdown files: **130**
 - Documentation directories: **15**
 - Delivery phase specifications: **15**
 - Specialized agent skills: **16**
 - Architecture decision records, including the template: **11**
-- Total Markdown size: **515,073 bytes**
-- Local Markdown links checked: **284**
+- Total Markdown size: **534,506 bytes**
+- Local Markdown links checked: **302**
 
 ## Checks
 
@@ -28,14 +28,15 @@ This report validates the static specification package and verified executable r
 | Phase files are present from 00 through 14 | PASS |
 | Phase requirement definitions are unique | PASS |
 | Every product requirement has exactly one primary acceptance phase | PASS |
-| Phase 00 queue covers `P00-R01` through `P00-R11`, every foundation item is done, and the first Phase 01 item is ready | PASS |
+| Phase 00 queue covers `P00-R01` through `P00-R11`, every foundation item and P01-R01 is done, and P01-R02 is the only ready item | PASS |
 | Every required engineering subject maps to implementation, adverse tests, measurement, operation, and a demonstration checkpoint | PASS |
 | Repository governance defines coherent commits, tiered feedback, non-duplicated CI, and an ordered public GitHub creation path | PASS |
 | Required agent state and skill files exist | PASS |
 | Current status does not claim application implementation | PASS |
 | MIT repository scope is separated from media and dependency licensing | PASS |
 | Corrected public candidate clone passes frozen bootstrap, complete gates, audit, cleanup, and recovery | PASS |
-| Phase 01 container and FFmpeg capabilities are observed without preselecting supported versions | PASS |
+| P01-R01 exact PostgreSQL and Redis images, licenses, isolation, resources, health, initialization, persistence, and disposal semantics are recorded | PASS |
+| Local-platform policy, 8 adverse tests, Compose parsing, local and clean-public hostile-environment startup, dependency failure, recovery, protected hosted remediation, resolved review, and exact cleanup pass | PASS |
 
 ## External references
 
@@ -43,8 +44,8 @@ External links are centralized in `../references/OFFICIAL_REFERENCES.md` and fav
 
 ## Implementation status
 
-The static inventory is not evidence that application code, infrastructure, deployments, or product runtime behavior exist. The repository-only executable foundation is covered separately by its focused tests and [clean-checkout evidence](../../evidence/phase-00/clean-checkout-closeout.txt).
+The static inventory is not evidence that application code, deployments, or product runtime behavior exist. The repository-only foundation is covered by [Phase 00 closeout evidence](../../evidence/phase-00/clean-checkout-closeout.txt); the implemented PostgreSQL and Redis checkpoint is covered separately by [P01-R01 evidence](../../evidence/phase-01/local-platform-checkpoint.txt). No application or product data exists.
 
 The executable static validation is implemented by `pnpm docs:check`; its adverse fixtures run through `pnpm docs:test`. External link reachability is deliberately outside this deterministic local command.
 
-Current audit artifacts are indexed under [`evidence/phase-00/`](../../evidence/phase-00/README.md). P00-R10 records the initial public-main finding separately and verifies the corrected public candidate plus its protected hosted workflow.
+Current audit artifacts are indexed under [`evidence/phase-00/`](../../evidence/phase-00/README.md) and [`evidence/phase-01/`](../../evidence/phase-01/README.md). P01-R01 is verified by its local, hostile-environment clean public-checkout, protected hosted, and resolved review results.

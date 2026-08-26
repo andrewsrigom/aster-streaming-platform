@@ -34,11 +34,19 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Public repository governance | Publish the reviewed local history to the authorized public repository; use squash-only protected pull requests, a strict stable aggregate check, read-only Actions defaults, automatic branch cleanup, no routine bypass actors, and supported GitHub security controls | `evidence/phase-00/public-repository-governance.txt` |
 | Repository-memory enforcement | Use a dependency-free bounded structural validator for required files, queue and blocker state, active-plan and phase binding, resume targets, and session shape; retain semantic truth and history review as human or agent responsibilities | `evidence/phase-00/ai-state-workflow.txt` |
 
+## Resolved Phase 01 decisions
+
+| Decision | Resolution | Evidence |
+|---|---|---|
+| Core local container floor | Support Docker Engine `26.0.0` and Compose `2.26.1` as the measured floor; require the model and smoke path to pass on newer compatible releases | `evidence/phase-01/local-platform-checkpoint.txt` |
+| Local PostgreSQL runtime | Pin Docker Official Image `postgres:18.6-alpine3.23` by multi-platform digest; persist `/var/lib/postgresql` with version-specific `PGDATA` | `evidence/phase-01/local-platform-checkpoint.txt` |
+| Local Redis runtime | Pin Docker Official Image `redis:8.10.0-alpine` by multi-platform digest; select the AGPLv3 option for the unmodified external runtime and keep state disposable | `evidence/phase-01/local-platform-checkpoint.txt` |
+
 ## Pending decisions
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Local PostgreSQL, Redis, broker, object-storage, and telemetry versions | 01 | Architecture support, local resource use, health behavior, and integration smoke tests | No local dependency stack is claimed | Phase 01 verification |
+| Local broker, object-storage, and telemetry versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint is claimed | Phase 01 verification |
 | Configuration, typed SQL, Kafka, and telemetry adapter libraries | 01 | Compatibility, maintenance, license, security, runtime cost, exit strategy, and focused spike | Depend on domain ports, not an unselected library | Affected Phase 01 work item |
 | Service HTTP adapter | 01 | ADR with Apollo integration compatibility, middleware ordering, input limits, async errors, cancellation, graceful shutdown, maintenance, license, and performance evidence | Express 5 is the preferred candidate; no framework type enters domain or application code before the ADR | Phase 01 verification |
 | Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |

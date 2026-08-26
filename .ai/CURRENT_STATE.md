@@ -6,7 +6,7 @@ Last updated: 2026-08-26
 
 **Phase 01 — Local platform and runtime skeleton**
 
-Status: **READY**
+Status: **IN_PROGRESS**
 
 ## Verified
 
@@ -47,12 +47,19 @@ Status: **READY**
 - A second public clone at candidate commit `8b45b29` followed the README without manual supplementation, passed frozen bootstrap, a twenty-task uncached gate with 78 tests, registry audit, bounded cleanup, frozen recovery, repeated uncached validation, Git integrity, documentation, secret, unwanted-file, and restricted-context checks.
 - Protected pull request 5 run `32943620872` passed classification, documentation and security, dependency review, and the stable required aggregate for the clean-checkout candidate.
 - Every Phase 00 requirement has linked acceptance evidence; the repository foundation is `VERIFIED`, and no application behavior is claimed.
-- Docker/daemon `26.0.0`, Compose `2.26.1`, and FFmpeg/FFprobe `6.1.1` are available on the recorded host for Phase 01 compatibility work; no supported Phase 01 version or dependency is selected yet.
+- Docker/daemon `26.0.0` and Compose `2.26.1` are the measured P01-R01 support floor; FFmpeg/FFprobe `6.1.1` remain capability observations for their future owning work.
+- The P01-R01 candidate pins official PostgreSQL `18.6-alpine3.23` and Redis `8.10.0-alpine` multi-platform images by digest, records their separate licenses, and enforces an internal network, no host ports, finite resources, PostgreSQL persistence, and disposable Redis state.
+- Dependency-free platform policy validation and 8 adverse tests pass, including rejection of public project-name overrides; the CI classifier and aggregate add a path-aware local-platform lane with 18 passing policy tests without making the normal source gate require Docker.
+- A unique empty local Compose project passed immutable pull, 9.80-second health-gated startup, one-shot PostgreSQL and Redis protocol initialization, ongoing status, exact version checks, persistence and disposal semantics, 13.945-second dependency-failure detection, 2.834-second recovery, data-preserving stop/restart, resource inspection, and unrelated-project isolation.
+- Public candidate commit `563d09f` started through the exact README Docker-only command from a new public clone with no existing Aster project resources; status became healthy in 7.39 seconds, exact dependency versions passed, the normal stop preserved PostgreSQL, and exact verification cleanup returned all Aster project resource counts to zero.
+- Protected pull request 6 run `32947483503` passed change classification, dependency review, documentation/security, frozen source quality and audit, the first hosted `Local platform` pull/start/protocol/cleanup job, and the stable required aggregate.
+- Automated review discussion `3860940991` identified inherited project-name override risk. Corrected candidate `c246051` explicitly pins every public operation to `aster`, passes 8 adverse platform tests, starts from a clean public clone with a hostile `COMPOSE_PROJECT_NAME` while creating 4 Aster and 0 collision containers, preserves PostgreSQL on normal stop, cleans exact project state to zero, passes protected run `32948639792`, and has the review thread resolved.
 
 ## Not implemented
 
 - Applications and services
-- Databases and migrations
+- Product database schemas and migrations
+- Broker, object storage, and observability runtime
 - GraphQL schemas
 - Media pipeline
 - Observability stack
@@ -61,7 +68,7 @@ Status: **READY**
 
 ## Next outcome
 
-Select the exact Phase 01 local dependency versions and resource bounds, record the decisions and rollback in a new active change plan for P01-R01, and implement only the smallest Docker-only runtime checkpoint owned by that requirement.
+Start P01-R02 with a new active change plan and implement only an explicit destructive reset that proves local scope, exact project identity, confirmation behavior, and refusal of hosted targets.
 
 ## Current risks
 
@@ -75,7 +82,9 @@ Select the exact Phase 01 local dependency versions and resource bounds, record 
 - Foundation cleanup intentionally does not remove Docker state or future durable local data; Phase 01 must implement and verify a separate explicit project-scoped reset.
 - Both P00-R10 clones reused warm Corepack and pnpm content-addressable stores; cold-registry latency and full offline bootstrap on an empty machine remain unmeasured.
 - Native Windows and macOS foundation execution are not measured; the verified local path is the named WSL environment and hosted CI covers Ubuntu 24.04.
-- Docker, Compose, FFmpeg, and FFprobe capabilities are observed on the current host, but supported Phase 01 versions, images, ports, resource limits, health behavior, and reset scope remain deliberately unselected.
+- P01-R01 selects only the Docker/Compose floor plus PostgreSQL and Redis; broker, object storage, telemetry, FFmpeg use, application ports, and the destructive reset remain intentionally unselected.
+- Redis `8.10.0` uses the AGPLv3 option from its tri-license as an unmodified external service; redistribution, modification, or a hosted Redis offering requires a new license review.
+- P01-R01 runtime behavior is measured only on Docker Desktop/WSL amd64; the image indexes include arm64 but native Windows, macOS, rootless Docker, Podman, and alternate Compose implementations remain unverified.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

@@ -229,15 +229,53 @@ export function validateWorkflowPolicy(
     [/\.\/tools\/verify-community-files\.test\.ts/u, "community-file policy tests are required"],
     [/node \.\/tools\/scan-secrets\.ts --all/u, "secret scan is required"],
     [/node \.\/tools\/verify-ci-policy\.ts/u, "CI policy check is required"],
+    [/node \.\/tools\/verify-local-platform\.mjs/u, "local-platform policy check is required"],
+    [/\.\/tools\/verify-local-platform\.test\.mjs/u, "local-platform policy tests are required"],
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],
+    [/^\s{4}name:\s*Local platform\s*$/mu, "local-platform job is required"],
+    [
+      /needs\.classify\.outputs\.platform == 'true'/u,
+      "local-platform job must use the isolated path decision",
+    ],
+    [
+      /COMPOSE_PROJECT_NAME:\s*aster-ci-\$\{\{ github\.run_id \}\}-\$\{\{ github\.run_attempt \}\}/u,
+      "local-platform job must use a unique run-scoped Compose project",
+    ],
+    [
+      /docker compose --file "\$COMPOSE_FILE" config --quiet/u,
+      "local-platform job must validate the Compose model",
+    ],
+    [
+      /docker compose --file "\$COMPOSE_FILE" pull/u,
+      "local-platform job must pull immutable images",
+    ],
+    [
+      /docker compose --file "\$COMPOSE_FILE" up\s+--wait --wait-timeout 120 platform-status/u,
+      "local-platform job must run the bounded health-gated status target",
+    ],
+    [/SHOW server_version/u, "local-platform job must verify PostgreSQL"],
+    [/redis_version:8\.10\.0/u, "local-platform job must verify Redis"],
+    [/aster local platform initialized/u, "local-platform job must verify initialization"],
+    [
+      /- name: Remove only the CI Compose project\s+if: always\(\)\s+run: docker compose --file "\$COMPOSE_FILE" down --volumes --remove-orphans --timeout 10/u,
+      "local-platform job must always remove only its unique Compose project",
+    ],
     [
       /allow-licenses:\s*Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, ISC, MIT/u,
       "dependency review must enforce the reviewed license set",
     ],
   ] as const) {
     addRequirement(violations, file, source, "commands", pattern, detail);
+  }
+  if (/docker\s+(?:system|container|volume|network|image)\s+prune/u.test(source)) {
+    violations.push({
+      detail: "broad Docker prune commands are prohibited",
+      file,
+      line: 1,
+      rule: "commands",
+    });
   }
   addRequirement(
     violations,
@@ -260,13 +298,17 @@ export function validateWorkflowPolicy(
     file,
     source,
     "aggregate",
-    /needs:\s*\[classify, governance, quality, dependency-review\]/u,
+    /needs:\s*\[classify, governance, quality, dependency-review, platform\]/u,
     "aggregate job must depend on every decision job",
   );
   for (const [pattern, detail] of [
     [
       /FULL_PATH:\s*\$\{\{ needs\.classify\.outputs\.full \}\}/u,
       "aggregate must receive the path decision",
+    ],
+    [
+      /PLATFORM_PATH:\s*\$\{\{ needs\.classify\.outputs\.platform \}\}/u,
+      "aggregate must receive the platform path decision",
     ],
     [/EVENT_NAME:\s*\$\{\{ github\.event_name \}\}/u, "aggregate must receive the event name"],
     [
@@ -284,6 +326,10 @@ export function validateWorkflowPolicy(
     [
       /"\$dependency_expected" == "false" && "\$DEPENDENCY_RESULT" != "skipped"/u,
       "aggregate must reject an unexpected dependency-review result",
+    ],
+    [
+      /"\$platform_expected" == "false" && "\$PLATFORM_RESULT" != "skipped"/u,
+      "aggregate must reject an unexpected local-platform result",
     ],
   ] as const) {
     addRequirement(violations, file, source, "aggregate", pattern, detail);

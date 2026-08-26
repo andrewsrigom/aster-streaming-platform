@@ -42,7 +42,7 @@ The phases remain ordered. Each checkpoint extends the same repository and local
 | Closed phase | Demonstrable checkpoint |
 |---:|---|
 | 00 | A clean checkout installs deterministically and passes the documented repository gates. |
-| 01 | A Docker-based runtime laboratory starts without hosted credentials, reports dependency readiness, emits baseline telemetry, and shuts down with a bounded drain. |
+| 01 | A Docker-based runtime laboratory starts without hosted credentials, reports dependency and application readiness, emits baseline telemetry, and shuts down with a bounded drain. P01-R01 first establishes the PostgreSQL and Redis status checkpoint; the later Phase 01 runtime work completes application telemetry and drain behavior. |
 | 02 | A deterministic synthetic account can obtain a local session and exercise owner-authorized profile behavior without a hosted identity account. |
 | 03 | The local seed exposes a rights-shaped synthetic catalog title and a small technically valid HLS fixture. |
 | 04 | First-party GraphQL operations traverse Apollo Router and the composed Identity and Catalog subgraphs. |
@@ -76,7 +76,7 @@ The demo lane must require only Git, a supported container runtime with Compose,
 - fail with a diagnosable dependency or resource reason;
 - record startup duration, image and volume footprint, and idle resource use before a checkpoint is called verified.
 
-Phase 00 defines this interface and its safety requirements. Phase 01 selects and verifies the exact runtime-laboratory command and supported Compose version. Phase 07 owns the first playable clean-start acceptance.
+Phase 00 defines this interface and its safety requirements. P01-R01 implements the first exact runtime-laboratory command and the measured Docker and Compose floor for PostgreSQL and Redis. The remaining Phase 01 work extends that same path with the application runtime and other phase-owned dependencies. Phase 07 owns the first playable clean-start acceptance.
 
 ### Laboratory lane
 

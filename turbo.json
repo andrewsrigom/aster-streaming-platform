@@ -53,6 +53,23 @@
     "//#architecture:test": {
       "inputs": ["tools/verify-architecture.ts", "tools/verify-architecture.test.ts"]
     },
+    "//#platform:check": {
+      "inputs": [
+        "README.md",
+        "docs/operations/LOCAL_DEVELOPMENT.md",
+        "infra/compose/**",
+        "tools/verify-local-platform.mjs"
+      ]
+    },
+    "//#platform:test": {
+      "inputs": [
+        "README.md",
+        "docs/operations/LOCAL_DEVELOPMENT.md",
+        "infra/compose/**",
+        "tools/verify-local-platform.mjs",
+        "tools/verify-local-platform.test.mjs"
+      ]
+    },
     "//#ai:check": {
       "inputs": [".ai/**", "tools/verify-ai-state.ts"]
     },
@@ -91,7 +108,12 @@
       "inputs": ["tools/scan-secrets.ts", "tools/scan-secrets.test.ts"]
     },
     "//#ci:check": {
-      "inputs": [".github/**", "tools/verify-ci-policy.ts"]
+      "inputs": [
+        ".github/**",
+        "infra/compose/**",
+        "tools/verify-ci-policy.ts",
+        "tools/verify-local-platform.mjs"
+      ]
     },
     "//#ci:test": {
       "inputs": [
@@ -99,7 +121,9 @@
         "tools/classify-ci-change.ts",
         "tools/classify-ci-change.test.ts",
         "tools/verify-ci-policy.ts",
-        "tools/verify-ci-policy.test.ts"
+        "tools/verify-ci-policy.test.ts",
+        "tools/verify-local-platform.mjs",
+        "tools/verify-local-platform.test.mjs"
       ]
     },
     "//#commit:test": {

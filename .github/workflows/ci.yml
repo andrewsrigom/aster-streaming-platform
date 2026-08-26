@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       full: ${{ steps.change.outputs.full }}
+      platform: ${{ steps.change.outputs.platform }}
       classification: ${{ steps.change.outputs.classification }}
     steps:
       - name: Check out repository history
@@ -63,6 +64,8 @@ jobs:
         run: node ./tools/scan-secrets.ts --all
       - name: Validate CI policy
         run: node ./tools/verify-ci-policy.ts
+      - name: Validate local platform policy
+        run: node ./tools/verify-local-platform.mjs
       - name: Test governance tools
         run: >-
           node --test
@@ -72,6 +75,7 @@ jobs:
           ./tools/scan-secrets.test.ts
           ./tools/classify-ci-change.test.ts
           ./tools/verify-ci-policy.test.ts
+          ./tools/verify-local-platform.test.mjs
 
   quality:
     name: Install and source quality
@@ -132,10 +136,43 @@ jobs:
           vulnerability-check: true
           comment-summary-in-pr: never
 
+  platform:
+    name: Local platform
+    needs: classify
+    if: >-
+      needs.classify.outputs.platform == 'true' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.draft == false)
+    runs-on: ubuntu-24.04
+    env:
+      COMPOSE_FILE: infra/compose/compose.yml
+      COMPOSE_PROJECT_NAME: aster-ci-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate Compose model
+        run: docker compose --file "$COMPOSE_FILE" config --quiet
+      - name: Pull immutable platform images
+        run: docker compose --file "$COMPOSE_FILE" pull
+      - name: Start health-gated local platform
+        run: >-
+          docker compose --file "$COMPOSE_FILE" up
+          --wait --wait-timeout 120 platform-status
+      - name: Verify versions, protocols, initialization, and status
+        run: |
+          docker compose --file "$COMPOSE_FILE" ps --all
+          docker compose --file "$COMPOSE_FILE" exec -T postgres psql --username=aster --dbname=aster --tuples-only --command="SHOW server_version" | grep '18.6'
+          docker compose --file "$COMPOSE_FILE" exec -T redis redis-cli --raw INFO server | grep '^redis_version:8.10.0'
+          docker compose --file "$COMPOSE_FILE" logs --no-color platform-init | grep 'aster local platform initialized'
+      - name: Remove only the CI Compose project
+        if: always()
+        run: docker compose --file "$COMPOSE_FILE" down --volumes --remove-orphans --timeout 10
+
   required:
     name: CI required
     if: always()
-    needs: [classify, governance, quality, dependency-review]
+    needs: [classify, governance, quality, dependency-review, platform]
     runs-on: ubuntu-24.04
     steps:
       - name: Verify applicable job results
@@ -144,7 +181,9 @@ jobs:
           GOVERNANCE_RESULT: ${{ needs.governance.result }}
           QUALITY_RESULT: ${{ needs.quality.result }}
           DEPENDENCY_RESULT: ${{ needs.dependency-review.result }}
+          PLATFORM_RESULT: ${{ needs.platform.result }}
           FULL_PATH: ${{ needs.classify.outputs.full }}
+          PLATFORM_PATH: ${{ needs.classify.outputs.platform }}
           EVENT_NAME: ${{ github.event_name }}
           IS_DRAFT: ${{ github.event.pull_request.draft || false }}
         shell: bash
@@ -154,6 +193,9 @@ jobs:
           fi
 
           if [[ "$FULL_PATH" != "true" && "$FULL_PATH" != "false" ]]; then
+            exit 1
+          fi
+          if [[ "$PLATFORM_PATH" != "true" && "$PLATFORM_PATH" != "false" ]]; then
             exit 1
           fi
 
@@ -176,5 +218,16 @@ jobs:
             exit 1
           fi
           if [[ "$dependency_expected" == "false" && "$DEPENDENCY_RESULT" != "skipped" ]]; then
+            exit 1
+          fi
+
+          platform_expected=false
+          if [[ "$PLATFORM_PATH" == "true" && ( "$EVENT_NAME" != "pull_request" || "$IS_DRAFT" == "false" ) ]]; then
+            platform_expected=true
+          fi
+          if [[ "$platform_expected" == "true" && "$PLATFORM_RESULT" != "success" ]]; then
+            exit 1
+          fi
+          if [[ "$platform_expected" == "false" && "$PLATFORM_RESULT" != "skipped" ]]; then
             exit 1
           fi

@@ -51,9 +51,18 @@ Patch upgrades are deliberate work: update every duplicated pin, verify the offi
 
 pnpm enforces a 24-hour release-maturity window in strict mode. Because Turborepo `2.10.12` was selected within that window after its Windows fix was reviewed, `pnpm-workspace.yaml` records version-specific exceptions for the signed, integrity-locked Turbo artifacts. Future fresh dependencies fail resolution until mature unless a similarly narrow reviewed exception is committed.
 
+## Decisions resolved in Phase 01
+
+- The P01-R01 supported floor is Docker Engine `26.0.0` with Docker Compose `2.26.1`. Newer releases remain compatible only while the checked Compose model and smoke path pass.
+- PostgreSQL uses the Docker Official Image `18.6-alpine3.23` at multi-platform digest `sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f`. PostgreSQL 18 is supported upstream through November 2030, and the selected patch was current during verification.
+- Redis Open Source uses the Docker Official Image `8.10.0-alpine` at multi-platform digest `sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241`. The unmodified local runtime uses the AGPLv3 option from the Redis 8 tri-license and remains separate from MIT-licensed Aster code.
+- The core checkpoint publishes no database or cache port, uses an internal Compose network, persists PostgreSQL 18 at its official `/var/lib/postgresql` parent mount, and makes Redis disposable with bounded memory and `allkeys-lfu` eviction.
+
+The selection evidence and measured limits are in [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt).
+
 ## Decisions deferred to Phase 01
 
-- exact PostgreSQL, Redis, broker, object-storage, and observability container versions;
+- exact broker, object-storage, and observability container versions;
 - concrete configuration library;
 - concrete typed SQL library;
 - concrete Kafka client;
