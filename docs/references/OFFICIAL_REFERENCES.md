@@ -95,6 +95,13 @@ Do not infer that every film or asset uses the same license. Review each officia
 - Apollo Federation: https://www.apollographql.com/docs/graphos/schema-design/federated-schemas/federation
 - Federation directives: https://www.apollographql.com/docs/graphos/schema-design/federated-schemas/reference/directives
 - Apollo Router: https://www.apollographql.com/docs/graphos/routing
+- Apollo Server integrations: https://www.apollographql.com/docs/apollo-server/integrations/integration-index
+- Apollo Server Express middleware: https://www.apollographql.com/docs/apollo-server/api/express-middleware
+- Apollo Server HTTP drain plugin: https://www.apollographql.com/docs/apollo-server/api/plugin/drain-http-server
+- Apollo-maintained Express 5 integration: https://github.com/apollo-server-integrations/apollo-server-integration-express5
+- Express 5 error handling: https://expressjs.com/en/5x/guide/error-handling/
+- Fastify server, body-limit, and close behavior: https://fastify.dev/docs/latest/Reference/Server/
+- Community Apollo Server integration for Fastify: https://github.com/apollo-server-integrations/apollo-server-integration-fastify
 - Router security: https://www.apollographql.com/docs/graphos/routing/security
 - Demand control: https://www.apollographql.com/docs/graphos/routing/security/demand-control
 - Persisted queries: https://www.apollographql.com/docs/graphos/routing/security/persisted-queries

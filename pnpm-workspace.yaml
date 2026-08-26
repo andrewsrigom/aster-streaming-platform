@@ -21,3 +21,6 @@ minimumReleaseAgeExclude:
   - "@turbo/windows-64@2.10.12"
   - "@turbo/windows-arm64@2.10.12"
   - turbo@2.10.12
+allowBuilds:
+  # The postinstall only creates an unused CLI folder and prints dependency-range warnings.
+  "@apollo/protobufjs": false

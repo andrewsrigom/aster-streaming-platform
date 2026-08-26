@@ -112,6 +112,7 @@ This index lists repository governance artifacts and every Markdown source in th
 ## evidence/phase-01
 
 - [`evidence/phase-01/README.md`](../../evidence/phase-01/README.md) — Phase 01 Evidence Index
+- [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt) — Express HTTP Adapter Compatibility Evidence
 - [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt) — Local Platform Checkpoint Evidence
 
 ## docs/00-start-here
@@ -162,6 +163,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/adr/0008-client-state.md`](../adr/0008-client-state.md) — ADR-0008: Separate Apollo Remote State from Redux Interaction State
 - [`docs/adr/0009-observability.md`](../adr/0009-observability.md) — ADR-0009: Standardize Telemetry through OpenTelemetry
 - [`docs/adr/0010-content-rights.md`](../adr/0010-content-rights.md) — ADR-0010: Make Rights Verification a Publication Invariant
+- [`docs/adr/0011-express-http-adapter.md`](../adr/0011-express-http-adapter.md) — ADR-0011: Use Express 5 behind a Bounded HTTP Adapter
 
 ## docs/specs
 
@@ -198,6 +200,7 @@ This index lists repository governance artifacts and every Markdown source in th
 ## docs/operations
 
 - [`docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`](../operations/CONFIGURATION_AND_ENVIRONMENTS.md) — Configuration and Environments
+- [`docs/operations/HTTP_TRANSPORT.md`](../operations/HTTP_TRANSPORT.md) — HTTP Transport
 - [`docs/operations/INCIDENT_RESPONSE.md`](../operations/INCIDENT_RESPONSE.md) — Incident Response
 - [`docs/operations/LOCAL_DEVELOPMENT.md`](../operations/LOCAL_DEVELOPMENT.md) — Local Development
 - [`docs/operations/REPOSITORY_GOVERNANCE.md`](../operations/REPOSITORY_GOVERNANCE.md) — Repository Governance

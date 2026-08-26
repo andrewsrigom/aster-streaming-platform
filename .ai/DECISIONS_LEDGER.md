@@ -44,6 +44,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Destructive local reset boundary | Require explicit local intent and confirmation, fixed Aster project and Compose file, local-socket and exact resource-label verification, zero-resource postconditions, and no broad fallback cleanup | `evidence/phase-01/local-reset.txt` |
 | Process-start configuration validation | Exact-pin `zod@4.4.3` behind repository-owned types and sanitized errors; read injected environment entries directly, classify every accepted field, and expose no secret value in diagnostics | `evidence/phase-01/runtime-configuration.txt` |
 | Structured runtime logging | Exact-pin Pino `10.3.1` behind repository-owned declarations; emit bounded JSON to standard output with reviewed sensitive-key redaction, sanitized errors, and injected validated trace context | `evidence/phase-01/runtime-logging.txt` |
+| Service HTTP adapter | Use exact-pinned Express `5.2.1` behind `@aster/http-express`; use Apollo's maintained Express 5 integration at service composition roots and keep framework types out of domain and application layers | `docs/adr/0011-express-http-adapter.md`; `evidence/phase-01/http-adapter.txt` |
 
 ## Pending decisions
 
@@ -51,7 +52,6 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 |---|---:|---|---|---|
 | Local broker, object-storage, and telemetry versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint is claimed | Phase 01 verification |
 | Typed SQL, Kafka, and telemetry adapter libraries | 01 | Compatibility, maintenance, license, security, runtime cost, exit strategy, and focused spike | Depend on domain ports, not an unselected library | Affected Phase 01 work item |
-| Service HTTP adapter | 01 | ADR with Apollo integration compatibility, middleware ordering, input limits, async errors, cancellation, graceful shutdown, maintenance, license, and performance evidence | Express 5 is the preferred candidate; no framework type enters domain or application code before the ADR | Phase 01 verification |
 | Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
 | Router-to-subgraph identity-context protection | 04 | Threat model, forgery tests, key handling, local topology, deadline, and rotation path | No public route reaches a subgraph directly; no public identity header is trusted | Phase 04 verification |

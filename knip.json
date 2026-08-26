@@ -8,6 +8,10 @@
     "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
   ],
   "workspaces": {
+    "packages/http-express": {
+      "entry": ["src/index.ts", "src/check-http-express.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
     "packages/config": {
       "entry": ["src/index.ts", "src/check-runtime-config.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]

@@ -2,6 +2,97 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified the bounded Express HTTP transport
+
+### Completed
+
+- Closed the unframed empty-body boundary in `cd572ad`; the post-parser gate returns stable `400 INVALID_JSON_BODY` before Apollo and the real-socket test has a deterministic deadline.
+- Exact public candidate `cd572ad` passed frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70` seconds, audit, secret scan, clean Git, exact temporary-root cleanup, and protected run `32980849863`.
+- Confirmation review found one P2 contract violation for an unframed empty request declaring gzip. Final candidate `487b403` validates content encoding before body parsing and proves stable `415 UNSUPPORTED_MEDIA_TYPE` through the real socket.
+- Final source candidate `487b403` passed eight focused tests, the diagnostic, registry audit, 31 of 31 forced local tasks in `20.70` seconds, and protected run `32981788859`. Evidence reply `3863902900` is posted and all nine review discussions are resolved.
+- Classified P01-R11 as `VERIFIED` without adding a service, product schema, process-signal owner, hosted resource, Docker mutation, or durable state. Recorded P00-R06 corrective maintenance as the next `READY` item before P01-R05.
+
+### Evidence
+
+- Final implementation: `487b403729d337d598a48903d1ac8987b8186852`.
+- Exact clean checkout: `cd572ad947631b9adf08217dac1ca0ecd5504123`; install `1.24s`; graph `23.70s`; audit, secret scan, Git state, and cleanup pass.
+- Final local graph: 31 of 31 forced tasks in `20.70s`; high-severity audit reports no known vulnerability.
+- Protected runs: `32980849863` at the clean-checkout candidate and `32981788859` at final source; both pass every applicable job.
+- Review: nine actionable discussions have evidence replies and are resolved; the final P2 is discussion `PRRT_kwDOUEkeis6cgNqW`.
+- Raw artifact: `evidence/phase-01/http-adapter.txt` (`VERIFIED`).
+
+### Next action
+
+Pass the documentation closeout, squash-merge pull request 10, verify the post-merge run, and execute the P00-R06 risk-proportionate verification correction before starting P01-R05.
+
+## 2026-08-26 — Implemented the bounded Express HTTP candidate
+
+### Completed
+
+- Activated P01-R11 with the shared transport owner, exact trust boundaries, input limits, failure behavior, lifecycle split, rollback, and evidence plan.
+- Compared Express 5, Fastify 5, native Node.js HTTP, and Apollo standalone behavior using current official documentation, registry metadata, compatibility, maintenance ownership, license, security, installed-cost, and exit-path evidence.
+- Accepted ADR-0011 and exact-pinned Express `5.2.1` behind `@aster/http-express`; exact-pinned Apollo Server `5.5.1`, Apollo-maintained `@as-integrations/express5@1.1.2`, and GraphQL.js `16.14.2` are executable compatibility dependencies only.
+- Added the fixed `/graphql` transport boundary with a stable pre-mount `503`, `POST` media-type enforcement, strict 64 KiB JSON default and 256 KiB hard maximum, parser-only `400/413` classification, terminal sanitized errors, disabled disclosure headers, and request-local cancellation cleanup.
+- Added a loopback diagnostic and eight tests covering hostile options, one-time mount, exact routing, parser order, unsupported/malformed/oversized input, forged parser categories, rejected Promise middleware, client disconnect, real Apollo execution, in-flight HTTP drain, process output, and generated declarations.
+- Kept P01-R05 responsible for process signals, readiness, generalized in-flight tracking, dependency closure, the overall shutdown deadline, and forced termination; no service, product schema, authentication, telemetry SDK, public port, or Docker resource was added.
+- Passed focused build/test/diagnostic, strict package typecheck, repository lint, formatting, Knip, architecture, secret scanning, license inventory, and high-severity registry audit. Eight tests pass and the diagnostic emits one stable JSON line.
+- Recorded an isolated non-benchmark process pair: HTTP/Apollo diagnostic `0.26` seconds and `94,020` KiB maximum RSS; empty Node.js `0.01` seconds and `42,380` KiB.
+- Implementation commit `e355e29` passed the complete forced local graph with 31 of 31 uncached tasks in `22.35` seconds, retaining all HTTP, logging, configuration, repository-tool, documentation, memory, security, architecture, and CI-policy assertions.
+- Published candidate `e7b0c2b`, cloned it over HTTPS into an empty temporary root, completed frozen install with 259 packages reused and zero downloaded, passed eight focused tests and the diagnostic, and passed 31 of 31 forced uncached tasks in `20.594` seconds.
+- The clean public candidate also passed audit, secret scanning, and clean-Git checks. Its resolved temporary path, public origin, exact SHA, and clean state were revalidated before only that root was removed; Docker was not invoked.
+- Opened pull request 10 at candidate `8f05669`; protected run `32969827929` passed hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`. Dependency review emitted nine informational low Scorecard warnings for Express transitives while the gate and vulnerability audit passed.
+- Self-review found the drain test released its resolver before Apollo's documented next-turn server close. Hardened it to wait one event-loop turn, prove the listener is closed while both stop and response remain pending, refuse a new connection, then release and verify the drained response. Five consecutive eight-test runs plus type, lint, formatting, and secret checks pass.
+- Hardened public candidate `a610697` passed frozen install, eight focused tests, the diagnostic, 31 of 31 uncached tasks in `22.673` seconds, audit, secret scanning, clean Git, and exact temporary-clone removal; protected run `32970353368` passed every applicable job.
+- Independent review comment `3862878496` found unsupported parser charset and content-encoding failures were incorrectly converted from `415` to `500`. The remediation maps only `charset.unsupported` and `encoding.unsupported` from the parser-local handler to stable `415 UNSUPPORTED_MEDIA_TYPE`; adverse charset and encoding-canary assertions pass without reflection.
+- The review remediation passed the complete local graph with 31 of 31 uncached tasks in `27.634` seconds.
+- Remediated public candidate `cb5a0fa` passed frozen install with 259 packages reused and zero downloaded, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.639` seconds, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32971194276` passed every applicable job at `cb5a0fa`. Evidence reply `3862910571` was posted and discussion `PRRT_kwDOUEkeis6cdpFj` is resolved; final review was requested at the remediated head.
+- Follow-up independent review comment `3862956772` found Express's default routing accepted `/graphql/` and `/GRAPHQL` despite the exact-route contract. The local remediation enables strict and case-sensitive routing before registration and adds both stable `404` assertions; focused and static checks pass.
+- The exact-route remediation passed the complete local graph with 31 of 31 uncached tasks in `14.951` seconds.
+- Exact-route public candidate `9ddf8d6` passed frozen install with 259 packages reused and zero downloaded, eight focused tests, the diagnostic, 31 of 31 forced tasks in `14.22` seconds, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32972076199` passed every applicable job. Evidence reply `3862985546` was posted, discussion `PRRT_kwDOUEkeis6cd2GQ` is resolved, and final review was requested at `9ddf8d6`.
+- Follow-up independent review comment `3863047553` found valid UTF-16 JSON was accepted despite the documented UTF-8-only policy. The local remediation parses `Content-Type` with Node.js `MIMEType` before body parsing, accepts only absent charset or explicit UTF-8, and adds a valid UTF-16LE JSON body that returns stable `415`; the complete local graph passes 31 of 31 uncached tasks in `17.701` seconds.
+- UTF-8 candidate `35b307a` passed a frozen empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `25.339` seconds, audit, secret scan, and clean Git; protected run `32973291227` passed.
+- Follow-up independent review comment `3863154140` found duplicate charset parameters could let Node.js admit the first value while Express decoded using the last. The local remediation rejects duplicates while respecting quoted semicolons, covers both the bypass and false-positive boundary, and passes 31 of 31 uncached local tasks in `17.16` seconds.
+- Duplicate-charset candidate `6b8e1c2` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `27.046` seconds, audit, secret scan, and clean Git; protected run `32974480044` passed. Evidence reply `3863199830` is posted and discussion `PRRT_kwDOUEkeis6ceWrB` is resolved.
+- Follow-up independent review comment `3863261260` found the direct compatibility diagnostic had no repository-owned request deadline. The local remediation passes a two-second abort signal through fetch and response consumption, clears its timer in `finally`, and passes 31 of 31 uncached local tasks in `15.235` seconds.
+- Diagnostic-deadline candidate `c2596d2` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406` seconds, audit, secret scan, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and discussion `PRRT_kwDOUEkeis6ceoLv` is resolved.
+- Follow-up independent review comment `3863364289` identified the malformed `application/json; charset` boundary. The local remediation replaces lenient Node.js MIME parsing with strict exact-pinned `content-type@1.0.5`, retains duplicate rejection, adds the stable `415` regression, and passes 31 of 31 uncached local tasks in `13.514` seconds.
+- Strict-media candidate `87127cf` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383` seconds, audit, secret scan, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and discussion `PRRT_kwDOUEkeis6ce5OP` is resolved.
+- Follow-up independent review comment `3863476696` found corrupt compressed request bytes could produce a client-triggered `500`. The local remediation disables request inflation, makes every non-identity encoding a stable pre-decompression `415`, adds the corrupt-gzip regression, and passes 31 of 31 uncached local tasks in `16.588` seconds.
+- Uncompressed-request candidate `18d7f27` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.415` seconds, audit, secret scan, and clean Git; protected run `32978001392` passed. Evidence reply `3863519812` is posted and discussion `PRRT_kwDOUEkeis6cfLsL` is resolved.
+- Follow-up independent review comment `3863619265` found an unframed empty `POST` could reach Apollo without a parsed body. The local remediation adds a post-parser presence gate and a deadline-bounded real Node.js request with default length headers disabled; it returns stable `400` before GraphQL, and the complete local graph passes 31 of 31 forced tasks in `18.24` seconds.
+
+### Evidence
+
+- Local branch: `feat/p01-r11-http-adapter` from released `main` commit `e33f90b1bfee157749e5b290bffd0a80d169c697`.
+- Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
+- Clean public checkout: `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`; 31 tasks, 0 cached, `20.594s`.
+- Initial protected run: `32969827929` at `8f056693735d8d18109db148a04f37a10c93a409`.
+- Hardened clean checkout and protected run: `a610697112b1c507ef13628d13c6bc2032e8d1a5`; 31 tasks in `22.673s`; run `32970353368`.
+- Independent review: actionable comment `3862878496`; local remediation pending commit.
+- Remediation: `cb5a0fa6165da322ccba53affb75d88d66c7f348`; clean checkout 31 tasks in `17.639s`; protected run `32971194276`; resolved evidence reply `3862910571`.
+- Follow-up review: actionable comment `3862956772`; exact-route remediation pending commit.
+- Exact-route remediation: `9ddf8d6a15f3cf87a9846bf0d4a66194620c4eb4`; clean checkout 31 tasks in `14.22s`; protected run `32972076199`; resolved reply `3862985546`.
+- Follow-up review: actionable comment `3863047553`; UTF-8 media-gate remediation pending commit.
+- UTF-8 remediation: `35b307ab2ac9b8a4a6c30b6cab8af07130c64ebd`; clean checkout 31 tasks in `25.339s`; protected run `32973291227`; review finding `3863154140` remains open.
+- Follow-up review: actionable comment `3863154140`; duplicate-charset remediation pending commit.
+- Duplicate-charset remediation: `6b8e1c29225280226b7c37b022fff3d1023e15b1`; clean checkout 31 tasks in `27.046s`; protected run `32974480044`; resolved reply `3863199830`.
+- Follow-up review: actionable comment `3863261260`; diagnostic-deadline remediation pending commit.
+- Diagnostic-deadline remediation: `c2596d2e64d68df4cd711bccb13201305ed5f4b2`; clean checkout 31 tasks in `18.406s`; protected run `32975500067`; resolved reply `3863295674`.
+- Follow-up review: actionable comment `3863364289`; strict-media-type remediation pending commit.
+- Strict-media remediation: `87127cf5370f8bf111d2dd3d899422baef146b12`; clean checkout 31 tasks in `18.383s`; protected run `32976909222`; resolved reply `3863420489`.
+- Follow-up review: actionable comment `3863476696`; uncompressed-request remediation pending commit.
+- Uncompressed-request remediation: `18d7f2768a43e22e1d4513267f850a64584eaa10`; clean checkout 31 tasks in `17.415s`; protected run `32978001392`; resolved reply `3863519812`.
+- Follow-up review: actionable comment `3863619265`; empty-body remediation passes the complete local graph in `18.24s` and is pending commit.
+- Focused assertions: 8 passed, 0 failed, 0 skipped.
+- Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
+- Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
+
+### Next action
+
+Run and publish the empty-body remediation, close comment `3863619265`, and request final independent review at the new head.
+
 ## 2026-08-26 — Verified structured runtime logging baseline
 
 ### Completed

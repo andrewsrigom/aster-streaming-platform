@@ -1,0 +1,167 @@
+# Experiment P01-R11-L01: Express HTTP Adapter Compatibility
+
+- Status: VERIFIED
+- Date: 2026-08-26
+- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; verified source candidate `487b403729d337d598a48903d1ac8987b8186852`
+- Owner: Aster shared transport infrastructure
+- Related requirement: P01-R11
+- Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
+
+## Question
+
+Can Express 5 provide a bounded, replaceable Node.js HTTP boundary for Apollo Server on the pinned runtime, including deterministic middleware order, body limits, safe async errors, client cancellation, and graceful HTTP drain, without creating a product service or leaking framework behavior into inner layers?
+
+## Hypothesis
+
+One repository-owned adapter around exact-pinned Express 5 will enforce the reviewed request boundary and expose only a Node.js listener plus its transport mounting seam. Real-socket tests will prove Apollo execution, asynchronous rejection handling, client cancellation, and drain compatibility while stable errors omit untrusted values.
+
+## Variables
+
+- Independent: `@aster/http-express` with Express `5.2.1`, compared only with an empty Node.js process for the isolated startup observation.
+- Dependent: response status/code, middleware invocation, header disclosure, cancellation state, in-flight drain result, process exit, elapsed time, and maximum resident set size.
+- Controlled: Node.js `24.19.0`, pnpm `11.24.0`, one WSL host, loopback-only ephemeral ports, synthetic GraphQL schema and payloads, no Docker dependency, no product service, and a warm ordinary filesystem/package store.
+
+## Environment
+
+- hardware/instance: Local x86_64 development host; exact physical CPU and memory allocation are not isolated.
+- operating system: `Linux devbox 6.18.33.2-microsoft-standard-WSL2`, x86_64.
+- runtime: Node.js `24.19.0`; pnpm `11.24.0`; Turborepo `2.10.12`.
+- service replicas: None; direct package tests and one diagnostic process.
+- database: Not used.
+- Redis: Not used.
+- broker: Not used.
+- dataset: Synthetic JSON bodies, error canaries, and a two-field test-only GraphQL query schema.
+- network: Node.js servers bind only to `127.0.0.1` on operating-system-assigned ephemeral ports.
+
+## Workload
+
+- focused command: `corepack pnpm --filter=@aster/http-express build && corepack pnpm --filter=@aster/http-express test && corepack pnpm --filter=@aster/http-express check`.
+- assertions: Eight tests, zero failures, zero skips.
+- operation mix: invalid options, hostile accessor, pre-mount request, exact and nested routes, JSON parse success, unsupported media type, malformed JSON, oversized JSON, forged parser category, rejected promise, client socket destruction, Apollo query execution, in-flight drain, subprocess diagnostic, and declaration isolation.
+- concurrency: One in-flight slow GraphQL operation coordinated through deterministic promises while Apollo stop begins; no arbitrary sleep is used for correctness.
+- timeout: Two-second test deadlines and a five-second subprocess deadline are failure guards, not timing assertions.
+
+The isolated process observation used:
+
+```bash
+/usr/bin/time -f "elapsed=%e max_rss_kib=%M exit=%x" node packages/http-express/dist/src/check-http-express.js
+/usr/bin/time -f "elapsed=%e max_rss_kib=%M exit=%x" node --input-type=module -e ""
+```
+
+## Baseline
+
+The empty pinned Node.js process exited 0 in `0.01` seconds wall time with `42,380` KiB maximum RSS.
+
+## Change
+
+The diagnostic process loaded Express, Apollo Server, GraphQL.js, and the Apollo-maintained Express 5 integration; mounted a synthetic query after Apollo startup; listened on loopback; executed one JSON GraphQL request; stopped Apollo through its HTTP drain plugin; and emitted one stable JSON result.
+
+## Results
+
+| Metric | Empty Node.js | HTTP/Apollo diagnostic | Difference |
+|---|---:|---:|---:|
+| Exit status | 0 | 0 | 0 |
+| Wall time | 0.01 s | 0.26 s | +0.25 s |
+| Maximum RSS | 42,380 KiB | 94,020 KiB | +51,640 KiB |
+| Loopback GraphQL operations | 0 | 1 successful | +1 |
+| Diagnostic JSON lines | 0 | 1 | +1 |
+
+The diagnostic returned HTTP `200`, body limit `65,536`, `frameworkDisclosure: false`, no standard-error output, and no persistent listener. The focused suite passed all eight tests. It proved stable `503`, `415`, `400`, `413`, `404`, and `500` paths; rejected async middleware could not forge a parser response; a destroyed client socket aborted its request signal; and Apollo drained the exercised in-flight resolver before the HTTP server rejected new connections.
+
+## Dependency and compatibility evidence
+
+Registry metadata queried on 2026-08-26 reported:
+
+| Package | Role | Runtime/license compatibility | Registry unpacked size |
+|---|---|---|---:|
+| `express@5.2.1` | Production HTTP adapter | Node.js `>=18`, MIT | 75,429 bytes |
+| `content-type@1.0.5` | Strict production media-type validator | Node.js `>=0.6`, MIT | 10,471 bytes |
+| `@as-integrations/express5@1.1.2` | Apollo compatibility fixture and future composition seam | Node.js `>=20`, Express `^5`, Apollo Server `^4` or `^5`, MIT | 148,091 bytes |
+| `@apollo/server@5.5.1` | Compatibility fixture | Node.js `>=20`, GraphQL.js `^16.11.0`, MIT | 2,223,368 bytes |
+| `graphql@16.14.2` | Compatible GraphQL execution fixture | Supports Node.js `>=17`, MIT | 2,105,112 bytes |
+
+Apollo's official integration index states that Apollo maintains its Express integration. Its Express middleware reference requires Apollo startup before mount, JSON parsing before `expressMiddleware`, and recommends `ApolloServerPluginDrainHttpServer`. Express 5 documentation states that rejected or throwing Promise middleware automatically reaches error handling. The real package tests validate these claims on the pinned versions rather than relying on documentation alone.
+
+Fastify `5.12.1` was evaluated as the primary alternative. Registry metadata reports MIT and a `2,984,609`-byte unpacked artifact. Its official server reference documents built-in body limits, prototype-poisoning controls, and close hooks. The compatible MIT `@as-integrations/fastify@3.1.0` package requires Node.js `>=20`, Fastify `^5.3.0`, and Apollo Server `^4` or `^5`, but is community maintained. No comparative throughput claim is made.
+
+The current production license inventory resolves only MIT, ISC, and BSD-3-Clause packages; `qs@6.15.3` is the BSD-3-Clause production entry. Direct Apollo, Express integration, Express, and GraphQL packages resolve under MIT. The dev-only `@apollo/protobufjs@1.2.8` package resolves under BSD-3-Clause. Its postinstall was inspected: it creates an unused CLI folder and emits dependency-range warnings. `pnpm-workspace.yaml` explicitly keeps that script disabled, and `pnpm ignored-builds` confirms the policy.
+
+`corepack pnpm audit --audit-level=high` reports no known vulnerability. Generated declarations contain no Apollo or Fastify reference. Express types remain confined to the transport package's own mounting seam and do not appear in domain or application packages; the architecture scanner passes with zero violation.
+
+## Raw evidence
+
+- Local branch: `feat/p01-r11-http-adapter` from released `main` commit `e33f90b1bfee157749e5b290bffd0a80d169c697`.
+- Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
+- Focused build/test/check: eight tests passed; diagnostic exited 0 with one JSON record.
+- Strict package typecheck, repository ESLint, formatting, Knip, architecture scan, and secret scan passed.
+- Complete local graph: 31 tasks, 0 cached, 31 successful in `22.35s`; all 8 HTTP, 14 logging, 12 configuration, and repository-tool tests passed.
+- Architecture scan: zero violation.
+- Secret scan: zero finding.
+- Registry audit: no known vulnerability at the high threshold.
+- Process observation: diagnostic `0.26s / 94,020 KiB`; empty Node.js `0.01s / 42,380 KiB`.
+- Clean public checkout: exact public candidate `e7b0c2b`, frozen install with 259 packages reused and zero downloaded in `1.4s`; 8 focused tests, diagnostic, 31 of 31 forced tasks in `20.594s`, audit, secret scan, and clean Git passed.
+- Initial protected candidate `8f05669` passed run `32969827929`, including hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`; the unrelated Docker lane was skipped.
+- Hosted dependency review emitted informational low OpenSSF Scorecard warnings for nine Express transitives: `bytes`, `cookie-signature`, `depd`, `ee-first`, `escape-html`, `safe-buffer`, `safer-buffer`, `toidentifier`, and `unpipe`. The gate passed and the registry audit reports no known vulnerability.
+- Self-review found that the original drain test released its resolver before Apollo's next-turn HTTP close, so it did not prove ordering. The hardened test waits one event-loop turn, proves the listener is closed while stop and response remain pending, refuses a new connection, and only then releases the resolver. Five consecutive focused runs passed all eight tests.
+- Independent review comment `3862878496` found that Express parser errors `charset.unsupported` and `encoding.unsupported` retained their client-side `415` semantics but the adapter's fallback converted them to `500`. The remediation classifies only those parser-originated types as stable `415 UNSUPPORTED_MEDIA_TYPE`; adverse charset and content-encoding canary cases pass with no header reflection.
+- The review remediation passed the complete local graph with 31 of 31 uncached tasks in `27.634s`, including all eight HTTP tests, type-aware lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, and existing package checks.
+- Remediated public candidate `cb5a0fa` passed frozen install with 259 packages reused and zero downloaded in `1.7s`, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.639s`, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32971194276` passed every applicable job at `cb5a0fa`. Evidence reply `3862910571` records the fix and tests, and discussion `PRRT_kwDOUEkeis6cdpFj` is resolved.
+- Follow-up independent review comment `3862956772` found Express's default non-strict, case-insensitive routing admitted `/graphql/` and `/GRAPHQL` despite the exact-route contract. The local remediation enables strict and case-sensitive routing before route registration and adds both adverse `404` cases.
+- The exact-route remediation passed the complete local graph with 31 of 31 uncached tasks in `14.951s`.
+- Exact public candidate `9ddf8d6` passed frozen install with 259 packages reused and zero downloaded in `1s`, eight focused tests, the diagnostic, 31 of 31 forced tasks in `14.22s`, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32972076199` passed every applicable job at `9ddf8d6`. Evidence reply `3862985546` records the strict-route fix and tests, and discussion `PRRT_kwDOUEkeis6cd2GQ` is resolved.
+- Follow-up independent review comment `3863047553` found that Express's parser accepts valid UTF-16 JSON, so the prior ISO-8859-1 rejection did not enforce the documented UTF-8-only policy. The local remediation uses Node.js `MIMEType` before body parsing and accepts only absent charset or explicit `utf-8`; a valid UTF-16LE JSON body now proves `415` before GraphQL middleware.
+- The UTF-8 gate remediation passed the complete local graph with 31 of 31 uncached tasks in `17.701s` (`18.33s` wall clock), including eight HTTP adapter tests, type checking, lint, formatting, dependency analysis, architecture, documentation, repository-memory, and secret checks.
+- UTF-8 candidate `35b307a` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `25.339s`, audit, secret scanning, and clean Git; protected run `32973291227` passed. Independent review comment `3863154140` then found duplicate `charset` parameters could make Node.js validate the first value while Express decoded with the last. The local remediation rejects duplicate charset parameters before parsing, respects quoted semicolons to avoid false positives, adds both bypass and valid quoted-parameter cases, and passes the complete local graph with 31 of 31 uncached tasks in `17.16s` (`17.71s` wall clock).
+- Duplicate-charset candidate `6b8e1c2` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `27.046s`, audit, secret scanning, and clean Git; protected run `32974480044` passed. Evidence reply `3863199830` is posted and discussion `PRRT_kwDOUEkeis6ceWrB` is resolved. Independent review comment `3863261260` then found the direct compatibility diagnostic had no repository-owned request deadline. The local remediation attaches an abort signal with a two-second deadline to both fetch and response consumption, clears its timer in `finally`, and passes the complete local graph with 31 of 31 uncached tasks in `15.235s` (`15.80s` wall clock).
+- Diagnostic-deadline candidate `c2596d2` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406s`, audit, secret scanning, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and discussion `PRRT_kwDOUEkeis6ceoLv` is resolved. Independent review comment `3863364289` then identified the malformed `application/json; charset` boundary. The local remediation replaces Node.js's lenient MIME parser with exact-pinned `content-type@1.0.5` as a strict validator, retains duplicate rejection, adds the malformed-header `415` regression, and passes the complete local graph with 31 of 31 uncached tasks in `13.514s` (`14.17s` wall clock). The matching type-only package is exact-pinned at `@types/content-type@1.1.9`; both resolve under MIT.
+- Strict-media candidate `87127cf` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383s`, audit, secret scanning, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and discussion `PRRT_kwDOUEkeis6ce5OP` is resolved. Independent review comment `3863476696` then found corrupt compressed request bytes remained a client-triggered parser failure mapped to `500`. The local remediation disables request inflation so every non-identity content encoding returns stable `415` before decompression, adds a corrupt-gzip regression, and passes the complete local graph with 31 of 31 uncached tasks in `16.588s` (`17.13s` wall clock).
+- Uncompressed-request candidate `18d7f27` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.415s`, audit, secret scanning, and clean Git; protected run `32978001392` passed. Evidence reply `3863519812` is posted and discussion `PRRT_kwDOUEkeis6cfLsL` is resolved. Independent review comment `3863619265` then found a `POST` without body-framing headers could skip parsing and reach Apollo with `request.body` undefined. The local remediation adds a post-parser body-presence gate and a deadline-bounded real Node.js request with default length headers disabled; it returns stable `400 INVALID_JSON_BODY` before GraphQL. Eight focused tests, the diagnostic, and the complete local graph pass, with 31 of 31 forced tasks in `18.24s`.
+- Empty-body candidate `cd572ad` passed an exact public clean checkout: frozen install reused 260 packages with zero download in `1.24s`; eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70s`, audit, secret scanning, clean Git, and exact temporary-root removal passed. Protected run `32980849863` passed, reply `3863818928` closed the eighth discussion, and confirmation review identified one P2 contract violation for an empty encoded request.
+- Final candidate `487b403` validates `Content-Encoding` before body framing can bypass the parser and adds a deadline-bounded unframed gzip regression that returns stable `415 UNSUPPORTED_MEDIA_TYPE`. Eight focused tests, the diagnostic, registry audit, and 31 of 31 forced local tasks in `20.70s` pass. Protected run `32981788859` passed, reply `3863902900` closed the ninth discussion, and no review discussion remains unresolved. No dependency, lockfile, bootstrap, packaging, Docker, or public-command input changed after the exact clean checkout, so that heavyweight experiment was not duplicated for the source-only correction.
+
+## Clean public checkout
+
+The public feature branch was cloned over HTTPS into a new empty `/tmp/aster-p01-r11-public-*` directory and resolved exact commit `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`. Before installation, neither `node_modules` nor `.turbo` existed. `corepack pnpm install --frozen-lockfile` reused 259 packages from the content-addressable store, downloaded zero packages, and completed in `1.4s` with the lockfile unchanged.
+
+`corepack pnpm http:test` passed all eight focused assertions through two uncached tasks in `4.357s`. `corepack pnpm http:check` emitted the one expected diagnostic record and exited zero. The complete `corepack pnpm check --force` graph passed 31 of 31 uncached tasks in `20.594s`; documentation covered 133 files and 327 local links. The high-severity registry audit reported no known vulnerability, the secret scan found zero issue, and Git remained clean.
+
+The temporary root was resolved and checked as a regular repository under the fixed `/tmp/aster-p01-r11-public-*` prefix. Its public origin, exact candidate SHA, and clean state were revalidated immediately before removing only that root and proving its absence. The experiment did not invoke Docker or modify any container, network, volume, image, or persistent local-platform state.
+
+After review remediation, the same procedure cloned exact public commit `cb5a0fa6165da322ccba53affb75d88d66c7f348` into a new `/tmp/aster-p01-r11-remediated-*` root. Frozen install reused 259 packages with zero download in `1.7s`; `http:test` passed eight assertions through two uncached tasks in `4.486s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `17.639s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked.
+
+The final exact-route procedure cloned public commit `9ddf8d6a15f3cf87a9846bf0d4a66194620c4eb4` into a new `/tmp/aster-p01-r11-exact-route-*` root. Frozen install reused 259 packages with zero download in `1s`; `http:test` passed eight assertions through two uncached tasks in `5.443s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `14.22s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked.
+
+The UTF-8 procedure cloned public commit `35b307ab2ac9b8a4a6c30b6cab8af07130c64ebd` into a new `/tmp/aster-p01-r11-utf8-*` root. Frozen install reused 259 packages with zero download in `1.4s`; `http:test` passed eight assertions through two uncached tasks in `5.103s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `25.339s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later duplicate-charset finding means this is supporting rather than final candidate evidence.
+
+The duplicate-charset procedure cloned public commit `6b8e1c29225280226b7c37b022fff3d1023e15b1` into a new `/tmp/aster-p01-r11-charset-*` root. Frozen install reused 259 packages with zero download in `1s`; `http:test` passed eight assertions through two uncached tasks in `4.588s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `27.046s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later missing-diagnostic-deadline finding means this is supporting rather than final candidate evidence.
+
+The diagnostic-deadline procedure cloned public commit `c2596d2e64d68df4cd711bccb13201305ed5f4b2` into a new `/tmp/aster-p01-r11-deadline-*` root. Frozen install reused 259 packages with zero download in `1.3s`; `http:test` passed eight assertions through two uncached tasks in `4.954s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `18.406s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later strict-media-type finding means this is supporting rather than final candidate evidence.
+
+The strict-media procedure cloned public commit `87127cf5370f8bf111d2dd3d899422baef146b12` into a new `/tmp/aster-p01-r11-media-*` root. Frozen install reused 260 packages with zero download in `1s`; `http:test` passed eight assertions through two uncached tasks in `3.932s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `18.383s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later compressed-request finding means this is supporting rather than final candidate evidence.
+
+The uncompressed-request procedure cloned public commit `18d7f2768a43e22e1d4513267f850a64584eaa10` into a new `/tmp/aster-p01-r11-identity-*` root. Frozen install reused 260 packages with zero download in `1.3s`; `http:test` passed eight assertions through two uncached tasks in `7.108s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `17.415s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later empty-body finding means this is supporting rather than final candidate evidence.
+
+The final repeated-checkout procedure cloned public commit `cd572ad947631b9adf08217dac1ca0ecd5504123` into a new `/tmp/aster-p01-r11-empty-*` root. Frozen install reused 260 packages with zero download in `1.24s`; `http:test` passed eight assertions, `http:check` emitted the expected record, and the complete forced graph passed 31 of 31 uncached tasks in `23.70s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only `/tmp/aster-p01-r11-empty-W74ahp` and proving its absence. Docker was not invoked. Final source candidate `487b403` changes only the pre-parser content-encoding gate and its real-socket test; exact protected CI and the full local graph cover that correction without repeating dependency-identical bootstrap evidence.
+
+## Interpretation
+
+The evidence verifies Express 5 as the bounded transport adapter for Apollo Server on the named runtime and host. It proves the reviewed functional and failure contracts without creating a deployable service. The maintained Apollo integration, executable drain path, and replaceable package boundary support ADR-0011.
+
+The process pair is a compatibility and startup-cost observation only. It does not establish throughput, latency distribution, event-loop effect, steady-state memory, allocation behavior, maximum concurrency, or comparative Express/Fastify performance.
+
+## Limitations
+
+- Eleven protected candidate runs pass; dependency review and the high-severity registry audit pass; all nine actionable review discussions are resolved. The exact clean checkout precedes the final source-only encoding correction, whose exact protected run and complete local graph pass. Release still requires protected squash merge and post-merge verification.
+- Nine Express transitives have informational OpenSSF Scorecard values below the hosted threshold. They are not current vulnerability findings, but future dependency changes must re-evaluate them and preserve the adapter replacement boundary.
+- The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
+- Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.
+- The drain test proves one in-flight HTTP operation. P01-R05 still owns process signals, readiness, dependency close order, the global shutdown deadline, timeout behavior, and forced termination.
+- Only Linux under the named WSL2 host is measured. Native Windows, macOS, arm64, containerized service behavior, and hosted environments remain unverified.
+- Fastify was reviewed from official behavior, community integration source, registry metadata, and compatibility ranges; it was not installed or benchmarked.
+
+## Decision
+
+- Keep, revert, or continue investigation: Keep the verified bounded Express adapter and proceed to protected release.
+- Revisit trigger: Apply ADR-0011 triggers if representative service profiles miss accepted budgets, maintenance or security posture changes, required server behavior makes the adapter materially larger, or framework types escape the transport boundary.

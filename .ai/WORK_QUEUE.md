@@ -21,7 +21,9 @@ Only one item may be `IN_PROGRESS`.
 | 15 | Add an explicit project-scoped destructive local reset | P01-R02 | DONE |
 | 16 | Validate process-start configuration and classify secrets | P01-R03 | DONE |
 | 17 | Implement structured logging with redaction and trace correlation | P01-R04 | DONE |
-| 18 | Select the HTTP adapter through an ADR and create the transport boundary | P01-R11 | READY |
+| 18 | Select the HTTP adapter through an ADR and create the transport boundary | P01-R11 | DONE |
+| 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | READY |
+| 20 | Implement lifecycle, health, and bounded graceful shutdown | P01-R05 | BLOCKED_BY_19 |
 
 ## Work-item rules
 

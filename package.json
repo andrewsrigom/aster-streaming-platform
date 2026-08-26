@@ -30,6 +30,8 @@
     "docs:test": "node --test ./tools/verify-documentation.test.ts",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
+    "http:check": "turbo run build --filter=@aster/http-express && pnpm --filter=@aster/http-express check",
+    "http:test": "turbo run test --filter=@aster/http-express",
     "lint": "eslint .",
     "logging:check": "turbo run build --filter=@aster/runtime && pnpm --filter=@aster/runtime check",
     "logging:test": "turbo run test --filter=@aster/runtime",
