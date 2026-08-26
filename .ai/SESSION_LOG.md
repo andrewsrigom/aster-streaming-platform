@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Core local platform checkpoint in progress
+## 2026-08-26 — Verified core local platform checkpoint
 
 ### Completed
 
@@ -13,16 +13,18 @@ Append new entries at the top. Keep entries factual and concise.
 - Stopped PostgreSQL and observed status become unhealthy in `13.945` seconds, then observed PostgreSQL and status recover in `2.834` seconds without mutating unrelated Docker resources.
 - Inspected exact Compose project labels, then removed only 4 `aster-p01-r01-dev` containers, its 1 internal network, and its 1 verification volume in `0.57` seconds; all project counts are zero and the 4 unrelated stopped containers remain unchanged.
 - Passed the complete 22-task repository gate in `7.58` seconds, Compose model parsing, frozen installation, and the high-severity registry audit with no known vulnerability.
+- Cloned public candidate `563d09f` into an empty path, ran the exact README command without host Node.js, reached health in `7.39` seconds, verified PostgreSQL `18.6` and Redis `8.10.0`, proved the normal `down` preserved PostgreSQL, and removed only the labeled verification project and clone.
+- Observed protected pull request 6 run `32947483503` pass classification, dependency review, documentation/security, complete source quality and audit, the `Local platform` job, unique CI project cleanup, and the stable required aggregate.
 
 ### Evidence
 
 - First immutable pull: `11.79` seconds; clean startup to health: `9.80` seconds; warm restart after normal stop: `7.38` seconds.
 - One idle sample: PostgreSQL `37.94 MiB`, Redis `6.445 MiB`, and status `1.566 MiB`; initialized PostgreSQL volume `65.39 MB`.
-- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`PASS_LOCAL`; clean public checkout and protected hosted smoke pending).
+- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`VERIFIED`).
 
 ### Next action
 
-Run final repository gates, publish the coherent P01-R01 candidate, repeat from a clean public checkout, and require the protected `Local platform` CI job before completion.
+After final branch integration is confirmed, create a new active plan for P01-R02 and implement only the explicit destructive local reset with exact scope and refusal tests.
 
 ## 2026-08-26 — Verified clean public checkout and Phase 00 closeout
 

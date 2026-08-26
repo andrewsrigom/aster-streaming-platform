@@ -51,6 +51,8 @@ Status: **IN_PROGRESS**
 - The P01-R01 candidate pins official PostgreSQL `18.6-alpine3.23` and Redis `8.10.0-alpine` multi-platform images by digest, records their separate licenses, and enforces an internal network, no host ports, finite resources, PostgreSQL persistence, and disposable Redis state.
 - Dependency-free platform policy validation and 7 adverse tests pass; the CI classifier and aggregate add a path-aware local-platform lane with 18 passing policy tests without making the normal source gate require Docker.
 - A unique empty local Compose project passed immutable pull, 9.80-second health-gated startup, one-shot PostgreSQL and Redis protocol initialization, ongoing status, exact version checks, persistence and disposal semantics, 13.945-second dependency-failure detection, 2.834-second recovery, data-preserving stop/restart, resource inspection, and unrelated-project isolation.
+- Public candidate commit `563d09f` started through the exact README Docker-only command from a new public clone with no existing Aster project resources; status became healthy in 7.39 seconds, exact dependency versions passed, the normal stop preserved PostgreSQL, and exact verification cleanup returned all Aster project resource counts to zero.
+- Protected pull request 6 run `32947483503` passed change classification, dependency review, documentation/security, frozen source quality and audit, the first hosted `Local platform` pull/start/protocol/cleanup job, and the stable required aggregate.
 
 ## Not implemented
 
@@ -65,7 +67,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Complete final repository gates, publish the P01-R01 candidate, repeat the exact Docker-only command from a clean public checkout, and accept the work item only after the protected local-platform CI smoke passes.
+Start P01-R02 with a new active change plan and implement only an explicit destructive reset that proves local scope, exact project identity, confirmation behavior, and refusal of hosted targets.
 
 ## Current risks
 

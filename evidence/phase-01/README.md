@@ -3,15 +3,15 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Active work item: P01-R01
+- Next work item: P01-R02
 
 ## Work items
 
 | Work item | Requirement | Acceptance | Artifact |
 |---|---|---|---|
-| First Docker-only PostgreSQL and Redis checkpoint | P01-R01 | PASS_LOCAL | [`local-platform-checkpoint.txt`](local-platform-checkpoint.txt) |
+| First Docker-only PostgreSQL and Redis checkpoint | P01-R01 | VERIFIED | [`local-platform-checkpoint.txt`](local-platform-checkpoint.txt) |
 
-The protected pull-request smoke and a clean public-checkout repeat remain pending. Broker, object storage, telemetry, application runtime, HTTP adapter, product schemas, and destructive reset are not part of this checkpoint.
+Candidate commit `563d09f` passed the clean public-checkout repeat and protected pull-request run `32947483503`. Broker, object storage, telemetry, application runtime, HTTP adapter, product schemas, and destructive reset are not part of this checkpoint.
 
 ## Current limitations
 

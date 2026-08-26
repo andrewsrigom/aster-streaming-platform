@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Phase 00 repository foundation is verified. P01-R01 implements and locally verifies the first Docker-only infrastructure checkpoint with exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. Its [local-platform evidence](../../evidence/phase-01/local-platform-checkpoint.txt) is `PASS_LOCAL`; protected hosted verification remains pending. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
+The Phase 00 repository foundation and P01-R01 are verified. The first Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. Its [local-platform evidence](../../evidence/phase-01/local-platform-checkpoint.txt) includes local, clean public-checkout, and protected hosted execution. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
 
 ## Current foundation tools
 
@@ -142,7 +142,7 @@ pnpm ci:test
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Its first protected hosted execution remains pending.
+The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Protected run `32947483503` passed the first hosted execution.
 
 ## Local endpoints
 
