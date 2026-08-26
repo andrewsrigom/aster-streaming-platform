@@ -178,3 +178,22 @@ test("bounds oversized values and excessive owned variables before schema parsin
     reason: "too_many",
   });
 });
+
+test("sanitizes unexpected source failures without preserving their cause", () => {
+  const sourceFailureCanary = "source-failure-canary-never-emit";
+  const source = new Proxy(validEnvironment(), {
+    ownKeys() {
+      throw new Error(sourceFailureCanary);
+    },
+  });
+
+  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(source));
+
+  assert.deepEqual(error.issues, [
+    { variable: "<owned-variables>", classification: "unknown", reason: "internal" },
+  ]);
+  assert.equal(error.message.includes(sourceFailureCanary), false);
+  assert.equal((error.stack ?? "").includes(sourceFailureCanary), false);
+  assert.equal(JSON.stringify(error).includes(sourceFailureCanary), false);
+  assert.equal("cause" in error, false);
+});

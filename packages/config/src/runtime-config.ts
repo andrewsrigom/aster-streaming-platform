@@ -8,8 +8,15 @@ const MAX_VARIABLE_NAME_LENGTH = 128;
 const MAX_VALUE_LENGTH = 2_048;
 const SERVICE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const OWNED_PREFIXES = ["ASTER_", "DATABASE_", "REDIS_"] as const;
+const POSTGRES_PROTOCOLS = new Set(["postgres:", "postgresql:"]);
+const REDIS_PROTOCOLS = new Set(["redis:", "rediss:"]);
 
-export const RUNTIME_ENVIRONMENTS = ["local", "integration", "staging", "production"] as const;
+export const RUNTIME_ENVIRONMENTS = Object.freeze([
+  "local",
+  "integration",
+  "staging",
+  "production",
+] as const);
 
 export type RuntimeEnvironment = (typeof RUNTIME_ENVIRONMENTS)[number];
 export type ConfigClassification = "non-secret" | "secret";
@@ -39,11 +46,11 @@ const runtimeConfigSchema = z.strictObject({
   DATABASE_URL: z
     .string()
     .max(MAX_VALUE_LENGTH)
-    .refine((value) => hasUrlProtocol(value, new Set(["postgres:", "postgresql:"]))),
+    .refine((value) => hasUrlProtocol(value, POSTGRES_PROTOCOLS)),
   REDIS_URL: z
     .string()
     .max(MAX_VALUE_LENGTH)
-    .refine((value) => hasUrlProtocol(value, new Set(["redis:", "rediss:"]))),
+    .refine((value) => hasUrlProtocol(value, REDIS_PROTOCOLS)),
 });
 
 export interface ReferenceRuntimeConfig {
@@ -193,7 +200,7 @@ function issuesFromSchema(error: z.ZodError): ReferenceRuntimeConfigIssue[] {
   return [...variables].map((variable) => knownIssue(variable, "invalid"));
 }
 
-export function loadReferenceRuntimeConfig(
+function parseReferenceRuntimeConfig(
   source: Readonly<Record<string, string | undefined>>,
 ): ReferenceRuntimeConfig {
   const preflightIssues = preflight(source);
@@ -226,6 +233,25 @@ export function loadReferenceRuntimeConfig(
     databaseUrl: result.data.DATABASE_URL,
     redisUrl: result.data.REDIS_URL,
   });
+}
+
+export function loadReferenceRuntimeConfig(
+  source: Readonly<Record<string, string | undefined>>,
+): ReferenceRuntimeConfig {
+  try {
+    return parseReferenceRuntimeConfig(source);
+  } catch (error) {
+    if (error instanceof ReferenceRuntimeConfigError) {
+      throw error;
+    }
+    throw new ReferenceRuntimeConfigError([
+      Object.freeze({
+        variable: "<owned-variables>",
+        classification: "unknown",
+        reason: "internal",
+      }),
+    ]);
+  }
 }
 
 export function createReferenceRuntimeConfigDiagnostic(
