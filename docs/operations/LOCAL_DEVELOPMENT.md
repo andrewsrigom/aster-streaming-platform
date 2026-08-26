@@ -38,12 +38,15 @@ pnpm format:check
 pnpm unused:check
 pnpm architecture:check
 pnpm docs:check
+pnpm ai:check
 pnpm check
 ```
 
 `pnpm check` is the complete currently implemented source and documentation gate. Use `pnpm format:write` only when an intentional formatting rewrite is wanted. The architecture checker scans approved workspace source roots, rejects malformed source and forbidden outward dependencies, and emits structured violations without following symbolic links. Knip checks unused source, exports, and direct dependencies as package source is added; the current root-only workspace is valid without placeholder packages.
 
 `pnpm docs:check` validates bounded UTF-8 Markdown inputs, first top-level titles, balanced fences, unresolved merge markers, relative files and heading fragments, canonical high-confidence terminology, and evidence support for explicit current-status maturity claims. It does not fetch external URLs, so network reachability remains a separate deliberate audit. `pnpm docs:test` exercises the adverse fixtures directly.
+
+`pnpm ai:check` validates the bounded durable repository-memory files, ordered queue and blockers, active-plan binding, current-state and handoff resume target, and reverse-chronological session shape. `pnpm ai:test` exercises safe malformed, stale, oversized, invalid-UTF-8, and symbolic fixtures. These structural checks do not replace review of narrative truth.
 
 Local Git is configured with `core.hooksPath=.githooks`. The `pre-commit` hook reads bounded NUL-delimited staged paths and runs only Prettier and ESLint when their file types apply. The `commit-msg` hook validates the bounded Conventional Commit-shaped subject. Neither hook installs dependencies nor runs repository-wide type checking, Knip, tests, documentation, Turbo, containers, media, or integration suites.
 
@@ -101,6 +104,8 @@ Focused commands are available for diagnosis:
 
 ```bash
 pnpm check:source
+pnpm ai:check
+pnpm ai:test
 pnpm community:check
 pnpm community:test
 pnpm security:check
@@ -114,7 +119,7 @@ pnpm ci:test
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs documentation, public-contribution, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The first hosted `main` and protected pull-request executions passed. The dependency-review action ran in its required public pull-request context and passed.
+The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The first hosted `main` and protected pull-request executions passed. The dependency-review action ran in its required public pull-request context and passed.
 
 ## Local endpoints
 

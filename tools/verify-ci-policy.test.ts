@@ -61,6 +61,14 @@ test("rejects a missing public contribution check", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
 });
 
+test("rejects a missing repository-memory check", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  const weakened = source
+    .replace("node ./tools/verify-ai-state.ts", "node ./tools/verify-documentation.ts")
+    .replace("./tools/verify-ai-state.test.ts", "./tools/verify-documentation.test.ts");
+  assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
 test("requires both bounded weekly dependency ecosystems", () => {
   assert.deepEqual(
     validateDependabotPolicy(`version: 2

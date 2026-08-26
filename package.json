@@ -11,9 +11,11 @@
   },
   "packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000",
   "scripts": {
+    "ai:check": "node ./tools/verify-ai-state.ts",
+    "ai:test": "node --test ./tools/verify-ai-state.test.ts",
     "architecture:check": "node ./tools/verify-architecture.ts",
     "architecture:test": "node --test ./tools/verify-architecture.test.ts",
-    "check": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test docs:check docs:test community:check community:test security:check security:test ci:check ci:test staged:test commit:test",
+    "check": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test docs:check docs:test ai:check ai:test community:check community:test security:check security:test ci:check ci:test staged:test commit:test",
     "check:source": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test staged:test commit:test",
     "ci:check": "node ./tools/verify-ci-policy.ts",
     "ci:test": "node --test ./tools/classify-ci-change.test.ts ./tools/verify-ci-policy.test.ts",

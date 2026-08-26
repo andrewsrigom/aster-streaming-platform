@@ -69,3 +69,9 @@ State files must be:
 - safe to keep public.
 
 Do not use `.ai/` as a scratch dump. Temporary reasoning belongs outside committed project state.
+
+## Executable validation
+
+Run `pnpm ai:check` for the bounded static contract and `pnpm ai:test` for its adverse fixtures. The validator requires the durable memory files as regular bounded UTF-8 inputs; checks queue order, statuses, active-item uniqueness, and live blocker references; binds the active or first ready requirement to the change plan, current-state next outcome, and handoff; and checks reverse-chronological session entry structure.
+
+This gate proves explicit structure and cross-file consistency. It cannot prove that arbitrary narrative statements are semantically true, so evidence review and the truthfulness rule in `AGENTS.md` still apply. The commands run in `pnpm check` and the dependency-free CI governance job, not in the fast staged-file commit hook.

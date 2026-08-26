@@ -1,0 +1,134 @@
+ASTER PHASE 00 REPOSITORY MEMORY WORKFLOW EVIDENCE
+=================================================
+
+Work item: P00-R08 executable repository-memory workflow
+Evidence date: 2026-08-26
+Commit: local candidate tree; hosted pull-request result is recorded before final acceptance
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
+Runtime: Node.js 24.19.0; pnpm 11.24.0; Turborepo 2.10.12
+Acceptance: PASS_LOCAL
+
+IMPLEMENTED CONTRACT
+--------------------
+
+The dependency-free tools/verify-ai-state.ts command reads ten fixed durable .ai files as regular, non-symbolic, bounded, strict UTF-8 inputs. It emits stable JSON and sorted diagnostics without echoing arbitrary file contents.
+
+The structural contract verifies:
+- the required repository-memory file set;
+- a bounded canonical work-queue table;
+- unique contiguous order and a completed prefix;
+- READY, IN_PROGRESS, DONE, and explicit BLOCKED_BY_<order> status syntax;
+- backward, existing, non-completed blocker references;
+- at most one active item, located at the earliest unfinished order;
+- an active plan with matching requirement, active phase, metadata, and every work-item template section;
+- the canonical inactive plan when no item is active;
+- an ISO current-state date and required current-state sections;
+- active or first-ready requirement binding across current state and handoff;
+- reverse-chronological session entries with Completed, Evidence, and Next action sections.
+
+The check is intentionally structural. It does not claim to prove arbitrary narrative truth, infer whether every code change needs a state transition, or prove append-only history without comparing Git revisions.
+
+FOCUSED VALIDATION
+------------------
+
+$ pnpm ai:check
+result: PASS
+files: 10
+queue items: 13
+session entries: 12
+active requirement: P00-R08
+target requirement: P00-R08
+violations: 0
+elapsed: 0.48 seconds
+maximum resident set observed: 141564 KiB
+
+$ pnpm ai:test
+result: PASS
+tests: 10 passed, 0 failed
+elapsed: 1.74 seconds
+maximum resident set observed: 142068 KiB
+
+Adverse fixtures cover missing and oversized memory, canonical idle state, unknown and duplicate queue state, multiple active items, completed/missing/forward blockers, requirement and phase drift, missing plan sections, stale current-state and handoff targets, session regression, missing session evidence, malformed UTF-8, symbolic files, and deterministic diagnostics.
+
+NORMAL WORKFLOW INTEGRATION
+---------------------------
+
+Root scripts:
+- ai:check runs the static contract;
+- ai:test runs its adverse fixtures;
+- check includes both commands;
+- check:source remains focused on executable source because the dependency-free governance path owns repository memory.
+
+Turborepo registers ai:check and ai:test with .ai and validator inputs. The CI Documentation and security job runs the actual repository-memory check before documentation and includes the adverse tests in its dependency-free test process. The CI-policy validator rejects removal of either command; one additional adverse policy test proves that failure.
+
+DEPENDENCY-FREE GOVERNANCE PATH
+-------------------------------
+
+Exact command workload:
+- repository-memory check;
+- documentation check;
+- public-contribution check;
+- redacting tracked-file secret scan;
+- CI-policy check;
+- repository-memory, documentation, community, secret, classification, and CI-policy tests.
+
+result: PASS
+checks: 5 actual repository checks, 0 violations or findings
+tests: 48 passed, 0 failed
+elapsed: 0.87 seconds
+maximum resident set observed: 91576 KiB
+
+COMPLETE LOCAL GATE
+-------------------
+
+$ pnpm exec turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test docs:check docs:test ai:check ai:test community:check community:test security:check security:test ci:check ci:test staged:test commit:test --force
+
+result: PASS
+tasks: 20 of 20, 0 cached
+focused built-in tests: 73 passed, 0 failed
+Turbo task duration: 6.158 seconds
+wrapper elapsed: 6.59 seconds
+maximum resident set observed: 441764 KiB
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities found
+elapsed: 0.75 seconds
+maximum resident set observed: 149516 KiB
+
+DOCUMENTATION, WORKFLOW, AND HOST HEALTH
+----------------------------------------
+
+Documentation validation:
+- result: PASS, 0 violations;
+- documents: 129;
+- headings: 1804;
+- local links: 271;
+- evidence-supported status claims: 3.
+
+Workflow validation:
+- actionlint: 1.7.12;
+- official linux amd64 archive SHA-256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8;
+- checksum: PASS against the official release checksum file;
+- result: PASS, 0 workflow error;
+- elapsed: below 0.01 seconds;
+- maximum resident set observed: 6276 KiB.
+
+Repository and host checks:
+- repository secret scan: PASS, 0 findings;
+- Git whitespace and conflict check: PASS;
+- restricted private-context vocabulary: absent;
+- Zone.Identifier files: 0;
+- Docker client and daemon: responsive at 26.0.0;
+- Docker containers: 4 present, 0 running;
+- WSL available memory: approximately 10 GiB;
+- WSL root filesystem: 70 GiB available.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- Static consistency cannot establish the semantic truth of arbitrary prose; evidence review remains mandatory.
+- The validator does not rewrite .ai files, inspect private conversation history, or make Git history authoritative over the checked-in state.
+- Append-only session behavior remains a review convention because the deterministic local check receives one tree, not a trusted base revision.
+- The fast pre-commit hook remains staged-file formatting, linting, and redacting secret scanning only; repository-memory validation belongs to explicit local and CI gates.
+- Hosted workflow execution remains pending for this candidate branch.
+- P00-R10 repeats the complete gate from a clean public checkout.

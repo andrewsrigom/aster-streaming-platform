@@ -4,7 +4,7 @@ These gates become executable during Phase 00 and expand in later phases.
 
 ## Current execution status
 
-Formatting, linting, strict TypeScript compilation, focused repository-tool tests, documentation-link and structure validation, canonical terminology, unsupported status-claim checks, unresolved merge-marker checks, public-contribution contract validation, redacting secret scans, and CI-policy checks are executable through `pnpm check`. Current evidence is in [`evidence/phase-00/source-quality-foundation.txt`](../evidence/phase-00/source-quality-foundation.txt), [`evidence/phase-00/documentation-validation.txt`](../evidence/phase-00/documentation-validation.txt), [`evidence/phase-00/ci-security-foundation.txt`](../evidence/phase-00/ci-security-foundation.txt), [`evidence/phase-00/community-governance.txt`](../evidence/phase-00/community-governance.txt), and [`evidence/phase-00/public-repository-governance.txt`](../evidence/phase-00/public-repository-governance.txt).
+Formatting, linting, strict TypeScript compilation, focused repository-tool tests, repository-memory consistency, documentation-link and structure validation, canonical terminology, unsupported status-claim checks, unresolved merge-marker checks, public-contribution contract validation, redacting secret scans, and CI-policy checks are executable through `pnpm check`. Current evidence is in [`evidence/phase-00/source-quality-foundation.txt`](../evidence/phase-00/source-quality-foundation.txt), [`evidence/phase-00/documentation-validation.txt`](../evidence/phase-00/documentation-validation.txt), [`evidence/phase-00/ci-security-foundation.txt`](../evidence/phase-00/ci-security-foundation.txt), [`evidence/phase-00/community-governance.txt`](../evidence/phase-00/community-governance.txt), [`evidence/phase-00/public-repository-governance.txt`](../evidence/phase-00/public-repository-governance.txt), and [`evidence/phase-00/ai-state-workflow.txt`](../evidence/phase-00/ai-state-workflow.txt).
 
 High-severity registry audit is executable locally, and the hosted `main` and protected pull-request decisions passed. Pull-request dependency and license review is configured and its first hosted execution passed. Later-phase gates remain planned until their owning phase implements and verifies them.
 
@@ -15,6 +15,7 @@ High-severity registry audit is executable locally, and the hosted `main` and pr
 - strict TypeScript compilation
 - unit tests for changed behavior
 - documentation-link validation
+- repository-memory consistency validation
 - public contribution contract validation
 - secret scanning
 - dependency vulnerability review

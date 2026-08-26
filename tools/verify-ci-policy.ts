@@ -222,6 +222,8 @@ export function validateWorkflowPolicy(
     "implicit setup-node caching must be disabled",
   );
   for (const [pattern, detail] of [
+    [/node \.\/tools\/verify-ai-state\.ts/u, "repository-memory check is required"],
+    [/\.\/tools\/verify-ai-state\.test\.ts/u, "repository-memory policy tests are required"],
     [/node \.\/tools\/verify-documentation\.ts/u, "documentation check is required"],
     [/node \.\/tools\/verify-community-files\.ts/u, "community-file check is required"],
     [/\.\/tools\/verify-community-files\.test\.ts/u, "community-file policy tests are required"],

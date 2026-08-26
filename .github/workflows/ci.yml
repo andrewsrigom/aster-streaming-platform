@@ -53,6 +53,8 @@ jobs:
         with:
           node-version: 24.19.0
           package-manager-cache: false
+      - name: Validate repository memory
+        run: node ./tools/verify-ai-state.ts
       - name: Validate documentation
         run: node ./tools/verify-documentation.ts
       - name: Validate public contribution contract
@@ -64,6 +66,7 @@ jobs:
       - name: Test governance tools
         run: >-
           node --test
+          ./tools/verify-ai-state.test.ts
           ./tools/verify-documentation.test.ts
           ./tools/verify-community-files.test.ts
           ./tools/scan-secrets.test.ts

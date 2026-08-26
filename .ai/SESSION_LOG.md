@@ -2,6 +2,25 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Executable repository-memory workflow in progress
+
+### Completed
+
+- Added a dependency-free bounded validator for the ten durable `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and reverse-chronological session structure.
+- Added 10 focused tests for valid active and idle state plus missing, oversized, malformed, stale, duplicate, conflicting, invalid-UTF-8, and symbolic inputs.
+- Integrated `ai:check` and `ai:test` into the root Turbo graph, dependency-free CI governance job, CI-policy enforcement, repository-memory documentation, and Phase 00 evidence.
+- Preserved the lightweight staged hook and kept semantic truth and cross-revision append-only review outside the static gate.
+
+### Evidence
+
+- Passed the actual ten-file state scan, 10 focused tests, 48 dependency-free governance tests, the forced twenty-task graph with 73 focused tests, actionlint `1.7.12`, and high-severity dependency audit.
+- Measured the focused check at `0.48` seconds, focused tests at `1.74` seconds, dependency-free governance path at `0.87` seconds, and forced graph wrapper at `6.59` seconds in the recorded environment.
+- Raw evidence: `evidence/phase-00/ai-state-workflow.txt`.
+
+### Next action
+
+Run the change through the protected P00-R08 pull-request path and record the hosted result before closing the requirement.
+
 ## 2026-08-26 — Public repository governance
 
 ### Completed
