@@ -2,7 +2,7 @@
 
 ## Current status
 
-P01-R04 is **implemented** at candidate commit `fca410d236a3761e37e42d19244e68d27bd1bd88`; clean-checkout and protected pull-request verification remain pending. The implementation is the logging slice of `@aster/runtime`. It does not include an application service, HTTP middleware, an OpenTelemetry SDK, a Collector, a log backend, retention, dashboards, or alerts.
+P01-R04 is **implemented** at public candidate commit `6eedca0600e568d6016bb0a71aade5b0889c941d`; its clean public-checkout verification passes, while protected pull-request verification remains pending. The implementation is the logging slice of `@aster/runtime`. It does not include an application service, HTTP middleware, an OpenTelemetry SDK, a Collector, a log backend, retention, dashboards, or alerts.
 
 ## Startup order
 

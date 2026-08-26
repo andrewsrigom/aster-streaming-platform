@@ -95,7 +95,16 @@ Pino is an internal adapter. Generated `runtime-logger.d.ts` contains no Pino re
 - Documentation: 131 documents, 1,858 headings, 317 local links, and zero violation.
 - Repository memory: 10 files, 17 queue items, P01-R04 active, and zero violation.
 - Secret scan: zero finding.
-- Clean public checkout, protected CI, and review: pending.
+- Clean public checkout: exact public candidate `6eedca0`, frozen install with 124 packages reused and zero downloaded, 14 focused tests passed, two diagnostic JSON records emitted, 28 of 28 forced uncached tasks passed in `11.307s`, audit and secret scan passed, and Git remained clean.
+- Protected CI and review: pending.
+
+## Clean public checkout
+
+The public branch was cloned over HTTPS into an empty temporary root and resolved exact commit `6eedca0600e568d6016bb0a71aade5b0889c941d`. Before installation, the clone had no `node_modules` or `.turbo` directory. `corepack pnpm install --frozen-lockfile` reused 124 packages from the content-addressable store, downloaded zero packages, and completed in `798ms`.
+
+`corepack pnpm logging:test` passed all 14 focused assertions through two uncached Turbo tasks in `2.446s`. `corepack pnpm logging:check` exited zero and emitted exactly two newline-delimited JSON records with the representative authorization value redacted. The complete `corepack pnpm check --force` graph passed 28 of 28 uncached tasks in `11.307s`; documentation validation covered 131 documents, 1,862 headings, and 317 local links. The high-severity dependency audit reported no known vulnerability, the secret scan reported zero finding, and `git status --short` was empty.
+
+The temporary root was resolved and checked as a regular directory under `/tmp`, then rechecked for the exact public origin, candidate commit, and clean state. Only that verified temporary root was removed. This experiment did not start, stop, or remove any Docker resource.
 
 ## Interpretation
 
@@ -105,7 +114,7 @@ The process numbers show only the startup cost of one short warm-filesystem proc
 
 ## Limitations
 
-- Clean-checkout, protected CI, dependency review, and independent automated review are pending.
+- Protected CI, hosted dependency review, and independent automated review are pending.
 - The process pair was not isolated from host scheduling, had no repeated samples, and is not a benchmark.
 - The default standard-output path has no Collector, retention, export queue, flush deadline, or drop metric yet.
 - Redaction recognizes reviewed names; it cannot infer a secret deliberately placed under an innocent-looking attribute name.
@@ -114,5 +123,5 @@ The process numbers show only the startup cost of one short warm-filesystem proc
 
 ## Decision
 
-- Keep, revert, or continue investigation: Keep the bounded Pino adapter and continue through clean-checkout, protected CI, and review verification.
+- Keep, revert, or continue investigation: Keep the bounded Pino adapter and continue through protected CI and review verification.
 - Revisit trigger: Replace or revise the adapter if the future OpenTelemetry/log pipeline cannot map the stable fields, stdout backpressure or shutdown evidence fails, representative service load shows unacceptable cost, a supported runtime breaks, or dependency/security posture changes.

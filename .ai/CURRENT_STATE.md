@@ -84,8 +84,9 @@ Status: **IN_PROGRESS**
 
 ## Implemented
 
-- P01-R04 candidate `fca410d` adds `@aster/runtime` with exact-pinned Pino `10.3.1` behind repository-owned declarations. It emits bounded JSON with fixed process context, reviewed sensitive-key redaction, sanitized error causes, and validated injected trace/span correlation.
-- Fourteen focused tests pass for JSON shape, levels, async context, invalid providers, representative redaction, reserved-field isolation, bounded errors, hostile accessors and collections, destination and option failures, subprocess output, and declaration isolation. The complete forced graph passed 28 of 28 uncached tasks in `9.762` seconds with TypeScript, lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, CI, platform, and all package tests green. License and registry audit checks pass; clean checkout, protected CI, and review remain pending.
+- P01-R04 implementation `fca410d` and public documentation candidate `6eedca0` add `@aster/runtime` with exact-pinned Pino `10.3.1` behind repository-owned declarations. It emits bounded JSON with fixed process context, reviewed sensitive-key redaction, sanitized error causes, and validated injected trace/span correlation.
+- Fourteen focused tests pass for JSON shape, levels, async context, invalid providers, representative redaction, reserved-field isolation, bounded errors, hostile accessors and collections, destination and option failures, subprocess output, and declaration isolation. The complete forced local graph passed 28 of 28 uncached tasks in `9.762` seconds with TypeScript, lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, CI, platform, and all package tests green. License and registry audit checks pass.
+- A clean HTTPS clone of exact public candidate `6eedca0` materialized from the frozen lock with 124 packages reused and zero downloaded, passed 14 focused logging tests, emitted the two expected diagnostic JSON records, passed all 28 forced uncached tasks in `11.307` seconds, passed audit and secret scanning, and remained Git-clean before exact temporary-root removal. Protected CI and review remain pending.
 
 ## Not implemented
 
@@ -100,7 +101,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Implement the smallest complete P01-R04 runtime logging slice, verify redaction and trace correlation under adverse inputs, and capture its dependency, process, clean-checkout, and protected-review evidence without adding the telemetry backend or service skeleton early.
+Pass P01-R04 through protected CI, hosted dependency review, and independent automated review; resolve actionable findings and close the work item without adding the telemetry backend or service skeleton early.
 
 ## Current risks
 
