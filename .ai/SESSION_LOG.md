@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented deterministic clock and identifier checkpoint
+
+### Completed
+
+- Added repository-owned `AsterClock` and `AsterIdentifierGenerator` contracts to `@aster/runtime` with system/fixed clocks, UUID v4 generation through `crypto.randomUUID`, and a copied finite deterministic unique sequence.
+- Added bounded cause-free configuration and exhaustion errors, epoch and sequence limits, accessor-safe input inspection, immutable returned adapters, isolated `Date` values, and no global mutation or new dependency.
+- Kept product-specific identity rules, deadlines, network clients, service composition, schema, cache, events, and durable data outside this checkpoint.
+
+### Evidence
+
+- Runtime typecheck/build, 46 of 46 tests including seven new clock/ID tests, ESLint, Prettier, architecture validation, public-declaration isolation, and `git diff --check` pass. The affected graph passed 13 of 13 tasks with zero cached in `10.341` seconds.
+- Raw evidence: `evidence/phase-01/platform-adapters.txt`; P01-R07 remains `IN_PROGRESS` and external client selections remain pending.
+
+### Next action
+
+Commit the green clock/ID checkpoint, then research exact current dependency clients before lockfile changes.
+
 ## 2026-08-26 — Released telemetry and activated platform adapters
 
 ### Completed

@@ -61,3 +61,16 @@ export type {
   AsterProcessSignalBindingIssue,
   AsterProcessSignalDisposalResult,
 } from "./process-signals.js";
+export {
+  AsterClockConfigurationError,
+  createAsterFixedClock,
+  createAsterSystemClock,
+} from "./clock.js";
+export type { AsterClock, AsterClockConfigurationIssue } from "./clock.js";
+export {
+  AsterIdentifierConfigurationError,
+  AsterIdentifierExhaustedError,
+  createAsterDeterministicIdentifierGenerator,
+  createAsterUuidGenerator,
+} from "./ids.js";
+export type { AsterIdentifierConfigurationIssue, AsterIdentifierGenerator } from "./ids.js";

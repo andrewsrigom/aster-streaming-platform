@@ -115,6 +115,10 @@ Create one package per operational dependency rather than one kitchen-sink adapt
 
 The PostgreSQL client and typed SQL decision are intentionally separate. Phase 01 can prove connection and failure semantics with `pg`. A typed SQL library is selected in Phase 02 against the first real schema, transaction, query, migration, generated type, and removal path rather than against a synthetic table.
 
+### Clock and identifier checkpoint
+
+The local P01-R07 candidate now exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package gates pass; the complete work-item and release gates remain pending.
+
 ### Kafka selection gate
 
 The broker client remains unresolved. The maintained Confluent client has current releases and production `librdkafka` behavior, but adds a native install boundary and its KafkaJS-compatible disconnect currently uses a fixed five-second native close. KafkaJS is small and pure JavaScript but its latest registry release is from 2023. P01-R07 must compare:

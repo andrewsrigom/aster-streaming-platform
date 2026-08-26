@@ -6,12 +6,12 @@ P01-R06 was squash-merged through pull request 13 as `8dff9d8d57572b2eac944ae984
 
 P01-R07 is active on `feat/p01-r07-platform-adapters` from exact clean released head `8dff9d8`. Its owner is shared runtime and dependency-adapter infrastructure; no product bounded context or durable data owner changes. The active plan defines dependency-free system/fake clock and ID contracts followed by separate PostgreSQL, Redis, S3, and broker packages. Every vendor dependency stays behind repository-owned types with finite deadlines/capacity, caller cancellation, stable sanitized failures, telemetry, idempotent close, focused iteration gates, and an independent removal path.
 
-The Kafka decision is deliberately two-stage. P01-R07 may implement one provisional client only after current install, lifecycle, deadline, redaction, license, dependency-cost, and removal evidence. P01-R09 must confirm it against a real broker and replace it before Phase 01 closeout if bounded stop fails. No P01-R07 dependency version or package capability is implemented yet.
+The Kafka decision is deliberately two-stage. P01-R07 may implement one provisional client only after current install, lifecycle, deadline, redaction, license, dependency-cost, and removal evidence. P01-R09 must confirm it against a real broker and replace it before Phase 01 closeout if bounded stop fails. The dependency-free clock/ID checkpoint is implemented locally with 46 passing runtime tests; no P01-R07 external dependency or network adapter is selected yet.
 
 ## Resume point
 
 1. Run the P01-R07 activation documentation and repository-memory gate, fix only current-plan inconsistencies, and commit the release/activation record as one coherent documentation commit.
-2. Implement the P01-R07 dependency-free clock/ID checkpoint in `@aster/runtime` with system and deterministic fakes, hostile-input/result tests, exports, declarations, and focused package gates.
+2. Commit the green P01-R07 clock/ID source and evidence as one coherent block; its focused and 13/13 changed-scope gates already pass.
 3. Record live official and registry evidence for `pg`, `@redis/client`, AWS S3 SDK modules, and Kafka candidates before changing the lockfile.
 4. Implement PostgreSQL first, then Redis, S3, and the provisional broker package as separate coherent checkpoints; keep real-container interoperability for P01-R09.
 

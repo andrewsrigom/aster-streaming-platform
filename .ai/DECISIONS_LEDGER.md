@@ -46,6 +46,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Structured runtime logging | Exact-pin Pino `10.3.1` behind repository-owned declarations; emit bounded JSON to standard output with reviewed sensitive-key redaction, sanitized errors, and injected validated trace context | `evidence/phase-01/runtime-logging.txt` |
 | Service HTTP adapter | Use exact-pinned Express `5.2.1` behind `@aster/http-express`; use Apollo's maintained Express 5 integration at service composition roots and keep framework types out of domain and application layers | `docs/adr/0011-express-http-adapter.md`; `evidence/phase-01/http-adapter.txt` |
 | Runtime metrics implementation | Exact-pin the OpenTelemetry API `1.9.1`, core/resources/metrics SDK `2.10.0`, OTLP HTTP metrics exporter `0.221.0`, and Node.js runtime instrumentation `0.34.0` behind repository-owned `@aster/telemetry`; omit host metrics and aggregate SDK packages | `evidence/phase-01/runtime-telemetry.txt` |
+| Runtime clock and identifier primitives | Use Node.js `Date` and `crypto.randomUUID` behind repository-owned interfaces; provide fixed-clock and finite unique-sequence generators for deterministic tests without a new dependency or global mutation | `evidence/phase-01/platform-adapters.txt` |
 
 ## Pending decisions
 

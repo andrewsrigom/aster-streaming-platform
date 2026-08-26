@@ -25,5 +25,21 @@ Selection state
 - A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
 
 Current interpretation
-- P01-R07 is active but no adapter capability is implemented or verified yet.
-- Clock/ID contracts are the first dependency-free implementation checkpoint.
+- P01-R07 is active. The dependency-free clock/ID local candidate is implemented; no external dependency or network adapter is selected yet.
+- @aster/runtime exposes a frozen system clock returning current fresh Date values, a fixed clock returning isolated deterministic Date values, a UUID v4 generator backed by crypto.randomUUID, and a finite deterministic generator that copies a bounded unique safe identifier sequence without invoking accessors.
+- Invalid clock and deterministic-ID configuration uses repository-owned cause-free errors with one stable issue. Deterministic sequence exhaustion uses a fixed cause-free error.
+
+Clock and identifier focused evidence
+- pnpm --filter=@aster/runtime typecheck: PASS.
+- pnpm --filter=@aster/runtime build: PASS; declarations generated.
+- pnpm --filter=@aster/runtime test: PASS; 46 of 46 runtime tests, including 7 clock/ID tests.
+- New tests cover fresh current instants, immutable fixed time, invalid epoch bounds, distinct RFC 4122 version 4 output, copied deterministic order, explicit exhaustion, empty/unsafe/oversized/duplicate/accessor-backed sequence rejection, zero accessor reads, cause-free errors, and vendor-free declarations.
+- pnpm exec eslint packages/runtime: PASS after explicit unknown narrowing for property descriptors.
+- pnpm exec prettier --check packages/runtime: PASS.
+- pnpm architecture:check: PASS with zero violation.
+- pnpm check:changed: PASS; 13 of 13 selected tasks, zero cached, in 10.341 seconds. The gate included runtime build, typecheck, 46 tests, repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, and secret validation.
+- No dependency, lockfile, package manifest, Docker resource, service, schema, cache, event, object, hosted setting, or public command changed.
+
+Pending checkpoint evidence
+- The exact clock/ID source commit remains pending at this record point.
+- External client selection and every network adapter remain planned.
