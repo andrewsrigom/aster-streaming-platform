@@ -11,6 +11,10 @@
     "packages/config": {
       "entry": ["src/index.ts", "src/check-runtime-config.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "packages/runtime": {
+      "entry": ["src/index.ts", "src/check-runtime-logging.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   }
 }

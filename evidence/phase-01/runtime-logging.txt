@@ -1,0 +1,129 @@
+# Experiment P01-R04-L01: Structured Runtime Logging Baseline
+
+- Status: VERIFIED
+- Date: 2026-08-26
+- Commit: `34e3cb9ec339981b733fe623349d8e66d3df4e43`
+- Owner: Aster runtime infrastructure
+- Related requirement: P01-R04
+- Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
+
+## Question
+
+Can the Phase 01 runtime emit stable structured JSON with bounded redaction and OpenTelemetry-compatible active trace correlation on the pinned Node.js runtime without exposing Pino types or adding the telemetry backend early?
+
+## Hypothesis
+
+One repository-owned adapter around exact-pinned Pino will emit parseable newline-delimited JSON, redact the reviewed sensitive fields, sanitize raw errors, preserve valid active trace/span IDs across an asynchronous boundary, omit invalid context, and fail safely under hostile input or destination failure.
+
+## Variables
+
+- Independent: Pino-backed `@aster/runtime` logger versus an empty Node.js process for the isolated process observation.
+- Dependent: functional test result, serialized fields, secret-canary absence, process exit, elapsed time, and maximum resident set size.
+- Controlled: candidate commit, Node.js `24.19.0`, WSL host, current warm filesystem/package store, one process, two diagnostic records, no application service, no Docker dependency, and no network export.
+
+## Environment
+
+- hardware/instance: Local x86_64 development host; exact physical CPU and memory allocation are not isolated.
+- operating system: `Linux devbox 6.18.33.2-microsoft-standard-WSL2`, x86_64.
+- runtime: Node.js `24.19.0`; pnpm `11.24.0`; Turborepo `2.10.12`.
+- service replicas: None; direct package diagnostic process only.
+- database: Not used.
+- Redis: Not used.
+- broker: Not used.
+- dataset: Synthetic operational fields and secret canaries created inside the focused tests.
+- cache state: Warm pnpm content-addressable store and ordinary host filesystem state.
+- configuration: `runtime-check`, `local`, version `0.0.0`, one fixed valid trace/span context, synchronous standard-output destination.
+
+## Workload
+
+- command: `corepack pnpm logging:test`.
+- duration: One focused run; Turbo reported `1.104s`, and Node test reported `131.898436ms`.
+- warmup: None.
+- rate/concurrency: One test process; one test validates an `AsyncLocalStorage` handoff without arbitrary sleeps.
+- operation mix: JSON shape, level filtering, async trace context, invalid/throwing provider, redaction, field collisions, bounded error causes, hostile accessors, excessive properties, destination failure, option failure, subprocess diagnostic, and public declaration isolation.
+- input: Synthetic values only. Tests use canaries and assert their complete absence from serialized output.
+- functional assertions: 14 tests passed, 0 failed, 0 skipped, and the diagnostic subprocess exited 0.
+
+The isolated process observation used:
+
+```bash
+/usr/bin/time -v node packages/runtime/dist/src/check-runtime-logging.js
+/usr/bin/time -v node --input-type=module -e ""
+```
+
+## Baseline
+
+The empty pinned Node.js process exited 0 in `0.02` seconds wall time with `42,484` KiB maximum RSS.
+
+## Change
+
+The changed process loaded the built runtime package and Pino, created one logger, emitted one correlated information record and one correlated warning record, redacted an authorization property, sanitized a two-frame error cause, and exited.
+
+## Results
+
+| Metric | Empty Node.js | Logging diagnostic | Difference |
+|---|---:|---:|---:|
+| Exit status | 0 | 0 | 0 |
+| Wall time | 0.02 s | 0.04 s | +0.02 s |
+| Maximum RSS | 42,484 KiB | 60,680 KiB | +18,196 KiB |
+| JSON records | 0 | 2 | +2 |
+| Focused assertions | N/A | 14 passed | N/A |
+
+Both diagnostic lines parsed as JSON. They contained ISO time, string severity, service, environment, version, valid trace ID, valid span ID, stable event/operation/outcome fields, and bounded attributes. The warning contained `authorization: "[Redacted]"` and error types/codes without messages or stacks. No diagnostic secret canary appeared in standard output or standard error.
+
+## Dependency and compatibility evidence
+
+Registry metadata on 2026-08-26 reported Pino `10.3.1` as the latest stable release, published on 2026-02-09, with MIT license, `663,527` unpacked bytes, integrity `sha512-r34yH/GlQpKZbU1BvFFqOjhISRo1MNx1tWYsYvmj6KIRHSPMT2+yHOEb1SG6NMvRoHRF0a07kCOox/9yakl1vg==`, and eleven declared runtime dependencies. The frozen lock resolves one Pino version.
+
+The official Pino repository documents initialization-time path redaction, Node.js LTS support, a security policy, and separate log processing. Exact compatibility evidence is stronger than the generic range: the package compiles, typechecks, serializes, redacts, and runs its direct/subprocess suite on the repository-pinned Node.js `24.19.0` and TypeScript `6.0.3`.
+
+`corepack pnpm licenses list --prod --json` reports MIT for Pino and its redaction, serialization, stream, formatting, warning, and exit helpers; `split2@4.2.0` is ISC. `corepack pnpm audit --audit-level=high` reports no known vulnerability. Hosted dependency review passed. It reported informational OpenSSF Scorecard warnings for transitive `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; neither warning is a vulnerability finding, and both dependencies remain inside the exact Pino graph and replacement boundary.
+
+Pino is an internal adapter. Generated `runtime-logger.d.ts` contains no Pino reference, and a focused test enforces that boundary. Removal replaces the private adapter while preserving repository-owned service call sites and JSON-field tests.
+
+## Raw evidence
+
+- Candidate: `fca410d236a3761e37e42d19244e68d27bd1bd88` on `feat/p01-r04-structured-logging`.
+- Focused run: 2 Turbo tasks, 0 cached, 14 tests passed, 0 failed, 0 skipped.
+- Diagnostic: exit 0 with exactly two newline-delimited JSON records and no standard-error output.
+- Process observation: diagnostic `0.04s / 60,680 KiB`; empty Node.js `0.02s / 42,484 KiB`.
+- Dependency query: `corepack pnpm view pino@10.3.1 version license dist.unpackedSize dist.integrity dependencies --json`.
+- Production-license query: `corepack pnpm licenses list --prod --json`.
+- Audit: `corepack pnpm audit --audit-level=high` returned `No known vulnerabilities found`.
+- Complete local graph: 28 tasks, 0 cached, 28 successful in `9.762s`.
+- Complete graph package assertions: 14 runtime tests and 12 configuration tests passed; all repository-tool adverse suites also passed.
+- Documentation: 131 documents, 1,858 headings, 317 local links, and zero violation.
+- Repository memory: 10 files, 17 queue items, P01-R04 active, and zero violation.
+- Secret scan: zero finding.
+- Clean public checkout: exact public candidate `6eedca0`, frozen install with 124 packages reused and zero downloaded, 14 focused tests passed, two diagnostic JSON records emitted, 28 of 28 forced uncached tasks passed in `11.307s`, audit and secret scan passed, and Git remained clean.
+- Protected CI: pull-request run `32966113415` passed classification, hosted dependency review, documentation/security, frozen install, source quality, registry audit, and the required aggregate at candidate `34e3cb9`; the unrelated Docker lane was skipped as designed.
+- Independent review: Codex review comment `5424999783` reports no major issue at exact candidate `34e3cb9` and created no unresolved discussion.
+- Final repository-state graph: 28 tasks, 0 cached, 28 successful in `10.862s`; 14 runtime tests and 12 configuration tests passed, documentation covered 131 documents and 317 links, repository memory selected P01-R11 as the next ready item, secret scanning found zero issue, and the high-severity audit found no known vulnerability.
+
+## Clean public checkout
+
+The public branch was cloned over HTTPS into an empty temporary root and resolved exact commit `6eedca0600e568d6016bb0a71aade5b0889c941d`. Before installation, the clone had no `node_modules` or `.turbo` directory. `corepack pnpm install --frozen-lockfile` reused 124 packages from the content-addressable store, downloaded zero packages, and completed in `798ms`.
+
+`corepack pnpm logging:test` passed all 14 focused assertions through two uncached Turbo tasks in `2.446s`. `corepack pnpm logging:check` exited zero and emitted exactly two newline-delimited JSON records with the representative authorization value redacted. The complete `corepack pnpm check --force` graph passed 28 of 28 uncached tasks in `11.307s`; documentation validation covered 131 documents, 1,862 headings, and 317 local links. The high-severity dependency audit reported no known vulnerability, the secret scan reported zero finding, and `git status --short` was empty.
+
+The temporary root was resolved and checked as a regular directory under `/tmp`, then rechecked for the exact public origin, candidate commit, and clean state. Only that verified temporary root was removed. This experiment did not start, stop, or remove any Docker resource.
+
+## Interpretation
+
+The current evidence supports the functional logging contract on the named runtime and host. It shows that representative credential keys and raw error text stay out of output, valid active trace context is correlated, invalid context is omitted, bounded hostile records do not escape into callers, and Pino remains replaceable behind repository-owned declarations.
+
+The process numbers show only the startup cost of one short warm-filesystem process pair. They do not establish throughput, event-loop impact, steady-state memory, allocation behavior, logging latency, backpressure capacity, or comparative logger performance.
+
+## Limitations
+
+- Transitive `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0` have OpenSSF Scorecard values below the repository's informational threshold; the hosted dependency gate still passed and the high-severity audit found no known vulnerability.
+- The process pair was not isolated from host scheduling, had no repeated samples, and is not a benchmark.
+- The default standard-output path has no Collector, retention, export queue, flush deadline, or drop metric yet.
+- Redaction recognizes reviewed names; it cannot infer a secret deliberately placed under an innocent-looking attribute name.
+- No HTTP request, GraphQL operation, service lifecycle, container, native Windows, macOS, or arm64 runtime was exercised.
+- Trace correlation uses an injected provider with synthetic context; the OpenTelemetry SDK adapter belongs to a later Phase 01 item.
+
+## Decision
+
+- Keep, revert, or continue investigation: Keep the bounded Pino adapter; P01-R04 acceptance is verified.
+- Revisit trigger: Replace or revise the adapter if the future OpenTelemetry/log pipeline cannot map the stable fields, stdout backpressure or shutdown evidence fails, representative service load shows unacceptable cost, a supported runtime breaks, or dependency/security posture changes.
