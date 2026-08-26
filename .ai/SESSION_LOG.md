@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified bounded runtime telemetry
+
+### Completed
+
+- Protected run `33011704716` passed at exact head `068f9fd`; evidence reply `3866572642` was posted and joined-cancellation discussion `3866505207` was resolved.
+- Both review discussions are resolved. Final blocking-boundary review comment `5430926105` reported no major issue at exact reviewed head `068f9fd`.
+- Classified P01-R06 as `VERIFIED`. No source, dependency, lockfile, packaging, Docker resource, service, product context, schema, durable data, hosted setting, metric vocabulary, or public command changed during this closeout.
+
+### Evidence
+
+- Exact source evidence remains nine focused tests, the diagnostic, 34/34 changed and exact uncached gates, audit, secret scan, clean Git, and validated temporary-root cleanup.
+- Protected runs `33009107927`, `33010364854`, and `33011704716` pass; the final review examined the exact source/evidence head after both availability remediations.
+
+### Next action
+
+Pass protected CI for this documentation-only closeout, squash-merge pull request 13, verify the post-merge `main` run, and activate P01-R07 from clean released `main`.
+
 ## 2026-08-26 — Remediated joined telemetry cancellation
 
 ### Completed

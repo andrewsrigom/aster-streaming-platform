@@ -116,7 +116,7 @@ Status: **IN_PROGRESS**
 - The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
 - Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
-- P01-R06 is `IMPLEMENTED` at cancellation-remediation candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe` on pull request 13. Initial lifecycle review finding `3866381774` was remediated, protected run `33010364854` passed, evidence reply `3866468924` was posted, and its discussion is resolved. Confirmation review `5034828379` then found joined flush callers ignored their own abort. The current candidate shares one bounded flush/shutdown operation while each waiter retains caller-local cancellation, and it classifies absorbed exporter failure on the shared result. Nine focused tests and a 34/34 changed gate pass; an exact no-local checkout reused 278 frozen packages with zero download, passed the diagnostic and 34/34 uncached tasks in `49.369s`, audit, secret scan, clean Git, and validated cleanup. Protected CI, reply/resolution, final blocking-boundary confirmation, and release remain pending.
+- P01-R06 is `VERIFIED` at source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe` and exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405` on pull request 13. The package shares one bounded flush/shutdown operation while each waiter retains caller-local cancellation and classifies absorbed exporter failure on the shared result. Nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, clean Git, and validated cleanup pass. Protected runs `33009107927`, `33010364854`, and `33011704716` passed; evidence replies `3866468924` and `3866572642` are posted; both discussions are resolved; final review comment `5430926105` reports no major issue at exact head `068f9fd`. Merge and post-merge release verification remain pending.
 
 ## Not implemented
 
@@ -140,7 +140,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Publish exact P01-R06 cancellation remediation `fbac8cc` plus its evidence, pass protected CI, reply to and resolve confirmation finding `3866505207`, obtain the permitted final blocking-boundary confirmation, then release before activating P01-R07.
+Pass protected CI for the documentation-only P01-R06 verification closeout, squash-merge pull request 13, verify the exact post-merge `main` run, and then activate P01-R07 from clean released `main`.
 
 ## Current risks
 

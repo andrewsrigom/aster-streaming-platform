@@ -6,14 +6,14 @@ P01-R05 is released through pull request 12 as exact protected squash `4d243351b
 
 P01-R06 is active on branch `feat/p01-r06-telemetry` from clean released squash `4d24335`. Its owner is shared telemetry/runtime infrastructure; it changes no product context or durable data. The local implementation adds `@aster/telemetry` with repository-owned finite metric contracts, Node.js runtime collection, HTTP/dependency recorders, process-local manual collection, optional bounded OTLP/HTTP export, export failure/drop health, lifecycle-compatible flush/shutdown, declaration isolation, and cardinality/privacy controls.
 
-The exact direct package selection is OpenTelemetry API `1.9.1`, core/resources/metrics SDK `2.10.0`, OTLP HTTP metrics exporter `0.221.0`, and runtime-node instrumentation `0.34.0`. Initial finding `3866381774` is resolved after protected run `33010364854`. Confirmation finding `3866505207` proved a joined flush caller ignored its own abort. Current candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe` shares one bounded flush/shutdown provider operation while each waiter retains caller-local cancellation and absorbed export failure becomes one stable failed shared result. Nine focused tests pass; an exact frozen offline checkout reused 278 packages with zero downloads, passed 34/34 forced tasks in `49.369s`, audit, secret scan, clean Git, and validated cleanup. A Collector, Prometheus scrape, dashboards, alerts, SLOs, product metrics, dependency adapters, Identity service, and Docker changes remain outside P01-R06.
+P01-R06 is `VERIFIED` at source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe` and exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`. Its exact OpenTelemetry package selection, finite metric vocabulary, local and OTLP behavior, shared flush/shutdown work, caller-local cancellation, stable export-failure classification, lifecycle degradation, cardinality/privacy controls, nine focused tests, exact 34/34 uncached checkout, audit, secret scan, and cleanup evidence pass. Protected runs `33009107927`, `33010364854`, and `33011704716` passed; both discussions are resolved with evidence replies; final review comment `5430926105` reports no major issue at the exact head. A Collector, Prometheus scrape, dashboards, alerts, SLOs, product metrics, dependency adapters, Identity service, and Docker changes remain outside P01-R06.
 
 ## Resume point
 
-1. Commit and push the exact cancellation-remediation evidence without changing dependencies, lockfile, packaging, metric vocabulary, or diagnostic behavior.
-2. Wait for protected CI, then reply to comment `3866505207` with exact evidence and resolve its discussion.
-3. Obtain one final blocking-boundary confirmation because the confirmation remediation changed the public cancellation boundary; handle only requirement, security/privacy, cardinality, availability, lifecycle, or public-contract blockers.
-4. Close P01-R06 as verified, pass its documentation-only protected gate, squash merge, confirm the post-merge run, and activate P01-R07 from clean released `main`.
+1. Commit and push the documentation-only verification closeout without changing source, dependencies, lockfile, packaging, metric vocabulary, or diagnostic behavior.
+2. Pass protected CI at that exact closeout head; the source review and heavyweight evidence remain applicable because this commit changes only evidence and repository memory.
+3. Squash-merge P01-R06, verify the post-merge `main` run, and record its release evidence.
+4. After P01-R06 is released, activate P01-R07 from clean `main` using `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` without copying preflight candidates as accepted selections.
 
 ## Do not do yet
 

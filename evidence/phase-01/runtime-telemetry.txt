@@ -1,5 +1,5 @@
 Evidence: P01-R06 bounded runtime telemetry candidate
-Status: IMPLEMENTED; initial and confirmation findings remediated, final protected CI/boundary confirmation and release verification pending
+Status: VERIFIED; release merge and post-merge verification pending
 Date: 2026-08-26
 Source base: 4d243351bb46ae6b63a80a9ca3b9186baa3c68ac
 Candidate commit: fbac8cc0f893b01392683549e86f47d6230fb0fe
@@ -116,6 +116,12 @@ Confirmation review and cancellation remediation evidence
 - Exact no-local checkout fbac8cc reused 278 frozen offline packages with zero downloads in 2.76 seconds and observed 380,236 KiB maximum RSS. It passed telemetry:check, 34 of 34 forced tasks with zero cached in 49.369 seconds, all package tests, audit, secret scanning, exact clean Git, and exact SHA confirmation.
 - Cleanup passed after resolving and verifying /tmp/aster-p01-r06-review-fbac8cc; that exact temporary root no longer exists.
 
+Verification closeout evidence
+- Protected run 33011704716 passed every applicable job at exact source/evidence head 068f9fd0835e38d432e5a7bd3627beeb42f9b405, including dependency review, frozen install, complete source quality, audit, documentation, memory, security, and the required aggregate.
+- Evidence reply 3866572642 was posted for joined-cancellation finding 3866505207, and both pull-request review discussions are resolved.
+- Final blocking-boundary review comment 5430926105 examined exact head 068f9fd and reported no major issue after the shared-operation, caller-local cancellation, export-failure classification, lifecycle degradation, and cleanup remediation.
+- P01-R06 is VERIFIED. No source, dependency, lockfile, packaging, Docker resource, service, product context, schema, durable data, hosted setting, metric vocabulary, or public command changed during this verification classification.
+
 Failure evidence
 - A loopback HTTP server deliberately accepted an OTLP request without responding. The lifecycle flush rejected with a sanitized error inside the 1-second test ceiling; exporter health recorded one bounded failure and a positive dropped-observation count; no endpoint or error entered the error or a metric attribute.
 - A loopback OTLP server returned HTTP 200. forceFlush completed, exactly one request arrived at the assertion point, and health recorded one success with no drop.
@@ -129,5 +135,5 @@ Public-contract evidence
 Current interpretation
 - The P01-R06 implementation exists and focused plus changed-scope gates pass.
 - Local complete and exact isolated-checkout gates now pass at cancellation-remediation candidate fbac8cc0f893b01392683549e86f47d6230fb0fe.
-- Initial review, its remediation CI, and confirmation review are proven. This artifact does not yet prove protected CI or final blocking-boundary confirmation for fbac8cc, merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
-- Collector and Prometheus evidence belongs to P01-R09. Final protected, boundary-confirmation, and release evidence will be appended only after their exact checks pass.
+- Initial review, both remediation runs, all discussion resolutions, and final blocking-boundary confirmation are proven. This artifact does not yet prove merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
+- Collector and Prometheus evidence belongs to P01-R09. Release evidence will be appended only after the exact merge and post-merge checks pass.

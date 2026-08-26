@@ -117,7 +117,7 @@ Remove `@aster/telemetry`, its exact OpenTelemetry dependencies, lockfile entrie
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
+- [x] Requirements satisfied
 - [x] Tests pass
 - [x] Evidence captured
 - [x] Documentation current
