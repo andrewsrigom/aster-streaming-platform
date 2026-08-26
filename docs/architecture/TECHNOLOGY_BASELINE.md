@@ -35,17 +35,17 @@ This document distinguishes fixed technology direction from decisions intentiona
 | Logging | Pino-compatible structured logging | Low-overhead JSON logs and redaction |
 | API types | GraphQL code generation | Client and operation type safety |
 
-## Decisions deferred to Phase 00
-
-- lint/format package versions;
-- architecture-boundary tooling.
-
 ## Decisions resolved in Phase 00
 
 - Source code and project-authored documentation use the MIT License (`MIT`).
 - Node.js `24.19.0` is the exact runtime pin. It is an active Krypton LTS release and Node.js 24 remains supported through April 2028.
 - pnpm `11.24.0` is the exact package-manager pin. Its published runtime requirement includes Node.js 24, and the package-manager artifact is integrity-pinned in `package.json`.
 - Turborepo `2.10.12` is the exact task-runner pin. The selected MIT-licensed npm artifact carries registry signatures and SLSA provenance, runs on the pinned toolchain, and contains the current Windows pnpm execution fix.
+- TypeScript `6.0.3`, ESLint `10.9.1`, `@eslint/js` `10.0.1`, typescript-eslint `8.68.0`, Prettier `3.9.6`, Knip `6.32.2`, and `@types/node` `24.13.3` are exact-pinned as the source-quality toolchain. The selected TypeScript and ESLint versions are inside typescript-eslint's published peer ranges, and every package supports Node.js 24.
+- Architecture boundaries use a bounded repository-owned TypeScript AST scanner instead of an additional general-purpose boundary framework. This keeps the accepted layer rules explicit, testable, and removable without coupling product packages to the checker.
+- Git uses repository-owned `pre-commit` and `commit-msg` hooks. The staged-file hook dispatches only check-only formatting and lint for applicable staged paths; full type, unused-code, architecture, test, documentation, integration, media, and container gates remain explicit commands or CI work.
+
+Node.js native TypeScript execution is limited to repository tooling that uses erasable syntax. Product packages will compile with `tsc`; they do not depend on runtime type stripping as their build strategy. The root tooling project enables `erasableSyntaxOnly` and `verbatimModuleSyntax` so unsupported runtime syntax fails during type checking.
 
 Patch upgrades are deliberate work: update every duplicated pin, verify the official artifact and compatibility, run the toolchain and workspace checks, and replace the affected evidence. The validator intentionally rejects a merely compatible but different runtime or package-manager patch version so local and CI behavior cannot drift silently.
 

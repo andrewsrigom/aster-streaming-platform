@@ -24,10 +24,13 @@ Status: **IN_PROGRESS**
 - Node.js `24.19.0` and pnpm `11.24.0` are exactly pinned, the package-manager artifact is integrity-pinned, and the dependency-free guard passes 7 built-in tests plus active-environment validation.
 - Local Git uses `main`; deterministic attributes and ignores preserve evidence and safe environment examples while excluding dependency trees, generated output, local secrets, and `Zone.Identifier` metadata.
 - The pnpm workspace contains only the root, its shared lockfile passes frozen supply-chain verification, and Turborepo `2.10.12` executes two real uncached foundation tasks.
+- The exact source-quality toolchain provides strict TypeScript, type-aware ESLint, check-only Prettier, Knip, bounded TypeScript-AST architecture validation, and 25 passing focused tests.
+- Repository-local hooks validate only applicable staged source/configuration paths and the commit message; the complete ten-task source gate passed cold and cached runs without changing authoritative files.
 
 ## Not implemented
 
-- Strict TypeScript, formatting, lint, unused-code, architecture-boundary, and commit-message gates
+- Documentation link, terminology, fence, and unsupported-status-claim gates
+- Staged secret scanning and dependency review
 - Applications and services
 - Databases and migrations
 - GraphQL schemas
@@ -38,12 +41,12 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Add strict TypeScript defaults, formatting, linting, unused-code and architecture-boundary checks, plus fast commit-message validation for P00-R04.
+Add executable Markdown link, terminology, fence, and unsupported-status-claim validation for P00-R05.
 
 ## Current risks
 
-- The remaining Phase 00 quality-tool compatibility has not yet been selected or validated.
-- Git and the public remote have not been initialized. Public creation of `andrewsrigom/aster-streaming-platform` is authorized but remains ordered after local Git, initial checks, and CI are ready.
+- The current source gates do not yet validate documentation semantics or secrets; P00-R05 and P00-R06 own those controls.
+- The public remote has not been created. Public creation of `andrewsrigom/aster-streaming-platform` is authorized but remains ordered after local checks and CI are ready.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

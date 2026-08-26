@@ -9,8 +9,8 @@ Only one item may be `IN_PROGRESS`.
 | 3 | Define engineering demonstration, local demo, and repository governance contracts | P00-R11 | DONE |
 | 4 | Select and pin the supported Node.js and pnpm versions | P00-R03 | DONE |
 | 5 | Initialize Git policy, pnpm workspace, Turborepo, and deterministic ignores | P00-R02 | DONE |
-| 6 | Add strict TypeScript, formatting, linting, unused-code, import-boundary, and commit checks | P00-R04 | READY |
-| 7 | Add link, terminology, and unsupported-status-claim validation | P00-R05 | BLOCKED_BY_6 |
+| 6 | Add strict TypeScript, formatting, linting, unused-code, import-boundary, and commit checks | P00-R04 | DONE |
+| 7 | Add link, terminology, and unsupported-status-claim validation | P00-R05 | READY |
 | 8 | Add CI for install integrity, code checks, tests, documentation, secrets, and dependency review | P00-R06 | BLOCKED_BY_6_7 |
 | 9 | Add public contribution governance and repository templates | P00-R07 | BLOCKED_BY_5 |
 | 10 | Create the authorized public GitHub repository and apply verified protections | P00-R07 | BLOCKED_BY_8_9 |

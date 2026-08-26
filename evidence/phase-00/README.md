@@ -14,11 +14,12 @@
 | Define engineering demonstration, local demo, and repository governance contracts | P00-R11 | PASS | [`plan-clarity-audit.txt`](plan-clarity-audit.txt) |
 | Select and pin Node.js and pnpm | P00-R03 | PASS | [`toolchain-selection.txt`](toolchain-selection.txt) |
 | Initialize Git policy, pnpm workspace, and Turborepo | P00-R02 | PASS | [`workspace-foundation.txt`](workspace-foundation.txt) |
+| Add strict and tiered source-quality gates | P00-R04 | PASS | [`source-quality-foundation.txt`](source-quality-foundation.txt) |
 
 P00-R08 is not complete as a phase requirement. A later work item integrates `.ai/` state validation into the executable contribution workflow.
 
 ## Limitations
 
 - Git now exists locally, but the public remote and public-clone result remain pending.
-- The toolchain guard is executable, but the workspace, lockfile, task graph, and full quality gates remain future Phase 00 work.
+- The toolchain, workspace, lockfile, source-quality task graph, architecture checks, and local hooks are executable. Documentation validation, staged secret checks, CI, templates, and remote governance remain future Phase 00 work.
 - P00-R10 will rerun every Phase 00 check through documented commands from a clean checkout and replace these limitations with final evidence.

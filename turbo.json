@@ -10,6 +10,53 @@
     },
     "//#toolchain:test": {
       "cache": false
+    },
+    "//#typecheck": {
+      "inputs": ["tools/**/*.ts", "tsconfig.json", "tsconfig.base.json", "package.json"]
+    },
+    "//#lint": {
+      "inputs": ["tools/**", "eslint.config.mjs", "package.json", "tsconfig*.json"]
+    },
+    "//#format:check": {
+      "inputs": [
+        ".githooks/**",
+        "*.{js,json,jsonc,mjs,ts,yaml,yml}",
+        "apps/**",
+        "packages/**",
+        "services/**",
+        "tools/**",
+        "workers/**"
+      ]
+    },
+    "//#unused:check": {
+      "inputs": [
+        "apps/**",
+        "knip.json",
+        "package.json",
+        "packages/**",
+        "services/**",
+        "tools/**",
+        "tsconfig*.json",
+        "workers/**"
+      ]
+    },
+    "//#architecture:check": {
+      "inputs": [
+        "apps/**",
+        "packages/**",
+        "services/**",
+        "tools/verify-architecture.ts",
+        "workers/**"
+      ]
+    },
+    "//#architecture:test": {
+      "inputs": ["tools/verify-architecture.ts", "tools/verify-architecture.test.ts"]
+    },
+    "//#commit:test": {
+      "inputs": ["tools/validate-commit-message.ts", "tools/validate-commit-message.test.ts"]
+    },
+    "//#staged:test": {
+      "inputs": ["tools/check-staged-files.ts", "tools/check-staged-files.test.ts"]
     }
   }
 }

@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, and initial Turborepo task graph are implemented and verified. Application, infrastructure, demonstration, and broader quality commands remain a contract for their owning Phase 00 and Phase 01 work items; they are not yet claimed as executable.
+The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript policy, source formatting and linting, unused-code analysis, architecture-boundary validation, repository-local Git hooks, and Turborepo task graph are implemented and verified. Documentation validation, CI, application, infrastructure, and demonstration commands remain contracts for their owning Phase 00 and Phase 01 work items; they are not yet claimed as executable.
 
 ## Required tools
 
@@ -25,11 +25,30 @@ pnpm install --frozen-lockfile
 pnpm check
 ```
 
-`pnpm check` uses the pinned local Turborepo binary to run the active-version guard and its built-in tests as uncached root tasks. The guard rejects missing, malformed, prerelease, or non-exact active versions and inconsistent repository pins. It disables Corepack network access while detecting pnpm, so validation cannot silently download a package manager. The first Corepack provisioning and dependency installation require registry access; subsequent offline behavior depends on the local content-addressed cache.
+`pnpm check` uses the pinned local Turborepo binary to run the active-version guard, source-quality checks, architecture checks, and their built-in tests. The guard rejects missing, malformed, prerelease, or non-exact active versions and inconsistent repository pins. It disables Corepack network access while detecting pnpm, so validation cannot silently download a package manager. The first Corepack provisioning and dependency installation require registry access; subsequent offline behavior depends on the local content-addressed cache.
+
+## Source-quality commands
+
+Use check-only commands for ordinary validation:
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm format:check
+pnpm unused:check
+pnpm architecture:check
+pnpm check
+```
+
+`pnpm check` is the complete currently implemented source gate. Use `pnpm format:write` only when an intentional formatting rewrite is wanted. The architecture checker scans approved workspace source roots, rejects malformed source and forbidden outward dependencies, and emits structured violations without following symbolic links. Knip checks unused source, exports, and direct dependencies as package source is added; the current root-only workspace is valid without placeholder packages.
+
+Local Git is configured with `core.hooksPath=.githooks`. The `pre-commit` hook reads bounded NUL-delimited staged paths and runs only Prettier and ESLint when their file types apply. The `commit-msg` hook validates the bounded Conventional Commit-shaped subject. Neither hook installs dependencies nor runs repository-wide type checking, Knip, tests, documentation, Turbo, containers, media, or integration suites.
+
+On the measured Phase 00 WSL environment, a documentation-only pre-commit completed in `0.07` seconds, a staged configuration-and-TypeScript check completed in `2.37` seconds, the cold full gate completed in `3.67` seconds, and its cached repeat completed in `0.96` seconds. These observations establish the current feedback tier; they are not portable performance guarantees.
 
 ## Command contract
 
-The repository will expose three feedback lanes. Except for the foundation install and check above, exact scripts remain planned until their Phase 00 and Phase 01 work items implement and verify them.
+The repository exposes the foundation and source-quality commands above and will grow three operational feedback lanes. Exact application and infrastructure scripts remain planned until their Phase 00 and Phase 01 work items implement and verify them.
 
 ### Development lane
 

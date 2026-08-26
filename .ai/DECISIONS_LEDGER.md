@@ -22,12 +22,14 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Exact Node.js runtime | Pin Node.js `24.19.0`, an active Krypton LTS release | `evidence/phase-00/toolchain-selection.txt` |
 | Exact package manager | Pin pnpm `11.24.0` with its published SHA-512 package integrity | `evidence/phase-00/toolchain-selection.txt` |
 | Exact monorepo task runner | Pin Turborepo `2.10.12`; use only locally installed root and package tasks | `evidence/phase-00/workspace-foundation.txt` |
+| Exact source-quality toolchain | Pin TypeScript `6.0.3`, ESLint `10.9.1`, `@eslint/js` `10.0.1`, typescript-eslint `8.68.0`, Prettier `3.9.6`, Knip `6.32.2`, and `@types/node` `24.13.3` | `evidence/phase-00/source-quality-foundation.txt` |
+| Architecture-boundary enforcement | Use a bounded repository-owned TypeScript AST scanner with explicit inward-dependency rules and adverse fixtures | `evidence/phase-00/source-quality-foundation.txt` |
+| Local commit feedback | Use repository-owned staged-file and commit-message hooks; keep repository-wide and heavyweight gates explicit | `evidence/phase-00/source-quality-foundation.txt` |
 
 ## Pending decisions
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Exact lint, format, and boundary-tool versions | 00 | Compatibility matrix, clean install, maintenance and license review, and representative checks | Node.js, pnpm, and Turborepo are authoritative; code-quality commands remain limited to the toolchain foundation | Remaining Phase 00 verification |
 | Local PostgreSQL, Redis, broker, object-storage, and telemetry versions | 01 | Architecture support, local resource use, health behavior, and integration smoke tests | No local dependency stack is claimed | Phase 01 verification |
 | Configuration, typed SQL, Kafka, and telemetry adapter libraries | 01 | Compatibility, maintenance, license, security, runtime cost, exit strategy, and focused spike | Depend on domain ports, not an unselected library | Affected Phase 01 work item |
 | Service HTTP adapter | 01 | ADR with Apollo integration compatibility, middleware ordering, input limits, async errors, cancellation, graceful shutdown, maintenance, license, and performance evidence | Express 5 is the preferred candidate; no framework type enters domain or application code before the ADR | Phase 01 verification |

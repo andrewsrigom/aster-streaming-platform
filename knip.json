@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "project": [
+    "apps/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}",
+    "packages/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}",
+    "services/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}",
+    "tools/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}",
+    "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
+  ]
+}

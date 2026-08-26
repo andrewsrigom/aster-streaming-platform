@@ -22,10 +22,7 @@ test("rejects prerelease, coerced, and unbounded version input", () => {
 });
 
 test("reads pnpm only from a bounded pnpm user-agent entry", () => {
-  assert.equal(
-    pnpmVersionFromUserAgent("pnpm/11.24.0 npm/? node/v24.19.0 linux x64"),
-    "11.24.0",
-  );
+  assert.equal(pnpmVersionFromUserAgent("pnpm/11.24.0 npm/? node/v24.19.0 linux x64"), "11.24.0");
   assert.throws(() => pnpmVersionFromUserAgent("yarn/4.15.0 npm/? node/v24.19.0 linux x64"));
 });
 
@@ -62,10 +59,7 @@ test("reports every pin drift instead of stopping at the first mismatch", () => 
 });
 
 test("rejects unsupported active versions", () => {
-  assert.deepEqual(
-    validateActiveVersions({ nodeVersion: "24.19.0", pnpmVersion: "11.24.0" }),
-    [],
-  );
+  assert.deepEqual(validateActiveVersions({ nodeVersion: "24.19.0", pnpmVersion: "11.24.0" }), []);
   assert.equal(
     validateActiveVersions({ nodeVersion: "22.23.2", pnpmVersion: "10.34.5" }).length,
     2,

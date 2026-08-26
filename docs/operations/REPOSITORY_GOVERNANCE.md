@@ -2,7 +2,7 @@
 
 ## Current status
 
-Local Git is initialized on `main`, deterministic attributes and ignores are active, and the pinned workspace foundation check is implemented. Commit hooks, broader quality gates, CI, GitHub templates, the public remote, and hosted protections remain planned Phase 00 work.
+Local Git is initialized on `main`; deterministic attributes and ignores, strict source-quality gates, executable architecture boundaries, staged-file and commit-message hooks, and the pinned workspace check are implemented. Documentation validation, staged secret scanning, CI, GitHub templates, the public remote, and hosted protections remain planned Phase 00 work.
 
 The repository owner has authorized creation of the public target `andrewsrigom/aster-streaming-platform`. Supported tool selection and local Git initialization are complete; creation remains ordered after the initial quality workflows and a final remote-existence check.
 
@@ -55,7 +55,7 @@ Quality gates are intentionally split by speed and risk.
 | Tier | Trigger | Scope | Intended feedback |
 |---|---|---|---|
 | Edit | developer action | editor diagnostics and targeted tests | immediate |
-| Commit | local commit | commit metadata plus fast staged-file formatting, lint, and secret checks | seconds, not a repository-wide build |
+| Commit | local commit | commit metadata plus fast staged-file formatting and lint; staged secret checks join in P00-R06 | seconds, not a repository-wide build |
 | Push | explicit pre-push or `check:changed` | affected formatting, lint, type checks, unit tests, and documentation | fast enough for normal iteration |
 | Pull request | ready-for-review PR | authoritative affected jobs, install integrity, tests, documentation, security, and dependency review | complete merge decision |
 | Phase or release gate | explicit command or workflow dispatch | clean install, integration containers, browser, load, failure, media, and release evidence required by the phase | comprehensive and measured |
@@ -66,7 +66,7 @@ Full integration, browser, container, media, load, soak, CodeQL, and failure-inj
 
 ## Static and architecture gates
 
-Phase 00 will select compatible tools, but the required behavior is fixed:
+The following source gates are implemented:
 
 - deterministic formatting check;
 - strict TypeScript compilation without emit;
@@ -75,10 +75,14 @@ Phase 00 will select compatible tools, but the required behavior is fixed:
 - inward-only domain and application import boundaries;
 - no cross-context persistence-model imports;
 - no framework, database, Redis, broker, or telemetry SDK in domain and application layers;
+- Conventional Commit validation for local commit messages.
+
+The remaining Phase 00 gates are planned and must not be described as executable yet:
+
 - Markdown links, terminology, fences, and status-claim validation;
 - secret and credential scanning;
 - dependency-license and vulnerability review;
-- Conventional Commit validation for merge commits and pull-request titles.
+- Conventional Commit validation for pull-request titles and merge results.
 
 Auto-fix commands remain separate from check commands. CI runs checks and does not rewrite source.
 

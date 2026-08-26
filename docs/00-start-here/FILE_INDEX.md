@@ -8,6 +8,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`.gitignore`](../../.gitignore) — Generated and Local File Policy
 - [`.node-version`](../../.node-version) — Node.js Runtime Pin
 - [`.nvmrc`](../../.nvmrc) — NVM Runtime Pin
+- [`.prettierignore`](../../.prettierignore) — Formatter Exclusion Policy
+- [`.prettierrc.json`](../../.prettierrc.json) — Deterministic Formatting Policy
 - [`LICENSE`](../../LICENSE) — MIT License
 - [`AGENTS.md`](../../AGENTS.md) — Aster Agent Operating Contract
 - [`CONTRIBUTING.md`](../../CONTRIBUTING.md) — Contributing
@@ -17,10 +19,19 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`README.md`](../../README.md) — Aster
 - [`ROADMAP.md`](../../ROADMAP.md) — Roadmap
 - [`SECURITY.md`](../../SECURITY.md) — Security Policy
+- [`eslint.config.mjs`](../../eslint.config.mjs) — Type-Aware Lint Policy
+- [`knip.json`](../../knip.json) — Unused-Code and Dependency Policy
 - [`package.json`](../../package.json) — Root Toolchain Metadata
 - [`pnpm-lock.yaml`](../../pnpm-lock.yaml) — Dependency Integrity Lockfile
 - [`pnpm-workspace.yaml`](../../pnpm-workspace.yaml) — Workspace Definition and pnpm Policy
 - [`turbo.json`](../../turbo.json) — Monorepo Task Graph
+- [`tsconfig.base.json`](../../tsconfig.base.json) — Strict Shared TypeScript Policy
+- [`tsconfig.json`](../../tsconfig.json) — Root Tooling TypeScript Project
+
+## .githooks
+
+- [`.githooks/commit-msg`](../../.githooks/commit-msg) — Commit Message Hook
+- [`.githooks/pre-commit`](../../.githooks/pre-commit) — Bounded Staged-File Hook
 
 ## .ai
 
@@ -56,6 +67,12 @@ This index lists repository governance artifacts and every Markdown source in th
 
 ## tools
 
+- [`tools/check-staged-files.ts`](../../tools/check-staged-files.ts) — Bounded Staged-File Dispatcher
+- [`tools/check-staged-files.test.ts`](../../tools/check-staged-files.test.ts) — Staged-File Dispatcher Tests
+- [`tools/validate-commit-message.ts`](../../tools/validate-commit-message.ts) — Commit Message Validator
+- [`tools/validate-commit-message.test.ts`](../../tools/validate-commit-message.test.ts) — Commit Message Validator Tests
+- [`tools/verify-architecture.ts`](../../tools/verify-architecture.ts) — Architecture Boundary Scanner
+- [`tools/verify-architecture.test.ts`](../../tools/verify-architecture.test.ts) — Architecture Boundary Scanner Tests
 - [`tools/verify-toolchain.mjs`](../../tools/verify-toolchain.mjs) — Dependency-Free Toolchain Guard
 - [`tools/verify-toolchain.test.mjs`](../../tools/verify-toolchain.test.mjs) — Toolchain Guard Tests
 
@@ -189,5 +206,6 @@ This index lists repository governance artifacts and every Markdown source in th
 ## evidence
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
+- [`evidence/phase-00/source-quality-foundation.txt`](../../evidence/phase-00/source-quality-foundation.txt) — Source Quality Foundation Evidence
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence

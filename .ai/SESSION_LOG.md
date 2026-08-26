@@ -2,6 +2,27 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Strict and tiered source-quality foundation
+
+### Completed
+
+- Exact-pinned TypeScript `6.0.3`, ESLint `10.9.1`, `@eslint/js` `10.0.1`, typescript-eslint `8.68.0`, Prettier `3.9.6`, Knip `6.32.2`, and `@types/node` `24.13.3` after current compatibility, license, engine, and release-maturity review.
+- Added strict shared and root TypeScript policies, type-aware linting, deterministic code/config formatting, unused-code analysis, and ten root Turbo tasks.
+- Added a bounded TypeScript-AST architecture scanner with inward-layer and forbidden-client rules plus adverse fixtures.
+- Added repository-local staged-file and commit-message hooks that keep repository-wide and heavyweight work outside the commit path.
+
+### Evidence
+
+- Passed a frozen install without changing any authoritative configuration or lockfile byte.
+- Passed 25 focused tests, an actual repository scan with zero violation, and deliberate Express-in-domain, outward-layer, package-escape, malformed-source, staged-path, and malformed-message failures.
+- Passed all ten source tasks in `3.67` seconds cold and `0.96` seconds cached in the measured environment; documentation-only and staged source/configuration hooks completed in `0.07` and `2.37` seconds respectively.
+- Verified 127 Markdown files and 212 internal links with no structure or broken-link issue; found no restricted private-context vocabulary or `Zone.Identifier` file.
+- Raw evidence: `evidence/phase-00/source-quality-foundation.txt`.
+
+### Next action
+
+Execute P00-R05 by turning the current documentation audit contract into a bounded, tested, repository-owned command and integrating it into the task graph.
+
 ## 2026-08-26 — Local Git and monorepo execution foundation
 
 ### Completed

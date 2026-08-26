@@ -1,0 +1,10 @@
+.git/
+.turbo/
+coverage/
+dist/
+docs/
+evidence/
+node_modules/
+*.md
+LICENSE
+pnpm-lock.yaml

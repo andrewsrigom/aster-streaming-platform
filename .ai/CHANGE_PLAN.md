@@ -1,3 +1,3 @@
 # Active Change Plan
 
-No work item is active. P00-R02 is complete and its evidence is recorded in `evidence/phase-00/workspace-foundation.txt`. The first `READY` queue item is P00-R04.
+No work item is active. Select the first `READY` item from `.ai/WORK_QUEUE.md` before beginning the next change.

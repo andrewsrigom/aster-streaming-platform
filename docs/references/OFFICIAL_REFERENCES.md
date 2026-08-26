@@ -37,6 +37,23 @@ Do not infer that every film or asset uses the same license. Review each officia
 - Turborepo 2.10.12 release: https://github.com/vercel/turborepo/releases/tag/v2.10.12
 - Turborepo 2.10.12 registry metadata: https://registry.npmjs.org/turbo/2.10.12
 
+## Source quality
+
+- TypeScript TSConfig reference: https://www.typescriptlang.org/tsconfig/
+- Node.js TypeScript support: https://nodejs.org/api/typescript.html
+- ESLint flat configuration: https://eslint.org/docs/latest/use/configure/configuration-files
+- typescript-eslint typed linting: https://typescript-eslint.io/getting-started/typed-linting/
+- Prettier local installation and exact version guidance: https://prettier.io/docs/install
+- Knip getting started: https://knip.dev/overview/getting-started
+- Git hooks: https://git-scm.com/docs/githooks
+- TypeScript 6.0.3 registry metadata: https://registry.npmjs.org/typescript/6.0.3
+- ESLint 10.9.1 registry metadata: https://registry.npmjs.org/eslint/10.9.1
+- `@eslint/js` 10.0.1 registry metadata: https://registry.npmjs.org/%40eslint%2Fjs/10.0.1
+- typescript-eslint 8.68.0 registry metadata: https://registry.npmjs.org/typescript-eslint/8.68.0
+- Prettier 3.9.6 registry metadata: https://registry.npmjs.org/prettier/3.9.6
+- Knip 6.32.2 registry metadata: https://registry.npmjs.org/knip/6.32.2
+- `@types/node` 24.13.3 registry metadata: https://registry.npmjs.org/%40types%2Fnode/24.13.3
+
 ## GraphQL and Apollo
 
 - GraphQL specification: https://spec.graphql.org/

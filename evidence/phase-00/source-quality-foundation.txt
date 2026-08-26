@@ -1,0 +1,119 @@
+ASTER PHASE 00 SOURCE QUALITY FOUNDATION EVIDENCE
+=================================================
+
+Work item: P00-R04
+Evidence date: 2026-08-26
+Commit: local candidate tree; P00-R10 records the final clean-checkout revision
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Runtime: Node.js 24.19.0; pnpm 11.24.0
+
+SELECTED TOOLS
+--------------
+
+TypeScript: 6.0.3 (Apache-2.0)
+ESLint: 10.9.1 (MIT)
+@eslint/js: 10.0.1 (MIT)
+typescript-eslint: 8.68.0 (MIT)
+Prettier: 3.9.6 (MIT)
+Knip: 6.32.2 (ISC)
+@types/node: 24.13.3 (MIT)
+
+Compatibility assertions:
+- typescript-eslint 8.68.0 accepts TypeScript >=4.8.4 and <6.1.0.
+- typescript-eslint 8.68.0 accepts ESLint 8, 9, and 10.
+- every selected package engine range includes Node.js 24.
+- each dependency is exact-pinned and more than 24 hours old at resolution; no additional release-maturity exception was required.
+- the frozen lockfile records exact integrity values and passed the existing supply-chain verifier.
+
+PRIMARY SOURCES CONSULTED
+-------------------------
+
+https://www.typescriptlang.org/tsconfig/
+https://nodejs.org/api/typescript.html
+https://eslint.org/docs/latest/use/configure/configuration-files
+https://typescript-eslint.io/getting-started/typed-linting/
+https://prettier.io/docs/install
+https://knip.dev/overview/getting-started
+https://git-scm.com/docs/githooks
+https://registry.npmjs.org/typescript/6.0.3
+https://registry.npmjs.org/eslint/10.9.1
+https://registry.npmjs.org/%40eslint%2Fjs/10.0.1
+https://registry.npmjs.org/typescript-eslint/8.68.0
+https://registry.npmjs.org/prettier/3.9.6
+https://registry.npmjs.org/knip/6.32.2
+https://registry.npmjs.org/%40types%2Fnode/24.13.3
+
+INSTALL AND INTEGRITY
+---------------------
+
+$ pnpm install --lockfile-only
+result: PASS
+elapsed: 6.04 seconds
+maximum resident set observed: 810824 KiB
+
+$ pnpm install --frozen-lockfile
+result: PASS
+packages installed: 108
+supply-chain policy: PASS
+elapsed: 1.31 seconds
+maximum resident set observed: 392332 KiB
+
+SOURCE GATES
+------------
+
+Individual results:
+- strict TypeScript no-emit check: PASS
+- type-aware ESLint flat-config check: PASS
+- deterministic Prettier check: PASS
+- Knip unused source/export/dependency check: PASS
+- actual repository architecture scan: PASS, 0 violations
+- toolchain guard tests: PASS, 7 passed and 0 failed
+- architecture scanner tests: PASS, 6 passed and 0 failed
+- staged-file dispatcher tests: PASS, 6 passed and 0 failed
+- commit-message validator tests: PASS, 6 passed and 0 failed
+
+Total focused built-in tests: 25 passed, 0 failed.
+
+$ pnpm check
+cold result: PASS, 10 successful tasks of 10, 0 cached
+cold elapsed: 3.67 seconds
+cold maximum resident set observed: 389656 KiB
+warm result: PASS, 10 successful tasks of 10, 8 cached and 2 intentionally uncached
+warm elapsed: 0.96 seconds
+warm maximum resident set observed: 141988 KiB
+
+Final repeatability assertions:
+- repeated frozen install: PASS in 0.41 seconds with 142132 KiB maximum resident set observed;
+- combined authoritative configuration SHA-256 before and after: 8ad56aa931f242df1ac7260df37e18dab1bc4f416eb86f29119229cefc32ebf0;
+- two repeated ten-task checks: PASS, with eight cached and two deliberately uncached toolchain tasks each;
+- Markdown files: 127; internal links: 212; structure or broken-link issues: 0.
+
+ADVERSE AND INTEGRATION EVIDENCE
+--------------------------------
+
+Architecture scanner:
+- a temporary domain source importing Express exited non-zero;
+- output identified the file, domain layer, express specifier, and forbidden-external rule;
+- outward-layer, package-escape, malformed-source, comment/string, and valid-import fixtures passed their expected assertions;
+- the scanner bounds roots, traversal depth, source count, file size, and imports per file and does not follow symbolic links.
+
+Commit-message hook:
+- accepted `chore(quality): verify local hook` in 0.06 seconds with 65024 KiB maximum resident set observed;
+- rejected `WIP` with the accepted message shape and a non-zero exit;
+- bounds message input at 16 KiB and does not print the body.
+
+Pre-commit hook:
+- documentation-only staged input invoked no formatter or linter and passed in 0.07 seconds with 65784 KiB maximum resident set observed;
+- staged package.json and TypeScript input ran check-only Prettier and ESLint and passed in 2.37 seconds with 381692 KiB maximum resident set observed;
+- the dispatcher accepts only bounded NUL-delimited Git paths and does not invoke installation, Turbo, typecheck, Knip, tests, documentation, containers, media, or integration work.
+
+BOUNDARIES AND LIMITATIONS
+-------------------------
+
+- The repository remains root-only; no future application or service was scaffolded to satisfy the tools.
+- Node.js native TypeScript runs only erasable repository tooling. Future product packages compile with tsc.
+- Architecture rules implement accepted inward dependencies but do not replace future cross-context contract and persistence-owner tests once package source exists.
+- Local hooks are fast feedback, not the authoritative hosted gate, and Git can bypass them for diagnosis.
+- P00-R05 still owns executable documentation link, terminology, fence, and status-claim validation.
+- P00-R06 still owns staged secret scanning, dependency review, and CI.
+- P00-R10 repeats all Phase 00 commands from a clean public checkout.

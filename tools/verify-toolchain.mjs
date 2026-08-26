@@ -119,7 +119,9 @@ export function validateActiveVersions({ nodeVersion, pnpmVersion }) {
     );
   }
   if (normalizedPnpmVersion && normalizedPnpmVersion !== TOOLCHAIN_POLICY.pnpmVersion) {
-    errors.push(`pnpm ${normalizedPnpmVersion} is unsupported; expected ${TOOLCHAIN_POLICY.pnpmVersion}`);
+    errors.push(
+      `pnpm ${normalizedPnpmVersion} is unsupported; expected ${TOOLCHAIN_POLICY.pnpmVersion}`,
+    );
   }
 
   return errors;
