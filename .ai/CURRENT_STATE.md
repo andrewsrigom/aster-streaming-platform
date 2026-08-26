@@ -55,6 +55,10 @@ Status: **IN_PROGRESS**
 - Protected pull request 6 run `32947483503` passed change classification, dependency review, documentation/security, frozen source quality and audit, the first hosted `Local platform` pull/start/protocol/cleanup job, and the stable required aggregate.
 - Automated review discussion `3860940991` identified inherited project-name override risk. Corrected candidate `c246051` explicitly pins every public operation to `aster`, passes 8 adverse platform tests, starts from a clean public clone with a hostile `COMPOSE_PROJECT_NAME` while creating 4 Aster and 0 collision containers, preserves PostgreSQL on normal stop, cleans exact project state to zero, passes protected run `32948639792`, and has the review thread resolved.
 - P01-R02 implementation commit `3fa3994` adds the explicit Docker-only reset with fixed local intent, confirmation, project, Compose file, endpoint and label validation, no broad fallback, and zero-resource postconditions; 18 focused platform/reset tests and 18 CI tests pass.
+- Automated review comment `3861318803` proved that released P01-R01 containers lack the new service-level Aster labels. Remediation `d5f857c` accepts only the complete current `local|platform` pair or complete absent legacy pair while preserving exact project, service, Compose-file, network, volume, authority, owner, allowlist, and count checks.
+- A same-checkout public upgrade started released `main` at `b4082e6`, stored marker `42`, observed `aster|postgres|||<same Compose file>`, switched without recreation to `d5f857c`, and reset 4 containers, 1 network, and 1 volume in `3.56` seconds with zero Aster/collision resources, unchanged unrelated state, and clean Git.
+- A real Aster-prefixed volume without a Compose project label was refused and preserved; its exact synthetic fixture identity was validated before targeted removal, leaving Aster project resources at zero.
+- The active review-remediation gate passed 22 of 22 uncached tasks in `8.266` seconds and the final evidence/state closeout passed in `8.129` seconds; both retained 18 platform/reset tests and 18 CI tests with Compose, documentation, memory, secret, audit, and zero-resource checks passing.
 - A populated Aster project retained a PostgreSQL marker through four unsafe reset refusals, then the confirmed reset removed only 4 Aster containers, 1 network, and 1 volume in `1.79` seconds while image IDs and the 4 unrelated stopped containers remained unchanged.
 - A clean restart became healthy in `7.40` seconds with the prior table absent; normal stop preserved exactly 1 volume, the partial-state reset removed it in `0.86` seconds, and an empty repeat created no resource.
 - A clean public checkout at `3fa3994` used only Git, shell, and Docker, reached health in `7.33` seconds, read a synthetic PostgreSQL marker, reset in `1.79` seconds with hostile `COMPOSE_PROJECT_NAME`, returned Aster and collision resources to zero, preserved unrelated state, and remained Git-clean.
@@ -73,7 +77,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Complete active P01-R02 remediation for released P01-R01 label compatibility and hidden Aster-prefixed resources, then repeat local, public-checkout, review, protected CI, and post-merge verification before starting P01-R03.
+After P01-R02 review resolution, protected CI, and post-merge state are unambiguous, start P01-R03 by selecting and recording the configuration-validation approach and implementing only process-start validation with explicit secret classification.
 
 ## Current risks
 

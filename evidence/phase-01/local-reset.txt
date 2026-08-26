@@ -4,9 +4,10 @@ ASTER P01-R02 DESTRUCTIVE LOCAL RESET EVIDENCE
 Work item: P01-R02 explicit project-scoped destructive local reset
 Evidence date: 2026-08-26
 Implementation commit: 3fa3994efe1663b57fe8c982092a95dd79c86b8d
+Review remediation commit: d5f857cc933811804400485e08cf4c4d6923e84f
 Branch: feat/p01-r02-local-reset
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; linux/amd64 containers
-Acceptance: REOPENED — released P01-R01 upgrade remediation pending
+Acceptance: VERIFIED
 
 QUESTION AND SCOPE
 ------------------
@@ -77,7 +78,8 @@ The 18 tests include 8 fake-Docker behavioral cases and 10 static platform-polic
 - extra targets, hosted connection URLs, CI indicators, and Docker overrides stop before Docker;
 - a remote active endpoint stops before Compose;
 - unexpected labels stop before teardown;
-- a populated valid Aster project executes only the fixed `down --volumes` command;
+- the complete current or released P01-R01 service-label pair executes only the fixed `down --volumes` command;
+- partial service labels and Aster-prefixed resources without exact project ownership stop before teardown;
 - empty state is idempotent without creating resources;
 - Compose failure produces no broad fallback;
 - nonzero postconditions fail explicitly;
@@ -202,6 +204,36 @@ Results:
 
 The bounded temporary clone path was validated against its absolute `/tmp/aster-p01-r02-public-*` shape, origin, commit, and clean status before removal.
 
+REVIEW REMEDIATION AND SAME-CHECKOUT UPGRADE
+--------------------------------------------
+
+Automated review comment `3861318803` identified that released P01-R01 containers have exact Compose project, service, and file labels but predate the new service-level `com.aster.environment` and `com.aster.scope` labels. The initial reset refused that valid upgrade state. P01-R02 was reopened before remediation.
+
+A new public checkout reproduced the exact upgrade path in one unchanged directory:
+
+1. clone public `main` at released commit `b4082e6d4917ca0989d58e70ee758b9aa6848d03`;
+2. start the exact P01-R01 public platform command;
+3. create and read PostgreSQL marker `42`;
+4. observe container labels `aster|postgres|||<same absolute Compose file>`;
+5. fetch and switch the same checkout to remediation `d5f857cc933811804400485e08cf4c4d6923e84f` without recreating containers;
+6. run the exact confirmed P01-R02 reset with hostile `COMPOSE_PROJECT_NAME`.
+
+Results:
+- released startup: PASS in 7.42 seconds;
+- legacy marker: 42;
+- legacy upgrade reset: PASS in 3.56 seconds;
+- reported removal: containers=4, networks=1, volumes=1;
+- Aster containers, networks, and volumes afterward: 0, 0, and 0;
+- collision-project containers: 0;
+- unrelated-container snapshot: unchanged;
+- same checkout after switch: Git-clean.
+
+The remediation accepts only `local|platform` or the complete empty legacy pair. Project, service, absolute Compose file, service allowlist, counts, network labels, and volume labels remain exact. A partial `local|` pair fails in the fake-Docker test.
+
+Manual review additionally identified that label-only discovery could miss an Aster-prefixed physical resource whose project label was absent. The corrected reset preflights Aster-prefixed names. A real fixture volume `aster_unowned-reset-probe` with no Compose project label was refused and preserved. Its exact name and synthetic test label were validated before targeted fixture removal; Aster project counts remained 0, 0, and 0.
+
+The bounded upgrade checkout was validated against its absolute `/tmp/aster-p01-r02-upgrade-*` shape, public origin, remediation commit, and clean status before removal.
+
 COMPLETE QUALITY DECISION
 -------------------------
 
@@ -222,6 +254,8 @@ $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities
 
 After the evidence and repository-memory closeout were added, the forced complete gate passed again with 22 of 22 tasks, 0 cached, and 6.492 seconds of Turbo time. The final documentation scan covered 130 documents, 1,822 headings, 306 local links, and 4 supported status claims; Compose parsing, secret scanning, audit, and zero Aster resource counts passed again.
+
+The active review-remediation gate passed 22 of 22 uncached tasks in 8.266 seconds. After the same-checkout upgrade evidence and final state closeout, the complete gate passed again in 8.129 seconds with 18 platform/reset tests, 18 CI tests, 130 documents, 1,822 headings, 304 local links, 4 supported status claims, zero secret findings, successful Compose parsing and audit, and zero Aster project resources.
 
 SECURITY, FAILURE, AND RECOVERY INTERPRETATION
 ----------------------------------------------
@@ -246,6 +280,6 @@ LIMITATIONS
 ACCEPTANCE
 ----------
 
-P01-R02: REOPENED
+P01-R02: PASS / VERIFIED
 
-The fresh-state candidate provides one explicit destructive reset command and passed the recorded refusal, teardown, recovery, and isolation checks. Final acceptance is reopened because review comment `3861318803` proved that released P01-R01 service containers lack the new service-level Aster labels. The same-checkout legacy upgrade and hidden-prefix remediation must pass before this requirement returns to `VERIFIED`.
+The repository provides one explicit destructive reset command. It requires deliberate local intent, uses an immutable project and Compose target, refuses common hosted and ambiguous execution paths, detects Aster-prefixed resources hidden from project-label discovery, accepts only exact current or released P01-R01 service ownership, removes only the current Aster project and named local volume, proves zero Aster resources afterward, preserves unrelated Docker state and images, recovers through a clean startup, and is idempotent from empty state.
