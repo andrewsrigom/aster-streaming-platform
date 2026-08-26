@@ -13,7 +13,7 @@ Make the existing tiered-feedback policy executable and bounded: development ite
 
 ## Current behavior
 
-Repository governance already prohibits full gates on every commit and describes `check:changed` as the pre-push path, but the root manifest exposes no such command. The full and source gates are executable, while review cadence, evidence consolidation, clean-checkout repetition triggers, and sufficient-verification criteria are not explicit. P01-R11 therefore accumulated eleven branch commits and repeated full, clean-checkout, hosted-CI, review, and evidence cycles for progressively narrower transport cases before its final release at `93147ac`.
+Repository governance already prohibits full gates on every commit and describes `check:changed` as the pre-push path, but the root manifest exposes no such command. The full and source gates are executable, while review cadence, evidence consolidation, clean-checkout repetition triggers, and sufficient-verification criteria are not explicit. P01-R11 therefore accumulated fourteen branch commits and repeated full, clean-checkout, hosted-CI, review, and evidence cycles for progressively narrower transport cases before its final release at `93147ac`.
 
 ## Proposed behavior
 

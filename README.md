@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and the first three Phase 01 work items are verified. P01-R04 structured runtime logging is implemented on the active candidate with local focused evidence; clean-checkout and protected pull-request verification remain pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
+**The Phase 00 repository foundation and Phase 01 requirements P01-R01 through P01-R04 plus P01-R11 are released. A bounded P00-R06 governance correction is currently implemented on its candidate branch and remains unreleased. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

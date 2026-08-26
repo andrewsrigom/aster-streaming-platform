@@ -35,8 +35,8 @@ IMPLEMENTED CONTRACT
 - Child execution has a 15-minute bound, preserves the selected nonzero status,
   and emits bounded errors without reflecting process or environment details.
 - Task-input-aware affected selection is enabled. Root lint owns application,
-  package, service, tool, and worker source; security scanning owns every changed
-  repository file.
+  package, service, tool, and worker source; formatting owns Markdown; security
+  scanning owns every changed repository file.
 - Work plans now name iteration, candidate, heavyweight-repeat, and review-stop
   gates. The default review cadence is one complete review plus one confirmation.
 

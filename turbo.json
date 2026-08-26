@@ -52,6 +52,7 @@
       "inputs": [
         ".github/**",
         ".githooks/**",
+        "**/*.md",
         "*.{js,json,jsonc,mjs,ts,yaml,yml}",
         "apps/**",
         "packages/**",

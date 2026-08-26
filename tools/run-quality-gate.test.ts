@@ -79,5 +79,6 @@ test("keeps manifest commands and task-level affected inputs aligned", async () 
   for (const path of ["apps/**", "packages/**", "services/**", "workers/**"]) {
     assert.ok(lintInputs.includes(path));
   }
+  assert.ok(turbo.tasks["//#format:check"]?.inputs?.includes("**/*.md"));
   assert.deepEqual(turbo.tasks["//#security:check"]?.inputs, ["**/*"]);
 });
