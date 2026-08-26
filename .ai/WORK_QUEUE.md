@@ -15,8 +15,8 @@ Only one item may be `IN_PROGRESS`.
 | 9 | Add public contribution governance and repository templates | P00-R07 | DONE |
 | 10 | Create the authorized public GitHub repository and apply verified protections | P00-R07 | DONE |
 | 11 | Integrate `.ai/` state checks into the normal contribution workflow | P00-R08 | DONE |
-| 12 | Document exact bootstrap, check, demo, and cleanup commands | P00-R09 | IN_PROGRESS |
-| 13 | Verify a clean checkout, capture the Phase 00 evidence index, and close the phase | P00-R10 | BLOCKED_BY_12 |
+| 12 | Document exact bootstrap, check, demo, and cleanup commands | P00-R09 | DONE |
+| 13 | Verify a clean checkout, capture the Phase 00 evidence index, and close the phase | P00-R10 | READY |
 
 ## Work-item rules
 

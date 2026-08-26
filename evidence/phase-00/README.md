@@ -20,9 +20,9 @@
 | Establish public contribution governance | P00-R07 templates | PASS_LOCAL | [`community-governance.txt`](community-governance.txt) |
 | Publish and protect the public repository | P00-R07 remote | PASS_HOSTED | [`public-repository-governance.txt`](public-repository-governance.txt) |
 | Make repository memory consistency executable | P00-R08 execution workflow | PASS_HOSTED | [`ai-state-workflow.txt`](ai-state-workflow.txt) |
-| Publish exact developer commands and bounded foundation cleanup | P00-R09 | PASS_LOCAL | [`developer-command-contract.txt`](developer-command-contract.txt) |
+| Publish exact developer commands and bounded foundation cleanup | P00-R09 | PASS_HOSTED | [`developer-command-contract.txt`](developer-command-contract.txt) |
 
-P00-R08 local and protected hosted checks pass. P00-R09 local bootstrap, complete-gate, cleanup, recovery, documentation, secret, and audit checks pass; its protected hosted result remains pending.
+P00-R08 and P00-R09 local and protected hosted checks pass. The root developer command contract and bounded foundation cleanup are executable through ordinary local and pull-request paths.
 
 ## Limitations
 

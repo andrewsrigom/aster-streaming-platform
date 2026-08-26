@@ -6,7 +6,7 @@ Evidence date: 2026-08-26
 Commit: local candidate tree; P00-R10 records the clean public-clone revision
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 Runtime: Node.js 24.19.0; Corepack 0.35.0; pnpm 11.24.0; Turborepo 2.10.12
-Acceptance: PASS_LOCAL
+Acceptance: PASS_HOSTED
 
 IMPLEMENTED COMMAND CONTRACT
 ----------------------------
@@ -130,6 +130,21 @@ Documentation validation inside the complete gate:
 - evidence-supported status claims: 3.
 
 The complete gate is the current runnable Phase 00 demonstration. It exercises the repository engineering controls but intentionally does not claim product behavior.
+
+FIRST HOSTED PULL-REQUEST RESULT
+--------------------------------
+
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/4
+- Workflow run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32942138591
+- Event: pull_request
+- Head commit: 301ef7a
+- Classify change: success, 7 seconds
+- Documentation and security: success, 10 seconds
+- Install and source quality: success, 20 seconds
+- Dependency review: success, 5 seconds
+- CI required: success, 3 seconds
+
+The hosted path performed a fresh frozen materialization on an Ubuntu 24.04 runner, executed the repository-memory and complete source paths, ran the cleanup adverse tests through toolchain:test, queried the dependency registry, and completed the public pull-request dependency and license review. The final state-only commit remains subject to the same protected aggregate check before merge.
 
 FAILURE AND SECURITY BEHAVIOR
 -----------------------------

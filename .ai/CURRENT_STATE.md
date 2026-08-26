@@ -41,6 +41,7 @@ Status: **IN_PROGRESS**
 - The first public P00-R08 pull-request run passed repository-memory validation, documentation/security, complete source quality, dependency review, and the stable aggregate check.
 - The root README exposes the exact Phase 00 clone, pinned bootstrap, focused and complete checks, current repository-only checkpoint, and bounded cleanup path while keeping Phase 01 Docker runtime and Phase 07 playable demonstration commands planned.
 - `pnpm clean:foundation` accepts no path argument, validates regular repository markers, removes only `.turbo` and `node_modules`, and passes five focused cleanup tests including an external symlink target; a real cleanup, frozen recovery, twenty-task uncached gate with 78 tests, and registry audit pass locally.
+- The first public P00-R09 pull-request run passed repository-memory validation, documentation/security, complete source quality including cleanup tests, dependency review, and the stable aggregate check.
 
 ## Not implemented
 
@@ -54,7 +55,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Publish the P00-R09 command contract through one protected pull request, address review findings, and close the work item only after the hosted governance, complete quality, dependency review, and stable aggregate checks pass.
+Execute P00-R10 from a clean public clone, capture the final Phase 00 evidence index at the merged revision, verify every requirement and next-phase prerequisite, and close the phase only if all exit-gate conditions pass.
 
 ## Current risks
 
