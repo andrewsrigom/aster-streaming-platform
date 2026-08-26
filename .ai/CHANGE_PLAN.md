@@ -103,7 +103,7 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 ## Evidence
 
 - Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
-- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable for unchanged bootstrap and packaging behavior. Protected runs `33000352054`, `33001670494`, and `33002748501` pass. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle. Remediation `6b9acb2` force-closed after remaining eligible stages; confirmation discussion `3865804838` then found that a failed consumer could still run against dependency teardown during that interval. Immediate-force remediation `fe61fc4` passed its local and protected gates. Availability-boundary confirmation discussion `3865880765` then found that a throwing force-close callback still lacked a hard process-termination fallback. Signal hard-fallback remediation `fc44892` plus exact focused 39-test, 15-task affected, documentation, memory, security, and audit gates pass; protected CI, discussion resolution, final boundary confirmation, merge, and post-merge evidence remain pending.
+- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable for unchanged bootstrap and packaging behavior. Protected runs `33000352054`, `33001670494`, `33002748501`, and `33004036882` pass. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle. Remediation `6b9acb2` force-closed after remaining eligible stages; confirmation discussion `3865804838` then found that a failed consumer could still run against dependency teardown during that interval. Immediate-force remediation `fe61fc4` passed its local and protected gates. Availability-boundary confirmation discussion `3865880765` then found that a throwing force-close callback still lacked a hard process-termination fallback. Signal hard-fallback remediation `fc44892` plus exact focused 39-test, 15-task affected, documentation, memory, security, and audit gates pass. Evidence reply `3865955990` is posted, all three discussions are resolved, and the final blocking-boundary review reported no major issue at exact reviewed head `3d4ba3e`. The remaining conditions are the documentation-only closeout CI, protected squash merge, and post-merge verification.
 - Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
 - Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
 - Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.
@@ -128,7 +128,7 @@ The current lifecycle implementation remains the only active Phase 01 work item.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
+- [x] Requirements satisfied
 - [x] Tests pass
 - [x] Evidence captured
 - [x] Documentation current

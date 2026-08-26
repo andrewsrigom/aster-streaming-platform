@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Active Phase 01 work item: P01-R05 is implemented locally on a branch rebased onto released `main`
+- Active Phase 01 work item: P01-R05 is verified on a branch rebased onto released `main` and awaits protected release
 
 ## Work items
 
@@ -14,10 +14,10 @@
 | Process-start validation and secret classification | P01-R03 | RELEASED | [`runtime-configuration.txt`](runtime-configuration.txt) |
 | Structured logging, redaction, and trace correlation | P01-R04 | RELEASED | [`runtime-logging.txt`](runtime-logging.txt) |
 | Express HTTP boundary and Apollo drain compatibility | P01-R11 | RELEASED | [`http-adapter.txt`](http-adapter.txt) |
-| Runtime lifecycle, health state, and bounded shutdown | P01-R05 | IMPLEMENTED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
+| Runtime lifecycle, health state, and bounded shutdown | P01-R05 | VERIFIED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 is released through `e33f90b`; P01-R11 is released through `93147ac` with post-merge run `32982613740` passing. P00-R06 is released through `92d3531` with post-merge run `32999467446` passing. P01-R05 implementation `60e9808` has been replayed onto that released base. Protected runs `33000352054`, `33001670494`, and `33002748501` passed. Review remediations now force resource-owner failures immediately without starting later graceful stages, and `fc44892` gives signal-owned shutdown a terminal fallback when force close throws or violates its synchronous return contract. Its exact focused 39-test gate, 15-task affected gate, audit, documentation, memory, and security checks pass. The prior exact isolated checkout remains supporting evidence for unchanged bootstrap and packaging behavior; changed failure behavior has fresh local socket, process, and package evidence. The runway preflight records only candidate research for P01-R06 through P01-R10. Broker, object storage, OpenTelemetry SDK/backend, Identity service composition, product schemas, and migrations remain unimplemented.
+P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 is released through `e33f90b`; P01-R11 is released through `93147ac` with post-merge run `32982613740` passing. P00-R06 is released through `92d3531` with post-merge run `32999467446` passing. P01-R05 implementation `60e9808` has been replayed onto that released base. Protected runs `33000352054`, `33001670494`, `33002748501`, and `33004036882` passed. Review remediations force resource-owner failures immediately without starting later graceful stages, and `fc44892` gives signal-owned shutdown a terminal fallback when force close throws or violates its synchronous return contract. Evidence reply `3865955990` is posted, all three discussions are resolved, and final review comment `5429993991` reports no major issue at exact reviewed head `3d4ba3e`. Its exact focused 39-test gate, 15-task affected gate, audit, documentation, memory, and security checks pass. The prior exact isolated checkout remains supporting evidence for unchanged bootstrap and packaging behavior; changed failure behavior has fresh local socket, process, and package evidence. P01-R05 is verified and awaits protected release. The runway preflight records only candidate research for P01-R06 through P01-R10. Broker, object storage, OpenTelemetry SDK/backend, Identity service composition, product schemas, and migrations remain unimplemented.
 
 ## Current limitations
 

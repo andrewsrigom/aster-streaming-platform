@@ -1,6 +1,6 @@
 # Experiment P01-R05-L01: Runtime Lifecycle and Bounded Shutdown
 
-- Status: IMPLEMENTED
+- Status: VERIFIED
 - Date: 2026-08-26
 - Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e` plus availability remediations through hard-fallback commit `fc448925260994517d4eb42328c2fb4970506e21` on `feat/p01-r05-lifecycle`, based on released `main` `92d3531b684ea259b840942f858584e5e364937c`
 - Owner: Aster shared runtime infrastructure
@@ -106,7 +106,9 @@ Official references:
 - exact hard-fallback typecheck, build, and all 39 tests pass. The real live-handle/throwing-force subprocess exits `143` in `52.246017 ms`; the normal real `SIGTERM` remains graceful in `71.560548 ms`, and the real stuck socket closes in `106.167801 ms`;
 - exact hard-fallback `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `6.797s` of Turbo task time; wrapper elapsed was `7.77s` with maximum observed RSS `625,648` KiB. Documentation, repository memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass;
 - the high-severity audit reports no known vulnerability in `0.79s`;
-- protected CI at the hard-fallback head, discussion resolution, final boundary confirmation, merge, and post-merge evidence remain pending.
+- protected run `33004036882` passed every applicable job at hard-fallback closeout `3d4ba3e75291c99b36d8c7105280f0c93b00e405`;
+- evidence reply `3865955990` is posted and all three actionable discussions are resolved;
+- final blocking-boundary review comment `5429993991` reported no major issue at exact reviewed head `3d4ba3e75291c99b36d8c7105280f0c93b00e405`. The later verification-closeout commit changes only evidence and repository memory, so it cannot invalidate lifecycle source, tests, real socket/process behavior, or that review.
 
 ## Limitations and next evidence
 
@@ -116,4 +118,4 @@ Official references:
 - Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
 - Native Windows signal semantics are not claimed; the supported WSL path is measured.
 - The original isolated checkout predates the squash rebase; its applicability is limited to unchanged bootstrap, lifecycle build, declarations, real socket/process behavior, and complete successful gate execution as reasoned above.
-- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until protected CI at the hard-fallback head and final boundary confirmation pass.
+- Acceptance is `VERIFIED`; protected squash merge and the exact post-merge `main` run remain release conditions.

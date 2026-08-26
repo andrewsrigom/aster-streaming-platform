@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified the bounded runtime lifecycle
+
+### Completed
+
+- Protected run `33004036882` passed every applicable job at hard-fallback closeout `3d4ba3e`.
+- Posted evidence reply `3865955990` and resolved availability discussion `3865880765`; the earlier discussions `3865708507` and `3865804838` were already resolved with their focused evidence.
+- Final blocking-boundary review comment `5429993991` reported no major issue at exact reviewed head `3d4ba3e` after checking failed force-close termination and synchronous return enforcement.
+- Classified P01-R05 as `VERIFIED`. No source, dependency, lockfile, Docker resource, service, product context, schema, durable data, or hosted resource changed during this verification closeout.
+
+### Evidence
+
+- Exact source gates remain 39 of 39 focused runtime tests, 15 of 15 affected tasks, high-severity audit with no known vulnerability, real stuck-socket closure, normal graceful `SIGTERM`, and hard fallback exit `143` with a live handle.
+- All three actionable review discussions are resolved and the final confirmation reviewed the exact source/evidence head.
+
+### Next action
+
+Pass protected CI for this documentation-only closeout, squash-merge pull request 12, verify the exact post-merge `main` run, and activate P01-R06 from clean `main`.
+
 ## 2026-08-26 — Closed lifecycle review availability gap
 
 ### Completed
