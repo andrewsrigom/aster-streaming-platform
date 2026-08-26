@@ -231,6 +231,7 @@ export function validateWorkflowPolicy(
     [/node \.\/tools\/verify-ci-policy\.ts/u, "CI policy check is required"],
     [/node \.\/tools\/verify-local-platform\.mjs/u, "local-platform policy check is required"],
     [/\.\/tools\/verify-local-platform\.test\.mjs/u, "local-platform policy tests are required"],
+    [/\.\/tools\/reset-local-platform\.test\.mjs/u, "local-reset adverse tests are required"],
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],

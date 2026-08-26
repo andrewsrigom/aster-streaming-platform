@@ -58,6 +58,7 @@
         "README.md",
         "docs/operations/LOCAL_DEVELOPMENT.md",
         "infra/compose/**",
+        "tools/reset-local-platform.sh",
         "tools/verify-local-platform.mjs"
       ]
     },
@@ -66,6 +67,8 @@
         "README.md",
         "docs/operations/LOCAL_DEVELOPMENT.md",
         "infra/compose/**",
+        "tools/reset-local-platform.sh",
+        "tools/reset-local-platform.test.mjs",
         "tools/verify-local-platform.mjs",
         "tools/verify-local-platform.test.mjs"
       ]
@@ -122,6 +125,8 @@
         "tools/classify-ci-change.test.ts",
         "tools/verify-ci-policy.ts",
         "tools/verify-ci-policy.test.ts",
+        "tools/reset-local-platform.sh",
+        "tools/reset-local-platform.test.mjs",
         "tools/verify-local-platform.mjs",
         "tools/verify-local-platform.test.mjs"
       ]

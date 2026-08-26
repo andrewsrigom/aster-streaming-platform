@@ -97,7 +97,15 @@ Stop the checkpoint while preserving its PostgreSQL volume with:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`, so every public command remains scoped to Aster. Do not add `--volumes`: P01-R02 owns the future explicit destructive reset and its local-only safety checks. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
+Delete the complete Aster local project, including its durable PostgreSQL volume, only with the explicit destructive reset:
+
+```bash
+ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+```
+
+This operation is irreversible for current local data. It accepts no alternate project, path, URL, Docker endpoint override, hosted CI environment, or extra flag. It inspects the active Docker context and every discovered Aster container, network, and volume before calling the fixed project teardown, then requires zero Aster project resources afterward. It retains container images and unrelated Docker resources. Run the normal `down` command when PostgreSQL data must survive.
+
+The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`, so every public command remains scoped to Aster. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics and reset recovery behavior in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

@@ -6,11 +6,13 @@ import test from "node:test";
 import {
   POSTGRES_IMAGE,
   REDIS_IMAGE,
+  validateLocalReset,
   validateLocalPlatform,
   validatePublicPlatformCommands,
 } from "./verify-local-platform.mjs";
 
 const composePath = resolve(import.meta.dirname, "..", "infra", "compose", "compose.yml");
+const resetPath = resolve(import.meta.dirname, "reset-local-platform.sh");
 const readmePath = resolve(import.meta.dirname, "..", "README.md");
 const localDevelopmentPath = resolve(
   import.meta.dirname,
@@ -20,17 +22,42 @@ const localDevelopmentPath = resolve(
   "LOCAL_DEVELOPMENT.md",
 );
 const validSource = await readFile(composePath, "utf8");
+const validReset = await readFile(resetPath, "utf8");
 const readmeSource = await readFile(readmePath, "utf8");
 const localDevelopmentSource = await readFile(localDevelopmentPath, "utf8");
 
 test("the checked-in local platform policy passes", () => {
   assert.deepEqual(validateLocalPlatform(validSource), []);
+  assert.deepEqual(validateLocalReset(validReset), []);
   assert.deepEqual(
     validatePublicPlatformCommands([
       { file: "README.md", source: readmeSource },
       { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopmentSource },
     ]),
     [],
+  );
+});
+
+test("rejects weakened reset confirmation and hosted-target controls", () => {
+  const noConfirmation = validReset.replaceAll("DELETE-ASTER-LOCAL-DATA", "delete-data");
+  const remoteEndpoint = validReset.replace("unix://* | npipe://*", "*");
+  const noHostedUrlRefusal = validReset.replaceAll("DATABASE_URL", "LOCAL_DATABASE_NAME");
+  assert.ok(validateLocalReset(noConfirmation).some(({ rule }) => rule === "confirmation"));
+  assert.ok(validateLocalReset(remoteEndpoint).some(({ rule }) => rule === "hosted"));
+  assert.ok(validateLocalReset(noHostedUrlRefusal).some(({ rule }) => rule === "hosted"));
+});
+
+test("rejects a redirectable or broad reset", () => {
+  const redirectable = validReset.replace("PROJECT_NAME=aster", "PROJECT_NAME=$1");
+  const broadCleanup = validReset.replace(
+    "compose_local down --volumes",
+    "docker system prune --all --force",
+  );
+  assert.ok(validateLocalReset(redirectable).some(({ rule }) => rule === "scope"));
+  assert.ok(
+    validateLocalReset(broadCleanup).some(
+      ({ rule }) => rule === "deletion" || rule === "destructive-scope",
+    ),
   );
 });
 

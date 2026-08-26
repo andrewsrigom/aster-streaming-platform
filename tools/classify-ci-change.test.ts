@@ -44,6 +44,8 @@ test("selects the isolated local-platform smoke path", () => {
     reason: "executable-change",
   });
   assert.equal(classifyChangedPaths(["tools/verify-local-platform.mjs"]).platform, true);
+  assert.equal(classifyChangedPaths(["tools/reset-local-platform.sh"]).platform, true);
+  assert.equal(classifyChangedPaths(["tools/reset-local-platform.test.mjs"]).platform, true);
   assert.equal(classifyChangedPaths([".github/workflows/ci.yml"]).platform, true);
   assert.equal(classifyChangedPaths(["tools/unrelated.ts"]).platform, false);
 });

@@ -73,7 +73,7 @@ The root README is the copy-paste entrypoint for the currently executable founda
 
 ### Development lane
 
-The current development lane uses `pnpm install --frozen-lockfile`, focused checks, `pnpm check`, `pnpm audit --audit-level=high`, and `pnpm clean:foundation` as documented in the root README. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. Later Phase 01 work adds broker, object storage, telemetry, runtime configuration, migrations, seed data, integration suites, and the explicit destructive reset. Later phases add browser, media, failure, and load commands only when they have executable implementations.
+The current development lane uses `pnpm install --frozen-lockfile`, focused checks, `pnpm check`, `pnpm audit --audit-level=high`, and `pnpm clean:foundation` as documented in the root README. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. P01-R02 adds the separate destructive local reset. Later Phase 01 work adds broker, object storage, telemetry, runtime configuration, migrations, seed data, and integration suites. Later phases add browser, media, failure, and load commands only when they have executable implementations.
 
 The fast changed-scope gate will not run every integration, browser, media, failure, or load suite on each commit. Each owning phase selects its final script names and affected-graph behavior only when the implementation exists.
 
@@ -102,17 +102,27 @@ Stop containers and the internal network while preserving PostgreSQL data:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`; use it on every public operation so diagnostics and lifecycle commands target the same Aster project. P01-R02 later adds the explicit project-scoped destructive reset. Do not append `--volumes` to the normal stop command. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
+The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`; use it on every public operation so diagnostics and lifecycle commands target the same Aster project. Do not append `--volumes` to the normal stop command.
+
+Delete the current Aster containers, network, disposable Redis state, and durable PostgreSQL volume only with:
+
+```bash
+ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+```
+
+The command accepts exactly the local marker and fixed confirmation. It refuses CI indicators, database or Redis URLs, Docker endpoint/configuration overrides, non-local Docker socket schemes, unexpected services, duplicate resources, label mismatches, symbolic repository inputs, and any extra argument. Before mutation it pins the inspected local Docker context, the repository Compose file, and project `aster`; it validates logical resource, environment, scope, authority, owner, and Compose-file labels. It then runs only the scoped `down --volumes` operation and proves that zero `aster` project resources remain. It never prunes images, containers, networks, or volumes globally and does not use a broad fallback after partial failure.
+
+The reset is irreversible for the current local PostgreSQL data. A successful repeat from empty state reports that Aster is already reset without creating resources. Recovery is the normal health-gated startup command, which creates a new empty PostgreSQL volume. Phase-owned migration and seed recovery will be documented when those capabilities exist. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
 
 ### Laboratory lane
 
 Named Compose profiles or targeted one-shot commands will activate resource-heavy dependencies and experiments only when the active phase needs them. The full broker, observability stack, media worker, browser suite, failure laboratory, and load tools are not mandatory for ordinary edits.
 
-The future destructive local reset must require explicit local-environment confirmation and must never accept a hosted database URL.
+The destructive local reset remains separate from resource-heavy laboratory commands and accepts no hosted database URL or alternate target.
 
 ### Foundation cleanup
 
-`pnpm clean:foundation` is executable now. It accepts no path argument, validates the repository markers, and removes only root `.turbo` and `node_modules`. It is intentionally separate from future Docker-volume and durable local-data reset commands.
+`pnpm clean:foundation` is executable now. It accepts no path argument, validates the repository markers, and removes only root `.turbo` and `node_modules`. It is intentionally separate from `reset-local-platform.sh`, which owns the confirmed deletion of current Aster Docker state and local durable data.
 
 ## CI and supply-chain commands
 
@@ -201,7 +211,8 @@ For the implemented P01-R01 checkpoint:
 4. validate the static policy with `pnpm platform:check` when Node.js is available;
 5. validate the resolved Compose model with `pnpm platform:compose:check` or the equivalent raw Docker command;
 6. use the normal `down` command to preserve PostgreSQL state;
-7. wait for P01-R02 before deleting the project volume through a supported reset.
+7. use `ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA` only when deleting the Aster PostgreSQL volume is intentional;
+8. restart through the health-gated public command and verify a new empty local platform after a reset.
 
 Migration, router, telemetry, and targeted volume-recovery diagnostics become executable only in their owning work items.
 

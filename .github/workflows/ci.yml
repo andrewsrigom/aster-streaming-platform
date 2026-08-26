@@ -75,6 +75,7 @@ jobs:
           ./tools/scan-secrets.test.ts
           ./tools/classify-ci-change.test.ts
           ./tools/verify-ci-policy.test.ts
+          ./tools/reset-local-platform.test.mjs
           ./tools/verify-local-platform.test.mjs
 
   quality:

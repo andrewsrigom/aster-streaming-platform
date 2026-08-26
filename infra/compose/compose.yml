@@ -6,6 +6,9 @@ x-redis-image: &redis-image docker.io/library/redis:8.10.0-alpine@sha256:978f0e0
 services:
   postgres:
     image: *postgres-image
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
     environment:
       POSTGRES_DB: aster
       POSTGRES_PASSWORD: aster-test-only
@@ -41,6 +44,9 @@ services:
 
   redis:
     image: *redis-image
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
     command:
       - redis-server
       - --save
@@ -72,6 +78,9 @@ services:
 
   platform-init:
     image: *postgres-image
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
     depends_on:
       postgres:
         condition: service_healthy
@@ -102,6 +111,9 @@ services:
 
   platform-status:
     image: *postgres-image
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
     depends_on:
       postgres:
         condition: service_healthy

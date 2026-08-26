@@ -68,7 +68,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Start P01-R02 with a new active change plan and implement only an explicit destructive reset that proves local scope, exact project identity, confirmation behavior, and refusal of hosted targets.
+Complete active work item P01-R02 by implementing and verifying only the explicit destructive reset with local scope, exact project identity, confirmation behavior, hosted-target refusal, and unrelated-resource preservation.
 
 ## Current risks
 
