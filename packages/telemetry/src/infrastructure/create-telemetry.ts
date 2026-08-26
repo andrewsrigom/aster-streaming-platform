@@ -588,7 +588,15 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
   lifecycleHooks(): Readonly<{ flushTelemetry(signal: AbortSignal): Promise<void> }> {
     return Object.freeze({
       flushTelemetry: async (signal: AbortSignal): Promise<void> => {
-        await this.forceFlush(signal);
+        const failuresBeforeFlush = this.exportFailureCount;
+        const result = await this.forceFlush(signal);
+        const failedDuringFlush = this.exportFailureCount > failuresBeforeFlush;
+        if (
+          (result.status !== "completed" && result.status !== "already_completed") ||
+          failedDuringFlush
+        ) {
+          throw new Error("Telemetry flush did not complete.");
+        }
       },
     });
   }

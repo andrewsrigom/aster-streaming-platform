@@ -170,6 +170,7 @@ test("records bounded HTTP, dependency, process, and runtime metrics", async () 
   assert.ok(collection.metrics.some((metric) => metric.name.startsWith("nodejs.eventloop.")));
   assert.ok(collection.metrics.some((metric) => metric.name.startsWith("v8js.memory.heap.")));
 
+  await telemetry.lifecycleHooks().flushTelemetry(new AbortController().signal);
   assert.deepEqual(await telemetry.shutdown(), { status: "completed" });
   assert.deepEqual(await telemetry.shutdown(), { status: "already_completed" });
   assert.deepEqual(await telemetry.collect(), {
@@ -294,9 +295,17 @@ test("bounds a stalled OTLP exporter and records export health", async () => {
   }
 
   const started = performance.now();
-  const result = await telemetry.forceFlush();
+  await assert.rejects(
+    telemetry.lifecycleHooks().flushTelemetry(new AbortController().signal),
+    (error: unknown) => {
+      assert.ok(error instanceof Error);
+      assert.equal(error.message, "Telemetry flush did not complete.");
+      assert.equal("cause" in error, false);
+      assert.equal(error.message.includes(String(address.port)), false);
+      return true;
+    },
+  );
   assert.ok(performance.now() - started < 1_000);
-  assert.ok(["completed", "failed", "timed_out"].includes(result.status));
   assert.deepEqual(await telemetry.collect(), { status: "unavailable", reason: "remote_export" });
   assert.deepEqual(telemetry.exportHealth(), {
     attempts: 1,
@@ -368,6 +377,15 @@ test("exports successfully and shares concurrent bounded shutdown", async () => 
   const abortController = new AbortController();
   abortController.abort();
   assert.deepEqual(await telemetry.forceFlush(abortController.signal), { status: "aborted" });
+  await assert.rejects(
+    telemetry.lifecycleHooks().flushTelemetry(abortController.signal),
+    (error: unknown) => {
+      assert.ok(error instanceof Error);
+      assert.equal(error.message, "Telemetry flush did not complete.");
+      assert.equal("cause" in error, false);
+      return true;
+    },
+  );
 
   const firstShutdown = telemetry.shutdown();
   const secondShutdown = telemetry.shutdown();
