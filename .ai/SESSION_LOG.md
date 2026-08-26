@@ -17,11 +17,13 @@ Append new entries at the top. Keep entries factual and concise.
 - Commit `a932822` records the broker checkpoint. The first stabilized complete graph passes 46 of 46 tasks uncached in `29.021` seconds of Turborepo time and `30.09` seconds elapsed.
 - An exact no-local checkout of `a932822` installed 329 packages entirely from the offline content-addressed store in `1.44` seconds, then exposed a real cold-state ordering defect: 45 of 46 uncached tasks passed, while root type-aware lint began before telemetry declarations existed.
 - The remediation separates public `pnpm lint` from the internal workspace lint task, prepares telemetry declarations for the public command, and makes the integrated lint task depend explicitly on the telemetry build. The 20-test toolchain suite, direct lint, and repeated affected graph pass; the latter completed 46 of 46 tasks with 24 cached in `15.802` seconds of Turborepo time and `16.92` seconds elapsed.
+- Commit `8361f11` records the lint-order remediation. Its exact no-local checkout reused 329 packages with zero download, passed 46 of 46 uncached tasks in `37.964` seconds of Turborepo time and `39.09` seconds elapsed, passed all four adapter diagnostics, audit, secret scanning, clean Git, and exact cleanup.
+- A separate exact no-local clone with no telemetry declaration proved standalone `pnpm lint`: frozen install completed in `1.50` seconds, the prerequisite telemetry build ran uncached, type-aware lint passed in `13.60` seconds total, Git stayed clean, and the validated root was removed.
 - Raw comparison and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
 
 ### Next action
 
-Commit the lint-order remediation, then repeat the exact clean-checkout proof for P01-R07 before initial review.
+Commit the exact clean-checkout evidence, then perform the bounded initial review at source candidate `8361f11`.
 
 ## 2026-08-26 — Implemented bounded S3-compatible storage candidate
 

@@ -1,5 +1,5 @@
 Evidence: P01-R07 narrow runtime platform adapters
-Status: IMPLEMENTED local candidates; active implementation
+Status: IMPLEMENTED; local and clean-checkout gates pass; review and hosted gates pending
 Date: 2026-08-26
 Source base: 8dff9d8d57572b2eac944ae98406f3da2979682c
 Branch: feat/p01-r07-platform-adapters
@@ -25,7 +25,7 @@ Selection state
 - A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
 
 Current interpretation
-- P01-R07 is active. Clock/ID, PostgreSQL, Redis, and S3 checkpoints are committed; the narrow Kafka-compatible broker adapter is a green local candidate. No real dependency interoperability is claimed.
+- P01-R07 is active. Clock/ID, PostgreSQL, Redis, S3, and Kafka checkpoints plus the clean-checkout lint-order remediation are committed through 8361f114c865b47bc236365a02c1169cebd15f96. No real dependency interoperability is claimed.
 - @aster/runtime exposes a frozen system clock returning current fresh Date values, a fixed clock returning isolated deterministic Date values, a UUID v4 generator backed by crypto.randomUUID, and a finite deterministic generator that copies a bounded unique safe identifier sequence without invoking accessors.
 - Invalid clock and deterministic-ID configuration uses repository-owned cause-free errors with one stable issue. Deterministic sequence exhaustion uses a fixed cause-free error.
 
@@ -145,4 +145,8 @@ Kafka focused evidence
 - Cause: the root lint task and workspace builds were independent in the task graph. A warmed tree already contained telemetry declarations; a fresh tree could let ESLint inspect the alphabetically early broker sources before @aster/telemetry emitted them. The failure was an ordering race, not a broker type or test failure.
 - Remediation: public pnpm lint first runs the exact @aster/telemetry build and then the internal lint-only command. The complete/affected graph calls the internal lint task directly and declares @aster/telemetry#build as its prerequisite, avoiding duplicate work while making cold execution deterministic. The toolchain test freezes the public command, internal command, task dependency, and affected inputs.
 - Remediation checks: targeted Prettier, 20 of 20 toolchain tests, direct pnpm lint, and pnpm check:changed pass. The affected graph passes 46 of 46 tasks with 24 cached in 15.802 seconds of Turborepo time and 16.92 seconds elapsed. An exact immutable checkout of the remediation commit remains required.
+- Exact remediation checkout: a no-local clone of 8361f114c865b47bc236365a02c1169cebd15f96 started without node_modules, .turbo, or generated declarations. Frozen offline installation reused all 329 packages, downloaded zero, completed in 2.64 seconds, and observed 409656 KiB maximum RSS.
+- Exact remediation graph: pnpm check --force passed 46 of 46 tasks with zero cache in 37.964 seconds of Turborepo time and 39.09 seconds elapsed, with 842008 KiB maximum RSS. PostgreSQL, Redis, S3, and Kafka refused-loopback diagnostics each returned their stable unavailable/completed record; the high-severity audit reported no known vulnerability and the full secret scan reported zero finding. Git remained clean and the validated temporary root was removed.
+- Standalone cold-lint proof: a second no-local clone of the same exact commit installed all 329 packages offline in 1.50 seconds with no telemetry dist. pnpm lint built only @aster/telemetry uncached in 2.437 seconds, then passed type-aware repository lint; total elapsed was 13.60 seconds with 847908 KiB maximum RSS. Git remained clean and the validated temporary root was removed.
+- A post-acceptance attempt to reuse pnpm clean:foundation inside the first clone was excluded from evidence because that command intentionally removes .turbo and node_modules rather than package dist directories. It did not alter source or the already completed clean-checkout gate.
 - Real broker authentication, metadata semantics, keyed ordering, idempotent retry boundaries, ambiguous delivery, consumer group join/rebalance, manual commit, poison-record recovery, stop, failure/recovery transitions, and process-handle exit remain P01-R09 and are not claimed.

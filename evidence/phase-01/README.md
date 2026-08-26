@@ -16,10 +16,10 @@
 | Express HTTP boundary and Apollo drain compatibility | P01-R11 | RELEASED | [`http-adapter.txt`](http-adapter.txt) |
 | Runtime lifecycle, health state, and bounded shutdown | P01-R05 | RELEASED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
 | Bounded runtime, HTTP, dependency, and export metrics | P01-R06 | RELEASED | [`runtime-telemetry.txt`](runtime-telemetry.txt) |
-| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | PLANNED; active | [`platform-adapters.txt`](platform-adapters.txt) |
+| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | IMPLEMENTED; review active | [`platform-adapters.txt`](platform-adapters.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; P00-R06 through `92d3531`; and P01-R05 through `4d24335`. P01-R06 is released through protected squash `8dff9d8`: exact source and clean-checkout gates, both review remediations, final review, protected closeout run `33012535152`, and post-merge run `33012664408` pass. P01-R07 is active from that clean released head; its client selections, packages, and tests are not implemented yet. Broker, object storage, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
+P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; P00-R06 through `92d3531`; and P01-R05 through `4d24335`. P01-R06 is released through protected squash `8dff9d8`: exact source and clean-checkout gates, both review remediations, final review, protected closeout run `33012535152`, and post-merge run `33012664408` pass. P01-R07 is implemented locally through exact candidate `8361f11`: focused adapter suites, the complete uncached graph, exact frozen clean checkout, four unavailable-dependency diagnostics, cold standalone lint, audit, and secret scanning pass. Review, protected CI, merge, and post-merge verification remain pending. Real dependency containers and interoperability, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
 
 ## Current limitations
 

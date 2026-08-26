@@ -8,12 +8,12 @@ P01-R07 is active on `feat/p01-r07-platform-adapters` from exact clean released 
 
 The Kafka decision remains deliberately two-stage. Clock/ID commit `2309f94`, PostgreSQL commit `1ded757`, Redis commit `f507c77`, S3 commit `353646e`, and Kafka commit `a932822` are coherent checkpoints. The broker selects provisional `kafkajs@2.2.4` after the current Confluent client exceeded the ten-second lifecycle budget in an isolated unavailable-broker spike. The repository-owned adapter provides bounded connect/metadata/keyed publish, one sequential at-least-once consumer, finite retries/capacity, telemetry, destructive ambiguous-generation recovery, and ordered lifecycle hooks with 17 focused tests passing. P01-R09 must confirm every real dependency and replace KafkaJS before Phase 01 closeout if real-broker lifecycle or compatibility fails.
 
-The first exact no-local checkout at `a932822` reused all 329 packages and passed 45 of 46 uncached tasks, but root type-aware lint raced the missing telemetry declaration build. The active remediation makes `pnpm lint` prepare that declaration and makes the internal gate task explicitly depend on the telemetry build. Its toolchain suite, direct lint, and 46-of-46 affected graph pass; a new immutable clean checkout remains required.
+The first exact no-local checkout at `a932822` reused all 329 packages and passed 45 of 46 uncached tasks, but root type-aware lint raced the missing telemetry declaration build. Remediation `8361f11` makes `pnpm lint` prepare that declaration and makes the internal gate task explicitly depend on the telemetry build. Exact `8361f11` passes a frozen offline install, 46 of 46 uncached tasks, all four stable diagnostics, audit, secret scanning, clean Git, cleanup, and an independent cold standalone-lint clone.
 
 ## Resume point
 
-1. Commit the lint/build ordering remediation and its evidence as one coherent checkpoint.
-2. Repeat the exact clean-checkout proof at that immutable remediation head, then perform the bounded initial review.
+1. Commit the exact clean-checkout and cold-lint evidence without changing source behavior.
+2. Perform the bounded initial review at exact source candidate `8361f11`; batch only blocking remediation defined by the active plan.
 3. Keep every real-container interoperability claim for P01-R09; do not publish, merge, or release P01-R07 until its complete gate, review, protected CI, and closeout evidence pass.
 
 ## Do not do yet
