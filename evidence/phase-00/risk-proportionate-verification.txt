@@ -36,6 +36,8 @@ IMPLEMENTED CONTRACT
   directly executable there; every command argument remains repository-owned.
 - Child execution has a 15-minute bound, preserves the selected nonzero status,
   and emits bounded errors without reflecting process or environment details.
+  A timeout force-terminates the detached POSIX process group or the complete
+  Windows process tree, with a five-second bounded close fallback.
 - Task-input-aware affected selection is enabled. Root lint owns application,
   package, service, tool, and worker source; formatting owns Markdown; security
   scanning owns every changed repository file.
@@ -47,13 +49,14 @@ FOCUSED AND FAILURE EVIDENCE
 
 $ pnpm toolchain:test
 result: PASS
-tests: 16 passed, 0 failed
+tests: 17 passed, 0 failed
 
-The four quality-runner tests prove:
+The five quality-runner tests prove:
 - exact full and changed arguments use one canonical task list;
 - Windows cmd.exe and POSIX pnpm invocation plus fixed SCM refs;
 - rejection of unknown and duplicate flags;
 - exact child-status propagation and sanitized spawn failure;
+- POSIX group and Windows tree termination plus stable timeout classification;
 - manifest scripts, Turbo future flag, and root input ownership remain aligned.
 
 Additional focused results:
@@ -100,7 +103,24 @@ candidate now compares resolved canonical paths and skips only the symbolic-link
 fixture when Windows returns EPERM; malformed UTF-8 and duplicate-location
 assertions remain unconditional. Nine community tests and 31 of 31 forced WSL
 tasks pass after the portability remediation; Turbo task time was 16.874 seconds
-and wrapper elapsed was 17.86 seconds. Final native-Windows results are pending.
+and wrapper elapsed was 17.86 seconds.
+
+Native-Windows public candidate bd7809235a08edf7a0507f4ecd330fd7e40b4b0e:
+- empty HTTPS clone and frozen install: PASS with Node.js 24.19.0, pnpm 11.24.0,
+  and 260 packages reused;
+- complete pnpm check --force: PASS, 31 of 31 tasks, 0 cached, 41.216
+  seconds of Turbo task time;
+- the two symbolic-link adverse fixtures were explicitly skipped because the
+  unprivileged host returned EPERM; their Linux/WSL executions remain passing;
+- high-severity audit, secret scan through the graph, clean Git state, exact
+  origin/SHA validation, and recoverable cleanup of every temporary clone: PASS.
+
+Initial review comment 3864234278 correctly found that the original synchronous
+timeout could leave Turbo descendants running. The remediation isolates the
+gate, kills the POSIX group or Windows tree on timeout, and adds the seventeenth
+toolchain test. The remediated WSL graph passes 31 of 31 forced tasks with zero
+cache in 18.097 seconds of Turbo task time and 19.32 seconds elapsed. The final
+post-review public/native repeat is pending.
 
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities
@@ -109,11 +129,7 @@ elapsed: 1.01 seconds
 PENDING RELEASE EVIDENCE
 ------------------------
 
-- Commit and public candidate SHA.
-- Documentation-only and representative package-source affected selections from
-  an isolated checkout, without retaining synthetic fixture changes.
-- One final clean public checkout because this change adds a documented public
-  command.
+- Final post-review public candidate SHA and native-Windows repeat.
 - Protected pull-request workflow and bounded initial/confirmation review.
 
 BOUNDARIES AND LIMITATIONS
