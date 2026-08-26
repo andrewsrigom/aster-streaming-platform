@@ -333,6 +333,7 @@ export function createExpressHttpAdapter(
         requestCancellationMiddleware,
         requireJsonContentType,
         express.json({
+          inflate: false,
           limit: normalized.bodyLimitBytes,
           strict: true,
           type: "application/json",

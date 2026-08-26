@@ -301,6 +301,19 @@ test("rejects malformed and oversized JSON before GraphQL middleware", async (co
     error: { code: "UNSUPPORTED_MEDIA_TYPE" },
   });
 
+  const corruptGzip = await fetch(`${url}/graphql`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "content-encoding": "gzip",
+    },
+    body: Buffer.from("not-a-gzip-stream"),
+  });
+  assert.equal(corruptGzip.status, 415);
+  assert.deepEqual(await responsePayload(corruptGzip), {
+    error: { code: "UNSUPPORTED_MEDIA_TYPE" },
+  });
+
   const oversized = await fetch(`${url}/graphql`, {
     method: "POST",
     headers: { "content-type": "application/json" },

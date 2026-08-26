@@ -105,6 +105,7 @@ Status: **IN_PROGRESS**
 - UTF-8 candidate `35b307a` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced uncached tasks in `25.339` seconds, audit, secret scan, and clean Git; protected run `32973291227` passed. Review comment `3863154140` then found a parser disagreement for duplicate charset parameters. The local remediation rejects duplicate charset parameters while respecting quoted semicolons, covers the bypass plus a non-duplicate quoted-value case, and passes 31 of 31 uncached local tasks in `17.16` seconds.
 - Duplicate-charset candidate `6b8e1c2` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `27.046` seconds, audit, secret scan, and clean Git; protected run `32974480044` passed. Evidence reply `3863199830` is posted and the fourth discussion is resolved. Review comment `3863261260` then found the direct diagnostic request lacked its own deadline. The local remediation attaches a two-second abort deadline through response consumption, clears the timer in `finally`, and passes 31 of 31 uncached local tasks in `15.235` seconds.
 - Diagnostic-deadline candidate `c2596d2` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406` seconds, audit, secret scan, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and the fifth discussion is resolved. Review comment `3863364289` then identified malformed media-type parameters. The local remediation uses exact-pinned strict `content-type@1.0.5`, retains duplicate rejection, adds an `application/json; charset` regression that returns `415` before GraphQL, and passes 31 of 31 uncached local tasks in `13.514` seconds.
+- Strict-media candidate `87127cf` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383` seconds, audit, secret scan, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and the sixth discussion is resolved. Review comment `3863476696` then found corrupt compressed request bytes could produce a client-triggered `500`. The local remediation disables request inflation, makes every non-identity content encoding a stable pre-decompression `415`, adds a corrupt-gzip regression, and passes 31 of 31 uncached local tasks in `16.588` seconds.
 
 ## Not implemented
 
@@ -119,7 +120,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the strict-media-type remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
+Verify the uncompressed-request remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
 
 ## Current risks
 

@@ -26,7 +26,7 @@ The adapter exposes a Node.js `RequestListener` and a one-time GraphQL middlewar
 1. reject traffic with a stable `503` until GraphQL middleware is mounted;
 2. match only the strict, case-sensitive `/graphql` route and reject trailing-slash, case-variant, and nested paths;
 3. create a request-local cancellation signal;
-4. require `application/json` for `POST` requests;
+4. require uncompressed UTF-8 `application/json` with unambiguous valid parameters for `POST` requests;
 5. parse strict JSON with a 64 KiB default and a reviewed 256 KiB hard maximum;
 6. classify only parser-originated malformed or oversized failures;
 7. invoke the supplied GraphQL middleware;
@@ -58,7 +58,7 @@ Fastify's richer built-in server behavior is valuable, but the current slice has
 
 ### Operational
 
-- `POST /graphql` without supported UTF-8 JSON media type or with unsupported content encoding returns `415`.
+- `POST /graphql` without supported UTF-8 JSON media type or with any non-identity request content encoding returns `415`.
 - Malformed JSON returns `400`; a body above the configured bound returns `413` before Apollo runs.
 - Requests before mount return `503`; unmatched and nested paths return `404`.
 - The adapter disables Express disclosure and ETag generation. CORS is intentionally absent until an owning deployment or application requirement defines it.
