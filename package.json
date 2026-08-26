@@ -31,6 +31,8 @@
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "lint": "eslint .",
+    "logging:check": "turbo run build --filter=@aster/runtime && pnpm --filter=@aster/runtime check",
+    "logging:test": "turbo run test --filter=@aster/runtime",
     "platform:check": "node ./tools/verify-local-platform.mjs",
     "platform:compose:check": "docker compose -f ./infra/compose/compose.yml config --quiet",
     "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/reset-local-platform.test.mjs",

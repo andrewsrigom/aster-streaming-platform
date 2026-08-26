@@ -1,0 +1,28 @@
+{
+  "name": "@aster/runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Reusable bounded Node.js runtime behavior for Aster services.",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "check": "node ./dist/src/check-runtime-logging.js",
+    "test": "node --test ./dist/test/*.test.js",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "dependencies": {
+    "pino": "10.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

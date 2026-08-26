@@ -80,10 +80,11 @@ Status: **IN_PROGRESS**
 - The adverse suite retains 12 focused tests while covering a length-changing proxy, 1,000-entry refusal before index access, 300 unrelated subprocess variables, duplicate known settings, 10,000-character owned names, oversized whitespace, raw URL controls, forged error canaries, exact process exits, and secret redaction.
 - Protected remediation runs `32958437941`, `32958998938`, `32959613401`, `32960632070`, `32961192353`, `32961814947`, and `32962358373` passed every applicable job. Nine actionable review discussions have evidence replies and are resolved; final automated review comment `5424539572` reports no major issue at implementation commit `4ff4c3e`.
 - P01-R03 is `VERIFIED`: local complete gates, two clean public checkouts, dependency/license review, protected CI, adverse review remediation, registry audit, documentation, repository-memory validation, and secret scanning pass. No application service, connection, hosted resource, schema migration, or credential was created.
+- Protected pull request 8 was squash-merged to `main` at `c5a707dc2510130cadcdac368e94b040f120d27c`. Post-merge run `32963360595` passed every applicable job, and local `main` matches the protected remote with a clean worktree.
 
 ## Implemented
 
-- No Phase 01 item is currently implemented but awaiting verification. P01-R04 is `READY` and has not started.
+- P01-R04 is `IN_PROGRESS` with an active plan for the structured runtime logging baseline. No logging behavior is implemented yet.
 
 ## Not implemented
 
@@ -98,7 +99,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Release the verified P01-R03 change through the protected squash merge and confirm post-merge `main`; then activate P01-R04 with a new change plan before changing logging code.
+Implement the smallest complete P01-R04 runtime logging slice, verify redaction and trace correlation under adverse inputs, and capture its dependency, process, clean-checkout, and protected-review evidence without adding the telemetry backend or service skeleton early.
 
 ## Current risks
 
