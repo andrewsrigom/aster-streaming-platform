@@ -52,10 +52,15 @@ pnpm platform:test
 pnpm platform:compose:check
 pnpm docs:check
 pnpm ai:check
+pnpm check:changed
 pnpm check
 ```
 
-`pnpm check` is the complete currently implemented source and documentation gate. Use `pnpm format:write` only when an intentional formatting rewrite is wanted. The architecture checker scans approved workspace source roots, rejects malformed source and forbidden outward dependencies, and emits structured violations without following symbolic links. Knip checks unused source, exports, and direct dependencies as package source is added; the current root-only workspace is valid without placeholder packages.
+`pnpm check:changed` is the pre-push candidate gate. It uses the same canonical task list as `pnpm check`, fixes the comparison to `main...HEAD`, and selects tasks through their declared inputs. Global configuration and lockfile changes conservatively select the complete graph. The command requires a resolvable local `main` ref and comparison history; refresh that ref or use the complete gate when the checkout cannot provide them. `pnpm check` remains the complete source and documentation gate; `pnpm check --force` reruns it without Turbo cache. Use `pnpm format:write` only when an intentional formatting rewrite is wanted. The architecture checker scans approved workspace source roots, rejects malformed source and forbidden outward dependencies, and emits structured violations without following symbolic links. Knip checks unused source, exports, and direct dependencies as package source is added.
+
+The repository runner invokes `pnpm` directly on POSIX systems and invokes `pnpm.cmd` through a fixed, AutoRun-disabled `cmd.exe` boundary on native Windows. Its task names, flags, and SCM refs are repository-owned; it does not forward arbitrary shell arguments.
+
+The destructive reset remains a POSIX shell script. Its tests run through the Git for Windows shell when invoked natively and normalize Docker/Compose line endings; WSL remains the recommended Windows environment for development and for the destructive reset.
 
 `pnpm docs:check` validates bounded UTF-8 Markdown inputs, first top-level titles, balanced fences, unresolved merge markers, relative files and heading fragments, canonical high-confidence terminology, and evidence support for explicit current-status maturity claims. It does not fetch external URLs, so network reachability remains a separate deliberate audit. `pnpm docs:test` exercises the adverse fixtures directly.
 
@@ -73,9 +78,9 @@ The root README is the copy-paste entrypoint for the currently executable founda
 
 ### Development lane
 
-The current development lane uses `pnpm install --frozen-lockfile`, focused checks, `pnpm check`, `pnpm audit --audit-level=high`, and `pnpm clean:foundation` as documented in the root README. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. P01-R02 adds the separate destructive local reset. Later Phase 01 work adds broker, object storage, telemetry, runtime configuration, migrations, seed data, and integration suites. Later phases add browser, media, failure, and load commands only when they have executable implementations.
+The current development lane uses `pnpm install --frozen-lockfile`, focused checks during edits, `pnpm check:changed` for a coherent candidate, `pnpm check` for the complete acceptance gate, `pnpm audit --audit-level=high`, and `pnpm clean:foundation`. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. P01-R02 adds the separate destructive local reset. Later Phase 01 work adds broker, object storage, telemetry, runtime configuration, migrations, seed data, and integration suites. Later phases add browser, media, failure, and load commands only when they have executable implementations.
 
-The fast changed-scope gate will not run every integration, browser, media, failure, or load suite on each commit. Each owning phase selects its final script names and affected-graph behavior only when the implementation exists.
+The changed-scope gate does not run every integration, browser, media, failure, or load suite on each commit. Each owning phase adds its task inputs and heavyweight acceptance behavior only when the implementation exists.
 
 ### Docker-only demo lane
 
@@ -129,6 +134,7 @@ The destructive local reset remains separate from resource-heavy laboratory comm
 Run the complete local decision with:
 
 ```bash
+pnpm check:changed
 pnpm check
 pnpm audit --audit-level=high
 ```

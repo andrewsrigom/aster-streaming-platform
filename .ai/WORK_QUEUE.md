@@ -22,12 +22,13 @@ Only one item may be `IN_PROGRESS`.
 | 16 | Validate process-start configuration and classify secrets | P01-R03 | DONE |
 | 17 | Implement structured logging with redaction and trace correlation | P01-R04 | DONE |
 | 18 | Select the HTTP adapter through an ADR and create the transport boundary | P01-R11 | DONE |
-| 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | READY |
+| 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | IN_PROGRESS |
 | 20 | Implement lifecycle, health, and bounded graceful shutdown | P01-R05 | BLOCKED_BY_19 |
 
 ## Work-item rules
 
 - Move one item to `IN_PROGRESS` before changing code.
+- `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.
 - Record its plan in `.ai/CHANGE_PLAN.md`.
 - Do not mark `DONE` without linked evidence.
 - Add newly discovered work only if it belongs to the active phase.

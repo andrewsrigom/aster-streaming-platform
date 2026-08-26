@@ -10,6 +10,8 @@ High-severity registry audit is executable locally, and the hosted `main` and pr
 
 ## Always required
 
+These controls are required before a work item is completed when they apply to its changed behavior. They are not a requirement to run the complete repository graph after every edit or commit.
+
 - formatting
 - linting
 - strict TypeScript compilation
@@ -22,6 +24,15 @@ High-severity registry audit is executable locally, and the hosted `main` and pr
 - no unsupported implementation claims
 - no unresolved merge markers
 - no skipped tests without an approved issue
+
+## Execution cadence
+
+- Edit: focused tests and static checks at the smallest responsible boundary.
+- Candidate: `pnpm check:changed` after related changes are coherent.
+- Merge: the complete acceptance gate once the candidate is stable.
+- Phase or release: clean-start and other heavyweight evidence owned by the phase.
+
+Repeat heavyweight evidence only after dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, public-command, or behavior changes that can invalidate it. Consolidate evidence and repository-memory prose at candidate and closeout checkpoints. One initial review plus one confirmation is the default; another round requires a changed or newly discovered blocking boundary.
 
 ## Architecture-sensitive changes
 

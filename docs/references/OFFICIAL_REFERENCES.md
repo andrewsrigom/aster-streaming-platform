@@ -34,6 +34,7 @@ Do not infer that every film or asset uses the same license. Review each officia
 - Turborepo installation: https://turborepo.com/docs/getting-started/installation
 - Turborepo task configuration: https://turborepo.com/docs/crafting-your-repository/configuring-tasks
 - Turborepo configuration reference: https://turborepo.com/docs/reference/configuration
+- Turborepo affected execution and SCM variables: https://turborepo.com/docs/reference/system-environment-variables
 - Turborepo 2.10.12 release: https://github.com/vercel/turborepo/releases/tag/v2.10.12
 - Turborepo 2.10.12 registry metadata: https://registry.npmjs.org/turbo/2.10.12
 

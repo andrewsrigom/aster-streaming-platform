@@ -14,7 +14,7 @@ What is verified, what is not implemented, active phase, next outcome, and known
 
 ### `WORK_QUEUE.md`
 
-Ordered phase-scoped work. Only one item may be in progress.
+Ordered phase-scoped work. Only one item may be in progress. One earlier frozen candidate may be `WAITING_EXTERNAL` while one dependent local item proceeds under the recorded predecessor-first release rule.
 
 ### `CHANGE_PLAN.md`
 
@@ -45,7 +45,7 @@ Reusable instructions for resuming, implementing, reviewing, investigating, and 
 At work start:
 
 1. restore context;
-2. move one queue item to `IN_PROGRESS`;
+2. move the earliest actionable queue item to `IN_PROGRESS`; an earlier `WAITING_EXTERNAL` item is allowed only under the frozen-candidate policy in `AGENTS.md`;
 3. populate `CHANGE_PLAN.md`.
 
 At work end:
@@ -72,6 +72,6 @@ Do not use `.ai/` as a scratch dump. Temporary reasoning belongs outside committ
 
 ## Executable validation
 
-Run `pnpm ai:check` for the bounded static contract and `pnpm ai:test` for its adverse fixtures. The validator requires the durable memory files as regular bounded UTF-8 inputs; checks queue order, statuses, active-item uniqueness, and live blocker references; binds the active or first ready requirement to the change plan, current-state next outcome, and handoff; and checks reverse-chronological session entry structure.
+Run `pnpm ai:check` for the bounded static contract and `pnpm ai:test` for its adverse fixtures. The validator requires the durable memory files as regular bounded UTF-8 inputs; checks queue order, statuses, one external wait, active-item uniqueness, and live blocker references; binds the active, first ready, or waiting requirement to the change plan, current-state next outcome, and handoff; and checks reverse-chronological session entry structure.
 
 This gate proves explicit structure and cross-file consistency. It cannot prove that arbitrary narrative statements are semantically true, so evidence review and the truthfulness rule in `AGENTS.md` still apply. The commands run in `pnpm check` and the dependency-free CI governance job, not in the fast staged-file commit hook.

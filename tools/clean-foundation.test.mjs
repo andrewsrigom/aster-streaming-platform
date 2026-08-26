@@ -56,7 +56,15 @@ test("unlinks a generated-path symlink without traversing its target", async (co
   const externalRoot = await mkdtemp(join(tmpdir(), "aster-foundation-external-"));
   context.after(async () => rm(externalRoot, { force: true, recursive: true }));
   await writeFile(join(externalRoot, "preserved.txt"), "preserved\n", "utf8");
-  await symlink(externalRoot, join(root, ".turbo"));
+  try {
+    await symlink(externalRoot, join(root, ".turbo"));
+  } catch (error) {
+    if (process.platform === "win32" && error.code === "EPERM") {
+      context.skip("Windows host does not grant symbolic-link fixture permission");
+      return;
+    }
+    throw error;
+  }
 
   assert.deepEqual((await cleanFoundation(root)).removed, [".turbo"]);
   await assert.rejects(lstat(join(root, ".turbo")), { code: "ENOENT" });

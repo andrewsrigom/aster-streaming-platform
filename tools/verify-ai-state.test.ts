@@ -181,6 +181,79 @@ test("accepts canonical active and idle repository memory", () => {
   assert.deepEqual(validateAiStateSources(canonicalSources(false)), []);
 });
 
+test("accepts one external wait before one dependent active item", () => {
+  const sources = canonicalSources();
+  const queueFile = ".ai/WORK_QUEUE.md";
+  sources.set(
+    queueFile,
+    requiredSource(sources, queueFile)
+      .replace("| P00-R02 | IN_PROGRESS |", "| P00-R02 | WAITING_EXTERNAL |")
+      .replace("| P00-R03 | READY |", "| P00-R03 | IN_PROGRESS |")
+      .replace("BLOCKED_BY_2_3", "BLOCKED_BY_3"),
+  );
+  const planFile = ".ai/CHANGE_PLAN.md";
+  sources.set(planFile, replaceRequired(requiredSource(sources, planFile), "P00-R02", "P00-R03"));
+  const currentFile = ".ai/CURRENT_STATE.md";
+  sources.set(
+    currentFile,
+    replaceRequired(
+      requiredSource(sources, currentFile),
+      "Execute P00-R02 fixture validation.",
+      "Execute P00-R03 fixture validation.",
+    ),
+  );
+  const handoffFile = ".ai/HANDOFF.md";
+  sources.set(handoffFile, requiredSource(sources, handoffFile).replaceAll("P00-R02", "P00-R03"));
+
+  assert.deepEqual(validateAiStateSources(sources), []);
+
+  sources.set(
+    queueFile,
+    replaceRequired(
+      requiredSource(sources, queueFile),
+      "| P00-R04 | BLOCKED_BY_3 |",
+      "| P00-R04 | WAITING_EXTERNAL |",
+    ),
+  );
+  assert.ok(
+    validateAiStateSources(sources).some(
+      ({ detail, rule }) => rule === "queue-state" && detail.includes("WAITING_EXTERNAL"),
+    ),
+  );
+});
+
+test("rejects an active item that skips actionable work after an external wait", () => {
+  const sources = canonicalSources();
+  const queueFile = ".ai/WORK_QUEUE.md";
+  sources.set(
+    queueFile,
+    requiredSource(sources, queueFile)
+      .replace("| P00-R02 | IN_PROGRESS |", "| P00-R02 | WAITING_EXTERNAL |")
+      .replace("| P00-R04 | BLOCKED_BY_2_3 |", "| P00-R04 | IN_PROGRESS |"),
+  );
+  const planFile = ".ai/CHANGE_PLAN.md";
+  sources.set(planFile, replaceRequired(requiredSource(sources, planFile), "P00-R02", "P00-R04"));
+  const currentFile = ".ai/CURRENT_STATE.md";
+  sources.set(
+    currentFile,
+    replaceRequired(
+      requiredSource(sources, currentFile),
+      "Execute P00-R02 fixture validation.",
+      "Execute P00-R04 fixture validation.",
+    ),
+  );
+  const handoffFile = ".ai/HANDOFF.md";
+  sources.set(handoffFile, requiredSource(sources, handoffFile).replaceAll("P00-R02", "P00-R04"));
+
+  assert.ok(
+    validateAiStateSources(sources).some(
+      ({ detail, rule }) =>
+        rule === "queue-state" &&
+        detail === "the active item must be the earliest actionable queue item",
+    ),
+  );
+});
+
 test("rejects missing and oversized repository memory", () => {
   const sources = canonicalSources();
   sources.delete(".ai/CONTEXT.md");
@@ -281,22 +354,34 @@ test("rejects session regression and missing entry evidence", () => {
   assert.equal(sessions.length, 2);
 });
 
-test("rejects malformed UTF-8 and symbolic repository memory files", async (context) => {
+test("rejects malformed UTF-8 repository memory files", async (context) => {
   const invalidRoot = await mkdtemp(join(tmpdir(), "aster-ai-state-invalid-"));
-  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-ai-state-symbolic-"));
   context.after(async () => {
     await rm(invalidRoot, { force: true, recursive: true });
-    await rm(symbolicRoot, { force: true, recursive: true });
   });
 
   await writeFixture(invalidRoot);
   await writeFile(resolve(invalidRoot, ".ai", "CONTEXT.md"), Buffer.from([0xff, 0xfe]));
   assert.ok((await scanAiState(invalidRoot)).violations.some(({ rule }) => rule === "input"));
+});
 
+test("rejects symbolic repository memory files when the host permits the fixture", async (context) => {
+  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-ai-state-symbolic-"));
+  context.after(async () => {
+    await rm(symbolicRoot, { force: true, recursive: true });
+  });
   await writeFixture(symbolicRoot);
   const planPath = resolve(symbolicRoot, ".ai", "CHANGE_PLAN.md");
   await unlink(planPath);
-  await symlink("CONTEXT.md", planPath);
+  try {
+    await symlink("CONTEXT.md", planPath);
+  } catch (error) {
+    if (process.platform === "win32" && (error as NodeJS.ErrnoException).code === "EPERM") {
+      context.skip("Windows host does not grant symbolic-link fixture permission");
+      return;
+    }
+    throw error;
+  }
   assert.ok((await scanAiState(symbolicRoot)).violations.some(({ rule }) => rule === "input"));
 });
 

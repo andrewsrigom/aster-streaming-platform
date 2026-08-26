@@ -1,3 +1,124 @@
-# Active Change Plan
+# Work Item: Calibrate Risk-Proportionate Verification and Affected-Scope Feedback
 
-No work item is active. Select the first `READY` item from `.ai/WORK_QUEUE.md` before beginning the next change.
+- Status: IN_PROGRESS
+- Owner: Aster repository engineering system
+- Phase: 00
+- Requirement IDs: P00-R06
+- Created: 2026-08-26
+- Updated: 2026-08-26
+
+## Outcome
+
+Make the existing tiered-feedback policy executable and bounded: development iterations use focused tests, coherent candidates use affected-scope checks, pull requests use one authoritative protected gate, and heavyweight clean-start evidence repeats only when a later change can invalidate it. Define a review stopping rule that fixes requirement, security, data, availability, and public-contract findings while recording lower-risk speculative hardening instead of creating an unbounded review loop.
+
+## Current behavior
+
+Repository governance already prohibits full gates on every commit and describes `check:changed` as the pre-push path, but the root manifest exposes no such command. The full and source gates are executable, while review cadence, evidence consolidation, clean-checkout repetition triggers, and sufficient-verification criteria are not explicit. P01-R11 therefore accumulated fourteen branch commits and repeated full, clean-checkout, hosted-CI, review, and evidence cycles for progressively narrower transport cases before its final release at `93147ac`.
+
+## Proposed behavior
+
+Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm check:changed`. Full mode preserves the existing authoritative task graph. Changed mode invokes the same task set through pinned Turborepo affected execution with repository-fixed `main` and `HEAD` comparison refs and task-input-aware selection. Update the written contract so work items declare iteration, candidate, heavyweight-repeat, and review stopping rules before implementation; consolidate evidence at meaningful checkpoints; batch review remediation; and stop after one review plus one confirmation unless a later finding violates a named blocking boundary.
+
+Represent a frozen coherent candidate as `WAITING_EXTERNAL` when its only remaining condition is named external CI, review, or merge state. This state is not ambiguous work: it permits exactly one later local `IN_PROGRESS` item on a branch based on the frozen predecessor, while preserving predecessor-first publication and release. A predecessor change invalidates the dependent base and requires rebase plus the affected gates.
+
+## Boundaries
+
+- Owning context: Repository engineering system; no product bounded context or data owner changes.
+- Affected services/packages: Root scripts, Turborepo task inputs, repository-tool tests, agent/governance/quality/local-development documentation, templates, and repository memory. No application package behavior changes.
+- Authoritative data: Git history and repository files remain authoritative; Turbo cache output is derived and disposable.
+- Read models/caches: Local Turborepo cache only; no remote cache or durable product state.
+- Trust boundaries: Command-line arguments, inherited environment variables, Git comparison refs, changed paths interpreted by pinned Turborepo, child-process exit status, and documentation claims about executable commands.
+- External dependencies: Existing exact-pinned Turborepo `2.10.12`, Node.js `24.19.0`, and pnpm `11.24.0`; no dependency addition.
+
+## Invariants
+
+- `pnpm check` retains the complete authoritative task list and behavior.
+- `pnpm check:changed` uses the same task list and can only narrow task selection through the pinned Turbo affected mechanism.
+- Caller-provided `TURBO_SCM_BASE` or `TURBO_SCM_HEAD` cannot silently narrow the repository-owned comparison.
+- Root tasks responsible for package source, documentation, repository memory, security, CI, or platform policy declare inputs that select them when their owned files change.
+- A missing comparison ref fails safe through Turbo behavior; a failed selected task propagates a nonzero exit.
+- No rule permits skipping a requirement, security boundary, data invariant, availability contract, or public observable contract.
+- At most one item may be `WAITING_EXTERNAL`, at most one later item may be `IN_PROGRESS`, and no dependent item may publish or release before the waiting predecessor.
+- The waiting predecessor has an exact frozen head, evidence, external condition, and recovery action recorded before later implementation begins.
+
+## Failure behavior
+
+| Failure | Expected behavior | Telemetry |
+|---|---|---|
+| Unknown runner argument | Exit nonzero with one bounded usage error before Turbo | Terminal error only |
+| Caller injects SCM base/head variables | Runner overwrites them with repository-owned refs | Test assertion; no secret values printed |
+| Base history cannot be resolved | Turbo fails safe to conservative execution or returns nonzero; never report a false pass | Turbo diagnostic and process exit |
+| Selected quality task fails | Preserve its nonzero status | Existing task output |
+| Gate exceeds its 15-minute deadline | Kill the isolated POSIX process group or Windows process tree, return a stable timeout error, and bound the termination fallback | Runner contract test and terminal error |
+| Gate wrapper receives `SIGINT` or `SIGTERM` | Forward the original signal to the isolated child process tree, allow one bounded cleanup window, force the tree only after that window, remove wrapper signal handlers, and return the conventional bounded signal exit status | Runner contract test and terminal error |
+| Clean tree has no affected task | Exit zero with Turbo's empty affected result | Turbo summary |
+| Documentation-only change | Select documentation, repository-memory when applicable, and security checks without package builds | Turbo dry-run and measured execution |
+| Package-source change | Select the changed package and dependent build/test/type tasks plus owned root lint/format/unused/architecture/security tasks | Turbo dry-run and focused execution |
+| Alternate pull-request template is a symbolic link to the canonical file | Reject the alternate path as a duplicate public template instead of treating matching real paths as a case-only alias | Community validator test and bounded violation |
+| Hosted CI, review, or merge service is unavailable after a coherent candidate is frozen | Mark the predecessor `WAITING_EXTERNAL`, retain its exact resume condition, and permit one dependent local item without bypassing release order | Repository-memory validator and state fixture |
+| Waiting predecessor changes after dependent work begins | Rebase the dependent branch onto the new frozen predecessor and repeat its affected gates before publication | Git history, handoff, and candidate evidence |
+
+## Data and contracts
+
+- Schema/migration: None.
+- GraphQL: None.
+- Events: None.
+- Cache: Existing `.turbo` cache remains derived and removable.
+- Compatibility: Existing `pnpm check` remains public and complete; `pnpm check:changed` becomes the documented pre-push interface.
+- Retention/deletion: No new retained data. Existing cleanup continues to remove `.turbo` safely.
+
+## Security and privacy
+
+- Authorization: Not applicable; the command acts only on the local checkout.
+- Input limits: Accept only the named changed-mode flag internally; fixed task list and SCM refs; bounded child-process lifetime belongs to the existing local execution environment.
+- Sensitive data: Do not print inherited environment values, Git credential configuration, or file contents.
+- Abuse cases: Environment override that narrows the diff, task-list drift between full and changed mode, missing history, changed files outside task inputs, command injection through arguments, and a child failure reported as success.
+
+## Implementation steps
+
+1. Add a typed quality-gate runner with one canonical task list, full and changed invocation construction, fixed SCM refs for changed mode, explicit Windows command-processor invocation, immediate isolated process-tree termination for timeouts, graceful signal forwarding with a bounded force fallback for wrapper signals, and exact exit propagation.
+2. Wire `check` and `check:changed` to that runner, add focused unit/manifest contract tests to the existing toolchain tier, reject symbolic alternate template locations while preserving case-insensitive canonical aliases, and keep governance fixtures portable across Windows hosts without symbolic-link privilege.
+3. Enable task-input-aware affected execution and fill input gaps for root lint and security ownership.
+4. Run dry and real affected checks against documentation and package-source fixtures without leaving synthetic changes in the final tree.
+5. Update the operating contract, agent loop, governance, delivery model, quality gates, local development, reusable prompt, and work-item template with the calibrated cadence and stopping rules.
+6. Run focused tests, changed-mode evidence, the full candidate gate, audit, clean public checkout only if bootstrap or public command behavior requires it, protected CI, and bounded review.
+7. Add the bounded `WAITING_EXTERNAL` queue state and validator fixture so an exact externally blocked candidate does not serialize unrelated local implementation while predecessor-first release remains mandatory.
+
+## Tests
+
+- Domain: Not applicable.
+- Application: Not applicable.
+- Integration: Spawn the pinned Turbo CLI through injected process boundaries only where needed; exercise the real `check:changed` command on the current branch.
+- Contract: Canonical task-list parity, exact full/changed arguments, fixed SCM refs, unknown-argument rejection, exit propagation, manifest scripts, Turbo future flag, and owned root task inputs.
+- Repository memory: Accept one waiting predecessor followed by one active dependent item; reject unknown status, multiple waiting items, multiple active items, and an active item that skips an earlier actionable item.
+- Browser: Not applicable.
+- Performance/failure: Compare task selection and elapsed time for a documentation/repository-memory change and a representative package-source change; treat results as workflow observations, not general benchmarks.
+
+## Evidence
+
+- Commands: Focused runner tests, affected dry runs, real `pnpm check:changed`, `pnpm check --force`, documentation/repository-memory/security checks, high-severity audit, and protected CI.
+- Raw artifact path: `evidence/phase-00/risk-proportionate-verification.txt`.
+- Acceptance result: Local focused, affected, clean forced, audit, documentation, memory, and security gates pass at `9775917`; protected CI, discussion resolution, merge, and post-merge evidence remain pending.
+- Iteration gate: Runner tests, typecheck/lint/format for changed tooling, and documentation/repository-memory checks for policy edits.
+- Candidate gate: One complete forced graph plus audit after behavior and documentation stabilize.
+- Heavyweight repeat triggers: Repeat clean checkout only after dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, or documented public-command changes that can invalidate prior clean-start evidence. This work changes a public command, so one final clean checkout is required.
+- Review stopping rule: One initial review and one confirmation. Additional review is justified only when a remediation changes a blocking boundary or a new finding violates a requirement, security/data invariant, availability behavior, or public contract.
+
+## Rollback or recovery
+
+Restore the direct `pnpm check` Turbo command, remove `check:changed`, the runner and its tests, remove task-input-aware affected configuration, and revert the policy text. No application, dependency, container, hosted resource, or durable data requires migration or cleanup.
+
+## Documentation updates
+
+- Calibrate `AGENTS.md` and `skills/agent.md` with sufficient-verification, review, batching, and evidence-checkpoint rules.
+- Align the delivery model, repository governance, quality gates, local-development commands, reusable implementation prompt, and work-item template.
+- Record measured command behavior in the Phase 00 corrective evidence and repository memory.
+
+## Completion checklist
+
+- [ ] Requirements satisfied
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

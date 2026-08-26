@@ -1,4 +1,4 @@
-import { lstat, readFile, readdir } from "node:fs/promises";
+import { lstat, readFile, readdir, realpath } from "node:fs/promises";
 import { resolve } from "node:path";
 import { TextDecoder } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -396,9 +396,26 @@ export async function scanCommunityFiles(root = repositoryRoot): Promise<Communi
     });
   }
 
+  let canonicalPullRequestPath: string | undefined;
+  try {
+    canonicalPullRequestPath = await realpath(resolve(root, ".github/PULL_REQUEST_TEMPLATE.md"));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") {
+      throw error;
+    }
+  }
+
   for (const duplicate of DUPLICATE_PULL_REQUEST_LOCATIONS) {
     try {
-      await lstat(resolve(root, duplicate));
+      const duplicatePath = resolve(root, duplicate);
+      const duplicateMetadata = await lstat(duplicatePath);
+      if (
+        canonicalPullRequestPath &&
+        !duplicateMetadata.isSymbolicLink() &&
+        (await realpath(duplicatePath)) === canonicalPullRequestPath
+      ) {
+        continue;
+      }
       addViolation(violations, {
         detail: "duplicate pull-request template location must be removed",
         file: duplicate,

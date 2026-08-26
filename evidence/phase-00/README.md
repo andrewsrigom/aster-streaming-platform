@@ -25,6 +25,12 @@
 | Publish exact developer commands and bounded foundation cleanup | P00-R09 | PASS_HOSTED | [`developer-command-contract.txt`](developer-command-contract.txt) |
 | Verify a clean public checkout and close the phase | P00-R10 | PASS_HOSTED | [`clean-checkout-closeout.txt`](clean-checkout-closeout.txt) |
 
+## Active corrective work
+
+| Work item | Requirement | Current acceptance | Artifacts |
+|---|---|---|---|
+| Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 corrective maintenance | IMPLEMENTED | [`risk-proportionate-verification.txt`](risk-proportionate-verification.txt) |
+
 P00-R08 and P00-R09 local and protected hosted checks pass. The P00-R10 public-main clone exposed the missing clone-local hook activation command. The corrected public candidate then passed its documented bootstrap without manual supplementation, two uncached complete gates, bounded cleanup and recovery, integrity checks, and the protected hosted workflow.
 
 ## Limitations

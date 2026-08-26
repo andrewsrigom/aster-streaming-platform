@@ -6,7 +6,7 @@ Last updated: 2026-08-26
 
 **Phase 00 — Foundation corrective maintenance**
 
-Status: **READY**
+Status: **IN_PROGRESS**
 
 ## Verified
 
@@ -110,6 +110,11 @@ Status: **READY**
 - Empty-body candidate `cd572ad` passed a frozen exact public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70` seconds, audit, secret scan, clean Git, and exact temporary-root removal; protected run `32980849863` passed. Evidence reply `3863818928` is posted and the eighth discussion is resolved. Confirmation review then found that an unframed empty request with `Content-Encoding: gzip` bypassed parser-owned encoding validation.
 - Final candidate `487b403` validates request content encoding before the parser can short-circuit on body framing and adds a deadline-bounded real-socket regression that preserves stable `415 UNSUPPORTED_MEDIA_TYPE`. Eight focused tests, the diagnostic, audit, and 31 of 31 forced local tasks in `20.70` seconds pass. Protected run `32981788859` passed, evidence reply `3863902900` is posted, all nine review discussions are resolved, and no dependency, bootstrap, packaging, Docker, or public-command input changed after the exact clean checkout.
 - P01-R11 is `VERIFIED`: the bounded Express adapter, ADR, real-socket/Apollo tests, local and clean-checkout gates, dependency/license checks, protected CI, and review remediation satisfy the requirement without creating a product service, schema, lifecycle coordinator, hosted resource, or durable state.
+- P01-R11 is `RELEASED` through protected squash `93147accfae07f9cde9ff73b8080f2edd99bed8a`; post-merge run `32982613740` passed every applicable job and the remote feature branch was removed.
+- P00-R06 corrective candidate `9775917` exposes one bounded full/affected quality runner, fixed comparison refs, task-input-aware selection, risk-proportionate verification checkpoints, and a bounded review stopping rule. It force-terminates the isolated gate tree on timeout, forwards `SIGINT` and `SIGTERM` before a bounded force fallback, rejects symbolic alternate pull-request template locations, conservatively selects documentation and community scanners for every repository path, and permits one dependent local item behind one frozen `WAITING_EXTERNAL` predecessor without changing publication or release order.
+- The corrective candidate passes 18 toolchain and 10 community tests on WSL, 31 of 31 forced WSL tasks in `24.622` seconds, and an exact public native-Windows clone with 31 of 31 forced tasks in `1m11.643s`; high-severity audit and clean Git pass. Evidence replies for confirmation findings `3864537199` and `3864537208` are posted and resolved.
+- The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
+- Exact-head run `32990397338` passed at predecessor `dd9f282`. Final confirmation then found two blocking affected-input and graceful-interrupt boundaries; candidate `9775917` closes both and passes 20 focused toolchain tests, 31 of 31 affected tasks, 31 of 31 clean forced tasks, documentation, memory, security, and audit locally. It remains `IMPLEMENTED` until protected CI passes at the new head and both confirmation discussions are resolved.
 
 ## Not implemented
 

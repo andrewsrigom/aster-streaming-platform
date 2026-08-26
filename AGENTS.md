@@ -53,6 +53,20 @@ For every non-trivial change:
 
 Do not begin a second work item while the first is in an ambiguous state.
 
+A coherent candidate may move to `WAITING_EXTERNAL` only when implementation, applicable local gates, evidence, exact head, and rollback are recorded and its sole remaining condition is named hosted CI, review, or merge state. This state is not ambiguous. At most one later item may become `IN_PROGRESS` on a branch based on that frozen head. The dependent item must not publish, merge, or release before the waiting predecessor. If the predecessor changes, rebase the dependent branch and repeat its affected gates before publication. Do not use this state for unresolved requirements, failed tests, open blocking findings, missing evidence, credentials, or owner decisions.
+
+Verification is risk-proportionate and checkpoint-based:
+
+- during implementation, run the cheapest focused test and static checks that can catch the changed behavior;
+- before publishing a coherent candidate, run the affected-scope gate;
+- before merge, run the complete acceptance gate required by the work item;
+- repeat a clean checkout, container start, browser suite, media job, load test, or other heavyweight experiment only when a later change can invalidate that evidence;
+- consolidate repository-memory and evidence prose at meaningful candidate and closeout checkpoints instead of rewriting it after every micro-edit.
+
+A work item is sufficiently verified when its written requirements, acceptance behavior, named failure modes, and applicable security, data, availability, and public-contract boundaries pass. Verification does not require eliminating every conceivable defect before the next vertical slice.
+
+Collect a complete review round before editing and batch related remediation. Use one initial review and one confirmation review. Start another review round only when a remediation changes a blocking boundary or a new finding violates a requirement, security or data invariant, availability behavior, or public contract. Record lower-risk speculative hardening in the correct future work rather than extending the current item indefinitely.
+
 ## 5. Scope control
 
 An agent must not:
@@ -155,6 +169,8 @@ Depending on risk, evidence may include:
 - migration forward-and-backward checks.
 
 Use measured values only. Keep raw evidence under `evidence/` when implementation begins and link it from the relevant document.
+
+The active change plan must name its iteration gate, candidate gate, heavyweight-evidence repeat triggers, and review stopping rule. A previously passing heavyweight result remains supporting evidence when later changes cannot affect the behavior it measured and the exact later source still passes its applicable local and protected gates; document that reasoning explicitly.
 
 ## 9. Security rules
 

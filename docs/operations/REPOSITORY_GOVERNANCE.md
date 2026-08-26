@@ -20,6 +20,7 @@ The authorized [public repository](https://github.com/andrewsrigom/aster-streami
 - `main` is the only long-lived branch and the protected default branch.
 - Direct pushes, force pushes, and deletion of `main` are prohibited after the GitHub ruleset is active.
 - One branch carries one coherent outcome that can be described and verified as one work item.
+- One dependent local branch may be based on an exact `WAITING_EXTERNAL` predecessor, but publication, merge, and release remain predecessor-first.
 - When a Jira key exists, use that exact key as the default branch name.
 - Otherwise use `<type>/<short-kebab-description>`, where `type` is normally `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, or `experiment`.
 - Branch names beginning with `codex/` are prohibited.
@@ -64,6 +65,29 @@ Local hooks are convenience controls and may be bypassed during diagnosis. CI is
 
 Full integration, browser, container, media, load, soak, CodeQL, and failure-injection work must not run on every local commit.
 
+`pnpm check:changed` is the pre-push candidate gate. It uses the same canonical task inventory as `pnpm check`, fixes the affected comparison to repository `main...HEAD`, and lets pinned Turborepo select tasks from declared inputs. Root-owned lint, formatting, unused-code, architecture, documentation, repository-memory, security, CI, and platform tasks retain explicit file ownership. Changes to global configuration or the lockfile conservatively select the complete graph. The local `main` ref and comparison history must resolve; refresh them or use `pnpm check` when they do not.
+
+## Verification and review stopping
+
+A work item defines four verification checkpoints before implementation:
+
+1. the focused iteration gate;
+2. the affected-scope candidate gate;
+3. changes that require repeating heavyweight evidence;
+4. the review stopping rule.
+
+The work item is sufficient when written requirements, acceptance behavior, named failure modes, and applicable security, data, availability, and public-contract boundaries pass. A possible improvement does not block merge unless it protects one of those boundaries or the work item explicitly accepted it.
+
+Collect a complete review round before changing the candidate. Batch related remediation into a coherent revision and run one confirmation review. Start another review round only when the remediation changes a blocking boundary or the confirmation identifies a requirement, security/data invariant, availability, or public-contract violation. Record other hardening under its owning future work.
+
+Do not repeat a clean checkout, container start, browser suite, media job, load test, soak, or failure experiment merely because source text changed. Repeat it when dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, documented public-command, or relevant behavior changes can invalidate the prior result. Record the exact reason when earlier evidence remains applicable to a later candidate.
+
+## External wait without idle engineering
+
+`WAITING_EXTERNAL` is a bounded queue state for one frozen candidate whose implementation, applicable local gates, evidence, exact head, and rollback are complete and whose only remaining condition is named hosted CI, review, or merge state. It is prohibited for a failed requirement, unresolved blocking finding, missing evidence, credential, owner decision, or architecture decision.
+
+At most one later item may be `IN_PROGRESS`, on a local branch based on the frozen predecessor. Do not open its ready pull request, merge it, or describe it as released before the predecessor. If the predecessor changes, rebase the dependent branch and repeat its affected gate before publication. This preserves one active implementation and ordered release without making an external provider outage a global engineering lock.
+
 ## Static and architecture gates
 
 The following source gates are implemented:
@@ -97,6 +121,8 @@ A pull request represents one work item, not one tiny edit. It includes:
 
 Draft pull requests may be used for visibility without running the complete merge gate. The authoritative pipeline runs when the pull request becomes ready for review and when its head changes afterward.
 
+Keep a pull request draft while its implementation or review-remediation batch is still changing. Mark it ready when the coherent candidate should receive the authoritative gate; do not publish one revision per isolated review comment when the round can be handled together.
+
 For a single-maintainer repository, the initial ruleset requires the pull-request path and status checks but does not require an unavailable external approval. Review approvals can become mandatory when an eligible collaborator exists.
 
 ## Public contribution surfaces
@@ -105,7 +131,7 @@ GitHub automatically applies [the pull-request template](../../.github/PULL_REQU
 
 The issue chooser offers a [bug report](../../.github/ISSUE_TEMPLATE/bug-report.md) and a [bounded change proposal](../../.github/ISSUE_TEMPLATE/change-proposal.md). Blank contributor issues are disabled. No label, assignee, or external contact is invented. Both issue paths redirect vulnerability details away from public disclosure and require sanitized evidence; the verified private reporting form is linked from [`SECURITY.md`](../../SECURITY.md).
 
-The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and the verified private vulnerability path. Eight adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, symbolic, and missing-private-channel inputs. GitHub's repository API recognizes both issue-template definitions, and the active pull-request template is publicly retrievable.
+The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and the verified private vulnerability path. Ten adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, symbolic canonical and alternate files, and missing-private-channel inputs. GitHub's repository API recognizes both issue-template definitions, and the active pull-request template is publicly retrievable.
 
 ## CI execution policy
 

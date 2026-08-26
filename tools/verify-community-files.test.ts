@@ -102,9 +102,8 @@ test("rejects oversized community content", async () => {
   assert.ok(validateCommunitySources(sources).some(({ rule }) => rule === "bounds"));
 });
 
-test("rejects malformed UTF-8, duplicate templates, and symbolic community files", async () => {
+test("rejects malformed UTF-8 and duplicate templates", async () => {
   const invalidRoot = await mkdtemp(join(tmpdir(), "aster-community-invalid-"));
-  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-community-symbolic-"));
   try {
     await writeFixture(invalidRoot);
     await writeFile(resolve(invalidRoot, "SECURITY.md"), Buffer.from([0xff, 0xfe]));
@@ -113,14 +112,56 @@ test("rejects malformed UTF-8, duplicate templates, and symbolic community files
     const invalidViolations = await scanCommunityFiles(invalidRoot);
     assert.ok(invalidViolations.some(({ rule }) => rule === "utf8"));
     assert.ok(invalidViolations.some(({ rule }) => rule === "file-set"));
+  } finally {
+    await rm(invalidRoot, { force: true, recursive: true });
+  }
+});
 
+test("rejects symbolic community files when the host permits the fixture", async (context) => {
+  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-community-symbolic-"));
+  try {
     await writeFixture(symbolicRoot);
     const pullRequest = resolve(symbolicRoot, ".github", "PULL_REQUEST_TEMPLATE.md");
     await unlink(pullRequest);
-    await symlink("../CONTRIBUTING.md", pullRequest);
+    try {
+      await symlink("../CONTRIBUTING.md", pullRequest);
+    } catch (error) {
+      if (process.platform === "win32" && (error as NodeJS.ErrnoException).code === "EPERM") {
+        context.skip("Windows host does not grant symbolic-link fixture permission");
+        return;
+      }
+      throw error;
+    }
     assert.ok((await scanCommunityFiles(symbolicRoot)).some(({ rule }) => rule === "bounds"));
   } finally {
-    await rm(invalidRoot, { force: true, recursive: true });
+    await rm(symbolicRoot, { force: true, recursive: true });
+  }
+});
+
+test("rejects a symbolic alternate pull-request template location", async (context) => {
+  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-community-symbolic-alternate-"));
+  try {
+    await writeFixture(symbolicRoot);
+    try {
+      await symlink(
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        resolve(symbolicRoot, "PULL_REQUEST_TEMPLATE.md"),
+      );
+    } catch (error) {
+      if (process.platform === "win32" && (error as NodeJS.ErrnoException).code === "EPERM") {
+        context.skip("Windows host does not grant symbolic-link fixture permission");
+        return;
+      }
+      throw error;
+    }
+
+    const violations = await scanCommunityFiles(symbolicRoot);
+    assert.ok(
+      violations.some(
+        ({ file, rule }) => file === "PULL_REQUEST_TEMPLATE.md" && rule === "file-set",
+      ),
+    );
+  } finally {
     await rm(symbolicRoot, { force: true, recursive: true });
   }
 });

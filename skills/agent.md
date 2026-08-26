@@ -48,6 +48,8 @@ Ask:
 
 If the work belongs to a future phase, update that phase specification or queue rather than implementing it early.
 
+An earlier item in `WAITING_EXTERNAL` does not block one dependent local item when its candidate is frozen, locally accepted, evidenced, and waiting only for named hosted CI, review, or merge state. Base the dependent branch on that exact head, preserve predecessor-first release, and rebase plus rerun affected gates if the predecessor changes.
+
 ### Step 3 — Write the change plan
 
 Use `docs/templates/WORK_ITEM_TEMPLATE.md`.
@@ -64,6 +66,13 @@ A valid plan includes:
 - evidence;
 - rollback;
 - documentation updates.
+
+It also names:
+
+- the focused iteration gate;
+- the affected-scope candidate gate;
+- the changes that require repeating heavyweight evidence;
+- the review stopping rule.
 
 ### Step 4 — Implement from the inside out
 
@@ -98,6 +107,12 @@ For each dependency, verify:
 Not every test applies to every change, but exclusions must be reasoned.
 
 ### Step 6 — Capture evidence
+
+Run focused checks while behavior is changing. Run `pnpm check:changed` for a coherent candidate and the complete work-item gate once the candidate is stable. Do not repeat clean checkout, containers, browser, media, load, soak, or failure experiments unless a later change can affect the behavior that evidence measured.
+
+Collect the complete review result before editing. Batch related findings, then use one confirmation review. An additional round requires a new or changed blocker involving a requirement, security or data invariant, availability behavior, or public contract. Record non-blocking speculative hardening for its owning work instead of extending the active item.
+
+Verification is sufficient when the written acceptance behavior and applicable blocking boundaries pass. It is not a claim that no undiscovered defect can exist.
 
 Use `docs/templates/EXPERIMENT_TEMPLATE.md` for measurements. Evidence must include:
 
