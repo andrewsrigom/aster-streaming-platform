@@ -15,6 +15,7 @@ Append new entries at the top. Keep entries factual and concise.
 - Intermediate protected run `32987293757` passed at `b7363ea` after GitHub Actions began accepting work during its incident. Confirmation review found two blocking boundaries: terminal signals could orphan the detached gate tree, and a symbolic alternate pull-request template could be mistaken for a case-only alias.
 - Batched remediation `4184fa1` handles `SIGINT`/`SIGTERM` with tree termination, listener cleanup, conventional status, and bounded fallback; duplicate suppression now requires a non-symbolic alias. Evidence replies `3864697962` and `3864698302` are posted and both discussions are resolved.
 - Exact native-Windows public candidate `4184fa1` passed frozen install, 18 toolchain tests, 31 of 31 forced tasks in `1m11.643s`, audit, clean Git, and recoverable cleanup. The matching WSL gate passed 31 of 31 forced tasks in `24.622s`.
+- Added the bounded `WAITING_EXTERNAL` queue state after the GitHub incident exposed that a frozen candidate was unnecessarily serializing all engineering. Candidate `19ee632` permits one dependent local item while keeping publication, merge, and release predecessor-first; a predecessor change requires rebase and affected verification.
 - Updated the operating contract, agent loop, governance, delivery model, quality gates, local-development guide, reusable prompt, and work-item template with focused, candidate, merge, and heavyweight checkpoints plus one-review/one-confirmation stopping rules.
 - Kept the correction outside product contexts, dependencies, lockfile, Docker, hosted resources, durable state, and application behavior.
 
@@ -28,12 +29,13 @@ Append new entries at the top. Keep entries factual and concise.
 - Native-Windows candidate `bd78092`: frozen install, 31 of 31 forced tasks with zero cache in `41.216` seconds of Turbo task time, audit, secret scan, clean Git, and temporary-root cleanup passed.
 - Timeout-tree review remediation: 17 toolchain tests and 31 of 31 forced WSL tasks passed; Turbo task time `18.097` seconds and wrapper elapsed `19.32` seconds.
 - Final review remediation `4184fa1`: 18 toolchain and 10 community tests pass on WSL; 31 of 31 forced WSL tasks pass in `24.622s`; the exact public native-Windows clone passes 31 of 31 forced tasks in `1m11.643s`, audit, and clean Git before recoverable cleanup.
+- External-wait governance `19ee632`: 13 repository-memory tests pass, including accepted dependent work and rejection of multiple waits or skipped actionable work; 31 of 31 forced WSL tasks pass uncached in `14.58s`, documentation and security pass, and audit reports no known vulnerability. The prior native-Windows result remains applicable because no dependency, bootstrap, command, process, alias, or Windows path behavior changed.
 - High-severity registry audit: no known vulnerability in `1.01` seconds.
 - Raw artifact: `evidence/phase-00/risk-proportionate-verification.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Publish the documentation closeout, wait for the official GitHub Actions incident to recover, reemit one pull-request event only if the final SHA still has no valid run, pass protected CI and the permitted final confirmation, squash-merge, verify `main`, then resume P01-R05 from a clean checkout.
+Freeze P00-R06 at `19ee632` while the official GitHub Actions incident persists, activate P01-R05 on one dependent local branch, and keep its publication and release blocked behind PR 11. When Actions recovers, reemit one pull-request event only if the final SHA still has no valid run, pass protected CI and the permitted final confirmation, squash-merge, verify `main`, then rebase the dependent work onto clean `main`.
 
 ## 2026-08-26 — Verified the bounded Express HTTP transport
 

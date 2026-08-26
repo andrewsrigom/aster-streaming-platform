@@ -4,7 +4,7 @@ ASTER PHASE 00 RISK-PROPORTIONATE VERIFICATION EVIDENCE
 Work item: P00-R06 corrective maintenance
 Evidence date: 2026-08-26
 Status: IMPLEMENTED
-Candidate: 4184fa178b43121910b47d1ba8a961f5aa5ba98f based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
+Implementation candidate: 19ee632ca40a04730432a682caece66b0d832034 based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04
 Runtime: Node.js 24.19.0; pnpm 11.24.0; Turborepo 2.10.12
 
@@ -49,6 +49,10 @@ IMPLEMENTED CONTRACT
   resolves to the canonical template remains a file-set violation.
 - Work plans now name iteration, candidate, heavyweight-repeat, and review-stop
   gates. The default review cadence is one complete review plus one confirmation.
+- One frozen evidenced candidate may use WAITING_EXTERNAL when only named hosted
+  CI, review, or merge state remains. The validator permits at most one later
+  dependent IN_PROGRESS item, preserves earliest-actionable order, and requires
+  predecessor-first publication and release.
 
 FOCUSED AND FAILURE EVIDENCE
 ----------------------------
@@ -159,6 +163,21 @@ review discussions are resolved. Because these remediations change named
 availability and public-contract boundaries, the written stopping rule permits
 one final confirmation at the exact closeout head.
 
+The external-wait correction at 19ee632ca40a04730432a682caece66b0d832034
+adds the bounded WAITING_EXTERNAL queue contract and two adverse fixtures. The
+repository-memory suite passes 13 tests, including one accepted waiting
+predecessor with one dependent active item, rejection of multiple waiting items,
+and rejection of skipped actionable work. The complete WSL graph passes 31 of
+31 forced tasks with zero cache in 14.58 seconds; audit reports no known
+vulnerability.
+
+The native-Windows result at 4184fa1 remains supporting evidence for 19ee632:
+the later change modifies only platform-independent repository-memory parsing,
+fixtures, and policy prose. It does not change dependencies, lockfile, bootstrap,
+packaging, command invocation, process termination, filesystem alias behavior,
+or Windows path handling. The exact later source passes its complete uncached WSL
+gate; protected CI at the final head remains required.
+
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities
 elapsed: 1.01 seconds
@@ -166,8 +185,8 @@ elapsed: 1.01 seconds
 PENDING RELEASE EVIDENCE
 ------------------------
 
-- Protected pull-request workflow at the final closeout head. GitHub Actions
-  remains under an official external incident and no run exists yet for 4184fa1.
+- Protected pull-request workflow at the final documentation-only closeout head.
+  GitHub Actions remains under an official external incident.
 - Final confirmation review at the exact closeout head.
 - Protected squash merge and post-merge main run.
 
