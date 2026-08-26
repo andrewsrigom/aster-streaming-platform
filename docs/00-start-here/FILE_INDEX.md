@@ -73,6 +73,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`tools/validate-commit-message.test.ts`](../../tools/validate-commit-message.test.ts) — Commit Message Validator Tests
 - [`tools/verify-architecture.ts`](../../tools/verify-architecture.ts) — Architecture Boundary Scanner
 - [`tools/verify-architecture.test.ts`](../../tools/verify-architecture.test.ts) — Architecture Boundary Scanner Tests
+- [`tools/verify-documentation.ts`](../../tools/verify-documentation.ts) — Static Documentation Validator
+- [`tools/verify-documentation.test.ts`](../../tools/verify-documentation.test.ts) — Documentation Validator Tests
 - [`tools/verify-toolchain.mjs`](../../tools/verify-toolchain.mjs) — Dependency-Free Toolchain Guard
 - [`tools/verify-toolchain.test.mjs`](../../tools/verify-toolchain.test.mjs) — Toolchain Guard Tests
 
@@ -207,5 +209,6 @@ This index lists repository governance artifacts and every Markdown source in th
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
 - [`evidence/phase-00/source-quality-foundation.txt`](../../evidence/phase-00/source-quality-foundation.txt) — Source Quality Foundation Evidence
+- [`evidence/phase-00/documentation-validation.txt`](../../evidence/phase-00/documentation-validation.txt) — Documentation Validation Evidence
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence

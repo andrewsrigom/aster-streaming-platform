@@ -1,6 +1,6 @@
 # Baseline Validation
 
-Generated: 2026-08-25
+Last verified: 2026-08-26
 
 ## Scope
 
@@ -13,8 +13,8 @@ This report validates the static specification package and the current Phase 00 
 - Delivery phase specifications: **15**
 - Specialized agent skills: **16**
 - Architecture decision records, including the template: **11**
-- Total Markdown size: **444,957 bytes**
-- Internal links checked: **182**
+- Total Markdown size: **467,677 bytes**
+- Local Markdown links checked: **223**
 
 ## Checks
 
@@ -43,6 +43,6 @@ External links are centralized in `../references/OFFICIAL_REFERENCES.md` and fav
 
 This validation applies to documentation structure and consistency only. It is not evidence that application code, infrastructure, tests, deployments, or runtime behavior exist.
 
-The first executable validation belongs to Phase 00.
+The executable static validation is implemented by `pnpm docs:check`; its adverse fixtures run through `pnpm docs:test`. External link reachability is deliberately outside this deterministic local command.
 
-Current audit artifacts are indexed under [`evidence/phase-00/`](../../evidence/phase-00/README.md). The checks remain read-only audit commands until P00-R05 turns them into pinned repository tooling and P00-R10 reruns them from a clean checkout.
+Current audit artifacts are indexed under [`evidence/phase-00/`](../../evidence/phase-00/README.md). P00-R10 reruns the complete command from a clean public checkout.

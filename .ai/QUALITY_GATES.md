@@ -2,6 +2,12 @@
 
 These gates become executable during Phase 00 and expand in later phases.
 
+## Current execution status
+
+Formatting, linting, strict TypeScript compilation, focused repository-tool tests, documentation-link and structure validation, canonical terminology, unsupported status-claim checks, and unresolved merge-marker checks are executable through `pnpm check`. Current evidence is in [`evidence/phase-00/source-quality-foundation.txt`](../evidence/phase-00/source-quality-foundation.txt) and [`evidence/phase-00/documentation-validation.txt`](../evidence/phase-00/documentation-validation.txt).
+
+Secret scanning and dependency vulnerability review remain planned for P00-R06. Later-phase gates remain planned until their owning phase implements and verifies them.
+
 ## Always required
 
 - formatting

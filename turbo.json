@@ -52,6 +52,12 @@
     "//#architecture:test": {
       "inputs": ["tools/verify-architecture.ts", "tools/verify-architecture.test.ts"]
     },
+    "//#docs:check": {
+      "inputs": ["**/*.md", "tools/verify-documentation.ts"]
+    },
+    "//#docs:test": {
+      "inputs": ["tools/verify-documentation.ts", "tools/verify-documentation.test.ts"]
+    },
     "//#commit:test": {
       "inputs": ["tools/validate-commit-message.ts", "tools/validate-commit-message.test.ts"]
     },

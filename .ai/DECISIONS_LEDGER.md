@@ -25,6 +25,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Exact source-quality toolchain | Pin TypeScript `6.0.3`, ESLint `10.9.1`, `@eslint/js` `10.0.1`, typescript-eslint `8.68.0`, Prettier `3.9.6`, Knip `6.32.2`, and `@types/node` `24.13.3` | `evidence/phase-00/source-quality-foundation.txt` |
 | Architecture-boundary enforcement | Use a bounded repository-owned TypeScript AST scanner with explicit inward-dependency rules and adverse fixtures | `evidence/phase-00/source-quality-foundation.txt` |
 | Local commit feedback | Use repository-owned staged-file and commit-message hooks; keep repository-wide and heavyweight gates explicit | `evidence/phase-00/source-quality-foundation.txt` |
+| Static documentation validation | Use a bounded dependency-free repository validator for local links, structure, terminology, and evidence-supported current-status claims; do not make network reachability part of the deterministic local gate | `evidence/phase-00/documentation-validation.txt` |
 
 ## Pending decisions
 

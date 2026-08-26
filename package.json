@@ -13,9 +13,11 @@
   "scripts": {
     "architecture:check": "node ./tools/verify-architecture.ts",
     "architecture:test": "node --test ./tools/verify-architecture.test.ts",
-    "check": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test staged:test commit:test",
+    "check": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test docs:check docs:test staged:test commit:test",
     "commit:check": "node ./tools/validate-commit-message.ts",
     "commit:test": "node --test ./tools/validate-commit-message.test.ts",
+    "docs:check": "node ./tools/verify-documentation.ts",
+    "docs:test": "node --test ./tools/verify-documentation.test.ts",
     "format:check": "prettier --check .",
     "format:write": "prettier --write .",
     "lint": "eslint .",

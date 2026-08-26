@@ -2,7 +2,7 @@
 
 ## Current status
 
-Local Git is initialized on `main`; deterministic attributes and ignores, strict source-quality gates, executable architecture boundaries, staged-file and commit-message hooks, and the pinned workspace check are implemented. Documentation validation, staged secret scanning, CI, GitHub templates, the public remote, and hosted protections remain planned Phase 00 work.
+Local Git is initialized on `main`; deterministic attributes and ignores, strict source and documentation gates, executable architecture boundaries, staged-file and commit-message hooks, and the pinned workspace check are implemented with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt) and [documentation evidence](../../evidence/phase-00/documentation-validation.txt). Staged secret scanning, CI, GitHub templates, the public remote, and hosted protections remain planned Phase 00 work.
 
 The repository owner has authorized creation of the public target `andrewsrigom/aster-streaming-platform`. Supported tool selection and local Git initialization are complete; creation remains ordered after the initial quality workflows and a final remote-existence check.
 
@@ -76,10 +76,10 @@ The following source gates are implemented:
 - no cross-context persistence-model imports;
 - no framework, database, Redis, broker, or telemetry SDK in domain and application layers;
 - Conventional Commit validation for local commit messages.
+- Markdown UTF-8, title, fence, unresolved-merge-marker, local-link, heading-fragment, canonical-terminology, and evidence-supported current-status validation.
 
 The remaining Phase 00 gates are planned and must not be described as executable yet:
 
-- Markdown links, terminology, fences, and status-claim validation;
 - secret and credential scanning;
 - dependency-license and vulnerability review;
 - Conventional Commit validation for pull-request titles and merge results.

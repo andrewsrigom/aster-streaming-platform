@@ -1,0 +1,114 @@
+ASTER PHASE 00 DOCUMENTATION VALIDATION EVIDENCE
+================================================
+
+Work item: P00-R05
+Evidence date: 2026-08-26
+Commit: local candidate tree; P00-R10 records the final clean-checkout revision
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Runtime: Node.js 24.19.0; pnpm 11.24.0
+
+IMPLEMENTED CONTROL
+-------------------
+
+The repository-owned validator has no additional package dependency and uses Node.js 24 platform modules. It scans checked-in Markdown below the resolved repository root without following symbolic links or fetching external URLs.
+
+Bounded inputs:
+- at most 1,000 Markdown documents;
+- at most 1,000,000 bytes per document;
+- at most 20,000,000 total Markdown bytes;
+- at most 20 directory levels;
+- at most 20,000 characters per line;
+- at most 2,000 links and 500 headings per document;
+- at most 200 diagnostics.
+
+Validated behavior:
+- fatal UTF-8 decoding;
+- non-empty document and first top-level title;
+- matching backtick or tilde fences;
+- no unresolved merge markers;
+- repository-relative local files and directories;
+- local Markdown heading fragments;
+- percent-decoded traversal, absolute Windows paths, file URLs, backslashes, and symbolic targets rejected;
+- inline and reference-style Markdown destinations;
+- high-confidence canonical Node.js, TypeScript, JavaScript, GitHub, GraphQL, DataLoader, microservice, WebSocket, and PostgreSQL terminology outside code;
+- unqualified absolute maturity phrases rejected;
+- implemented, verified, or released claims in Current status require a same-line checked-in evidence or current-state link.
+
+FOCUSED TESTS
+-------------
+
+$ pnpm docs:test
+result: PASS
+tests: 8 passed, 0 failed
+
+Adverse fixtures proved detection of:
+- missing top-level title;
+- mismatched fenced code block;
+- unresolved merge marker;
+- non-canonical terminology;
+- unsupported absolute maturity claim;
+- undefined reference link;
+- missing local file;
+- missing local heading fragment;
+- repository-root escape;
+- Windows absolute target;
+- unsupported current-status maturity claim;
+- malformed UTF-8.
+
+Positive fixtures proved canonical prose, ignored code literals, an existing relative file and fragment, and an evidence-supported current-status claim.
+
+ACTUAL REPOSITORY RESULT
+------------------------
+
+$ pnpm docs:check
+result: PASS
+documents: 127
+headings: 1,753
+local links: 215 before final evidence and index links
+explicit current-status maturity claims: 2
+violations: 0
+elapsed: 0.62 seconds
+maximum resident set observed: 141948 KiB
+
+Final documentation self-check after evidence, index, operations, and state-adjacent documentation updates:
+- documents: 127;
+- Markdown bytes: 467,677;
+- headings: 1,744;
+- local links: 223;
+- explicit current-status maturity claims: 2;
+- violations: 0.
+
+TASK GRAPH INTEGRATION
+----------------------
+
+The documentation check and tests join the complete root graph as cached tasks. They do not join pre-commit.
+
+Forced complete graph:
+- result: PASS, 12 successful tasks of 12, 0 cached;
+- focused built-in tests across the graph: 33 passed, 0 failed;
+- elapsed around the complete command: 4.98 seconds;
+- maximum resident set observed: 408624 KiB.
+
+Cached repeat:
+- result: PASS, 12 successful tasks of 12;
+- 10 tasks cached and the 2 toolchain tasks intentionally uncached;
+- elapsed around `pnpm check`: 2.99 seconds;
+- maximum resident set observed: 142680 KiB.
+
+Final repeatability assertions:
+- frozen install: PASS in 0.43 seconds with 142376 KiB maximum resident set observed;
+- combined package, lockfile, workspace, and task-graph SHA-256 before and after: c617332caee59b32dad9d2932bf1dd2e8dc8b23f805bde78894f6575a678da5d;
+- final 12-task graph after state updates: PASS;
+- staged-file dispatcher and both hook files: unchanged from P00-R04;
+- restricted private-context vocabulary matches: 0;
+- existing Zone.Identifier files: 0.
+
+BOUNDARIES AND LIMITATIONS
+-------------------------
+
+- External HTTP availability is not deterministic and is not checked by this local gate.
+- Terminology rules are intentionally limited to high-confidence canonical variants; this is not a general prose spell checker.
+- Status analysis enforces explicit current-status claims and absolute maturity phrases; human review remains responsible for nuanced target-versus-current prose.
+- P00-R06 still owns secrets, dependency review, and authoritative CI integration.
+- P00-R08 still owns executable `.ai/` workflow-state consistency.
+- P00-R10 reruns the complete path from a clean public checkout.

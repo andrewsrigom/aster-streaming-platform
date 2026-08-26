@@ -26,10 +26,10 @@ Status: **IN_PROGRESS**
 - The pnpm workspace contains only the root, its shared lockfile passes frozen supply-chain verification, and Turborepo `2.10.12` executes two real uncached foundation tasks.
 - The exact source-quality toolchain provides strict TypeScript, type-aware ESLint, check-only Prettier, Knip, bounded TypeScript-AST architecture validation, and 25 passing focused tests.
 - Repository-local hooks validate only applicable staged source/configuration paths and the commit message; the complete ten-task source gate passed cold and cached runs without changing authoritative files.
+- The dependency-free documentation validator checks bounded UTF-8 Markdown, local files and heading fragments, canonical terminology, fences, merge markers, and evidence-supported current-status claims; 8 focused adverse tests and the 127-document repository scan pass.
 
 ## Not implemented
 
-- Documentation link, terminology, fence, and unsupported-status-claim gates
 - Staged secret scanning and dependency review
 - Applications and services
 - Databases and migrations
@@ -41,11 +41,12 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Add executable Markdown link, terminology, fence, and unsupported-status-claim validation for P00-R05.
+Add CI for install integrity, source and documentation checks, tests, staged secrets, and dependency review for P00-R06.
 
 ## Current risks
 
-- The current source gates do not yet validate documentation semantics or secrets; P00-R05 and P00-R06 own those controls.
+- Static documentation validation does not fetch external URLs and intentionally applies only high-confidence terminology and status rules; nuanced truthfulness remains a review responsibility.
+- The current local gates do not yet validate secrets or dependency vulnerabilities; P00-R06 owns those controls and their CI integration.
 - The public remote has not been created. Public creation of `andrewsrigom/aster-streaming-platform` is authorized but remains ordered after local checks and CI are ready.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
