@@ -301,10 +301,10 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
     const value = input[variable];
     if (value === undefined) {
       issues.push(knownIssue(variable, "missing"));
-    } else if (value.length === 0 || value.trim().length === 0) {
-      issues.push(knownIssue(variable, "empty"));
     } else if (value.length > MAX_VALUE_LENGTH) {
       issues.push(knownIssue(variable, "too_long"));
+    } else if (value.length === 0 || value.trim().length === 0) {
+      issues.push(knownIssue(variable, "empty"));
     }
   }
   return { input, issues };

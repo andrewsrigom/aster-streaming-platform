@@ -212,9 +212,11 @@ test("rejects owned-prefix typos while ignoring unrelated host variables", () =>
 
 test("bounds oversized values and excessive owned variables before schema parsing", () => {
   const oversized = validEnvironment();
+  oversized["ASTER_SERVICE_NAME"] = " ".repeat(2_100);
   oversized["DATABASE_URL"] = `postgresql://${"x".repeat(2_100)}`;
   const oversizedError = captureRuntimeConfigError(() => loadEnvironment(oversized));
   assert.deepEqual(oversizedError.issues, [
+    { variable: "ASTER_SERVICE_NAME", classification: "non-secret", reason: "too_long" },
     { variable: "DATABASE_URL", classification: "secret", reason: "too_long" },
   ]);
 
