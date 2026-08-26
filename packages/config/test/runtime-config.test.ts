@@ -143,6 +143,21 @@ test("rejects ambiguous non-secret values and URL whitespace", () => {
   assertCanariesRedacted(error);
 });
 
+test("rejects URL control characters before the platform parser can normalize them", () => {
+  const environment = validEnvironment();
+  environment["DATABASE_URL"] = "postgresql://post\ngres:5432/aster";
+  environment["REDIS_URL"] = "redis://red\tis:6379/0";
+
+  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(environment));
+
+  assert.deepEqual(error.issues, [
+    { variable: "DATABASE_URL", classification: "secret", reason: "invalid" },
+    { variable: "REDIS_URL", classification: "secret", reason: "invalid" },
+  ]);
+  assert.equal(JSON.stringify(error).includes("\\n"), false);
+  assert.equal(JSON.stringify(error).includes("\\t"), false);
+});
+
 test("rejects owned-prefix typos while ignoring unrelated host variables", () => {
   const environment = {
     ...validEnvironment(),

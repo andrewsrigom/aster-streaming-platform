@@ -99,7 +99,7 @@ export class ReferenceRuntimeConfigError extends Error {
 }
 
 function hasUrlProtocol(value: string, protocols: ReadonlySet<string>): boolean {
-  if (value !== value.trim()) {
+  if (hasAsciiControl(value) || value !== value.trim()) {
     return false;
   }
   try {
@@ -108,6 +108,16 @@ function hasUrlProtocol(value: string, protocols: ReadonlySet<string>): boolean 
   } catch {
     return false;
   }
+}
+
+function hasAsciiControl(value: string): boolean {
+  for (const character of value) {
+    const codePoint = character.charCodeAt(0);
+    if (codePoint <= 0x1f || codePoint === 0x7f) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function isOwnedVariable(name: string): boolean {
