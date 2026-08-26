@@ -1,0 +1,33 @@
+{
+  "name": "@aster/telemetry",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bounded OpenTelemetry metrics for Aster Node.js services.",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "check": "node ./dist/src/check-telemetry.js",
+    "test": "node --test ./dist/test/*.test.js",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "1.9.1",
+    "@opentelemetry/core": "2.10.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "0.221.0",
+    "@opentelemetry/instrumentation-runtime-node": "0.34.0",
+    "@opentelemetry/resources": "2.10.0",
+    "@opentelemetry/sdk-metrics": "2.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,0 +1,191 @@
+export const ASTER_TELEMETRY_ENVIRONMENTS = Object.freeze([
+  "local",
+  "test",
+  "development",
+  "staging",
+  "production",
+] as const);
+
+export const ASTER_HTTP_METHODS = Object.freeze([
+  "GET",
+  "HEAD",
+  "POST",
+  "PUT",
+  "PATCH",
+  "DELETE",
+  "OPTIONS",
+] as const);
+
+export const ASTER_HTTP_ROUTES = Object.freeze([
+  "/graphql",
+  "/health/live",
+  "/health/ready",
+] as const);
+
+export const ASTER_DEPENDENCIES = Object.freeze([
+  "postgresql",
+  "redis",
+  "broker",
+  "object_storage",
+  "telemetry",
+] as const);
+
+export const ASTER_DEPENDENCY_OPERATIONS = Object.freeze([
+  "connect",
+  "probe",
+  "query",
+  "command",
+  "publish",
+  "consume",
+  "read",
+  "write",
+  "delete",
+  "export",
+  "flush",
+] as const);
+
+export const ASTER_OBSERVATION_OUTCOMES = Object.freeze([
+  "success",
+  "timeout",
+  "cancelled",
+  "unavailable",
+  "rejected",
+  "error",
+] as const);
+
+export type AsterTelemetryEnvironment = (typeof ASTER_TELEMETRY_ENVIRONMENTS)[number];
+export type AsterHttpMethod = (typeof ASTER_HTTP_METHODS)[number];
+export type AsterHttpRoute = (typeof ASTER_HTTP_ROUTES)[number];
+export type AsterDependency = (typeof ASTER_DEPENDENCIES)[number];
+export type AsterDependencyOperation = (typeof ASTER_DEPENDENCY_OPERATIONS)[number];
+export type AsterObservationOutcome = (typeof ASTER_OBSERVATION_OUTCOMES)[number];
+
+export type AsterTelemetryExportOptions =
+  | Readonly<{ mode: "none" }>
+  | Readonly<{
+      mode: "otlp-http";
+      endpoint: string;
+      intervalMs: number;
+      timeoutMs: number;
+    }>;
+
+export interface AsterTelemetryOptions {
+  readonly serviceName: string;
+  readonly serviceVersion: string;
+  readonly environment: AsterTelemetryEnvironment;
+  readonly export?: AsterTelemetryExportOptions;
+  readonly monitoringPrecisionMs?: number;
+  readonly shutdownTimeoutMs?: number;
+  readonly maxActiveObservations?: number;
+  readonly cardinalityLimit?: number;
+}
+
+export interface AsterHttpObservationInput {
+  readonly method: AsterHttpMethod;
+  readonly route: AsterHttpRoute;
+}
+
+export interface AsterHttpCompletion {
+  readonly outcome: AsterObservationOutcome;
+  readonly statusCode: number;
+}
+
+export interface AsterDependencyObservationInput {
+  readonly dependency: AsterDependency;
+  readonly operation: AsterDependencyOperation;
+}
+
+export interface AsterDependencyCompletion {
+  readonly outcome: AsterObservationOutcome;
+}
+
+export type AsterObservationCompletionResult =
+  | Readonly<{ status: "completed" }>
+  | Readonly<{ status: "already_completed" }>
+  | Readonly<{ status: "rejected"; reason: "invalid_completion" | "telemetry_closed" }>;
+
+export interface AsterHttpObservation {
+  complete(completion: AsterHttpCompletion): AsterObservationCompletionResult;
+}
+
+export interface AsterDependencyObservation {
+  complete(completion: AsterDependencyCompletion): AsterObservationCompletionResult;
+}
+
+export type AsterStartHttpObservationResult =
+  | Readonly<{ status: "started"; observation: AsterHttpObservation }>
+  | Readonly<{
+      status: "rejected";
+      reason: "invalid_dimension" | "capacity_exceeded" | "telemetry_closed";
+    }>;
+
+export type AsterStartDependencyObservationResult =
+  | Readonly<{ status: "started"; observation: AsterDependencyObservation }>
+  | Readonly<{
+      status: "rejected";
+      reason: "invalid_dimension" | "capacity_exceeded" | "telemetry_closed";
+    }>;
+
+export type AsterTelemetryOperationResult = Readonly<{
+  status: "completed" | "already_completed" | "timed_out" | "aborted" | "failed";
+}>;
+
+export interface AsterTelemetryExportHealth {
+  readonly attempts: number;
+  readonly successes: number;
+  readonly failures: number;
+  readonly droppedObservations: number;
+  readonly lastResult: "never" | "success" | "failure";
+}
+
+export type AsterMetricAttributeValue = string | number | boolean;
+
+export interface AsterCollectedMetricPoint {
+  readonly attributes: Readonly<Record<string, AsterMetricAttributeValue>>;
+  readonly value:
+    | number
+    | Readonly<{
+        count: number;
+        sum: number;
+        min?: number;
+        max?: number;
+        boundaries: readonly number[];
+        bucketCounts: readonly number[];
+      }>;
+}
+
+export interface AsterCollectedMetric {
+  readonly name: string;
+  readonly description: string;
+  readonly unit: string;
+  readonly points: readonly AsterCollectedMetricPoint[];
+}
+
+export type AsterMetricCollectionResult =
+  | Readonly<{ status: "collected"; metrics: readonly AsterCollectedMetric[] }>
+  | Readonly<{ status: "unavailable"; reason: "remote_export" | "telemetry_closed" }>
+  | Readonly<{ status: "failed" }>;
+
+export interface AsterTelemetry {
+  startHttpRequest(input: AsterHttpObservationInput): AsterStartHttpObservationResult;
+  startDependencyOperation(
+    input: AsterDependencyObservationInput,
+  ): AsterStartDependencyObservationResult;
+  collect(): Promise<AsterMetricCollectionResult>;
+  exportHealth(): AsterTelemetryExportHealth;
+  forceFlush(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;
+  shutdown(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;
+  lifecycleHooks(): Readonly<{
+    flushTelemetry(signal: AbortSignal): Promise<void>;
+  }>;
+}
+
+export class AsterTelemetryConfigurationError extends Error {
+  readonly issues: readonly string[];
+
+  constructor(issues: readonly string[]) {
+    super("Invalid Aster telemetry configuration.");
+    this.name = "AsterTelemetryConfigurationError";
+    this.issues = Object.freeze([...issues]);
+  }
+}

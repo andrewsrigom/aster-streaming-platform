@@ -1,130 +1,119 @@
-# Work Item: Implement Runtime Lifecycle, Health, and Bounded Graceful Shutdown
+# Work Item: Define the Bounded Telemetry Contract and Runtime Metrics
 
 - Status: IN_PROGRESS
-- Owner: Aster shared runtime infrastructure
+- Owner: Aster shared telemetry and runtime infrastructure
 - Phase: 01
-- Requirement IDs: P01-R05
+- Requirement IDs: P01-R06
 - Created: 2026-08-26
 - Updated: 2026-08-26
 
 ## Outcome
 
-Provide one reusable Node.js lifecycle coordinator that makes startup, liveness, readiness, process-signal ownership, ordered resource closure, bounded in-flight drain, and forced termination explicit. Later services adopt this runtime behavior without copying signal handlers or inventing competing shutdown budgets.
+Provide one repository-owned telemetry package that exposes bounded Node.js runtime, HTTP, dependency, and export-health metrics without leaking OpenTelemetry SDK types to service, transport, domain, or application code. The package must remain useful without a Collector, fail safely when export is unavailable, integrate with the existing lifecycle flush stage, and prove that caller-controlled values cannot create high-cardinality series or disclose sensitive data.
 
 ## Current behavior
 
-`@aster/runtime` provides structured logging with redaction and trace correlation. `@aster/http-express` provides a bounded Express request listener, request-local cancellation, and an Apollo compatibility test that drains one synthetic in-flight operation. No package currently owns process signals, startup/readiness transitions, generalized in-flight tracking, dependency closure order, one overall shutdown deadline, timeout logging, or forced termination.
+`@aster/runtime` provides structured Pino-compatible logs, validated trace correlation through a repository-owned context provider, stable lifecycle events, and a bounded `flushTelemetry` shutdown hook. No OpenTelemetry API or SDK dependency, metric provider, runtime collector, exporter, metric reader, Collector, scrape endpoint, dashboard, alert, or drop signal exists.
 
-P00-R06 is released through protected squash `92d3531`, and post-merge run `32999467446` passes. This P01-R05 branch has been rebased from predecessor head `dd9f282` onto released `main`; focused real-socket/process evidence and the affected gate must repeat before publication.
+P01-R05 is released through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`; exact post-merge run `33004926766` passed every applicable job. This branch starts from that clean released `main` head.
 
 ## Proposed behavior
 
-Add a transport-neutral lifecycle state machine to `@aster/runtime`. A process begins `starting` and not ready, explicitly becomes `ready`, becomes `failed` on unrecoverable startup failure, and enters `draining` before it becomes `stopped`. Liveness and readiness snapshots expose only stable state and bounded reason codes.
+Create `@aster/telemetry` as the only package that imports selected OpenTelemetry API, metrics SDK, instrumentation, or exporter modules. It exposes repository-owned options, metric recorders, lifecycle hooks, stable finite dimension types, and sanitized result categories. Runtime collection covers event-loop delay and utilization, garbage collection, heap and process memory, process CPU, uptime, and bounded active-resource observations. Explicit HTTP and dependency recorders cover duration, concurrency, and stable outcomes.
 
-Use one idempotent shutdown promise and one overall deadline. The coordinator first fails readiness and stops new traffic, then drains in-flight work, stops consumers, flushes telemetry, and closes dependencies within the remaining budget. Every asynchronous hook receives the same cancellation signal. A rejection is classified without reflecting its raw error. Deadline exhaustion invokes the global force-close path. A rejected resource-closing stage invokes that path immediately and prevents later graceful stages from starting, so a failed consumer cannot continue against dependencies being closed; an isolated telemetry-flush rejection continues to dependency closure and remains degraded because that later stage owns exporter resources.
-
-Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first signal begins graceful shutdown; a repeated signal requests immediate force-close. Signal handlers are removable and do not compete with transport-owned handlers. Graceful and successful forced completion let the event loop exit naturally; if the composition-wide force-close path throws or lifecycle coordination rejects, the signal owner disposes its handlers and uses the signal's conventional status as a last-resort hard process exit so a leaked handle cannot defeat bounded termination. Add a concrete Node.js HTTP server seam that calls `server.close()` before any forced `server.closeAllConnections()`, preserving the documented race-free order. Express and Apollo types remain inside their existing adapter package.
+Use an in-memory reader for deterministic tests and one optional periodic OTLP/HTTP path with finite interval and export timeout. Export failure must not fail product work or readiness. The implementation exposes a stable export-failure/drop observation and bounded `forceFlush` plus shutdown hooks that compose with P01-R05. A real Collector, Prometheus scrape, dashboard, SLO, product metric, service composition, and dependency adapter remain outside this item.
 
 ## Boundaries
 
-- Owning context: Shared runtime infrastructure; no product bounded context or durable data owner changes.
-- Affected packages: `@aster/runtime`, its tests and diagnostic; `@aster/http-express` only if a narrow Node HTTP lifecycle compatibility seam is required; runtime and operations documentation; Phase 01 evidence and repository memory.
-- Authoritative data: In-memory lifecycle state owned by the current process. It is ephemeral and non-authoritative for product data.
-- Trust boundaries: Constructor options, lifecycle transitions, registered asynchronous hooks, Node.js process signals, HTTP server events and sockets, timers, injected log destinations, and caller cancellation behavior.
-- External dependencies: Node.js `24.19.0` built-ins and existing `@aster/runtime` logging. No new package, service, database, Redis key, broker, container, or hosted resource.
+- Owning context: Shared telemetry and runtime infrastructure; no product bounded context or durable data owner changes.
+- Affected services/packages: New `@aster/telemetry`; workspace and lockfile; documentation, Phase 01 evidence, and repository memory. Existing runtime or HTTP packages change only if a narrow repository-owned metric seam is required and proven.
+- Authoritative data: Process-local counters, histograms, gauges, collection state, and exporter health. They are operational observations, not authoritative product data.
+- Read models/caches: None. Metric aggregation is bounded ephemeral state, not a product cache.
+- Trust boundaries: Constructor configuration, service identity, HTTP route/method/status categories, dependency/operation/outcome categories, Node.js performance observers, active-resource names, clocks, metric reader/exporter behavior, OTLP endpoint configuration, cancellation, and lifecycle flush/shutdown.
+- External dependencies: Exact OpenTelemetry packages selected after current registry, license, engine, dependency, API-stability, and Node.js `24.19.0` compatibility evidence. No container or hosted resource is added.
 
 ## Invariants
 
-- Exactly one coordinator owns process lifecycle and signal bindings in a service process.
-- Readiness becomes false before new traffic is stopped or resources are closed.
-- Liveness describes whether the process can coordinate lifecycle; readiness describes whether it can accept its responsibility.
-- State transitions are monotonic; a draining, stopped, or failed process cannot become ready.
-- Shutdown is idempotent and concurrent callers observe the same terminal outcome.
-- All graceful work shares one overall deadline and cancellation signal; nested hooks cannot create a new unbounded budget.
-- HTTP force-close follows `server.close()` and occurs only after deadline exhaustion or an explicit repeated signal.
-- Raw hook errors, configuration values, request data, tokens, URLs, and internal topology never appear in health output or lifecycle logs.
-- Logging or telemetry failure cannot extend shutdown beyond its deadline.
-- Domain and application packages import no Node.js HTTP, process, Express, Apollo, database, Redis, or telemetry SDK types.
+- Domain, application, service, and transport contracts import no OpenTelemetry SDK or exporter type.
+- Metric names, units, descriptions, bucket boundaries, and allowed attributes are explicit and stable.
+- Caller-controlled identifiers, URLs, query text, GraphQL documents, headers, exception messages, credentials, trace IDs, span IDs, request IDs, and object keys never become metric attributes.
+- Service and environment values come only from already validated process configuration.
+- Dependency, operation, route, method, outcome, status, runtime-resource, and export-result values use finite reviewed sets or fail closed to one bounded fallback.
+- Recording and instrument creation do not require a Collector or network connection.
+- HTTP and dependency active counts cannot become negative; each acquired observation completes at most once.
+- Periodic export, force flush, and shutdown have finite deadlines and cannot block request correctness, readiness, or the lifecycle deadline.
+- Export failure and dropped observations are observable without recursively exporting unbounded failure telemetry.
+- Runtime observers, timers, and readers are owned once, idempotently stopped, and release their event-loop resources.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Missing, accessor-backed, excessive, or invalid lifecycle options | Fail construction with one bounded cause-free issue set before signal or timer registration | Sanitized construction error only |
-| Invalid or repeated startup transition | Reject with a stable transition result; never move backward or become ready after drain/failure | Stable state and transition code |
-| Startup marked failed | Remain not ready, report bounded startup-failed health, and allow cleanup | Structured lifecycle event without raw cause |
-| First `SIGINT` or `SIGTERM` | Fail readiness and begin the shared graceful-shutdown promise once | Signal category and lifecycle phase |
-| Concurrent shutdown calls | Return the same terminal work and do not repeat hooks | One shutdown-start event |
-| Repeated termination signal | Abort remaining graceful work, call force-close once, and produce a forced outcome | Stable repeated-signal event |
-| Traffic, consumer, or dependency close rejects | Classify the stage, invoke global force-close once with `stage_failure`, do not start later graceful stages, and return a forced outcome | Stage name and bounded force reason; no raw error |
-| Telemetry flush rejects | Classify the stage, continue dependency closure, and return a degraded outcome when no resource-closing stage fails | Stage name and bounded outcome; no raw error |
-| Hook ignores cancellation or never settles | Deadline wins through a deterministic race; force-close runs and the coordinator returns without awaiting the hook forever | Deadline and forced outcome |
-| Force-close throws or returns any value/thenable under signal-owned shutdown | Attempt the synchronous callback, classify `force_close`, absorb any returned Promise rejection, dispose signal handlers, and hard-exit with the first signal's conventional status | Stable force-close failure category before terminal fallback |
-| Lifecycle coordination rejects under signal-owned shutdown | Dispose signal handlers and hard-exit with the first signal's conventional status | No raw error or rejected value |
-| Logger or telemetry sink fails | Continue lifecycle and deadline enforcement | Existing logger write result only |
-| HTTP server receives shutdown | Call `server.close()` to stop accepts and drain active HTTP before force-close is eligible | Server drain outcome |
+| Missing, accessor-backed, excessive, or invalid options | Fail construction before installing observers, timers, or exporters with one bounded cause-free issue set | Sanitized initialization result only |
+| Unknown route, method, dependency, operation, outcome, or resource value | Reject or map to one documented bounded fallback; never create a caller-named series | Stable invalid-observation result |
+| Duplicate completion of HTTP or dependency observation | Return an unchanged result without decrementing active state twice | No duplicate duration/count |
+| Runtime observer or synchronous collection throws | Preserve product work, classify the collector, and allow later collection or shutdown | Stable collector failure category |
+| Exporter rejects, times out, or Collector is unreachable | Bound the attempt, record stable failure/drop state, and continue product work and readiness | Export result and bounded dropped-observation count |
+| Exporter ignores cancellation or never settles | Lifecycle deadline remains authoritative; shutdown returns without awaiting the exporter forever | Timeout/drop category when locally observable |
+| `forceFlush` or shutdown called concurrently/repeatedly | Share one bounded provider operation while each waiter retains caller-local cancellation; close the provider once | One stable result per caller without duplicate provider work |
+| Clock moves backward or supplies invalid duration | Reject the observation or clamp only according to an explicit tested rule | Stable invalid-duration category |
+| Active-resource inventory exceeds its ceiling | Aggregate overflow into one bounded category; never emit arbitrary resource names | Stable overflow resource series |
 
 ## Data and contracts
 
 - Schema/migration: None.
-- GraphQL/events: None. Apollo drain compatibility remains in `@aster/http-express` and composes with the single lifecycle coordinator.
+- GraphQL: None.
+- Events: None.
 - Cache: None.
-- Public runtime API: Frozen lifecycle state, bounded health snapshot, explicit readiness/startup transitions, idempotent shutdown, signal binding with disposal, and narrow lifecycle hook types.
-- Compatibility: No change to the existing logger or Express request-listener contract. New declarations must expose no Express, Apollo, Pino, database, Redis, broker, or telemetry SDK types.
-- Retention/deletion: Lifecycle state and hook references are process-local and released after terminal completion/disposal.
+- Public telemetry API: Repository-owned immutable options, finite metric dimensions, HTTP/dependency observation leases, runtime collection lifecycle, export health snapshot, and bounded flush/shutdown hooks.
+- Compatibility: Generated declarations contain no OpenTelemetry SDK, OTLP exporter, Express, Apollo, PostgreSQL, Redis, broker, object-storage, or product-domain types. The package supports pinned Node.js `24.19.0`.
+- Retention/deletion: Process-local aggregation is released on shutdown. Backend retention remains unimplemented until P01-R09/P01-R10.
 
 ## Security and privacy
 
-- Actors: Local service composition root, orchestrator signals, HTTP clients observing future health routes, and resource adapters participating in shutdown.
-- Assets: Service availability, bounded termination, request completion, log confidentiality, and dependency integrity.
-- Controls: Fail-closed option validation, monotonic state, one signal owner, stable health reason codes, bounded hook inventory, one deadline, cancellation, error sanitization, and forced close.
-- Health snapshots expose no hostname, port, dependency URL, credential, exception, stack, request identifier, or signed media URL.
-- Authorization is not added; future public health routing must preserve the stable non-sensitive contract and deployment ownership.
+- Authorization: None; this package exposes no public endpoint. Future scrape and health exposure retain their owning authorization and network boundary.
+- Input limits: Bound option keys, string lengths, registered operation/route inventory, attribute sets, histogram boundaries, collection interval, exporter timeout, active observation count, active-resource categories, and exporter failure accounting.
+- Sensitive data: Never read or emit request bodies, headers, documents, tokens, cookies, emails, profile/account/title identifiers, endpoints with credentials, signed URLs, errors, stacks, or arbitrary caller objects.
+- Abuse cases: Hostile metric labels causing memory growth, accessor execution, series explosion, negative active counts, duplicate completion, recursive export-failure telemetry, stalled export preventing shutdown, and fake runtime values corrupting instruments.
 
 ## Implementation steps
 
-1. Add strict lifecycle state, health snapshot, option normalization, transition errors, and deterministic tests inside `@aster/runtime`.
-2. Add one shared shutdown promise, fixed ordered hook stages, one deadline/cancellation signal, bounded failure classification, and one idempotent force-close path.
-3. Add removable `SIGINT`/`SIGTERM` binding with first-signal graceful and repeated-signal force behavior.
-4. Add a concrete Node.js HTTP drain seam and real-socket tests for new-traffic refusal, in-flight completion, and forced deadline closure.
-5. Integrate stable lifecycle events with the existing runtime logger without allowing sink failure to block termination.
-6. Update runtime/HTTP operations documentation, Phase 01 evidence, state, and handoff; run affected, complete, protected, and bounded review gates after the predecessor is released and this branch is rebased.
+1. Select the smallest exact OpenTelemetry dependency set from current official compatibility, stability, license, engine, transitive, audit, and removal-path evidence.
+2. Define finite repository-owned metric vocabulary, validation, public result types, and deterministic clock/reader seams in `@aster/telemetry`.
+3. Implement HTTP and dependency duration/concurrency/outcome recorders with one-shot completion and cardinality controls.
+4. Implement Node.js runtime collection with bounded observer ownership, resource classification, start/stop behavior, and deterministic tests.
+5. Add optional in-memory and bounded OTLP/HTTP composition, export health/drop behavior, and lifecycle-compatible flush/shutdown hooks.
+6. Add declaration-isolation, hostile-input, unavailable-exporter, timer/handle cleanup, and Node.js compatibility diagnostics.
+7. Update observability/runtime documentation, dependency decisions, evidence, state, queue, session log, and handoff at candidate and closeout checkpoints.
 
 ## Tests
 
-- State: Initial startup health, ready transition, startup failure, monotonic invalid transitions, frozen snapshots, hostile option accessors, and bounded issues.
-- Shutdown: Exact stage order, one shared promise, concurrent calls, immediate resource-closing rejection force behavior without later stage execution, telemetry-only degradation through dependency closure, ignored cancellation, one overall deadline, force-close once, and terminal outcome.
-- Signals: First signal begins graceful work, repeated signal forces, handlers dispose, conventional categories remain stable without installing duplicate owners, and a deterministic plus real-process diagnostic prove the hard fallback when force close fails.
-- HTTP integration: `server.close()` precedes force-close, a request already in flight can finish within budget, new connections fail after drain begins, and a stuck request is closed at deadline.
-- Logging/security: Lifecycle events contain only stable fields; raw errors and canaries are absent; logger failure does not change state or deadline behavior.
-- Contract: Generated declarations contain no Express, Apollo, Pino, PostgreSQL, Redis, broker, or telemetry SDK types.
-- Process: A spawned diagnostic handles a real termination signal where the host supports it, exits within the bound, and leaves no listener or child work behind.
+- Domain: None; no product domain rule changes.
+- Application: Pure recorder tests for finite vocabulary, one-shot completion, active counts, duration/outcome mapping, overflow aggregation, and hostile values.
+- Integration: In-memory OpenTelemetry reader and a loopback unreachable/stalled OTLP endpoint; no Collector container.
+- Contract: Metric names, units, descriptions, attributes, histogram boundaries, generated declarations, package exports, and lifecycle hook shape.
+- Browser: Not applicable.
+- Performance/failure: Bounded runtime observer start/stop, event-loop delay observation, GC/heap/process collection compatibility, exporter timeout, concurrent flush/shutdown, no live timer/observer after stop, no unhandled rejection, and no high-cardinality labels.
 
 ## Evidence
 
-- Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
-- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable for unchanged bootstrap and packaging behavior. Protected runs `33000352054`, `33001670494`, `33002748501`, and `33004036882` pass. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle. Remediation `6b9acb2` force-closed after remaining eligible stages; confirmation discussion `3865804838` then found that a failed consumer could still run against dependency teardown during that interval. Immediate-force remediation `fe61fc4` passed its local and protected gates. Availability-boundary confirmation discussion `3865880765` then found that a throwing force-close callback still lacked a hard process-termination fallback. Signal hard-fallback remediation `fc44892` plus exact focused 39-test, 15-task affected, documentation, memory, security, and audit gates pass. Evidence reply `3865955990` is posted, all three discussions are resolved, and the final blocking-boundary review reported no major issue at exact reviewed head `3d4ba3e`. The remaining conditions are the documentation-only closeout CI, protected squash merge, and post-merge verification.
-- Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
-- Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
-- Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.
-- Heavyweight repeat triggers: Repeat a clean checkout only for dependency, lockfile, bootstrap, packaging, generated-declaration, or documented public-command changes. Repeat real socket/process evidence when lifecycle, signal, timer, HTTP drain, or force-close behavior changes. Docker is not required unless this item changes the existing local demonstration path.
-- Review stopping rule: One complete review and one confirmation after rebase onto released `main`. Additional review only if remediation changes or reveals a requirement, security/data invariant, availability behavior, or public runtime/health contract.
+- Commands: Exact package typecheck/build/test/check, targeted lint/format, diagnostic, `pnpm check:changed`, one stabilized complete `pnpm check --force`, `pnpm audit --audit-level=high`, dependency/license inventory, and exact clean checkout when the final dependency/lockfile/public-package contract stabilizes.
+- Raw artifact path: `evidence/phase-01/runtime-telemetry.txt`.
+- Acceptance result: Pending.
+- Iteration gate: Focused `@aster/telemetry` typecheck/build/test/check plus targeted lint and format after each coherent behavior slice.
+- Candidate gate: `pnpm check:changed` after the package contract, runtime collection, and export failure path form one complete candidate; one forced complete graph before publication.
+- Heavyweight repeat triggers: Repeat clean checkout for dependency, lockfile, workspace, packaging, generated-declaration, install-script, or public-command changes. Repeat runtime/handle and unreachable-exporter diagnostics for observer, timer, reader, exporter, flush, or shutdown changes. P01-R06 adds no Docker path, so container evidence is not applicable.
+- Review stopping rule: One complete review and one confirmation. Additional review only if remediation changes or reveals a requirement, security/data invariant, availability behavior, metric public contract, or cardinality boundary.
 
 ## Rollback or recovery
 
-Remove the lifecycle module, exports, tests, diagnostic, and documentation, leaving the existing logger and Express adapter contracts unchanged. Dispose installed signal handlers before replacing a coordinator. No data migration, cache invalidation, Docker cleanup, dependency rollback, or hosted action is required.
+Remove `@aster/telemetry`, its exact OpenTelemetry dependencies, lockfile entries, documentation, and tests. Stop and shut down any created provider before replacement. Existing logs, lifecycle, Express transport, product data, Docker resources, and hosted settings remain unchanged. Export outage recovery is to keep local bounded recording operational, preserve readiness, and restore the optional exporter without replaying unbounded observations.
 
 ## Documentation updates
 
-- Document lifecycle state, stable health meaning, shutdown order, signal behavior, overall deadline, failure classification, and force-close recovery.
-- Clarify composition with the existing Express/Apollo drain and preserve P01-R08 ownership of dependency/startup deadlines plus P01-R06 ownership of process metrics.
-- Preserve future-item separation through the planned P01-R06–R10 runtime runway; candidate research may narrow risks but must not install dependencies, create containers, change accepted contracts, or claim a later requirement is active.
-- Record raw focused, real-socket/process, affected, complete, protected, and review evidence under Phase 01.
-- Update `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, `.ai/SESSION_LOG.md`, and `.ai/HANDOFF.md` at candidate and closeout checkpoints.
-
-## Planning preparation boundary
-
-The current lifecycle implementation remains the only active Phase 01 work item. Planning defines the ordered P01-R06 through P01-R10 paths, metric dimensions, adapter responsibilities, selection gates, failure matrices, profiles, and tests without activating them. This preparation creates no second active work item, changes no lifecycle source, installs no repository dependency, starts no new container, publishes no candidate, and resolves no pending client or image decision. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` and `evidence/phase-01/runtime-runway-preflight.txt` record that boundary.
+- Document the exact metric catalog, units, dimensions, bucket rationale, runtime collection ownership, export lifecycle, failure behavior, privacy exclusions, and operational limitations.
+- Record dependency compatibility, license, audit, Node.js runtime, timer/handle, in-memory collection, and unreachable-exporter evidence.
+- Update `docs/architecture/OBSERVABILITY_ARCHITECTURE.md`, `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`, the Phase 01 specification/evidence index, repository dependency documentation, and `.ai/` memory without claiming a Collector, scrape path, dashboard, SLO, or product service.
 
 ## Completion checklist
 

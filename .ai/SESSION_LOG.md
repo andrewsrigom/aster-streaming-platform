@@ -2,6 +2,97 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified bounded runtime telemetry
+
+### Completed
+
+- Protected run `33011704716` passed at exact head `068f9fd`; evidence reply `3866572642` was posted and joined-cancellation discussion `3866505207` was resolved.
+- Both review discussions are resolved. Final blocking-boundary review comment `5430926105` reported no major issue at exact reviewed head `068f9fd`.
+- Classified P01-R06 as `VERIFIED`. No source, dependency, lockfile, packaging, Docker resource, service, product context, schema, durable data, hosted setting, metric vocabulary, or public command changed during this closeout.
+
+### Evidence
+
+- Exact source evidence remains nine focused tests, the diagnostic, 34/34 changed and exact uncached gates, audit, secret scan, clean Git, and validated temporary-root cleanup.
+- Protected runs `33009107927`, `33010364854`, and `33011704716` pass; the final review examined the exact source/evidence head after both availability remediations.
+
+### Next action
+
+Pass protected CI for this documentation-only closeout, squash-merge pull request 13, verify the post-merge `main` run, and activate P01-R07 from clean released `main`.
+
+## 2026-08-26 — Remediated joined telemetry cancellation
+
+### Completed
+
+- Protected run `33010364854` passed, initial evidence reply `3866468924` was posted, and lifecycle discussion `3866381774` was resolved.
+- Confirmation review `5034828379` found that a caller joining an active flush ignored its own abort until the owner's timeout.
+- Candidate `fbac8cc` separates shared timeout-bounded provider work from caller-local waiting for both flush and shutdown; it also classifies absorbed exporter failure on the shared flush result.
+
+### Evidence
+
+- Focused typecheck, build, nine tests, ESLint, Prettier, diagnostic, and 34 of 34 changed-scope tasks pass. Regressions prove joined flush abort under 100 milliseconds, one continuing owner, stable failed export classification, sanitized lifecycle rejection, shared shutdown, and an independently aborted shutdown waiter.
+- Exact no-local checkout reused 278 frozen offline packages with zero downloads in `2.76s`, passed 34/34 forced uncached tasks in `49.369s`, audit, secret scan, clean Git, exact SHA confirmation, and validated temporary-root cleanup.
+
+### Next action
+
+Publish `fbac8cc` plus evidence, pass protected CI, resolve confirmation finding `3866505207`, then obtain the permitted final blocking-boundary confirmation before verification and release.
+
+## 2026-08-26 — Remediated telemetry lifecycle flush degradation
+
+### Completed
+
+- Protected pull-request run `33009107927` passed at pre-remediation head `d10e612`; initial review `5034691076` then identified one blocking lifecycle issue in comment `3866381774`.
+- Confirmed OpenTelemetry metrics SDK `2.10.0` absorbs periodic export errors during `onForceFlush`; remediation `d970d66` therefore evaluates both the bounded flush status and exporter-health failures during the shared operation.
+- The lifecycle adapter now rejects unsuccessful or exporter-degraded flushes with one fixed cause-free error, preserving product recording while allowing the runtime coordinator to record degraded shutdown.
+
+### Evidence
+
+- Focused typecheck, build, nine tests, ESLint, Prettier, and the telemetry diagnostic pass. Regression coverage includes successful local lifecycle flush, aborted lifecycle flush, and stalled loopback OTLP failure without endpoint reflection.
+- Exact no-local remediation checkout reused 278 frozen offline packages with zero downloads in `1.56s`, passed 34 of 34 forced uncached tasks in `41.374s`, audit, secret scan, clean Git, exact SHA confirmation, and validated temporary-root cleanup.
+- Raw evidence: `evidence/phase-01/runtime-telemetry.txt` (`IMPLEMENTED`; protected remediation CI, confirmation review, and release pending).
+
+### Next action
+
+Publish the remediation/evidence head once, pass protected CI, reply to and resolve the initial discussion, then request the single planned confirmation review.
+
+## 2026-08-26 — Implemented the bounded telemetry candidate
+
+### Completed
+
+- Added `@aster/telemetry` behind repository-owned declarations with finite environment, HTTP, dependency, operation, outcome, export, and drop dimensions; no product context or durable data owner changed.
+- Exact-pinned OpenTelemetry API `1.9.1`, core/resources/metrics SDK `2.10.0`, OTLP HTTP metrics exporter `0.221.0`, and runtime-node instrumentation `0.34.0`; omitted host metrics, aggregate SDK packages, and a direct semantic-conventions dependency.
+- Implemented process-local manual collection, Node.js runtime/event-loop/GC/heap/active-resource metrics, process CPU/RSS/uptime metrics, HTTP and dependency leases, bounded optional OTLP/HTTP export, health/drop accounting, and lifecycle-compatible flush/shutdown.
+- Documented the exact metric contract, selection rationale, failure behavior, privacy/cardinality rules, deferred Collector path, and removal boundary without adding a service, dashboard, SLO, Docker resource, or hosted setting.
+
+### Evidence
+
+- Nine focused tests pass for hostile/accessor/proxy configuration, frozen finite dimensions, one-shot active counts, explicit SDK overflow aggregation, runtime collection, monotonic durations, stalled and successful shared OTLP export, aborted flush, shared shutdown, and declaration isolation.
+- The public diagnostic collects 16 metrics and shuts down cleanly on Node.js `24.19.0`; one warm run observed `0.15` seconds and `71,624` KiB maximum RSS as a compatibility observation, not a benchmark.
+- `pnpm check:changed` passed 34 of 34 tasks in `10.107s` before review hardening; the zero-cache complete graph then passed 34 of 34 tasks in `32.343s` with architecture, lint, format, unused-code, documentation, repository memory, secret scanning, and high-severity audit green.
+- Exact candidate `b277c689cc3de7960fa42d9a019c9711a9a67725` passed a no-local isolated checkout: frozen offline install reused 278 packages with zero downloads in `1.40s`, the diagnostic collected 16 metrics, 34 of 34 uncached tasks passed in `29.771s`, audit and secret scan passed, Git stayed clean, and the validated temporary root was removed.
+- Raw candidate evidence: `evidence/phase-01/runtime-telemetry.txt` (`IMPLEMENTED`; complete, clean-checkout, review, protected CI, and release gates pending).
+
+### Next action
+
+Commit the clean-checkout evidence, publish the exact candidate through a protected pull request, then perform the bounded initial/confirmation review and release sequence before P01-R07.
+
+## 2026-08-26 — Released lifecycle and activated telemetry work
+
+### Completed
+
+- Protected closeout run `33004817099` passed at exact P01-R05 head `87e3fe6`; pull request 12 was squash-merged as `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`, and local `main` was fast-forwarded cleanly.
+- Post-merge run `33004926766` passed every applicable job, including the delayed `CI required` aggregate; P01-R05 is `RELEASED`.
+- Created `feat/p01-r06-telemetry` from clean released squash `4d24335`; no predecessor source, dependency, lockfile, Docker resource, product state, or hosted setting changed.
+- Activated P01-R06 with shared telemetry/runtime ownership, finite metric dimensions, privacy and cardinality controls, bounded exporter failure, lifecycle integration, deterministic tests, evidence, rollback, and review stopping rules.
+
+### Evidence
+
+- P01-R05 protected PR run `33004817099` and exact post-merge run `33004926766` pass at their exact heads.
+- Git was clean on synchronized `main` before branch creation; `feat/p01-r06-telemetry` begins at `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`.
+
+### Next action
+
+Select the minimal exact OpenTelemetry dependency set and implement the P01-R06 contract from clean released `main`.
+
 ## 2026-08-26 — Verified the bounded runtime lifecycle
 
 ### Completed

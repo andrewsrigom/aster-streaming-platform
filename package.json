@@ -44,6 +44,8 @@
     "security:test": "node --test ./tools/scan-secrets.test.ts",
     "staged:check": "node ./tools/check-staged-files.ts",
     "staged:test": "node --test ./tools/check-staged-files.test.ts",
+    "telemetry:check": "turbo run build --filter=@aster/telemetry && pnpm --filter=@aster/telemetry check",
+    "telemetry:test": "turbo run test --filter=@aster/telemetry",
     "toolchain:check": "node ./tools/verify-toolchain.mjs",
     "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs ./tools/run-quality-gate.test.ts",
     "typecheck": "tsc --project ./tsconfig.json --noEmit",

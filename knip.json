@@ -19,6 +19,10 @@
     "packages/runtime": {
       "entry": ["src/index.ts", "src/check-runtime-logging.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "packages/telemetry": {
+      "entry": ["src/index.ts", "src/check-telemetry.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
     }
   }
 }

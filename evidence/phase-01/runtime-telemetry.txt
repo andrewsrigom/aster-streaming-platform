@@ -1,0 +1,139 @@
+Evidence: P01-R06 bounded runtime telemetry candidate
+Status: VERIFIED; release merge and post-merge verification pending
+Date: 2026-08-26
+Source base: 4d243351bb46ae6b63a80a9ca3b9186baa3c68ac
+Candidate commit: fbac8cc0f893b01392683549e86f47d6230fb0fe
+Branch: feat/p01-r06-telemetry
+Environment: Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace; amd64
+Runtime: Node.js v24.19.0; pnpm 11.24.0
+
+Requirement and boundary
+- Requirement: P01-R06.
+- Owner: shared telemetry and runtime infrastructure.
+- Product bounded contexts and durable data owners changed: none.
+- Public contract: repository-owned finite metric dimensions, observation leases, process-local collection, export-health snapshot, and bounded flush/shutdown results.
+- OpenTelemetry imports are confined to packages/telemetry/src/infrastructure.
+- Explicit exclusions: Collector, scrape endpoint, traces, log export, dashboard, alert, SLO, product metric, service composition, dependency adapter, Docker change, and hosted resource.
+
+Exact direct dependency selection
+- @opentelemetry/api 1.9.1
+- @opentelemetry/core 2.10.0
+- @opentelemetry/resources 2.10.0
+- @opentelemetry/sdk-metrics 2.10.0
+- @opentelemetry/exporter-metrics-otlp-http 0.221.0
+- @opentelemetry/instrumentation-runtime-node 0.34.0
+
+Selection interpretation
+- Registry and official package metadata checked on 2026-08-26 report Apache-2.0 for every direct package.
+- SDK, resources, exporter, and runtime instrumentation publish Node.js engine ranges ^18.19.0 || >=20.6.0; API 1.9.1 publishes >=8.0.0. The pinned Node.js 24.19.0 satisfies each range.
+- Metrics SDK 2.10.0 requires @opentelemetry/api >=1.9.0 <1.10.0; selected API 1.9.1 satisfies it.
+- Exporter 0.221.0 resolves SDK/resources/core 2.10.0 and experimental OTLP components 0.221.0, avoiding a mixed supported line.
+- Runtime instrumentation 0.34.0 provides event-loop time/utilization/delay, V8 GC duration, heap-space metrics, and bounded active-resource aggregation from Node.js performance APIs.
+- @opentelemetry/host-metrics is deprecated. Its instrumentation-host-metrics replacement is also not selected because Node.js built-ins cover the required process CPU, RSS, and uptime metrics without broader host/network collection or systeminformation.
+- @opentelemetry/sdk-node, auto-instrumentation aggregates, and a direct semantic-conventions dependency are not needed for this metrics-only slice.
+- Removal path: delete @aster/telemetry and its six direct dependencies. No domain, application, database, Redis, broker, object-storage, HTTP-framework, product-data, or Docker contract changes.
+
+Implemented contract
+- Manual process-local reader when export.mode is none; instrument creation and collection require no network or Collector.
+- Optional OTLP/HTTP exporter accepts only HTTP(S) endpoints without embedded credentials.
+- Periodic export has explicit interval, timeout, one in-flight attempt, cardinality ceiling, and bounded batch size.
+- HTTP route, method, dependency, operation, outcome, status-class, export-result, and drop-reason dimensions are finite.
+- HTTP and dependency leases complete once and active counters cannot decrement twice.
+- Caller IDs, URLs, query text, GraphQL documents, request/trace/span IDs, headers, errors, credentials, endpoints, buckets, and object keys are absent from metric attributes.
+- Process CPU time is canonical. CPU utilization is derived from CPU-time delta divided by elapsed monotonic time and CPUs available to the process, then bounded from zero through one.
+- Runtime observers stop before provider shutdown. Repeated and concurrent shutdown is idempotent; flush/shutdown provider work is shared while each caller retains its own cancellation result.
+- Export timeout/failure increments process-local attempt/drop health without reflecting endpoint or error details and without changing readiness or product work.
+- The lifecycle flush hook rejects with one fixed cause-free error when the bounded operation aborts, times out, fails, or when the OpenTelemetry reader absorbs an exporter failure. Product recording still remains available; the runtime coordinator can now classify shutdown as degraded.
+
+Metric names and units
+- http.server.request.duration: seconds; official HTTP server boundaries 0.005 through 10 seconds.
+- http.server.active_requests: requests.
+- aster.dependency.operation.duration: seconds; explicit boundaries 0.001 through 10 seconds.
+- aster.dependency.operation.active: operations.
+- aster.dependency.operation.outcomes: operations.
+- aster.telemetry.export.attempts: attempts.
+- aster.telemetry.dropped_observations: observations.
+- process.cpu.time: seconds, user/system modes.
+- process.cpu.utilization: ratio, user/system modes.
+- process.memory.usage: bytes, resident memory.
+- process.uptime: seconds.
+- Runtime instrumentation additionally supplies nodejs.eventloop.*, v8js.gc.duration, v8js.memory.heap.*, and v8js.resource.active.
+
+Focused commands and results
+- pnpm --filter=@aster/telemetry typecheck
+  PASS.
+- pnpm --filter=@aster/telemetry build
+  PASS; generated declarations emitted.
+- pnpm --filter=@aster/telemetry test
+  PASS; 9 of 9 tests. Covered accessor/proxy/unknown/excessive configuration rejection, frozen finite vocabularies, bounded dimensions and active capacity, one-shot active counters, explicit SDK overflow aggregation at a 16-series ceiling, HTTP/dependency histograms, process/runtime instruments, monotonic duration, stalled OTLP timeout/drop health, successful and shared concurrent OTLP export, aborted flush, shared concurrent and repeated shutdown, and public declaration isolation.
+- pnpm --filter=@aster/telemetry check
+  PASS; emitted one JSON line with event telemetry_diagnostic_passed, metricCount 16, exportMode none, shutdown completed.
+- /usr/bin/time -f "elapsed=%e max_rss_kib=%M user=%U system=%S" node packages/telemetry/dist/src/check-telemetry.js
+  PASS; one warm WSL process observed elapsed 0.15 seconds, maximum RSS 71,624 KiB, user CPU 0.13 seconds, and system CPU 0.05 seconds. This is a single compatibility observation, not a startup, throughput, steady-state, or cross-platform benchmark.
+- pnpm exec eslint packages/telemetry
+  PASS.
+- pnpm check:changed
+  PASS after review hardening and evidence update; 34 of 34 selected tasks with 23 cached in 10.053 seconds. Included five workspace packages, full source lint/format/unused/architecture/security/AI/docs/community/policy checks, 39 runtime tests, 8 HTTP tests, 12 configuration tests, and 9 telemetry tests.
+- pnpm check --force
+  PASS after review hardening; 34 of 34 tasks, zero cached, in 32.343 seconds of Turbo task time. Included 9 telemetry, 39 runtime, 8 HTTP, 12 configuration, and every repository source, architecture, documentation, memory, security, community, CI, platform, staged, commit, toolchain, unused-code, type, lint, and format gate.
+- pnpm audit --audit-level=high
+  PASS; no known vulnerabilities found.
+- pnpm licenses list --prod --json
+  PASS; exact direct and resolved OpenTelemetry packages report Apache-2.0. Existing workspace production dependencies report their previously reviewed licenses.
+
+Exact isolated-checkout evidence
+- Source: local no-local clone of exact candidate b277c689cc3de7960fa42d9a019c9711a9a67725 under validated temporary root /tmp/aster-p01-r06-clean.9HFNWs.
+- pnpm install --frozen-lockfile --offline
+  PASS; 278 packages reused, zero downloaded, completed in 1.40 seconds with 381,640 KiB maximum RSS. The repository supply-chain policy accepted the lockfile.
+- pnpm telemetry:check
+  PASS after package build; emitted telemetry_diagnostic_passed with metricCount 16, exportMode none, and shutdown completed.
+- pnpm check --force
+  PASS; 34 of 34 tasks, zero cached, in 29.771 seconds of Turbo task time. The telemetry suite passed 9 of 9 tests; runtime 39 of 39; HTTP 8 of 8; configuration 12 of 12; all repository gates passed.
+- pnpm audit --audit-level=high
+  PASS; no known vulnerabilities found.
+- pnpm security:check
+  PASS; zero findings.
+- git status --short
+  PASS; exact clone remained clean after install, build, diagnostics, tests, audit, and scan.
+- Cleanup
+  PASS; the resolved temporary root was checked against /tmp/aster-p01-r06-clean.* before recursive removal, and /tmp/aster-p01-r06-clean.9HFNWs no longer exists.
+
+Initial review and remediation evidence
+- Pull request 13 opened at documentation head d10e6128eb433c284c0467e287b02c0ad908a3f3. Protected run 33009107927 passed classification, dependency review, documentation/security, frozen source quality, audit, and the required aggregate.
+- Initial review 5034691076 at the exact head produced one blocking lifecycle finding in comment 3866381774: the public lifecycle hook discarded unsuccessful forceFlush outcomes, allowing the runtime coordinator to record a clean shutdown after a failed flush.
+- OpenTelemetry metrics SDK 2.10.0 inspection confirmed that PeriodicExportingMetricReader._runOnce catches export errors and onForceFlush awaits that non-rejecting method. The remediation therefore checks both the bounded operation result and the process-local export-failure counter around the shared flush.
+- Focused typecheck, build, nine tests, ESLint, Prettier, and telemetry diagnostic pass after remediation. Tests prove a successful local lifecycle flush, fixed cause-free rejection for an aborted flush, and fixed cause-free rejection after a stalled loopback OTLP export without reflecting the endpoint port.
+- Exact remediation candidate d970d66b7966493d43f8bf6f4460a59424607b65 passed a local no-local isolated checkout under /tmp/aster-p01-r06-review-d970d66. Frozen offline install reused 278 packages, downloaded zero, completed in 1.56 seconds, and observed 387,028 KiB maximum RSS.
+- The remediation checkout passed telemetry:check, 34 of 34 forced tasks with zero cached in 41.374 seconds, all 9 telemetry tests, all 39 runtime tests including degraded telemetry-hook behavior, audit with no known vulnerability, secret scanning with zero findings, exact clean Git, and exact SHA confirmation.
+- Cleanup passed after resolving and verifying the exact temporary root; /tmp/aster-p01-r06-review-d970d66 no longer exists.
+
+Confirmation review and cancellation remediation evidence
+- Protected remediation run 33010364854 passed every applicable job at exact documentation head 430ff80bb46fc5c9f5e63306701013b504329013. Evidence reply 3866468924 was posted and the initial lifecycle discussion was resolved.
+- Confirmation review 5034828379 at exact head 430ff80 produced one availability/public-cancellation finding in comment 3866505207: a caller joining an in-flight flush returned the owner's shared promise and could not observe its own abort until the owner timeout.
+- Candidate fbac8cc0f893b01392683549e86f47d6230fb0fe separates the one timeout-bounded provider operation from caller-local waiting. Concurrent flush and shutdown callers share provider work, but each joined waiter races that result against its own AbortSignal without canceling or duplicating the underlying operation.
+- Export-health comparison now classifies an exporter failure on the shared forceFlush result itself. Every lifecycle caller therefore receives the same stable failed result even when OpenTelemetry absorbs the raw exporter error or the caller joins after failure accounting changes.
+- Focused typecheck, build, nine tests, ESLint, Prettier, telemetry diagnostic, and the 34-of-34 changed-scope gate pass. The changed gate used 22 cached tasks and completed in 16.524 seconds. Regression coverage proves immediate joined-flush abort, shared failed export classification, sanitized lifecycle rejection, two successful shared shutdown waiters, and an independently aborted shutdown waiter.
+- Exact no-local checkout fbac8cc reused 278 frozen offline packages with zero downloads in 2.76 seconds and observed 380,236 KiB maximum RSS. It passed telemetry:check, 34 of 34 forced tasks with zero cached in 49.369 seconds, all package tests, audit, secret scanning, exact clean Git, and exact SHA confirmation.
+- Cleanup passed after resolving and verifying /tmp/aster-p01-r06-review-fbac8cc; that exact temporary root no longer exists.
+
+Verification closeout evidence
+- Protected run 33011704716 passed every applicable job at exact source/evidence head 068f9fd0835e38d432e5a7bd3627beeb42f9b405, including dependency review, frozen install, complete source quality, audit, documentation, memory, security, and the required aggregate.
+- Evidence reply 3866572642 was posted for joined-cancellation finding 3866505207, and both pull-request review discussions are resolved.
+- Final blocking-boundary review comment 5430926105 examined exact head 068f9fd and reported no major issue after the shared-operation, caller-local cancellation, export-failure classification, lifecycle degradation, and cleanup remediation.
+- P01-R06 is VERIFIED. No source, dependency, lockfile, packaging, Docker resource, service, product context, schema, durable data, hosted setting, metric vocabulary, or public command changed during this verification classification.
+
+Failure evidence
+- A loopback HTTP server deliberately accepted an OTLP request without responding. The lifecycle flush rejected with a sanitized error inside the 1-second test ceiling; exporter health recorded one bounded failure and a positive dropped-observation count; no endpoint or error entered the error or a metric attribute.
+- A loopback OTLP server returned HTTP 200. forceFlush completed, exactly one request arrived at the assertion point, and health recorded one success with no drop.
+- An already-aborted direct flush returned aborted and its lifecycle adapter rejected with the same sanitized failure. A waiter joining a stalled flush returned aborted within 100 milliseconds while the owner continued to one stable failed result. Two ordinary shutdown waiters shared one provider shutdown and completed while a third caller independently returned aborted.
+- The test process exited after runtime instrumentation, periodic readers, loopback sockets, and providers shut down, providing handle-cleanup evidence for the exercised path.
+
+Public-contract evidence
+- dist/src/index.d.ts contains repository-owned exports only and contains no OpenTelemetry, Express, Apollo, PostgreSQL, Redis client, Kafka, or object-storage type.
+- The repository architecture scanner reports zero violations; OpenTelemetry imports occur only in infrastructure paths.
+
+Current interpretation
+- The P01-R06 implementation exists and focused plus changed-scope gates pass.
+- Local complete and exact isolated-checkout gates now pass at cancellation-remediation candidate fbac8cc0f893b01392683549e86f47d6230fb0fe.
+- Initial review, both remediation runs, all discussion resolutions, and final blocking-boundary confirmation are proven. This artifact does not yet prove merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
+- Collector and Prometheus evidence belongs to P01-R09. Release evidence will be appended only after the exact merge and post-merge checks pass.
