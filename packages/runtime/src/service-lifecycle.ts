@@ -23,7 +23,7 @@ export const ASTER_SHUTDOWN_STAGES = Object.freeze([
 export type AsterLifecyclePhase = (typeof ASTER_LIFECYCLE_PHASES)[number];
 export type AsterShutdownStage = (typeof ASTER_SHUTDOWN_STAGES)[number];
 export type AsterShutdownTrigger = "manual" | "sigint" | "sigterm";
-export type AsterForceShutdownReason = "deadline" | "manual" | "repeated_signal";
+export type AsterForceShutdownReason = "deadline" | "manual" | "repeated_signal" | "stage_failure";
 export type AsterLifecycleTransitionResult = "applied" | "rejected" | "unchanged";
 export type AsterInFlightCompletionResult = "already_completed" | "completed";
 export type AsterShutdownOutcome = "completed" | "degraded" | "forced";
@@ -304,7 +304,16 @@ function validShutdownTrigger(value: unknown): value is AsterShutdownTrigger {
 }
 
 function validForceReason(value: unknown): value is AsterForceShutdownReason {
-  return value === "deadline" || value === "manual" || value === "repeated_signal";
+  return (
+    value === "deadline" ||
+    value === "manual" ||
+    value === "repeated_signal" ||
+    value === "stage_failure"
+  );
+}
+
+function stageFailureRequiresForceClose(stage: AsterShutdownFailureStage): boolean {
+  return stage === "stop_traffic" || stage === "stop_consumers" || stage === "close_dependencies";
 }
 
 function createLifecycle(
@@ -472,6 +481,10 @@ function createLifecycle(
       if (forceReason) {
         break;
       }
+    }
+
+    if (!forceReason && failedStages.some(stageFailureRequiresForceClose)) {
+      requestForce("stage_failure");
     }
 
     cancelDeadline();

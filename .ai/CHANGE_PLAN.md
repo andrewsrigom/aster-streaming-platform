@@ -21,7 +21,7 @@ P00-R06 is released through protected squash `92d3531`, and post-merge run `3299
 
 Add a transport-neutral lifecycle state machine to `@aster/runtime`. A process begins `starting` and not ready, explicitly becomes `ready`, becomes `failed` on unrecoverable startup failure, and enters `draining` before it becomes `stopped`. Liveness and readiness snapshots expose only stable state and bounded reason codes.
 
-Use one idempotent shutdown promise and one overall deadline. The coordinator first fails readiness and stops new traffic, then drains in-flight work, stops consumers, flushes telemetry, and closes dependencies within the remaining budget. Every asynchronous hook receives the same cancellation signal. A rejection is classified without reflecting its raw error, remaining stages receive a best-effort opportunity within the same budget, and deadline exhaustion invokes a force-close path before returning a stable forced outcome.
+Use one idempotent shutdown promise and one overall deadline. The coordinator first fails readiness and stops new traffic, then drains in-flight work, stops consumers, flushes telemetry, and closes dependencies within the remaining budget. Every asynchronous hook receives the same cancellation signal. A rejection is classified without reflecting its raw error and remaining stages receive a best-effort opportunity within the same budget. Deadline exhaustion invokes the global force-close path. A rejected resource-closing stage also invokes that path after the remaining eligible stages so a leaked live handle cannot outlive terminal shutdown; an isolated telemetry-flush rejection remains degraded because dependency closure still owns exporter resources.
 
 Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first signal begins graceful shutdown; a repeated signal requests immediate force-close. Signal handlers are removable and do not compete with transport-owned handlers. Add a concrete Node.js HTTP server seam that calls `server.close()` before any forced `server.closeAllConnections()`, preserving the documented race-free order. Express and Apollo types remain inside their existing adapter package.
 
@@ -56,7 +56,8 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 | First `SIGINT` or `SIGTERM` | Fail readiness and begin the shared graceful-shutdown promise once | Signal category and lifecycle phase |
 | Concurrent shutdown calls | Return the same terminal work and do not repeat hooks | One shutdown-start event |
 | Repeated termination signal | Abort remaining graceful work, call force-close once, and produce a forced outcome | Stable repeated-signal event |
-| Shutdown hook rejects | Classify the stage, continue eligible remaining stages within the same deadline, and return a degraded or failed outcome | Stage name and bounded outcome; no raw error |
+| Traffic, consumer, or dependency close rejects | Classify the stage, continue eligible remaining stages, invoke global force-close once with `stage_failure`, and return a forced outcome | Stage name and bounded force reason; no raw error |
+| Telemetry flush rejects | Classify the stage, continue dependency closure, and return a degraded outcome when no resource-closing stage fails | Stage name and bounded outcome; no raw error |
 | Hook ignores cancellation or never settles | Deadline wins through a deterministic race; force-close runs and the coordinator returns without awaiting the hook forever | Deadline and forced outcome |
 | Force-close throws | Preserve bounded terminal completion and classify force-close failure without reflection | Stable force-close failure category |
 | Logger or telemetry sink fails | Continue lifecycle and deadline enforcement | Existing logger write result only |
@@ -91,7 +92,7 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 ## Tests
 
 - State: Initial startup health, ready transition, startup failure, monotonic invalid transitions, frozen snapshots, hostile option accessors, and bounded issues.
-- Shutdown: Exact stage order, one shared promise, concurrent calls, hook rejection, ignored cancellation, one overall deadline, force-close once, and terminal outcome.
+- Shutdown: Exact stage order, one shared promise, concurrent calls, resource-closing rejection force behavior, telemetry-only degradation, ignored cancellation, one overall deadline, force-close once, and terminal outcome.
 - Signals: First signal begins graceful work, repeated signal forces, handlers dispose, and conventional categories remain stable without installing duplicate owners.
 - HTTP integration: `server.close()` precedes force-close, a request already in flight can finish within budget, new connections fail after drain begins, and a stuck request is closed at deadline.
 - Logging/security: Lifecycle events contain only stable fields; raw errors and canaries are absent; logger failure does not change state or deadline behavior.
@@ -101,7 +102,7 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 ## Evidence
 
 - Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
-- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable by unchanged-path evidence. Protected CI, review, merge, and post-merge evidence remain pending.
+- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable by unchanged-path evidence. Protected CI run `33000352054` passes at `92f5d0a`. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle; remediation, confirmation review, merge, and post-merge evidence remain pending.
 - Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
 - Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
 - Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.

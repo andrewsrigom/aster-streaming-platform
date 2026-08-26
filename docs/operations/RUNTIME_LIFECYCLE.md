@@ -25,7 +25,12 @@ The service composition root creates one coordinator and one signal binding:
 ```ts
 const http = createAsterNodeHttpLifecycleHooks(server);
 const lifecycle = createAsterServiceLifecycle({
-  ...http,
+  stopTraffic: http.stopTraffic,
+  forceClose: () => {
+    http.forceClose();
+    forceCloseConsumers();
+    forceCloseDependencies();
+  },
   logger,
   shutdownDeadlineMs: 10_000,
   stopConsumers: async (signal) => stopConsumers({ signal }),
@@ -38,6 +43,8 @@ lifecycle.markReady();
 ```
 
 Domain and application code do not import this composition or Node.js HTTP types. Express and Apollo remain inside `@aster/http-express`.
+
+`forceClose` is the composition root's last-resort closure for every owned resource that can keep the event loop alive after a resource-closing hook rejects or ignores cancellation. The example names HTTP, consumer, and dependency force paths explicitly; a service with fewer owners supplies only its real force paths. Each adapter keeps framework and client types behind its own boundary.
 
 ## Shutdown contract
 
@@ -53,7 +60,7 @@ Every asynchronous stage receives the same `AbortSignal`. The default overall de
 
 Call `tryBeginWork()` only after readiness. It returns no lease before readiness or after drain begins. Every accepted lease must call `complete()` in `finally`; duplicate completion is harmless.
 
-A rejected hook records only its stable stage, continues remaining eligible stages, and produces `degraded`. The raw rejection is not returned or logged. A hook that ignores cancellation cannot hold the process forever: the deadline aborts the shared signal, invokes force close once, and produces `forced`.
+A rejected hook records only its stable stage and continues remaining eligible stages; the raw rejection is not returned or logged. When traffic, consumer, or dependency closure rejects, the coordinator invokes global force close once after those eligible stages and produces `forced` with reason `stage_failure`. An isolated telemetry-flush rejection produces `degraded` after dependency closure because exporter resource ownership belongs to that later close stage. A hook that ignores cancellation cannot hold the process forever: the deadline aborts the shared signal, invokes force close once, and produces `forced` with reason `deadline`.
 
 ## Process signals
 

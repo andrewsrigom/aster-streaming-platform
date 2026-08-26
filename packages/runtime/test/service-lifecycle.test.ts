@@ -210,35 +210,80 @@ test("fails readiness, stops traffic, drains work, and closes hooks in fixed ord
   });
 });
 
-test("records bounded hook failures and continues the remaining shutdown stages", async () => {
+for (const failure of [
+  { option: "stopTraffic", stage: "stop_traffic" },
+  { option: "stopConsumers", stage: "stop_consumers" },
+  { option: "closeDependencies", stage: "close_dependencies" },
+] as const) {
+  test(`forces after ${failure.stage} rejects and still runs eligible stages`, async () => {
+    const events: string[] = [];
+    let forceCloseCalls = 0;
+    const hook = (stage: string, reject: boolean): (() => Promise<void>) => {
+      return () => {
+        events.push(stage);
+        return reject
+          ? Promise.reject(new Error("sensitive-dependency-detail"))
+          : Promise.resolve();
+      };
+    };
+    const lifecycle = createAsterServiceLifecycle(
+      options({
+        closeDependencies: hook("close_dependencies", failure.option === "closeDependencies"),
+        forceClose: () => {
+          forceCloseCalls += 1;
+        },
+        stopConsumers: hook("stop_consumers", failure.option === "stopConsumers"),
+        stopTraffic: hook("stop_traffic", failure.option === "stopTraffic"),
+      }),
+    );
+
+    const result = await lifecycle.shutdown(
+      "not-a-trigger" as Parameters<AsterServiceLifecycle["shutdown"]>[0],
+    );
+    assert.deepEqual(events, ["stop_traffic", "stop_consumers", "close_dependencies"]);
+    assert.equal(forceCloseCalls, 1);
+    assert.deepEqual(result, {
+      failedStages: [failure.stage],
+      forceReason: "stage_failure",
+      outcome: "forced",
+      trigger: "manual",
+    });
+    assert.doesNotMatch(JSON.stringify(result), /sensitive-dependency-detail/u);
+  });
+}
+
+test("keeps an isolated telemetry flush rejection degraded while dependencies close", async () => {
   const events: string[] = [];
+  let forceCloseCalls = 0;
   const lifecycle = createAsterServiceLifecycle(
     options({
       closeDependencies: () => {
         events.push("close_dependencies");
         return Promise.resolve();
       },
-      stopConsumers: () => {
-        events.push("stop_consumers");
-        return Promise.resolve();
+      flushTelemetry: () => {
+        events.push("flush_telemetry");
+        return Promise.reject(new Error("private-export-detail"));
+      },
+      forceClose: () => {
+        forceCloseCalls += 1;
       },
       stopTraffic: () => {
         events.push("stop_traffic");
-        return Promise.reject(new Error("sensitive-dependency-detail"));
+        return Promise.resolve();
       },
     }),
   );
 
-  const result = await lifecycle.shutdown(
-    "not-a-trigger" as Parameters<AsterServiceLifecycle["shutdown"]>[0],
-  );
-  assert.deepEqual(events, ["stop_traffic", "stop_consumers", "close_dependencies"]);
+  const result = await lifecycle.shutdown();
+  assert.deepEqual(events, ["stop_traffic", "flush_telemetry", "close_dependencies"]);
+  assert.equal(forceCloseCalls, 0);
   assert.deepEqual(result, {
-    failedStages: ["stop_traffic"],
+    failedStages: ["flush_telemetry"],
     outcome: "degraded",
     trigger: "manual",
   });
-  assert.doesNotMatch(JSON.stringify(result), /sensitive-dependency-detail/u);
+  assert.doesNotMatch(JSON.stringify(result), /private-export-detail/u);
 });
 
 test("forces a hung shutdown at the bounded deadline with one abort signal", async () => {
@@ -340,8 +385,8 @@ test("emits stable lifecycle events without reflecting hook errors", async () =>
   };
   const lifecycle = createAsterServiceLifecycle(
     options({
+      flushTelemetry: () => Promise.reject(new Error("private-network-and-token-canary")),
       logger: { info: record, warn: record },
-      stopTraffic: () => Promise.reject(new Error("private-network-and-token-canary")),
     }),
   );
 
