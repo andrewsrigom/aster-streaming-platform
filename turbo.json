@@ -5,6 +5,18 @@
   "cacheDir": ".turbo/cache",
   "globalDependencies": [".node-version", ".nvmrc"],
   "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
     "//#toolchain:check": {
       "cache": false
     },

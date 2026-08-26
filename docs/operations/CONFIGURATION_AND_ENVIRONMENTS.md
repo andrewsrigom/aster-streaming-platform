@@ -10,6 +10,56 @@
 - Do not infer production from a missing flag.
 - Configuration changes follow review and deployment controls.
 
+## Phase 01 reference runtime
+
+P01-R03 implements the first server-only configuration contract in `@aster/config`. It belongs to the Phase 01 reference Node.js runtime, which requires PostgreSQL and Redis. It is not a universal schema for every future service. A runtime unit with different dependencies owns a different schema and must not add unused variables to this contract.
+
+The process-start order is:
+
+1. receive environment entries from the operator or runtime orchestrator;
+2. convert the operating-system-bounded process environment with `Object.entries(process.env)`, retain only names beginning with the contract-owned prefixes, and pass those entries to `loadReferenceRuntimeConfig` before initializing logging, telemetry, transports, or dependency clients;
+3. stop with a classified configuration error when validation fails;
+4. continue initialization only with the returned frozen typed object.
+
+The CLI captures the real process environment into entries once and filters unrelated host names before applying the package bound; unexpected names with an owned prefix remain present so typos fail closed. The public loader accepts only an actual array of at most 256 own two-item tuples, snapshots its length once, and rejects sparse, inherited, malformed, duplicate-known, excessive, or throwing input before schema parsing. This externally bounded representation prevents an arbitrary record or proxy from forcing eager materialization of an unbounded key list inside the loader. The package does not load `.env` files, contact a secret manager, connect to PostgreSQL or Redis, infer an environment, or start a service.
+
+### Implemented variables
+
+| Variable | Classification | Required behavior |
+|---|---|---|
+| `ASTER_ENV` | Non-secret server runtime | Required; one of `local`, `integration`, `staging`, or `production` |
+| `ASTER_SERVICE_NAME` | Non-secret server runtime | Required; 1–63 lowercase alphanumeric or hyphen characters |
+| `DATABASE_URL` | Secret | Required; bounded PostgreSQL URL using `postgres:` or `postgresql:` |
+| `REDIS_URL` | Secret | Required; bounded Redis URL using `redis:` or `rediss:` |
+
+Database and Redis URLs are secret even when a local value has no credential because the same fields may carry credentials in another environment. All four values are limited before schema parsing. The runtime ignores unrelated host variables, rejects unexpected names beginning with `ASTER_`, `DATABASE_`, or `REDIS_`, and reports no more than eight issues.
+
+### Focused diagnostic
+
+After the frozen workspace install, run the process-start diagnostic without starting dependencies or an application:
+
+```bash
+ASTER_ENV=local \
+ASTER_SERVICE_NAME=config-check \
+DATABASE_URL=postgresql://postgres:5432/aster \
+REDIS_URL=redis://redis:6379/0 \
+pnpm config:check
+```
+
+A successful result contains the two non-secret values and only `configured` status for the secret variables:
+
+```json
+{"event":"aster.configuration.valid","status":"ok","variables":[{"name":"ASTER_ENV","classification":"non-secret","status":"configured","value":"local"},{"name":"ASTER_SERVICE_NAME","classification":"non-secret","status":"configured","value":"config-check"},{"name":"DATABASE_URL","classification":"secret","status":"configured"},{"name":"REDIS_URL","classification":"secret","status":"configured"}]}
+```
+
+Invalid configuration exits with status 1. Its stable issue contract contains only a variable name, classification, and reason such as `missing`, `empty`, `invalid`, `too_long`, `too_many`, or `unexpected`. It never includes an input value or a third-party validation message. Run the twelve focused success, failure, limit, URL-normalization, unexpected-source, and redaction tests with:
+
+```bash
+pnpm config:test
+```
+
+The raw compatibility, redaction, dependency, and process-cost results are in the [P01-R03 evidence](../../evidence/phase-01/runtime-configuration.txt).
+
 ## Configuration classes
 
 ### Build-time public

@@ -2,6 +2,45 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented fail-fast reference runtime configuration
+
+### Completed
+
+- Selected exact-pinned `zod@4.4.3` after current compatibility, maintenance, MIT license, security-policy, zero-dependency, registry-integrity, installed-cost, and exit-strategy review; kept Zod private behind repository-owned generated declarations.
+- Added `@aster/config` as the first real workspace package and integrated package build, typecheck, and tests into the existing Turborepo source gate without adding a new commit hook or CI workflow.
+- Added the Phase 01 reference-runtime schema for explicit `ASTER_ENV`, bounded service identity, PostgreSQL URL, and Redis URL with per-field non-secret or secret classification.
+- Added frozen typed output, owned-prefix typo rejection, bounded values, owned-variable and issue counts, stable sanitized errors, configured-only secret diagnostics, and process exit 1 before other initialization.
+- Added 10 direct and subprocess tests covering success, missing and empty fields, invalid environment/service/protocol/whitespace, unrelated host entries, owned typos, limit enforcement, credential-position canaries, stdout/stderr redaction, and exit 0/1.
+- Corrected the first-package ESLint global ignore so nested `dist` output is excluded and registered the package library plus diagnostic entry points with Knip.
+- Passed the initial 15-task uncached source gate, frozen install, high-severity registry audit, MIT production-license inventory, isolated success/failure execution, and focused tests.
+- Passed the implementation, documentation, evidence, and active-memory closeout through 25 of 25 forced uncached tasks in `9.911` seconds; clean-checkout, protected CI, and review remain pending.
+- Cloned public candidate `95cc1ed` into an empty repository root, completed frozen materialization with 110 warm-store reuses and zero download, passed 10 configuration tests, valid and redacted-invalid process runs, 25 of 25 forced uncached tasks in `7.554` seconds, audit, secret scan, and clean Git.
+- Revalidated the temporary clone's exact resolved `/tmp` path, regular-directory status, public origin, candidate SHA, and clean state before removing only that root and proving its absence.
+- Self-review found that an unexpected getter or proxy failure could escape the loader with an arbitrary message; remediation `e7cbaed` converts it to one cause-free internal issue and adds the eleventh redaction test.
+- A second public clone at exact remediation commit `e7cbaed` passed 11 focused tests, 25 of 25 uncached tasks in `7.56` seconds, audit, secret scan, and clean Git before its exact path, origin, SHA, and status were revalidated for targeted removal.
+- Pull request 8 initial run `32956541507` and final implementation run `32956811284` passed every applicable protected job, including dependency review, source quality, audit, governance, and `CI required`; the unrelated Docker lane was skipped as designed.
+- Automated review discussion `3861714547` identified that Node.js URL parsing removes embedded control characters. Remediation `a6a12b6` rejects C0 controls and DEL before parsing and adds a database-newline plus Redis-tab adverse test; 12 focused tests, strict typecheck, lint, formatting, and secret scanning pass locally.
+- Review-remediation run `32957245769` passed every applicable protected job. Replied with exact fix and test evidence in comment `3861750199`, then resolved discussion `PRRT_kwDOUEkeis6capup`.
+- Continued automated review through eight further actionable discussions. Remediations bounded owned and total source work, rejected inherited and malformed entries, sanitized forged source errors, replaced arbitrary-record enumeration with a length-snapshotted tuple list, filtered unrelated host variables, and applied value/name bounds before linear operations.
+- Protected remediation runs `32958437941`, `32958998938`, `32959613401`, `32960632070`, `32961192353`, `32961814947`, and `32962358373` passed every applicable job. All nine discussions are resolved.
+- Final implementation `4ff4c3e` passes 12 focused tests including 300 unrelated subprocess variables, a 1,000-entry pre-access refusal, a changing-length proxy, inherited and duplicate input, forged error canaries, oversized whitespace, and a 10,000-character owned name. Final automated review comment `5424539572` reports no major issue.
+- Closed the active plan, marked P01-R03 `DONE` with `VERIFIED` evidence, left P01-R04 only `READY`, and passed the final repository-state graph with 25 of 25 forced tasks in `8.034` seconds plus audit, documentation, memory, secret, and diff checks.
+
+### Evidence
+
+- Candidate implementation: `027539f5f410821352908f27aff30a56d1c54251`.
+- Isolated valid process: exit 0, `0.09` seconds, `62,984` KiB maximum RSS; empty Node.js baseline: exit 0, `0.03` seconds, `45,040` KiB maximum RSS.
+- Invalid secret canaries: exit 1 with two classified issues and no canary in output.
+- Complete local gate: 25 tasks, 0 cached, `9.911` seconds.
+- Clean public-checkout gate: 25 tasks, 0 cached, `7.554` seconds; wrapper `8.03` seconds.
+- Final remediation clean-checkout gate: 25 tasks, 0 cached, `7.56` seconds; wrapper `8.01` seconds.
+- Protected implementation runs: `32956541507` and `32956811284` succeeded.
+- Raw evidence: `evidence/phase-01/runtime-configuration.txt` (`VERIFIED`).
+
+### Next action
+
+Complete the protected squash merge and post-merge `main` confirmation. P01-R04 is `READY`; create its own change plan before changing logging code.
+
 ## 2026-08-26 — Verified destructive local reset and review remediation
 
 ### Completed

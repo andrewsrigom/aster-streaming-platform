@@ -64,6 +64,27 @@ Status: **IN_PROGRESS**
 - A clean public checkout at `3fa3994` used only Git, shell, and Docker, reached health in `7.33` seconds, read a synthetic PostgreSQL marker, reset in `1.79` seconds with hostile `COMPOSE_PROJECT_NAME`, returned Aster and collision resources to zero, preserved unrelated state, and remained Git-clean.
 - The forced complete local graph passed 22 of 22 uncached tasks in `6.109` seconds and its full closeout repeat passed in `6.492` seconds; Compose parsing, shell syntax, documentation, repository memory, secret scanning, and the high-severity registry audit passed.
 
+## Verified work-item detail
+
+- P01-R03 candidate `027539f` adds the first real workspace package, `@aster/config`, with a Phase 01 reference-runtime schema for explicit environment, service identity, PostgreSQL URL, and Redis URL. Every accepted variable is classified non-secret or secret; owned-prefix typos, missing, empty, malformed, ambiguous, oversized, and excessive input fail closed before other initialization.
+- Repository-owned types, frozen results, bounded issues, and redacted diagnostics contain no Zod type or secret value. Twelve focused tests pass, including direct and spawned-process success/failure, credential-position canaries, issue bounds, raw URL control-character rejection, unrelated-host-variable tolerance, unexpected-source sanitization without cause preservation, and exact exit status.
+- Exact-pinned `zod@4.4.3` compiles with Node.js `24.19.0` and TypeScript `6.0.3`, has no runtime dependency, resolves under MIT, and passes the frozen install plus registry audit. A single isolated successful diagnostic observed `0.09` seconds and `62,984` KiB maximum RSS versus `0.03` seconds and `45,040` KiB for an empty Node.js process on the same host; this is a compatibility observation, not a benchmark.
+- The first-package task graph now runs package build, typecheck, and tests through the existing source gate. ESLint globally excludes nested build output and Knip has explicit configuration-package entry points without weakening checks for other workspaces.
+- The implementation, documentation, evidence, and active repository-memory tree passed 25 of 25 forced uncached tasks in `9.911` seconds. Documentation validated 130 files and 311 local links, the redacting secret scan found zero issue, and all existing foundation, platform, CI, and package checks remained green.
+- A clean public clone at `95cc1ed` started without local dependencies or Turbo state, materialized 110 packages with zero download from the warm store, passed 10 focused configuration tests, exact success and redacted failure diagnostics, 25 of 25 forced uncached tasks in `7.554` seconds, audit, secret scanning, and clean Git. Its exact path, origin, SHA, and status were revalidated before only that temporary root was removed.
+- Self-review remediation `e7cbaed` converts any unexpected source or schema failure to one sanitized internal issue without preserving its cause and freezes the exported runtime-environment list while reusing protocol sets. A second clean public clone passed 11 focused tests, 25 of 25 uncached tasks in `7.56` seconds, audit, secret scan, and clean Git before exact validated removal.
+- Pull request 8 initial run `32956541507` passed classification, dependency review, documentation/security, source quality, audit, and `CI required`. Final implementation run `32956811284` passed the same applicable protected path at `e7cbaed`; the unrelated Docker platform lane was correctly skipped.
+- Automated review discussion `3861714547` proved Node.js URL parsing can remove tabs and newlines before protocol and hostname checks. Remediation `a6a12b6` rejects C0 controls and DEL in the bounded raw string before parsing; its database-newline and Redis-tab test brings the focused suite to 12 passing tests.
+- Review-remediation run `32957245769` passed every applicable protected job at `a6a12b6`. Evidence reply `3861750199` records the fix and test, and discussion `PRRT_kwDOUEkeis6capup` is resolved.
+- Automated review then drove bounded-source hardening through `33f97f1`, `b34e596`, `815a1ad`, `b05aca8`, `0f44a6c`, `c9185a3`, and `4ff4c3e`: owned-entry traversal stops at its ceiling, injected errors cannot forge safe issues, inherited settings are not accepted, the public loader consumes at most 256 own tuples without eager key enumeration, the CLI filters unrelated host entries, and string length bounds precede normalization, hashing, regex, or parsing.
+- The adverse suite retains 12 focused tests while covering a length-changing proxy, 1,000-entry refusal before index access, 300 unrelated subprocess variables, duplicate known settings, 10,000-character owned names, oversized whitespace, raw URL controls, forged error canaries, exact process exits, and secret redaction.
+- Protected remediation runs `32958437941`, `32958998938`, `32959613401`, `32960632070`, `32961192353`, `32961814947`, and `32962358373` passed every applicable job. Nine actionable review discussions have evidence replies and are resolved; final automated review comment `5424539572` reports no major issue at implementation commit `4ff4c3e`.
+- P01-R03 is `VERIFIED`: local complete gates, two clean public checkouts, dependency/license review, protected CI, adverse review remediation, registry audit, documentation, repository-memory validation, and secret scanning pass. No application service, connection, hosted resource, schema migration, or credential was created.
+
+## Implemented
+
+- No Phase 01 item is currently implemented but awaiting verification. P01-R04 is `READY` and has not started.
+
 ## Not implemented
 
 - Applications and services
@@ -77,7 +98,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-After P01-R02 review resolution, protected CI, and post-merge state are unambiguous, start P01-R03 by selecting and recording the configuration-validation approach and implementing only process-start validation with explicit secret classification.
+Release the verified P01-R03 change through the protected squash merge and confirm post-merge `main`; then activate P01-R04 with a new change plan before changing logging code.
 
 ## Current risks
 
@@ -97,6 +118,9 @@ After P01-R02 review resolution, protected CI, and post-merge state are unambigu
 - P01-R02 accepts ordinary local Unix sockets and Windows named pipes; it cannot prove that a deliberately installed local proxy does not forward to a remote daemon.
 - The reset allowlists the current four services and PostgreSQL volume; later local dependencies must extend its exact ownership checks and evidence before their state becomes resettable.
 - Intentional reset is irreversible until phase-owned migration, seed, backup, and restore capabilities exist.
+- The P01-R03 schema belongs only to the Phase 01 reference runtime and currently requires both PostgreSQL and Redis URLs; future runtime units with different dependencies need their own owning schema rather than treating this contract as universal.
+- P01-R03 process cost is measured only as one isolated warm-filesystem process pair on WSL2; steady-state service memory, container memory, throughput, and other operating systems remain unmeasured.
+- Host and orchestrator controls still own environment confidentiality, process inspection, crash handling, injection, and secret rotation; P01-R03 proves only the repository-owned loader and diagnostic surfaces.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

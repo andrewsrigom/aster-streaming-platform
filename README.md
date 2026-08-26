@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and the first two Phase 01 local-platform work items are verified. [P01-R02 evidence](evidence/phase-01/local-reset.txt) covers fresh-state reset, released P01-R01 same-checkout upgrade, hosted-target refusals, hidden-resource refusal, clean recovery, and unrelated-resource preservation; application implementation has not started.**
+**The Phase 00 repository foundation and the first three Phase 01 work items are verified. P01-R03 provides bounded fail-fast process configuration with secret-aware diagnostics and protected review evidence; P01-R04 structured logging is the next ready item and has not started. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -106,6 +106,20 @@ ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-L
 This operation is irreversible for current local data. It accepts no alternate project, path, URL, Docker endpoint override, hosted CI environment, or extra flag. It inspects the active Docker context and every discovered Aster container, network, and volume before calling the fixed project teardown, then requires zero Aster project resources afterward. It retains container images and unrelated Docker resources. Run the normal `down` command when PostgreSQL data must survive.
 
 The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`, so every public command remains scoped to Aster. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics and reset recovery behavior in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
+
+## Validate reference runtime configuration
+
+P01-R03 adds a server-only configuration package and process-start diagnostic. It validates explicit environment selection and the reference runtime's PostgreSQL and Redis URLs without connecting to either dependency or starting an application:
+
+```bash
+ASTER_ENV=local \
+ASTER_SERVICE_NAME=config-check \
+DATABASE_URL=postgresql://postgres:5432/aster \
+REDIS_URL=redis://redis:6379/0 \
+pnpm config:check
+```
+
+The result prints non-secret runtime values and only configured status for secret fields. Missing, empty, malformed, oversized, or unexpected owned variables fail before other initialization with exit status 1 and bounded redacted issues. Use `pnpm config:test` for the focused adverse suite and [`docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`](docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md) for the complete contract.
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

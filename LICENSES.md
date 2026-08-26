@@ -10,6 +10,16 @@ The project notice uses `Aster contributors`. Each contributor retains copyright
 
 Third-party dependencies, generated third-party notices, trademarks, and externally sourced materials are not relicensed by Aster. They remain under their respective terms. Automated notices and a software bill of materials will be produced during the release phase.
 
+## Source dependencies
+
+P01-R03 exact-pins the first production source dependency. It remains under its upstream terms and is not relicensed by Aster.
+
+| Package | Selected artifact | License | Source and terms |
+|---|---|---|---|
+| Zod | `zod@4.4.3` | MIT | [Source](https://github.com/colinhacks/zod/tree/v4.4.3) and [package license](https://github.com/colinhacks/zod/blob/v4.4.3/LICENSE) |
+
+The frozen lockfile records the registry integrity. The P01-R03 dependency review, installed size, generated public boundary, and vulnerability-audit result are recorded in [`evidence/phase-01/runtime-configuration.txt`](evidence/phase-01/runtime-configuration.txt).
+
 ## Local runtime dependencies
 
 P01-R01 references unmodified Docker Official Images by exact digest. These runtime artifacts are pulled from their publishers and are not relicensed under Aster's MIT License.

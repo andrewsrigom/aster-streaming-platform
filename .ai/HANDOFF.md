@@ -1,19 +1,16 @@
 # Handoff
 
-Phase 00 is verified and released at `da7e6d0`, and P01-R01 is released on `main` at `b4082e6`. P01-R02 is verified through fresh-state implementation `3fa3994` and review remediation `d5f857c`: exact current and released-label tests, same-checkout public upgrade, Aster-prefix ownership refusal, populated and partial-state reset, zero postconditions, clean recovery, 18 focused tests, 18 CI tests, uncached repository gates, audit, and unrelated-resource preservation passed. P01-R02 is `DONE`, no work item is active, and P01-R03 is the first `READY` item. No application code exists.
+Phase 00 is verified and released at `da7e6d0`; P01-R01 and P01-R02 are released on `main` at `b4082e6` and `345b224`. P01-R03 is `VERIFIED` on protected pull request 8 through implementation commit `4ff4c3e`. It adds the first workspace package with fail-fast process configuration, explicit non-secret/secret classification, a bounded entry-list trust boundary, frozen typed results, sanitized bounded issues, redacted diagnostics, and twelve passing focused tests. No application service, HTTP adapter, database client, Redis client, telemetry, hosted resource, or credential exists.
 
-The verified checkpoint contains exact official PostgreSQL `18.6` and Redis `8.10.0` images, explicit public project `aster`, no host ports, an internal network, persistent PostgreSQL state, disposable Redis state, finite resources, protocol health, one-shot initialization, ongoing status, protected CI policy, operator documentation, separate third-party notices, and Phase 01 evidence. Its destructive reset requires explicit local intent and confirmation, rejects common hosted and ambiguous targets, validates exact resource ownership, preserves images and unrelated Docker state, and proves zero Aster resources.
+The configuration package exact-pins `zod@4.4.3` behind repository-owned public declarations. The CLI filters the operating-system-bounded environment to owned prefixes; the public loader snapshots at most 256 own tuples and accepts at most 16 owned settings, with value, name, and issue bounds applied before linear work. `ASTER_ENV` and `ASTER_SERVICE_NAME` are non-secret; `DATABASE_URL` and `REDIS_URL` are secret. Success diagnostics expose values only for the non-secret pair. Failure output contains only variable, classification, and stable reason. The schema is explicitly the Phase 01 reference-runtime contract and is not universal for future services.
 
-Every local Compose verification project was inspected by exact project labels and removed with all project resource counts at zero. Both temporary public clones were validated against their origin, commit, and Git state before removal. The 4 unrelated stopped containers remain untouched.
+The initial and final clean public clones passed frozen install, focused diagnostics, complete uncached gates, audit, secret scan, clean Git, and exact targeted removal. Protected implementation and remediation runs through `32962358373` passed dependency review, governance, source quality, audit, and `CI required`; the unrelated Docker lane skipped as designed. Automated review identified and verified nine trust-boundary problems, all discussions are resolved, and final comment `5424539572` reports no major issue at `4ff4c3e`. Only protected merge and post-merge `main` confirmation remain as release steps. Existing Aster Docker resources remain zero and the 4 unrelated stopped containers remain untouched.
 
 ## Resume point
 
-1. Read `AGENTS.md`, `.ai/CONTEXT.md`, and `.ai/CURRENT_STATE.md`.
-2. Confirm review comment `3861318803` is resolved and the corrected PR plus post-merge `main` run pass; do not start P01-R03 while integration state is ambiguous.
-3. Read `docs/specs/phase-01-local-platform.md`, `docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`, `SECURITY.md`, and the configuration, security, testing, Node runtime, documentation, and agent skills.
-4. Select only P01-R03, move it to `IN_PROGRESS`, and create `.ai/CHANGE_PLAN.md` before implementation.
-5. Resolve the pending configuration-library decision with current compatibility, maintenance, license, security, runtime-cost, and exit-strategy evidence; do not select unrelated Phase 01 dependencies.
-6. Implement only bounded process-start validation, secret classification and redaction metadata, safe startup diagnostics, adverse tests, and the smallest reusable package boundary needed by P01-R03.
+1. Complete the protected squash merge of pull request 8 and confirm post-merge `main` CI before describing P01-R03 as released.
+2. Read `AGENTS.md`, `.ai/CONTEXT.md`, `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, and the inactive `.ai/CHANGE_PLAN.md` before the next work item.
+3. P01-R04 is the first `READY` item. Load its observability, Node runtime, security, testing, and documentation context, then create a new change plan before changing code.
 
 ## Do not do yet
 

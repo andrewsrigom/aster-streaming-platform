@@ -19,7 +19,8 @@ Only one item may be `IN_PROGRESS`.
 | 13 | Verify a clean checkout, capture the Phase 00 evidence index, and close the phase | P00-R10 | DONE |
 | 14 | Select local platform versions, resource bounds, and the first Docker runtime checkpoint | P01-R01 | DONE |
 | 15 | Add an explicit project-scoped destructive local reset | P01-R02 | DONE |
-| 16 | Validate process-start configuration and classify secrets | P01-R03 | READY |
+| 16 | Validate process-start configuration and classify secrets | P01-R03 | DONE |
+| 17 | Implement structured logging with redaction and trace correlation | P01-R04 | READY |
 
 ## Work-item rules
 

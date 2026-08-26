@@ -1,0 +1,289 @@
+P01-R03 RUNTIME CONFIGURATION EVIDENCE
+======================================
+
+Status
+------
+
+VERIFIED at implementation commit 4ff4c3eee277da12e8958b753182739840ad1276.
+Local, clean-checkout, protected CI, dependency, security, and automated-review acceptance checks pass. Protected merge and post-merge main remain release steps.
+
+Requirement and scope
+---------------------
+
+Requirement: P01-R03 — validate environment configuration at process start and distinguish secret from non-secret values.
+
+Owning boundary: cross-cutting Phase 01 runtime infrastructure. No bounded-context data, database schema, Redis state, event, HTTP adapter, application process, hosted resource, or credential is created.
+
+Trust boundary: operator or orchestrator environment entries are untrusted until @aster/config returns a frozen typed object. Terminal and future log output are separate disclosure boundaries and receive only repository-owned redacted diagnostics.
+
+Measured environment
+--------------------
+
+Date: 2026-08-26
+Host path: WSL2 on a Windows host
+Kernel: Linux 6.18.33.2-microsoft-standard-WSL2 x86_64
+Userspace: Ubuntu 24.04.4 LTS
+Logical processors visible to WSL: 6
+Memory visible to WSL: 12,249,200 KiB
+Node.js: v24.19.0
+pnpm: 11.24.0
+Initial implementation commit: 027539f5f410821352908f27aff30a56d1c54251
+Unexpected-failure remediation commit: e7cbaed9c577f2ee9865e198d5c6ef6d640a244f
+URL control-character remediation commit: a6a12b6201454547115d36e27935eb3247ef23cb
+Final reviewed implementation commit: 4ff4c3eee277da12e8958b753182739840ad1276
+
+Configuration-library decision
+------------------------------
+
+Selection: exact-pinned zod@4.4.3 as a private implementation detail of @aster/config.
+
+Problem statement:
+
+- Node.js provides process.env and URL parsing but no typed runtime schema, issue aggregation, or static inference.
+- Hand-written per-field parsing would duplicate enum, length, pattern, and URL-protocol behavior while creating separate runtime and TypeScript contracts.
+- P01-R03 needs one small schema engine; it does not need a .env loader, framework integration, dynamic configuration service, or schema DSL owned by Aster.
+
+Current primary-source review on 2026-08-26:
+
+- The npm registry reported 4.4.3 as the stable version selected by this work item. It was published on 2026-05-04, outside the repository's 24-hour maturity window.
+- The package metadata reports MIT, zero runtime dependencies, registry integrity sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==, and an npm registry signature.
+- The upstream v4.4.3 release and repository show active Zod 4 maintenance: https://github.com/colinhacks/zod/releases/tag/v4.4.3
+- The upstream package manifest confirms the MIT license, ESM exports, and sideEffects=false: https://github.com/colinhacks/zod/blob/v4.4.3/packages/zod/package.json
+- The upstream security policy accepts private GitHub advisory reports and states that fixes are published on the latest line: https://github.com/colinhacks/zod/blob/v4.4.3/SECURITY.md
+- GitHub reported no published Zod security advisory during the review. pnpm audit also reported no known vulnerability for the resolved workspace graph.
+
+Compatibility and exit strategy:
+
+- The package compiles with strict TypeScript 6.0.3 and generated declarations contain no Zod import or Zod type.
+- Node.js 24.19.0 executed success and failure paths as separate processes.
+- Repository-owned ReferenceRuntimeConfig, ReferenceRuntimeConfigError, classifications, issues, and diagnostics form the public package boundary.
+- Replacing Zod requires changing the private parser, keeping the public declarations, and passing the same focused adverse suite. No persisted data or network contract requires migration.
+
+Registry and installed cost
+---------------------------
+
+Command:
+
+  corepack pnpm view zod@4.4.3 version license dependencies dist.unpackedSize dist.integrity --json
+
+Result:
+
+  version=4.4.3
+  license=MIT
+  dependencies=none
+  registry unpacked size=4,558,122 bytes
+  integrity=sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==
+
+Command:
+
+  du -sk node_modules/.pnpm/zod@4.4.3/node_modules/zod packages/config/dist
+
+Result:
+
+  installed Zod package=5,900 KiB
+  complete configuration build including tests, declarations, maps, and TypeScript build metadata=168 KiB
+
+Process-start success
+---------------------
+
+Command:
+
+  /usr/bin/time -f "elapsed_seconds=%e max_rss_kib=%M exit=%x" \
+    /usr/bin/env -i \
+    ASTER_ENV=local \
+    ASTER_SERVICE_NAME=config-check \
+    DATABASE_URL=postgresql://postgres:5432/aster \
+    REDIS_URL=redis://redis:6379/0 \
+    /home/andrews/.local/bin/node \
+    ./packages/config/dist/src/check-runtime-config.js
+
+Raw result:
+
+  {"event":"aster.configuration.valid","status":"ok","variables":[{"name":"ASTER_ENV","classification":"non-secret","status":"configured","value":"local"},{"name":"ASTER_SERVICE_NAME","classification":"non-secret","status":"configured","value":"config-check"},{"name":"DATABASE_URL","classification":"secret","status":"configured"},{"name":"REDIS_URL","classification":"secret","status":"configured"}]}
+  elapsed_seconds=0.09 max_rss_kib=62984 exit=0
+
+Node.js baseline command:
+
+  /usr/bin/time -f "elapsed_seconds=%e max_rss_kib=%M exit=%x" \
+    /usr/bin/env -i \
+    /home/andrews/.local/bin/node \
+    --input-type=module \
+    --eval 'process.stdout.write(JSON.stringify({status:"baseline"}) + "\n")'
+
+Raw baseline result:
+
+  {"status":"baseline"}
+  elapsed_seconds=0.03 max_rss_kib=45040 exit=0
+
+Observed delta for this single process pair: 0.06 seconds wall time and 17,944 KiB maximum RSS. This includes Node.js module loading, Zod, schema construction, validation, JSON serialization, and process noise. It is a bounded compatibility observation, not a throughput or steady-state service benchmark.
+
+Process-start failure and redaction
+-----------------------------------
+
+Workload: exact isolated environment with two synthetic canary strings embedded in malformed secret fields.
+
+Raw result:
+
+  {"event":"aster.configuration.invalid","status":"error","code":"ASTER_CONFIGURATION_INVALID","issues":[{"variable":"DATABASE_URL","classification":"secret","reason":"invalid"},{"variable":"REDIS_URL","classification":"secret","reason":"invalid"}]}
+  exit=1
+
+The output contained neither synthetic canary. Direct tests also place synthetic canaries in database and Redis credential positions, then check the success diagnostic, error object, error message, stack, JSON serialization, stdout, and stderr without comparing or printing the secret strings.
+
+Focused verification
+--------------------
+
+Command:
+
+  corepack pnpm config:test
+
+Result at final reviewed implementation 4ff4c3e: 12 tests passed, 0 failed, 0 skipped. The suite covers a frozen typed success result; explicit non-secret output; configured-only secret status; missing, inherited, empty, malformed, duplicate, oversized, and excessive input; URL controls before Node.js normalization; a length-changing proxy; refusal of a 1,000-entry list before index access; stop after the owned-entry ceiling; 300 unrelated subprocess variables; a 10,000-character owned name; forged error canaries; exact process exit 0/1; and redaction without cause preservation.
+
+Command:
+
+  corepack pnpm install --frozen-lockfile
+  corepack pnpm audit --audit-level=high
+  corepack pnpm licenses list --prod --json
+
+Result:
+
+- Frozen install passed for both workspace projects.
+- Registry audit reported no known vulnerabilities.
+- The only production package reported by the license command was zod@4.4.3 under MIT.
+
+Complete local repository gate
+------------------------------
+
+Command:
+
+  TURBO_FORCE=true corepack pnpm check
+
+Result after the implementation, documentation, evidence, and active repository-memory update:
+
+  Tasks: 25 successful, 25 total
+  Cached: 0
+  Turbo elapsed: 9.911 seconds
+
+This included @aster/config build, strict typecheck, and 10 tests plus root toolchain, lint, formatting, unused-code, architecture, local-platform policy, documentation, repository-memory, community, secret, CI-policy, staged-file, and commit-policy checks and their focused adverse tests. Documentation covered 130 Markdown files and 311 local links; secret scanning reported zero finding; repository-memory validation identified P01-R03 as the only active item.
+
+Clean public-checkout verification
+----------------------------------
+
+Public candidate commit: 95cc1ed6f704dc7a42a6fd335bdd378b323991df
+Origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+Branch: feat/p01-r03-runtime-config
+Temporary root: /tmp/aster-p01-r03-public-IHitjV
+
+Initial checks proved the exact origin and SHA, a clean branch, and no repository-local node_modules or .turbo directory. The README bootstrap activated only the clone-local Git hooks and selected Node.js 24.19.0 plus pnpm 11.24.0.
+
+Frozen install:
+
+  packages materialized=110
+  reused from warm content-addressed store=110
+  downloaded=0
+  pnpm elapsed=2.9 seconds
+  measured wrapper elapsed=4.05 seconds
+  exit=0
+
+Focused configuration result:
+
+  tests=10
+  pass=10
+  fail=0
+  skipped=0
+  Turbo elapsed=3.227 seconds
+
+The documented config:check command exited 0 and printed only the two non-secret values plus configured status for DATABASE_URL and REDIS_URL. An isolated malformed-secret workload exited 1 with the two classified issues and neither clean-checkout canary in output.
+
+Complete clean-checkout gate:
+
+  Command: TURBO_FORCE=true corepack pnpm check
+  Tasks: 25 successful, 25 total
+  Cached: 0
+  Turbo elapsed: 7.554 seconds
+  Wrapper elapsed: 8.03 seconds
+  Exit: 0
+
+The high-severity registry audit reported no known vulnerability, the all-file secret scan reported zero finding, and Git remained clean. Before removal, the temporary root was resolved to the exact /tmp path and revalidated for regular directory status, origin, candidate SHA, and clean Git state. Only that exact root was then removed and its absence verified.
+
+Final remediation clean public-checkout
+---------------------------------------
+
+Public candidate commit: e7cbaed9c577f2ee9865e198d5c6ef6d640a244f
+Origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+Temporary root: /tmp/aster-p01-r03-final-skJubX
+
+The second empty repository checkout verified the exact public origin, remediation SHA, clean branch, and initial absence of node_modules and .turbo. Frozen installation materialized the same 110 packages from the warm store with zero download. The focused suite passed 11 tests, including the unexpected-source redaction case.
+
+Complete final-remediation clean-checkout gate:
+
+  Command: TURBO_FORCE=true corepack pnpm check
+  Tasks: 25 successful, 25 total
+  Cached: 0
+  Turbo elapsed: 7.56 seconds
+  Wrapper elapsed: 8.01 seconds
+  Exit: 0
+
+The audit reported no known vulnerability, the all-file secret scan reported zero finding, and Git remained clean. The exact resolved root, regular-directory status, public origin, remediation SHA, and clean state were revalidated before only that temporary root was removed and its absence proved.
+
+Protected pull-request verification
+-----------------------------------
+
+Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/8
+
+Initial protected run 32956541507 passed at 34f7813367a5f34a8d80cb99d5d9b395151d32ce:
+
+- Classify change: success, 5 seconds
+- Dependency review: success, 7 seconds
+- Documentation and security: success, 11 seconds
+- Install and source quality: success, 28 seconds
+- Local platform: skipped as intended for a non-platform change
+- CI required: success, 3 seconds
+
+Final implementation run 32956811284 passed at e7cbaed9c577f2ee9865e198d5c6ef6d640a244f. Classification, dependency review, documentation/security, install/source quality, and CI required succeeded; the unrelated Docker platform lane remained intentionally skipped.
+
+Automated review on commit 34f7813367 identified discussion 3861714547: Node.js URL parsing removes embedded ASCII tabs and newlines, so the original validator could accept a normalized representation and return the malformed original value. Remediation a6a12b6 scans the bounded raw URL for C0 controls and DEL before constructing URL and adds an adverse database-newline plus Redis-tab test. The twelve focused tests, strict typecheck, lint, formatting, and secret scan pass locally. Protected run 32957245769 passed every applicable job at a6a12b6. The evidence reply was posted as comment 3861750199 and thread PRRT_kwDOUEkeis6capup was resolved.
+
+The complete local closeout was then repeated from the remediation head with forced Turbo execution: 25 of 25 tasks passed with zero cached tasks in 9.417 seconds (9.88 seconds wrapper elapsed), 12 of 12 configuration tests and 18 of 18 platform tests passed, the high-severity registry audit reported no known vulnerability, and `git diff --check` passed.
+
+Automated-review hardening
+--------------------------
+
+Automated review exercised the public trust boundary repeatedly. Each actionable discussion received an exact evidence reply, passed its protected remediation run, and is resolved:
+
+- `33f97f1` stops allocating and reading after the owned-entry ceiling; run `32958437941` passed.
+- `b34e596` converts even a caller-forged `ReferenceRuntimeConfigError` from injected source access to a new cause-free internal issue; run `32958998938` passed.
+- `815a1ad` rejects inherited settings and bounds total traversal; run `32959613401` passed.
+- `b05aca8` replaces arbitrary-record enumeration with an externally bounded array of own two-item entries, snapshots length once, and refuses more than 256 entries before index access; run `32960632070` passed.
+- `0f44a6c` filters unrelated operating-system environment entries before the package cap while retaining unknown owned-prefix names; a subprocess with 300 unrelated variables exits zero; run `32961192353` passed.
+- `c9185a3` checks the 2,048-character value limit before whitespace normalization; run `32961814947` passed.
+- `4ff4c3e` checks the 128-character name limit before the known-name lookup or bounded-name regex; run `32962358373` passed.
+
+All applicable runs passed classification, dependency review, documentation/security, frozen source quality and tests, registry audit, and `CI required`; the unrelated Docker lane skipped as designed. The final automated review response is issue comment `5424539572`: it reviewed `4ff4c3e` and reported no major issue. All nine review discussions are resolved.
+
+The final repository-state closeout then passed 25 of 25 forced tasks with zero cache in 8.034 seconds (8.49 seconds wrapper elapsed), 12 of 12 configuration tests, documentation and repository-memory validation, all-file secret scanning, `git diff --check`, and the high-severity registry audit.
+
+Acceptance interpretation
+-------------------------
+
+- Process start succeeds only after explicit typed validation.
+- Missing, empty, malformed, oversized, and unexpected owned variables fail closed.
+- The generic loader accepts only a length-snapshotted array of at most 256 own tuples and stops after 16 owned entries; the CLI filters unrelated host entries before this package bound.
+- ASTER_ENV never defaults to production or any other environment.
+- Every accepted variable has an explicit non-secret or secret classification.
+- Success diagnostics omit secret values; failure diagnostics use stable repository-owned issues and omit both values and Zod messages.
+- Unrelated host environment entries are outside the owned boundary and remain ignored.
+- The implementation performs no network operation and creates no partial dependency or application state.
+
+Remaining release steps
+-----------------------
+
+- Complete the protected squash merge and pass post-merge main CI before describing P01-R03 as released.
+
+Limitations
+-----------
+
+- The timing and RSS observations are one process pair on one WSL2 host with warm filesystem and pnpm stores; they do not predict service throughput, container memory, native Windows, macOS, or other Linux hosts.
+- The clean clone reused the user-level Corepack and pnpm content-addressable stores. It proves an empty repository checkout and frozen materialization, not an empty-machine or cold-registry install.
+- Environment-variable confidentiality still depends on the host, orchestrator, process inspection policy, crash handling, and future log callers. P01-R03 proves only the repository-owned loader and diagnostic surfaces.
+- The current schema belongs to the Phase 01 reference runtime and deliberately requires PostgreSQL and Redis. Future runtime units with different dependencies require their own schema.
+- Dynamic secret retrieval, rotation, hosted secret stores, client-bundle analysis, and runtime logging redaction belong to later owning work.
