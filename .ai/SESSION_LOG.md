@@ -18,10 +18,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Exact hosted candidate: `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`; run: `33023896325`.
 - Targeted formatting, lint, typecheck, build, Kafka 21/21, and S3 16/16 pass for the late-review remediation.
 - The remediation affected graph passes 46/46 tasks with 29 cached in `18.538` seconds of Turborepo time and `19.66` seconds elapsed, with `861432` KiB maximum RSS.
+- Exact source candidate `d3a23dc9fd6016a4369c977532b129a507c15316` passed a no-generated-state frozen offline install reusing all 329 packages with zero download in `1.75` seconds and `402136` KiB maximum RSS.
+- Its forced exact-checkout graph passed 46/46 tasks with zero cache in `48.283` seconds of Turborepo time and `49.55` seconds elapsed, with `842380` KiB maximum RSS. All four diagnostics, high-severity audit, clean Git, and validated checkout removal pass; confirmation review found no blocker.
 
 ### Next action
 
-Commit the coherent boundary fix, repeat the frozen exact checkout and lifecycle evidence required by its public-contract/cancellation change, then publish, resolve both discussions with exact evidence, and require protected exact-head confirmation before squash merge.
+Commit and publish the exact-checkout evidence closeout, resolve both discussions with exact evidence, and require protected exact-head confirmation before squash merge.
 
 ## 2026-08-26 — Identified the hosted MITNFA license blocker
 

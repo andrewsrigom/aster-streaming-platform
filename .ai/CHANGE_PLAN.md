@@ -92,7 +92,7 @@ PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution,
 8. [completed checkpoint] Consolidate dependency, failure, cancellation, handle-cleanup, declaration, audit, and package evidence; update architecture and operations documentation without claiming real-container interoperability.
 9. [confirmation review completed] The complete initial review at candidate `37e6db8` found one bounded batch: preserve normal S3 not-found availability telemetry, reject hostile write input without throwing, prevent late Redis/Kafka completions from reviving closing state, account for active Kafka wrappers during close, and consume broker records only from own data properties. Remediation `3e55990` and its focused, affected, and forced complete gates pass; the exact-source confirmation review found no blocker.
 10. [completed] Pull-request run `33023269145` passed source quality, audit, documentation, security, and classification but blocked on the GitHub dependency graph's `MIT AND MITNFA` classification for transitive `bowser@2.14.1`. ADR-0012 records the license decision; only SPDX `MITNFA` was added to the reviewed allowlist, and the adverse policy test plus 46-task affected gate pass. Protected exact-head run `33023896325` then passed Dependency review, the complete source/audit and documentation/security lanes, the real local-platform lane, and the stable `CI required` aggregate at remediation head `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`.
-11. [local candidate passed; exact checkout pending] A late independent review on `f8aa6f8` found two blocking boundary defects that satisfy the written reason for one additional round: an accepted Kafka publish returned ordinary abort/timeout despite uncertain delivery, and an S3 bucket-probe 404 was treated as a healthy object miss. The remediation returns a distinct finite `delivery_ambiguous` result only after publish acceptance, classifies probe 404 as unavailable while preserving object-read `not_found`, and adds focused abort/timeout/readiness regressions. Focused Kafka 21/21, S3 16/16, and the 46-task affected graph pass; repeat the exact frozen checkout and lifecycle diagnostics after the coherent source commit, then require protected exact-head confirmation before merge.
+11. [local confirmation completed; protected confirmation pending] A late independent review on `f8aa6f8` found two blocking boundary defects that satisfy the written reason for one additional round: an accepted Kafka publish returned ordinary abort/timeout despite uncertain delivery, and an S3 bucket-probe 404 was treated as a healthy object miss. Source candidate `d3a23dc` returns a distinct finite `delivery_ambiguous` result only after publish acceptance, classifies probe 404 as unavailable while preserving object-read `not_found`, and adds focused abort/timeout/readiness regressions. Focused Kafka 21/21, S3 16/16, the 46-task affected graph, and an exact frozen checkout with 46/46 forced uncached tasks pass. Confirmation review found no remaining requirement, security/data, availability, lifecycle, or public-contract blocker; protected exact-head CI and evidence-backed discussion resolution remain.
 
 ## Tests
 
@@ -107,7 +107,7 @@ PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution,
 
 - Commands: Focused package typecheck/build/test/check and targeted lint/format during each coherent package slice; `pnpm check:changed` at package candidates; `pnpm check --force` once the complete work item stabilizes; `pnpm audit --audit-level=high`; license/dependency/install-script inventories; exact runtime diagnostics; isolated frozen clean checkout; protected CI and review evidence.
 - Raw artifact path: `evidence/phase-01/platform-adapters.txt`.
-- Acceptance result: Pending post-review affected and protected confirmation; the prior hosted candidate passed but the late review changed one public result contract and one readiness boundary.
+- Acceptance result: Implemented and locally verified at exact source candidate `d3a23dc9fd6016a4369c977532b129a507c15316`; protected exact-head confirmation and release remain pending.
 - Iteration gate: Run only the affected package build/typecheck/tests plus targeted lint/format after a coherent contract or failure-path change. Clock/ID, PostgreSQL, Redis, S3, and broker are separate iteration checkpoints.
 - Candidate gate: Run `pnpm check:changed` when each package forms a coherent candidate. Run one forced complete graph only after all four adapters, clock/ID, dependency graph, declarations, documentation, and evidence stabilize.
 - Heavyweight repeat triggers: Repeat frozen isolated checkout for dependency, lockfile, workspace, package export, generated declaration, install-script, native module, or public-command changes. Repeat subprocess/handle diagnostics for client lifecycle, cancellation, retry, timer, consumer, stream, or close changes. Repeat stream memory/backpressure evidence for S3 body ownership changes. Real container interoperability is owned and repeated in P01-R09.
@@ -127,8 +127,8 @@ Each dependency package can be removed independently with its exact dependency a
 ## Completion checklist
 
 - [x] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
 - [x] Remaining risks recorded
