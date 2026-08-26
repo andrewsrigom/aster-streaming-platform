@@ -16,10 +16,10 @@
 | Express HTTP boundary and Apollo drain compatibility | P01-R11 | RELEASED | [`http-adapter.txt`](http-adapter.txt) |
 | Runtime lifecycle, health state, and bounded shutdown | P01-R05 | RELEASED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
 | Bounded runtime, HTTP, dependency, and export metrics | P01-R06 | RELEASED | [`runtime-telemetry.txt`](runtime-telemetry.txt) |
-| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | IMPLEMENTED; review active | [`platform-adapters.txt`](platform-adapters.txt) |
+| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | IMPLEMENTED; confirmation review passed | [`platform-adapters.txt`](platform-adapters.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; P00-R06 through `92d3531`; and P01-R05 through `4d24335`. P01-R06 is released through protected squash `8dff9d8`: exact source and clean-checkout gates, both review remediations, final review, protected closeout run `33012535152`, and post-merge run `33012664408` pass. P01-R07 is implemented locally through exact candidate `8361f11`: focused adapter suites, the complete uncached graph, exact frozen clean checkout, four unavailable-dependency diagnostics, cold standalone lint, audit, and secret scanning pass. Review, protected CI, merge, and post-merge verification remain pending. Real dependency containers and interoperability, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
+P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; P00-R06 through `92d3531`; and P01-R05 through `4d24335`. P01-R06 is released through protected squash `8dff9d8`: exact source and clean-checkout gates, both review remediations, final review, protected closeout run `33012535152`, and post-merge run `33012664408` pass. P01-R07 is implemented through source candidate `3e55990`: focused adapter suites, the complete uncached graph, exact frozen clean checkout, four unavailable-dependency diagnostics, cold standalone lint, audit, secret scanning, initial remediation, and confirmation review pass. Protected CI, merge, and post-merge verification remain pending. Real dependency containers and interoperability, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
 
 ## Current limitations
 
@@ -30,4 +30,4 @@ P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protecte
 - The destructive reset intentionally has no backup or seed recovery yet; deleted local PostgreSQL data is irreversible until the owning phases implement those capabilities.
 - The current reset allowlists only the P01-R01 services and volume; later local dependencies must extend its ownership checks before becoming resettable.
 - P01-R11 uses a synthetic Apollo schema and loopback-only diagnostic. P01-R05 proves reusable process shutdown separately, but no deployable service, representative load, or comparative Express/Fastify performance exists yet.
-- The remaining-runtime preflight does not select a client or image; upstream metadata and every affected compatibility result must be repeated by the owning work item.
+- The remaining-runtime preflight does not select the P01-R09/P01-R10 service images; upstream metadata and every affected compatibility result must be repeated by the owning work item.

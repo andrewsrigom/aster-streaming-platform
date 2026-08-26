@@ -1,5 +1,5 @@
 Evidence: P01-R07 narrow runtime platform adapters
-Status: IMPLEMENTED; local and clean-checkout gates pass; review and hosted gates pending
+Status: IMPLEMENTED; local, clean-checkout, and confirmation-review gates pass; hosted gates pending
 Date: 2026-08-26
 Source base: 8dff9d8d57572b2eac944ae98406f3da2979682c
 Branch: feat/p01-r07-platform-adapters
@@ -25,7 +25,7 @@ Selection state
 - A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
 
 Current interpretation
-- P01-R07 is active. Clock/ID, PostgreSQL, Redis, S3, and Kafka checkpoints plus the clean-checkout lint-order remediation are committed through 8361f114c865b47bc236365a02c1169cebd15f96. No real dependency interoperability is claimed.
+- P01-R07 is active. Clock/ID, PostgreSQL, Redis, S3, Kafka, the clean-checkout lint-order remediation, and the bounded initial-review remediation are committed through source candidate 3e5599064b80c74c3f363151843eabcdcb3d8ec4. No real dependency interoperability is claimed.
 - @aster/runtime exposes a frozen system clock returning current fresh Date values, a fixed clock returning isolated deterministic Date values, a UUID v4 generator backed by crypto.randomUUID, and a finite deterministic generator that copies a bounded unique safe identifier sequence without invoking accessors.
 - Invalid clock and deterministic-ID configuration uses repository-owned cause-free errors with one stable issue. Deterministic sequence exhaustion uses a fixed cause-free error.
 
@@ -40,9 +40,9 @@ Clock and identifier focused evidence
 - pnpm check:changed: PASS; 13 of 13 selected tasks, zero cached, in 10.341 seconds. The gate included runtime build, typecheck, 46 tests, repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, and secret validation.
 - No dependency, lockfile, package manifest, Docker resource, service, schema, cache, event, object, hosted setting, or public command changed.
 
-Pending checkpoint evidence
-- Clock/ID source commit 2309f94 is the current coherent checkpoint.
-- The broker client selection and adapter remain planned. Real PostgreSQL, Redis, and S3 interoperability remain P01-R09 and are not claimed by the controlled-fake and refused-loopback evidence below.
+Clock checkpoint record
+- Clock/ID source commit 2309f94 was the first coherent source checkpoint. The later sections record the now-implemented dependency adapters.
+- Real PostgreSQL, Redis, S3, and Kafka interoperability remains P01-R09 and is not claimed by the controlled-fake and refused-loopback evidence below.
 
 PostgreSQL client selection evidence
 - Registry metadata inspected live on 2026-08-26 selected exact pg 8.23.0, published 2026-08-08 under MIT with Node.js >=16 support, no install script, and a 100044-byte unpacked package. Exact @types/pg 8.23.1, published 2026-08-17 under MIT, supplies development-only declarations.
@@ -65,7 +65,7 @@ PostgreSQL focused evidence
 - Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:postgres_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no endpoint, credential, vendor error, or stack is emitted.
 - Targeted ESLint and Prettier checks: PASS.
 - pnpm check:changed: PASS; 37 of 37 selected tasks, 23 cached, in 9.435 seconds of Turborepo time and 10.46 seconds elapsed. The gate includes package build/typecheck/tests plus repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, CI, local-platform, and secret validation.
-- The coherent PostgreSQL source commit remains pending at this evidence checkpoint. Real-container and clean-checkout evidence are deferred by the written P01-R07 repeat triggers until all adapter package and lockfile changes stabilize.
+- At this checkpoint the coherent PostgreSQL source commit and later aggregate evidence were still pending; commit 1ded757 and the aggregate sections below record their completion. Real-container evidence remains P01-R09.
 
 PostgreSQL checkpoint commit
 - Commit 1ded757 records the selected client, @aster/postgres package, lockfile, architecture documentation, repository memory, and evidence as one coherent checkpoint.
@@ -114,7 +114,7 @@ S3 focused evidence
 - Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:object_storage_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no endpoint, credential, bucket, key, vendor error, or stack is emitted and the subprocess exits within three seconds.
 - Targeted Prettier, ESLint, typecheck, build, tests, diagnostic, Knip, architecture, dependency/license inventory, and high-severity audit pass.
 - pnpm check:changed: PASS; 43 of 43 selected tasks, 29 cached, in 15.106 seconds. The gate includes the S3 package and every affected repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, CI, local-platform, and secret validation.
-- The coherent S3 source commit remains next. Exact clean-checkout and real-container evidence remain deferred by the written P01-R07 repeat triggers until all adapter packages and lockfile changes stabilize.
+- At this checkpoint the coherent S3 source commit and aggregate clean-checkout evidence were still pending; commit 353646e and the aggregate sections below record their completion. Real-container evidence remains P01-R09.
 - Real S3-compatible authentication, checksum interoperability, multipart abort cleanup, backpressure under representative object sizes, and process-handle exit remain P01-R09 and are not claimed.
 
 Kafka client comparison and selection evidence
@@ -135,7 +135,7 @@ Kafka implemented contract
 
 Kafka focused evidence
 - @aster/broker-kafka typecheck and build: PASS; generated public declarations contain no kafkajs, ProducerRecord, ConsumerConfig, or KafkaJSError reference.
-- @aster/broker-kafka test: PASS, 17 of 17 tests. Coverage includes hostile/accessor-backed configuration, exact finite client policy, connect/metadata/publish telemetry, late copied bytes, invalid/not-connected work, capacity, publish abort and connect-timeout generation recovery, bounded consumer handling, consumer-start timeout, failed handler, malformed record, client crash, shared caller-local stop, concurrent/idempotent close, finite close with stalled producer/handler, cause-free lifecycle failure, refused-loopback diagnosis, and declaration isolation.
+- @aster/broker-kafka test: PASS, 20 of 20 tests after review remediation. Coverage includes hostile/accessor-backed configuration and broker records, exact finite client policy, connect/metadata/publish telemetry, late copied bytes, invalid/not-connected work, capacity, publish abort and connect-timeout generation recovery, late connect/publish/consumer-start completion during close, bounded consumer handling, consumer-start timeout, failed handler, malformed record, client crash, shared caller-local stop, concurrent/idempotent close, finite close with stalled producer/handler, cause-free lifecycle failure, refused-loopback diagnosis, and declaration isolation.
 - Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:broker_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no broker, client/group ID, topic, payload, vendor error, or stack is emitted and the subprocess exits within three seconds.
 - Targeted Prettier, ESLint, typecheck, build, tests, diagnostic, Knip, architecture, exact MIT dependency/license inventory, and high-severity audit pass.
 - pnpm check:changed: PASS; 46 of 46 selected tasks, 32 cached, in 13.832 seconds of Turborepo time and 14.91 seconds elapsed. The gate includes every changed adapter package plus repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, CI, local-platform, secret, and policy validation.
@@ -150,3 +150,12 @@ Kafka focused evidence
 - Standalone cold-lint proof: a second no-local clone of the same exact commit installed all 329 packages offline in 1.50 seconds with no telemetry dist. pnpm lint built only @aster/telemetry uncached in 2.437 seconds, then passed type-aware repository lint; total elapsed was 13.60 seconds with 847908 KiB maximum RSS. Git remained clean and the validated temporary root was removed.
 - A post-acceptance attempt to reuse pnpm clean:foundation inside the first clone was excluded from evidence because that command intentionally removes .turbo and node_modules rather than package dist directories. It did not alter source or the already completed clean-checkout gate.
 - Real broker authentication, metadata semantics, keyed ordering, idempotent retry boundaries, ambiguous delivery, consumer group join/rebalance, manual commit, poison-record recovery, stop, failure/recovery transitions, and process-handle exit remain P01-R09 and are not claimed.
+
+Initial review, remediation, and confirmation evidence
+- The complete initial review examined exact candidate 37e6db8 across public contracts, trust boundaries, state ownership, deadline/capacity behavior, telemetry, process lifecycle, generated declarations, tests, and task ordering. It found one bounded blocking batch: S3 mapped a normal not_found result to unavailable telemetry and could throw on hostile null write input; Redis and Kafka could accept late vendor completions after close; Kafka close did not account for active public wrappers; and Kafka consumed record properties directly instead of through own data descriptors.
+- Source candidate 3e5599064b80c74c3f363151843eabcdcb3d8ec4 remediates that batch. S3 now records not_found as successful dependency availability and safely rejects hostile input. Redis and Kafka reject late connect completion after closure ownership changes. Kafka tracks connect, producer, and consumer-start wrappers during close, never restores ready/running state after shutdown begins, and validates broker records exclusively through bounded own data properties.
+- Focused Prettier, ESLint, typecheck, build, and tests pass: S3 16 of 16, Redis 14 of 14, and Kafka 20 of 20. New regressions cover null S3 write input, zero reads from a hostile Kafka record accessor, late Redis/Kafka connect, late Kafka publish, late Kafka consumer start, final closed state, and zero residual in-flight counters.
+- The remediation affected gate passes 46 of 46 tasks with 24 cached in 18.664 seconds of Turborepo time and 19.93 seconds elapsed, with 859708 KiB maximum RSS. The forced complete graph passes 46 of 46 tasks with zero cache in 32.206 seconds of Turborepo time and 33.42 seconds elapsed, with 846912 KiB maximum RSS.
+- After evidence and repository-memory consolidation, the final affected candidate gate passes 46 of 46 tasks with 35 cached in 14.658 seconds of Turborepo time and 15.78 seconds elapsed, with 841600 KiB maximum RSS.
+- The confirmation review of exact source candidate 3e55990 found no blocking requirement, security/data invariant, availability, lifecycle, or public-contract issue. The written stopping rule is satisfied; no second remediation round is warranted.
+- The frozen clean checkout and cold standalone-lint experiments were not repeated because the remediation changes no dependency, lockfile, workspace, package export, generated declaration contract, install script, native module, bootstrap path, or public command. Their exact 8361f11 evidence remains applicable to those boundaries. Lifecycle and hostile-input behavior did change, so the affected and forced complete graphs repeated all four refused-loopback subprocess diagnostics plus the focused adapter suites at the exact remediated source.

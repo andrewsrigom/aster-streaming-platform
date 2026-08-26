@@ -117,7 +117,7 @@ The PostgreSQL client and typed SQL decision are intentionally separate. Phase 0
 
 ### Clock and identifier checkpoint
 
-The local P01-R07 candidate now exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package, complete uncached, and exact clean-checkout gates pass; review and release gates remain pending.
+The local P01-R07 candidate now exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package, complete uncached, exact clean-checkout, initial-remediation, and confirmation-review gates pass; protected release gates remain pending.
 
 ### PostgreSQL connectivity checkpoint
 

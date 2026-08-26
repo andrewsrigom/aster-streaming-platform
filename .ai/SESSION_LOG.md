@@ -2,6 +2,25 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Remediated and confirmed the platform adapter candidate
+
+### Completed
+
+- Completed the initial review of source candidate `37e6db8` across contracts, trust boundaries, state ownership, deadlines, telemetry, lifecycle, declarations, tests, and task ordering.
+- Corrected normal S3 not-found availability telemetry and hostile write input; prevented late Redis/Kafka completions from reviving shutdown state; accounted for active Kafka wrappers during close; and restricted consumed broker records to bounded own data properties.
+- Recorded source remediation `3e55990` and completed the confirmation review with no blocking requirement, security/data invariant, availability, lifecycle, or public-contract finding.
+
+### Evidence
+
+- Focused Prettier, ESLint, typecheck, build, and tests pass: S3 16/16, Redis 14/14, and Kafka 20/20.
+- `pnpm check:changed` passes 46/46 tasks with 24 cached in `18.664` seconds of Turborepo time and `19.93` seconds elapsed; `pnpm check --force` passes 46/46 uncached in `32.206` seconds and `33.42` seconds elapsed.
+- The consolidated evidence/memory candidate passes a final 46/46 affected gate with 35 cached in `14.658` seconds of Turborepo time and `15.78` seconds elapsed.
+- The exact clean-checkout and cold-lint proof at `8361f11` remains applicable because the review remediation changes no dependency, lockfile, workspace, export, declaration contract, install, bootstrap, native module, or public command. Lifecycle and hostile-input suites and all four subprocess diagnostics were repeated.
+
+### Next action
+
+Commit this consolidated evidence, push once, open one pull request, pass protected CI, squash-merge, verify the post-merge run, and activate P01-R08 from clean released `main`.
+
 ## 2026-08-26 — Implemented provisional bounded Kafka adapter candidate
 
 ### Completed
