@@ -4,6 +4,7 @@ import * as z from "zod";
 
 const MAX_OWNED_VARIABLES = 16;
 const MAX_REPORTED_ISSUES = 8;
+const MAX_SCANNED_VARIABLES = 256;
 const MAX_VARIABLE_NAME_LENGTH = 128;
 const MAX_VALUE_LENGTH = 2_048;
 const SERVICE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
@@ -176,27 +177,54 @@ function guardUntrustedSourceAccess<T>(operation: () => T): T {
   }
 }
 
-function preflight(
-  source: Readonly<Record<string, string | undefined>>,
-): ReferenceRuntimeConfigIssue[] {
+interface PreflightResult {
+  readonly input: Record<ReferenceRuntimeConfigVariable, string | undefined>;
+  readonly issues: ReferenceRuntimeConfigIssue[];
+}
+
+function tooManyVariablesIssue(variable: string): ReferenceRuntimeConfigIssue {
+  return Object.freeze({
+    variable,
+    classification: "unknown",
+    reason: "too_many",
+  });
+}
+
+function stopWithTooManyVariables(
+  issues: readonly ReferenceRuntimeConfigIssue[],
+  input: Record<ReferenceRuntimeConfigVariable, string | undefined>,
+  variable: string,
+): PreflightResult {
+  return {
+    input,
+    issues: [...issues.slice(0, MAX_REPORTED_ISSUES - 1), tooManyVariablesIssue(variable)],
+  };
+}
+
+function preflight(source: Readonly<Record<string, string | undefined>>): PreflightResult {
   const issues: ReferenceRuntimeConfigIssue[] = [];
+  const input: Record<ReferenceRuntimeConfigVariable, string | undefined> = {
+    ASTER_ENV: undefined,
+    ASTER_SERVICE_NAME: undefined,
+    DATABASE_URL: undefined,
+    REDIS_URL: undefined,
+  };
   let ownedVariableCount = 0;
+  let scannedVariableCount = 0;
 
   for (const name in source) {
+    scannedVariableCount += 1;
+    if (scannedVariableCount > MAX_SCANNED_VARIABLES) {
+      return stopWithTooManyVariables(issues, input, "<environment-variables>");
+    }
+
     if (!Object.hasOwn(source, name) || !isOwnedVariable(name)) {
       continue;
     }
 
     ownedVariableCount += 1;
     if (ownedVariableCount > MAX_OWNED_VARIABLES) {
-      return [
-        ...issues.slice(0, MAX_REPORTED_ISSUES - 1),
-        Object.freeze({
-          variable: "<owned-variables>",
-          classification: "unknown",
-          reason: "too_many",
-        }),
-      ];
+      return stopWithTooManyVariables(issues, input, "<owned-variables>");
     }
 
     if (!KNOWN_VARIABLE_SET.has(name)) {
@@ -211,7 +239,13 @@ function preflight(
   }
 
   for (const variable of KNOWN_VARIABLES) {
+    if (!Object.hasOwn(source, variable)) {
+      issues.push(knownIssue(variable, "missing"));
+      continue;
+    }
+
     const value = source[variable];
+    input[variable] = value;
     if (value === undefined) {
       issues.push(knownIssue(variable, "missing"));
     } else if (value.length === 0 || value.trim().length === 0) {
@@ -220,7 +254,7 @@ function preflight(
       issues.push(knownIssue(variable, "too_long"));
     }
   }
-  return issues;
+  return { input, issues };
 }
 
 function issuesFromSchema(error: z.ZodError): ReferenceRuntimeConfigIssue[] {
@@ -237,15 +271,12 @@ function issuesFromSchema(error: z.ZodError): ReferenceRuntimeConfigIssue[] {
 function parseReferenceRuntimeConfig(
   source: Readonly<Record<string, string | undefined>>,
 ): ReferenceRuntimeConfig {
-  const preflightIssues = guardUntrustedSourceAccess(() => preflight(source));
-  if (preflightIssues.length > 0) {
-    throw new ReferenceRuntimeConfigError(boundedIssues(preflightIssues));
+  const preflightResult = guardUntrustedSourceAccess(() => preflight(source));
+  if (preflightResult.issues.length > 0) {
+    throw new ReferenceRuntimeConfigError(boundedIssues(preflightResult.issues));
   }
 
-  const input = guardUntrustedSourceAccess(() =>
-    Object.fromEntries(KNOWN_VARIABLES.map((variable) => [variable, source[variable]])),
-  );
-  const result = runtimeConfigSchema.safeParse(input);
+  const result = runtimeConfigSchema.safeParse(preflightResult.input);
   if (!result.success) {
     const issues = issuesFromSchema(result.error);
     throw new ReferenceRuntimeConfigError(

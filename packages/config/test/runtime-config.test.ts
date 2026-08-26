@@ -95,6 +95,13 @@ test("fails closed for every missing variable with classified bounded issues", (
     { variable: "DATABASE_URL", classification: "secret", reason: "missing" },
     { variable: "REDIS_URL", classification: "secret", reason: "missing" },
   ]);
+
+  const inheritedEnvironment: Record<string, string> = {};
+  Object.setPrototypeOf(inheritedEnvironment, validEnvironment());
+  const inheritedError = captureRuntimeConfigError(() =>
+    loadReferenceRuntimeConfig(inheritedEnvironment),
+  );
+  assert.deepEqual(inheritedError.issues, error.issues);
 });
 
 test("classifies empty and malformed values without returning their contents", () => {
@@ -240,6 +247,50 @@ test("bounds oversized values and excessive owned variables before schema parsin
     classification: "unknown",
     reason: "too_many",
   });
+
+  const totalScanTarget = validEnvironment();
+  const totalScanKeys = [
+    ...Array.from({ length: 1_000 }, (_, index) => `HOST_UNTRUSTED_${index}`),
+    ...Object.keys(totalScanTarget),
+  ];
+  let totalDescriptorReads = 0;
+  let knownValueReads = 0;
+  const totalScanSource = new Proxy(totalScanTarget, {
+    ownKeys() {
+      return totalScanKeys;
+    },
+    getOwnPropertyDescriptor(target, property) {
+      totalDescriptorReads += 1;
+      if (totalDescriptorReads > 513) {
+        throw new Error("total-entry-scan-exceeded-the-limit");
+      }
+      return (
+        Reflect.getOwnPropertyDescriptor(target, property) ?? {
+          configurable: true,
+          enumerable: true,
+          value: "unrelated",
+        }
+      );
+    },
+    get(target, property): string | undefined {
+      if (typeof property !== "string") {
+        return undefined;
+      }
+      if (property in target) {
+        knownValueReads += 1;
+      }
+      return target[property];
+    },
+  });
+
+  const totalScanError = captureRuntimeConfigError(() =>
+    loadReferenceRuntimeConfig(totalScanSource),
+  );
+  assert.equal(totalDescriptorReads, 513);
+  assert.equal(knownValueReads, 0);
+  assert.deepEqual(totalScanError.issues, [
+    { variable: "<environment-variables>", classification: "unknown", reason: "too_many" },
+  ]);
 });
 
 test("sanitizes unexpected source failures without preserving their cause", () => {
