@@ -2,18 +2,17 @@
 
 Phase 00 is verified and released. P01-R01 and P01-R02 are released on `main`, and P01-R03 is released through protected squash commit `c5a707dc2510130cadcdac368e94b040f120d27c`; post-merge run `32963360595` passed every applicable job.
 
-P01-R04 is `RELEASED` through protected squash `e33f90b`; post-merge run `32967185247` passed. P01-R11 is `IN_PROGRESS` on `feat/p01-r11-http-adapter` through pull request 10. Implementation `e355e29` adds exact-pinned Express `5.2.1` behind `@aster/http-express`; ADR-0011 accepts it because Apollo maintains the selected Express 5 integration, while Fastify remains the primary evaluated replacement. Seven prior review findings are fixed with evidence replies and resolved. Uncompressed-request candidate `18d7f27` passed public and protected gates, but follow-up comment `3863619265` found an unframed empty `POST` could reach Apollo without a parsed body. The local remediation adds a post-parser presence gate and a deadline-bounded real Node.js request without default body-framing headers; it returns stable `400` before GraphQL, and the complete local graph passes 31 of 31 forced tasks in `18.24` seconds. Final public and protected gates must use that candidate. P01-R05 retains process signals, readiness, generalized in-flight tracking, and complete shutdown orchestration.
+P01-R04 is `RELEASED` through protected squash `e33f90b`; post-merge run `32967185247` passed. P01-R11 is `VERIFIED` on `feat/p01-r11-http-adapter` through pull request 10. Final implementation `487b403` validates content encoding before parsing and preserves the stable empty-body boundary. Eight focused tests, the Apollo diagnostic, 31 of 31 forced local tasks in `20.70` seconds, exact clean-checkout evidence at the preceding dependency-identical candidate, protected run `32981788859`, dependency review, registry audit, and nine resolved review discussions pass. P01-R05 retains process signals, readiness, generalized in-flight tracking, and complete shutdown orchestration.
 
 ## Resume point
 
-1. Run the complete local graph for the empty-body remediation, then commit and push it with evidence.
-2. Repeat the exact public clean checkout and protected CI at the new head.
-3. Reply to and resolve comment `3863619265`, then request final independent review.
-4. Close and squash-merge P01-R11 only after final review and evidence pass; start P01-R05 from released clean `main`.
+1. Pass the documentation-only P01-R11 closeout gate, then squash-merge pull request 10 and verify its post-merge `main` run.
+2. Start P00-R06 corrective maintenance from clean `main`: define sufficient-verification and review stop rules, align evidence cadence, and implement the promised affected-scope local command.
+3. Verify and release that bounded governance correction, return the active phase to Phase 01, and start P01-R05 from clean `main`.
 
 ## Do not do yet
 
 - Do not add an application service, product resolver/schema, process-signal coordinator, OpenTelemetry SDK, Collector, dashboard, broker, object store, or hosted resource to P01-R11.
 - Do not expose arbitrary caller objects, raw errors, request bodies, headers, GraphQL documents, configuration URLs, personal identifiers, or signed media URLs through the logging contract.
 - Do not merge or close Dependabot pull request 1 without its dedicated compatibility work and an authorized disposition.
-- Do not mark P01-R11 verified or released before current evidence proves that status.
+- Do not mark P01-R11 `RELEASED` before protected squash merge and post-merge verification.

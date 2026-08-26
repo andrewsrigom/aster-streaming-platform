@@ -2,6 +2,29 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified the bounded Express HTTP transport
+
+### Completed
+
+- Closed the unframed empty-body boundary in `cd572ad`; the post-parser gate returns stable `400 INVALID_JSON_BODY` before Apollo and the real-socket test has a deterministic deadline.
+- Exact public candidate `cd572ad` passed frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70` seconds, audit, secret scan, clean Git, exact temporary-root cleanup, and protected run `32980849863`.
+- Confirmation review found one P2 contract violation for an unframed empty request declaring gzip. Final candidate `487b403` validates content encoding before body parsing and proves stable `415 UNSUPPORTED_MEDIA_TYPE` through the real socket.
+- Final source candidate `487b403` passed eight focused tests, the diagnostic, registry audit, 31 of 31 forced local tasks in `20.70` seconds, and protected run `32981788859`. Evidence reply `3863902900` is posted and all nine review discussions are resolved.
+- Classified P01-R11 as `VERIFIED` without adding a service, product schema, process-signal owner, hosted resource, Docker mutation, or durable state. Recorded P00-R06 corrective maintenance as the next `READY` item before P01-R05.
+
+### Evidence
+
+- Final implementation: `487b403729d337d598a48903d1ac8987b8186852`.
+- Exact clean checkout: `cd572ad947631b9adf08217dac1ca0ecd5504123`; install `1.24s`; graph `23.70s`; audit, secret scan, Git state, and cleanup pass.
+- Final local graph: 31 of 31 forced tasks in `20.70s`; high-severity audit reports no known vulnerability.
+- Protected runs: `32980849863` at the clean-checkout candidate and `32981788859` at final source; both pass every applicable job.
+- Review: nine actionable discussions have evidence replies and are resolved; the final P2 is discussion `PRRT_kwDOUEkeis6cgNqW`.
+- Raw artifact: `evidence/phase-01/http-adapter.txt` (`VERIFIED`).
+
+### Next action
+
+Pass the documentation closeout, squash-merge pull request 10, verify the post-merge run, and execute the P00-R06 risk-proportionate verification correction before starting P01-R05.
+
 ## 2026-08-26 — Implemented the bounded Express HTTP candidate
 
 ### Completed

@@ -2,7 +2,7 @@
 
 ## Current status
 
-P01-R11 implements the first shared HTTP transport boundary in `@aster/http-express`. The focused suite exercises Express 5, real Node.js sockets, Apollo Server 5, the Apollo-maintained Express integration, and the Apollo HTTP drain plugin. Clean-checkout, protected-CI, and release evidence remain required before this work item is verified or released. Current evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt).
+P01-R11 verifies the first shared HTTP transport boundary in `@aster/http-express`. The focused suite exercises Express 5, real Node.js sockets, Apollo Server 5, the Apollo-maintained Express integration, and the Apollo HTTP drain plugin. Local, clean-checkout, protected-CI, dependency, audit, and review evidence pass; protected merge and post-merge verification remain required before release. Current evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt).
 
 This package is not an application service. It contains no product schema, resolver, identity rule, database connection, Redis client, telemetry SDK, public port, or process-signal handler.
 

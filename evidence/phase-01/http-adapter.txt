@@ -1,8 +1,8 @@
 # Experiment P01-R11-L01: Express HTTP Adapter Compatibility
 
-- Status: IMPLEMENTED
+- Status: VERIFIED
 - Date: 2026-08-26
-- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; exact-route candidate `9ddf8d6a15f3cf87a9846bf0d4a66194620c4eb4`
+- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; verified source candidate `487b403729d337d598a48903d1ac8987b8186852`
 - Owner: Aster shared transport infrastructure
 - Related requirement: P01-R11
 - Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
@@ -118,7 +118,8 @@ The current production license inventory resolves only MIT, ISC, and BSD-3-Claus
 - Diagnostic-deadline candidate `c2596d2` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406s`, audit, secret scanning, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and discussion `PRRT_kwDOUEkeis6ceoLv` is resolved. Independent review comment `3863364289` then identified the malformed `application/json; charset` boundary. The local remediation replaces Node.js's lenient MIME parser with exact-pinned `content-type@1.0.5` as a strict validator, retains duplicate rejection, adds the malformed-header `415` regression, and passes the complete local graph with 31 of 31 uncached tasks in `13.514s` (`14.17s` wall clock). The matching type-only package is exact-pinned at `@types/content-type@1.1.9`; both resolve under MIT.
 - Strict-media candidate `87127cf` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383s`, audit, secret scanning, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and discussion `PRRT_kwDOUEkeis6ce5OP` is resolved. Independent review comment `3863476696` then found corrupt compressed request bytes remained a client-triggered parser failure mapped to `500`. The local remediation disables request inflation so every non-identity content encoding returns stable `415` before decompression, adds a corrupt-gzip regression, and passes the complete local graph with 31 of 31 uncached tasks in `16.588s` (`17.13s` wall clock).
 - Uncompressed-request candidate `18d7f27` passed an exact public clean checkout with frozen install, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.415s`, audit, secret scanning, and clean Git; protected run `32978001392` passed. Evidence reply `3863519812` is posted and discussion `PRRT_kwDOUEkeis6cfLsL` is resolved. Independent review comment `3863619265` then found a `POST` without body-framing headers could skip parsing and reach Apollo with `request.body` undefined. The local remediation adds a post-parser body-presence gate and a deadline-bounded real Node.js request with default length headers disabled; it returns stable `400 INVALID_JSON_BODY` before GraphQL. Eight focused tests, the diagnostic, and the complete local graph pass, with 31 of 31 forced tasks in `18.24s`.
-- Final local graph, clean public checkout, protected CI, review closeout, and verified candidate: pending after empty-body remediation.
+- Empty-body candidate `cd572ad` passed an exact public clean checkout: frozen install reused 260 packages with zero download in `1.24s`; eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70s`, audit, secret scanning, clean Git, and exact temporary-root removal passed. Protected run `32980849863` passed, reply `3863818928` closed the eighth discussion, and confirmation review identified one P2 contract violation for an empty encoded request.
+- Final candidate `487b403` validates `Content-Encoding` before body framing can bypass the parser and adds a deadline-bounded unframed gzip regression that returns stable `415 UNSUPPORTED_MEDIA_TYPE`. Eight focused tests, the diagnostic, registry audit, and 31 of 31 forced local tasks in `20.70s` pass. Protected run `32981788859` passed, reply `3863902900` closed the ninth discussion, and no review discussion remains unresolved. No dependency, lockfile, bootstrap, packaging, Docker, or public-command input changed after the exact clean checkout, so that heavyweight experiment was not duplicated for the source-only correction.
 
 ## Clean public checkout
 
@@ -142,15 +143,17 @@ The strict-media procedure cloned public commit `87127cf5370f8bf111d2dd3d899422b
 
 The uncompressed-request procedure cloned public commit `18d7f2768a43e22e1d4513267f850a64584eaa10` into a new `/tmp/aster-p01-r11-identity-*` root. Frozen install reused 260 packages with zero download in `1.3s`; `http:test` passed eight assertions through two uncached tasks in `7.108s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `17.415s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked. The later empty-body finding means this is supporting rather than final candidate evidence.
 
+The final repeated-checkout procedure cloned public commit `cd572ad947631b9adf08217dac1ca0ecd5504123` into a new `/tmp/aster-p01-r11-empty-*` root. Frozen install reused 260 packages with zero download in `1.24s`; `http:test` passed eight assertions, `http:check` emitted the expected record, and the complete forced graph passed 31 of 31 uncached tasks in `23.70s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only `/tmp/aster-p01-r11-empty-W74ahp` and proving its absence. Docker was not invoked. Final source candidate `487b403` changes only the pre-parser content-encoding gate and its real-socket test; exact protected CI and the full local graph cover that correction without repeating dependency-identical bootstrap evidence.
+
 ## Interpretation
 
-The current local evidence supports Express 5 as an implemented bounded transport candidate for Apollo Server on the named runtime and host. It proves the reviewed functional and failure contracts without creating a deployable service. The maintained Apollo integration, executable drain path, and replaceable package boundary support ADR-0011.
+The evidence verifies Express 5 as the bounded transport adapter for Apollo Server on the named runtime and host. It proves the reviewed functional and failure contracts without creating a deployable service. The maintained Apollo integration, executable drain path, and replaceable package boundary support ADR-0011.
 
 The process pair is a compatibility and startup-cost observation only. It does not establish throughput, latency distribution, event-loop effect, steady-state memory, allocation behavior, maximum concurrency, or comparative Express/Fastify performance.
 
 ## Limitations
 
-- Nine protected runs, dependency review, seven actionable review-thread closeouts, and the uncompressed-request clean checkout pass. Empty-body remediation still requires final clean-checkout, protected, review-closeout, and release evidence.
+- Eleven protected candidate runs pass; dependency review and the high-severity registry audit pass; all nine actionable review discussions are resolved. The exact clean checkout precedes the final source-only encoding correction, whose exact protected run and complete local graph pass. Release still requires protected squash merge and post-merge verification.
 - Nine Express transitives have informational OpenSSF Scorecard values below the hosted threshold. They are not current vulnerability findings, but future dependency changes must re-evaluate them and preserve the adapter replacement boundary.
 - The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
 - Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.
@@ -160,5 +163,5 @@ The process pair is a compatibility and startup-cost observation only. It does n
 
 ## Decision
 
-- Keep, revert, or continue investigation: Keep the bounded Express adapter as the implementation candidate and continue repository verification.
+- Keep, revert, or continue investigation: Keep the verified bounded Express adapter and proceed to protected release.
 - Revisit trigger: Apply ADR-0011 triggers if representative service profiles miss accepted budgets, maintenance or security posture changes, required server behavior makes the adapter materially larger, or framework types escape the transport boundary.

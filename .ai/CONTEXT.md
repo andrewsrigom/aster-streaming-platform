@@ -50,6 +50,6 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 01 — Local platform and runtime skeleton**
+Active phase: **Phase 00 — Foundation corrective maintenance**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.

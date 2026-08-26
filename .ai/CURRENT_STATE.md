@@ -4,9 +4,9 @@ Last updated: 2026-08-26
 
 ## Active phase
 
-**Phase 01 — Local platform and runtime skeleton**
+**Phase 00 — Foundation corrective maintenance**
 
-Status: **IN_PROGRESS**
+Status: **READY**
 
 ## Verified
 
@@ -88,7 +88,7 @@ Status: **IN_PROGRESS**
 - The final P01-R04 repository-state graph passed 28 of 28 forced uncached tasks in `10.862` seconds with all 14 runtime and 12 configuration tests green; documentation, repository-memory, secret, diff, and high-severity audit checks pass with P01-R11 as the sole next `READY` item.
 - Protected pull request 9 was squash-merged to `main` at `e33f90b1bfee157749e5b290bffd0a80d169c697`. Post-merge run `32967185247` passed every applicable job, the remote feature branch was removed automatically, and P01-R04 is `RELEASED`.
 
-## Implemented
+## Verified P01-R11 detail
 
 - P01-R11 implementation `e355e29` adds `@aster/http-express` with exact-pinned Express `5.2.1`, a fixed `/graphql` route boundary, bounded strict JSON, stable sanitized errors, request-local cancellation, and disabled framework disclosure. Local evidence is recorded in [`evidence/phase-01/http-adapter.txt`](../evidence/phase-01/http-adapter.txt); public-checkout and protected verification remain pending.
 - ADR-0011 accepts Express 5 behind the transport adapter after comparing Fastify 5, native Node.js HTTP, and Apollo standalone behavior. Apollo Server `5.5.1`, `@as-integrations/express5@1.1.2`, and GraphQL.js `16.14.2` are exact-pinned test dependencies, not a product schema or service.
@@ -107,6 +107,9 @@ Status: **IN_PROGRESS**
 - Diagnostic-deadline candidate `c2596d2` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406` seconds, audit, secret scan, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and the fifth discussion is resolved. Review comment `3863364289` then identified malformed media-type parameters. The local remediation uses exact-pinned strict `content-type@1.0.5`, retains duplicate rejection, adds an `application/json; charset` regression that returns `415` before GraphQL, and passes 31 of 31 uncached local tasks in `13.514` seconds.
 - Strict-media candidate `87127cf` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383` seconds, audit, secret scan, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and the sixth discussion is resolved. Review comment `3863476696` then found corrupt compressed request bytes could produce a client-triggered `500`. The local remediation disables request inflation, makes every non-identity content encoding a stable pre-decompression `415`, adds a corrupt-gzip regression, and passes 31 of 31 uncached local tasks in `16.588` seconds.
 - Uncompressed-request candidate `18d7f27` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.415` seconds, audit, secret scan, and clean Git; protected run `32978001392` passed. Evidence reply `3863519812` is posted and the seventh discussion is resolved. Review comment `3863619265` then found an unframed empty `POST` could reach Apollo with no parsed body. The local remediation adds a post-parser presence gate and a deadline-bounded real Node.js request with default length headers disabled; it returns stable `400` before GraphQL, and the complete local graph passes 31 of 31 forced tasks in `18.24` seconds.
+- Empty-body candidate `cd572ad` passed a frozen exact public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `23.70` seconds, audit, secret scan, clean Git, and exact temporary-root removal; protected run `32980849863` passed. Evidence reply `3863818928` is posted and the eighth discussion is resolved. Confirmation review then found that an unframed empty request with `Content-Encoding: gzip` bypassed parser-owned encoding validation.
+- Final candidate `487b403` validates request content encoding before the parser can short-circuit on body framing and adds a deadline-bounded real-socket regression that preserves stable `415 UNSUPPORTED_MEDIA_TYPE`. Eight focused tests, the diagnostic, audit, and 31 of 31 forced local tasks in `20.70` seconds pass. Protected run `32981788859` passed, evidence reply `3863902900` is posted, all nine review discussions are resolved, and no dependency, bootstrap, packaging, Docker, or public-command input changed after the exact clean checkout.
+- P01-R11 is `VERIFIED`: the bounded Express adapter, ADR, real-socket/Apollo tests, local and clean-checkout gates, dependency/license checks, protected CI, and review remediation satisfy the requirement without creating a product service, schema, lifecycle coordinator, hosted resource, or durable state.
 
 ## Not implemented
 
@@ -121,7 +124,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the empty-body remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
+Complete the P00-R06 corrective work item that makes risk-proportionate verification, review stopping rules, evidence checkpoints, and affected-scope local feedback executable. Then return to Phase 01 and start P01-R05 lifecycle, health, and bounded graceful shutdown behavior.
 
 ## Current risks
 
