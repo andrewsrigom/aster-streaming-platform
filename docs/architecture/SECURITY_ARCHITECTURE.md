@@ -1,0 +1,123 @@
+# Security Architecture
+
+## Trust boundaries
+
+```mermaid
+flowchart LR
+    Browser[Untrusted browser]
+    Edge[Edge and router]
+    Services[Trusted service network]
+    Data[Data stores]
+    Worker[Isolated media worker]
+    Sources[External media sources]
+    CDN[CDN and object delivery]
+
+    Browser --> Edge
+    Edge --> Services
+    Services --> Data
+    Sources --> Worker
+    Worker --> Data
+    Browser --> CDN
+```
+
+Every boundary validates identity, input shape, size, time, and authority appropriate to the operation.
+
+## Identity propagation
+
+The public client authenticates through the chosen identity adapter. The edge creates or validates a trusted request identity containing minimal claims.
+
+Subgraphs accept identity context only from the router or trusted server path. They do not trust public `x-user-id`, `x-profile-id`, or role headers.
+
+Service-to-service identity and key rotation are finalized before hosted release.
+
+## Authorization model
+
+- Identity verifies account-to-profile ownership.
+- Catalog protects draft, rights, processing, and publication operations with operator policy.
+- Playback verifies publication and profile ownership when needed.
+- Engagement verifies ownership for every profile-scoped read and mutation.
+- Discovery receives only approved profile context and does not become an authorization authority.
+
+Authorization decisions produce auditable stable outcomes without logging secrets.
+
+## GraphQL abuse model
+
+Threats include:
+
+- deeply nested queries;
+- alias amplification;
+- expensive list fan-out;
+- oversized variables;
+- parser exhaustion;
+- repeated mutations;
+- batching abuse;
+- introspection reconnaissance;
+- identifier substitution;
+- cache poisoning;
+- error detail leakage.
+
+Controls are layered at edge, router, schema, resolver, application, and dependency levels.
+
+## Media threat model
+
+Threats include:
+
+- misleading extension or MIME type;
+- malformed container;
+- decompression or decode bomb;
+- excessive duration or dimensions;
+- unexpected streams;
+- command injection;
+- path traversal;
+- temporary-disk exhaustion;
+- CPU/memory exhaustion;
+- poisoned subtitle or metadata;
+- public exposure of originals;
+- incomplete manifest publication.
+
+The worker runs with no shell interpolation, least privilege, resource limits, isolated temporary storage, restricted network access, and bounded outputs.
+
+## Object storage
+
+- Originals are private.
+- Worker credentials can write only intended prefixes.
+- Playback services cannot overwrite media.
+- CDN origin access is restricted.
+- Stable public URLs point only to validated publications.
+- Administrative listing is not exposed publicly.
+- Lifecycle rules do not delete active publication objects.
+- Audit logs are enabled in hosted environments.
+
+## Data protection
+
+The initial product minimizes personal data. Profile data and viewing history receive retention, access, export, and deletion policies before release.
+
+Logs and metrics use pseudonymous or aggregate context. Raw progress events are retained only as required by product and recovery needs.
+
+## Supply chain
+
+CI performs:
+
+- lockfile integrity;
+- secret scanning;
+- dependency review;
+- static analysis;
+- container scanning;
+- generated software bill of materials;
+- provenance or signing where supported.
+
+New dependencies require a reason, maintenance check, license review, and runtime-impact review.
+
+## Threat-model cadence
+
+Update the threat model when:
+
+- adding an entry point;
+- adding file or URL ingestion;
+- changing identity;
+- moving a field between subgraphs;
+- introducing trusted operations;
+- changing object delivery;
+- collecting new personal data;
+- adding an operator function;
+- changing deployment network boundaries.

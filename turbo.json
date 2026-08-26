@@ -1,0 +1,15 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "stream",
+  "noUpdateNotifier": true,
+  "cacheDir": ".turbo/cache",
+  "globalDependencies": [".node-version", ".nvmrc"],
+  "tasks": {
+    "//#toolchain:check": {
+      "cache": false
+    },
+    "//#toolchain:test": {
+      "cache": false
+    }
+  }
+}

@@ -1,0 +1,20 @@
+Phase 00 license audit
+Date: 2026-08-25
+Environment: Windows host with Ubuntu 20.04 under WSL
+Commit: unavailable; Git is not initialized
+
+Source reviewed:
+https://opensource.org/license/mit/
+
+Observed results:
+- LICENSE exists and contains the canonical MIT grant, notice condition, and warranty disclaimer.
+- Copyright notice: Copyright (c) 2026 Aster contributors
+- LICENSES.md identifies SPDX expression MIT.
+- README.md identifies the MIT repository license.
+- CONTRIBUTING.md states that submitted contributions are provided under MIT.
+- Repository licensing is explicitly separate from media and third-party licensing.
+- Internal link audit after license adoption: 155 checked, 0 broken.
+
+Limitations:
+- Dependency notice and software-bill-of-material generation do not exist yet and remain release-gated work.
+- This audit does not determine whether a third-party contribution has sufficient provenance; each contribution must make that assertion.

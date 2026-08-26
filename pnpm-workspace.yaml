@@ -1,0 +1,23 @@
+packages:
+  - apps/*
+  - services/*
+  - workers/*
+  - packages/*
+
+sharedWorkspaceLockfile: true
+linkWorkspacePackages: false
+saveWorkspaceProtocol: rolling
+strictPeerDependencies: true
+disallowWorkspaceCycles: true
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+# Reviewed version-specific exception: Turbo 2.10.12 carries npm signatures and SLSA provenance.
+minimumReleaseAgeExclude:
+  - '@turbo/darwin-64@2.10.12'
+  - '@turbo/darwin-arm64@2.10.12'
+  - '@turbo/linux-64@2.10.12'
+  - '@turbo/linux-arm64@2.10.12'
+  - '@turbo/windows-64@2.10.12'
+  - '@turbo/windows-arm64@2.10.12'
+  - turbo@2.10.12

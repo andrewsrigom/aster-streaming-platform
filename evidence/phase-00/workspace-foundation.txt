@@ -1,0 +1,149 @@
+ASTER PHASE 00 GIT AND WORKSPACE FOUNDATION EVIDENCE
+===================================================
+
+Work item: P00-R02
+Evidence date: 2026-08-26
+Commit: pre-initial-commit candidate tree; final Phase 00 clean-checkout evidence belongs to P00-R10
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Guest userspace: Ubuntu 24.04
+Kernel observed: 6.18.33.2-microsoft-standard-WSL2
+
+SELECTED TOOL
+-------------
+
+Turborepo: 2.10.12
+License: MIT
+Published: 2026-08-25T18:36:17Z
+npm integrity: sha512-AswgMPnpOoaVZHrrSBejETzEbuIA69OVGwfkHwfrY0A23VjWXBANzgq9+OymWOHAIArB7D1+1z498WY8fGg1Jw==
+npm metadata: signed; SLSA provenance attestation advertised by the registry
+
+Selection rationale:
+- Official guidance recommends an exact local development dependency for stable collaboration.
+- The release is maintained, MIT-licensed, integrity-locked, signed, and provenance-attested.
+- The release includes the current fix to run pnpm directly on Windows.
+- Node.js 24.19.0 and pnpm 11.24.0 compatibility passed through installation, dry-run, and real task execution.
+- Removal is bounded: delete the devDependency and turbo.json, then invoke the underlying pnpm scripts directly.
+
+Because the release was less than 24 hours old at selection time, pnpm's strict maturity policy required reviewed version-specific exceptions for `turbo@2.10.12` and its six platform artifacts. No name-wide exception exists. Every artifact remains exact and integrity-locked.
+
+PRIMARY SOURCES CONSULTED
+-------------------------
+
+https://pnpm.io/workspaces
+https://pnpm.io/settings
+https://pnpm.io/settings/dependency-resolution
+https://turborepo.com/docs/getting-started/installation
+https://turborepo.com/docs/crafting-your-repository/configuring-tasks
+https://turborepo.com/docs/reference/configuration
+https://registry.npmjs.org/turbo/2.10.12
+https://github.com/vercel/turborepo/releases/tag/v2.10.12
+
+GIT POLICY
+----------
+
+$ git --version
+git version 2.50.1
+
+$ git init --initial-branch=main
+Initialized empty Git repository
+
+Observed local configuration:
+branch=main
+core.autocrlf=false
+core.eol=lf
+pull.ff=only
+fetch.prune=true
+push.default=simple
+
+Git attribute assertions:
+- ordinary text: text=auto, eol=lf
+- .bat and .cmd: text, eol=crlf
+- named media, archive, font, and PDF formats: binary
+
+Ignore assertions that matched:
+- node_modules/pkg/index.js
+- .turbo/cache/task.log
+- dist/app.js
+- .env
+- .env.production
+- ROADMAP.md:Zone.Identifier
+- ROADMAP.md with the WSL private-use colon representation followed by Zone.Identifier
+
+Required tracking candidates that did not match an ignore:
+- evidence/phase-00/future.txt
+- .env.example
+- .env.test.example
+- pnpm-lock.yaml
+
+WORKSPACE AND INSTALL
+---------------------
+
+Workspace package locations declared:
+- apps/*
+- services/*
+- workers/*
+- packages/*
+
+Placeholder application, service, worker, and package directories observed: 0
+Discovered workspace projects: root only
+Shared lockfile: pnpm-lock.yaml, lockfile version 9.0
+
+$ pnpm install --lockfile-only
+result: PASS
+elapsed: 1.07 seconds
+maximum resident set observed: 217704 KiB
+
+$ pnpm install --frozen-lockfile
+result: PASS
+supply-chain policy entries verified: 7
+packages installed: 2 for the current Linux platform
+elapsed: 1.22 seconds
+maximum resident set observed: 368716 KiB
+
+$ pnpm exec turbo --version
+2.10.12
+
+TASK GRAPH
+----------
+
+$ pnpm exec turbo run toolchain:check toolchain:test --dry=json
+result: PASS
+monorepo: true
+packages: root only
+environment mode: strict
+tasks: //#toolchain:check and //#toolchain:test
+both tasks cache=false
+environment variables passed through: none
+
+$ pnpm check
+result: PASS
+tasks: 2 successful, 2 total
+cached: 0
+toolchain tests: 7 passed, 0 failed
+elapsed measured around the full pnpm command: 0.91 seconds
+maximum resident set observed: 141868 KiB
+
+Repeatability assertions:
+- `COREPACK_ENABLE_NETWORK=0 corepack install`: PASS from the provisioned cache
+- repeated frozen install changed no authoritative manifest, lockfile, workspace, or Turbo configuration bytes
+- combined authoritative-file SHA-256 after the repeat: 478da2c44682dd0c51528a3ac77ef039b48cb16527001854d2b62f191ce5fb3b
+- repeated Turbo dry-run: root only, strict environment, two uncached tasks
+- Docker daemon responsiveness check: 26.0.0
+
+Documentation and repository audit:
+- Markdown files: 127
+- Internal links: 196
+- Empty files, missing top-level titles, unbalanced fences, or broken links: 0
+- Restricted private-context vocabulary matches: 0
+- Existing Zone.Identifier files: 0
+
+BOUNDARIES AND LIMITATIONS
+-------------------------
+
+- No future application, service, worker, or reusable package was scaffolded.
+- node_modules and .turbo are generated, ignored, and non-authoritative.
+- The lockfile and root workspace policy are authoritative and remain tracking candidates.
+- P00-R04 still owns TypeScript, formatting, lint, unused-code, architecture-boundary, and commit-message tooling.
+- P00-R06 still owns authoritative dependency, secret, and CI review.
+- The GitHub remote is not created in this work item.
+- P00-R10 will repeat the full Phase 00 path from a clean public checkout.

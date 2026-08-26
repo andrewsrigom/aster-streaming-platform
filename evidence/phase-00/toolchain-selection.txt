@@ -1,0 +1,91 @@
+ASTER PHASE 00 TOOLCHAIN SELECTION EVIDENCE
+==========================================
+
+Work item: P00-R03
+Evidence date: 2026-08-26
+Commit: unavailable because P00-R02 has not initialized Git
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Guest userspace: Ubuntu 24.04
+Kernel observed: 6.18.33.2-microsoft-standard-WSL2
+
+SELECTION
+---------
+
+Node.js: 24.19.0
+- Node.js 24 is the active Krypton LTS line.
+- The published Node.js support schedule retains Node.js 24 through April 2028.
+- Exact patch pinning keeps local and CI behavior reproducible.
+
+pnpm: 11.24.0
+- The stable registry release declares Node.js >=22.13 compatibility, which includes Node.js 24.19.0.
+- Registry license metadata is MIT.
+- package.json pins the published SHA-512 integrity in its packageManager field.
+
+PRIMARY SOURCES CONSULTED
+-------------------------
+
+https://nodejs.org/en/about/previous-releases
+https://nodejs.org/en/blog/release/v24.11.0
+https://nodejs.org/dist/v24.19.0/
+https://pnpm.io/installation
+https://registry.npmjs.org/pnpm/11.24.0
+https://github.com/nodejs/corepack#readme
+
+ARTIFACT VERIFICATION
+---------------------
+
+Official Node.js SHASUMS256.txt entry:
+14b342e71204f811bde6153be8e04b62aef63c236fef92b55f9c83154b409647  node-v24.19.0-linux-x64.tar.xz
+
+pnpm 11.24.0 published registry integrity:
+sha512-vSfjRel23LC+C3oSKCF7BJqBfiGx81XJDb59xGZxiVqLwebQbCRVRQXqk+oLRfSJon7Bv7yN5qlln8oPFvoAAA==
+
+packageManager integrity in hexadecimal form:
+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000
+
+ACTIVE ENVIRONMENT
+------------------
+
+$ node --version
+v24.19.0
+
+$ COREPACK_ENABLE_NETWORK=0 pnpm --version
+11.24.0
+
+$ corepack --version
+0.35.0
+
+$ docker version --format '{{.Client.Version}} / {{.Server.Version}}'
+26.0.0 / 26.0.0
+
+ACCEPTANCE CHECKS
+-----------------
+
+$ node --test tools/verify-toolchain.test.mjs
+tests 7; pass 7; fail 0
+
+$ node tools/verify-toolchain.mjs
+{"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+
+Deliberate old-Node check:
+exit 1; Node.js 24.14.0 is unsupported; expected 24.19.0
+
+Deliberate pnpm user-agent mismatch:
+exit 1; pnpm 10.0.0 is unsupported; expected 11.24.0
+
+Empty Corepack cache with COREPACK_ENABLE_NETWORK=0:
+exit 1; Corepack reports that the pinned package manager is unavailable without a download.
+This verifies that the guard does not silently fetch tooling during validation.
+
+Repository artifact check:
+node_modules: absent
+pnpm-lock.yaml: absent
+pnpm-workspace.yaml: absent
+
+BOUNDARIES AND LIMITATIONS
+-------------------------
+
+- The validator uses only Node.js platform APIs and works before dependency installation.
+- It checks exact active versions and duplicated repository pins.
+- P00-R02 still owns Git initialization, workspace layout, lockfile generation, Turborepo selection, and deterministic bootstrap.
+- P00-R10 will repeat the complete Phase 00 gate from a clean checkout after Git and CI exist.

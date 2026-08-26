@@ -1,0 +1,41 @@
+# Dependency stores and installed trees
+node_modules/
+.pnpm-store/
+
+# Build, test, and task outputs
+.next/
+.turbo/
+.nyc_output/
+build/
+coverage/
+dist/
+out/
+*.tsbuildinfo
+
+# Runtime and temporary state
+.runtime/
+.tmp/
+tmp/
+temp/
+*.log
+*.pid
+*.seed
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+.secrets/
+.credentials/
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Desktop.ini
+Thumbs.db
+*Zone.Identifier
