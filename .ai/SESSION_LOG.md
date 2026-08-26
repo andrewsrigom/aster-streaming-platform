@@ -17,6 +17,7 @@ Append new entries at the top. Keep entries factual and concise.
 - Focused runtime gate: strict typecheck, build, and 33 of 33 tests pass, including deterministic deadline, force-close exception, real socket, real signal, logging, hostile input, and generated-declaration cases.
 - Candidate affected gate: 31 of 31 tasks passed with 16 cached in `9.202s` of Turbo task time.
 - Complete candidate gate: 31 of 31 tasks passed with zero cache in `15.44s`; wrapper elapsed `18.18s`; high-severity audit reports no known vulnerability.
+- Exact isolated checkout `62b3e4c`: offline frozen install reused 260 packages with zero download in `1.53s`; 33 focused tests and 31 of 31 uncached tasks in `21.102s` passed, as did audit, secret scan, clean Git, and exact temporary-root removal.
 - Documentation validates 134 documents and 335 internal links; repository-memory, architecture, lint, format, unused-code, CI, platform, community, security, and Git whitespace checks pass.
 - Implementation commit: `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea`; raw artifact: `evidence/phase-01/runtime-lifecycle.txt` (`IMPLEMENTED`).
 

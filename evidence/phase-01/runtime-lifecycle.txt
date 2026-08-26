@@ -81,7 +81,10 @@ Official references:
 - the affected candidate gate passed 31 of 31 tasks with 16 cached in `9.202s` of Turbo task time;
 - the complete candidate gate passed 31 of 31 tasks with zero cache in `15.44s`; wrapper elapsed `18.18s` with maximum observed wrapper RSS `616,676` KiB;
 - the high-severity audit reports no known vulnerability in `0.90s`;
-- protected CI, clean-checkout if later triggered, and bounded review gates remain pending.
+- exact local clean checkout `62b3e4ce1f1fe4a024c0794f92c6afc3f0e99b66` installed from the frozen lockfile in offline mode with 260 packages reused, zero downloaded, and `1.53s` elapsed; all 33 focused tests passed;
+- the clean checkout passed 31 of 31 complete tasks with zero cache in `21.102s`; wrapper elapsed `22.19s`, audit and full secret scan passed, and Git remained clean;
+- the exact WSL temporary root `/tmp/aster-p01-r05-clean.MfY5If` was revalidated by path and commit before removal; no Windows-side temporary clone was created;
+- protected CI and bounded review gates remain pending.
 
 ## Limitations and next evidence
 
@@ -90,5 +93,5 @@ Official references:
 - P01-R06 still owns process metrics, export queues, and drop metrics.
 - Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
 - Native Windows signal semantics are not claimed; the supported WSL path is measured.
-- The branch cannot publish or merge before frozen P00-R06 predecessor PR #11 completes. A predecessor change requires rebase and affected verification.
+- The branch cannot publish or merge before frozen P00-R06 predecessor PR #11 completes. Its exact-head run `32990397338` passed, but the official Actions incident remains open during queue recovery. A predecessor change requires rebase and affected verification.
 - Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until the affected candidate gate, complete acceptance gate, exact-source protected CI, and bounded review pass.

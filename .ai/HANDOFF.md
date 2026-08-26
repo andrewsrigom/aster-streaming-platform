@@ -4,7 +4,7 @@ Phase 00 is verified and released. P01-R01 and P01-R02 are released on `main`, a
 
 P01-R11 is `RELEASED` through protected squash `93147ac`; post-merge run `32982613740` passed every applicable job. P00-R06 is `RELEASED` through protected squash `92d3531`; post-merge run `32999467446` passed every applicable job, and both final-confirmation discussions are resolved.
 
-P01-R05 implementation commit `60e9808` is `IMPLEMENTED` locally on `feat/p01-r05-lifecycle` after replay onto released `main`. It provides the shared runtime lifecycle, stable health state, process signals, generalized in-flight coordination, dependency closure order, one overall shutdown deadline, stable lifecycle logging, and forced termination. Its pre-rebase 33 focused tests, affected gate, complete uncached gate, audit, documentation, and security checks pass. The branch must finish replaying its evidence/runway commits and repeat invalidated evidence before publication.
+P01-R05 implementation commit `60e9808` is `IMPLEMENTED` locally on `feat/p01-r05-lifecycle` after replay onto released `main`. It provides the shared runtime lifecycle, stable health state, process signals, generalized in-flight coordination, dependency closure order, one overall shutdown deadline, stable lifecycle logging, and forced termination. Its pre-rebase 33 focused tests, affected and working-tree complete gates, exact-clean-checkout gate, audit, documentation, security, clean Git, and recoverable cleanup checks pass. The branch must finish replaying its runway commit and repeat invalidated evidence before publication.
 
 ## Resume point
 
