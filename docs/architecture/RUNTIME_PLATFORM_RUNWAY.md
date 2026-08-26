@@ -90,6 +90,7 @@ Metric attributes never contain account, profile, title, user, request, event, t
 - Periodic export uses a finite interval, finite queue, and exporter timeout.
 - Export failure never fails a product request or readiness.
 - `forceFlush` and shutdown participate in the existing lifecycle `flushTelemetry` stage.
+- Concurrent flush and shutdown callers share provider work but retain caller-local cancellation; an aborted waiter cannot cancel or duplicate the shared operation.
 - A missing or stalled Collector produces a stable failure and drop signal but cannot hold shutdown beyond the lifecycle deadline.
 - Tests use a manual process-local metric reader first; the real Collector path belongs to P01-R09.
 

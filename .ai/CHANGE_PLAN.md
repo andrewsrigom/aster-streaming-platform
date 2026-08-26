@@ -55,7 +55,7 @@ Use an in-memory reader for deterministic tests and one optional periodic OTLP/H
 | Runtime observer or synchronous collection throws | Preserve product work, classify the collector, and allow later collection or shutdown | Stable collector failure category |
 | Exporter rejects, times out, or Collector is unreachable | Bound the attempt, record stable failure/drop state, and continue product work and readiness | Export result and bounded dropped-observation count |
 | Exporter ignores cancellation or never settles | Lifecycle deadline remains authoritative; shutdown returns without awaiting the exporter forever | Timeout/drop category when locally observable |
-| `forceFlush` or shutdown called concurrently/repeatedly | Share or serialize bounded work and close the provider once | One stable terminal result |
+| `forceFlush` or shutdown called concurrently/repeatedly | Share one bounded provider operation while each waiter retains caller-local cancellation; close the provider once | One stable result per caller without duplicate provider work |
 | Clock moves backward or supplies invalid duration | Reject the observation or clamp only according to an explicit tested rule | Stable invalid-duration category |
 | Active-resource inventory exceeds its ceiling | Aggregate overflow into one bounded category; never emit arbitrary resource names | Stable overflow resource series |
 

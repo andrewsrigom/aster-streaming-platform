@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Remediated joined telemetry cancellation
+
+### Completed
+
+- Protected run `33010364854` passed, initial evidence reply `3866468924` was posted, and lifecycle discussion `3866381774` was resolved.
+- Confirmation review `5034828379` found that a caller joining an active flush ignored its own abort until the owner's timeout.
+- Candidate `fbac8cc` separates shared timeout-bounded provider work from caller-local waiting for both flush and shutdown; it also classifies absorbed exporter failure on the shared flush result.
+
+### Evidence
+
+- Focused typecheck, build, nine tests, ESLint, Prettier, diagnostic, and 34 of 34 changed-scope tasks pass. Regressions prove joined flush abort under 100 milliseconds, one continuing owner, stable failed export classification, sanitized lifecycle rejection, shared shutdown, and an independently aborted shutdown waiter.
+- Exact no-local checkout reused 278 frozen offline packages with zero downloads in `2.76s`, passed 34/34 forced uncached tasks in `49.369s`, audit, secret scan, clean Git, exact SHA confirmation, and validated temporary-root cleanup.
+
+### Next action
+
+Publish `fbac8cc` plus evidence, pass protected CI, resolve confirmation finding `3866505207`, then obtain the permitted final blocking-boundary confirmation before verification and release.
+
 ## 2026-08-26 — Remediated telemetry lifecycle flush degradation
 
 ### Completed

@@ -148,7 +148,7 @@ Allowed HTTP routes are `/graphql`, `/health/live`, and `/health/ready`. Depende
 
 OTLP endpoints accept only bounded HTTP(S) URLs without embedded credentials. Export failures and timeouts update process-local health and drop counters without exposing endpoint text or exporter errors. A late exporter callback is ignored after the package-owned timeout, and the OpenTelemetry reader also owns a finite timeout and a single in-flight export.
 
-`forceFlush` and `shutdown` return sanitized bounded results. The `lifecycleHooks().flushTelemetry` adapter composes with the released P01-R05 lifecycle and never reflects an exporter error into product behavior or readiness. Runtime observers are disabled before provider shutdown, repeated shutdown is idempotent, and the lifecycle deadline remains authoritative if an exporter does not cooperate.
+`forceFlush` and `shutdown` return sanitized bounded results. Concurrent callers share one underlying operation while each caller retains its own cancellation path; canceling one waiter does not cancel or duplicate provider work. An exporter failure absorbed by the OpenTelemetry reader becomes a stable failed flush result. The `lifecycleHooks().flushTelemetry` adapter composes with the released P01-R05 lifecycle and never reflects an exporter error into product behavior or readiness. Runtime observers are disabled before provider shutdown, repeated shutdown is idempotent, and the lifecycle deadline remains authoritative if an exporter does not cooperate.
 
 ## SLIs
 
