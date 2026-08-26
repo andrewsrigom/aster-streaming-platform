@@ -18,12 +18,14 @@ export default typescriptEslint.config(
       ".git/**",
       ".turbo/**",
       "coverage/**",
-      "dist/**",
+      "**/dist/**",
       "docs/**",
       "evidence/**",
       "node_modules/**",
       "pnpm-lock.yaml",
     ],
+  },
+  {
     linterOptions: {
       reportUnusedDisableDirectives: "error",
     },

@@ -6,5 +6,11 @@
     "services/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}",
     "tools/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}",
     "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
-  ]
+  ],
+  "workspaces": {
+    "packages/config": {
+      "entry": ["src/index.ts", "src/check-runtime-config.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    }
+  }
 }
