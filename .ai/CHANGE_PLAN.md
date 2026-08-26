@@ -102,7 +102,7 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 ## Evidence
 
 - Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
-- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable by unchanged-path evidence. Protected CI run `33000352054` passes at `92f5d0a`. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle; remediation, confirmation review, merge, and post-merge evidence remain pending.
+- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable for unchanged bootstrap and packaging behavior. Protected CI run `33000352054` passes at `92f5d0a`. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle. Remediation `6b9acb2` plus exact focused 36-test, 15-task affected, documentation, memory, security, and audit gates pass; confirmation review, protected CI at the remediated head, merge, and post-merge evidence remain pending.
 - Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
 - Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
 - Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.

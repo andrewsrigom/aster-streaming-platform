@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED
 - Date: 2026-08-26
-- Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e` on local `feat/p01-r05-lifecycle`, replayed without lifecycle-source or bootstrap changes from original commit `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea` onto released `main` `92d3531b684ea259b840942f858584e5e364937c`
+- Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e` plus review remediation `6b9acb254ec85e113374db4e5764b1ca15909544` on `feat/p01-r05-lifecycle`, based on released `main` `92d3531b684ea259b840942f858584e5e364937c`
 - Owner: Aster shared runtime infrastructure
 - Related requirement: P01-R05
 - Environment: Docker Desktop host with WSL2; no Docker resource used by this experiment
@@ -34,20 +34,21 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-The current suite contains 33 tests across lifecycle, process-signal, Node.js HTTP, declaration-isolation, and existing structured-logging behavior. Lifecycle cases cover hostile options and accessors, health transitions, lease completion, shutdown order, one shared Promise, hook rejection, a deterministic deadline scheduler, repeated signals, force-close failure, logger failure, secret canaries, and bounded result fields.
+The current suite contains 36 tests across lifecycle, process-signal, Node.js HTTP, declaration-isolation, and existing structured-logging behavior. Lifecycle cases cover hostile options and accessors, health transitions, lease completion, shutdown order, one shared Promise, resource-closing rejection, telemetry-only degradation, a deterministic deadline scheduler, repeated signals, force-close failure, logger failure, secret canaries, and bounded result fields.
 
 The real-socket cases use one graceful request and one deliberately stuck request. The real-process case spawns the compiled fixture, waits for its `READY` marker, sends `SIGTERM`, and observes its hooks and exit status. Native Windows skips only this Unix signal-semantics case; WSL executes it.
 
 ## Results
 
-The focused typecheck, build, and all 33 tests pass after the rebase. The rebased focused test process completed in `249.703607 ms` before the repository gate.
+The focused typecheck, build, and all 36 tests pass at review-remediation commit `6b9acb2`. The exact focused test process completed in `263.163582 ms`; wrapper elapsed was `0.81s` with maximum observed RSS `142,588` KiB.
 
 | Observation | Result |
 |---|---|
 | Initial/ready/draining/failed/stopped snapshots | Stable and frozen; monotonic transitions pass |
 | Concurrent shutdown | Same Promise and one hook execution |
 | Ordered graceful stages | stop traffic, drain in-flight, stop consumers, flush telemetry, close dependencies |
-| Hook rejection | Stable failed stage, remaining eligible stages execute, raw canary absent |
+| Traffic, consumer, or dependency close rejection | Stable failed stage, remaining eligible stages execute, global force close runs once with `stage_failure`, raw canary absent |
+| Telemetry flush rejection | Stable failed stage, dependency closure executes, result remains degraded, raw canary absent |
 | Deterministic deadline | Shared signal aborted, force close called once, forced result returned |
 | Graceful real socket | Existing request completed; new connection refused after drain began |
 | Stuck real socket | Forced at the 100 ms configured deadline; latest observation `106.075123 ms` |
@@ -90,7 +91,12 @@ Official references:
 - the rebased `pnpm check:changed` gate selected the root and `@aster/runtime` scopes and passed 15 of 15 tasks with 3 cached in `8.186s` of Turbo task time; wrapper elapsed was `9.26s` with `620,012` KiB maximum observed RSS;
 - the high-severity audit after rebase reports no known vulnerability;
 - the previous clean-checkout evidence remains applicable: the rebase changes no dependency, lockfile, bootstrap, packaging, lifecycle source/test, generated-declaration input, or successful full-gate path. The predecessor's later runner changes affect interrupted execution and affected-mode ownership, both covered by P00-R06 protected evidence and the rebased affected gate, so they cannot invalidate the measured clean lifecycle build and execution;
-- protected CI and bounded review gates remain pending.
+- initial protected PR run `33000352054` passed every applicable job at candidate `92f5d0a39b34cdb165b20c88a5a585af7114cb38`;
+- initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline while leaving a live event-loop handle. Remediation `6b9acb254ec85e113374db4e5764b1ca15909544` continues eligible stages and then invokes the composition-wide force-close path once with stable reason `stage_failure`; isolated telemetry-flush rejection remains degraded because later dependency closure owns exporter resources;
+- exact remediation typecheck, build, and all 36 tests pass. The three resource-closing stages each have a rejection regression, telemetry-only degradation is separate, the real stuck socket closes in `105.884759 ms`, and the real `SIGTERM` subprocess completes in `74.792454 ms`;
+- exact-remediation `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `8.093s` of Turbo task time; wrapper elapsed was `9.27s` with maximum observed RSS `614,196` KiB. Documentation, repository memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass;
+- the high-severity audit reports no known vulnerability in `0.78s`;
+- confirmation review, protected CI at the remediated head, merge, and post-merge evidence remain pending.
 
 ## Limitations and next evidence
 
@@ -100,4 +106,4 @@ Official references:
 - Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
 - Native Windows signal semantics are not claimed; the supported WSL path is measured.
 - The original isolated checkout predates the squash rebase; its applicability is limited to unchanged bootstrap, lifecycle build, declarations, real socket/process behavior, and complete successful gate execution as reasoned above.
-- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until exact-source protected CI and the bounded review pass.
+- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until protected CI at the remediated head and the confirmation review pass.

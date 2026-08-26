@@ -115,7 +115,7 @@ Status: **IN_PROGRESS**
 - The corrective candidate passes 18 toolchain and 10 community tests on WSL, 31 of 31 forced WSL tasks in `24.622` seconds, and an exact public native-Windows clone with 31 of 31 forced tasks in `1m11.643s`; high-severity audit and clean Git pass. Evidence replies for confirmation findings `3864537199` and `3864537208` are posted and resolved.
 - The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
 - Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
-- P01-R05 implementation commit `60e9808` is `IMPLEMENTED` locally after replay onto released `main`: `@aster/runtime` now provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. The rebased focused typecheck, build, and 33 tests pass; the rebased affected gate passes 15 of 15 selected tasks; audit reports no known vulnerability. Exact pre-rebase checkout `62b3e4c` remains supporting evidence because Git proves lifecycle source, bootstrap, packaging, manifests, and generated-declaration inputs are unchanged.
+- P01-R05 implementation `60e9808` plus review remediation `6b9acb2` is `IMPLEMENTED` on released `main`: `@aster/runtime` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Initial protected run `33000352054` passed. Review discussion `3865708507` found that a rejected resource-closing hook could leave a live handle after the deadline was canceled; the remediation continues eligible stages and then invokes global force close once with `stage_failure`. Exact typecheck, build, 36 tests, the 15-task affected gate, documentation, memory, security, and audit pass. Exact pre-rebase checkout `62b3e4c` remains supporting evidence for unchanged bootstrap and packaging behavior; the changed lifecycle failure behavior has fresh local socket, process, and package evidence.
 
 ## Not implemented
 
@@ -139,7 +139,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Complete the P01-R05 rebase onto released `main`, repeat affected and real lifecycle evidence, publish it, and run the bounded review plus protected gates.
+Publish the P01-R05 review remediation once, pass protected CI at its exact head, resolve discussion `3865708507`, run the single confirmation review, and then complete protected merge plus post-merge verification.
 
 ## Current risks
 
