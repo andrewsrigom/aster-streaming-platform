@@ -4,7 +4,7 @@ Last verified: 2026-08-26
 
 ## Scope
 
-This report validates the static specification package and the current Phase 00 governance state before application implementation begins.
+This report validates the static specification package, executable repository foundation, and current Phase 00 closeout candidate before application implementation begins.
 
 ## Inventory
 
@@ -13,8 +13,8 @@ This report validates the static specification package and the current Phase 00 
 - Delivery phase specifications: **15**
 - Specialized agent skills: **16**
 - Architecture decision records, including the template: **11**
-- Total Markdown size: **490,759 bytes**
-- Local Markdown links checked: **254**
+- Total Markdown size: **521,572 bytes**
+- Local Markdown links checked: **284**
 
 ## Checks
 
@@ -34,6 +34,8 @@ This report validates the static specification package and the current Phase 00 
 | Required agent state and skill files exist | PASS |
 | Current status does not claim application implementation | PASS |
 | MIT repository scope is separated from media and dependency licensing | PASS |
+| Public `main` clone passes frozen bootstrap, complete gates, audit, cleanup, and recovery | PASS with documented hook-activation remediation |
+| Phase 01 container and FFmpeg capabilities are observed without preselecting supported versions | PASS |
 
 ## External references
 
@@ -41,8 +43,8 @@ External links are centralized in `../references/OFFICIAL_REFERENCES.md` and fav
 
 ## Implementation status
 
-This validation applies to documentation structure and consistency only. It is not evidence that application code, infrastructure, tests, deployments, or runtime behavior exist.
+The static inventory is not evidence that application code, infrastructure, deployments, or product runtime behavior exist. The repository-only executable foundation is covered separately by its focused tests and [clean-checkout evidence](../../evidence/phase-00/clean-checkout-closeout.txt).
 
 The executable static validation is implemented by `pnpm docs:check`; its adverse fixtures run through `pnpm docs:test`. External link reachability is deliberately outside this deterministic local command.
 
-Current audit artifacts are indexed under [`evidence/phase-00/`](../../evidence/phase-00/README.md). P00-R10 reruns the complete command from a clean public checkout.
+Current audit artifacts are indexed under [`evidence/phase-00/`](../../evidence/phase-00/README.md). P00-R10 passed the public-main clone after identifying and documenting the missing clone-local hook activation; the public candidate clone and protected closeout remain pending.

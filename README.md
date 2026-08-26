@@ -30,6 +30,7 @@ Run these commands from a POSIX shell such as Linux, macOS, WSL, or the reposito
 ```bash
 git clone https://github.com/andrewsrigom/aster-streaming-platform.git
 cd aster-streaming-platform
+git config --local core.hooksPath .githooks
 node --version
 corepack enable
 corepack install
@@ -38,7 +39,7 @@ pnpm install --frozen-lockfile
 pnpm toolchain:check
 ```
 
-`node --version` must print `v24.19.0`, and `pnpm --version` must print `11.24.0`. The frozen install rejects lockfile drift. The toolchain check rejects an unsupported active runtime or inconsistent repository pins.
+The local Git command activates the tracked repository hooks for this clone without changing user-global configuration. `node --version` must print `v24.19.0`, and `pnpm --version` must print `11.24.0`. The frozen install rejects lockfile drift. The toolchain check rejects an unsupported active runtime or inconsistent repository pins.
 
 ### Choose the check that matches the change
 

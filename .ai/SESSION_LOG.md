@@ -2,6 +2,26 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Clean public checkout and Phase 00 closeout in progress
+
+### Completed
+
+- Matched public and local `main` at `91dbc7a`, cloned the public HTTPS repository into a new bounded `/tmp` root, and confirmed the initial absence of repository-local dependencies, Turbo state, unwanted metadata, private context, and future scaffolding.
+- Found that a fresh clone left `core.hooksPath` unset, added explicit clone-local hook activation to the root and detailed bootstrap, and exercised the command without changing tracked or global Git state.
+- Passed frozen bootstrap, a first 20-task uncached gate with 78 tests, high-severity audit, real cleanup, frozen recovery, a second uncached gate, documentation, secret, Git integrity, and working-tree cleanliness checks.
+- Observed Docker/daemon `26.0.0`, Compose `2.26.1`, and FFmpeg/FFprobe `6.1.1` as available Phase 01 compatibility inputs without selecting supported versions.
+- Closed unmerged Dependabot pull request 1 because its grouped TypeScript 7 and Node 26 type majors cross the exact supported toolchain boundaries and require a dedicated compatibility work item.
+
+### Evidence
+
+- First clean gate: 20/20 tasks, 0 cached, 78 tests, `9.18` seconds wrapper; recovery gate: 20/20 tasks, 0 cached, 78 tests, `6.09` seconds wrapper.
+- Public-clone cleanup completed in `0.63` seconds; recovery materialized 110 packages from the warm store in `0.85` seconds with zero download; audit reported no known vulnerability.
+- Raw evidence: `evidence/phase-00/clean-checkout-closeout.txt`.
+
+### Next action
+
+Commit and publish the P00-R10 candidate, clone its public branch into a second empty temporary root, and require the clean bootstrap plus protected hosted closeout before marking Phase 00 verified.
+
 ## 2026-08-26 — Executable developer command contract
 
 ### Completed

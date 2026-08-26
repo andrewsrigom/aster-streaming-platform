@@ -24,13 +24,14 @@ The following tools are not required to execute the Phase 00 repository checkpoi
 After activating the pinned Node.js runtime, provision the repository package manager through Corepack, install from the lockfile, and run the current foundation gate:
 
 ```bash
+git config --local core.hooksPath .githooks
 corepack enable
 corepack install
 pnpm install --frozen-lockfile
 pnpm check
 ```
 
-`pnpm check` uses the pinned local Turborepo binary to run the active-version guard, source-quality checks, architecture checks, and their built-in tests. The guard rejects missing, malformed, prerelease, or non-exact active versions and inconsistent repository pins. It disables Corepack network access while detecting pnpm, so validation cannot silently download a package manager. The first Corepack provisioning and dependency installation require registry access; subsequent offline behavior depends on the local content-addressed cache.
+The Git command activates only this clone's tracked hooks and does not mutate global Git configuration. `pnpm check` uses the pinned local Turborepo binary to run the active-version guard, source-quality checks, architecture checks, and their built-in tests. The guard rejects missing, malformed, prerelease, or non-exact active versions and inconsistent repository pins. It disables Corepack network access while detecting pnpm, so validation cannot silently download a package manager. The first Corepack provisioning and dependency installation require registry access; subsequent offline behavior depends on the local content-addressed cache.
 
 ## Source-quality commands
 

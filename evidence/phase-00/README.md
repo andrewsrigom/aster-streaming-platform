@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Commit: the initial local commit is created after this index is finalized; P00-R10 records the final verified revision
+- Public main tested by P00-R10: `91dbc7a907e0fd30b6f0b17519aa717d9d945495`
 
 ## Verified work items
 
@@ -21,11 +21,12 @@
 | Publish and protect the public repository | P00-R07 remote | PASS_HOSTED | [`public-repository-governance.txt`](public-repository-governance.txt) |
 | Make repository memory consistency executable | P00-R08 execution workflow | PASS_HOSTED | [`ai-state-workflow.txt`](ai-state-workflow.txt) |
 | Publish exact developer commands and bounded foundation cleanup | P00-R09 | PASS_HOSTED | [`developer-command-contract.txt`](developer-command-contract.txt) |
+| Verify a clean public checkout and close the phase | P00-R10 | PASS_LOCAL_WITH_REMEDIATION | [`clean-checkout-closeout.txt`](clean-checkout-closeout.txt) |
 
-P00-R08 and P00-R09 local and protected hosted checks pass. The root developer command contract and bounded foundation cleanup are executable through ordinary local and pull-request paths.
+P00-R08 and P00-R09 local and protected hosted checks pass. The P00-R10 public-main clone found the missing clone-local hook activation, exercised its remediation, and passed both complete clean-checkout gates. A public candidate clone and protected closeout remain pending.
 
 ## Limitations
 
 - The public remote, first hosted `main` workflow, protected pull-request workflow, hosted dependency review, community surfaces, security settings, and active `main` ruleset are verified.
-- The public-clone result remains pending for P00-R10.
-- P00-R10 will rerun every Phase 00 check through documented commands from a clean checkout and replace these limitations with final evidence.
+- The initial public-main clone required the candidate hook-activation documentation fix; it is not mislabeled as the final candidate result.
+- P00-R10 will clone the public candidate branch, run the protected closeout, and replace these remaining limitations before Phase 00 is marked verified.
