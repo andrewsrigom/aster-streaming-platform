@@ -1,0 +1,285 @@
+ASTER P01-R02 DESTRUCTIVE LOCAL RESET EVIDENCE
+================================================
+
+Work item: P01-R02 explicit project-scoped destructive local reset
+Evidence date: 2026-08-26
+Implementation commit: 3fa3994efe1663b57fe8c982092a95dd79c86b8d
+Review remediation commit: d5f857cc933811804400485e08cf4c4d6923e84f
+Branch: feat/p01-r02-local-reset
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; linux/amd64 containers
+Acceptance: VERIFIED
+
+QUESTION AND SCOPE
+------------------
+
+Question: Can an operator deliberately remove the complete current Aster local Compose project and its durable PostgreSQL volume through one Docker-only command while unsafe inputs fail closed and unrelated Docker resources and images remain unchanged?
+
+Implemented scope:
+- one executable POSIX shell command with no Node.js or pnpm runtime dependency;
+- exact `ASTER_ENVIRONMENT=local` marker and `DELETE-ASTER-LOCAL-DATA` confirmation;
+- fixed Compose project `aster` and repository file `infra/compose/compose.yml`;
+- hosted CI, connection URL, Docker endpoint override, remote endpoint scheme, extra argument, symlink, service-set, resource-count, and label refusal;
+- explicit validation of Compose project, service, file, network, volume, environment, scope, authority, and owner labels;
+- scoped `docker compose down --volumes` with no image or broad prune operation;
+- zero-resource postconditions and empty-state idempotence.
+
+Explicitly absent:
+- hosted database, Redis, Docker daemon, credential, or infrastructure mutation;
+- arbitrary target, project, Compose file, URL, path, or passthrough option;
+- global container, network, volume, image, or system cleanup;
+- database backup, migration, seed, or product schema;
+- application service or endpoint.
+
+OFFICIAL COMMAND BEHAVIOR REVIEW
+--------------------------------
+
+Primary sources reviewed:
+- Compose project-name precedence: https://docs.docker.com/compose/how-tos/project-name/
+- Compose `down` behavior: https://docs.docker.com/reference/cli/docker/compose/down/
+- Compose named-volume labels: https://docs.docker.com/reference/compose-file/volumes/
+- Docker object-label inspection: https://docs.docker.com/engine/manage-resources/labels/
+
+The Docker documentation states that the CLI project-name option has the highest precedence. It also states that `down --volumes` removes named volumes declared by the Compose file, while external volumes are never removed. Compose automatically records project and logical-volume labels. The reset therefore pins the CLI project name and Compose file, rejects a model outside the reviewed service and volume set, verifies existing resource labels, and uses the supported Compose teardown instead of manually enumerating broad removals.
+
+HOST AND INITIAL STATE
+----------------------
+
+- Docker client: 26.0.0
+- Docker server: 26.0.0
+- Docker Compose: 2.26.1-desktop.1
+- Docker operating system and architecture: linux/amd64
+- Node.js used only for repository tests: 24.19.0
+- pnpm used only for repository tests: 11.24.0
+- implementation base: released P01-R01 main commit b4082e6d4917ca0989d58e70ee758b9aa6848d03
+- implementation commit: 3fa3994efe1663b57fe8c982092a95dd79c86b8d
+- Aster containers, networks, and volumes before the first empty reset: 0, 0, and 0
+- unrelated containers: 4, all stopped
+
+The unrelated containers were:
+- job-apply-assistant-postgres
+- inbox-cleaner-mcp-postgres-1
+- seusaas-platform-postgres-1
+- capta-postgres-local
+
+STATIC AND SIMULATED FAILURE VALIDATION
+---------------------------------------
+
+$ /bin/sh -n tools/reset-local-platform.sh
+result: PASS
+
+$ pnpm platform:check
+result: PASS, 0 violations
+
+$ pnpm platform:test
+result: PASS, 18 tests
+
+The 18 tests include 8 fake-Docker behavioral cases and 10 static platform-policy cases. They prove:
+- missing local intent and incorrect confirmation stop before Docker;
+- extra targets, hosted connection URLs, CI indicators, and Docker overrides stop before Docker;
+- a remote active endpoint stops before Compose;
+- unexpected labels stop before teardown;
+- the complete current or released P01-R01 service-label pair executes only the fixed `down --volumes` command;
+- partial service labels and Aster-prefixed resources without exact project ownership stop before teardown;
+- empty state is idempotent without creating resources;
+- Compose failure produces no broad fallback;
+- nonzero postconditions fail explicitly;
+- weakened confirmation, endpoint, fixed-project, label, public-command, image, network, persistence, readiness, resource, and lifecycle policies are rejected.
+
+$ pnpm ci:check
+result: PASS, 0 violations
+
+$ pnpm ci:test
+result: PASS, 18 tests
+
+The path classifier selects the isolated `Local platform` job for the reset script and its tests. The dependency-free governance job runs the reset adverse tests, and CI policy requires that command.
+
+REAL EMPTY-STATE AND REFUSAL CHECKS
+-----------------------------------
+
+$ ASTER_ENVIRONMENT=local DOCKER_HOST=<remote> ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+result: REFUSED before Docker resource inspection
+diagnostic: Docker endpoint and configuration overrides are prohibited
+
+$ ASTER_ENVIRONMENT=local CI=true ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+result: REFUSED before Docker resource inspection
+diagnostic: hosted or CI execution is prohibited
+
+$ COMPOSE_PROJECT_NAME=foreign-collision ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+result: PASS, already reset
+postcondition: Aster containers=0, networks=0, volumes=0
+
+POPULATED PROJECT AND LABEL CHECK
+---------------------------------
+
+$ COMPOSE_PROJECT_NAME=foreign-collision docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+result: PASS
+startup duration: 9.41 seconds
+
+A synthetic local table stored `preserve-until-confirmed`. Before reset:
+- Aster containers: 4
+- Aster networks: 1
+- Aster volumes: 1
+- PostgreSQL probe: preserve-until-confirmed
+
+Observed PostgreSQL container labels:
+- project: aster
+- service: postgres
+- environment: local
+- scope: platform
+- Compose file: the absolute checked-out `infra/compose/compose.yml`
+
+Observed network labels:
+- project: aster
+- logical network: platform
+- environment: local
+- scope: platform
+
+Observed volume labels:
+- project: aster
+- logical volume: postgres-data
+- authority: durable-local
+- environment: local
+- owner: platform
+
+The incorrect confirmation, a database URL variable, `GITHUB_ACTIONS`, and `DOCKER_CONTEXT` override were then attempted separately. Every call was refused. The resource counts remained 4, 1, and 1 and the PostgreSQL probe remained `preserve-until-confirmed`.
+
+CONFIRMED DESTRUCTIVE RESET
+---------------------------
+
+$ COMPOSE_PROJECT_NAME=foreign-collision ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+result: PASS
+elapsed: 1.79 seconds
+reported removal: containers=4, networks=1, volumes=1
+
+Postconditions:
+- Aster containers: 0
+- Aster networks: 0
+- Aster volumes: 0
+- foreign-collision containers: 0
+- PostgreSQL image ID before and after: sha256:d2c2da7ea137ccb8cf7b9e585c58af5527e8302e9e43ed856621183c04ab6149
+- Redis image ID before and after: sha256:cc48e0fe25c0095fb69b711b6c110b3801e7b30189e14358a5f16d4a747c9ec0
+- unrelated-container snapshot hash before and after: cf558df11e62c0741113eed97e56509dd3b7d6c6c374d6b6cbc0ea269f8f709e
+
+RECOVERY AND PARTIAL-STATE RESET
+--------------------------------
+
+$ docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+result: PASS
+clean restart duration: 7.40 seconds
+PostgreSQL `to_regclass` probe: previous table absent
+service state: PostgreSQL, Redis, and status healthy; initializer exited 0
+
+$ docker compose --project-name aster --file infra/compose/compose.yml down
+result: PASS
+postcondition: containers=0, networks=0, volumes=1
+
+$ ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+result: PASS
+elapsed: 0.86 seconds
+reported removal: containers=0, networks=0, volumes=1
+postcondition: containers=0, networks=0, volumes=0
+
+An immediate repeat returned `aster local platform is already reset` and created no resource.
+
+CLEAN PUBLIC-CHECKOUT REPEAT
+----------------------------
+
+A new empty directory cloned the public branch over HTTPS at implementation commit `3fa3994efe1663b57fe8c982092a95dd79c86b8d`. The checkout had no `node_modules` and used no host Node.js or pnpm command.
+
+Commands exercised:
+- the exact documented empty reset with hostile `COMPOSE_PROJECT_NAME`;
+- the exact documented health-gated startup;
+- creation and readback of one synthetic PostgreSQL marker;
+- the exact documented destructive reset with hostile `COMPOSE_PROJECT_NAME`.
+
+Results:
+- startup: PASS in 7.33 seconds
+- PostgreSQL marker: 1
+- reset: PASS in 1.79 seconds
+- reported removal: containers=4, networks=1, volumes=1
+- Aster containers, networks, and volumes afterward: 0, 0, and 0
+- foreign-collision containers afterward: 0
+- unrelated-container snapshot: unchanged
+- checkout origin, commit, and Git status: expected and clean
+
+The bounded temporary clone path was validated against its absolute `/tmp/aster-p01-r02-public-*` shape, origin, commit, and clean status before removal.
+
+REVIEW REMEDIATION AND SAME-CHECKOUT UPGRADE
+--------------------------------------------
+
+Automated review comment `3861318803` identified that released P01-R01 containers have exact Compose project, service, and file labels but predate the new service-level `com.aster.environment` and `com.aster.scope` labels. The initial reset refused that valid upgrade state. P01-R02 was reopened before remediation.
+
+A new public checkout reproduced the exact upgrade path in one unchanged directory:
+
+1. clone public `main` at released commit `b4082e6d4917ca0989d58e70ee758b9aa6848d03`;
+2. start the exact P01-R01 public platform command;
+3. create and read PostgreSQL marker `42`;
+4. observe container labels `aster|postgres|||<same absolute Compose file>`;
+5. fetch and switch the same checkout to remediation `d5f857cc933811804400485e08cf4c4d6923e84f` without recreating containers;
+6. run the exact confirmed P01-R02 reset with hostile `COMPOSE_PROJECT_NAME`.
+
+Results:
+- released startup: PASS in 7.42 seconds;
+- legacy marker: 42;
+- legacy upgrade reset: PASS in 3.56 seconds;
+- reported removal: containers=4, networks=1, volumes=1;
+- Aster containers, networks, and volumes afterward: 0, 0, and 0;
+- collision-project containers: 0;
+- unrelated-container snapshot: unchanged;
+- same checkout after switch: Git-clean.
+
+The remediation accepts only `local|platform` or the complete empty legacy pair. Project, service, absolute Compose file, service allowlist, counts, network labels, and volume labels remain exact. A partial `local|` pair fails in the fake-Docker test.
+
+Manual review additionally identified that label-only discovery could miss an Aster-prefixed physical resource whose project label was absent. The corrected reset preflights Aster-prefixed names. A real fixture volume `aster_unowned-reset-probe` with no Compose project label was refused and preserved. Its exact name and synthetic test label were validated before targeted fixture removal; Aster project counts remained 0, 0, and 0.
+
+The bounded upgrade checkout was validated against its absolute `/tmp/aster-p01-r02-upgrade-*` shape, public origin, remediation commit, and clean status before removal.
+
+COMPLETE QUALITY DECISION
+-------------------------
+
+$ TURBO_FORCE=true pnpm check
+result: PASS
+tasks: 22 of 22
+cached tasks: 0
+Turbo elapsed: 6.109 seconds
+platform/reset tests: 18 passed
+CI classifier/policy tests: 18 passed
+documentation scan: 130 documents, 1,832 headings, 302 local links, 4 supported status claims
+secret scan: 0 findings
+
+$ pnpm platform:compose:check
+result: PASS
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities
+
+After the evidence and repository-memory closeout were added, the forced complete gate passed again with 22 of 22 tasks, 0 cached, and 6.492 seconds of Turbo time. The final documentation scan covered 130 documents, 1,822 headings, 306 local links, and 4 supported status claims; Compose parsing, secret scanning, audit, and zero Aster resource counts passed again.
+
+The active review-remediation gate passed 22 of 22 uncached tasks in 8.266 seconds. After the same-checkout upgrade evidence and final state closeout, the complete gate passed again in 8.129 seconds with 18 platform/reset tests, 18 CI tests, 130 documents, 1,822 headings, 304 local links, 4 supported status claims, zero secret findings, successful Compose parsing and audit, and zero Aster project resources.
+
+SECURITY, FAILURE, AND RECOVERY INTERPRETATION
+----------------------------------------------
+
+- The operator is the actor; local durable PostgreSQL data and unrelated Docker resources are the protected assets.
+- Arguments, environment, Docker context metadata, repository paths, Compose model, and Docker labels are untrusted boundaries.
+- The command prints no connection URL, credential, Docker certificate path, database content, or secret environment value.
+- Every refusal and metadata failure occurs before the scoped teardown.
+- A teardown or postcondition failure exits nonzero and deliberately avoids global fallback cleanup.
+- The command retains images and build cache. Recovery from an intentional reset is a new empty startup; migrations, seeds, and backup restore remain owned by later work.
+- No GraphQL, browser, accessibility, product-data, event, cache-key, or application-runtime behavior changes in this work item.
+
+LIMITATIONS
+-----------
+
+- Runtime evidence covers Docker Desktop through WSL on linux/amd64. Native Windows, macOS, rootless Docker, Podman, alternate Compose implementations, and arm64 runtime behavior remain unverified.
+- A local Unix socket or Windows named pipe proves the ordinary client endpoint is local; it cannot prove that a deliberately installed local proxy does not forward elsewhere.
+- The fixed service and volume allowlists match the current P01-R01 slice. Later Phase 01 dependencies must update the reset contract and adverse tests before their data becomes resettable.
+- The command intentionally rejects Docker configuration overrides, CI environments, and exported database or Redis URL variables even when an operator believes they are local; the safe recovery is to unset them and re-run against the inspected local context.
+- Deleted local PostgreSQL data is irreversible because backup, migration, and seed recovery are not implemented yet.
+
+ACCEPTANCE
+----------
+
+P01-R02: PASS / VERIFIED
+
+The repository provides one explicit destructive reset command. It requires deliberate local intent, uses an immutable project and Compose target, refuses common hosted and ambiguous execution paths, detects Aster-prefixed resources hidden from project-label discovery, accepts only exact current or released P01-R01 service ownership, removes only the current Aster project and named local volume, proves zero Aster resources afterward, preserves unrelated Docker state and images, recovers through a clean startup, and is idempotent from empty state.

@@ -13,6 +13,8 @@ const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as cons
 const PLATFORM_PREFIXES = ["infra/compose/"] as const;
 const PLATFORM_FILES = new Set([
   ".github/workflows/ci.yml",
+  "tools/reset-local-platform.sh",
+  "tools/reset-local-platform.test.mjs",
   "tools/verify-local-platform.mjs",
   "tools/verify-local-platform.test.mjs",
 ]);

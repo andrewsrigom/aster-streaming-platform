@@ -31,7 +31,7 @@
     "lint": "eslint .",
     "platform:check": "node ./tools/verify-local-platform.mjs",
     "platform:compose:check": "docker compose -f ./infra/compose/compose.yml config --quiet",
-    "platform:test": "node --test ./tools/verify-local-platform.test.mjs",
+    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/reset-local-platform.test.mjs",
     "security:check": "node ./tools/scan-secrets.ts --all",
     "security:staged": "node ./tools/scan-secrets.ts --staged",
     "security:test": "node --test ./tools/scan-secrets.test.ts",

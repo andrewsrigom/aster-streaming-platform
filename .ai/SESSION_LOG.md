@@ -2,6 +2,33 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified destructive local reset and review remediation
+
+### Completed
+
+- Added one Docker-only POSIX reset requiring `ASTER_ENVIRONMENT=local` and exact confirmation while fixing the Aster project, repository Compose file, inspected local Docker context, reviewed service and volume sets, resource labels, and zero-resource postconditions.
+- Refused hosted CI, connection URLs, Docker endpoint/configuration overrides, remote endpoint schemes, extra arguments, symbolic repository inputs, duplicate or unexpected resources, label drift, failed Compose teardown, and nonzero postconditions without broad cleanup or sensitive-value output.
+- Added local-scope labels to all four services, 8 fake-Docker reset tests, 10 static platform-policy tests, path-aware CI classification, governance execution, and CI-policy enforcement.
+- Started 4 Aster containers with a synthetic PostgreSQL marker; four unsafe reset attempts preserved the `4/1/1` resource state and marker, while the confirmed reset removed exactly 4 containers, 1 network, and 1 volume in `1.79` seconds.
+- Verified unchanged PostgreSQL and Redis image IDs, unchanged snapshot of 4 unrelated stopped containers, zero collision-project resources, a `7.40`-second clean restart with the previous table absent, a `0.86`-second volume-only reset after normal stop, and empty-state idempotence.
+- Pushed implementation commit `3fa3994`, cloned it from the public GitHub branch into an empty path, used no Node.js or pnpm command, reached health in `7.33` seconds, read a synthetic PostgreSQL marker, reset in `1.79` seconds, returned Aster and collision resources to zero, preserved unrelated state, and removed only the validated clean temporary clone.
+- A first combined experiment wrapper reached healthy startup but its following SQL command had shell-quoting failure; no teardown or data mutation occurred, and the corrected marker command and complete experiment passed.
+- Passed 22 of 22 forced uncached repository tasks in `6.109` seconds and the final closeout repeat in `6.492` seconds, plus 18 platform/reset tests, 18 CI tests, Compose parsing, shell syntax, documentation, memory, secret, Git-diff, and high-severity registry-audit gates.
+- Reopened P01-R02 after review comment `3861318803` proved released P01-R01 containers lack the new service-level Aster labels; added exact compatibility for the complete legacy pair without weakening project, service, file, network, volume, authority, owner, service-set, or count checks.
+- Added physical-name preflight so Aster-prefixed containers, networks, or volumes without exact project ownership fail before label-filtered discovery; a real unowned fixture volume was refused and preserved before exact targeted fixture cleanup.
+- Cloned released public `main`, reached health in `7.42` seconds, stored marker `42`, observed the legacy empty label pair, switched the same clean checkout to `d5f857c`, and reset `4/1/1` resources in `3.56` seconds with zero Aster/collision state and unchanged unrelated containers.
+- Passed the first remediation forced gate with 22 of 22 uncached tasks in `8.266` seconds and the final evidence/state closeout in `8.129` seconds, with 18 focused platform/reset tests, 18 CI tests, Compose parsing, audit, documentation, memory, secret validation, and zero Aster resources.
+
+### Evidence
+
+- Populated reset: `1.79` seconds; clean recovery: `7.40` seconds; stopped-volume reset: `0.86` seconds.
+- Clean public-checkout startup: `7.33` seconds; reset: `1.79` seconds.
+- Raw evidence: `evidence/phase-01/local-reset.txt` (`VERIFIED`).
+
+### Next action
+
+Pass corrected protected CI, reply to and resolve review comment `3861318803`, merge P01-R02, confirm post-merge `main`, then create a new active plan for P01-R03.
+
 ## 2026-08-26 — Verified core local platform checkpoint
 
 ### Completed

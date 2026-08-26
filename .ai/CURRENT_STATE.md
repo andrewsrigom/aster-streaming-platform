@@ -49,11 +49,20 @@ Status: **IN_PROGRESS**
 - Every Phase 00 requirement has linked acceptance evidence; the repository foundation is `VERIFIED`, and no application behavior is claimed.
 - Docker/daemon `26.0.0` and Compose `2.26.1` are the measured P01-R01 support floor; FFmpeg/FFprobe `6.1.1` remain capability observations for their future owning work.
 - The P01-R01 candidate pins official PostgreSQL `18.6-alpine3.23` and Redis `8.10.0-alpine` multi-platform images by digest, records their separate licenses, and enforces an internal network, no host ports, finite resources, PostgreSQL persistence, and disposable Redis state.
-- Dependency-free platform policy validation and 8 adverse tests pass, including rejection of public project-name overrides; the CI classifier and aggregate add a path-aware local-platform lane with 18 passing policy tests without making the normal source gate require Docker.
+- Dependency-free platform and reset policy validation plus 18 focused tests pass, including rejection of public project-name overrides, confirmation bypass, hosted targets, remote endpoints, unexpected labels, broad cleanup, failed teardown, and nonzero postconditions; the CI classifier and aggregate retain a path-aware local-platform lane with 18 passing policy tests without making the normal source gate require Docker.
 - A unique empty local Compose project passed immutable pull, 9.80-second health-gated startup, one-shot PostgreSQL and Redis protocol initialization, ongoing status, exact version checks, persistence and disposal semantics, 13.945-second dependency-failure detection, 2.834-second recovery, data-preserving stop/restart, resource inspection, and unrelated-project isolation.
 - Public candidate commit `563d09f` started through the exact README Docker-only command from a new public clone with no existing Aster project resources; status became healthy in 7.39 seconds, exact dependency versions passed, the normal stop preserved PostgreSQL, and exact verification cleanup returned all Aster project resource counts to zero.
 - Protected pull request 6 run `32947483503` passed change classification, dependency review, documentation/security, frozen source quality and audit, the first hosted `Local platform` pull/start/protocol/cleanup job, and the stable required aggregate.
 - Automated review discussion `3860940991` identified inherited project-name override risk. Corrected candidate `c246051` explicitly pins every public operation to `aster`, passes 8 adverse platform tests, starts from a clean public clone with a hostile `COMPOSE_PROJECT_NAME` while creating 4 Aster and 0 collision containers, preserves PostgreSQL on normal stop, cleans exact project state to zero, passes protected run `32948639792`, and has the review thread resolved.
+- P01-R02 implementation commit `3fa3994` adds the explicit Docker-only reset with fixed local intent, confirmation, project, Compose file, endpoint and label validation, no broad fallback, and zero-resource postconditions; 18 focused platform/reset tests and 18 CI tests pass.
+- Automated review comment `3861318803` proved that released P01-R01 containers lack the new service-level Aster labels. Remediation `d5f857c` accepts only the complete current `local|platform` pair or complete absent legacy pair while preserving exact project, service, Compose-file, network, volume, authority, owner, allowlist, and count checks.
+- A same-checkout public upgrade started released `main` at `b4082e6`, stored marker `42`, observed `aster|postgres|||<same Compose file>`, switched without recreation to `d5f857c`, and reset 4 containers, 1 network, and 1 volume in `3.56` seconds with zero Aster/collision resources, unchanged unrelated state, and clean Git.
+- A real Aster-prefixed volume without a Compose project label was refused and preserved; its exact synthetic fixture identity was validated before targeted removal, leaving Aster project resources at zero.
+- The active review-remediation gate passed 22 of 22 uncached tasks in `8.266` seconds and the final evidence/state closeout passed in `8.129` seconds; both retained 18 platform/reset tests and 18 CI tests with Compose, documentation, memory, secret, audit, and zero-resource checks passing.
+- A populated Aster project retained a PostgreSQL marker through four unsafe reset refusals, then the confirmed reset removed only 4 Aster containers, 1 network, and 1 volume in `1.79` seconds while image IDs and the 4 unrelated stopped containers remained unchanged.
+- A clean restart became healthy in `7.40` seconds with the prior table absent; normal stop preserved exactly 1 volume, the partial-state reset removed it in `0.86` seconds, and an empty repeat created no resource.
+- A clean public checkout at `3fa3994` used only Git, shell, and Docker, reached health in `7.33` seconds, read a synthetic PostgreSQL marker, reset in `1.79` seconds with hostile `COMPOSE_PROJECT_NAME`, returned Aster and collision resources to zero, preserved unrelated state, and remained Git-clean.
+- The forced complete local graph passed 22 of 22 uncached tasks in `6.109` seconds and its full closeout repeat passed in `6.492` seconds; Compose parsing, shell syntax, documentation, repository memory, secret scanning, and the high-severity registry audit passed.
 
 ## Not implemented
 
@@ -68,7 +77,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Start P01-R02 with a new active change plan and implement only an explicit destructive reset that proves local scope, exact project identity, confirmation behavior, and refusal of hosted targets.
+After P01-R02 review resolution, protected CI, and post-merge state are unambiguous, start P01-R03 by selecting and recording the configuration-validation approach and implementing only process-start validation with explicit secret classification.
 
 ## Current risks
 
@@ -82,9 +91,12 @@ Start P01-R02 with a new active change plan and implement only an explicit destr
 - Foundation cleanup intentionally does not remove Docker state or future durable local data; Phase 01 must implement and verify a separate explicit project-scoped reset.
 - Both P00-R10 clones reused warm Corepack and pnpm content-addressable stores; cold-registry latency and full offline bootstrap on an empty machine remain unmeasured.
 - Native Windows and macOS foundation execution are not measured; the verified local path is the named WSL environment and hosted CI covers Ubuntu 24.04.
-- P01-R01 selects only the Docker/Compose floor plus PostgreSQL and Redis; broker, object storage, telemetry, FFmpeg use, application ports, and the destructive reset remain intentionally unselected.
+- P01-R01 and P01-R02 select only the Docker/Compose floor, PostgreSQL, Redis, and the guarded current-slice reset; broker, object storage, telemetry, FFmpeg use, and application ports remain intentionally unselected.
 - Redis `8.10.0` uses the AGPLv3 option from its tri-license as an unmodified external service; redistribution, modification, or a hosted Redis offering requires a new license review.
 - P01-R01 runtime behavior is measured only on Docker Desktop/WSL amd64; the image indexes include arm64 but native Windows, macOS, rootless Docker, Podman, and alternate Compose implementations remain unverified.
+- P01-R02 accepts ordinary local Unix sockets and Windows named pipes; it cannot prove that a deliberately installed local proxy does not forward to a remote daemon.
+- The reset allowlists the current four services and PostgreSQL volume; later local dependencies must extend its exact ownership checks and evidence before their state becomes resettable.
+- Intentional reset is irreversible until phase-owned migration, seed, backup, and restore capabilities exist.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and first Phase 01 local-platform checkpoint are verified. [P01-R01 evidence](evidence/phase-01/local-platform-checkpoint.txt) includes explicit project scoping, a hostile-environment clean public clone, protected hosted execution, and resolved automated review; application implementation has not started.**
+**The Phase 00 repository foundation and the first two Phase 01 local-platform work items are verified. [P01-R02 evidence](evidence/phase-01/local-reset.txt) covers fresh-state reset, released P01-R01 same-checkout upgrade, hosted-target refusals, hidden-resource refusal, clean recovery, and unrelated-resource preservation; application implementation has not started.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -97,7 +97,15 @@ Stop the checkpoint while preserving its PostgreSQL volume with:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`, so every public command remains scoped to Aster. Do not add `--volumes`: P01-R02 owns the future explicit destructive reset and its local-only safety checks. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
+Delete the complete Aster local project, including its durable PostgreSQL volume, only with the explicit destructive reset:
+
+```bash
+ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+```
+
+This operation is irreversible for current local data. It accepts no alternate project, path, URL, Docker endpoint override, hosted CI environment, or extra flag. It inspects the active Docker context and every discovered Aster container, network, and volume before calling the fixed project teardown, then requires zero Aster project resources afterward. It retains container images and unrelated Docker resources. Run the normal `down` command when PostgreSQL data must survive.
+
+The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`, so every public command remains scoped to Aster. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics and reset recovery behavior in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 
