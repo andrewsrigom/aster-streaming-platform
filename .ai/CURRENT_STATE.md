@@ -94,6 +94,7 @@ Status: **IN_PROGRESS**
 - ADR-0011 accepts Express 5 behind the transport adapter after comparing Fastify 5, native Node.js HTTP, and Apollo standalone behavior. Apollo Server `5.5.1`, `@as-integrations/express5@1.1.2`, and GraphQL.js `16.14.2` are exact-pinned test dependencies, not a product schema or service.
 - Eight focused tests pass for hostile construction, pre-mount state, exact route and middleware order, media type, malformed and oversized JSON, parser-category isolation, async rejection sanitization, socket cancellation, real Apollo query execution, in-flight HTTP drain, subprocess output, and declaration boundaries.
 - Strict package build/typecheck, repository lint, formatting, Knip, architecture, secret, license, and high-severity audit checks pass. The forced local graph passed 31 of 31 uncached tasks in `22.35` seconds. The isolated compatibility process exited 0 at `0.26` seconds and `94,020` KiB maximum RSS versus `0.01` seconds and `42,380` KiB for an empty Node.js process; this is not a benchmark.
+- A clean HTTPS clone of exact public candidate `e7b0c2b` started without dependencies or Turbo state, reused 259 packages with zero download through frozen install, passed eight focused HTTP tests and the diagnostic, passed 31 of 31 forced uncached tasks in `20.594` seconds, passed audit and secret scanning, and remained Git-clean before exact temporary-root removal. Docker was not invoked.
 
 ## Not implemented
 
@@ -108,7 +109,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the P01-R11 candidate through the complete local graph, a frozen clean public checkout, protected CI, hosted dependency review, and independent review without adding a product service or lifecycle implementation early.
+Verify the P01-R11 candidate through protected CI, hosted dependency review, and independent review without adding a product service or lifecycle implementation early.
 
 ## Current risks
 

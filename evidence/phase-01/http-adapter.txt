@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED
 - Date: 2026-08-26
-- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; documentation candidate pending
+- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; clean-checkout candidate `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`
 - Owner: Aster shared transport infrastructure
 - Related requirement: P01-R11
 - Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
@@ -98,7 +98,16 @@ The current production license inventory resolves only MIT, ISC, and BSD-3-Claus
 - Secret scan: zero finding.
 - Registry audit: no known vulnerability at the high threshold.
 - Process observation: diagnostic `0.26s / 94,020 KiB`; empty Node.js `0.01s / 42,380 KiB`.
-- Clean public checkout, protected CI, hosted dependency review, independent review, and final candidate commit: pending.
+- Clean public checkout: exact public candidate `e7b0c2b`, frozen install with 259 packages reused and zero downloaded in `1.4s`; 8 focused tests, diagnostic, 31 of 31 forced tasks in `20.594s`, audit, secret scan, and clean Git passed.
+- Protected CI, hosted dependency review, independent review, and final verified candidate: pending.
+
+## Clean public checkout
+
+The public feature branch was cloned over HTTPS into a new empty `/tmp/aster-p01-r11-public-*` directory and resolved exact commit `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`. Before installation, neither `node_modules` nor `.turbo` existed. `corepack pnpm install --frozen-lockfile` reused 259 packages from the content-addressable store, downloaded zero packages, and completed in `1.4s` with the lockfile unchanged.
+
+`corepack pnpm http:test` passed all eight focused assertions through two uncached tasks in `4.357s`. `corepack pnpm http:check` emitted the one expected diagnostic record and exited zero. The complete `corepack pnpm check --force` graph passed 31 of 31 uncached tasks in `20.594s`; documentation covered 133 files and 327 local links. The high-severity registry audit reported no known vulnerability, the secret scan found zero issue, and Git remained clean.
+
+The temporary root was resolved and checked as a regular repository under the fixed `/tmp/aster-p01-r11-public-*` prefix. Its public origin, exact candidate SHA, and clean state were revalidated immediately before removing only that root and proving its absence. The experiment did not invoke Docker or modify any container, network, volume, image, or persistent local-platform state.
 
 ## Interpretation
 
@@ -108,7 +117,7 @@ The process pair is a compatibility and startup-cost observation only. It does n
 
 ## Limitations
 
-- Clean public-checkout, protected CI, hosted dependency review, independent review, and final release evidence are still pending.
+- Protected CI, hosted dependency review, independent review, and final release evidence are still pending.
 - The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
 - Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.
 - The drain test proves one in-flight HTTP operation. P01-R05 still owns process signals, readiness, dependency close order, the global shutdown deadline, timeout behavior, and forced termination.

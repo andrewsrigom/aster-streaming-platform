@@ -15,18 +15,21 @@ Append new entries at the top. Keep entries factual and concise.
 - Passed focused build/test/diagnostic, strict package typecheck, repository lint, formatting, Knip, architecture, secret scanning, license inventory, and high-severity registry audit. Eight tests pass and the diagnostic emits one stable JSON line.
 - Recorded an isolated non-benchmark process pair: HTTP/Apollo diagnostic `0.26` seconds and `94,020` KiB maximum RSS; empty Node.js `0.01` seconds and `42,380` KiB.
 - Implementation commit `e355e29` passed the complete forced local graph with 31 of 31 uncached tasks in `22.35` seconds, retaining all HTTP, logging, configuration, repository-tool, documentation, memory, security, architecture, and CI-policy assertions.
+- Published candidate `e7b0c2b`, cloned it over HTTPS into an empty temporary root, completed frozen install with 259 packages reused and zero downloaded, passed eight focused tests and the diagnostic, and passed 31 of 31 forced uncached tasks in `20.594` seconds.
+- The clean public candidate also passed audit, secret scanning, and clean-Git checks. Its resolved temporary path, public origin, exact SHA, and clean state were revalidated before only that root was removed; Docker was not invoked.
 
 ### Evidence
 
 - Local branch: `feat/p01-r11-http-adapter` from released `main` commit `e33f90b1bfee157749e5b290bffd0a80d169c697`.
 - Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
+- Clean public checkout: `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`; 31 tasks, 0 cached, `20.594s`.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Run the complete forced local graph, create coherent implementation/documentation commits, and verify the exact public candidate through a clean checkout before protected CI and review.
+Commit and push the clean-checkout evidence, then open the protected pull request and capture hosted CI, dependency review, and independent review.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 
