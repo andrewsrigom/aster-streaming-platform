@@ -2,6 +2,31 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented structured runtime logging baseline
+
+### Completed
+
+- Activated P01-R04 with an explicit shared-runtime owner, standard-output disclosure boundary, failure modes, redaction limits, trace-provider port, rollback, and evidence plan.
+- Selected exact-pinned Pino `10.3.1` after current release, Node.js compatibility, initialization-time redaction, MIT license, security-policy, dependency, installed-cost, audit, and replacement-boundary review.
+- Added `@aster/runtime` behind repository-owned declarations with fixed service/environment/version context, string severity and ISO timestamp, bounded stable events, optional operation/outcome/request/event/error/duration context, and at most 32 scalar attributes.
+- Added reviewed sensitive-key canonicalization and defense-in-depth Pino redaction; raw Error messages, stacks, and arbitrary properties never enter output, while built-in types, stable codes, categories, and four bounded causes remain diagnosable.
+- Added an injected active-trace provider that accepts only non-zero lowercase 32-hex trace IDs, 16-hex span IDs, and optional byte trace flags; invalid or throwing providers are omitted without failing the requested event.
+- Added safe invalid-record fallback, pre-access collection bounds, data-property-only tuple/error-cause handling, reserved base-field isolation, level-first filtering, cause-free option errors, and failed-write results for synchronous destination exceptions.
+- Added a runnable two-record diagnostic and 14 direct/subprocess tests covering JSON, levels, async context handoff, invalid providers, representative redaction, collisions, error truncation and accessors, excessive and accessor-backed properties, destination/options failures, canary absence, process exit, and public declaration isolation.
+- Implementation commit `fca410d` passed focused build/test/typecheck, lint, formatting, Knip, architecture, secret scan, production license inventory, and high-severity audit.
+- The complete repository graph passed 28 of 28 forced uncached tasks in `9.762` seconds. Documentation validated 131 files and 317 local links; repository memory and secret scans reported zero violation.
+
+### Evidence
+
+- Implementation: `fca410d236a3761e37e42d19244e68d27bd1bd88`.
+- Focused run: 2 Turbo tasks, 0 cached, 14 tests passed in `1.104` seconds.
+- Isolated diagnostic: exit 0, two JSON lines, `0.04` seconds, `60,680` KiB maximum RSS; empty Node.js baseline: `0.02` seconds, `42,484` KiB.
+- Raw artifact: `evidence/phase-01/runtime-logging.txt` (`IMPLEMENTED`; clean checkout and protected review pending).
+
+### Next action
+
+Commit and push the documentation/evidence block, verify an empty public checkout at the exact candidate, open the protected pull request, pass dependency and CI review, resolve actionable findings, then close P01-R04 only after final evidence is current.
+
 ## 2026-08-26 — Implemented fail-fast reference runtime configuration
 
 ### Completed

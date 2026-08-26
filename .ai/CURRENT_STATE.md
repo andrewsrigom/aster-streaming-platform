@@ -84,7 +84,8 @@ Status: **IN_PROGRESS**
 
 ## Implemented
 
-- P01-R04 is `IN_PROGRESS` with an active plan for the structured runtime logging baseline. No logging behavior is implemented yet.
+- P01-R04 candidate `fca410d` adds `@aster/runtime` with exact-pinned Pino `10.3.1` behind repository-owned declarations. It emits bounded JSON with fixed process context, reviewed sensitive-key redaction, sanitized error causes, and validated injected trace/span correlation.
+- Fourteen focused tests pass for JSON shape, levels, async context, invalid providers, representative redaction, reserved-field isolation, bounded errors, hostile accessors and collections, destination and option failures, subprocess output, and declaration isolation. The complete forced graph passed 28 of 28 uncached tasks in `9.762` seconds with TypeScript, lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, CI, platform, and all package tests green. License and registry audit checks pass; clean checkout, protected CI, and review remain pending.
 
 ## Not implemented
 

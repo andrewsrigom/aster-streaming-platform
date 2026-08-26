@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and the first three Phase 01 work items are verified. P01-R03 provides bounded fail-fast process configuration with secret-aware diagnostics and protected review evidence; P01-R04 structured logging is the next ready item and has not started. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
+**The Phase 00 repository foundation and the first three Phase 01 work items are verified. P01-R04 structured runtime logging is implemented on the active candidate with local focused evidence; clean-checkout and protected pull-request verification remain pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -120,6 +120,17 @@ pnpm config:check
 ```
 
 The result prints non-secret runtime values and only configured status for secret fields. Missing, empty, malformed, oversized, or unexpected owned variables fail before other initialization with exit status 1 and bounded redacted issues. Use `pnpm config:test` for the focused adverse suite and [`docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`](docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md) for the complete contract.
+
+## Run the structured logging diagnostic
+
+P01-R04 adds the first slice of `@aster/runtime`. It emits newline-delimited JSON with fixed service context, representative sensitive-key redaction, sanitized error causes, and validated trace/span correlation without starting an application or telemetry backend:
+
+```bash
+pnpm logging:check
+pnpm logging:test
+```
+
+The diagnostic prints one correlated success record and one correlated warning whose authorization value is `[Redacted]`. The focused suite verifies limits, hostile accessors, secret canaries, raw-error omission, async context handoff, invalid providers, destination failure, and the absence of Pino types from the public declarations. See [`docs/operations/RUNTIME_LOGGING.md`](docs/operations/RUNTIME_LOGGING.md) for the contract and [P01-R04 evidence](evidence/phase-01/runtime-logging.txt) for current status and limitations.
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

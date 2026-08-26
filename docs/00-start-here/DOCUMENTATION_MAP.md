@@ -61,6 +61,7 @@
 - `docs/operations/LOCAL_DEVELOPMENT.md`
 - `docs/operations/REPOSITORY_GOVERNANCE.md`
 - `docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`
+- `docs/operations/RUNTIME_LOGGING.md`
 - `docs/operations/SLIS_SLOS_AND_ALERTS.md`
 - `docs/operations/RELEASE_PROCESS.md`
 - `docs/operations/INCIDENT_RESPONSE.md`

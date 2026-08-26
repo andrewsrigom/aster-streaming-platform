@@ -43,6 +43,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Local Redis runtime | Pin Docker Official Image `redis:8.10.0-alpine` by multi-platform digest; select the AGPLv3 option for the unmodified external runtime and keep state disposable | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Destructive local reset boundary | Require explicit local intent and confirmation, fixed Aster project and Compose file, local-socket and exact resource-label verification, zero-resource postconditions, and no broad fallback cleanup | `evidence/phase-01/local-reset.txt` |
 | Process-start configuration validation | Exact-pin `zod@4.4.3` behind repository-owned types and sanitized errors; read injected environment entries directly, classify every accepted field, and expose no secret value in diagnostics | `evidence/phase-01/runtime-configuration.txt` |
+| Structured runtime logging | Exact-pin Pino `10.3.1` behind repository-owned declarations; emit bounded JSON to standard output with reviewed sensitive-key redaction, sanitized errors, and injected validated trace context | `evidence/phase-01/runtime-logging.txt` |
 
 ## Pending decisions
 
