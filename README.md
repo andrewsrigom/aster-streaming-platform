@@ -242,7 +242,7 @@ Read these files in order:
 8. [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md)
 9. [`.ai/WORK_QUEUE.md`](.ai/WORK_QUEUE.md)
 
-The next implementation unit is defined in [`docs/specs/phase-01-local-platform.md`](docs/specs/phase-01-local-platform.md). The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
+The next implementation unit is defined in [`docs/specs/phase-01-local-platform.md`](docs/specs/phase-01-local-platform.md), and the planned P01-R06 through P01-R10 path is detailed in [`docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`](docs/architecture/RUNTIME_PLATFORM_RUNWAY.md). The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
 
 ## Repository shape
 

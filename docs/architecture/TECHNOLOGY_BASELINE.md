@@ -27,7 +27,7 @@ This document distinguishes fixed technology direction from decisions intentiona
 | Media | FFmpeg and FFprobe invoked through argument-safe process spawning | Mature media processing and direct resource control |
 | Packaging | HLS VOD | Adaptive browser delivery |
 | Browser playback | HTML media element plus hls.js where needed | Native-first playback with broad HLS support |
-| Object storage | S3-compatible API; MinIO-compatible local runtime | Portable immutable media origin |
+| Object storage | S3-compatible API; evidence-selected local runtime | Portable immutable media origin without assuming an archived implementation |
 | Telemetry | OpenTelemetry SDK and Collector | Backend-neutral traces and metrics |
 | Local observability | Prometheus, Tempo, Loki, Grafana-compatible stack | Full local diagnosis |
 | Unit/integration | Vitest and real dependency containers | Fast domain tests and realistic infrastructure semantics |
@@ -67,11 +67,15 @@ The container selection evidence is in [`evidence/phase-01/local-platform-checkp
 ## Decisions deferred to Phase 01
 
 - exact broker, object-storage, and observability container versions;
-- concrete typed SQL library;
+- concrete PostgreSQL, Redis, Kafka, object-storage, and telemetry client libraries;
 - concrete Kafka client;
 - OpenTelemetry package compatibility;
 
+Current preparation keeps Redpanda as the primary Kafka-compatible container candidate and compares VersityGW with SeaweedFS for the local S3-compatible runtime. The official MinIO repository is archived and is no longer an automatic default. None of these candidates is selected until its owning work item records immutable image, license, architecture, health, resource, reset, and integration evidence. See [Runtime Platform Runway](RUNTIME_PLATFORM_RUNWAY.md) and [preflight evidence](../../evidence/phase-01/runtime-runway-preflight.txt).
+
 ## Decision deferred to Phase 02
+
+Select the typed SQL library against the first real context-owned schema, transactions, queries, migrations, generated types, and removal path. Phase 01 selects only the PostgreSQL connectivity client and does not create a synthetic product persistence model to justify a query builder.
 
 Identity implementation is selected through an ADR after comparing:
 

@@ -128,6 +128,15 @@ Status: **IN_PROGRESS**
 - Hosted deployment automation
 - Hosted environments
 
+## Planned Phase 01 runway
+
+- P01-R06 defines repository-owned metric and trace-context contracts before HTTP and dependency adapters emit telemetry.
+- P01-R07 creates separate PostgreSQL, Redis, Kafka-compatible broker, S3-compatible object-storage, clock, ID, and telemetry adapters without product logic.
+- P01-R08 composes propagated deadlines, recoverable readiness gates, stable health routes, and an Identity reference service with no account, profile, session, schema, or resolver behavior.
+- P01-R09 selects the remaining local images and proves the runtime against real dependencies, OTLP export, Prometheus scrape, failure transitions, and bounded shutdown.
+- P01-R10 publishes measured core, runtime, integration, observability, and full profiles plus the clean Docker-only evaluator path.
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative planned path. Its package versions, container candidates, budgets, and paths remain unimplemented until their owning item records evidence.
+
 ## Next outcome
 
 Complete the P01-R05 rebase onto released `main`, repeat affected and real lifecycle evidence, publish it, and run the bounded review plus protected gates.
@@ -140,6 +149,7 @@ Complete the P01-R05 rebase onto released `main`, repeat affected and real lifec
 - GitHub APIs prove that community templates are recognized but do not prove every browser-specific rendering detail; Markdown issue forms avoid dependence on the preview issue-form schema.
 - Secret-scanning validity checks and non-provider patterns are disabled and unclaimed; CodeQL remains deliberately deferred until representative application source exists.
 - Repository-memory validation proves explicit structure and cross-file targets, not the semantic truth of arbitrary prose or append-only history across Git revisions.
+- The official GitHub status still reports a major Actions outage. PR 11 currently has a successful exact-head run, but merge and dependent publication remain paused until the official incident recovers under the recorded external-wait policy.
 - Open Dependabot pull request 1 proposes grouped TypeScript 7 and Node 26 type-major changes across the verified baseline; it requires dedicated compatibility evidence and must not be merged ad hoc.
 - Foundation cleanup intentionally does not remove Docker state or future durable local data; Phase 01 must implement and verify a separate explicit project-scoped reset.
 - Both P00-R10 clones reused warm Corepack and pnpm content-addressable stores; cold-registry latency and full offline bootstrap on an empty machine remain unmeasured.
@@ -157,6 +167,9 @@ Complete the P01-R05 rebase onto released `main`, repeat affected and real lifec
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
 - P01-R05 has no application composition or public health route yet. Dependency-specific startup/readiness remains P01-R08, process metrics and export/drop behavior remain P01-R06, and native Windows signal semantics are intentionally unclaimed; the supported WSL path has real socket and subprocess evidence.
+- Current P01-R06 through P01-R10 package and container versions are preflight candidates only. The owning work item must repeat registry, license, engine, audit, multi-platform, resource, failure, and real integration evidence before selection.
+- The official MinIO repository is archived. VersityGW is the primary local S3-compatible candidate and SeaweedFS is the fallback, but neither is selected or pulled yet.
+- The maintained Confluent Kafka client adds a native boundary and its KafkaJS-compatible producer close uses a fixed five-second native timeout; KafkaJS is much smaller but its registry release is from 2023. P01-R07 must resolve this through Node.js 24, multi-architecture, deadline, redaction, and real broker shutdown evidence.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for nine Express transitives. They are not known-vulnerability findings, but the exact graph remains a reviewed cost and ADR-0011 keeps a replacement path.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.

@@ -1,0 +1,101 @@
+Phase 01 remaining-runtime preflight
+====================================
+
+Status: preparation only; no dependency or container is selected by this file
+Date: 2026-08-26
+Branch at observation: feat/p01-r05-lifecycle
+Observed branch head before documentation edits: 10098f1
+Pinned runtime used for package probes: Node.js 24.19.0
+
+Purpose
+-------
+
+Reduce uncertainty for P01-R06 through P01-R10 without starting a second implementation item while P01-R05 remains the one dependent active candidate. Registry and upstream metadata are time-sensitive. The owning work item must repeat affected metadata, compatibility, license, audit, and integration checks before selecting or pinning a package or image.
+
+Commands
+--------
+
+Package metadata, one package at a time:
+
+  PATH=/home/andrews/.local/share/node-v24.19.0-linux-x64/bin:$PATH \
+    npm view "<package>" version engines license dist.unpackedSize \
+    dependencies peerDependencies time.modified repository.url --json
+
+Upstream repository and release metadata, one repository at a time:
+
+  gh api repos/<owner>/<repository> \
+    --jq '{archived,license:.license.spdx_id,pushed_at,updated_at,default_branch}'
+  gh api repos/<owner>/<repository>/releases/latest \
+    --jq '{tag_name,published_at,html_url}'
+
+Candidate package metadata observed
+-----------------------------------
+
+  @opentelemetry/api                              1.9.1    Apache-2.0
+  @opentelemetry/sdk-metrics                      2.10.0   Apache-2.0
+  @opentelemetry/exporter-metrics-otlp-http       0.221.0  Apache-2.0
+  @opentelemetry/instrumentation-runtime-node     0.34.0   Apache-2.0
+  @opentelemetry/instrumentation-host-metrics     0.4.0    Apache-2.0
+  pg                                              8.23.0   MIT
+  kysely                                          0.29.5   MIT
+  @redis/client                                   6.2.1    MIT
+  @aws-sdk/client-s3                              3.1118.0 Apache-2.0
+  @confluentinc/kafka-javascript                  1.10.0   MIT
+  kafkajs                                         2.2.4    MIT
+
+The OpenTelemetry, PostgreSQL, Redis, and S3 candidates publish Node.js engine ranges that include Node.js 24. Kysely 0.29.5 requires Node.js 22 or newer, but its selection is deferred to Phase 02 so the first real schema and query behavior can govern the decision.
+
+The explicit OpenTelemetry candidate set is preferred over the broad Node SDK and auto-instrumentation aggregators for P01-R06. Scratch compatibility probes observed the required Node.js runtime, V8, process CPU, and process memory metric families. The owning implementation must recreate raw metric output and cardinality overflow evidence in its own artifact.
+
+Kafka client finding
+--------------------
+
+An isolated npm project installed @confluentinc/kafka-javascript 1.10.0 on Node.js 24.19.0. The installed tree contained 26 production packages and occupied approximately 38 MiB in that temporary npm layout. The high-severity audit reported zero known vulnerability. Loading the module and creating the KafkaJS-compatible producer succeeded.
+
+An unreachable 127.0.0.1:1 connect was raced against a 250 ms preflight deadline with library logging disabled. The caller observed the deadline after 251 ms, but the process remained active while producer.disconnect() used the compatibility layer's fixed five-second native disconnect. Source inspection found that fixed timeout in lib/kafkajs/_producer.js. This is a compatibility observation, not a benchmark. P01-R07 must prove a shutdown path that fits the Aster lifecycle before this client can be selected.
+
+KafkaJS 2.2.4 is much smaller and has no runtime dependency, but the registry reports its last modification on 2023-02-27. It remains a comparison candidate, not the safe default.
+
+Container upstream metadata observed
+------------------------------------
+
+  redpanda-data/redpanda                         v26.2.2   active
+  minio/minio                                    RELEASE.2025-10-15T17-29-55Z archived
+  seaweedfs/seaweedfs                            4.44      active, Apache-2.0
+  versity/versitygw                              v1.7.0    active, Apache-2.0
+  open-telemetry/opentelemetry-collector-releases v0.159.0 active, Apache-2.0
+  prometheus/prometheus                          v3.14.0   active, Apache-2.0
+  grafana/grafana                                v13.2.0   active, AGPL-3.0
+  grafana/tempo                                  v3.0.3    active, AGPL-3.0
+  grafana/loki                                   v3.7.6    active, AGPL-3.0
+
+These are upstream release observations, not Docker tag or digest selections. P01-R09 still owns multi-platform manifest inspection, exact image digest, image license and notice, health behavior, resource limits, storage semantics, and integration tests.
+
+The official minio/minio repository reported archived=true and its latest release was dated 2025-10-16. It is not an acceptable automatic default for a new local runtime. VersityGW is the primary lightweight S3-compatible candidate because its current project documents a Docker image, POSIX backend, AWS SDK compatibility tests, amd64 and arm64 builds, and Apache-2.0 license. SeaweedFS is the fallback candidate. Both still require Aster's exact streaming, checksum, abort, object-layout, persistence, and reset evidence.
+
+Limitations
+-----------
+
+- No package was added to the repository and no lockfile changed.
+- No candidate broker, object-storage, or observability image was pulled or started.
+- No S3, Kafka, Collector, Prometheus, Tempo, Loki, or Grafana protocol integration was claimed.
+- Registry and release observations can change and must be repeated by the owning work item.
+- Scratch timing and installed-size observations describe one WSL amd64 environment and are not portable performance requirements.
+- The isolated Kafka temporary project was outside the repository and contained no Aster source or credential.
+
+Repository validation
+---------------------
+
+  pnpm docs:check       passed: 135 documents, 354 internal links, 0 violation
+  pnpm ai:check         passed: 25 queue items, P01-R05 active, 0 violation
+  pnpm format:check     passed
+  pnpm security:check   passed: 0 finding
+  git diff --check      passed
+  pnpm check:changed    passed: 31/31 tasks, 19 cached, 8.611s Turbo task time
+
+The first check:changed invocation used corepack directly from a reduced non-login PATH. The repository runner then could not spawn the required pnpm executable and returned its stable execution_failed category before Turbo started. Repeating the documented environment with /home/andrews/.local/bin on PATH found the exact pnpm 11.24.0 shim and passed the affected gate. This was an invocation-environment failure, not a failing repository task.
+
+Interpretation
+--------------
+
+Proceed in the order P01-R06, P01-R07, P01-R08, P01-R09, and P01-R10. Keep telemetry contracts ahead of adapter implementation, defer typed SQL until a real Phase 02 persistence use case, keep Kafka selection open until bounded shutdown is proven, and replace the prior MinIO assumption with an evidence-driven S3-compatible local runtime selection.

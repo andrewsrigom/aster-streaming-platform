@@ -102,6 +102,7 @@ Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first si
 
 - Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
 - Acceptance result: Local implementation and pre-rebase evidence pass; rebased focused, affected, protected, review, merge, and post-merge evidence remain pending.
+- Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
 - Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
 - Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.
 - Heavyweight repeat triggers: Repeat a clean checkout only for dependency, lockfile, bootstrap, packaging, generated-declaration, or documented public-command changes. Repeat real socket/process evidence when lifecycle, signal, timer, HTTP drain, or force-close behavior changes. Docker is not required unless this item changes the existing local demonstration path.
@@ -115,8 +116,13 @@ Remove the lifecycle module, exports, tests, diagnostic, and documentation, leav
 
 - Document lifecycle state, stable health meaning, shutdown order, signal behavior, overall deadline, failure classification, and force-close recovery.
 - Clarify composition with the existing Express/Apollo drain and preserve P01-R08 ownership of dependency/startup deadlines plus P01-R06 ownership of process metrics.
+- Preserve future-item separation through the planned P01-R06–R10 runtime runway; candidate research may narrow risks but must not install dependencies, create containers, change accepted contracts, or claim a later requirement is active.
 - Record raw focused, real-socket/process, affected, complete, protected, and review evidence under Phase 01.
 - Update `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, `.ai/SESSION_LOG.md`, and `.ai/HANDOFF.md` at candidate and closeout checkpoints.
+
+## Planning preparation boundary
+
+The current lifecycle implementation remains the only active Phase 01 work item. Planning defines the ordered P01-R06 through P01-R10 paths, metric dimensions, adapter responsibilities, selection gates, failure matrices, profiles, and tests without activating them. This preparation creates no second active work item, changes no lifecycle source, installs no repository dependency, starts no new container, publishes no candidate, and resolves no pending client or image decision. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` and `evidence/phase-01/runtime-runway-preflight.txt` record that boundary.
 
 ## Completion checklist
 

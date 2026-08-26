@@ -6,12 +6,15 @@ P01-R11 is `RELEASED` through protected squash `93147ac`; post-merge run `329826
 
 P01-R05 implementation commit `60e9808` is `IMPLEMENTED` locally on `feat/p01-r05-lifecycle` after replay onto released `main`. It provides the shared runtime lifecycle, stable health state, process signals, generalized in-flight coordination, dependency closure order, one overall shutdown deadline, stable lifecycle logging, and forced termination. Its pre-rebase 33 focused tests, affected and working-tree complete gates, exact-clean-checkout gate, audit, documentation, security, clean Git, and recoverable cleanup checks pass. The branch must finish replaying its runway commit and repeat invalidated evidence before publication.
 
+The remaining Phase 01 runway is now explicit without beginning another item. P01-R06 owns telemetry contracts; P01-R07 owns narrow platform adapters; P01-R08 owns deadline/readiness composition and the product-empty Identity skeleton; P01-R09 owns real dependency integration; P01-R10 owns resource-aware profiles and clean Docker-only closeout. Current package and container observations are candidates only. The official MinIO repository is archived, Kafka client shutdown remains unresolved, and typed SQL selection is deferred to the first real Phase 02 persistence use case.
+
 ## Resume point
 
 1. Finish the rebase without losing P00-R06 release evidence or the later P01-R06–P01-R10 runway documentation.
 2. Remove only stale generated runtime output, then repeat focused typecheck, build, 33 tests, real socket/process evidence, and `pnpm check:changed`.
 3. Record the rebased exact head and why the prior clean-checkout evidence remains applicable if no heavyweight trigger changed.
 4. Publish P01-R05, run one complete review and one confirmation, pass protected CI, and follow the recorded release process.
+5. After P01-R05 is released, activate P01-R06 from clean `main` using `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`; repeat affected candidate metadata rather than copying preflight versions as accepted decisions.
 
 ## Do not do yet
 
@@ -20,3 +23,4 @@ P01-R05 implementation commit `60e9808` is `IMPLEMENTED` locally on `feat/p01-r0
 - Do not merge or close Dependabot pull request 1 without its dedicated compatibility work and an authorized disposition.
 - Do not bypass `CI required` or duplicate protected runs.
 - Do not add Identity behavior, a product GraphQL schema, dependency adapters, an OpenTelemetry SDK, metrics, dashboards, Docker resources, or hosted resources to P01-R05.
+- Do not treat VersityGW, SeaweedFS, Redpanda, a Kafka client, an OpenTelemetry package, or a preflight timeout as selected until its owning work item passes the required gate.

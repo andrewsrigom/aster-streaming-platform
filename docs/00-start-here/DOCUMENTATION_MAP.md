@@ -36,6 +36,7 @@
 - `docs/architecture/MEDIA_PIPELINE.md`
 - `docs/architecture/FRONTEND_ARCHITECTURE.md`
 - `docs/architecture/RESILIENCE_ARCHITECTURE.md`
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`
 - `docs/architecture/OBSERVABILITY_ARCHITECTURE.md`
 - `docs/architecture/SECURITY_ARCHITECTURE.md`
 - `docs/architecture/DEPLOYMENT_ARCHITECTURE.md`
@@ -104,6 +105,7 @@
 | Measured performance | `evidence/` and experiment records |
 | Operational response | `docs/operations/` |
 | Engineering demonstration coverage | `docs/00-start-here/ENGINEERING_DEMONSTRATION.md` |
+| Remaining Phase 01 runtime design | `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` |
 | Branch, commit, CI, and GitHub controls | `docs/operations/REPOSITORY_GOVERNANCE.md` |
 
 When two documents conflict, stop and resolve the inconsistency before implementation.

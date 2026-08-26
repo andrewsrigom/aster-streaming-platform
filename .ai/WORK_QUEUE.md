@@ -24,6 +24,11 @@ Only one item may be `IN_PROGRESS`.
 | 18 | Select the HTTP adapter through an ADR and create the transport boundary | P01-R11 | DONE |
 | 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | WAITING_EXTERNAL |
 | 20 | Implement lifecycle, health, and bounded graceful shutdown | P01-R05 | IN_PROGRESS |
+| 21 | Define the bounded telemetry contract and runtime metrics | P01-R06 | READY |
+| 22 | Implement narrow PostgreSQL, Redis, broker, object-storage, clock, ID, and telemetry adapters | P01-R07 | READY |
+| 23 | Compose startup deadlines, dependency readiness, health routes, and the Identity reference skeleton | P01-R08 | READY |
+| 24 | Prove the reference runtime against real local dependencies | P01-R09 | READY |
+| 25 | Publish resource-aware profiles, troubleshooting, and the clean Docker-only Phase 01 closeout | P01-R10 | READY |
 
 ## Work-item rules
 
@@ -33,3 +38,4 @@ Only one item may be `IN_PROGRESS`.
 - Do not mark `DONE` without linked evidence.
 - Add newly discovered work only if it belongs to the active phase.
 - Record future-phase ideas under the relevant specification rather than implementing them early.
+- `READY` items after the active item are ordered runway, not authorization to start them concurrently.

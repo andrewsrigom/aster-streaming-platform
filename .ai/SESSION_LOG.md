@@ -2,6 +2,29 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Defined the remaining Phase 01 runtime runway
+
+### Completed
+
+- Added an ordered P01-R06 through P01-R10 runway covering telemetry contracts, separate platform adapters, deadline/readiness composition, a product-empty Identity reference service, real dependency integration, resource-aware profiles, and the clean Docker-only closeout.
+- Defined planned package and infrastructure paths, bounded metric dimensions, export behavior, adapter ownership, deadline hierarchy, dynamic readiness gates, health disclosure limits, integration cases, Docker profiles, rollback, and stop conditions without starting another work item.
+- Corrected stale project context and Phase 01 evidence status, added the five remaining requirements to the queue as ordered `READY` work, and kept P01-R05 as the sole dependent `IN_PROGRESS` item.
+- Moved typed SQL selection to Phase 02 so the decision uses the first real schema, transactions, queries, migrations, and generated types rather than a synthetic Phase 01 table.
+- Recorded current official package and upstream metadata as non-binding preflight: an explicit OpenTelemetry metrics set, Node.js client candidates, the archived MinIO repository, active VersityGW and SeaweedFS S3 alternatives, and the unresolved Kafka client lifecycle trade-off.
+- Kept the P01-R05 source candidate, repository lockfile, installed dependency graph, Docker resources, accepted ADRs, public remote, and hosted pipelines unchanged.
+
+### Evidence
+
+- Planning contract: `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`.
+- Raw candidate metadata, Kafka deadline/close observation, upstream release state, and limitations: `evidence/phase-01/runtime-runway-preflight.txt`.
+- Documentation validation passes across 135 documents and 354 internal links; repository-memory validation passes with 25 queue items and P01-R05 remaining the only active requirement; formatting, secret scanning, and Git whitespace checks pass.
+- The affected candidate gate passes 31 of 31 tasks with 19 cached in `8.611s` of Turbo task time. No dependency, lockfile, application source, or Docker input changed, so prior lifecycle clean-checkout and real-socket/process evidence remains applicable.
+- Official GitHub status still reported a major Actions outage during this preparation; no duplicate PR event, empty commit, new branch, image pull, container start, or publication was performed.
+
+### Next action
+
+Validate the documentation and repository-memory changes while preserving the lifecycle candidate. After official Actions recovery, release PR 11 first, rebase and publish P01-R05, then activate P01-R06 from clean `main`.
+
 ## 2026-08-26 — Implemented the bounded runtime lifecycle candidate
 
 ### Completed
