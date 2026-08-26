@@ -60,6 +60,8 @@ pnpm check
 
 The repository runner invokes `pnpm` directly on POSIX systems and invokes `pnpm.cmd` through a fixed, AutoRun-disabled `cmd.exe` boundary on native Windows. Its task names, flags, and SCM refs are repository-owned; it does not forward arbitrary shell arguments.
 
+The destructive reset remains a POSIX shell script. Its tests run through the Git for Windows shell when invoked natively and normalize Docker/Compose line endings; WSL remains the recommended Windows environment for development and for the destructive reset.
+
 `pnpm docs:check` validates bounded UTF-8 Markdown inputs, first top-level titles, balanced fences, unresolved merge markers, relative files and heading fragments, canonical high-confidence terminology, and evidence support for explicit current-status maturity claims. It does not fetch external URLs, so network reachability remains a separate deliberate audit. `pnpm docs:test` exercises the adverse fixtures directly.
 
 `pnpm ai:check` validates the bounded durable repository-memory files, ordered queue and blockers, active-plan binding, current-state and handoff resume target, and reverse-chronological session shape. `pnpm ai:test` exercises safe malformed, stale, oversized, invalid-UTF-8, and symbolic fixtures. These structural checks do not replace review of narrative truth.

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { delimiter, join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import test from "node:test";
 import { clearTimeout, setTimeout } from "node:timers";
@@ -10,6 +10,8 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const resetPath = resolve(repositoryRoot, "tools", "reset-local-platform.sh");
 const composePath = resolve(repositoryRoot, "infra", "compose", "compose.yml");
 const confirmationArguments = ["--confirm", "DELETE-ASTER-LOCAL-DATA"];
+const shellExecutable = process.platform === "win32" ? "sh" : "/bin/sh";
+const resetFixtureTimeoutMs = process.platform === "win32" ? 15_000 : 5_000;
 const blockedEnvironmentNames = [
   "ASTER_DATABASE_URL",
   "ASTER_REDIS_URL",
@@ -149,6 +151,15 @@ fi
 exit 94
 `;
 
+function shellPath(path) {
+  if (process.platform !== "win32") {
+    return path;
+  }
+  return path
+    .replace(/^([A-Za-z]):/u, (_match, drive) => `/${drive.toLowerCase()}`)
+    .replaceAll("\\", "/");
+}
+
 async function runReset(t, options = {}) {
   const fixtureRoot = await mkdtemp(join(tmpdir(), "aster-reset-test-"));
   t.after(async () => rm(fixtureRoot, { force: true, recursive: true }));
@@ -162,17 +173,25 @@ async function runReset(t, options = {}) {
   await chmod(dockerPath, 0o755);
 
   const environment = { ...process.env };
+  const inheritedPath = Object.entries(environment).find(
+    ([name]) => name.toLowerCase() === "path",
+  )?.[1];
+  for (const name of Object.keys(environment)) {
+    if (name.toLowerCase() === "path") {
+      delete environment[name];
+    }
+  }
   for (const name of blockedEnvironmentNames) {
     delete environment[name];
   }
   Object.assign(environment, {
     ASTER_ENVIRONMENT: "local",
-    FAKE_COMPOSE_FILE: composePath,
+    FAKE_COMPOSE_FILE: shellPath(composePath),
     FAKE_DOCKER_ENDPOINT: "unix:///var/run/docker.sock",
-    FAKE_DOCKER_LOG: logPath,
+    FAKE_DOCKER_LOG: shellPath(logPath),
     FAKE_DOCKER_SCENARIO: options.scenario ?? "populated",
-    FAKE_DOCKER_STATE: stateDirectory,
-    PATH: `${binDirectory}:${environment.PATH ?? "/usr/bin:/bin"}`,
+    FAKE_DOCKER_STATE: shellPath(stateDirectory),
+    PATH: [binDirectory, inheritedPath ?? "/usr/bin:/bin"].join(delimiter),
     ...options.environment,
   });
   for (const name of options.unsetEnvironment ?? []) {
@@ -180,17 +199,21 @@ async function runReset(t, options = {}) {
   }
 
   const result = await new Promise((resolveResult, reject) => {
-    const child = spawn("/bin/sh", [resetPath, ...(options.arguments ?? confirmationArguments)], {
-      cwd: repositoryRoot,
-      env: environment,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    const child = spawn(
+      shellExecutable,
+      [shellPath(resetPath), ...(options.arguments ?? confirmationArguments)],
+      {
+        cwd: repositoryRoot,
+        env: environment,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
     let stdout = "";
     let stderr = "";
     const timeout = setTimeout(() => {
       child.kill("SIGKILL");
-      reject(new Error("reset fixture exceeded 5 seconds"));
-    }, 5_000);
+      reject(new Error(`reset fixture exceeded ${resetFixtureTimeoutMs} milliseconds`));
+    }, resetFixtureTimeoutMs);
     child.stdout.setEncoding("utf8");
     child.stderr.setEncoding("utf8");
     child.stdout.on("data", (chunk) => {
@@ -265,7 +288,7 @@ test("removes only the fixed populated Aster project and proves postconditions",
   assert.match(
     result.log,
     new RegExp(
-      `--context default compose --project-name aster --file ${composePath.replaceAll("/", "\\/")} down --volumes`,
+      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} down --volumes`,
       "u",
     ),
   );

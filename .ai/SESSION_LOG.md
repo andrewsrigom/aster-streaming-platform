@@ -10,6 +10,7 @@ Append new entries at the top. Keep entries factual and concise.
 - Reopened Phase 00 only for bounded P00-R06 corrective maintenance after the retrospective found that governance promised `pnpm check:changed` without exposing the command and did not define review or heavyweight-evidence stopping rules.
 - Added one typed quality-gate runner shared by full and changed modes, fixed changed-mode SCM refs, bounded invocation and failure behavior, task-list parity tests, and task-input-aware Turbo ownership.
 - Isolated README and runtime-source fixtures exposed a missing Markdown formatting input, which was corrected and guarded before release. Local review also found that Windows cannot execute `pnpm.cmd` directly through `spawnSync`; the runner now uses a fixed AutoRun-disabled `cmd.exe` boundary and retains repository-owned arguments.
+- A native-Windows public clone reached Turbo through the corrected runner and exposed two pre-existing community-test portability defects. Resolved-path comparison now distinguishes a case-insensitive alias from a real duplicate, and only a Windows `EPERM` symbolic-link fixture is skipped while UTF-8, duplicate-path, and real symbolic-file controls remain tested.
 - Updated the operating contract, agent loop, governance, delivery model, quality gates, local-development guide, reusable prompt, and work-item template with focused, candidate, merge, and heavyweight checkpoints plus one-review/one-confirmation stopping rules.
 - Kept the correction outside product contexts, dependencies, lockfile, Docker, hosted resources, durable state, and application behavior.
 
@@ -19,6 +20,7 @@ Append new entries at the top. Keep entries factual and concise.
 - Candidate affected gate: 31 of 31 tasks passed with 28 cached in `1.151` seconds of Turbo task time and `2.28` seconds elapsed; global manifest/config changes correctly selected the complete graph.
 - Complete forced candidate gate: 31 of 31 tasks passed uncached in `18.413` seconds of Turbo task time and `20.04` seconds elapsed.
 - Windows-boundary remediation gate: 31 of 31 tasks passed uncached in `15.013` seconds of Turbo task time and `16.16` seconds elapsed; direct `cmd.exe /d /s /c pnpm.cmd --version` invocation succeeds on the host.
+- Portability remediation: 9 community tests and 31 of 31 forced WSL tasks passed; Turbo task time `16.874` seconds and wrapper elapsed `17.86` seconds. Final native-Windows repeat remains pending.
 - High-severity registry audit: no known vulnerability in `1.01` seconds.
 - Raw artifact: `evidence/phase-00/risk-proportionate-verification.txt` (`IMPLEMENTED`).
 

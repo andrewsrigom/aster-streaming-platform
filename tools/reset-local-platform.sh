@@ -90,7 +90,7 @@ compose_local config --quiet >/dev/null 2>&1 || fail 'the checked-in Compose mod
 if ! configured_services=$(compose_local config --services 2>/dev/null); then
   fail 'the Compose service set cannot be read'
 fi
-configured_services=$(printf '%s\n' "$configured_services" | LC_ALL=C sort)
+configured_services=$(printf '%s\n' "$configured_services" | LC_ALL=C sort | tr -d '\r')
 expected_services='platform-init
 platform-status
 postgres
@@ -100,6 +100,7 @@ redis'
 if ! configured_volumes=$(compose_local config --volumes 2>/dev/null); then
   fail 'the Compose volume set cannot be read'
 fi
+configured_volumes=$(printf '%s\n' "$configured_volumes" | tr -d '\r')
 [ "$configured_volumes" = "postgres-data" ] || fail 'the Compose volume set is not the reviewed local platform slice'
 
 if ! prefixed_container_ids=$(docker_local container ls --all --quiet --filter "name=^/${PROJECT_NAME}[-_]" 2>/dev/null); then

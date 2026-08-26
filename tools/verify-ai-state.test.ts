@@ -281,22 +281,34 @@ test("rejects session regression and missing entry evidence", () => {
   assert.equal(sessions.length, 2);
 });
 
-test("rejects malformed UTF-8 and symbolic repository memory files", async (context) => {
+test("rejects malformed UTF-8 repository memory files", async (context) => {
   const invalidRoot = await mkdtemp(join(tmpdir(), "aster-ai-state-invalid-"));
-  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-ai-state-symbolic-"));
   context.after(async () => {
     await rm(invalidRoot, { force: true, recursive: true });
-    await rm(symbolicRoot, { force: true, recursive: true });
   });
 
   await writeFixture(invalidRoot);
   await writeFile(resolve(invalidRoot, ".ai", "CONTEXT.md"), Buffer.from([0xff, 0xfe]));
   assert.ok((await scanAiState(invalidRoot)).violations.some(({ rule }) => rule === "input"));
+});
 
+test("rejects symbolic repository memory files when the host permits the fixture", async (context) => {
+  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-ai-state-symbolic-"));
+  context.after(async () => {
+    await rm(symbolicRoot, { force: true, recursive: true });
+  });
   await writeFixture(symbolicRoot);
   const planPath = resolve(symbolicRoot, ".ai", "CHANGE_PLAN.md");
   await unlink(planPath);
-  await symlink("CONTEXT.md", planPath);
+  try {
+    await symlink("CONTEXT.md", planPath);
+  } catch (error) {
+    if (process.platform === "win32" && (error as NodeJS.ErrnoException).code === "EPERM") {
+      context.skip("Windows host does not grant symbolic-link fixture permission");
+      return;
+    }
+    throw error;
+  }
   assert.ok((await scanAiState(symbolicRoot)).violations.some(({ rule }) => rule === "input"));
 });
 

@@ -92,6 +92,16 @@ Windows-invocation remediation repeat:
   the remediation;
 - remediation Turbo task time: 15.013 seconds; wrapper elapsed: 16.16 seconds.
 
+The first native-Windows graph reached Turbo through the new runner and exposed
+two pre-existing portability defects in the community verifier: a case-only path
+alias was reported as a duplicate of the same canonical file, and its symbolic
+fixture required a Windows privilege not available to a normal evaluator. The
+candidate now compares resolved canonical paths and skips only the symbolic-link
+fixture when Windows returns EPERM; malformed UTF-8 and duplicate-location
+assertions remain unconditional. Nine community tests and 31 of 31 forced WSL
+tasks pass after the portability remediation; Turbo task time was 16.874 seconds
+and wrapper elapsed was 17.86 seconds. Final native-Windows results are pending.
+
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities
 elapsed: 1.01 seconds
