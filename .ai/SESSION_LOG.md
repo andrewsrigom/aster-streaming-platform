@@ -16,12 +16,14 @@ Append new entries at the top. Keep entries factual and concise.
 - Batched remediation `4184fa1` handles `SIGINT`/`SIGTERM` with tree termination, listener cleanup, conventional status, and bounded fallback; duplicate suppression now requires a non-symbolic alias. Evidence replies `3864697962` and `3864698302` are posted and both discussions are resolved.
 - Exact native-Windows public candidate `4184fa1` passed frozen install, 18 toolchain tests, 31 of 31 forced tasks in `1m11.643s`, audit, clean Git, and recoverable cleanup. The matching WSL gate passed 31 of 31 forced tasks in `24.622s`.
 - Added the bounded `WAITING_EXTERNAL` queue state after the GitHub incident exposed that a frozen candidate was unnecessarily serializing all engineering. Candidate `19ee632` permits one dependent local item while keeping publication, merge, and release predecessor-first; a predecessor change requires rebase and affected verification.
+- Exact-head protected run `32990397338` passed at `dd9f282`. Final confirmation then found that arbitrary scanner-observed paths could escape affected inputs and that wrapper signals force-killed child work without a cleanup window.
+- Candidate `9775917` fixes both confirmation boundaries in one batch: documentation and community checks conservatively own every repository path, and wrapper signals request graceful tree termination before the bounded force fallback. No dependency, lockfile, bootstrap, Docker, product, or durable-data input changed.
 - Updated the operating contract, agent loop, governance, delivery model, quality gates, local-development guide, reusable prompt, and work-item template with focused, candidate, merge, and heavyweight checkpoints plus one-review/one-confirmation stopping rules.
 - Kept the correction outside product contexts, dependencies, lockfile, Docker, hosted resources, durable state, and application behavior.
 
 ### Evidence
 
-- Focused toolchain suite: 18 passed, 0 failed, including POSIX group and Windows tree timeout termination plus `SIGINT`/`SIGTERM` cleanup; the community suite passes 10 tests on WSL, including the symbolic alternate regression. Root typecheck, ESLint, Prettier, documentation, repository-memory, CI-policy, security, and Git whitespace checks pass.
+- Focused toolchain suite: 20 passed, 0 failed, including POSIX group and Windows tree timeout termination, graceful `SIGINT`/`SIGTERM` requests, bounded force fallback, conventional statuses, and listener cleanup; the community suite passes 10 tests on WSL, including the symbolic alternate regression. Root typecheck, ESLint, Prettier, documentation, repository-memory, CI-policy, security, and Git whitespace checks pass.
 - Candidate affected gate: 31 of 31 tasks passed with 28 cached in `1.151` seconds of Turbo task time and `2.28` seconds elapsed; global manifest/config changes correctly selected the complete graph.
 - Complete forced candidate gate: 31 of 31 tasks passed uncached in `18.413` seconds of Turbo task time and `20.04` seconds elapsed.
 - Windows-boundary remediation gate: 31 of 31 tasks passed uncached in `15.013` seconds of Turbo task time and `16.16` seconds elapsed; direct `cmd.exe /d /s /c pnpm.cmd --version` invocation succeeds on the host.
@@ -30,12 +32,13 @@ Append new entries at the top. Keep entries factual and concise.
 - Timeout-tree review remediation: 17 toolchain tests and 31 of 31 forced WSL tasks passed; Turbo task time `18.097` seconds and wrapper elapsed `19.32` seconds.
 - Final review remediation `4184fa1`: 18 toolchain and 10 community tests pass on WSL; 31 of 31 forced WSL tasks pass in `24.622s`; the exact public native-Windows clone passes 31 of 31 forced tasks in `1m11.643s`, audit, and clean Git before recoverable cleanup.
 - External-wait governance `19ee632`: 13 repository-memory tests pass, including accepted dependent work and rejection of multiple waits or skipped actionable work; 31 of 31 forced WSL tasks pass uncached in `14.58s`, documentation and security pass, and audit reports no known vulnerability. The prior native-Windows result remains applicable because no dependency, bootstrap, command, process, alias, or Windows path behavior changed.
+- Final-confirmation remediation `9775917`: 31 of 31 affected tasks pass with 9 cached in `11.735s` of Turbo task time and `13.44s` elapsed. After exact removal of stale ignored P01-R05 `dist/` output left by the branch switch, 31 of 31 forced tasks pass with zero cache in `23.992s` of Turbo task time and `25.63s` elapsed; audit reports no known vulnerability.
 - High-severity registry audit: no known vulnerability in `1.01` seconds.
 - Raw artifact: `evidence/phase-00/risk-proportionate-verification.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Freeze P00-R06 at `19ee632` while the official GitHub Actions incident persists, activate P01-R05 on one dependent local branch, and keep its publication and release blocked behind PR 11. When Actions recovers, reemit one pull-request event only if the final SHA still has no valid run, pass protected CI and the permitted final confirmation, squash-merge, verify `main`, then rebase the dependent work onto clean `main`.
+Push `9775917` once, pass protected CI at its exact head, reply to and resolve both final-confirmation discussions, squash-merge PR 11, verify the post-merge `main` run, then rebase and reverify the preserved P01-R05 candidate before publication.
 
 ## 2026-08-26 — Verified the bounded Express HTTP transport
 

@@ -98,7 +98,7 @@ Represent a frozen coherent candidate as `WAITING_EXTERNAL` when its only remain
 
 - Commands: Focused runner tests, affected dry runs, real `pnpm check:changed`, `pnpm check --force`, documentation/repository-memory/security checks, high-severity audit, and protected CI.
 - Raw artifact path: `evidence/phase-00/risk-proportionate-verification.txt`.
-- Acceptance result: Pending.
+- Acceptance result: Local focused, affected, clean forced, audit, documentation, memory, and security gates pass at `9775917`; protected CI, discussion resolution, merge, and post-merge evidence remain pending.
 - Iteration gate: Runner tests, typecheck/lint/format for changed tooling, and documentation/repository-memory checks for policy edits.
 - Candidate gate: One complete forced graph plus audit after behavior and documentation stabilize.
 - Heavyweight repeat triggers: Repeat clean checkout only after dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, or documented public-command changes that can invalidate prior clean-start evidence. This work changes a public command, so one final clean checkout is required.
@@ -117,8 +117,8 @@ Restore the direct `pnpm check` Turbo command, remove `check:changed`, the runne
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

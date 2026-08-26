@@ -4,7 +4,7 @@ ASTER PHASE 00 RISK-PROPORTIONATE VERIFICATION EVIDENCE
 Work item: P00-R06 corrective maintenance
 Evidence date: 2026-08-26
 Status: IMPLEMENTED
-Implementation candidate: 19ee632ca40a04730432a682caece66b0d832034 based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
+Implementation candidate: 97759171593a2d553079097f4428e106163de13e based on public main 93147accfae07f9cde9ff73b8080f2edd99bed8a
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04
 Runtime: Node.js 24.19.0; pnpm 11.24.0; Turborepo 2.10.12
 
@@ -38,12 +38,15 @@ IMPLEMENTED CONTRACT
   and emits bounded errors without reflecting process or environment details.
   A timeout force-terminates the detached POSIX process group or the complete
   Windows process tree, with a five-second bounded close fallback.
-- SIGINT and SIGTERM use the same process-tree termination path, remove both
-  wrapper signal handlers, and return conventional statuses 130 and 143 with
-  the same bounded close fallback.
+- SIGINT and SIGTERM first forward the original signal to the detached POSIX
+  group or request non-forced Windows tree termination. A five-second cleanup
+  window precedes the existing force path, both wrapper handlers are removed,
+  and conventional statuses 130 and 143 remain bounded.
 - Task-input-aware affected selection is enabled. Root lint owns application,
-  package, service, tool, and worker source; formatting owns Markdown; security
-  scanning owns every changed repository file.
+  package, service, tool, and worker source; documentation and community checks
+  conservatively own every repository path because their scanners can observe
+  arbitrary link targets and alternate template locations; security scanning
+  also owns every changed repository file.
 - Pull-request template duplicate suppression accepts only a non-symbolic
   case-insensitive alias of the canonical entry. A symbolic alternate path that
   resolves to the canonical template remains a file-set violation.
@@ -59,16 +62,18 @@ FOCUSED AND FAILURE EVIDENCE
 
 $ pnpm toolchain:test
 result: PASS
-tests: 18 passed, 0 failed
+tests: 20 passed, 0 failed
 
-The six quality-runner tests prove:
+The eight quality-runner tests prove:
 - exact full and changed arguments use one canonical task list;
 - Windows cmd.exe and POSIX pnpm invocation plus fixed SCM refs;
 - rejection of unknown and duplicate flags;
 - exact child-status propagation and sanitized spawn failure;
 - POSIX group and Windows tree termination plus stable timeout classification;
-- SIGINT/SIGTERM tree termination, conventional exit status, and listener cleanup;
-- manifest scripts, Turbo future flag, and root input ownership remain aligned.
+- original SIGINT/SIGTERM forwarding, bounded force fallback, conventional exit
+  status, and listener cleanup;
+- manifest scripts, Turbo future flag, and conservative documentation,
+  community, and security input ownership remain aligned.
 
 Additional focused results:
 - strict root TypeScript check: PASS
@@ -171,12 +176,46 @@ and rejection of skipped actionable work. The complete WSL graph passes 31 of
 31 forced tasks with zero cache in 14.58 seconds; audit reports no known
 vulnerability.
 
-The native-Windows result at 4184fa1 remains supporting evidence for 19ee632:
-the later change modifies only platform-independent repository-memory parsing,
-fixtures, and policy prose. It does not change dependencies, lockfile, bootstrap,
-packaging, command invocation, process termination, filesystem alias behavior,
-or Windows path handling. The exact later source passes its complete uncached WSL
-gate; protected CI at the final head remains required.
+Final confirmation review at exact PR head dd9f282 produced two new blocking
+findings:
+- comment 3865479921 proved task-input-aware selection could skip documentation
+  after an arbitrary linked target changed and skip community validation after
+  an alternate pull-request template appeared;
+- comment 3865479931 proved wrapper signals used the timeout force path without
+  allowing the child tree a cleanup window.
+
+Candidate 97759171593a2d553079097f4428e106163de13e closes both boundaries in one
+batch. Documentation and community checks now declare every repository path as
+an input. Wrapper signals request graceful tree termination first, wait one
+bounded cleanup window, and use force only as the fallback. The 20-test focused
+toolchain suite passes, including POSIX and Windows command contracts, graceful
+close before fallback, and forced close after the configured grace window.
+
+$ pnpm check:changed
+result: PASS
+tasks: 31 successful, 31 total; 9 cached
+Turbo task time: 11.735 seconds
+wrapper elapsed: 13.44 seconds
+
+The first forced repeat correctly failed after a local branch switch because
+ignored P01-R05 dist output remained beside the P00 source and exposed tests not
+present in this branch. Git confirmed the three targets contained no tracked
+files; targeted ignored-output cleanup removed only packages/config/dist,
+packages/http-express/dist, and packages/runtime/dist. The clean repeat then
+regenerated current-branch output and passed:
+
+$ pnpm check --force
+result: PASS
+tasks: 31 successful, 31 total; 0 cached
+Turbo task time: 23.992 seconds
+wrapper elapsed: 25.63 seconds
+
+The prior native-Windows clean graph remains evidence for bootstrap and complete
+repository portability, but it does not prove the changed signal path. The exact
+candidate instead has injected POSIX and Windows process-tree contract coverage;
+an interactive native-Windows interrupt remains an explicit limitation. No
+dependency, lockfile, bootstrap, packaging, Docker, product, or durable-data
+input changed. Protected CI at the exact candidate remains required.
 
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities
@@ -185,9 +224,8 @@ elapsed: 1.01 seconds
 PENDING RELEASE EVIDENCE
 ------------------------
 
-- Protected pull-request workflow at the final documentation-only closeout head.
-  GitHub Actions remains under an official external incident.
-- Final confirmation review at the exact closeout head.
+- Protected pull-request workflow at candidate 97759171593a2d553079097f4428e106163de13e.
+- Resolution of confirmation discussions 3865479921 and 3865479931.
 - Protected squash merge and post-merge main run.
 
 BOUNDARIES AND LIMITATIONS
@@ -201,3 +239,6 @@ BOUNDARIES AND LIMITATIONS
   final work-item acceptance gate.
 - The elapsed observations describe one warm local environment and are workflow
   evidence, not general performance benchmarks.
+- The changed graceful-interrupt path is contract-tested for Windows command
+  selection but has not been exercised through an interactive native-Windows
+  console interrupt at the exact candidate.
