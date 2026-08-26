@@ -22,6 +22,10 @@ Append new entries at the top. Keep entries factual and concise.
 - Hardened public candidate `a610697` passed frozen install, eight focused tests, the diagnostic, 31 of 31 uncached tasks in `22.673` seconds, audit, secret scanning, clean Git, and exact temporary-clone removal; protected run `32970353368` passed every applicable job.
 - Independent review comment `3862878496` found unsupported parser charset and content-encoding failures were incorrectly converted from `415` to `500`. The remediation maps only `charset.unsupported` and `encoding.unsupported` from the parser-local handler to stable `415 UNSUPPORTED_MEDIA_TYPE`; adverse charset and encoding-canary assertions pass without reflection.
 - The review remediation passed the complete local graph with 31 of 31 uncached tasks in `27.634` seconds.
+- Remediated public candidate `cb5a0fa` passed frozen install with 259 packages reused and zero downloaded, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.639` seconds, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32971194276` passed every applicable job at `cb5a0fa`. Evidence reply `3862910571` was posted and discussion `PRRT_kwDOUEkeis6cdpFj` is resolved; final review was requested at the remediated head.
+- Follow-up independent review comment `3862956772` found Express's default routing accepted `/graphql/` and `/GRAPHQL` despite the exact-route contract. The local remediation enables strict and case-sensitive routing before registration and adds both stable `404` assertions; focused and static checks pass.
+- The exact-route remediation passed the complete local graph with 31 of 31 uncached tasks in `14.951` seconds.
 
 ### Evidence
 
@@ -31,13 +35,15 @@ Append new entries at the top. Keep entries factual and concise.
 - Initial protected run: `32969827929` at `8f056693735d8d18109db148a04f37a10c93a409`.
 - Hardened clean checkout and protected run: `a610697112b1c507ef13628d13c6bc2032e8d1a5`; 31 tasks in `22.673s`; run `32970353368`.
 - Independent review: actionable comment `3862878496`; local remediation pending commit.
+- Remediation: `cb5a0fa6165da322ccba53affb75d88d66c7f348`; clean checkout 31 tasks in `17.639s`; protected run `32971194276`; resolved evidence reply `3862910571`.
+- Follow-up review: actionable comment `3862956772`; exact-route remediation pending commit.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Commit and push the parser remediation, then repeat the clean public candidate, protected CI, and independent review at the new head.
+Run and publish the exact-route remediation gates, close comment `3862956772`, and request final independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 

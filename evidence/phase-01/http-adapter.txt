@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED
 - Date: 2026-08-26
-- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; clean-checkout candidate `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`
+- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; remediated candidate `cb5a0fa6165da322ccba53affb75d88d66c7f348`
 - Owner: Aster shared transport infrastructure
 - Related requirement: P01-R11
 - Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
@@ -104,7 +104,11 @@ The current production license inventory resolves only MIT, ISC, and BSD-3-Claus
 - Self-review found that the original drain test released its resolver before Apollo's next-turn HTTP close, so it did not prove ordering. The hardened test waits one event-loop turn, proves the listener is closed while stop and response remain pending, refuses a new connection, and only then releases the resolver. Five consecutive focused runs passed all eight tests.
 - Independent review comment `3862878496` found that Express parser errors `charset.unsupported` and `encoding.unsupported` retained their client-side `415` semantics but the adapter's fallback converted them to `500`. The remediation classifies only those parser-originated types as stable `415 UNSUPPORTED_MEDIA_TYPE`; adverse charset and content-encoding canary cases pass with no header reflection.
 - The review remediation passed the complete local graph with 31 of 31 uncached tasks in `27.634s`, including all eight HTTP tests, type-aware lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, and existing package checks.
-- Final clean public checkout, protected CI, review closeout, and verified candidate: pending after the review remediation.
+- Remediated public candidate `cb5a0fa` passed frozen install with 259 packages reused and zero downloaded in `1.7s`, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.639s`, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32971194276` passed every applicable job at `cb5a0fa`. Evidence reply `3862910571` records the fix and tests, and discussion `PRRT_kwDOUEkeis6cdpFj` is resolved.
+- Follow-up independent review comment `3862956772` found Express's default non-strict, case-insensitive routing admitted `/graphql/` and `/GRAPHQL` despite the exact-route contract. The local remediation enables strict and case-sensitive routing before route registration and adds both adverse `404` cases.
+- The exact-route remediation passed the complete local graph with 31 of 31 uncached tasks in `14.951s`.
+- Final local graph, clean public checkout, protected CI, review closeout, and verified candidate: pending after exact-route remediation.
 
 ## Clean public checkout
 
@@ -114,6 +118,8 @@ The public feature branch was cloned over HTTPS into a new empty `/tmp/aster-p01
 
 The temporary root was resolved and checked as a regular repository under the fixed `/tmp/aster-p01-r11-public-*` prefix. Its public origin, exact candidate SHA, and clean state were revalidated immediately before removing only that root and proving its absence. The experiment did not invoke Docker or modify any container, network, volume, image, or persistent local-platform state.
 
+After review remediation, the same procedure cloned exact public commit `cb5a0fa6165da322ccba53affb75d88d66c7f348` into a new `/tmp/aster-p01-r11-remediated-*` root. Frozen install reused 259 packages with zero download in `1.7s`; `http:test` passed eight assertions through two uncached tasks in `4.486s`; `http:check` emitted the expected record; and the complete forced graph passed 31 of 31 uncached tasks in `17.639s`. Audit, secret scanning, and clean Git passed. The resolved path, public origin, SHA, and state were revalidated before removing only that root and proving its absence. Docker was not invoked.
+
 ## Interpretation
 
 The current local evidence supports Express 5 as an implemented bounded transport candidate for Apollo Server on the named runtime and host. It proves the reviewed functional and failure contracts without creating a deployable service. The maintained Apollo integration, executable drain path, and replaceable package boundary support ADR-0011.
@@ -122,7 +128,7 @@ The process pair is a compatibility and startup-cost observation only. It does n
 
 ## Limitations
 
-- The first two protected runs and dependency review passed, but the final clean checkout, protected rerun, review closeout, and release evidence remain pending after the unsupported-encoding remediation.
+- Three protected runs, dependency review, and the unsupported-encoding review-thread closeout pass. Exact-route remediation still requires its final clean checkout, protected run, review closeout, and release evidence.
 - Nine Express transitives have informational OpenSSF Scorecard values below the hosted threshold. They are not current vulnerability findings, but future dependency changes must re-evaluate them and preserve the adapter replacement boundary.
 - The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
 - Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.

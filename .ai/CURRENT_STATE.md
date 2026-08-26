@@ -98,6 +98,8 @@ Status: **IN_PROGRESS**
 - Pull request 10 initial candidate `8f05669` passed protected run `32969827929`, including hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`. Dependency review reported nine informational low OpenSSF Scorecard warnings in Express transitives; the gate and registry audit passed.
 - Self-review found the original in-flight drain test released its resolver before Apollo's next-turn HTTP close. The hardened test now proves the listener is closed while stop and response remain pending, rejects a new connection, and only then releases the resolver; five consecutive focused runs passed all eight tests. Final public and protected evidence must use the hardened candidate.
 - Hardened candidate `a610697` passed an exact clean public checkout with eight focused tests, the diagnostic, 31 of 31 forced tasks in `22.673` seconds, audit, secret scan, and clean state; protected run `32970353368` also passed. Independent review comment `3862878496` then found unsupported parser charset/encoding errors were translated from client-side `415` to `500`. The remediation preserves stable `415 UNSUPPORTED_MEDIA_TYPE`, adds both adverse cases without reflecting the header canary, and passes 31 of 31 forced local tasks in `27.634` seconds.
+- Remediated candidate `cb5a0fa` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced uncached tasks in `17.639` seconds, audit, secret scanning, and clean Git before exact clone removal. Protected run `32971194276` passed every applicable job. Evidence reply `3862910571` was posted and the actionable discussion is resolved; final independent review remains pending.
+- Follow-up review comment `3862956772` proved Express's defaults also accept `/graphql/` and `/GRAPHQL`. The local remediation enables strict, case-sensitive routing before mount, adds stable `404` assertions for trailing-slash and case variants, and passes 31 of 31 forced local tasks in `14.951` seconds. Final gates must use this exact-route candidate.
 
 ## Not implemented
 
@@ -112,7 +114,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the P01-R11 candidate through protected CI, hosted dependency review, and independent review without adding a product service or lifecycle implementation early.
+Verify the exact-route remediation through the complete local graph, public clean checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
 
 ## Current risks
 

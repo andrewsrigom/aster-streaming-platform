@@ -24,7 +24,7 @@ Use the Apollo-maintained `@as-integrations/express5` package when a subgraph mo
 The adapter exposes a Node.js `RequestListener` and a one-time GraphQL middleware mount. Its request path is ordered as follows:
 
 1. reject traffic with a stable `503` until GraphQL middleware is mounted;
-2. match the fixed `/graphql` route boundary and reject nested paths;
+2. match only the strict, case-sensitive `/graphql` route and reject trailing-slash, case-variant, and nested paths;
 3. create a request-local cancellation signal;
 4. require `application/json` for `POST` requests;
 5. parse strict JSON with a 64 KiB default and a reviewed 256 KiB hard maximum;

@@ -196,6 +196,18 @@ test("enforces parser-before-handler ordering and hides framework headers", asyn
   const nested = await fetch(`${url}/graphql/nested`);
   assert.equal(nested.status, 404);
   assert.deepEqual(await responsePayload(nested), { error: { code: "HTTP_NOT_FOUND" } });
+
+  const trailingSlash = await fetch(`${url}/graphql/`);
+  assert.equal(trailingSlash.status, 404);
+  assert.deepEqual(await responsePayload(trailingSlash), {
+    error: { code: "HTTP_NOT_FOUND" },
+  });
+
+  const caseVariant = await fetch(`${url}/GRAPHQL`);
+  assert.equal(caseVariant.status, 404);
+  assert.deepEqual(await responsePayload(caseVariant), {
+    error: { code: "HTTP_NOT_FOUND" },
+  });
 });
 
 test("rejects malformed and oversized JSON before GraphQL middleware", async (context) => {

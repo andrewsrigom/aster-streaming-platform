@@ -251,6 +251,8 @@ export function createExpressHttpAdapter(
   const application = express();
   application.disable("etag");
   application.disable("x-powered-by");
+  application.enable("case sensitive routing");
+  application.enable("strict routing");
   let mounted = false;
   application.use((_request: Request, response: Response, next: NextFunction): void => {
     if (!mounted) {

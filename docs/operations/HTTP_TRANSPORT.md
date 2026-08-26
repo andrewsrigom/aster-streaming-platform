@@ -47,7 +47,7 @@ The fixed route stack is:
 7. caller-supplied GraphQL middleware;
 8. stable not-found and terminal error handlers.
 
-The default JSON bound is `65,536` bytes. A composition root may lower it or raise it only to the package maximum of `262,144` bytes. The bound is enforced before Apollo executes. `POST` requires UTF-8 `application/json`; unsupported charsets or content encodings return the same stable `415` category without reflecting the header. `GET` remains available for GraphQL query semantics and does not require a body media type. Nested paths such as `/graphql/internal` do not enter the GraphQL middleware.
+The default JSON bound is `65,536` bytes. A composition root may lower it or raise it only to the package maximum of `262,144` bytes. The bound is enforced before Apollo executes. `POST` requires UTF-8 `application/json`; unsupported charsets or content encodings return the same stable `415` category without reflecting the header. `GET` remains available for GraphQL query semantics and does not require a body media type. Routing is strict and case-sensitive: `/graphql/internal`, `/graphql/`, and `/GRAPHQL` do not enter the GraphQL middleware.
 
 ## Stable responses
 
