@@ -54,10 +54,17 @@
       "inputs": ["tools/verify-architecture.ts", "tools/verify-architecture.test.ts"]
     },
     "//#platform:check": {
-      "inputs": ["infra/compose/**", "tools/verify-local-platform.mjs"]
+      "inputs": [
+        "README.md",
+        "docs/operations/LOCAL_DEVELOPMENT.md",
+        "infra/compose/**",
+        "tools/verify-local-platform.mjs"
+      ]
     },
     "//#platform:test": {
       "inputs": [
+        "README.md",
+        "docs/operations/LOCAL_DEVELOPMENT.md",
         "infra/compose/**",
         "tools/verify-local-platform.mjs",
         "tools/verify-local-platform.test.mjs"

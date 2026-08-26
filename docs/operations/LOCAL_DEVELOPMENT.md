@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Phase 00 repository foundation and P01-R01 are verified. The first Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. Its [local-platform evidence](../../evidence/phase-01/local-platform-checkpoint.txt) includes local, clean public-checkout, and protected hosted execution. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
+The Phase 00 repository foundation is verified. P01-R01 implements the first Docker-only infrastructure checkpoint with exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. Explicit project-name remediation is locally validated in [P01-R01 evidence](../../evidence/phase-01/local-platform-checkpoint.txt) after automated review; its corrected clean public-checkout and protected hosted repetition remain pending. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
 
 ## Current foundation tools
 
@@ -82,7 +82,7 @@ The fast changed-scope gate will not run every integration, browser, media, fail
 P01-R01 exposes one Compose command for the current runtime-laboratory slice. It requires no host Node.js, pnpm, database, Redis, broker, object storage, telemetry, FFmpeg, or hosted credentials:
 
 ```bash
-docker compose --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
 ```
 
 The command pulls immutable images when absent, creates the `aster` project, waits for PostgreSQL and Redis health, requires `platform-init` to complete, and leaves `platform-status` healthy. The synthetic `aster-test-only` database credential is fixed, local-only, inaccessible through a published host port, and not accepted as a hosted configuration pattern.
@@ -90,19 +90,19 @@ The command pulls immutable images when absent, creates the `aster` project, wai
 Inspect the ongoing state and bounded initialization output:
 
 ```bash
-docker compose --file infra/compose/compose.yml ps --all
-docker compose --file infra/compose/compose.yml logs --no-color platform-init platform-status
-docker compose --file infra/compose/compose.yml exec postgres psql --username=aster --dbname=aster
-docker compose --file infra/compose/compose.yml exec redis redis-cli
+docker compose --project-name aster --file infra/compose/compose.yml ps --all
+docker compose --project-name aster --file infra/compose/compose.yml logs --no-color platform-init platform-status
+docker compose --project-name aster --file infra/compose/compose.yml exec postgres psql --username=aster --dbname=aster
+docker compose --project-name aster --file infra/compose/compose.yml exec redis redis-cli
 ```
 
 Stop containers and the internal network while preserving PostgreSQL data:
 
 ```bash
-docker compose --file infra/compose/compose.yml down
+docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-P01-R02 later adds the explicit project-scoped destructive reset. Do not append `--volumes` to the normal stop command. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
+The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`; use it on every public operation so diagnostics and lifecycle commands target the same Aster project. P01-R02 later adds the explicit project-scoped destructive reset. Do not append `--volumes` to the normal stop command. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
 
 ### Laboratory lane
 
@@ -195,9 +195,9 @@ Do not commit full source films or generated HLS packages to the source reposito
 
 For the implemented P01-R01 checkpoint:
 
-1. run `docker compose --file infra/compose/compose.yml ps --all`;
+1. run `docker compose --project-name aster --file infra/compose/compose.yml ps --all`;
 2. require PostgreSQL, Redis, and `platform-status` to report `healthy` and `platform-init` to report exit code `0`;
-3. inspect bounded logs with `docker compose --file infra/compose/compose.yml logs --no-color --tail 200`;
+3. inspect bounded logs with `docker compose --project-name aster --file infra/compose/compose.yml logs --no-color --tail 200`;
 4. validate the static policy with `pnpm platform:check` when Node.js is available;
 5. validate the resolved Compose model with `pnpm platform:compose:check` or the equivalent raw Docker command;
 6. use the normal `down` command to preserve PostgreSQL state;

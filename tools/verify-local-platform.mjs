@@ -5,6 +5,8 @@ import { fileURLToPath, pathToFileURL, URL } from "node:url";
 const MAX_COMPOSE_BYTES = 100_000;
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const composePath = resolve(repositoryRoot, "infra", "compose", "compose.yml");
+const readmePath = resolve(repositoryRoot, "README.md");
+const localDevelopmentPath = resolve(repositoryRoot, "docs", "operations", "LOCAL_DEVELOPMENT.md");
 
 export const POSTGRES_IMAGE =
   "docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f";
@@ -120,14 +122,53 @@ export function validateLocalPlatform(source) {
   );
   requireText("lifecycle", "    stop_grace_period: 10s", "Redis needs a bounded graceful stop");
   requireText("lifecycle", "    stop_grace_period: 5s", "status needs a bounded graceful stop");
+  requireText(
+    "scope",
+    "use docker compose --project-name aster --file infra/compose/compose.yml ps --all for status",
+    "status diagnostics must pin the public Aster project name",
+  );
 
+  return violations;
+}
+
+export function validatePublicPlatformCommands(documents) {
+  const violations = [];
+  const requiredCommands = [
+    "docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status",
+    "docker compose --project-name aster --file infra/compose/compose.yml ps --all",
+    "docker compose --project-name aster --file infra/compose/compose.yml logs --no-color platform-init platform-status",
+    "docker compose --project-name aster --file infra/compose/compose.yml down",
+  ];
+  for (const { file, source } of documents) {
+    if (source.includes("docker compose --file infra/compose/compose.yml")) {
+      violations.push({
+        detail: `${file} contains a public command vulnerable to COMPOSE_PROJECT_NAME override`,
+        rule: "scope",
+      });
+    }
+    for (const command of requiredCommands) {
+      if (!source.includes(command)) {
+        violations.push({ detail: `${file} is missing scoped command: ${command}`, rule: "scope" });
+      }
+    }
+  }
   return violations;
 }
 
 export async function runLocalPlatformCheck(path = composePath) {
   try {
-    const source = await readFile(path, "utf8");
-    const violations = validateLocalPlatform(source);
+    const [source, readme, localDevelopment] = await Promise.all([
+      readFile(path, "utf8"),
+      readFile(readmePath, "utf8"),
+      readFile(localDevelopmentPath, "utf8"),
+    ]);
+    const violations = [
+      ...validateLocalPlatform(source),
+      ...validatePublicPlatformCommands([
+        { file: "README.md", source: readme },
+        { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopment },
+      ]),
+    ];
     if (violations.length > 0) {
       console.error(
         JSON.stringify({ check: "local-platform", status: "error", violations }, null, 2),

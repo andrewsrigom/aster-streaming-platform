@@ -3,13 +3,44 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import test from "node:test";
 
-import { POSTGRES_IMAGE, REDIS_IMAGE, validateLocalPlatform } from "./verify-local-platform.mjs";
+import {
+  POSTGRES_IMAGE,
+  REDIS_IMAGE,
+  validateLocalPlatform,
+  validatePublicPlatformCommands,
+} from "./verify-local-platform.mjs";
 
 const composePath = resolve(import.meta.dirname, "..", "infra", "compose", "compose.yml");
+const readmePath = resolve(import.meta.dirname, "..", "README.md");
+const localDevelopmentPath = resolve(
+  import.meta.dirname,
+  "..",
+  "docs",
+  "operations",
+  "LOCAL_DEVELOPMENT.md",
+);
 const validSource = await readFile(composePath, "utf8");
+const readmeSource = await readFile(readmePath, "utf8");
+const localDevelopmentSource = await readFile(localDevelopmentPath, "utf8");
 
 test("the checked-in local platform policy passes", () => {
   assert.deepEqual(validateLocalPlatform(validSource), []);
+  assert.deepEqual(
+    validatePublicPlatformCommands([
+      { file: "README.md", source: readmeSource },
+      { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopmentSource },
+    ]),
+    [],
+  );
+});
+
+test("rejects public commands vulnerable to a project-name environment override", () => {
+  const weakened = readmeSource.replaceAll("docker compose --project-name aster", "docker compose");
+  assert.ok(
+    validatePublicPlatformCommands([{ file: "README.md", source: weakened }]).some(
+      ({ rule }) => rule === "scope",
+    ),
+  );
 });
 
 test("rejects floating or environment-substituted images", () => {

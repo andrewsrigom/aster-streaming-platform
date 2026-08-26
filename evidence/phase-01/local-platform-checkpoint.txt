@@ -6,7 +6,7 @@ Evidence date: 2026-08-26
 Branch: feat/phase-01-local-platform
 Verified implementation commit: 563d09fde2de4c515d7dab02dfe68ee7484fa7e4
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; linux/amd64 containers
-Acceptance: VERIFIED
+Acceptance: IMPLEMENTED; explicit project-name remediation is local-only pending public and hosted repetition
 
 QUESTION AND SCOPE
 ------------------
@@ -92,7 +92,7 @@ $ pnpm platform:check
 result: PASS, 0 violations
 
 $ pnpm platform:test
-result: PASS, 7 adverse tests
+result: PASS, 8 adverse tests
 
 Adverse cases reject:
 - floating and substituted images;
@@ -100,6 +100,7 @@ Adverse cases reject:
 - wrong PostgreSQL 18 mount and a Redis durability claim;
 - missing health and one-shot completion gates;
 - missing CPU, memory, PID, and graceful-stop bounds;
+- public commands vulnerable to COMPOSE_PROJECT_NAME override;
 - malformed, tab-delimited, and oversized configuration.
 
 $ docker compose --project-name aster-p01-r01-dev --file infra/compose/compose.yml config --quiet
@@ -108,13 +109,13 @@ result: PASS
 $ pnpm check:source
 result: PASS after one local lint correction
 tasks: 12 of 12
-platform tests: 7 passed
+platform tests: 8 passed
 CI policy/classifier tests: 18 passed
 
 $ pnpm check
 result: PASS
 tasks: 22 of 22
-focused platform tests: 7 passed
+focused platform tests: 8 passed
 elapsed: 7.58 seconds
 maximum resident set observed for the complete gate: 453,412 KiB
 
@@ -264,8 +265,30 @@ Post-cleanup queries returned:
 
 This volume removal applied only to the unique verification project after its evidence was durable. It is not the public reset interface; the documented normal stop continues to preserve PostgreSQL.
 
-CLEAN PUBLIC-CHECKOUT ACCEPTANCE
---------------------------------
+PROJECT-NAME OVERRIDE REMEDIATION
+---------------------------------
+
+Automated review discussion 3860940991 identified that an inherited COMPOSE_PROJECT_NAME has higher precedence than the top-level Compose name. The original public commands could therefore target a different project while claiming to operate on Aster.
+
+The remediation:
+- adds --project-name aster to every public startup, status, log, interactive, and normal-stop command;
+- prints the explicit project name in the ongoing status diagnostic;
+- makes README.md and LOCAL_DEVELOPMENT.md inputs to the dependency-free platform policy;
+- rejects an unpinned public command in the eighth adverse test;
+- preserves the unique CI project supplied through COMPOSE_PROJECT_NAME because CI does not use the public commands.
+
+Hostile-environment runtime:
+- exported conflicting value COMPOSE_PROJECT_NAME=foreign-collision for each operation;
+- ran the corrected command with --project-name aster;
+- observed 4 containers labeled project=aster and 0 labeled project=foreign-collision;
+- observed the status diagnostic print the corrected scoped command;
+- ran the corrected normal stop and proved aster_postgres-data remained with exact ownership labels;
+- removed only the verified Aster volume and observed Aster and collision resource counts return to zero.
+
+Result: PASS_LOCAL. Corrected clean public-checkout and protected hosted repetitions remain pending.
+
+INITIAL CLEAN PUBLIC-CHECKOUT ACCEPTANCE
+----------------------------------------
 
 Initial state:
 - public source: https://github.com/andrewsrigom/aster-streaming-platform.git;
@@ -275,7 +298,7 @@ Initial state:
 - Aster project networks before start: 0;
 - Aster project volumes before start: 0.
 
-The new public clone ran the exact Docker-only start command from README.md without installing or invoking host Node.js or pnpm:
+The new public clone ran the then-current Docker-only start command from README.md without installing or invoking host Node.js or pnpm:
 
 $ docker compose --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
 result: PASS
@@ -320,18 +343,18 @@ The hosted Local platform job used unique project aster-ci-32947483503-1. Its ru
 ACCEPTANCE STATUS
 -----------------
 
-- One Docker-only command starts from empty project state: VERIFIED.
+- One Docker-only command starts from empty project state: IMPLEMENTED; project-name remediation is locally verified.
 - Dependencies use exact versions and immutable multi-platform digests: PASS.
 - Health checks and one-shot initialization gate ongoing status: PASS.
 - PostgreSQL state persists across recreation and normal stop: PASS.
 - Redis state is explicitly disposable: PASS.
 - CPU, memory, PID, health, wait, and shutdown behavior are bounded: PASS.
 - No hosted credential, host port, product data, or unrelated Docker mutation exists: PASS.
-- Static/adverse policy and Compose syntax pass: VERIFIED.
+- Static/adverse policy and Compose syntax pass: PASS_LOCAL after remediation.
 - Complete 22-task repository gate and high-severity dependency audit: VERIFIED.
 - Failure detection and recovery pass: VERIFIED.
-- Protected hosted smoke: VERIFIED.
-- Clean public-checkout repeat: VERIFIED.
+- Initial protected hosted smoke: PASS; corrected repetition PENDING.
+- Initial clean public-checkout repeat: PASS; corrected repetition PENDING.
 
 LIMITATIONS AND NEXT ACTION
 ---------------------------
@@ -344,3 +367,4 @@ LIMITATIONS AND NEXT ACTION
 - The public normal stop preserves PostgreSQL. P01-R02 must provide and test the destructive reset before users receive one.
 - Broker, object storage, telemetry, application runtime, and HTTP adapter remain pending Phase 01 work.
 - The exact local and clean-public-checkout verification projects were removed after label validation; hosted logs confirm the unique CI project cleanup also completed.
+- Review remediation remains incomplete until the corrected public-clone and protected hosted paths pass and discussion 3860940991 is resolved.

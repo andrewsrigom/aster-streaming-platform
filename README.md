@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and the first Phase 01 local-platform checkpoint are verified. [P01-R01 evidence](evidence/phase-01/local-platform-checkpoint.txt) includes a clean public clone and protected hosted execution; application implementation has not started.**
+**The Phase 00 repository foundation is verified. The first Phase 01 local-platform checkpoint is implemented, and explicit project-name remediation is locally validated in [P01-R01 evidence](evidence/phase-01/local-platform-checkpoint.txt) after automated review; its corrected clean public clone and protected hosted execution remain pending. Application implementation has not started.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -81,23 +81,23 @@ Requirements:
 From the repository root, start the checkpoint with one command:
 
 ```bash
-docker compose --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
 ```
 
 The command creates only the `aster` Compose project, pulls exact multi-platform image digests when absent, waits for PostgreSQL and Redis health, requires the one-shot initializer to exit successfully, and leaves `platform-status` healthy. Inspect the result with:
 
 ```bash
-docker compose --file infra/compose/compose.yml ps --all
-docker compose --file infra/compose/compose.yml logs --no-color platform-init platform-status
+docker compose --project-name aster --file infra/compose/compose.yml ps --all
+docker compose --project-name aster --file infra/compose/compose.yml logs --no-color platform-init platform-status
 ```
 
 Stop the checkpoint while preserving its PostgreSQL volume with:
 
 ```bash
-docker compose --file infra/compose/compose.yml down
+docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-Do not add `--volumes`: P01-R02 owns the future explicit destructive reset and its local-only safety checks. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
+The explicit project name has higher precedence than an inherited `COMPOSE_PROJECT_NAME`, so every public command remains scoped to Aster. Do not add `--volumes`: P01-R02 owns the future explicit destructive reset and its local-only safety checks. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

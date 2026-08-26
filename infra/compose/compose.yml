@@ -114,7 +114,7 @@ services:
     entrypoint: [/bin/sh, -ec]
     command:
       - |
-        printf 'aster local platform ready\nuse docker compose -f infra/compose/compose.yml ps for status\n'
+        printf 'aster local platform ready\nuse docker compose --project-name aster --file infra/compose/compose.yml ps --all for status\n'
         trap 'exit 0' TERM INT
         while :; do sleep 3600 & wait $$!; done
     networks:

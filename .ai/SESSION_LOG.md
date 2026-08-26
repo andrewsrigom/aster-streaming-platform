@@ -2,29 +2,31 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Verified core local platform checkpoint
+## 2026-08-26 — Core local platform review remediation
 
 ### Completed
 
 - Selected PostgreSQL `18.6-alpine3.23` and Redis `8.10.0-alpine` Docker Official Images from current upstream support and release evidence, pinned both multi-platform indexes by digest, and recorded PostgreSQL License plus the Redis AGPLv3 option without relicensing them as Aster source.
 - Added a Docker-only Compose checkpoint with no host ports, an internal network, a PostgreSQL 18 persistent volume, disposable bounded Redis, health checks, one-shot protocol initialization, ongoing cross-dependency status, finite CPU/memory/PID limits, and bounded shutdown.
-- Added dependency-free policy validation with 7 adverse tests and an isolated path-aware CI smoke decision with 18 passing classifier/policy tests, including rejection of broad Docker cleanup.
+- Added dependency-free policy validation with 8 adverse tests and an isolated path-aware CI smoke decision with 18 passing classifier/policy tests, including rejection of project-name overrides and broad Docker cleanup.
 - Started a unique empty Compose project, verified exact runtime versions and applied limits, recreated PostgreSQL with its data retained, recreated Redis with its probe discarded, and passed a normal data-preserving stop/restart.
 - Stopped PostgreSQL and observed status become unhealthy in `13.945` seconds, then observed PostgreSQL and status recover in `2.834` seconds without mutating unrelated Docker resources.
 - Inspected exact Compose project labels, then removed only 4 `aster-p01-r01-dev` containers, its 1 internal network, and its 1 verification volume in `0.57` seconds; all project counts are zero and the 4 unrelated stopped containers remain unchanged.
 - Passed the complete 22-task repository gate in `7.58` seconds, Compose model parsing, frozen installation, and the high-severity registry audit with no known vulnerability.
 - Cloned public candidate `563d09f` into an empty path, ran the exact README command without host Node.js, reached health in `7.39` seconds, verified PostgreSQL `18.6` and Redis `8.10.0`, proved the normal `down` preserved PostgreSQL, and removed only the labeled verification project and clone.
 - Observed protected pull request 6 run `32947483503` pass classification, dependency review, documentation/security, complete source quality and audit, the `Local platform` job, unique CI project cleanup, and the stable required aggregate.
+- Observed final-state run `32947882904` pass, then reopened P01-R01 when automated review discussion `3860940991` proved inherited `COMPOSE_PROJECT_NAME` could redirect the public commands.
+- Added explicit `--project-name aster` to every public operation and status diagnostic, made both command documents platform-policy inputs, added the eighth adverse test, and passed a real hostile-environment startup with 4 Aster containers and 0 collision-project containers before exact cleanup.
 
 ### Evidence
 
 - First immutable pull: `11.79` seconds; clean startup to health: `9.80` seconds; warm restart after normal stop: `7.38` seconds.
 - One idle sample: PostgreSQL `37.94 MiB`, Redis `6.445 MiB`, and status `1.566 MiB`; initialized PostgreSQL volume `65.39 MB`.
-- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`VERIFIED`).
+- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`IMPLEMENTED`; corrected public and hosted repeats pending).
 
 ### Next action
 
-After final branch integration is confirmed, create a new active plan for P01-R02 and implement only the explicit destructive local reset with exact scope and refusal tests.
+Publish the project-name remediation, repeat the corrected command from a clean public checkout with a hostile override, require protected CI, resolve review discussion `3860940991`, and only then close P01-R01 again.
 
 ## 2026-08-26 — Verified clean public checkout and Phase 00 closeout
 
