@@ -1,6 +1,6 @@
 import type { RequestListener } from "node:http";
-import { MIMEType } from "node:util";
 
+import { parse as parseContentType } from "content-type";
 import express, {
   type ErrorRequestHandler,
   type NextFunction,
@@ -264,11 +264,11 @@ const requireJsonContentType: RequestHandler = (
   try {
     const rawContentType = request.get("content-type");
     if (rawContentType && !hasDuplicateCharsetParameter(rawContentType)) {
-      const contentType = new MIMEType(rawContentType);
-      const charset = contentType.params.get("charset");
+      const contentType = parseContentType(rawContentType);
+      const charset = contentType.parameters["charset"];
       if (
-        contentType.essence === "application/json" &&
-        (charset === null || charset.toLowerCase() === "utf-8")
+        contentType.type === "application/json" &&
+        (charset === undefined || charset.toLowerCase() === "utf-8")
       ) {
         next();
         return;

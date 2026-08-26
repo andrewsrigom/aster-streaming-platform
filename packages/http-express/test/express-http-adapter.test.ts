@@ -274,6 +274,16 @@ test("rejects malformed and oversized JSON before GraphQL middleware", async (co
     error: { code: "UNSUPPORTED_MEDIA_TYPE" },
   });
 
+  const malformedParameter = await fetch(`${url}/graphql`, {
+    method: "POST",
+    headers: { "content-type": "application/json; charset" },
+    body: "{}",
+  });
+  assert.equal(malformedParameter.status, 415);
+  assert.deepEqual(await responsePayload(malformedParameter), {
+    error: { code: "UNSUPPORTED_MEDIA_TYPE" },
+  });
+
   const encodingCanary = "unsupported-secret-canary";
   const unsupportedEncoding = await fetch(`${url}/graphql`, {
     method: "POST",

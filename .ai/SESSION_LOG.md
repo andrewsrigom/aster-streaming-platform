@@ -33,6 +33,8 @@ Append new entries at the top. Keep entries factual and concise.
 - Follow-up independent review comment `3863154140` found duplicate charset parameters could let Node.js admit the first value while Express decoded using the last. The local remediation rejects duplicates while respecting quoted semicolons, covers both the bypass and false-positive boundary, and passes 31 of 31 uncached local tasks in `17.16` seconds.
 - Duplicate-charset candidate `6b8e1c2` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `27.046` seconds, audit, secret scan, and clean Git; protected run `32974480044` passed. Evidence reply `3863199830` is posted and discussion `PRRT_kwDOUEkeis6ceWrB` is resolved.
 - Follow-up independent review comment `3863261260` found the direct compatibility diagnostic had no repository-owned request deadline. The local remediation passes a two-second abort signal through fetch and response consumption, clears its timer in `finally`, and passes 31 of 31 uncached local tasks in `15.235` seconds.
+- Diagnostic-deadline candidate `c2596d2` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406` seconds, audit, secret scan, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and discussion `PRRT_kwDOUEkeis6ceoLv` is resolved.
+- Follow-up independent review comment `3863364289` identified the malformed `application/json; charset` boundary. The local remediation replaces lenient Node.js MIME parsing with strict exact-pinned `content-type@1.0.5`, retains duplicate rejection, adds the stable `415` regression, and passes 31 of 31 uncached local tasks in `13.514` seconds.
 
 ### Evidence
 
@@ -50,13 +52,15 @@ Append new entries at the top. Keep entries factual and concise.
 - Follow-up review: actionable comment `3863154140`; duplicate-charset remediation pending commit.
 - Duplicate-charset remediation: `6b8e1c29225280226b7c37b022fff3d1023e15b1`; clean checkout 31 tasks in `27.046s`; protected run `32974480044`; resolved reply `3863199830`.
 - Follow-up review: actionable comment `3863261260`; diagnostic-deadline remediation pending commit.
+- Diagnostic-deadline remediation: `c2596d2e64d68df4cd711bccb13201305ed5f4b2`; clean checkout 31 tasks in `18.406s`; protected run `32975500067`; resolved reply `3863295674`.
+- Follow-up review: actionable comment `3863364289`; strict-media-type remediation pending commit.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Run and publish the diagnostic-deadline remediation, close comment `3863261260`, and request final independent review at the new head.
+Run and publish the strict-media-type remediation, close comment `3863364289`, and request final independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 
