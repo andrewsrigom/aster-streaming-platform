@@ -114,6 +114,11 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`evidence/phase-01/README.md`](../../evidence/phase-01/README.md) — Phase 01 Evidence Index
 - [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt) — Express HTTP Adapter Compatibility Evidence
 - [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt) — Local Platform Checkpoint Evidence
+- [`evidence/phase-01/local-reset.txt`](../../evidence/phase-01/local-reset.txt) — Project-Scoped Local Reset Evidence
+- [`evidence/phase-01/runtime-configuration.txt`](../../evidence/phase-01/runtime-configuration.txt) — Runtime Configuration Evidence
+- [`evidence/phase-01/runtime-lifecycle.txt`](../../evidence/phase-01/runtime-lifecycle.txt) — Runtime Lifecycle Evidence
+- [`evidence/phase-01/runtime-logging.txt`](../../evidence/phase-01/runtime-logging.txt) — Runtime Logging Evidence
+- [`evidence/phase-01/runtime-runway-preflight.txt`](../../evidence/phase-01/runtime-runway-preflight.txt) — Remaining Runtime Preflight Evidence
 
 ## docs/00-start-here
 
@@ -146,6 +151,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/architecture/OBSERVABILITY_ARCHITECTURE.md`](../architecture/OBSERVABILITY_ARCHITECTURE.md) — Observability Architecture
 - [`docs/architecture/REDIS_ARCHITECTURE.md`](../architecture/REDIS_ARCHITECTURE.md) — Redis Architecture
 - [`docs/architecture/RESILIENCE_ARCHITECTURE.md`](../architecture/RESILIENCE_ARCHITECTURE.md) — Resilience Architecture
+- [`docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`](../architecture/RUNTIME_PLATFORM_RUNWAY.md) — Runtime Platform Runway
 - [`docs/architecture/SECURITY_ARCHITECTURE.md`](../architecture/SECURITY_ARCHITECTURE.md) — Security Architecture
 - [`docs/architecture/SYSTEM_OVERVIEW.md`](../architecture/SYSTEM_OVERVIEW.md) — System Overview
 - [`docs/architecture/TECHNOLOGY_BASELINE.md`](../architecture/TECHNOLOGY_BASELINE.md) — Technology Baseline
@@ -206,6 +212,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/operations/REPOSITORY_GOVERNANCE.md`](../operations/REPOSITORY_GOVERNANCE.md) — Repository Governance
 - [`docs/operations/RELEASE_PROCESS.md`](../operations/RELEASE_PROCESS.md) — Release Process
 - [`docs/operations/RUNBOOKS.md`](../operations/RUNBOOKS.md) — Operational Runbooks
+- [`docs/operations/RUNTIME_LIFECYCLE.md`](../operations/RUNTIME_LIFECYCLE.md) — Runtime Lifecycle
+- [`docs/operations/RUNTIME_LOGGING.md`](../operations/RUNTIME_LOGGING.md) — Runtime Logging
 - [`docs/operations/SLIS_SLOS_AND_ALERTS.md`](../operations/SLIS_SLOS_AND_ALERTS.md) — SLIs, SLOs, and Alerts
 
 ## docs/quality
@@ -257,4 +265,10 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence
 - [`evidence/phase-01/README.md`](../../evidence/phase-01/README.md) — Phase 01 Evidence Index
+- [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt) — Express HTTP Adapter Compatibility Evidence
 - [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt) — Local Platform Checkpoint Evidence
+- [`evidence/phase-01/local-reset.txt`](../../evidence/phase-01/local-reset.txt) — Project-Scoped Local Reset Evidence
+- [`evidence/phase-01/runtime-configuration.txt`](../../evidence/phase-01/runtime-configuration.txt) — Runtime Configuration Evidence
+- [`evidence/phase-01/runtime-lifecycle.txt`](../../evidence/phase-01/runtime-lifecycle.txt) — Runtime Lifecycle Evidence
+- [`evidence/phase-01/runtime-logging.txt`](../../evidence/phase-01/runtime-logging.txt) — Runtime Logging Evidence
+- [`evidence/phase-01/runtime-runway-preflight.txt`](../../evidence/phase-01/runtime-runway-preflight.txt) — Remaining Runtime Preflight Evidence

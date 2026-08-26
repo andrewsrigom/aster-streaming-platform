@@ -51,7 +51,8 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
 | Local broker, object-storage, and telemetry versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint is claimed | Phase 01 verification |
-| Typed SQL, Kafka, and telemetry adapter libraries | 01 | Compatibility, maintenance, license, security, runtime cost, exit strategy, and focused spike | Depend on domain ports, not an unselected library | Affected Phase 01 work item |
+| PostgreSQL, Redis, Kafka, object-storage, and telemetry client libraries | 01 | Node.js 24 compatibility, deadline and cancellation behavior, close semantics, maintenance, license, security, runtime cost, exit strategy, and focused real-dependency spike | Use only repository-owned ports and the currently released local core | Affected Phase 01 work item |
+| Typed SQL library | 02 | First real context-owned schema, transaction, query, migration, generated-type, compatibility, maintenance, and removal evidence | Phase 01 uses its selected PostgreSQL connectivity adapter without product tables or a synthetic query abstraction | Phase 02 persistence implementation |
 | Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
 | Router-to-subgraph identity-context protection | 04 | Threat model, forgery tests, key handling, local topology, deadline, and rotation path | No public route reaches a subgraph directly; no public identity header is trusted | Phase 04 verification |
@@ -68,6 +69,8 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Hosted telemetry backend and secret management | 14 | OpenTelemetry compatibility, retention, privacy, alerting, rotation, access control, and cost | Local backends and environment-local development secrets | Hosted release |
 
 Pending decisions are resolved only by their owning phase. A work item stops when it needs a pending decision whose required evidence is unavailable; it does not select a dependency implicitly.
+
+The current Phase 01 preflight narrows candidates but resolves none of the rows above. It records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, the explicit OpenTelemetry package set, current Node.js client metadata, and the Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`.
 
 ## Repository governance decisions
 

@@ -2,6 +2,130 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Verified the bounded runtime lifecycle
+
+### Completed
+
+- Protected run `33004036882` passed every applicable job at hard-fallback closeout `3d4ba3e`.
+- Posted evidence reply `3865955990` and resolved availability discussion `3865880765`; the earlier discussions `3865708507` and `3865804838` were already resolved with their focused evidence.
+- Final blocking-boundary review comment `5429993991` reported no major issue at exact reviewed head `3d4ba3e` after checking failed force-close termination and synchronous return enforcement.
+- Classified P01-R05 as `VERIFIED`. No source, dependency, lockfile, Docker resource, service, product context, schema, durable data, or hosted resource changed during this verification closeout.
+
+### Evidence
+
+- Exact source gates remain 39 of 39 focused runtime tests, 15 of 15 affected tasks, high-severity audit with no known vulnerability, real stuck-socket closure, normal graceful `SIGTERM`, and hard fallback exit `143` with a live handle.
+- All three actionable review discussions are resolved and the final confirmation reviewed the exact source/evidence head.
+
+### Next action
+
+Pass protected CI for this documentation-only closeout, squash-merge pull request 12, verify the exact post-merge `main` run, and activate P01-R06 from clean `main`.
+
+## 2026-08-26 — Closed lifecycle review availability gap
+
+### Completed
+
+- Published P01-R05 pull request 12 at exact candidate `92f5d0a`; protected run `33000352054` passed every applicable job and the initial automated review examined that SHA.
+- Classified discussion `3865708507` as a blocking availability finding: a resource-closing hook could reject without releasing its live event-loop handle, after which the coordinator canceled its only deadline and the signal binding removed its handlers.
+- Remediation `6b9acb2` preserved remaining eligible cleanup, then invoked composition-wide force close once with stable reason `stage_failure` for failed traffic, consumer, or dependency closure. Protected run `33001670494` passed, evidence reply `3865769157` was posted, and the initial discussion was resolved.
+- Confirmation discussion `3865804838` found that the first remediation could run dependency teardown while a consumer that failed to stop was still active. Ordering remediation `fe61fc4` force-closes immediately and starts no later graceful stage; telemetry-flush-only failure still proceeds through dependency closure and remains degraded.
+- Protected run `33002748501` passed at ordering closeout `4f115a4`, evidence reply `3865854616` was posted, and discussion `3865804838` was resolved. Boundary confirmation discussion `3865880765` then found that a throwing force-close callback could still leave a live handle after the signal owner removed its handlers.
+- Hard-fallback remediation `fc44892` makes signal-owned shutdown dispose listeners and call `process.exit(130|143)` only when the force-close stage fails or lifecycle coordination rejects. Graceful and successful forced paths still exit naturally. Promise/thenable and other non-`undefined` returns also fail the synchronous force-close contract, with returned rejection consumed without reflection.
+- Clarified that the composition root's `forceClose` must cover every owned resource capable of keeping the event loop alive. No dependency, lockfile, Docker resource, service, product context, schema, durable data, or hosted resource changed.
+
+### Evidence
+
+- Exact hard-fallback typecheck, build, and 39 of 39 runtime tests pass. A real subprocess with a live timer and throwing force close exits `143` in `52.246017ms`; normal graceful `SIGTERM` completes in `71.560548ms`, the stuck socket closes in `106.167801ms`, and the Promise-returning force regression emits no unhandled rejection or canary.
+- Exact hard-fallback `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `6.797s` of Turbo task time and `7.77s` elapsed. Documentation validates 135 files and 354 links; memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass.
+- High-severity audit reports no known vulnerability in `0.79s`.
+
+### Next action
+
+Commit the hard-fallback evidence closeout, push once, pass protected CI at the resulting exact head, reply to and resolve discussion `3865880765`, then obtain final boundary confirmation before protected merge.
+
+## 2026-08-26 — Released verification correction and rebased lifecycle
+
+### Completed
+
+- Closed final-confirmation findings for scanner-observed affected inputs and graceful quality-gate interruption in implementation `9775917`; protected PR run `32999250730` passed at closeout `6e25100`, and both discussions were resolved.
+- Squash-merged P00-R06 as `92d3531`; post-merge run `32999467446` passed every applicable job and the remote correction branch was removed.
+- Rebased the four local P01-R05 commits from predecessor `dd9f282` onto released `main` without replaying the squashed predecessor. Lifecycle implementation is now `60e9808`, and the later runway remains preserved through `d400f89`.
+- Removed only stale ignored `packages/runtime/dist` generated by the prior branch before regenerating the rebased runtime output. No dependency, lockfile, Docker resource, product data, hosted resource, or lifecycle behavior changed.
+
+### Evidence
+
+- Git reports no difference between original implementation `4d4eb92` and replayed implementation `60e9808` for runtime source/tests, lifecycle operations documentation, lockfile, manifests, workspace, or TypeScript configuration.
+- Rebased runtime typecheck, build, and all 33 tests pass; the test process reports `249.703607ms`, including real stuck-socket closure at `106.075123ms` and real `SIGTERM` completion at `73.040916ms`.
+- Rebased `pnpm check:changed` passes 15 of 15 selected root/runtime tasks with 3 cached in `8.186s` of Turbo task time and `9.26s` elapsed; documentation validates 135 files and 354 links, repository memory validates 25 queue items, and audit reports no known vulnerability.
+- The earlier exact clean checkout remains applicable because no dependency, bootstrap, packaging, lifecycle source/test, declaration input, or successful full-gate behavior changed; the predecessor's affected/interruption changes have their own protected evidence and pass the rebased affected gate.
+
+### Next action
+
+Commit and publish the rebased P01-R05 evidence closeout, open its pull request, then run the bounded protected CI, review, confirmation, merge, and post-merge sequence before activating P01-R06.
+
+## 2026-08-26 — Defined the remaining Phase 01 runtime runway
+
+### Completed
+
+- Added an ordered P01-R06 through P01-R10 runway covering telemetry contracts, separate platform adapters, deadline/readiness composition, a product-empty Identity reference service, real dependency integration, resource-aware profiles, and the clean Docker-only closeout.
+- Defined planned package and infrastructure paths, bounded metric dimensions, export behavior, adapter ownership, deadline hierarchy, dynamic readiness gates, health disclosure limits, integration cases, Docker profiles, rollback, and stop conditions without starting another work item.
+- Corrected stale project context and Phase 01 evidence status, added the five remaining requirements to the queue as ordered `READY` work, and kept P01-R05 as the sole dependent `IN_PROGRESS` item.
+- Moved typed SQL selection to Phase 02 so the decision uses the first real schema, transactions, queries, migrations, and generated types rather than a synthetic Phase 01 table.
+- Recorded current official package and upstream metadata as non-binding preflight: an explicit OpenTelemetry metrics set, Node.js client candidates, the archived MinIO repository, active VersityGW and SeaweedFS S3 alternatives, and the unresolved Kafka client lifecycle trade-off.
+- Kept the P01-R05 source candidate, repository lockfile, installed dependency graph, Docker resources, accepted ADRs, public remote, and hosted pipelines unchanged.
+
+### Evidence
+
+- Planning contract: `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`.
+- Raw candidate metadata, Kafka deadline/close observation, upstream release state, and limitations: `evidence/phase-01/runtime-runway-preflight.txt`.
+- Documentation validation passes across 135 documents and 354 internal links; repository-memory validation passes with 25 queue items and P01-R05 remaining the only active requirement; formatting, secret scanning, and Git whitespace checks pass.
+- The affected candidate gate passes 31 of 31 tasks with 19 cached in `8.611s` of Turbo task time. No dependency, lockfile, application source, or Docker input changed, so prior lifecycle clean-checkout and real-socket/process evidence remains applicable.
+- Official GitHub status still reported a major Actions outage during this preparation; no duplicate PR event, empty commit, new branch, image pull, container start, or publication was performed.
+
+### Next action
+
+Validate the documentation and repository-memory changes while preserving the lifecycle candidate. After official Actions recovery, release PR 11 first, rebase and publish P01-R05, then activate P01-R06 from clean `main`.
+
+## 2026-08-26 — Implemented the bounded runtime lifecycle candidate
+
+### Completed
+
+- Added a transport-neutral `@aster/runtime` lifecycle with frozen health snapshots, monotonic startup transitions, ready-only in-flight leases, one shared shutdown Promise, fixed hook order, one overall deadline, one cancellation signal, bounded failure classification, and idempotent force close.
+- Added removable `SIGINT`/`SIGTERM` ownership with conventional exit codes, repeated-signal force behavior, duplicate-owner rejection, and a real Unix subprocess diagnostic.
+- Added a narrow Node.js HTTP seam that always starts `server.close()` before `server.closeAllConnections()`; real loopback tests prove graceful in-flight completion, refusal of new traffic, and deadline closure of a stuck socket.
+- Integrated stable lifecycle events with the existing logger while keeping raw errors out and making sink failure unable to alter shutdown behavior.
+- Documented health, composition, shutdown order, signals, HTTP behavior, telemetry boundaries, recovery, and the limits retained by P01-R06 and P01-R08. No dependency, lockfile, Docker resource, product context, service, schema, or hosted resource changed.
+
+### Evidence
+
+- Focused runtime gate: strict typecheck, build, and 33 of 33 tests pass, including deterministic deadline, force-close exception, real socket, real signal, logging, hostile input, and generated-declaration cases.
+- Candidate affected gate: 31 of 31 tasks passed with 16 cached in `9.202s` of Turbo task time.
+- Complete candidate gate: 31 of 31 tasks passed with zero cache in `15.44s`; wrapper elapsed `18.18s`; high-severity audit reports no known vulnerability.
+- Exact isolated checkout `62b3e4c`: offline frozen install reused 260 packages with zero download in `1.53s`; 33 focused tests and 31 of 31 uncached tasks in `21.102s` passed, as did audit, secret scan, clean Git, and exact temporary-root removal.
+- Documentation validates 134 documents and 335 internal links; repository-memory, architecture, lint, format, unused-code, CI, platform, community, security, and Git whitespace checks pass.
+- Implementation commit: `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea`; raw artifact: `evidence/phase-01/runtime-lifecycle.txt` (`IMPLEMENTED`).
+
+### Next action
+
+Keep the local candidate unpublished. Keep PR 11 as the frozen predecessor; after its protected release, rebase this candidate onto clean `main`, repeat the affected and real lifecycle evidence, then publish for the bounded review and protected gates.
+
+## 2026-08-26 — Activated bounded runtime lifecycle work
+
+### Completed
+
+- Froze P00-R06 as `WAITING_EXTERNAL` at pull-request head `dd9f282` after its local, WSL, native-Windows, review-remediation, evidence, and rollback conditions passed; only hosted CI, final confirmation, and protected merge remain.
+- Created dependent local branch `feat/p01-r05-lifecycle` from exact frozen head `dd9f282` under the predecessor-first publication and release rule.
+- Activated P01-R05 with the shared runtime owner, no product data owner, explicit Node.js signal/HTTP/timer trust boundaries, bounded shutdown failure modes, rollback, focused tests, candidate gate, heavyweight-repeat triggers, and review stopping rule.
+- Kept Identity behavior, product schemas, dependency adapters, telemetry SDKs, metrics, Docker resources, hosted resources, and publication outside this activation.
+
+### Evidence
+
+- The `WAITING_EXTERNAL` validator and policy passed 13 repository-memory tests, 31 of 31 forced WSL tasks in `14.58s`, documentation, security, and high-severity audit before the dependent branch was created.
+- Branch base, name, clean state, and exact predecessor `dd9f2822969e042364f641c7a2bd5f5b84285a3d` were verified locally.
+
+### Next action
+
+Implement P01-R05 state and health contracts with deterministic focused tests, then add bounded shutdown and concrete Node.js HTTP/process integration without publishing the dependent branch before PR 11.
+
 ## 2026-08-26 — Implemented risk-proportionate verification feedback
 
 ### Completed

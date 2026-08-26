@@ -73,11 +73,24 @@ Select the service HTTP adapter through an ADR. Evaluate Express 5 with the main
 1. Define local dependency versions and resource limits.
 2. Create configuration schemas and startup diagnostics.
 3. Record the HTTP adapter ADR and create the transport boundary.
-4. Create telemetry and logging baseline.
-5. Create lifecycle and health behavior.
-6. Create dependency adapters and smoke tests.
-7. Apply the runtime to the Identity service skeleton.
-8. Capture normal startup, dependency failure, and shutdown evidence.
+4. Create the logging baseline and reusable process lifecycle.
+5. Define the telemetry contract and runtime metrics before dependency adapters emit them.
+6. Create narrow dependency, clock, ID, and telemetry adapters without product logic.
+7. Compose deadlines, readiness gates, health routes, and the Identity reference skeleton.
+8. Prove adapters and lifecycle against real local dependencies.
+9. Publish resource-aware profiles, troubleshooting, and clean-start evidence.
+
+## Remaining work-item runway
+
+| Order | Requirement | Observable delivery | Does not include |
+|---:|---|---|---|
+| 1 | P01-R06 | OpenTelemetry-backed Node.js, HTTP, dependency, export-failure, and cardinality-bounded metric contract | dashboards, SLOs, product metrics |
+| 2 | P01-R07 | Separate PostgreSQL, Redis, Kafka-compatible broker, S3-compatible storage, clock, ID, and telemetry adapters with bounded lifecycle behavior | product repositories, cache keys, product events, media publication |
+| 3 | P01-R08 | Propagated startup and operation deadlines, recoverable readiness gates, stable health routes, and an Identity composition root | account, profile, session, GraphQL, or schema behavior |
+| 4 | P01-R09 | Real container smoke tests, dependency-failure transitions, OTLP export, Prometheus scrape, and bounded shutdown | hosted resources or representative product load |
+| 5 | P01-R10 | Core, runtime, integration, observability, and full profiles plus one clean Docker-only evaluator path | later media, browser, Federation, or SLO work |
+
+[Runtime Platform Runway](../architecture/RUNTIME_PLATFORM_RUNWAY.md) defines the planned paths, boundaries, metric dimensions, adapter slices, deadline hierarchy, readiness behavior, integration matrix, container candidates, and stop conditions. It remains planning until each owning requirement records implementation and evidence.
 
 ## Required tests
 

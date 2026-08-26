@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-No application code exists yet. The repository begins from a completed specification baseline.
+The repository foundation and the first Phase 01 technical packages exist. Configuration, structured logging, the bounded Express transport, and the reusable lifecycle are implemented or released according to `.ai/CURRENT_STATE.md`. No deployable application service, product schema, product resolver, product database migration, broker, object-storage runtime, or observability backend exists yet.
 
 ## Fixed boundaries
 
@@ -50,6 +50,8 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 00 — Foundation corrective maintenance**
+Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
+
+The planned path after the current lifecycle candidate is P01-R06 telemetry, P01-R07 platform adapters, P01-R08 deadline/readiness composition, P01-R09 real integration, and P01-R10 resource-aware closeout. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` defines the boundaries without claiming those capabilities are implemented.

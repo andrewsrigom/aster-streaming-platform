@@ -118,7 +118,7 @@ Sensitive values are redacted at logger configuration and reviewed in tests.
 
 P01-R04 is implemented through `@aster/runtime`. It emits bounded Pino-backed JSON to standard output with fixed service, environment, and version context; reviewed sensitive-key redaction; sanitized error causes; and optional validated trace/span IDs supplied through a repository-owned active-context provider. Invalid per-call data produces a safe stable event, while an invalid or throwing trace provider is omitted without failing application work.
 
-The current implementation has no HTTP integration, OpenTelemetry SDK, network transport, Collector, log backend, retention, export queue, drop metric, or shutdown flush behavior. Those remain planned under their owning Phase 01 requirements.
+The current implementation has structured runtime logging and a bounded lifecycle flush hook, but no OpenTelemetry SDK, network transport, Collector, log backend, retention, export queue, or drop metric. Those remain planned under their owning Phase 01 requirements.
 
 ## SLIs
 

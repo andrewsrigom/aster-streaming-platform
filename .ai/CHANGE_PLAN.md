@@ -1,122 +1,134 @@
-# Work Item: Calibrate Risk-Proportionate Verification and Affected-Scope Feedback
+# Work Item: Implement Runtime Lifecycle, Health, and Bounded Graceful Shutdown
 
 - Status: IN_PROGRESS
-- Owner: Aster repository engineering system
-- Phase: 00
-- Requirement IDs: P00-R06
+- Owner: Aster shared runtime infrastructure
+- Phase: 01
+- Requirement IDs: P01-R05
 - Created: 2026-08-26
 - Updated: 2026-08-26
 
 ## Outcome
 
-Make the existing tiered-feedback policy executable and bounded: development iterations use focused tests, coherent candidates use affected-scope checks, pull requests use one authoritative protected gate, and heavyweight clean-start evidence repeats only when a later change can invalidate it. Define a review stopping rule that fixes requirement, security, data, availability, and public-contract findings while recording lower-risk speculative hardening instead of creating an unbounded review loop.
+Provide one reusable Node.js lifecycle coordinator that makes startup, liveness, readiness, process-signal ownership, ordered resource closure, bounded in-flight drain, and forced termination explicit. Later services adopt this runtime behavior without copying signal handlers or inventing competing shutdown budgets.
 
 ## Current behavior
 
-Repository governance already prohibits full gates on every commit and describes `check:changed` as the pre-push path, but the root manifest exposes no such command. The full and source gates are executable, while review cadence, evidence consolidation, clean-checkout repetition triggers, and sufficient-verification criteria are not explicit. P01-R11 therefore accumulated fourteen branch commits and repeated full, clean-checkout, hosted-CI, review, and evidence cycles for progressively narrower transport cases before its final release at `93147ac`.
+`@aster/runtime` provides structured logging with redaction and trace correlation. `@aster/http-express` provides a bounded Express request listener, request-local cancellation, and an Apollo compatibility test that drains one synthetic in-flight operation. No package currently owns process signals, startup/readiness transitions, generalized in-flight tracking, dependency closure order, one overall shutdown deadline, timeout logging, or forced termination.
+
+P00-R06 is released through protected squash `92d3531`, and post-merge run `32999467446` passes. This P01-R05 branch has been rebased from predecessor head `dd9f282` onto released `main`; focused real-socket/process evidence and the affected gate must repeat before publication.
 
 ## Proposed behavior
 
-Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm check:changed`. Full mode preserves the existing authoritative task graph. Changed mode invokes the same task set through pinned Turborepo affected execution with repository-fixed `main` and `HEAD` comparison refs and task-input-aware selection. Update the written contract so work items declare iteration, candidate, heavyweight-repeat, and review stopping rules before implementation; consolidate evidence at meaningful checkpoints; batch review remediation; and stop after one review plus one confirmation unless a later finding violates a named blocking boundary.
+Add a transport-neutral lifecycle state machine to `@aster/runtime`. A process begins `starting` and not ready, explicitly becomes `ready`, becomes `failed` on unrecoverable startup failure, and enters `draining` before it becomes `stopped`. Liveness and readiness snapshots expose only stable state and bounded reason codes.
 
-Represent a frozen coherent candidate as `WAITING_EXTERNAL` when its only remaining condition is named external CI, review, or merge state. This state is not ambiguous work: it permits exactly one later local `IN_PROGRESS` item on a branch based on the frozen predecessor, while preserving predecessor-first publication and release. A predecessor change invalidates the dependent base and requires rebase plus the affected gates.
+Use one idempotent shutdown promise and one overall deadline. The coordinator first fails readiness and stops new traffic, then drains in-flight work, stops consumers, flushes telemetry, and closes dependencies within the remaining budget. Every asynchronous hook receives the same cancellation signal. A rejection is classified without reflecting its raw error. Deadline exhaustion invokes the global force-close path. A rejected resource-closing stage invokes that path immediately and prevents later graceful stages from starting, so a failed consumer cannot continue against dependencies being closed; an isolated telemetry-flush rejection continues to dependency closure and remains degraded because that later stage owns exporter resources.
+
+Add one explicit process-signal binding for `SIGINT` and `SIGTERM`. The first signal begins graceful shutdown; a repeated signal requests immediate force-close. Signal handlers are removable and do not compete with transport-owned handlers. Graceful and successful forced completion let the event loop exit naturally; if the composition-wide force-close path throws or lifecycle coordination rejects, the signal owner disposes its handlers and uses the signal's conventional status as a last-resort hard process exit so a leaked handle cannot defeat bounded termination. Add a concrete Node.js HTTP server seam that calls `server.close()` before any forced `server.closeAllConnections()`, preserving the documented race-free order. Express and Apollo types remain inside their existing adapter package.
 
 ## Boundaries
 
-- Owning context: Repository engineering system; no product bounded context or data owner changes.
-- Affected services/packages: Root scripts, Turborepo task inputs, repository-tool tests, agent/governance/quality/local-development documentation, templates, and repository memory. No application package behavior changes.
-- Authoritative data: Git history and repository files remain authoritative; Turbo cache output is derived and disposable.
-- Read models/caches: Local Turborepo cache only; no remote cache or durable product state.
-- Trust boundaries: Command-line arguments, inherited environment variables, Git comparison refs, changed paths interpreted by pinned Turborepo, child-process exit status, and documentation claims about executable commands.
-- External dependencies: Existing exact-pinned Turborepo `2.10.12`, Node.js `24.19.0`, and pnpm `11.24.0`; no dependency addition.
+- Owning context: Shared runtime infrastructure; no product bounded context or durable data owner changes.
+- Affected packages: `@aster/runtime`, its tests and diagnostic; `@aster/http-express` only if a narrow Node HTTP lifecycle compatibility seam is required; runtime and operations documentation; Phase 01 evidence and repository memory.
+- Authoritative data: In-memory lifecycle state owned by the current process. It is ephemeral and non-authoritative for product data.
+- Trust boundaries: Constructor options, lifecycle transitions, registered asynchronous hooks, Node.js process signals, HTTP server events and sockets, timers, injected log destinations, and caller cancellation behavior.
+- External dependencies: Node.js `24.19.0` built-ins and existing `@aster/runtime` logging. No new package, service, database, Redis key, broker, container, or hosted resource.
 
 ## Invariants
 
-- `pnpm check` retains the complete authoritative task list and behavior.
-- `pnpm check:changed` uses the same task list and can only narrow task selection through the pinned Turbo affected mechanism.
-- Caller-provided `TURBO_SCM_BASE` or `TURBO_SCM_HEAD` cannot silently narrow the repository-owned comparison.
-- Root tasks responsible for package source, documentation, repository memory, security, CI, or platform policy declare inputs that select them when their owned files change.
-- A missing comparison ref fails safe through Turbo behavior; a failed selected task propagates a nonzero exit.
-- No rule permits skipping a requirement, security boundary, data invariant, availability contract, or public observable contract.
-- At most one item may be `WAITING_EXTERNAL`, at most one later item may be `IN_PROGRESS`, and no dependent item may publish or release before the waiting predecessor.
-- The waiting predecessor has an exact frozen head, evidence, external condition, and recovery action recorded before later implementation begins.
+- Exactly one coordinator owns process lifecycle and signal bindings in a service process.
+- Readiness becomes false before new traffic is stopped or resources are closed.
+- Liveness describes whether the process can coordinate lifecycle; readiness describes whether it can accept its responsibility.
+- State transitions are monotonic; a draining, stopped, or failed process cannot become ready.
+- Shutdown is idempotent and concurrent callers observe the same terminal outcome.
+- All graceful work shares one overall deadline and cancellation signal; nested hooks cannot create a new unbounded budget.
+- HTTP force-close follows `server.close()` and occurs only after deadline exhaustion or an explicit repeated signal.
+- Raw hook errors, configuration values, request data, tokens, URLs, and internal topology never appear in health output or lifecycle logs.
+- Logging or telemetry failure cannot extend shutdown beyond its deadline.
+- Domain and application packages import no Node.js HTTP, process, Express, Apollo, database, Redis, or telemetry SDK types.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Unknown runner argument | Exit nonzero with one bounded usage error before Turbo | Terminal error only |
-| Caller injects SCM base/head variables | Runner overwrites them with repository-owned refs | Test assertion; no secret values printed |
-| Base history cannot be resolved | Turbo fails safe to conservative execution or returns nonzero; never report a false pass | Turbo diagnostic and process exit |
-| Selected quality task fails | Preserve its nonzero status | Existing task output |
-| Gate exceeds its 15-minute deadline | Kill the isolated POSIX process group or Windows process tree, return a stable timeout error, and bound the termination fallback | Runner contract test and terminal error |
-| Gate wrapper receives `SIGINT` or `SIGTERM` | Forward the original signal to the isolated child process tree, allow one bounded cleanup window, force the tree only after that window, remove wrapper signal handlers, and return the conventional bounded signal exit status | Runner contract test and terminal error |
-| Clean tree has no affected task | Exit zero with Turbo's empty affected result | Turbo summary |
-| Documentation-only change | Select documentation, repository-memory when applicable, and security checks without package builds | Turbo dry-run and measured execution |
-| Package-source change | Select the changed package and dependent build/test/type tasks plus owned root lint/format/unused/architecture/security tasks | Turbo dry-run and focused execution |
-| Alternate pull-request template is a symbolic link to the canonical file | Reject the alternate path as a duplicate public template instead of treating matching real paths as a case-only alias | Community validator test and bounded violation |
-| Hosted CI, review, or merge service is unavailable after a coherent candidate is frozen | Mark the predecessor `WAITING_EXTERNAL`, retain its exact resume condition, and permit one dependent local item without bypassing release order | Repository-memory validator and state fixture |
-| Waiting predecessor changes after dependent work begins | Rebase the dependent branch onto the new frozen predecessor and repeat its affected gates before publication | Git history, handoff, and candidate evidence |
+| Missing, accessor-backed, excessive, or invalid lifecycle options | Fail construction with one bounded cause-free issue set before signal or timer registration | Sanitized construction error only |
+| Invalid or repeated startup transition | Reject with a stable transition result; never move backward or become ready after drain/failure | Stable state and transition code |
+| Startup marked failed | Remain not ready, report bounded startup-failed health, and allow cleanup | Structured lifecycle event without raw cause |
+| First `SIGINT` or `SIGTERM` | Fail readiness and begin the shared graceful-shutdown promise once | Signal category and lifecycle phase |
+| Concurrent shutdown calls | Return the same terminal work and do not repeat hooks | One shutdown-start event |
+| Repeated termination signal | Abort remaining graceful work, call force-close once, and produce a forced outcome | Stable repeated-signal event |
+| Traffic, consumer, or dependency close rejects | Classify the stage, invoke global force-close once with `stage_failure`, do not start later graceful stages, and return a forced outcome | Stage name and bounded force reason; no raw error |
+| Telemetry flush rejects | Classify the stage, continue dependency closure, and return a degraded outcome when no resource-closing stage fails | Stage name and bounded outcome; no raw error |
+| Hook ignores cancellation or never settles | Deadline wins through a deterministic race; force-close runs and the coordinator returns without awaiting the hook forever | Deadline and forced outcome |
+| Force-close throws or returns any value/thenable under signal-owned shutdown | Attempt the synchronous callback, classify `force_close`, absorb any returned Promise rejection, dispose signal handlers, and hard-exit with the first signal's conventional status | Stable force-close failure category before terminal fallback |
+| Lifecycle coordination rejects under signal-owned shutdown | Dispose signal handlers and hard-exit with the first signal's conventional status | No raw error or rejected value |
+| Logger or telemetry sink fails | Continue lifecycle and deadline enforcement | Existing logger write result only |
+| HTTP server receives shutdown | Call `server.close()` to stop accepts and drain active HTTP before force-close is eligible | Server drain outcome |
 
 ## Data and contracts
 
 - Schema/migration: None.
-- GraphQL: None.
-- Events: None.
-- Cache: Existing `.turbo` cache remains derived and removable.
-- Compatibility: Existing `pnpm check` remains public and complete; `pnpm check:changed` becomes the documented pre-push interface.
-- Retention/deletion: No new retained data. Existing cleanup continues to remove `.turbo` safely.
+- GraphQL/events: None. Apollo drain compatibility remains in `@aster/http-express` and composes with the single lifecycle coordinator.
+- Cache: None.
+- Public runtime API: Frozen lifecycle state, bounded health snapshot, explicit readiness/startup transitions, idempotent shutdown, signal binding with disposal, and narrow lifecycle hook types.
+- Compatibility: No change to the existing logger or Express request-listener contract. New declarations must expose no Express, Apollo, Pino, database, Redis, broker, or telemetry SDK types.
+- Retention/deletion: Lifecycle state and hook references are process-local and released after terminal completion/disposal.
 
 ## Security and privacy
 
-- Authorization: Not applicable; the command acts only on the local checkout.
-- Input limits: Accept only the named changed-mode flag internally; fixed task list and SCM refs; bounded child-process lifetime belongs to the existing local execution environment.
-- Sensitive data: Do not print inherited environment values, Git credential configuration, or file contents.
-- Abuse cases: Environment override that narrows the diff, task-list drift between full and changed mode, missing history, changed files outside task inputs, command injection through arguments, and a child failure reported as success.
+- Actors: Local service composition root, orchestrator signals, HTTP clients observing future health routes, and resource adapters participating in shutdown.
+- Assets: Service availability, bounded termination, request completion, log confidentiality, and dependency integrity.
+- Controls: Fail-closed option validation, monotonic state, one signal owner, stable health reason codes, bounded hook inventory, one deadline, cancellation, error sanitization, and forced close.
+- Health snapshots expose no hostname, port, dependency URL, credential, exception, stack, request identifier, or signed media URL.
+- Authorization is not added; future public health routing must preserve the stable non-sensitive contract and deployment ownership.
 
 ## Implementation steps
 
-1. Add a typed quality-gate runner with one canonical task list, full and changed invocation construction, fixed SCM refs for changed mode, explicit Windows command-processor invocation, immediate isolated process-tree termination for timeouts, graceful signal forwarding with a bounded force fallback for wrapper signals, and exact exit propagation.
-2. Wire `check` and `check:changed` to that runner, add focused unit/manifest contract tests to the existing toolchain tier, reject symbolic alternate template locations while preserving case-insensitive canonical aliases, and keep governance fixtures portable across Windows hosts without symbolic-link privilege.
-3. Enable task-input-aware affected execution and fill input gaps for root lint and security ownership.
-4. Run dry and real affected checks against documentation and package-source fixtures without leaving synthetic changes in the final tree.
-5. Update the operating contract, agent loop, governance, delivery model, quality gates, local development, reusable prompt, and work-item template with the calibrated cadence and stopping rules.
-6. Run focused tests, changed-mode evidence, the full candidate gate, audit, clean public checkout only if bootstrap or public command behavior requires it, protected CI, and bounded review.
-7. Add the bounded `WAITING_EXTERNAL` queue state and validator fixture so an exact externally blocked candidate does not serialize unrelated local implementation while predecessor-first release remains mandatory.
+1. Add strict lifecycle state, health snapshot, option normalization, transition errors, and deterministic tests inside `@aster/runtime`.
+2. Add one shared shutdown promise, fixed ordered hook stages, one deadline/cancellation signal, bounded failure classification, and one idempotent force-close path.
+3. Add removable `SIGINT`/`SIGTERM` binding with first-signal graceful and repeated-signal force behavior.
+4. Add a concrete Node.js HTTP drain seam and real-socket tests for new-traffic refusal, in-flight completion, and forced deadline closure.
+5. Integrate stable lifecycle events with the existing runtime logger without allowing sink failure to block termination.
+6. Update runtime/HTTP operations documentation, Phase 01 evidence, state, and handoff; run affected, complete, protected, and bounded review gates after the predecessor is released and this branch is rebased.
 
 ## Tests
 
-- Domain: Not applicable.
-- Application: Not applicable.
-- Integration: Spawn the pinned Turbo CLI through injected process boundaries only where needed; exercise the real `check:changed` command on the current branch.
-- Contract: Canonical task-list parity, exact full/changed arguments, fixed SCM refs, unknown-argument rejection, exit propagation, manifest scripts, Turbo future flag, and owned root task inputs.
-- Repository memory: Accept one waiting predecessor followed by one active dependent item; reject unknown status, multiple waiting items, multiple active items, and an active item that skips an earlier actionable item.
-- Browser: Not applicable.
-- Performance/failure: Compare task selection and elapsed time for a documentation/repository-memory change and a representative package-source change; treat results as workflow observations, not general benchmarks.
+- State: Initial startup health, ready transition, startup failure, monotonic invalid transitions, frozen snapshots, hostile option accessors, and bounded issues.
+- Shutdown: Exact stage order, one shared promise, concurrent calls, immediate resource-closing rejection force behavior without later stage execution, telemetry-only degradation through dependency closure, ignored cancellation, one overall deadline, force-close once, and terminal outcome.
+- Signals: First signal begins graceful work, repeated signal forces, handlers dispose, conventional categories remain stable without installing duplicate owners, and a deterministic plus real-process diagnostic prove the hard fallback when force close fails.
+- HTTP integration: `server.close()` precedes force-close, a request already in flight can finish within budget, new connections fail after drain begins, and a stuck request is closed at deadline.
+- Logging/security: Lifecycle events contain only stable fields; raw errors and canaries are absent; logger failure does not change state or deadline behavior.
+- Contract: Generated declarations contain no Express, Apollo, Pino, PostgreSQL, Redis, broker, or telemetry SDK types.
+- Process: A spawned diagnostic handles a real termination signal where the host supports it, exits within the bound, and leaves no listener or child work behind.
 
 ## Evidence
 
-- Commands: Focused runner tests, affected dry runs, real `pnpm check:changed`, `pnpm check --force`, documentation/repository-memory/security checks, high-severity audit, and protected CI.
-- Raw artifact path: `evidence/phase-00/risk-proportionate-verification.txt`.
-- Acceptance result: Local focused, affected, clean forced, audit, documentation, memory, and security gates pass at `9775917`; protected CI, discussion resolution, merge, and post-merge evidence remain pending.
-- Iteration gate: Runner tests, typecheck/lint/format for changed tooling, and documentation/repository-memory checks for policy edits.
-- Candidate gate: One complete forced graph plus audit after behavior and documentation stabilize.
-- Heavyweight repeat triggers: Repeat clean checkout only after dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, or documented public-command changes that can invalidate prior clean-start evidence. This work changes a public command, so one final clean checkout is required.
-- Review stopping rule: One initial review and one confirmation. Additional review is justified only when a remediation changes a blocking boundary or a new finding violates a requirement, security/data invariant, availability behavior, or public contract.
+- Raw artifact path: `evidence/phase-01/runtime-lifecycle.txt`.
+- Acceptance result: Rebased focused lifecycle and affected gates pass; the earlier clean checkout remains applicable for unchanged bootstrap and packaging behavior. Protected runs `33000352054`, `33001670494`, `33002748501`, and `33004036882` pass. Initial review discussion `3865708507` found that a rejected resource-closing hook could release the only deadline without releasing a live handle. Remediation `6b9acb2` force-closed after remaining eligible stages; confirmation discussion `3865804838` then found that a failed consumer could still run against dependency teardown during that interval. Immediate-force remediation `fe61fc4` passed its local and protected gates. Availability-boundary confirmation discussion `3865880765` then found that a throwing force-close callback still lacked a hard process-termination fallback. Signal hard-fallback remediation `fc44892` plus exact focused 39-test, 15-task affected, documentation, memory, security, and audit gates pass. Evidence reply `3865955990` is posted, all three discussions are resolved, and the final blocking-boundary review reported no major issue at exact reviewed head `3d4ba3e`. The remaining conditions are the documentation-only closeout CI, protected squash merge, and post-merge verification.
+- Planning-only runway artifact: `evidence/phase-01/runtime-runway-preflight.txt`; its documentation, memory, formatting, secret, whitespace, and affected 31-task gate pass without invalidating lifecycle source or heavyweight evidence.
+- Iteration gate: Focused lifecycle build/test, package typecheck, targeted lint/format, and deterministic deadline/signal fixtures.
+- Candidate gate: `pnpm check:changed` after one coherent lifecycle slice; one complete `pnpm check --force` plus high-severity audit when the candidate stabilizes.
+- Heavyweight repeat triggers: Repeat a clean checkout only for dependency, lockfile, bootstrap, packaging, generated-declaration, or documented public-command changes. Repeat real socket/process evidence when lifecycle, signal, timer, HTTP drain, or force-close behavior changes. Docker is not required unless this item changes the existing local demonstration path.
+- Review stopping rule: One complete review and one confirmation after rebase onto released `main`. Additional review only if remediation changes or reveals a requirement, security/data invariant, availability behavior, or public runtime/health contract.
 
 ## Rollback or recovery
 
-Restore the direct `pnpm check` Turbo command, remove `check:changed`, the runner and its tests, remove task-input-aware affected configuration, and revert the policy text. No application, dependency, container, hosted resource, or durable data requires migration or cleanup.
+Remove the lifecycle module, exports, tests, diagnostic, and documentation, leaving the existing logger and Express adapter contracts unchanged. Dispose installed signal handlers before replacing a coordinator. No data migration, cache invalidation, Docker cleanup, dependency rollback, or hosted action is required.
 
 ## Documentation updates
 
-- Calibrate `AGENTS.md` and `skills/agent.md` with sufficient-verification, review, batching, and evidence-checkpoint rules.
-- Align the delivery model, repository governance, quality gates, local-development commands, reusable implementation prompt, and work-item template.
-- Record measured command behavior in the Phase 00 corrective evidence and repository memory.
+- Document lifecycle state, stable health meaning, shutdown order, signal behavior, overall deadline, failure classification, and force-close recovery.
+- Clarify composition with the existing Express/Apollo drain and preserve P01-R08 ownership of dependency/startup deadlines plus P01-R06 ownership of process metrics.
+- Preserve future-item separation through the planned P01-R06–R10 runtime runway; candidate research may narrow risks but must not install dependencies, create containers, change accepted contracts, or claim a later requirement is active.
+- Record raw focused, real-socket/process, affected, complete, protected, and review evidence under Phase 01.
+- Update `.ai/CURRENT_STATE.md`, `.ai/WORK_QUEUE.md`, `.ai/SESSION_LOG.md`, and `.ai/HANDOFF.md` at candidate and closeout checkpoints.
+
+## Planning preparation boundary
+
+The current lifecycle implementation remains the only active Phase 01 work item. Planning defines the ordered P01-R06 through P01-R10 paths, metric dimensions, adapter responsibilities, selection gates, failure matrices, profiles, and tests without activating them. This preparation creates no second active work item, changes no lifecycle source, installs no repository dependency, starts no new container, publishes no candidate, and resolves no pending client or image decision. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` and `evidence/phase-01/runtime-runway-preflight.txt` record that boundary.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
+- [x] Requirements satisfied
 - [x] Tests pass
 - [x] Evidence captured
 - [x] Documentation current

@@ -4,7 +4,7 @@ Last updated: 2026-08-26
 
 ## Active phase
 
-**Phase 00 — Foundation corrective maintenance**
+**Phase 01 — Local Platform and Runtime Skeleton**
 
 Status: **IN_PROGRESS**
 
@@ -114,7 +114,8 @@ Status: **IN_PROGRESS**
 - P00-R06 corrective candidate `9775917` exposes one bounded full/affected quality runner, fixed comparison refs, task-input-aware selection, risk-proportionate verification checkpoints, and a bounded review stopping rule. It force-terminates the isolated gate tree on timeout, forwards `SIGINT` and `SIGTERM` before a bounded force fallback, rejects symbolic alternate pull-request template locations, conservatively selects documentation and community scanners for every repository path, and permits one dependent local item behind one frozen `WAITING_EXTERNAL` predecessor without changing publication or release order.
 - The corrective candidate passes 18 toolchain and 10 community tests on WSL, 31 of 31 forced WSL tasks in `24.622` seconds, and an exact public native-Windows clone with 31 of 31 forced tasks in `1m11.643s`; high-severity audit and clean Git pass. Evidence replies for confirmation findings `3864537199` and `3864537208` are posted and resolved.
 - The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
-- Exact-head run `32990397338` passed at predecessor `dd9f282`. Final confirmation then found two blocking affected-input and graceful-interrupt boundaries; candidate `9775917` closes both and passes 20 focused toolchain tests, 31 of 31 affected tasks, 31 of 31 clean forced tasks, documentation, memory, security, and audit locally. It remains `IMPLEMENTED` until protected CI passes at the new head and both confirmation discussions are resolved.
+- Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
+- P01-R05 is `VERIFIED` at reviewed source head `3d4ba3e`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected runs `33000352054`, `33001670494`, `33002748501`, and `33004036882` passed. Discussions `3865708507` and `3865804838` established immediate `stage_failure` force close without later graceful stages. Boundary confirmation `3865880765` then found that a throwing force close still allowed a live handle; `fc44892` makes the signal owner hard-exit with the first signal's conventional code only on `force_close` failure or lifecycle rejection and rejects Promise/thenable returns from the synchronous force contract. Evidence reply `3865955990` is posted, all three discussions are resolved, and the final blocking-boundary review reported no major issue at the exact head. Exact typecheck, build, 39 tests, the 15-task affected gate, documentation, memory, security, and audit pass. Exact pre-rebase checkout `62b3e4c` remains supporting evidence for unchanged bootstrap and packaging behavior; changed lifecycle failure behavior has fresh local socket, process, and package evidence.
 
 ## Not implemented
 
@@ -127,9 +128,18 @@ Status: **IN_PROGRESS**
 - Hosted deployment automation
 - Hosted environments
 
+## Planned Phase 01 runway
+
+- P01-R06 defines repository-owned metric and trace-context contracts before HTTP and dependency adapters emit telemetry.
+- P01-R07 creates separate PostgreSQL, Redis, Kafka-compatible broker, S3-compatible object-storage, clock, ID, and telemetry adapters without product logic.
+- P01-R08 composes propagated deadlines, recoverable readiness gates, stable health routes, and an Identity reference service with no account, profile, session, schema, or resolver behavior.
+- P01-R09 selects the remaining local images and proves the runtime against real dependencies, OTLP export, Prometheus scrape, failure transitions, and bounded shutdown.
+- P01-R10 publishes measured core, runtime, integration, observability, and full profiles plus the clean Docker-only evaluator path.
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative planned path. Its package versions, container candidates, budgets, and paths remain unimplemented until their owning item records evidence.
+
 ## Next outcome
 
-Complete the P00-R06 corrective work item that makes risk-proportionate verification, review stopping rules, evidence checkpoints, and affected-scope local feedback executable. Then return to Phase 01 and start P01-R05 lifecycle, health, and bounded graceful shutdown behavior.
+Pass protected CI for the documentation-only verification closeout, squash-merge P01-R05, verify the exact post-merge `main` run, and then activate P01-R06 from clean `main`.
 
 ## Current risks
 
@@ -155,7 +165,10 @@ Complete the P00-R06 corrective work item that makes risk-proportionate verifica
 - P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. Export queues, flush deadlines, drop metrics, retention, and the OpenTelemetry SDK/backend remain unimplemented.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
-- The HTTP adapter proves Apollo-to-HTTP drain for one synthetic in-flight operation only. P01-R05 still owns process signals, readiness, dependency closure, the overall shutdown budget, telemetry, and forced termination.
+- P01-R05 has no application composition or public health route yet. Dependency-specific startup/readiness remains P01-R08, process metrics and export/drop behavior remain P01-R06, and native Windows signal semantics are intentionally unclaimed; the supported WSL path has real socket and subprocess evidence.
+- Current P01-R06 through P01-R10 package and container versions are preflight candidates only. The owning work item must repeat registry, license, engine, audit, multi-platform, resource, failure, and real integration evidence before selection.
+- The official MinIO repository is archived. VersityGW is the primary local S3-compatible candidate and SeaweedFS is the fallback, but neither is selected or pulled yet.
+- The maintained Confluent Kafka client adds a native boundary and its KafkaJS-compatible producer close uses a fixed five-second native timeout; KafkaJS is much smaller but its registry release is from 2023. P01-R07 must resolve this through Node.js 24, multi-architecture, deadline, redaction, and real broker shutdown evidence.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for nine Express transitives. They are not known-vulnerability findings, but the exact graph remains a reviewed cost and ADR-0011 keeps a replacement path.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
