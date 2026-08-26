@@ -16,11 +16,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Nine focused tests pass for hostile/accessor/proxy configuration, frozen finite dimensions, one-shot active counts, explicit SDK overflow aggregation, runtime collection, monotonic durations, stalled and successful shared OTLP export, aborted flush, shared shutdown, and declaration isolation.
 - The public diagnostic collects 16 metrics and shuts down cleanly on Node.js `24.19.0`; one warm run observed `0.15` seconds and `71,624` KiB maximum RSS as a compatibility observation, not a benchmark.
 - `pnpm check:changed` passed 34 of 34 tasks in `10.107s` before review hardening; the zero-cache complete graph then passed 34 of 34 tasks in `32.343s` with architecture, lint, format, unused-code, documentation, repository memory, secret scanning, and high-severity audit green.
+- Exact candidate `b277c689cc3de7960fa42d9a019c9711a9a67725` passed a no-local isolated checkout: frozen offline install reused 278 packages with zero downloads in `1.40s`, the diagnostic collected 16 metrics, 34 of 34 uncached tasks passed in `29.771s`, audit and secret scan passed, Git stayed clean, and the validated temporary root was removed.
 - Raw candidate evidence: `evidence/phase-01/runtime-telemetry.txt` (`IMPLEMENTED`; complete, clean-checkout, review, protected CI, and release gates pending).
 
 ### Next action
 
-Run the complete forced candidate gate, review the full implementation once, commit and prove an exact clean checkout, then perform the bounded review and protected publication sequence.
+Commit the clean-checkout evidence, publish the exact candidate through a protected pull request, then perform the bounded initial/confirmation review and release sequence before P01-R07.
 
 ## 2026-08-26 — Released lifecycle and activated telemetry work
 

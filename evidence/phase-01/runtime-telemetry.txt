@@ -2,6 +2,7 @@ Evidence: P01-R06 bounded runtime telemetry candidate
 Status: IMPLEMENTED; complete candidate, review, protected CI, and release verification pending
 Date: 2026-08-26
 Source base: 4d243351bb46ae6b63a80a9ca3b9186baa3c68ac
+Candidate commit: b277c689cc3de7960fa42d9a019c9711a9a67725
 Branch: feat/p01-r06-telemetry
 Environment: Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace; amd64
 Runtime: Node.js v24.19.0; pnpm 11.24.0
@@ -79,6 +80,23 @@ Focused commands and results
 - pnpm licenses list --prod --json
   PASS; exact direct and resolved OpenTelemetry packages report Apache-2.0. Existing workspace production dependencies report their previously reviewed licenses.
 
+Exact isolated-checkout evidence
+- Source: local no-local clone of exact candidate b277c689cc3de7960fa42d9a019c9711a9a67725 under validated temporary root /tmp/aster-p01-r06-clean.9HFNWs.
+- pnpm install --frozen-lockfile --offline
+  PASS; 278 packages reused, zero downloaded, completed in 1.40 seconds with 381,640 KiB maximum RSS. The repository supply-chain policy accepted the lockfile.
+- pnpm telemetry:check
+  PASS after package build; emitted telemetry_diagnostic_passed with metricCount 16, exportMode none, and shutdown completed.
+- pnpm check --force
+  PASS; 34 of 34 tasks, zero cached, in 29.771 seconds of Turbo task time. The telemetry suite passed 9 of 9 tests; runtime 39 of 39; HTTP 8 of 8; configuration 12 of 12; all repository gates passed.
+- pnpm audit --audit-level=high
+  PASS; no known vulnerabilities found.
+- pnpm security:check
+  PASS; zero findings.
+- git status --short
+  PASS; exact clone remained clean after install, build, diagnostics, tests, audit, and scan.
+- Cleanup
+  PASS; the resolved temporary root was checked against /tmp/aster-p01-r06-clean.* before recursive removal, and /tmp/aster-p01-r06-clean.9HFNWs no longer exists.
+
 Failure evidence
 - A loopback HTTP server deliberately accepted an OTLP request without responding. forceFlush returned inside the 1-second test ceiling; exporter health recorded one bounded failure and a positive dropped-observation count; no endpoint or error entered a metric attribute.
 - A loopback OTLP server returned HTTP 200. forceFlush completed, exactly one request arrived at the assertion point, and health recorded one success with no drop.
@@ -91,5 +109,6 @@ Public-contract evidence
 
 Current interpretation
 - The P01-R06 implementation exists and focused plus changed-scope gates pass.
-- This artifact does not yet prove a complete forced graph, exact clean-checkout install/package diagnostic, review, protected CI, merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, or another operating system/architecture.
-- Complete candidate and clean-checkout results will be appended only after their exact commands pass. Collector and Prometheus evidence belongs to P01-R09.
+- Local complete and exact isolated-checkout gates now pass at candidate b277c689cc3de7960fa42d9a019c9711a9a67725.
+- This artifact does not yet prove review, protected CI, merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
+- Collector and Prometheus evidence belongs to P01-R09. Protected review and release evidence will be appended only after their exact checks pass.

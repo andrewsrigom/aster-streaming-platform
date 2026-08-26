@@ -116,7 +116,7 @@ Status: **IN_PROGRESS**
 - The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
 - Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
-- P01-R06 is `IMPLEMENTED` locally on `feat/p01-r06-telemetry`: `@aster/telemetry` hides six exact OpenTelemetry dependencies behind finite repository-owned contracts; collects Node.js event-loop, GC, heap, active-resource, process CPU/RSS/uptime, HTTP, dependency, export-health, and drop metrics; and owns manual local collection plus bounded optional OTLP/HTTP export. Nine focused tests, the compatibility diagnostic, the final 34-of-34 changed-scope gate in `10.053s`, and a zero-cache 34-of-34 complete graph in `32.343s` pass with architecture, documentation, secret scan, and high-severity audit. Exact clean-checkout, confirmation review, protected CI, and release gates remain pending.
+- P01-R06 is `IMPLEMENTED` locally at candidate `b277c689cc3de7960fa42d9a019c9711a9a67725` on `feat/p01-r06-telemetry`: `@aster/telemetry` hides six exact OpenTelemetry dependencies behind finite repository-owned contracts; collects Node.js event-loop, GC, heap, active-resource, process CPU/RSS/uptime, HTTP, dependency, export-health, and drop metrics; and owns manual local collection plus bounded optional OTLP/HTTP export. Nine focused tests, the compatibility diagnostic, the final 34-of-34 changed-scope gate in `10.053s`, and a zero-cache 34-of-34 complete graph in `32.343s` pass. An exact isolated checkout reused 278 frozen offline packages with zero download, passed 34/34 uncached tasks in `29.771s`, audit, secret scan, clean Git, and validated cleanup. Confirmation review, protected CI, and release gates remain pending.
 
 ## Not implemented
 
@@ -140,7 +140,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Stabilize the P01-R06 candidate: run the forced complete graph and exact clean-checkout proof, perform the bounded initial and confirmation review, publish through protected CI, then release before activating P01-R07.
+Publish exact P01-R06 candidate `b277c68` plus its documentation-only clean-checkout evidence, perform the bounded initial and confirmation review, pass protected CI, then release before activating P01-R07.
 
 ## Current risks
 
