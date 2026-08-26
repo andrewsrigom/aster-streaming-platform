@@ -81,12 +81,15 @@ Status: **IN_PROGRESS**
 - Protected remediation runs `32958437941`, `32958998938`, `32959613401`, `32960632070`, `32961192353`, `32961814947`, and `32962358373` passed every applicable job. Nine actionable review discussions have evidence replies and are resolved; final automated review comment `5424539572` reports no major issue at implementation commit `4ff4c3e`.
 - P01-R03 is `VERIFIED`: local complete gates, two clean public checkouts, dependency/license review, protected CI, adverse review remediation, registry audit, documentation, repository-memory validation, and secret scanning pass. No application service, connection, hosted resource, schema migration, or credential was created.
 - Protected pull request 8 was squash-merged to `main` at `c5a707dc2510130cadcdac368e94b040f120d27c`. Post-merge run `32963360595` passed every applicable job, and local `main` matches the protected remote with a clean worktree.
+- P01-R04 implementation `fca410d` and public documentation candidate `6eedca0` add `@aster/runtime` with exact-pinned Pino `10.3.1` behind repository-owned declarations. It emits bounded JSON with fixed process context, reviewed sensitive-key redaction, sanitized error causes, and validated injected trace/span correlation.
+- Fourteen focused tests pass for JSON shape, levels, async context, invalid providers, representative redaction, reserved-field isolation, bounded errors, hostile accessors and collections, destination and option failures, subprocess output, and declaration isolation. The complete forced local graph passed 28 of 28 uncached tasks in `9.762` seconds with TypeScript, lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, CI, platform, and all package tests green. License and registry audit checks pass.
+- A clean HTTPS clone of exact public candidate `6eedca0` materialized from the frozen lock with 124 packages reused and zero downloaded, passed 14 focused logging tests, emitted the two expected diagnostic JSON records, passed all 28 forced uncached tasks in `11.307` seconds, passed audit and secret scanning, and remained Git-clean before exact temporary-root removal.
+- Protected candidate `34e3cb9` passed pull-request run `32966113415`, including hosted dependency review, documentation/security, frozen source quality, registry audit, and the required aggregate. Independent review comment `5424999783` reports no major issue and left no unresolved discussion. P01-R04 is `VERIFIED` without adding a service, HTTP adapter, telemetry SDK/backend, product schema, or hosted resource.
+- The final P01-R04 repository-state graph passed 28 of 28 forced uncached tasks in `10.862` seconds with all 14 runtime and 12 configuration tests green; documentation, repository-memory, secret, diff, and high-severity audit checks pass with P01-R11 as the sole next `READY` item.
 
 ## Implemented
 
-- P01-R04 implementation `fca410d` and public documentation candidate `6eedca0` add `@aster/runtime` with exact-pinned Pino `10.3.1` behind repository-owned declarations. It emits bounded JSON with fixed process context, reviewed sensitive-key redaction, sanitized error causes, and validated injected trace/span correlation.
-- Fourteen focused tests pass for JSON shape, levels, async context, invalid providers, representative redaction, reserved-field isolation, bounded errors, hostile accessors and collections, destination and option failures, subprocess output, and declaration isolation. The complete forced local graph passed 28 of 28 uncached tasks in `9.762` seconds with TypeScript, lint, formatting, unused-code, architecture, documentation, repository memory, secret, governance, CI, platform, and all package tests green. License and registry audit checks pass.
-- A clean HTTPS clone of exact public candidate `6eedca0` materialized from the frozen lock with 124 packages reused and zero downloaded, passed 14 focused logging tests, emitted the two expected diagnostic JSON records, passed all 28 forced uncached tasks in `11.307` seconds, passed audit and secret scanning, and remained Git-clean before exact temporary-root removal. Protected CI and review remain pending.
+- No additional Phase 01 work item is implemented beyond the verified items above.
 
 ## Not implemented
 
@@ -101,7 +104,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Pass P01-R04 through protected CI, hosted dependency review, and independent automated review; resolve actionable findings and close the work item without adding the telemetry backend or service skeleton early.
+Select the Phase 01 HTTP adapter through the P01-R11 ADR, evaluating Express 5 with the maintained Apollo Server integration while keeping framework types inside the transport boundary.
 
 ## Current risks
 
@@ -124,6 +127,8 @@ Pass P01-R04 through protected CI, hosted dependency review, and independent aut
 - The P01-R03 schema belongs only to the Phase 01 reference runtime and currently requires both PostgreSQL and Redis URLs; future runtime units with different dependencies need their own owning schema rather than treating this contract as universal.
 - P01-R03 process cost is measured only as one isolated warm-filesystem process pair on WSL2; steady-state service memory, container memory, throughput, and other operating systems remain unmeasured.
 - Host and orchestrator controls still own environment confidentiality, process inspection, crash handling, injection, and secret rotation; P01-R03 proves only the repository-owned loader and diagnostic surfaces.
+- P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. Export queues, flush deadlines, drop metrics, retention, and the OpenTelemetry SDK/backend remain unimplemented.
+- Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

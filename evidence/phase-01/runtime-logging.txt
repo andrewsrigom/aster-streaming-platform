@@ -1,8 +1,8 @@
 # Experiment P01-R04-L01: Structured Runtime Logging Baseline
 
-- Status: IMPLEMENTED
+- Status: VERIFIED
 - Date: 2026-08-26
-- Commit: `fca410d236a3761e37e42d19244e68d27bd1bd88`
+- Commit: `34e3cb9ec339981b733fe623349d8e66d3df4e43`
 - Owner: Aster runtime infrastructure
 - Related requirement: P01-R04
 - Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
@@ -77,7 +77,7 @@ Registry metadata on 2026-08-26 reported Pino `10.3.1` as the latest stable rele
 
 The official Pino repository documents initialization-time path redaction, Node.js LTS support, a security policy, and separate log processing. Exact compatibility evidence is stronger than the generic range: the package compiles, typechecks, serializes, redacts, and runs its direct/subprocess suite on the repository-pinned Node.js `24.19.0` and TypeScript `6.0.3`.
 
-`corepack pnpm licenses list --prod --json` reports MIT for Pino and its redaction, serialization, stream, formatting, warning, and exit helpers; `split2@4.2.0` is ISC. `corepack pnpm audit --audit-level=high` reports no known vulnerability. Hosted dependency review remains required before verification.
+`corepack pnpm licenses list --prod --json` reports MIT for Pino and its redaction, serialization, stream, formatting, warning, and exit helpers; `split2@4.2.0` is ISC. `corepack pnpm audit --audit-level=high` reports no known vulnerability. Hosted dependency review passed. It reported informational OpenSSF Scorecard warnings for transitive `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; neither warning is a vulnerability finding, and both dependencies remain inside the exact Pino graph and replacement boundary.
 
 Pino is an internal adapter. Generated `runtime-logger.d.ts` contains no Pino reference, and a focused test enforces that boundary. Removal replaces the private adapter while preserving repository-owned service call sites and JSON-field tests.
 
@@ -96,7 +96,9 @@ Pino is an internal adapter. Generated `runtime-logger.d.ts` contains no Pino re
 - Repository memory: 10 files, 17 queue items, P01-R04 active, and zero violation.
 - Secret scan: zero finding.
 - Clean public checkout: exact public candidate `6eedca0`, frozen install with 124 packages reused and zero downloaded, 14 focused tests passed, two diagnostic JSON records emitted, 28 of 28 forced uncached tasks passed in `11.307s`, audit and secret scan passed, and Git remained clean.
-- Protected CI and review: pending.
+- Protected CI: pull-request run `32966113415` passed classification, hosted dependency review, documentation/security, frozen install, source quality, registry audit, and the required aggregate at candidate `34e3cb9`; the unrelated Docker lane was skipped as designed.
+- Independent review: Codex review comment `5424999783` reports no major issue at exact candidate `34e3cb9` and created no unresolved discussion.
+- Final repository-state graph: 28 tasks, 0 cached, 28 successful in `10.862s`; 14 runtime tests and 12 configuration tests passed, documentation covered 131 documents and 317 links, repository memory selected P01-R11 as the next ready item, secret scanning found zero issue, and the high-severity audit found no known vulnerability.
 
 ## Clean public checkout
 
@@ -114,7 +116,7 @@ The process numbers show only the startup cost of one short warm-filesystem proc
 
 ## Limitations
 
-- Protected CI, hosted dependency review, and independent automated review are pending.
+- Transitive `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0` have OpenSSF Scorecard values below the repository's informational threshold; the hosted dependency gate still passed and the high-severity audit found no known vulnerability.
 - The process pair was not isolated from host scheduling, had no repeated samples, and is not a benchmark.
 - The default standard-output path has no Collector, retention, export queue, flush deadline, or drop metric yet.
 - Redaction recognizes reviewed names; it cannot infer a secret deliberately placed under an innocent-looking attribute name.
@@ -123,5 +125,5 @@ The process numbers show only the startup cost of one short warm-filesystem proc
 
 ## Decision
 
-- Keep, revert, or continue investigation: Keep the bounded Pino adapter and continue through protected CI and review verification.
+- Keep, revert, or continue investigation: Keep the bounded Pino adapter; P01-R04 acceptance is verified.
 - Revisit trigger: Replace or revise the adapter if the future OpenTelemetry/log pipeline cannot map the stable fields, stdout backpressure or shutdown evidence fails, representative service load shows unacceptable cost, a supported runtime breaks, or dependency/security posture changes.

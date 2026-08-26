@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Implemented structured runtime logging baseline
+## 2026-08-26 — Verified structured runtime logging baseline
 
 ### Completed
 
@@ -17,6 +17,9 @@ Append new entries at the top. Keep entries factual and concise.
 - The complete repository graph passed 28 of 28 forced uncached tasks in `9.762` seconds. Documentation validated 131 files and 317 local links; repository memory and secret scans reported zero violation.
 - Published implementation and documentation candidate `6eedca0`, cloned it from the public HTTPS branch into an empty temporary root, and completed a frozen install with 124 packages reused and zero downloaded.
 - The clean public clone passed 14 focused tests, the exact two-record diagnostic, 28 of 28 forced uncached tasks in `11.307` seconds, audit, secret scanning, and clean Git. Its path, public origin, candidate commit, and clean state were revalidated before only that root was removed; Docker was not touched.
+- Opened protected pull request 9 at candidate `34e3cb9`; run `32966113415` passed classification, hosted dependency review, documentation/security, frozen install, all source-quality and package tests, registry audit, and the required aggregate. The unrelated Docker lane was skipped as designed.
+- Confirmed the two dependency-review warnings are informational low Scorecard values on Pino transitives, while the hosted gate and high-severity audit pass. Independent review comment `5424999783` reports no major issue on the exact candidate and leaves no unresolved discussion.
+- Closed the active plan, marked P01-R04 `DONE` with `VERIFIED` evidence, left P01-R11 only `READY`, and passed the final repository-state graph with 28 of 28 forced uncached tasks in `10.862` seconds plus audit, documentation, memory, secret, and diff checks.
 
 ### Evidence
 
@@ -24,11 +27,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Focused run: 2 Turbo tasks, 0 cached, 14 tests passed in `1.104` seconds.
 - Isolated diagnostic: exit 0, two JSON lines, `0.04` seconds, `60,680` KiB maximum RSS; empty Node.js baseline: `0.02` seconds, `42,484` KiB.
 - Clean public-checkout gate: 28 tasks, 0 cached, `11.307` seconds; 14 focused tests, two diagnostic records, audit and secret scan passed.
-- Raw artifact: `evidence/phase-01/runtime-logging.txt` (`IMPLEMENTED`; protected review pending).
+- Protected pull-request run: `32966113415`; independent review: `5424999783` at `34e3cb9`.
+- Raw artifact: `evidence/phase-01/runtime-logging.txt` (`VERIFIED`).
 
 ### Next action
 
-Commit and push the clean-checkout evidence update, open the protected pull request, pass dependency and CI review, resolve actionable findings, then close P01-R04 only after final evidence is current.
+Pass the final protected state run, squash-merge pull request 9, confirm post-merge `main`, then create a new active plan for P01-R11 without starting HTTP implementation early.
 
 ## 2026-08-26 — Implemented fail-fast reference runtime configuration
 
