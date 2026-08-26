@@ -6,6 +6,7 @@ import test from "node:test";
 import {
   createQualityGateInvocation,
   QUALITY_GATE_TASKS,
+  requestQualityGateProcessTreeTermination,
   runQualityGate,
   terminateQualityGateProcessTree,
   type QualityGateSignal,
@@ -203,6 +204,37 @@ test("terminates the isolated process tree on timeout", async () => {
   ]);
 });
 
+test("requests graceful process-tree termination before the force fallback", () => {
+  const posixSignals: Array<{ readonly pid: number; readonly signal: NodeJS.Signals }> = [];
+  assert.equal(
+    requestQualityGateProcessTreeTermination(42, "SIGTERM", "linux", (pid, signal) => {
+      posixSignals.push({ pid, signal });
+      return true;
+    }),
+    true,
+  );
+  assert.deepEqual(posixSignals, [{ pid: -42, signal: "SIGTERM" }]);
+
+  const taskkillCalls: Array<{ readonly args: readonly string[]; readonly executable: string }> =
+    [];
+  assert.equal(
+    requestQualityGateProcessTreeTermination(
+      84,
+      "SIGINT",
+      "win32",
+      () => {
+        assert.fail("Windows termination must not use POSIX group signals");
+      },
+      (executable, args) => {
+        taskkillCalls.push({ args, executable });
+        return { status: 0 };
+      },
+    ),
+    true,
+  );
+  assert.deepEqual(taskkillCalls, [{ args: ["/pid", "84", "/t"], executable: "taskkill.exe" }]);
+});
+
 test("terminates the isolated process tree when the wrapper receives a signal", async () => {
   for (const [signal, expectedStatus] of [
     ["SIGINT", 130],
@@ -211,7 +243,10 @@ test("terminates the isolated process tree when the wrapper receives a signal", 
     const child = fakeQualityGateProcess(252);
     const signals = fakeQualityGateSignalSource();
     const errors: string[] = [];
-    let terminatedPid: number | undefined;
+    const gracefulRequests: Array<{
+      readonly pid: number | undefined;
+      readonly signal: QualityGateSignal;
+    }> = [];
     const statusPromise = runQualityGate(
       [],
       () => child,
@@ -219,27 +254,60 @@ test("terminates the isolated process tree when the wrapper receives a signal", 
         errors.push(message);
       },
       (pid) => {
-        terminatedPid = pid;
+        assert.fail(`graceful close must not force process ${String(pid)}`);
+      },
+      60_000,
+      signals.source,
+      (pid, requestedSignal) => {
+        gracefulRequests.push({ pid, signal: requestedSignal });
         queueMicrotask(() => {
           child.emitClose(null);
         });
         return true;
       },
-      60_000,
-      signals.source,
     );
 
     assert.equal(signals.listenerCount(signal), 1);
     signals.emit(signal);
 
     assert.equal(await statusPromise, expectedStatus);
-    assert.equal(terminatedPid, 252);
+    assert.deepEqual(gracefulRequests, [{ pid: 252, signal }]);
     assert.deepEqual(errors, [
       JSON.stringify({ check: "quality-gate", reason: "interrupted", status: "error" }),
     ]);
     assert.equal(signals.listenerCount("SIGINT"), 0);
     assert.equal(signals.listenerCount("SIGTERM"), 0);
   }
+});
+
+test("force-kills an interrupted gate only after its graceful window", async () => {
+  const child = fakeQualityGateProcess(504);
+  const signals = fakeQualityGateSignalSource();
+  const calls: string[] = [];
+  const statusPromise = runQualityGate(
+    [],
+    () => child,
+    () => {},
+    (pid) => {
+      calls.push(`force:${String(pid)}`);
+      queueMicrotask(() => {
+        child.emitClose(null);
+      });
+      return true;
+    },
+    60_000,
+    signals.source,
+    (pid, signal) => {
+      calls.push(`graceful:${String(pid)}:${signal}`);
+      return true;
+    },
+    1,
+  );
+
+  signals.emit("SIGTERM");
+
+  assert.equal(await statusPromise, 143);
+  assert.deepEqual(calls, ["graceful:504:SIGTERM", "force:504"]);
 });
 
 test("keeps manifest commands and task-level affected inputs aligned", async () => {
@@ -261,5 +329,7 @@ test("keeps manifest commands and task-level affected inputs aligned", async () 
     assert.ok(lintInputs.includes(path));
   }
   assert.ok(turbo.tasks["//#format:check"]?.inputs?.includes("**/*.md"));
+  assert.deepEqual(turbo.tasks["//#docs:check"]?.inputs, ["**/*"]);
+  assert.deepEqual(turbo.tasks["//#community:check"]?.inputs, ["**/*"]);
   assert.deepEqual(turbo.tasks["//#security:check"]?.inputs, ["**/*"]);
 });

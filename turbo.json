@@ -112,19 +112,13 @@
       "inputs": [".ai/**", "tools/verify-ai-state.ts", "tools/verify-ai-state.test.ts"]
     },
     "//#docs:check": {
-      "inputs": ["**/*.md", "tools/verify-documentation.ts"]
+      "inputs": ["**/*"]
     },
     "//#docs:test": {
       "inputs": ["tools/verify-documentation.ts", "tools/verify-documentation.test.ts"]
     },
     "//#community:check": {
-      "inputs": [
-        ".github/ISSUE_TEMPLATE/**",
-        ".github/PULL_REQUEST_TEMPLATE.md",
-        "CONTRIBUTING.md",
-        "SECURITY.md",
-        "tools/verify-community-files.ts"
-      ]
+      "inputs": ["**/*"]
     },
     "//#community:test": {
       "inputs": [

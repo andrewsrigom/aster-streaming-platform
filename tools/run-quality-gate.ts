@@ -45,6 +45,10 @@ type StartQualityGate = (
 ) => QualityGateProcess;
 
 type TerminateQualityGate = (pid: number | undefined) => boolean;
+type RequestQualityGateTermination = (
+  pid: number | undefined,
+  signal: QualityGateSignal,
+) => boolean;
 
 export type QualityGateSignal = "SIGINT" | "SIGTERM";
 
@@ -120,6 +124,32 @@ export function terminateQualityGateProcessTree(
   }
 }
 
+export function requestQualityGateProcessTreeTermination(
+  pid: number | undefined,
+  signal: QualityGateSignal,
+  platform = process.platform,
+  signalGroup: (pid: number, signal: NodeJS.Signals) => boolean = (groupPid, groupSignal) =>
+    process.kill(groupPid, groupSignal),
+  runTaskkill: RunTaskkill = (executable, args, options) => spawnSync(executable, args, options),
+): boolean {
+  if (!pid || !Number.isSafeInteger(pid) || pid <= 0) {
+    return false;
+  }
+  if (platform === "win32") {
+    const result = runTaskkill("taskkill.exe", ["/pid", String(pid), "/t"], {
+      stdio: "ignore",
+      timeout: 10_000,
+      windowsHide: true,
+    } satisfies SpawnSyncOptions);
+    return !result.error && result.status === 0;
+  }
+  try {
+    return signalGroup(-pid, signal);
+  } catch {
+    return false;
+  }
+}
+
 export interface QualityGateInvocation {
   readonly args: readonly string[];
   readonly changed: boolean;
@@ -175,6 +205,9 @@ export async function runQualityGate(
   terminate: TerminateQualityGate = (pid) => terminateQualityGateProcessTree(pid),
   timeoutMs = QUALITY_GATE_TIMEOUT_MS,
   signalSource: QualityGateSignalSource = processSignalSource,
+  requestTermination: RequestQualityGateTermination = (pid, signal) =>
+    requestQualityGateProcessTreeTermination(pid, signal),
+  signalGraceMs = 5_000,
 ): Promise<number> {
   let invocation: QualityGateInvocation;
   try {
@@ -243,13 +276,17 @@ export async function runQualityGate(
           return;
         }
         terminationSignal = signal;
-        if (!terminate(child.pid)) {
-          finish(1, "execution_failed");
-          return;
-        }
+        clearTimeout(timeout);
+        requestTermination(child.pid, signal);
         fallback = setTimeout(() => {
-          finish(SIGNAL_EXIT_STATUS[signal], "interrupted");
-        }, 5_000);
+          if (!terminate(child.pid)) {
+            finish(1, "execution_failed");
+            return;
+          }
+          fallback = setTimeout(() => {
+            finish(SIGNAL_EXIT_STATUS[signal], "interrupted");
+          }, 5_000);
+        }, signalGraceMs);
       };
       signalListeners.set(signal, listener);
       signalSource.on(signal, listener);
