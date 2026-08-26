@@ -71,6 +71,7 @@ Status: **IN_PROGRESS**
 - Exact-pinned `zod@4.4.3` compiles with Node.js `24.19.0` and TypeScript `6.0.3`, has no runtime dependency, resolves under MIT, and passes the frozen install plus registry audit. A single isolated successful diagnostic observed `0.09` seconds and `62,984` KiB maximum RSS versus `0.03` seconds and `45,040` KiB for an empty Node.js process on the same host; this is a compatibility observation, not a benchmark.
 - The first-package task graph now runs package build, typecheck, and tests through the existing source gate. ESLint globally excludes nested build output and Knip has explicit configuration-package entry points without weakening checks for other workspaces.
 - The implementation, documentation, evidence, and active repository-memory tree passed 25 of 25 forced uncached tasks in `9.911` seconds. Documentation validated 130 files and 311 local links, the redacting secret scan found zero issue, and all existing foundation, platform, CI, and package checks remained green.
+- A clean public clone at `95cc1ed` started without local dependencies or Turbo state, materialized 110 packages with zero download from the warm store, passed 10 focused configuration tests, exact success and redacted failure diagnostics, 25 of 25 forced uncached tasks in `7.554` seconds, audit, secret scanning, and clean Git. Its exact path, origin, SHA, and status were revalidated before only that temporary root was removed.
 
 ## Not implemented
 
@@ -85,7 +86,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Complete the P01-R03 clean public-checkout repeat, then pass protected CI, dependency review, automated review, merge, and post-merge `main` verification before marking the work item `DONE` and the evidence `VERIFIED`.
+Pass P01-R03 protected CI, dependency review, automated review, merge, and post-merge `main` verification before marking the work item `DONE` and the evidence `VERIFIED`.
 
 ## Current risks
 

@@ -14,6 +14,8 @@ Append new entries at the top. Keep entries factual and concise.
 - Corrected the first-package ESLint global ignore so nested `dist` output is excluded and registered the package library plus diagnostic entry points with Knip.
 - Passed the initial 15-task uncached source gate, frozen install, high-severity registry audit, MIT production-license inventory, isolated success/failure execution, and focused tests.
 - Passed the implementation, documentation, evidence, and active-memory closeout through 25 of 25 forced uncached tasks in `9.911` seconds; clean-checkout, protected CI, and review remain pending.
+- Cloned public candidate `95cc1ed` into an empty repository root, completed frozen materialization with 110 warm-store reuses and zero download, passed 10 configuration tests, valid and redacted-invalid process runs, 25 of 25 forced uncached tasks in `7.554` seconds, audit, secret scan, and clean Git.
+- Revalidated the temporary clone's exact resolved `/tmp` path, regular-directory status, public origin, candidate SHA, and clean state before removing only that root and proving its absence.
 
 ### Evidence
 
@@ -21,11 +23,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Isolated valid process: exit 0, `0.09` seconds, `62,984` KiB maximum RSS; empty Node.js baseline: exit 0, `0.03` seconds, `45,040` KiB maximum RSS.
 - Invalid secret canaries: exit 1 with two classified issues and no canary in output.
 - Complete local gate: 25 tasks, 0 cached, `9.911` seconds.
+- Clean public-checkout gate: 25 tasks, 0 cached, `7.554` seconds; wrapper `8.03` seconds.
 - Raw evidence: `evidence/phase-01/runtime-configuration.txt` (`IMPLEMENTED` locally).
 
 ### Next action
 
-Publish the branch, run the clean public-checkout repeat at its exact SHA, then open the protected P01-R03 pull request and update evidence only after hosted CI and review results exist.
+Open the protected P01-R03 pull request, observe hosted dependency review and `CI required`, request automated review, and update evidence only after those results exist.
 
 ## 2026-08-26 — Verified destructive local reset and review remediation
 

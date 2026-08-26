@@ -162,6 +162,46 @@ Result after the implementation, documentation, evidence, and active repository-
 
 This included @aster/config build, strict typecheck, and 10 tests plus root toolchain, lint, formatting, unused-code, architecture, local-platform policy, documentation, repository-memory, community, secret, CI-policy, staged-file, and commit-policy checks and their focused adverse tests. Documentation covered 130 Markdown files and 311 local links; secret scanning reported zero finding; repository-memory validation identified P01-R03 as the only active item.
 
+Clean public-checkout verification
+----------------------------------
+
+Public candidate commit: 95cc1ed6f704dc7a42a6fd335bdd378b323991df
+Origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+Branch: feat/p01-r03-runtime-config
+Temporary root: /tmp/aster-p01-r03-public-IHitjV
+
+Initial checks proved the exact origin and SHA, a clean branch, and no repository-local node_modules or .turbo directory. The README bootstrap activated only the clone-local Git hooks and selected Node.js 24.19.0 plus pnpm 11.24.0.
+
+Frozen install:
+
+  packages materialized=110
+  reused from warm content-addressed store=110
+  downloaded=0
+  pnpm elapsed=2.9 seconds
+  measured wrapper elapsed=4.05 seconds
+  exit=0
+
+Focused configuration result:
+
+  tests=10
+  pass=10
+  fail=0
+  skipped=0
+  Turbo elapsed=3.227 seconds
+
+The documented config:check command exited 0 and printed only the two non-secret values plus configured status for DATABASE_URL and REDIS_URL. An isolated malformed-secret workload exited 1 with the two classified issues and neither clean-checkout canary in output.
+
+Complete clean-checkout gate:
+
+  Command: TURBO_FORCE=true corepack pnpm check
+  Tasks: 25 successful, 25 total
+  Cached: 0
+  Turbo elapsed: 7.554 seconds
+  Wrapper elapsed: 8.03 seconds
+  Exit: 0
+
+The high-severity registry audit reported no known vulnerability, the all-file secret scan reported zero finding, and Git remained clean. Before removal, the temporary root was resolved to the exact /tmp path and revalidated for regular directory status, origin, candidate SHA, and clean Git state. Only that exact root was then removed and its absence verified.
+
 Acceptance interpretation
 -------------------------
 
@@ -177,13 +217,13 @@ Remaining verification
 ----------------------
 
 - Pass protected pull-request CI, dependency review, and automated review.
-- Re-run the public diagnostic and complete gate from a clean checkout at the final candidate commit.
 - Pass post-merge main CI before marking P01-R03 DONE and VERIFIED.
 
 Limitations
 -----------
 
 - The timing and RSS observations are one process pair on one WSL2 host with warm filesystem and pnpm stores; they do not predict service throughput, container memory, native Windows, macOS, or other Linux hosts.
+- The clean clone reused the user-level Corepack and pnpm content-addressable stores. It proves an empty repository checkout and frozen materialization, not an empty-machine or cold-registry install.
 - Environment-variable confidentiality still depends on the host, orchestrator, process inspection policy, crash handling, and future log callers. P01-R03 proves only the repository-owned loader and diagnostic surfaces.
 - The current schema belongs to the Phase 01 reference runtime and deliberately requires PostgreSQL and Redis. Future runtime units with different dependencies require their own schema.
 - Dynamic secret retrieval, rotation, hosted secret stores, client-bundle analysis, and runtime logging redaction belong to later owning work.
