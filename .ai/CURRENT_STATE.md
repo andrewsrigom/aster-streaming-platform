@@ -103,6 +103,7 @@ Status: **IN_PROGRESS**
 - Exact-route candidate `9ddf8d6` passed an empty public clone with eight focused tests, the diagnostic, 31 of 31 forced uncached tasks in `14.22` seconds, audit, secret scan, and clean state; protected run `32972076199` passed. Evidence reply `3862985546` is posted and the second discussion is resolved. Final independent review is pending at the exact head.
 - Follow-up review comment `3863047553` proved the Express parser accepts valid UTF-16 JSON despite the documented UTF-8-only boundary. The local remediation validates `Content-Type` through Node.js `MIMEType` before the parser, accepts only absent charset or explicit `utf-8`, and adds a real UTF-16LE JSON body that returns `415` before middleware; the complete local graph passes 31 of 31 uncached tasks in `17.701` seconds.
 - UTF-8 candidate `35b307a` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced uncached tasks in `25.339` seconds, audit, secret scan, and clean Git; protected run `32973291227` passed. Review comment `3863154140` then found a parser disagreement for duplicate charset parameters. The local remediation rejects duplicate charset parameters while respecting quoted semicolons, covers the bypass plus a non-duplicate quoted-value case, and passes 31 of 31 uncached local tasks in `17.16` seconds.
+- Duplicate-charset candidate `6b8e1c2` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `27.046` seconds, audit, secret scan, and clean Git; protected run `32974480044` passed. Evidence reply `3863199830` is posted and the fourth discussion is resolved. Review comment `3863261260` then found the direct diagnostic request lacked its own deadline. The local remediation attaches a two-second abort deadline through response consumption, clears the timer in `finally`, and passes 31 of 31 uncached local tasks in `15.235` seconds.
 
 ## Not implemented
 
@@ -117,7 +118,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the duplicate-charset remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
+Verify the diagnostic-deadline remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
 
 ## Current risks
 

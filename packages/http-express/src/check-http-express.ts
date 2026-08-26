@@ -15,12 +15,37 @@ interface DiagnosticContext {
   readonly signal: AbortSignal;
 }
 
+const HTTP_DIAGNOSTIC_REQUEST_DEADLINE_MS = 2_000;
+
 function localUrl(server: Server): string {
   const address = server.address();
   if (!address || typeof address === "string") {
     throw new Error("HTTP diagnostic address is unavailable.");
   }
   return `http://127.0.0.1:${address.port}`;
+}
+
+async function requestDiagnostic(url: string): Promise<{
+  readonly payload: unknown;
+  readonly response: Response;
+}> {
+  const controller = new AbortController();
+  const deadline = setTimeout(() => {
+    controller.abort();
+  }, HTTP_DIAGNOSTIC_REQUEST_DEADLINE_MS);
+  deadline.unref();
+  try {
+    const response = await fetch(`${url}/graphql`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ query: "query TransportCheck { transportCheck }" }),
+      signal: controller.signal,
+    });
+    const payload: unknown = await response.json();
+    return { payload, response };
+  } finally {
+    clearTimeout(deadline);
+  }
 }
 
 async function run(): Promise<void> {
@@ -55,12 +80,7 @@ async function run(): Promise<void> {
     httpServer.listen(0, "127.0.0.1");
     await once(httpServer, "listening");
 
-    const response = await fetch(`${localUrl(httpServer)}/graphql`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ query: "query TransportCheck { transportCheck }" }),
-    });
-    const payload: unknown = await response.json();
+    const { payload, response } = await requestDiagnostic(localUrl(httpServer));
     if (
       response.status !== 200 ||
       !payload ||
