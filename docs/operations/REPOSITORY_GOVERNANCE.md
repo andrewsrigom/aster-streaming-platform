@@ -77,6 +77,7 @@ The following source gates are implemented:
 - no framework, database, Redis, broker, or telemetry SDK in domain and application layers;
 - Conventional Commit validation for local commit messages.
 - Markdown UTF-8, title, fence, unresolved-merge-marker, local-link, heading-fragment, canonical-terminology, and evidence-supported current-status validation.
+- Bounded repository-memory files, queue order and blockers, active-plan binding, resume-target, and session-structure validation.
 
 Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the hosted full CI path. Pull-request dependency and license review is configured and its first hosted execution passed. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
 
@@ -128,7 +129,7 @@ The checked-in `CI` workflow has one authoritative event policy and one stable a
 | Job | When | Dependency install | Responsibility |
 |---|---|---:|---|
 | Classify change | Every run | No | Fail-safe full versus documentation-only path |
-| Documentation and security | Every run | No | Documentation, community contract, tracked secret, CI policy, and governance-tool tests |
+| Documentation and security | Every run | No | Repository memory, documentation, community contract, tracked secret, CI policy, and governance-tool tests |
 | Install and source quality | Non-draft executable/configuration changes, `main`, and manual fallback | Yes | Frozen install, source gates, and high-severity registry audit |
 | Dependency review | Non-draft pull requests | No | New dependency vulnerability, scope, and reviewed-license policy |
 | CI required | Every run | No | Stable result over every applicable prerequisite |

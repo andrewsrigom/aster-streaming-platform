@@ -76,6 +76,8 @@ This index lists repository governance artifacts and every Markdown source in th
 
 ## tools
 
+- [`tools/verify-ai-state.ts`](../../tools/verify-ai-state.ts) — Repository Memory Consistency Validator
+- [`tools/verify-ai-state.test.ts`](../../tools/verify-ai-state.test.ts) — Repository Memory Validator Tests
 - [`tools/check-staged-files.ts`](../../tools/check-staged-files.ts) — Bounded Staged-File Dispatcher
 - [`tools/check-staged-files.test.ts`](../../tools/check-staged-files.test.ts) — Staged-File Dispatcher Tests
 - [`tools/classify-ci-change.ts`](../../tools/classify-ci-change.ts) — Fail-Safe CI Change Classifier
@@ -98,6 +100,7 @@ This index lists repository governance artifacts and every Markdown source in th
 ## evidence/phase-00
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
+- [`evidence/phase-00/ai-state-workflow.txt`](../../evidence/phase-00/ai-state-workflow.txt) — Repository Memory Workflow Evidence
 - [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
 
 ## docs/00-start-here

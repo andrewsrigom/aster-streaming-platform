@@ -32,6 +32,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Public contribution surfaces | Use stable Markdown bug, proposal, and pull-request templates plus a blank-issue-disabled chooser; avoid preview issue forms and unverified labels, assignees, or contact channels | `evidence/phase-00/community-governance.txt` |
 | Community contract enforcement | Use a bounded dependency-free validator for exact files, front matter, required topics, MIT contribution terms, separate media rights, and safe vulnerability guidance | `evidence/phase-00/community-governance.txt` |
 | Public repository governance | Publish the reviewed local history to the authorized public repository; use squash-only protected pull requests, a strict stable aggregate check, read-only Actions defaults, automatic branch cleanup, no routine bypass actors, and supported GitHub security controls | `evidence/phase-00/public-repository-governance.txt` |
+| Repository-memory enforcement | Use a dependency-free bounded structural validator for required files, queue and blocker state, active-plan and phase binding, resume targets, and session shape; retain semantic truth and history review as human or agent responsibilities | `evidence/phase-00/ai-state-workflow.txt` |
 
 ## Pending decisions
 

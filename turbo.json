@@ -53,6 +53,12 @@
     "//#architecture:test": {
       "inputs": ["tools/verify-architecture.ts", "tools/verify-architecture.test.ts"]
     },
+    "//#ai:check": {
+      "inputs": [".ai/**", "tools/verify-ai-state.ts"]
+    },
+    "//#ai:test": {
+      "inputs": [".ai/**", "tools/verify-ai-state.ts", "tools/verify-ai-state.test.ts"]
+    },
     "//#docs:check": {
       "inputs": ["**/*.md", "tools/verify-documentation.ts"]
     },

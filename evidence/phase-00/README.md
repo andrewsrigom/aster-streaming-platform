@@ -19,8 +19,9 @@
 | Establish efficient and secure CI | P00-R06 | PASS_LOCAL | [`ci-security-foundation.txt`](ci-security-foundation.txt) |
 | Establish public contribution governance | P00-R07 templates | PASS_LOCAL | [`community-governance.txt`](community-governance.txt) |
 | Publish and protect the public repository | P00-R07 remote | PASS_HOSTED | [`public-repository-governance.txt`](public-repository-governance.txt) |
+| Make repository memory consistency executable | P00-R08 execution workflow | PASS_HOSTED | [`ai-state-workflow.txt`](ai-state-workflow.txt) |
 
-P00-R08 is not complete as a phase requirement. A later work item integrates `.ai/` state validation into the executable contribution workflow.
+P00-R08 local and protected hosted checks pass. The repository-memory workflow is executable in ordinary local and pull-request contribution paths.
 
 ## Limitations
 

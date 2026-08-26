@@ -36,6 +36,9 @@ Status: **IN_PROGRESS**
 - GitHub repository settings are audited: squash-only merging, automatic branch cleanup, read-only Actions defaults, immutable action SHA pinning, vulnerability alerts and fixes, Dependabot security updates, secret scanning with push protection, and private vulnerability reporting are enabled.
 - The active no-bypass `Protect main` ruleset requires the pull-request path, review-thread resolution, strict `CI required` success, linear history, and protection from non-fast-forward updates and deletion.
 - The first protected pull-request workflow passed its classification, documentation/security, full source-quality, dependency-review, and stable aggregate jobs.
+- A dependency-free repository-memory validator checks ten bounded `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and session structure; 10 focused tests and the twenty-task local graph pass.
+- `ai:check` and `ai:test` are integrated into the root gate and the always-applicable dependency-free CI governance path; CI policy rejects removal of either command.
+- The first public P00-R08 pull-request run passed repository-memory validation, documentation/security, complete source quality, dependency review, and the stable aggregate check.
 
 ## Not implemented
 
@@ -49,7 +52,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Integrate `.ai/` consistency checks into the normal contribution workflow for P00-R08 without broadening the current Phase 00 scope.
+Document exact bootstrap, check, demonstration, and cleanup commands for P00-R09, preserving the current split between implemented foundation commands and planned application commands.
 
 ## Current risks
 
@@ -58,6 +61,7 @@ Integrate `.ai/` consistency checks into the normal contribution workflow for P0
 - Dependency and license review passed its first public pull-request execution; future changes can still expose dependency or license policy failures and remain gated by `CI required`.
 - GitHub APIs prove that community templates are recognized but do not prove every browser-specific rendering detail; Markdown issue forms avoid dependence on the preview issue-form schema.
 - Secret-scanning validity checks and non-provider patterns are disabled and unclaimed; CodeQL remains deliberately deferred until representative application source exists.
+- Repository-memory validation proves explicit structure and cross-file targets, not the semantic truth of arbitrary prose or append-only history across Git revisions.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.
