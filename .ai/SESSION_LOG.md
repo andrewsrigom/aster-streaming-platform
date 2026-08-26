@@ -2,6 +2,27 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Passed hosted policy confirmation and remediated late review
+
+### Completed
+
+- Published the narrow ADR-0012 policy remediation as exact head `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a` on pull request 14 without changing dependencies or adapter runtime source.
+- Observed protected run `33023896325` complete successfully after the delayed pull-request event was delivered during the documented GitHub Actions degradation.
+- Received two late independent review comments after the run: `3867503077` found that accepted Kafka publish interruption was not publicly distinguished as delivery-ambiguous, and `3867503082` found that an S3 bucket-probe 404 was incorrectly treated as a healthy object miss.
+- Implemented the warranted additional-round remediation: accepted Kafka publish interruption now returns a finite `delivery_ambiguous` result with abort/timeout reason, pre-acceptance abort remains ordinary abort, and only S3 object reads treat 404 as normal `not_found`; bucket probe reports degraded/unavailable.
+
+### Evidence
+
+- Classify change, Dependency review, Documentation and security, Install and source quality including the frozen install and high-severity audit, Local platform including health-gated Compose verification, and `CI required` all pass.
+- Dependency review accepts the complete `MIT AND MITNFA` expression under ADR-0012 without a package exclusion. Its seven low OpenSSF Scorecard annotations remain informational and no high-or-higher vulnerability is reported.
+- Exact hosted candidate: `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`; run: `33023896325`.
+- Targeted formatting, lint, typecheck, build, Kafka 21/21, and S3 16/16 pass for the late-review remediation.
+- The remediation affected graph passes 46/46 tasks with 29 cached in `18.538` seconds of Turborepo time and `19.66` seconds elapsed, with `861432` KiB maximum RSS.
+
+### Next action
+
+Commit the coherent boundary fix, repeat the frozen exact checkout and lifecycle evidence required by its public-contract/cancellation change, then publish, resolve both discussions with exact evidence, and require protected exact-head confirmation before squash merge.
+
 ## 2026-08-26 — Identified the hosted MITNFA license blocker
 
 ### Completed

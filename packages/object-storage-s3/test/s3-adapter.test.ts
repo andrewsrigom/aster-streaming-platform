@@ -235,26 +235,37 @@ test("constructs one finite path-style no-retry client configuration", async () 
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
-test("probe and head use finite telemetry while a missing object remains a normal result", async () => {
+test("a missing bucket degrades readiness while a missing object remains a normal result", async () => {
   const telemetry = new RecordingTelemetry();
   const client = new FakeS3Client();
   const missing = new Error("vendor-key-secret-never-emit");
   Object.defineProperty(missing, "$metadata", { value: { httpStatusCode: 404 } });
+  client.probeHandler = () => Promise.reject(missing);
   client.headHandler = () => Promise.reject(missing);
+  client.readHandler = () => Promise.reject(missing);
   const adapter = createAsterObjectStorageAdapterWithClientFactory(
     options(telemetry),
     () => client,
   );
 
+  assert.deepEqual(await adapter.probe(), { status: "unavailable" });
+  assert.equal(adapter.snapshot().state, "degraded");
+  client.probeHandler = () => Promise.resolve();
   assert.deepEqual(await adapter.probe(), { status: "completed" });
   assert.deepEqual(await adapter.head({ key: "catalog/missing.m3u8" }), {
     status: "not_found",
   });
+  assert.deepEqual(
+    await adapter.read({ key: "catalog/missing.m4s", destination: new CollectingWritable() }),
+    { status: "not_found" },
+  );
   assert.equal(adapter.snapshot().state, "open");
   assert.deepEqual(
     telemetry.attempts.map(({ input, outcome }) => ({ operation: input.operation, outcome })),
     [
+      { operation: "probe", outcome: "unavailable" },
       { operation: "probe", outcome: "success" },
+      { operation: "read", outcome: "success" },
       { operation: "read", outcome: "success" },
     ],
   );

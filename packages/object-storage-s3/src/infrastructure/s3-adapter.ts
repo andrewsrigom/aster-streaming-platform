@@ -938,8 +938,8 @@ export function createAsterObjectStorageAdapterWithClientFactory(
         return finalResult;
       }
       if (isNotFound(result.error)) {
-        state = "open";
-        finalResult = NOT_FOUND;
+        state = operation === "read" ? "open" : "degraded";
+        finalResult = operation === "read" ? NOT_FOUND : UNAVAILABLE;
       } else {
         state = "degraded";
         finalResult = UNAVAILABLE;

@@ -55,7 +55,7 @@ The allowlist remains fail-closed for every unreviewed identifier. A future depe
 
 - CI keeps license checking enabled for runtime, development, and unknown scopes.
 - The repository policy validator and adverse test reject removal or silent drift of `MITNFA`.
-- P01-R07 remains blocked until the protected exact-head dependency review passes.
+- Protected exact-head run `33023896325` passed Dependency review and the stable aggregate at remediation head `f8aa6f8`; the decision is enforced without a package exemption.
 
 ### Security and privacy
 

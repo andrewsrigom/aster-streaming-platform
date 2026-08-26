@@ -70,6 +70,10 @@ export type AsterKafkaBrokerOperationResult =
   | Readonly<{ status: "completed" }>
   | Readonly<{ status: "timed_out" }>
   | Readonly<{ status: "aborted" }>
+  | Readonly<{
+      status: "delivery_ambiguous";
+      reason: "timed_out" | "aborted";
+    }>
   | Readonly<{ status: "unavailable" }>
   | Readonly<{
       status: "rejected";

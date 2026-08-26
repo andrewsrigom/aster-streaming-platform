@@ -61,6 +61,14 @@ const KNOWN_OPTIONS = new Set([
 const COMPLETED = Object.freeze({ status: "completed" } as const);
 const TIMED_OUT = Object.freeze({ status: "timed_out" } as const);
 const ABORTED = Object.freeze({ status: "aborted" } as const);
+const DELIVERY_AMBIGUOUS_TIMED_OUT = Object.freeze({
+  status: "delivery_ambiguous",
+  reason: "timed_out",
+} as const);
+const DELIVERY_AMBIGUOUS_ABORTED = Object.freeze({
+  status: "delivery_ambiguous",
+  reason: "aborted",
+} as const);
 const UNAVAILABLE = Object.freeze({ status: "unavailable" } as const);
 const FAILED = Object.freeze({ status: "failed" } as const);
 const INVALID_REQUEST = Object.freeze({ status: "rejected", reason: "invalid_request" } as const);
@@ -502,6 +510,8 @@ function outcomeFor(result: AsterKafkaBrokerOperationResult): AsterObservationOu
       return "timeout";
     case "aborted":
       return "cancelled";
+    case "delivery_ambiguous":
+      return result.reason === "aborted" ? "cancelled" : "timeout";
     case "unavailable":
       return "unavailable";
     case "rejected":
@@ -951,7 +961,14 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
         finalResult = COMPLETED;
       } else if (result.status === "aborted" || result.status === "timed_out") {
         retireProducer(owned);
-        finalResult = result.status === "aborted" ? ABORTED : TIMED_OUT;
+        finalResult =
+          operation === "publish"
+            ? result.status === "aborted"
+              ? DELIVERY_AMBIGUOUS_ABORTED
+              : DELIVERY_AMBIGUOUS_TIMED_OUT
+            : result.status === "aborted"
+              ? ABORTED
+              : TIMED_OUT;
       } else {
         retireProducer(owned);
         finalResult = UNAVAILABLE;

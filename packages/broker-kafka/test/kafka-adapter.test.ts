@@ -343,7 +343,7 @@ test("rejects excess publishes before extending producer work", async () => {
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
-test("publish abort retires the ambiguous generation and allows explicit recovery", async () => {
+test("an accepted publish abort is delivery-ambiguous and allows explicit recovery", async () => {
   const telemetry = new RecordingTelemetry();
   const first = new FakeBundle();
   const second = new FakeBundle();
@@ -355,6 +355,16 @@ test("publish abort retires the ambiguous generation and allows explicit recover
     () => bundles.shift() as FakeBundle,
   );
   assert.deepEqual(await adapter.connect(), { status: "completed" });
+  const alreadyAborted = new AbortController();
+  alreadyAborted.abort();
+  assert.deepEqual(
+    await adapter.publish(
+      { topic: "aster.probe", key: Uint8Array.from([0]), value: Uint8Array.from([0]) },
+      alreadyAborted.signal,
+    ),
+    { status: "aborted" },
+  );
+  assert.equal(first.producer.publishCalls, 0);
   const controller = new AbortController();
   const pending = adapter.publish(
     { topic: "aster.probe", key: Uint8Array.from([1]), value: Uint8Array.from([2]) },
@@ -363,11 +373,41 @@ test("publish abort retires the ambiguous generation and allows explicit recover
   await nextTurn();
   controller.abort();
 
-  assert.deepEqual(await pending, { status: "aborted" });
+  assert.deepEqual(await pending, { status: "delivery_ambiguous", reason: "aborted" });
   assert.equal(first.producer.disconnectCalls, 1);
   assert.equal(adapter.snapshot().state, "degraded");
+  assert.equal(telemetry.attempts.at(-1)?.outcome, "cancelled");
   assert.deepEqual(await adapter.connect(), { status: "completed" });
   assert.equal(second.producer.connectCalls, 1);
+  publish.resolve(undefined);
+  assert.deepEqual(await adapter.close(), { status: "completed" });
+});
+
+test("an accepted publish timeout is delivery-ambiguous", async () => {
+  const telemetry = new RecordingTelemetry();
+  const first = new FakeBundle();
+  const second = new FakeBundle();
+  const publish = deferred<undefined>();
+  first.producer.publishHandler = () => publish.promise;
+  const bundles = [first, second];
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(telemetry, { operationTimeoutMs: 20 }),
+    () => bundles.shift() as FakeBundle,
+  );
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
+
+  assert.deepEqual(
+    await adapter.publish({
+      topic: "aster.probe",
+      key: Uint8Array.from([1]),
+      value: Uint8Array.from([2]),
+    }),
+    { status: "delivery_ambiguous", reason: "timed_out" },
+  );
+  assert.equal(first.producer.disconnectCalls, 1);
+  assert.equal(adapter.snapshot().state, "degraded");
+  assert.equal(telemetry.attempts.at(-1)?.outcome, "timeout");
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
   publish.resolve(undefined);
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
