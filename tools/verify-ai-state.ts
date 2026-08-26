@@ -512,9 +512,10 @@ function validateHandoff(
       });
     }
   }
-  if (targetRequirement && !normalizedSource.includes(targetRequirement)) {
+  const resumePoint = sectionBody(normalizedSource, "Resume point") ?? "";
+  if (targetRequirement && !resumePoint.includes(targetRequirement)) {
     addViolation(violations, {
-      detail: `handoff must identify ${targetRequirement}`,
+      detail: `handoff Resume point must identify ${targetRequirement}`,
       file,
       line: 1,
       rule: "resume-target",

@@ -3,10 +3,10 @@ ASTER PHASE 00 REPOSITORY MEMORY WORKFLOW EVIDENCE
 
 Work item: P00-R08 executable repository-memory workflow
 Evidence date: 2026-08-26
-Commit: local candidate tree; hosted pull-request result is recorded before final acceptance
+Initial implementation commit: 460a497
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 Runtime: Node.js 24.19.0; pnpm 11.24.0; Turborepo 2.10.12
-Acceptance: PASS_LOCAL
+Acceptance: PASS_HOSTED
 
 IMPLEMENTED CONTRACT
 --------------------
@@ -36,19 +36,19 @@ result: PASS
 files: 10
 queue items: 13
 session entries: 12
-active requirement: P00-R08
-target requirement: P00-R08
+active requirement: none
+target requirement: P00-R09
 violations: 0
-elapsed: 0.48 seconds
-maximum resident set observed: 141564 KiB
+elapsed: 0.57 seconds
+maximum resident set observed: 142548 KiB
 
 $ pnpm ai:test
 result: PASS
 tests: 10 passed, 0 failed
-elapsed: 1.74 seconds
-maximum resident set observed: 142068 KiB
+elapsed: 0.65 seconds
+maximum resident set observed: 142408 KiB
 
-Adverse fixtures cover missing and oversized memory, canonical idle state, unknown and duplicate queue state, multiple active items, completed/missing/forward blockers, requirement and phase drift, missing plan sections, stale current-state and handoff targets, session regression, missing session evidence, malformed UTF-8, symbolic files, and deterministic diagnostics.
+Adverse fixtures use fixed synthetic active and idle baselines independent of the checked-in work item. They cover missing and oversized memory, unknown and duplicate queue state, multiple active items, completed/missing/forward blockers, requirement and phase drift, missing plan sections, stale current-state and handoff Resume point targets, session regression, missing session evidence, malformed UTF-8, symbolic files, and deterministic diagnostics.
 
 NORMAL WORKFLOW INTEGRATION
 ---------------------------
@@ -60,6 +60,23 @@ Root scripts:
 - check:source remains focused on executable source because the dependency-free governance path owns repository memory.
 
 Turborepo registers ai:check and ai:test with .ai and validator inputs. The CI Documentation and security job runs the actual repository-memory check before documentation and includes the adverse tests in its dependency-free test process. The CI-policy validator rejects removal of either command; one additional adverse policy test proves that failure.
+
+FIRST HOSTED PULL-REQUEST RESULT
+--------------------------------
+
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/3
+- Workflow run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32939956932
+- Event: pull_request
+- Head commit: 460a497
+- Classify change: success, 8 seconds
+- Documentation and security: success, 6 seconds
+- Install and source quality: success, 22 seconds
+- Dependency review: success, 5 seconds
+- CI required: success, 3 seconds
+
+The hosted governance job executed the repository-memory check and all dependency-free adverse tests from the public branch. The workflow selected the complete source path because executable tooling and configuration changed. The final state-only commit remains subject to the same protected aggregate check before merge.
+
+Automated review of the initial commit identified tests coupled to P00-R08 and a handoff check that searched outside the Resume point section. The final candidate uses synthetic active and idle fixtures and restricts the handoff target check to Resume point. Its adverse target test leaves the correct requirement in the introduction while directing Resume point elsewhere, proving that the stale instruction is rejected.
 
 DEPENDENCY-FREE GOVERNANCE PATH
 -------------------------------
@@ -76,7 +93,7 @@ result: PASS
 checks: 5 actual repository checks, 0 violations or findings
 tests: 48 passed, 0 failed
 elapsed: 0.87 seconds
-maximum resident set observed: 91576 KiB
+maximum resident set observed: 90992 KiB
 
 COMPLETE LOCAL GATE
 -------------------
@@ -86,14 +103,14 @@ $ pnpm exec turbo run toolchain:check toolchain:test typecheck lint format:check
 result: PASS
 tasks: 20 of 20, 0 cached
 focused built-in tests: 73 passed, 0 failed
-Turbo task duration: 6.158 seconds
-wrapper elapsed: 6.59 seconds
-maximum resident set observed: 441764 KiB
+Turbo task duration: 5.404 seconds
+wrapper elapsed: 5.85 seconds
+maximum resident set observed: 449264 KiB
 
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities found
-elapsed: 0.75 seconds
-maximum resident set observed: 149516 KiB
+elapsed: 1.03 seconds
+maximum resident set observed: 150744 KiB
 
 DOCUMENTATION, WORKFLOW, AND HOST HEALTH
 ----------------------------------------
@@ -101,7 +118,7 @@ DOCUMENTATION, WORKFLOW, AND HOST HEALTH
 Documentation validation:
 - result: PASS, 0 violations;
 - documents: 129;
-- headings: 1804;
+- headings: 1790;
 - local links: 271;
 - evidence-supported status claims: 3.
 
@@ -130,5 +147,5 @@ BOUNDARIES AND LIMITATIONS
 - The validator does not rewrite .ai files, inspect private conversation history, or make Git history authoritative over the checked-in state.
 - Append-only session behavior remains a review convention because the deterministic local check receives one tree, not a trusted base revision.
 - The fast pre-commit hook remains staged-file formatting, linting, and redacting secret scanning only; repository-memory validation belongs to explicit local and CI gates.
-- Hosted workflow execution remains pending for this candidate branch.
+- The first hosted pull-request workflow passed; the required check remains authoritative for the final state-only commit and merge.
 - P00-R10 repeats the complete gate from a clean public checkout.

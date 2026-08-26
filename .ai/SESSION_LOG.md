@@ -2,24 +2,27 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Executable repository-memory workflow in progress
+## 2026-08-26 — Executable repository-memory workflow
 
 ### Completed
 
 - Added a dependency-free bounded validator for the ten durable `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and reverse-chronological session structure.
 - Added 10 focused tests for valid active and idle state plus missing, oversized, malformed, stale, duplicate, conflicting, invalid-UTF-8, and symbolic inputs.
+- Replaced checked-in work-item-derived fixtures with fixed synthetic active and idle baselines and restricted handoff target validation to the `Resume point` section after automated review.
 - Integrated `ai:check` and `ai:test` into the root Turbo graph, dependency-free CI governance job, CI-policy enforcement, repository-memory documentation, and Phase 00 evidence.
 - Preserved the lightweight staged hook and kept semantic truth and cross-revision append-only review outside the static gate.
+- Verified the new governance path in public pull request 3 with complete source quality, dependency review, and the stable aggregate check.
 
 ### Evidence
 
 - Passed the actual ten-file state scan, 10 focused tests, 48 dependency-free governance tests, the forced twenty-task graph with 73 focused tests, actionlint `1.7.12`, and high-severity dependency audit.
-- Measured the focused check at `0.48` seconds, focused tests at `1.74` seconds, dependency-free governance path at `0.87` seconds, and forced graph wrapper at `6.59` seconds in the recorded environment.
+- Measured the focused check at `0.57` seconds, focused tests at `0.65` seconds, dependency-free governance path at `0.87` seconds, and forced graph wrapper at `5.85` seconds in the recorded environment.
 - Raw evidence: `evidence/phase-00/ai-state-workflow.txt`.
+- Hosted run `32939956932`: success across every applicable job.
 
 ### Next action
 
-Run the change through the protected P00-R08 pull-request path and record the hosted result before closing the requirement.
+Execute P00-R09 by documenting exact bootstrap, check, demonstration, and cleanup commands without claiming future application commands are implemented.
 
 ## 2026-08-26 — Public repository governance
 

@@ -38,6 +38,7 @@ Status: **IN_PROGRESS**
 - The first protected pull-request workflow passed its classification, documentation/security, full source-quality, dependency-review, and stable aggregate jobs.
 - A dependency-free repository-memory validator checks ten bounded `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and session structure; 10 focused tests and the twenty-task local graph pass.
 - `ai:check` and `ai:test` are integrated into the root gate and the always-applicable dependency-free CI governance path; CI policy rejects removal of either command.
+- The first public P00-R08 pull-request run passed repository-memory validation, documentation/security, complete source quality, dependency review, and the stable aggregate check.
 
 ## Not implemented
 
@@ -51,7 +52,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Run the P00-R08 repository-memory change through the protected pull-request workflow and close it only after the hosted governance and aggregate checks pass.
+Document exact bootstrap, check, demonstration, and cleanup commands for P00-R09, preserving the current split between implemented foundation commands and planned application commands.
 
 ## Current risks
 

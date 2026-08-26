@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, rm, symlink, unlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
@@ -10,11 +10,143 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const inactiveChangePlan =
   "# Active Change Plan\n\nNo work item is active. Select the first `READY` item from `.ai/WORK_QUEUE.md` before beginning the next change.\n";
 
-async function actualSources(): Promise<Map<string, string>> {
+function canonicalSources(active = true): Map<string, string> {
   const sources = new Map<string, string>();
   for (const file of AI_STATE_FILES) {
-    sources.set(file, await readFile(resolve(repositoryRoot, file), "utf8"));
+    sources.set(file, `# ${file}\n`);
   }
+  sources.set(
+    ".ai/WORK_QUEUE.md",
+    [
+      "# Work Queue",
+      "",
+      "Only one item may be `IN_PROGRESS`.",
+      "",
+      "| Order | Work item | Requirement | Status |",
+      "|---:|---|---|---|",
+      "| 1 | Completed foundation | P00-R01 | DONE |",
+      `| 2 | Current foundation | P00-R02 | ${active ? "IN_PROGRESS" : "READY"} |`,
+      "| 3 | Next foundation | P00-R03 | READY |",
+      "| 4 | Close foundation | P00-R04 | BLOCKED_BY_2_3 |",
+      "",
+    ].join("\n"),
+  );
+  sources.set(
+    ".ai/CHANGE_PLAN.md",
+    active
+      ? [
+          "# Work Item: Validate fixture state",
+          "",
+          "- Status: IN_PROGRESS",
+          "- Owner: Repository governance",
+          "- Phase: 00",
+          "- Requirement IDs: P00-R02",
+          "- Created: 2026-08-26",
+          "- Updated: 2026-08-26",
+          "",
+          "## Outcome",
+          "Fixture outcome.",
+          "## Current behavior",
+          "Fixture current behavior.",
+          "## Proposed behavior",
+          "Fixture proposed behavior.",
+          "## Boundaries",
+          "- Fixture boundary.",
+          "## Invariants",
+          "- Fixture invariant.",
+          "## Failure behavior",
+          "| Failure | Expected behavior | Telemetry |",
+          "|---|---|---|",
+          "| Fixture | Fail | Diagnostic |",
+          "## Data and contracts",
+          "- None.",
+          "## Security and privacy",
+          "- Fixture input only.",
+          "## Implementation steps",
+          "1. Validate.",
+          "## Tests",
+          "- Fixture test.",
+          "## Evidence",
+          "- Fixture evidence.",
+          "## Rollback or recovery",
+          "Restore the fixture.",
+          "## Documentation updates",
+          "- Fixture documentation.",
+          "## Completion checklist",
+          "- [ ] Fixture complete",
+          "",
+        ].join("\n")
+      : inactiveChangePlan,
+  );
+  sources.set(
+    ".ai/CURRENT_STATE.md",
+    [
+      "# Current State",
+      "",
+      "Last updated: 2026-08-26",
+      "",
+      "## Active phase",
+      "",
+      "**Phase 00 — Foundation**",
+      "",
+      "## Verified",
+      "",
+      "- Fixture baseline.",
+      "",
+      "## Not implemented",
+      "",
+      "- Fixture application.",
+      "",
+      "## Next outcome",
+      "",
+      "Execute P00-R02 fixture validation.",
+      "",
+      "## Current risks",
+      "",
+      "- Fixture risk.",
+      "",
+    ].join("\n"),
+  );
+  sources.set(
+    ".ai/HANDOFF.md",
+    [
+      "# Handoff",
+      "",
+      "Continue P00-R02 fixture validation.",
+      "",
+      "## Resume point",
+      "",
+      "1. Continue P00-R02 fixture validation.",
+      "",
+      "## Do not do yet",
+      "",
+      "- Do not broaden the fixture.",
+      "",
+    ].join("\n"),
+  );
+  sources.set(
+    ".ai/SESSION_LOG.md",
+    [
+      "# Session Log",
+      "",
+      "Append new entries at the top.",
+      "",
+      "## 2026-08-26 — Fixture entry",
+      "",
+      "### Completed",
+      "",
+      "- Fixture work.",
+      "",
+      "### Evidence",
+      "",
+      "- Fixture evidence.",
+      "",
+      "### Next action",
+      "",
+      "Continue P00-R02.",
+      "",
+    ].join("\n"),
+  );
   return sources;
 }
 
@@ -30,7 +162,7 @@ function replaceRequired(source: string, search: string, replacement: string): s
 }
 
 async function writeFixture(root: string): Promise<void> {
-  for (const [file, source] of await actualSources()) {
+  for (const [file, source] of canonicalSources()) {
     const path = resolve(root, file);
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, source, "utf8");
@@ -41,27 +173,16 @@ test("the checked-in repository memory passes", async () => {
   const report = await scanAiState(repositoryRoot);
   assert.equal(report.status, "ok");
   assert.equal(report.files, AI_STATE_FILES.length);
-  assert.equal(report.activeRequirement, "P00-R08");
   assert.deepEqual(report.violations, []);
 });
 
-test("accepts the canonical idle plan with the first ready resume target", async () => {
-  const sources = await actualSources();
-  const queueFile = ".ai/WORK_QUEUE.md";
-  sources.set(
-    queueFile,
-    replaceRequired(
-      requiredSource(sources, queueFile),
-      "| 11 | Integrate `.ai/` state checks into the normal contribution workflow | P00-R08 | IN_PROGRESS |",
-      "| 11 | Integrate `.ai/` state checks into the normal contribution workflow | P00-R08 | READY |",
-    ),
-  );
-  sources.set(".ai/CHANGE_PLAN.md", inactiveChangePlan);
-  assert.deepEqual(validateAiStateSources(sources), []);
+test("accepts canonical active and idle repository memory", () => {
+  assert.deepEqual(validateAiStateSources(canonicalSources(true)), []);
+  assert.deepEqual(validateAiStateSources(canonicalSources(false)), []);
 });
 
-test("rejects missing and oversized repository memory", async () => {
-  const sources = await actualSources();
+test("rejects missing and oversized repository memory", () => {
+  const sources = canonicalSources();
   sources.delete(".ai/CONTEXT.md");
   sources.set(".ai/PROMPTS.md", "x".repeat(1_000_001));
   const rules = validateAiStateSources(sources).map(({ rule }) => rule);
@@ -69,39 +190,39 @@ test("rejects missing and oversized repository memory", async () => {
   assert.ok(rules.includes("bounds"));
 });
 
-test("rejects unknown, duplicate, and multiple active queue states", async () => {
-  const sources = await actualSources();
+test("rejects unknown, duplicate, and multiple active queue states", () => {
+  const sources = canonicalSources();
   const file = ".ai/WORK_QUEUE.md";
   const queue = requiredSource(sources, file)
     .replace(
-      "| 12 | Document exact bootstrap, check, demo, and cleanup commands | P00-R09 | READY |",
-      "| 11 | Document exact bootstrap, check, demo, and cleanup commands | P00-R09 | IN_PROGRESS |",
+      "| 3 | Next foundation | P00-R03 | READY |",
+      "| 2 | Next foundation | P00-R03 | IN_PROGRESS |",
     )
-    .replace("| P00-R10 | BLOCKED_BY_11_12 |", "| P00-R10 | UNKNOWN | ");
+    .replace("| P00-R04 | BLOCKED_BY_2_3 |", "| P00-R04 | UNKNOWN | ");
   sources.set(file, queue);
   const rules = validateAiStateSources(sources).map(({ rule }) => rule);
   assert.ok(rules.includes("queue"));
   assert.ok(rules.includes("queue-state"));
 });
 
-test("rejects completed, missing, and forward blocker references", async () => {
-  const sources = await actualSources();
+test("rejects completed, missing, and forward blocker references", () => {
+  const sources = canonicalSources();
   const file = ".ai/WORK_QUEUE.md";
   sources.set(
     file,
-    replaceRequired(requiredSource(sources, file), "BLOCKED_BY_11_12", "BLOCKED_BY_10_14"),
+    replaceRequired(requiredSource(sources, file), "BLOCKED_BY_2_3", "BLOCKED_BY_1_5"),
   );
   const blockers = validateAiStateSources(sources).filter(({ rule }) => rule === "queue-blocker");
   assert.equal(blockers.length, 2);
 });
 
-test("rejects a mismatched or incomplete active change plan", async () => {
-  const sources = await actualSources();
+test("rejects a mismatched or incomplete active change plan", () => {
+  const sources = canonicalSources();
   const file = ".ai/CHANGE_PLAN.md";
   sources.set(
     file,
     requiredSource(sources, file)
-      .replace("- Requirement IDs: P00-R08", "- Requirement IDs: P00-R09")
+      .replace("- Requirement IDs: P00-R02", "- Requirement IDs: P00-R03")
       .replace("- Phase: 00", "- Phase: 01")
       .replace("## Tests", "## Verification"),
   );
@@ -109,30 +230,51 @@ test("rejects a mismatched or incomplete active change plan", async () => {
   assert.equal(planViolations.length, 3);
 });
 
-test("rejects stale current-state and handoff resume targets", async () => {
-  const sources = await actualSources();
+test("rejects stale current-state and handoff resume targets", () => {
+  const sources = canonicalSources();
   const currentFile = ".ai/CURRENT_STATE.md";
   sources.set(
     currentFile,
     replaceRequired(
       requiredSource(sources, currentFile),
-      "Run the P00-R08 repository-memory change through the protected pull-request workflow and close it only after the hosted governance and aggregate checks pass.",
+      "Execute P00-R02 fixture validation.",
       "Continue the current work without an explicit requirement.",
     ),
   );
   const handoffFile = ".ai/HANDOFF.md";
-  sources.set(handoffFile, requiredSource(sources, handoffFile).replaceAll("P00-R08", "P00-R09"));
+  sources.set(
+    handoffFile,
+    replaceRequired(
+      requiredSource(sources, handoffFile),
+      "1. Continue P00-R02 fixture validation.",
+      "1. Continue P00-R03 instead.",
+    ),
+  );
   const targets = validateAiStateSources(sources).filter(({ rule }) => rule === "resume-target");
   assert.equal(targets.length, 2);
 });
 
-test("rejects session regression and missing entry evidence", async () => {
-  const sources = await actualSources();
+test("rejects session regression and missing entry evidence", () => {
+  const sources = canonicalSources();
   const file = ".ai/SESSION_LOG.md";
   sources.set(
     file,
     requiredSource(sources, file)
-      .replace("## 2026-08-26", "## 2026-08-24")
+      .replace(
+        "Append new entries at the top.",
+        [
+          "Append new entries at the top.",
+          "",
+          "## 2026-08-24 — Older entry in the wrong position",
+          "",
+          "### Completed",
+          "- Older work.",
+          "### Evidence",
+          "- Older evidence.",
+          "### Next action",
+          "- Continue.",
+        ].join("\n"),
+      )
       .replace("### Evidence", "### Notes"),
   );
   const sessions = validateAiStateSources(sources).filter(({ rule }) => rule === "session-log");
@@ -158,8 +300,8 @@ test("rejects malformed UTF-8 and symbolic repository memory files", async (cont
   assert.ok((await scanAiState(symbolicRoot)).violations.some(({ rule }) => rule === "input"));
 });
 
-test("emits deterministic sorted diagnostics", async () => {
-  const sources = await actualSources();
+test("emits deterministic sorted diagnostics", () => {
+  const sources = canonicalSources();
   sources.delete(".ai/CURRENT_STATE.md");
   sources.delete(".ai/HANDOFF.md");
   const violations = validateAiStateSources(sources);
