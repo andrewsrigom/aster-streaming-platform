@@ -231,6 +231,42 @@ test("rejects malformed and oversized JSON before GraphQL middleware", async (co
   assert.equal(malformed.status, 400);
   assert.deepEqual(await responsePayload(malformed), { error: { code: "INVALID_JSON_BODY" } });
 
+  const emptyWithoutLength = await withTestDeadline(
+    new Promise<{ readonly body: string; readonly status: number }>((resolve, reject) => {
+      const target = new URL(`${url}/graphql`);
+      const request = createClientRequest(
+        {
+          hostname: target.hostname,
+          port: target.port,
+          path: target.pathname,
+          method: "POST",
+          headers: {
+            host: target.host,
+            "content-type": "application/json",
+          },
+          setDefaultHeaders: false,
+        },
+        (response) => {
+          const chunks: Buffer[] = [];
+          response.on("data", (chunk: Buffer) => chunks.push(chunk));
+          response.once("error", reject);
+          response.once("end", () => {
+            resolve({
+              body: Buffer.concat(chunks).toString("utf8"),
+              status: response.statusCode ?? 0,
+            });
+          });
+        },
+      );
+      request.once("error", reject);
+      request.end();
+    }),
+  );
+  assert.equal(emptyWithoutLength.status, 400);
+  assert.deepEqual(JSON.parse(emptyWithoutLength.body) as unknown, {
+    error: { code: "INVALID_JSON_BODY" },
+  });
+
   const wrongContentType = await fetch(`${url}/graphql`, {
     method: "POST",
     headers: { "content-type": "text/plain" },

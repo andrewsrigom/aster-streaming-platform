@@ -37,6 +37,8 @@ Append new entries at the top. Keep entries factual and concise.
 - Follow-up independent review comment `3863364289` identified the malformed `application/json; charset` boundary. The local remediation replaces lenient Node.js MIME parsing with strict exact-pinned `content-type@1.0.5`, retains duplicate rejection, adds the stable `415` regression, and passes 31 of 31 uncached local tasks in `13.514` seconds.
 - Strict-media candidate `87127cf` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383` seconds, audit, secret scan, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and discussion `PRRT_kwDOUEkeis6ce5OP` is resolved.
 - Follow-up independent review comment `3863476696` found corrupt compressed request bytes could produce a client-triggered `500`. The local remediation disables request inflation, makes every non-identity encoding a stable pre-decompression `415`, adds the corrupt-gzip regression, and passes 31 of 31 uncached local tasks in `16.588` seconds.
+- Uncompressed-request candidate `18d7f27` passed frozen install from an empty public clone, eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.415` seconds, audit, secret scan, and clean Git; protected run `32978001392` passed. Evidence reply `3863519812` is posted and discussion `PRRT_kwDOUEkeis6cfLsL` is resolved.
+- Follow-up independent review comment `3863619265` found an unframed empty `POST` could reach Apollo without a parsed body. The local remediation adds a post-parser presence gate and a deadline-bounded real Node.js request with default length headers disabled; it returns stable `400` before GraphQL, and the complete local graph passes 31 of 31 forced tasks in `18.24` seconds.
 
 ### Evidence
 
@@ -58,13 +60,15 @@ Append new entries at the top. Keep entries factual and concise.
 - Follow-up review: actionable comment `3863364289`; strict-media-type remediation pending commit.
 - Strict-media remediation: `87127cf5370f8bf111d2dd3d899422baef146b12`; clean checkout 31 tasks in `18.383s`; protected run `32976909222`; resolved reply `3863420489`.
 - Follow-up review: actionable comment `3863476696`; uncompressed-request remediation pending commit.
+- Uncompressed-request remediation: `18d7f2768a43e22e1d4513267f850a64584eaa10`; clean checkout 31 tasks in `17.415s`; protected run `32978001392`; resolved reply `3863519812`.
+- Follow-up review: actionable comment `3863619265`; empty-body remediation passes the complete local graph in `18.24s` and is pending commit.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Run and publish the uncompressed-request remediation, close comment `3863476696`, and request final independent review at the new head.
+Run and publish the empty-body remediation, close comment `3863619265`, and request final independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 

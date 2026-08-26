@@ -29,8 +29,9 @@ The adapter exposes a Node.js `RequestListener` and a one-time GraphQL middlewar
 4. require uncompressed UTF-8 `application/json` with unambiguous valid parameters for `POST` requests;
 5. parse strict JSON with a 64 KiB default and a reviewed 256 KiB hard maximum;
 6. classify only parser-originated malformed or oversized failures;
-7. invoke the supplied GraphQL middleware;
-8. return stable JSON for unmatched routes and sanitize every unhandled error.
+7. reject a `POST` whose parser produced no body;
+8. invoke the supplied GraphQL middleware;
+9. return stable JSON for unmatched routes and sanitize every unhandled error.
 
 Apollo's HTTP drain plugin owns Apollo-to-HTTP drain compatibility. P01-R05 owns process signals, readiness transitions, generalized in-flight tracking, dependency closure, the overall shutdown deadline, and forced termination behavior. There is one future lifecycle coordinator, not competing transport shutdown mechanisms.
 

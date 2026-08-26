@@ -106,6 +106,7 @@ Status: **IN_PROGRESS**
 - Duplicate-charset candidate `6b8e1c2` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `27.046` seconds, audit, secret scan, and clean Git; protected run `32974480044` passed. Evidence reply `3863199830` is posted and the fourth discussion is resolved. Review comment `3863261260` then found the direct diagnostic request lacked its own deadline. The local remediation attaches a two-second abort deadline through response consumption, clears the timer in `finally`, and passes 31 of 31 uncached local tasks in `15.235` seconds.
 - Diagnostic-deadline candidate `c2596d2` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.406` seconds, audit, secret scan, and clean Git; protected run `32975500067` passed. Evidence reply `3863295674` is posted and the fifth discussion is resolved. Review comment `3863364289` then identified malformed media-type parameters. The local remediation uses exact-pinned strict `content-type@1.0.5`, retains duplicate rejection, adds an `application/json; charset` regression that returns `415` before GraphQL, and passes 31 of 31 uncached local tasks in `13.514` seconds.
 - Strict-media candidate `87127cf` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `18.383` seconds, audit, secret scan, and clean Git; protected run `32976909222` passed. Evidence reply `3863420489` is posted and the sixth discussion is resolved. Review comment `3863476696` then found corrupt compressed request bytes could produce a client-triggered `500`. The local remediation disables request inflation, makes every non-identity content encoding a stable pre-decompression `415`, adds a corrupt-gzip regression, and passes 31 of 31 uncached local tasks in `16.588` seconds.
+- Uncompressed-request candidate `18d7f27` passed an exact empty public clone with eight focused tests, the diagnostic, 31 of 31 forced tasks in `17.415` seconds, audit, secret scan, and clean Git; protected run `32978001392` passed. Evidence reply `3863519812` is posted and the seventh discussion is resolved. Review comment `3863619265` then found an unframed empty `POST` could reach Apollo with no parsed body. The local remediation adds a post-parser presence gate and a deadline-bounded real Node.js request with default length headers disabled; it returns stable `400` before GraphQL, and the complete local graph passes 31 of 31 forced tasks in `18.24` seconds.
 
 ## Not implemented
 
@@ -120,7 +121,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Verify the uncompressed-request remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
+Verify the empty-body remediation through the complete local graph, clean public checkout, protected CI, and review closeout, then close P01-R11 without adding a product service or lifecycle implementation early.
 
 ## Current risks
 

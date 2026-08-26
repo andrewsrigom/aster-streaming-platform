@@ -204,6 +204,18 @@ const jsonParserErrorHandler: ErrorRequestHandler = (
   writeError(response, 500, "INTERNAL_HTTP_ERROR");
 };
 
+const requireParsedJsonBody: RequestHandler = (
+  request: Request,
+  response: Response,
+  next: NextFunction,
+): void => {
+  if (request.method === "POST" && request.body === undefined) {
+    writeError(response, 400, "INVALID_JSON_BODY");
+    return;
+  }
+  next();
+};
+
 const notFoundHandler: RequestHandler = (_request: Request, response: Response): void => {
   writeError(response, 404, "HTTP_NOT_FOUND");
 };
@@ -339,6 +351,7 @@ export function createExpressHttpAdapter(
           type: "application/json",
         }),
         jsonParserErrorHandler,
+        requireParsedJsonBody,
         middleware,
       );
       application.use(notFoundHandler);
