@@ -14,11 +14,14 @@ Append new entries at the top. Keep entries factual and concise.
 
 - Broker typecheck/build, 17 of 17 focused tests, refused-loopback diagnostic, ESLint, Prettier, Knip, architecture validation, vendor-free declarations, exact MIT dependency inventory, high-severity audit, and finite stalled-work shutdown pass.
 - `pnpm check:changed` passes 46 of 46 selected tasks, 32 cached, in `13.832` seconds of Turborepo time and `14.91` seconds elapsed.
+- Commit `a932822` records the broker checkpoint. The first stabilized complete graph passes 46 of 46 tasks uncached in `29.021` seconds of Turborepo time and `30.09` seconds elapsed.
+- An exact no-local checkout of `a932822` installed 329 packages entirely from the offline content-addressed store in `1.44` seconds, then exposed a real cold-state ordering defect: 45 of 46 uncached tasks passed, while root type-aware lint began before telemetry declarations existed.
+- The remediation separates public `pnpm lint` from the internal workspace lint task, prepares telemetry declarations for the public command, and makes the integrated lint task depend explicitly on the telemetry build. The 20-test toolchain suite, direct lint, and repeated affected graph pass; the latter completed 46 of 46 tasks with 24 cached in `15.802` seconds of Turborepo time and `16.92` seconds elapsed.
 - Raw comparison and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
 
 ### Next action
 
-Commit the broker checkpoint, then run the stabilized complete graph and clean-checkout proof for P01-R07.
+Commit the lint-order remediation, then repeat the exact clean-checkout proof for P01-R07 before initial review.
 
 ## 2026-08-26 — Implemented bounded S3-compatible storage candidate
 

@@ -36,7 +36,8 @@
     "//#typecheck": {
       "inputs": ["tools/**/*.ts", "tsconfig.json", "tsconfig.base.json", "package.json"]
     },
-    "//#lint": {
+    "//#lint:workspace": {
+      "dependsOn": ["@aster/telemetry#build"],
       "inputs": [
         "apps/**",
         "eslint.config.mjs",

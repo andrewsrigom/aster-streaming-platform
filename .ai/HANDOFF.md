@@ -6,12 +6,14 @@ P01-R06 was squash-merged through pull request 13 as `8dff9d8d57572b2eac944ae984
 
 P01-R07 is active on `feat/p01-r07-platform-adapters` from exact clean released head `8dff9d8`. Its owner is shared runtime and dependency-adapter infrastructure; no product bounded context or durable data owner changes. The active plan defines dependency-free system/fake clock and ID contracts followed by separate PostgreSQL, Redis, S3, and broker packages. Every vendor dependency stays behind repository-owned types with finite deadlines/capacity, caller cancellation, stable sanitized failures, telemetry, idempotent close, focused iteration gates, and an independent removal path.
 
-The Kafka decision remains deliberately two-stage. Clock/ID commit `2309f94`, PostgreSQL commit `1ded757`, Redis commit `f507c77`, and S3 commit `353646e` are coherent checkpoints. The local broker candidate selects provisional `kafkajs@2.2.4` after the current Confluent client exceeded the ten-second lifecycle budget in an isolated unavailable-broker spike. The repository-owned adapter provides bounded connect/metadata/keyed publish, one sequential at-least-once consumer, finite retries/capacity, telemetry, destructive ambiguous-generation recovery, and ordered lifecycle hooks with 17 focused tests passing. P01-R09 must confirm every real dependency and replace KafkaJS before Phase 01 closeout if real-broker lifecycle or compatibility fails.
+The Kafka decision remains deliberately two-stage. Clock/ID commit `2309f94`, PostgreSQL commit `1ded757`, Redis commit `f507c77`, S3 commit `353646e`, and Kafka commit `a932822` are coherent checkpoints. The broker selects provisional `kafkajs@2.2.4` after the current Confluent client exceeded the ten-second lifecycle budget in an isolated unavailable-broker spike. The repository-owned adapter provides bounded connect/metadata/keyed publish, one sequential at-least-once consumer, finite retries/capacity, telemetry, destructive ambiguous-generation recovery, and ordered lifecycle hooks with 17 focused tests passing. P01-R09 must confirm every real dependency and replace KafkaJS before Phase 01 closeout if real-broker lifecycle or compatibility fails.
+
+The first exact no-local checkout at `a932822` reused all 329 packages and passed 45 of 46 uncached tasks, but root type-aware lint raced the missing telemetry declaration build. The active remediation makes `pnpm lint` prepare that declaration and makes the internal gate task explicitly depend on the telemetry build. Its toolchain suite, direct lint, and 46-of-46 affected graph pass; a new immutable clean checkout remains required.
 
 ## Resume point
 
-1. Commit the broker package, lockfile, documentation, memory, and evidence as one coherent checkpoint; its affected gate passes 46 of 46 tasks.
-2. Run the first forced complete graph and exact clean-checkout proof now that all P01-R07 packages are stable, then perform the bounded initial review.
+1. Commit the lint/build ordering remediation and its evidence as one coherent checkpoint.
+2. Repeat the exact clean-checkout proof at that immutable remediation head, then perform the bounded initial review.
 3. Keep every real-container interoperability claim for P01-R09; do not publish, merge, or release P01-R07 until its complete gate, review, protected CI, and closeout evidence pass.
 
 ## Do not do yet
