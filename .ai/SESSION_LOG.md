@@ -2,6 +2,25 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Public repository governance in progress
+
+### Completed
+
+- Verified the active GitHub identity and exact target absence, then created the authorized public repository from the reviewed local `main` history without starter files.
+- Observed the first hosted `CI` workflow succeed and confirmed GitHub recognizes the public issue and pull-request templates and initial dependency graph.
+- Enabled and queried squash-only merging, branch cleanup, read-only Actions defaults, immutable action SHA enforcement, vulnerability alerts and fixes, Dependabot security updates, secret scanning with push protection, and private vulnerability reporting.
+- Added the active no-bypass `Protect main` ruleset with pull-request, strict aggregate check, review-thread, linear-history, non-fast-forward, and deletion controls.
+
+### Evidence
+
+- Initial hosted run: `32936909301`, success on published commit `4bb0ad47269f5ae9616a0363a599afa655e42ce9`.
+- Active ruleset: `21535199`; required check `CI required` from GitHub Actions application `15368`.
+- Raw redacted evidence: `evidence/phase-00/public-repository-governance.txt`.
+
+### Next action
+
+Run this governance branch through the protected pull-request workflow, record the dependency-review result, and close P00-R07 only after the required check passes.
+
 ## 2026-08-26 — Public contribution governance
 
 ### Completed

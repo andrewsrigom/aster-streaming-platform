@@ -95,6 +95,11 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`tools/verify-toolchain.mjs`](../../tools/verify-toolchain.mjs) — Dependency-Free Toolchain Guard
 - [`tools/verify-toolchain.test.mjs`](../../tools/verify-toolchain.test.mjs) — Toolchain Guard Tests
 
+## evidence/phase-00
+
+- [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
+- [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
+
 ## docs/00-start-here
 
 - [`docs/00-start-here/BASELINE_VALIDATION.md`](BASELINE_VALIDATION.md) — Baseline Validation

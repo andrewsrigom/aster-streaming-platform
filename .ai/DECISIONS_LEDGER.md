@@ -31,6 +31,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Secret and dependency review | Use a bounded redacting repository scanner locally and in CI, high-severity pnpm audit after frozen install, and GitHub pull-request dependency/license review; add hosted secret protection during remote governance | `evidence/phase-00/ci-security-foundation.txt` |
 | Public contribution surfaces | Use stable Markdown bug, proposal, and pull-request templates plus a blank-issue-disabled chooser; avoid preview issue forms and unverified labels, assignees, or contact channels | `evidence/phase-00/community-governance.txt` |
 | Community contract enforcement | Use a bounded dependency-free validator for exact files, front matter, required topics, MIT contribution terms, separate media rights, and safe vulnerability guidance | `evidence/phase-00/community-governance.txt` |
+| Public repository governance | Publish the reviewed local history to the authorized public repository; use squash-only protected pull requests, a strict stable aggregate check, read-only Actions defaults, automatic branch cleanup, no routine bypass actors, and supported GitHub security controls | `evidence/phase-00/public-repository-governance.txt` |
 
 ## Pending decisions
 
@@ -60,6 +61,6 @@ Pending decisions are resolved only by their owning phase. A work item stops whe
 
 - Source code and project-authored documentation use the MIT License (`MIT`) with the project notice `Aster contributors`.
 - Media assets and third-party materials retain independent licensing terms.
-- GitHub is the selected public code host. The repository owner authorized the planned public target `andrewsrigom/aster-streaming-platform` on 2026-08-25.
-- Remote creation remains planned until the ordered Phase 00 local Git, CI, remote-existence, ruleset, and security checks in `docs/operations/REPOSITORY_GOVERNANCE.md` are ready.
-- `main` will use the pull-request path, a stable required aggregate check, linear squash-merged history, and force-push and deletion protection without requiring unavailable external approval from a single maintainer.
+- GitHub is the selected public code host. The repository owner authorized `andrewsrigom/aster-streaming-platform` on 2026-08-25; the public repository was created and audited on 2026-08-26.
+- `main` uses the pull-request path, the strict stable `CI required` check, linear squash-merged history, non-fast-forward and deletion protection, and no routine bypass actor.
+- External approval is not required while there is only one eligible maintainer; review-thread resolution remains required.

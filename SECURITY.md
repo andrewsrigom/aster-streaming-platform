@@ -8,9 +8,9 @@ Security controls must exist at multiple layers. A client-side restriction is ne
 
 ## Reporting
 
-Do not publish vulnerabilities, exploit details, credentials, personal data, or unrestricted signed media URLs in a public issue or pull request. Until a dedicated private reporting channel exists, retain the minimum report privately and wait for the repository maintainer to publish a verified private channel. Repository maintainers configure and audit GitHub private vulnerability reporting during public-repository governance and before any public deployment.
+Do not publish vulnerabilities, exploit details, credentials, personal data, or unrestricted signed media URLs in a public issue or pull request. Submit the minimum information needed through the repository's [private vulnerability report](https://github.com/andrewsrigom/aster-streaming-platform/security/advisories/new). GitHub private vulnerability reporting is enabled and was verified during public-repository governance.
 
-Public bug and proposal templates redirect security-sensitive reports here. That redirect is implemented locally; private vulnerability reporting remains planned until the public repository setting is enabled and observed.
+Public bug and proposal templates redirect security-sensitive reports here. Do not create a public fallback when the private reporting form is unavailable; retain the report privately and notify the maintainer through a previously trusted channel.
 
 ## Core controls
 
@@ -71,7 +71,7 @@ DataLoader caches must be request-scoped to prevent cross-user data leakage.
 - Generate a software bill of materials for releases.
 - Verify container provenance when the delivery platform supports it.
 
-The Phase 00 repository currently enforces exact lockfile installation, immutable GitHub Action commits, read-only workflow permissions, dependency-change review, high-severity registry audit, and bounded redacting secret scans through the staged hook, local gate, and configured CI workflow. Local verification is recorded in [`evidence/phase-00/ci-security-foundation.txt`](evidence/phase-00/ci-security-foundation.txt). Hosted workflow, secret-scanning, push-protection, and repository-setting results are not claimed until the public remote is created and audited.
+The Phase 00 repository currently enforces exact lockfile installation, immutable GitHub Action commits, read-only workflow permissions, dependency-change review, high-severity registry audit, and bounded redacting secret scans through the staged hook, local gate, and configured CI workflow. Local verification is recorded in [`evidence/phase-00/ci-security-foundation.txt`](evidence/phase-00/ci-security-foundation.txt). The first hosted workflow, secret scanning, push protection, private vulnerability reporting, and repository security settings are verified in [`evidence/phase-00/public-repository-governance.txt`](evidence/phase-00/public-repository-governance.txt).
 
 ## Sensitive data
 

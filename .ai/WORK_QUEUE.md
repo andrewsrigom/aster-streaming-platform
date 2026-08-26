@@ -13,7 +13,7 @@ Only one item may be `IN_PROGRESS`.
 | 7 | Add link, terminology, and unsupported-status-claim validation | P00-R05 | DONE |
 | 8 | Add CI for install integrity, code checks, tests, documentation, secrets, and dependency review | P00-R06 | DONE |
 | 9 | Add public contribution governance and repository templates | P00-R07 | DONE |
-| 10 | Create the authorized public GitHub repository and apply verified protections | P00-R07 | READY |
+| 10 | Create the authorized public GitHub repository and apply verified protections | P00-R07 | IN_PROGRESS |
 | 11 | Integrate `.ai/` state checks into the normal contribution workflow | P00-R08 | READY |
 | 12 | Document exact bootstrap, check, demo, and cleanup commands | P00-R09 | READY |
 | 13 | Verify a clean checkout, capture the Phase 00 evidence index, and close the phase | P00-R10 | BLOCKED_BY_10_11_12 |

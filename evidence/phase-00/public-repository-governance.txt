@@ -1,0 +1,130 @@
+ASTER PHASE 00 PUBLIC REPOSITORY GOVERNANCE EVIDENCE
+====================================================
+
+Work item: P00-R07 public repository creation and protection
+Evidence date: 2026-08-26
+Initial published commit: 4bb0ad47269f5ae9616a0363a599afa655e42ce9
+Repository: https://github.com/andrewsrigom/aster-streaming-platform
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+GitHub CLI: 2.87.3
+Acceptance: PENDING_PROTECTED_PR
+
+AUTHORIZATION AND CREATION PRECONDITIONS
+----------------------------------------
+
+- Repository owner authorization: exact public target andrewsrigom/aster-streaming-platform.
+- Authenticated GitHub login selected before mutation: andrewsrigom.
+- Required repository and workflow scopes were present. Credential values were not captured.
+- Exact target lookup before creation: not found.
+- Local remotes before creation: 0.
+- Local reviewed branch before publication: main at 4bb0ad47269f5ae9616a0363a599afa655e42ce9.
+
+CREATION RESULT
+---------------
+
+- Created from the existing local repository without a starter README, license, ignore file, alternate branch, or generated commit.
+- origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+- visibility: public
+- default branch: main
+- issues: enabled
+- wiki: disabled
+- merge method: squash only
+- squash title/message: pull-request title and body
+- head branch deletion after merge: enabled
+- update branch support: enabled
+
+FIRST HOSTED WORKFLOW
+---------------------
+
+- Workflow: CI
+- Event: push to main
+- Run ID: 32936909301
+- URL: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32936909301
+- Published commit: 4bb0ad47269f5ae9616a0363a599afa655e42ce9
+- Conclusion: success
+- Classify change: success, 5 seconds
+- Documentation and security: success, 7 seconds
+- Install and source quality: success, 22 seconds
+- Dependency review: correctly skipped outside a pull-request event
+- CI required: success, 2 seconds
+- Stable check provider: GitHub Actions application ID 15368
+
+The dependency graph returned a generated software bill of materials with 162 packages and 234 relationships. This count describes the observed initial published commit and is not a permanent dependency target.
+
+PUBLIC CONTRIBUTION SURFACES
+----------------------------
+
+GitHub's repository query recognized both issue templates:
+- Bug report
+- Change proposal
+
+The pull-request template and chooser files were retrievable from the public main branch. Blank contributor issues remain disabled. No public test issue or pull request was created merely to exercise the templates.
+
+REPOSITORY AND ACTIONS SETTINGS
+-------------------------------
+
+- default workflow permissions: read
+- workflows may approve pull requests: false
+- allowed actions: all
+- immutable action SHA pinning required: true
+- merge commits: disabled
+- rebase merges: disabled
+- squash merge: enabled
+- automatic branch deletion: enabled
+- automatic merge: disabled
+- branch update support: enabled
+
+SECURITY SETTINGS
+-----------------
+
+- vulnerability alerts: enabled
+- automated security fixes: enabled
+- Dependabot security updates: enabled
+- secret scanning: enabled
+- secret scanning push protection: enabled
+- private vulnerability reporting: enabled
+- secret-scanning non-provider patterns: disabled and unclaimed
+- secret-scanning validity checks: disabled and unclaimed
+- CodeQL/code scanning: deliberately deferred until representative application source exists
+
+MAIN RULESET
+------------
+
+- ID: 21535199
+- URL: https://github.com/andrewsrigom/aster-streaming-platform/rules/21535199
+- Name: Protect main
+- Status: active
+- Target: default branch
+- Bypass actors: none
+- Deletion protection: enabled
+- Non-fast-forward protection: enabled
+- Linear history: required
+- Pull request: required
+- Allowed merge method: squash
+- Required approvals: 0 because no eligible external reviewer is assumed
+- Stale reviews dismissed: enabled
+- Review-thread resolution: required
+- Required status check: CI required
+- Required check integration ID: 15368
+- Strict required-check policy: enabled
+
+The effective-rules query for main returned the same deletion, non-fast-forward, linear-history, pull-request, and required-status-check controls. No direct-push failure was generated as a destructive demonstration; this governance branch exercises the required pull-request path.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- No token, authentication header, credential value, private email, or private account setting is stored in this artifact.
+- GitHub API and GraphQL results prove configured state and recognized templates; they do not prove every browser-specific rendering detail.
+- Secret scanning does not replace repository-owned redacting scans, credential rotation, dependency review, or later source-specific analysis.
+- The first protected pull-request workflow and hosted dependency-review conclusion remain pending when this initial evidence revision is committed.
+- P00-R10 later repeats the complete gate from a clean public checkout.
+
+OFFICIAL PRIMARY REFERENCES
+---------------------------
+
+- https://cli.github.com/manual/gh_repo_create
+- https://docs.github.com/en/rest/repos/repos
+- https://docs.github.com/en/rest/repos/rules
+- https://docs.github.com/en/rest/actions/permissions
+- https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning
+- https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository
