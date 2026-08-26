@@ -158,13 +158,7 @@ function mapMetrics(resourceMetrics: ResourceMetrics): readonly AsterCollectedMe
 function boundedOperation(
   operation: Promise<void>,
   timeoutMs: number,
-  signal?: AbortSignal,
 ): Promise<AsterTelemetryOperationResult> {
-  if (signal?.aborted === true) {
-    operation.catch(() => undefined);
-    return Promise.resolve(Object.freeze({ status: "aborted" }));
-  }
-
   return new Promise((resolve) => {
     let settled = false;
     const finish = (status: AsterTelemetryOperationResult["status"]): void => {
@@ -173,17 +167,12 @@ function boundedOperation(
       }
       settled = true;
       clearTimeout(timeout);
-      signal?.removeEventListener("abort", onAbort);
       resolve(Object.freeze({ status }));
-    };
-    const onAbort = (): void => {
-      finish("aborted");
     };
     const timeout = setTimeout(() => {
       finish("timed_out");
     }, timeoutMs);
     timeout.unref();
-    signal?.addEventListener("abort", onAbort, { once: true });
     operation.then(
       () => {
         finish("completed");
@@ -192,6 +181,37 @@ function boundedOperation(
         finish("failed");
       },
     );
+  });
+}
+
+function joinOperation(
+  operation: Promise<AsterTelemetryOperationResult>,
+  signal?: AbortSignal,
+): Promise<AsterTelemetryOperationResult> {
+  if (signal === undefined) {
+    return operation;
+  }
+  if (signal.aborted) {
+    return Promise.resolve(Object.freeze({ status: "aborted" }));
+  }
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (result: AsterTelemetryOperationResult): void => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      signal.removeEventListener("abort", onAbort);
+      resolve(result);
+    };
+    const onAbort = (): void => {
+      finish(Object.freeze({ status: "aborted" }));
+    };
+    signal.addEventListener("abort", onAbort, { once: true });
+    void operation.then(finish, () => {
+      finish(Object.freeze({ status: "failed" }));
+    });
   });
 }
 
@@ -546,19 +566,25 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       return Object.freeze({ status: "aborted" });
     }
     if (this.flushOperation !== undefined) {
-      return this.flushOperation;
+      return joinOperation(this.flushOperation, signal);
     }
+    const failuresBeforeFlush = this.exportFailureCount;
     const currentOperation = boundedOperation(
       this.provider.forceFlush({ timeoutMillis: this.shutdownTimeoutMs }),
       this.shutdownTimeoutMs,
-      signal,
-    );
+    ).then((result): AsterTelemetryOperationResult => {
+      if (result.status === "completed" && this.exportFailureCount > failuresBeforeFlush) {
+        return Object.freeze({ status: "failed" });
+      }
+      return result;
+    });
     this.flushOperation = currentOperation;
-    const result = await currentOperation;
-    if (this.flushOperation === currentOperation) {
-      this.flushOperation = undefined;
-    }
-    return result;
+    void currentOperation.then(() => {
+      if (this.flushOperation === currentOperation) {
+        this.flushOperation = undefined;
+      }
+    });
+    return joinOperation(currentOperation, signal);
   }
 
   async shutdown(signal?: AbortSignal): Promise<AsterTelemetryOperationResult> {
@@ -569,7 +595,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       return Object.freeze({ status: "already_completed" });
     }
     if (this.shutdownOperation !== undefined) {
-      return this.shutdownOperation;
+      return joinOperation(this.shutdownOperation, signal);
     }
 
     this.closed = true;
@@ -577,24 +603,19 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     const currentOperation = boundedOperation(
       this.provider.shutdown({ timeoutMillis: this.shutdownTimeoutMs }),
       this.shutdownTimeoutMs,
-      signal,
     );
-    this.shutdownOperation = currentOperation;
-    const result = await currentOperation;
-    this.shutdownResult = result;
-    return result;
+    this.shutdownOperation = currentOperation.then((result) => {
+      this.shutdownResult = result;
+      return result;
+    });
+    return joinOperation(this.shutdownOperation, signal);
   }
 
   lifecycleHooks(): Readonly<{ flushTelemetry(signal: AbortSignal): Promise<void> }> {
     return Object.freeze({
       flushTelemetry: async (signal: AbortSignal): Promise<void> => {
-        const failuresBeforeFlush = this.exportFailureCount;
         const result = await this.forceFlush(signal);
-        const failedDuringFlush = this.exportFailureCount > failuresBeforeFlush;
-        if (
-          (result.status !== "completed" && result.status !== "already_completed") ||
-          failedDuringFlush
-        ) {
+        if (result.status !== "completed" && result.status !== "already_completed") {
           throw new Error("Telemetry flush did not complete.");
         }
       },

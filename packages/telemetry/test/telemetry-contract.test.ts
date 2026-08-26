@@ -295,16 +295,21 @@ test("bounds a stalled OTLP exporter and records export health", async () => {
   }
 
   const started = performance.now();
-  await assert.rejects(
-    telemetry.lifecycleHooks().flushTelemetry(new AbortController().signal),
-    (error: unknown) => {
-      assert.ok(error instanceof Error);
-      assert.equal(error.message, "Telemetry flush did not complete.");
-      assert.equal("cause" in error, false);
-      assert.equal(error.message.includes(String(address.port)), false);
-      return true;
-    },
-  );
+  const ownerFlush = telemetry.forceFlush();
+  const lifecycleFlush = telemetry.lifecycleHooks().flushTelemetry(new AbortController().signal);
+  const joinedController = new AbortController();
+  const joinedFlush = telemetry.forceFlush(joinedController.signal);
+  joinedController.abort();
+  assert.deepEqual(await joinedFlush, { status: "aborted" });
+  assert.ok(performance.now() - started < 100);
+  assert.deepEqual(await ownerFlush, { status: "failed" });
+  await assert.rejects(lifecycleFlush, (error: unknown) => {
+    assert.ok(error instanceof Error);
+    assert.equal(error.message, "Telemetry flush did not complete.");
+    assert.equal("cause" in error, false);
+    assert.equal(error.message.includes(String(address.port)), false);
+    return true;
+  });
   assert.ok(performance.now() - started < 1_000);
   assert.deepEqual(await telemetry.collect(), { status: "unavailable", reason: "remote_export" });
   assert.deepEqual(telemetry.exportHealth(), {
@@ -389,6 +394,10 @@ test("exports successfully and shares concurrent bounded shutdown", async () => 
 
   const firstShutdown = telemetry.shutdown();
   const secondShutdown = telemetry.shutdown();
+  const joinedShutdownController = new AbortController();
+  const joinedShutdown = telemetry.shutdown(joinedShutdownController.signal);
+  joinedShutdownController.abort();
+  assert.deepEqual(await joinedShutdown, { status: "aborted" });
   assert.deepEqual(await Promise.all([firstShutdown, secondShutdown]), [
     { status: "completed" },
     { status: "completed" },
