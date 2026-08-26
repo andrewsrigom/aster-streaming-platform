@@ -2,6 +2,32 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented the bounded Express HTTP candidate
+
+### Completed
+
+- Activated P01-R11 with the shared transport owner, exact trust boundaries, input limits, failure behavior, lifecycle split, rollback, and evidence plan.
+- Compared Express 5, Fastify 5, native Node.js HTTP, and Apollo standalone behavior using current official documentation, registry metadata, compatibility, maintenance ownership, license, security, installed-cost, and exit-path evidence.
+- Accepted ADR-0011 and exact-pinned Express `5.2.1` behind `@aster/http-express`; exact-pinned Apollo Server `5.5.1`, Apollo-maintained `@as-integrations/express5@1.1.2`, and GraphQL.js `16.14.2` are executable compatibility dependencies only.
+- Added the fixed `/graphql` transport boundary with a stable pre-mount `503`, `POST` media-type enforcement, strict 64 KiB JSON default and 256 KiB hard maximum, parser-only `400/413` classification, terminal sanitized errors, disabled disclosure headers, and request-local cancellation cleanup.
+- Added a loopback diagnostic and eight tests covering hostile options, one-time mount, exact routing, parser order, unsupported/malformed/oversized input, forged parser categories, rejected Promise middleware, client disconnect, real Apollo execution, in-flight HTTP drain, process output, and generated declarations.
+- Kept P01-R05 responsible for process signals, readiness, generalized in-flight tracking, dependency closure, the overall shutdown deadline, and forced termination; no service, product schema, authentication, telemetry SDK, public port, or Docker resource was added.
+- Passed focused build/test/diagnostic, strict package typecheck, repository lint, formatting, Knip, architecture, secret scanning, license inventory, and high-severity registry audit. Eight tests pass and the diagnostic emits one stable JSON line.
+- Recorded an isolated non-benchmark process pair: HTTP/Apollo diagnostic `0.26` seconds and `94,020` KiB maximum RSS; empty Node.js `0.01` seconds and `42,380` KiB.
+- Implementation commit `e355e29` passed the complete forced local graph with 31 of 31 uncached tasks in `22.35` seconds, retaining all HTTP, logging, configuration, repository-tool, documentation, memory, security, architecture, and CI-policy assertions.
+
+### Evidence
+
+- Local branch: `feat/p01-r11-http-adapter` from released `main` commit `e33f90b1bfee157749e5b290bffd0a80d169c697`.
+- Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
+- Focused assertions: 8 passed, 0 failed, 0 skipped.
+- Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
+- Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
+
+### Next action
+
+Run the complete forced local graph, create coherent implementation/documentation commits, and verify the exact public candidate through a clean checkout before protected CI and review.
+
 ## 2026-08-26 — Verified structured runtime logging baseline
 
 ### Completed

@@ -17,6 +17,7 @@ This document distinguishes fixed technology direction from decisions intentiona
 | Local complex state | Redux Toolkit | Explicit player and shell interaction state |
 | Graph API | Apollo Federation v2 through Apollo Router | One API with context-owned subgraphs |
 | Subgraph runtime | Apollo Server and `@apollo/subgraph` behind a transport adapter | Direct Federation support with replaceable application core |
+| Service HTTP adapter | Express 5 behind `@aster/http-express` | Apollo-maintained integration with an explicit replaceable transport boundary |
 | Validation | Schema validation at every trust boundary | Explicit runtime safety |
 | Durable data | PostgreSQL | Transactions, constraints, ordering, search baseline, recovery |
 | SQL access | Typed SQL adapter selected for transparent queries; explicit SQL allowed | Advanced locking, outbox, keyset pagination, and query-plan control |
@@ -59,8 +60,9 @@ pnpm enforces a 24-hour release-maturity window in strict mode. Because Turborep
 - The core checkpoint publishes no database or cache port, uses an internal Compose network, persists PostgreSQL 18 at its official `/var/lib/postgresql` parent mount, and makes Redis disposable with bounded memory and `allkeys-lfu` eviction.
 - Process-start configuration validation uses exact-pinned `zod@4.4.3` behind the repository-owned `@aster/config` API. The selected MIT package has zero runtime dependencies, a published private vulnerability-reporting policy, active Zod 4 releases, registry integrity and signature metadata, and no Zod type in the generated public declarations. The package reads injected environment entries directly and does not add a `.env` loader.
 - Structured runtime logging uses exact-pinned Pino `10.3.1` behind the repository-owned `@aster/runtime` API. The selected MIT package supports initialization-time redaction and the pinned Node.js runtime; its resolved production chain is MIT/ISC, the registry audit reports no known vulnerability, and no Pino type appears in generated public declarations. Services emit bounded JSON to standard output; OpenTelemetry SDK and backend selection remain separate owning decisions.
+- The service HTTP adapter uses exact-pinned Express `5.2.1` behind `@aster/http-express`. Apollo Server composition uses the Apollo-maintained `@as-integrations/express5` package. The adapter fixes middleware order, bounds JSON, sanitizes asynchronous failures, propagates client cancellation, and has executable Apollo drain compatibility; P01-R05 still owns the complete process lifecycle. [ADR-0011](../adr/0011-express-http-adapter.md) records the Fastify and native HTTP alternatives plus measured revisit triggers.
 
-The container selection evidence is in [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt). Configuration compatibility, dependency, redaction, process-cost, and removal evidence is in [`evidence/phase-01/runtime-configuration.txt`](../../evidence/phase-01/runtime-configuration.txt). Logging compatibility, redaction, correlation, dependency, and process-cost evidence is in [`evidence/phase-01/runtime-logging.txt`](../../evidence/phase-01/runtime-logging.txt).
+The container selection evidence is in [`evidence/phase-01/local-platform-checkpoint.txt`](../../evidence/phase-01/local-platform-checkpoint.txt). Configuration compatibility, dependency, redaction, process-cost, and removal evidence is in [`evidence/phase-01/runtime-configuration.txt`](../../evidence/phase-01/runtime-configuration.txt). Logging compatibility, redaction, correlation, dependency, and process-cost evidence is in [`evidence/phase-01/runtime-logging.txt`](../../evidence/phase-01/runtime-logging.txt). HTTP compatibility, failure, drain, dependency, and process evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt).
 
 ## Decisions deferred to Phase 01
 
@@ -68,7 +70,6 @@ The container selection evidence is in [`evidence/phase-01/local-platform-checkp
 - concrete typed SQL library;
 - concrete Kafka client;
 - OpenTelemetry package compatibility;
-- service HTTP adapter. Express 5 with the maintained Apollo Server integration is the preferred candidate, but Phase 01 records the decision through an ADR after compatibility and lifecycle tests.
 
 ## Decision deferred to Phase 02
 

@@ -1,0 +1,121 @@
+# Experiment P01-R11-L01: Express HTTP Adapter Compatibility
+
+- Status: IMPLEMENTED
+- Date: 2026-08-26
+- Commit: Implementation `e355e291d6111158de0d07a41bfcd91fb840779b`; documentation candidate pending
+- Owner: Aster shared transport infrastructure
+- Related requirement: P01-R11
+- Environment: Docker Desktop host with WSL2; Ubuntu-20.04 registered distribution using Ubuntu 24.04 userspace
+
+## Question
+
+Can Express 5 provide a bounded, replaceable Node.js HTTP boundary for Apollo Server on the pinned runtime, including deterministic middleware order, body limits, safe async errors, client cancellation, and graceful HTTP drain, without creating a product service or leaking framework behavior into inner layers?
+
+## Hypothesis
+
+One repository-owned adapter around exact-pinned Express 5 will enforce the reviewed request boundary and expose only a Node.js listener plus its transport mounting seam. Real-socket tests will prove Apollo execution, asynchronous rejection handling, client cancellation, and drain compatibility while stable errors omit untrusted values.
+
+## Variables
+
+- Independent: `@aster/http-express` with Express `5.2.1`, compared only with an empty Node.js process for the isolated startup observation.
+- Dependent: response status/code, middleware invocation, header disclosure, cancellation state, in-flight drain result, process exit, elapsed time, and maximum resident set size.
+- Controlled: Node.js `24.19.0`, pnpm `11.24.0`, one WSL host, loopback-only ephemeral ports, synthetic GraphQL schema and payloads, no Docker dependency, no product service, and a warm ordinary filesystem/package store.
+
+## Environment
+
+- hardware/instance: Local x86_64 development host; exact physical CPU and memory allocation are not isolated.
+- operating system: `Linux devbox 6.18.33.2-microsoft-standard-WSL2`, x86_64.
+- runtime: Node.js `24.19.0`; pnpm `11.24.0`; Turborepo `2.10.12`.
+- service replicas: None; direct package tests and one diagnostic process.
+- database: Not used.
+- Redis: Not used.
+- broker: Not used.
+- dataset: Synthetic JSON bodies, error canaries, and a two-field test-only GraphQL query schema.
+- network: Node.js servers bind only to `127.0.0.1` on operating-system-assigned ephemeral ports.
+
+## Workload
+
+- focused command: `corepack pnpm --filter=@aster/http-express build && corepack pnpm --filter=@aster/http-express test && corepack pnpm --filter=@aster/http-express check`.
+- assertions: Eight tests, zero failures, zero skips.
+- operation mix: invalid options, hostile accessor, pre-mount request, exact and nested routes, JSON parse success, unsupported media type, malformed JSON, oversized JSON, forged parser category, rejected promise, client socket destruction, Apollo query execution, in-flight drain, subprocess diagnostic, and declaration isolation.
+- concurrency: One in-flight slow GraphQL operation coordinated through deterministic promises while Apollo stop begins; no arbitrary sleep is used for correctness.
+- timeout: Two-second test deadlines and a five-second subprocess deadline are failure guards, not timing assertions.
+
+The isolated process observation used:
+
+```bash
+/usr/bin/time -f "elapsed=%e max_rss_kib=%M exit=%x" node packages/http-express/dist/src/check-http-express.js
+/usr/bin/time -f "elapsed=%e max_rss_kib=%M exit=%x" node --input-type=module -e ""
+```
+
+## Baseline
+
+The empty pinned Node.js process exited 0 in `0.01` seconds wall time with `42,380` KiB maximum RSS.
+
+## Change
+
+The diagnostic process loaded Express, Apollo Server, GraphQL.js, and the Apollo-maintained Express 5 integration; mounted a synthetic query after Apollo startup; listened on loopback; executed one JSON GraphQL request; stopped Apollo through its HTTP drain plugin; and emitted one stable JSON result.
+
+## Results
+
+| Metric | Empty Node.js | HTTP/Apollo diagnostic | Difference |
+|---|---:|---:|---:|
+| Exit status | 0 | 0 | 0 |
+| Wall time | 0.01 s | 0.26 s | +0.25 s |
+| Maximum RSS | 42,380 KiB | 94,020 KiB | +51,640 KiB |
+| Loopback GraphQL operations | 0 | 1 successful | +1 |
+| Diagnostic JSON lines | 0 | 1 | +1 |
+
+The diagnostic returned HTTP `200`, body limit `65,536`, `frameworkDisclosure: false`, no standard-error output, and no persistent listener. The focused suite passed all eight tests. It proved stable `503`, `415`, `400`, `413`, `404`, and `500` paths; rejected async middleware could not forge a parser response; a destroyed client socket aborted its request signal; and Apollo drained the exercised in-flight resolver before the HTTP server rejected new connections.
+
+## Dependency and compatibility evidence
+
+Registry metadata queried on 2026-08-26 reported:
+
+| Package | Role | Runtime/license compatibility | Registry unpacked size |
+|---|---|---|---:|
+| `express@5.2.1` | Production HTTP adapter | Node.js `>=18`, MIT | 75,429 bytes |
+| `@as-integrations/express5@1.1.2` | Apollo compatibility fixture and future composition seam | Node.js `>=20`, Express `^5`, Apollo Server `^4` or `^5`, MIT | 148,091 bytes |
+| `@apollo/server@5.5.1` | Compatibility fixture | Node.js `>=20`, GraphQL.js `^16.11.0`, MIT | 2,223,368 bytes |
+| `graphql@16.14.2` | Compatible GraphQL execution fixture | Supports Node.js `>=17`, MIT | 2,105,112 bytes |
+
+Apollo's official integration index states that Apollo maintains its Express integration. Its Express middleware reference requires Apollo startup before mount, JSON parsing before `expressMiddleware`, and recommends `ApolloServerPluginDrainHttpServer`. Express 5 documentation states that rejected or throwing Promise middleware automatically reaches error handling. The real package tests validate these claims on the pinned versions rather than relying on documentation alone.
+
+Fastify `5.12.1` was evaluated as the primary alternative. Registry metadata reports MIT and a `2,984,609`-byte unpacked artifact. Its official server reference documents built-in body limits, prototype-poisoning controls, and close hooks. The compatible MIT `@as-integrations/fastify@3.1.0` package requires Node.js `>=20`, Fastify `^5.3.0`, and Apollo Server `^4` or `^5`, but is community maintained. No comparative throughput claim is made.
+
+The current production license inventory resolves only MIT, ISC, and BSD-3-Clause packages; `qs@6.15.3` is the BSD-3-Clause production entry. Direct Apollo, Express integration, Express, and GraphQL packages resolve under MIT. The dev-only `@apollo/protobufjs@1.2.8` package resolves under BSD-3-Clause. Its postinstall was inspected: it creates an unused CLI folder and emits dependency-range warnings. `pnpm-workspace.yaml` explicitly keeps that script disabled, and `pnpm ignored-builds` confirms the policy.
+
+`corepack pnpm audit --audit-level=high` reports no known vulnerability. Generated declarations contain no Apollo or Fastify reference. Express types remain confined to the transport package's own mounting seam and do not appear in domain or application packages; the architecture scanner passes with zero violation.
+
+## Raw evidence
+
+- Local branch: `feat/p01-r11-http-adapter` from released `main` commit `e33f90b1bfee157749e5b290bffd0a80d169c697`.
+- Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
+- Focused build/test/check: eight tests passed; diagnostic exited 0 with one JSON record.
+- Strict package typecheck, repository ESLint, formatting, Knip, architecture scan, and secret scan passed.
+- Complete local graph: 31 tasks, 0 cached, 31 successful in `22.35s`; all 8 HTTP, 14 logging, 12 configuration, and repository-tool tests passed.
+- Architecture scan: zero violation.
+- Secret scan: zero finding.
+- Registry audit: no known vulnerability at the high threshold.
+- Process observation: diagnostic `0.26s / 94,020 KiB`; empty Node.js `0.01s / 42,380 KiB`.
+- Clean public checkout, protected CI, hosted dependency review, independent review, and final candidate commit: pending.
+
+## Interpretation
+
+The current local evidence supports Express 5 as an implemented bounded transport candidate for Apollo Server on the named runtime and host. It proves the reviewed functional and failure contracts without creating a deployable service. The maintained Apollo integration, executable drain path, and replaceable package boundary support ADR-0011.
+
+The process pair is a compatibility and startup-cost observation only. It does not establish throughput, latency distribution, event-loop effect, steady-state memory, allocation behavior, maximum concurrency, or comparative Express/Fastify performance.
+
+## Limitations
+
+- Clean public-checkout, protected CI, hosted dependency review, independent review, and final release evidence are still pending.
+- The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
+- Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.
+- The drain test proves one in-flight HTTP operation. P01-R05 still owns process signals, readiness, dependency close order, the global shutdown deadline, timeout behavior, and forced termination.
+- Only Linux under the named WSL2 host is measured. Native Windows, macOS, arm64, containerized service behavior, and hosted environments remain unverified.
+- Fastify was reviewed from official behavior, community integration source, registry metadata, and compatibility ranges; it was not installed or benchmarked.
+
+## Decision
+
+- Keep, revert, or continue investigation: Keep the bounded Express adapter as the implementation candidate and continue repository verification.
+- Revisit trigger: Apply ADR-0011 triggers if representative service profiles miss accepted budgets, maintenance or security posture changes, required server behavior makes the adapter materially larger, or framework types escape the transport boundary.

@@ -86,10 +86,14 @@ Status: **IN_PROGRESS**
 - A clean HTTPS clone of exact public candidate `6eedca0` materialized from the frozen lock with 124 packages reused and zero downloaded, passed 14 focused logging tests, emitted the two expected diagnostic JSON records, passed all 28 forced uncached tasks in `11.307` seconds, passed audit and secret scanning, and remained Git-clean before exact temporary-root removal.
 - Protected candidate `34e3cb9` passed pull-request run `32966113415`, including hosted dependency review, documentation/security, frozen source quality, registry audit, and the required aggregate. Independent review comment `5424999783` reports no major issue and left no unresolved discussion. P01-R04 is `VERIFIED` without adding a service, HTTP adapter, telemetry SDK/backend, product schema, or hosted resource.
 - The final P01-R04 repository-state graph passed 28 of 28 forced uncached tasks in `10.862` seconds with all 14 runtime and 12 configuration tests green; documentation, repository-memory, secret, diff, and high-severity audit checks pass with P01-R11 as the sole next `READY` item.
+- Protected pull request 9 was squash-merged to `main` at `e33f90b1bfee157749e5b290bffd0a80d169c697`. Post-merge run `32967185247` passed every applicable job, the remote feature branch was removed automatically, and P01-R04 is `RELEASED`.
 
 ## Implemented
 
-- No additional Phase 01 work item is implemented beyond the verified items above.
+- P01-R11 implementation `e355e29` adds `@aster/http-express` with exact-pinned Express `5.2.1`, a fixed `/graphql` route boundary, bounded strict JSON, stable sanitized errors, request-local cancellation, and disabled framework disclosure. Local evidence is recorded in [`evidence/phase-01/http-adapter.txt`](../evidence/phase-01/http-adapter.txt); public-checkout and protected verification remain pending.
+- ADR-0011 accepts Express 5 behind the transport adapter after comparing Fastify 5, native Node.js HTTP, and Apollo standalone behavior. Apollo Server `5.5.1`, `@as-integrations/express5@1.1.2`, and GraphQL.js `16.14.2` are exact-pinned test dependencies, not a product schema or service.
+- Eight focused tests pass for hostile construction, pre-mount state, exact route and middleware order, media type, malformed and oversized JSON, parser-category isolation, async rejection sanitization, socket cancellation, real Apollo query execution, in-flight HTTP drain, subprocess output, and declaration boundaries.
+- Strict package build/typecheck, repository lint, formatting, Knip, architecture, secret, license, and high-severity audit checks pass. The forced local graph passed 31 of 31 uncached tasks in `22.35` seconds. The isolated compatibility process exited 0 at `0.26` seconds and `94,020` KiB maximum RSS versus `0.01` seconds and `42,380` KiB for an empty Node.js process; this is not a benchmark.
 
 ## Not implemented
 
@@ -104,7 +108,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Select the Phase 01 HTTP adapter through the P01-R11 ADR, evaluating Express 5 with the maintained Apollo Server integration while keeping framework types inside the transport boundary.
+Verify the P01-R11 candidate through the complete local graph, a frozen clean public checkout, protected CI, hosted dependency review, and independent review without adding a product service or lifecycle implementation early.
 
 ## Current risks
 
@@ -129,6 +133,8 @@ Select the Phase 01 HTTP adapter through the P01-R11 ADR, evaluating Express 5 w
 - Host and orchestrator controls still own environment confidentiality, process inspection, crash handling, injection, and secret rotation; P01-R03 proves only the repository-owned loader and diagnostic surfaces.
 - P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. Export queues, flush deadlines, drop metrics, retention, and the OpenTelemetry SDK/backend remain unimplemented.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
+- P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
+- The HTTP adapter proves Apollo-to-HTTP drain for one synthetic in-flight operation only. P01-R05 still owns process signals, readiness, dependency closure, the overall shutdown budget, telemetry, and forced termination.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.
