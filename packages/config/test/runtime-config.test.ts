@@ -192,6 +192,54 @@ test("bounds oversized values and excessive owned variables before schema parsin
     classification: "unknown",
     reason: "too_many",
   });
+
+  const boundedTarget = validEnvironment();
+  const boundedSourceKeys = [
+    ...Object.keys(boundedTarget),
+    ...Array.from({ length: 1_000 }, (_, index) => `ASTER_UNTRUSTED_${index}`),
+  ];
+  let descriptorReads = 0;
+  let unexpectedValueReads = 0;
+  const unboundedSource = new Proxy(boundedTarget, {
+    ownKeys() {
+      return boundedSourceKeys;
+    },
+    getOwnPropertyDescriptor(target, property) {
+      descriptorReads += 1;
+      if (descriptorReads > 34) {
+        throw new Error("owned-entry-scan-exceeded-the-limit");
+      }
+      return (
+        Reflect.getOwnPropertyDescriptor(target, property) ?? {
+          configurable: true,
+          enumerable: true,
+          value: "owned-entry-value-must-not-be-materialized",
+        }
+      );
+    },
+    get(target, property): string | undefined {
+      if (typeof property !== "string") {
+        return undefined;
+      }
+      if (property.startsWith("ASTER_UNTRUSTED_")) {
+        unexpectedValueReads += 1;
+        throw new Error("owned-entry-value-must-not-be-materialized");
+      }
+      return target[property];
+    },
+  });
+
+  const boundedScanError = captureRuntimeConfigError(() =>
+    loadReferenceRuntimeConfig(unboundedSource),
+  );
+  assert.equal(descriptorReads, 34);
+  assert.equal(unexpectedValueReads, 0);
+  assert.equal(boundedScanError.issues.length, 8);
+  assert.deepEqual(boundedScanError.issues.at(-1), {
+    variable: "<owned-variables>",
+    classification: "unknown",
+    reason: "too_many",
+  });
 });
 
 test("sanitizes unexpected source failures without preserving their cause", () => {

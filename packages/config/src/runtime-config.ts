@@ -162,19 +162,25 @@ function preflight(
   source: Readonly<Record<string, string | undefined>>,
 ): ReferenceRuntimeConfigIssue[] {
   const issues: ReferenceRuntimeConfigIssue[] = [];
-  const ownedEntries = Object.entries(source).filter(([name]) => isOwnedVariable(name));
+  let ownedVariableCount = 0;
 
-  if (ownedEntries.length > MAX_OWNED_VARIABLES) {
-    issues.push(
-      Object.freeze({
-        variable: "<owned-variables>",
-        classification: "unknown",
-        reason: "too_many",
-      }),
-    );
-  }
+  for (const name in source) {
+    if (!Object.hasOwn(source, name) || !isOwnedVariable(name)) {
+      continue;
+    }
 
-  for (const [name] of ownedEntries) {
+    ownedVariableCount += 1;
+    if (ownedVariableCount > MAX_OWNED_VARIABLES) {
+      return [
+        ...issues.slice(0, MAX_REPORTED_ISSUES - 1),
+        Object.freeze({
+          variable: "<owned-variables>",
+          classification: "unknown",
+          reason: "too_many",
+        }),
+      ];
+    }
+
     if (!KNOWN_VARIABLE_SET.has(name)) {
       issues.push(
         Object.freeze({
