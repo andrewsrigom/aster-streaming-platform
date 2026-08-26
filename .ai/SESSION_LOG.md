@@ -8,18 +8,19 @@ Append new entries at the top. Keep entries factual and concise.
 
 - Published P01-R05 pull request 12 at exact candidate `92f5d0a`; protected run `33000352054` passed every applicable job and the initial automated review examined that SHA.
 - Classified discussion `3865708507` as a blocking availability finding: a resource-closing hook could reject without releasing its live event-loop handle, after which the coordinator canceled its only deadline and the signal binding removed its handlers.
-- Remediation `6b9acb2` preserves remaining eligible cleanup, then invokes composition-wide force close once with stable reason `stage_failure` for failed traffic, consumer, or dependency closure. Telemetry-flush-only failure remains degraded because the later dependency-close stage owns exporter resources.
+- Remediation `6b9acb2` preserved remaining eligible cleanup, then invoked composition-wide force close once with stable reason `stage_failure` for failed traffic, consumer, or dependency closure. Protected run `33001670494` passed, evidence reply `3865769157` was posted, and the initial discussion was resolved.
+- Confirmation discussion `3865804838` found that the first remediation could run dependency teardown while a consumer that failed to stop was still active. Ordering remediation `fe61fc4` force-closes immediately and starts no later graceful stage; telemetry-flush-only failure still proceeds through dependency closure and remains degraded.
 - Clarified that the composition root's `forceClose` must cover every owned resource capable of keeping the event loop alive. No dependency, lockfile, Docker resource, service, product context, schema, durable data, or hosted resource changed.
 
 ### Evidence
 
-- Exact remediation typecheck, build, and 36 of 36 runtime tests pass, including separate failure regressions for traffic, consumer, and dependency closure plus telemetry-only degradation. Focused wrapper elapsed was `0.81s`; real stuck-socket closure was `105.884759ms` and the real `SIGTERM` subprocess completed in `74.792454ms`.
-- Exact-remediation `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `8.093s` of Turbo task time and `9.27s` elapsed. Documentation validates 135 files and 354 links; memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass.
-- High-severity audit reports no known vulnerability in `0.78s`. Initial review found no second discussion.
+- Exact ordering-remediation typecheck, build, and 36 of 36 runtime tests pass, including exact execution prefixes for traffic, consumer, and dependency close failures plus telemetry-only degradation. Focused wrapper elapsed was `0.81s`; real stuck-socket closure was `106.315242ms` and the real `SIGTERM` subprocess completed in `82.638225ms`.
+- Exact ordering-remediation `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `8.235s` of Turbo task time and `9.32s` elapsed. Documentation validates 135 files and 354 links; memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass.
+- High-severity audit reports no known vulnerability in `0.80s`.
 
 ### Next action
 
-Commit the evidence closeout, push once, pass protected CI at the resulting exact head, reply to and resolve discussion `3865708507`, then run the single confirmation review before protected merge.
+Commit the ordering evidence closeout, push once, pass protected CI at the resulting exact head, reply to and resolve discussion `3865804838`, then run the allowed availability-boundary confirmation before protected merge.
 
 ## 2026-08-26 — Released verification correction and rebased lifecycle
 
