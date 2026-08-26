@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented bounded S3-compatible storage candidate
+
+### Completed
+
+- Selected exact `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3` after release-age, registry, source, license, engine, install, dependency, audit, checksum, streaming, cancellation, lifecycle, and removal review.
+- Added `@aster/object-storage-s3` with bounded path-style no-retry construction, probe/head, exact-length streaming writes, bounded streaming reads, fixture-only deletion, finite capacity/deadlines, dependency telemetry, generation retirement, and idempotent lifecycle close.
+- Added no product object, rights/publication policy, HLS/CDN behavior, signed URL, broad deletion, service, container, or real-interoperability claim.
+
+### Evidence
+
+- S3 typecheck/build, 16 of 16 focused tests, refused-loopback diagnostic, ESLint, Prettier, Knip, architecture validation, vendor-free declarations, dependency/license inventory, high-severity audit, and finite forced-retirement behavior pass. The affected graph passes 43 of 43 tasks, 29 cached, in `15.106` seconds; the coherent source commit remains next.
+- Raw selection and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Commit the green S3 checkpoint, then perform the Kafka client install/lifecycle comparison.
+
 ## 2026-08-26 — Implemented bounded Redis connectivity candidate
 
 ### Completed

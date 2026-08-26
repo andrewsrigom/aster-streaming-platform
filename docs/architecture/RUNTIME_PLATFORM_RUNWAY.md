@@ -109,7 +109,7 @@ Create one package per operational dependency rather than one kitchen-sink adapt
 | PostgreSQL | exact `pg@8.23.0` local candidate | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, bounded pool snapshot and operation telemetry, close | product schema, migrations, repositories, typed SQL selection, real-container proof |
 | Redis | exact `@redis/client@6.2.1` local candidate | connect, `PING`, disabled offline queue, bounded command/reconnect policy, cancellation recovery, telemetry, idempotent close | generic commands, cache keys, Lua scripts, rate limits, leases, real-container proof |
 | Broker | Confluent JavaScript client and KafkaJS compared at the item gate | connect, metadata, bounded producer send, one bounded consumer, stop, telemetry | product events, outbox relay, replay policy |
-| Object storage | AWS SDK S3 client | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy |
+| Object storage | exact AWS SDK `3.1118.0` plus Smithy Node HTTP handler `4.11.3` local candidate | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy, real-container proof |
 | Clock | Node.js built-ins | current instant and deterministic fake | domain-specific scheduling |
 | IDs | `crypto.randomUUID` | UUID generation and deterministic fake | aggregate-specific identity rules |
 
@@ -134,6 +134,14 @@ The local `@aster/redis` candidate exact-pins `@redis/client@6.2.1` after curren
 Exact client source removes command abort and timeout listeners after a command moves onto the connection's waiting-for-reply queue, and connect itself accepts no `AbortSignal`. The adapter therefore applies outer deadlines, disables offline queueing, caps repository and vendor queue capacity, and destroys an ambiguous client generation after probe abort, timeout, malformed reply, or unknown failure. Explicit connect can create a fresh generation. Automatic reconnect uses a finite attempt count and bounded linear delay; vendor error and reconnect causes never enter public results or Aster telemetry.
 
 Thirteen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, finite client options, connect sharing, caller-local cancellation, capacity, destructive cancellation recovery, explicit generation recovery, bounded reconnect state, concurrent/idempotent close, close timeout, vendor-destroy failure, cause-free lifecycle errors, sanitized output, and vendor-free declarations. These are controlled local proofs, not real Redis compatibility; P01-R09 owns authentication, protocol, stop/recover transitions, reconnect timing, and process-handle confirmation against the selected container.
+
+### S3-compatible object-storage checkpoint
+
+The local `@aster/object-storage-s3` candidate exact-pins `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3`. The newer SDK `3.1119.0` was less than 24 hours old at selection time and therefore failed the repository release-age policy. The selected packages support Node.js 24, use Apache-2.0, add no native install boundary, and remain isolated behind repository-owned declarations.
+
+The adapter uses path-style addressing for local S3-compatible runtimes, disables SDK retries, applies finite connection/request/operation/close budgets, caps repository concurrency, and bounds multipart buffering through finite queue and part sizes. Writes validate the exact declared byte length and transfer ownership only after acceptance; reads enforce both declared and observed size bounds. Checksums are requested where supported, fixture deletion accepts only one exact non-root key under a configured prefix, and buckets, keys, endpoints, credentials, signed URLs, or vendor errors never enter stable telemetry or public failures.
+
+Caller cancellation returns promptly while the retired SDK generation receives a bounded grace period to finish multipart-abort cleanup before forced destruction. Sixteen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, client policy, probe/head, exact-length streaming writes, bounded reads, capacity, generation recovery, safe deletion, finite shutdown even when vendor work ignores cancellation, sanitized lifecycle failures, and vendor-free declarations. These are controlled local proofs; P01-R09 owns authentication, checksum interoperability, multipart abort/cleanup, backpressure, and handle-exit confirmation against the selected S3-compatible container.
 
 ### Kafka selection gate
 

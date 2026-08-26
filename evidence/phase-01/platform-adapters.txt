@@ -20,12 +20,12 @@ Activation evidence
 - The active plan defines one package per operational dependency, repository-owned declarations, finite deadlines and capacity, caller cancellation, stable telemetry, idempotent close, iteration/candidate gates, heavyweight repeat triggers, review stopping rules, and independent removal.
 
 Selection state
-- The activation record selected no dependency. The PostgreSQL checkpoint selects exact pg 8.23.0 and @types/pg 8.23.1, and the Redis checkpoint selects exact @redis/client 6.2.1 after the live evidence below; S3 and broker clients remain unselected.
+- The activation record selected no dependency. The PostgreSQL checkpoint selects exact pg 8.23.0 and @types/pg 8.23.1, the Redis checkpoint selects exact @redis/client 6.2.1, and the S3 checkpoint selects exact @aws-sdk/client-s3 3.1118.0, @aws-sdk/lib-storage 3.1118.0, and @smithy/node-http-handler 4.11.3 after the live evidence below; only the broker client remains unselected.
 - Live registry, official documentation, license, engine, install-script, dependency, audit, cancellation, deadline, redaction, shutdown, and removal evidence must precede installation.
 - A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
 
 Current interpretation
-- P01-R07 is active. The dependency-free clock/ID local candidate plus narrow PostgreSQL and Redis connectivity adapters are implemented; S3 and broker adapters remain planned.
+- P01-R07 is active. The dependency-free clock/ID, PostgreSQL, and Redis checkpoints are committed; the narrow S3-compatible object-storage adapter is a green local candidate; the broker adapter remains planned.
 - @aster/runtime exposes a frozen system clock returning current fresh Date values, a fixed clock returning isolated deterministic Date values, a UUID v4 generator backed by crypto.randomUUID, and a finite deterministic generator that copies a bounded unique safe identifier sequence without invoking accessors.
 - Invalid clock and deterministic-ID configuration uses repository-owned cause-free errors with one stable issue. Deterministic sequence exhaustion uses a fixed cause-free error.
 
@@ -42,7 +42,7 @@ Clock and identifier focused evidence
 
 Pending checkpoint evidence
 - Clock/ID source commit 2309f94 is the current coherent checkpoint.
-- S3 and broker client selection and adapters remain planned. Real PostgreSQL and Redis interoperability remain P01-R09 and are not claimed by the controlled-fake and refused-loopback evidence below.
+- The broker client selection and adapter remain planned. Real PostgreSQL, Redis, and S3 interoperability remain P01-R09 and are not claimed by the controlled-fake and refused-loopback evidence below.
 
 PostgreSQL client selection evidence
 - Registry metadata inspected live on 2026-08-26 selected exact pg 8.23.0, published 2026-08-08 under MIT with Node.js >=16 support, no install script, and a 100044-byte unpacked package. Exact @types/pg 8.23.1, published 2026-08-17 under MIT, supplies development-only declarations.
@@ -92,4 +92,27 @@ Redis focused evidence
 - Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:redis_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no endpoint, credential, vendor error, or stack is emitted and the subprocess exits within three seconds.
 - Targeted typecheck, build, tests, ESLint, Prettier, Knip, architecture, diagnostic, high-severity audit, secret scan, and git diff checks pass.
 - pnpm check:changed: PASS; 40 of 40 selected tasks, 27 cached, in 11.562 seconds of Turborepo time and 12.64 seconds elapsed. The first attempt correctly stopped on two continuous synthetic credential URLs; fixtures were changed to construct the redaction canary without resembling committed credentials, and the complete repeated gate passed.
-- The coherent Redis source commit remains pending at this evidence checkpoint. Real-container and clean-checkout evidence are deferred by the written P01-R07 repeat triggers until all adapter package and lockfile changes stabilize.
+- Commit f507c77 records the coherent Redis checkpoint. Real-container and clean-checkout evidence are deferred by the written P01-R07 repeat triggers until all adapter package and lockfile changes stabilize.
+
+S3 client selection evidence
+- Live registry metadata inspected on 2026-08-26 showed @aws-sdk/client-s3 3.1119.0 and @aws-sdk/lib-storage 3.1119.0 had been published less than 24 hours earlier, so the repository release-age policy rejected them. The newest eligible exact pair was 3.1118.0, published on 2026-08-25, under Apache-2.0 with Node.js >=20 support. Exact @smithy/node-http-handler 4.11.3, published on 2026-08-20 under Apache-2.0 with Node.js >=18 support, supplies explicit connection and request deadlines.
+- The exact client-s3 and lib-storage packages unpack to 3295245 and 68916 bytes respectively; node-http-handler unpacks to 127830 bytes. Workspace installation on Node.js 24.19.0 added 34 packages, passed the repository supply-chain policy, added no native build boundary, and pnpm audit --audit-level=high reports no known vulnerability.
+- The resolved vendor and transport closure uses Apache-2.0, MIT, ISC, BSD-3-Clause, and 0BSD licenses. @aster/object-storage-s3 is the sole direct owner of the three selected packages and generated public declarations contain no AWS SDK or Smithy type.
+- Exact lib-storage source defines queueSize multiplied by partSize as the maximum upload-buffer budget, enforces a five-MiB minimum part size, supports an AbortController, and attempts AbortMultipartUpload when leavePartsOnError is false. The adapter fixes finite queue and part sizes, uses leavePartsOnError false, and separates prompt caller cancellation from a bounded background cleanup grace before destroying the retired client generation.
+- Exit path: remove @aster/object-storage-s3 and its exact lockfile graph. No product object, media publication state, rights record, CDN policy, or service imports the package in P01-R07.
+
+S3 implemented contract
+- @aster/object-storage-s3 validates a bounded own-data endpoint, region, bucket, credentials, telemetry, deadlines, capacity, object size, multipart budget, and fixture prefix without invoking accessors or reflecting secrets. It uses path-style addressing, maxAttempts 1, finite Smithy connection/request timeouts, request and response checksum support, and SHA-256 upload requests.
+- The repository-owned API exposes probe, head, streaming write, streaming read into a caller destination, exact fixture-key deletion, bounded snapshot, one shared close with caller-local cancellation, and runtime lifecycle hooks. It exposes no generic SDK client, signed URL, list or prefix delete, publication state, HLS/CDN policy, rights decision, or product object.
+- Accepted writes own and destroy their source, validate observed bytes against the declared length, and cap multipart buffering. Reads reject excessive declared or observed size and destroy owned streams. Capacity rejection occurs before extending vendor work.
+- Abort or timeout detaches the ambiguous client generation, returns a finite stable result to the caller, allows a bounded grace for SDK multipart-abort cleanup, then destroys the generation. A later operation may use a fresh generation. Close aborts active work, waits adapter settlements and retirements, remains finite even when vendor work ignores cancellation, destroys each generation once, and reports sanitized failure if destruction fails.
+- Dependency telemetry uses only object_storage probe/read/write/delete with finite outcomes. Missing head remains a normal not_found result; no endpoint, bucket, key, credential, URL, vendor message, or arbitrary identifier enters telemetry or diagnostic output.
+
+S3 focused evidence
+- @aster/object-storage-s3 typecheck and build: PASS; generated public declarations contain no @aws-sdk, @smithy, S3Client, command, or Upload reference.
+- @aster/object-storage-s3 test: PASS, 16 of 16 tests. Coverage includes hostile/accessor-backed configuration, exact finite client policy, probe/head/missing objects, bounded multipart write and ownership, invalid/oversized/exact-length mismatch writes, declared/observed bounded reads, capacity rejection, abort/timeout generation retirement and recovery, fixture-only deletion, concurrent/idempotent/caller-local close, finite forced retirement, vendor-destroy failure, cause-free lifecycle errors, refused-loopback diagnosis, and declaration isolation.
+- Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:object_storage_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no endpoint, credential, bucket, key, vendor error, or stack is emitted and the subprocess exits within three seconds.
+- Targeted Prettier, ESLint, typecheck, build, tests, diagnostic, Knip, architecture, dependency/license inventory, and high-severity audit pass.
+- pnpm check:changed: PASS; 43 of 43 selected tasks, 29 cached, in 15.106 seconds. The gate includes the S3 package and every affected repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, CI, local-platform, and secret validation.
+- The coherent S3 source commit remains next. Exact clean-checkout and real-container evidence remain deferred by the written P01-R07 repeat triggers until all adapter packages and lockfile changes stabilize.
+- Real S3-compatible authentication, checksum interoperability, multipart abort cleanup, backpressure under representative object sizes, and process-handle exit remain P01-R09 and are not claimed.

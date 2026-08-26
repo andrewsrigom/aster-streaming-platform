@@ -6,14 +6,13 @@ P01-R06 was squash-merged through pull request 13 as `8dff9d8d57572b2eac944ae984
 
 P01-R07 is active on `feat/p01-r07-platform-adapters` from exact clean released head `8dff9d8`. Its owner is shared runtime and dependency-adapter infrastructure; no product bounded context or durable data owner changes. The active plan defines dependency-free system/fake clock and ID contracts followed by separate PostgreSQL, Redis, S3, and broker packages. Every vendor dependency stays behind repository-owned types with finite deadlines/capacity, caller cancellation, stable sanitized failures, telemetry, idempotent close, focused iteration gates, and an independent removal path.
 
-The Kafka decision is deliberately two-stage. P01-R07 may implement one provisional client only after current install, lifecycle, deadline, redaction, license, dependency-cost, and removal evidence. P01-R09 must confirm it against a real broker and replace it before Phase 01 closeout if bounded stop fails. Clock/ID commit `2309f94` has 46 passing runtime tests. PostgreSQL commit `1ded757` exact-pins `pg@8.23.0` behind a bounded vendor-free contract. The local Redis candidate exact-pins `@redis/client@6.2.1`, disables offline queueing, caps commands/reconnect, replaces ambiguous command generations, exposes no generic command or cache policy, and passes 13 focused tests plus its refused-loopback diagnostic. Real PostgreSQL and Redis compatibility remain P01-R09.
+The Kafka decision is deliberately two-stage. P01-R07 may implement one provisional client only after current install, lifecycle, deadline, redaction, license, dependency-cost, and removal evidence. P01-R09 must confirm it against a real broker and replace it before Phase 01 closeout if bounded stop fails. Clock/ID commit `2309f94`, PostgreSQL commit `1ded757`, and Redis commit `f507c77` are coherent checkpoints. The local S3 candidate exact-pins AWS SDK `3.1118.0` and Smithy Node HTTP handler `4.11.3`, exposes only bounded repository-owned streaming operations, and passes 16 focused tests plus its refused-loopback diagnostic. Real PostgreSQL, Redis, and S3 compatibility remain P01-R09.
 
 ## Resume point
 
-1. Commit the green Redis package, lockfile, documentation, memory, and evidence as one coherent checkpoint; 13 focused tests and 40 of 40 affected tasks pass.
-2. Confirm the newest release-age-eligible AWS S3 client and lib-storage versions, exact abort/stream/checksum behavior, dependency graph, and exit path before implementing the bounded streaming adapter.
-3. Perform the explicit Kafka candidate install/lifecycle comparison before the provisional broker package.
-4. Keep every real-container interoperability claim for P01-R09 and run the first forced complete graph only when all P01-R07 packages stabilize.
+1. Commit the green S3 package, lockfile, documentation, memory, and evidence as one coherent checkpoint; 16 focused tests and 43 of 43 affected tasks pass.
+2. Perform the explicit Kafka candidate install/lifecycle comparison before the provisional broker package.
+3. Keep every real-container interoperability claim for P01-R09 and run the first forced complete graph only when all P01-R07 packages stabilize.
 
 ## Do not do yet
 

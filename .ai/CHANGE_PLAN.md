@@ -13,7 +13,7 @@ Provide reusable, independently removable packages for system clock and identifi
 
 ## Current behavior
 
-P01-R06 is released through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c`; exact post-merge run `33012664408` passed every applicable job. This branch starts from that clean released `main` head. Commit `2309f94` adds deterministic clock/ID contracts; commit `1ded757` adds the exact `pg@8.23.0` PostgreSQL connectivity adapter after 11 focused tests and 37 affected tasks pass. The local Redis checkpoint now selects exact `@redis/client@6.2.1` behind `@aster/redis` and implements bounded connect/probe, disabled offline queueing, finite capacity/reconnect, cancellation recovery, telemetry, availability state, and close with 13 focused tests passing. It creates no database, schema, migration, repository, transaction/cache policy, generic Redis command, broker/S3 client, event, object, or application service; real dependency interoperability remains P01-R09.
+P01-R06 is released through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c`; exact post-merge run `33012664408` passed every applicable job. This branch starts from that clean released `main` head. Commit `2309f94` adds deterministic clock/ID contracts, commit `1ded757` adds the exact `pg@8.23.0` PostgreSQL connectivity adapter, and commit `f507c77` adds the exact `@redis/client@6.2.1` Redis connectivity adapter. The local S3 checkpoint exact-pins `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3` behind `@aster/object-storage-s3`; 16 focused tests and its refused-loopback diagnostic pass. It creates no database, schema, migration, repository, transaction/cache policy, generic Redis command, broker client, product event, media publication policy, or application service; real dependency interoperability remains P01-R09.
 
 ## Proposed behavior
 
@@ -28,7 +28,7 @@ PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution,
 - Authoritative data: None created. PostgreSQL remains the future durable authority; Redis and adapter state are non-authoritative and process-local.
 - Read models/caches: None. Redis keys and cache policy are deferred.
 - Trust boundaries: Configuration URLs and credentials, vendor callbacks/errors/loggers, network responses, database result metadata, broker records and topic configuration, S3 buckets/keys/metadata/streams, caller `AbortSignal`, injected clocks/IDs, metric categories, and close races.
-- External dependencies: Exact current `pg`, `@redis/client`, AWS S3 SDK, and one provisional Kafka-compatible client selected after registry, official documentation, license, engine, install, audit, architecture, shutdown, redaction, and removal evidence. Real service containers and public endpoints remain P01-R09.
+- External dependencies: Exact `pg@8.23.0`, `@redis/client@6.2.1`, `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, `@smithy/node-http-handler@4.11.3`, and one provisional Kafka-compatible client selected after registry, official documentation, license, engine, install, audit, architecture, shutdown, redaction, and removal evidence. Real service containers and public endpoints remain P01-R09.
 
 ## Invariants
 
@@ -83,10 +83,10 @@ PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution,
 
 1. [completed] Record the P01-R06 release, activate P01-R07, reconcile the broker selection/confirmation boundary, and create the raw evidence ledger.
 2. [completed] Implement repository-owned system/fake clock and UUID/deterministic ID contracts with focused deterministic tests and no new dependency.
-3. [in progress] Repeat live registry and official compatibility research for `pg`, `@redis/client`, the AWS S3 client modules, and Kafka candidates; record exact versions, licenses, engines, scripts, dependency cost, known advisories, cancellation/deadline seams, redaction, and removal paths before installation. PostgreSQL and Redis evidence is complete; S3 and Kafka remain.
+3. [in progress] Repeat live registry and official compatibility research for `pg`, `@redis/client`, the AWS S3 client modules, and Kafka candidates; record exact versions, licenses, engines, scripts, dependency cost, known advisories, cancellation/deadline seams, redaction, and removal paths before installation. PostgreSQL, Redis, and S3 evidence is complete; Kafka remains.
 4. [completed checkpoint] Implement PostgreSQL as the first network adapter, including bounded pool acquisition, probe/query cancellation recovery, telemetry, close, hostile construction tests, and vendor-free public declarations.
-5. [local candidate] Implement Redis with bounded offline/reconnect behavior, abortable probe execution, telemetry, availability state, close, and equivalent boundary tests. No generic command is exposed before a context-owned use case exists.
-6. Implement S3-compatible storage with streaming put/get, head/probe, bounded fixture deletion, abort and owned-stream cleanup, telemetry, and equivalent boundary tests.
+5. [completed checkpoint] Implement Redis with bounded offline/reconnect behavior, abortable probe execution, telemetry, availability state, close, and equivalent boundary tests. No generic command is exposed before a context-owned use case exists.
+6. [local candidate] Implement S3-compatible storage with streaming put/get, head/probe, bounded fixture deletion, abort and owned-stream cleanup, telemetry, and equivalent boundary tests.
 7. Compare the Kafka candidates with install and process-lifecycle diagnostics, select one provisional client, implement bounded producer/consumer lifecycle, and document the mandatory real-broker confirmation gate for P01-R09.
 8. Consolidate dependency, failure, cancellation, handle-cleanup, declaration, audit, and package evidence; update architecture and operations documentation without claiming real-container interoperability.
 9. Run the affected candidate gate, one stabilized complete gate, exact clean-checkout proof, initial review, batched blocking remediation, confirmation review, protected CI, merge, and post-merge verification.
