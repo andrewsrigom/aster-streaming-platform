@@ -76,7 +76,7 @@ The demo lane must require only Git, a supported container runtime with Compose,
 - fail with a diagnosable dependency or resource reason;
 - record startup duration, image and volume footprint, and idle resource use before a checkpoint is called verified.
 
-The exact command and supported Compose version are selected and verified in Phases 00 and 01. Phase 07 owns the first playable clean-start acceptance.
+Phase 00 defines this interface and its safety requirements. Phase 01 selects and verifies the exact runtime-laboratory command and supported Compose version. Phase 07 owns the first playable clean-start acceptance.
 
 ### Laboratory lane
 

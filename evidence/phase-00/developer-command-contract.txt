@@ -1,0 +1,151 @@
+ASTER PHASE 00 DEVELOPER COMMAND CONTRACT EVIDENCE
+===================================================
+
+Work item: P00-R09 exact bootstrap, check, demonstration, and cleanup commands
+Evidence date: 2026-08-26
+Commit: local candidate tree; P00-R10 records the clean public-clone revision
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
+Runtime: Node.js 24.19.0; Corepack 0.35.0; pnpm 11.24.0; Turborepo 2.10.12
+Acceptance: PASS_LOCAL
+
+IMPLEMENTED COMMAND CONTRACT
+----------------------------
+
+The root README now contains one copy-paste Phase 00 path with:
+- exact Git clone and repository entry;
+- pinned Node.js and pnpm observations;
+- integrity-pinned Corepack provisioning;
+- frozen dependency installation;
+- proportionate focused checks;
+- the complete repository gate and high-severity registry audit;
+- the current repository-only demonstration boundary;
+- one bounded cross-platform foundation cleanup command;
+- explicit Phase 01 Docker runtime and Phase 07 playable-demo ownership.
+
+No application URL, pnpm dev command, Compose startup command, database, infrastructure service, or playable journey is claimed as executable in Phase 00.
+
+PINNED BOOTSTRAP
+----------------
+
+$ node --version
+v24.19.0
+
+$ corepack --version
+0.35.0
+
+$ pnpm --version
+11.24.0
+
+$ pnpm install --frozen-lockfile
+result: PASS, already up to date
+elapsed: 0.47 seconds
+maximum resident set observed: 142652 KiB
+
+$ pnpm toolchain:check
+result: PASS
+active Node.js: 24.19.0
+active pnpm: 11.24.0
+pin violations: 0
+
+FOUNDATION CLEANUP CONTRACT
+---------------------------
+
+Implementation: tools/clean-foundation.mjs
+Public command: pnpm clean:foundation
+Fixed generated-path allowlist: .turbo, node_modules
+Required regular repository markers: package.json, pnpm-lock.yaml
+Accepted CLI path arguments: none
+
+The implementation refuses a filesystem root, rejects missing or non-regular repository markers, resolves only the two fixed direct children, treats absent targets as already clean, and removes a generated-path symbolic link without traversing its external target. It does not inspect or delete Git state, source, evidence, environment files, the pnpm content-addressable store, containers, images, or volumes.
+
+$ pnpm toolchain:test
+result: PASS
+tests: 12 passed, 0 failed
+cleanup-specific tests: 5 passed, 0 failed
+adverse coverage: missing targets, unexpected path argument, unmarked root, and generated-path symlink to external data
+
+READ-ONLY TARGET RESOLUTION BEFORE REAL CLEANUP
+-----------------------------------------------
+
+Repository root:
+/home/andrews/personal/portfolio-2026/aster-streaming-platform
+
+Resolved targets:
+/home/andrews/personal/portfolio-2026/aster-streaming-platform/.turbo
+/home/andrews/personal/portfolio-2026/aster-streaming-platform/node_modules
+
+Both targets were directories, both were ignored by the repository policy, and package.json plus pnpm-lock.yaml were regular files.
+
+$ pnpm clean:foundation
+result: PASS
+reported removed paths: .turbo, node_modules
+postcondition: both targets absent
+elapsed: 0.66 seconds
+maximum resident set observed: 142352 KiB
+
+Git status after cleanup contained only the intended P00-R09 tracked and new source changes. No authoritative file changed as a side effect of cleanup.
+
+POST-CLEANUP RECOVERY
+---------------------
+
+$ corepack enable
+$ corepack install
+$ pnpm install --frozen-lockfile
+result: PASS
+packages restored: 110
+content-addressable store: warm
+packages downloaded: 0
+elapsed: 0.78 seconds
+maximum resident set observed: 332984 KiB
+
+$ pnpm toolchain:check
+result: PASS
+active Node.js: 24.19.0
+active pnpm: 11.24.0
+
+The cleanup is therefore reversible through the documented frozen bootstrap. The measurement proves recovery from removed project dependencies and Turbo state while reusing the local pnpm store; it is not a cold-network measurement.
+
+COMPLETE CURRENT CHECKPOINT
+---------------------------
+
+$ pnpm check
+result: PASS
+tasks: 20 of 20
+cached tasks: 0
+focused built-in tests: 78 passed, 0 failed
+Turbo task duration: 5.687 seconds
+wrapper elapsed: 6.13 seconds
+maximum resident set observed: 453552 KiB
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities found
+elapsed: 0.75 seconds
+maximum resident set observed: 148488 KiB
+
+Documentation validation inside the complete gate:
+- result: PASS, 0 violations;
+- documents: 129;
+- headings: 1816;
+- local links: 280;
+- evidence-supported status claims: 3.
+
+The complete gate is the current runnable Phase 00 demonstration. It exercises the repository engineering controls but intentionally does not claim product behavior.
+
+FAILURE AND SECURITY BEHAVIOR
+-----------------------------
+
+- Unsupported active Node.js or pnpm versions remain rejected by toolchain:check.
+- Lockfile drift remains rejected by the frozen install.
+- Registry unavailability remains a visible non-zero provisioning, installation, or audit failure; no fallback weakens integrity or vulnerability policy.
+- Cleanup is local and accepts no credentials, environment URL, arbitrary root, Docker project, or shared-store target.
+- The repository secret scan passed with 0 findings after the command and documentation changes.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- The installed package tree and pnpm content-addressable store were warm for these measurements.
+- Corepack install consulted its local cache; this record does not claim first-use registry latency or offline availability on an empty machine.
+- P00-R10 repeats the documented commands from a clean public clone and records the final Phase 00 revision.
+- Phase 01 must still select and verify its Compose version, Docker-only runtime command, status output, resource bounds, diagnostics, and destructive project-scoped reset.
+- Phase 07 still owns the first playable HLS clean-start checkpoint.
+- No application, service, database, media pipeline, product state, container, image, or Docker volume was created or removed by P00-R09.

@@ -17,6 +17,7 @@
     "architecture:test": "node --test ./tools/verify-architecture.test.ts",
     "check": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test docs:check docs:test ai:check ai:test community:check community:test security:check security:test ci:check ci:test staged:test commit:test",
     "check:source": "turbo run toolchain:check toolchain:test typecheck lint format:check unused:check architecture:check architecture:test staged:test commit:test",
+    "clean:foundation": "node ./tools/clean-foundation.mjs",
     "ci:check": "node ./tools/verify-ci-policy.ts",
     "ci:test": "node --test ./tools/classify-ci-change.test.ts ./tools/verify-ci-policy.test.ts",
     "commit:check": "node ./tools/validate-commit-message.ts",
@@ -34,7 +35,7 @@
     "staged:check": "node ./tools/check-staged-files.ts",
     "staged:test": "node --test ./tools/check-staged-files.test.ts",
     "toolchain:check": "node ./tools/verify-toolchain.mjs",
-    "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs",
+    "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs",
     "typecheck": "tsc --project ./tsconfig.json --noEmit",
     "unused:check": "knip --no-config-hints"
   },

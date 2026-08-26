@@ -76,6 +76,8 @@ This index lists repository governance artifacts and every Markdown source in th
 
 ## tools
 
+- [`tools/clean-foundation.mjs`](../../tools/clean-foundation.mjs) — Bounded Foundation Cleanup
+- [`tools/clean-foundation.test.mjs`](../../tools/clean-foundation.test.mjs) — Foundation Cleanup Tests
 - [`tools/verify-ai-state.ts`](../../tools/verify-ai-state.ts) — Repository Memory Consistency Validator
 - [`tools/verify-ai-state.test.ts`](../../tools/verify-ai-state.test.ts) — Repository Memory Validator Tests
 - [`tools/check-staged-files.ts`](../../tools/check-staged-files.ts) — Bounded Staged-File Dispatcher
@@ -101,6 +103,7 @@ This index lists repository governance artifacts and every Markdown source in th
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
 - [`evidence/phase-00/ai-state-workflow.txt`](../../evidence/phase-00/ai-state-workflow.txt) — Repository Memory Workflow Evidence
+- [`evidence/phase-00/developer-command-contract.txt`](../../evidence/phase-00/developer-command-contract.txt) — Developer Command Contract Evidence
 - [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
 
 ## docs/00-start-here
@@ -232,9 +235,12 @@ This index lists repository governance artifacts and every Markdown source in th
 ## evidence
 
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
+- [`evidence/phase-00/ai-state-workflow.txt`](../../evidence/phase-00/ai-state-workflow.txt) — Repository Memory Workflow Evidence
 - [`evidence/phase-00/source-quality-foundation.txt`](../../evidence/phase-00/source-quality-foundation.txt) — Source Quality Foundation Evidence
 - [`evidence/phase-00/documentation-validation.txt`](../../evidence/phase-00/documentation-validation.txt) — Documentation Validation Evidence
 - [`evidence/phase-00/ci-security-foundation.txt`](../../evidence/phase-00/ci-security-foundation.txt) — CI and Security Foundation Evidence
 - [`evidence/phase-00/community-governance.txt`](../../evidence/phase-00/community-governance.txt) — Public Contribution Governance Evidence
+- [`evidence/phase-00/developer-command-contract.txt`](../../evidence/phase-00/developer-command-contract.txt) — Developer Command Contract Evidence
+- [`evidence/phase-00/public-repository-governance.txt`](../../evidence/phase-00/public-repository-governance.txt) — Public Repository Governance Evidence
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence

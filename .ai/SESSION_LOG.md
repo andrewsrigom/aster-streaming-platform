@@ -2,6 +2,25 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Executable developer command contract in progress
+
+### Completed
+
+- Added the exact public clone, pinned bootstrap, proportionate checks, complete gate, registry audit, current checkpoint, and cleanup commands to the root README.
+- Added dependency-free `clean:foundation` with a fixed `.turbo` and `node_modules` allowlist, regular repository-marker checks, no CLI path input, bounded diagnostics, and five adverse tests.
+- Distinguished the current repository-only checkpoint from the planned Phase 01 Docker runtime laboratory and Phase 07 playable HLS demonstration across root and detailed documentation.
+- Executed a real project cleanup, verified only ignored generated paths disappeared, restored 110 packages through the frozen bootstrap with zero download from the warm store, and reran the complete gate without cache.
+
+### Evidence
+
+- Passed 12 toolchain and cleanup tests, the 20-task graph with 78 focused tests, documentation over 129 documents and 280 local links, the redacting secret scan, and high-severity registry audit.
+- Measured real cleanup at `0.66` seconds, post-clean frozen installation at `0.78` seconds, and the uncached complete gate wrapper at `6.13` seconds in the recorded environment.
+- Raw evidence: `evidence/phase-00/developer-command-contract.txt`.
+
+### Next action
+
+Publish P00-R09 through the protected pull-request path, address review findings, and record the hosted result before closing the requirement.
+
 ## 2026-08-26 — Executable repository-memory workflow
 
 ### Completed

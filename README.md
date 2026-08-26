@@ -10,6 +10,69 @@ The repository begins with specifications. The implementation must remain tracea
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
+## Run the current foundation
+
+The Phase 00 checkpoint validates the repository itself. It does not start an application, expose a URL, or require Docker. The current command results are recorded in the [Phase 00 evidence index](evidence/phase-00/README.md).
+
+### Requirements
+
+- Git;
+- Node.js `24.19.0`, selected through `.nvmrc`, `.node-version`, or an equivalent version manager;
+- Corepack from the supported Node.js distribution;
+- registry access for the first package-manager provisioning, dependency install, and dependency audit.
+
+Docker, FFmpeg, databases, and hosted credentials are not required for this checkpoint.
+
+### Bootstrap a fresh checkout
+
+Run these commands from a POSIX shell such as Linux, macOS, WSL, or the repository's CI environment:
+
+```bash
+git clone https://github.com/andrewsrigom/aster-streaming-platform.git
+cd aster-streaming-platform
+node --version
+corepack enable
+corepack install
+pnpm --version
+pnpm install --frozen-lockfile
+pnpm toolchain:check
+```
+
+`node --version` must print `v24.19.0`, and `pnpm --version` must print `11.24.0`. The frozen install rejects lockfile drift. The toolchain check rejects an unsupported active runtime or inconsistent repository pins.
+
+### Choose the check that matches the change
+
+Repository hooks automatically inspect only applicable staged files and the commit subject. Use the focused commands while iterating:
+
+```bash
+pnpm check:source
+pnpm docs:check
+pnpm ai:check
+```
+
+Before considering a Phase 00 change complete, run the authoritative local repository gate and the registry-backed vulnerability audit:
+
+```bash
+pnpm check
+pnpm audit --audit-level=high
+```
+
+`pnpm check` is also the current runnable demonstration: it exercises the pinned toolchain, source policy, architecture boundaries, documentation, repository memory, community contract, secret scanning, CI policy, staged-file selection, commit policy, and their adverse tests. It intentionally does not pretend that the future video application exists.
+
+### Clean generated foundation state
+
+```bash
+pnpm clean:foundation
+```
+
+The command validates `package.json` and `pnpm-lock.yaml`, then removes only the root `.turbo` cache and `node_modules` tree. It does not delete source, Git state, evidence, environment files, the shared pnpm store, containers, images, or volumes. Run the frozen install again before executing package scripts.
+
+### Planned Docker demonstration
+
+Phase 01 will add the first Docker-only runtime-laboratory command and project-scoped reset after the Compose layout, supported version, health behavior, and resource bounds are measured. Phase 07 owns the first clean-start playable HLS journey. Until those phases close, there is no supported `pnpm dev`, `docker compose up`, application URL, or playable demo command.
+
+See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) for command behavior, feedback lanes, and future checkpoints.
+
 ## Product scope
 
 Aster provides:
