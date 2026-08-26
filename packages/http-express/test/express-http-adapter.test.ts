@@ -173,7 +173,7 @@ test("enforces parser-before-handler ordering and hides framework headers", asyn
 
   const response = await fetch(`${url}/graphql`, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json; charset=UTF-8" },
     body: JSON.stringify({ operationName: "TransportCheck" }),
   });
   assert.equal(response.status, 200);
@@ -246,6 +246,17 @@ test("rejects malformed and oversized JSON before GraphQL middleware", async (co
   });
   assert.equal(unsupportedCharset.status, 415);
   assert.deepEqual(await responsePayload(unsupportedCharset), {
+    error: { code: "UNSUPPORTED_MEDIA_TYPE" },
+  });
+
+  const validUtf16Json = Buffer.from("{}", "utf16le");
+  const unsupportedUtf16 = await fetch(`${url}/graphql`, {
+    method: "POST",
+    headers: { "content-type": "application/json; charset=utf-16le" },
+    body: validUtf16Json,
+  });
+  assert.equal(unsupportedUtf16.status, 415);
+  assert.deepEqual(await responsePayload(unsupportedUtf16), {
     error: { code: "UNSUPPORTED_MEDIA_TYPE" },
   });
 

@@ -26,6 +26,9 @@ Append new entries at the top. Keep entries factual and concise.
 - Protected run `32971194276` passed every applicable job at `cb5a0fa`. Evidence reply `3862910571` was posted and discussion `PRRT_kwDOUEkeis6cdpFj` is resolved; final review was requested at the remediated head.
 - Follow-up independent review comment `3862956772` found Express's default routing accepted `/graphql/` and `/GRAPHQL` despite the exact-route contract. The local remediation enables strict and case-sensitive routing before registration and adds both stable `404` assertions; focused and static checks pass.
 - The exact-route remediation passed the complete local graph with 31 of 31 uncached tasks in `14.951` seconds.
+- Exact-route public candidate `9ddf8d6` passed frozen install with 259 packages reused and zero downloaded, eight focused tests, the diagnostic, 31 of 31 forced tasks in `14.22` seconds, audit, secret scan, clean Git, and exact temporary-clone removal.
+- Protected run `32972076199` passed every applicable job. Evidence reply `3862985546` was posted, discussion `PRRT_kwDOUEkeis6cd2GQ` is resolved, and final review was requested at `9ddf8d6`.
+- Follow-up independent review comment `3863047553` found valid UTF-16 JSON was accepted despite the documented UTF-8-only policy. The local remediation parses `Content-Type` with Node.js `MIMEType` before body parsing, accepts only absent charset or explicit UTF-8, and adds a valid UTF-16LE JSON body that returns stable `415`; the complete local graph passes 31 of 31 uncached tasks in `17.701` seconds.
 
 ### Evidence
 
@@ -37,13 +40,15 @@ Append new entries at the top. Keep entries factual and concise.
 - Independent review: actionable comment `3862878496`; local remediation pending commit.
 - Remediation: `cb5a0fa6165da322ccba53affb75d88d66c7f348`; clean checkout 31 tasks in `17.639s`; protected run `32971194276`; resolved evidence reply `3862910571`.
 - Follow-up review: actionable comment `3862956772`; exact-route remediation pending commit.
+- Exact-route remediation: `9ddf8d6a15f3cf87a9846bf0d4a66194620c4eb4`; clean checkout 31 tasks in `14.22s`; protected run `32972076199`; resolved reply `3862985546`.
+- Follow-up review: actionable comment `3863047553`; UTF-8 media-gate remediation pending commit.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Run and publish the exact-route remediation gates, close comment `3862956772`, and request final independent review at the new head.
+Run and publish the UTF-8 gate remediation, close comment `3863047553`, and request final independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 

@@ -1,4 +1,5 @@
 import type { RequestListener } from "node:http";
+import { MIMEType } from "node:util";
 
 import express, {
   type ErrorRequestHandler,
@@ -217,9 +218,17 @@ const requireJsonContentType: RequestHandler = (
     return;
   }
   try {
-    if (request.is("application/json") === "application/json") {
-      next();
-      return;
+    const rawContentType = request.get("content-type");
+    if (rawContentType) {
+      const contentType = new MIMEType(rawContentType);
+      const charset = contentType.params.get("charset");
+      if (
+        contentType.essence === "application/json" &&
+        (charset === null || charset.toLowerCase() === "utf-8")
+      ) {
+        next();
+        return;
+      }
     }
   } catch {
     // Treat malformed media-type input as unsupported without reflecting it.
