@@ -84,6 +84,18 @@ test("rejects weakened licensing and public security guidance", async () => {
   assert.ok(rules.includes("security"));
 });
 
+test("rejects a missing verified private vulnerability channel", async () => {
+  const sources = await actualSources();
+  sources.set(
+    "SECURITY.md",
+    requiredSource(sources, "SECURITY.md").replace(
+      "https://github.com/andrewsrigom/aster-streaming-platform/security/advisories/new",
+      "https://example.invalid/security",
+    ),
+  );
+  assert.ok(validateCommunitySources(sources).some(({ rule }) => rule === "security"));
+});
+
 test("rejects oversized community content", async () => {
   const sources = await actualSources();
   sources.set("CONTRIBUTING.md", "x".repeat(200_001));

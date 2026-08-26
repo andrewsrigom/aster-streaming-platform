@@ -343,10 +343,14 @@ export function validateCommunitySources(
   if (
     security !== undefined &&
     (!/Do not publish vulnerabilities, exploit details/iu.test(security) ||
-      !/private vulnerability reporting remains planned/iu.test(security))
+      !/GitHub private vulnerability reporting is enabled/iu.test(security) ||
+      !/https:\/\/github\.com\/andrewsrigom\/aster-streaming-platform\/security\/advisories\/new/iu.test(
+        security,
+      ))
   ) {
     addViolation(violations, {
-      detail: "security policy must prohibit public disclosure without claiming a private channel",
+      detail:
+        "security policy must prohibit public disclosure and preserve the verified private channel",
       file: "SECURITY.md",
       rule: "security",
     });

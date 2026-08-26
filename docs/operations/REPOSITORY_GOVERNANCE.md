@@ -2,9 +2,9 @@
 
 ## Current status
 
-Local Git is initialized on `main`; deterministic attributes and ignores, strict source, documentation, and public-contribution gates, executable architecture boundaries, staged secret/file and commit-message hooks, the pinned workspace check, the CI workflow, and active GitHub community templates are implemented and locally validated with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [community-governance evidence](../../evidence/phase-00/community-governance.txt). The public remote, hosted template and workflow results, and hosted protections remain planned Phase 00 work.
+Local Git is initialized on `main`; deterministic attributes and ignores, strict source, documentation, and public-contribution gates, executable architecture boundaries, staged secret/file and commit-message hooks, the pinned workspace check, the CI workflow, and active GitHub community templates are implemented and locally validated with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [community-governance evidence](../../evidence/phase-00/community-governance.txt).
 
-The repository owner has authorized creation of the public target `andrewsrigom/aster-streaming-platform`. Supported tool selection and local Git initialization are complete; creation remains ordered after the initial quality workflows and a final remote-existence check.
+The authorized [public repository](https://github.com/andrewsrigom/aster-streaming-platform) is implemented and audited. Its first hosted `main` and protected pull-request workflows passed, including hosted dependency review. GitHub recognizes both issue templates and the pull-request template, and the repository uses squash-only merging, read-only default workflow permissions, automated branch cleanup, supported security features, and an active no-bypass `main` ruleset. Exact observed settings and remaining capability limits are recorded in [public-repository evidence](../../evidence/phase-00/public-repository-governance.txt).
 
 ## Goals
 
@@ -78,7 +78,7 @@ The following source gates are implemented:
 - Conventional Commit validation for local commit messages.
 - Markdown UTF-8, title, fence, unresolved-merge-marker, local-link, heading-fragment, canonical-terminology, and evidence-supported current-status validation.
 
-Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the configured full CI path. Pull-request dependency and license review is configured, but its hosted result remains unverified until the authorized public repository runs the workflow. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
+Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the hosted full CI path. Pull-request dependency and license review is configured and its first hosted execution passed. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
 
 Auto-fix commands remain separate from check commands. CI runs checks and does not rewrite source.
 
@@ -102,9 +102,9 @@ For a single-maintainer repository, the initial ruleset requires the pull-reques
 
 GitHub automatically applies [the pull-request template](../../.github/PULL_REQUEST_TEMPLATE.md). It asks for the requirement or defect, ownership and trust boundaries, observable and failure behavior, security and data impact, tests, evidence, recovery, documentation, a coherent-change declaration, and confirmation that the contributor can provide the work under MIT.
 
-The issue chooser offers a [bug report](../../.github/ISSUE_TEMPLATE/bug-report.md) and a [bounded change proposal](../../.github/ISSUE_TEMPLATE/change-proposal.md). Blank contributor issues are disabled. No label, assignee, external contact, or private-reporting capability is invented before the remote audit. Both issue paths redirect vulnerability details away from public disclosure and require sanitized evidence.
+The issue chooser offers a [bug report](../../.github/ISSUE_TEMPLATE/bug-report.md) and a [bounded change proposal](../../.github/ISSUE_TEMPLATE/change-proposal.md). Blank contributor issues are disabled. No label, assignee, or external contact is invented. Both issue paths redirect vulnerability details away from public disclosure and require sanitized evidence; the verified private reporting form is linked from [`SECURITY.md`](../../SECURITY.md).
 
-The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and truthful security guidance. Seven adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, and symbolic inputs. GitHub rendering remains hosted-unverified until publication.
+The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and the verified private vulnerability path. Eight adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, symbolic, and missing-private-channel inputs. GitHub's repository API recognizes both issue-template definitions, and the active pull-request template is publicly retrievable.
 
 ## CI execution policy
 
@@ -141,13 +141,13 @@ The pnpm cache contains only the content-addressed store and is keyed by runner 
 
 ## GitHub repository settings
 
-The planned public repository is:
+The verified public repository is:
 
 ```text
 github.com/andrewsrigom/aster-streaming-platform
 ```
 
-Planned baseline settings:
+Observed baseline settings on 2026-08-26:
 
 - public visibility;
 - `main` as default branch;
@@ -159,15 +159,18 @@ Planned baseline settings:
 - no routine bypass of failed required checks;
 - dependency graph and Dependabot alerts enabled;
 - Dependabot security updates and a low-noise scheduled version-update policy;
-- secret scanning and push protection enabled where the public-repository capability supports them;
-- code scanning enabled once representative source exists;
+- secret scanning and push protection enabled;
+- private vulnerability reporting and automated security fixes enabled;
+- code scanning deliberately deferred until representative source exists;
 - Actions workflow permissions set to read repository contents by default.
 
-Required status-check names are configured only after the workflows have run and GitHub exposes their stable names.
+The active ruleset is [Protect main](https://github.com/andrewsrigom/aster-streaming-platform/rules/21535199). It has no bypass actors and requires the pull-request path, review-thread resolution, squash merging, strict `CI required` success, linear history, and protection from non-fast-forward updates and deletion. The required check was configured only after the first hosted workflow exposed its stable name and GitHub Actions application identity. An external approval is not required while the repository has only one eligible maintainer.
+
+GitHub also reports a dependency graph with 162 packages and 234 relationships. Secret-scanning validity checks and non-provider patterns were not enabled by the available defaults and remain unclaimed. Code scanning is deliberately deferred until representative application source exists, so no empty or decorative CodeQL result is claimed.
 
 ## Authorized creation sequence
 
-Steps 1 through 4 are implemented locally, including the public community templates. The public remote remains absent and steps 5 through 10 remain pending.
+Steps 1 through 9 are implemented and audited. Step 10 remains the final Phase 00 clean-checkout gate owned by P00-R10.
 
 1. Complete P00-R03 and record supported Node.js and pnpm versions.
 2. Complete the local Git and ignore-policy part of P00-R02 with `main` as the initial branch.
@@ -180,7 +183,7 @@ Steps 1 through 4 are implemented locally, including the public community templa
 9. Query the resulting settings and store the redacted configuration audit under `evidence/phase-00/`.
 10. Run the clean-checkout gate through the public clone before closing Phase 00.
 
-Remote creation is authorized, but each step remains subject to the Phase 00 order and evidence gate. No token, credential value, or private GitHub configuration belongs in repository files or evidence.
+Remote creation used the authorized existing local history and did not generate a second README, license, ignore file, or starter commit. No token, credential value, private email, or private account configuration belongs in repository files or evidence.
 
 ## Recovery
 

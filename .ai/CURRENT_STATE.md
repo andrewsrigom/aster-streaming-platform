@@ -29,9 +29,13 @@ Status: **IN_PROGRESS**
 - The dependency-free documentation validator checks bounded UTF-8 Markdown, local files and heading fragments, canonical terminology, fences, merge markers, evidence-supported current-status claims, and scoped GitHub issue-template front matter; 9 focused adverse tests and the repository scan pass.
 - A bounded redacting secret scanner validates tracked, non-ignored untracked, and staged-index text; its 6 focused tests pass and the pre-commit path now rejects staged credential patterns without printing matched values.
 - The locally validated `CI` workflow uses non-duplicated triggers, superseded-run cancellation, least privilege, immutable action commits, fail-safe documentation-versus-full classification, frozen installation, source checks, registry audit, dependency review, and one stable `CI required` result.
-- Dependabot groups weekly npm and GitHub Actions updates; the locally forced graph passes every registered task and `pnpm audit --audit-level=high` reports no known vulnerability. Hosted workflow behavior is not yet claimed.
+- Dependabot groups weekly npm and GitHub Actions updates; the locally forced graph passes every registered task and `pnpm audit --audit-level=high` reports no known vulnerability. The first hosted `main` workflow passed every applicable job.
 - Active Markdown bug, change-proposal, and pull-request templates plus a blank-issue-disabled chooser define coherent scope, MIT contribution rights, ownership, failure, security, evidence, and recovery expectations.
-- A bounded community-file validator enforces the exact six-file public contribution contract; 7 adverse tests pass and the dependency-free governance path includes the validator and tests. Hosted rendering and private vulnerability reporting are not yet claimed.
+- A bounded community-file validator enforces the exact six-file public contribution contract and verified private vulnerability path; its adverse tests and the dependency-free governance path pass.
+- The authorized public repository exists at `andrewsrigom/aster-streaming-platform`; GitHub recognizes both issue templates and the pull-request template, and its dependency graph reports the initial published software bill of materials.
+- GitHub repository settings are audited: squash-only merging, automatic branch cleanup, read-only Actions defaults, immutable action SHA pinning, vulnerability alerts and fixes, Dependabot security updates, secret scanning with push protection, and private vulnerability reporting are enabled.
+- The active no-bypass `Protect main` ruleset requires the pull-request path, review-thread resolution, strict `CI required` success, linear history, and protection from non-fast-forward updates and deletion.
+- The first protected pull-request workflow passed its classification, documentation/security, full source-quality, dependency-review, and stable aggregate jobs.
 
 ## Not implemented
 
@@ -40,21 +44,20 @@ Status: **IN_PROGRESS**
 - GraphQL schemas
 - Media pipeline
 - Observability stack
-- Hosted CI execution, public repository settings, and deployment automation
+- Hosted deployment automation
 - Hosted environments
 
 ## Next outcome
 
-Create the authorized public GitHub repository, observe the first hosted workflow, and apply auditable repository protections for the second P00-R07 work item.
+Integrate `.ai/` consistency checks into the normal contribution workflow for P00-R08 without broadening the current Phase 00 scope.
 
 ## Current risks
 
 - Static documentation validation does not fetch external URLs and intentionally applies only high-confidence terminology and status rules; nuanced truthfulness remains a review responsibility.
-- Pattern-based secret scanning cannot prove that arbitrary binary or invalid-UTF-8 content contains no secret; hosted secret scanning and push protection remain part of remote governance.
-- Dependency and license review is configured from current official action documentation but has not run in a public pull-request context.
-- GitHub community templates are locally validated but have not rendered on the absent public repository; Markdown issue forms were selected to avoid dependence on the preview issue-form schema.
-- No verified private vulnerability-reporting channel exists yet; public templates redirect sensitive reports without claiming that hosted capability.
-- The public remote has not been created. Public creation of `andrewsrigom/aster-streaming-platform` is authorized but remains ordered after local checks and CI are ready.
+- Pattern-based and hosted secret scanning cannot prove that arbitrary binary or invalid-UTF-8 content contains no secret; later source and artifact formats still require their owning scanners.
+- Dependency and license review passed its first public pull-request execution; future changes can still expose dependency or license policy failures and remain gated by `CI required`.
+- GitHub APIs prove that community templates are recognized but do not prove every browser-specific rendering detail; Markdown issue forms avoid dependence on the preview issue-form schema.
+- Secret-scanning validity checks and non-provider patterns are disabled and unclaimed; CodeQL remains deliberately deferred until representative application source exists.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

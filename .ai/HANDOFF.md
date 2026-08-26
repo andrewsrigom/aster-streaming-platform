@@ -1,10 +1,10 @@
 # Handoff
 
-P00-R01, the Phase 00 alignment audit, P00-R11, P00-R03, P00-R02, P00-R04, P00-R05, P00-R06, and the local-template part of P00-R07 are complete. No application implementation has started.
+P00-R01, the Phase 00 alignment audit, P00-R11, P00-R03, P00-R02, P00-R04, P00-R05, P00-R06, and both P00-R07 repository-governance work items are complete. No application implementation has started.
 
-The repository has an exact Node.js and pnpm toolchain, deterministic root-only workspace, strict source, documentation, security, CI-policy, and public-contribution gates, lightweight repository hooks, bounded redacting secret scans, and a locally validated CI workflow. The complete forced graph passes eighteen tasks and 61 focused tests. Passing evidence is indexed under `evidence/phase-00/`, including `community-governance.txt` for the latest work item.
+The repository has an exact Node.js and pnpm toolchain, deterministic root-only workspace, strict source, documentation, security, CI-policy, and public-contribution gates, lightweight repository hooks, bounded redacting secret scans, and a locally and hosted-validated CI workflow. The complete graph passes eighteen tasks and 62 focused tests. Passing evidence is indexed under `evidence/phase-00/`, including `public-repository-governance.txt` for the latest work item.
 
-The repository owner authorized the public target `andrewsrigom/aster-streaming-platform`; no remote is configured locally. The checked-in workflow, dependency review, Dependabot policy, community templates, secret-scanning integration, and immutable action pins are locally verified. No destination-existence result, hosted template or workflow result, public setting, secret-protection result, or required status check is claimed until the next item queries it.
+The authorized public repository exists at `andrewsrigom/aster-streaming-platform`, `origin` is configured, and the first hosted `main` and protected pull-request workflows passed. Community files, merge settings, read-only Actions defaults, vulnerability alerts and fixes, Dependabot security updates, secret scanning and push protection, private vulnerability reporting, hosted dependency review, and the no-bypass `Protect main` ruleset are queried and recorded in `evidence/phase-00/public-repository-governance.txt`.
 
 ## Resume point
 
@@ -12,12 +12,12 @@ The repository owner authorized the public target `andrewsrigom/aster-streaming-
 2. Read `.ai/CONTEXT.md`.
 3. Read `.ai/CURRENT_STATE.md`.
 4. Read `docs/specs/phase-00-foundation.md`.
-5. Select only the first `READY` item: the authorized public-repository creation and protection audit for P00-R07.
-6. Move that item to `IN_PROGRESS` and create `.ai/CHANGE_PLAN.md` from `docs/templates/WORK_ITEM_TEMPLATE.md` before mutating a remote.
-7. Query the active GitHub CLI identity, authentication scopes, local remotes, and exact target existence; stop on identity mismatch, existing target ambiguity, or insufficient capability.
-8. Create the public repository without generated starter files, add `origin`, push the reviewed `main`, and observe actual workflow and community-file behavior.
-9. Apply only the documented merge, issue, security, Actions, and ruleset settings supported by the account and current API; query every result and store redacted evidence.
-10. Keep any unavailable control explicit rather than claiming protection or bypassing a failed workflow.
+5. Select only the first `READY` item: integrate `.ai/` state checks into the contribution workflow for P00-R08.
+6. Move it to `IN_PROGRESS` and write `.ai/CHANGE_PLAN.md` before implementation.
+7. Define bounded rules for queue status, active-plan state, required memory files, session ordering, and handoff consistency without attempting semantic proof of every statement.
+8. Add focused adverse fixtures, integrate the check into local and CI governance paths, capture evidence, and use the protected pull-request flow.
+9. Keep exact bootstrap/demo/cleanup documentation in the separate P00-R09 item.
+10. Keep clean public-clone and Phase 00 closure in P00-R10.
 
 ## Do not do yet
 

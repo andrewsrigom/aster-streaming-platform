@@ -70,6 +70,11 @@ Do not infer that every film or asset uses the same license. Review each officia
 
 ## Public repository governance
 
+- GitHub CLI repository creation: https://cli.github.com/manual/gh_repo_create
+- Repository rulesets REST API: https://docs.github.com/en/rest/repos/rules
+- Repository settings REST API: https://docs.github.com/en/rest/repos/repos
+- GitHub Actions permissions REST API: https://docs.github.com/en/rest/actions/permissions
+- Secret scanning for public repositories: https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning
 - GitHub issue and pull-request templates: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates
 - Configuring issue templates and the chooser: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
 - Creating a pull-request template: https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository

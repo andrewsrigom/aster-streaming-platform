@@ -1,0 +1,198 @@
+ASTER PHASE 00 PUBLIC REPOSITORY GOVERNANCE EVIDENCE
+====================================================
+
+Work item: P00-R07 public repository creation and protection
+Evidence date: 2026-08-26
+Initial published commit: 4bb0ad47269f5ae9616a0363a599afa655e42ce9
+Repository: https://github.com/andrewsrigom/aster-streaming-platform
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+GitHub CLI: 2.87.3
+Acceptance: PASS_HOSTED
+
+AUTHORIZATION AND CREATION PRECONDITIONS
+----------------------------------------
+
+- Repository owner authorization: exact public target andrewsrigom/aster-streaming-platform.
+- Authenticated GitHub login selected before mutation: andrewsrigom.
+- Required repository and workflow scopes were present. Credential values were not captured.
+- Exact target lookup before creation: not found.
+- Local remotes before creation: 0.
+- Local reviewed branch before publication: main at 4bb0ad47269f5ae9616a0363a599afa655e42ce9.
+
+CREATION RESULT
+---------------
+
+- Created from the existing local repository without a starter README, license, ignore file, alternate branch, or generated commit.
+- origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+- visibility: public
+- default branch: main
+- issues: enabled
+- wiki: disabled
+- merge method: squash only
+- squash title/message: pull-request title and body
+- head branch deletion after merge: enabled
+- update branch support: enabled
+
+FIRST HOSTED WORKFLOW
+---------------------
+
+- Workflow: CI
+- Event: push to main
+- Run ID: 32936909301
+- URL: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32936909301
+- Published commit: 4bb0ad47269f5ae9616a0363a599afa655e42ce9
+- Conclusion: success
+- Classify change: success, 5 seconds
+- Documentation and security: success, 7 seconds
+- Install and source quality: success, 22 seconds
+- Dependency review: correctly skipped outside a pull-request event
+- CI required: success, 2 seconds
+- Stable check provider: GitHub Actions application ID 15368
+
+The dependency graph returned a generated software bill of materials with 162 packages and 234 relationships. This count describes the observed initial published commit and is not a permanent dependency target.
+
+FIRST PROTECTED PULL REQUEST
+----------------------------
+
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/2
+- Workflow run ID: 32937757207
+- Workflow URL: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937757207
+- Head commit: 62cb7d4
+- Classify change: success, 6 seconds
+- Documentation and security: success, 8 seconds
+- Install and source quality: success, 20 seconds
+- Dependency review: success, 7 seconds
+- CI required: success, 4 seconds
+
+The pull-request event exercised the full source path because the governance validator changed. The dependency-review action ran in its required public pull-request context and passed. The second and final evidence commit is accepted only after the same protected aggregate check runs again.
+
+PUBLIC CONTRIBUTION SURFACES
+----------------------------
+
+GitHub's repository query recognized both issue templates:
+- Bug report
+- Change proposal
+
+The pull-request template and chooser files were retrievable from the public main branch. Blank contributor issues remain disabled. No public test issue or pull request was created merely to exercise the templates.
+
+REPOSITORY AND ACTIONS SETTINGS
+-------------------------------
+
+- default workflow permissions: read
+- workflows may approve pull requests: false
+- allowed actions: all
+- immutable action SHA pinning required: true
+- merge commits: disabled
+- rebase merges: disabled
+- squash merge: enabled
+- automatic branch deletion: enabled
+- automatic merge: disabled
+- branch update support: enabled
+
+SECURITY SETTINGS
+-----------------
+
+- vulnerability alerts: enabled
+- automated security fixes: enabled
+- Dependabot security updates: enabled
+- secret scanning: enabled
+- secret scanning push protection: enabled
+- private vulnerability reporting: enabled
+- secret-scanning non-provider patterns: disabled and unclaimed
+- secret-scanning validity checks: disabled and unclaimed
+- CodeQL/code scanning: deliberately deferred until representative application source exists
+
+MAIN RULESET
+------------
+
+- ID: 21535199
+- URL: https://github.com/andrewsrigom/aster-streaming-platform/rules/21535199
+- Name: Protect main
+- Status: active
+- Target: default branch
+- Bypass actors: none
+- Deletion protection: enabled
+- Non-fast-forward protection: enabled
+- Linear history: required
+- Pull request: required
+- Allowed merge method: squash
+- Required approvals: 0 because no eligible external reviewer is assumed
+- Extra approval for unattributed changes: disabled because it would contradict the audited single-maintainer policy
+- Stale reviews dismissed: enabled
+- Review-thread resolution: required
+- Required status check: CI required
+- Required check integration ID: 15368
+- Strict required-check policy: enabled
+
+The effective-rules query for main returned the same deletion, non-fast-forward, linear-history, pull-request, and required-status-check controls. No direct-push failure was generated as a destructive demonstration; this governance branch exercises the required pull-request path.
+
+REPRODUCIBLE SELECTED API AUDIT
+-------------------------------
+
+The following exact read-only commands were rerun after configuration. The outputs select only public repository state and contain no authentication material.
+
+$ gh api repos/andrewsrigom/aster-streaming-platform --jq '{full_name,visibility,default_branch,has_issues,has_wiki,allow_squash_merge,allow_merge_commit,allow_rebase_merge,delete_branch_on_merge,allow_auto_merge,allow_update_branch,squash_merge_commit_title,squash_merge_commit_message,security_and_analysis}'
+
+{"allow_auto_merge":false,"allow_merge_commit":false,"allow_rebase_merge":false,"allow_squash_merge":true,"allow_update_branch":true,"default_branch":"main","delete_branch_on_merge":true,"full_name":"andrewsrigom/aster-streaming-platform","has_issues":true,"has_wiki":false,"security_and_analysis":{"dependabot_security_updates":{"status":"enabled"},"secret_scanning":{"status":"enabled"},"secret_scanning_non_provider_patterns":{"status":"disabled"},"secret_scanning_push_protection":{"status":"enabled"},"secret_scanning_validity_checks":{"status":"disabled"}},"squash_merge_commit_message":"PR_BODY","squash_merge_commit_title":"PR_TITLE","visibility":"public"}
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/actions/permissions --jq '{enabled,allowed_actions,sha_pinning_required}'
+
+{"allowed_actions":"all","enabled":true,"sha_pinning_required":true}
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/actions/permissions/workflow --jq '{default_workflow_permissions,can_approve_pull_request_reviews}'
+
+{"can_approve_pull_request_reviews":false,"default_workflow_permissions":"read"}
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/private-vulnerability-reporting --jq '{enabled}'
+
+{"enabled":true}
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/vulnerability-alerts --silent
+
+HTTP 204, no response body.
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/automated-security-fixes --silent
+
+HTTP 204, no response body.
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/rulesets/21535199 --jq '{id,name,target,enforcement,bypass_actors,conditions,rules}'
+
+{"bypass_actors":[],"conditions":{"ref_name":{"exclude":[],"include":["~DEFAULT_BRANCH"]}},"enforcement":"active","id":21535199,"name":"Protect main","rules":[{"type":"deletion"},{"type":"non_fast_forward"},{"type":"required_linear_history"},{"parameters":{"allowed_merge_methods":["squash"],"dismiss_stale_reviews_on_push":true,"require_code_owner_review":false,"require_extra_approval_for_unattributed_changes":false,"require_last_push_approval":false,"required_approving_review_count":0,"required_review_thread_resolution":true,"required_reviewers":[]},"type":"pull_request"},{"parameters":{"do_not_enforce_on_create":true,"required_status_checks":[{"context":"CI required","integration_id":15368}],"strict_required_status_checks_policy":true},"type":"required_status_checks"}],"target":"branch"}
+
+$ gh run view 32937988211 --repo andrewsrigom/aster-streaming-platform --json databaseId,event,headSha,status,conclusion,url,jobs --jq '{databaseId,event,headSha,status,conclusion,url,jobs:[.jobs[]|{name,status,conclusion,url}]}'
+
+{"conclusion":"success","databaseId":32937988211,"event":"pull_request","headSha":"429adb75cf53983d6598093874d921530c6047b3","jobs":[{"conclusion":"success","name":"Classify change","status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937988211/job/98082938179"},{"conclusion":"success","name":"Dependency review","status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937988211/job/98082938367"},{"conclusion":"success","name":"Install and source quality","status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937988211/job/98082961199"},{"conclusion":"success","name":"Documentation and security","status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937988211/job/98082961276"},{"conclusion":"success","name":"CI required","status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937988211/job/98083054982"}],"status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/32937988211"}
+
+$ gh api graphql -F query='query($owner: String!, $repo: String!) { repository(owner: $owner, name: $repo) { issueTemplates { name about title } } }' -F owner=andrewsrigom -F repo=aster-streaming-platform --jq '.data.repository.issueTemplates'
+
+[{"about":"Report reproducible incorrect behavior without disclosing sensitive data","name":"Bug report","title":"[Bug] "},{"about":"Propose one bounded product, architecture, reliability, or operational outcome","name":"Change proposal","title":"[Proposal] "}]
+
+$ gh api repos/andrewsrigom/aster-streaming-platform/contents/.github/PULL_REQUEST_TEMPLATE.md?ref=main --jq '{name,path,sha,size}'
+
+{"name":"PULL_REQUEST_TEMPLATE.md","path":".github/PULL_REQUEST_TEMPLATE.md","sha":"4777a9d1f565aa4b2916e66799df1135d80715ea","size":1958}
+
+MERGE-TIME REVIEW BEHAVIOR
+--------------------------
+
+The first normal squash-merge attempt was blocked; no administrator bypass was used. The live pull-request query exposed one unresolved automated review thread requesting reproducible API evidence. This artifact now preserves the exact selected commands and responses above. The ruleset still requires review-thread resolution and the strict aggregate check.
+
+The same audit also exposed an automatically added extra-approval rule that contradicted the documented zero-approval single-maintainer policy. It was disabled through a complete ruleset update, and the current raw selected response above proves the resulting no-bypass rule inventory. The protected pull-request workflow must pass again after this correction.
+
+BOUNDARIES AND LIMITATIONS
+--------------------------
+
+- No token, authentication header, credential value, private email, or private account setting is stored in this artifact.
+- GitHub API and GraphQL results prove configured state and recognized templates; they do not prove every browser-specific rendering detail.
+- Secret scanning does not replace repository-owned redacting scans, credential rotation, dependency review, or later source-specific analysis.
+- The protected pull-request workflow and hosted dependency review passed. The required check remains authoritative for the final evidence commit and merge.
+- P00-R10 later repeats the complete gate from a clean public checkout.
+
+OFFICIAL PRIMARY REFERENCES
+---------------------------
+
+- https://cli.github.com/manual/gh_repo_create
+- https://docs.github.com/en/rest/repos/repos
+- https://docs.github.com/en/rest/repos/rules
+- https://docs.github.com/en/rest/actions/permissions
+- https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning
+- https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository

@@ -18,11 +18,12 @@
 | Make documentation truthfulness executable | P00-R05 | PASS | [`documentation-validation.txt`](documentation-validation.txt) |
 | Establish efficient and secure CI | P00-R06 | PASS_LOCAL | [`ci-security-foundation.txt`](ci-security-foundation.txt) |
 | Establish public contribution governance | P00-R07 templates | PASS_LOCAL | [`community-governance.txt`](community-governance.txt) |
+| Publish and protect the public repository | P00-R07 remote | PASS_HOSTED | [`public-repository-governance.txt`](public-repository-governance.txt) |
 
 P00-R08 is not complete as a phase requirement. A later work item integrates `.ai/` state validation into the executable contribution workflow.
 
 ## Limitations
 
-- Git now exists locally, but the public remote and public-clone result remain pending.
-- The toolchain, workspace, source/documentation/security/community task graph, staged hooks, CI workflow, dependency policy, and GitHub community templates are implemented and locally verified. Hosted template and workflow observations, remote security settings, and remote governance remain future Phase 00 work.
+- The public remote, first hosted `main` workflow, protected pull-request workflow, hosted dependency review, community surfaces, security settings, and active `main` ruleset are verified.
+- The public-clone result remains pending for P00-R10.
 - P00-R10 will rerun every Phase 00 check through documented commands from a clean checkout and replace these limitations with final evidence.
