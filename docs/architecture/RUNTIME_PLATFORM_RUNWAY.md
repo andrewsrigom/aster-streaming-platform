@@ -107,7 +107,7 @@ Create one package per operational dependency rather than one kitchen-sink adapt
 | Adapter | Current candidate | First complete slice | Explicitly deferred |
 |---|---|---|---|
 | PostgreSQL | exact `pg@8.23.0` local candidate | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, bounded pool snapshot and operation telemetry, close | product schema, migrations, repositories, typed SQL selection, real-container proof |
-| Redis | `@redis/client` | connect, `PING`, bounded offline behavior, abortable command, reconnect policy, telemetry, idempotent close | cache keys, Lua scripts, rate limits, leases |
+| Redis | exact `@redis/client@6.2.1` local candidate | connect, `PING`, disabled offline queue, bounded command/reconnect policy, cancellation recovery, telemetry, idempotent close | generic commands, cache keys, Lua scripts, rate limits, leases, real-container proof |
 | Broker | Confluent JavaScript client and KafkaJS compared at the item gate | connect, metadata, bounded producer send, one bounded consumer, stop, telemetry | product events, outbox relay, replay policy |
 | Object storage | AWS SDK S3 client | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy |
 | Clock | Node.js built-ins | current instant and deterministic fake | domain-specific scheduling |
@@ -126,6 +126,14 @@ The local `@aster/postgres` candidate exact-pins `pg@8.23.0` after current regis
 Node-postgres does not currently provide the adapter a reliable `AbortSignal` query-cancellation seam, and its client-side query timeout can finish before the server-side work. A caller abort, local timeout, query read timeout, SQLSTATE `57014`, or unknown probe failure therefore destroys the reserved connection instead of returning possibly busy protocol state to the pool. Adapter-owned reservations cap acquisitions before the vendor FIFO; timed-out acquisitions retain capacity until their eventual connection is destroyed or the acquisition fails. Connection, idle, server-statement, client-query, operation, and close budgets are finite.
 
 Eleven focused tests and a refused-loopback diagnostic prove the repository boundary, hostile configuration handling, capacity, stable telemetry, cancellation, timeout, concurrent/idempotent shutdown, side-effect-free pre-aborted close, later completion of a timed-out drain, sanitized failures, and vendor-free declarations. These are controlled local proofs, not real PostgreSQL compatibility; P01-R09 owns container startup, authentication, protocol, failure/recovery, and handle-exit confirmation.
+
+### Redis connectivity checkpoint
+
+The local `@aster/redis` candidate exact-pins `@redis/client@6.2.1` after current registry, license, engine, dependency, install, audit, source, lifecycle, cancellation, and removal review. Its repository-owned contract exposes only bounded connect, fixed `PING`, an availability snapshot, stable outcomes, and lifecycle close. No raw command API is exposed because Phase 01 has no context-owned cache, lease, rate limit, or second concrete command use case.
+
+Exact client source removes command abort and timeout listeners after a command moves onto the connection's waiting-for-reply queue, and connect itself accepts no `AbortSignal`. The adapter therefore applies outer deadlines, disables offline queueing, caps repository and vendor queue capacity, and destroys an ambiguous client generation after probe abort, timeout, malformed reply, or unknown failure. Explicit connect can create a fresh generation. Automatic reconnect uses a finite attempt count and bounded linear delay; vendor error and reconnect causes never enter public results or Aster telemetry.
+
+Thirteen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, finite client options, connect sharing, caller-local cancellation, capacity, destructive cancellation recovery, explicit generation recovery, bounded reconnect state, concurrent/idempotent close, close timeout, vendor-destroy failure, cause-free lifecycle errors, sanitized output, and vendor-free declarations. These are controlled local proofs, not real Redis compatibility; P01-R09 owns authentication, protocol, stop/recover transitions, reconnect timing, and process-handle confirmation against the selected container.
 
 ### Kafka selection gate
 

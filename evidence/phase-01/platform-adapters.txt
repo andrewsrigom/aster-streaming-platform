@@ -20,12 +20,12 @@ Activation evidence
 - The active plan defines one package per operational dependency, repository-owned declarations, finite deadlines and capacity, caller cancellation, stable telemetry, idempotent close, iteration/candidate gates, heavyweight repeat triggers, review stopping rules, and independent removal.
 
 Selection state
-- The activation record selected no dependency. The PostgreSQL checkpoint now selects exact pg 8.23.0 and @types/pg 8.23.1 after the live evidence below; Redis, S3, and broker clients remain unselected.
+- The activation record selected no dependency. The PostgreSQL checkpoint selects exact pg 8.23.0 and @types/pg 8.23.1, and the Redis checkpoint selects exact @redis/client 6.2.1 after the live evidence below; S3 and broker clients remain unselected.
 - Live registry, official documentation, license, engine, install-script, dependency, audit, cancellation, deadline, redaction, shutdown, and removal evidence must precede installation.
 - A Kafka client selected in P01-R07 is provisional until P01-R09 confirms bounded lifecycle against a real broker. Failure requires replacement and repetition of the affected adapter gates before Phase 01 closeout.
 
 Current interpretation
-- P01-R07 is active. The dependency-free clock/ID local candidate and narrow PostgreSQL connectivity adapter are implemented; Redis, S3, and broker adapters remain planned.
+- P01-R07 is active. The dependency-free clock/ID local candidate plus narrow PostgreSQL and Redis connectivity adapters are implemented; S3 and broker adapters remain planned.
 - @aster/runtime exposes a frozen system clock returning current fresh Date values, a fixed clock returning isolated deterministic Date values, a UUID v4 generator backed by crypto.randomUUID, and a finite deterministic generator that copies a bounded unique safe identifier sequence without invoking accessors.
 - Invalid clock and deterministic-ID configuration uses repository-owned cause-free errors with one stable issue. Deterministic sequence exhaustion uses a fixed cause-free error.
 
@@ -42,7 +42,7 @@ Clock and identifier focused evidence
 
 Pending checkpoint evidence
 - Clock/ID source commit 2309f94 is the current coherent checkpoint.
-- Redis, S3, and broker client selection and adapters remain planned. Real PostgreSQL interoperability remains P01-R09 and is not claimed by the controlled-fake and refused-loopback evidence below.
+- S3 and broker client selection and adapters remain planned. Real PostgreSQL and Redis interoperability remain P01-R09 and are not claimed by the controlled-fake and refused-loopback evidence below.
 
 PostgreSQL client selection evidence
 - Registry metadata inspected live on 2026-08-26 selected exact pg 8.23.0, published 2026-08-08 under MIT with Node.js >=16 support, no install script, and a 100044-byte unpacked package. Exact @types/pg 8.23.1, published 2026-08-17 under MIT, supplies development-only declarations.
@@ -66,3 +66,30 @@ PostgreSQL focused evidence
 - Targeted ESLint and Prettier checks: PASS.
 - pnpm check:changed: PASS; 37 of 37 selected tasks, 23 cached, in 9.435 seconds of Turborepo time and 10.46 seconds elapsed. The gate includes package build/typecheck/tests plus repository lint, format, unused-code, architecture, documentation, memory, community, toolchain, CI, local-platform, and secret validation.
 - The coherent PostgreSQL source commit remains pending at this evidence checkpoint. Real-container and clean-checkout evidence are deferred by the written P01-R07 repeat triggers until all adapter package and lockfile changes stabilize.
+
+PostgreSQL checkpoint commit
+- Commit 1ded757 records the selected client, @aster/postgres package, lockfile, architecture documentation, repository memory, and evidence as one coherent checkpoint.
+
+Redis client selection evidence
+- Registry metadata inspected live on 2026-08-26 selected exact @redis/client 6.2.1, published 2026-08-11 under MIT with Node.js >=20 support, no install script, a 5211572-byte unpacked package, SHA-512 integrity LzxBY7SIBvvJiyCgcaJZZakE3fJrZZ++i24+EDW9fKpCl68D35uJcKFpZZwCfOoG9WZTbyZlMzMeM0gtOAMU9Q==, and SHA-1 202d6c6bc88f1ed791fc50604d6d792ddf75438b.
+- The only required production dependency is cluster-key-slot 1.1.2 under Apache-2.0. Optional peers are @node-rs/xxhash ^1.1.0 and @opentelemetry/api >=1 <2; the native xxhash peer is not installed, and the already selected @opentelemetry/api 1.9.1 satisfies the optional telemetry peer without a duplicate.
+- The workspace install completed on Node.js 24.19.0 with two added pure-JavaScript packages, the repository supply-chain policy passing, and no native build or install-script boundary. pnpm audit --audit-level=high reports no known vulnerability.
+- Exact 6.2.1 declarations and source expose finite commandsQueueMaxLength, disableOfflineQueue, connectTimeout, reconnectStrategy, AbortSignal command options, command timeout options, close(), and destroy().
+- Exact command-queue source removes abort and timeout listeners when a command moves from the write queue to the waiting-for-reply queue. Therefore those options do not prove cancellation of an already written command. Exact connect source also accepts no AbortSignal and can retry according to reconnectStrategy.
+- The adapter adds its own connect and operation deadlines. It disables offline queueing, caps both the vendor queue and repository in-flight count, bounds reconnect attempts and delay, and destroys the current client generation after probe abort, timeout, malformed reply, or unknown command failure. A later explicit connect creates a clean generation.
+- Exit path: @aster/redis owns the sole @redis/client dependency and exports no RedisClientType, RedisClientOptions, command, key, or vendor error type. Removing the package and lockfile graph removes the client without changing durable state because Redis is non-authoritative and no cache policy exists.
+
+Redis implemented contract
+- @aster/redis accepts only a bounded plain own-data URL and lifecycle configuration. It exposes connect, fixed PING probe, bounded availability snapshot, stable sanitized outcomes, one shared close, and @aster/runtime lifecycle hooks.
+- The first slice exposes no generic Redis command, key, value, TTL, invalidation, Lua, lease, rate limit, cache-aside behavior, or product state. This keeps later capabilities owned by their contexts and prevents a premature raw-client abstraction.
+- One shared bounded connect preserves caller-local cancellation. Automatic reconnect is capped at the selected attempt count and linear bounded delay. Commands are rejected while offline, and excess repository operations are rejected before the vendor queue grows.
+- Probe abort or timeout destroys the whole client generation because exact source cannot prove cancellation after write. Shutdown prevents new work, aborts adapter operations, destroys the client once, waits bounded local/background settlements, and reports failed rather than completed if vendor destruction throws.
+- Dependency telemetry uses only redis/connect and redis/probe with the released finite outcomes. Error events update only a bounded availability state; endpoint, credential, vendor error, command argument, and reconnect cause are discarded.
+
+Redis focused evidence
+- @aster/redis typecheck and build: PASS; generated public declarations contain no @redis/client, RedisClientType, RedisClientOptions, or cluster-key-slot reference.
+- @aster/redis test: PASS, 13 of 13 tests. Coverage includes hostile configuration, exact finite client policy, ready connect/probe, shared connect and caller-local cancellation, connect timeout and generation recovery, in-flight capacity, probe abort and explicit recovery, probe timeout, bounded reconnect state, concurrent/idempotent close, pre-aborted close, close timeout, vendor destroy failure, cause-free lifecycle errors, refused-loopback diagnostic, and declaration isolation.
+- Refused-loopback diagnostic on 127.0.0.1:1: PASS with stable JSON {event:redis_diagnostic_passed, unavailableOutcome:unavailable, close:completed}; no endpoint, credential, vendor error, or stack is emitted and the subprocess exits within three seconds.
+- Targeted typecheck, build, tests, ESLint, Prettier, Knip, architecture, diagnostic, high-severity audit, secret scan, and git diff checks pass.
+- pnpm check:changed: PASS; 40 of 40 selected tasks, 27 cached, in 11.562 seconds of Turborepo time and 12.64 seconds elapsed. The first attempt correctly stopped on two continuous synthetic credential URLs; fixtures were changed to construct the redaction canary without resembling committed credentials, and the complete repeated gate passed.
+- The coherent Redis source commit remains pending at this evidence checkpoint. Real-container and clean-checkout evidence are deferred by the written P01-R07 repeat triggers until all adapter package and lockfile changes stabilize.

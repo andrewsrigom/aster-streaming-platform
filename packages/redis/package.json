@@ -1,0 +1,29 @@
+{
+  "name": "@aster/redis",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bounded non-authoritative Redis connectivity for Aster Node.js services.",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "check": "node ./dist/src/check-redis.js",
+    "test": "node --test ./dist/test/*.test.js",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "dependencies": {
+    "@aster/telemetry": "workspace:*",
+    "@redis/client": "6.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

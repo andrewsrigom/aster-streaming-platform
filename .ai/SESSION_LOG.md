@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented bounded Redis connectivity candidate
+
+### Completed
+
+- Selected exact `@redis/client@6.2.1` after current registry, exact-source, license, engine, install, dependency, audit, cancellation, reconnect, lifecycle, and removal review.
+- Added `@aster/redis` with disabled offline queueing, bounded command capacity and reconnect attempts/delay, shared finite connect, fixed `PING`, caller cancellation, stable sanitized outcomes, finite telemetry/state, generation replacement, and idempotent lifecycle close.
+- Exposed no generic Redis command, cache key/value, TTL, invalidation, Lua, lease, rate limit, or product state. Redis remains non-authoritative and real interoperability remains P01-R09.
+
+### Evidence
+
+- Redis typecheck/build, 13 of 13 focused tests, ESLint, Prettier, Knip, architecture validation, refused-loopback diagnostic, vendor-free declarations, exact MIT/Apache-2.0 graph, high-severity audit, and secret scan pass. The affected graph passes 40 of 40 tasks, 27 cached, in `11.562` seconds of Turborepo time and `12.64` seconds elapsed; the coherent source commit remains next.
+- Raw selection and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Pass and record the affected-scope gate, commit the Redis checkpoint, then start the S3 streaming adapter.
+
 ## 2026-08-26 — Implemented bounded PostgreSQL connectivity candidate
 
 ### Completed
