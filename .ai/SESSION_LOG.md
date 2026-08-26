@@ -18,11 +18,11 @@ Append new entries at the top. Keep entries factual and concise.
 - Candidate affected gate: 31 of 31 tasks passed with 16 cached in `9.202s` of Turbo task time.
 - Complete candidate gate: 31 of 31 tasks passed with zero cache in `15.44s`; wrapper elapsed `18.18s`; high-severity audit reports no known vulnerability.
 - Documentation validates 134 documents and 335 internal links; repository-memory, architecture, lint, format, unused-code, CI, platform, community, security, and Git whitespace checks pass.
-- Raw artifact: `evidence/phase-01/runtime-lifecycle.txt` (`IMPLEMENTED`).
+- Implementation commit: `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea`; raw artifact: `evidence/phase-01/runtime-lifecycle.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Create a local coherent commit without publishing it. Keep PR 11 as the frozen predecessor; after its protected release, rebase this candidate onto clean `main`, repeat the affected and real lifecycle evidence, then publish for the bounded review and protected gates.
+Keep the local candidate unpublished. Keep PR 11 as the frozen predecessor; after its protected release, rebase this candidate onto clean `main`, repeat the affected and real lifecycle evidence, then publish for the bounded review and protected gates.
 
 ## 2026-08-26 — Activated bounded runtime lifecycle work
 

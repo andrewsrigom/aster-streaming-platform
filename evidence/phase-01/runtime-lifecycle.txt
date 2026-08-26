@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED
 - Date: 2026-08-26
-- Source: Local `feat/p01-r05-lifecycle` branch based on frozen predecessor `dd9f2822969e042364f641c7a2bd5f5b84285a3d`; candidate commit pending
+- Source: Implementation commit `4d4eb920983e2ec7a02cd3ef4fdcea83d3463aea` on local `feat/p01-r05-lifecycle`, based on frozen predecessor `dd9f2822969e042364f641c7a2bd5f5b84285a3d`
 - Owner: Aster shared runtime infrastructure
 - Related requirement: P01-R05
 - Environment: Docker Desktop host with WSL2; no Docker resource used by this experiment
