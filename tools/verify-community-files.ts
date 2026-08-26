@@ -408,9 +408,10 @@ export async function scanCommunityFiles(root = repositoryRoot): Promise<Communi
   for (const duplicate of DUPLICATE_PULL_REQUEST_LOCATIONS) {
     try {
       const duplicatePath = resolve(root, duplicate);
-      await lstat(duplicatePath);
+      const duplicateMetadata = await lstat(duplicatePath);
       if (
         canonicalPullRequestPath &&
+        !duplicateMetadata.isSymbolicLink() &&
         (await realpath(duplicatePath)) === canonicalPullRequestPath
       ) {
         continue;

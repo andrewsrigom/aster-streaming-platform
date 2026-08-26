@@ -8,6 +8,8 @@ import {
   QUALITY_GATE_TASKS,
   runQualityGate,
   terminateQualityGateProcessTree,
+  type QualityGateSignal,
+  type QualityGateSignalSource,
 } from "./run-quality-gate.ts";
 
 const repositoryRoot = resolve(import.meta.dirname, "..");
@@ -66,6 +68,35 @@ function fakeQualityGateProcess(pid = 42): FakeQualityGateProcess {
     },
     onError(listener) {
       errorListener = listener;
+    },
+  };
+}
+
+function fakeQualityGateSignalSource(): {
+  readonly emit: (signal: QualityGateSignal) => void;
+  readonly listenerCount: (signal: QualityGateSignal) => number;
+  readonly source: QualityGateSignalSource;
+} {
+  const listeners: Record<QualityGateSignal, Set<() => void>> = {
+    SIGINT: new Set(),
+    SIGTERM: new Set(),
+  };
+  return {
+    emit(signal) {
+      for (const listener of [...listeners[signal]]) {
+        listener();
+      }
+    },
+    listenerCount(signal) {
+      return listeners[signal].size;
+    },
+    source: {
+      on(signal, listener) {
+        listeners[signal].add(listener);
+      },
+      off(signal, listener) {
+        listeners[signal].delete(listener);
+      },
     },
   };
 }
@@ -170,6 +201,45 @@ test("terminates the isolated process tree on timeout", async () => {
   assert.deepEqual(errors, [
     JSON.stringify({ check: "quality-gate", reason: "timeout", status: "error" }),
   ]);
+});
+
+test("terminates the isolated process tree when the wrapper receives a signal", async () => {
+  for (const [signal, expectedStatus] of [
+    ["SIGINT", 130],
+    ["SIGTERM", 143],
+  ] as const) {
+    const child = fakeQualityGateProcess(252);
+    const signals = fakeQualityGateSignalSource();
+    const errors: string[] = [];
+    let terminatedPid: number | undefined;
+    const statusPromise = runQualityGate(
+      [],
+      () => child,
+      (message) => {
+        errors.push(message);
+      },
+      (pid) => {
+        terminatedPid = pid;
+        queueMicrotask(() => {
+          child.emitClose(null);
+        });
+        return true;
+      },
+      60_000,
+      signals.source,
+    );
+
+    assert.equal(signals.listenerCount(signal), 1);
+    signals.emit(signal);
+
+    assert.equal(await statusPromise, expectedStatus);
+    assert.equal(terminatedPid, 252);
+    assert.deepEqual(errors, [
+      JSON.stringify({ check: "quality-gate", reason: "interrupted", status: "error" }),
+    ]);
+    assert.equal(signals.listenerCount("SIGINT"), 0);
+    assert.equal(signals.listenerCount("SIGTERM"), 0);
+  }
 });
 
 test("keeps manifest commands and task-level affected inputs aligned", async () => {

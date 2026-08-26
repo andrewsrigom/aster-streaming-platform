@@ -46,6 +46,27 @@ type StartQualityGate = (
 
 type TerminateQualityGate = (pid: number | undefined) => boolean;
 
+export type QualityGateSignal = "SIGINT" | "SIGTERM";
+
+export interface QualityGateSignalSource {
+  on(signal: QualityGateSignal, listener: () => void): void;
+  off(signal: QualityGateSignal, listener: () => void): void;
+}
+
+const processSignalSource: QualityGateSignalSource = {
+  on(signal, listener) {
+    process.on(signal, listener);
+  },
+  off(signal, listener) {
+    process.off(signal, listener);
+  },
+};
+
+const SIGNAL_EXIT_STATUS: Readonly<Record<QualityGateSignal, number>> = Object.freeze({
+  SIGINT: 130,
+  SIGTERM: 143,
+});
+
 interface TaskkillResult {
   readonly error?: Error;
   readonly status: number | null;
@@ -153,6 +174,7 @@ export async function runQualityGate(
   reportError: (message: string) => void = console.error,
   terminate: TerminateQualityGate = (pid) => terminateQualityGateProcessTree(pid),
   timeoutMs = QUALITY_GATE_TIMEOUT_MS,
+  signalSource: QualityGateSignalSource = processSignalSource,
 ): Promise<number> {
   let invocation: QualityGateInvocation;
   try {
@@ -184,7 +206,9 @@ export async function runQualityGate(
     let fallback: NodeJS.Timeout | undefined;
     let settled = false;
     let timedOut = false;
-    const finish = (status: number, reason?: "execution_failed" | "timeout") => {
+    let terminationSignal: QualityGateSignal | undefined;
+    const signalListeners = new Map<QualityGateSignal, () => void>();
+    const finish = (status: number, reason?: "execution_failed" | "interrupted" | "timeout") => {
       if (settled) {
         return;
       }
@@ -192,6 +216,9 @@ export async function runQualityGate(
       clearTimeout(timeout);
       if (fallback) {
         clearTimeout(fallback);
+      }
+      for (const [signal, listener] of signalListeners) {
+        signalSource.off(signal, listener);
       }
       if (reason) {
         reportError(JSON.stringify({ check: "quality-gate", reason, status: "error" }));
@@ -210,10 +237,32 @@ export async function runQualityGate(
       }, 5_000);
     }, timeoutMs);
 
+    for (const signal of ["SIGINT", "SIGTERM"] as const) {
+      const listener = (): void => {
+        if (settled || timedOut || terminationSignal) {
+          return;
+        }
+        terminationSignal = signal;
+        if (!terminate(child.pid)) {
+          finish(1, "execution_failed");
+          return;
+        }
+        fallback = setTimeout(() => {
+          finish(SIGNAL_EXIT_STATUS[signal], "interrupted");
+        }, 5_000);
+      };
+      signalListeners.set(signal, listener);
+      signalSource.on(signal, listener);
+    }
+
     child.onError(() => {
       finish(1, "execution_failed");
     });
     child.onClose((code) => {
+      if (terminationSignal) {
+        finish(SIGNAL_EXIT_STATUS[terminationSignal], "interrupted");
+        return;
+      }
       if (timedOut) {
         finish(1, "timeout");
         return;

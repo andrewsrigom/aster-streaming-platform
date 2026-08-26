@@ -46,9 +46,11 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 | Base history cannot be resolved | Turbo fails safe to conservative execution or returns nonzero; never report a false pass | Turbo diagnostic and process exit |
 | Selected quality task fails | Preserve its nonzero status | Existing task output |
 | Gate exceeds its 15-minute deadline | Kill the isolated POSIX process group or Windows process tree, return a stable timeout error, and bound the termination fallback | Runner contract test and terminal error |
+| Gate wrapper receives `SIGINT` or `SIGTERM` | Terminate the isolated child process tree, remove wrapper signal handlers, and return the conventional bounded signal exit status | Runner contract test and terminal error |
 | Clean tree has no affected task | Exit zero with Turbo's empty affected result | Turbo summary |
 | Documentation-only change | Select documentation, repository-memory when applicable, and security checks without package builds | Turbo dry-run and measured execution |
 | Package-source change | Select the changed package and dependent build/test/type tasks plus owned root lint/format/unused/architecture/security tasks | Turbo dry-run and focused execution |
+| Alternate pull-request template is a symbolic link to the canonical file | Reject the alternate path as a duplicate public template instead of treating matching real paths as a case-only alias | Community validator test and bounded violation |
 
 ## Data and contracts
 
@@ -68,8 +70,8 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 
 ## Implementation steps
 
-1. Add a typed quality-gate runner with one canonical task list, full and changed invocation construction, fixed SCM refs for changed mode, explicit Windows command-processor invocation, isolated process-tree timeout termination, and exact exit propagation.
-2. Wire `check` and `check:changed` to that runner, add focused unit/manifest contract tests to the existing toolchain tier, and keep existing governance fixtures portable across case-insensitive filesystems and Windows hosts without symbolic-link privilege.
+1. Add a typed quality-gate runner with one canonical task list, full and changed invocation construction, fixed SCM refs for changed mode, explicit Windows command-processor invocation, isolated process-tree termination for timeouts and wrapper signals, and exact exit propagation.
+2. Wire `check` and `check:changed` to that runner, add focused unit/manifest contract tests to the existing toolchain tier, reject symbolic alternate template locations while preserving case-insensitive canonical aliases, and keep governance fixtures portable across Windows hosts without symbolic-link privilege.
 3. Enable task-input-aware affected execution and fill input gaps for root lint and security ownership.
 4. Run dry and real affected checks against documentation and package-source fixtures without leaving synthetic changes in the final tree.
 5. Update the operating contract, agent loop, governance, delivery model, quality gates, local development, reusable prompt, and work-item template with the calibrated cadence and stopping rules.

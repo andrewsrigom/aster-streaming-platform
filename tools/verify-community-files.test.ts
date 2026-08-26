@@ -137,3 +137,31 @@ test("rejects symbolic community files when the host permits the fixture", async
     await rm(symbolicRoot, { force: true, recursive: true });
   }
 });
+
+test("rejects a symbolic alternate pull-request template location", async (context) => {
+  const symbolicRoot = await mkdtemp(join(tmpdir(), "aster-community-symbolic-alternate-"));
+  try {
+    await writeFixture(symbolicRoot);
+    try {
+      await symlink(
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        resolve(symbolicRoot, "PULL_REQUEST_TEMPLATE.md"),
+      );
+    } catch (error) {
+      if (process.platform === "win32" && (error as NodeJS.ErrnoException).code === "EPERM") {
+        context.skip("Windows host does not grant symbolic-link fixture permission");
+        return;
+      }
+      throw error;
+    }
+
+    const violations = await scanCommunityFiles(symbolicRoot);
+    assert.ok(
+      violations.some(
+        ({ file, rule }) => file === "PULL_REQUEST_TEMPLATE.md" && rule === "file-set",
+      ),
+    );
+  } finally {
+    await rm(symbolicRoot, { force: true, recursive: true });
+  }
+});
