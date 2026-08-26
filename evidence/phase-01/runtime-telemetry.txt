@@ -1,8 +1,8 @@
 Evidence: P01-R06 bounded runtime telemetry candidate
-Status: IMPLEMENTED; complete candidate, review, protected CI, and release verification pending
+Status: IMPLEMENTED; initial review remediated, confirmation review, protected remediation CI, and release verification pending
 Date: 2026-08-26
 Source base: 4d243351bb46ae6b63a80a9ca3b9186baa3c68ac
-Candidate commit: b277c689cc3de7960fa42d9a019c9711a9a67725
+Candidate commit: d970d66b7966493d43f8bf6f4460a59424607b65
 Branch: feat/p01-r06-telemetry
 Environment: Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace; amd64
 Runtime: Node.js v24.19.0; pnpm 11.24.0
@@ -43,6 +43,7 @@ Implemented contract
 - Process CPU time is canonical. CPU utilization is derived from CPU-time delta divided by elapsed monotonic time and CPUs available to the process, then bounded from zero through one.
 - Runtime observers stop before provider shutdown. Repeated and concurrent shutdown is idempotent and flush/shutdown results are sanitized.
 - Export timeout/failure increments process-local attempt/drop health without reflecting endpoint or error details and without changing readiness or product work.
+- The lifecycle flush hook rejects with one fixed cause-free error when the bounded operation aborts, times out, fails, or when the OpenTelemetry reader absorbs an exporter failure. Product recording still remains available; the runtime coordinator can now classify shutdown as degraded.
 
 Metric names and units
 - http.server.request.duration: seconds; official HTTP server boundaries 0.005 through 10 seconds.
@@ -97,10 +98,19 @@ Exact isolated-checkout evidence
 - Cleanup
   PASS; the resolved temporary root was checked against /tmp/aster-p01-r06-clean.* before recursive removal, and /tmp/aster-p01-r06-clean.9HFNWs no longer exists.
 
+Initial review and remediation evidence
+- Pull request 13 opened at documentation head d10e6128eb433c284c0467e287b02c0ad908a3f3. Protected run 33009107927 passed classification, dependency review, documentation/security, frozen source quality, audit, and the required aggregate.
+- Initial review 5034691076 at the exact head produced one blocking lifecycle finding in comment 3866381774: the public lifecycle hook discarded unsuccessful forceFlush outcomes, allowing the runtime coordinator to record a clean shutdown after a failed flush.
+- OpenTelemetry metrics SDK 2.10.0 inspection confirmed that PeriodicExportingMetricReader._runOnce catches export errors and onForceFlush awaits that non-rejecting method. The remediation therefore checks both the bounded operation result and the process-local export-failure counter around the shared flush.
+- Focused typecheck, build, nine tests, ESLint, Prettier, and telemetry diagnostic pass after remediation. Tests prove a successful local lifecycle flush, fixed cause-free rejection for an aborted flush, and fixed cause-free rejection after a stalled loopback OTLP export without reflecting the endpoint port.
+- Exact remediation candidate d970d66b7966493d43f8bf6f4460a59424607b65 passed a local no-local isolated checkout under /tmp/aster-p01-r06-review-d970d66. Frozen offline install reused 278 packages, downloaded zero, completed in 1.56 seconds, and observed 387,028 KiB maximum RSS.
+- The remediation checkout passed telemetry:check, 34 of 34 forced tasks with zero cached in 41.374 seconds, all 9 telemetry tests, all 39 runtime tests including degraded telemetry-hook behavior, audit with no known vulnerability, secret scanning with zero findings, exact clean Git, and exact SHA confirmation.
+- Cleanup passed after resolving and verifying the exact temporary root; /tmp/aster-p01-r06-review-d970d66 no longer exists.
+
 Failure evidence
-- A loopback HTTP server deliberately accepted an OTLP request without responding. forceFlush returned inside the 1-second test ceiling; exporter health recorded one bounded failure and a positive dropped-observation count; no endpoint or error entered a metric attribute.
+- A loopback HTTP server deliberately accepted an OTLP request without responding. The lifecycle flush rejected with a sanitized error inside the 1-second test ceiling; exporter health recorded one bounded failure and a positive dropped-observation count; no endpoint or error entered the error or a metric attribute.
 - A loopback OTLP server returned HTTP 200. forceFlush completed, exactly one request arrived at the assertion point, and health recorded one success with no drop.
-- An already-aborted signal returned aborted. Two concurrent shutdown calls shared one provider shutdown and returned completed/already_completed.
+- An already-aborted direct flush returned aborted and its lifecycle adapter rejected with the same sanitized failure. Two concurrent shutdown calls shared one provider shutdown and returned completed/already_completed.
 - The test process exited after runtime instrumentation, periodic readers, loopback sockets, and providers shut down, providing handle-cleanup evidence for the exercised path.
 
 Public-contract evidence
@@ -109,6 +119,6 @@ Public-contract evidence
 
 Current interpretation
 - The P01-R06 implementation exists and focused plus changed-scope gates pass.
-- Local complete and exact isolated-checkout gates now pass at candidate b277c689cc3de7960fa42d9a019c9711a9a67725.
-- This artifact does not yet prove review, protected CI, merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
-- Collector and Prometheus evidence belongs to P01-R09. Protected review and release evidence will be appended only after their exact checks pass.
+- Local complete and exact isolated-checkout gates now pass at remediation candidate d970d66b7966493d43f8bf6f4460a59424607b65.
+- Initial review and pre-remediation protected CI are proven. This artifact does not yet prove protected CI for the remediation, confirmation review, merge, post-merge run, Collector ingestion, Prometheus scrape, steady-state overhead, representative throughput, a cold package store, a public HTTPS clone, or another operating system/architecture.
+- Collector and Prometheus evidence belongs to P01-R09. Protected remediation, confirmation-review, and release evidence will be appended only after their exact checks pass.

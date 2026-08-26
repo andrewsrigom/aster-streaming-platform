@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Remediated telemetry lifecycle flush degradation
+
+### Completed
+
+- Protected pull-request run `33009107927` passed at pre-remediation head `d10e612`; initial review `5034691076` then identified one blocking lifecycle issue in comment `3866381774`.
+- Confirmed OpenTelemetry metrics SDK `2.10.0` absorbs periodic export errors during `onForceFlush`; remediation `d970d66` therefore evaluates both the bounded flush status and exporter-health failures during the shared operation.
+- The lifecycle adapter now rejects unsuccessful or exporter-degraded flushes with one fixed cause-free error, preserving product recording while allowing the runtime coordinator to record degraded shutdown.
+
+### Evidence
+
+- Focused typecheck, build, nine tests, ESLint, Prettier, and the telemetry diagnostic pass. Regression coverage includes successful local lifecycle flush, aborted lifecycle flush, and stalled loopback OTLP failure without endpoint reflection.
+- Exact no-local remediation checkout reused 278 frozen offline packages with zero downloads in `1.56s`, passed 34 of 34 forced uncached tasks in `41.374s`, audit, secret scan, clean Git, exact SHA confirmation, and validated temporary-root cleanup.
+- Raw evidence: `evidence/phase-01/runtime-telemetry.txt` (`IMPLEMENTED`; protected remediation CI, confirmation review, and release pending).
+
+### Next action
+
+Publish the remediation/evidence head once, pass protected CI, reply to and resolve the initial discussion, then request the single planned confirmation review.
+
 ## 2026-08-26 — Implemented the bounded telemetry candidate
 
 ### Completed
