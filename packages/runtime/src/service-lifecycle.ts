@@ -102,7 +102,7 @@ interface NormalizedLifecycleOptions {
   readonly stopConsumers: AsterShutdownHook | undefined;
   readonly flushTelemetry: AsterShutdownHook | undefined;
   readonly closeDependencies: AsterShutdownHook | undefined;
-  readonly forceClose: AsterForceClose;
+  readonly forceClose: () => unknown;
   readonly logger: Pick<AsterLogger, "info" | "warn"> | undefined;
 }
 
@@ -234,7 +234,7 @@ function normalizeOptions(input: AsterServiceLifecycleOptions): NormalizedLifecy
   return {
     closeDependencies: normalizeOptionalHook(input, "closeDependencies"),
     flushTelemetry: normalizeOptionalHook(input, "flushTelemetry"),
-    forceClose: forceCloseCandidate as AsterForceClose,
+    forceClose: forceCloseCandidate as () => unknown,
     logger: normalizeLogger(input),
     shutdownDeadlineMs,
     stopConsumers: normalizeOptionalHook(input, "stopConsumers"),
@@ -407,9 +407,17 @@ function createLifecycle(
       }
       forceReason = reason;
       controller.abort();
+      let forceCloseFailed = false;
       try {
-        normalized.forceClose();
+        const forceCloseResult: unknown = normalized.forceClose();
+        if (forceCloseResult !== undefined) {
+          forceCloseFailed = true;
+          void Promise.resolve(forceCloseResult).catch(() => undefined);
+        }
       } catch {
+        forceCloseFailed = true;
+      }
+      if (forceCloseFailed) {
         failedStages.push("force_close");
         report("warn", {
           event: "aster.lifecycle.stage_failed",

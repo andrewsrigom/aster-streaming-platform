@@ -10,7 +10,13 @@ import { bindAsterProcessSignalsToTargetForTest } from "../src/process-signals.j
 
 class FakeSignalTarget {
   exitCode: number | string | undefined;
+  readonly exitCalls: Array<null | number | string | undefined> = [];
   readonly listeners = new Map<AsterProcessSignal, Set<() => void>>();
+
+  exit(code?: null | number | string): never {
+    this.exitCalls.push(code);
+    return undefined as never;
+  }
 
   off(signal: AsterProcessSignal, listener: () => void): void {
     this.listeners.get(signal)?.delete(listener);
@@ -84,6 +90,28 @@ test("a repeated process signal forces one active graceful shutdown", async () =
     outcome: "forced",
     trigger: "sigint",
   });
+});
+
+test("a failed force close hard-terminates with the first signal status", async () => {
+  const target = new FakeSignalTarget();
+  const lifecycle = createAsterServiceLifecycle({
+    forceClose: () => {
+      throw new Error("force-close-private-canary");
+    },
+    stopTraffic: () => Promise.reject(new Error("stop-private-canary")),
+  });
+  const binding = bindAsterProcessSignalsToTargetForTest(lifecycle, target);
+
+  target.emit("SIGTERM");
+  assert.deepEqual(await binding.completion(), {
+    failedStages: ["stop_traffic", "force_close"],
+    forceReason: "stage_failure",
+    outcome: "forced",
+    trigger: "sigterm",
+  });
+  assert.deepEqual(target.exitCalls, [143]);
+  assert.equal(target.listenerCount("SIGINT"), 0);
+  assert.equal(target.listenerCount("SIGTERM"), 0);
 });
 
 test("one target cannot have competing signal owners and disposal releases it", () => {

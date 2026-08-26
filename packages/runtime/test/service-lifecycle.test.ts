@@ -6,6 +6,7 @@ import {
   ASTER_SHUTDOWN_DEADLINE_MAX_MS,
   AsterLifecycleError,
   createAsterServiceLifecycle,
+  type AsterForceClose,
   type AsterLogEntry,
   type AsterLogWriteResult,
   type AsterServiceLifecycle,
@@ -383,6 +384,27 @@ test("a throwing force-close path remains bounded and cause-free", async () => {
     trigger: "manual",
   });
   assert.doesNotMatch(JSON.stringify(result), /force-close-private-canary/u);
+});
+
+test("a promise-returning force-close path fails closed without an unhandled rejection", async () => {
+  const asyncForceClose = (() =>
+    Promise.reject(new Error("async-force-close-private-canary"))) as unknown as AsterForceClose;
+  const lifecycle = createAsterServiceLifecycle(
+    options({
+      forceClose: asyncForceClose,
+      stopTraffic: () => Promise.reject(new Error("stop-private-canary")),
+    }),
+  );
+
+  const result = await lifecycle.shutdown();
+  await Promise.resolve();
+  assert.deepEqual(result, {
+    failedStages: ["stop_traffic", "force_close"],
+    forceReason: "stage_failure",
+    outcome: "forced",
+    trigger: "manual",
+  });
+  assert.doesNotMatch(JSON.stringify(result), /private-canary/u);
 });
 
 test("emits stable lifecycle events without reflecting hook errors", async () => {

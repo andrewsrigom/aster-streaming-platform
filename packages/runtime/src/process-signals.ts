@@ -29,6 +29,7 @@ export class AsterProcessSignalBindingError extends Error {
 
 interface AsterProcessSignalTarget {
   exitCode: null | number | string | undefined;
+  exit(code?: null | number | string): never;
   off(signal: AsterProcessSignal, listener: () => void): unknown;
   on(signal: AsterProcessSignal, listener: () => void): unknown;
 }
@@ -85,8 +86,23 @@ function bindAsterProcessSignalsToTarget(
     } catch {
       // Exit-code assignment is advisory; bounded shutdown remains authoritative.
     }
-    shutdownCompletion = lifecycle.shutdown(signal);
-    void shutdownCompletion.then(dispose, dispose);
+    const hardTerminate = (): void => {
+      dispose();
+      target.exit(conventionalExitCode);
+    };
+    try {
+      shutdownCompletion = lifecycle.shutdown(signal);
+    } catch {
+      hardTerminate();
+      return;
+    }
+    void shutdownCompletion.then((result) => {
+      if (result.failedStages.includes("force_close")) {
+        hardTerminate();
+        return;
+      }
+      dispose();
+    }, hardTerminate);
   };
 
   function onSigint(): void {

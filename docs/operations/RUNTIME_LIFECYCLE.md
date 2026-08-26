@@ -44,7 +44,7 @@ lifecycle.markReady();
 
 Domain and application code do not import this composition or Node.js HTTP types. Express and Apollo remain inside `@aster/http-express`.
 
-`forceClose` is the composition root's last-resort closure for every owned resource that can keep the event loop alive after a resource-closing hook rejects or ignores cancellation. The example names HTTP, consumer, and dependency force paths explicitly; a service with fewer owners supplies only its real force paths. Each adapter keeps framework and client types behind its own boundary.
+`forceClose` is the composition root's synchronous last-resort closure for every owned resource that can keep the event loop alive after a resource-closing hook rejects or ignores cancellation. It must attempt every owner and return `undefined`; a thrown error, returned Promise/thenable, or other returned value is classified as `force_close` failure. The example names HTTP, consumer, and dependency force paths explicitly; a service with fewer owners supplies only its real force paths. Each adapter keeps framework and client types behind its own boundary.
 
 ## Shutdown contract
 
@@ -70,7 +70,7 @@ A rejected hook records only its stable stage; the raw rejection is not returned
 - A repeated signal during active drain requests immediate force close.
 - Completion or explicit `dispose()` removes both listeners and releases signal ownership.
 
-The binding does not call `process.exit()`. Resource closure lets the event loop finish naturally, so buffered output and eligible cleanup retain their bounded opportunity.
+Graceful completion and successful force close do not call `process.exit()`. Resource closure lets the event loop finish naturally, so buffered output and eligible cleanup retain their bounded opportunity. If the composition-wide force-close callback throws, the result records only `force_close`, then the signal owner removes its listeners and calls `process.exit()` with the first signal's conventional status. The same last-resort fallback applies if lifecycle coordination unexpectedly rejects. This path may truncate buffered output by design: it runs only after graceful and force-close ownership have failed, preventing a leaked live handle from defeating bounded process termination. A manual shutdown caller that does not use the signal binding must apply an equivalent terminal policy when `failedStages` contains `force_close`.
 
 ## Node.js HTTP behavior
 
@@ -108,7 +108,7 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-The suite exercises hostile configuration, health transitions, shared shutdown, exact stage order, hook failure, deterministic deadline, repeated signals, logger failure, a real `SIGTERM` subprocess, and real loopback sockets for graceful and forced HTTP closure. The process-signal diagnostic is skipped on native Windows because its Unix signal semantics are not portable; the supported WSL path executes it.
+The suite exercises hostile configuration, health transitions, shared shutdown, exact stage order, hook failure, deterministic deadline, repeated signals, logger failure, a graceful real `SIGTERM` subprocess, a live-handle subprocess whose force close throws and reaches the hard fallback, and real loopback sockets for graceful and forced HTTP closure. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
 
 Current raw evidence and limitations are in [P01-R05 lifecycle evidence](../../evidence/phase-01/runtime-lifecycle.txt).
 
