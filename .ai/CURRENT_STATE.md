@@ -39,6 +39,9 @@ Status: **IN_PROGRESS**
 - A dependency-free repository-memory validator checks ten bounded `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and session structure; 10 focused tests and the twenty-task local graph pass.
 - `ai:check` and `ai:test` are integrated into the root gate and the always-applicable dependency-free CI governance path; CI policy rejects removal of either command.
 - The first public P00-R08 pull-request run passed repository-memory validation, documentation/security, complete source quality, dependency review, and the stable aggregate check.
+- The root README exposes the exact Phase 00 clone, pinned bootstrap, focused and complete checks, current repository-only checkpoint, and bounded cleanup path while keeping Phase 01 Docker runtime and Phase 07 playable demonstration commands planned.
+- `pnpm clean:foundation` accepts no path argument, validates regular repository markers, removes only `.turbo` and `node_modules`, and passes five focused cleanup tests including an external symlink target; a real cleanup, frozen recovery, twenty-task uncached gate with 78 tests, and registry audit pass locally.
+- The first public P00-R09 pull-request run passed repository-memory validation, documentation/security, complete source quality including cleanup tests, dependency review, and the stable aggregate check.
 
 ## Not implemented
 
@@ -52,7 +55,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Document exact bootstrap, check, demonstration, and cleanup commands for P00-R09, preserving the current split between implemented foundation commands and planned application commands.
+Execute P00-R10 from a clean public clone, capture the final Phase 00 evidence index at the merged revision, verify every requirement and next-phase prerequisite, and close the phase only if all exit-gate conditions pass.
 
 ## Current risks
 
@@ -62,6 +65,8 @@ Document exact bootstrap, check, demonstration, and cleanup commands for P00-R09
 - GitHub APIs prove that community templates are recognized but do not prove every browser-specific rendering detail; Markdown issue forms avoid dependence on the preview issue-form schema.
 - Secret-scanning validity checks and non-provider patterns are disabled and unclaimed; CodeQL remains deliberately deferred until representative application source exists.
 - Repository-memory validation proves explicit structure and cross-file targets, not the semantic truth of arbitrary prose or append-only history across Git revisions.
+- The P00-R09 recovery measurement reused a warm pnpm content-addressable store; P00-R10 still owns final execution from a clean public clone.
+- Foundation cleanup intentionally does not remove Docker state or future durable local data; Phase 01 must implement and verify a separate explicit project-scoped reset.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

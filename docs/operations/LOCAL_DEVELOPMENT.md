@@ -2,13 +2,18 @@
 
 ## Current status
 
-The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript policy, source formatting and linting, unused-code analysis, architecture-boundary validation, static documentation validation, redacting secret scan, repository-local Git hooks, CI workflow, and Turborepo task graph are implemented and verified by [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [hosted repository evidence](../../evidence/phase-00/public-repository-governance.txt). The first `main` workflow completed successfully on GitHub. Application, infrastructure, and demonstration commands remain contracts for their owning Phase 00 and Phase 01 work items; they are not yet claimed as executable.
+The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript policy, source formatting and linting, unused-code analysis, architecture-boundary validation, static documentation validation, redacting secret scan, repository-local Git hooks, CI workflow, and Turborepo task graph are implemented and verified by [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt), and [hosted repository evidence](../../evidence/phase-00/public-repository-governance.txt). The first `main` workflow completed successfully on GitHub. The root README contains the currently executable bootstrap, check, and bounded foundation-cleanup commands. Application, infrastructure, Docker runtime, and playable demonstration commands remain planned for their owning phases.
 
-## Required tools
+## Current foundation tools
 
 - Node.js `24.19.0`, pinned by `.nvmrc`, `.node-version`, and `package.json`;
 - pnpm `11.24.0`, provisioned through Corepack from the integrity-pinned `packageManager` field;
 - Git;
+
+## Future checkpoint tools
+
+The following tools are not required to execute the Phase 00 repository checkpoint. Their exact supported versions and operating constraints belong to the phases that first use them:
+
 - container runtime with Compose support;
 - FFmpeg and FFprobe compatible with the media recipe;
 - enough disk for source and generated media;
@@ -54,42 +59,27 @@ On the measured Phase 00 WSL environment, a documentation-only pre-commit comple
 
 ## Command contract
 
-The repository exposes the foundation and source-quality commands above and will grow three operational feedback lanes. Exact application and infrastructure scripts remain planned until their Phase 00 and Phase 01 work items implement and verify them.
+The root README is the copy-paste entrypoint for the currently executable foundation commands. The repository will grow three operational feedback lanes without changing the phase order. Exact application and infrastructure scripts remain planned until their owning work items implement and verify them.
 
 ### Development lane
 
-```bash
-pnpm install --frozen-lockfile
-pnpm infra:up
-pnpm db:migrate
-pnpm seed
-pnpm dev
-```
+The current development lane uses `pnpm install --frozen-lockfile`, focused checks, `pnpm check`, `pnpm audit --audit-level=high`, and `pnpm clean:foundation` as documented in the root README. Phase 01 will add canonical interfaces for dependency startup, readiness, diagnostics, migrations, seed data, integration tests, shutdown, and destructive local reset. Later phases add browser, media, failure, and load commands only when they have executable implementations.
 
-Additional operational commands:
-
-```bash
-pnpm infra:status
-pnpm infra:logs
-pnpm infra:down
-pnpm local:reset
-pnpm test:integration
-pnpm test:e2e
-pnpm test:load:smoke
-pnpm docs:check
-```
-
-The fast changed-scope gate will not run every integration, browser, media, failure, or load suite on each commit. The final script names and affected-graph behavior are selected in Phase 00.
+The fast changed-scope gate will not run every integration, browser, media, failure, or load suite on each commit. Each owning phase selects its final script names and affected-graph behavior only when the implementation exists.
 
 ### Docker-only demo lane
 
-The verified slice will expose one Compose command that requires no host Node.js, pnpm, database, broker, object storage, telemetry, FFmpeg, or hosted credentials. The final command is recorded after the Compose layout and minimum version are verified. It must build or pull pinned images, run one-shot initialization, wait for health, print the useful URL and diagnostics, and support explicit project-scoped cleanup.
+Phase 01 will expose one Compose command for its runtime-laboratory slice that requires no host Node.js, pnpm, database, broker, object storage, telemetry, FFmpeg, or hosted credentials. The command is recorded only after the Compose layout and minimum version are verified. It must build or pull pinned images, run one-shot initialization, wait for health, print the useful status or URL and diagnostics, and support explicit project-scoped cleanup. Phase 07 expands the same lane into the first playable HLS checkpoint.
 
 ### Laboratory lane
 
 Named Compose profiles or targeted one-shot commands will activate resource-heavy dependencies and experiments only when the active phase needs them. The full broker, observability stack, media worker, browser suite, failure laboratory, and load tools are not mandatory for ordinary edits.
 
-`local:reset` must require explicit local-environment confirmation and must never accept a hosted database URL.
+The future destructive local reset must require explicit local-environment confirmation and must never accept a hosted database URL.
+
+### Foundation cleanup
+
+`pnpm clean:foundation` is executable now. It accepts no path argument, validates the repository markers, and removes only root `.turbo` and `node_modules`. It is intentionally separate from future Docker-volume and durable local-data reset commands.
 
 ## CI and supply-chain commands
 
@@ -168,7 +158,9 @@ Do not commit full source films or generated HLS packages to the source reposito
 
 ## Troubleshooting sequence
 
-1. run `infra:status`;
+After Phase 01 implements the runtime-laboratory commands:
+
+1. run the documented infrastructure-status command;
 2. inspect service readiness;
 3. validate configuration;
 4. check migration state;
