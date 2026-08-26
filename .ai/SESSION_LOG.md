@@ -10,17 +10,19 @@ Append new entries at the top. Keep entries factual and concise.
 - Classified discussion `3865708507` as a blocking availability finding: a resource-closing hook could reject without releasing its live event-loop handle, after which the coordinator canceled its only deadline and the signal binding removed its handlers.
 - Remediation `6b9acb2` preserved remaining eligible cleanup, then invoked composition-wide force close once with stable reason `stage_failure` for failed traffic, consumer, or dependency closure. Protected run `33001670494` passed, evidence reply `3865769157` was posted, and the initial discussion was resolved.
 - Confirmation discussion `3865804838` found that the first remediation could run dependency teardown while a consumer that failed to stop was still active. Ordering remediation `fe61fc4` force-closes immediately and starts no later graceful stage; telemetry-flush-only failure still proceeds through dependency closure and remains degraded.
+- Protected run `33002748501` passed at ordering closeout `4f115a4`, evidence reply `3865854616` was posted, and discussion `3865804838` was resolved. Boundary confirmation discussion `3865880765` then found that a throwing force-close callback could still leave a live handle after the signal owner removed its handlers.
+- Hard-fallback remediation `fc44892` makes signal-owned shutdown dispose listeners and call `process.exit(130|143)` only when the force-close stage fails or lifecycle coordination rejects. Graceful and successful forced paths still exit naturally. Promise/thenable and other non-`undefined` returns also fail the synchronous force-close contract, with returned rejection consumed without reflection.
 - Clarified that the composition root's `forceClose` must cover every owned resource capable of keeping the event loop alive. No dependency, lockfile, Docker resource, service, product context, schema, durable data, or hosted resource changed.
 
 ### Evidence
 
-- Exact ordering-remediation typecheck, build, and 36 of 36 runtime tests pass, including exact execution prefixes for traffic, consumer, and dependency close failures plus telemetry-only degradation. Focused wrapper elapsed was `0.81s`; real stuck-socket closure was `106.315242ms` and the real `SIGTERM` subprocess completed in `82.638225ms`.
-- Exact ordering-remediation `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `8.235s` of Turbo task time and `9.32s` elapsed. Documentation validates 135 files and 354 links; memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass.
-- High-severity audit reports no known vulnerability in `0.80s`.
+- Exact hard-fallback typecheck, build, and 39 of 39 runtime tests pass. A real subprocess with a live timer and throwing force close exits `143` in `52.246017ms`; normal graceful `SIGTERM` completes in `71.560548ms`, the stuck socket closes in `106.167801ms`, and the Promise-returning force regression emits no unhandled rejection or canary.
+- Exact hard-fallback `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `6.797s` of Turbo task time and `7.77s` elapsed. Documentation validates 135 files and 354 links; memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass.
+- High-severity audit reports no known vulnerability in `0.79s`.
 
 ### Next action
 
-Commit the ordering evidence closeout, push once, pass protected CI at the resulting exact head, reply to and resolve discussion `3865804838`, then run the allowed availability-boundary confirmation before protected merge.
+Commit the hard-fallback evidence closeout, push once, pass protected CI at the resulting exact head, reply to and resolve discussion `3865880765`, then obtain final boundary confirmation before protected merge.
 
 ## 2026-08-26 — Released verification correction and rebased lifecycle
 

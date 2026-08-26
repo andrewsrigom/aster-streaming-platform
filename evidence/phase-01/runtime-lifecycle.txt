@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED
 - Date: 2026-08-26
-- Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e`, initial remediation `6b9acb254ec85e113374db4e5764b1ca15909544`, and ordering remediation `fe61fc40f50eadeb2e5b7ce197cdfcc52be80c68` on `feat/p01-r05-lifecycle`, based on released `main` `92d3531b684ea259b840942f858584e5e364937c`
+- Source: Implementation commit `60e980800d3426d702c4ad4b2e3026c04623252e` plus availability remediations through hard-fallback commit `fc448925260994517d4eb42328c2fb4970506e21` on `feat/p01-r05-lifecycle`, based on released `main` `92d3531b684ea259b840942f858584e5e364937c`
 - Owner: Aster shared runtime infrastructure
 - Related requirement: P01-R05
 - Environment: Docker Desktop host with WSL2; no Docker resource used by this experiment
@@ -34,13 +34,13 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-The current suite contains 36 tests across lifecycle, process-signal, Node.js HTTP, declaration-isolation, and existing structured-logging behavior. Lifecycle cases cover hostile options and accessors, health transitions, lease completion, shutdown order, one shared Promise, resource-closing rejection, telemetry-only degradation, a deterministic deadline scheduler, repeated signals, force-close failure, logger failure, secret canaries, and bounded result fields.
+The current suite contains 39 tests across lifecycle, process-signal, Node.js HTTP, declaration-isolation, and existing structured-logging behavior. Lifecycle cases cover hostile options and accessors, health transitions, lease completion, shutdown order, one shared Promise, resource-closing rejection, telemetry-only degradation, a deterministic deadline scheduler, repeated signals, throwing and Promise-returning force-close failure, hard signal fallback, logger failure, secret canaries, and bounded result fields.
 
 The real-socket cases use one graceful request and one deliberately stuck request. The real-process case spawns the compiled fixture, waits for its `READY` marker, sends `SIGTERM`, and observes its hooks and exit status. Native Windows skips only this Unix signal-semantics case; WSL executes it.
 
 ## Results
 
-The focused typecheck, build, and all 36 tests pass at ordering-remediation commit `fe61fc4`. The exact focused test process completed in `275.397456 ms`; wrapper elapsed was `0.81s` with maximum observed RSS `141,716` KiB.
+The focused typecheck, build, and all 39 tests pass at hard-fallback commit `fc44892`. The exact focused test process completed in `265.699455 ms`; wrapper elapsed was `0.79s` with maximum observed RSS `142,220` KiB.
 
 | Observation | Result |
 |---|---|
@@ -52,7 +52,9 @@ The focused typecheck, build, and all 36 tests pass at ordering-remediation comm
 | Deterministic deadline | Shared signal aborted, force close called once, forced result returned |
 | Graceful real socket | Existing request completed; new connection refused after drain began |
 | Stuck real socket | Forced at the 100 ms configured deadline; latest observation `106.075123 ms` |
-| Real `SIGTERM` subprocess | `STOP_TRAFFIC`, then `CLOSE_DEPENDENCIES`; exit code `143`; no force close; latest observation `73.040916 ms` |
+| Real `SIGTERM` subprocess | `STOP_TRAFFIC`, then `CLOSE_DEPENDENCIES`; exit code `143`; no force close; latest exact observation `71.560548 ms` |
+| Real `SIGTERM` with live handle and throwing force close | Signal owner hard-exits with code `143`; no private canary; latest exact observation `52.246017 ms` |
+| Promise-returning force close | Classified as `force_close`; returned rejection is consumed without reflection or unhandled rejection |
 | Throwing logger | Shutdown remains completed and bounded |
 | Generated lifecycle declarations | No Express, Apollo, Fastify, Pino, PostgreSQL, Redis, broker, or telemetry SDK reference |
 
@@ -98,7 +100,13 @@ Official references:
 - exact ordering-remediation typecheck, build, and all 36 tests pass. The three resource-closing regressions assert the exact executed prefix, telemetry-only degradation is separate, the real stuck socket closes in `106.315242 ms`, and the real `SIGTERM` subprocess completes in `82.638225 ms`;
 - exact ordering-remediation `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `8.235s` of Turbo task time; wrapper elapsed was `9.32s` with maximum observed RSS `620,084` KiB. Documentation, repository memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass;
 - the high-severity audit reports no known vulnerability in `0.80s`;
-- the availability-boundary confirmation allowed by the review stopping rule, protected CI at the new head, discussion resolution, merge, and post-merge evidence remain pending.
+- protected run `33002748501` passed every applicable job at ordering closeout `4f115a4ff1249f24ff6fc31d8a2bd6ef6c28b845`. Evidence reply `3865854616` was posted and discussion `3865804838` was resolved;
+- availability-boundary confirmation discussion `3865880765` found that a throwing composition-wide force close could still leave a live handle after the coordinator completed. Hard-fallback remediation `fc448925260994517d4eb42328c2fb4970506e21` makes the signal owner dispose its handlers and use the first signal's conventional `process.exit` status only when `force_close` fails or lifecycle coordination rejects. Graceful and successful forced paths still exit naturally;
+- the same remediation treats any non-`undefined` force-close return, including a Promise/thenable, as a synchronous-contract failure and consumes a returned rejection without reflection or an unhandled rejection;
+- exact hard-fallback typecheck, build, and all 39 tests pass. The real live-handle/throwing-force subprocess exits `143` in `52.246017 ms`; the normal real `SIGTERM` remains graceful in `71.560548 ms`, and the real stuck socket closes in `106.167801 ms`;
+- exact hard-fallback `pnpm check:changed` passes 15 of 15 selected tasks with 7 cached in `6.797s` of Turbo task time; wrapper elapsed was `7.77s` with maximum observed RSS `625,648` KiB. Documentation, repository memory, architecture, lint, formatting, unused-code, security, community, platform, CI-policy, and package checks pass;
+- the high-severity audit reports no known vulnerability in `0.79s`;
+- protected CI at the hard-fallback head, discussion resolution, final boundary confirmation, merge, and post-merge evidence remain pending.
 
 ## Limitations and next evidence
 
@@ -108,4 +116,4 @@ Official references:
 - Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
 - Native Windows signal semantics are not claimed; the supported WSL path is measured.
 - The original isolated checkout predates the squash rebase; its applicability is limited to unchanged bootstrap, lifecycle build, declarations, real socket/process behavior, and complete successful gate execution as reasoned above.
-- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until protected CI at the ordering-remediated head and its allowed availability-boundary confirmation pass.
+- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until protected CI at the hard-fallback head and final boundary confirmation pass.
