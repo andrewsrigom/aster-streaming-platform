@@ -273,6 +273,11 @@ const requireJsonContentType: RequestHandler = (
     next();
     return;
   }
+  const rawContentEncoding = request.get("content-encoding");
+  if (rawContentEncoding !== undefined && rawContentEncoding.trim().toLowerCase() !== "identity") {
+    writeError(response, 415, "UNSUPPORTED_MEDIA_TYPE");
+    return;
+  }
   try {
     const rawContentType = request.get("content-type");
     if (rawContentType && !hasDuplicateCharsetParameter(rawContentType)) {
