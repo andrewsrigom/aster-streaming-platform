@@ -69,6 +69,8 @@ DataLoader caches must be request-scoped to prevent cross-user data leakage.
 - Generate a software bill of materials for releases.
 - Verify container provenance when the delivery platform supports it.
 
+The Phase 00 repository currently enforces exact lockfile installation, immutable GitHub Action commits, read-only workflow permissions, dependency-change review, high-severity registry audit, and bounded redacting secret scans through the staged hook, local gate, and configured CI workflow. Local verification is recorded in [`evidence/phase-00/ci-security-foundation.txt`](evidence/phase-00/ci-security-foundation.txt). Hosted workflow, secret-scanning, push-protection, and repository-setting results are not claimed until the public remote is created and audited.
+
 ## Sensitive data
 
 Do not store more personal data than the product requires. Use synthetic data in fixtures and evidence. Define retention and deletion behavior before collecting analytics beyond operational telemetry.

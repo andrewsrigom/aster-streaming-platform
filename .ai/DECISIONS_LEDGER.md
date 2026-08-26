@@ -26,6 +26,9 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Architecture-boundary enforcement | Use a bounded repository-owned TypeScript AST scanner with explicit inward-dependency rules and adverse fixtures | `evidence/phase-00/source-quality-foundation.txt` |
 | Local commit feedback | Use repository-owned staged-file and commit-message hooks; keep repository-wide and heavyweight gates explicit | `evidence/phase-00/source-quality-foundation.txt` |
 | Static documentation validation | Use a bounded dependency-free repository validator for local links, structure, terminology, and evidence-supported current-status claims; do not make network reachability part of the deterministic local gate | `evidence/phase-00/documentation-validation.txt` |
+| CI event and aggregation policy | Use pull-request validation, `main` post-merge push, manual dispatch, superseded-run cancellation, path classification, and one stable `CI required` result | `evidence/phase-00/ci-security-foundation.txt` |
+| CI action supply chain | Pin checkout `v7.0.1`, setup-node `v7.0.0`, cache `v6.1.0`, and dependency-review `v5.0.0` to reviewed full verified commits | `evidence/phase-00/ci-security-foundation.txt` |
+| Secret and dependency review | Use a bounded redacting repository scanner locally and in CI, high-severity pnpm audit after frozen install, and GitHub pull-request dependency/license review; add hosted secret protection during remote governance | `evidence/phase-00/ci-security-foundation.txt` |
 
 ## Pending decisions
 

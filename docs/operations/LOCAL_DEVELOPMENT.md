@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript policy, source formatting and linting, unused-code analysis, architecture-boundary validation, static documentation validation, repository-local Git hooks, and Turborepo task graph are implemented and verified by [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt) and [documentation evidence](../../evidence/phase-00/documentation-validation.txt). CI, application, infrastructure, and demonstration commands remain contracts for their owning Phase 00 and Phase 01 work items; they are not yet claimed as executable.
+The Phase 00 toolchain guard, pnpm workspace, frozen lockfile, strict TypeScript policy, source formatting and linting, unused-code analysis, architecture-boundary validation, static documentation validation, redacting secret scan, repository-local Git hooks, locally validated CI configuration, and Turborepo task graph are implemented and verified by [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), and [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt). The workflow has not run on GitHub because the ordered public remote does not exist yet. Application, infrastructure, and demonstration commands remain contracts for their owning Phase 00 and Phase 01 work items; they are not yet claimed as executable.
 
 ## Required tools
 
@@ -87,6 +87,32 @@ The verified slice will expose one Compose command that requires no host Node.js
 Named Compose profiles or targeted one-shot commands will activate resource-heavy dependencies and experiments only when the active phase needs them. The full broker, observability stack, media worker, browser suite, failure laboratory, and load tools are not mandatory for ordinary edits.
 
 `local:reset` must require explicit local-environment confirmation and must never accept a hosted database URL.
+
+## CI and supply-chain commands
+
+Run the complete local decision with:
+
+```bash
+pnpm check
+pnpm audit --audit-level=high
+```
+
+Focused commands are available for diagnosis:
+
+```bash
+pnpm check:source
+pnpm security:check
+pnpm security:test
+pnpm security:staged
+pnpm ci:check
+pnpm ci:test
+```
+
+`security:check` scans tracked and non-ignored untracked text without printing matched values. `security:staged` reads bytes from the Git index, so an unstaged working-tree edit cannot hide a staged finding. High-confidence provider patterns, private-key headers, credential-bearing data URLs, and non-placeholder credential assignments fail; binary or invalid-UTF-8 files are skipped and require their owning format-specific scanner later.
+
+The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
+
+The configured GitHub governance job runs documentation, secret, and CI-policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. The dependency-review action requires a public pull-request context and therefore remains configured but not hosted-verified until publication.
 
 ## Local endpoints
 

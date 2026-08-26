@@ -13,8 +13,8 @@ This report validates the static specification package and the current Phase 00 
 - Delivery phase specifications: **15**
 - Specialized agent skills: **16**
 - Architecture decision records, including the template: **11**
-- Total Markdown size: **467,677 bytes**
-- Local Markdown links checked: **223**
+- Total Markdown size: **477,874 bytes**
+- Local Markdown links checked: **237**
 
 ## Checks
 

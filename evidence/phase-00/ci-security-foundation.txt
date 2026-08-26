@@ -1,0 +1,182 @@
+ASTER PHASE 00 CI AND SECURITY FOUNDATION EVIDENCE
+==================================================
+
+Work item: P00-R06
+Evidence date: 2026-08-26
+Commit: local candidate tree; hosted workflow evidence is captured after authorized publication
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04
+Runtime: Node.js 24.19.0; pnpm 11.24.0; Docker daemon 26.0.0
+
+OFFICIAL ACTION SELECTION
+-------------------------
+
+GitHub API release and commit verification on 2026-08-26:
+
+actions/checkout v7.0.1
+- release published: 2026-07-20T15:10:05Z
+- reviewed verified commit: 3d3c42e5aac5ba805825da76410c181273ba90b1
+
+actions/setup-node v7.0.0
+- release published: 2026-07-14T02:46:05Z
+- reviewed verified commit: 820762786026740c76f36085b0efc47a31fe5020
+
+actions/cache v6.1.0
+- release published: 2026-06-26T19:17:06Z
+- reviewed verified commit: 55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+
+actions/dependency-review-action v5.0.0
+- release published: 2026-05-08T20:23:50Z
+- reviewed verified commit: a1d282b36b6f3519aa1f3fc636f609c47dddb294
+
+All workflow `uses:` entries contain one of those full commits and a matching release comment. The repository policy validator rejects changed, short, movable, or unknown external action references.
+
+Primary sources:
+- https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+- https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency
+- https://docs.github.com/en/actions/reference/security/secure-use
+- https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching
+- https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review
+- https://github.com/actions/checkout/releases/tag/v7.0.1
+- https://github.com/actions/setup-node/releases/tag/v7.0.0
+- https://github.com/actions/cache/releases/tag/v6.1.0
+- https://github.com/actions/dependency-review-action/releases/tag/v5.0.0
+
+WORKFLOW CONTRACT
+-----------------
+
+Triggers:
+- pull_request: opened, reopened, synchronize, ready_for_review;
+- push: main only;
+- workflow_dispatch: explicit diagnosis;
+- pull_request_target: absent;
+- feature-branch push: absent.
+
+Controls:
+- concurrency group per pull request or ref with cancel-in-progress true;
+- permissions: contents read only;
+- persisted checkout credentials disabled on every checkout;
+- no secret context reference;
+- explicit ubuntu-24.04 runner;
+- exact Node.js 24.19.0 in every Node job;
+- governance path performs no dependency install;
+- full source path restores only the pnpm store, then performs frozen install;
+- dependency review runs only on non-draft pull requests;
+- stable aggregate job name: CI required.
+
+Path behavior:
+- Markdown, docs, evidence, skills, and .ai-only changes use the governance path;
+- added, copied, modified, renamed, or deleted source, manifest, workflow, environment template, empty diff, invalid object, or failed Git diff selects the full path;
+- a real 16-file executable commit range classified full;
+- an absent base object classified fallback full.
+
+WORKFLOW SYNTAX AND POLICY
+--------------------------
+
+actionlint: 1.7.12
+release: https://github.com/rhysd/actionlint/releases/tag/v1.7.12
+linux amd64 archive SHA-256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+checksum verification: PASS
+workflow parse and actionlint rules: PASS, 0 errors
+
+actionlint reported that optional shellcheck and pyflakes executables were not installed. The workflow contains no Python; shell fragments remain covered by actionlint parsing, the repository policy, and focused local execution. P00-R10 observes the actual hosted workflow before the required check is protected.
+
+$ pnpm ci:check
+result: PASS, 0 violations
+
+$ pnpm ci:test
+result: PASS
+tests: 13 passed, 0 failed
+
+Adverse policy fixtures reject movable action tags, write permissions, secret context, feature-push duplication, missing cancellation, weakened aggregate results, and incomplete Dependabot ecosystems. Change-classifier fixtures cover docs-only, executable, empty, duplicate, unsafe, unbounded, and malformed Git output.
+
+DOCUMENTATION VALIDATION
+------------------------
+
+$ pnpm docs:check
+result: PASS
+documents: 127
+headings: 1752
+local links: 237
+status claims: 2
+violations: 0
+elapsed: 0.67 seconds
+maximum resident set observed: 142384 KiB
+
+The current Markdown inventory contains 127 files and 477874 bytes outside dependency, Git, and Turbo state directories.
+
+SECRET SCANNING
+---------------
+
+The dependency-free scanner bounds 10,000 repository files or 500 staged files, 2,000,000 bytes per file, 50,000,000 total bytes, 4,096-byte paths, 20,000-character lines, and 100 redacted findings. The full scan includes tracked and non-ignored untracked files. Staged mode reads Git index blobs. Symbolic links are scanned as link text; binary and invalid-UTF-8 files are skipped.
+
+$ pnpm security:check
+result: PASS, 0 findings
+
+$ pnpm security:test
+result: PASS
+tests: 6 passed, 0 failed
+
+Safe synthetic fixtures cover provider-key shapes, private-key headers, credential-bearing data URLs, generic assignments, accepted placeholders, line reporting, malformed Git paths, and a real temporary Git index. Findings contain only file, line, rule, and redacted detail; tests prove the matched value is absent from serialized output.
+
+DEPENDENCY REVIEW
+-----------------
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities found
+elapsed: 0.77 seconds
+maximum resident set observed: 149852 KiB
+
+Installed license inventory:
+- MIT: 78 package entries;
+- Apache-2.0: 12;
+- BSD-2-Clause: 6;
+- BSD-3-Clause: 2;
+- ISC: 9;
+- BlueOak-1.0.0: 1.
+
+The pull-request action enforces high severity across runtime, development, and unknown scopes and allows only that reviewed license set. The action relies on the GitHub dependency graph and cannot run without a public pull-request context; its hosted result remains pending publication.
+
+MEASURED FEEDBACK LANES
+-----------------------
+
+Representative staged hook over the 25-file work-item change:
+- staged index secret scan plus applicable Prettier and ESLint checks;
+- result: PASS, 0 secret findings and no formatting or lint violation;
+- elapsed: 5.02 seconds;
+- maximum resident set observed: 394488 KiB.
+
+Governance path without dependency installation:
+- documentation, repository secrets, CI policy, and 27 governance tests;
+- result: PASS;
+- elapsed: 1.78 seconds;
+- maximum resident set observed: 89412 KiB.
+
+Source-only path:
+- ten tasks, including frozen-toolchain, type, lint, format, unused, architecture, and repository-tool tests;
+- result: PASS, 10 of 10 tasks;
+- elapsed: 4.63 seconds;
+- maximum resident set observed: 427764 KiB.
+
+Forced complete local graph:
+- result: PASS, 16 of 16 tasks, 0 cached;
+- focused built-in tests: 52 passed, 0 failed;
+- elapsed: 4.94 seconds;
+- maximum resident set observed: 426308 KiB.
+
+Cached complete local graph:
+- result: PASS, 16 of 16 tasks;
+- 13 cached; exact toolchain checks and repository secret scan intentionally uncached;
+- elapsed: 1.05 seconds;
+- maximum resident set observed: 141976 KiB.
+
+BOUNDARIES AND LIMITATIONS
+-------------------------
+
+- No remote, hosted secret, repository setting, workflow run, cache entry, dependency-review API result, or required status check is claimed in this local work item.
+- Pattern scanning reduces common credential leaks but cannot prove that arbitrary bytes contain no secret. GitHub secret scanning and push protection join during remote governance.
+- Invalid UTF-8 and binary artifacts require their owning format-specific scanner in later phases.
+- Registry audit is point-in-time and can change as advisories change.
+- Cache restoration changes duration only; frozen lockfile integrity remains authoritative.
+- Dependency-review and license behavior is configured from current official v5 documentation and is observed after the public repository exists.
+- P00-R07 adds public contribution templates and then creates and audits the authorized remote.
+- P00-R10 repeats the complete path from a clean public checkout.

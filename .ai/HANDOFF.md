@@ -1,10 +1,10 @@
 # Handoff
 
-P00-R01, the Phase 00 alignment audit, P00-R11, P00-R03, P00-R02, P00-R04, and P00-R05 are complete. No application implementation has started.
+P00-R01, the Phase 00 alignment audit, P00-R11, P00-R03, P00-R02, P00-R04, P00-R05, and P00-R06 are complete. No application implementation has started.
 
-P00-R11 added the engineering demonstration contract, progressive Docker-only checkpoints, coherent commit and tiered-check policy, and public GitHub governance. The repository owner authorized the future public target `andrewsrigom/aster-streaming-platform`; it does not exist yet and remains sequenced after local Git, checks, and CI.
+The repository has an exact Node.js and pnpm toolchain, deterministic root-only workspace, strict source and documentation gates, lightweight repository hooks, bounded redacting secret scans, and a locally validated CI workflow. The complete forced graph passes sixteen tasks and 52 focused tests. Passing evidence is indexed under `evidence/phase-00/`, including `ci-security-foundation.txt` for the latest work item.
 
-P00-R03 pins Node.js `24.19.0` and pnpm `11.24.0` and provides a dependency-free toolchain guard. P00-R02 initializes local Git on `main`, the root-only workspace and lockfile, deterministic attributes and ignores, and Turborepo `2.10.12`. P00-R04 adds exact strict source tools, a bounded architecture scanner, 25 focused tests, ten Turbo gates, and lightweight repository-local hooks. P00-R05 adds bounded static documentation validation, 8 adverse tests, and two more Turbo tasks without changing the commit hook. Passing evidence is in `evidence/phase-00/toolchain-selection.txt`, `evidence/phase-00/workspace-foundation.txt`, `evidence/phase-00/source-quality-foundation.txt`, and `evidence/phase-00/documentation-validation.txt`.
+The repository owner authorized the future public target `andrewsrigom/aster-streaming-platform`; it does not exist yet. The checked-in workflow, dependency review, Dependabot policy, secret-scanning integration, and immutable action pins are locally verified. No hosted workflow result, public setting, secret-protection result, or required status check is claimed.
 
 ## Resume point
 
@@ -12,9 +12,11 @@ P00-R03 pins Node.js `24.19.0` and pnpm `11.24.0` and provides a dependency-free
 2. Read `.ai/CONTEXT.md`.
 3. Read `.ai/CURRENT_STATE.md`.
 4. Read `docs/specs/phase-00-foundation.md`.
-5. Select only the first `READY` item: P00-R06, CI, secret scanning, and dependency review.
-6. Move P00-R06 to `IN_PROGRESS` and create `.ai/CHANGE_PLAN.md` from `docs/templates/WORK_ITEM_TEMPLATE.md`.
-7. Add the smallest non-duplicated workflow set with a stable aggregate result, safe secret fixtures, dependency review, immutable actions, least privilege, concurrency cancellation, and current local-equivalent evidence before remote creation.
+5. Select only the first `READY` item: P00-R07 contribution governance and repository templates.
+6. Move the template item to `IN_PROGRESS` and create `.ai/CHANGE_PLAN.md` from `docs/templates/WORK_ITEM_TEMPLATE.md`.
+7. Add focused public contribution, issue, security-reporting, and pull-request guidance that matches the executable commands and MIT contribution terms.
+8. Validate template syntax, links, truthfulness, and the full local gate before closing the item.
+9. Only then confirm the configured GitHub identity and target absence before the separately queued public-repository creation and settings audit.
 
 ## Do not do yet
 

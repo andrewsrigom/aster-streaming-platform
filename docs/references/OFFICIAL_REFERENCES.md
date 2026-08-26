@@ -54,6 +54,20 @@ Do not infer that every film or asset uses the same license. Review each officia
 - Knip 6.32.2 registry metadata: https://registry.npmjs.org/knip/6.32.2
 - `@types/node` 24.13.3 registry metadata: https://registry.npmjs.org/%40types%2Fnode/24.13.3
 
+## Continuous integration and supply chain
+
+- GitHub Actions workflow syntax: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+- GitHub Actions concurrency: https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency
+- Secure use and immutable action pins: https://docs.github.com/en/actions/reference/security/secure-use
+- Dependency caching reference: https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching
+- GitHub dependency review: https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review
+- Dependency review configuration: https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/manage-your-dependency-security/configure-dependency-review-action
+- checkout `v7.0.1`: https://github.com/actions/checkout/releases/tag/v7.0.1
+- setup-node `v7.0.0`: https://github.com/actions/setup-node/releases/tag/v7.0.0
+- cache `v6.1.0`: https://github.com/actions/cache/releases/tag/v6.1.0
+- dependency-review-action `v5.0.0`: https://github.com/actions/dependency-review-action/releases/tag/v5.0.0
+- actionlint `v1.7.12`: https://github.com/rhysd/actionlint/releases/tag/v1.7.12
+
 ## GraphQL and Apollo
 
 - GraphQL specification: https://spec.graphql.org/

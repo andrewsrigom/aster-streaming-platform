@@ -33,6 +33,11 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`.githooks/commit-msg`](../../.githooks/commit-msg) — Commit Message Hook
 - [`.githooks/pre-commit`](../../.githooks/pre-commit) — Bounded Staged-File Hook
 
+## .github
+
+- [`.github/dependabot.yml`](../../.github/dependabot.yml) — Low-Noise Dependency Update Policy
+- [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — Pull-Request and Main CI Decision
+
 ## .ai
 
 - [`.ai/CHANGE_PLAN.md`](../../.ai/CHANGE_PLAN.md) — Active Change Plan
@@ -69,12 +74,18 @@ This index lists repository governance artifacts and every Markdown source in th
 
 - [`tools/check-staged-files.ts`](../../tools/check-staged-files.ts) — Bounded Staged-File Dispatcher
 - [`tools/check-staged-files.test.ts`](../../tools/check-staged-files.test.ts) — Staged-File Dispatcher Tests
+- [`tools/classify-ci-change.ts`](../../tools/classify-ci-change.ts) — Fail-Safe CI Change Classifier
+- [`tools/classify-ci-change.test.ts`](../../tools/classify-ci-change.test.ts) — CI Change Classifier Tests
+- [`tools/scan-secrets.ts`](../../tools/scan-secrets.ts) — Bounded Redacting Secret Scanner
+- [`tools/scan-secrets.test.ts`](../../tools/scan-secrets.test.ts) — Secret Scanner Tests
 - [`tools/validate-commit-message.ts`](../../tools/validate-commit-message.ts) — Commit Message Validator
 - [`tools/validate-commit-message.test.ts`](../../tools/validate-commit-message.test.ts) — Commit Message Validator Tests
 - [`tools/verify-architecture.ts`](../../tools/verify-architecture.ts) — Architecture Boundary Scanner
 - [`tools/verify-architecture.test.ts`](../../tools/verify-architecture.test.ts) — Architecture Boundary Scanner Tests
 - [`tools/verify-documentation.ts`](../../tools/verify-documentation.ts) — Static Documentation Validator
 - [`tools/verify-documentation.test.ts`](../../tools/verify-documentation.test.ts) — Documentation Validator Tests
+- [`tools/verify-ci-policy.ts`](../../tools/verify-ci-policy.ts) — GitHub Actions and Dependabot Policy Validator
+- [`tools/verify-ci-policy.test.ts`](../../tools/verify-ci-policy.test.ts) — CI Policy Validator Tests
 - [`tools/verify-toolchain.mjs`](../../tools/verify-toolchain.mjs) — Dependency-Free Toolchain Guard
 - [`tools/verify-toolchain.test.mjs`](../../tools/verify-toolchain.test.mjs) — Toolchain Guard Tests
 
@@ -210,5 +221,6 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`evidence/phase-00/README.md`](../../evidence/phase-00/README.md) — Phase 00 Evidence Index
 - [`evidence/phase-00/source-quality-foundation.txt`](../../evidence/phase-00/source-quality-foundation.txt) — Source Quality Foundation Evidence
 - [`evidence/phase-00/documentation-validation.txt`](../../evidence/phase-00/documentation-validation.txt) — Documentation Validation Evidence
+- [`evidence/phase-00/ci-security-foundation.txt`](../../evidence/phase-00/ci-security-foundation.txt) — CI and Security Foundation Evidence
 - [`evidence/phase-00/toolchain-selection.txt`](../../evidence/phase-00/toolchain-selection.txt) — Node.js and pnpm Selection Evidence
 - [`evidence/phase-00/workspace-foundation.txt`](../../evidence/phase-00/workspace-foundation.txt) — Git and Workspace Foundation Evidence

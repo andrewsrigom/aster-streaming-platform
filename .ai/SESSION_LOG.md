@@ -2,6 +2,26 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Efficient and secure CI foundation
+
+### Completed
+
+- Added one least-privilege GitHub Actions workflow for pull requests, `main` pushes, and manual diagnosis with concurrency cancellation and one stable `CI required` result.
+- Added fail-safe path classification, a dependency-free redacting repository and staged-index secret scanner, a workflow-policy validator, and focused adverse tests.
+- Pinned every external action to a reviewed immutable commit, kept frozen installation authoritative over cache restoration, and added high-severity registry audit, pull-request dependency and license review, and bounded weekly Dependabot groups.
+- Hardened the aggregate decision against unexpected skipped jobs and made source deletions select the complete quality path.
+
+### Evidence
+
+- Passed checksum-verified actionlint `1.7.12` with zero workflow error, 13 focused CI-policy/classification tests, 6 secret-scanner tests, and 27 dependency-free governance tests.
+- Passed frozen installation without changing manifests, the forced sixteen-task graph with 52 focused tests in `4.94` seconds of Turbo task time, and the registry audit with no known vulnerability.
+- Verified 127 Markdown documents, 237 local links, zero secret finding, and zero CI-policy violation; hosted workflow and repository protections remain deliberately unclaimed until publication.
+- Raw evidence: `evidence/phase-00/ci-security-foundation.txt`.
+
+### Next action
+
+Execute P00-R07 by adding contribution governance and repository templates before the authorized public repository is created and audited.
+
 ## 2026-08-26 — Executable documentation truthfulness gate
 
 ### Completed

@@ -1,3 +1,4 @@
 #!/bin/sh
 
+node ./tools/scan-secrets.ts --staged || exit $?
 exec node ./tools/check-staged-files.ts

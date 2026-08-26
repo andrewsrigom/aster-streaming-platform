@@ -2,7 +2,7 @@
 
 ## Current status
 
-Local Git is initialized on `main`; deterministic attributes and ignores, strict source and documentation gates, executable architecture boundaries, staged-file and commit-message hooks, and the pinned workspace check are implemented with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt) and [documentation evidence](../../evidence/phase-00/documentation-validation.txt). Staged secret scanning, CI, GitHub templates, the public remote, and hosted protections remain planned Phase 00 work.
+Local Git is initialized on `main`; deterministic attributes and ignores, strict source and documentation gates, executable architecture boundaries, staged secret/file and commit-message hooks, the pinned workspace check, and the CI workflow are implemented and locally validated with [source-quality evidence](../../evidence/phase-00/source-quality-foundation.txt), [documentation evidence](../../evidence/phase-00/documentation-validation.txt), and [CI security evidence](../../evidence/phase-00/ci-security-foundation.txt). GitHub templates, the public remote, hosted workflow results, and hosted protections remain planned Phase 00 work.
 
 The repository owner has authorized creation of the public target `andrewsrigom/aster-streaming-platform`. Supported tool selection and local Git initialization are complete; creation remains ordered after the initial quality workflows and a final remote-existence check.
 
@@ -55,7 +55,7 @@ Quality gates are intentionally split by speed and risk.
 | Tier | Trigger | Scope | Intended feedback |
 |---|---|---|---|
 | Edit | developer action | editor diagnostics and targeted tests | immediate |
-| Commit | local commit | commit metadata plus fast staged-file formatting and lint; staged secret checks join in P00-R06 | seconds, not a repository-wide build |
+| Commit | local commit | commit metadata plus bounded staged-secret scanning and fast staged-file formatting and lint | seconds, not a repository-wide build |
 | Push | explicit pre-push or `check:changed` | affected formatting, lint, type checks, unit tests, and documentation | fast enough for normal iteration |
 | Pull request | ready-for-review PR | authoritative affected jobs, install integrity, tests, documentation, security, and dependency review | complete merge decision |
 | Phase or release gate | explicit command or workflow dispatch | clean install, integration containers, browser, load, failure, media, and release evidence required by the phase | comprehensive and measured |
@@ -78,11 +78,7 @@ The following source gates are implemented:
 - Conventional Commit validation for local commit messages.
 - Markdown UTF-8, title, fence, unresolved-merge-marker, local-link, heading-fragment, canonical-terminology, and evidence-supported current-status validation.
 
-The remaining Phase 00 gates are planned and must not be described as executable yet:
-
-- secret and credential scanning;
-- dependency-license and vulnerability review;
-- Conventional Commit validation for pull-request titles and merge results.
+Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the configured full CI path. Pull-request dependency and license review is configured, but its hosted result remains unverified until the authorized public repository runs the workflow. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
 
 Auto-fix commands remain separate from check commands. CI runs checks and does not rewrite source.
 
@@ -117,6 +113,24 @@ For a single-maintainer repository, the initial ruleset requires the pull-reques
 
 Gate duration, cache effectiveness, cancellation, and false-positive cost are measured before adding or promoting a check. Slow checks are optimized or moved to a more appropriate tier; they are not silently removed when they protect a required invariant.
 
+## Implemented CI layout
+
+The checked-in `CI` workflow has one authoritative event policy and one stable aggregate job:
+
+| Job | When | Dependency install | Responsibility |
+|---|---|---:|---|
+| Classify change | Every run | No | Fail-safe full versus documentation-only path |
+| Documentation and security | Every run | No | Documentation, tracked secret, CI policy, and governance-tool tests |
+| Install and source quality | Non-draft executable/configuration changes, `main`, and manual fallback | Yes | Frozen install, source gates, and high-severity registry audit |
+| Dependency review | Non-draft pull requests | No | New dependency vulnerability, scope, and reviewed-license policy |
+| CI required | Every run | No | Stable result over every applicable prerequisite |
+
+The workflow uses `pull_request`, a `main`-only `push`, and `workflow_dispatch`; it does not use `pull_request_target` or feature-branch pushes. Superseded pull-request or ref runs cancel through concurrency grouping. Every job receives only `contents: read`, checkout persistence is disabled, and no repository secret is referenced.
+
+Current external actions are pinned to reviewed full commits for checkout `v7.0.1`, setup-node `v7.0.0`, cache `v6.1.0`, and dependency-review `v5.0.0`. The local policy validator rejects a movable tag, unknown action, changed pin, write permission, secret context, broad push trigger, missing cancellation, missing command, or weakened aggregate. Action and runner upgrades are focused supply-chain changes with new evidence.
+
+The pnpm cache contains only the content-addressed store and is keyed by runner OS and lockfile hash. Restored content is untrusted; `pnpm install --frozen-lockfile` still verifies and materializes dependencies. No credential, `node_modules` tree, or build output belongs in the cache.
+
 ## GitHub repository settings
 
 The planned public repository is:
@@ -145,7 +159,7 @@ Required status-check names are configured only after the workflows have run and
 
 ## Authorized creation sequence
 
-Steps 1 through 3 are implemented locally. The public remote remains absent and steps 4 through 10 remain pending.
+Steps 1 through 4 are implemented locally. The public remote remains absent and steps 5 through 10 remain pending.
 
 1. Complete P00-R03 and record supported Node.js and pnpm versions.
 2. Complete the local Git and ignore-policy part of P00-R02 with `main` as the initial branch.

@@ -19,6 +19,7 @@
     },
     "//#format:check": {
       "inputs": [
+        ".github/**",
         ".githooks/**",
         "*.{js,json,jsonc,mjs,ts,yaml,yml}",
         "apps/**",
@@ -57,6 +58,24 @@
     },
     "//#docs:test": {
       "inputs": ["tools/verify-documentation.ts", "tools/verify-documentation.test.ts"]
+    },
+    "//#security:check": {
+      "cache": false
+    },
+    "//#security:test": {
+      "inputs": ["tools/scan-secrets.ts", "tools/scan-secrets.test.ts"]
+    },
+    "//#ci:check": {
+      "inputs": [".github/**", "tools/verify-ci-policy.ts"]
+    },
+    "//#ci:test": {
+      "inputs": [
+        ".github/**",
+        "tools/classify-ci-change.ts",
+        "tools/classify-ci-change.test.ts",
+        "tools/verify-ci-policy.ts",
+        "tools/verify-ci-policy.test.ts"
+      ]
     },
     "//#commit:test": {
       "inputs": ["tools/validate-commit-message.ts", "tools/validate-commit-message.test.ts"]
