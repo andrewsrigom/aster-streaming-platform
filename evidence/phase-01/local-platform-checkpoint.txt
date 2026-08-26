@@ -1,0 +1,306 @@
+ASTER P01-R01 LOCAL PLATFORM CHECKPOINT EVIDENCE
+================================================
+
+Work item: P01-R01 first Docker-only local platform checkpoint
+Evidence date: 2026-08-26
+Branch: feat/phase-01-local-platform
+Commit: local candidate tree; protected commit pending
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; linux/amd64 containers
+Acceptance: PASS_LOCAL; clean public-checkout and protected hosted smoke remain pending
+
+QUESTION AND SCOPE
+------------------
+
+Question: Can a new checkout start a bounded, health-gated PostgreSQL and Redis checkpoint through one Docker Compose command without host Node.js, hosted credentials, exposed dependency ports, product schema, or unrelated local-resource mutation?
+
+Implemented scope:
+- exact PostgreSQL and Redis official images;
+- internal Compose network;
+- one named PostgreSQL volume at the PostgreSQL 18 official parent mount;
+- disposable Redis state with bounded memory and allkeys-lfu eviction;
+- dependency health checks;
+- one-shot SQL and Redis protocol initialization;
+- ongoing status health across both dependencies;
+- CPU, memory, PID, startup, health, and shutdown bounds;
+- dependency-free policy and adverse tests;
+- Docker Compose configuration validation;
+- path-aware protected CI smoke candidate.
+
+Explicitly absent:
+- Node application or service;
+- product schema, migration, or data;
+- broker, object storage, telemetry, FFmpeg, router, or GraphQL;
+- host port or application URL;
+- destructive reset command;
+- hosted resource or credential.
+
+OFFICIAL SUPPORT, IMAGE, AND LICENSE REVIEW
+-------------------------------------------
+
+Primary sources reviewed:
+- PostgreSQL version policy: https://www.postgresql.org/support/versioning/
+- PostgreSQL 18.6 official image: https://hub.docker.com/_/postgres
+- Redis Open Source 8.10 release notes: https://redis.io/docs/latest/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.10-release-notes/
+- Redis licensing: https://redis.io/legal/licenses/
+- Redis official image: https://hub.docker.com/_/redis
+- Docker Compose startup order: https://docs.docker.com/compose/how-tos/startup-order/
+- Docker Compose up --wait: https://docs.docker.com/reference/cli/docker/compose/up/
+- Docker Compose resource limits: https://docs.docker.com/reference/compose-file/deploy/
+
+PostgreSQL decision:
+- version: 18.6, current supported PostgreSQL 18 minor during review;
+- upstream support end: November 14, 2030;
+- image: docker.io/library/postgres:18.6-alpine3.23;
+- multi-platform index digest: sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f;
+- amd64 manifest: sha256:8810a63e526404041442acb4d96b8d882dffd544df9c43f2ea59deac2004628f;
+- arm64 manifest: sha256:2913eb827c107447f37ab96d6c58581d158c20dd4bcca9666581a67ec45fd59f;
+- license: PostgreSQL License;
+- data layout: named volume at /var/lib/postgresql with PGDATA=/var/lib/postgresql/18/docker.
+
+Redis decision:
+- version: Redis Open Source 8.10.0 general availability from July 2026;
+- image: docker.io/library/redis:8.10.0-alpine;
+- multi-platform index digest: sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241;
+- amd64 manifest: sha256:a6a88248ad5b0c724b7f2b380b7d21f46097db158b2b077ef85bcb97f90aee3a;
+- arm64 manifest: sha256:0f8941c253cc39d98439a608dcb4f0a840b54421cc5109a68c72b2d2d223cea5;
+- license selection: AGPLv3 option from the Redis 8 tri-license;
+- treatment: unmodified external local service, separate from MIT-licensed Aster source;
+- retention: no AOF, no snapshot schedule, no named volume, bounded 128 MB dataset and allkeys-lfu eviction.
+
+The two image indexes share Alpine 3.23 for the measured architecture and include supply-chain attestation manifests. Digests prevent a tag from silently changing the reviewed artifact. LICENSES.md records the external terms and source locations.
+
+HOST AND INITIAL STATE
+----------------------
+
+- Docker client: 26.0.0
+- Docker server: 26.0.0
+- Docker Compose: v2.26.1-desktop.1
+- daemon CPUs: 6
+- daemon memory: 12,543,180,800 bytes
+- pre-existing Docker containers: 4, all stopped and unrelated
+- P01 test project: aster-p01-r01-dev
+- project containers before start: 0
+- project volumes before start: 0
+- project networks before start: 0
+
+No unrelated container, image, volume, network, or Docker Desktop setting was changed.
+
+STATIC AND COMPOSE MODEL VALIDATION
+-----------------------------------
+
+$ pnpm platform:check
+result: PASS, 0 violations
+
+$ pnpm platform:test
+result: PASS, 7 adverse tests
+
+Adverse cases reject:
+- floating and substituted images;
+- host ports, host networking, privilege, and bind mounts;
+- wrong PostgreSQL 18 mount and a Redis durability claim;
+- missing health and one-shot completion gates;
+- missing CPU, memory, PID, and graceful-stop bounds;
+- malformed, tab-delimited, and oversized configuration.
+
+$ docker compose --project-name aster-p01-r01-dev --file infra/compose/compose.yml config --quiet
+result: PASS
+
+$ pnpm check:source
+result: PASS after one local lint correction
+tasks: 12 of 12
+platform tests: 7 passed
+CI policy/classifier tests: 18 passed
+
+$ pnpm check
+result: PASS
+tasks: 22 of 22
+focused platform tests: 7 passed
+elapsed: 7.58 seconds
+maximum resident set observed for the complete gate: 453,412 KiB
+
+$ pnpm audit --audit-level=high
+result: PASS, no known vulnerabilities
+
+IMMUTABLE IMAGE PULL
+--------------------
+
+$ docker compose --project-name aster-p01-r01-dev --file infra/compose/compose.yml pull
+result: PASS
+elapsed: 11.79 seconds
+maximum resident set observed for Compose: 43,724 KiB
+
+Pulled local-platform image sizes for linux/amd64:
+- PostgreSQL: 302,294,786 bytes
+- Redis: 118,619,095 bytes
+
+FIRST EMPTY-PROJECT STARTUP
+---------------------------
+
+$ docker compose --project-name aster-p01-r01-dev --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+result: PASS
+elapsed: 9.80 seconds
+maximum resident set observed for Compose: 44,656 KiB
+
+Final service state:
+- postgres: running, healthy
+- redis: running, healthy
+- platform-init: exited 0 after PostgreSQL SELECT 1 and Redis PING
+- platform-status: running, healthy
+
+Initializer output:
+- aster local platform initialized
+- postgres=healthy
+- redis=healthy
+
+Runtime protocol versions:
+- PostgreSQL server_version: 18.6
+- Redis redis_version: 8.10.0
+
+No host binding exists for PostgreSQL 5432 or Redis 6379. The project network reports internal=true.
+
+RESOURCE AND SECURITY INSPECTION
+--------------------------------
+
+PostgreSQL:
+- CPU limit: 1,000,000,000 NanoCPUs (1.00 CPU)
+- memory limit: 805,306,368 bytes (768 MiB)
+- PID limit: 128
+- restart: unless-stopped
+- no-new-privileges: true
+- port bindings: none
+
+Redis:
+- CPU limit: 500,000,000 NanoCPUs (0.50 CPU)
+- memory limit: 268,435,456 bytes (256 MiB)
+- PID limit: 64
+- restart: unless-stopped
+- no-new-privileges: true
+- port bindings: none
+
+Status:
+- CPU limit: 250,000,000 NanoCPUs (0.25 CPU)
+- memory limit: 134,217,728 bytes (128 MiB)
+- PID limit: 32
+- read-only root filesystem: true
+- restart: unless-stopped
+- no-new-privileges: true
+- port bindings: none
+
+Initializer uses the same 0.25 CPU, 128 MiB, and 32 PID limits, has a read-only root filesystem, and does not restart after success.
+
+One idle sample:
+- platform-status: 1.29% CPU, 1.566 MiB, 2 PIDs
+- postgres: 1.30% CPU, 37.94 MiB, 9 PIDs
+- redis: 0.17% CPU, 6.445 MiB, 7 PIDs
+
+The initialized PostgreSQL volume occupied 65.39 MB. Point-in-time CPU values vary with health checks and are not capacity guarantees.
+
+PERSISTENCE AND NON-AUTHORITY TESTS
+-----------------------------------
+
+PostgreSQL container recreation:
+1. created a temporary p01_persistence_probe table and inserted value 42;
+2. stopped and removed only the project PostgreSQL container;
+3. recreated PostgreSQL against the named volume;
+4. observed a new container ID and value 42;
+5. dropped the temporary table.
+
+Result: PASS
+recreation elapsed: 2.83 seconds
+volume retained: aster-p01-r01-dev_postgres-data
+
+Redis container recreation:
+1. set aster:p01:probe=transient;
+2. stopped and removed only the project Redis container;
+3. recreated Redis without a volume;
+4. observed a new container ID and EXISTS=0;
+5. observed platform-status return healthy.
+
+Result: PASS, Redis state is disposable as designed
+recreation elapsed: 2.92 seconds
+
+Normal data-preserving stop:
+1. created temporary p01_stop_probe value 84;
+2. ran docker compose down without --volumes;
+3. verified the named PostgreSQL volume remained;
+4. started the checkpoint again and observed value 84;
+5. dropped the temporary table.
+
+Result: PASS
+normal down elapsed: 0.54 seconds
+warm startup elapsed: 7.38 seconds
+
+FAILURE DETECTION AND RECOVERY
+------------------------------
+
+Controlled failure: stop only the project PostgreSQL container while platform-status continues.
+
+Result:
+- platform-status transitioned to unhealthy in 13,945 milliseconds;
+- no retry loop or container restart hid the dependency outage;
+- after PostgreSQL start, PostgreSQL and platform-status returned healthy in 2,834 milliseconds.
+
+The measurement uses one polling observer at one-second resolution. It proves bounded detection under the configured three-attempt status health check; it is not an availability SLI.
+
+EXACT VERIFICATION CLEANUP
+--------------------------
+
+Before deletion, Docker label inspection proved:
+- exactly 4 containers belonged to com.docker.compose.project=aster-p01-r01-dev;
+- exactly 1 internal network belonged to that project;
+- exactly 1 volume belonged to that project and also carried com.aster.owner=platform and com.aster.authority=durable-local;
+- the 4 pre-existing unrelated containers remained outside the project and stopped.
+
+$ docker compose --project-name aster-p01-r01-dev --file infra/compose/compose.yml down --volumes --remove-orphans --timeout 30
+result: PASS
+elapsed: 0.57 seconds
+maximum resident set observed for Compose: 42,956 KiB
+
+Post-cleanup queries returned:
+- project containers: 0;
+- project networks: 0;
+- project volumes: 0;
+- unrelated containers: 4, still stopped.
+
+This volume removal applied only to the unique verification project after its evidence was durable. It is not the public reset interface; the documented normal stop continues to preserve PostgreSQL.
+
+CI CONTRACT
+-----------
+
+The candidate adds a separate `Local platform` job selected only for infra/compose and local-platform policy changes. It:
+- validates the Compose model;
+- pulls exact digests;
+- starts the health-gated status target;
+- checks PostgreSQL and Redis versions, protocols, and initializer output;
+- always removes only a unique project derived from the workflow run ID and attempt;
+- participates in the stable CI required aggregate.
+
+The dependency-free governance job validates the platform policy and adverse tests even when the container lane is skipped. Local CI classifier and policy checks pass with 18 tests, including rejection of broad Docker cleanup. Protected hosted execution remains pending and is not claimed here.
+
+ACCEPTANCE STATUS
+-----------------
+
+- One Docker-only command starts from empty project state: PASS_LOCAL.
+- Dependencies use exact versions and immutable multi-platform digests: PASS.
+- Health checks and one-shot initialization gate ongoing status: PASS.
+- PostgreSQL state persists across recreation and normal stop: PASS.
+- Redis state is explicitly disposable: PASS.
+- CPU, memory, PID, health, wait, and shutdown behavior are bounded: PASS.
+- No hosted credential, host port, product data, or unrelated Docker mutation exists: PASS.
+- Static/adverse policy and Compose syntax pass: PASS_LOCAL.
+- Complete 22-task repository gate and high-severity dependency audit: PASS_LOCAL.
+- Failure detection and recovery pass: PASS_LOCAL.
+- Protected hosted smoke: PENDING.
+- Clean public-checkout repeat: PENDING.
+
+LIMITATIONS AND NEXT ACTION
+---------------------------
+
+- The first pull and runtime measurements use one Docker Desktop/WSL amd64 host.
+- Image indexes contain arm64 manifests, but arm64 runtime is unmeasured.
+- The tested Docker floor is Engine 26.0.0 and Compose 2.26.1; native Windows, macOS, rootless, Podman, and alternate Compose implementations remain unclaimed.
+- Redis 8.10.0 is used as an unmodified external AGPLv3 service. A different distribution or modification requires new license evidence.
+- The checkpoint exposes status output, not an application URL.
+- The public normal stop preserves PostgreSQL. P01-R02 must provide and test the destructive reset before users receive one.
+- Broker, object storage, telemetry, application runtime, and HTTP adapter remain pending Phase 01 work.
+- The exact local verification project was removed after label validation; clean public-checkout and hosted CI projects remain future isolated repetitions.

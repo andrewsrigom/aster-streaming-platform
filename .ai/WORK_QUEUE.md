@@ -17,7 +17,7 @@ Only one item may be `IN_PROGRESS`.
 | 11 | Integrate `.ai/` state checks into the normal contribution workflow | P00-R08 | DONE |
 | 12 | Document exact bootstrap, check, demo, and cleanup commands | P00-R09 | DONE |
 | 13 | Verify a clean checkout, capture the Phase 00 evidence index, and close the phase | P00-R10 | DONE |
-| 14 | Select local platform versions, resource bounds, and the first Docker runtime checkpoint | P01-R01 | READY |
+| 14 | Select local platform versions, resource bounds, and the first Docker runtime checkpoint | P01-R01 | IN_PROGRESS |
 
 ## Work-item rules
 

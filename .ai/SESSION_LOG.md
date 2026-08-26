@@ -2,6 +2,28 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Core local platform checkpoint in progress
+
+### Completed
+
+- Selected PostgreSQL `18.6-alpine3.23` and Redis `8.10.0-alpine` Docker Official Images from current upstream support and release evidence, pinned both multi-platform indexes by digest, and recorded PostgreSQL License plus the Redis AGPLv3 option without relicensing them as Aster source.
+- Added a Docker-only Compose checkpoint with no host ports, an internal network, a PostgreSQL 18 persistent volume, disposable bounded Redis, health checks, one-shot protocol initialization, ongoing cross-dependency status, finite CPU/memory/PID limits, and bounded shutdown.
+- Added dependency-free policy validation with 7 adverse tests and an isolated path-aware CI smoke decision with 18 passing classifier/policy tests, including rejection of broad Docker cleanup.
+- Started a unique empty Compose project, verified exact runtime versions and applied limits, recreated PostgreSQL with its data retained, recreated Redis with its probe discarded, and passed a normal data-preserving stop/restart.
+- Stopped PostgreSQL and observed status become unhealthy in `13.945` seconds, then observed PostgreSQL and status recover in `2.834` seconds without mutating unrelated Docker resources.
+- Inspected exact Compose project labels, then removed only 4 `aster-p01-r01-dev` containers, its 1 internal network, and its 1 verification volume in `0.57` seconds; all project counts are zero and the 4 unrelated stopped containers remain unchanged.
+- Passed the complete 22-task repository gate in `7.58` seconds, Compose model parsing, frozen installation, and the high-severity registry audit with no known vulnerability.
+
+### Evidence
+
+- First immutable pull: `11.79` seconds; clean startup to health: `9.80` seconds; warm restart after normal stop: `7.38` seconds.
+- One idle sample: PostgreSQL `37.94 MiB`, Redis `6.445 MiB`, and status `1.566 MiB`; initialized PostgreSQL volume `65.39 MB`.
+- Raw evidence: `evidence/phase-01/local-platform-checkpoint.txt` (`PASS_LOCAL`; clean public checkout and protected hosted smoke pending).
+
+### Next action
+
+Run final repository gates, publish the coherent P01-R01 candidate, repeat from a clean public checkout, and require the protected `Local platform` CI job before completion.
+
 ## 2026-08-26 — Verified clean public checkout and Phase 00 closeout
 
 ### Completed

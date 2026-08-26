@@ -129,12 +129,13 @@ The checked-in `CI` workflow has one authoritative event policy and one stable a
 | Job | When | Dependency install | Responsibility |
 |---|---|---:|---|
 | Classify change | Every run | No | Fail-safe full versus documentation-only path |
-| Documentation and security | Every run | No | Repository memory, documentation, community contract, tracked secret, CI policy, and governance-tool tests |
+| Documentation and security | Every run | No | Repository memory, documentation, community contract, tracked secret, CI and local-platform policy, and governance-tool tests |
 | Install and source quality | Non-draft executable/configuration changes, `main`, and manual fallback | Yes | Frozen install, source gates, and high-severity registry audit |
 | Dependency review | Non-draft pull requests | No | New dependency vulnerability, scope, and reviewed-license policy |
+| Local platform | Non-draft Compose, local-platform policy, or CI workflow changes; unclassifiable and manual fallback | No | Parse Compose, pull immutable PostgreSQL and Redis images, start the health-gated status target, verify protocol versions and initialization, and remove only the unique CI project |
 | CI required | Every run | No | Stable result over every applicable prerequisite |
 
-The workflow uses `pull_request`, a `main`-only `push`, and `workflow_dispatch`; it does not use `pull_request_target` or feature-branch pushes. Superseded pull-request or ref runs cancel through concurrency grouping. Every job receives only `contents: read`, checkout persistence is disabled, and no repository secret is referenced.
+The workflow uses `pull_request`, a `main`-only `push`, and `workflow_dispatch`; it does not use `pull_request_target` or feature-branch pushes. Superseded pull-request or ref runs cancel through concurrency grouping. Every job receives only `contents: read`, checkout persistence is disabled, and no repository secret is referenced. Change classification selects the container lane for `infra/compose/`, its platform-policy tooling, or the CI workflow itself and fails safe to that lane when the diff cannot be classified.
 
 Current external actions are pinned to reviewed full commits for checkout `v7.0.1`, setup-node `v7.0.0`, cache `v6.1.0`, and dependency-review `v5.0.0`. The local policy validator rejects a movable tag, unknown action, changed pin, write permission, secret context, broad push trigger, missing cancellation, missing command, or weakened aggregate. Action and runner upgrades are focused supply-chain changes with new evidence.
 

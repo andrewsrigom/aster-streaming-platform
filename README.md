@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation is verified by the [clean-checkout evidence](evidence/phase-00/clean-checkout-closeout.txt). Phase 01 is ready to begin; application implementation has not started.**
+**The Phase 00 repository foundation is verified. The first Phase 01 local-platform checkpoint is implemented and locally verified by [P01-R01 evidence](evidence/phase-01/local-platform-checkpoint.txt); protected hosted verification is pending, and application implementation has not started.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -68,9 +68,38 @@ pnpm clean:foundation
 
 The command validates `package.json` and `pnpm-lock.yaml`, then removes only the root `.turbo` cache and `node_modules` tree. It does not delete source, Git state, evidence, environment files, the shared pnpm store, containers, images, or volumes. Run the frozen install again before executing package scripts.
 
-### Planned Docker demonstration
+## Run the local platform checkpoint
 
-Phase 01 will add the first Docker-only runtime-laboratory command and project-scoped reset after the Compose layout, supported version, health behavior, and resource bounds are measured. Phase 07 owns the first clean-start playable HLS journey. Until those phases close, there is no supported `pnpm dev`, `docker compose up`, application URL, or playable demo command.
+P01-R01 provides a Docker-only status checkpoint with PostgreSQL, Redis, one-shot protocol initialization, persistent PostgreSQL state, ongoing dependency health, and no host ports. It is not an application or playable video demo.
+
+Requirements:
+
+- Docker Engine `26.0.0` or a newer compatible release;
+- Docker Compose `2.26.1` or a newer compatible release;
+- registry access the first time the immutable images are pulled.
+
+From the repository root, start the checkpoint with one command:
+
+```bash
+docker compose --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+```
+
+The command creates only the `aster` Compose project, pulls exact multi-platform image digests when absent, waits for PostgreSQL and Redis health, requires the one-shot initializer to exit successfully, and leaves `platform-status` healthy. Inspect the result with:
+
+```bash
+docker compose --file infra/compose/compose.yml ps --all
+docker compose --file infra/compose/compose.yml logs --no-color platform-init platform-status
+```
+
+Stop the checkpoint while preserving its PostgreSQL volume with:
+
+```bash
+docker compose --file infra/compose/compose.yml down
+```
+
+Do not add `--volumes`: P01-R02 owns the future explicit destructive reset and its local-only safety checks. Redis is deliberately disposable and neither dependency is published to a host port. Use the detailed diagnostics in [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md).
+
+Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 
 See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) for command behavior, feedback lanes, and future checkpoints.
 

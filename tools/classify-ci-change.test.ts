@@ -12,20 +12,16 @@ test("classifies Markdown, evidence, skills, and repository memory as documentat
       "skills/testing.md",
       ".ai/CURRENT_STATE.md",
     ]),
-    { changedFiles: 5, full: false, reason: "docs-only" },
+    { changedFiles: 5, full: false, platform: false, reason: "docs-only" },
   );
 });
 
-test("requires full quality for source, manifest, workflow, and environment templates", () => {
-  for (const path of [
-    "tools/check.ts",
-    "package.json",
-    ".github/workflows/ci.yml",
-    ".env.example",
-  ]) {
+test("requires full quality for source, manifest, and environment templates", () => {
+  for (const path of ["tools/check.ts", "package.json", ".env.example"]) {
     assert.deepEqual(classifyChangedPaths([path]), {
       changedFiles: 1,
       full: true,
+      platform: false,
       reason: "executable-change",
     });
   }
@@ -35,8 +31,21 @@ test("fails safe to full quality for an empty diff", () => {
   assert.deepEqual(classifyChangedPaths([]), {
     changedFiles: 0,
     full: true,
+    platform: true,
     reason: "empty-diff",
   });
+});
+
+test("selects the isolated local-platform smoke path", () => {
+  assert.deepEqual(classifyChangedPaths(["infra/compose/compose.yml"]), {
+    changedFiles: 1,
+    full: true,
+    platform: true,
+    reason: "executable-change",
+  });
+  assert.equal(classifyChangedPaths(["tools/verify-local-platform.mjs"]).platform, true);
+  assert.equal(classifyChangedPaths([".github/workflows/ci.yml"]).platform, true);
+  assert.equal(classifyChangedPaths(["tools/unrelated.ts"]).platform, false);
 });
 
 test("deduplicates changed paths before classification", () => {

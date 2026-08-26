@@ -10,6 +10,12 @@ const MAX_OUTPUT_PATH_BYTES = 4_096;
 const GIT_OBJECT = /^[a-f\d]{40}$/u;
 const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
+const PLATFORM_PREFIXES = ["infra/compose/"] as const;
+const PLATFORM_FILES = new Set([
+  ".github/workflows/ci.yml",
+  "tools/verify-local-platform.mjs",
+  "tools/verify-local-platform.test.mjs",
+]);
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 
 export const GIT_DIFF_FILTER = "ACMRD";
@@ -17,6 +23,7 @@ export const GIT_DIFF_FILTER = "ACMRD";
 export interface ChangeClassification {
   changedFiles: number;
   full: boolean;
+  platform: boolean;
   reason: "docs-only" | "empty-diff" | "executable-change" | "fallback";
 }
 
@@ -43,6 +50,10 @@ function isDocumentationOnlyPath(path: string): boolean {
   );
 }
 
+function isPlatformPath(path: string): boolean {
+  return PLATFORM_FILES.has(path) || PLATFORM_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
 export function classifyChangedPaths(paths: string[]): ChangeClassification {
   if (paths.length > MAX_CHANGED_FILES) {
     throw new Error(`changed file count exceeds ${MAX_CHANGED_FILES}`);
@@ -52,12 +63,17 @@ export function classifyChangedPaths(paths: string[]): ChangeClassification {
     validateChangedPath(path);
   }
   if (uniquePaths.length === 0) {
-    return { changedFiles: 0, full: true, reason: "empty-diff" };
+    return { changedFiles: 0, full: true, platform: true, reason: "empty-diff" };
   }
   if (uniquePaths.every(isDocumentationOnlyPath)) {
-    return { changedFiles: uniquePaths.length, full: false, reason: "docs-only" };
+    return { changedFiles: uniquePaths.length, full: false, platform: false, reason: "docs-only" };
   }
-  return { changedFiles: uniquePaths.length, full: true, reason: "executable-change" };
+  return {
+    changedFiles: uniquePaths.length,
+    full: true,
+    platform: uniquePaths.some(isPlatformPath),
+    reason: "executable-change",
+  };
 }
 
 export function parseChangedPaths(output: string): string[] {
@@ -109,7 +125,7 @@ async function writeGitHubOutputs(classification: ChangeClassification): Promise
   }
   await appendFile(
     outputPath,
-    `full=${classification.full ? "true" : "false"}\nclassification=${classification.reason}\n`,
+    `full=${classification.full ? "true" : "false"}\nplatform=${classification.platform ? "true" : "false"}\nclassification=${classification.reason}\n`,
     { encoding: "utf8", flag: "a" },
   );
 }
@@ -119,13 +135,13 @@ export async function runChangeClassification(base: string, head: string): Promi
     const paths = changedPaths(base, head);
     const classification = paths
       ? classifyChangedPaths(paths)
-      : ({ changedFiles: 0, full: true, reason: "fallback" } as const);
+      : ({ changedFiles: 0, full: true, platform: true, reason: "fallback" } as const);
     await writeGitHubOutputs(classification);
     console.log(JSON.stringify({ check: "ci-change", status: "ok", ...classification }));
     return 0;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    const fallback = { changedFiles: 0, full: true, reason: "fallback" } as const;
+    const fallback = { changedFiles: 0, full: true, platform: true, reason: "fallback" } as const;
     try {
       await writeGitHubOutputs(fallback);
     } catch {

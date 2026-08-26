@@ -10,6 +10,17 @@ The project notice uses `Aster contributors`. Each contributor retains copyright
 
 Third-party dependencies, generated third-party notices, trademarks, and externally sourced materials are not relicensed by Aster. They remain under their respective terms. Automated notices and a software bill of materials will be produced during the release phase.
 
+## Local runtime dependencies
+
+P01-R01 references unmodified Docker Official Images by exact digest. These runtime artifacts are pulled from their publishers and are not relicensed under Aster's MIT License.
+
+| Runtime | Selected artifact | License treatment | Source and terms |
+|---|---|---|---|
+| PostgreSQL | `postgres:18.6-alpine3.23` | PostgreSQL License | [PostgreSQL source and license](https://www.postgresql.org/about/licence/) and [Docker Official Image](https://hub.docker.com/_/postgres) |
+| Redis Open Source | `redis:8.10.0-alpine` | AGPLv3 option from the Redis 8 tri-license; image is used unmodified as a separate local service | [Redis licensing](https://redis.io/legal/licenses/), [Redis source](https://github.com/redis/redis/tree/8.10.0), and [Docker Official Image](https://hub.docker.com/_/redis) |
+
+The Compose file records immutable multi-platform digests. Operators and distributors remain responsible for complying with the selected third-party terms. Any future modification, redistribution, or hosted offering involving these runtimes requires a new license review; this record is not legal advice.
+
 ## Media assets
 
 Every media title has an independent rights record. A title may not be published merely because it appears on a site associated with open content.
