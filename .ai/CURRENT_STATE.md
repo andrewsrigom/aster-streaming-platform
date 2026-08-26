@@ -4,7 +4,7 @@ Last updated: 2026-08-26
 
 ## Active phase
 
-**Phase 00 — Foundation corrective maintenance**
+**Phase 01 — Local Platform and Runtime Skeleton**
 
 Status: **IN_PROGRESS**
 
@@ -114,7 +114,8 @@ Status: **IN_PROGRESS**
 - P00-R06 corrective candidate `9775917` exposes one bounded full/affected quality runner, fixed comparison refs, task-input-aware selection, risk-proportionate verification checkpoints, and a bounded review stopping rule. It force-terminates the isolated gate tree on timeout, forwards `SIGINT` and `SIGTERM` before a bounded force fallback, rejects symbolic alternate pull-request template locations, conservatively selects documentation and community scanners for every repository path, and permits one dependent local item behind one frozen `WAITING_EXTERNAL` predecessor without changing publication or release order.
 - The corrective candidate passes 18 toolchain and 10 community tests on WSL, 31 of 31 forced WSL tasks in `24.622` seconds, and an exact public native-Windows clone with 31 of 31 forced tasks in `1m11.643s`; high-severity audit and clean Git pass. Evidence replies for confirmation findings `3864537199` and `3864537208` are posted and resolved.
 - The external-wait validator passes 13 adverse repository-memory tests and the final complete WSL graph passes 31 of 31 forced tasks in `14.58` seconds. The prior native-Windows evidence remains applicable because the later change affects only platform-independent memory parsing and policy prose.
-- Exact-head run `32990397338` passed at predecessor `dd9f282`. Final confirmation then found two blocking affected-input and graceful-interrupt boundaries; candidate `9775917` closes both and passes 20 focused toolchain tests, 31 of 31 affected tasks, 31 of 31 clean forced tasks, documentation, memory, security, and audit locally. It remains `IMPLEMENTED` until protected CI passes at the new head and both confirmation discussions are resolved.
+- Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
+- P01-R05 is `IMPLEMENTED` locally on the dependent branch: `@aster/runtime` now provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. The focused suite passes 33 tests, the affected gate passes 31 of 31 tasks, the complete uncached gate passes 31 of 31 tasks in `15.44s`, and the high-severity audit reports no known vulnerability.
 
 ## Not implemented
 
@@ -129,7 +130,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Complete the P00-R06 corrective work item that makes risk-proportionate verification, review stopping rules, evidence checkpoints, and affected-scope local feedback executable. Then return to Phase 01 and start P01-R05 lifecycle, health, and bounded graceful shutdown behavior.
+Complete the P01-R05 rebase onto released `main`, repeat affected and real lifecycle evidence, publish it, and run the bounded review plus protected gates.
 
 ## Current risks
 
@@ -155,7 +156,7 @@ Complete the P00-R06 corrective work item that makes risk-proportionate verifica
 - P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. Export queues, flush deadlines, drop metrics, retention, and the OpenTelemetry SDK/backend remain unimplemented.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
-- The HTTP adapter proves Apollo-to-HTTP drain for one synthetic in-flight operation only. P01-R05 still owns process signals, readiness, dependency closure, the overall shutdown budget, telemetry, and forced termination.
+- P01-R05 has no application composition or public health route yet. Dependency-specific startup/readiness remains P01-R08, process metrics and export/drop behavior remain P01-R06, and native Windows signal semantics are intentionally unclaimed; the supported WSL path has real socket and subprocess evidence.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for nine Express transitives. They are not known-vulnerability findings, but the exact graph remains a reviewed cost and ADR-0011 keeps a replacement path.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.

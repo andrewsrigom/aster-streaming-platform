@@ -69,7 +69,7 @@ Responses contain only the stable code. The adapter never reflects an error mess
 
 Downstream operations that can outlive the request must propagate this signal into their own deadline and cancellation APIs. The signal does not make an unsafe database operation idempotent and does not replace an outbound deadline.
 
-The Apollo drain plugin proves that Apollo can stop accepting new work and allow the exercised in-flight request to finish. P01-R05 still owns process signals, readiness changes, dependency-close order, a single overall shutdown budget, timeout telemetry, and forced termination. Do not add a second process-signal handler inside this package.
+The Apollo drain plugin proves that Apollo can stop accepting new work and allow the exercised in-flight request to finish. The current P01-R05 runtime source owns process signals, readiness changes, dependency-close order, a single overall shutdown budget, timeout telemetry, and forced termination. Compose the plugin with that coordinator and do not add a second process-signal handler inside this package. The complete contract is in [Runtime Lifecycle](RUNTIME_LIFECYCLE.md).
 
 ## Run the compatibility checks
 

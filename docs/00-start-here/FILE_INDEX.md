@@ -206,6 +206,8 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/operations/REPOSITORY_GOVERNANCE.md`](../operations/REPOSITORY_GOVERNANCE.md) — Repository Governance
 - [`docs/operations/RELEASE_PROCESS.md`](../operations/RELEASE_PROCESS.md) — Release Process
 - [`docs/operations/RUNBOOKS.md`](../operations/RUNBOOKS.md) — Operational Runbooks
+- [`docs/operations/RUNTIME_LIFECYCLE.md`](../operations/RUNTIME_LIFECYCLE.md) — Runtime Lifecycle
+- [`docs/operations/RUNTIME_LOGGING.md`](../operations/RUNTIME_LOGGING.md) — Runtime Logging
 - [`docs/operations/SLIS_SLOS_AND_ALERTS.md`](../operations/SLIS_SLOS_AND_ALERTS.md) — SLIs, SLOs, and Alerts
 
 ## docs/quality

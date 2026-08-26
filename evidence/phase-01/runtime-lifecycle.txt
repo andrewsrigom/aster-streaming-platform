@@ -1,0 +1,94 @@
+# Experiment P01-R05-L01: Runtime Lifecycle and Bounded Shutdown
+
+- Status: IMPLEMENTED
+- Date: 2026-08-26
+- Source: Local `feat/p01-r05-lifecycle` branch based on frozen predecessor `dd9f2822969e042364f641c7a2bd5f5b84285a3d`; candidate commit pending
+- Owner: Aster shared runtime infrastructure
+- Related requirement: P01-R05
+- Environment: Docker Desktop host with WSL2; no Docker resource used by this experiment
+
+## Question
+
+Can one transport-neutral Node.js coordinator provide stable health state, idempotent ordered shutdown, a single bounded deadline, removable process-signal ownership, structured failure events, and race-safe HTTP force closure without importing Express, Apollo, database, Redis, broker, or telemetry SDK contracts?
+
+## Hypothesis
+
+A small state machine in `@aster/runtime`, combined with narrow process and Node.js HTTP seams, will stop readiness before traffic, allow eligible in-flight work to finish, force a hung connection at the overall deadline, and complete despite hook or logger failure. Real loopback sockets and a real Unix termination signal will validate the boundaries that deterministic unit fixtures cannot prove.
+
+## Environment
+
+- kernel: `Linux devbox 6.18.33.2-microsoft-standard-WSL2`, x86_64;
+- runtime: Node.js `24.19.0`, pnpm `11.24.0`;
+- branch: `feat/p01-r05-lifecycle`;
+- exact base: `dd9f2822969e042364f641c7a2bd5f5b84285a3d`;
+- database, Redis, broker, object storage, telemetry backend, and Docker containers: not used;
+- network: Node.js test servers bind only to `127.0.0.1` on operating-system-assigned ephemeral ports.
+
+## Workload
+
+The focused gate is:
+
+```bash
+pnpm --filter @aster/runtime typecheck
+pnpm --filter @aster/runtime build
+pnpm --filter @aster/runtime test
+```
+
+The current suite contains 33 tests across lifecycle, process-signal, Node.js HTTP, declaration-isolation, and existing structured-logging behavior. Lifecycle cases cover hostile options and accessors, health transitions, lease completion, shutdown order, one shared Promise, hook rejection, a deterministic deadline scheduler, repeated signals, force-close failure, logger failure, secret canaries, and bounded result fields.
+
+The real-socket cases use one graceful request and one deliberately stuck request. The real-process case spawns the compiled fixture, waits for its `READY` marker, sends `SIGTERM`, and observes its hooks and exit status. Native Windows skips only this Unix signal-semantics case; WSL executes it.
+
+## Results
+
+The focused typecheck, build, and all 33 tests pass. The candidate-focused test process completed in `262.02635 ms` before the repository gates.
+
+| Observation | Result |
+|---|---|
+| Initial/ready/draining/failed/stopped snapshots | Stable and frozen; monotonic transitions pass |
+| Concurrent shutdown | Same Promise and one hook execution |
+| Ordered graceful stages | stop traffic, drain in-flight, stop consumers, flush telemetry, close dependencies |
+| Hook rejection | Stable failed stage, remaining eligible stages execute, raw canary absent |
+| Deterministic deadline | Shared signal aborted, force close called once, forced result returned |
+| Graceful real socket | Existing request completed; new connection refused after drain began |
+| Stuck real socket | Forced at the 100 ms configured deadline; latest observation `106.068766 ms` |
+| Real `SIGTERM` subprocess | `STOP_TRAFFIC`, then `CLOSE_DEPENDENCIES`; exit code `143`; no force close; latest observation `114.070995 ms` |
+| Throwing logger | Shutdown remains completed and bounded |
+| Generated lifecycle declarations | No Express, Apollo, Fastify, Pino, PostgreSQL, Redis, broker, or telemetry SDK reference |
+
+The millisecond values are local correctness observations with generous assertions, not latency or capacity benchmarks. No throughput, tail-latency, event-loop, memory, or multi-process claim is made.
+
+## Node.js compatibility basis
+
+The pinned Node.js HTTP contract documents that `server.close()` stops new connections and closes idle connections while waiting for active connections. It also documents that `server.closeAllConnections()` force closes established HTTP connections and should be invoked after `server.close()` to avoid a race. The Aster HTTP seam preserves that order even if an explicit force arrives before the asynchronous stop hook runs.
+
+The pinned process contract documents that installing `SIGINT` or `SIGTERM` listeners removes Node.js default exit behavior. The Aster binding therefore records conventional exit codes `130` and `143`, performs bounded resource closure, and lets the event loop finish without calling `process.exit()`.
+
+Official references:
+
+- https://nodejs.org/docs/latest-v24.x/api/http.html#serverclosecallback
+- https://nodejs.org/docs/latest-v24.x/api/http.html#servercloseallconnections
+- https://nodejs.org/docs/latest-v24.x/api/process.html#signal-events
+
+## Static and policy evidence
+
+- strict package typecheck passes;
+- targeted type-aware ESLint over runtime source and tests passes;
+- targeted Prettier check passes after mechanical formatting;
+- generated declarations exclude prohibited framework and infrastructure client names;
+- no dependency or lockfile changed;
+- no product context, schema, durable data, hosted resource, or Docker state changed;
+- documentation validates 134 documents and 335 internal links; repository-memory, architecture, lint, format, unused-code, CI, platform, community, security, and Git whitespace checks pass;
+- the affected candidate gate passed 31 of 31 tasks with 16 cached in `9.202s` of Turbo task time;
+- the complete candidate gate passed 31 of 31 tasks with zero cache in `15.44s`; wrapper elapsed `18.18s` with maximum observed wrapper RSS `616,676` KiB;
+- the high-severity audit reports no known vulnerability in `0.90s`;
+- protected CI, clean-checkout if later triggered, and bounded review gates remain pending.
+
+## Limitations and next evidence
+
+- No application currently exposes the health snapshot over HTTP.
+- P01-R08 still owns dependency-specific startup deadlines and readiness reasons.
+- P01-R06 still owns process metrics, export queues, and drop metrics.
+- Apollo drain compatibility remains proven separately in `@aster/http-express`; a future service composition root must place it under this single lifecycle owner.
+- Native Windows signal semantics are not claimed; the supported WSL path is measured.
+- The branch cannot publish or merge before frozen P00-R06 predecessor PR #11 completes. A predecessor change requires rebase and affected verification.
+- Acceptance remains `IMPLEMENTED`, not `VERIFIED`, until the affected candidate gate, complete acceptance gate, exact-source protected CI, and bounded review pass.

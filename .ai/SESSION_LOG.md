@@ -2,6 +2,46 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented the bounded runtime lifecycle candidate
+
+### Completed
+
+- Added a transport-neutral `@aster/runtime` lifecycle with frozen health snapshots, monotonic startup transitions, ready-only in-flight leases, one shared shutdown Promise, fixed hook order, one overall deadline, one cancellation signal, bounded failure classification, and idempotent force close.
+- Added removable `SIGINT`/`SIGTERM` ownership with conventional exit codes, repeated-signal force behavior, duplicate-owner rejection, and a real Unix subprocess diagnostic.
+- Added a narrow Node.js HTTP seam that always starts `server.close()` before `server.closeAllConnections()`; real loopback tests prove graceful in-flight completion, refusal of new traffic, and deadline closure of a stuck socket.
+- Integrated stable lifecycle events with the existing logger while keeping raw errors out and making sink failure unable to alter shutdown behavior.
+- Documented health, composition, shutdown order, signals, HTTP behavior, telemetry boundaries, recovery, and the limits retained by P01-R06 and P01-R08. No dependency, lockfile, Docker resource, product context, service, schema, or hosted resource changed.
+
+### Evidence
+
+- Focused runtime gate: strict typecheck, build, and 33 of 33 tests pass, including deterministic deadline, force-close exception, real socket, real signal, logging, hostile input, and generated-declaration cases.
+- Candidate affected gate: 31 of 31 tasks passed with 16 cached in `9.202s` of Turbo task time.
+- Complete candidate gate: 31 of 31 tasks passed with zero cache in `15.44s`; wrapper elapsed `18.18s`; high-severity audit reports no known vulnerability.
+- Documentation validates 134 documents and 335 internal links; repository-memory, architecture, lint, format, unused-code, CI, platform, community, security, and Git whitespace checks pass.
+- Raw artifact: `evidence/phase-01/runtime-lifecycle.txt` (`IMPLEMENTED`).
+
+### Next action
+
+Create a local coherent commit without publishing it. Keep PR 11 as the frozen predecessor; after its protected release, rebase this candidate onto clean `main`, repeat the affected and real lifecycle evidence, then publish for the bounded review and protected gates.
+
+## 2026-08-26 — Activated bounded runtime lifecycle work
+
+### Completed
+
+- Froze P00-R06 as `WAITING_EXTERNAL` at pull-request head `dd9f282` after its local, WSL, native-Windows, review-remediation, evidence, and rollback conditions passed; only hosted CI, final confirmation, and protected merge remain.
+- Created dependent local branch `feat/p01-r05-lifecycle` from exact frozen head `dd9f282` under the predecessor-first publication and release rule.
+- Activated P01-R05 with the shared runtime owner, no product data owner, explicit Node.js signal/HTTP/timer trust boundaries, bounded shutdown failure modes, rollback, focused tests, candidate gate, heavyweight-repeat triggers, and review stopping rule.
+- Kept Identity behavior, product schemas, dependency adapters, telemetry SDKs, metrics, Docker resources, hosted resources, and publication outside this activation.
+
+### Evidence
+
+- The `WAITING_EXTERNAL` validator and policy passed 13 repository-memory tests, 31 of 31 forced WSL tasks in `14.58s`, documentation, security, and high-severity audit before the dependent branch was created.
+- Branch base, name, clean state, and exact predecessor `dd9f2822969e042364f641c7a2bd5f5b84285a3d` were verified locally.
+
+### Next action
+
+Implement P01-R05 state and health contracts with deterministic focused tests, then add bounded shutdown and concrete Node.js HTTP/process integration without publishing the dependent branch before PR 11.
+
 ## 2026-08-26 — Implemented risk-proportionate verification feedback
 
 ### Completed

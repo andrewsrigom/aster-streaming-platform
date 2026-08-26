@@ -26,7 +26,7 @@ Invalid logger construction options fail startup with `ASTER_LOGGING_INVALID_OPT
 
 Optional reviewed fields are `operation`, `outcome`, `requestId`, `eventId`, `errorCategory`, `durationMs`, scalar `attributes`, a sanitized error chain, and valid trace correlation. Caller objects never become top-level bindings, so they cannot replace the logger-owned timestamp, severity, process identity, or trace fields.
 
-The API returns `written`, `filtered`, or `failed`. A disabled level is filtered before the entry is inspected. A synchronous destination exception returns `failed` without retrying or throwing into application work. Drop counters and bounded export flushing belong to the later telemetry and lifecycle requirements.
+The API returns `written`, `filtered`, or `failed`. A disabled level is filtered before the entry is inspected. A synchronous destination exception returns `failed` without retrying or throwing into application work. The current lifecycle coordinator gives telemetry one bounded flush hook and ignores logger failure; export queues and drop metrics still belong to P01-R06 and its telemetry owner.
 
 ## Input bounds
 
@@ -83,4 +83,4 @@ The current dependency, redaction, process-cost, and adverse-input results are i
 
 The logger owns no durable state. Rollback removes `@aster/runtime`, Pino, the root logging command aliases, and P01-R04 documentation. Pino types do not appear in generated public declarations, so a future implementation can replace the adapter without changing service call sites.
 
-Do not add pretty printing or network export inside a service process by default. Standard output remains the local process boundary; later Collector and lifecycle work owns bounded queues, export deadlines, flushing, storage, and retention.
+Do not add pretty printing or network export inside a service process by default. Standard output remains the local process boundary. [Runtime Lifecycle](RUNTIME_LIFECYCLE.md) owns the overall termination deadline and flush opportunity; later Collector work owns bounded export queues, transport, drop metrics, storage, and retention.

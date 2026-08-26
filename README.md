@@ -138,6 +138,18 @@ pnpm logging:test
 
 The diagnostic prints one correlated success record and one correlated warning whose authorization value is `[Redacted]`. The focused suite verifies limits, hostile accessors, secret canaries, raw-error omission, async context handoff, invalid providers, destination failure, and the absence of Pino types from the public declarations. See [`docs/operations/RUNTIME_LOGGING.md`](docs/operations/RUNTIME_LOGGING.md) for the contract and [P01-R04 evidence](evidence/phase-01/runtime-logging.txt) for current status and limitations.
 
+## Verify the Node.js lifecycle candidate
+
+P01-R05 adds transport-neutral health state, one overall shutdown deadline, ordered resource hooks, removable process-signal ownership, and a Node.js HTTP seam. The focused suite uses deterministic deadlines, a real `SIGTERM` subprocess on Unix, and loopback sockets that prove graceful in-flight completion plus forced closure of a stuck connection:
+
+```bash
+pnpm --filter @aster/runtime typecheck
+pnpm --filter @aster/runtime build
+pnpm --filter @aster/runtime test
+```
+
+This is reusable runtime behavior, not an application or public health endpoint. See [`docs/operations/RUNTIME_LIFECYCLE.md`](docs/operations/RUNTIME_LIFECYCLE.md) for state, signal, shutdown, logging, and recovery contracts and [P01-R05 evidence](evidence/phase-01/runtime-lifecycle.txt) for current verification status.
+
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 
 See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) for command behavior, feedback lanes, and future checkpoints.
