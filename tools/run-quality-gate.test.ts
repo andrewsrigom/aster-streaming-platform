@@ -18,8 +18,18 @@ test("builds full and changed invocations from one canonical task list", () => {
   assert.deepEqual(full.envOverrides, {});
 
   const changed = createQualityGateInvocation(["--changed", "--force"], "win32");
-  assert.equal(changed.executable, "pnpm.cmd");
-  assert.deepEqual(changed.args, ["turbo", "run", ...QUALITY_GATE_TASKS, "--affected", "--force"]);
+  assert.equal(changed.executable, "cmd.exe");
+  assert.deepEqual(changed.args, [
+    "/d",
+    "/s",
+    "/c",
+    "pnpm.cmd",
+    "turbo",
+    "run",
+    ...QUALITY_GATE_TASKS,
+    "--affected",
+    "--force",
+  ]);
   assert.deepEqual(changed.envOverrides, { TURBO_SCM_BASE: "main", TURBO_SCM_HEAD: "HEAD" });
 });
 

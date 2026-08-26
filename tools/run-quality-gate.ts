@@ -47,7 +47,7 @@ export interface QualityGateInvocation {
   readonly args: readonly string[];
   readonly changed: boolean;
   readonly envOverrides: Readonly<Record<string, string>>;
-  readonly executable: "pnpm" | "pnpm.cmd";
+  readonly executable: "cmd.exe" | "pnpm";
 }
 
 export function createQualityGateInvocation(
@@ -68,13 +68,16 @@ export function createQualityGateInvocation(
     throw new Error("quality gate accepts only one --changed and one --force flag");
   }
 
-  const args = ["turbo", "run", ...QUALITY_GATE_TASKS];
+  const turboArgs = ["turbo", "run", ...QUALITY_GATE_TASKS];
   if (changed) {
-    args.push("--affected");
+    turboArgs.push("--affected");
   }
   if (force) {
-    args.push("--force");
+    turboArgs.push("--force");
   }
+
+  const windows = platform === "win32";
+  const args = windows ? ["/d", "/s", "/c", "pnpm.cmd", ...turboArgs] : turboArgs;
 
   return Object.freeze({
     args: Object.freeze(args),
@@ -82,7 +85,7 @@ export function createQualityGateInvocation(
     envOverrides: changed
       ? Object.freeze({ TURBO_SCM_BASE: "main", TURBO_SCM_HEAD: "HEAD" })
       : Object.freeze({}),
-    executable: platform === "win32" ? "pnpm.cmd" : "pnpm",
+    executable: windows ? "cmd.exe" : "pnpm",
   });
 }
 

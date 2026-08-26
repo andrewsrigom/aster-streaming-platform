@@ -31,7 +31,9 @@ IMPLEMENTED CONTRACT
 - pnpm check:changed adds Turbo affected execution and fixes TURBO_SCM_BASE to
   main and TURBO_SCM_HEAD to HEAD, overwriting inherited caller values.
 - Only one --changed and one --force flag are accepted. Unknown or repeated
-  narrowing arguments fail before spawning Turbo.
+  narrowing arguments fail before spawning Turbo. Windows invokes pnpm.cmd
+  through a fixed cmd.exe /d /s /c boundary because command scripts are not
+  directly executable there; every command argument remains repository-owned.
 - Child execution has a 15-minute bound, preserves the selected nonzero status,
   and emits bounded errors without reflecting process or environment details.
 - Task-input-aware affected selection is enabled. Root lint owns application,
@@ -49,7 +51,7 @@ tests: 16 passed, 0 failed
 
 The four quality-runner tests prove:
 - exact full and changed arguments use one canonical task list;
-- Windows and POSIX executable selection and fixed SCM refs;
+- Windows cmd.exe and POSIX pnpm invocation plus fixed SCM refs;
 - rejection of unknown and duplicate flags;
 - exact child-status propagation and sanitized spawn failure;
 - manifest scripts, Turbo future flag, and root input ownership remain aligned.
@@ -80,6 +82,15 @@ result: PASS
 tasks: 31 successful, 31 total; 0 cached
 Turbo task time: 18.413 seconds
 wrapper elapsed: 20.04 seconds
+
+Windows-invocation remediation repeat:
+- official Node.js process behavior requires .cmd files to use a command
+  processor on Windows;
+- the fixed cmd.exe /d /s /c boundary executed pnpm.cmd --version successfully
+  on the Windows host;
+- 16 runner/toolchain tests and 31 of 31 forced repository tasks passed after
+  the remediation;
+- remediation Turbo task time: 15.013 seconds; wrapper elapsed: 16.16 seconds.
 
 $ pnpm audit --audit-level=high
 result: PASS, no known vulnerabilities

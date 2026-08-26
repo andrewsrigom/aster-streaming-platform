@@ -67,7 +67,7 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 
 ## Implementation steps
 
-1. Add a typed quality-gate runner with one canonical task list, full and changed invocation construction, fixed SCM refs for changed mode, and exact exit propagation.
+1. Add a typed quality-gate runner with one canonical task list, full and changed invocation construction, fixed SCM refs for changed mode, explicit Windows command-processor invocation, and exact exit propagation.
 2. Wire `check` and `check:changed` to that runner and add focused unit/manifest contract tests to the existing toolchain test tier.
 3. Enable task-input-aware affected execution and fill input gaps for root lint and security ownership.
 4. Run dry and real affected checks against documentation and package-source fixtures without leaving synthetic changes in the final tree.
