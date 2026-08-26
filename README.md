@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and the first two Phase 01 local-platform work items are verified. P01-R03 process-start configuration is implemented locally and awaiting protected verification. [P01-R02 evidence](evidence/phase-01/local-reset.txt) covers fresh-state reset, released P01-R01 same-checkout upgrade, hosted-target refusals, hidden-resource refusal, clean recovery, and unrelated-resource preservation; application-service implementation has not started.**
+**The Phase 00 repository foundation and the first three Phase 01 work items are verified. P01-R03 provides bounded fail-fast process configuration with secret-aware diagnostics and protected review evidence; P01-R04 structured logging is the next ready item and has not started. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

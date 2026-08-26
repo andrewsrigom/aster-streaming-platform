@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Active work item: P01-R03
+- Active work item: none; P01-R04 is the first `READY` item
 
 ## Work items
 
@@ -11,9 +11,9 @@
 |---|---|---|---|
 | First Docker-only PostgreSQL and Redis checkpoint | P01-R01 | VERIFIED | [`local-platform-checkpoint.txt`](local-platform-checkpoint.txt) |
 | Explicit project-scoped destructive local reset | P01-R02 | VERIFIED | [`local-reset.txt`](local-reset.txt) |
-| Process-start validation and secret classification | P01-R03 | IMPLEMENTED (local) | [`runtime-configuration.txt`](runtime-configuration.txt) |
+| Process-start validation and secret classification | P01-R03 | VERIFIED | [`runtime-configuration.txt`](runtime-configuration.txt) |
 
-P01-R01 candidate commit `563d09f` passed the initial clean public-checkout repeat and protected run `32947483503`. Automated review then identified project-name override risk; corrected candidate `c246051` passed the hostile-environment clean public-checkout, protected remediation run `32948639792`, exact cleanup, and resolved review. P01-R02 implementation commit `3fa3994` passed fixed-target refusals, populated and partial-state resets, clean restart, empty idempotence, unrelated-resource preservation, and a Docker-only public-checkout repeat. Review then identified released P01-R01 label compatibility; remediation `d5f857c` passed a same-checkout upgrade from released `main`, exact legacy and current label tests, and real hidden-prefix refusal. P01-R03 initial candidate `027539f` passed Node.js 24 and TypeScript 6 compatibility, frozen install, registry audit, license review, isolated process success/failure, and secret-canary redaction. Remediation `e7cbaed` adds unexpected-source sanitization and passes 11 focused tests, a second clean public-checkout gate, dependency review, and protected run `32956811284`. Automated review then identified Node.js URL control-character normalization; remediation `a6a12b6` rejects the raw malformed values, passes 12 focused tests and protected run `32957245769`, and has the actionable thread resolved while final review remains pending. Broker, object storage, telemetry, application runtime, HTTP adapter, and product schemas remain outside these checkpoints.
+P01-R01 candidate commit `563d09f` passed the initial clean public-checkout repeat and protected run `32947483503`; corrected candidate `c246051` closed the project-name override found by review. P01-R02 implementation `3fa3994` passed reset, recovery, isolation, and public-checkout evidence; remediation `d5f857c` closed released-label compatibility and hidden-resource review. P01-R03 initial implementation `027539f`, self-review `e7cbaed`, and URL remediation `a6a12b6` passed compatibility, license, clean-checkout, redaction, and protected checks. Repeated automated review then hardened source enumeration, ownership, error provenance, tuple and issue bounds, unrelated-host filtering, and preflight ordering through final implementation `4ff4c3e`. Seven final remediation runs through `32962358373` passed, all nine discussions are resolved, and final review comment `5424539572` reports no major issue. Broker, object storage, telemetry, application runtime, HTTP adapter, and product schemas remain outside these verified checkpoints.
 
 ## Current limitations
 

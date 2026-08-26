@@ -4,8 +4,8 @@ P01-R03 RUNTIME CONFIGURATION EVIDENCE
 Status
 ------
 
-IMPLEMENTED at review-remediation candidate a6a12b6201454547115d36e27935eb3247ef23cb.
-Protected implementation CI passes; automated review and post-merge verification remain pending.
+VERIFIED at implementation commit 4ff4c3eee277da12e8958b753182739840ad1276.
+Local, clean-checkout, protected CI, dependency, security, and automated-review acceptance checks pass. Protected merge and post-merge main remain release steps.
 
 Requirement and scope
 ---------------------
@@ -30,6 +30,7 @@ pnpm: 11.24.0
 Initial implementation commit: 027539f5f410821352908f27aff30a56d1c54251
 Unexpected-failure remediation commit: e7cbaed9c577f2ee9865e198d5c6ef6d640a244f
 URL control-character remediation commit: a6a12b6201454547115d36e27935eb3247ef23cb
+Final reviewed implementation commit: 4ff4c3eee277da12e8958b753182739840ad1276
 
 Configuration-library decision
 ------------------------------
@@ -135,7 +136,7 @@ Command:
 
   corepack pnpm config:test
 
-Result at review-remediation candidate a6a12b6: 12 tests passed, 0 failed, 0 skipped. The suite covers a frozen typed success result, explicit non-secret output, secret configured-only status, all missing fields, empty input, invalid protocols, ambiguous environment and service names, URL whitespace, rejection of ASCII controls before Node.js URL normalization, owned-prefix typo rejection, unrelated host-variable tolerance, maximum value size, owned-variable count, issue-count bounds, process exit 0, process exit 1, secret-canary redaction, and conversion of an unexpected source getter failure into one sanitized internal issue without its cause.
+Result at final reviewed implementation 4ff4c3e: 12 tests passed, 0 failed, 0 skipped. The suite covers a frozen typed success result; explicit non-secret output; configured-only secret status; missing, inherited, empty, malformed, duplicate, oversized, and excessive input; URL controls before Node.js normalization; a length-changing proxy; refusal of a 1,000-entry list before index access; stop after the owned-entry ceiling; 300 unrelated subprocess variables; a 10,000-character owned name; forged error canaries; exact process exit 0/1; and redaction without cause preservation.
 
 Command:
 
@@ -244,22 +245,39 @@ Automated review on commit 34f7813367 identified discussion 3861714547: Node.js 
 
 The complete local closeout was then repeated from the remediation head with forced Turbo execution: 25 of 25 tasks passed with zero cached tasks in 9.417 seconds (9.88 seconds wrapper elapsed), 12 of 12 configuration tests and 18 of 18 platform tests passed, the high-severity registry audit reported no known vulnerability, and `git diff --check` passed.
 
+Automated-review hardening
+--------------------------
+
+Automated review exercised the public trust boundary repeatedly. Each actionable discussion received an exact evidence reply, passed its protected remediation run, and is resolved:
+
+- `33f97f1` stops allocating and reading after the owned-entry ceiling; run `32958437941` passed.
+- `b34e596` converts even a caller-forged `ReferenceRuntimeConfigError` from injected source access to a new cause-free internal issue; run `32958998938` passed.
+- `815a1ad` rejects inherited settings and bounds total traversal; run `32959613401` passed.
+- `b05aca8` replaces arbitrary-record enumeration with an externally bounded array of own two-item entries, snapshots length once, and refuses more than 256 entries before index access; run `32960632070` passed.
+- `0f44a6c` filters unrelated operating-system environment entries before the package cap while retaining unknown owned-prefix names; a subprocess with 300 unrelated variables exits zero; run `32961192353` passed.
+- `c9185a3` checks the 2,048-character value limit before whitespace normalization; run `32961814947` passed.
+- `4ff4c3e` checks the 128-character name limit before the known-name lookup or bounded-name regex; run `32962358373` passed.
+
+All applicable runs passed classification, dependency review, documentation/security, frozen source quality and tests, registry audit, and `CI required`; the unrelated Docker lane skipped as designed. The final automated review response is issue comment `5424539572`: it reviewed `4ff4c3e` and reported no major issue. All nine review discussions are resolved.
+
+The final repository-state closeout then passed 25 of 25 forced tasks with zero cache in 8.034 seconds (8.49 seconds wrapper elapsed), 12 of 12 configuration tests, documentation and repository-memory validation, all-file secret scanning, `git diff --check`, and the high-severity registry audit.
+
 Acceptance interpretation
 -------------------------
 
 - Process start succeeds only after explicit typed validation.
 - Missing, empty, malformed, oversized, and unexpected owned variables fail closed.
+- The generic loader accepts only a length-snapshotted array of at most 256 own tuples and stops after 16 owned entries; the CLI filters unrelated host entries before this package bound.
 - ASTER_ENV never defaults to production or any other environment.
 - Every accepted variable has an explicit non-secret or secret classification.
 - Success diagnostics omit secret values; failure diagnostics use stable repository-owned issues and omit both values and Zod messages.
 - Unrelated host environment entries are outside the owned boundary and remain ignored.
 - The implementation performs no network operation and creates no partial dependency or application state.
 
-Remaining verification
-----------------------
+Remaining release steps
+-----------------------
 
-- Receive the final automated review on the remediated head with no actionable thread.
-- Pass post-merge main CI before marking P01-R03 DONE and VERIFIED.
+- Complete the protected squash merge and pass post-merge main CI before describing P01-R03 as released.
 
 Limitations
 -----------
