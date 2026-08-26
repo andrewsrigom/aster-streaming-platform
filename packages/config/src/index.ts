@@ -13,6 +13,7 @@ export type {
   ReferenceRuntimeConfigDiagnostic,
   ReferenceRuntimeConfigIssue,
   ReferenceRuntimeConfigIssueReason,
+  ReferenceRuntimeConfigSourceEntry,
   ReferenceRuntimeConfigVariable,
   RuntimeEnvironment,
 } from "./runtime-config.js";

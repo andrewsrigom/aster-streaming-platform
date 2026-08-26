@@ -9,7 +9,7 @@ function writeJson(stream: NodeJS.WriteStream, value: unknown): void {
 }
 
 try {
-  const configuration = loadReferenceRuntimeConfig(process.env);
+  const configuration = loadReferenceRuntimeConfig(Object.entries(process.env));
   writeJson(process.stdout, createReferenceRuntimeConfigDiagnostic(configuration));
 } catch (error) {
   if (error instanceof ReferenceRuntimeConfigError) {

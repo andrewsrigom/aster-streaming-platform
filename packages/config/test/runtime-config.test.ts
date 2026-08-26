@@ -6,6 +6,7 @@ import {
   ReferenceRuntimeConfigError,
   createReferenceRuntimeConfigDiagnostic,
   loadReferenceRuntimeConfig,
+  type ReferenceRuntimeConfigSourceEntry,
 } from "../src/index.js";
 
 const DATABASE_CANARY = "database-canary-never-emit";
@@ -18,6 +19,16 @@ function validEnvironment(): Record<string, string> {
     DATABASE_URL: credentialUrl("postgresql:", "aster", DATABASE_CANARY, "postgres:5432/aster"),
     REDIS_URL: credentialUrl("redis:", "", REDIS_CANARY, "redis:6379/0"),
   };
+}
+
+function environmentEntries(
+  environment: Readonly<Record<string, string | undefined>>,
+): ReferenceRuntimeConfigSourceEntry[] {
+  return Object.entries(environment);
+}
+
+function loadEnvironment(environment: Readonly<Record<string, string | undefined>>) {
+  return loadReferenceRuntimeConfig(environmentEntries(environment));
 }
 
 function credentialUrl(
@@ -51,8 +62,20 @@ function assertCanariesRedacted(value: unknown): void {
 
 test("loads and freezes a valid typed runtime configuration", () => {
   const environment = validEnvironment();
-  const configuration = loadReferenceRuntimeConfig(environment);
+  const stableSource = environmentEntries(environment);
+  let sourceLengthReads = 0;
+  const source = new Proxy(stableSource, {
+    get(target, property): unknown {
+      if (property === "length") {
+        sourceLengthReads += 1;
+        return sourceLengthReads === 1 ? target.length : 1_000;
+      }
+      return Reflect.get(target, property) as unknown;
+    },
+  });
+  const configuration = loadReferenceRuntimeConfig(source);
 
+  assert.equal(sourceLengthReads, 1);
   assert.equal(configuration.environment, "local");
   assert.equal(configuration.serviceName, "config-check");
   assert.equal(digest(configuration.databaseUrl), digest(environment["DATABASE_URL"] ?? ""));
@@ -61,9 +84,7 @@ test("loads and freezes a valid typed runtime configuration", () => {
 });
 
 test("reports non-secret values and only configured status for secrets", () => {
-  const diagnostic = createReferenceRuntimeConfigDiagnostic(
-    loadReferenceRuntimeConfig(validEnvironment()),
-  );
+  const diagnostic = createReferenceRuntimeConfigDiagnostic(loadEnvironment(validEnvironment()));
   const serialized = JSON.stringify(diagnostic);
 
   assert.deepEqual(diagnostic.variables, [
@@ -86,7 +107,7 @@ test("reports non-secret values and only configured status for secrets", () => {
 });
 
 test("fails closed for every missing variable with classified bounded issues", () => {
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig({ PATH: "/usr/bin" }));
+  const error = captureRuntimeConfigError(() => loadEnvironment({ PATH: "/usr/bin" }));
 
   assert.equal(error.code, "ASTER_CONFIGURATION_INVALID");
   assert.deepEqual(error.issues, [
@@ -98,9 +119,7 @@ test("fails closed for every missing variable with classified bounded issues", (
 
   const inheritedEnvironment: Record<string, string> = {};
   Object.setPrototypeOf(inheritedEnvironment, validEnvironment());
-  const inheritedError = captureRuntimeConfigError(() =>
-    loadReferenceRuntimeConfig(inheritedEnvironment),
-  );
+  const inheritedError = captureRuntimeConfigError(() => loadEnvironment(inheritedEnvironment));
   assert.deepEqual(inheritedError.issues, error.issues);
 });
 
@@ -110,7 +129,7 @@ test("classifies empty and malformed values without returning their contents", (
   environment["DATABASE_URL"] = `https://${DATABASE_CANARY}.invalid/aster`;
   environment["REDIS_URL"] = `not-a-url-${REDIS_CANARY}`;
 
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(environment));
+  const error = captureRuntimeConfigError(() => loadEnvironment(environment));
 
   assert.deepEqual(error.issues, [
     { variable: "ASTER_ENV", classification: "non-secret", reason: "empty" },
@@ -125,7 +144,7 @@ test("rejects malformed values after preflight without exposing secret canaries"
   environment["DATABASE_URL"] = `https://${DATABASE_CANARY}.invalid/aster`;
   environment["REDIS_URL"] = `not-a-url-${REDIS_CANARY}`;
 
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(environment));
+  const error = captureRuntimeConfigError(() => loadEnvironment(environment));
 
   assert.deepEqual(error.issues, [
     { variable: "DATABASE_URL", classification: "secret", reason: "invalid" },
@@ -140,7 +159,7 @@ test("rejects ambiguous non-secret values and URL whitespace", () => {
   environment["ASTER_SERVICE_NAME"] = "Config_Check";
   environment["REDIS_URL"] = ` redis://:${REDIS_CANARY}@redis:6379/0`;
 
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(environment));
+  const error = captureRuntimeConfigError(() => loadEnvironment(environment));
 
   assert.deepEqual(error.issues, [
     { variable: "ASTER_ENV", classification: "non-secret", reason: "invalid" },
@@ -155,7 +174,7 @@ test("rejects URL control characters before the platform parser can normalize th
   environment["DATABASE_URL"] = "postgresql://post\ngres:5432/aster";
   environment["REDIS_URL"] = "redis://red\tis:6379/0";
 
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(environment));
+  const error = captureRuntimeConfigError(() => loadEnvironment(environment));
 
   assert.deepEqual(error.issues, [
     { variable: "DATABASE_URL", classification: "secret", reason: "invalid" },
@@ -173,26 +192,46 @@ test("rejects owned-prefix typos while ignoring unrelated host variables", () =>
     PATH: "/usr/bin",
   };
 
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(environment));
+  const error = captureRuntimeConfigError(() => loadEnvironment(environment));
 
   assert.deepEqual(error.issues, [
     { variable: "ASTER_ENVIROMENT", classification: "unknown", reason: "unexpected" },
+  ]);
+
+  const duplicateKnownSource = [
+    ...environmentEntries(validEnvironment()),
+    ["ASTER_ENV", "production"] as const,
+  ];
+  const duplicateKnownError = captureRuntimeConfigError(() =>
+    loadReferenceRuntimeConfig(duplicateKnownSource),
+  );
+  assert.deepEqual(duplicateKnownError.issues, [
+    { variable: "ASTER_ENV", classification: "non-secret", reason: "invalid" },
   ]);
 });
 
 test("bounds oversized values and excessive owned variables before schema parsing", () => {
   const oversized = validEnvironment();
   oversized["DATABASE_URL"] = `postgresql://${"x".repeat(2_100)}`;
-  const oversizedError = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(oversized));
+  const oversizedError = captureRuntimeConfigError(() => loadEnvironment(oversized));
   assert.deepEqual(oversizedError.issues, [
     { variable: "DATABASE_URL", classification: "secret", reason: "too_long" },
   ]);
 
-  const excessive = validEnvironment();
+  const excessive = environmentEntries(validEnvironment());
   for (let index = 0; index < 20; index += 1) {
-    excessive[`ASTER_UNKNOWN_${index}`] = `value-${index}`;
+    excessive.push([`ASTER_UNKNOWN_${index}`, `value-${index}`]);
   }
+  let trailingOwnedEntryReads = 0;
+  Object.defineProperty(excessive, 17, {
+    configurable: true,
+    get() {
+      trailingOwnedEntryReads += 1;
+      throw new Error("owned-entry-after-limit-must-not-be-read");
+    },
+  });
   const excessiveError = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(excessive));
+  assert.equal(trailingOwnedEntryReads, 0);
   assert.equal(excessiveError.issues.length, 8);
   assert.deepEqual(excessiveError.issues.at(-1), {
     variable: "<owned-variables>",
@@ -200,94 +239,20 @@ test("bounds oversized values and excessive owned variables before schema parsin
     reason: "too_many",
   });
 
-  const boundedTarget = validEnvironment();
-  const boundedSourceKeys = [
-    ...Object.keys(boundedTarget),
-    ...Array.from({ length: 1_000 }, (_, index) => `ASTER_UNTRUSTED_${index}`),
-  ];
-  let descriptorReads = 0;
-  let unexpectedValueReads = 0;
-  const unboundedSource = new Proxy(boundedTarget, {
-    ownKeys() {
-      return boundedSourceKeys;
-    },
-    getOwnPropertyDescriptor(target, property) {
-      descriptorReads += 1;
-      if (descriptorReads > 34) {
-        throw new Error("owned-entry-scan-exceeded-the-limit");
-      }
-      return (
-        Reflect.getOwnPropertyDescriptor(target, property) ?? {
-          configurable: true,
-          enumerable: true,
-          value: "owned-entry-value-must-not-be-materialized",
-        }
-      );
-    },
-    get(target, property): string | undefined {
-      if (typeof property !== "string") {
-        return undefined;
-      }
-      if (property.startsWith("ASTER_UNTRUSTED_")) {
-        unexpectedValueReads += 1;
-        throw new Error("owned-entry-value-must-not-be-materialized");
-      }
-      return target[property];
+  const totalScanSource = environmentEntries(validEnvironment());
+  totalScanSource.length = 1_000;
+  let firstEntryReads = 0;
+  Object.defineProperty(totalScanSource, 0, {
+    configurable: true,
+    get() {
+      firstEntryReads += 1;
+      throw new Error("source-entry-must-not-be-read-before-length-refusal");
     },
   });
-
-  const boundedScanError = captureRuntimeConfigError(() =>
-    loadReferenceRuntimeConfig(unboundedSource),
-  );
-  assert.equal(descriptorReads, 34);
-  assert.equal(unexpectedValueReads, 0);
-  assert.equal(boundedScanError.issues.length, 8);
-  assert.deepEqual(boundedScanError.issues.at(-1), {
-    variable: "<owned-variables>",
-    classification: "unknown",
-    reason: "too_many",
-  });
-
-  const totalScanTarget = validEnvironment();
-  const totalScanKeys = [
-    ...Array.from({ length: 1_000 }, (_, index) => `HOST_UNTRUSTED_${index}`),
-    ...Object.keys(totalScanTarget),
-  ];
-  let totalDescriptorReads = 0;
-  let knownValueReads = 0;
-  const totalScanSource = new Proxy(totalScanTarget, {
-    ownKeys() {
-      return totalScanKeys;
-    },
-    getOwnPropertyDescriptor(target, property) {
-      totalDescriptorReads += 1;
-      if (totalDescriptorReads > 513) {
-        throw new Error("total-entry-scan-exceeded-the-limit");
-      }
-      return (
-        Reflect.getOwnPropertyDescriptor(target, property) ?? {
-          configurable: true,
-          enumerable: true,
-          value: "unrelated",
-        }
-      );
-    },
-    get(target, property): string | undefined {
-      if (typeof property !== "string") {
-        return undefined;
-      }
-      if (property in target) {
-        knownValueReads += 1;
-      }
-      return target[property];
-    },
-  });
-
   const totalScanError = captureRuntimeConfigError(() =>
     loadReferenceRuntimeConfig(totalScanSource),
   );
-  assert.equal(totalDescriptorReads, 513);
-  assert.equal(knownValueReads, 0);
+  assert.equal(firstEntryReads, 0);
   assert.deepEqual(totalScanError.issues, [
     { variable: "<environment-variables>", classification: "unknown", reason: "too_many" },
   ]);
@@ -295,8 +260,8 @@ test("bounds oversized values and excessive owned variables before schema parsin
 
 test("sanitizes unexpected source failures without preserving their cause", () => {
   const sourceFailureCanary = "source-failure-canary-never-emit";
-  const unexpectedSource = new Proxy(validEnvironment(), {
-    ownKeys() {
+  const unexpectedSource = new Proxy(environmentEntries(validEnvironment()), {
+    getOwnPropertyDescriptor() {
       throw new Error(sourceFailureCanary);
     },
   });
@@ -313,8 +278,8 @@ test("sanitizes unexpected source failures without preserving their cause", () =
   assert.equal(JSON.stringify(unexpectedError).includes(sourceFailureCanary), false);
   assert.equal("cause" in unexpectedError, false);
 
-  const forgedSource = new Proxy(validEnvironment(), {
-    ownKeys() {
+  const forgedSource = new Proxy(environmentEntries(validEnvironment()), {
+    getOwnPropertyDescriptor() {
       throw new ReferenceRuntimeConfigError([
         {
           variable: sourceFailureCanary,
