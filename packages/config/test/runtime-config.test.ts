@@ -244,19 +244,40 @@ test("bounds oversized values and excessive owned variables before schema parsin
 
 test("sanitizes unexpected source failures without preserving their cause", () => {
   const sourceFailureCanary = "source-failure-canary-never-emit";
-  const source = new Proxy(validEnvironment(), {
+  const unexpectedSource = new Proxy(validEnvironment(), {
     ownKeys() {
       throw new Error(sourceFailureCanary);
     },
   });
 
-  const error = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(source));
+  const unexpectedError = captureRuntimeConfigError(() =>
+    loadReferenceRuntimeConfig(unexpectedSource),
+  );
 
-  assert.deepEqual(error.issues, [
+  assert.deepEqual(unexpectedError.issues, [
     { variable: "<owned-variables>", classification: "unknown", reason: "internal" },
   ]);
-  assert.equal(error.message.includes(sourceFailureCanary), false);
-  assert.equal((error.stack ?? "").includes(sourceFailureCanary), false);
-  assert.equal(JSON.stringify(error).includes(sourceFailureCanary), false);
-  assert.equal("cause" in error, false);
+  assert.equal(unexpectedError.message.includes(sourceFailureCanary), false);
+  assert.equal((unexpectedError.stack ?? "").includes(sourceFailureCanary), false);
+  assert.equal(JSON.stringify(unexpectedError).includes(sourceFailureCanary), false);
+  assert.equal("cause" in unexpectedError, false);
+
+  const forgedSource = new Proxy(validEnvironment(), {
+    ownKeys() {
+      throw new ReferenceRuntimeConfigError([
+        {
+          variable: sourceFailureCanary,
+          classification: "secret",
+          reason: "unexpected",
+        },
+      ]);
+    },
+  });
+  const forgedError = captureRuntimeConfigError(() => loadReferenceRuntimeConfig(forgedSource));
+
+  assert.deepEqual(forgedError.issues, [
+    { variable: "<owned-variables>", classification: "unknown", reason: "internal" },
+  ]);
+  assert.equal(JSON.stringify(forgedError).includes(sourceFailureCanary), false);
+  assert.equal("cause" in forgedError, false);
 });

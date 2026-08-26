@@ -158,6 +158,24 @@ function boundedIssues(
   ]);
 }
 
+function sanitizedInternalError(): ReferenceRuntimeConfigError {
+  return new ReferenceRuntimeConfigError([
+    Object.freeze({
+      variable: "<owned-variables>",
+      classification: "unknown",
+      reason: "internal",
+    }),
+  ]);
+}
+
+function guardUntrustedSourceAccess<T>(operation: () => T): T {
+  try {
+    return operation();
+  } catch {
+    throw sanitizedInternalError();
+  }
+}
+
 function preflight(
   source: Readonly<Record<string, string | undefined>>,
 ): ReferenceRuntimeConfigIssue[] {
@@ -219,12 +237,14 @@ function issuesFromSchema(error: z.ZodError): ReferenceRuntimeConfigIssue[] {
 function parseReferenceRuntimeConfig(
   source: Readonly<Record<string, string | undefined>>,
 ): ReferenceRuntimeConfig {
-  const preflightIssues = preflight(source);
+  const preflightIssues = guardUntrustedSourceAccess(() => preflight(source));
   if (preflightIssues.length > 0) {
     throw new ReferenceRuntimeConfigError(boundedIssues(preflightIssues));
   }
 
-  const input = Object.fromEntries(KNOWN_VARIABLES.map((variable) => [variable, source[variable]]));
+  const input = guardUntrustedSourceAccess(() =>
+    Object.fromEntries(KNOWN_VARIABLES.map((variable) => [variable, source[variable]])),
+  );
   const result = runtimeConfigSchema.safeParse(input);
   if (!result.success) {
     const issues = issuesFromSchema(result.error);
@@ -260,13 +280,7 @@ export function loadReferenceRuntimeConfig(
     if (error instanceof ReferenceRuntimeConfigError) {
       throw error;
     }
-    throw new ReferenceRuntimeConfigError([
-      Object.freeze({
-        variable: "<owned-variables>",
-        classification: "unknown",
-        reason: "internal",
-      }),
-    ]);
+    throw sanitizedInternalError();
   }
 }
 
