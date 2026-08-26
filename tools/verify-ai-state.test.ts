@@ -181,6 +181,79 @@ test("accepts canonical active and idle repository memory", () => {
   assert.deepEqual(validateAiStateSources(canonicalSources(false)), []);
 });
 
+test("accepts one external wait before one dependent active item", () => {
+  const sources = canonicalSources();
+  const queueFile = ".ai/WORK_QUEUE.md";
+  sources.set(
+    queueFile,
+    requiredSource(sources, queueFile)
+      .replace("| P00-R02 | IN_PROGRESS |", "| P00-R02 | WAITING_EXTERNAL |")
+      .replace("| P00-R03 | READY |", "| P00-R03 | IN_PROGRESS |")
+      .replace("BLOCKED_BY_2_3", "BLOCKED_BY_3"),
+  );
+  const planFile = ".ai/CHANGE_PLAN.md";
+  sources.set(planFile, replaceRequired(requiredSource(sources, planFile), "P00-R02", "P00-R03"));
+  const currentFile = ".ai/CURRENT_STATE.md";
+  sources.set(
+    currentFile,
+    replaceRequired(
+      requiredSource(sources, currentFile),
+      "Execute P00-R02 fixture validation.",
+      "Execute P00-R03 fixture validation.",
+    ),
+  );
+  const handoffFile = ".ai/HANDOFF.md";
+  sources.set(handoffFile, requiredSource(sources, handoffFile).replaceAll("P00-R02", "P00-R03"));
+
+  assert.deepEqual(validateAiStateSources(sources), []);
+
+  sources.set(
+    queueFile,
+    replaceRequired(
+      requiredSource(sources, queueFile),
+      "| P00-R04 | BLOCKED_BY_3 |",
+      "| P00-R04 | WAITING_EXTERNAL |",
+    ),
+  );
+  assert.ok(
+    validateAiStateSources(sources).some(
+      ({ detail, rule }) => rule === "queue-state" && detail.includes("WAITING_EXTERNAL"),
+    ),
+  );
+});
+
+test("rejects an active item that skips actionable work after an external wait", () => {
+  const sources = canonicalSources();
+  const queueFile = ".ai/WORK_QUEUE.md";
+  sources.set(
+    queueFile,
+    requiredSource(sources, queueFile)
+      .replace("| P00-R02 | IN_PROGRESS |", "| P00-R02 | WAITING_EXTERNAL |")
+      .replace("| P00-R04 | BLOCKED_BY_2_3 |", "| P00-R04 | IN_PROGRESS |"),
+  );
+  const planFile = ".ai/CHANGE_PLAN.md";
+  sources.set(planFile, replaceRequired(requiredSource(sources, planFile), "P00-R02", "P00-R04"));
+  const currentFile = ".ai/CURRENT_STATE.md";
+  sources.set(
+    currentFile,
+    replaceRequired(
+      requiredSource(sources, currentFile),
+      "Execute P00-R02 fixture validation.",
+      "Execute P00-R04 fixture validation.",
+    ),
+  );
+  const handoffFile = ".ai/HANDOFF.md";
+  sources.set(handoffFile, requiredSource(sources, handoffFile).replaceAll("P00-R02", "P00-R04"));
+
+  assert.ok(
+    validateAiStateSources(sources).some(
+      ({ detail, rule }) =>
+        rule === "queue-state" &&
+        detail === "the active item must be the earliest actionable queue item",
+    ),
+  );
+});
+
 test("rejects missing and oversized repository memory", () => {
   const sources = canonicalSources();
   sources.delete(".ai/CONTEXT.md");

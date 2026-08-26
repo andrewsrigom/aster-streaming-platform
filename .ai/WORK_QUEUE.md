@@ -28,6 +28,7 @@ Only one item may be `IN_PROGRESS`.
 ## Work-item rules
 
 - Move one item to `IN_PROGRESS` before changing code.
+- `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.
 - Record its plan in `.ai/CHANGE_PLAN.md`.
 - Do not mark `DONE` without linked evidence.
 - Add newly discovered work only if it belongs to the active phase.

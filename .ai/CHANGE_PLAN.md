@@ -19,6 +19,8 @@ Repository governance already prohibits full gates on every commit and describes
 
 Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm check:changed`. Full mode preserves the existing authoritative task graph. Changed mode invokes the same task set through pinned Turborepo affected execution with repository-fixed `main` and `HEAD` comparison refs and task-input-aware selection. Update the written contract so work items declare iteration, candidate, heavyweight-repeat, and review stopping rules before implementation; consolidate evidence at meaningful checkpoints; batch review remediation; and stop after one review plus one confirmation unless a later finding violates a named blocking boundary.
 
+Represent a frozen coherent candidate as `WAITING_EXTERNAL` when its only remaining condition is named external CI, review, or merge state. This state is not ambiguous work: it permits exactly one later local `IN_PROGRESS` item on a branch based on the frozen predecessor, while preserving predecessor-first publication and release. A predecessor change invalidates the dependent base and requires rebase plus the affected gates.
+
 ## Boundaries
 
 - Owning context: Repository engineering system; no product bounded context or data owner changes.
@@ -36,6 +38,8 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 - Root tasks responsible for package source, documentation, repository memory, security, CI, or platform policy declare inputs that select them when their owned files change.
 - A missing comparison ref fails safe through Turbo behavior; a failed selected task propagates a nonzero exit.
 - No rule permits skipping a requirement, security boundary, data invariant, availability contract, or public observable contract.
+- At most one item may be `WAITING_EXTERNAL`, at most one later item may be `IN_PROGRESS`, and no dependent item may publish or release before the waiting predecessor.
+- The waiting predecessor has an exact frozen head, evidence, external condition, and recovery action recorded before later implementation begins.
 
 ## Failure behavior
 
@@ -51,6 +55,8 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 | Documentation-only change | Select documentation, repository-memory when applicable, and security checks without package builds | Turbo dry-run and measured execution |
 | Package-source change | Select the changed package and dependent build/test/type tasks plus owned root lint/format/unused/architecture/security tasks | Turbo dry-run and focused execution |
 | Alternate pull-request template is a symbolic link to the canonical file | Reject the alternate path as a duplicate public template instead of treating matching real paths as a case-only alias | Community validator test and bounded violation |
+| Hosted CI, review, or merge service is unavailable after a coherent candidate is frozen | Mark the predecessor `WAITING_EXTERNAL`, retain its exact resume condition, and permit one dependent local item without bypassing release order | Repository-memory validator and state fixture |
+| Waiting predecessor changes after dependent work begins | Rebase the dependent branch onto the new frozen predecessor and repeat its affected gates before publication | Git history, handoff, and candidate evidence |
 
 ## Data and contracts
 
@@ -76,6 +82,7 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 4. Run dry and real affected checks against documentation and package-source fixtures without leaving synthetic changes in the final tree.
 5. Update the operating contract, agent loop, governance, delivery model, quality gates, local development, reusable prompt, and work-item template with the calibrated cadence and stopping rules.
 6. Run focused tests, changed-mode evidence, the full candidate gate, audit, clean public checkout only if bootstrap or public command behavior requires it, protected CI, and bounded review.
+7. Add the bounded `WAITING_EXTERNAL` queue state and validator fixture so an exact externally blocked candidate does not serialize unrelated local implementation while predecessor-first release remains mandatory.
 
 ## Tests
 
@@ -83,6 +90,7 @@ Add one repository-owned quality-gate runner used by both `pnpm check` and `pnpm
 - Application: Not applicable.
 - Integration: Spawn the pinned Turbo CLI through injected process boundaries only where needed; exercise the real `check:changed` command on the current branch.
 - Contract: Canonical task-list parity, exact full/changed arguments, fixed SCM refs, unknown-argument rejection, exit propagation, manifest scripts, Turbo future flag, and owned root task inputs.
+- Repository memory: Accept one waiting predecessor followed by one active dependent item; reject unknown status, multiple waiting items, multiple active items, and an active item that skips an earlier actionable item.
 - Browser: Not applicable.
 - Performance/failure: Compare task selection and elapsed time for a documentation/repository-memory change and a representative package-source change; treat results as workflow observations, not general benchmarks.
 

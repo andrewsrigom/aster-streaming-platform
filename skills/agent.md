@@ -48,6 +48,8 @@ Ask:
 
 If the work belongs to a future phase, update that phase specification or queue rather than implementing it early.
 
+An earlier item in `WAITING_EXTERNAL` does not block one dependent local item when its candidate is frozen, locally accepted, evidenced, and waiting only for named hosted CI, review, or merge state. Base the dependent branch on that exact head, preserve predecessor-first release, and rebase plus rerun affected gates if the predecessor changes.
+
 ### Step 3 — Write the change plan
 
 Use `docs/templates/WORK_ITEM_TEMPLATE.md`.

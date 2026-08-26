@@ -107,6 +107,8 @@ A work item stops when its written requirements, acceptance behavior, named fail
 
 Use focused checks during edits, `pnpm check:changed` for a stable candidate, and the complete work-item gate before merge. Collect a full review round before remediation, batch related findings, and use one confirmation review. Repeat review or heavyweight evidence only when a later change can invalidate the protected behavior. This is scope control, not permission to ignore a failed requirement or material risk.
 
+An external CI, review, or merge outage must not serialize all local engineering. A work item may become `WAITING_EXTERNAL` only after its exact coherent candidate, applicable local acceptance, evidence, rollback, and sole external condition are recorded. One later item may proceed on a dependent branch based on that frozen head, but it cannot publish, merge, or release first. A predecessor change requires rebase and affected verification. Unresolved product decisions, failing tests, blocking findings, missing evidence, credentials, and architecture decisions never qualify.
+
 ## Decision timing
 
 Resolve decisions at the last responsible moment, not after implementation has already depended on them.

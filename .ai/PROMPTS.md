@@ -20,7 +20,7 @@ Do not change files until the state is coherent.
 ## Implement the next work item
 
 ```text
-Restore context according to AGENTS.md. Select only the first READY item in .ai/WORK_QUEUE.md. Confirm it belongs to the active phase and its prerequisites are verified.
+Restore context according to AGENTS.md. Select only the earliest actionable READY item in .ai/WORK_QUEUE.md. An earlier WAITING_EXTERNAL item is allowed only when its exact frozen candidate and predecessor-first release condition are recorded. Confirm the selected item belongs to the active phase and its prerequisites are verified.
 
 Populate .ai/CHANGE_PLAN.md from docs/templates/WORK_ITEM_TEMPLATE.md. Implement the smallest complete vertical slice. Preserve context boundaries, data ownership, security, cancellation, bounded resources, failure behavior, and observability.
 
@@ -28,7 +28,7 @@ Name the focused iteration gate, affected-scope candidate gate, heavyweight-evid
 
 Capture evidence at candidate and closeout checkpoints. Do not claim success without passing output. Update .ai/CURRENT_STATE.md, .ai/WORK_QUEUE.md, .ai/SESSION_LOG.md, .ai/HANDOFF.md, and relevant documentation before finishing.
 
-Do not begin a second work item.
+Do not begin a second ambiguous work item. At most one dependent local item may proceed behind one conforming WAITING_EXTERNAL predecessor.
 ```
 
 ## Review a proposed change

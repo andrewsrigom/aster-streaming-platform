@@ -20,6 +20,7 @@ The authorized [public repository](https://github.com/andrewsrigom/aster-streami
 - `main` is the only long-lived branch and the protected default branch.
 - Direct pushes, force pushes, and deletion of `main` are prohibited after the GitHub ruleset is active.
 - One branch carries one coherent outcome that can be described and verified as one work item.
+- One dependent local branch may be based on an exact `WAITING_EXTERNAL` predecessor, but publication, merge, and release remain predecessor-first.
 - When a Jira key exists, use that exact key as the default branch name.
 - Otherwise use `<type>/<short-kebab-description>`, where `type` is normally `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, or `experiment`.
 - Branch names beginning with `codex/` are prohibited.
@@ -81,6 +82,12 @@ Collect a complete review round before changing the candidate. Batch related rem
 
 Do not repeat a clean checkout, container start, browser suite, media job, load test, soak, or failure experiment merely because source text changed. Repeat it when dependency, lockfile, bootstrap, packaging, Docker, generated-artifact, documented public-command, or relevant behavior changes can invalidate the prior result. Record the exact reason when earlier evidence remains applicable to a later candidate.
 
+## External wait without idle engineering
+
+`WAITING_EXTERNAL` is a bounded queue state for one frozen candidate whose implementation, applicable local gates, evidence, exact head, and rollback are complete and whose only remaining condition is named hosted CI, review, or merge state. It is prohibited for a failed requirement, unresolved blocking finding, missing evidence, credential, owner decision, or architecture decision.
+
+At most one later item may be `IN_PROGRESS`, on a local branch based on the frozen predecessor. Do not open its ready pull request, merge it, or describe it as released before the predecessor. If the predecessor changes, rebase the dependent branch and repeat its affected gate before publication. This preserves one active implementation and ordered release without making an external provider outage a global engineering lock.
+
 ## Static and architecture gates
 
 The following source gates are implemented:
@@ -124,7 +131,7 @@ GitHub automatically applies [the pull-request template](../../.github/PULL_REQU
 
 The issue chooser offers a [bug report](../../.github/ISSUE_TEMPLATE/bug-report.md) and a [bounded change proposal](../../.github/ISSUE_TEMPLATE/change-proposal.md). Blank contributor issues are disabled. No label, assignee, or external contact is invented. Both issue paths redirect vulnerability details away from public disclosure and require sanitized evidence; the verified private reporting form is linked from [`SECURITY.md`](../../SECURITY.md).
 
-The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and the verified private vulnerability path. Eight adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, symbolic, and missing-private-channel inputs. GitHub's repository API recognizes both issue-template definitions, and the active pull-request template is publicly retrievable.
+The bounded `community:check` command validates the exact file set, regular bounded UTF-8 inputs, stable Markdown front matter, chooser policy, required contribution topics, MIT terms, separate media rights, and the verified private vulnerability path. Ten adverse tests cover missing, extra, malformed, incomplete, oversized, invalid-UTF-8, symbolic canonical and alternate files, and missing-private-channel inputs. GitHub's repository API recognizes both issue-template definitions, and the active pull-request template is publicly retrievable.
 
 ## CI execution policy
 

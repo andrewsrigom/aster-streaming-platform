@@ -53,6 +53,8 @@ For every non-trivial change:
 
 Do not begin a second work item while the first is in an ambiguous state.
 
+A coherent candidate may move to `WAITING_EXTERNAL` only when implementation, applicable local gates, evidence, exact head, and rollback are recorded and its sole remaining condition is named hosted CI, review, or merge state. This state is not ambiguous. At most one later item may become `IN_PROGRESS` on a branch based on that frozen head. The dependent item must not publish, merge, or release before the waiting predecessor. If the predecessor changes, rebase the dependent branch and repeat its affected gates before publication. Do not use this state for unresolved requirements, failed tests, open blocking findings, missing evidence, credentials, or owner decisions.
+
 Verification is risk-proportionate and checkpoint-based:
 
 - during implementation, run the cheapest focused test and static checks that can catch the changed behavior;

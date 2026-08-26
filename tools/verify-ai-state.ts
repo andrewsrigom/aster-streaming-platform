@@ -247,7 +247,7 @@ function parseQueue(source: string, violations: AiStateViolation[]): QueueItem[]
       continue;
     }
     if (
-      !["DONE", "IN_PROGRESS", "READY"].includes(status) &&
+      !["DONE", "IN_PROGRESS", "READY", "WAITING_EXTERNAL"].includes(status) &&
       (!blockedStatus || blockers === undefined)
     ) {
       addViolation(violations, {
@@ -328,21 +328,52 @@ function validateQueue(items: QueueItem[], violations: AiStateViolation[]): Queu
       });
     }
   }
+  const waitingItems = items.filter((item) => item.status === "WAITING_EXTERNAL");
+  if (waitingItems.length > 1) {
+    for (const item of waitingItems) {
+      addViolation(violations, {
+        detail: "only one work item may be WAITING_EXTERNAL",
+        file,
+        line: item.line,
+        rule: "queue-state",
+      });
+    }
+  }
   const earliestUnfinished = items.find((item) => item.status !== "DONE");
-  const active = activeItems[0];
-  if (active && earliestUnfinished && active.order !== earliestUnfinished.order) {
+  const waiting = waitingItems[0];
+  if (waiting && earliestUnfinished && waiting.order !== earliestUnfinished.order) {
     addViolation(violations, {
-      detail: "the active item must be the earliest unfinished queue item",
+      detail: "WAITING_EXTERNAL must be the earliest unfinished queue item",
+      file,
+      line: waiting.line,
+      rule: "queue-state",
+    });
+  }
+  const firstActionable = items.find(
+    (item) => item.status !== "DONE" && item.status !== "WAITING_EXTERNAL",
+  );
+  const active = activeItems[0];
+  if (active && firstActionable && active.order !== firstActionable.order) {
+    addViolation(violations, {
+      detail: "the active item must be the earliest actionable queue item",
       file,
       line: active.line,
       rule: "queue-state",
     });
   }
-  if (!active && earliestUnfinished?.status.startsWith("BLOCKED_BY_")) {
+  if (waiting && active && waiting.order >= active.order) {
     addViolation(violations, {
-      detail: "the earliest unfinished queue item cannot be blocked by later work",
+      detail: "WAITING_EXTERNAL must precede the dependent active item",
       file,
-      line: earliestUnfinished.line,
+      line: active.line,
+      rule: "queue-state",
+    });
+  }
+  if (!active && firstActionable?.status.startsWith("BLOCKED_BY_")) {
+    addViolation(violations, {
+      detail: "the earliest actionable queue item cannot remain blocked",
+      file,
+      line: firstActionable.line,
       rule: "queue-state",
     });
   }
@@ -625,7 +656,8 @@ function validateSources(sources: ReadonlyMap<string, string>): ValidationSummar
   const items = parseQueue(queueSource, violations);
   const active = validateQueue(items, violations);
   const firstReady = items.find((item) => item.status === "READY");
-  const targetRequirement = active?.requirement ?? firstReady?.requirement;
+  const waiting = items.find((item) => item.status === "WAITING_EXTERNAL");
+  const targetRequirement = active?.requirement ?? firstReady?.requirement ?? waiting?.requirement;
   const activePhase = validateCurrentState(
     sources.get(".ai/CURRENT_STATE.md") ?? "",
     targetRequirement,
