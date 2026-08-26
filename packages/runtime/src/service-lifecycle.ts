@@ -28,6 +28,7 @@ export type AsterLifecycleTransitionResult = "applied" | "rejected" | "unchanged
 export type AsterInFlightCompletionResult = "already_completed" | "completed";
 export type AsterShutdownOutcome = "completed" | "degraded" | "forced";
 export type AsterShutdownFailureStage = AsterShutdownStage | "force_close";
+type AsterShutdownStageResult = "completed" | "failed" | "forced";
 
 export interface AsterServiceHealthSnapshot {
   readonly phase: AsterLifecyclePhase;
@@ -439,11 +440,11 @@ function createLifecycle(
     const raceHook = async (
       stage: AsterShutdownStage,
       hook: AsterShutdownHook | (() => Promise<void>),
-    ): Promise<boolean> => {
+    ): Promise<AsterShutdownStageResult> => {
       const completion = Promise.resolve()
         .then(() => hook(controller.signal))
-        .then(
-          () => false,
+        .then<AsterShutdownStageResult, AsterShutdownStageResult>(
+          () => "completed",
           () => {
             failedStages.push(stage);
             report("warn", {
@@ -452,10 +453,11 @@ function createLifecycle(
               outcome: "degraded",
               properties: [["stage", stage]],
             });
-            return false;
+            return "failed";
           },
         );
-      return await Promise.race([completion, forced.then(() => true)]);
+      const forcedCompletion = forced.then<AsterShutdownStageResult>(() => "forced");
+      return await Promise.race([completion, forcedCompletion]);
     };
 
     const stages: ReadonlyArray<
@@ -475,16 +477,14 @@ function createLifecycle(
     ];
 
     for (const [stage, hook] of stages) {
-      if (await raceHook(stage, hook)) {
+      const stageResult = await raceHook(stage, hook);
+      if (stageResult === "forced") {
         break;
       }
-      if (forceReason) {
+      if (stageResult === "failed" && stageFailureRequiresForceClose(stage)) {
+        requestForce("stage_failure");
         break;
       }
-    }
-
-    if (!forceReason && failedStages.some(stageFailureRequiresForceClose)) {
-      requestForce("stage_failure");
     }
 
     cancelDeadline();

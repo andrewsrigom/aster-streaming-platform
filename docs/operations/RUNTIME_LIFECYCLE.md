@@ -60,7 +60,7 @@ Every asynchronous stage receives the same `AbortSignal`. The default overall de
 
 Call `tryBeginWork()` only after readiness. It returns no lease before readiness or after drain begins. Every accepted lease must call `complete()` in `finally`; duplicate completion is harmless.
 
-A rejected hook records only its stable stage and continues remaining eligible stages; the raw rejection is not returned or logged. When traffic, consumer, or dependency closure rejects, the coordinator invokes global force close once after those eligible stages and produces `forced` with reason `stage_failure`. An isolated telemetry-flush rejection produces `degraded` after dependency closure because exporter resource ownership belongs to that later close stage. A hook that ignores cancellation cannot hold the process forever: the deadline aborts the shared signal, invokes force close once, and produces `forced` with reason `deadline`.
+A rejected hook records only its stable stage; the raw rejection is not returned or logged. When traffic, consumer, or dependency closure rejects, the coordinator invokes global force close immediately, does not start later graceful stages, and produces `forced` with reason `stage_failure`. This preserves the ownership order: a consumer that failed to stop is never allowed to continue while the coordinator gracefully closes its dependencies. An isolated telemetry-flush rejection continues through dependency closure and produces `degraded` because exporter resource ownership belongs to that later close stage. A hook that ignores cancellation cannot hold the process forever: the deadline aborts the shared signal, invokes force close once, and produces `forced` with reason `deadline`.
 
 ## Process signals
 

@@ -211,11 +211,19 @@ test("fails readiness, stops traffic, drains work, and closes hooks in fixed ord
 });
 
 for (const failure of [
-  { option: "stopTraffic", stage: "stop_traffic" },
-  { option: "stopConsumers", stage: "stop_consumers" },
-  { option: "closeDependencies", stage: "close_dependencies" },
+  { expectedEvents: ["stop_traffic"], option: "stopTraffic", stage: "stop_traffic" },
+  {
+    expectedEvents: ["stop_traffic", "stop_consumers"],
+    option: "stopConsumers",
+    stage: "stop_consumers",
+  },
+  {
+    expectedEvents: ["stop_traffic", "stop_consumers", "close_dependencies"],
+    option: "closeDependencies",
+    stage: "close_dependencies",
+  },
 ] as const) {
-  test(`forces after ${failure.stage} rejects and still runs eligible stages`, async () => {
+  test(`forces immediately after ${failure.stage} rejects without starting later stages`, async () => {
     const events: string[] = [];
     let forceCloseCalls = 0;
     const hook = (stage: string, reject: boolean): (() => Promise<void>) => {
@@ -240,7 +248,7 @@ for (const failure of [
     const result = await lifecycle.shutdown(
       "not-a-trigger" as Parameters<AsterServiceLifecycle["shutdown"]>[0],
     );
-    assert.deepEqual(events, ["stop_traffic", "stop_consumers", "close_dependencies"]);
+    assert.deepEqual(events, failure.expectedEvents);
     assert.equal(forceCloseCalls, 1);
     assert.deepEqual(result, {
       failedStages: [failure.stage],
