@@ -17,19 +17,22 @@ Append new entries at the top. Keep entries factual and concise.
 - Implementation commit `e355e29` passed the complete forced local graph with 31 of 31 uncached tasks in `22.35` seconds, retaining all HTTP, logging, configuration, repository-tool, documentation, memory, security, architecture, and CI-policy assertions.
 - Published candidate `e7b0c2b`, cloned it over HTTPS into an empty temporary root, completed frozen install with 259 packages reused and zero downloaded, passed eight focused tests and the diagnostic, and passed 31 of 31 forced uncached tasks in `20.594` seconds.
 - The clean public candidate also passed audit, secret scanning, and clean-Git checks. Its resolved temporary path, public origin, exact SHA, and clean state were revalidated before only that root was removed; Docker was not invoked.
+- Opened pull request 10 at candidate `8f05669`; protected run `32969827929` passed hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`. Dependency review emitted nine informational low Scorecard warnings for Express transitives while the gate and vulnerability audit passed.
+- Self-review found the drain test released its resolver before Apollo's documented next-turn server close. Hardened it to wait one event-loop turn, prove the listener is closed while both stop and response remain pending, refuse a new connection, then release and verify the drained response. Five consecutive eight-test runs plus type, lint, formatting, and secret checks pass.
 
 ### Evidence
 
 - Local branch: `feat/p01-r11-http-adapter` from released `main` commit `e33f90b1bfee157749e5b290bffd0a80d169c697`.
 - Implementation: `e355e291d6111158de0d07a41bfcd91fb840779b`.
 - Clean public checkout: `e7b0c2b96a57e789b4f134bcb1c0585e7a8d869c`; 31 tasks, 0 cached, `20.594s`.
+- Initial protected run: `32969827929` at `8f056693735d8d18109db148a04f37a10c93a409`.
 - Focused assertions: 8 passed, 0 failed, 0 skipped.
 - Audit: no known vulnerability at the high threshold; direct selected packages resolve under MIT.
 - Raw artifact: `evidence/phase-01/http-adapter.txt` (`IMPLEMENTED`).
 
 ### Next action
 
-Commit and push the clean-checkout evidence, then open the protected pull request and capture hosted CI, dependency review, and independent review.
+Commit and push the hardened drain verification, then repeat the clean public candidate, protected CI, and independent review at the new head.
 
 ## 2026-08-26 — Verified structured runtime logging baseline
 

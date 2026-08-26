@@ -99,7 +99,10 @@ The current production license inventory resolves only MIT, ISC, and BSD-3-Claus
 - Registry audit: no known vulnerability at the high threshold.
 - Process observation: diagnostic `0.26s / 94,020 KiB`; empty Node.js `0.01s / 42,380 KiB`.
 - Clean public checkout: exact public candidate `e7b0c2b`, frozen install with 259 packages reused and zero downloaded in `1.4s`; 8 focused tests, diagnostic, 31 of 31 forced tasks in `20.594s`, audit, secret scan, and clean Git passed.
-- Protected CI, hosted dependency review, independent review, and final verified candidate: pending.
+- Initial protected candidate `8f05669` passed run `32969827929`, including hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`; the unrelated Docker lane was skipped.
+- Hosted dependency review emitted informational low OpenSSF Scorecard warnings for nine Express transitives: `bytes`, `cookie-signature`, `depd`, `ee-first`, `escape-html`, `safe-buffer`, `safer-buffer`, `toidentifier`, and `unpipe`. The gate passed and the registry audit reports no known vulnerability.
+- Self-review found that the original drain test released its resolver before Apollo's next-turn HTTP close, so it did not prove ordering. The hardened test waits one event-loop turn, proves the listener is closed while stop and response remain pending, refuses a new connection, and only then releases the resolver. Five consecutive focused runs passed all eight tests.
+- Final clean public checkout, protected CI, independent review, and verified candidate: pending after drain-test hardening.
 
 ## Clean public checkout
 
@@ -117,7 +120,8 @@ The process pair is a compatibility and startup-cost observation only. It does n
 
 ## Limitations
 
-- Protected CI, hosted dependency review, independent review, and final release evidence are still pending.
+- The first protected run and dependency review passed, but the final clean checkout, protected rerun, independent review, and release evidence remain pending after drain-test hardening.
+- Nine Express transitives have informational OpenSSF Scorecard values below the hosted threshold. They are not current vulnerability findings, but future dependency changes must re-evaluate them and preserve the adapter replacement boundary.
 - The synthetic schema is not a product or Federation schema and exercises no database, Redis, router, authentication, authorization, persisted operation, CORS, or telemetry path.
 - Apollo and GraphQL are development-only compatibility dependencies in this package; a future service composition root owns its runtime packages.
 - The drain test proves one in-flight HTTP operation. P01-R05 still owns process signals, readiness, dependency close order, the global shutdown deadline, timeout behavior, and forced termination.

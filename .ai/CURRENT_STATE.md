@@ -95,6 +95,8 @@ Status: **IN_PROGRESS**
 - Eight focused tests pass for hostile construction, pre-mount state, exact route and middleware order, media type, malformed and oversized JSON, parser-category isolation, async rejection sanitization, socket cancellation, real Apollo query execution, in-flight HTTP drain, subprocess output, and declaration boundaries.
 - Strict package build/typecheck, repository lint, formatting, Knip, architecture, secret, license, and high-severity audit checks pass. The forced local graph passed 31 of 31 uncached tasks in `22.35` seconds. The isolated compatibility process exited 0 at `0.26` seconds and `94,020` KiB maximum RSS versus `0.01` seconds and `42,380` KiB for an empty Node.js process; this is not a benchmark.
 - A clean HTTPS clone of exact public candidate `e7b0c2b` started without dependencies or Turbo state, reused 259 packages with zero download through frozen install, passed eight focused HTTP tests and the diagnostic, passed 31 of 31 forced uncached tasks in `20.594` seconds, passed audit and secret scanning, and remained Git-clean before exact temporary-root removal. Docker was not invoked.
+- Pull request 10 initial candidate `8f05669` passed protected run `32969827929`, including hosted dependency review, frozen source quality, audit, documentation/security, and `CI required`. Dependency review reported nine informational low OpenSSF Scorecard warnings in Express transitives; the gate and registry audit passed.
+- Self-review found the original in-flight drain test released its resolver before Apollo's next-turn HTTP close. The hardened test now proves the listener is closed while stop and response remain pending, rejects a new connection, and only then releases the resolver; five consecutive focused runs passed all eight tests. Final public and protected evidence must use the hardened candidate.
 
 ## Not implemented
 
@@ -136,6 +138,7 @@ Verify the P01-R11 candidate through protected CI, hosted dependency review, and
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
 - The HTTP adapter proves Apollo-to-HTTP drain for one synthetic in-flight operation only. P01-R05 still owns process signals, readiness, dependency closure, the overall shutdown budget, telemetry, and forced termination.
+- Hosted dependency review reports informational low OpenSSF Scorecard values for nine Express transitives. They are not known-vulnerability findings, but the exact graph remains a reviewed cost and ADR-0011 keeps a replacement path.
 - shadcn/ui and Media Chrome are preferred candidates only; their compatibility, accessibility, maintenance, bundle, and license evidence belongs to Phases 05 and 07.
 - No media title has completed the rights-review workflow.
 - Hosted infrastructure provider choices remain intentionally deferred.

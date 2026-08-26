@@ -366,8 +366,32 @@ test("executes Apollo Server and drains an in-flight operation before closing HT
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ query: "query SlowCheck { slowCheck }" }),
   });
+  let inFlightSettled = false;
+  void inFlight.then(
+    () => {
+      inFlightSettled = true;
+    },
+    () => {
+      inFlightSettled = true;
+    },
+  );
   const signal = await withTestDeadline(resolverStarted.promise);
+  let stopSettled = false;
   const stopping = apollo.stop();
+  void stopping.then(
+    () => {
+      stopSettled = true;
+    },
+    () => {
+      stopSettled = true;
+    },
+  );
+  await new Promise<void>((resolve) => setImmediate(resolve));
+  assert.equal(httpServer.listening, false);
+  assert.equal(stopSettled, false);
+  assert.equal(inFlightSettled, false);
+  await assert.rejects(fetch(`${url}/graphql`));
+
   releaseResolver.resolve(undefined);
   const drainedResponse = await withTestDeadline(inFlight);
   assert.equal(drainedResponse.status, 200);
