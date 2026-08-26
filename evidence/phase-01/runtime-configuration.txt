@@ -4,8 +4,8 @@ P01-R03 RUNTIME CONFIGURATION EVIDENCE
 Status
 ------
 
-IMPLEMENTED locally at candidate commit 027539f5f410821352908f27aff30a56d1c54251.
-Protected pull-request CI and post-merge verification remain pending.
+IMPLEMENTED at review-remediation candidate a6a12b6201454547115d36e27935eb3247ef23cb.
+Protected implementation CI passes; automated review and post-merge verification remain pending.
 
 Requirement and scope
 ---------------------
@@ -27,7 +27,9 @@ Logical processors visible to WSL: 6
 Memory visible to WSL: 12,249,200 KiB
 Node.js: v24.19.0
 pnpm: 11.24.0
-Candidate commit: 027539f5f410821352908f27aff30a56d1c54251
+Initial implementation commit: 027539f5f410821352908f27aff30a56d1c54251
+Unexpected-failure remediation commit: e7cbaed9c577f2ee9865e198d5c6ef6d640a244f
+URL control-character remediation commit: a6a12b6201454547115d36e27935eb3247ef23cb
 
 Configuration-library decision
 ------------------------------
@@ -133,7 +135,7 @@ Command:
 
   corepack pnpm config:test
 
-Result at the candidate implementation: 10 tests passed, 0 failed, 0 skipped. The suite covers a frozen typed success result, explicit non-secret output, secret configured-only status, all missing fields, empty input, invalid protocols, ambiguous environment and service names, URL whitespace, owned-prefix typo rejection, unrelated host-variable tolerance, maximum value size, owned-variable count, issue-count bounds, process exit 0, process exit 1, and secret-canary redaction.
+Result at review-remediation candidate a6a12b6: 12 tests passed, 0 failed, 0 skipped. The suite covers a frozen typed success result, explicit non-secret output, secret configured-only status, all missing fields, empty input, invalid protocols, ambiguous environment and service names, URL whitespace, rejection of ASCII controls before Node.js URL normalization, owned-prefix typo rejection, unrelated host-variable tolerance, maximum value size, owned-variable count, issue-count bounds, process exit 0, process exit 1, secret-canary redaction, and conversion of an unexpected source getter failure into one sanitized internal issue without its cause.
 
 Command:
 
@@ -202,6 +204,46 @@ Complete clean-checkout gate:
 
 The high-severity registry audit reported no known vulnerability, the all-file secret scan reported zero finding, and Git remained clean. Before removal, the temporary root was resolved to the exact /tmp path and revalidated for regular directory status, origin, candidate SHA, and clean Git state. Only that exact root was then removed and its absence verified.
 
+Final remediation clean public-checkout
+---------------------------------------
+
+Public candidate commit: e7cbaed9c577f2ee9865e198d5c6ef6d640a244f
+Origin: https://github.com/andrewsrigom/aster-streaming-platform.git
+Temporary root: /tmp/aster-p01-r03-final-skJubX
+
+The second empty repository checkout verified the exact public origin, remediation SHA, clean branch, and initial absence of node_modules and .turbo. Frozen installation materialized the same 110 packages from the warm store with zero download. The focused suite passed 11 tests, including the unexpected-source redaction case.
+
+Complete final-remediation clean-checkout gate:
+
+  Command: TURBO_FORCE=true corepack pnpm check
+  Tasks: 25 successful, 25 total
+  Cached: 0
+  Turbo elapsed: 7.56 seconds
+  Wrapper elapsed: 8.01 seconds
+  Exit: 0
+
+The audit reported no known vulnerability, the all-file secret scan reported zero finding, and Git remained clean. The exact resolved root, regular-directory status, public origin, remediation SHA, and clean state were revalidated before only that temporary root was removed and its absence proved.
+
+Protected pull-request verification
+-----------------------------------
+
+Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/8
+
+Initial protected run 32956541507 passed at 34f7813367a5f34a8d80cb99d5d9b395151d32ce:
+
+- Classify change: success, 5 seconds
+- Dependency review: success, 7 seconds
+- Documentation and security: success, 11 seconds
+- Install and source quality: success, 28 seconds
+- Local platform: skipped as intended for a non-platform change
+- CI required: success, 3 seconds
+
+Final implementation run 32956811284 passed at e7cbaed9c577f2ee9865e198d5c6ef6d640a244f. Classification, dependency review, documentation/security, install/source quality, and CI required succeeded; the unrelated Docker platform lane remained intentionally skipped.
+
+Automated review on commit 34f7813367 identified discussion 3861714547: Node.js URL parsing removes embedded ASCII tabs and newlines, so the original validator could accept a normalized representation and return the malformed original value. Remediation a6a12b6 scans the bounded raw URL for C0 controls and DEL before constructing URL and adds an adverse database-newline plus Redis-tab test. The twelve focused tests, strict typecheck, lint, formatting, and secret scan pass locally. Protected run 32957245769 passed every applicable job at a6a12b6. The evidence reply was posted as comment 3861750199 and thread PRRT_kwDOUEkeis6capup was resolved.
+
+The complete local closeout was then repeated from the remediation head with forced Turbo execution: 25 of 25 tasks passed with zero cached tasks in 9.417 seconds (9.88 seconds wrapper elapsed), 12 of 12 configuration tests and 18 of 18 platform tests passed, the high-severity registry audit reported no known vulnerability, and `git diff --check` passed.
+
 Acceptance interpretation
 -------------------------
 
@@ -216,7 +258,7 @@ Acceptance interpretation
 Remaining verification
 ----------------------
 
-- Pass protected pull-request CI, dependency review, and automated review.
+- Receive the final automated review on the remediated head with no actionable thread.
 - Pass post-merge main CI before marking P01-R03 DONE and VERIFIED.
 
 Limitations

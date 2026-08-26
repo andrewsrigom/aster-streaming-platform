@@ -52,7 +52,7 @@ A successful result contains the two non-secret values and only `configured` sta
 {"event":"aster.configuration.valid","status":"ok","variables":[{"name":"ASTER_ENV","classification":"non-secret","status":"configured","value":"local"},{"name":"ASTER_SERVICE_NAME","classification":"non-secret","status":"configured","value":"config-check"},{"name":"DATABASE_URL","classification":"secret","status":"configured"},{"name":"REDIS_URL","classification":"secret","status":"configured"}]}
 ```
 
-Invalid configuration exits with status 1. Its stable issue contract contains only a variable name, classification, and reason such as `missing`, `empty`, `invalid`, `too_long`, `too_many`, or `unexpected`. It never includes an input value or a third-party validation message. Run the ten focused success, failure, limit, and redaction tests with:
+Invalid configuration exits with status 1. Its stable issue contract contains only a variable name, classification, and reason such as `missing`, `empty`, `invalid`, `too_long`, `too_many`, or `unexpected`. It never includes an input value or a third-party validation message. Run the twelve focused success, failure, limit, URL-normalization, unexpected-source, and redaction tests with:
 
 ```bash
 pnpm config:test

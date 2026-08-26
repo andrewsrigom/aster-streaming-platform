@@ -16,6 +16,11 @@ Append new entries at the top. Keep entries factual and concise.
 - Passed the implementation, documentation, evidence, and active-memory closeout through 25 of 25 forced uncached tasks in `9.911` seconds; clean-checkout, protected CI, and review remain pending.
 - Cloned public candidate `95cc1ed` into an empty repository root, completed frozen materialization with 110 warm-store reuses and zero download, passed 10 configuration tests, valid and redacted-invalid process runs, 25 of 25 forced uncached tasks in `7.554` seconds, audit, secret scan, and clean Git.
 - Revalidated the temporary clone's exact resolved `/tmp` path, regular-directory status, public origin, candidate SHA, and clean state before removing only that root and proving its absence.
+- Self-review found that an unexpected getter or proxy failure could escape the loader with an arbitrary message; remediation `e7cbaed` converts it to one cause-free internal issue and adds the eleventh redaction test.
+- A second public clone at exact remediation commit `e7cbaed` passed 11 focused tests, 25 of 25 uncached tasks in `7.56` seconds, audit, secret scan, and clean Git before its exact path, origin, SHA, and status were revalidated for targeted removal.
+- Pull request 8 initial run `32956541507` and final implementation run `32956811284` passed every applicable protected job, including dependency review, source quality, audit, governance, and `CI required`; the unrelated Docker lane was skipped as designed.
+- Automated review discussion `3861714547` identified that Node.js URL parsing removes embedded control characters. Remediation `a6a12b6` rejects C0 controls and DEL before parsing and adds a database-newline plus Redis-tab adverse test; 12 focused tests, strict typecheck, lint, formatting, and secret scanning pass locally.
+- Review-remediation run `32957245769` passed every applicable protected job. Replied with exact fix and test evidence in comment `3861750199`, then resolved discussion `PRRT_kwDOUEkeis6capup`.
 
 ### Evidence
 
@@ -24,11 +29,13 @@ Append new entries at the top. Keep entries factual and concise.
 - Invalid secret canaries: exit 1 with two classified issues and no canary in output.
 - Complete local gate: 25 tasks, 0 cached, `9.911` seconds.
 - Clean public-checkout gate: 25 tasks, 0 cached, `7.554` seconds; wrapper `8.03` seconds.
+- Final remediation clean-checkout gate: 25 tasks, 0 cached, `7.56` seconds; wrapper `8.01` seconds.
+- Protected implementation runs: `32956541507` and `32956811284` succeeded.
 - Raw evidence: `evidence/phase-01/runtime-configuration.txt` (`IMPLEMENTED` locally).
 
 ### Next action
 
-Open the protected P01-R03 pull request, observe hosted dependency review and `CI required`, request automated review, and update evidence only after those results exist.
+Request final automated review on the remediated head, then close P01-R03 state and merge only after final review and protected CI are green.
 
 ## 2026-08-26 — Verified destructive local reset and review remediation
 

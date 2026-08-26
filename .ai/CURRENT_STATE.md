@@ -67,11 +67,15 @@ Status: **IN_PROGRESS**
 ## Implemented
 
 - P01-R03 candidate `027539f` adds the first real workspace package, `@aster/config`, with a Phase 01 reference-runtime schema for explicit environment, service identity, PostgreSQL URL, and Redis URL. Every accepted variable is classified non-secret or secret; owned-prefix typos, missing, empty, malformed, ambiguous, oversized, and excessive input fail closed before other initialization.
-- Repository-owned types, frozen results, bounded issues, and redacted diagnostics contain no Zod type or secret value. Ten focused tests pass, including direct and spawned-process success/failure, credential-position canaries, issue bounds, unrelated-host-variable tolerance, and exact exit status.
+- Repository-owned types, frozen results, bounded issues, and redacted diagnostics contain no Zod type or secret value. Twelve focused tests pass, including direct and spawned-process success/failure, credential-position canaries, issue bounds, raw URL control-character rejection, unrelated-host-variable tolerance, unexpected-source sanitization without cause preservation, and exact exit status.
 - Exact-pinned `zod@4.4.3` compiles with Node.js `24.19.0` and TypeScript `6.0.3`, has no runtime dependency, resolves under MIT, and passes the frozen install plus registry audit. A single isolated successful diagnostic observed `0.09` seconds and `62,984` KiB maximum RSS versus `0.03` seconds and `45,040` KiB for an empty Node.js process on the same host; this is a compatibility observation, not a benchmark.
 - The first-package task graph now runs package build, typecheck, and tests through the existing source gate. ESLint globally excludes nested build output and Knip has explicit configuration-package entry points without weakening checks for other workspaces.
 - The implementation, documentation, evidence, and active repository-memory tree passed 25 of 25 forced uncached tasks in `9.911` seconds. Documentation validated 130 files and 311 local links, the redacting secret scan found zero issue, and all existing foundation, platform, CI, and package checks remained green.
 - A clean public clone at `95cc1ed` started without local dependencies or Turbo state, materialized 110 packages with zero download from the warm store, passed 10 focused configuration tests, exact success and redacted failure diagnostics, 25 of 25 forced uncached tasks in `7.554` seconds, audit, secret scanning, and clean Git. Its exact path, origin, SHA, and status were revalidated before only that temporary root was removed.
+- Self-review remediation `e7cbaed` converts any unexpected source or schema failure to one sanitized internal issue without preserving its cause and freezes the exported runtime-environment list while reusing protocol sets. A second clean public clone passed 11 focused tests, 25 of 25 uncached tasks in `7.56` seconds, audit, secret scan, and clean Git before exact validated removal.
+- Pull request 8 initial run `32956541507` passed classification, dependency review, documentation/security, source quality, audit, and `CI required`. Final implementation run `32956811284` passed the same applicable protected path at `e7cbaed`; the unrelated Docker platform lane was correctly skipped.
+- Automated review discussion `3861714547` proved Node.js URL parsing can remove tabs and newlines before protocol and hostname checks. Remediation `a6a12b6` rejects C0 controls and DEL in the bounded raw string before parsing; its database-newline and Redis-tab test brings the focused suite to 12 passing tests.
+- Review-remediation run `32957245769` passed every applicable protected job at `a6a12b6`. Evidence reply `3861750199` records the fix and test, and discussion `PRRT_kwDOUEkeis6capup` is resolved.
 
 ## Not implemented
 
@@ -86,7 +90,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Pass P01-R03 protected CI, dependency review, automated review, merge, and post-merge `main` verification before marking the work item `DONE` and the evidence `VERIFIED`.
+Request final P01-R03 automated review on the remediated head, then close repository state, pass final protected CI, merge, and verify post-merge `main` before marking the evidence `VERIFIED`.
 
 ## Current risks
 
