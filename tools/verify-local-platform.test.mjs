@@ -158,3 +158,19 @@ test("rejects unsafe or unbounded Compose text", () => {
   assert.ok(validateLocalPlatform(`${validSource}\t`).some(({ rule }) => rule === "bounds"));
   assert.ok(validateLocalPlatform("x".repeat(100_001)).some(({ rule }) => rule === "bounds"));
 });
+
+test("runtime profile rejects broad ports, entrypoint overrides and weakened isolation", () => {
+  for (const [before, after] of [
+    ["[runtime, full]", "[full]"],
+    ["127.0.0.1:3100:3100", "0.0.0.0:3100:3100"],
+    ['user: "1000:1000"', 'user: "0:0"'],
+    ["cap_drop: [ALL]", "cap_add: [SYS_ADMIN]"],
+    ["stop_grace_period: 15s", "stop_grace_period: 1s"],
+    ["memory: 384M", "memory: 4G"],
+    ["dockerfile: infra/docker/identity.Dockerfile", "dockerfile: unreviewed.Dockerfile"],
+    ["    profiles: [runtime, full]", '    profiles: [runtime, full]\n    entrypoint: ["sh"]'],
+    ["ASTER_DATABASE_PASSWORD: aster-test-only", "DATABASE_PASSWORD: aster-test-only"],
+  ]) {
+    assert.ok(validateLocalPlatform(validSource.replace(before, after)).length > 0, before);
+  }
+});

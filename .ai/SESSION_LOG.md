@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Docker runtime, real recovery and safe reset
+
+### Completed
+
+- Committed portable image checkpoint `4837207`; added the runtime profile, optional classified database-password input and guarded all-profile reset. No product scope or hosted mutation.
+- Fixed two measured Docker behaviors: internal-only port publication and inherited helper anonymous volumes. Identity alone joins the edge bridge; PostgreSQL/Redis remain internal and helpers use tmpfs.
+
+### Evidence
+
+- Config 17/17, Identity 33/33, platform/reset 25/25; affected gate 49/49 (28 cached, 18.58 s). Real readiness 503/live 200 on each stopped dependency and automatic recovery pass. Windows localhost access passes; SIGTERM exits naturally with 143 in 561 ms including CLI/inspection.
+- Warm-layer image rebuild plus empty-project start 39.71 s; core-only start 7.38 s. Exact reset, repeat and legacy-helper cleanup pass; unrelated four containers and 22 volume/network entries match pre/post. Only synthetic test data was deleted. Raw commands, image IDs, fingerprints and limitations: `evidence/phase-01/docker-demo.txt`.
+
+### Next action
+
+Connect optional validated OTLP export and integration/observability/full profiles; extend exact reset ownership before new resources. Then final cold/occupied-port/CI evidence and Phase 01 protected closeout. No P01-R10 publication yet.
+
 ## 2026-08-27 — P01-R09 released; Docker-only closeout activated
 
 ### Completed

@@ -23,6 +23,64 @@ function occurrences(source, value) {
   return source.split(value).length - 1;
 }
 
+function validateRuntimeService(source) {
+  const violations = [];
+  for (const [rule, value] of [
+    ["scope", "    profiles: [runtime, full]\n"],
+    [
+      "image",
+      "    build:\n      context: ../..\n      dockerfile: infra/docker/identity.Dockerfile\n",
+    ],
+    ["scope", "      com.aster.environment: local\n      com.aster.scope: platform\n"],
+    [
+      "readiness",
+      "    depends_on:\n      platform-init:\n        condition: service_completed_successfully\n",
+    ],
+    [
+      "configuration",
+      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n',
+    ],
+    [
+      "network",
+      '    ports:\n      - "127.0.0.1:3100:3100"\n    networks:\n      - platform\n      - edge\n',
+    ],
+    [
+      "security",
+      '    user: "1000:1000"\n    read_only: true\n    cap_drop: [ALL]\n    security_opt:\n      - no-new-privileges:true\n',
+    ],
+    ["lifecycle", '    stop_grace_period: 15s\n    restart: "no"\n'],
+    ["resources", '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n'],
+  ]) {
+    if (!source.includes(value)) {
+      violations.push({
+        rule,
+        detail: "Identity runtime must preserve its reviewed " + rule + " policy",
+      });
+    }
+  }
+  // The image owns the bounded readiness probe and direct Node entrypoint.
+  for (const forbidden of [
+    "entrypoint:",
+    "command:",
+    "healthcheck:",
+    "volumes:",
+    "env_file:",
+    "image:",
+    "privileged:",
+    "network_mode:",
+    "cap_add:",
+    "${",
+  ]) {
+    if (source.includes(forbidden)) {
+      violations.push({
+        rule: "security",
+        detail: "Identity runtime cannot override " + forbidden,
+      });
+    }
+  }
+  return violations;
+}
+
 export function validateLocalPlatform(source) {
   const violations = [];
   const requireText = (rule, value, detail) => {
@@ -49,16 +107,28 @@ export function validateLocalPlatform(source) {
     violations.push({ detail: "Compose project must use the stable aster name", rule: "scope" });
   }
 
+  const runtime = source.match(/^ {2}identity:\n(?:\n| {4}[^\n]*\n)+/mu)?.[0];
+  if (!runtime) {
+    violations.push({ rule: "scope", detail: "reviewed Identity runtime profile is missing" });
+  } else {
+    violations.push(...validateRuntimeService(runtime));
+    source = source.replace(runtime, "");
+  }
+  const edgeNetwork =
+    "  edge:\n    labels:\n      com.aster.environment: local\n      com.aster.scope: platform\n";
+  requireText("network", edgeNetwork, "loopback-facing application network ownership is missing");
+  source = source.replace(edgeNetwork, "");
+
   requireText("image", POSTGRES_IMAGE, "exact PostgreSQL image is missing");
   requireText("image", REDIS_IMAGE, "exact Redis image is missing");
   if (occurrences(source, "@sha256:") !== 2) {
     violations.push({ detail: "every distinct image must be immutable by digest", rule: "image" });
   }
   rejectText("image", ":latest", "floating latest image tags are prohibited");
-  rejectText("image", "build:", "P01-R01 must use reviewed prebuilt images only");
+  rejectText("image", "build:", "only the reviewed Identity runtime may build an image");
   rejectText("configuration", "${", "environment-dependent Compose substitution is prohibited");
 
-  rejectText("network", "ports:", "P01-R01 must not publish host ports");
+  rejectText("network", "ports:", "core dependencies must not publish host ports");
   rejectText("network", "network_mode: host", "host networking is prohibited");
   rejectText("security", "privileged: true", "privileged containers are prohibited");
   rejectText("security", "type: bind", "host bind mounts are prohibited");
@@ -131,6 +201,12 @@ export function validateLocalPlatform(source) {
     violations.push({
       detail: "initializer and status filesystems must be read-only",
       rule: "security",
+    });
+  }
+  if (occurrences(source, "      - /var/lib/postgresql:size=1m,mode=1777") !== 2) {
+    violations.push({
+      rule: "persistence",
+      detail: "helper containers must not create inherited anonymous database volumes",
     });
   }
   requireText(
@@ -239,6 +315,10 @@ export function validateLocalReset(source) {
     "compose_local down --volumes",
     "scoped named-volume teardown is missing",
   );
+  requireText("scope", "--profile '*'", "reset must inspect and remove every reviewed profile");
+  requireText("scope", "require_owned_attachments", "shared-resource ownership guard is missing");
+  requireText("scope", ".Mounts", "container mount ownership guard is missing");
+  requireText("scope", ".NetworkSettings.Networks", "container network ownership guard is missing");
   requireText("postcondition", "remaining_container_count", "container postcondition is missing");
   requireText("postcondition", "remaining_network_count", "network postcondition is missing");
   requireText("postcondition", "remaining_volume_count", "volume postcondition is missing");
@@ -265,6 +345,8 @@ export function validateLocalReset(source) {
 export function validatePublicPlatformCommands(documents) {
   const violations = [];
   const requiredCommands = [
+    "docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120",
+    'docker compose --project-name aster --file infra/compose/compose.yml --profile "*" down',
     "docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status",
     "docker compose --project-name aster --file infra/compose/compose.yml ps --all",
     "docker compose --project-name aster --file infra/compose/compose.yml logs --no-color platform-init platform-status",

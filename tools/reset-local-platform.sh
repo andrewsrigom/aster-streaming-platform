@@ -78,7 +78,7 @@ docker_local() {
 }
 
 compose_local() {
-  docker_local compose --project-name "$PROJECT_NAME" --file "$compose_file" "$@"
+  docker_local compose --project-name "$PROJECT_NAME" --file "$compose_file" --profile '*' "$@"
 }
 
 if ! docker_os=$(docker_local info --format '{{.OSType}}' 2>/dev/null); then
@@ -91,7 +91,8 @@ if ! configured_services=$(compose_local config --services 2>/dev/null); then
   fail 'the Compose service set cannot be read'
 fi
 configured_services=$(printf '%s\n' "$configured_services" | LC_ALL=C sort | tr -d '\r')
-expected_services='platform-init
+expected_services='identity
+platform-init
 platform-status
 postgres
 redis'
@@ -143,7 +144,7 @@ for volume_name in $prefixed_volume_names; do
     fail "volume $volume_name uses the Aster name prefix without exact project ownership"
 done
 
-if ! container_ids=$(docker_local container ls --all --quiet --filter "label=com.docker.compose.project=$PROJECT_NAME" 2>/dev/null); then
+if ! container_ids=$(docker_local container ls --all --quiet --no-trunc --filter "label=com.docker.compose.project=$PROJECT_NAME" 2>/dev/null); then
   fail 'Aster containers cannot be listed'
 fi
 container_count=0
@@ -151,6 +152,8 @@ seen_platform_init=0
 seen_platform_status=0
 seen_postgres=0
 seen_redis=0
+seen_identity=0
+legacy_volume_names=''
 for container_id in $container_ids; do
   if ! container_name=$(docker_local container inspect --format '{{.Name}}' "$container_id" 2>/dev/null); then
     fail 'an Aster container cannot be inspected'
@@ -171,6 +174,11 @@ for container_id in $container_ids; do
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
+    identity)
+      [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'Identity requires current ownership labels'
+      [ "$seen_identity" -eq 0 ] || fail 'duplicate identity container is prohibited'
+      seen_identity=1
+      ;;
     platform-init)
       [ "$seen_platform_init" -eq 0 ] || fail 'duplicate platform-init container is prohibited'
       seen_platform_init=1
@@ -189,23 +197,87 @@ for container_id in $container_ids; do
       ;;
     *) fail "container $container_name belongs to an unexpected service" ;;
   esac
+  if ! container_mounts=$(docker_local container inspect --format '{{range .Mounts}}{{.Type}}|{{.Name}}|{{.Destination}}{{"\n"}}{{end}}' "$container_id" 2>/dev/null); then
+    fail "container $container_name mounts cannot be inspected"
+  fi
+  case "$container_service|$container_mounts" in
+    'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
+    platform-init\|volume\|*\|/var/lib/postgresql | platform-status\|volume\|*\|/var/lib/postgresql)
+      legacy_volume=$(printf '%s\n' "$container_mounts" | cut -d '|' -f 2)
+      [ "${#legacy_volume}" -eq 64 ] || fail 'legacy helper volume is not an anonymous identifier'
+      case "$legacy_volume" in
+        *[!0-9a-f]*) fail 'legacy helper volume is not an anonymous identifier' ;;
+      esac
+      legacy_volume_names="$legacy_volume_names $legacy_volume"
+      ;;
+    *) fail "container $container_name has unreviewed mounts" ;;
+  esac
+  if ! container_networks=$(docker_local container inspect --format '{{range $name, $network := .NetworkSettings.Networks}}{{$name}}{{"\n"}}{{end}}' "$container_id" 2>/dev/null); then
+    fail "container $container_name networks cannot be inspected"
+  fi
+  case "$container_service|$container_networks" in
+    *\| | *\|aster_platform | 'identity|aster_edge
+aster_platform') ;;
+    *) fail "container $container_name has unreviewed network attachments" ;;
+  esac
   container_count=$((container_count + 1))
+done
+
+require_owned_attachments() {
+  for attached_id in $1; do
+    attached_owned=false
+    for owned_id in $container_ids; do
+      if [ "$attached_id" = "$owned_id" ]; then
+        attached_owned=true
+        break
+      fi
+    done
+    [ "$attached_owned" = true ] || fail 'a foreign container shares an Aster network or volume'
+  done
+}
+
+for legacy_volume in $legacy_volume_names; do
+  if ! legacy_labels=$(docker_local volume inspect --format '{{json .Labels}}' "$legacy_volume" 2>/dev/null); then
+    fail 'legacy helper volume labels cannot be inspected'
+  fi
+  case "$legacy_labels" in
+    null | '{}' | '{"com.docker.volume.anonymous":""}') ;;
+    *) fail 'legacy helper volume has unexpected labels' ;;
+  esac
+  if ! attached_ids=$(docker_local container ls --all --quiet --no-trunc --filter "volume=$legacy_volume" 2>/dev/null); then
+    fail 'legacy helper volume attachments cannot be inspected'
+  fi
+  require_owned_attachments "$attached_ids"
 done
 
 if ! network_ids=$(docker_local network ls --quiet --filter "label=com.docker.compose.project=$PROJECT_NAME" 2>/dev/null); then
   fail 'Aster networks cannot be listed'
 fi
 network_count=0
+seen_platform_network=0
+seen_edge_network=0
 for network_id in $network_ids; do
-  [ "$network_count" -eq 0 ] || fail 'more than one Aster network is prohibited'
   if ! network_name=$(docker_local network inspect --format '{{.Name}}' "$network_id" 2>/dev/null); then
     fail 'an Aster network cannot be inspected'
   fi
   if ! network_labels=$(docker_local network inspect --format '{{ index .Labels "com.docker.compose.project" }}|{{ index .Labels "com.docker.compose.network" }}|{{ index .Labels "com.aster.environment" }}|{{ index .Labels "com.aster.scope" }}' "$network_id" 2>/dev/null); then
     fail "network $network_name labels cannot be inspected"
   fi
-  [ "$network_labels" = "$PROJECT_NAME|platform|local|platform" ] ||
-    fail "network $network_name has unexpected project, network, environment, or scope labels"
+  case "$network_name|$network_labels" in
+    'aster_platform|aster|platform|local|platform')
+      [ "$seen_platform_network" -eq 0 ] || fail 'duplicate platform network'
+      seen_platform_network=1
+      ;;
+    'aster_edge|aster|edge|local|platform')
+      [ "$seen_edge_network" -eq 0 ] || fail 'duplicate edge network'
+      seen_edge_network=1
+      ;;
+    *) fail "network $network_name has unexpected ownership" ;;
+  esac
+  if ! attached_ids=$(docker_local network inspect --format '{{range $id, $container := .Containers}}{{$id}}{{"\n"}}{{end}}' "$network_id" 2>/dev/null); then
+    fail 'network attachments cannot be inspected'
+  fi
+  require_owned_attachments "$attached_ids"
   network_count=$((network_count + 1))
 done
 
@@ -220,6 +292,11 @@ for volume_name in $volume_names; do
   fi
   [ "$volume_labels" = "$PROJECT_NAME|postgres-data|durable-local|local|platform" ] ||
     fail "volume $volume_name has unexpected project, volume, authority, environment, or owner labels"
+  [ "$volume_name" = aster_postgres-data ] || fail 'unexpected Aster volume name'
+  if ! attached_ids=$(docker_local container ls --all --quiet --no-trunc --filter "volume=$volume_name" 2>/dev/null); then
+    fail 'volume attachments cannot be inspected'
+  fi
+  require_owned_attachments "$attached_ids"
   volume_count=$((volume_count + 1))
 done
 
@@ -249,6 +326,14 @@ if [ "$remaining_container_count" -ne 0 ] || [ "$remaining_network_count" -ne 0 
   [ "$remaining_volume_count" -ne 0 ]; then
   fail "scoped teardown left containers=$remaining_container_count networks=$remaining_network_count volumes=$remaining_volume_count"
 fi
+legacy_volume_count=0
+for legacy_volume in $legacy_volume_names; do
+  if docker_local volume inspect "$legacy_volume" >/dev/null 2>&1; then
+    fail 'a legacy helper volume remains after teardown'
+  fi
+  legacy_volume_count=$((legacy_volume_count + 1))
+done
 
 printf 'aster local platform reset complete\n'
 printf 'removed project resources: containers=%s networks=%s volumes=%s\n' "$container_count" "$network_count" "$volume_count"
+printf 'removed legacy helper volumes=%s\n' "$legacy_volume_count"

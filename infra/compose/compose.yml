@@ -4,6 +4,45 @@ x-postgres-image: &postgres-image docker.io/library/postgres:18.6-alpine3.23@sha
 x-redis-image: &redis-image docker.io/library/redis:8.10.0-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
 
 services:
+  identity:
+    profiles: [runtime, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/identity.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      platform-init:
+        condition: service_completed_successfully
+    environment:
+      ASTER_ENV: local
+      ASTER_HTTP_HOST: 0.0.0.0
+      ASTER_HTTP_PORT: "3100"
+      ASTER_SERVICE_NAME: identity
+      ASTER_STARTUP_DEADLINE_MS: "15000"
+      DATABASE_URL: postgresql://aster@postgres:5432/aster
+      ASTER_DATABASE_PASSWORD: aster-test-only
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks:
+      - platform
+      - edge
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 15s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 384M
+          pids: 64
+
   postgres:
     image: *postgres-image
     labels:
@@ -99,6 +138,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp:size=16m,mode=1777
+      - /var/lib/postgresql:size=1m,mode=1777
     security_opt:
       - no-new-privileges:true
     restart: "no"
@@ -134,6 +174,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp:size=16m,mode=1777
+      - /var/lib/postgresql:size=1m,mode=1777
     healthcheck:
       test:
         - CMD-SHELL
@@ -156,6 +197,10 @@ services:
           pids: 32
 
 networks:
+  edge:
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
   platform:
     internal: true
     labels:

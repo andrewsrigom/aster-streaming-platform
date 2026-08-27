@@ -15,7 +15,7 @@ An evaluator with Git and Docker/Compose can build/start the reference Identity 
 
 P01-R09 is released through PR 17 squash `a1f728196aa7a4d8a79181042f75a876610d2b11`. Protected run `33041524806` and exact post-merge run `33041787663` pass the real eight-scenario matrix and all applicable gates. Local cold source `cbc5255` passed 49/49 uncached tasks, audit and clean Git. Executing-agent initial/confirmation reviews have no blocker; no independent approval is claimed. See `evidence/phase-01/real-integration.txt`.
 
-This branch starts from that clean merge. Core Compose has PostgreSQL/Redis plus initialization/status and no application port. Identity runs from host Node with no exporter by default. Real broker/S3/Collector/Prometheus laboratories are test-only. Reset currently accepts four core services and one PostgreSQL volume.
+This branch starts from that clean merge. Image checkpoint `4837207` is followed by the locally passing runtime profile: packaged Identity with PostgreSQL/Redis, loopback 3100, optional classified database password, guarded five-service/two-network reset and helper tmpfs. Real broker/S3/Collector/Prometheus laboratories remain test-only; exporter/profile expansion is next.
 
 ## Proposed behavior
 
@@ -26,7 +26,7 @@ First prove portable production packaging and an immutable-base non-root Identit
 - Owner/data: shared infrastructure, product-empty Identity, synthetic local data only; Redis/telemetry non-authoritative.
 - Paths: `infra/docker/identity.Dockerfile`, `.dockerignore`, package file allowlists, Compose/configuration, reset/platform/CI tools and tests, config/Identity composition, docs/evidence.
 - Trust boundaries: build context, package/image artifacts, process configuration, UID/capabilities/mounts/ports, health probes and destructive cleanup.
-- External dependencies: already-pinned clients/images. Node candidate is official `24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df`; amd64/arm64 index and upstream MIT recipe verified, runtime/footprint still pending.
+- External dependencies: already-pinned clients/images. Node candidate is official `24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df`; amd64/arm64 index and upstream MIT recipe verified, packaged runtime/footprint measured locally in the linked evidence.
 - No new framework, product service, authoritative owner or hosted resource.
 
 ## Invariants
@@ -65,8 +65,8 @@ No auth/trust-model change. Frozen installation and reviewed image digests remai
 ## Implementation steps
 
 1. [completed] Pinned non-root Identity image builds inside Docker and passes package/controlled HTTP diagnostics. Seven workspace packages load; all 114 external installed versions match the lockfile; no dev/test/host tree ships. Image: 255269001 bytes, UID 1000. Missing configuration exits 1; all probe containers are removed. Platform/CI tests pass 21/21 each and affected graph passes 49/49 (52.272 s). See `evidence/phase-01/docker-demo.txt`.
-2. [in progress] Add the classified optional database-password input, preserving current URI callers and rejecting conflicts. Extend reset/platform ownership tests before adding runtime services; implement minimal runtime profile with loopback health, finite resources and graceful stop. No reset/Compose/application configuration change has been implemented yet.
-3. [pending] Add optional integration, Collector/Prometheus and full profiles from proven pins; validate optional OTLP configuration and real metric delivery. No unused diagnostic services.
+2. [completed] Optional password/configuration, exact reset and runtime profile pass. Fixed internal-only port non-publication with an Identity-only edge bridge and inherited helper volumes with tmpfs. Real PostgreSQL/Redis loss keeps liveness 200 and changes readiness to 503; restart recovers automatically. Docker image/build-start 39.71 s with cached base/install layers; natural SIGTERM 561 ms; core-only start 7.38 s. Reset removes only synthetic owned resources, supports legacy helper volumes and preserves the complete unrelated inventory. Config 17/17, Identity 33/33, platform/reset 25/25, affected graph 49/49 (28 cached, 18.58 s).
+3. [in progress] Add optional integration, Collector/Prometheus and full profiles from proven pins; validate optional OTLP configuration and real metric delivery. No unused diagnostic services.
 4. [pending] Prove clean Docker-only runtime/full commands, partial profiles, dependency recovery, stop/reset preservation; document ports, volumes, architecture, FFmpeg and resources. Measure startup, idle footprint and image/volume sizes.
 5. [pending] Complete affected/full gates, applicable CI, one review plus confirmation and Phase 01 evidence index; check Phase 02 prerequisites, squash and verify post-merge before starting Phase 02.
 

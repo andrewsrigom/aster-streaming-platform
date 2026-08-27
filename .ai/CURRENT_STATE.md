@@ -120,12 +120,12 @@ Status: **IN_PROGRESS**
 - P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
 - P01-R08 is `RELEASED` through PR 16 squash `f174aa6`; protected run `33036056777` and exact post-merge run `33036182208` passed. Source `282ccb5` passed 49/49 affected and 49/49 forced cold tasks, 20 Identity tests and 15 Redis tests, diagnostic, audit and clean Git.
 - P01-R09 is `RELEASED` through PR 17 squash `a1f7281`. Protected run `33041524806` and exact post-merge run `33041787663` pass every applicable gate and the real eight-scenario matrix. Local cold source `cbc5255` passes 49/49 uncached tasks, audit and clean Git. Exact-owned cleanup preserves unrelated containers; confirmation review has no blocker. Raw protocol/failure/telemetry/shutdown evidence: `evidence/phase-01/real-integration.txt`.
-- P01-R10's local Identity image checkpoint passes: pinned Node 24.19.0, non-root UID 1000, production-only portable packages, no host/test/source tree, 114 external versions matching the lockfile, controlled HTTP diagnostic and missing-config exit 1. Image size is 255269001 bytes. Platform and CI tests pass 21/21 each; affected graph passes 49/49 tasks in 52.272 s. Runtime/full profiles and complete phase acceptance are still pending; see `evidence/phase-01/docker-demo.txt`.
+- P01-R10's local runtime checkpoint passes: production-only non-root/read-only Identity, real PostgreSQL/Redis health loss and automatic recovery, loopback 3100 from WSL and Windows, secret-safe optional database password, natural SIGTERM exit 143 in 561 ms, scoped reset and unchanged unrelated Docker inventory. Image `802aca851543412bfb7da3941605138579b5547ab7fb6242ed59b6d8864c58ab` is 255272610 bytes; warm-layer rebuild plus empty-project startup is 39.71 s, core-only startup 7.38 s. Config 17/17, Identity 33/33, platform/reset 25/25 and affected gate 49/49 (28 cached, 18.58 s) pass. Optional profiles and complete phase acceptance remain pending; see `evidence/phase-01/docker-demo.txt`.
 
 ## Not implemented
 
 
-- Docker runtime/full application profiles and product entrypoints (the product-empty Identity image is implemented)
+- Complete integration/observability/full application profiles and product entrypoints (the product-empty Docker runtime is implemented)
 - Product database schemas and migrations
 - Default broker/object-storage application profiles and observability runtime (isolated Kafka/S3 test fixtures exist)
 - GraphQL schemas
@@ -141,11 +141,11 @@ Status: **IN_PROGRESS**
 - P01-R08 composes propagated deadlines, recoverable readiness gates, stable health routes, and an Identity reference service with no account, profile, session, schema, or resolver behavior.
 - P01-R09 selects the remaining local images and proves the runtime against real dependencies, OTLP export, Prometheus scrape, failure transitions, and bounded shutdown.
 - P01-R10 publishes measured core, runtime, integration, observability, and full profiles plus the clean Docker-only evaluator path.
-- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06 through P01-R08 are released, including provisional `kafkajs@2.2.4`. P01-R09's core, broker, storage and telemetry integration is implemented locally; complete multi-adapter acceptance/release and P01-R10 Docker-only paths remain pending.
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06 through P01-R08 are released, including provisional `kafkajs@2.2.4`. P01-R09's complete real matrix is released. P01-R10's lightweight Docker runtime passes locally; optional profiles and the final cold/hosted closeout remain pending.
 
 ## Next outcome
 
-P01-R10 is active on `feat/p01-r10-docker-demo` from released merge `a1f7281`. The production image and controlled diagnostic pass; next add validated optional database-password configuration, exact reset ownership and the lightweight runtime profile. Then optional telemetry/full profiles and clean evaluator evidence. Current image proof and 49/49 affected gate are recorded in `evidence/phase-01/docker-demo.txt`; no hosted P01-R10 run or complete phase acceptance yet.
+P01-R10 is active on `feat/p01-r10-docker-demo` from released merge `a1f7281`. The production runtime, optional database-password validation and exact reset pass locally. Next connect the existing OTLP exporter through optional validated configuration and add integration/observability/full profiles without adding broker/S3 dependencies to Identity or empty dashboards. Finish occupied-port/final cold evaluator evidence, image/profile CI and phase acceptance. Runtime proof and the 49/49 affected gate are in `evidence/phase-01/docker-demo.txt`; no hosted P01-R10 run yet.
 
 ## Current risks
 

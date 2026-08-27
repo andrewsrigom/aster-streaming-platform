@@ -6,9 +6,27 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and Phase 01 requirements P01-R01 through P01-R04 plus P01-R11 are released. A bounded P00-R06 governance correction is currently implemented on its candidate branch and remains unreleased. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
+Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10's Docker runtime checkpoint is implemented locally; optional integration/observability profiles and complete phase acceptance remain pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the delivered runtime from the planned video application.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
+
+## Run the Docker Identity checkpoint
+
+From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
+```
+
+Open [readiness](http://127.0.0.1:3100/health/ready) or [liveness](http://127.0.0.1:3100/health/live). Docker builds the application from the frozen lockfile and starts real PostgreSQL/Redis; no host Node, pnpm or hosted credential is needed. The first build needs registry access. This is a health/recovery demonstration, not a catalog, login or playable video interface. Native Windows localhost access was checked with containers running through WSL; other host/CPU combinations remain unverified.
+
+Stop all enabled Aster profiles while retaining PostgreSQL data:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --profile "*" down
+```
+
+Use the explicit reset below only to delete local data. [Runtime instructions and evidence](docs/operations/LOCAL_DEVELOPMENT.md#docker-runtime-checkpoint) cover limits and troubleshooting.
 
 ## Run the current foundation
 

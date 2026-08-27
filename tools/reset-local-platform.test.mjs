@@ -63,11 +63,16 @@ if [ "$1" = "compose" ]; then
   shift 2
   [ "$1" = "--file" ] && [ "$2" = "$FAKE_COMPOSE_FILE" ] || exit 92
   shift 2
+  [ "$1" = "--profile" ] && [ "$2" = "*" ] || exit 95
+  shift 2
   if [ "$1" = "config" ] && [ "$2" = "--quiet" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status
+    printf '%s\\n' redis postgres platform-init platform-status identity
+    if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
+      printf '%s\\n' unreviewed
+    fi
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--volumes" ]; then
@@ -92,12 +97,44 @@ if [ "$FAKE_DOCKER_SCENARIO" != "empty" ]; then
 fi
 
 if [ "$1" = "container" ] && [ "$2" = "ls" ]; then
+  case "$*" in
+    *'volume='*)
+      if [ "$FAKE_DOCKER_SCENARIO" = "foreign-volume" ] || [ "$FAKE_DOCKER_SCENARIO" = "foreign-legacy-volume" ]; then
+        printf '%s\\n' foreign-id
+      fi
+      exit 0
+      ;;
+  esac
   if [ "$resource_present" = true ]; then
     printf '%s\\n' container-id
+    if [ "$FAKE_DOCKER_SCENARIO" = "duplicate-identity" ]; then
+      printf '%s\\n' second-container-id
+    fi
   fi
   exit 0
 fi
 if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
+  case "$4" in
+    *'.Mounts'*)
+      case "$FAKE_DOCKER_SCENARIO" in
+        foreign-mount) printf '%s\\n' 'bind||/private' ;;
+        runtime | legacy-identity | duplicate-identity) ;;
+        legacy-helper | foreign-legacy-volume) printf '%s\\n' 'volume|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|/var/lib/postgresql' ;;
+        *) printf '%s\\n' 'volume|aster_postgres-data|/var/lib/postgresql' ;;
+      esac
+      exit 0
+      ;;
+    *'.NetworkSettings.Networks'*)
+      if [ "$FAKE_DOCKER_SCENARIO" = "foreign-attachment" ]; then
+        printf '%s\\n' foreign-network
+      elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ]; then
+        printf '%s\\n' aster_edge aster_platform
+      else
+        printf '%s\\n' aster_platform
+      fi
+      exit 0
+      ;;
+  esac
   if [ "$4" = "{{.Name}}" ]; then
     printf '%s\\n' /aster-postgres-1
   elif [ "$4" = "{{ index .Config.Labels \\"com.docker.compose.project\\" }}" ]; then
@@ -106,6 +143,12 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
     printf 'aster|postgres|local||%s\\n' "$FAKE_COMPOSE_FILE"
   elif [ "$FAKE_DOCKER_SCENARIO" = "previous-revision" ]; then
     printf 'aster|postgres|||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "legacy-identity" ]; then
+    printf 'aster|identity|||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "legacy-helper" ] || [ "$FAKE_DOCKER_SCENARIO" = "foreign-legacy-volume" ]; then
+    printf 'aster|platform-init|||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ] || [ "$FAKE_DOCKER_SCENARIO" = "duplicate-identity" ]; then
+    printf 'aster|identity|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
   else
     printf 'aster|postgres|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
   fi
@@ -114,16 +157,37 @@ fi
 if [ "$1" = "network" ] && [ "$2" = "ls" ]; then
   if [ "$resource_present" = true ]; then
     printf '%s\\n' network-id
+    if [ "$FAKE_DOCKER_SCENARIO" = "runtime" ]; then
+      printf '%s\\n' edge-network-id
+    fi
   fi
   exit 0
 fi
 if [ "$1" = "network" ] && [ "$2" = "inspect" ]; then
+  case "$4" in
+    *'.Containers'*)
+      if [ "$FAKE_DOCKER_SCENARIO" = "foreign-network" ]; then
+        printf '%s\\n' foreign-id
+      else
+        printf '%s\\n' container-id
+      fi
+      exit 0
+      ;;
+  esac
   if [ "$4" = "{{.Name}}" ]; then
-    printf '%s\\n' aster_platform
+    if [ "$5" = "edge-network-id" ]; then
+      printf '%s\\n' aster_edge
+    else
+      printf '%s\\n' aster_platform
+    fi
   elif [ "$4" = "{{ index .Labels \\"com.docker.compose.project\\" }}" ]; then
     printf '%s\\n' aster
   else
-    printf '%s\\n' 'aster|platform|local|platform'
+    if [ "$5" = "edge-network-id" ]; then
+      printf '%s\\n' 'aster|edge|local|platform'
+    else
+      printf '%s\\n' 'aster|platform|local|platform'
+    fi
   fi
   exit 0
 fi
@@ -136,6 +200,13 @@ if [ "$1" = "volume" ] && [ "$2" = "ls" ]; then
   exit 0
 fi
 if [ "$1" = "volume" ] && [ "$2" = "inspect" ]; then
+  if [ "$resource_present" = false ]; then
+    exit 1
+  fi
+  if [ "$4" = "{{json .Labels}}" ]; then
+    printf '%s\\n' '{"com.docker.volume.anonymous":""}'
+    exit 0
+  fi
   if [ "$4" = "{{ index .Labels \\"com.docker.compose.project\\" }}" ]; then
     if [ "$FAKE_DOCKER_SCENARIO" = "missing-project-label" ]; then
       printf '%s\\n' foreign-project
@@ -288,7 +359,7 @@ test("removes only the fixed populated Aster project and proves postconditions",
   assert.match(
     result.log,
     new RegExp(
-      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} down --volumes`,
+      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} --profile \\* down --volumes`,
       "u",
     ),
   );
@@ -318,4 +389,34 @@ test("fails when any project resource remains after teardown", async (t) => {
   const result = await runReset(t, { scenario: "postcondition-failure" });
   assert.equal(result.code, 1);
   assert.match(result.stderr, /containers=1 networks=1 volumes=1/u);
+});
+
+test("accepts a partial runtime profile and tears down all reviewed profiles", async (t) => {
+  const result = await runReset(t, { scenario: "runtime" });
+  assert.equal(result.code, 0, result.stderr);
+  assert.match(result.log, /--profile \* down --volumes/u);
+  assert.match(result.stdout, /networks=2/u);
+});
+
+test("removes only validated legacy helper anonymous volumes and verifies their absence", async (t) => {
+  const result = await runReset(t, { scenario: "legacy-helper" });
+  assert.equal(result.code, 0, result.stderr);
+  assert.match(result.stdout, /legacy helper volumes=1/u);
+});
+
+test("refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion", async (t) => {
+  for (const scenario of [
+    "unexpected-service",
+    "legacy-identity",
+    "duplicate-identity",
+    "foreign-mount",
+    "foreign-attachment",
+    "foreign-network",
+    "foreign-volume",
+    "foreign-legacy-volume",
+  ]) {
+    const result = await runReset(t, { scenario });
+    assert.equal(result.code, 1, scenario);
+    assert.doesNotMatch(result.log, / down --volumes/u, scenario);
+  }
 });

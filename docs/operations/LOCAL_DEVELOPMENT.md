@@ -2,13 +2,13 @@
 
 ## Current status
 
-The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds explicit real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus integration laboratories below. No product schema, default application/observability profile or playable journey exists yet.
+The core checkpoint uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without host ports. P01-R10 adds the local Docker runtime profile below, including real Identity health and loopback-only port 3100. P01-R09's released laboratories separately prove Kafka, S3 and Collector/Prometheus. Optional application integration/observability/full profiles, product schemas and playable journeys remain pending.
 
 ### Identity reference process
 
 After frozen installation, `pnpm identity:check` builds and runs a self-contained loopback diagnostic with controlled dependency ports, real HTTP and local metrics. It checks not-ready, ready, unavailable and recovered states, then closes its listener and exits naturally. This is not proof of real PostgreSQL/Redis protocol interoperability.
 
-`pnpm identity:start` runs the real adapters using the seven required variables in [Configuration and Environments](CONFIGURATION_AND_ENVIRONMENTS.md). No `.env` file is loaded implicitly. An unavailable database/cache keeps `/health/live` at 200 and `/health/ready` at 503; the bounded monitor owns recovery. Invalid configuration fails before clients/listeners exist. Use `SIGINT`/`SIGTERM` on Linux/WSL to request bounded shutdown. The existing Compose core has no host ports, so it is not automatically reachable by this host-run process. P01-R09 proves networked integration; P01-R10 supplies the Docker-only service command.
+`pnpm identity:start` runs the real adapters using the seven required variables in [Configuration and Environments](CONFIGURATION_AND_ENVIRONMENTS.md). No `.env` file is loaded implicitly. An unavailable database/cache keeps `/health/live` at 200 and `/health/ready` at 503; the bounded monitor owns recovery. Invalid configuration fails before clients/listeners exist. Use `SIGINT`/`SIGTERM` on Linux/WSL to request bounded shutdown. The existing Compose core has no host ports, so it is not automatically reachable by this host-run process. P01-R09 proves networked integration; P01-R10's local runtime checkpoint supplies the Docker-only service command below.
 
 ## Current foundation tools
 
@@ -31,6 +31,32 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 
 ## Toolchain validation
 
+### Docker runtime checkpoint
+
+From the repository root:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
+```
+
+Visit [readiness](http://127.0.0.1:3100/health/ready) and [liveness](http://127.0.0.1:3100/health/live). No host Node/pnpm, schema initialization or account is needed. Docker builds the frozen production package, waits for PostgreSQL/Redis initialization and probes Identity readiness. Build/pulls precede the 120-second readiness wait; a cold registry outage can still fail the build. The first build needs registry access.
+
+Identity uses UID/GID 1000, a read-only root, no Linux capabilities, a 384 MiB/1 CPU/64 PID ceiling and a 15-second orchestrator grace around the ten-second application shutdown budget. Only Identity joins the `edge` bridge for localhost publication; databases remain exclusively on the internal `platform` network. The application can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL-image helper containers override the inherited data-volume path with 1 MiB tmpfs so they create no anonymous database volumes.
+
+The current seven-variable configuration remains supported. Compose supplies the fixed synthetic database password separately through the classified optional `ASTER_DATABASE_PASSWORD`; conflicting sources fail before resource construction. An unavailable dependency produces readiness 503 while liveness remains 200, then readiness recovers when the dependency returns. There is no GraphQL endpoint, UI or `/metrics` HTTP endpoint yet; optional Collector/Prometheus export is the next P01-R10 slice.
+
+Stop all profiles without deleting the named PostgreSQL volume:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --profile "*" down
+```
+
+The earlier core-only command remains light and does not start Identity or create the edge network. `full` currently aliases the runtime subset; do not interpret it as the completed laboratory. Integration/observability/full expansion and a clean-checkout evaluator run remain pending.
+
+Measured on Linux/WSL amd64 with cached base/dependency layers: image rebuild plus empty-project startup 39.71 s; core-only startup 7.38 s; natural SIGTERM exit 143 in 561 ms including Docker CLI/inspection. A single healthy post-recovery sample reports Identity 51.59 MiB, PostgreSQL 25.11 MiB, Redis 6.004 MiB and status 1.609 MiB; these are observations, not sizing guarantees. Image size is 255272610 bytes; fresh PostgreSQL data is 47488 KiB. See [raw runtime evidence](../../evidence/phase-01/docker-demo.txt).
+
+If localhost fails, inspect `ps --all`, Identity logs and the published port; an internal-only Docker network may report container health without publishing host traffic. Use the checked-in edge network. For an occupied 3100, stop the conflicting local listener or this stack; never reset Docker or unrelated projects. Native Windows can open localhost while containers run through WSL; native Windows/macOS/arm64 execution is not proven.
+
 ### Identity image checkpoint
 
 The P01-R10 image builds and runs its existing controlled diagnostic with Docker only, on the verified Linux/WSL amd64 path:
@@ -40,7 +66,7 @@ docker build --file infra/docker/identity.Dockerfile --tag aster-identity:p01-r1
 docker run --rm --network none --cpus 0.5 --memory 256m --pids-limit 64 --read-only --cap-drop ALL --security-opt no-new-privileges --label com.aster.scope=p01-r10 aster-identity:p01-r10 ./dist/src/check-identity.js
 ```
 
-The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The normal runtime/full profile and single evaluator-start command are still pending in P01-R10.
+The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The runtime command above adds real database connectivity; optional profiles and the complete clean-checkout closeout remain pending.
 
 ### Complete integration matrix
 
@@ -66,7 +92,7 @@ pnpm integration:core
 
 The command builds Identity and runs four bounded subprocess scenarios: protocol success/disposal, adapter failure/recovery, real Identity health transitions, and termination during a held diagnostic HTTP request. To repeat only one scenario, append `protocol`, `adapters`, `identity`, or `http-drain`. This explicit laboratory does not run in ordinary unit tests, hooks, or every CI build.
 
-`infra/compose/integration.yml` inherits the reviewed core images and resource limits. The runner generates an `aster-integration-<random>` project, pins the local Docker socket, allocates temporary loopback ports that survive restart, and uses synthetic credentials. It refuses remote endpoints, Docker overrides and pre-existing names. The normal `aster` project remains unexposed and unchanged.
+`infra/compose/integration.yml` inherits the reviewed core images and resource limits. The runner generates an `aster-integration-<random>` project, pins the local Docker socket, allocates temporary loopback ports that survive restart, and uses synthetic credentials. It refuses remote endpoints, Docker overrides and pre-existing names. The normal `aster` core dependencies remain unexposed and unchanged; its optional runtime profile publishes only Identity's loopback health port.
 
 Stopping/pausing a dependency and final deletion require inspected exact project, fixture, service, environment and scope labels. Cleanup validates all containers, mounts, the network and volume before removing exact IDs. It runs after success, worker failure and handled interruption, then checks for residual resources. Only the disposable synthetic PostgreSQL volume is deleted irreversibly; images are retained. No global prune or default-project reset is used. A parent `SIGKILL` or unavailable daemon can prevent cleanup: retain the printed project ID, inspect its exact ownership, and do not apply the default Aster reset or a broad prefix deletion.
 
@@ -197,7 +223,7 @@ Delete the current Aster containers, network, disposable Redis state, and durabl
 ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
 ```
 
-The command accepts exactly the local marker and fixed confirmation. It refuses CI indicators, database or Redis URLs, Docker endpoint/configuration overrides, non-local Docker socket schemes, unexpected services, duplicate resources, partial or mismatched labels, symbolic repository inputs, and any extra argument. Before mutation it pins the inspected local Docker context, the repository Compose file, and project `aster`; it rejects Aster-prefixed physical resources without exact project ownership and validates logical resource, authority, owner, and Compose-file labels. Service containers may use only the complete current `local|platform` label pair or the complete absent pair created by released P01-R01; project, service, and Compose-file labels remain exact in both cases. It then runs only the scoped `down --volumes` operation and proves that zero `aster` project resources remain. It never prunes images, containers, networks, or volumes globally and does not use a broad fallback after partial failure.
+The command accepts exactly the local marker and fixed confirmation. It refuses CI indicators, database or Redis URLs, Docker endpoint/configuration overrides, non-local Docker socket schemes, unexpected services, duplicate resources, partial or mismatched labels, symbolic repository inputs, and any extra argument. Before mutation it pins the inspected local Docker context, the repository Compose file, and project `aster`; it rejects Aster-prefixed physical resources without exact project ownership and validates logical resource, authority, owner, and Compose-file labels. Core service containers may use only the complete current `local|platform` label pair or the complete absent pair created by released P01-R01; Identity requires the current pair. Project, service and Compose-file labels remain exact. Reset explicitly enables every reviewed profile and checks container mounts/network attachments plus foreign containers sharing project networks or volumes before deletion. Only the exact PostgreSQL volume, platform/edge networks and five reviewed services are accepted. Legacy helper anonymous volumes require a 64-hex identifier, anonymous/empty labels, no foreign attachment and a post-deletion absence check. It then runs only the scoped all-profile `down --volumes` operation and proves that zero `aster` project resources remain. It never prunes images, containers, networks, or volumes globally and does not use a broad fallback after partial failure.
 
 The reset is irreversible for the current local PostgreSQL data. A successful repeat from empty state reports that Aster is already reset without creating resources. Recovery is the normal health-gated startup command, which creates a new empty PostgreSQL volume. Phase-owned migration and seed recovery will be documented when those capabilities exist. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
 
@@ -244,7 +270,7 @@ The configured GitHub governance job runs repository-memory, documentation, publ
 
 ## Local endpoints
 
-P01-R01 intentionally publishes no host port. PostgreSQL, Redis, the initializer, and status communicate only through the internal `platform` network. Use `docker compose exec` and `docker compose ps` rather than relying on a host port.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate only through the internal `platform` network. The optional runtime publishes Identity on `127.0.0.1:3100` for `/health/live` and `/health/ready`; it does not publish database/cache ports.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 
