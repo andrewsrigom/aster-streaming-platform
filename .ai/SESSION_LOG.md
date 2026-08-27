@@ -2,6 +2,87 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Guarded Identity product candidate
+
+### Completed
+
+- Implemented and wired the bounded Federation v2 Identity API, request-scoped entity batching, cookies/CSRF, sanitized outcomes, cancellation, restricted runtime readiness and separate finite migrations. Docker now runs the real local login/profile journey; no UI/Router/playback claim.
+- Owner authorized Apollo Elastic-2.0 and standing compatible licensing decisions. ADR-0014 accepts Elastic-2.0/0BSD; Aster stays MIT. Initial review corrected late-response header cleanup and stale status prose in one batch; focused confirmation passes. No independent approval or remote release claimed.
+
+### Evidence
+
+- Initial candidate: all 49 tasks and 144 Identity tests pass. Eleven real scenarios pass in 162778 ms; cleanup 2732 ms/zero remaining. After review, HTTP tests and a fresh subgraph fixture pass (12545 ms, cleanup 1387 ms). Rebuilt Docker six-step smoke passes; repeat migration is a no-op, notices retained, 189 packaged dependency versions match source.
+- Exact commands, fingerprints and limits: `evidence/phase-02/identity-subgraph.txt`. Audit passes high/critical with one moderate uuid advisory outside inspected Apollo v1/v4 call paths. Disposable fixtures removed only their own synthetic data; the Aster demo and retained user data remain.
+
+### Next action
+
+- Final pre-push gate passed (49 tasks, 34 cached, 17.891 s; 144 Identity tests; high/critical audit) and executing-agent confirmation is complete. Publish one coherent PR, require protected exact-head CI, squash and verify post-merge; then check Phase 03 prerequisites. No more licensing permission pause for this accepted graph.
+
+## 2026-08-27 — Local cookie/CSRF checkpoint; license decision
+
+### Completed
+
+- Committed owned profiles/outbox as `5a263e8`. Implemented the next local transport boundary: exact Host/Origin, custom-header CSRF, bounded unambiguous cookies/headers, absolute HttpOnly cookie lifetime and preserved Express async error handling. Still unwired; new files remain uncommitted for the next functional block.
+- Verified Apollo dependency metadata and exact upstream source. Selected Federation internals/composition use Elastic-2.0, outside current license policy. Created proposed ADR-0014; no packages installed, policy changed, remote write or pipeline.
+
+### Evidence
+
+- Focused 70/70 tests (19 transport + 51 crypto); full Identity 130/130, all 49 tasks (35 cached, 14.98 s), audit and diff checks pass. Test-only shorthand callbacks corrected after focused ESLint; no gate weakened.
+- Commands, fingerprints, limits and license sources: `evidence/phase-02/identity-subgraph.txt`. No Docker resources changed.
+
+### Next action
+
+Owner decision on proposed ADR-0014 is required by AGENTS/skill agent before installing the new license graph or altering policy. P02-R09 stays unfinished, not WAITING_EXTERNAL or phase verified. After authorization, continue schema/resolvers and real product startup; do not repeat unchanged tests merely while waiting.
+
+## 2026-08-27 — Owned profiles and transactional facts
+
+### Completed
+
+- Implemented normalized owned profiles, per-session active selection, optimistic versions and 24-hour retry receipts. Migration 0002 atomically stores audit/outbox facts; deletion removes preferences and clears every selected reference without deleting the account.
+- Bounded profiles/receipts/audit/outbox and defined backpressure without pending-event loss. Reused existing PostgreSQL transactions and fixture supervision; no new dependency, service, remote write or pipeline.
+
+### Evidence
+
+- Identity 111 tests, PostgreSQL 29 tests, all 49 source tasks (34 cached, 16.103 s), audit and executing-agent initial/confirmation review pass. No independent review claimed.
+- Real profile run 10780 ms; eight duplicate callers create one fact; eight callers crossing a two-profile limit admit one/reject seven. Foreign ownership, post-write rollback, revocation ordering, deletion replay, retention, timeout/cancellation and restrictive migration round-trip pass. Cleanup removed only one synthetic fixture in 1048 ms, zero remaining.
+- Exact commands/fingerprints and raw output: `evidence/phase-02/profiles-outbox.txt`.
+
+### Next action
+
+P02-R09 cookie/GraphQL transport is active. Wire product startup before publishing a runnable candidate; existing health-only Docker behavior is not a login demo. No broker relay until Phase 08.
+
+## 2026-08-27 — Durable account/session candidate
+
+### Completed
+
+- Implemented account/session policies, bounded one-client PostgreSQL transactions, explicit owner SQL and migration 0001. No ORM, new service, public route or remote pipeline was added.
+- Added real database admission/rollback/revocation/restart/privilege/migration tests using the existing isolated fixture supervisor. Batched initial review remediation for dispatch/retirement, commit ambiguity and migration deadlines.
+
+### Evidence
+
+- PostgreSQL 29 tests, Identity 91 tests, all 49 canonical tasks (33 cached, 14.369 s), audit and executing-agent confirmation pass. Real database scenario: 12334 ms; cleanup: 1021 ms, zero remaining. Eight first logins produce one account/eight sessions; limit crossing admits four of eight at four existing sessions.
+- Two disposable test fixtures removed; unrelated Docker resources preserved. Raw commands, measured values and limitations: `evidence/phase-02/account-sessions.txt`.
+
+### Next action
+
+P02-R02 is locally verified; P02-R03 profiles/outbox is active. Consolidate the functional local checkpoint without another remote pipeline. Phase 02 remains unpublished; no independent review or runnable product login is claimed.
+
+## 2026-08-27 — Phase 01 release and first Identity boundary
+
+### Completed
+
+- Resolved all three PR 18 documentation findings; final source-backed baseline sweep and executing-agent confirmation passed. Squash merged as `b0544c9` after protected run `33047330768`; exact post-merge `33047629326` passed. No independent approval is claimed.
+- Started P02-R01 from clean main on `feat/p02-identity-session`. ADR-0013 selects local-only signed assertions and mandatory owner-held session validity. Added the first domain contract and guarded JOSE adapter; runtime startup is unchanged.
+
+### Evidence
+
+- Final protected matrix: 145020 ms, cleanup 975 ms. Post-merge matrix: 153008 ms, cleanup 1053 ms. Both have zero residual fixture resources and passing Docker UID/health/six-metric proof; audit passes.
+- Initial Identity cryptographic suite passes 47 tests; corrected focused lint issues and removed an asynchronous saturation-test ordering race. Expanded opt-in cases and final candidate gates follow. jose 6.2.10 adds one MIT package, no runtime dependency; registry audit passes.
+
+### Next action
+
+P02-R01 is now locally committed as `64a3aa8`; final 51 focused cases, 85 Identity tests and all 49 tasks pass. P02-R02 is active for PostgreSQL session/account validity before GraphQL/cookie integration. No branch push or new pipeline was created. Activation memory edits belong to the next functional commit.
+
 ## 2026-08-27 — Complete Docker confirmation findings
 
 ### Completed

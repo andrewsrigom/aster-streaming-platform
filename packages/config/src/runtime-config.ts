@@ -50,6 +50,8 @@ export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
   REDIS_URL: Object.freeze({ classification: "secret" }),
   ASTER_DATABASE_PASSWORD: Object.freeze({ classification: "secret", optional: true }),
   ASTER_OTLP_METRICS_ENDPOINT: Object.freeze({ classification: "secret", optional: true }),
+  ASTER_LOCAL_DEMO_ENABLED: Object.freeze({ classification: "non-secret", optional: true }),
+  ASTER_PUBLIC_ORIGIN: Object.freeze({ classification: "non-secret", optional: true }),
 } satisfies Record<string, RuntimeVariableDefinition>);
 
 const KNOWN_VARIABLES = Object.freeze(
@@ -87,6 +89,8 @@ const runtimeConfigSchema = z.strictObject({
     .refine((value) => !hasAsciiControl(value))
     .optional(),
   ASTER_OTLP_METRICS_ENDPOINT: z.string().refine(isOtlpMetricsEndpoint).optional(),
+  ASTER_LOCAL_DEMO_ENABLED: z.enum(["true", "false"]).optional(),
+  ASTER_PUBLIC_ORIGIN: z.string().max(128).refine(isLocalPublicOrigin).optional(),
 });
 
 export interface ReferenceRuntimeConfig {
@@ -99,6 +103,7 @@ export interface ReferenceRuntimeConfig {
   readonly databasePasswordConfigured: boolean;
   readonly redisUrl: string;
   readonly otlpMetricsEndpoint?: string;
+  readonly localDemo?: Readonly<{ publicOrigin: string }>;
 }
 
 export interface ReferenceRuntimeConfigIssue {
@@ -113,7 +118,9 @@ export interface ConfiguredNonSecretVariable {
     | "ASTER_HTTP_HOST"
     | "ASTER_HTTP_PORT"
     | "ASTER_SERVICE_NAME"
-    | "ASTER_STARTUP_DEADLINE_MS";
+    | "ASTER_STARTUP_DEADLINE_MS"
+    | "ASTER_LOCAL_DEMO_ENABLED"
+    | "ASTER_PUBLIC_ORIGIN";
   readonly classification: "non-secret";
   readonly status: "configured";
   readonly value: string;
@@ -189,6 +196,11 @@ function hasAsciiControl(value: string): boolean {
     }
   }
   return false;
+}
+
+function isLocalPublicOrigin(value: string): boolean {
+  const match = /^http:\/\/127\.0\.0\.1:([1-9]\d{3,4})$/u.exec(value);
+  return match?.[1] !== undefined && integerInRange(match[1], HTTP_PORT_MIN, HTTP_PORT_MAX);
 }
 
 function isOwnedVariable(name: string): boolean {
@@ -288,6 +300,8 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
     REDIS_URL: undefined,
     ASTER_DATABASE_PASSWORD: undefined,
     ASTER_OTLP_METRICS_ENDPOINT: undefined,
+    ASTER_LOCAL_DEMO_ENABLED: undefined,
+    ASTER_PUBLIC_ORIGIN: undefined,
   };
   const seenKnownVariables = new Set<ReferenceRuntimeConfigVariable>();
   let ownedVariableCount = 0;
@@ -419,6 +433,15 @@ function parseReferenceRuntimeConfig(
     );
   }
 
+  const localDemoEnabled = result.data.ASTER_LOCAL_DEMO_ENABLED === "true";
+  const publicOrigin = result.data.ASTER_PUBLIC_ORIGIN;
+  if (localDemoEnabled && (result.data.ASTER_ENV !== "local" || publicOrigin === undefined)) {
+    throw new ReferenceRuntimeConfigError([knownIssue("ASTER_LOCAL_DEMO_ENABLED", "invalid")]);
+  }
+  if (!localDemoEnabled && publicOrigin !== undefined) {
+    throw new ReferenceRuntimeConfigError([knownIssue("ASTER_PUBLIC_ORIGIN", "invalid")]);
+  }
+
   let databaseUrl = result.data.DATABASE_URL;
   const databasePassword = result.data.ASTER_DATABASE_PASSWORD;
   if (databasePassword !== undefined) {
@@ -447,6 +470,9 @@ function parseReferenceRuntimeConfig(
     databaseUrl,
     databasePasswordConfigured: databasePassword !== undefined,
     redisUrl: result.data.REDIS_URL,
+    ...(localDemoEnabled && publicOrigin !== undefined
+      ? { localDemo: Object.freeze({ publicOrigin }) }
+      : {}),
     ...(result.data.ASTER_OTLP_METRICS_ENDPOINT === undefined
       ? {}
       : { otlpMetricsEndpoint: result.data.ASTER_OTLP_METRICS_ENDPOINT }),
@@ -521,6 +547,22 @@ export function createReferenceRuntimeConfigDiagnostic(
               name: "ASTER_OTLP_METRICS_ENDPOINT" as const,
               classification: "secret" as const,
               status: "configured" as const,
+            }),
+          ]),
+      ...(config.localDemo === undefined
+        ? []
+        : [
+            Object.freeze({
+              name: "ASTER_LOCAL_DEMO_ENABLED" as const,
+              classification: "non-secret" as const,
+              status: "configured" as const,
+              value: "true",
+            }),
+            Object.freeze({
+              name: "ASTER_PUBLIC_ORIGIN" as const,
+              classification: "non-secret" as const,
+              status: "configured" as const,
+              value: config.localDemo.publicOrigin,
             }),
           ]),
     ]),

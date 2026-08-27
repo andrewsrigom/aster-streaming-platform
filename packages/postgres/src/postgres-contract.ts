@@ -53,6 +53,35 @@ export type AsterPostgresCloseResult = Readonly<{
   status: "completed" | "already_completed" | "timed_out" | "aborted" | "failed";
 }>;
 
+export type AsterPostgresValue = string | number | boolean | null;
+
+export interface AsterPostgresQuery {
+  /** Source-owned, single SELECT/INSERT/UPDATE/DELETE statement; never caller-supplied SQL. */
+  readonly text: string;
+  readonly values?: readonly AsterPostgresValue[];
+}
+
+export interface AsterPostgresRows {
+  readonly rowCount: number;
+  readonly rows: readonly unknown[];
+}
+
+export interface AsterPostgresTransaction {
+  /** Sequential queries only. The lease expires when the callback settles or its budget ends. */
+  query(query: AsterPostgresQuery): Promise<AsterPostgresRows>;
+}
+
+export type AsterPostgresTransactionDecision<T> = Readonly<{
+  action: "commit" | "rollback";
+  value: T;
+}>;
+
+export type AsterPostgresTransactionResult<T> =
+  | Readonly<{ status: "committed"; value: T }>
+  | Readonly<{ status: "rolled_back"; value: T }>
+  | Exclude<AsterPostgresOperationResult, { status: "completed" }>
+  | Readonly<{ status: "indeterminate" }>;
+
 export type AsterPostgresPoolSnapshot = Readonly<{
   state: "open" | "closing" | "closed";
   totalConnections: number;
@@ -64,6 +93,10 @@ export type AsterPostgresPoolSnapshot = Readonly<{
 export interface AsterPostgresAdapter {
   connect(signal?: AbortSignal): Promise<AsterPostgresOperationResult>;
   probe(signal?: AbortSignal): Promise<AsterPostgresOperationResult>;
+  transaction<T>(
+    work: (transaction: AsterPostgresTransaction) => Promise<AsterPostgresTransactionDecision<T>>,
+    signal?: AbortSignal,
+  ): Promise<AsterPostgresTransactionResult<T>>;
   snapshot(): AsterPostgresPoolSnapshot;
   close(signal?: AbortSignal): Promise<AsterPostgresCloseResult>;
   lifecycleHooks(): Readonly<{

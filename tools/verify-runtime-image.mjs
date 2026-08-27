@@ -33,6 +33,7 @@ const allowedContext = [
   "!services/identity/tsconfig.json",
   "!services/identity/src/**/*.ts",
   "!services/identity/test/**/*.ts",
+  "!services/identity/migrations/*.sql",
   "!infra/",
   "!infra/docker/",
   "!infra/docker/identity.Dockerfile",
@@ -116,8 +117,12 @@ export function validateRuntimeImage(sources) {
   for (const path of productionPackages) {
     try {
       const manifest = JSON.parse(sources[`${path}/package.json`] ?? "{}");
-      if (JSON.stringify(manifest.files) !== '["dist/src"]') {
-        reject(`${path} must ship only compiled source, not tests or host artifacts`);
+      const expected =
+        path === "services/identity" ? '["dist/src","migrations/*.sql"]' : '["dist/src"]';
+      if (JSON.stringify(manifest.files) !== expected) {
+        reject(
+          `${path} must ship compiled source and only its reviewed SQL, not tests or host artifacts`,
+        );
       }
     } catch {
       reject(`${path} has invalid package metadata`);

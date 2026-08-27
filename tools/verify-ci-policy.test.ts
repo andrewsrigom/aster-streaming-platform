@@ -106,6 +106,7 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
   const source = await readFile(workflowPath, "utf8");
   for (const [before, after] of [
     ["--profile full up --build", "--profile full up"],
+    ["< tools/verify-local-identity.mjs", "< tools/unreviewed-demo.mjs"],
     ["timeout-minutes: 10", "timeout-minutes: 60"],
     ["assert.equal(process.getuid(), 1000)", "assert.ok(true)"],
     ["assert.deepEqual(present, required)", "assert.ok(present)"],
@@ -130,6 +131,17 @@ test("rejects removal of the reviewed MITNFA license", async () => {
   const source = await readFile(workflowPath, "utf8");
   const weakened = source.replace(", MIT, MITNFA", ", MIT");
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
+test("rejects removal or expansion of the owner-approved Federation license set", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace(", Elastic-2.0", ""),
+    source.replace("0BSD, ", ""),
+    source.replace(", MIT, MITNFA", ", MIT, MITNFA, GPL-3.0-only"),
+  ]) {
+    assert.ok(validateWorkflowPolicy(changed).some(({ rule }) => rule === "commands"));
+  }
 });
 
 test("requires both bounded weekly dependency ecosystems", () => {

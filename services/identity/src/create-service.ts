@@ -1,7 +1,7 @@
 import { performance } from "node:perf_hooks";
 
 import { loadReferenceRuntimeConfig, type ReferenceRuntimeConfigSourceEntry } from "@aster/config";
-import { createAsterPostgresAdapter } from "@aster/postgres";
+import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
 import { createAsterRedisAdapter } from "@aster/redis";
 import {
   createAsterDeadline,
@@ -21,6 +21,7 @@ import {
   type AsterIdentityStartupResult,
 } from "./reference-runtime.js";
 import { createIdentityHttpServer } from "./transport/http-server.js";
+import { createLocalIdentityProduct } from "./create-local-product.js";
 
 const SERVICE_VERSION = "0.0.0";
 const CLEANUP_DEADLINE_MS = 10_000;
@@ -34,6 +35,7 @@ interface DependencyAdapter {
   connect(signal?: AbortSignal): Promise<Readonly<{ status: string }>>;
   probe(signal?: AbortSignal): Promise<Readonly<{ status: string }>>;
   close(signal?: AbortSignal): Promise<CloseResult>;
+  readonly transaction?: AsterPostgresAdapter["transaction"];
 }
 
 // Internal factory seams are trusted composition code, never caller/environment configuration.
@@ -166,6 +168,27 @@ export async function createIdentityServiceWithFactories(
     });
     const postgresqlOwner = ownClose((signal) => postgresql.close(signal));
     owners.push(postgresqlOwner);
+    let product: Awaited<ReturnType<typeof createLocalIdentityProduct>> | undefined;
+    let productOwner: OwnedClose | undefined;
+    if (configuration.localDemo) {
+      const transaction = postgresql.transaction;
+      if (!transaction) {
+        throw new AsterIdentityCompositionError();
+      }
+      product = await createLocalIdentityProduct(
+        configuration,
+        { transaction },
+        clock,
+        identifiers,
+        logger,
+      );
+      const ownedProduct = product;
+      productOwner = ownClose(async () => {
+        await ownedProduct.stop();
+        return { status: "completed" };
+      });
+      owners.push(productOwner);
+    }
     const redis = factories.redis({ url: configuration.redisUrl, telemetry });
     const redisOwner = ownClose((signal) => redis.close(signal));
     owners.push(redisOwner);
@@ -188,16 +211,45 @@ export async function createIdentityServiceWithFactories(
           factories.terminate(1);
         });
       },
+      ...(product
+        ? {
+            graphql: async (request, response, next) => {
+              const lease = runtime.tryBeginWork();
+              if (!lease) {
+                response
+                  .set("Cache-Control", "no-store")
+                  .status(503)
+                  .json({
+                    errors: [
+                      { message: "Identity unavailable.", extensions: { code: "UNAVAILABLE" } },
+                    ],
+                  });
+                return;
+              }
+              try {
+                await product.middleware(request, response, next);
+              } finally {
+                lease.complete();
+              }
+            },
+          }
+        : {}),
     });
     const httpOwner = ownClose(async (signal) => {
-      await http.stopTraffic(signal);
+      await Promise.all([http.stopTraffic(signal), productOwner?.close(signal)]);
       return { status: "completed" };
     });
     owners.push(httpOwner);
     const runtime = factories.runtime({
       startupDeadlineMs: configuration.startupDeadlineMs,
       logger,
-      postgresql: dependencyPort(postgresql, postgresqlOwner),
+      postgresql: {
+        ...dependencyPort(postgresql, postgresqlOwner),
+        probe: (signal) =>
+          product
+            ? product.probe(signal)
+            : dependencyPort(postgresql, postgresqlOwner).probe(signal),
+      },
       redis: dependencyPort(redis, redisOwner),
       http: {
         listen: (signal) => http.listen(signal),
@@ -214,9 +266,12 @@ export async function createIdentityServiceWithFactories(
       },
       forceClose(): void {
         http.forceClose();
-        const remaining = [postgresqlOwner, redisOwner, telemetryOwner].filter(
-          (owner) => !owner.isClosed(),
-        );
+        const remaining = [
+          ...(productOwner ? [productOwner] : []),
+          postgresqlOwner,
+          redisOwner,
+          telemetryOwner,
+        ].filter((owner) => !owner.isClosed());
         for (const owner of remaining) {
           void owner.close(new AbortController().signal).catch(() => undefined);
         }

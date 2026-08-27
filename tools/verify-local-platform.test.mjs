@@ -150,7 +150,10 @@ test("rejects weakened readiness and one-shot ordering", () => {
     "        condition: service_completed_successfully",
     "        condition: service_started",
   );
-  const missingHealth = validSource.replace("    healthcheck:", "    x-healthcheck:");
+  const missingHealth = validSource.replace(
+    "    healthcheck:\n      test: [CMD-SHELL, pg_isready",
+    "    x-healthcheck:\n      test: [CMD-SHELL, pg_isready",
+  );
   assert.ok(validateLocalPlatform(noCompletionGate).some(({ rule }) => rule === "readiness"));
   assert.ok(validateLocalPlatform(missingHealth).some(({ rule }) => rule === "readiness"));
 });
@@ -181,6 +184,17 @@ test("runtime profile rejects broad ports, entrypoint overrides and weakened iso
       '    profiles: [runtime, integration, observability, full]\n    entrypoint: ["sh"]',
     ],
     ["ASTER_DATABASE_PASSWORD: aster-test-only", "DATABASE_PASSWORD: aster-test-only"],
+  ]) {
+    assert.ok(validateLocalPlatform(validSource.replace(before, after)).length > 0, before);
+  }
+});
+
+test("local Identity initialization stays finite, isolated and separate from the runtime login", () => {
+  for (const [before, after] of [
+    ["postgresql://aster_identity_local@postgres", "postgresql://aster@postgres"],
+    ['command: ["./dist/src/migrate-local.js"]', 'command: ["./dist/src/main.js"]'],
+    ["networks: [platform]\n    user:", "networks: [platform, edge]\n    user:"],
+    ['ASTER_LOCAL_DEMO_ENABLED: "true"', 'ASTER_LOCAL_DEMO_ENABLED: "false"'],
   ]) {
     assert.ok(validateLocalPlatform(validSource.replace(before, after)).length > 0, before);
   }

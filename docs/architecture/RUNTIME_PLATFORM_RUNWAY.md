@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document records the Phase 01 implementation sequence and current boundaries. P01-R06 through P01-R09 are released, including the real combined dependency/telemetry/shutdown matrix. P01-R10 implements the non-root Docker runtime, resource-aware integration/observability/full profiles and the exact clean Docker-only evaluator path. Protected final acceptance/release remain pending; [Phase 01 evidence](../../evidence/phase-01/README.md) distinguishes local acceptance from release.
+This document records the Phase 01 implementation sequence and current boundaries. P01-R06 through P01-R09 are released, including the real combined dependency/telemetry/shutdown matrix. P01-R10 implements the non-root Docker runtime, resource-aware integration/observability/full profiles and the exact clean Docker-only evaluator path. Final protected and exact post-merge acceptance pass through PR 18; [Phase 01 evidence](../../evidence/phase-01/README.md) distinguishes local acceptance from release.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -260,7 +260,7 @@ The [Identity image checkpoint](../operations/LOCAL_DEVELOPMENT.md#identity-imag
 
 The README supplies one copyable Docker-only runtime command and a second full-laboratory command using the explicit observability overlay. Neither path requires host Node.js/pnpm, hosted credentials, personal data or manual container repair. Identity stays live/ready when Collector fails; the status helper reports telemetry failure, and shutdown remains bounded with truthful degraded delivery.
 
-Exact clean source `38801ce` proves the documented path with no host Node/pnpm in PATH and no local dependencies or Aster volumes: full build/start 36.89 s with warm base/install caches, occupied-port refusal/recovery 4.56/5.60 s, volume-preserving stop and guarded partial/idempotent reset. The cold source gate passes 49/49 uncached tasks and audit. The first protected PR 18 run `33046068184` also passes the Docker-built profile, real metrics and eight-scenario matrix. Final review/closeout acceptance and release remain pending. Evidence records environment, commands, image/volume footprints, resource snapshots and limitations; no playable product or capacity/SLO claim is made.
+Exact clean source `38801ce` proves the documented path with no host Node/pnpm in PATH and no local dependencies or Aster volumes: full build/start 36.89 s with warm base/install caches, occupied-port refusal/recovery 4.56/5.60 s, volume-preserving stop and guarded partial/idempotent reset. The cold source gate passes 49/49 uncached tasks and audit. The first protected PR 18 run `33046068184` also passes the Docker-built profile, real metrics and eight-scenario matrix. Final protected run `33047330768` and post-merge run `33047629326` pass at `b9f816a`/`b0544c9`; all review findings are resolved and Phase 01 is released. Evidence records environment, commands, image/volume footprints, resource snapshots and limitations; no playable product or capacity/SLO claim is made.
 
 ## Cross-item failure and rollback rules
 

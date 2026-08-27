@@ -38,6 +38,8 @@ The Identity entrypoint (`pnpm identity:start`) uses this exact contract before 
 | `REDIS_URL` | Secret | Required; bounded Redis URL using `redis:` or `rediss:` |
 | `ASTER_DATABASE_PASSWORD` | Secret | Optional; omit to retain the original URL contract; when supplied, requires a non-empty explicit URL username and no URL/query password |
 | `ASTER_OTLP_METRICS_ENDPOINT` | Secret server-only endpoint | Optional; complete HTTP(S) metrics URL without credentials, query or fragment; omit for no export |
+| `ASTER_LOCAL_DEMO_ENABLED` | Non-secret local product mode | Optional `true`/`false`; only `true` enables Identity product routes, requires `ASTER_ENV=local` and the public origin |
+| `ASTER_PUBLIC_ORIGIN` | Non-secret local HTTP origin | Required only with the enabled demo; exact `http://127.0.0.1:<1024..65535>`, no trailing slash/path/credentials/query; rejected when mode is absent/false |
 
 Database and Redis URLs are secret even when a local value has no credential because the same fields may carry credentials in another environment. All provided values are limited to 2048 characters before schema parsing. The optional password rejects empty/undefined supplied values and control characters, is percent-encoded into the effective database URL, and cannot override an existing authority or query-string password. The resulting URL also has a 2048-character limit. Existing seven-variable callers retain their exact URL. Diagnostics add only a configured secret marker when the separate password is present; no credential is printed. The runtime ignores unrelated host variables, rejects unexpected names beginning with `ASTER_`, `DATABASE_`, or `REDIS_`, and reports no more than eight issues.
 

@@ -2,6 +2,10 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+Phase 02 identity/session selection is accepted in [ADR-0013](../docs/adr/0013-local-identity-and-sessions.md): guarded local ES256 assertions with durable owner-validated sessions. The assertion adapter is locally verified; account/session persistence passes real database tests. Cookie/GraphQL transport and hosted identity remain separate acceptance boundaries.
+
+The owned-profile slice implements defaults of five profiles (configured 1–16), per-session active selection, optimistic versions, 24-hour idempotency receipts (64/account), 30-day audit (128/account), and a non-evicting pending outbox (128/account). Deletion removes preferences immediately; broker delivery/consumer acknowledgment remains Phase 08. These reversible owner policies preserve the accepted architecture; exact contracts and proof are in [migration policies](../services/identity/migrations/README.md) and [profile evidence](../evidence/phase-02/profiles-outbox.txt).
+
 | Decision | ADR | Status |
 |---|---|---|
 | Use a TypeScript monorepo with explicit application and package boundaries | `docs/adr/0001-monorepo.md` | Accepted |
@@ -16,6 +20,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Require verified rights records before media publication | `docs/adr/0010-content-rights.md` | Accepted |
 | Use Express 5 behind a bounded HTTP adapter | `docs/adr/0011-express-http-adapter.md` | Accepted |
 | Recognize MITNFA in dependency license review | `docs/adr/0012-mitnfa-dependency-license.md` | Accepted |
+| Accept Elastic-2.0 Apollo dependencies and 0BSD tslib while preserving Aster MIT | `docs/adr/0014-apollo-federation-license-policy.md` | Accepted; owner authorization and narrow CI policy implemented |
 
 ## Resolved Phase 00 decisions
 
@@ -62,11 +67,12 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
 ## Pending decisions
 
+Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterized SQL and context-owned row decoding; no ORM or generated-type tool is required for the first schema. Application-held READ COMMITTED transactions lock the account and enforce eight session slots in both policy and SQL. Migration/recovery and runtime privilege boundaries are recorded in [the migration guide](../services/identity/migrations/README.md) and [raw evidence](../evidence/phase-02/account-sessions.txt). Cancellation/uncertain commits retire the connection; writes are not retried automatically.
+
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Final profile sizing and any additional observability backends | 01 | Combined lifecycle proof, resource measurements and a concrete need before adding Grafana/Tempo/Loki | Core, Kafka, S3 and Collector/Prometheus are proved in isolated fixtures; no final evaluator profile or product dashboard is claimed | Phase 01 verification |
-| Typed SQL library | 02 | First real context-owned schema, transaction, query, migration, generated-type, compatibility, maintenance, and removal evidence | Phase 01 uses its selected PostgreSQL connectivity adapter without product tables or a synthetic query abstraction | Phase 02 persistence implementation |
-| Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
+| Additional observability backends | 12 | A concrete dashboard/trace requirement, bounded resources and verified operation before adding Grafana/Tempo/Loki | Phase 01 finite profiles and Collector/Prometheus are released; no product dashboard or capacity guarantee is claimed | Phase 12 observability |
+| Identity/session closeout after ADR-0013 | 02 | Protected CI, evidence review and post-merge acceptance after passing local product tests | Guarded local subgraph; hosted trust stays deferred | Phase 02 verification |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
 | Router-to-subgraph identity-context protection | 04 | Threat model, forgery tests, key handling, local topology, deadline, and rotation path | No public route reaches a subgraph directly; no public identity header is trusted | Phase 04 verification |
 | Web UI primitive strategy | 05 | Current Next.js and React compatibility, accessibility, bundle impact, maintenance, customization ownership, license, and used-component inventory | Use semantic HTML and minimal local primitives; shadcn/ui is the preferred candidate | Phase 05 verification |
@@ -87,6 +93,7 @@ The Phase 01 preflight records the archived MinIO upstream, active VersityGW and
 
 ## Repository governance decisions
 
+- On 2026-08-27 the owner authorized Elastic-2.0 Apollo dependencies (ADR-0014), then authorized autonomous compatible licensing decisions for the public portfolio, including a necessary project-license adjustment. Retain actual terms/notices and narrow checks; keep MIT absent a demonstrated compatibility need. Do not pause merely for an unfamiliar allowlist entry. Unresolved rights, paid resources, credentials and irreversible data loss remain separate boundaries.
 - Source code and project-authored documentation use the MIT License (`MIT`) with the project notice `Aster contributors`.
 - Media assets and third-party materials retain independent licensing terms.
 - GitHub is the selected public code host. The repository owner authorized `andrewsrigom/aster-streaming-platform` on 2026-08-25; the public repository was created and audited on 2026-08-26.

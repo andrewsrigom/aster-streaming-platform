@@ -20,7 +20,7 @@ services:
       com.aster.environment: local
       com.aster.scope: platform
     depends_on:
-      platform-init:
+      identity-init:
         condition: service_completed_successfully
     environment:
       ASTER_ENV: local
@@ -28,9 +28,11 @@ services:
       ASTER_HTTP_PORT: "3100"
       ASTER_SERVICE_NAME: identity
       ASTER_STARTUP_DEADLINE_MS: "15000"
-      DATABASE_URL: postgresql://aster@postgres:5432/aster
+      DATABASE_URL: postgresql://aster_identity_local@postgres:5432/aster
       ASTER_DATABASE_PASSWORD: aster-test-only
       REDIS_URL: redis://redis:6379/0
+      ASTER_LOCAL_DEMO_ENABLED: "true"
+      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100
     ports:
       - "127.0.0.1:3100:3100"
     networks:
@@ -49,6 +51,46 @@ services:
           cpus: "1.00"
           memory: 384M
           pids: 64
+
+  identity-init:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/identity.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      platform-init:
+        condition: service_completed_successfully
+    environment:
+      ASTER_ENV: local
+      ASTER_HTTP_HOST: 127.0.0.1
+      ASTER_HTTP_PORT: "3100"
+      ASTER_SERVICE_NAME: identity-migrate
+      ASTER_STARTUP_DEADLINE_MS: "15000"
+      DATABASE_URL: postgresql://aster@postgres:5432/aster
+      ASTER_DATABASE_PASSWORD: aster-test-only
+      REDIS_URL: redis://redis:6379/0
+      ASTER_LOCAL_DEMO_ENABLED: "true"
+      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100
+    command: ["./dist/src/migrate-local.js"]
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      disable: true
+    stop_grace_period: 5s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+          pids: 32
 
   postgres:
     logging: *local-logging

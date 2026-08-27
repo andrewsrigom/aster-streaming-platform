@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 
-import { createExpressHttpAdapter } from "@aster/http-express";
+import { createExpressHttpAdapter, type AsterExpressGraphqlMiddleware } from "@aster/http-express";
 import { createAsterNodeHttpLifecycleHooks, type AsterReadinessSnapshot } from "@aster/runtime";
 import {
   ASTER_HTTP_METHODS,
@@ -18,6 +18,7 @@ export interface IdentityHttpServerOptions {
   readonly health: () => AsterReadinessSnapshot;
   readonly telemetry: Pick<AsterTelemetry, "startHttpRequest">;
   readonly onFatalError: () => void;
+  readonly graphql?: AsterExpressGraphqlMiddleware;
 }
 
 export interface IdentityHttpServer extends AsterIdentityHttpPort {
@@ -73,6 +74,9 @@ function observeRequest(
 
 export function createIdentityHttpServer(options: IdentityHttpServerOptions): IdentityHttpServer {
   const adapter = createExpressHttpAdapter({ healthSnapshotProvider: options.health });
+  if (options.graphql) {
+    adapter.mountGraphql(options.graphql);
+  }
   const server = createServer(
     {
       maxHeaderSize: 16_384,

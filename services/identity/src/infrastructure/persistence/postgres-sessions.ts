@@ -1,0 +1,122 @@
+import type { AsterPostgresAdapter, AsterPostgresTransaction } from "@aster/postgres";
+
+import type {
+  IdentitySessionTransaction,
+  IdentitySessionUnitOfWork,
+  SessionResult,
+} from "../../application/session-ports.js";
+import {
+  identityRow as row,
+  invalidIdentityRow as invalidRow,
+  readIdentityAccount as account,
+  readIdentitySession,
+} from "./identity-rows.js";
+
+function repositories(tx: AsterPostgresTransaction): IdentitySessionTransaction {
+  return {
+    async resolveAndLockAccount(identity, newAccountId) {
+      await tx.query({
+        text: "INSERT INTO identity.accounts (id, issuer, subject) VALUES ($1, $2, $3) ON CONFLICT (issuer, subject) DO NOTHING",
+        values: [newAccountId, identity.issuer, identity.subject],
+      });
+      // A separate READ COMMITTED statement sees the winner after an insert conflict waited.
+      const found = await tx.query({
+        text: "SELECT id AS account_id, issuer, subject FROM identity.accounts WHERE issuer = $1 AND subject = $2 FOR UPDATE",
+        values: [identity.issuer, identity.subject],
+      });
+      if (found.rowCount !== 1) {
+        return invalidRow();
+      }
+      return account(found.rows[0]);
+    },
+    async removeUnusableSessions(accountId, signerId, now) {
+      await tx.query({
+        text: "DELETE FROM identity.sessions WHERE account_id = $1 AND (signer_id <> $2 OR expires_at <= $3)",
+        values: [accountId, signerId, now],
+      });
+    },
+    async countSessions(accountId) {
+      const found = await tx.query({
+        text: "SELECT count(*)::integer AS count FROM identity.sessions WHERE account_id = $1",
+        values: [accountId],
+      });
+      const count = row(found.rows[0])["count"];
+      if (
+        found.rowCount !== 1 ||
+        typeof count !== "number" ||
+        !Number.isSafeInteger(count) ||
+        count < 0 ||
+        count > 8
+      ) {
+        return invalidRow();
+      }
+      return count;
+    },
+    async insertSession(session) {
+      const inserted = await tx.query({
+        text: `INSERT INTO identity.sessions (id, account_id, signer_id, slot, credential_digest, issued_at, expires_at)
+          SELECT $1, $2, $3, candidate.slot, $4, $5, $6 FROM generate_series(1, 8) AS candidate(slot)
+          WHERE NOT EXISTS (SELECT 1 FROM identity.sessions WHERE account_id = $2 AND slot = candidate.slot)
+          ORDER BY candidate.slot LIMIT 1 RETURNING id`,
+        values: [
+          session.id,
+          session.account.id,
+          session.signerId,
+          session.credentialDigest,
+          session.issuedAt,
+          session.expiresAt,
+        ],
+      });
+      if (inserted.rowCount !== 1 || row(inserted.rows[0])["id"] !== session.id) {
+        invalidRow();
+      }
+    },
+    async findSession(sessionId) {
+      const found = await tx.query({
+        text: `SELECT s.id, s.account_id, a.issuer, a.subject, s.signer_id, s.credential_digest, s.issued_at, s.expires_at
+          FROM identity.sessions s JOIN identity.accounts a ON a.id = s.account_id WHERE s.id = $1`,
+        values: [sessionId],
+      });
+      if (found.rowCount === 0) {
+        return undefined;
+      }
+      if (found.rowCount !== 1) {
+        return invalidRow();
+      }
+      return readIdentitySession(found.rows[0]);
+    },
+    async deleteSession(sessionId, digest, signerId) {
+      await tx.query({
+        text: "DELETE FROM identity.sessions WHERE id = $1 AND credential_digest = $2 AND signer_id = $3",
+        values: [sessionId, digest, signerId],
+      });
+    },
+  };
+}
+
+export function createPostgresSessions(
+  database: Pick<AsterPostgresAdapter, "transaction">,
+): IdentitySessionUnitOfWork {
+  return Object.freeze({
+    async run<T>(
+      operation: (transaction: IdentitySessionTransaction) => Promise<SessionResult<T>>,
+      signal: AbortSignal,
+    ): Promise<SessionResult<T>> {
+      const result = await database.transaction(async (tx) => {
+        const outcome = await operation(repositories(tx));
+        return { action: outcome.status === "completed" ? "commit" : "rollback", value: outcome };
+      }, signal);
+      if (result.status === "committed" || result.status === "rolled_back") {
+        return result.value;
+      }
+      return {
+        status:
+          result.status === "aborted"
+            ? "cancelled"
+            : result.status === "indeterminate"
+              ? "indeterminate"
+              : "unavailable",
+      };
+    },
+  });
+}

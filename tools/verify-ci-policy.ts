@@ -272,6 +272,10 @@ export function validateWorkflowPolicy(
       "Docker-only full profile must build and start with a bounded deadline",
     ],
     [
+      /- name: Verify local Identity product API\s+timeout-minutes: 1\s+run: >-\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml\s+--profile full exec -T identity node --input-type=module < tools\/verify-local-identity.mjs/u,
+      "packaged Identity product behavior must pass within a bounded deadline",
+    ],
+    [
       /- name: Verify packaged health and real telemetry\s+timeout-minutes: 2\s+run: \|/u,
       "Docker-only health and telemetry verification must have a bounded deadline",
     ],
@@ -281,7 +285,7 @@ export function validateWorkflowPolicy(
     ],
     [/assert.deepEqual\(present, required\)/u, "Docker-only demo must require every metric family"],
     [
-      /allow-licenses:\s*Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, ISC, MIT, MITNFA/u,
+      /^\s*allow-licenses: *0BSD, Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, Elastic-2\.0, ISC, MIT, MITNFA *$/mu,
       "dependency review must enforce the reviewed license set",
     ],
   ] as const) {

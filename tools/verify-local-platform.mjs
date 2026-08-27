@@ -42,11 +42,11 @@ function validateRuntimeService(source) {
     ["scope", "      com.aster.environment: local\n      com.aster.scope: platform\n"],
     [
       "readiness",
-      "    depends_on:\n      platform-init:\n        condition: service_completed_successfully\n",
+      "    depends_on:\n      identity-init:\n        condition: service_completed_successfully\n",
     ],
     [
       "configuration",
-      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n',
+      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster_identity_local@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n      ASTER_LOCAL_DEMO_ENABLED: "true"\n      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100\n',
     ],
     [
       "network",
@@ -132,6 +132,46 @@ export function validateLocalPlatform(source) {
     "  edge:\n    labels:\n      com.aster.environment: local\n      com.aster.scope: platform\n";
   requireText("network", edgeNetwork, "loopback-facing application network ownership is missing");
   source = source.replace(edgeNetwork, "");
+
+  const initializer = serviceBlock(source, "identity-init");
+  for (const required of [
+    "    profiles: [runtime, integration, observability, full]\n",
+    "    build:\n      context: ../..\n      dockerfile: infra/docker/identity.Dockerfile\n",
+    "      com.aster.environment: local\n      com.aster.scope: platform\n",
+    "    depends_on:\n      platform-init:\n        condition: service_completed_successfully\n",
+    "      DATABASE_URL: postgresql://aster@postgres:5432/aster\n",
+    '      ASTER_LOCAL_DEMO_ENABLED: "true"\n      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100\n',
+    '    command: ["./dist/src/migrate-local.js"]\n',
+    '    networks: [platform]\n    user: "1000:1000"\n    read_only: true\n    cap_drop: [ALL]\n',
+    "    security_opt: [no-new-privileges:true]\n",
+    '    healthcheck:\n      disable: true\n    stop_grace_period: 5s\n    restart: "no"\n',
+    '          cpus: "0.25"\n          memory: 128M\n          pids: 32\n',
+  ]) {
+    if (!initializer.includes(required)) {
+      violations.push({
+        rule: "identity-init",
+        detail: "finite local migration initializer contract is missing",
+      });
+    }
+  }
+  for (const forbidden of [
+    "ports:",
+    "volumes:",
+    "env_file:",
+    "entrypoint:",
+    "privileged:",
+    "network_mode:",
+    "cap_add:",
+    "${",
+  ]) {
+    if (initializer.includes(forbidden)) {
+      violations.push({
+        rule: "identity-init",
+        detail: "migration initializer exceeds its local boundary",
+      });
+    }
+  }
+  source = source.replace(initializer, "");
 
   requireText(
     "resources",

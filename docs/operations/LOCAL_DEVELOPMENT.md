@@ -2,7 +2,7 @@
 
 ## Current status
 
-The core checkpoint uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without host ports. P01-R10 adds the local Docker runtime profile below, including real Identity health and loopback-only port 3100. P01-R09's released laboratories separately prove Kafka, S3 and Collector/Prometheus. P01-R10 also supplies integration, observability and full profiles with real OTLP metrics. Exact clean-checkout acceptance passes; protected closeout, product schemas and playable journeys remain pending.
+The core uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without database host ports. The released Phase 01 runtime/optional profiles prove health, recovery and OTLP metrics. Phase 02 adds the guarded local Identity GraphQL API and a finite migration initializer; local product checks pass. [Current state](../../.ai/CURRENT_STATE.md) records candidate/release status. Router, browser UI and playable journeys remain planned.
 
 ### Identity reference process
 
@@ -39,11 +39,19 @@ From the repository root:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-Visit [readiness](http://127.0.0.1:3100/health/ready) and [liveness](http://127.0.0.1:3100/health/live). No host Node/pnpm, schema initialization or account is needed. Docker builds the frozen production package, waits for PostgreSQL/Redis initialization and probes Identity readiness. Build/pulls precede the 120-second readiness wait; a cold registry outage can still fail the build. The first build needs registry access.
+Visit [readiness](http://127.0.0.1:3100/health/ready) and [liveness](http://127.0.0.1:3100/health/live). No host Node/pnpm, manual schema initialization or hosted account is needed. Docker builds the frozen production package and waits for PostgreSQL/Redis plus the finite `identity-init` migration job. That separate process holds admin credentials; the API uses `aster_identity_local`, not the database owner. Successful migrations are not reapplied. Build/pulls precede the 120-second readiness wait; the first build needs registry access.
 
 Identity uses UID/GID 1000, a read-only root, no Linux capabilities, a 384 MiB/1 CPU/64 PID ceiling and a 15-second orchestrator grace around the ten-second application shutdown budget. Only Identity and the optional Prometheus UI join the `edge` bridge for localhost publication; databases remain exclusively on the internal `platform` network. The application can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL-image helper containers override the inherited data-volume path with 1 MiB tmpfs so they create no anonymous database volumes.
 
-The current seven-variable configuration remains supported. Compose supplies the fixed synthetic database password separately through the classified optional `ASTER_DATABASE_PASSWORD`; conflicting sources fail before resource construction. An unavailable dependency produces readiness 503 while liveness remains 200, then readiness recovers when the dependency returns. There is no GraphQL endpoint, product UI or application `/metrics` route. The optional overlay enables OTLP/HTTP to Collector, which Prometheus scrapes; omission leaves export disabled.
+The seven-variable configuration retains health-only behavior. Compose additionally opts into local Identity with `ASTER_LOCAL_DEMO_ENABLED=true` and `ASTER_PUBLIC_ORIGIN=http://127.0.0.1:3100`; other environments cannot activate it. The separate password remains classified and conflicting sources fail before resource construction. Product readiness checks restricted database privileges and required schema columns. An unavailable dependency produces readiness 503 while liveness stays 200 and recovery remains monitored. `POST /graphql` now exposes the [local Identity API](../../services/identity/README.md); no product UI or application `/metrics` route exists. The optional overlay enables OTLP/HTTP to Collector, which Prometheus scrapes.
+
+Run the Docker-only product check from POSIX/WSL:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+```
+
+It uses memory-only credentials and removes only its own synthetic profile. Inspect `identity-init` logs for failed or unknown-version migration state; do not delete retained data to repair startup. Application restart invalidates old local assertions but keeps accounts/profiles. Sign in again. The default account allows five profiles; outbox delivery/cleanup starts in Phase 08, so 128 pending events/account deliberately backpressure further writes. The script also needs free receipt/journal capacity.
 
 Stop all profiles without deleting their named data volumes:
 
@@ -51,7 +59,7 @@ Stop all profiles without deleting their named data volumes:
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
 ```
 
-The earlier core-only command remains light and does not start Identity or create the edge network. Exact source `38801ce` passes the profile commands from a clean checkout with no host Node/pnpm in PATH and no local dependencies or Aster volumes. Full-profile build/start took 36.89 s with warm base/install caches and an uncached application build. Occupied 3100 failed clearly in 4.56 s without stopping its owner; removing only the synthetic conflict allowed the same runtime command to recover in 5.60 s. Normal all-profile stop preserved four data volumes, and the guarded reset removed them. Protected release remains pending.
+The earlier core-only command remains light and does not start Identity or create the edge network. Exact source `38801ce` passes the profile commands from a clean checkout with no host Node/pnpm in PATH and no local dependencies or Aster volumes. Full-profile build/start took 36.89 s with warm base/install caches and an uncached application build. Occupied 3100 failed clearly in 4.56 s without stopping its owner; removing only the synthetic conflict allowed the same runtime command to recover in 5.60 s. Normal all-profile stop preserved four data volumes, and the guarded reset removed them. Phase 01 is released through PR 18 with exact post-merge acceptance.
 
 Measured on Linux/WSL amd64 with cached base/dependency layers: image rebuild plus empty-project startup 39.71 s; core-only startup 7.38 s; natural SIGTERM exit 143 in 561 ms including Docker CLI/inspection. A single healthy post-recovery sample reports Identity 51.59 MiB, PostgreSQL 25.11 MiB, Redis 6.004 MiB and status 1.609 MiB; these are observations, not sizing guarantees. Image size is 255272610 bytes; fresh PostgreSQL data is 47488 KiB. See [raw runtime evidence](../../evidence/phase-01/docker-demo.txt).
 
@@ -66,6 +74,8 @@ If localhost fails, inspect `ps --all`, Identity logs and the published port; an
 | `integration` | Identity, Kafka, S3 | 3100 |
 | `observability` + overlay | Identity, Collector, Prometheus | 3100, 9090 |
 | `full` + overlay | Identity, Kafka, S3, Collector, Prometheus | 3100, 9090 |
+
+Every profile with Identity also runs the finite `identity-init` migration job before admitting API traffic.
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --profile integration up --build --wait --wait-timeout 120
@@ -102,9 +112,9 @@ After the pinned repository installation, on Linux/WSL with local Linux Docker c
 pnpm integration
 ```
 
-One fresh six-service project runs protocol probes, adapter faults, Identity recovery, held HTTP drain, Kafka, S3, all-adapter HTTP shutdown and telemetry faults sequentially. The test-only all-adapter composition confirms that HTTP work finishes before consumers stop, telemetry flushes, PostgreSQL/Redis/Kafka/S3 close, and telemetry shuts down within the ten-second budget. Prometheus observes the final HTTP metric. Production Identity does not acquire broker or storage dependencies.
+One fresh six-service project runs eleven scenarios: protocol probes, adapter faults, Identity recovery, held HTTP drain, local Identity GraphQL, sessions, profiles, Kafka, S3, all-adapter HTTP shutdown and telemetry faults. The product scenarios verify migrations, owner isolation, concurrency and session lifetime against real PostgreSQL. The test-only all-adapter composition confirms that HTTP work finishes before consumers stop, telemetry flushes, PostgreSQL/Redis/Kafka/S3 close, and telemetry shuts down within the ten-second budget. Prometheus observes the final HTTP metric. Production Identity does not acquire broker or storage dependencies.
 
-The matrix passes locally in 135.621 seconds plus 5.004 seconds cleanup; this warm-image observation is not a startup target or steady-state benchmark. It removes only its six verified containers, network and four synthetic-data volumes. Images and repository configuration remain. The focused commands below use smaller fixtures. Neither hooks nor ordinary unit tests run this matrix; the existing protected quality job invokes it once, with a 15-minute deadline, for runtime/adapter/Compose and shared bootstrap/dependency changes. Documentation-only and unrelated web changes do not select it.
+The earlier eight-scenario Phase 01 matrix passed locally in 135.621 seconds plus 5.004 seconds cleanup; this historical warm-image observation is not a startup target or a measurement of the expanded Phase 02 matrix. The fixture removes only its six verified containers, network and four synthetic-data volumes. Images and repository configuration remain. The focused commands below use smaller fixtures. Neither hooks nor ordinary unit tests run this matrix; the existing protected quality job invokes it once, with a 15-minute deadline, for runtime/adapter/Compose and shared bootstrap/dependency changes. Documentation-only and unrelated web changes do not select it.
 
 The following ownership, interruption and Linux/WSL limitations apply to every profile. The Docker-only evaluator path remains P01-R10.
 
@@ -292,7 +302,7 @@ pnpm ci:test
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Protected run `32947483503` passed the original core execution. P01-R10 adds a Docker-built full-profile check in the same conditional job: in-container non-root health and six real metric families, bounded build/probe steps and all-profile cleanup. Its first hosted run `33046068184` passed all six jobs at `d148bf7`; run `33046678570` also passed all six at `d751109`. These exact-source results verify the platform, not a later commit or release; [current state](../../.ai/CURRENT_STATE.md) records the remaining closeout.
+The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Protected run `32947483503` passed the original core execution. P01-R10 adds a Docker-built full-profile check in the same conditional job: in-container non-root health and six real metric families, bounded build/probe steps and all-profile cleanup. Its first hosted run `33046068184` passed all six jobs at `d148bf7`; run `33046678570` also passed all six at `d751109`. Final protected run `33047330768` at `b9f816a` and post-merge run `33047629326` at squash `b0544c9` also pass every applicable gate. [Current state](../../.ai/CURRENT_STATE.md) records subsequent work.
 
 ## Local endpoints
 

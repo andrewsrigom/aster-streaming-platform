@@ -16,6 +16,9 @@ assert.ok(
   selected === undefined ||
     selected === "protocol" ||
     selected === "adapters" ||
+    selected === "sessions" ||
+    selected === "profiles" ||
+    selected === "subgraph" ||
     selected === "identity" ||
     selected === "http-drain" ||
     selected === "storage" ||
@@ -50,7 +53,13 @@ async function worker(mode: string): Promise<void> {
             : (["postgres", "redis"] as const);
   const ports = await Promise.all(services.map((service) => fixture.port(service)));
   const workerFile =
-    mode === "storage" || mode === "broker" || mode === "telemetry" || mode === "runtime"
+    mode === "storage" ||
+    mode === "broker" ||
+    mode === "telemetry" ||
+    mode === "runtime" ||
+    mode === "sessions" ||
+    mode === "profiles" ||
+    mode === "subgraph"
       ? `${mode}-worker`
       : "core-worker";
   const child = fork(new URL(`./${workerFile}.js`, import.meta.url), [mode, ...ports.map(String)], {
@@ -171,6 +180,9 @@ try {
           "adapters",
           "identity",
           "http-drain",
+          "subgraph",
+          "sessions",
+          "profiles",
           "broker",
           "storage",
           "runtime",

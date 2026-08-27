@@ -1,0 +1,151 @@
+P02-R09 local HTTP checkpoint — implemented, not phase verified
+Date: 2026-08-27
+Base: 5a263e87b6abfd1f72860529a90f6f4f9ce9b8b0 on feat/p02-identity-session.
+Exact changed source: fingerprints below; currently uncommitted. No branch push.
+Environment: WSL Ubuntu amd64, Node 24.19.0, pnpm 11.24.0; existing Express 5 adapter; ephemeral loopback sockets.
+Scope: guarded cookie serialization, Host/Origin/CSRF/JSON policy, request-local credential extraction and protected middleware wrapping. No new package or startup/GraphQL endpoint.
+
+Command: pnpm exec turbo run build --filter=@aster/identity && node --test services/identity/dist/test/local-session.test.js services/identity/dist/test/local-identity.test.js
+Result: build 9/9, 8 cached, 2.287s; 70/70 focused tests pass (19 transport cases including nested adverse cases and 51 existing crypto cases), 245.395ms.
+Workload: fixed synthetic cookie-format credential (not a valid authenticated user), real Node/Express sockets. Exact host/origin and custom header required even with no cookie; cookie not reflected in JSON. Covers duplicate raw headers before merged-header interpretation, duplicate/encoded/quoted/malformed/oversized credentials, cookie/header counts, missing/foreign/null origin, wrong Host, CSRF, Fetch Metadata, forwarded/auth/identity headers, non-POST, URL query and simple/malformed bodies. Rejected requests never reach the fixture application or issue a cookie.
+Fixture async middleware failure is awaited through Express and returns the existing sanitized terminal error without a cookie. Absolute expiry, attributes, injection rejection, guarded activation and sub-4KiB output covered. All sockets are closed by fixture finally blocks.
+Iteration: focused ESLint found only shorthand void-expression callbacks in tests; changed to explicit braces. Middleware preserves downstream promise return so Express owns asynchronous rejection. No quality or security rule relaxed.
+
+Command: pnpm exec eslint services/identity/src/transport/local-session.ts services/identity/src/infrastructure/identity/local-identity.ts services/identity/test/local-session.test.ts
+Result: exit 0.
+Command: pnpm check:changed && pnpm audit --audit-level=high && git diff --check
+Result: exit 0, all 49 source tasks successful, 35 cached, 14.98s; Identity 130/130, PostgreSQL 29/29; no known vulnerabilities found.
+Selected raw output:
+//:format:check: All matched files use Prettier code style!
+@aster/identity:test: ✔ cookie policy is guarded by the same local-only activation contract (3.211451ms)
+@aster/identity:test: ✔ cookies stay HttpOnly/host-only, fit the envelope and retain absolute expiry (0.893184ms)
+@aster/identity:test: ✔ real HTTP protects even anonymous issuance, parses one credential and emits no credential body (69.834493ms)
+@aster/identity:test: ▶ real HTTP rejects origin/host/CSRF/forwarding and non-POST requests before issuance
+@aster/identity:test: ✔ real HTTP rejects origin/host/CSRF/forwarding and non-POST requests before issuance (66.012794ms)
+@aster/identity:test: ✔ real HTTP rejects ambiguity, cookie abuse and simple bodies without executing application (61.171343ms)
+@aster/identity:test: ℹ tests 130
+@aster/identity:test: ℹ pass 130
+ Tasks:    49 successful, 49 total
+Cached:    35 cached, 49 total
+  Time:    14.98s 
+No known vulnerabilities found
+
+Dependency preflight — author-published npm metadata, 2026-08-27:
+@apollo/server 5.5.1: MIT, Node >=20, graphql ^16.11.0 (already verified compatibility fixture).
+@as-integrations/express5 1.1.2: MIT, Node >=20, Express ^5.0.0, Apollo ^4 || ^5.
+@apollo/subgraph 2.14.4: MIT, graphql ^16.5.0; dependency @apollo/federation-internals exactly 2.14.4.
+@apollo/federation-internals 2.14.4: Elastic-2.0; exact npm gitHead b95c124ca8376e66ae12fc0b1fbc394ee2c8c58e.
+@apollo/composition 2.14.4: Elastic-2.0; same gitHead.
+dataloader 2.2.3: MIT.
+Primary sources and pending authorization: docs/adr/0014-apollo-federation-license-policy.md. The registry version's exact Git source confirms Elastic-2.0. No packages installed, no lockfile/allowlist modifications; full package graph compatibility not claimed.
+
+Limitations: browser-independent transport tests use a fixture application, not public GraphQL/session persistence. No complete P02-R09 initial/confirmation review, clean product startup, browser semantics, protected CI or release yet. Previously passing profile/database and released health evidence remain unchanged; no new Docker experiment justified for this unwired boundary.
+Stop: skill agent / AGENTS license-policy boundary requires owner decision on proposed ADR-0014. Do not install the Elastic-2.0 graph, change architecture/CI policy or mark work complete without it.
+
+SHA-256:
+bb12cfedac71c9522f6db84b312772a1ce03b1378af68be6b410e210a541cdc1  services/identity/src/transport/local-session.ts
+bc2ecbe47a491cd7e00e05dbe33c329cffaa942a452e61bfe5119667bb11ac13  services/identity/test/local-session.test.ts
+4888fde60ded27073a53ff879463c2a4500bc2f7a3cfd3949a59508abec91383  services/identity/src/infrastructure/identity/local-identity.ts
+## 2026-08-27 resumed implementation checkpoint (supersedes the earlier pause)
+
+Owner authorization: ADR-0014 accepted; subsequent standing authorization permits compatible licensing decisions without another permission pause. Aster remains MIT. Approved exact SPDX additions: Elastic-2.0 and 0BSD (tslib 2.8.1, upstream versioned license checked). This is not blanket permission to ignore license terms or create hosted/paid resources.
+
+Exact dependencies: Apollo Server 5.5.1; subgraph/composition/internals/query-graphs 2.14.4; Express integration 1.1.2; Express 5.2.1; GraphQL 16.14.2; DataLoader 2.2.3; existing pg 8.23.0 and jose 6.2.10.
+pnpm install --ignore-scripts passed. All installed dependency licenses were enumerated with pnpm licenses list --json: MIT 275, Elastic-2.0 3, BSD-3-Clause 15, Apache-2.0 53, BSD-2-Clause 6, ISC 15, BlueOak-1.0.0 2, (MIT AND BSD-3-Clause) 1, 0BSD 1.
+pnpm audit --audit-level=high passed with one moderate uuid 9.0.1 advisory GHSA-w5hq-g745-h8pq (not zero vulnerabilities). Installed federation-internals operations.js calls uuid.v1() without arguments; query-graphs graphPath.js calls v4() without arguments. The upstream advisory affects v3/v5/v6 with caller buffers; those paths are not reached by these inspected call sites. Recheck on graph changes; no unsupported transitive major override was applied.
+Primary advisory: https://github.com/advisories/GHSA-w5hq-g745-h8pq
+tslib terms: https://raw.githubusercontent.com/microsoft/tslib/v2.8.1/LICENSE.txt
+
+Implemented: Federation v2 owner schema, guarded cookie transport, typed outcome payloads, request-scoped authorized DataLoader/list snapshot, bounded parsing/input/selection/cost/admission/time, cancellation-safe cookie writes and mutable entity DTOs. Configuration explicitly rejects hosted activation. Runtime verifies a restricted PostgreSQL role and product columns. Separate finite migration command serializes initialization, preserves data and rejects unknown versions. No Router/UI/hosted provider/broker relay is claimed.
+
+Focused commands:
+pnpm exec turbo run build --filter=@aster/identity
+node --test services/identity/dist/test/graphql-operation.test.js services/identity/dist/test/identity-subgraph.test.js
+Result before latest malformed-entity cases: 13/13, 3740.417452 ms; timeout fixture holds eight operations past response deadline and proves no freed admission or late cookie. Other cases prove schema composition, headers, cookies, same-request batching, cross-request owner separation and fixed errors.
+node --test packages/config/dist/test/runtime-config.test.js services/identity/dist/test/identity-subgraph.test.js services/identity/dist/test/service-composition.test.js
+Result: 35/35, 6732.125371 ms. Legacy health-only behavior remains passing.
+node --test tools/verify-local-platform.test.mjs
+Result: 18/18; includes separate initializer boundaries and runtime login.
+
+Real source-to-HTTP-to-PostgreSQL command:
+pnpm --filter @aster/identity integration:subgraph
+Environment: WSL Ubuntu amd64; Node v24.19.0; pnpm 11.24.0; Docker 26.0.0; isolated PostgreSQL 18.6/Redis 8.10.0 fixture.
+Project: aster-integration-f2e47907065a454a85d056178c86728a.
+{"event":"identity_local_bootstrap","emptyState":"passed","repeat":"no-op","concurrentMigration":"rejected","unknownVersion":"rejected"}
+{"event":"identity_graphql_concurrency","duplicateRequests":8,"duplicateFacts":1,"limitRequests":8,"admitted":4,"rejected":4,"profiles":5}
+{"event":"identity_graphql_ownership","foreignReadWriteDeleteSelect":"rejected","entitySubstitution":"rejected","optimisticConflict":"passed","deadline":"failed-closed","deletionReplay":"passed","outboxFacts":7}
+{"event":"identity_graphql_sessions","revoked":"rejected","expired":"rejected","previousProcess":"rejected","restartProfiles":4,"shutdown":"completed"}
+{"event":"natural_exit","mode":"subgraph"}
+{"event":"core_integration","outcome":"passed","scenarios":["subgraph"],"durationMs":11372}
+{"event":"fixture_cleanup","remaining":0,"durationMs":1190}
+Sample sanitized operation record:
+{"level":"info","time":"2026-08-27T10:52:33.124Z","service":"identity-subgraph-integration","environment":"local","version":"0.0.0","event":"aster.identity.graphql_completed","operation":"mutation","outcome":"ok","requestId":"e94c6c68-c064-4e6b-a4ad-afcdb8b73156","durationMs":26.231937000000016,"attributes":{"code":"COMPLETED","trace_id":"8d90162693b4457c86c995279f520701","span_id":"fde73fa1d86348d7"}}
+This is a correlated structured operation record, not an exported distributed trace.
+
+Iteration findings: Apollo clones its context envelope and annotates entity objects. The transport now preserves its single request owner across that shallow clone and returns mutable projected entity DTOs without modifying frozen domain profiles. Real database integration caught the latter; controlled fixtures now freeze their domain records too. Full initial/confirmation candidate review is still pending.
+
+Docker-only product checkpoint:
+docker compose --project-name aster --file infra/compose/compose.yml --profile runtime build identity identity-init
+docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --wait --wait-timeout 120
+docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+Fresh project/volume observed before startup; four long-lived containers plus two completed finite initializers. All applicable health checks passed. Initializer output applied [1,2]; repeating up output applied [], without resetting data.
+{"event":"aster.identity.demo_verified","steps":["sign-in","create","select","list","delete","sign-out"]}
+Inspected packaged UID 1000, all four source SQL files, retained Elastic license text, exact direct package versions and no compiled test directory.
+Native Windows Invoke-WebRequest to loopback GraphQL with exact Origin/custom header: HTTP 200 {"data":{"me":null}}. Browser UI and other host architectures remain unverified.
+
+The image checkpoint precedes the latest malformed-entity preflight refinement; rebuild/reverify before publication. First attempted smoke command passed through shell variable expansion and failed before profile creation; the checked-in stdin script avoids that and passed. Fixture tests removed their own synthetic state; the Aster Docker demo remains running with retained local data.
+Candidate check attempts surfaced only stale session-log structure and an unregistered smoke entrypoint before stopping other tasks; both were corrected, no rules relaxed. No complete source-gate/combined-matrix/review/protected CI or release claim yet for this checkpoint.
+
+Checkpoint source fingerprints (later refinements require fresh gate/fingerprints):
+9353a8f1be21b99be9a213960376e575ff037648e82284e7a22505d686bab239  services/identity/src/transport/graphql-operation.ts
+a3b08edfede12cbadd5db88adae5b0b7d766a332367f60dbb59138ac68a00009  services/identity/src/transport/identity-schema.ts
+5d15d6031c728865480b5ad11b55a2b36fdb7e83785b67c57f22c0ed6b337da9  services/identity/src/transport/identity-subgraph.ts
+46cd9f767961536d92e84b18a69304522e3322b39953515f0cd9c6c6b592c103  services/identity/src/create-local-product.ts
+53814b5ebfba71f6eefb2bd035c1d6790c684588d65a09272fc5af14bf6e18d1  services/identity/src/create-service.ts
+c5913e11a2a0c58f4f10ffb3b77965f4120139773fbf812cdef2083b79055d25  services/identity/src/infrastructure/persistence/local-migrations.ts
+88b3248faa548672bfe0cdd251465a3028439445be48e59837e5fcc567c0e2c7  services/identity/src/migrate-local.ts
+2e7b77dd5d2e3ee21f97ad79769b23634d57f9ed95253864bd31f9d51fbe9cc1  packages/config/src/runtime-config.ts
+0af8570ba8943ef19e170b4cee9a22cc088a8afb17253e09a3ed81abfdc14ff4  infra/compose/compose.yml
+4f78bea902a44ff13567b568da018b0194f0f8d0663bff46471959d638b2e6fa  pnpm-lock.yaml
+sha256:4900a4b1f61b48f0c649fe9e88bcc11468d2632ffea4389a7235b1ab11ade8ea 270403594 amd64
+
+## 2026-08-27 complete local candidate and review batch
+
+Base remains 5a263e87b6abfd1f72860529a90f6f4f9ce9b8b0; containing candidate commit records this work. Same pinned WSL amd64 environment as above. No remote publication at this checkpoint.
+pnpm check:changed: exit 0; 49/49 tasks, 8 cached, 34.494s; Identity 144/144, 7576.344338ms.
+pnpm integration: fresh project aster-integration-9c618dae0ea44bf2b97e729490560da7, all eleven scenarios pass. This matrix began before the final terminal-header fix; the ten unaffected scenarios remain supporting evidence and the changed HTTP path was separately repeated afterward. No whole-matrix repetition merely for prose.
+{"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","subgraph","sessions","profiles","broker","storage","runtime","telemetry"],"durationMs":162778}
+{"event":"fixture_cleanup","project":"aster-integration-9c618dae0ea44bf2b97e729490560da7","remaining":0,"durationMs":2732}
+
+Initial executing-agent review covered requirements R01–R10, owner/session isolation, mutation/outbox atomicity, schema/entity loading, input/CSRF/error/cancellation boundaries, migration credentials/startup, packaging/licenses and current-state prose. Findings collected in one batch: rejecting a late Apollo completion tried to remove a header after the timeout response; current-state/license/matrix prose retained earlier unwired claims. Moved header removal inside the writable-response guard; the regression now asserts that all eight late operations settle without an escaping middleware error. Updated current prose without rewriting historical evidence. No independent reviewer approval is claimed.
+Confirmation: reviewed the changed guard and adverse test against real middleware behavior and checked current API/ADR/queue/runbook wording. Final source gate remains required before publication. No additional requirement/security/data/public-contract blocker found; hosted checks still own clean exact-head acceptance.
+
+After-remediation command: pnpm exec turbo run build --filter=@aster/identity && node --test services/identity/dist/test/identity-subgraph.test.js
+Result: 9/9 HTTP tests pass, 3731.066726ms, including eight non-cooperative requests, no late cookie/header rejection and released admission after settlement.
+After-remediation command: pnpm --filter @aster/identity integration:subgraph
+{"event":"identity_local_bootstrap","emptyState":"passed","repeat":"no-op","concurrentMigration":"rejected","unknownVersion":"rejected"}
+{"event":"identity_graphql_concurrency","duplicateRequests":8,"duplicateFacts":1,"limitRequests":8,"admitted":4,"rejected":4,"profiles":5}
+{"event":"identity_graphql_ownership","foreignReadWriteDeleteSelect":"rejected","entitySubstitution":"rejected","optimisticConflict":"passed","deadline":"failed-closed","deletionReplay":"passed","outboxFacts":7}
+{"event":"identity_graphql_sessions","revoked":"rejected","expired":"rejected","previousProcess":"rejected","restartProfiles":4,"shutdown":"completed"}
+{"event":"identity_sanitized_operation_trace","sample":{"level":"info","time":"2026-08-27T11:09:37.244Z","service":"identity-subgraph-integration","environment":"local","version":"0.0.0","event":"aster.identity.graphql_completed","operation":"mutation","outcome":"ok","requestId":"5ec434dd-86e3-4bcd-8a9e-020e5fc15624","durationMs":39.40792199999987,"attributes":{"code":"COMPLETED","trace_id":"191d32331a6247fc9cd8f007e8b74e34","span_id":"92fd5d94a70548b8"}},"limitation":"correlated structured operation record; not an exported distributed trace"}
+{"event":"natural_exit","mode":"subgraph"}
+{"event":"core_integration","outcome":"passed","scenarios":["subgraph"],"durationMs":12545}
+{"event":"fixture_cleanup","project":"aster-integration-8985b403885147268e39e7632c129e2d","remaining":0,"durationMs":1387}
+
+Docker command: docker compose --project-name aster --file infra/compose/compose.yml --profile runtime build identity identity-init
+Frozen source install/build passed; rebuilt final code. Command: docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --wait --wait-timeout 120
+Command: docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+{"event":"aster.identity.demo_verified","steps":["sign-in","create","select","list","delete","sign-out"]}
+sha256:e3056cf9fa6614f8c23f84eea646063dc0a6eb93cf5e3ecab1211144eaba891a 270410927 amd64
+identity-init-1  | {"event":"aster.identity.migration_completed","applied":[]}
+Inspected UID 1000, four packaged migration SQL files, no dist/test, and retained federation-internals Elastic/tslib 0BSD notices. Compared normalized external package name/version entries in the running container's node_modules/.pnpm with the frozen source installation: source 375, packaged 189, unmatched []. This checks version membership, not an independent byte-integrity or license-law audit. The Docker deploy resolver's 429 peer entries do not represent 429 shipped external versions.
+Final image: sha256:e3056cf9fa6614f8c23f84eea646063dc0a6eb93cf5e3ecab1211144eaba891a, 270410927 bytes, amd64. The running Aster project keeps its data; only explicitly isolated test fixtures were removed.
+
+Final changed runtime SHA-256 (other runtime fingerprints above unchanged):
+00c169037816118cb4c4f46eafd0a858d3b4922f6cba1bfd1bc5539d94a18c8b  services/identity/src/transport/identity-subgraph.ts
+4edc705d3e4f5fca2ee1e341e4cb407228913a46c134fe39a99cead25da45173  services/identity/test/identity-subgraph.test.ts
+
+Final pre-push command: pnpm check:changed && pnpm audit --audit-level=high && git diff --check
+Result: exit 0; all 49 tasks, 34 cached, 17.891s; Identity 144/144, 8235.306481ms. Audit: one moderate, no high/critical. Executing-agent confirmation is complete; no unresolved blocking finding. Subsequent edits in this checkpoint are evidence/state prose only; run documentation/memory/secret/diff checks, not the unchanged container matrix again.
+
+Limitations: local-only synthetic accounts; no Router, browser UI, hosted identity, broker relay, distributed trace export or playable VOD. Browser/accessibility acceptance belongs to Phase 05; an HTTP client does not prove browser cookie behavior. Moderate uuid advisory remains documented above. Protected exact-head CI and post-merge acceptance are pending.

@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10 implements the Docker runtime and integration/observability/full profiles. Clean-checkout acceptance and protected CI pass; final release status is recorded in [current state](.ai/CURRENT_STATE.md). [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the verified runtime from the planned video application.
+Phase 00 and Phase 01 are released. Phase 02's local Identity API is implemented: guarded demo sign-in, durable sessions, owned profiles, selection and Federation v2. Real HTTP/PostgreSQL and Docker product checks pass locally; protected candidate CI/review/release remain pending. See [current state](.ai/CURRENT_STATE.md), [Identity API](services/identity/README.md) and [Phase 02 evidence](evidence/phase-02/README.md). Catalog, browser UI and playable video are still planned.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -18,7 +18,15 @@ From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-Open [readiness](http://127.0.0.1:3100/health/ready) or [liveness](http://127.0.0.1:3100/health/live). Docker builds the application from the frozen lockfile and starts real PostgreSQL/Redis; no host Node, pnpm or hosted credential is needed. The first build needs registry access. This is a health/recovery demonstration, not a catalog, login or playable video interface. Native Windows localhost access was checked with containers running through WSL; other host/CPU combinations remain unverified.
+Open [readiness](http://127.0.0.1:3100/health/ready) or [liveness](http://127.0.0.1:3100/health/live). Docker builds from the frozen lockfile, starts PostgreSQL/Redis, applies pending owner migrations once and starts Identity with a separate restricted database login. No host Node, pnpm or hosted credential is needed. The first build needs registry access. The API has local sign-in/profiles, but no browser UI or playable video yet. Native Windows localhost access was checked through WSL; other host/CPU combinations remain unverified.
+
+Exercise sign-in, create/select/list/delete a synthetic profile and sign-out (POSIX/WSL, Docker only):
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+```
+
+The check keeps credentials in memory and cleans up its own profile. It requires one free profile slot and available journal capacity; it never deletes existing profiles. [API operations, limits and recovery](services/identity/README.md).
 
 For real metrics, Kafka and S3, start the optional full laboratory:
 

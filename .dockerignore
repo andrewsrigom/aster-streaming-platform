@@ -18,6 +18,7 @@
 !services/identity/tsconfig.json
 !services/identity/src/**/*.ts
 !services/identity/test/**/*.ts
+!services/identity/migrations/*.sql
 !infra/
 !infra/docker/
 !infra/docker/identity.Dockerfile
