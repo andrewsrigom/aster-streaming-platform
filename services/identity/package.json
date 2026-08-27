@@ -14,11 +14,18 @@
   },
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
+    "check": "node ./dist/src/check-identity.js",
+    "start": "node ./dist/src/main.js",
     "test": "node --test ./dist/test/*.test.js",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
   "dependencies": {
-    "@aster/runtime": "workspace:*"
+    "@aster/config": "workspace:*",
+    "@aster/http-express": "workspace:*",
+    "@aster/postgres": "workspace:*",
+    "@aster/redis": "workspace:*",
+    "@aster/runtime": "workspace:*",
+    "@aster/telemetry": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.13.3",

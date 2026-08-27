@@ -1,6 +1,6 @@
 # Runtime Lifecycle
 
-`@aster/runtime` owns reusable process lifecycle behavior for Node.js services. Released P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. The active P01-R08 candidate adds a propagated finite deadline, recoverable critical-dependency readiness, one bounded monitor, and fixed health transport routes. It does not yet create the Identity reference service or prove real dependency integration.
+`@aster/runtime` owns reusable process lifecycle behavior for Node.js services. Released P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. The active P01-R08 candidate adds propagated deadlines, recoverable readiness, one bounded monitor, fixed health routes, and an executable Identity reference service. Real dependency-container interoperability remains P01-R09.
 
 ## State and health
 
@@ -28,13 +28,13 @@ The Express adapter can publish this repository-owned snapshot through exact `/h
 
 Options must be a plain own-data object with only `timeoutMs` and optional real `parentSignal`. Unknown properties, accessors, proxies that throw, non-finite or fractional budgets, and forged signals fail with bounded cause-free issues. Deadline code invokes the platform's `AbortSignal` and `EventTarget` operations directly so caller-owned property overrides cannot execute during propagation or cleanup.
 
-This primitive does not replace the released lifecycle shutdown coordinator or create a second shutdown budget. The Identity composition root will use it for service startup and nested dependency work.
+This primitive does not replace the released lifecycle shutdown coordinator or create a second shutdown budget. The Identity composition root uses it for service startup and nested dependency work.
 
 ## Readiness recovery monitor
 
 One monitor owns dependency recovery. It executes at most one probe per anonymous critical gate in a sequential, non-overlapping cycle, applies a finite 20% jittered interval, and caps the complete cycle with one deadline. Probe rejection, malformed outcome, timeout, scheduler failure, or invalid randomness fails the affected readiness state closed without exposing the cause.
 
-Stopping the monitor aborts its ownership and prevents late completion from changing readiness or scheduling more work. Production timers are unreferenced. The future service shutdown order stops this monitor before closing dependency clients.
+Stopping the monitor aborts its ownership and prevents late completion from changing readiness or scheduling more work. Production timers are unreferenced. Identity stops this monitor before closing dependency clients.
 
 ## Composition
 
@@ -68,7 +68,13 @@ Domain and application code do not import this composition or Node.js HTTP types
 
 The local `services/identity` candidate composes the lifecycle, deadline, readiness controller, and monitor against source-owned HTTP, PostgreSQL, Redis, telemetry, and force-close ports. Startup starts the listener first, performs one connect and one probe per critical dependency under the same propagated deadline, and starts recovery monitoring after the bounded attempt. Dependency failure leaves the lifecycle live and ready-phase but the combined readiness false; no startup retry loop is created.
 
-Controlled tests prove shared startup, unavailable recovery, ready-only admission, deadline and shutdown cancellation, late-completion suppression, listener-failure cleanup, complete closure attempts, monitor-start failure, and one removable process-signal owner. The module is not yet a runnable service entrypoint: real HTTP/client factories, partial-construction cleanup, synchronous force-close or terminal fallback, and the process diagnostic remain pending. Its injected ports are trusted composition code, not public request input.
+`createAsterIdentityService(entries)` validates configuration before construction, then owns the logger, local telemetry, clock/IDs, real PostgreSQL/Redis adapters, HTTP listener, and coordinator. `pnpm identity:start` builds and runs the environment-backed entrypoint. `pnpm identity:check` uses real loopback HTTP and telemetry with explicitly controlled dependencies and a shortened monitor interval; it proves four readiness states and natural process exit without requiring containers or credentials. `pnpm identity:test` runs the focused suite.
+
+The normal monitor interval is 10 seconds with 20% jitter and an 8-second overall cycle budget. Startup is configured between 5 and 300 seconds; PostgreSQL connect/probe budgets are 3/2 seconds and Redis connect/probe budgets are 1.5/1 seconds. The same startup signal reaches both adapters. Once bound, the HTTP listener is detached from the startup deadline so a dependency timeout leaves liveness available. Shutdown retains one 10-second lifecycle budget. Partial factory failure closes every already-created owner under a separate construction-cleanup budget of 10 seconds; these paths never run as competing shutdown coordinators.
+
+The root treats only explicit completed/already-completed adapter close results as disposal evidence. Its force path closes HTTP synchronously and initiates remaining adapter cleanup. If an adapter is not yet proven closed, it reports `force_close` failure, and the process owner terminates explicitly (130/143 for signals or 1 for manual/startup failure). This intentionally does not promise asynchronous cleanup after forced termination. Ordinary shutdown leaves the process to exit naturally.
+
+Tests prove shared startup, unavailable recovery, snapshot-only health polling, HTTP metrics, partial construction/listener cleanup, real-client unavailable endpoints, one signal owner, graceful drain, and forced terminal fallback. Injected ports/factories are trusted source-owned composition code, not environment options or public request input. `aster.identity.startup_completed` carries a generated event ID, wall-clock start and measured duration; `aster.identity.readiness_changed` carries only finite readiness/reason values. Neither event includes dependency endpoints or credentials. Export is local-only; Collector/backend proof remains P01-R09.
 
 ## Shutdown contract
 

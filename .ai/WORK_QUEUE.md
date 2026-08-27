@@ -2,6 +2,8 @@
 
 Only one item may be `IN_PROGRESS`.
 
+P01-R08 checkpoint (2026-08-27): executable Identity composition and its controlled diagnostic are implemented; acceptance, clean-checkout and release closeout remain. P01-R09 is not active yet.
+
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
 | 1 | Select and record the source-code license | P00-R01 | DONE |

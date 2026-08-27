@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { createServer } from "node:net";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -9,6 +10,7 @@ import type { AsterDependencyObservationInput, AsterObservationOutcome } from "@
 import {
   AsterRedisConfigurationError,
   AsterRedisLifecycleError,
+  createAsterRedisAdapter,
   type AsterRedisOptions,
   type AsterRedisTelemetry,
 } from "../src/index.js";
@@ -141,6 +143,37 @@ function options(
 function nextTurn(): Promise<void> {
   return new Promise((resolve) => setImmediate(resolve));
 }
+
+test("the default vendor factory connects using an isolated mutable configuration copy", async () => {
+  let connections = 0;
+  const server = createServer((socket) => {
+    connections += 1;
+    socket.destroy();
+  });
+  await new Promise<void>((resolve) => {
+    server.listen(0, "127.0.0.1", resolve);
+  });
+  const address = server.address();
+  assert.ok(address && typeof address === "object");
+  const adapter = createAsterRedisAdapter(
+    options(new RecordingTelemetry(), {
+      url: `redis://127.0.0.1:${address.port}/0`,
+      reconnectMaxAttempts: 0,
+    }),
+  );
+  try {
+    assert.equal((await adapter.connect()).status, "unavailable");
+    assert.equal(connections, 1);
+    assert.equal((await adapter.close()).status, "completed");
+  } finally {
+    await adapter.close();
+    await new Promise<void>((resolve) => {
+      server.close(() => {
+        resolve();
+      });
+    });
+  }
+});
 
 test("validates bounded own-data options without invoking accessors or leaking secrets", () => {
   const telemetry = new RecordingTelemetry();

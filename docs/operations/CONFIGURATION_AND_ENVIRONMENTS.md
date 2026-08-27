@@ -25,6 +25,8 @@ The CLI captures the real process environment into entries once and filters unre
 
 ### Implemented variables
 
+The Identity entrypoint (`pnpm identity:start`) uses this exact contract before creating resources. `integration` maps to the telemetry package's `test` environment while retaining the configured logger environment. Export is process-local in P01-R08; no extra telemetry or dependency knobs are accepted. The controlled diagnostic supplies its own synthetic entries and never reads hosted credentials.
+
 | Variable | Classification | Required behavior |
 |---|---|---|
 | `ASTER_ENV` | Non-secret server runtime | Required; one of `local`, `integration`, `staging`, or `production` |

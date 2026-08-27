@@ -2,7 +2,7 @@
 
 ## Current status
 
-Released P01-R11 provides the first shared HTTP transport boundary in `@aster/http-express`. The active P01-R08 candidate adds fixed process-health routes without adding a service or dependency I/O. Current evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt) and [`evidence/phase-01/runtime-composition.txt`](../../evidence/phase-01/runtime-composition.txt).
+Released P01-R11 provides the first shared HTTP transport boundary in `@aster/http-express`. The active P01-R08 candidate adds fixed snapshot-only health routes; `services/identity` composes them into the first executable reference process. Current evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt) and [`evidence/phase-01/runtime-composition.txt`](../../evidence/phase-01/runtime-composition.txt).
 
 This package is not an application service. It contains no product schema, resolver, identity rule, database connection, Redis client, telemetry SDK, public port, or process-signal handler.
 
@@ -42,6 +42,8 @@ The adapter returns `503 HTTP_ADAPTER_NOT_READY` for GraphQL traffic before moun
 The provider may publish only coherent lifecycle and dependency-readiness combinations. A throw, accessor-backed field, additional field, invalid value, or incoherent combination returns stable `500 INTERNAL_HTTP_ERROR` without reflecting the provider value. Other methods return `405 HTTP_METHOD_NOT_ALLOWED` and `Allow: GET, HEAD` without invoking the provider. Routes remain strict and case-sensitive.
 
 ## Request path
+
+The Identity transport owner caps headers at 16,384 bytes, concurrent connections at 128, and requests per socket at 100. Request and idle-socket timeouts are 10 seconds, headers and keep-alive timeouts are 5 seconds, and timeout checks run every second. HTTP observations use only the existing `/graphql`, `/health/live`, `/health/ready` and finite method dimensions; unknown paths are never metric labels. Instrumentation failure cannot change the response. This root leaves GraphQL unmounted and has no product requests or HTTP upgrade protocol.
 
 The fixed route stack is:
 
@@ -96,6 +98,6 @@ The current dependency, failure, lifecycle, and process evidence is in the [P01-
 
 ## Limitations and recovery
 
-The current slice does not implement CORS, authentication, authorization, persisted operations, GraphQL cost limits, rate limiting, access logs, request metrics, tracing, a product schema, or a deployable service. Their owning phases must compose those controls without weakening this boundary.
+The shared adapter does not implement CORS, authentication, authorization, persisted operations, GraphQL cost limits, rate limiting, access logs, tracing, or a product schema. Identity now composes finite request metrics and a local reference process; container delivery and product controls remain with their owning work items.
 
 The adapter owns no durable state. Rollback removes `@aster/http-express`, its root command aliases, its exact dependencies and lock entries, ADR-0011, and P01-R11 documentation. A replacement must pass the same request, cancellation, Apollo, and lifecycle contract before service composition moves to it.

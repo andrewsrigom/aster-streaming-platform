@@ -1,7 +1,7 @@
 Evidence: P01-R08 deadlines, readiness, health, and Identity runtime composition
 Date: 2026-08-26
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; amd64; Node.js 24.19.0; pnpm 11.24.0
-Status: IMPLEMENTED IN PART; deadline checkpoint on corrective released main
+Status: IMPLEMENTED locally; executable composition checkpoint; acceptance/release closeout pending
 
 Scope and ownership
 - Requirement: P01-R08.
@@ -76,6 +76,22 @@ Controlled Identity orchestration checkpoint
 - Nine focused tests pass for shared startup, deadline propagation, unavailable startup/recovery, work drain, cancellation and late completion, listener cleanup, complete closure attempts, monitor failure, signal cleanup, and vendor-free declarations.
 - Package build/typecheck, architecture and unused-code validation, and frozen offline install pass. The lockfile adds only the Identity workspace importer; no existing package version changes. The initial offline metadata check failed for an existing AWS transitive, then normal pinned installation reused all packages with zero downloads and the frozen offline retry passed.
 - Real factories, partial-construction cleanup, synchronous force-close or terminal fallback, process diagnostic, combined affected gate, and exact clean checkout remain required before publication.
+
+Executable composition checkpoint — 2026-08-27
+- Source: working candidate following de90aa8 on feat/p01-r08-runtime-composition; exact candidate commit and acceptance evidence will be recorded before publication.
+- Added real factories, bounded Node HTTP listener, local telemetry, readiness transition logs, clock/ID startup event, environment-backed entrypoint, one process owner and explicit terminal fallback.
+- pnpm install --lockfile-only --offline; pnpm install --frozen-lockfile --offline: PASS. Only existing workspace links were added to the Identity importer; no registry versions changed.
+- pnpm exec turbo run build --filter=@aster/identity: PASS, 7/7 tasks.
+- pnpm --filter=@aster/identity test: PASS, 20/20. Includes real HTTP, controlled failure/recovery, no dependency I/O from health polls, partial factory cleanup, occupied listener, cancellation before/after binding, real PostgreSQL/Redis unavailable endpoints, cause-free invalid configuration, SIGTERM drain/natural exit and forced signal/manual termination.
+- pnpm --filter=@aster/redis test: PASS, 15/15. The new real TCP regression initially failed because node-redis tried to mutate frozen socket options. Direct reproduction reported TypeError before a Redis socket existed. Copying outer/socket options only at the vendor factory restored the connection attempt while preserving immutable internal options and public contracts.
+- pnpm exec eslint services/identity packages/redis; pnpm unused:check; pnpm architecture:check: PASS.
+- pnpm --filter=@aster/identity check: PASS. Exact diagnostic output:
+  {"event":"identity_diagnostic_passed","dependencyMode":"controlled","healthStatesChecked":4,"httpMetrics":"collected","shutdown":"completed"}
+- Process tests impose a 5-second external kill bound and assert the child was not killed. Graceful SIGTERM exits 143 through beforeExit; forced signal/manual exits 143/1 without beforeExit. Native-Windows signal cases are explicitly skipped; native-Windows signal support remains unclaimed.
+- Existing runtime/HTTP/config focused evidence remains supporting evidence; the combined candidate gate reruns affected dependencies. Real protocol interoperability, container failure/recovery and OTLP remain P01-R09.
+- Compatibility reference: https://github.com/redis/node-redis/blob/redis@6.2.1/packages/client/lib/client/index.ts (parseOptions mutates both options and options.socket; confirmed against pinned installed source).
+- Combined candidate gate: pnpm check:changed PASS, 49/49 tasks, 11 cached, 56.409s Turborepo time. The first attempt stopped on missing session-log section headings; after restoring the required Completed/Evidence/Next action structure, focused documentation/memory/format checks and the complete affected rerun passed. No source test failure was concealed by that formatting correction.
+- Remaining source-independent context prose was reconciled after this gate; documentation/memory validation is repeated before the candidate commit. The forced full gate will run once inside the exact frozen checkout, satisfying both acceptance and clean-build evidence without duplicating it in the warm workspace.
 
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.

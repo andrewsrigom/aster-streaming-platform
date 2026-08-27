@@ -151,7 +151,7 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-This is reusable runtime behavior, not an application or public health endpoint. See [`docs/operations/RUNTIME_LIFECYCLE.md`](docs/operations/RUNTIME_LIFECYCLE.md) for state, signal, shutdown, logging, and recovery contracts and [P01-R05 evidence](evidence/phase-01/runtime-lifecycle.txt) for current verification status.
+P01-R05 is reusable runtime behavior. The active P01-R08 candidate now composes it into a product-empty Identity process with real HTTP and dependency adapters. Run `pnpm identity:check` for a self-contained loopback diagnostic with controlled dependencies, or `pnpm identity:start` after configuring the seven reference environment variables. The existing Docker core does not expose host ports; real container integration and the Docker-only service command remain P01-R09/P01-R10. See [Runtime Lifecycle](docs/operations/RUNTIME_LIFECYCLE.md) and [P01-R08 evidence](evidence/phase-01/runtime-composition.txt).
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

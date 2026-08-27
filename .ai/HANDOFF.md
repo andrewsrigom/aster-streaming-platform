@@ -18,9 +18,9 @@ P01-R08 is active on `feat/p01-r08-runtime-composition`, rebased onto corrective
 
 ## Resume point
 
-1. For P01-R08, compose the released real HTTP, telemetry, PostgreSQL, and Redis factories behind the controlled `services/identity` runtime. Preserve one lifecycle owner, no product behavior, and explicit partial-construction cleanup.
-2. Resolve synchronous force-close or terminal fallback explicitly: the current database/cache adapters expose bounded asynchronous close, which alone is not a synchronous force guarantee. Add the loopback process diagnostic and exact startup/stop evidence.
-3. Run the next affected gate only after HTTP, configuration, and service composition form one candidate. Keep real dependency/container claims for P01-R09.
+1. P01-R08 real composition is now implemented locally: `create-service.ts`, `main.ts`, bounded `transport/http-server.ts`, `identity:check`, resource ownership and terminal fallback. Twenty Identity tests, fifteen Redis tests, the diagnostic, targeted lint, architecture and unused-code checks pass.
+2. A real-client failure test exposed node-redis 6.2.1 mutating frozen options before opening a socket. The default factory now copies only the outer/socket objects for the vendor; the internal contract stays frozen. A package-level real TCP regression and the composed real-client subprocess pass.
+3. The combined affected gate passes 49/49 tasks (11 cached, 56.409s). Commit this coherent candidate, then run the forced acceptance gate inside one exact frozen checkout, followed by initial/confirmation review and protected publication closeout. New workspace links and executable commands require this fresh clean-checkout evidence. Keep real dependency/container claims for P01-R09. No new public PR or remote mutation has been made for P01-R08.
 
 ## Do not do yet
 

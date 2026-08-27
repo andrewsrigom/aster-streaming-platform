@@ -169,11 +169,37 @@ export function createAsterIdentityRuntimeWithMonitor(
     },
   });
   const readiness = createAsterReadinessController({ criticalDependencyCount: 2, lifecycle });
+  let lastReadiness = readiness.health();
+  const reportReadiness = (): void => {
+    const current = readiness.health();
+    if (current.readiness === lastReadiness.readiness && current.reason === lastReadiness.reason) {
+      return;
+    }
+    lastReadiness = current;
+    try {
+      options.logger?.info({
+        event: "aster.identity.readiness_changed",
+        outcome: current.readiness === "ready" ? "ok" : "degraded",
+        properties: [
+          ["readiness", current.readiness],
+          ["reason", current.reason],
+        ],
+      });
+    } catch {
+      // Readiness transitions are authoritative even if optional logging fails.
+    }
+  };
   const monitor = createMonitor({
     intervalMs: READINESS_INTERVAL_MS,
     probeTimeoutMs: READINESS_CYCLE_TIMEOUT_MS,
     probes: dependencies.map((dependency) => (signal) => checkDependency(dependency, signal)),
-    readiness,
+    readiness: {
+      setCriticalDependencyState(index, state) {
+        const result = readiness.setCriticalDependencyState(index, state);
+        reportReadiness();
+        return result;
+      },
+    },
   });
 
   const observeShutdown = (result: Promise<AsterShutdownResult>): Promise<AsterShutdownResult> => {
@@ -227,6 +253,7 @@ export function createAsterIdentityRuntimeWithMonitor(
           readiness.setCriticalDependencyState(index, "unavailable");
         });
       }
+      reportReadiness();
       return Object.freeze({ status: "started", readiness: readiness.health().readiness });
     } finally {
       deadline.dispose();

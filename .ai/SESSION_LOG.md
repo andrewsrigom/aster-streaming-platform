@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Executable Identity composition and process diagnostic
+
+### Completed
+
+- Implemented real HTTP/configuration/telemetry/PostgreSQL/Redis factories, clock/IDs, fixed listener limits, snapshot health, HTTP metrics, readiness events, environment entrypoint and controlled loopback diagnostic.
+- Added partial-construction cleanup and explicit terminal ownership when asynchronous adapter closure cannot prove disposal after the lifecycle deadline. Normal SIGTERM drains accepted work and exits naturally; forced signal/manual paths terminate within the tested subprocess bound.
+- Real-client testing found node-redis mutating frozen options before connecting. Corrected the vendor-only copy and added a real TCP regression without changing dependencies or public contracts.
+
+### Evidence
+
+- Evidence: 20/20 Identity tests, 15/15 Redis tests, diagnostic, targeted ESLint, architecture and Knip pass. Frozen offline installation changes only Identity workspace links. Combined/full/clean-checkout/release gates remain next; no container integration or product behavior is claimed.
+
+### Next action
+
+The combined affected gate now passes 49/49 tasks. Commit the coherent candidate, then run the forced complete gate in one exact frozen checkout and finish protected publication closeout for P01-R08.
+
 ## 2026-08-26 — Implemented controlled Identity runtime orchestration
 
 ### Completed

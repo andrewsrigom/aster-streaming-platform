@@ -2,7 +2,13 @@
 
 ## Current status
 
-The Phase 00 repository foundation plus P01-R01 and P01-R02 are verified. The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated one-shot initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers fresh-state reset, same-checkout cleanup of released P01-R01 containers, hosted-target and hidden-resource refusals, populated and partial-state teardown, clean recovery, public-checkout repetition, and unrelated-resource preservation. No Node application, product schema, broker, object store, telemetry stack, application URL, or playable journey exists yet.
+The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. The active P01-R08 candidate adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. No product schema, broker/object-store runtime, telemetry backend, or playable journey exists yet.
+
+### Identity reference process
+
+After frozen installation, `pnpm identity:check` builds and runs a self-contained loopback diagnostic with controlled dependency ports, real HTTP and local metrics. It checks not-ready, ready, unavailable and recovered states, then closes its listener and exits naturally. This is not proof of real PostgreSQL/Redis protocol interoperability.
+
+`pnpm identity:start` runs the real adapters using the seven required variables in [Configuration and Environments](CONFIGURATION_AND_ENVIRONMENTS.md). No `.env` file is loaded implicitly. An unavailable database/cache keeps `/health/live` at 200 and `/health/ready` at 503; the bounded monitor owns recovery. Invalid configuration fails before clients/listeners exist. Use `SIGINT`/`SIGTERM` on Linux/WSL to request bounded shutdown. The existing Compose core has no host ports, so it is not automatically reachable by this host-run process. P01-R09 proves networked integration; P01-R10 supplies the Docker-only service command.
 
 ## Current foundation tools
 

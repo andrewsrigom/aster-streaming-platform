@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-08-26
+Last updated: 2026-08-27
 
 ## Active phase
 
@@ -118,11 +118,11 @@ Status: **IN_PROGRESS**
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
 - P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
 - P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
-- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Health checkpoint `d6d6ffc` passes 10 HTTP tests, and reference configuration `361d5d1` passes 13 tests. The new `services/identity` controlled orchestration passes 9 tests for startup, unavailable recovery, cancellation, cleanup, drain, and signal ownership. Real factory composition and the executable process diagnostic remain next.
+- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, based on corrective released `main`. Beyond controlled source `de90aa8`, the working candidate now includes real factories, bounded HTTP, executable `identity:start`, local `identity:check`, partial cleanup, readiness logs/HTTP metrics, and explicit force/terminal ownership. Identity passes 20 focused tests including real-client failure and natural/forced process exit; Redis passes 15 after correcting the vendor factory's mutation of frozen URL/socket options. No new registry dependency was added. Combined, forced, clean-checkout and release gates remain required.
 
 ## Not implemented
 
-- Deployable applications and service entrypoints
+- Containerized application services and product entrypoints (the local product-empty Identity entrypoint is implemented)
 - Product database schemas and migrations
 - Broker, object storage, and observability runtime
 - GraphQL schemas
@@ -138,11 +138,11 @@ Status: **IN_PROGRESS**
 - P01-R08 composes propagated deadlines, recoverable readiness gates, stable health routes, and an Identity reference service with no account, profile, session, schema, or resolver behavior.
 - P01-R09 selects the remaining local images and proves the runtime against real dependencies, OTLP export, Prometheus scrape, failure transitions, and bounded shutdown.
 - P01-R10 publishes measured core, runtime, integration, observability, and full profiles plus the clean Docker-only evaluator path.
-- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06 is released; every P01-R07 local adapter client is selected, including provisional `kafkajs@2.2.4`. The P01-R08 through P01-R10 composition, remaining container candidates, budgets, and paths remain unimplemented until their owning items record evidence.
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06/P01-R07 are released, including provisional `kafkajs@2.2.4`. P01-R08 composition is implemented locally; P01-R09/P01-R10 container interoperability, backend and Docker-only paths remain planned.
 
 ## Next outcome
 
-For P01-R08, compose the real HTTP, telemetry, PostgreSQL, and Redis factories behind the controlled Identity boundary, with explicit partial-construction cleanup and force-close/terminal ownership; then add the bounded loopback process diagnostic.
+For P01-R08, the combined affected gate passes 49/49 tasks. Commit the coherent executable candidate, run the forced complete gate inside one exact frozen checkout, then finish review/publication closeout. Keep P01-R09 inactive until this candidate is accepted or explicitly frozen under the external-wait contract.
 
 ## Current risks
 

@@ -5,7 +5,7 @@
 - Phase: 01
 - Requirement IDs: P01-R08
 - Created: 2026-08-26
-- Updated: 2026-08-26
+- Updated: 2026-08-27
 
 ## Outcome
 
@@ -15,7 +15,7 @@ Provide one product-empty Identity reference process that starts and stops withi
 
 P01-R05 and P01-R06 released bounded lifecycle and telemetry. P01-R07 released the clock, ID, PostgreSQL, Redis, Kafka, and S3 adapter boundaries through corrective squash `61226eb3ce4976e31edde1f8b8198bcdd10095a6`; exact post-merge run `33026799005` passed. P01-R08 is now directly based on released `main`.
 
-The deadline, dependency-readiness controller, recovery monitor, fixed health routes, reference configuration, and controlled Identity startup coordinator are implemented locally. Real HTTP/client factories, the executable service entrypoint, and process diagnostic remain pending. No product schema or GraphQL resolver exists.
+The deadline, dependency-readiness controller, recovery monitor, fixed health routes, reference configuration, Identity coordinator, real factories, executable service entrypoint and process diagnostic are implemented locally. The combined acceptance, clean-checkout and release gates remain pending. No product schema or GraphQL resolver exists.
 
 ## Proposed behavior
 
@@ -25,7 +25,7 @@ Extend `@aster/http-express` with fixed `GET`/`HEAD` `/health/live` and `/health
 
 Create `services/identity` as the first composition root. It validates reference configuration, creates logger/telemetry/runtime/transport/dependency owners, starts the HTTP health surface, performs one PostgreSQL and Redis startup attempt inside the propagated startup deadline, marks readiness from those two critical gates, starts the single recovery monitor, binds one lifecycle/signal owner, and closes monitor, telemetry, and dependencies in the existing shutdown order. It contains no Identity product use case and does not mount GraphQL.
 
-Correct the repository task graph so every package `typecheck` waits for dependency builds as well as dependency typechecks. Add a policy regression for the exact edge. Do not change adapter runtime source, dependencies, lockfile, public contracts, or quality-gate scope.
+Correct the repository task graph so every package `typecheck` waits for dependency builds as well as dependency typechecks. Add a policy regression for the exact edge. Preserve adapter dependencies, public contracts, and quality-gate scope. The real composition check found one availability blocker in the released Redis default factory: node-redis 6.2.1 mutates the supplied options/socket while parsing its URL, but the adapter passed its frozen internal snapshot directly. Copy only those two objects at the vendor boundary; preserve the immutable internal contract and add a real TCP connection-attempt regression. This is a necessary P01-R08 composition correction, not P01-R09 database interoperability work. The workspace lockfile changes only Identity's links to existing packages.
 
 ## Boundaries
 
@@ -95,12 +95,14 @@ Correct the repository task graph so every package `typecheck` waits for depende
 4. [completed] Implement the single non-overlapping recovery monitor with deterministic scheduler/jitter seams, one probe per critical dependency, cancellation, stop-before-close, late-completion, and failure tests.
 5. [completed] Extend the Express adapter and ADR-0011 with fixed non-cacheable liveness/readiness routes, exact methods/status/body behavior, provider hardening, and real-socket tests while preserving `/graphql` behavior.
 6. [completed] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.
-7. [in progress] Create the product-empty Identity composition root using injected controlled ports first, then compose the released real adapter factories behind the same boundary. Prove startup deadline propagation, unavailable startup, recovery, request admission, partial-start cleanup, one signal owner, ordered shutdown, and vendor-free inner declarations. The real root must supply an explicit synchronous force-close or terminal fallback; asynchronous adapter close alone must not be presented as that guarantee.
-8. [pending] Add a loopback diagnostic that starts the reference process with controlled dependency ports, verifies stable health transitions and bounded stop, and exits naturally without product state.
-9. [pending] Consolidate documentation/evidence, run the affected and forced complete gates, repeat an exact frozen checkout for new workspace/package/export/public-command inputs, and perform one complete review plus one confirmation round.
+7. [completed] Create the product-empty Identity composition root using controlled ports then real factories. Focused tests prove startup propagation, unavailable startup/recovery, admission, partial/listener cleanup, one signal owner, ordered shutdown, inner declaration isolation and explicit terminal fallback.
+8. [completed] Add the real-HTTP controlled-dependency loopback diagnostic with four health states, local metrics, bounded stop and natural process exit.
+9. [in progress] Documentation/evidence and the combined affected gate pass (49/49 tasks). Run the forced complete gate inside one exact frozen checkout for new workspace/package/export/public-command inputs, then perform complete review and confirmation closeout.
 10. [completed] Rebase the unpublished branch after the P01-R07 corrective release; repeat the affected gate before the next source checkpoint.
 
 ## Tests
+
+Composition checkpoint decisions: `services/identity/src/create-service.ts` owns validated configuration and the real factories; `src/transport/http-server.ts` owns bounded Node HTTP transport; `src/main.ts` owns the executable process; `src/check-identity.ts` owns the explicitly controlled loopback diagnostic. Factory overrides are internal source-owned test seams, not environment flags or public package exports. The production monitor retains its 10-second interval and 8-second cycle deadline. The diagnostic shortens only its controlled monitor interval. HTTP metrics use only the three existing finite route dimensions. Integration configuration maps to telemetry's `test` environment. PostgreSQL and Redis close results must explicitly report completion; an asynchronous close promise is not synchronous force closure. On forced shutdown, the root closes HTTP, initiates remaining adapter cleanup, and reports `force_close` failure if any resource is not proven closed. The process owner then terminates explicitly (conventional signal code, or 1 for manual/startup failure). Ordinary shutdown exits naturally. Partial factory failure closes all already-owned resources under one 10-second cleanup deadline and uses the same terminal fallback if cleanup cannot complete.
 
 - Domain: Not applicable; no product domain behavior.
 - Application: Pure deterministic deadline, readiness transition, admission, monitor scheduling/cancellation, and startup orchestration tests with controlled ports.
@@ -113,7 +115,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 
 - Commands: Focused package typecheck/build/tests and targeted lint/format per checkpoint; `pnpm check:changed` per coherent candidate; one `pnpm check --force` when the entire item stabilizes; loopback process diagnostics; exact frozen no-generated-state checkout; audit and secret scan; protected CI only after predecessor-first rebase/publication.
 - Raw artifact path: `evidence/phase-01/runtime-composition.txt`.
-- Acceptance result: Deadline, readiness, recovery-monitor, fixed-health-route, reference-configuration, and controlled Identity orchestration are implemented; 80 runtime tests, 10 HTTP tests, 13 configuration tests, and 9 Identity tests pass. Real factory composition and the process diagnostic remain pending.
+- Acceptance result: All planned local P01-R08 source is implemented. Focused supporting evidence passes 80 runtime tests, 10 HTTP tests, 13 configuration tests, 20 Identity tests and 15 Redis tests. The combined affected gate passes 49/49 tasks. Forced full/exact clean-checkout and release gates remain pending.
 - Iteration gate: Run only the changed runtime/HTTP/config/service build, typecheck, tests, diagnostic, and targeted lint/format after each coherent behavior checkpoint.
 - Candidate gate: Run `pnpm check:changed` after the combined runtime contracts, after the combined HTTP/service composition, and at closeout. Run the forced complete graph once after source, declarations, documentation, and evidence stabilize.
 - Heavyweight repeat triggers: Repeat exact frozen checkout for workspace, dependency, lockfile, package/export/declaration, install, bootstrap, service entrypoint, or public command changes. Repeat real-socket/subprocess handle evidence for listener, signal, timer, cancellation, monitor, request admission, startup, or shutdown changes. Real dependency/container evidence remains exclusively P01-R09.

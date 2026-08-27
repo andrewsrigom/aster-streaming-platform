@@ -9,7 +9,7 @@
   ],
   "workspaces": {
     "services/identity": {
-      "entry": ["src/index.ts"],
+      "entry": ["src/index.ts", "src/main.ts", "src/check-identity.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "packages/http-express": {
