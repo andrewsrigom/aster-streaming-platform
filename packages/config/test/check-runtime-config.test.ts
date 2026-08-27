@@ -108,3 +108,12 @@ test("process diagnostic classifies the optional password without emitting it", 
   assert.match(conflicting.stderr, /ASTER_DATABASE_PASSWORD/u);
   assertCanariesRedacted(conflicting.stderr);
 });
+
+test("process diagnostic accepts optional export without exposing the endpoint", () => {
+  const endpoint = "http://collector:4318/v1/metrics";
+  const result = runDiagnostic({ ...validEnvironment(), ASTER_OTLP_METRICS_ENDPOINT: endpoint });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /ASTER_OTLP_METRICS_ENDPOINT/u);
+  assert.equal(result.stdout.includes(endpoint), false);
+  assertCanariesRedacted(result.stdout);
+});

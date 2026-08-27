@@ -4,6 +4,14 @@ import { fileURLToPath, pathToFileURL, URL } from "node:url";
 
 import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
 
+import {
+  readObservabilitySources,
+  serviceBlock,
+  volumeBlock,
+  validateIntegrationServices,
+  validateObservabilityProfile,
+} from "./verify-optional-platform.mjs";
+
 const MAX_COMPOSE_BYTES = 100_000;
 const MAX_RESET_BYTES = 50_000;
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
@@ -26,7 +34,7 @@ function occurrences(source, value) {
 function validateRuntimeService(source) {
   const violations = [];
   for (const [rule, value] of [
-    ["scope", "    profiles: [runtime, full]\n"],
+    ["scope", "    profiles: [runtime, integration, observability, full]\n"],
     [
       "image",
       "    build:\n      context: ../..\n      dockerfile: infra/docker/identity.Dockerfile\n",
@@ -107,6 +115,12 @@ export function validateLocalPlatform(source) {
     violations.push({ detail: "Compose project must use the stable aster name", rule: "scope" });
   }
 
+  violations.push(...validateIntegrationServices(source));
+  for (const name of ["broker", "storage"]) {
+    source = source
+      .replace(serviceBlock(source, name), "")
+      .replace(volumeBlock(name + "-data"), "");
+  }
   const runtime = source.match(/^ {2}identity:\n(?:\n| {4}[^\n]*\n)+/mu)?.[0];
   if (!runtime) {
     violations.push({ rule: "scope", detail: "reviewed Identity runtime profile is missing" });
@@ -119,6 +133,14 @@ export function validateLocalPlatform(source) {
   requireText("network", edgeNetwork, "loopback-facing application network ownership is missing");
   source = source.replace(edgeNetwork, "");
 
+  requireText(
+    "resources",
+    'x-local-logging: &local-logging\n  driver: json-file\n  options:\n    max-size: "5m"\n    max-file: "2"\n',
+    "bounded local log rotation is required",
+  );
+  if (occurrences(source, "    logging: *local-logging") !== 4) {
+    violations.push({ rule: "resources", detail: "core services must use bounded log rotation" });
+  }
   requireText("image", POSTGRES_IMAGE, "exact PostgreSQL image is missing");
   requireText("image", REDIS_IMAGE, "exact Redis image is missing");
   if (occurrences(source, "@sha256:") !== 2) {
@@ -346,7 +368,8 @@ export function validatePublicPlatformCommands(documents) {
   const violations = [];
   const requiredCommands = [
     "docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120",
-    'docker compose --project-name aster --file infra/compose/compose.yml --profile "*" down',
+    'docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down',
+    "docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120",
     "docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status",
     "docker compose --project-name aster --file infra/compose/compose.yml ps --all",
     "docker compose --project-name aster --file infra/compose/compose.yml logs --no-color platform-init platform-status",
@@ -371,17 +394,20 @@ export function validatePublicPlatformCommands(documents) {
 
 export async function runLocalPlatformCheck(path = composePath) {
   try {
-    const [source, reset, readme, localDevelopment, runtimeImage] = await Promise.all([
-      readFile(path, "utf8"),
-      readFile(resetPath, "utf8"),
-      readFile(readmePath, "utf8"),
-      readFile(localDevelopmentPath, "utf8"),
-      readRuntimeImageSources(repositoryRoot),
-    ]);
+    const [source, reset, readme, localDevelopment, runtimeImage, observability] =
+      await Promise.all([
+        readFile(path, "utf8"),
+        readFile(resetPath, "utf8"),
+        readFile(readmePath, "utf8"),
+        readFile(localDevelopmentPath, "utf8"),
+        readRuntimeImageSources(repositoryRoot),
+        readObservabilitySources(repositoryRoot),
+      ]);
     const violations = [
       ...validateLocalPlatform(source),
       ...validateLocalReset(reset),
       ...validateRuntimeImage(runtimeImage),
+      ...validateObservabilityProfile(observability),
       ...validatePublicPlatformCommands([
         { file: "README.md", source: readme },
         { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopment },

@@ -6,6 +6,13 @@ import test from "node:test";
 import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
 
 import {
+  readObservabilitySources,
+  validateObservabilityProfile,
+  BROKER_IMAGE,
+  STORAGE_IMAGE,
+} from "./verify-optional-platform.mjs";
+
+import {
   POSTGRES_IMAGE,
   REDIS_IMAGE,
   validateLocalReset,
@@ -27,6 +34,7 @@ const validSource = await readFile(composePath, "utf8");
 const validReset = await readFile(resetPath, "utf8");
 const readmeSource = await readFile(readmePath, "utf8");
 const localDevelopmentSource = await readFile(localDevelopmentPath, "utf8");
+const observability = await readObservabilitySources(resolve(import.meta.dirname, ".."));
 const runtimeImage = await readRuntimeImageSources(resolve(import.meta.dirname, ".."));
 
 test("runtime image preserves the pinned non-root production packaging contract", () => {
@@ -161,16 +169,63 @@ test("rejects unsafe or unbounded Compose text", () => {
 
 test("runtime profile rejects broad ports, entrypoint overrides and weakened isolation", () => {
   for (const [before, after] of [
-    ["[runtime, full]", "[full]"],
+    ["[runtime, integration, observability, full]", "[full]"],
     ["127.0.0.1:3100:3100", "0.0.0.0:3100:3100"],
     ['user: "1000:1000"', 'user: "0:0"'],
     ["cap_drop: [ALL]", "cap_add: [SYS_ADMIN]"],
     ["stop_grace_period: 15s", "stop_grace_period: 1s"],
     ["memory: 384M", "memory: 4G"],
     ["dockerfile: infra/docker/identity.Dockerfile", "dockerfile: unreviewed.Dockerfile"],
-    ["    profiles: [runtime, full]", '    profiles: [runtime, full]\n    entrypoint: ["sh"]'],
+    [
+      "    profiles: [runtime, integration, observability, full]",
+      '    profiles: [runtime, integration, observability, full]\n    entrypoint: ["sh"]',
+    ],
     ["ASTER_DATABASE_PASSWORD: aster-test-only", "DATABASE_PASSWORD: aster-test-only"],
   ]) {
     assert.ok(validateLocalPlatform(validSource.replace(before, after)).length > 0, before);
+  }
+});
+
+test("optional telemetry retains bounded collection without becoming an Identity dependency", () => {
+  assert.deepEqual(validateObservabilityProfile(observability), []);
+  for (const [file, before, after] of [
+    ["observability.yml", "ASTER_OTLP_METRICS_ENDPOINT:", "UNREVIEWED_ENDPOINT:"],
+    ["observability.yml", "127.0.0.1:9090:9090", "0.0.0.0:9090:9090"],
+    ["observability.yml", "mem_limit: 128m", "mem_limit: 4g"],
+    ["observability.yml", "retention.time=1h", "retention.time=30d"],
+    ["observability.yml", "condition: service_healthy", "condition: service_started"],
+    ["observability.yml", "--post-data=", "--data="],
+    ["collector.integration.yml", "enabled: false", "enabled: true"],
+    ["collector.integration.yml", "limit_mib: 96", "limit_mib: 0"],
+    ["prometheus.local.yml", "sample_limit: 2000", "sample_limit: 0"],
+    ["prometheus.local.yml", "label_limit: 16", "label_limit: 0"],
+  ]) {
+    const changed = { ...observability, [file]: observability[file].replace(before, after) };
+    assert.ok(validateObservabilityProfile(changed).length > 0, before);
+  }
+});
+
+test("optional broker and storage must stay private, pinned and resource-bounded", () => {
+  for (const [before, after] of [
+    [BROKER_IMAGE, "kafka:latest"],
+    [STORAGE_IMAGE, "versitygw:latest"],
+    ["profiles: [integration, full]", "profiles: [full]"],
+    ["mem_limit: 768m", "mem_limit: 8g"],
+    ["INTERNAL://broker:19092", "PUBLIC://broker:19092"],
+    ["    networks: [platform]", "    networks: [platform]\n    ports: [9000:9000]"],
+    ["broker-data:/var/lib/kafka/data", "foreign-data:/var/lib/kafka/data"],
+  ]) {
+    assert.ok(validateLocalPlatform(validSource.replace(before, after)).length > 0, before);
+  }
+});
+
+test("telemetry images refuse mutable tags and added runtime instructions", () => {
+  for (const file of ["infra/docker/collector.Dockerfile", "infra/docker/prometheus.Dockerfile"]) {
+    for (const source of [
+      runtimeImage[file].replace("@sha256:", "@changed:"),
+      runtimeImage[file] + "\nUSER root\n",
+    ]) {
+      assert.ok(validateRuntimeImage({ ...runtimeImage, [file]: source }).length > 0, file);
+    }
   }
 });

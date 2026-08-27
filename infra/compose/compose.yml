@@ -3,9 +3,16 @@ name: aster
 x-postgres-image: &postgres-image docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f
 x-redis-image: &redis-image docker.io/library/redis:8.10.0-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
 
+x-local-logging: &local-logging
+  driver: json-file
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   identity:
-    profiles: [runtime, full]
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
     build:
       context: ../..
       dockerfile: infra/docker/identity.Dockerfile
@@ -44,6 +51,7 @@ services:
           pids: 64
 
   postgres:
+    logging: *local-logging
     image: *postgres-image
     labels:
       com.aster.environment: local
@@ -82,6 +90,7 @@ services:
           pids: 128
 
   redis:
+    logging: *local-logging
     image: *redis-image
     labels:
       com.aster.environment: local
@@ -116,6 +125,7 @@ services:
           pids: 64
 
   platform-init:
+    logging: *local-logging
     image: *postgres-image
     labels:
       com.aster.environment: local
@@ -150,6 +160,7 @@ services:
           pids: 32
 
   platform-status:
+    logging: *local-logging
     image: *postgres-image
     labels:
       com.aster.environment: local
@@ -196,6 +207,123 @@ services:
           memory: 128M
           pids: 32
 
+  broker:
+    profiles: [integration, full]
+    image: docker.io/apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    environment:
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:19092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://broker:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:9093
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: "1"
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
+      KAFKA_NUM_PARTITIONS: "1"
+      KAFKA_NUM_NETWORK_THREADS: "2"
+      KAFKA_NUM_IO_THREADS: "2"
+      KAFKA_BACKGROUND_THREADS: "2"
+      KAFKA_QUEUED_MAX_REQUESTS: "16"
+      KAFKA_LOG_RETENTION_HOURS: "1"
+      KAFKA_LOG_RETENTION_BYTES: "16777216"
+      KAFKA_LOG_SEGMENT_BYTES: "8388608"
+      KAFKA_HEAP_OPTS: -Xms128m -Xmx256m
+      KAFKA_JVM_PERFORMANCE_OPTS: -XX:ActiveProcessorCount=2
+      LOG_DIR: /tmp/kafka-logs
+    networks: [platform]
+    volumes:
+      - broker-data:/var/lib/kafka/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+      - /opt/kafka/config:size=4m,uid=1000,gid=1000,mode=0750
+      - /etc/kafka/secrets:size=1m,uid=1000,gid=1000,mode=0750
+      - /mnt/shared/config:size=1m,uid=1000,gid=1000,mode=0750
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 1
+    mem_limit: 768m
+    pids_limit: 192
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test:
+        - CMD
+        - env
+        - KAFKA_HEAP_OPTS=-Xms16m -Xmx64m
+        - KAFKA_JVM_PERFORMANCE_OPTS=-XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1
+        - /opt/kafka/bin/kafka-topics.sh
+        - --bootstrap-server
+        - 127.0.0.1:19092
+        - --list
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 10s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  storage:
+    profiles: [integration, full]
+    image: docker.io/versity/versitygw:v1.7.0@sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    entrypoint: ["/usr/local/bin/versitygw"]
+    command:
+      - --port
+      - :9000
+      - --health
+      - /health
+      - --quiet
+      - --max-connections
+      - "64"
+      - --max-requests
+      - "16"
+      - posix
+      - --concurrency
+      - "8"
+      - /data
+    environment:
+      ROOT_ACCESS_KEY: aster-test-access
+      ROOT_SECRET_KEY: aster-test-only
+    networks: [platform]
+    volumes:
+      - storage-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 1
+    mem_limit: 384m
+    pids_limit: 96
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9000/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
 networks:
   edge:
     labels:
@@ -209,6 +337,16 @@ networks:
 
 volumes:
   postgres-data:
+    labels:
+      com.aster.authority: durable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  broker-data:
+    labels:
+      com.aster.authority: durable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  storage-data:
     labels:
       com.aster.authority: durable-local
       com.aster.environment: local

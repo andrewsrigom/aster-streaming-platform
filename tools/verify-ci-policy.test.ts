@@ -87,7 +87,7 @@ test("rejects weakened local-platform execution or broad Docker cleanup", async 
   const weakened = source
     .replace("--wait --wait-timeout 120 platform-status", "platform-status")
     .replace(
-      'docker compose --file "$COMPOSE_FILE" down --volumes --remove-orphans --timeout 10',
+      'docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile "*" down --volumes --remove-orphans --timeout 10',
       "docker system prune --all --force",
     );
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
@@ -100,6 +100,22 @@ test("rejects a missing public contribution check", async () => {
     "node ./tools/verify-documentation.ts",
   );
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
+test("rejects missing or unbounded Docker-only build and metric verification", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const [before, after] of [
+    ["--profile full up --build", "--profile full up"],
+    ["timeout-minutes: 10", "timeout-minutes: 60"],
+    ["assert.equal(process.getuid(), 1000)", "assert.ok(true)"],
+    ["assert.deepEqual(present, required)", "assert.ok(present)"],
+    ['--profile "*" down --volumes', "down --volumes"],
+  ] as const) {
+    assert.ok(
+      validateWorkflowPolicy(source.replace(before, after)).some(({ rule }) => rule === "commands"),
+      before,
+    );
+  }
 });
 
 test("rejects a missing repository-memory check", async () => {

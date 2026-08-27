@@ -264,9 +264,22 @@ export function validateWorkflowPolicy(
     [/redis_version:8\.10\.0/u, "local-platform job must verify Redis"],
     [/aster local platform initialized/u, "local-platform job must verify initialization"],
     [
-      /- name: Remove only the CI Compose project\s+if: always\(\)\s+run: docker compose --file "\$COMPOSE_FILE" down --volumes --remove-orphans --timeout 10/u,
+      /- name: Remove only the CI Compose project\s+if: always\(\)\s+run: docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml --profile "\*" down --volumes --remove-orphans --timeout 10/u,
       "local-platform job must always remove only its unique Compose project",
     ],
+    [
+      /- name: Build and start the Docker-only full profile\s+timeout-minutes: 10\s+run: >-\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml\s+--profile full up --build --wait --wait-timeout 120/u,
+      "Docker-only full profile must build and start with a bounded deadline",
+    ],
+    [
+      /- name: Verify packaged health and real telemetry\s+timeout-minutes: 2\s+run: \|/u,
+      "Docker-only health and telemetry verification must have a bounded deadline",
+    ],
+    [
+      /assert.equal\(process.getuid\(\), 1000\)/u,
+      "Docker-only demo must verify the packaged non-root runtime",
+    ],
+    [/assert.deepEqual\(present, required\)/u, "Docker-only demo must require every metric family"],
     [
       /allow-licenses:\s*Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, ISC, MIT, MITNFA/u,
       "dependency review must enforce the reviewed license set",

@@ -40,6 +40,7 @@ const PLATFORM_FILES = new Set([
   "tools/verify-local-platform.mjs",
   "tools/verify-local-platform.test.mjs",
   "tools/verify-runtime-image.mjs",
+  "tools/verify-optional-platform.mjs",
 ]);
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 

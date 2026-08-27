@@ -52,7 +52,8 @@ if ! repository_root=$(CDPATH= cd -- "$script_directory/.." && pwd -P); then
 fi
 
 compose_file=$repository_root/infra/compose/compose.yml
-for repository_file in "$repository_root/AGENTS.md" "$repository_root/package.json" "$compose_file"; do
+observability_file=$repository_root/infra/compose/observability.yml
+for repository_file in "$repository_root/AGENTS.md" "$repository_root/package.json" "$compose_file" "$observability_file"; do
   [ -f "$repository_file" ] || fail 'required regular repository files are missing'
   [ ! -L "$repository_file" ] || fail 'symbolic repository inputs are prohibited'
 done
@@ -78,7 +79,7 @@ docker_local() {
 }
 
 compose_local() {
-  docker_local compose --project-name "$PROJECT_NAME" --file "$compose_file" --profile '*' "$@"
+  docker_local compose --project-name "$PROJECT_NAME" --file "$compose_file" --file "$observability_file" --profile '*' "$@"
 }
 
 if ! docker_os=$(docker_local info --format '{{.OSType}}' 2>/dev/null); then
@@ -91,18 +92,26 @@ if ! configured_services=$(compose_local config --services 2>/dev/null); then
   fail 'the Compose service set cannot be read'
 fi
 configured_services=$(printf '%s\n' "$configured_services" | LC_ALL=C sort | tr -d '\r')
-expected_services='identity
+expected_services='broker
+collector
+identity
 platform-init
 platform-status
 postgres
-redis'
+prometheus
+redis
+storage'
 [ "$configured_services" = "$expected_services" ] || fail 'the Compose service set is not the reviewed local platform slice'
 
 if ! configured_volumes=$(compose_local config --volumes 2>/dev/null); then
   fail 'the Compose volume set cannot be read'
 fi
-configured_volumes=$(printf '%s\n' "$configured_volumes" | tr -d '\r')
-[ "$configured_volumes" = "postgres-data" ] || fail 'the Compose volume set is not the reviewed local platform slice'
+configured_volumes=$(printf '%s\n' "$configured_volumes" | LC_ALL=C sort | tr -d '\r')
+expected_volumes='broker-data
+postgres-data
+prometheus-data
+storage-data'
+[ "$configured_volumes" = "$expected_volumes" ] || fail 'the Compose volume set is not the reviewed local platform slice'
 
 if ! prefixed_container_ids=$(docker_local container ls --all --quiet --filter "name=^/${PROJECT_NAME}[-_]" 2>/dev/null); then
   fail 'Aster-prefixed containers cannot be listed'
@@ -148,11 +157,7 @@ if ! container_ids=$(docker_local container ls --all --quiet --no-trunc --filter
   fail 'Aster containers cannot be listed'
 fi
 container_count=0
-seen_platform_init=0
-seen_platform_status=0
-seen_postgres=0
-seen_redis=0
-seen_identity=0
+seen_services='|'
 legacy_volume_names=''
 for container_id in $container_ids; do
   if ! container_name=$(docker_local container inspect --format '{{.Name}}' "$container_id" 2>/dev/null); then
@@ -168,40 +173,31 @@ for container_id in $container_ids; do
   container_scope=$(printf '%s\n' "$container_labels" | cut -d '|' -f 4)
   container_compose_file=$(printf '%s\n' "$container_labels" | cut -d '|' -f 5)
   [ "$container_project" = "$PROJECT_NAME" ] || fail "container $container_name has unexpected project ownership"
-  [ "$container_compose_file" = "$compose_file" ] || fail "container $container_name has an unexpected Compose-file label"
+  case "$container_compose_file" in
+    "$compose_file" | "$compose_file,$observability_file") ;;
+    *) fail "container $container_name has an unexpected Compose-file label" ;;
+  esac
   case "$container_environment|$container_scope" in
     'local|platform' | '|') ;;
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
-    identity)
-      [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'Identity requires current ownership labels'
-      [ "$seen_identity" -eq 0 ] || fail 'duplicate identity container is prohibited'
-      seen_identity=1
+    identity | broker | storage | collector | prometheus)
+      [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'runtime and optional services require current ownership labels'
       ;;
-    platform-init)
-      [ "$seen_platform_init" -eq 0 ] || fail 'duplicate platform-init container is prohibited'
-      seen_platform_init=1
-      ;;
-    platform-status)
-      [ "$seen_platform_status" -eq 0 ] || fail 'duplicate platform-status container is prohibited'
-      seen_platform_status=1
-      ;;
-    postgres)
-      [ "$seen_postgres" -eq 0 ] || fail 'duplicate postgres container is prohibited'
-      seen_postgres=1
-      ;;
-    redis)
-      [ "$seen_redis" -eq 0 ] || fail 'duplicate redis container is prohibited'
-      seen_redis=1
-      ;;
+    platform-init | platform-status | postgres | redis) ;;
     *) fail "container $container_name belongs to an unexpected service" ;;
   esac
+  case "$seen_services" in
+    *"|$container_service|"*) fail "duplicate $container_service container is prohibited" ;;
+  esac
+  seen_services="$seen_services$container_service|"
   if ! container_mounts=$(docker_local container inspect --format '{{range .Mounts}}{{.Type}}|{{.Name}}|{{.Destination}}{{"\n"}}{{end}}' "$container_id" 2>/dev/null); then
     fail "container $container_name mounts cannot be inspected"
   fi
   case "$container_service|$container_mounts" in
     'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
+    'broker|volume|aster_broker-data|/var/lib/kafka/data' | 'storage|volume|aster_storage-data|/data' | 'prometheus|volume|aster_prometheus-data|/prometheus' | 'collector|') ;;
     platform-init\|volume\|*\|/var/lib/postgresql | platform-status\|volume\|*\|/var/lib/postgresql)
       legacy_volume=$(printf '%s\n' "$container_mounts" | cut -d '|' -f 2)
       [ "${#legacy_volume}" -eq 64 ] || fail 'legacy helper volume is not an anonymous identifier'
@@ -217,6 +213,7 @@ for container_id in $container_ids; do
   fi
   case "$container_service|$container_networks" in
     *\| | *\|aster_platform | 'identity|aster_edge
+aster_platform' | 'prometheus|aster_edge
 aster_platform') ;;
     *) fail "container $container_name has unreviewed network attachments" ;;
   esac
@@ -286,13 +283,17 @@ if ! volume_names=$(docker_local volume ls --quiet --filter "label=com.docker.co
 fi
 volume_count=0
 for volume_name in $volume_names; do
-  [ "$volume_count" -eq 0 ] || fail 'more than one Aster volume is prohibited'
+  [ "$volume_count" -lt 4 ] || fail 'more than four Aster volumes are prohibited'
   if ! volume_labels=$(docker_local volume inspect --format '{{ index .Labels "com.docker.compose.project" }}|{{ index .Labels "com.docker.compose.volume" }}|{{ index .Labels "com.aster.authority" }}|{{ index .Labels "com.aster.environment" }}|{{ index .Labels "com.aster.owner" }}' "$volume_name" 2>/dev/null); then
     fail "volume $volume_name labels cannot be inspected"
   fi
-  [ "$volume_labels" = "$PROJECT_NAME|postgres-data|durable-local|local|platform" ] ||
-    fail "volume $volume_name has unexpected project, volume, authority, environment, or owner labels"
-  [ "$volume_name" = aster_postgres-data ] || fail 'unexpected Aster volume name'
+  case "$volume_name|$volume_labels" in
+    'aster_postgres-data|aster|postgres-data|durable-local|local|platform' | \
+    'aster_broker-data|aster|broker-data|durable-local|local|platform' | \
+    'aster_storage-data|aster|storage-data|durable-local|local|platform' | \
+    'aster_prometheus-data|aster|prometheus-data|disposable-local|local|platform') ;;
+    *) fail "volume $volume_name has unexpected project, volume, authority, environment, or owner labels" ;;
+  esac
   if ! attached_ids=$(docker_local container ls --all --quiet --no-trunc --filter "volume=$volume_name" 2>/dev/null); then
     fail 'volume attachments cannot be inspected'
   fi

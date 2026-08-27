@@ -2,7 +2,7 @@
 
 ## Current status
 
-The core checkpoint uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without host ports. P01-R10 adds the local Docker runtime profile below, including real Identity health and loopback-only port 3100. P01-R09's released laboratories separately prove Kafka, S3 and Collector/Prometheus. Optional application integration/observability/full profiles, product schemas and playable journeys remain pending.
+The core checkpoint uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without host ports. P01-R10 adds the local Docker runtime profile below, including real Identity health and loopback-only port 3100. P01-R09's released laboratories separately prove Kafka, S3 and Collector/Prometheus. P01-R10 also supplies integration, observability and full profiles with real OTLP metrics. Clean-checkout/protected closeout, product schemas and playable journeys remain pending.
 
 ### Identity reference process
 
@@ -41,21 +41,47 @@ docker compose --project-name aster --file infra/compose/compose.yml --profile r
 
 Visit [readiness](http://127.0.0.1:3100/health/ready) and [liveness](http://127.0.0.1:3100/health/live). No host Node/pnpm, schema initialization or account is needed. Docker builds the frozen production package, waits for PostgreSQL/Redis initialization and probes Identity readiness. Build/pulls precede the 120-second readiness wait; a cold registry outage can still fail the build. The first build needs registry access.
 
-Identity uses UID/GID 1000, a read-only root, no Linux capabilities, a 384 MiB/1 CPU/64 PID ceiling and a 15-second orchestrator grace around the ten-second application shutdown budget. Only Identity joins the `edge` bridge for localhost publication; databases remain exclusively on the internal `platform` network. The application can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL-image helper containers override the inherited data-volume path with 1 MiB tmpfs so they create no anonymous database volumes.
+Identity uses UID/GID 1000, a read-only root, no Linux capabilities, a 384 MiB/1 CPU/64 PID ceiling and a 15-second orchestrator grace around the ten-second application shutdown budget. Only Identity and the optional Prometheus UI join the `edge` bridge for localhost publication; databases remain exclusively on the internal `platform` network. The application can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL-image helper containers override the inherited data-volume path with 1 MiB tmpfs so they create no anonymous database volumes.
 
-The current seven-variable configuration remains supported. Compose supplies the fixed synthetic database password separately through the classified optional `ASTER_DATABASE_PASSWORD`; conflicting sources fail before resource construction. An unavailable dependency produces readiness 503 while liveness remains 200, then readiness recovers when the dependency returns. There is no GraphQL endpoint, UI or `/metrics` HTTP endpoint yet; optional Collector/Prometheus export is the next P01-R10 slice.
+The current seven-variable configuration remains supported. Compose supplies the fixed synthetic database password separately through the classified optional `ASTER_DATABASE_PASSWORD`; conflicting sources fail before resource construction. An unavailable dependency produces readiness 503 while liveness remains 200, then readiness recovers when the dependency returns. There is no GraphQL endpoint, product UI or application `/metrics` route. The optional overlay enables OTLP/HTTP to Collector, which Prometheus scrapes; omission leaves export disabled.
 
-Stop all profiles without deleting the named PostgreSQL volume:
+Stop all profiles without deleting their named data volumes:
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml --profile "*" down
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
 ```
 
-The earlier core-only command remains light and does not start Identity or create the edge network. `full` currently aliases the runtime subset; do not interpret it as the completed laboratory. Integration/observability/full expansion and a clean-checkout evaluator run remain pending.
+The earlier core-only command remains light and does not start Identity or create the edge network. The complete clean-checkout evaluator run and protected release remain pending; the profile commands below pass local runtime checks.
 
 Measured on Linux/WSL amd64 with cached base/dependency layers: image rebuild plus empty-project startup 39.71 s; core-only startup 7.38 s; natural SIGTERM exit 143 in 561 ms including Docker CLI/inspection. A single healthy post-recovery sample reports Identity 51.59 MiB, PostgreSQL 25.11 MiB, Redis 6.004 MiB and status 1.609 MiB; these are observations, not sizing guarantees. Image size is 255272610 bytes; fresh PostgreSQL data is 47488 KiB. See [raw runtime evidence](../../evidence/phase-01/docker-demo.txt).
 
 If localhost fails, inspect `ps --all`, Identity logs and the published port; an internal-only Docker network may report container health without publishing host traffic. Use the checked-in edge network. For an occupied 3100, stop the conflicting local listener or this stack; never reset Docker or unrelated projects. Native Windows can open localhost while containers run through WSL; native Windows/macOS/arm64 execution is not proven.
+
+### Optional profiles
+
+| Selection | Services beyond the four-service core | Published localhost ports |
+|---|---|---|
+| no profile / core target | none | none |
+| `runtime` | Identity | 3100 |
+| `integration` | Identity, Kafka, S3 | 3100 |
+| `observability` + overlay | Identity, Collector, Prometheus | 3100, 9090 |
+| `full` + overlay | Identity, Kafka, S3, Collector, Prometheus | 3100, 9090 |
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --profile integration up --build --wait --wait-timeout 120
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile observability up --build --wait --wait-timeout 120
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120
+```
+
+Use the overlay with `observability` or `full`; the base file alone does not enable export. Switching to a smaller profile does not stop previously enabled services: use the all-profile `down` command first, which preserves data. Do not supply arbitrary overlays to the local reset.
+
+The optional stack reuses the released integration pins: Apache Kafka 4.3.1, VersityGW 1.7.0, Collector 0.159.0 and Prometheus 3.14.0. Kafka is single-node/plaintext, not a production cluster. S3 is local synthetic storage; its upstream root process has all capabilities dropped. Other optional processes inherit upstream non-root users. Collector/Prometheus configs are baked into digest-pinned images, with no host config mounts.
+
+Open [Prometheus](http://127.0.0.1:9090). Queries include `process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds`, `http_server_request_duration_seconds_count` and `aster_dependency_operation_outcomes_total`. Export interval is 5 seconds, timeout 1 second; scrape interval is 5 seconds. Prometheus limits samples, labels, query concurrency/time and retention to 1 hour/128 MB. Retention is not a hard filesystem quota. No dashboard, tracing/log backend or SLO is claimed.
+
+Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.
+
+One post-recovery idle sample (Linux/WSL amd64, health probes active): Identity 41.98 MiB, Kafka 335.8 MiB, S3 9.141 MiB, Collector 19 MiB and Prometheus 30.26 MiB. This is not a capacity test. Raw image IDs, volume sizes, failure observations and guarded nine-container/four-volume cleanup are in [Docker evidence](../../evidence/phase-01/docker-demo.txt).
 
 ### Identity image checkpoint
 
@@ -66,7 +92,7 @@ docker build --file infra/docker/identity.Dockerfile --tag aster-identity:p01-r1
 docker run --rm --network none --cpus 0.5 --memory 256m --pids-limit 64 --read-only --cap-drop ALL --security-opt no-new-privileges --label com.aster.scope=p01-r10 aster-identity:p01-r10 ./dist/src/check-identity.js
 ```
 
-The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The runtime command above adds real database connectivity; optional profiles and the complete clean-checkout closeout remain pending.
+The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The runtime command above adds real database connectivity; optional profiles below are implemented locally, while the complete clean-checkout closeout remains pending.
 
 ### Complete integration matrix
 
@@ -113,7 +139,7 @@ The S3 laboratory uses digest-pinned VersityGW 1.7.0 with a POSIX volume. It che
 
 Both fixtures use finite CPU/memory/PID/log limits, read-only roots, dropped capabilities, no-new-privileges and no host bind mounts. Kafka runs as the upstream non-root user; the storage fixture runs as root with all capabilities dropped to initialize its fresh owned POSIX volume. Only synthetic data is allowed. Cleanup verifies the exact owned volume before irreversible removal; image caches are retained. The supervisor reports startup/actions/cleanup and one pre-workload resource sample, not a steady-state benchmark. The ownership and interrupted-cleanup rules in the core section apply unchanged.
 
-Broker and S3 protocol scenarios pass individually and in the released combined matrix; exact cold and protected/post-merge gates pass. The P01-R10 application profiles remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
+Broker and S3 protocol scenarios pass individually and in the released combined matrix; exact cold and protected/post-merge gates pass. P01-R10 reuses these pins in its optional local profiles. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
 
 ### Real telemetry integration
 
@@ -127,7 +153,7 @@ Collector and Prometheus run as their upstream non-root users with read-only roo
 
 Do not edit the two config files while the fixture runs. Docker Desktop/WSL can translate a bind path after restart; cleanup accepts that translation only for the matching distribution and identical file device/inode. Changed files, writable/shared binds or foreign mounts are refused before deletion. Normal teardown removes only the exact synthetic PostgreSQL/Prometheus volumes and fixture containers/network; images and repository config files remain. No host mount propagation, Docker daemon settings or unrelated resources are changed. The core interruption/ownership rules also apply here.
 
-See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). The released combined matrix proves multi-adapter HTTP drain, with exact cold and protected/post-merge gates passing. The Docker-only evaluator profile remains P01-R10 work.
+See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). The released combined matrix proves multi-adapter HTTP drain, with exact cold and protected/post-merge gates passing. The P01-R10 Docker-only profiles below use baked configurations instead of these test-fixture bind mounts.
 
 ### Pinned repository bootstrap
 
@@ -186,7 +212,7 @@ The root README is the copy-paste entrypoint for the currently executable founda
 
 ### Development lane
 
-The current development lane uses `pnpm install --frozen-lockfile`, focused checks during edits, `pnpm check:changed` for a coherent candidate, `pnpm check` for the complete acceptance gate, `pnpm audit --audit-level=high`, and `pnpm clean:foundation`. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. P01-R02 adds the separate destructive local reset. Later Phase 01 work adds broker, object storage, telemetry, runtime configuration, migrations, seed data, and integration suites. Later phases add browser, media, failure, and load commands only when they have executable implementations.
+The current development lane uses `pnpm install --frozen-lockfile`, focused checks during edits, `pnpm check:changed` for a coherent candidate, `pnpm check` for the complete acceptance gate, `pnpm audit --audit-level=high`, and `pnpm clean:foundation`. P01-R01 adds canonical PostgreSQL and Redis startup, status, diagnostic, and non-destructive stop commands. P01-R02 adds the separate destructive local reset. Phase 01 also supplies broker, object storage, telemetry, runtime configuration and integration suites. Phase 02 owns the first product migrations and synthetic seed. Later phases add browser, media, failure, and load commands only when they have executable implementations.
 
 The changed-scope gate does not run every integration, browser, media, failure, or load suite on each commit. Each owning phase adds its task inputs and heavyweight acceptance behavior only when the implementation exists.
 
@@ -223,13 +249,13 @@ Delete the current Aster containers, network, disposable Redis state, and durabl
 ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
 ```
 
-The command accepts exactly the local marker and fixed confirmation. It refuses CI indicators, database or Redis URLs, Docker endpoint/configuration overrides, non-local Docker socket schemes, unexpected services, duplicate resources, partial or mismatched labels, symbolic repository inputs, and any extra argument. Before mutation it pins the inspected local Docker context, the repository Compose file, and project `aster`; it rejects Aster-prefixed physical resources without exact project ownership and validates logical resource, authority, owner, and Compose-file labels. Core service containers may use only the complete current `local|platform` label pair or the complete absent pair created by released P01-R01; Identity requires the current pair. Project, service and Compose-file labels remain exact. Reset explicitly enables every reviewed profile and checks container mounts/network attachments plus foreign containers sharing project networks or volumes before deletion. Only the exact PostgreSQL volume, platform/edge networks and five reviewed services are accepted. Legacy helper anonymous volumes require a 64-hex identifier, anonymous/empty labels, no foreign attachment and a post-deletion absence check. It then runs only the scoped all-profile `down --volumes` operation and proves that zero `aster` project resources remain. It never prunes images, containers, networks, or volumes globally and does not use a broad fallback after partial failure.
+The command accepts exactly the local marker and fixed confirmation. It refuses CI indicators, database or Redis URLs, Docker endpoint/configuration overrides, non-local Docker socket schemes, unexpected services, duplicate resources, partial or mismatched labels, symbolic repository inputs, and any extra argument. Before mutation it pins the inspected local Docker context, the repository Compose file, and project `aster`; it rejects Aster-prefixed physical resources without exact project ownership and validates logical resource, authority, owner, and Compose-file labels. Core service containers may use only the complete current `local|platform` label pair or the complete absent pair created by released P01-R01; Identity and all optional services require the current pair. Project, service and Compose-file labels remain exact. Reset explicitly enables every reviewed profile and checks container mounts/network attachments plus foreign containers sharing project networks or volumes before deletion. Only the exact PostgreSQL, broker, storage and Prometheus volumes, platform/edge networks and nine reviewed services are accepted. Provenance must equal the base Compose file or the ordered base-plus-observability pair; reversed or arbitrary overlays are refused. Legacy helper anonymous volumes require a 64-hex identifier, anonymous/empty labels, no foreign attachment and a post-deletion absence check. It then runs only the scoped all-profile `down --volumes` operation and proves that zero `aster` project resources remain. It never prunes images, containers, networks, or volumes globally and does not use a broad fallback after partial failure.
 
-The reset is irreversible for the current local PostgreSQL data. A successful repeat from empty state reports that Aster is already reset without creating resources. Recovery is the normal health-gated startup command, which creates a new empty PostgreSQL volume. Phase-owned migration and seed recovery will be documented when those capabilities exist. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
+The reset irreversibly deletes local PostgreSQL/broker/S3 data and disposable Prometheus history. Back up anything you need before confirming. A successful repeat from empty state reports that Aster is already reset without creating resources. Recovery is the normal health-gated startup command, which creates a new empty PostgreSQL volume. Phase-owned migration and seed recovery will be documented when those capabilities exist. Phase 07 expands the Docker-only lane into the first playable HLS checkpoint.
 
 ### Laboratory lane
 
-Named Compose profiles or targeted one-shot commands will activate resource-heavy dependencies and experiments only when the active phase needs them. The full broker, observability stack, media worker, browser suite, failure laboratory, and load tools are not mandatory for ordinary edits.
+The named profiles above activate broker/storage and telemetry only when required. The full broker, observability stack, media worker, browser suite, failure laboratory, and load tools are not mandatory for ordinary edits.
 
 The destructive local reset remains separate from resource-heavy laboratory commands and accepts no hosted database URL or alternate target.
 
@@ -266,11 +292,11 @@ pnpm ci:test
 
 The repository-local pre-commit hook runs only the staged secret scan followed by applicable staged formatting and linting. It still does not run Turbo, repository-wide types, tests, documentation, dependency audit, containers, media, or infrastructure.
 
-The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Protected run `32947483503` passed the first hosted execution.
+The configured GitHub governance job runs repository-memory, documentation, public-contribution, secret, CI-policy, and local-platform policy checks plus their tests without installing dependencies. The conditional full path provisions exact pnpm through Corepack, restores only the content-addressed store, performs a frozen install, runs `check:source`, and queries the registry audit endpoint. P01-R01 adds an isolated path-aware `Local platform` job that parses Compose, pulls immutable images, starts the health-gated checkpoint, verifies versions and protocols, and always removes only its unique CI project. Protected run `32947483503` passed the original core execution. P01-R10 adds a Docker-built full-profile check in the same conditional job: in-container non-root health and six real metric families, bounded build/probe steps and all-profile cleanup. Its first hosted execution remains pending.
 
 ## Local endpoints
 
-The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate only through the internal `platform` network. The optional runtime publishes Identity on `127.0.0.1:3100` for `/health/live` and `/health/ready`; it does not publish database/cache ports.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate only through the internal `platform` network. The optional runtime publishes Identity on `127.0.0.1:3100` for `/health/live` and `/health/ready`. The observability overlay also publishes Prometheus on `127.0.0.1:9090`; PostgreSQL, Redis, broker, storage and Collector have no host ports.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 
@@ -279,7 +305,6 @@ Later phases record ports only when a user-facing or operator-facing endpoint ex
 - private subgraph ports;
 - object-storage console;
 - Grafana;
-- Prometheus;
 - trace UI through Grafana;
 - log UI through Grafana;
 - broker diagnostics.
@@ -328,7 +353,7 @@ For the implemented P01-R01 checkpoint:
 7. use `ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA` only when deleting the Aster PostgreSQL volume is intentional;
 8. restart through the health-gated public command and verify a new empty local platform after a reset.
 
-Migration, router, telemetry, and targeted volume-recovery diagnostics become executable only in their owning work items.
+For telemetry, inspect the overlay's `platform-status`, Collector logs and Prometheus `up` series; an unhealthy telemetry status helper does not imply Identity is unready. Product migration, router and targeted data recovery remain future work.
 
 ## Resource constraints
 
@@ -343,7 +368,7 @@ The P01-R01 limits are:
 
 On the recorded WSL host, the first local pull completed in `11.79` seconds, clean startup reached health in `9.80` seconds, the PostgreSQL image occupied `302,294,786` bytes, the Redis image occupied `118,619,095` bytes, and the initialized PostgreSQL volume occupied `65.39 MB`. One idle sample observed approximately `37.94 MiB` for PostgreSQL, `6.45 MiB` for Redis, and `1.57 MiB` for status. These values are evidence-scoped observations, not portable requirements.
 
-Media processing concurrency, observability retention, broker resources, and their cleanup remain planned.
+The optional profiles add Identity 1 CPU/384 MiB/64 PIDs, Kafka 1 CPU/768 MiB/192 PIDs, S3 1 CPU/384 MiB/96 PIDs, Collector 0.5 CPU/128 MiB/64 PIDs and Prometheus 0.5 CPU/256 MiB/64 PIDs. All local service logs rotate at 5 MiB with two files. Media-processing bounds remain Phase 06 work.
 
 Developers with limited resources may start a profile containing only dependencies required by the active phase.
 

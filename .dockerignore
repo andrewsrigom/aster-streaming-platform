@@ -21,6 +21,11 @@
 !infra/
 !infra/docker/
 !infra/docker/identity.Dockerfile
+!infra/docker/collector.Dockerfile
+!infra/docker/prometheus.Dockerfile
+!infra/compose/
+!infra/compose/collector.integration.yml
+!infra/compose/prometheus.local.yml
 **/node_modules/**
 **/dist/**
 **/.git/**

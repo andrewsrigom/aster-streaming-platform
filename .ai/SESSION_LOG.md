@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Optional Docker profiles and real configured telemetry
+
+### Completed
+
+- Added validated optional OTLP configuration, integration/observability/full profiles, baked telemetry configs, bounded logs and exact nine-service/four-volume reset. Identity still owns only PostgreSQL/Redis runtime dependencies.
+- Extended the existing conditional CI platform job with Docker image/full-profile health and six real metric checks; hosted execution remains pending. Condensed current memory; historical detail remains in evidence and this log.
+
+### Evidence
+
+- Config 20/20, Identity 34/34, platform/reset 29/29, CI 22/22; final affected gate 49/49 (33 cached, 14.863 s). Corrected test-only lint/tuple errors before acceptance.
+- Real metrics, Collector loss with Identity still ready/live, telemetry status/recovery and degraded SIGTERM pass (4223 ms, exit 143). A wrong ad hoc metric-label assertion was corrected against the declared contract without repeating the outage. Exact reset removed only nine Aster containers, two networks and four synthetic volumes; unrelated inventory matches. Raw outputs/fingerprints: `evidence/phase-01/docker-demo.txt`.
+
+### Next action
+
+Commit the coherent local profile candidate, then prove its exact clean Docker-only checkout, occupied-port recovery, final source/audit and protected release. No P01-R10 push or PR yet; Phase 02 remains gated.
+
 ## 2026-08-27 — Docker runtime, real recovery and safe reset
 
 ### Completed

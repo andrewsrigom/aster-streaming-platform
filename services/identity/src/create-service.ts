@@ -146,7 +146,17 @@ export async function createIdentityServiceWithFactories(
       serviceName: configuration.serviceName,
       serviceVersion: SERVICE_VERSION,
       environment: configuration.environment === "integration" ? "test" : configuration.environment,
-      export: { mode: "none" },
+      ...(configuration.otlpMetricsEndpoint === undefined
+        ? { export: { mode: "none" as const } }
+        : {
+            export: {
+              mode: "otlp-http" as const,
+              endpoint: configuration.otlpMetricsEndpoint,
+              intervalMs: 5_000,
+              timeoutMs: 1_000,
+            },
+            shutdownTimeoutMs: 2_000,
+          }),
     });
     const telemetryOwner = ownClose((signal) => telemetry.shutdown(signal));
     owners.push(telemetryOwner);

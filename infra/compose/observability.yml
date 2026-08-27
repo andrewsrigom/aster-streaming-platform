@@ -1,0 +1,104 @@
+services:
+  identity:
+    environment:
+      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
+
+  platform-status:
+    depends_on:
+      collector:
+        condition: service_started
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready --host=postgres --username=aster --dbname=aster &&
+          printf '*1\r\n$$4\r\nPING\r\n' | nc -w 2 redis 6379 | tr -d '\r' | grep -qx '+PONG' &&
+          wget -T 1 -q -O /dev/null --header 'Content-Type: application/json' --post-data='{}' http://collector:4318/v1/metrics &&
+          wget -T 1 -q -O /dev/null http://prometheus:9090/-/ready
+      interval: 5s
+      timeout: 4s
+      retries: 3
+      start_period: 5s
+
+  collector:
+    profiles: [observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/collector.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    environment:
+      GOMEMLIMIT: 80MiB
+      GOMAXPROCS: "2"
+    networks: [platform]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 64
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  prometheus:
+    profiles: [observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/prometheus.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    command:
+      - --config.file=/etc/aster/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=1h
+      - --storage.tsdb.retention.size=128MB
+      - --storage.tsdb.wal-segment-size=10MB
+      - --query.timeout=2s
+      - --query.max-concurrency=2
+      - --query.max-samples=10000
+      - --web.max-connections=16
+      - --log.level=warn
+      - --log.format=json
+    environment:
+      GOMEMLIMIT: 192MiB
+      GOMAXPROCS: "2"
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+    networks: [platform, edge]
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 256m
+    pids_limit: 64
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+volumes:
+  prometheus-data:
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.owner: platform

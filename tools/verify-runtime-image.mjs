@@ -36,6 +36,11 @@ const allowedContext = [
   "!infra/",
   "!infra/docker/",
   "!infra/docker/identity.Dockerfile",
+  "!infra/docker/collector.Dockerfile",
+  "!infra/docker/prometheus.Dockerfile",
+  "!infra/compose/",
+  "!infra/compose/collector.integration.yml",
+  "!infra/compose/prometheus.local.yml",
   "**/node_modules/**",
   "**/dist/**",
   "**/.git/**",
@@ -49,6 +54,8 @@ const allowedContext = [
 export async function readRuntimeImageSources(root) {
   const files = [
     "infra/docker/identity.Dockerfile",
+    "infra/docker/collector.Dockerfile",
+    "infra/docker/prometheus.Dockerfile",
     ".dockerignore",
     ...productionPackages.map((path) => `${path}/package.json`),
   ];
@@ -66,6 +73,16 @@ export function validateRuntimeImage(sources) {
     return [{ rule: "runtime-image", detail: "image input exceeds 16 KiB" }];
   }
   const dockerfile = sources["infra/docker/identity.Dockerfile"] ?? "";
+  const collector =
+    'FROM docker.io/otel/opentelemetry-collector:0.159.0@sha256:7725a7a10c87d8853208bdd4bb3439ad3c0d7b32b4292b9300ac07c8daba14a2\nCOPY infra/compose/collector.integration.yml /etc/aster/collector.yml\nCMD ["--config=/etc/aster/collector.yml"]';
+  const prometheus =
+    "FROM docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0\nCOPY infra/compose/prometheus.local.yml /etc/aster/prometheus.yml";
+  if (
+    sources["infra/docker/collector.Dockerfile"]?.trim() !== collector ||
+    sources["infra/docker/prometheus.Dockerfile"]?.trim() !== prometheus
+  ) {
+    reject("telemetry images must retain reviewed base pins and baked public configuration only");
+  }
   const from = dockerfile.match(/^FROM .+$/gm) ?? [];
   if (
     from.join("\n") !==

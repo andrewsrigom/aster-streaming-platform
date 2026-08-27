@@ -49,6 +49,7 @@ export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
   DATABASE_URL: Object.freeze({ classification: "secret" }),
   REDIS_URL: Object.freeze({ classification: "secret" }),
   ASTER_DATABASE_PASSWORD: Object.freeze({ classification: "secret", optional: true }),
+  ASTER_OTLP_METRICS_ENDPOINT: Object.freeze({ classification: "secret", optional: true }),
 } satisfies Record<string, RuntimeVariableDefinition>);
 
 const KNOWN_VARIABLES = Object.freeze(
@@ -85,6 +86,7 @@ const runtimeConfigSchema = z.strictObject({
     .string()
     .refine((value) => !hasAsciiControl(value))
     .optional(),
+  ASTER_OTLP_METRICS_ENDPOINT: z.string().refine(isOtlpMetricsEndpoint).optional(),
 });
 
 export interface ReferenceRuntimeConfig {
@@ -96,6 +98,7 @@ export interface ReferenceRuntimeConfig {
   readonly databaseUrl: string;
   readonly databasePasswordConfigured: boolean;
   readonly redisUrl: string;
+  readonly otlpMetricsEndpoint?: string;
 }
 
 export interface ReferenceRuntimeConfigIssue {
@@ -117,7 +120,8 @@ export interface ConfiguredNonSecretVariable {
 }
 
 export interface ConfiguredSecretVariable {
-  readonly name: "DATABASE_URL" | "REDIS_URL" | "ASTER_DATABASE_PASSWORD";
+  readonly name:
+    "DATABASE_URL" | "REDIS_URL" | "ASTER_DATABASE_PASSWORD" | "ASTER_OTLP_METRICS_ENDPOINT";
   readonly classification: "secret";
   readonly status: "configured";
 }
@@ -156,6 +160,25 @@ function hasUrlProtocol(value: string, protocols: ReadonlySet<string>): boolean 
 function integerInRange(value: string, minimum: number, maximum: number): boolean {
   const parsed = Number(value);
   return Number.isSafeInteger(parsed) && parsed >= minimum && parsed <= maximum;
+}
+
+function isOtlpMetricsEndpoint(value: string): boolean {
+  if (hasAsciiControl(value) || value !== value.trim()) {
+    return false;
+  }
+  try {
+    const url = new URL(value);
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.hostname.length > 0 &&
+      !url.username &&
+      !url.password &&
+      !url.search &&
+      !url.hash
+    );
+  } catch {
+    return false;
+  }
 }
 
 function hasAsciiControl(value: string): boolean {
@@ -264,6 +287,7 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
     DATABASE_URL: undefined,
     REDIS_URL: undefined,
     ASTER_DATABASE_PASSWORD: undefined,
+    ASTER_OTLP_METRICS_ENDPOINT: undefined,
   };
   const seenKnownVariables = new Set<ReferenceRuntimeConfigVariable>();
   let ownedVariableCount = 0;
@@ -423,6 +447,9 @@ function parseReferenceRuntimeConfig(
     databaseUrl,
     databasePasswordConfigured: databasePassword !== undefined,
     redisUrl: result.data.REDIS_URL,
+    ...(result.data.ASTER_OTLP_METRICS_ENDPOINT === undefined
+      ? {}
+      : { otlpMetricsEndpoint: result.data.ASTER_OTLP_METRICS_ENDPOINT }),
   });
 }
 
@@ -487,6 +514,15 @@ export function createReferenceRuntimeConfigDiagnostic(
             }),
           ]
         : []),
+      ...(config.otlpMetricsEndpoint === undefined
+        ? []
+        : [
+            Object.freeze({
+              name: "ASTER_OTLP_METRICS_ENDPOINT" as const,
+              classification: "secret" as const,
+              status: "configured" as const,
+            }),
+          ]),
     ]),
   });
 }

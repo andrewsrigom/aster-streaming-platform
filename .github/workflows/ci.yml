@@ -143,6 +143,7 @@ jobs:
 
   platform:
     name: Local platform
+    timeout-minutes: 20
     needs: classify
     if: >-
       needs.classify.outputs.platform == 'true' &&
@@ -170,9 +171,40 @@ jobs:
           docker compose --file "$COMPOSE_FILE" exec -T postgres psql --username=aster --dbname=aster --tuples-only --command="SHOW server_version" | grep '18.6'
           docker compose --file "$COMPOSE_FILE" exec -T redis redis-cli --raw INFO server | grep '^redis_version:8.10.0'
           docker compose --file "$COMPOSE_FILE" logs --no-color platform-init | grep 'aster local platform initialized'
+      - name: Build and start the Docker-only full profile
+        timeout-minutes: 10
+        run: >-
+          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml
+          --profile full up --build --wait --wait-timeout 120
+      - name: Verify packaged health and real telemetry
+        timeout-minutes: 2
+        run: |
+          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full exec -T identity node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { setTimeout } from 'node:timers/promises';
+          assert.equal(process.getuid(), 1000);
+          async function json(url) {
+            const response = await fetch(url, { signal: AbortSignal.timeout(2000), redirect: 'error' });
+            assert.equal(response.status, 200);
+            return response.json();
+          }
+          assert.equal((await json('http://127.0.0.1:3100/health/ready')).readiness, 'ready');
+          const required = ['http_server_request_duration_seconds_count', 'aster_dependency_operation_outcomes_total', 'process_cpu_time_seconds_total', 'process_memory_usage_bytes', 'nodejs_eventloop_delay_p99_seconds', 'aster_telemetry_export_attempts_total'];
+          const deadline = Date.now() + 30000;
+          let present = [];
+          while (Date.now() < deadline) {
+            const body = await json('http://prometheus:9090/api/v1/label/__name__/values');
+            assert.equal(body.status, 'success');
+            present = required.filter(name => body.data.includes(name));
+            if (present.length === required.length) break;
+            await setTimeout(500);
+          }
+          assert.deepEqual(present, required);
+          console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present }));
+          NODE
       - name: Remove only the CI Compose project
         if: always()
-        run: docker compose --file "$COMPOSE_FILE" down --volumes --remove-orphans --timeout 10
+        run: docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile "*" down --volumes --remove-orphans --timeout 10
 
   required:
     name: CI required

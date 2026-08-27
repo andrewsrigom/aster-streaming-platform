@@ -4,7 +4,7 @@ Only one item may be `IN_PROGRESS`.
 
 P01-R09 is released through PR 17 squash `a1f7281`; protected run `33041524806` and exact post-merge run `33041787663` pass every applicable gate and the real eight-scenario matrix. P01-R10 starts locally from that clean merge: portable Identity packaging, resource-aware profiles and the clean Docker-only Phase 01 closeout.
 
-The local Docker runtime checkpoint passes real PostgreSQL/Redis recovery, Windows localhost access, non-root/read-only isolation and natural shutdown. Core remains lightweight; exact reset preserves unrelated Docker state. Config 17/17, Identity 33/33, platform/reset 25/25 and affected gate 49/49 pass. Next add optional exporter/integration/observability/full profiles, final cold proof and hosted image/profile CI; P01-R10 remains unreleased.
+The optional-profile checkpoint now passes real metrics, Collector outage isolation/recovery, bounded degraded shutdown and exact nine-service reset. Focused config/Identity/platform/CI checks pass 20/34/29/22. CI image/profile coverage is added; final clean-checkout/occupied-port/source acceptance and protected release remain P01-R10 work.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

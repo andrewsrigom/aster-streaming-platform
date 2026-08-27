@@ -33,6 +33,7 @@ test("selects real integration for adapters, runtime, bootstrap and shared depen
     "infra/docker/identity.Dockerfile",
     ".dockerignore",
     "tools/verify-runtime-image.mjs",
+    "tools/verify-optional-platform.mjs",
     "packages/runtime/src/index.ts",
     "packages/config/package.json",
     "packages/telemetry/src/index.ts",

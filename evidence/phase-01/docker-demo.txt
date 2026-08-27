@@ -585,3 +585,230 @@ Config: 17/17; Identity: 33/33; platform/reset: 25/25. Lint/types/format/unused/
 After evidence and memory consolidation, pnpm docs:check, ai:check, security:check and platform:check pass. Heavy Docker evidence is retained: executable config, image, Compose and reset bytes are unchanged; later edits affect only command-policy assertions and prose.
 Final command-policy fingerprint: 920fa40a7ac4cb1602c1a471754813018a5bdb42dc64f4784122d3603349d18c  tools/verify-local-platform.mjs
 Checkpoint review by executing agent: password classification/conflicts/encoding, loopback exposure, private database ownership, exact reset (including foreign references and legacy volumes), absence of test/host files and bounded shutdown examined. No current-checkpoint blocker; no independent review or complete P01-R10 acceptance is claimed. Final profile review follows implementation of remaining profiles.
+
+
+2026-08-27 — Optional Docker profiles and real configured metrics
+Source: feat/p01-r10-docker-demo following runtime commit 166cc3c; executable fingerprints below identify this local experiment. Final clean/protected source remains pending.
+Environment: same Windows/WSL amd64, Docker 26.0.0 and Compose 2.26.1; empty Aster project, existing immutable image/install caches. Workload: health probes and single-node synthetic laboratory only.
+Commands: docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120
+Result: exit 0. Nine services created; initializer exited 0, six dependency/Identity/status health checks passed, shell-less Collector receiver verified by status's real OTLP request. Only loopback 3100/9090 are published. No host configuration mounts.
+Build/start final output:
+                                   | +120 ++++++++++++
+#35 DONE 32.7s
+
+#36 [identity runtime 2/4] WORKDIR /app
+#36 CACHED
+
+#37 [identity runtime 3/4] COPY --from=build --chown=node:node /out ./
+#37 DONE 0.7s
+
+#38 [identity runtime 4/4] COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+#38 DONE 0.1s
+
+#39 [identity] exporting to image
+#39 exporting layers
+#39 exporting layers 0.5s done
+#39 writing image sha256:d94b81120e75970ece8d3bd6998e819a0fe7281662573685783f9e4d231aecdf done
+#39 naming to docker.io/library/aster-identity done
+#39 DONE 0.6s
+ Network aster_platform  Creating
+ Network aster_platform  Created
+ Network aster_edge  Creating
+ Network aster_edge  Created
+ Volume "aster_storage-data"  Creating
+ Volume "aster_storage-data"  Created
+ Volume "aster_postgres-data"  Creating
+ Volume "aster_postgres-data"  Created
+ Volume "aster_broker-data"  Creating
+ Volume "aster_broker-data"  Created
+ Volume "aster_prometheus-data"  Creating
+ Volume "aster_prometheus-data"  Created
+ Container aster-prometheus-1  Creating
+ Container aster-postgres-1  Creating
+ Container aster-redis-1  Creating
+ Container aster-storage-1  Creating
+ Container aster-broker-1  Creating
+ Container aster-collector-1  Creating
+ Container aster-postgres-1  Created
+ Container aster-redis-1  Created
+ Container aster-platform-init-1  Creating
+ Container aster-prometheus-1  Created
+ Container aster-collector-1  Created
+ Container aster-storage-1  Created
+ Container aster-broker-1  Created
+ Container aster-platform-init-1  Created
+ Container aster-platform-status-1  Creating
+ Container aster-identity-1  Creating
+ Container aster-identity-1  Created
+ Container aster-platform-status-1  Created
+ Container aster-prometheus-1  Starting
+ Container aster-redis-1  Starting
+ Container aster-postgres-1  Starting
+ Container aster-storage-1  Starting
+ Container aster-broker-1  Starting
+ Container aster-collector-1  Starting
+ Container aster-redis-1  Started
+ Container aster-broker-1  Started
+ Container aster-collector-1  Started
+ Container aster-postgres-1  Started
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-storage-1  Started
+ Container aster-prometheus-1  Started
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-prometheus-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-prometheus-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-identity-1  Starting
+ Container aster-redis-1  Healthy
+ Container aster-platform-status-1  Starting
+ Container aster-platform-status-1  Started
+ Container aster-identity-1  Started
+ Container aster-redis-1  Waiting
+ Container aster-identity-1  Waiting
+ Container aster-collector-1  Waiting
+ Container aster-platform-status-1  Waiting
+ Container aster-storage-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-prometheus-1  Waiting
+ Container aster-broker-1  Waiting
+ Container aster-prometheus-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-storage-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-collector-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-identity-1  Healthy
+ Container aster-broker-1  Healthy
+ Container aster-platform-status-1  Healthy
+
+Read-only bounded HTTP/Prometheus queries and exact container inspection; then stop/start only inspected aster-collector-1:
+{"metric":"http_server_request_duration_seconds_count","series":[{"metric":{"__name__":"http_server_request_duration_seconds_count","aster_outcome":"success","exported_job":"identity","http_request_method":"GET","http_response_status_class":"2xx","http_route":"/health/ready","instance":"collector:8889","job":"aster-local"},"value":[1787811209.375,"15"]}]}
+{"metric":"aster_dependency_operation_outcomes_total","series":[{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"postgresql","aster_operation":"connect","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]},{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"postgresql","aster_operation":"probe","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]},{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"redis","aster_operation":"connect","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]},{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"redis","aster_operation":"probe","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]}]}
+{"metric":"process_cpu_time_seconds_total","series":[{"metric":{"__name__":"process_cpu_time_seconds_total","cpu_mode":"system","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.387,"0.143069"]},{"metric":{"__name__":"process_cpu_time_seconds_total","cpu_mode":"user","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.387,"0.860687"]}]}
+{"metric":"process_memory_usage_bytes","series":[{"metric":{"__name__":"process_memory_usage_bytes","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.391,"102699008"]}]}
+{"metric":"nodejs_eventloop_delay_p99_seconds","series":[{"metric":{"__name__":"nodejs_eventloop_delay_p99_seconds","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.396,"0.010264575"]}]}
+{"metric":"aster_telemetry_export_attempts_total","series":[{"metric":{"__name__":"aster_telemetry_export_attempts_total","aster_export_result":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.399,"8"]}]}
+{"container":"/aster-identity-1","image":"sha256:d94b81120e75970ece8d3bd6998e819a0fe7281662573685783f9e4d231aecdf","user":"1000:1000","readOnly":true,"capDrop":["ALL"],"nanoCpus":1000000000,"memory":402653184,"pids":64,"ports":{"3100/tcp":[{"HostIp":"127.0.0.1","HostPort":"3100"}]},"mounts":[],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-collector-1","image":"sha256:8e0033e4d656ea5857165f5a36b4b7346564cb76933677564844a786f8327517","user":"10001:10001","readOnly":true,"capDrop":["ALL"],"nanoCpus":500000000,"memory":134217728,"pids":64,"ports":{},"mounts":[],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-prometheus-1","image":"sha256:fc8e3bcb58548588aac18110fb5cf87283bc304fb1627e773c05d23d910092cb","user":"nobody","readOnly":true,"capDrop":["ALL"],"nanoCpus":500000000,"memory":268435456,"pids":64,"ports":{"9090/tcp":[{"HostIp":"127.0.0.1","HostPort":"9090"}]},"mounts":[{"type":"volume","name":"aster_prometheus-data","destination":"/prometheus"}],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-broker-1","image":"sha256:47dccc76b32761bc57462b8753144cdbb73a16b123b1d13d3eedb92bb7952b11","user":"appuser","readOnly":true,"capDrop":["ALL"],"nanoCpus":1000000000,"memory":805306368,"pids":192,"ports":{},"mounts":[{"type":"volume","name":"aster_broker-data","destination":"/var/lib/kafka/data"}],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-storage-1","image":"sha256:975a7a21693eb9fad7c0c1998a9e505964e3ed67adb0bbdd000efc17d6cc80dc","user":"","readOnly":true,"capDrop":["ALL"],"nanoCpus":1000000000,"memory":402653184,"pids":96,"ports":{},"mounts":[{"type":"volume","name":"aster_storage-data","destination":"/data"}],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"collectorStopped":true,"identityReady":true,"identityLive":true,"platformStatus":"unhealthy","scrapeUp":0}
+file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/[eval1]:19
+ throw Error("timeout: "+name);
+       ^
+
+Error: timeout: failed export observable
+    at until (file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/[eval1]:19:8)
+    at async file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/[eval1]:36:1
+
+Node.js v24.19.0
+
+The last ad hoc assertion incorrectly inspected a nonexistent outcome label; the application and Collector recovered. Without repeating the outage, the corrected declared aster_export_result assertion passed:
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"aster_telemetry_export_attempts_total","aster_export_result":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811259.171,"13"]},{"metric":{"__name__":"aster_telemetry_export_attempts_total","aster_export_result":"failure","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811259.171,"5"]}]}}
+PASS: recovered cumulative export-success and export-failure metrics; assertion corrected to declared aster_export_result label.
+
+Footprint commands: docker stats --no-stream with fixed eight live service names; docker image inspect aster-identity aster-collector aster-prometheus; docker exec <owned service> du -sk <owned data path>.
+aster-identity-1|41.98MiB / 384MiB|1.20%|11
+aster-postgres-1|58.05MiB / 768MiB|0.55%|10
+aster-redis-1|12.68MiB / 256MiB|0.18%|7
+aster-broker-1|335.8MiB / 768MiB|2.29%|77
+aster-storage-1|9.141MiB / 384MiB|0.03%|7
+aster-collector-1|19MiB / 128MiB|0.02%|8
+aster-prometheus-1|30.26MiB / 256MiB|0.34%|8
+aster-platform-status-1|752KiB / 128MiB|0.00%|2
+sha256:d94b81120e75970ece8d3bd6998e819a0fe7281662573685783f9e4d231aecdf|255275702|node
+sha256:8e0033e4d656ea5857165f5a36b4b7346564cb76933677564844a786f8327517|123692717|10001:10001
+sha256:fc8e3bcb58548588aac18110fb5cf87283bc304fb1627e773c05d23d910092cb|260925664|nobody
+47656	/var/lib/postgresql
+64	/var/lib/kafka/data
+4	/data
+48	/prometheus
+
+Shutdown: stop exact aster-collector-1, then time docker stop --time 15 aster-identity-1; inspect state and bounded logs. Collector unavailability does not prevent natural exit; failed flush is honestly degraded. No force kill or OOM:
+{"collectorUnavailable":true,"stopCommandMs":4223.058028,"exitCode":143,"oomKilled":false,"logs":"{\"level\":\"info\",\"time\":\"2026-08-27T06:12:34.161Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.ready\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"ok\",\"attributes\":{\"phase\":\"ready\"}}\n{\"level\":\"info\",\"time\":\"2026-08-27T06:12:34.162Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.identity.readiness_changed\",\"outcome\":\"ok\",\"attributes\":{\"readiness\":\"ready\",\"reason\":\"ready\"}}\n{\"level\":\"info\",\"time\":\"2026-08-27T06:12:34.163Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.identity.startup_completed\",\"outcome\":\"ok\",\"eventId\":\"f3c8bc7b-eaeb-4eb5-b67b-9d11144e434e\",\"durationMs\":90.50526400000001,\"attributes\":{\"started_at\":\"2026-08-27T06:12:34.072Z\",\"status\":\"started\"}}\n{\"level\":\"info\",\"time\":\"2026-08-27T06:14:43.260Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.shutdown_started\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"ok\",\"attributes\":{\"trigger\":\"sigterm\"}}\n{\"level\":\"warn\",\"time\":\"2026-08-27T06:14:45.262Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.stage_failed\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"degraded\",\"attributes\":{\"stage\":\"flush_telemetry\"}}\n{\"level\":\"warn\",\"time\":\"2026-08-27T06:14:47.248Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.shutdown_completed\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"degraded\",\"attributes\":{\"outcome\":\"degraded\",\"trigger\":\"sigterm\"}}\n"}
+
+Reset command: ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+ Container aster-broker-1  Stopping
+ Container aster-platform-status-1  Stopping
+ Container aster-storage-1  Stopping
+ Container aster-identity-1  Stopping
+ Container aster-identity-1  Stopped
+ Container aster-identity-1  Removing
+ Container aster-identity-1  Removed
+ Container aster-storage-1  Stopped
+ Container aster-storage-1  Removing
+ Container aster-storage-1  Removed
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-prometheus-1  Stopping
+ Container aster-platform-init-1  Stopping
+ Container aster-collector-1  Stopping
+ Container aster-collector-1  Stopped
+ Container aster-collector-1  Removing
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-collector-1  Removed
+ Container aster-platform-init-1  Removed
+ Container aster-redis-1  Stopping
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Container aster-broker-1  Stopped
+ Container aster-broker-1  Removing
+ Container aster-broker-1  Removed
+ Container aster-prometheus-1  Stopped
+ Container aster-prometheus-1  Removing
+ Container aster-prometheus-1  Removed
+ Volume aster_prometheus-data  Removing
+ Volume aster_postgres-data  Removing
+ Volume aster_storage-data  Removing
+ Volume aster_broker-data  Removing
+ Volume aster_prometheus-data  Removed
+ Volume aster_storage-data  Removed
+ Network aster_platform  Removing
+ Network aster_edge  Removing
+ Volume aster_postgres-data  Removed
+ Volume aster_broker-data  Removed
+ Network aster_platform  Removed
+ Network aster_edge  Removed
+aster local platform reset complete
+removed project resources: containers=9 networks=2 volumes=4
+removed legacy helper volumes=0
+
+Inventory proof: before/after normalized container ID/name/image/state/networks/mounts/ports and complete volume/network names match: true. Four unrelated stopped containers and 22 unrelated volume/network entries are unchanged. Only the four named synthetic-data volumes and nine Aster containers/two networks were removed; no backup, no global prune, images/caches remain.
+Resolved profile service counts: core 4; runtime 5; integration 7; observability with overlay 7; full with overlay 9. Base-only configuration never sets the OTLP endpoint. Default runtime remains no-export.
+Focused checks: config 20/20; Identity 34/34; platform/reset 29/29; CI policy/classification 22/22. New CI path builds the full profile and checks UID/health/six metric families inside Identity; first hosted run pending. Initial affected checks found test-only lint/tuple typing errors; corrected before the final candidate gate below.
+Source fingerprints:
+84be38ea996e40b87a99597ea4cec9d1787bafac65dfc8351b0897c8432eae5e  infra/compose/compose.yml
+cbdb9ab89a7b39a4c4c3f12a4389e1679f021267f44e52b584cde03adfa5f033  infra/compose/observability.yml
+de291329382ba4c4028a8f679af2d80f3594fc348d5c7ee25ea5e48a5561341b  infra/compose/collector.integration.yml
+d8b547eba9ee5a7e5f35bb4707ba2d64af40de4f839c6cf389a2512a008a218f  infra/compose/prometheus.local.yml
+84e7c3c6c62bc59551d6779a8ec62e1f37a5e626157560af104edbebaf4e2329  infra/docker/identity.Dockerfile
+c5ad0ec8450d471108f30d6d787d2cd79e2b54a2a3ef123cd32d6fc2936f292a  infra/docker/collector.Dockerfile
+d24f442676924b4142e04b46af103ca71109ae78367d78a9618c82bf51779841  infra/docker/prometheus.Dockerfile
+f684b955264a0b3bba27ef190aedbafec3cd0a09420eb896b22b356b1479f5cc  packages/config/src/runtime-config.ts
+43ec4eee217fd88213ecc65fd0c6b48800ee7bbc61c34e2c60fc28f92f1dbd94  services/identity/src/create-service.ts
+5d84992c5cb183dff0c7ef8491333179571cac3cd4a392325a3acdbb7bda2822  tools/reset-local-platform.sh
+bb9fe75ba94a65f7a49371f34e19ab4a7c644394090a3956edc9bdf6358a9c79  .dockerignore
+
+Interpretation: actual packaged runtime emits bounded metrics and remains available without telemetry. Broker/S3 remain optional diagnostic services, not Identity dependencies. Resource values are snapshots, not SLO/capacity guarantees; Prometheus retention is not a hard disk quota. Initial full build reused base/install caches; final clean checkout remains required. No new package/license/framework choice.
+Official Compose merge reference: https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+
+Optional-profile candidate gate: pnpm check:changed -> exit 0, 49/49 tasks, 33 cached, 14.863 s. Configuration 20/20, Identity 34/34, platform/reset 29/29 and CI 22/22 pass. Initial test-only lint/tuple issues are corrected. Later memory/prose consolidation does not change executable behavior; clean Docker-only evaluator proof and hosted CI still remain.

@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10's Docker runtime checkpoint is implemented locally; optional integration/observability profiles and complete phase acceptance remain pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the delivered runtime from the planned video application.
+Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10's Docker runtime checkpoint is implemented locally; integration/observability/full profiles pass local checks; clean-checkout and protected phase acceptance remain pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the delivered runtime from the planned video application.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -20,10 +20,18 @@ docker compose --project-name aster --file infra/compose/compose.yml --profile r
 
 Open [readiness](http://127.0.0.1:3100/health/ready) or [liveness](http://127.0.0.1:3100/health/live). Docker builds the application from the frozen lockfile and starts real PostgreSQL/Redis; no host Node, pnpm or hosted credential is needed. The first build needs registry access. This is a health/recovery demonstration, not a catalog, login or playable video interface. Native Windows localhost access was checked with containers running through WSL; other host/CPU combinations remain unverified.
 
-Stop all enabled Aster profiles while retaining PostgreSQL data:
+For real metrics, Kafka and S3, start the optional full laboratory:
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml --profile "*" down
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120
+```
+
+Open [Prometheus](http://127.0.0.1:9090) and query `process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds` or `aster_dependency_operation_outcomes_total`. Broker/storage remain internal; Collector failure does not make Identity unready. Smaller [profiles](docs/operations/LOCAL_DEVELOPMENT.md#optional-profiles) are available.
+
+Stop all enabled Aster profiles while retaining named local data:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
 ```
 
 Use the explicit reset below only to delete local data. [Runtime instructions and evidence](docs/operations/LOCAL_DEVELOPMENT.md#docker-runtime-checkpoint) cover limits and troubleshooting.
@@ -121,7 +129,7 @@ Stop the checkpoint while preserving its PostgreSQL volume with:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-Delete the complete Aster local project, including its durable PostgreSQL volume, only with the explicit destructive reset:
+Delete the complete Aster local project, including PostgreSQL, broker, S3 and Prometheus volumes, only with the explicit destructive reset:
 
 ```bash
 ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA

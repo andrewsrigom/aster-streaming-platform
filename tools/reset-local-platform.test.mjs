@@ -9,6 +9,7 @@ import { clearTimeout, setTimeout } from "node:timers";
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const resetPath = resolve(repositoryRoot, "tools", "reset-local-platform.sh");
 const composePath = resolve(repositoryRoot, "infra", "compose", "compose.yml");
+const observabilityPath = resolve(repositoryRoot, "infra", "compose", "observability.yml");
 const confirmationArguments = ["--confirm", "DELETE-ASTER-LOCAL-DATA"];
 const shellExecutable = process.platform === "win32" ? "sh" : "/bin/sh";
 const resetFixtureTimeoutMs = process.platform === "win32" ? 15_000 : 5_000;
@@ -63,20 +64,22 @@ if [ "$1" = "compose" ]; then
   shift 2
   [ "$1" = "--file" ] && [ "$2" = "$FAKE_COMPOSE_FILE" ] || exit 92
   shift 2
+  [ "$1" = "--file" ] && [ "$2" = "$FAKE_OBSERVABILITY_FILE" ] || exit 96
+  shift 2
   [ "$1" = "--profile" ] && [ "$2" = "*" ] || exit 95
   shift 2
   if [ "$1" = "config" ] && [ "$2" = "--quiet" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status identity
+    printf '%s\\n' redis postgres platform-init platform-status identity broker storage collector prometheus
     if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
       printf '%s\\n' unreviewed
     fi
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--volumes" ]; then
-    printf '%s\\n' postgres-data
+    printf '%s\\n' postgres-data broker-data storage-data prometheus-data
     exit 0
   fi
   if [ "$1" = "down" ] && [ "$2" = "--volumes" ]; then
@@ -120,7 +123,15 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
         foreign-mount) printf '%s\\n' 'bind||/private' ;;
         runtime | legacy-identity | duplicate-identity) ;;
         legacy-helper | foreign-legacy-volume) printf '%s\\n' 'volume|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|/var/lib/postgresql' ;;
-        *) printf '%s\\n' 'volume|aster_postgres-data|/var/lib/postgresql' ;;
+        *)
+          case "$FAKE_DOCKER_SERVICE" in
+            collector) ;;
+            broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
+            storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
+            prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
+            *) printf '%s\\n' 'volume|aster_postgres-data|/var/lib/postgresql' ;;
+          esac
+          ;;
       esac
       exit 0
       ;;
@@ -149,6 +160,10 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
     printf 'aster|platform-init|||%s\\n' "$FAKE_COMPOSE_FILE"
   elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ] || [ "$FAKE_DOCKER_SCENARIO" = "duplicate-identity" ]; then
     printf 'aster|identity|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "foreign-compose" ]; then
+    printf 'aster|postgres|local|platform|%s,%s\\n' "$FAKE_OBSERVABILITY_FILE" "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SERVICE" != "postgres" ]; then
+    printf 'aster|%s|local|platform|%s,%s\\n' "$FAKE_DOCKER_SERVICE" "$FAKE_COMPOSE_FILE" "$FAKE_OBSERVABILITY_FILE"
   else
     printf 'aster|postgres|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
   fi
@@ -194,7 +209,7 @@ fi
 if [ "$1" = "volume" ] && [ "$2" = "ls" ]; then
   if [ "$resource_present" = true ]; then
     if [ "$FAKE_DOCKER_SCENARIO" != "missing-project-label" ] || printf '%s' "$*" | grep -q 'name='; then
-      printf '%s\\n' aster_postgres-data
+      printf '%s\\n' "aster_$FAKE_VOLUME_NAME"
     fi
   fi
   exit 0
@@ -214,7 +229,7 @@ if [ "$1" = "volume" ] && [ "$2" = "inspect" ]; then
       printf '%s\\n' aster
     fi
   else
-    printf '%s\\n' 'aster|postgres-data|durable-local|local|platform'
+    printf 'aster|%s|%s|local|platform\\n' "$FAKE_VOLUME_NAME" "$FAKE_VOLUME_AUTHORITY"
   fi
   exit 0
 fi
@@ -258,6 +273,12 @@ async function runReset(t, options = {}) {
   Object.assign(environment, {
     ASTER_ENVIRONMENT: "local",
     FAKE_COMPOSE_FILE: shellPath(composePath),
+    FAKE_OBSERVABILITY_FILE: shellPath(observabilityPath),
+    FAKE_DOCKER_SERVICE: options.service ?? "postgres",
+    FAKE_VOLUME_NAME: ["broker", "storage", "prometheus"].includes(options.service)
+      ? options.service + "-data"
+      : "postgres-data",
+    FAKE_VOLUME_AUTHORITY: options.service === "prometheus" ? "disposable-local" : "durable-local",
     FAKE_DOCKER_ENDPOINT: "unix:///var/run/docker.sock",
     FAKE_DOCKER_LOG: shellPath(logPath),
     FAKE_DOCKER_SCENARIO: options.scenario ?? "populated",
@@ -359,7 +380,7 @@ test("removes only the fixed populated Aster project and proves postconditions",
   assert.match(
     result.log,
     new RegExp(
-      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} --profile \\* down --volumes`,
+      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} --file ${shellPath(observabilityPath).replaceAll("/", "\\/")} --profile \\* down --volumes`,
       "u",
     ),
   );
@@ -410,6 +431,7 @@ test("refuses unreviewed profiles, Identity ownership, mounts and shared resourc
     "legacy-identity",
     "duplicate-identity",
     "foreign-mount",
+    "foreign-compose",
     "foreign-attachment",
     "foreign-network",
     "foreign-volume",
@@ -418,5 +440,13 @@ test("refuses unreviewed profiles, Identity ownership, mounts and shared resourc
     const result = await runReset(t, { scenario });
     assert.equal(result.code, 1, scenario);
     assert.doesNotMatch(result.log, / down --volumes/u, scenario);
+  }
+});
+
+test("accepts exact optional service mounts and ordered Compose provenance", async (t) => {
+  for (const service of ["broker", "storage", "collector", "prometheus"]) {
+    const result = await runReset(t, { service });
+    assert.equal(result.code, 0, service + ": " + result.stderr);
+    assert.match(result.stdout, /reset complete/u);
   }
 });
