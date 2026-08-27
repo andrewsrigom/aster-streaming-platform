@@ -16,8 +16,8 @@ test("classifies Markdown, evidence, skills, and repository memory as documentat
   );
 });
 
-test("requires full quality for source, manifest, and environment templates", () => {
-  for (const path of ["tools/check.ts", "package.json", ".env.example"]) {
+test("requires full quality for unrelated source and environment templates", () => {
+  for (const path of ["tools/check.ts", ".env.example"]) {
     assert.deepEqual(classifyChangedPaths([path]), {
       changedFiles: 1,
       full: true,
@@ -25,6 +25,31 @@ test("requires full quality for source, manifest, and environment templates", ()
       reason: "executable-change",
     });
   }
+});
+
+test("selects real integration for adapters, runtime, bootstrap and shared dependency changes", () => {
+  for (const path of [
+    "services/identity/src/create-service.ts",
+    "packages/runtime/src/index.ts",
+    "packages/config/package.json",
+    "packages/telemetry/src/index.ts",
+    "packages/postgres/src/index.ts",
+    "packages/redis/src/index.ts",
+    "packages/broker-kafka/src/index.ts",
+    "packages/object-storage-s3/src/index.ts",
+    "packages/http-express/package.json",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "turbo.json",
+    "tsconfig.base.json",
+    ".node-version",
+    ".nvmrc",
+    "tools/classify-ci-change.ts",
+  ]) {
+    assert.equal(classifyChangedPaths([path]).platform, true, path);
+  }
+  assert.equal(classifyChangedPaths(["apps/web/src/page.tsx"]).platform, false);
 });
 
 test("fails safe to full quality for an empty diff", () => {

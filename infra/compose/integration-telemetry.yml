@@ -1,0 +1,100 @@
+name: ${ASTER_INTEGRATION_PROJECT:?Run through pnpm integration:telemetry}
+
+x-fixture-labels: &fixture-labels
+  com.aster.environment: integration
+  com.aster.scope: p01-r09
+  com.aster.fixture: ${ASTER_INTEGRATION_PROJECT:?Run through pnpm integration:telemetry}
+
+services:
+  collector:
+    image: docker.io/otel/opentelemetry-collector:0.159.0@sha256:7725a7a10c87d8853208bdd4bb3439ad3c0d7b32b4292b9300ac07c8daba14a2
+    labels: *fixture-labels
+    command: ["--config=/etc/aster/collector.yml"]
+    environment:
+      GOMEMLIMIT: 80MiB
+      GOMAXPROCS: "2"
+    ports:
+      - "127.0.0.1:${ASTER_INTEGRATION_COLLECTOR_PORT:?Run through pnpm integration:telemetry}:4318"
+    volumes:
+      - type: bind
+        source: ./collector.integration.yml
+        target: /etc/aster/collector.yml
+        read_only: true
+        bind:
+          create_host_path: false
+          propagation: rprivate
+    networks: [platform]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 64
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  prometheus:
+    image: docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+    labels: *fixture-labels
+    command:
+      - --config.file=/etc/aster/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=1h
+      - --storage.tsdb.retention.size=128MB
+      - --storage.tsdb.wal-segment-size=10MB
+      - --query.timeout=2s
+      - --query.max-concurrency=2
+      - --query.max-samples=10000
+      - --web.max-connections=16
+      - --log.level=warn
+      - --log.format=json
+    environment:
+      GOMEMLIMIT: 192MiB
+      GOMAXPROCS: "2"
+    ports:
+      - "127.0.0.1:${ASTER_INTEGRATION_PROMETHEUS_PORT:?Run through pnpm integration:telemetry}:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - type: bind
+        source: ./prometheus.integration.yml
+        target: /etc/aster/prometheus.yml
+        read_only: true
+        bind:
+          create_host_path: false
+          propagation: rprivate
+    networks: [platform]
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 256m
+    pids_limit: 64
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  platform:
+    labels: *fixture-labels
+
+volumes:
+  prometheus-data:
+    labels:
+      <<: *fixture-labels
+      com.aster.authority: disposable-fixture
+      com.aster.owner: integration

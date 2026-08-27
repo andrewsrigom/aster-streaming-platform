@@ -151,7 +151,9 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-P01-R05 is reusable runtime behavior. The active P01-R08 candidate now composes it into a product-empty Identity process with real HTTP and dependency adapters. Run `pnpm identity:check` for a self-contained loopback diagnostic with controlled dependencies, or `pnpm identity:start` after configuring the seven reference environment variables. The existing Docker core does not expose host ports; real container integration and the Docker-only service command remain P01-R09/P01-R10. See [Runtime Lifecycle](docs/operations/RUNTIME_LIFECYCLE.md) and [P01-R08 evidence](evidence/phase-01/runtime-composition.txt).
+P01-R08 composes the reusable runtime into a product-empty Identity process with real HTTP and dependency adapters. Run `pnpm identity:check` for a self-contained loopback diagnostic with controlled dependencies, or `pnpm identity:start` after configuring the seven reference environment variables. The default Docker core does not expose host ports. See [Runtime Lifecycle](docs/operations/RUNTIME_LIFECYCLE.md) and [P01-R08 evidence](evidence/phase-01/runtime-composition.txt).
+
+Run `pnpm integration` on Linux/WSL for the eight-scenario real PostgreSQL/Redis/Identity, Kafka, S3 and Collector/Prometheus matrix, including in-flight HTTP shutdown with every adapter. It uses one disposable Docker project; the default project is unchanged. Focused `integration:core`, `integration:broker`, `integration:storage` and `integration:telemetry` commands remain available. These tests require pinned host Node/pnpm; the Docker-only application command belongs to P01-R10. The local matrix and exact cold acceptance pass; protected release remains pending. See [integration operation and cleanup](docs/operations/LOCAL_DEVELOPMENT.md#complete-integration-matrix) and [current evidence](evidence/phase-01/real-integration.txt).
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

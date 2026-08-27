@@ -10,9 +10,29 @@ const MAX_OUTPUT_PATH_BYTES = 4_096;
 const GIT_OBJECT = /^[a-f\d]{40}$/u;
 const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
-const PLATFORM_PREFIXES = ["infra/compose/"] as const;
+const PLATFORM_PREFIXES = [
+  "infra/compose/",
+  "services/identity/",
+  "packages/runtime/",
+  "packages/config/",
+  "packages/http-express/",
+  "packages/telemetry/",
+  "packages/postgres/",
+  "packages/redis/",
+  "packages/broker-kafka/",
+  "packages/object-storage-s3/",
+] as const;
 const PLATFORM_FILES = new Set([
   ".github/workflows/ci.yml",
+  ".node-version",
+  ".nvmrc",
+  "package.json",
+  "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
+  "turbo.json",
+  "tsconfig.base.json",
+  "tools/classify-ci-change.ts",
+  "tools/classify-ci-change.test.ts",
   "tools/reset-local-platform.sh",
   "tools/reset-local-platform.test.mjs",
   "tools/verify-local-platform.mjs",

@@ -212,9 +212,24 @@ importers:
         specifier: workspace:*
         version: link:../../packages/telemetry
     devDependencies:
+      '@aster/broker-kafka':
+        specifier: workspace:*
+        version: link:../../packages/broker-kafka
+      '@aster/object-storage-s3':
+        specifier: workspace:*
+        version: link:../../packages/object-storage-s3
+      '@aws-sdk/client-s3':
+        specifier: 3.1118.0
+        version: 3.1118.0
+      '@smithy/node-http-handler':
+        specifier: 4.11.3
+        version: 4.11.3
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
+      kafkajs:
+        specifier: 2.2.4
+        version: 2.2.4
       typescript:
         specifier: 6.0.3
         version: 6.0.3

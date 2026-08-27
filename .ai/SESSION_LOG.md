@@ -2,6 +2,94 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Complete real-dependency matrix and scoped CI
+
+### Completed
+
+- Added one six-service/four-volume fixture and `pnpm integration` covering eight existing and new scenarios. Test-only held HTTP now proves ordered shutdown of every real adapter and final metric delivery; production Identity ownership is unchanged.
+- Added real integration to the existing protected quality job only for affected platform/runtime/bootstrap inputs, with a 15-minute deadline. No new job, pipeline or commit hook.
+
+### Evidence
+
+- Complete matrix: 135.621 s plus 5.004 s cleanup; all-adapter shutdown 70 ms; telemetry 429 bounded series, 304 ms stalled flush and 7 ms exporter-down shutdown with only `flush_telemetry` degraded. Every worker exits naturally. All disposable resources removed; the same four unrelated stopped containers remain.
+- Affected gate: 49/49 tasks, 25 cached, 18.951 s; Identity 33/33 including eleven ownership guards. CI classification/policy 21/21, Compose validation and no-known-vulnerability audit pass. Raw output and source fingerprints: `evidence/phase-01/real-integration.txt`.
+
+### Next action
+
+Source `cbc5255` also passes frozen offline installation and 49/49 uncached tasks in a fresh no-local clone (40.586 s), audit, clean Git and executing-agent confirmation. Publish one protected PR and verify post-merge. P01-R10 follows release; do not repeat the matrix or cold checkout for prose-only updates.
+
+## 2026-08-27 — Real Collector and Prometheus integration checkpoint
+
+### Completed
+
+- Added digest-pinned core Collector 0.159.0 and Prometheus 3.14.0, an explicit telemetry fixture and real Identity OTLP/scrape/failure/recovery checks. No production dependency, adapter or public contract changed.
+- Proved HTTP/dependency histograms, CPU/memory/event-loop delay, backend restart, cumulative recovery, bounded stalled export and exporter-down shutdown with readiness preserved.
+- Corrected two measured Docker Desktop bind issues: explicit private propagation and exact file device/inode validation for translated mounts. No host/daemon change; rejected cleanup preserved resources until exact ownership was verified.
+
+### Evidence
+
+- `pnpm integration:telemetry`: 29.755 s plus 5.744 s cleanup, 202 series, unavailable flush 17 ms, stalled flush 306 ms, shutdown 15 ms with only `flush_telemetry` degraded and natural exit. All disposable resources removed; four unrelated stopped containers preserved.
+- `pnpm check:changed`: 49/49 tasks, 25 cached, 28.383 s; Identity 32/32, ten ownership guards and two bounded HTTP tests pass. Dependency graph/lockfile unchanged from the audited broker/S3 checkpoint `0cd02ef`.
+- Exact image references, source fingerprints, failed experiments and final output: `evidence/phase-01/real-integration.txt`. Executing-agent initial/confirmation review has no checkpoint blocker; no independent or hosted approval claimed.
+
+### Next action
+
+Finish P01-R09's test-only all-adapter HTTP drain and combined matrix after the shared harness stabilizes, then cold/forced/protected release gates. Do not add broker/S3 dependencies to production Identity or begin P01-R10 before release.
+
+## 2026-08-27 — Real Kafka and S3 integration checkpoint
+
+### Completed
+
+- Added separate digest-pinned Apache Kafka 4.3.1 KRaft and VersityGW 1.7.0 POSIX fixtures, shared bounded supervision and exact-owned cleanup. SDK administration stays test-only; no production adapter or Identity dependency change.
+- Proved keyed delivery/manual commit, cancelled and failed handler replay, ambiguous publish outcomes, multipart SHA-256/backpressure/cancellation cleanup, credential rejection, dependency restart and natural client exit.
+- Corrected only test-harness initialization and reduced Kafka health CLI overhead. No remote pipeline or additional product behavior.
+
+### Evidence
+
+- Broker passed in 50.796 s; storage in 17.635 s; the shared-harness four-scenario core regression in 74.790 s. Eight no-Docker ownership tests and Identity 28/28 tests pass.
+- `pnpm check:changed`: 49/49 tasks, 25 cached, 37.066 s. Documentation, memory, architecture, formatting, lint, secrets and existing tests pass; high-severity audit reports no known vulnerability. All fixture resources are removed and the same four unrelated stopped containers remain.
+- Source fingerprints, exact commands, resource samples, primary image references and limitations: `evidence/phase-01/real-integration.txt`. Executing-agent initial/confirmation review, not independent or hosted approval.
+
+### Next action
+
+Continue P01-R09 with Collector/Prometheus and real export/scrape/failure proof, then complete acceptance and protected release. P01-R10 and product functionality remain later work.
+
+## 2026-08-27 — Real core integration and idle-pool disconnect correction
+
+### Completed
+
+- Added explicit isolated PostgreSQL/Redis/Identity integration with exact-owned Docker cleanup, bounded subprocesses, temporary stable loopback ports and no default Compose change.
+- Real PostgreSQL stop exposed an unhandled idle-pool error; added its adapter-owned handler and real Pool regression. Exercised timeouts, cancellation, Redis capacity, readiness recovery, natural signals and held HTTP drain.
+- Kept this implementation and the prior activation memory in one local checkpoint; no remote pipeline or new dependency/image.
+
+### Evidence
+
+- Combined four-scenario run passed in 66.401 seconds. Signal and held-HTTP drain took 53 ms and 61 ms in that run; these are observations, not SLOs. Zero fixture resources remain; four unrelated containers are preserved.
+- Identity 26/26 and PostgreSQL 12/12 focused tests pass, including six no-Docker fixture guards. First affected gate identified the synthetic credential URL form; corrected without changing scanner policy. Final core checkpoint passes 30/30 affected tasks (13 cached) in 20.178 seconds and all four real scenarios in 64.118 seconds, including 57 ms signal drain and 77 ms held-HTTP drain. Executing-agent confirmation found no core blocker.
+- Raw artifact: `evidence/phase-01/real-integration.txt`.
+
+### Next action
+
+Continue P01-R09 with broker/S3 compatibility and Collector/Prometheus from the completed local core checkpoint. The complete item and P01-R10 Docker-only closeout are not claimed.
+
+## 2026-08-27 — Released P01-R08 and activated real integration
+
+### Completed
+
+- Published PR 16 once, recorded executing-agent confirmation review without claiming independence, and squash-merged the accepted candidate as `f174aa6` with protections intact.
+- Confirmed the exact post-merge run, fast-forwarded clean main, and created `feat/p01-r09-real-integration` for the accepted real-dependency item.
+- Read-only Docker preflight passed; no integration container or new image has been started. Removed only the validated temporary cold-checkout directory.
+
+### Evidence
+
+- Protected run `33036056777` and exact post-merge run `33036182208`: all applicable jobs PASS.
+- Source `282ccb5`: 49/49 forced cold tasks, frozen offline install, diagnostic, audit and clean Git. Evidence-only `ce2ab18` preserved those source inputs.
+- Docker Engine 26.0.0 responds; default Aster running-container listing is empty; core services remain unchanged.
+
+### Next action
+
+Implement P01-R09's isolated PostgreSQL/Redis happy-path and cleanup harness, then real failure/recovery. Include this activation memory with the next coherent implementation commit rather than creating an extra documentation-only pipeline.
+
 ## 2026-08-27 — Executable Identity composition and process diagnostic
 
 ### Completed

@@ -2,8 +2,8 @@
 
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
-- Evidence date: 2026-08-26
-- Active Phase 01 work item: P01-R08 on corrective released `main` at `61226eb`
+- Evidence date: 2026-08-27
+- Active Phase 01 work item: P01-R09 on released `main` at `f174aa6`
 
 ## Work items
 
@@ -17,10 +17,11 @@
 | Runtime lifecycle, health state, and bounded shutdown | P01-R05 | RELEASED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
 | Bounded runtime, HTTP, dependency, and export metrics | P01-R06 | RELEASED | [`runtime-telemetry.txt`](runtime-telemetry.txt) |
 | Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | RELEASED | [`platform-adapters.txt`](platform-adapters.txt) |
-| Propagated deadlines, recoverable readiness, health routes, and Identity runtime composition | P01-R08 | IMPLEMENTED locally; acceptance/release closeout pending | [`runtime-composition.txt`](runtime-composition.txt) |
+| Propagated deadlines, recoverable readiness, health routes, and Identity runtime composition | P01-R08 | RELEASED through PR 16; exact post-merge passed | [`runtime-composition.txt`](runtime-composition.txt) |
+| Real core, Kafka, S3 and Collector/Prometheus protocol, recovery and shutdown | P01-R09 | VERIFIED locally: matrix and exact cold gate; protected release pending | [`real-integration.txt`](real-integration.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 through P01-R07 and P01-R11 are released. P01-R07 passed pull request 14 exact-head run `33024975611`, corrective pull request 15 run `33026707150`, and exact corrective post-merge run `33026799005`; corrective squash `61226eb` is the P01-R08 base. P01-R08 is active locally. Real dependency containers and interoperability, Collector/backend, product schemas, and migrations remain unimplemented.
+P01-R01 through P01-R08 and P01-R11 are released. P01-R08 merged through PR 16 squash `f174aa6` after exact-head run `33036056777`; exact post-merge run `33036182208` passed. P01-R09's complete eight-scenario matrix and exact cold/forced acceptance pass locally; protected release remains pending. Product schemas and migrations remain later work.
 
 ## Current limitations
 

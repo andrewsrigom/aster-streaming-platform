@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-The repository foundation and Phase 01 technical packages exist. The active P01-R08 candidate adds a local product-empty Identity entrypoint that composes those packages, with health and a controlled loopback diagnostic. No containerized product service, product schema/resolver/migration, broker/object-storage runtime, or observability backend exists yet. `.ai/CURRENT_STATE.md` distinguishes implemented candidates from released behavior.
+The repository foundation and Phase 01 technical packages exist. Released P01-R08 provides a product-empty Identity entrypoint, bounded health/lifecycle composition and a controlled loopback diagnostic. P01-R09 provides local PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus integration fixtures. No containerized product service, product schema/resolver/migration or default application/observability profile exists yet.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 lifecycle, P01-R06 telemetry, and P01-R07 platform adapters are released. P01-R08 composition is active from corrective released `main`; deadlines, readiness, monitoring, health, configuration, real factories, Identity entrypoint and controlled process diagnostic are implemented locally. Acceptance and protected release closeout remain next. P01-R09 real integration and P01-R10 resource-aware Docker-only closeout remain later work.
+P01-R05 through P01-R08 are released. P01-R09 is active from squash `f174aa6`; checkpoints `0fb247c`, `0cd02ef` and `8ef472d` establish core, broker/S3 and telemetry proof. The complete `pnpm integration` matrix passes eight scenarios in 135.621 s plus 5.004 s cleanup, including 70 ms all-adapter HTTP shutdown. Source `cbc5255` passes 49/49 uncached tasks in a fresh frozen clone (40.586 s), audit, clean Git and executing-agent confirmation. Continue protected release. P01-R10 Docker-only closeout remains later work.

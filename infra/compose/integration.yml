@@ -1,0 +1,48 @@
+name: ${ASTER_INTEGRATION_PROJECT:?Run through pnpm integration:core}
+
+x-fixture-labels: &fixture-labels
+  com.aster.environment: integration
+  com.aster.scope: p01-r09
+  com.aster.fixture: ${ASTER_INTEGRATION_PROJECT:?Run through pnpm integration:core}
+
+services:
+  postgres:
+    extends:
+      file: compose.yml
+      service: postgres
+    labels: *fixture-labels
+    ports:
+      - "127.0.0.1:${ASTER_INTEGRATION_POSTGRES_PORT:?Run through pnpm integration:core}:5432"
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  redis:
+    extends:
+      file: compose.yml
+      service: redis
+    labels: *fixture-labels
+    ports:
+      - "127.0.0.1:${ASTER_INTEGRATION_REDIS_PORT:?Run through pnpm integration:core}:6379"
+    tmpfs:
+      - /data:size=16m,mode=1777
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  platform:
+    labels: *fixture-labels
+
+volumes:
+  postgres-data:
+    labels:
+      <<: *fixture-labels
+      com.aster.authority: disposable-fixture
+      com.aster.owner: integration

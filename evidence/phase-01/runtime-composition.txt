@@ -1,7 +1,7 @@
 Evidence: P01-R08 deadlines, readiness, health, and Identity runtime composition
 Date: 2026-08-26
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; amd64; Node.js 24.19.0; pnpm 11.24.0
-Status: IMPLEMENTED; local acceptance and exact frozen checkout passed; protected release pending
+Status: RELEASED through PR 16 squash f174aa6a7ffb432136c7a757ec05983fe48195d6
 
 Scope and ownership
 - Requirement: P01-R08.
@@ -103,7 +103,15 @@ Exact source acceptance — 282ccb5d1ba561e1237570d622b09e3c771b3345
 - Local source inspection covered environment preflight, owner construction/cleanup, deadline propagation, monitor stop/late-completion rules, HTTP snapshot sanitization, finite metrics, inner declarations, real-client configuration copying and manual/signal terminal ownership. No remaining local blocking finding was identified. This is executing-agent review, not a claim of independent or hosted approval.
 - Later evidence/memory-only edits do not alter source, package/export/declaration inputs, dependencies, public commands or bootstrap behavior. This exact cold source evidence remains applicable; only the affected documentation/memory/security gates need repetition for closeout prose.
 
-Planned evidence sequence
+Protected closeout
+- Public PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/16
+- Exact evidence head ce2ab185fd7e6fcc04db939c3de3f7a48fb046a1 passed protected run 33036056777, including dependency review, source quality, documentation/security and CI required. The unchanged Docker-core lane was correctly skipped.
+- Executing-agent confirmation review recorded no remaining blocker and explicitly did not claim independent approval. No review thread or required approval was outstanding; GitHub reported CLEAN/MERGEABLE.
+- Squash f174aa6a7ffb432136c7a757ec05983fe48195d6 merged on 2026-08-27. Exact post-merge push run 33036182208 passed every applicable job.
+- Local main fast-forwarded cleanly to the squash before P01-R09 activation. No empty commit, duplicate PR or manual pipeline rerun was created.
+- The exact temporary checkout was removed after verifying its resolved /tmp/aster-p01-r08-clean-mK1eiE path and clean Git. No default Docker or user resource was removed.
+
+Planned evidence sequence (historical)
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
 - Monitor cancellation/non-overlap focused tests.
 - Real-socket health and service-composition focused tests followed by one combined affected gate.

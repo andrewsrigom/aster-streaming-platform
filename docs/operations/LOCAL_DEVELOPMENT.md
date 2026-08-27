@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. The active P01-R08 candidate adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. No product schema, broker/object-store runtime, telemetry backend, or playable journey exists yet.
+The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds explicit real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus integration laboratories below. No product schema, default application/observability profile or playable journey exists yet.
 
 ### Identity reference process
 
@@ -30,6 +30,69 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 - a browser supported by the current test matrix.
 
 ## Toolchain validation
+
+### Complete integration matrix
+
+After the pinned repository installation, on Linux/WSL with local Linux Docker containers:
+
+```bash
+pnpm integration
+```
+
+One fresh six-service project runs protocol probes, adapter faults, Identity recovery, held HTTP drain, Kafka, S3, all-adapter HTTP shutdown and telemetry faults sequentially. The test-only all-adapter composition confirms that HTTP work finishes before consumers stop, telemetry flushes, PostgreSQL/Redis/Kafka/S3 close, and telemetry shuts down within the ten-second budget. Prometheus observes the final HTTP metric. Production Identity does not acquire broker or storage dependencies.
+
+The matrix passes locally in 135.621 seconds plus 5.004 seconds cleanup; this warm-image observation is not a startup target or steady-state benchmark. It removes only its six verified containers, network and four synthetic-data volumes. Images and repository configuration remain. The focused commands below use smaller fixtures. Neither hooks nor ordinary unit tests run this matrix; the existing protected quality job invokes it once, with a 15-minute deadline, for runtime/adapter/Compose and shared bootstrap/dependency changes. Documentation-only and unrelated web changes do not select it.
+
+The following ownership, interruption and Linux/WSL limitations apply to every profile. The Docker-only evaluator path remains P01-R10.
+
+### Real PostgreSQL/Redis integration
+
+After frozen installation, on Linux/WSL with local Linux Docker containers:
+
+```bash
+pnpm integration:core
+```
+
+The command builds Identity and runs four bounded subprocess scenarios: protocol success/disposal, adapter failure/recovery, real Identity health transitions, and termination during a held diagnostic HTTP request. To repeat only one scenario, append `protocol`, `adapters`, `identity`, or `http-drain`. This explicit laboratory does not run in ordinary unit tests, hooks, or every CI build.
+
+`infra/compose/integration.yml` inherits the reviewed core images and resource limits. The runner generates an `aster-integration-<random>` project, pins the local Docker socket, allocates temporary loopback ports that survive restart, and uses synthetic credentials. It refuses remote endpoints, Docker overrides and pre-existing names. The normal `aster` project remains unexposed and unchanged.
+
+Stopping/pausing a dependency and final deletion require inspected exact project, fixture, service, environment and scope labels. Cleanup validates all containers, mounts, the network and volume before removing exact IDs. It runs after success, worker failure and handled interruption, then checks for residual resources. Only the disposable synthetic PostgreSQL volume is deleted irreversibly; images are retained. No global prune or default-project reset is used. A parent `SIGKILL` or unavailable daemon can prevent cleanup: retain the printed project ID, inspect its exact ownership, and do not apply the default Aster reset or a broad prefix deletion.
+
+The core slice is implemented with [real integration evidence](../../evidence/phase-01/real-integration.txt). The held handler is test-only, not a product GraphQL endpoint. Native Windows signal semantics remain unsupported by this command; use WSL.
+
+### Real broker and object-storage integration
+
+With the same pinned Linux/WSL toolchain and local Docker:
+
+```bash
+pnpm integration:broker
+pnpm integration:storage
+```
+
+Each command owns a separate disposable project through the same guarded supervisor. The broker laboratory uses digest-pinned Apache Kafka 4.3.1 in single-node KRaft, a synthetic topic/group, keyed delivery, manual offset inspection, cancellation/failure replay, bounded capacity, ambiguous publish outcomes, stop/restart and natural client exit. It uses plaintext on an allocated loopback port; SASL/TLS, distributed failover and product outbox/deduplication are not claimed. The small health CLI has its own JVM budget, independent of the broker heap.
+
+The S3 laboratory uses digest-pinned VersityGW 1.7.0 with a POSIX volume. It checks a missing bucket, bad credentials, empty/small/multipart objects, SHA-256 including multipart composite checksums, streaming read backpressure, read size/cancellation, acknowledged multipart abort cleanup, pause/timeout and persistence across restart. It creates no media title. Administrative SDKs are test-only dependencies, not new Identity runtime dependencies.
+
+Both fixtures use finite CPU/memory/PID/log limits, read-only roots, dropped capabilities, no-new-privileges and no host bind mounts. Kafka runs as the upstream non-root user; the storage fixture runs as root with all capabilities dropped to initialize its fresh owned POSIX volume. Only synthetic data is allowed. Cleanup verifies the exact owned volume before irreversible removal; image caches are retained. The supervisor reports startup/actions/cleanup and one pre-workload resource sample, not a steady-state benchmark. The ownership and interrupted-cleanup rules in the core section apply unchanged.
+
+Broker and S3 protocol scenarios pass individually and in the combined matrix; the exact cold source gate also passes. Protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
+
+### Real telemetry integration
+
+```bash
+pnpm integration:telemetry
+```
+
+This fixed fixture combines PostgreSQL/Redis with digest-pinned core OpenTelemetry Collector 0.159.0 and Prometheus 3.14.0. The test-only Identity composition exports real HTTP, dependency, CPU, memory and event-loop delay metrics through OTLP/HTTP. Prometheus scrapes bounded series; the test verifies HTTP histogram counts, backend/Collector restart, cumulative recovery, stalled-export cancellation and bounded shutdown while the Collector is down. A failed flush is reported as a degraded shutdown, not successful delivery; PostgreSQL, Redis and telemetry still close and the process exits naturally. Optional telemetry failure does not change Identity readiness.
+
+Collector and Prometheus run as their upstream non-root users with read-only roots, finite resource limits and exact read-only `rprivate` config mounts. The Collector's minimal image has no shell health utility: a bounded real OTLP request proves receiver readiness. Prometheus uses its readiness endpoint. Only loopback OTLP/query ports are published; the scrape endpoint stays inside the fixture network. Prometheus uses 1-hour/128 MB retention settings, not a hard filesystem quota or a production sizing result.
+
+Do not edit the two config files while the fixture runs. Docker Desktop/WSL can translate a bind path after restart; cleanup accepts that translation only for the matching distribution and identical file device/inode. Changed files, writable/shared binds or foreign mounts are refused before deletion. Normal teardown removes only the exact synthetic PostgreSQL/Prometheus volumes and fixture containers/network; images and repository config files remain. No host mount propagation, Docker daemon settings or unrelated resources are changed. The core interruption/ownership rules also apply here.
+
+See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). The combined matrix proves multi-adapter HTTP drain and the exact cold source gate passes; protected release and the Docker-only evaluator profile remain pending.
+
+### Pinned repository bootstrap
 
 After activating the pinned Node.js runtime, provision the repository package manager through Corepack, install from the lockfile, and run the current foundation gate:
 

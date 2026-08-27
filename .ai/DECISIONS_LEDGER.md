@@ -54,12 +54,14 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | S3-compatible object-storage client | Exact-pin `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3` behind `@aster/object-storage-s3`; disable SDK retries, bound stream size/multipart buffering and deadlines, retire ambiguous generations after cancellation, and defer real interoperability and publication policy | `evidence/phase-01/platform-adapters.txt` |
 | Kafka-compatible broker client | Exact-pin provisional `kafkajs@2.2.4` behind `@aster/broker-kafka`; bound retries, bytes, capacity, deadlines and logging, use finite idempotent keyed publish, commit offsets only after successful handling, and require P01-R09 real-broker confirmation or replacement | `evidence/phase-01/platform-adapters.txt` |
 | MITNFA dependency policy | Allow the reviewed SPDX `MITNFA` identifier without exempting packages from license checks; preserve notices and repeat review before modifying or bundling affected code | `docs/adr/0012-mitnfa-dependency-license.md`; `evidence/phase-01/platform-adapters.txt` |
+| Local broker/storage integration images | Use upstream Apache Kafka JVM 4.3.1 KRaft (the accepted Apache-2.0 alternative to Redpanda's BSL grant) and Apache-2.0 VersityGW 1.7.0 POSIX, both pinned by multi-architecture index digest; keep fixtures isolated and SDK administration test-only | `evidence/phase-01/real-integration.txt` |
+| Local telemetry integration images | Use Apache-2.0 core Collector 0.159.0 and Prometheus 3.14.0 pinned by amd64/arm64 index digest; core includes the required components, so omit contrib. Keep metrics/backend faults optional for Identity and config mounts read-only/private with exact identity checks | `evidence/phase-01/real-integration.txt` |
 
 ## Pending decisions
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Local broker, object-storage, and observability-container versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint and process-local telemetry candidate are claimed | Phase 01 verification |
+| Final profile sizing and any additional observability backends | 01 | Combined lifecycle proof, resource measurements and a concrete need before adding Grafana/Tempo/Loki | Core, Kafka, S3 and Collector/Prometheus are proved in isolated fixtures; no final evaluator profile or product dashboard is claimed | Phase 01 verification |
 | Typed SQL library | 02 | First real context-owned schema, transaction, query, migration, generated-type, compatibility, maintenance, and removal evidence | Phase 01 uses its selected PostgreSQL connectivity adapter without product tables or a synthetic query abstraction | Phase 02 persistence implementation |
 | Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
@@ -78,7 +80,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
 Pending decisions are resolved only by their owning phase. A work item stops when it needs a pending decision whose required evidence is unavailable; it does not select a dependency implicitly.
 
-The current Phase 01 preflight narrows the remaining candidates but resolves none of the rows above. It records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, current Node.js client metadata, and the Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 separately resolves the process-local OpenTelemetry package set in `evidence/phase-01/runtime-telemetry.txt`; Collector/backend images remain pending.
+The Phase 01 preflight records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, client metadata and Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 resolves the process-local OpenTelemetry packages in `evidence/phase-01/runtime-telemetry.txt`; P01-R09 resolves the local Kafka, S3 and Collector/Prometheus images in `evidence/phase-01/real-integration.txt`. Final profile sizing and the remaining decisions above are still pending.
 
 ## Repository governance decisions
 

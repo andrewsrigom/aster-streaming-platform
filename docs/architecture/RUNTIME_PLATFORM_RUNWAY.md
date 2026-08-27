@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the remaining Phase 01 path. P01-R06 telemetry and P01-R07 adapters are released. The active P01-R08 candidate now composes an executable Identity reference process. Real dependency/container interoperability, Collector export, backends, profiles and the Docker-only service path remain P01-R09/P01-R10.
+This document defines the remaining Phase 01 path. P01-R06 telemetry, P01-R07 adapters and P01-R08 executable Identity composition are released. P01-R09 implements the combined real PostgreSQL/Redis, broker, S3 and Collector/Prometheus laboratory, including all-adapter HTTP shutdown. Cold acceptance, protected release, final profiles and the Docker-only service path remain P01-R09/P01-R10.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -45,7 +45,7 @@ This order prevents three expensive forms of rework:
 | `packages/object-storage-s3/` | P01-R07 | Streaming S3-compatible operations, probe, cancellation, telemetry, and close behavior without publication policy |
 | `services/identity/` | P01-R08 | Reference composition root, health routes, and no account, profile, session, resolver, or schema behavior |
 | `infra/compose/compose.yml` | P01-R09 | Reviewed optional dependency profiles, immutable image pins, health checks, resource bounds, and ownership labels |
-| `infra/compose/observability/` | P01-R09 | Collector and backend configuration mounted read-only from the repository |
+| `infra/compose/collector.integration.yml`, `infra/compose/prometheus.integration.yml` | P01-R09 | Exact read-only Collector/Prometheus test configuration; final evaluator profiles remain P01-R10 |
 | `evidence/phase-01/` | P01-R06–R10 | Raw compatibility, failure, integration, clean-start, and resource evidence |
 
 These are planned paths, not permission to scaffold every directory at once. Each work item creates only the paths required for its smallest complete slice.
@@ -200,21 +200,29 @@ A single bounded background monitor owns recovery probes. It allows one probe pe
 
 ## P01-R09 — Real dependency proof
 
+The first local slice is `pnpm integration:core`: existing pinned PostgreSQL/Redis images, temporary loopback connectivity, exact fixture ownership and cleanup, real client probes, stop/recovery, pause/cancellation/capacity, Identity health transitions and held-HTTP shutdown. It exposed and corrected an unhandled idle-pool PostgreSQL error. [Local Development](../operations/LOCAL_DEVELOPMENT.md#real-postgresqlredis-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) record operation and limitations. This slice does not complete the remaining matrix or add final runtime profiles.
+
 ### Container candidate gate
 
 P01-R09 selects and pins exact multi-platform images by digest only after license and runtime evidence. Current candidates are:
 
 | Capability | Primary candidate | Alternative or concern |
 |---|---|---|
-| Kafka-compatible broker | Redpanda single-node runtime | Apache Kafka KRaft if license, compatibility, or lifecycle evidence is stronger |
-| S3-compatible local storage | VersityGW with a POSIX backend | SeaweedFS single-node S3; the archived MinIO repository is not the default |
-| Telemetry transport | OpenTelemetry Collector Contrib | Core Collector if every required receiver/exporter exists |
-| Metrics | Prometheus | no alternative needed before evidence |
+| Kafka-compatible broker | Apache Kafka 4.3.1 KRaft, selected for local integration | Approved alternative to Redpanda; Apache-2.0 avoids adding the Redpanda BSL conditional-use grant |
+| S3-compatible local storage | VersityGW 1.7.0 POSIX, selected for local integration | SeaweedFS remains fallback; the archived MinIO repository is not the default |
+| Telemetry transport | Core OpenTelemetry Collector 0.159.0, selected for local integration | Core includes every required receiver/processor/exporter; contrib is unnecessary |
+| Metrics | Prometheus 3.14.0, selected for local integration | no alternative needed before evidence |
 | Traces | Tempo | enabled only when trace work begins or required for the Phase 01 diagnostic |
 | Logs | Loki | standard-output logging remains valid if the log backend profile is stopped |
 | Diagnosis | Grafana | provisioned dashboards remain minimal and question-driven |
 
 The final selection requires health behavior, startup and shutdown duration, idle CPU and memory, image and volume size, amd64 and arm64 manifests, license, current maintenance, local reset ownership, and protocol smoke evidence.
+
+The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured only on WSL amd64. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish these tests from the pending evaluator profile, complete acceptance and release. No product event, bucket/media publication or Identity production dependency was added.
+
+The [telemetry laboratory](../operations/LOCAL_DEVELOPMENT.md#real-telemetry-integration) proves real Identity metrics through core Collector/Prometheus, bounded scrape series, optional-backend failure, cumulative recovery and exporter-down shutdown. Core Collector 0.159.0 and Prometheus 3.14.0 are Apache-2.0 upstream images pinned by amd64/arm64 index digest. Fixed read-only private mounts and exact device/inode validation handle Docker Desktop's translated bind paths without changing host mount policy. No production dependency or telemetry contract changed. The combined matrix also passes; cold acceptance and protected release remain pending.
+
+The complete local command is `pnpm integration`: all eight scenarios share one fresh six-service/four-volume fixture and pass in 135.621 seconds plus 5.004 seconds cleanup. The final synthetic HTTP request is scraped before all owners exit naturally; ordered shutdown takes 70 ms in this run. This test-only composition does not add production Identity dependencies. The existing protected quality job runs the matrix only for applicable runtime, adapter, Compose and shared bootstrap/dependency changes. Cold acceptance and hosted confirmation remain pending.
 
 ### Integration matrix
 

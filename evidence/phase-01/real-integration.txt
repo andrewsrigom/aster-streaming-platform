@@ -1,0 +1,678 @@
+P01-R09 real integration — PostgreSQL/Redis/Identity checkpoint
+Date: 2026-08-27
+Status: VERIFIED local core slice; whole P01-R09 IN_PROGRESS, not released
+Base: f174aa6a7ffb432136c7a757ec05983fe48195d6
+Branch: feat/p01-r09-real-integration
+
+Environment
+Windows host; WSL Ubuntu-20.04 registration, Linux amd64.
+Node v24.19.0; pnpm 11.24.0; Docker Engine 26.0.0;
+Docker Compose v2.26.1-desktop.1; local unix:///var/run/docker.sock.
+Existing immutable images inherited from infra/compose/compose.yml:
+postgres:18.6-alpine3.23
+sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f
+redis:8.10.0-alpine
+sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
+No new image, package, product table, event or media.
+
+Command/workload
+pnpm integration:core
+Optional argument: protocol | adapters | identity | http-drain.
+One unique project, two containers, one network, one PostgreSQL volume,
+Redis tmpfs; inherited resource limits, temporary host-loopback ports,
+bounded Node subprocesses and synthetic credentials/data only.
+Normal unit tests/hooks do not start Docker.
+
+Demonstrated defect
+First fixture: aster-integration-d1426825f4034409a635a9dcceaec179.
+SELECT 1/PING and normal disposal passed. Stopping PostgreSQL with a healthy
+idle connection caused an unhandled pg-pool error, SQLSTATE 57P01, exit 1,
+and a vendor-client dump. Parent cleanup still removed only its resources.
+The adapter now owns pool background errors. pg-pool already removes the
+failed idle client; subsequent probes report availability and recovery.
+No global exception handler, invented operation metric, retry or API change.
+Regression emits two errors through a real Pool and proves bounded close.
+Reference: https://node-postgres.com/apis/pool#error
+Source inspected: pg-pool@3.14.0 makeIdleListener removes before emit(error).
+
+Harness corrections
+- Docker-assigned port=0 changed from 64082 to 64085 on stop/start; explicit
+  allocated loopback ports now survive restart. A bind race fails safely.
+- SIGTERM natural termination follows the released contract: exit 143.
+- Test telemetry delegates prototype methods rather than spreading an instance.
+- Secret scan flagged the literal fixture credential URL. URL components now
+  use the same explicit test-only credential; scanner policy is unchanged.
+
+Combined integration, before final candidate checkpoint
+Command: pnpm integration:core
+Fixture: aster-integration-313754474bd04b76870cfde3cc6ed229
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"protocol"}
+{"event":"postgres_stop_recovery","outcome":"passed"}
+{"event":"postgres_timeout_cancellation","outcome":"passed","reservedSlots":0}
+{"event":"redis_stop_recovery","outcome":"passed"}
+{"event":"redis_cancellation_capacity_timeout","outcome":"passed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"adapters"}
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":53}
+{"event":"natural_exit","mode":"identity"}
+{"event":"http_inflight_drain","durationMs":61,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"core_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain"],"durationMs":66401}
+{"event":"fixture_cleanup","project":"aster-integration-313754474bd04b76870cfde3cc6ed229","remaining":0}
+
+Assertions
+PostgreSQL: authenticated connect/SELECT 1, unavailable fresh startup,
+idle disconnect, stop/recovery, paused-query timeout, AbortSignal cancellation,
+healthy later probe, zero reserved/pool connections, idempotent close.
+Redis: PING, unavailable fresh startup, bounded reconnect, pause/cancel,
+capacity=1 and explicit overflow rejection, timeout retirement, recovery,
+zero in-flight commands, idempotent close and closed socket state.
+Identity: default ten-second jittered monitor, real Express health/adapters,
+200 -> 503 with liveness 200 -> 200 for each dependency, no degraded work
+admission or topology in public health bodies. SIGTERM drains accepted work.
+HTTP drain: a test-only Express handler holds a real HTTP request; shutdown
+waits response/lease completion, then flushes local telemetry and closes
+PostgreSQL/Redis/telemetry. Natural exit 143; no product schema/endpoint added.
+
+Focused source checks
+pnpm exec turbo run test --filter=@aster/identity --filter=@aster/postgres
+PASS: Identity 26/26, PostgreSQL 12/12; 9/9 tasks (5 cached), 10.819s.
+Six no-Docker fixture tests cover remote endpoints, name collisions,
+changed ownership, foreign mounts/attachments, exact/idempotent removal.
+Targeted ESLint, Knip and secret scan passed after fixture corrections.
+First affected gate stopped at the literal fixture-URL finding. Cancelled
+parallel tasks were not independent failures.
+
+Final core candidate checkpoint
+Command: pnpm check:changed && pnpm integration:core
+Affected gate: 30/30 tasks PASS, 13 cached, 20.178s.
+Identity 26/26 and PostgreSQL 12/12; type/lint/format/architecture/unused,
+platform/reset, documentation/memory, CI/community and secrets passed.
+Compose default model: config --quiet PASS; git diff --check PASS.
+Final fixture: aster-integration-4fed9dbb65b64ac7aa1bcc4b68ce1332
+The protocol/adapter/recovery output matches the successful run above.
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":57}
+{"event":"natural_exit","mode":"identity"}
+{"event":"http_inflight_drain","durationMs":77,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"core_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain"],"durationMs":64118}
+{"event":"fixture_cleanup","project":"aster-integration-4fed9dbb65b64ac7aa1bcc4b68ce1332","remaining":0}
+
+Exact source SHA-256 fingerprints (base plus these implementation changes)
+525e1d658fc4c8d043d129195403e15a2640e7afb48b2d2554f56fd94327e5b1  infra/compose/integration.yml
+4a7b495849ef544d880f21dc06619d832c6ee41583c1327bf48c7b917240de2e  packages/postgres/src/infrastructure/postgres-adapter.ts
+1e14541897f0c5ca4293867ea1e717976a7747c0080ca0cea33c57b9aed50dd8  packages/postgres/test/pool-events.test.ts
+6e89bc2663c113cc4dba41dc1560c5f53334c097b4958e44001740fcbf312871  services/identity/test/docker-fixture.test.ts
+77abaa3c4d5232cdfb899d86a7120880461e326fdd05b281b84045598b1656be  services/identity/test/integration/core-integration.ts
+dee2ca230b1240e629fdf639441825a23f04bffe264c09ab1fb652964e35043f  services/identity/test/integration/core-worker.ts
+904ea5a68a35747e82825b160192580fb1a501e09203f512919ad13d6648462a  services/identity/test/integration/docker-fixture.ts
+9da33d47b241e3ffb387f58d1fa3134b9b8e79f0f00f3fd544a307d57cc65065  services/identity/test/integration/http-drain.ts
+7c09704da7b684361b8eb7f6c88faed7828b1287d8601a02043c10be8e3da177  services/identity/package.json
+0bc53560403a8930fd7c599bdaccffd773d039937964a25a0dcefbbe0623b2f3  package.json
+Later evidence/memory-only closeout does not change these inputs. No cold
+clone, full force gate or hosted run is required for this intermediate
+checkpoint; the stabilized complete P01-R09 matrix still owns those gates.
+
+Preservation inspection
+docker container/network/volume ls --filter label=com.aster.scope=p01-r09
+All three inventories empty after the combined run.
+Four unrelated container IDs from preflight remain present and exited:
+5c91b929fa48663a76b372ed63178b089030dd8a83572a80b098d17db0b8133a
+b03fbb6cc926033445c0c0f53f41dddb228a4d4180a4ee5b16b98cff92fd6f8f
+d6bd9b628185e610b58beb7856351d6286b9e0e93b85851b8088f5df06878c05
+b4f5eb2da9c24434beabcbd374effa79a2c724f6e2cf5c012b65f903ab488568
+Default Aster startup/reset/exposure unchanged. No global prune.
+
+Review/limitations
+Executing-agent review, not independent/hosted approval. Initial review and
+experiments addressed the idle-pool crash, port lifetime, process outcomes,
+stderr bounds and exact Docker ownership. Confirmation review found no
+remaining core requirement/security/data/availability/contract blocker.
+No independent review, whole-item verification or protected release claimed.
+One warm-image WSL amd64 host, not a benchmark, SLO or cross-platform proof.
+Native Windows command fails before Docker mutation; use WSL.
+Only synthetic fixture volumes are irreversibly deleted; images are retained.
+Parent SIGKILL/daemon loss can prevent automatic cleanup: retain the printed
+exact project ID, inspect ownership, and remove only that fixture.
+Broker/S3/OTLP/Collector/Prometheus/all-adapter shutdown remain P01-R09 work.
+Docker-only application profiles/resource/clean-start proof remain P01-R10.
+No product, media, hosted or release claim.
+
+
+P01-R09 broker/storage checkpoint — 2026-08-27
+=============================================
+Working branch: feat/p01-r09-real-integration, based on local core commit 0fb247c.
+These are integration fixtures, not default application/evaluator profiles.
+Node 24.19.0, pnpm 11.24.0, local Linux Docker 26.0.0, WSL amd64.
+No application adapter or public contract changed in this checkpoint.
+
+Image provenance (upstream references inspected on 2026-08-27)
+- VersityGW v1.7.0, published 2026-07-15T02:34:54Z, Apache-2.0.
+  https://github.com/versity/versitygw/releases/tag/v1.7.0
+  https://raw.githubusercontent.com/versity/versitygw/v1.7.0/LICENSE
+  https://github.com/versity/versitygw/wiki/POSIX-Backend
+  https://github.com/versity/versitygw/wiki/Global-Options
+  Image index sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad
+  linux/amd64 sha256:ef1c6bf0180abd9583da8a0466b3cba1cfc1ed368afebdf7280c0774081d2c82
+  linux/arm64 sha256:06ab1492d9ff5b851dc9e3dfdd4221383ca135c1a42246853ed72e49618ff1d0
+- Apache Kafka JVM 4.3.1, released 2026-06-25, Apache-2.0.
+  https://kafka.apache.org/community/downloads/
+  https://kafka.apache.org/43/getting-started/docker/
+  https://raw.githubusercontent.com/apache/kafka/4.3.1/LICENSE
+  https://raw.githubusercontent.com/apache/kafka/4.3.1/docker/jvm/Dockerfile
+  Image index sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
+  linux/amd64 sha256:ccd1314e47ec76909e01f86308b4dcf2064f19f7c89759234322314b0e319e26
+  linux/arm64 sha256:c2b5172ab20d66381ec1729796a410fd611135821994526d4d42d2f256054af3
+The accepted Apache alternative avoids adding Redpanda's BSL conditional-use grant.
+Redpanda v26.2.2 was inspected but not pulled/adopted:
+https://raw.githubusercontent.com/redpanda-data/redpanda/v26.2.2/licenses/bsl.md
+Manifest inspection proves image availability, not runtime execution on arm64.
+Image and upstream notices remain unmodified; no image rebundling is claimed.
+
+Implementation/workload
+Shared supervisor with closed core/storage/broker profiles, exact-owned cleanup,
+fixed Compose paths, stable allocated loopback ports, bounded IPC/output/child
+lifetimes and natural-exit evidence. SDK administration is test-only.
+Storage: empty, 262144-byte and 7340049-byte deterministic streamed objects;
+SHA-256/full and multipart-composite checksum comparisons; backpressured sink;
+one acknowledged 5242880-byte part before cancelling a held multipart upload;
+zero residual uploads, read cancellation/limit, missing bucket/key, bad credential,
+capacity, paused deadline/cancellation, persistent stop/start, exact fixture delete.
+Broker: one partition/topic/group, keyed messages, explicit starting offset,
+manual commits, cancelled/failed-handler replay, no retry of ambiguous publishes,
+capacity, paused publish abort/timeout, persistent progress after restart,
+exact group/topic deletion, idempotent close and natural process exit.
+No Kafka SASL/TLS, cluster failover, product deduplication or media claim.
+
+Investigations/remediation (test harness, not production adapter changes)
+- First storage run passed all scenarios in 21479 ms and cleaned its exact project.
+- The broker harness initially requested one retry attempt; the accepted idempotent
+  adapter contract requires at least two. Corrected the fixture setting.
+- Initial group metadata is not immediately ready; only coordinator startup codes
+  14/15/16 and the explicit missing-coordinator condition receive bounded read-only
+  retries. Code 69 means the fresh group does not exist, not a broker outage.
+- KafkaJS admin.setOffsets creates a hidden consumer whose default 5000 ms fetch
+  wait conflicts with the inspector deadline. Replaced it with an explicitly owned
+  100 ms-wait initializer, initial commit and disconnect; no production API expansion.
+- First complete broker run passed in 111972 ms. Health logs showed repeated JVM
+  CLI startup exceeding its 5 s deadline, including a valid topic response after
+  the deadline. Its two unpause waits took 30501/30576 ms. Limited the health-only
+  JVM to 16/64 MiB heap, one logical CPU and tier-1 compilation; retained a real
+  Kafka metadata command and an explicit 10 s health deadline. Broker heap is unchanged.
+  Java option reference: https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html
+
+Command: pnpm integration:broker (final broker source/Compose checkpoint)
+{"event":"fixture_start","project":"aster-integration-7f5eba9fb6f04d899a6fae7ce25aa54b","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":11050}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"broker","cpu":"3.78%","memory":"286.5MiB / 768MiB","pids":"80","imageBytes":441627906,"architecture":"amd64","dataKiB":32}]}
+{"event":"scenario_start","mode":"broker"}
+{"event":"fixture_action","service":"broker","action":"pause","durationMs":271}
+{"event":"fixture_action","service":"broker","action":"unpause","durationMs":7892}
+{"event":"fixture_action","service":"broker","action":"pause","durationMs":236}
+{"event":"fixture_action","service":"broker","action":"unpause","durationMs":8540}
+{"event":"fixture_action","service":"broker","action":"stop","durationMs":1202}
+{"event":"fixture_action","service":"broker","action":"start","durationMs":15043}
+{"event":"broker_topic_ready"}
+{"event":"broker_coordinator_ready"}
+{"event":"broker_initial_offset_ready"}
+{"event":"broker_keyed_delivery","committed":3,"cancelledReplay":"passed","failedReplay":"passed"}
+{"event":"broker_fault_recovery","capacity":"passed","ambiguousAbort":"passed","ambiguousTimeout":"passed","restart":"passed"}
+{"event":"broker_fixture_empty","topics":0,"groups":0}
+{"event":"broker_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"broker"}
+{"event":"broker_integration","outcome":"passed","scenarios":["broker"],"durationMs":50796}
+{"event":"fixture_cleanup","project":"aster-integration-7f5eba9fb6f04d899a6fae7ce25aa54b","remaining":0,"durationMs":1355}
+
+Command: pnpm integration:storage (shared supervisor/resource sample confirmation)
+{"event":"fixture_start","project":"aster-integration-8745b16d0fce4e09aeab8a8c36a98168","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":4300}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"storage","cpu":"0.47%","memory":"24.41MiB / 384MiB","pids":"7","imageBytes":62775913,"architecture":"amd64","dataKiB":4}]}
+{"event":"scenario_start","mode":"storage"}
+{"event":"fixture_action","service":"storage","action":"stop","durationMs":353}
+{"event":"fixture_action","service":"storage","action":"start","durationMs":2855}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":243}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2534}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":253}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2638}
+{"event":"storage_round_trip","bytes":0,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":262144,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":7340049,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_multipart_abort","acknowledgedPartBytes":5242880,"remainingUploads":0}
+{"event":"storage_fault_recovery","restart":"passed","timeout":"passed","cancellation":"passed"}
+{"event":"storage_fixture_empty","objects":0,"multipartUploads":0,"buckets":0}
+{"event":"storage_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"storage"}
+{"event":"storage_integration","outcome":"passed","scenarios":["storage"],"durationMs":17635}
+{"event":"fixture_cleanup","project":"aster-integration-8745b16d0fce4e09aeab8a8c36a98168","remaining":0,"durationMs":1081}
+
+
+Command: pnpm integration:core (shared-harness regression, all four scenarios)
+{"event":"fixture_start","project":"aster-integration-b2f69f6d1e444378b652ffeb442d1e4a","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":6563}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"1.25%","memory":"52.46MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.64%","memory":"12.33MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0}]}
+{"event":"scenario_start","mode":"protocol"}
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"protocol"}
+{"event":"scenario_start","mode":"adapters"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":458}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2796}
+{"event":"fixture_action","service":"postgres","action":"pause","durationMs":248}
+{"event":"fixture_action","service":"postgres","action":"unpause","durationMs":2576}
+{"event":"fixture_action","service":"postgres","action":"pause","durationMs":235}
+{"event":"fixture_action","service":"postgres","action":"unpause","durationMs":2692}
+{"event":"fixture_action","service":"redis","action":"stop","durationMs":430}
+{"event":"fixture_action","service":"redis","action":"start","durationMs":2782}
+{"event":"fixture_action","service":"redis","action":"pause","durationMs":249}
+{"event":"fixture_action","service":"redis","action":"unpause","durationMs":2634}
+{"event":"fixture_action","service":"redis","action":"pause","durationMs":296}
+{"event":"fixture_action","service":"redis","action":"unpause","durationMs":2617}
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"postgres_stop_recovery","outcome":"passed"}
+{"event":"postgres_timeout_cancellation","outcome":"passed","reservedSlots":0}
+{"event":"redis_stop_recovery","outcome":"passed"}
+{"event":"redis_cancellation_capacity_timeout","outcome":"passed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"adapters"}
+{"event":"scenario_start","mode":"identity"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":450}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2766}
+{"event":"fixture_action","service":"redis","action":"stop","durationMs":398}
+{"event":"fixture_action","service":"redis","action":"start","durationMs":2902}
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":58}
+{"event":"natural_exit","mode":"identity"}
+{"event":"scenario_start","mode":"http-drain"}
+{"event":"http_inflight_drain","durationMs":70,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"core_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain"],"durationMs":74790}
+{"event":"fixture_cleanup","project":"aster-integration-b2f69f6d1e444378b652ffeb442d1e4a","remaining":0,"durationMs":1726}
+
+Focused guard command: node --test services/identity/dist/test/docker-fixture.test.js
+8 tests; 8 passed; 0 failed; no Docker required (124.469402 ms).
+
+Source fingerprints (sha256, working tree based on 0fb247c)
+acc662904e6931419dae6ddf3c496338ab7cf894ff31b2888282fb23df8cee13  infra/compose/integration-broker.yml
+874ea0caa8538c7207f82cc82bec06b3cae0225200e0476cf022f24dac28ad29  infra/compose/integration-storage.yml
+525e1d658fc4c8d043d129195403e15a2640e7afb48b2d2554f56fd94327e5b1  infra/compose/integration.yml
+acdcc086e07ee8520ec6b62cfdf369fc6a0a98299c1773c2673e382650a8716e  services/identity/test/integration/broker-worker.ts
+81b7152b01d4a9c45165643a09970112c87f72d8fc1dfb80fa7f391f42cdf8a7  services/identity/test/integration/core-worker.ts
+8daf9c142cfbef948977476a61e0c12bba0219fb1bb5993137233c23f65c6b5d  services/identity/test/integration/docker-fixture.ts
+9da33d47b241e3ffb387f58d1fa3134b9b8e79f0f00f3fd544a307d57cc65065  services/identity/test/integration/http-drain.ts
+05dfdb98db97d6e66e3c492071f8b7fc26ca085499f016d4a0120c7ccba993c8  services/identity/test/integration/integration.ts
+3a82a44138a87bd1fdbbffc92b26df1179b156f38349f98a95b29892f5c6bd3c  services/identity/test/integration/storage-worker.ts
+ad8d7e3c710fc8d0eddce9978055de5dc8aa1a50defadc65ffd1fcc2631e90a4  services/identity/test/integration/worker-control.ts
+79ab66d11c557712866d0dc9f9bba0dd3d09e8ee782b1f17344479adfc52c2f7  services/identity/test/docker-fixture.test.ts
+ae6c3bf8763a556eda81bbbd3832ff454c5d8d53ffd81cd1053cc5733e464a1b  services/identity/package.json
+011a52725be5e0877c21e91e8824c4d446d6d71eff4e9f8d41f910160ddea345  package.json
+58f1496a14e6aa56368e95a505b3ea6a954ff6f59eda2b6063f0b763b39fcd0b  pnpm-lock.yaml
+
+Candidate verification
+pnpm check:changed: 49/49 tasks passed, 25 cached, 37.066 s.
+Identity: 28/28 tests, including 8 no-Docker ownership guards.
+ESLint, formatting, typecheck, Knip, architecture, platform, CI policy,
+documentation, memory, secret and existing package tests passed.
+pnpm audit --audit-level=high: No known vulnerabilities found.
+pnpm install --frozen-lockfile --offline: unchanged lockfile; passed in 598 ms.
+Final prose/evidence-only checks: docs 136 files / 2095 headings / 378 links;
+ai-state 10 files / 25 queue items / 52 sessions, P01-R09 active; secrets zero;
+git diff --check passed. No source/Compose changed after the recorded matrix.
+Final Docker inventories filtered by com.aster.scope=p01-r09: zero containers,
+networks and volumes. The same four unrelated containers remain exited:
+5c91b929fa48663a76b372ed63178b089030dd8a83572a80b098d17db0b8133a
+b03fbb6cc926033445c0c0f53f41dddb228a4d4180a4ee5b16b98cff92fd6f8f
+d6bd9b628185e610b58beb7856351d6286b9e0e93b85851b8088f5df06878c05
+b4f5eb2da9c24434beabcbd374effa79a2c724f6e2cf5c012b65f903ab488568
+
+Executing-agent initial review and confirmation found no remaining checkpoint
+blocker. Reviewed fixed profiles/ownership, fresh/inherited mounts, finite worker
+and SDK lifetimes, ambiguous outcomes, manual commit/replay, stream checksums,
+multipart cleanup, resource budgets and dev-only dependency scope. KafkaJS group
+deletion rejects nonzero per-group errors; no successful deletion is inferred
+from merely sending a request. No independent or hosted approval is claimed.
+The heavyweight matrix is not repeated for these evidence/memory-only updates.
+One warm-image WSL amd64 host; resource samples are immediate pre-workload
+observations, not a steady-state benchmark, cross-platform guarantee or SLO.
+No Collector/Prometheus proof, combined whole-item acceptance, protected release,
+Kafka SASL/TLS, distributed failover, media publication or evaluator profile yet.
+
+2026-08-27: real Collector/Prometheus checkpoint
+===============================================
+Source: branch feat/p01-r09-real-integration, parent 0cd02ef plus the fingerprints
+below; candidate telemetry code/config unchanged by the subsequent prose closeout.
+Node 24.19.0, pnpm 11.24.0; Docker Desktop engine 26.0.0, Compose 2.26.1;
+Linux amd64 in the existing Ubuntu-20.04 WSL distribution. No production adapter,
+Identity factory, SDK dependency, lockfile, hosted resource or daemon change.
+
+Selection and primary references (inspected 2026-08-27)
+----------------------------------------------------
+Core Collector 0.159.0 released 2026-08-18T01:09:57Z, Apache-2.0:
+https://github.com/open-telemetry/opentelemetry-collector-releases/releases/tag/v0.159.0
+https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.159.0/LICENSE
+https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.159.0/distributions/otelcol/manifest.yaml
+Core already contains OTLP, memory_limiter and the Prometheus exporter. No contrib
+distribution or extra SDK is needed. The Prometheus exporter is upstream beta.
+https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.159.0/exporter/prometheusexporter/README.md
+https://github.com/open-telemetry/opentelemetry-collector/blob/v0.159.0/receiver/otlpreceiver/config.md
+
+Collector image index:
+docker.io/otel/opentelemetry-collector:0.159.0@sha256:7725a7a10c87d8853208bdd4bb3439ad3c0d7b32b4292b9300ac07c8daba14a2
+linux/amd64 sha256:435dd6f180af9e17cea7fbb6e9ba45360d7bfb8389269201269da43ec88f74e7
+linux/arm64 sha256:812a8cd0b5d0540923f5b1827a5745e02f6445827a396d68b38005036a5bfdab
+Local image 123692063 bytes; upstream user 10001:10001; no volume.
+The shell-free image is checked through actual bounded OTLP, not a fake shell probe.
+
+Prometheus 3.14.0 released 2026-08-18T08:49:40Z, Apache-2.0:
+https://github.com/prometheus/prometheus/releases/tag/v3.14.0
+https://github.com/prometheus/prometheus/blob/v3.14.0/Dockerfile
+https://prometheus.io/docs/prometheus/latest/installation/
+https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+https://prometheus.io/docs/prometheus/latest/command-line/prometheus/
+docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+linux/amd64 sha256:e906cef998316bbe319f98711e1b4d8613ad37e14b08ff831d7036e77b7464f9
+linux/arm64 sha256:2d25f68eb7aa2e654dadd83b45e5757259b32a1e4b6bc370f1eec927f491265b
+Local image 260925355 bytes; upstream user nobody; named test volume replaces /prometheus.
+No authentication/TLS is claimed for these loopback-only diagnostic ports.
+
+Fixture and failure behavior
+----------------------------
+The fixed telemetry profile composes the existing core file with
+integration-telemetry.yml: four containers, one owned network, exactly two named
+volumes. PG/Redis retain their tested limits. Collector: 0.5 CPU, 128 MiB, 64 PIDs,
+96 MiB memory limiter, 80 MiB Go target, 1 MiB OTLP body limit. Prometheus: 0.5 CPU,
+256 MiB, 64 PIDs, 192 MiB Go target, 16 web connections, two queries, 10000 query
+samples, 1 MiB/2000-series/16-label scrape limits, 1h/128 MB retention and 10 MB WAL
+segments. Retention is not a filesystem hard quota. Both use read-only roots,
+dropped capabilities, no-new-privileges, finite logs and 5 s stop grace.
+Stateless Collector dataKiB is null (not a fabricated disk measurement).
+
+Two exact regular repository files are mounted read-only/private. Preflight
+refuses oversized files and symlinks. A start failure initially reported:
+"path ...collector.integration.yml is mounted on / but it is not a shared mount."
+Explicit rprivate fixed startup; no host mount/daemon settings changed.
+https://docs.docker.com/engine/storage/bind-mounts/
+The first protocol-complete run (37.571 s) then correctly refused cleanup:
+Docker Desktop translated the restarted Prometheus source under
+/run/desktop/mnt/host/wsl/docker-desktop-bind-mounts/Ubuntu-20.04/<hash>.
+Read-only inspection proved the original and /mnt/wsl translated file had the
+same device 2096 and inode 2257678. Cleanup now accepts only matching distribution,
+regular file, device/inode identity, exact destination, RW=false and rprivate.
+It rejects another source, writable/shared bind, traversal, missing alias and
+different inode. The interrupted project 0a559fc088b24cd2ae9f6e50feac91f8 was
+resumed only for exact validated cleanup; all its resources were removed.
+A subsequent complete run passed in 43.620 s plus 4.927 s cleanup.
+
+Telemetry tests wait for real event-loop delay samples: upstream instrumentation
+requires at least five samples and can omit delay metrics from an immediate first
+flush. No artificial delay metric or production-code fix was introduced.
+The test-only Identity factory enables the existing OTLP exporter (300 ms export,
+1000 ms flush/shutdown, 60 s interval). Critical dependencies are still real
+PG/Redis. Query helpers bound loopback HTTP to 1000 ms and 128 KiB, reject redirects
+and cover body timeouts, not only headers.
+Prometheus stop does not prevent Collector acceptance; restart scrapes cumulative
+counts. Collector stop is visible as up=0 and failed flush, but live/ready remain
+200. Restart restores cumulative HTTP counts. Paused Collector causes finite
+failure; one cancelled flush join does not abandon the owner operation.
+Exporter-down shutdown truthfully returns degraded with only flush_telemetry
+failed, closes PG/Redis/telemetry and exits naturally without forced process exit.
+
+Final command: pnpm integration:telemetry
+----------------------------------------
+{"event":"fixture_start","project":"aster-integration-583ad3b56de8447bb00c6398ec260650","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":4131}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"1.18%","memory":"39.08MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.17%","memory":"19.42MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0},{"service":"collector","cpu":"0.10%","memory":"15.79MiB / 128MiB","pids":"7","imageBytes":123692063,"architecture":"amd64","dataKiB":null},{"service":"prometheus","cpu":"0.52%","memory":"30.54MiB / 256MiB","pids":"7","imageBytes":260925355,"architecture":"amd64","dataKiB":20}]}
+{"event":"scenario_start","mode":"telemetry"}
+{"event":"fixture_action","service":"prometheus","action":"stop","durationMs":772}
+{"event":"fixture_action","service":"prometheus","action":"start","durationMs":3587}
+{"event":"fixture_action","service":"collector","action":"stop","durationMs":931}
+{"event":"fixture_action","service":"collector","action":"start","durationMs":2757}
+{"event":"fixture_action","service":"collector","action":"pause","durationMs":355}
+{"event":"fixture_action","service":"collector","action":"unpause","durationMs":983}
+{"event":"fixture_action","service":"collector","action":"stop","durationMs":465}
+{"event":"otlp_prometheus_round_trip","outcome":"passed","series":202,"metricNames":["aster_dependency_operation_active","aster_dependency_operation_duration_seconds_bucket","aster_dependency_operation_duration_seconds_count","aster_dependency_operation_duration_seconds_sum","aster_dependency_operation_outcomes_total","http_server_active_requests","http_server_request_duration_seconds_bucket","http_server_request_duration_seconds_count","http_server_request_duration_seconds_sum","nodejs_eventloop_delay_max_seconds","nodejs_eventloop_delay_mean_seconds","nodejs_eventloop_delay_min_seconds","nodejs_eventloop_delay_p50_seconds","nodejs_eventloop_delay_p90_seconds","nodejs_eventloop_delay_p99_seconds","nodejs_eventloop_delay_stddev_seconds","nodejs_eventloop_time_seconds_total","nodejs_eventloop_utilization_ratio","process_cpu_time_seconds_total","process_cpu_utilization_ratio","process_memory_usage_bytes","process_uptime_seconds","scrape_duration_seconds","scrape_samples_post_metric_relabeling","scrape_samples_scraped","scrape_series_added","up","v8js_gc_duration_seconds_bucket","v8js_gc_duration_seconds_count","v8js_gc_duration_seconds_sum","v8js_memory_heap_space_available_size_bytes","v8js_memory_heap_space_physical_size_bytes","v8js_memory_heap_space_size_bytes","v8js_memory_heap_used_bytes","v8js_resource_active"]}
+{"event":"scrape_backend_down","readiness":"ready","export":"success"}
+{"event":"collector_stop_recovery","readiness":"ready","unavailableFlushMs":17,"recoveredCount":3}
+{"event":"collector_deadline_cancellation","outcome":"passed","flushMs":306}
+{"event":"exporter_down_shutdown","outcome":"degraded","failedStages":["flush_telemetry"],"durationMs":15,"connections":0}
+{"event":"natural_exit","mode":"telemetry"}
+{"event":"telemetry_integration","outcome":"passed","scenarios":["telemetry"],"durationMs":29755}
+{"event":"fixture_cleanup","project":"aster-integration-583ad3b56de8447bb00c6398ec260650","remaining":0,"durationMs":5744}
+
+Source SHA-256
+--------------
+a63a4a5ceb8656e60b144a56bec76731ce3c6e386abdd1a2b28e677b77771564  infra/compose/integration-telemetry.yml
+de291329382ba4c4028a8f679af2d80f3594fc348d5c7ee25ea5e48a5561341b  infra/compose/collector.integration.yml
+8b3a50a1f6e635ee956e0c22a41e61c20a84a1521319cbe73d227549870b23f6  infra/compose/prometheus.integration.yml
+4d249908c653ffa1e831ebac811724b81d5bc786bb74e822cb74cc3a6fa5486a  services/identity/test/integration/docker-fixture.ts
+df166b1f35b34175db2dca2521bc073e8361913c99e10dfb8e958ee2121a654b  services/identity/test/integration/integration.ts
+5574f5f6f36bb1b20c5d0271c99d30af7a98f423a05b5a040426a347f6a53bd4  services/identity/test/integration/telemetry-worker.ts
+6a78e93ecff93caae6deda5dd8116fe49b148784ceb62441a7e19dfddf99725f  services/identity/test/integration/http-probe.ts
+3d1d5aa4c4c1097dd10faa4335b7af24c667552deecbf15ad2f94a9165014da8  services/identity/test/docker-fixture.test.ts
+78df5ceffc1eb5f34f78095780d00c1c0088a73e3a5f3ccad5fa2652f1b93bfe  services/identity/test/http-probe.test.ts
+
+Verification and limits
+-----------------------
+pnpm --filter=@aster/identity test: 32/32, including ten ownership tests and two
+HTTP-boundary tests. Focused ESLint: PASS.
+pnpm check:changed: 49/49 tasks, 25 cached, 28.383 s. Includes build/typecheck,
+format, lint, Knip, architecture, secret/policy/memory and existing unit checks.
+No dependency graph change since the no-known-vulnerability audit at 0cd02ef;
+no redundant registry audit or cold install for this test-only checkpoint.
+Post-run inventory: no p01-r09 network/volume or Aster fixture container remains.
+The same four unrelated stopped containers listed above remain untouched.
+Synthetic PG/Prometheus data was deleted irreversibly; source configs and image
+caches were preserved.
+
+Executing-agent initial review and confirmation cover profile/file/volume
+ownership, Docker Desktop alias checks, deadlines and HTTP body bounds, optional
+readiness, shutdown failure truthfulness, metric series and test-only factories.
+No remaining local checkpoint blocker; no independent or hosted approval.
+Shared supervisor/port/profile code changed, so repeat core/broker/S3 once at the
+stabilized combined checkpoint. Historical results remain supporting evidence,
+not proof that the new whole matrix ran. Do not repeat containers for prose only.
+Still pending: test-only all-adapter in-flight HTTP shutdown, combined acceptance,
+applicable hosted integration/CI review, cold/forced candidate, protected release,
+post-merge verification and P01-R10 Docker-only evaluator profiles.
+No Grafana/Tempo/Loki, SLO, load benchmark, product feature, native Windows/macOS
+execution or actual arm64 runtime is claimed.
+
+Complete matrix candidate — 2026-08-27
+=====================================
+Base checkpoint: 8ef472d, with the source fingerprints below.
+Environment: same Windows / WSL Ubuntu-20.04 registration (24.04 userspace),
+Node v24.19.0, pnpm 11.24.0, Linux amd64, Docker 26.0.0 / Compose 2.26.1.
+Images are warm. No user workload or steady-state/load benchmark.
+
+One fixed all profile combines the four existing Compose files: PostgreSQL,
+Redis, Kafka, S3, Collector, Prometheus; four synthetic-data volumes and one
+network. Production Identity does not acquire broker/storage dependencies.
+runtime-worker composes the existing lifecycle with real adapters only in tests.
+It holds one HTTP request across SIGTERM, observes finish before consumer stop,
+flushes telemetry, closes PG/Redis/Kafka/S3 then telemetry, verifies zero work,
+and observes final HTTP count 1 in Prometheus. Natural exit is 143.
+A focused runtime run first passed in 23.000 s plus 5.759 s cleanup (71 ms drain).
+The complete matrix below is the authoritative stabilized shared-harness run.
+
+Command: pnpm integration
+-------------------------
+{"event":"fixture_start","project":"aster-integration-b099ce32bd0048deaed4c664b0d531a4","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":8774}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"0.92%","memory":"33.4MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.63%","memory":"5.926MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0},{"service":"broker","cpu":"95.15%","memory":"339.6MiB / 768MiB","pids":"94","imageBytes":441627906,"architecture":"amd64","dataKiB":32},{"service":"storage","cpu":"0.30%","memory":"7.074MiB / 384MiB","pids":"8","imageBytes":62775913,"architecture":"amd64","dataKiB":4},{"service":"collector","cpu":"0.11%","memory":"16.3MiB / 128MiB","pids":"7","imageBytes":123692063,"architecture":"amd64","dataKiB":null},{"service":"prometheus","cpu":"0.72%","memory":"36.48MiB / 256MiB","pids":"8","imageBytes":260925355,"architecture":"amd64","dataKiB":20}]}
+{"event":"scenario_start","mode":"protocol"}
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"protocol"}
+{"event":"scenario_start","mode":"adapters"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":342}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2737}
+{"event":"fixture_action","service":"postgres","action":"pause","durationMs":189}
+{"event":"fixture_action","service":"postgres","action":"unpause","durationMs":2569}
+{"event":"fixture_action","service":"postgres","action":"pause","durationMs":202}
+{"event":"fixture_action","service":"postgres","action":"unpause","durationMs":2514}
+{"event":"fixture_action","service":"redis","action":"stop","durationMs":395}
+{"event":"fixture_action","service":"redis","action":"start","durationMs":2694}
+{"event":"fixture_action","service":"redis","action":"pause","durationMs":212}
+{"event":"fixture_action","service":"redis","action":"unpause","durationMs":2572}
+{"event":"fixture_action","service":"redis","action":"pause","durationMs":197}
+{"event":"fixture_action","service":"redis","action":"unpause","durationMs":2562}
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"postgres_stop_recovery","outcome":"passed"}
+{"event":"postgres_timeout_cancellation","outcome":"passed","reservedSlots":0}
+{"event":"redis_stop_recovery","outcome":"passed"}
+{"event":"redis_cancellation_capacity_timeout","outcome":"passed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"adapters"}
+{"event":"scenario_start","mode":"identity"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":428}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2801}
+{"event":"fixture_action","service":"redis","action":"stop","durationMs":813}
+{"event":"fixture_action","service":"redis","action":"start","durationMs":2726}
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":53}
+{"event":"natural_exit","mode":"identity"}
+{"event":"scenario_start","mode":"http-drain"}
+{"event":"http_inflight_drain","durationMs":61,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"scenario_start","mode":"broker"}
+{"event":"fixture_action","service":"broker","action":"pause","durationMs":199}
+{"event":"fixture_action","service":"broker","action":"unpause","durationMs":7471}
+{"event":"fixture_action","service":"broker","action":"pause","durationMs":203}
+{"event":"fixture_action","service":"broker","action":"unpause","durationMs":7937}
+{"event":"fixture_action","service":"broker","action":"stop","durationMs":1128}
+{"event":"fixture_action","service":"broker","action":"start","durationMs":7615}
+{"event":"broker_topic_ready"}
+{"event":"broker_coordinator_ready"}
+{"event":"broker_initial_offset_ready"}
+{"event":"broker_keyed_delivery","committed":3,"cancelledReplay":"passed","failedReplay":"passed"}
+{"event":"broker_fault_recovery","capacity":"passed","ambiguousAbort":"passed","ambiguousTimeout":"passed","restart":"passed"}
+{"event":"broker_fixture_empty","topics":0,"groups":0}
+{"event":"broker_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"broker"}
+{"event":"scenario_start","mode":"storage"}
+{"event":"fixture_action","service":"storage","action":"stop","durationMs":321}
+{"event":"fixture_action","service":"storage","action":"start","durationMs":2669}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":200}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2595}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":209}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2484}
+{"event":"storage_round_trip","bytes":0,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":262144,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":7340049,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_multipart_abort","acknowledgedPartBytes":5242880,"remainingUploads":0}
+{"event":"storage_fault_recovery","restart":"passed","timeout":"passed","cancellation":"passed"}
+{"event":"storage_fixture_empty","objects":0,"multipartUploads":0,"buckets":0}
+{"event":"storage_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"storage"}
+{"event":"scenario_start","mode":"runtime"}
+{"event":"all_adapter_http_drain","outcome":"passed","durationMs":70,"stages":["consumers","flush","adapters","telemetry"],"httpCount":1,"closed":["http","postgresql","redis","broker","object_storage","telemetry"]}
+{"event":"natural_exit","mode":"runtime"}
+{"event":"scenario_start","mode":"telemetry"}
+{"event":"fixture_action","service":"prometheus","action":"stop","durationMs":298}
+{"event":"fixture_action","service":"prometheus","action":"start","durationMs":2736}
+{"event":"fixture_action","service":"collector","action":"stop","durationMs":313}
+{"event":"fixture_action","service":"collector","action":"start","durationMs":815}
+{"event":"fixture_action","service":"collector","action":"pause","durationMs":193}
+{"event":"fixture_action","service":"collector","action":"unpause","durationMs":653}
+{"event":"fixture_action","service":"collector","action":"stop","durationMs":344}
+{"event":"otlp_prometheus_round_trip","outcome":"passed","series":429,"metricNames":["aster_dependency_operation_active","aster_dependency_operation_duration_seconds_bucket","aster_dependency_operation_duration_seconds_count","aster_dependency_operation_duration_seconds_sum","aster_dependency_operation_outcomes_total","aster_telemetry_export_attempts_total","http_server_active_requests","http_server_request_duration_seconds_bucket","http_server_request_duration_seconds_count","http_server_request_duration_seconds_sum","nodejs_eventloop_delay_max_seconds","nodejs_eventloop_delay_mean_seconds","nodejs_eventloop_delay_min_seconds","nodejs_eventloop_delay_p50_seconds","nodejs_eventloop_delay_p90_seconds","nodejs_eventloop_delay_p99_seconds","nodejs_eventloop_delay_stddev_seconds","nodejs_eventloop_time_seconds_total","nodejs_eventloop_utilization_ratio","process_cpu_time_seconds_total","process_cpu_utilization_ratio","process_memory_usage_bytes","process_uptime_seconds","scrape_duration_seconds","scrape_samples_post_metric_relabeling","scrape_samples_scraped","scrape_series_added","up","v8js_gc_duration_seconds_bucket","v8js_gc_duration_seconds_count","v8js_gc_duration_seconds_sum","v8js_memory_heap_space_available_size_bytes","v8js_memory_heap_space_physical_size_bytes","v8js_memory_heap_space_size_bytes","v8js_memory_heap_used_bytes","v8js_resource_active"]}
+{"event":"scrape_backend_down","readiness":"ready","export":"success"}
+{"event":"collector_stop_recovery","readiness":"ready","unavailableFlushMs":4,"recoveredCount":3}
+{"event":"collector_deadline_cancellation","outcome":"passed","flushMs":304}
+{"event":"exporter_down_shutdown","outcome":"degraded","failedStages":["flush_telemetry"],"durationMs":7,"connections":0}
+{"event":"natural_exit","mode":"telemetry"}
+{"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","broker","storage","runtime","telemetry"],"durationMs":135621}
+{"event":"fixture_cleanup","project":"aster-integration-b099ce32bd0048deaed4c664b0d531a4","remaining":0,"durationMs":5004}
+
+Source SHA-256
+--------------
+0b2ed9b5a56cea60ac2f8a22a47e60a463a663eaec30027115308bb21ce608f8  package.json
+43086cb50f19015ce341492cb131be9f77fcbd175f6bab4952bbd3421ac75063  services/identity/package.json
+1e49738bbc36e84b31015674b178e0aad2178446b9e50bedd6b03e1bf21bd5be  .github/workflows/ci.yml
+8df5cdc634659ff7b28e4a3f89a79d0d39cde95bf3bce5c6b5c86af74e47f974  tools/classify-ci-change.ts
+acdcc086e07ee8520ec6b62cfdf369fc6a0a98299c1773c2673e382650a8716e  services/identity/test/integration/broker-worker.ts
+81b7152b01d4a9c45165643a09970112c87f72d8fc1dfb80fa7f391f42cdf8a7  services/identity/test/integration/core-worker.ts
+e12a2f30b8df2ff5a3ee122051f8f62f237ceb75796490351b64a790512c2e9b  services/identity/test/integration/docker-fixture.ts
+9da33d47b241e3ffb387f58d1fa3134b9b8e79f0f00f3fd544a307d57cc65065  services/identity/test/integration/http-drain.ts
+6a78e93ecff93caae6deda5dd8116fe49b148784ceb62441a7e19dfddf99725f  services/identity/test/integration/http-probe.ts
+1d31b45a1f00d79c6f6554f71137c3c9b8bb17fc4912f6261230b442b965998e  services/identity/test/integration/integration.ts
+b6350802edaa75536ca9e6d768ff04832a7669553aa589f998a25aade16ff66c  services/identity/test/integration/runtime-worker.ts
+3a82a44138a87bd1fdbbffc92b26df1179b156f38349f98a95b29892f5c6bd3c  services/identity/test/integration/storage-worker.ts
+5574f5f6f36bb1b20c5d0271c99d30af7a98f423a05b5a040426a347f6a53bd4  services/identity/test/integration/telemetry-worker.ts
+ad8d7e3c710fc8d0eddce9978055de5dc8aa1a50defadc65ffd1fcc2631e90a4  services/identity/test/integration/worker-control.ts
+de291329382ba4c4028a8f679af2d80f3594fc348d5c7ee25ea5e48a5561341b  infra/compose/collector.integration.yml
+acc662904e6931419dae6ddf3c496338ab7cf894ff31b2888282fb23df8cee13  infra/compose/integration-broker.yml
+874ea0caa8538c7207f82cc82bec06b3cae0225200e0476cf022f24dac28ad29  infra/compose/integration-storage.yml
+a63a4a5ceb8656e60b144a56bec76731ce3c6e386abdd1a2b28e677b77771564  infra/compose/integration-telemetry.yml
+525e1d658fc4c8d043d129195403e15a2640e7afb48b2d2554f56fd94327e5b1  infra/compose/integration.yml
+8b3a50a1f6e635ee956e0c22a41e61c20a84a1521319cbe73d227549870b23f6  infra/compose/prometheus.integration.yml
+4a7b495849ef544d880f21dc06619d832c6ee41583c1327bf48c7b917240de2e  packages/postgres/src/infrastructure/postgres-adapter.ts
+58f1496a14e6aa56368e95a505b3ea6a954ff6f59eda2b6063f0b763b39fcd0b  pnpm-lock.yaml
+
+Candidate checks and review
+---------------------------
+pnpm check:changed: 49/49 tasks, 25 cached, 18.951 s.
+Identity: 33/33, including eleven exact fixture-ownership guards and two bounded
+HTTP-body tests. Focused build/lint/format: PASS.
+pnpm ci:check and pnpm ci:test: PASS, 21/21 tests.
+pnpm platform:compose:check: PASS.
+pnpm audit --audit-level=high: No known vulnerabilities found.
+git diff --check: PASS.
+Post-run Docker inventory contains exactly the same four unrelated stopped
+containers recorded earlier; no p01-r09 network/volume or fixture container.
+Synthetic fixture volumes were deleted irreversibly; image caches/configs stay.
+
+CI adds one 15-minute integration step inside the existing protected quality job.
+Runtime, adapters, Compose, shared manifests/lockfile/build/toolchain and classifier
+changes select it. Documentation-only and unrelated web source do not. No extra
+pipeline, install job or local hook. Policy tests reject removal/suppression or
+an increased integration timeout; classification tests cover affected boundaries.
+
+Executing-agent initial review covers the complete P01-R09 diff: exact-owned
+destruction, finite subprocess/IPC/output/network budgets, immutable image/license
+selection, test-only SDK ownership, PG error handling, metric bounds, natural exit,
+safe retries/ambiguous outcomes and strict path-aware CI. No initial blocker.
+Not an independent approval. Cold/forced candidate and confirmation review follow.
+Evidence-only changes do not invalidate this real matrix; protected CI will run
+the same command from a fresh native-Linux checkout before release.
+Limits: no product/auth/schema/media behavior, no SASL/TLS or distributed broker
+failover, no arm64/native-Windows/macOS execution, no steady-state footprint/SLO.
+P01-R10 still owns final evaluator profiles and Docker-only application startup.
+
+Cold acceptance and confirmation — 2026-08-27
+--------------------------------------------
+Exact source: cbc525598d483768f6be34b80ac07cb0ef7536aa.
+Fresh no-local clone: /tmp/aster-p01-r09-0sHuGs, no node_modules/build/Turbo state.
+Command: git clone --no-local --single-branch --branch
+  feat/p01-r09-real-integration <local-repository> <fresh-directory>
+git config --local core.hooksPath .githooks
+pnpm install --frozen-lockfile --offline
+  Scope: all 10 workspace projects
+  Lockfile passes supply-chain policies; lockfile is up to date
+  Packages: 329 reused, 0 downloaded, 329 added
+  Done in 2.2 s using pnpm v11.24.0
+pnpm check --force
+  Tasks: 49 successful, 49 total
+  Cached: 0 cached, 49 total
+  Time: 40.586 s
+  Identity: 33/33; PostgreSQL: 12/12; CI classification/policy: 21/21
+pnpm audit --audit-level=high
+  No known vulnerabilities found
+git diff --check and git status --porcelain=v1: clean, exit 0.
+
+Cold repository/declaration/build state, warm external package store. This does
+not measure a first Internet download or native Windows/arm64 execution.
+The complete real matrix fingerprints match this source; no additional local
+container run is needed for this clone or subsequent evidence-only amendment.
+Executing-agent confirmation review found no requirement, security/data,
+availability or public-contract blocker in the complete candidate. No independent
+approval claimed. Strict main rules still require CI required and resolved review
+threads; zero approving reviews are configured. No protections were changed.
+Next: one protected PR, real hosted matrix, squash merge and exact post-merge run.
