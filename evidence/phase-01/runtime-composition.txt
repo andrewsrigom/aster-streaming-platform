@@ -1,0 +1,116 @@
+Evidence: P01-R08 deadlines, readiness, health, and Identity runtime composition
+Date: 2026-08-26
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; amd64; Node.js 24.19.0; pnpm 11.24.0
+Status: IMPLEMENTED; local acceptance and exact frozen checkout passed; protected release pending
+
+Scope and ownership
+- Requirement: P01-R08.
+- Shared runtime infrastructure owns propagated deadlines, dependency readiness, and the single recovery monitor.
+- Identity and Profiles owns only the reference composition root. No account, profile, session, GraphQL, schema, migration, durable write, cache key, product event, media, or hosted resource is in scope.
+- PostgreSQL and Redis are the only critical dependencies for the reference runtime. Redis remains non-authoritative. Broker, object storage, and telemetry export do not gate readiness.
+
+Predecessor and base
+- P01-R07 passed pull request 14 exact-head run 33024975611 and merged as 0dd4dadffa0cfdd688327b9e3f8b89734782ed24.
+- Its cold task-order correction passed pull request 15 run 33026707150, merged as 61226eb3ce4976e31edde1f8b8198bcdd10095a6, and exact post-merge run 33026799005 passed.
+- This P01-R08 branch is rebased onto that corrective released main. Its affected gate must pass before the next source checkpoint.
+
+Activation state
+- Active branch: feat/p01-r08-runtime-composition.
+- Active plan: .ai/CHANGE_PLAN.md.
+- Required source, tests, operations documentation, ADR-0011, runtime runway, and relevant repository skills were restored before implementation.
+- The deadline checkpoint is implemented in @aster/runtime. Readiness, service, health routes, configuration, dependencies, and lockfile changes remain unimplemented here.
+
+Activation verification
+- pnpm format:check: PASS; 3.16s elapsed; 323740 KiB maximum RSS.
+- pnpm docs:check: PASS; 136 documents, 2047 headings, 365 links, 4 status claims, 0 violations; 0.84s elapsed; 142388 KiB maximum RSS.
+- pnpm ai:check: PASS; 10 files, 25 queue items, 42 session entries, P01-R08 active and targeted, 0 violations; 0.53s elapsed; 142316 KiB maximum RSS.
+- git diff --check: PASS.
+
+Deadline checkpoint
+- Added packages/runtime/src/deadline.ts and the public @aster/runtime export with no new package, dependency, lockfile, service, route, schema, durable state, or vendor type.
+- The accepted timeout is one integer millisecond through 300000 milliseconds. One monotonic budget produces a derived AbortSignal and non-increasing remaining value. Parent cancellation never copies its reason.
+- Expiry, parent cancellation, and explicit disposal release the timer and parent listener once. Disposal does not abort completed work. The default timer is unreferenced and cannot keep an otherwise idle Node.js process alive.
+- Plain own-data validation rejects unknown keys, accessors, throwing proxies, forged signals, and invalid budgets with bounded cause-free issues. Built-in AbortSignal/EventTarget operations bypass caller-owned signal properties.
+- Sixteen focused deadline cases cover deterministic expiry, regression-resistant remaining budget, live and already-aborted parents, hostile signal properties, disposal, timeout bounds, hostile option shapes, forged signals, throwing/synchronous/invalid schedulers, late clock failure, real expiry, natural subprocess exit, and declaration isolation.
+
+Deadline verification
+- @aster/runtime typecheck: PASS; 2.53s elapsed; 327472 KiB maximum RSS.
+- @aster/runtime build: PASS; 1.58s elapsed; 257576 KiB maximum RSS.
+- @aster/runtime focused package suite before the final two scheduler regressions: PASS; 60 tests in 0.97s elapsed; 141996 KiB maximum RSS. The final focused run passes 62 tests, including all 16 deadline cases.
+- Targeted ESLint: PASS; 2.36s elapsed; 374004 KiB maximum RSS.
+- Targeted Prettier: PASS; 0.69s elapsed; 142192 KiB maximum RSS.
+- Final affected repository gate: PASS; 46/46 tasks, 32 cached, 13.173s Turborepo time, 14.24s elapsed, 869316 KiB maximum RSS. It includes the final 62-test runtime suite, documentation, repository memory, architecture, security, unused-code, toolchain, CI policy, community, local-platform policy, formatting, lint, typecheck, build, and every selected test.
+
+Readiness checkpoint
+- Added a bounded readiness controller with one through 32 anonymous critical gates. Gate identity and topology never enter its public snapshot.
+- Lifecycle phase and dependency readiness remain separate. Pending or unavailable dependencies keep a ready lifecycle live but not ready; all gates can recover readiness without phase rollback.
+- Work admission delegates to the lifecycle only while every critical gate and the lifecycle are ready. Draining, failed, stopped, malformed-provider, and late-transition paths fail closed.
+- Nine focused readiness cases cover hostile construction, bounded counts, snapshot validation, failure/recovery, transition outcomes, admission, terminal state, malformed providers, captured operations, declaration isolation, and no topology disclosure.
+
+Combined runtime-contract verification
+- @aster/runtime typecheck, build, targeted ESLint, and targeted formatting: PASS.
+- @aster/runtime complete suite: PASS; 71/71 tests.
+- pnpm check:changed: PASS; 14/14 selected tasks, 3 cached, 22.358s Turborepo time, 23.51s elapsed, 860052 KiB maximum RSS.
+
+Recovery monitor checkpoint
+- Added one sequential monitor with one probe per anonymous critical gate, one overall cycle timeout, a jittered interval, no overlapping cycles, and explicit start/terminal stop ownership.
+- Stop aborts active monitor ownership and resolves without waiting for a probe that ignores cancellation. Late completion cannot change readiness or schedule another cycle.
+- Probe rejection/malformed outcomes, timeout, scheduler failure, invalid randomness, and synchronous scheduling fail closed to unavailable without reflecting causes. Production timers are unreferenced.
+- Targeted formatting, ESLint, typecheck, build, declaration isolation, natural process exit, and the complete 80-test runtime suite pass. No additional affected gate was required after the unchanged package/workspace boundary and green combined runtime-contract candidate.
+
+Fixed health route checkpoint
+- Added exact case-sensitive `GET` and `HEAD` `/health/live` and `/health/ready` routes before the GraphQL mount gate. Both read one repository-owned process-local snapshot, set `Cache-Control: no-store`, and return status from only the selected liveness/readiness dimension.
+- The adapter accepts only coherent finite snapshots containing liveness, lifecycle phase, readiness, and stable reason. Throwing, accessor-backed, excessive, and incoherent provider results return sanitized `500 INTERNAL_HTTP_ERROR`; unsupported methods return `405 HTTP_METHOD_NOT_ALLOWED` without invoking the provider.
+- `@aster/http-express` build, typecheck, targeted ESLint, targeted formatting, and 10/10 tests pass. Real sockets prove starting, dependency-unavailable, ready, and failed statuses; `HEAD` body suppression; provider sanitization; and unchanged pre-mount `/graphql` behavior.
+- This is focused working-tree evidence based on source head `0a7cdc0`; the combined HTTP/configuration/service candidate will record its exact commit and affected gate.
+
+Reference listener and startup configuration checkpoint
+- Health source and documentation were committed as `d6d6ffc` after the focused HTTP gate, documentation validation, repository-memory validation, and staged secret check passed.
+- Added three required non-secret reference inputs: loopback or container-wildcard HTTP host, unprivileged decimal port, and 5000–300000 millisecond total startup deadline. Dependency and monitor budgets remain phase-owned composition policy rather than new environment variables.
+- Configuration build, typecheck, targeted ESLint, and 13/13 tests pass. The updated README diagnostic command exits 0 and emits five non-secret values while retaining configured-only secret status.
+- Focused working-tree configuration evidence is based on `d6d6ffc`; the combined candidate will record exact source and affected-gate evidence.
+
+Controlled Identity orchestration checkpoint
+- Reference configuration was committed as `361d5d1` after its focused gate and documentation, memory, platform-policy, and secret checks passed.
+- Added `services/identity` with source-owned HTTP, PostgreSQL, Redis, telemetry, and force-close ports. It composes one lifecycle, one startup deadline, two critical readiness gates, one recovery monitor, and one removable process-signal owner without a product schema or executable listener.
+- Nine focused tests pass for shared startup, deadline propagation, unavailable startup/recovery, work drain, cancellation and late completion, listener cleanup, complete closure attempts, monitor failure, signal cleanup, and vendor-free declarations.
+- Package build/typecheck, architecture and unused-code validation, and frozen offline install pass. The lockfile adds only the Identity workspace importer; no existing package version changes. The initial offline metadata check failed for an existing AWS transitive, then normal pinned installation reused all packages with zero downloads and the frozen offline retry passed.
+- Real factories, partial-construction cleanup, synchronous force-close or terminal fallback, process diagnostic, combined affected gate, and exact clean checkout remain required before publication.
+
+Executable composition checkpoint — 2026-08-27
+- Source: working candidate following de90aa8 on feat/p01-r08-runtime-composition; exact candidate commit and acceptance evidence will be recorded before publication.
+- Added real factories, bounded Node HTTP listener, local telemetry, readiness transition logs, clock/ID startup event, environment-backed entrypoint, one process owner and explicit terminal fallback.
+- pnpm install --lockfile-only --offline; pnpm install --frozen-lockfile --offline: PASS. Only existing workspace links were added to the Identity importer; no registry versions changed.
+- pnpm exec turbo run build --filter=@aster/identity: PASS, 7/7 tasks.
+- pnpm --filter=@aster/identity test: PASS, 20/20. Includes real HTTP, controlled failure/recovery, no dependency I/O from health polls, partial factory cleanup, occupied listener, cancellation before/after binding, real PostgreSQL/Redis unavailable endpoints, cause-free invalid configuration, SIGTERM drain/natural exit and forced signal/manual termination.
+- pnpm --filter=@aster/redis test: PASS, 15/15. The new real TCP regression initially failed because node-redis tried to mutate frozen socket options. Direct reproduction reported TypeError before a Redis socket existed. Copying outer/socket options only at the vendor factory restored the connection attempt while preserving immutable internal options and public contracts.
+- pnpm exec eslint services/identity packages/redis; pnpm unused:check; pnpm architecture:check: PASS.
+- pnpm --filter=@aster/identity check: PASS. Exact diagnostic output:
+  {"event":"identity_diagnostic_passed","dependencyMode":"controlled","healthStatesChecked":4,"httpMetrics":"collected","shutdown":"completed"}
+- Process tests impose a 5-second external kill bound and assert the child was not killed. Graceful SIGTERM exits 143 through beforeExit; forced signal/manual exits 143/1 without beforeExit. Native-Windows signal cases are explicitly skipped; native-Windows signal support remains unclaimed.
+- Existing runtime/HTTP/config focused evidence remains supporting evidence; the combined candidate gate reruns affected dependencies. Real protocol interoperability, container failure/recovery and OTLP remain P01-R09.
+- Compatibility reference: https://github.com/redis/node-redis/blob/redis@6.2.1/packages/client/lib/client/index.ts (parseOptions mutates both options and options.socket; confirmed against pinned installed source).
+- Combined candidate gate: pnpm check:changed PASS, 49/49 tasks, 11 cached, 56.409s Turborepo time. The first attempt stopped on missing session-log section headings; after restoring the required Completed/Evidence/Next action structure, focused documentation/memory/format checks and the complete affected rerun passed. No source test failure was concealed by that formatting correction.
+- Remaining source-independent context prose was reconciled after this gate; documentation/memory validation is repeated before the candidate commit. The forced full gate will run once inside the exact frozen checkout, satisfying both acceptance and clean-build evidence without duplicating it in the warm workspace.
+
+Exact source acceptance — 282ccb5d1ba561e1237570d622b09e3c771b3345
+- Environment unchanged: WSL Linux amd64, Node.js 24.19.0, pnpm 11.24.0. A separate no-local Git clone contained no node_modules, generated declarations or Turbo cache before validation. It reused the local pnpm content-addressed store; this is not an internet-download or empty-machine timing claim.
+- pnpm install --frozen-lockfile --offline: PASS; 329 packages reused, zero downloads, unchanged lockfile.
+- pnpm check --force: PASS; 49/49 tasks, zero cached, 1m21.592s Turborepo time. This single cold run is also the complete P01-R08 local acceptance gate.
+- pnpm identity:check: PASS from the exact clean clone; four controlled health states, HTTP metrics collected, shutdown completed and natural exit.
+- pnpm audit --audit-level=high: PASS; No known vulnerabilities found.
+- git status --porcelain: empty after installation, full gate, diagnostic and audit.
+- Local source inspection covered environment preflight, owner construction/cleanup, deadline propagation, monitor stop/late-completion rules, HTTP snapshot sanitization, finite metrics, inner declarations, real-client configuration copying and manual/signal terminal ownership. No remaining local blocking finding was identified. This is executing-agent review, not a claim of independent or hosted approval.
+- Later evidence/memory-only edits do not alter source, package/export/declaration inputs, dependencies, public commands or bootstrap behavior. This exact cold source evidence remains applicable; only the affected documentation/memory/security gates need repetition for closeout prose.
+
+Planned evidence sequence
+- Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
+- Monitor cancellation/non-overlap focused tests.
+- Real-socket health and service-composition focused tests followed by one combined affected gate.
+- Controlled Identity composition and process-exit diagnostic.
+- Forced complete graph, exact frozen checkout, review, protected CI, merge, and post-merge verification.
+
+Limitations
+- Real PostgreSQL/Redis authentication, stop/recovery, container health, and service integration belong to P01-R09.
+- Compose exposure, resource profiles, and the clean Docker-only evaluator command belong to P01-R10.
+- No benchmark, SLO, hosted availability, native Windows signal, or product behavior is claimed.

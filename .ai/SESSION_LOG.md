@@ -2,26 +2,133 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-26 — Corrected the post-merge cold typecheck graph
+## 2026-08-27 — Executable Identity composition and process diagnostic
 
 ### Completed
 
-- Observed exact P01-R07 protected run `33024975611` pass at `613c1db`, squash-merged pull request 14 as `0dd4dadffa0cfdd688327b9e3f8b89734782ed24`, and preserved the two local P01-R08 commits through a predecessor-first rebase.
-- Diagnosed post-merge run `33026244011`: `@aster/broker-kafka` and other adapter typechecks started before the cold runner emitted exported `@aster/telemetry` declarations. The source-quality lane and stable aggregate failed; documentation/security and local platform passed.
-- Added only the missing Turbo edge from package typecheck to dependency build while retaining dependency typecheck, plus one exact policy regression. Adapter source, dependencies, lockfile, exports, and runtime behavior are unchanged.
-- Excluded one local switched-branch run from evidence because ignored P01-R08 runtime `dist` files remained outside Git. The exact detached checkout began without generated state and is the acceptance proof.
+- Implemented real HTTP/configuration/telemetry/PostgreSQL/Redis factories, clock/IDs, fixed listener limits, snapshot health, HTTP metrics, readiness events, environment entrypoint and controlled loopback diagnostic.
+- Added partial-construction cleanup and explicit terminal ownership when asynchronous adapter closure cannot prove disposal after the lifecycle deadline. Normal SIGTERM drains accepted work and exits naturally; forced signal/manual paths terminate within the tested subprocess bound.
+- Real-client testing found node-redis mutating frozen options before connecting. Corrected the vendor-only copy and added a real TCP regression without changing dependencies or public contracts.
 
 ### Evidence
 
-- Corrective source candidate: `f38485aa5200e4b284dddba1af95cf0e33022f2d`.
-- Twenty toolchain tests, formatting, documentation, repository memory, secret scanning, and Git whitespace checks pass before the exact checkout.
-- The exact checkout installed all 329 packages from the offline store with zero download in `1.62s` at `399748 KiB` maximum RSS.
-- Its forced graph passed 46/46 tasks with zero cache in `40.365s` of Turborepo time and `41.62s` elapsed at `873456 KiB` maximum RSS. High-severity audit reports no known vulnerability, Git is clean, and the validated worktree was removed.
-- Raw ledger: `evidence/phase-01/platform-adapters.txt`.
+- Evidence: 20/20 Identity tests, 15/15 Redis tests, diagnostic, targeted ESLint, architecture and Knip pass. Frozen offline installation changes only Identity workspace links. Combined/full/clean-checkout/release gates remain next; no container integration or product behavior is claimed.
 
 ### Next action
 
-Publish one corrective pull request, require protected exact-head CI, merge, verify the post-merge run, then rebase and resume the saved P01-R08 deadline/readiness branch.
+Source commit `282ccb5` passes the 49/49 affected gate and a separate frozen clone with 49/49 forced uncached tasks, diagnostic, high-severity audit and clean Git. Finish protected publication closeout for P01-R08; no independent/hosted review is claimed yet.
+
+## 2026-08-26 — Implemented controlled Identity runtime orchestration
+
+### Completed
+
+- Added the product-empty Identity workspace with one startup deadline, two critical dependency gates, recoverable readiness, one monitor, work admission, ordered closure, and removable signal ownership against source-owned ports.
+- Kept real listener/client construction and the synchronous force-close or terminal fallback explicit as the next composition boundary.
+
+### Evidence
+
+- Identity build/typecheck, 9/9 focused tests, architecture, unused-code checks, and frozen offline installation pass. Lockfile changes only add the new workspace importer; existing versions are unchanged.
+
+### Next action
+
+Compose real factories, prove partial cleanup and terminal behavior, add the loopback process diagnostic, and run one combined affected gate.
+
+## 2026-08-26 — Implemented reference listener and startup configuration
+
+### Completed
+
+- Added required non-secret HTTP host, unprivileged port, and total startup deadline values to the Phase 01 reference schema, typed result, and redacted diagnostic.
+- Kept internal dependency and monitor budgets in the upcoming composition policy; updated the existing README command without adding a service or dependency.
+
+### Evidence
+
+- Configuration build, typecheck, targeted ESLint, 13/13 tests, and the updated README diagnostic pass. The health checkpoint is committed as `d6d6ffc`.
+
+### Next action
+
+Create the product-empty Identity composition root with controlled ports and focused lifecycle tests.
+
+## 2026-08-26 — Implemented fixed public health routes
+
+### Completed
+
+- Added exact non-cacheable `GET`/`HEAD` liveness and readiness routes before the GraphQL mount gate.
+- Added coherent finite snapshot validation, stable status selection, unsupported-method handling, and sanitization for throwing, accessor-backed, excessive, or incoherent providers without dependency I/O in the adapter.
+
+### Evidence
+
+- HTTP build, typecheck, targeted ESLint, targeted formatting, and 10/10 tests pass. Real sockets cover starting, dependency-unavailable, ready, failed, `HEAD`, unsupported method, hostile provider, and preserved pre-mount GraphQL behavior.
+
+### Next action
+
+Add the minimum listener and startup configuration needed by the product-empty Identity composition root.
+
+## 2026-08-26 — Implemented the bounded readiness recovery monitor
+
+### Completed
+
+- Added one sequential, non-overlapping monitor with bounded anonymous probes, 20% jitter, one overall cycle timeout, cancellation, terminal stop, late-completion suppression, and unreferenced production timers.
+- Scheduler/random/probe/readiness failures produce stable unavailable state without leaking causes or starting unbounded work.
+
+### Evidence
+
+- Targeted formatting, ESLint, typecheck, build, declaration isolation, natural process exit, and 80/80 runtime tests pass. Per the checkpoint policy, no additional full affected gate was run after the green combined deadline/readiness candidate.
+
+### Next action
+
+Add the fixed Express liveness/readiness routes and focused real-socket contract tests.
+
+## 2026-08-26 — Implemented recoverable dependency readiness
+
+### Completed
+
+- Added a bounded readiness controller over the released lifecycle with up to 32 anonymous critical gates, pending/ready/unavailable transitions, topology-free frozen snapshots, recovery without lifecycle rollback, and ready-only work leases.
+- Hardened options, lifecycle snapshots, and leases against accessors, malformed values, thrown providers, unbounded counts, invalid transitions, and late recovery after drain.
+
+### Evidence
+
+- Runtime typecheck/build and 71/71 runtime tests pass; the combined deadline/readiness affected gate passes 14/14 tasks in `22.358s` of Turborepo time and `23.51s` elapsed at `860052 KiB` maximum RSS.
+
+### Next action
+
+Implement the single non-overlapping recovery monitor with focused deterministic tests.
+
+## 2026-08-26 — Implemented the propagated deadline checkpoint
+
+### Completed
+
+- Added a dependency-free `@aster/runtime` deadline with a finite 1–300000 millisecond monotonic budget, derived cancellation signal, non-increasing remaining budget, and idempotent disposal.
+- Parent cancellation does not copy its reason. Plain own-data validation rejects unknown/accessor/proxy input and forged signals; platform AbortSignal/EventTarget operations bypass caller-owned properties.
+- The default timer is unreferenced. A subprocess with a five-minute unused deadline exits naturally, and disposal releases resources without aborting completed work.
+- Documented the implemented local checkpoint separately from the still-planned readiness, monitor, health, configuration, and Identity composition behavior.
+
+### Evidence
+
+- Sixteen focused deadline cases and the complete 62-test runtime package pass, including deterministic timeout, parent cancellation, clock regression/failure, synchronous and invalid scheduler behavior, cleanup, declaration isolation, real expiry, and natural process exit.
+- Runtime typecheck passed in `2.53s` at `327472 KiB` maximum RSS; build passed in `1.58s` at `257576 KiB`; the measured 60-test package run passed in `0.97s` at `141996 KiB` before the final two scheduler regressions, and the final 62-test run also passes.
+- Targeted ESLint passed in `2.36s` at `374004 KiB`; targeted formatting passed in `0.69s` at `142192 KiB`.
+- The final affected graph passed 46/46 tasks with 32 cached in `13.173s` of Turborepo time and `14.24s` elapsed at `869316 KiB` maximum RSS; it executed the final 62-test runtime suite and every selected repository validator.
+- Raw ledger: `evidence/phase-01/runtime-composition.txt`.
+
+### Next action
+
+Verify the rebased deadline checkpoint once, then implement the bounded readiness controller.
+
+## 2026-08-26 — Released P01-R07 and activated P01-R08 on released main
+
+### Completed
+
+- P01-R07 pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; its cold task-order correction passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
+- Activated local P01-R08 branch `feat/p01-r08-runtime-composition` on corrective released `main` with the delivery sequence: deadline/readiness contracts, monitor, health routes, minimum configuration, and product-empty Identity composition.
+- Consolidated the candidate gate to the combined runtime contracts, combined HTTP/service composition, and closeout instead of repeating the full gate after every micro-edit.
+
+### Evidence
+
+- P01-R07 protected and post-merge runs are recorded above; the rebased P01-R08 affected gate remains the next verification.
+
+### Next action
+
+Verify the rebased deadline once, then implement readiness with focused tests before the combined runtime-contract gate.
 
 ## 2026-08-26 — Passed hosted policy confirmation and remediated late review
 

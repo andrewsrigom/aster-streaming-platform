@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-The repository foundation and the first Phase 01 technical packages exist. Configuration, structured logging, the bounded Express transport, and the reusable lifecycle are implemented or released according to `.ai/CURRENT_STATE.md`. No deployable application service, product schema, product resolver, product database migration, broker, object-storage runtime, or observability backend exists yet.
+The repository foundation and Phase 01 technical packages exist. The active P01-R08 candidate adds a local product-empty Identity entrypoint that composes those packages, with health and a controlled loopback diagnostic. No containerized product service, product schema/resolver/migration, broker/object-storage runtime, or observability backend exists yet. `.ai/CURRENT_STATE.md` distinguishes implemented candidates from released behavior.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 lifecycle and P01-R06 telemetry are released. P01-R07 adapter behavior merged through pull request 14, but its post-merge cold task graph failed and P01-R07 remains active on one corrective ordering branch. P01-R08 deadline/readiness work is saved locally and unpublished until that correction releases, followed by P01-R09 real integration and P01-R10 resource-aware closeout. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` distinguishes the released telemetry baseline, active adapter closeout, and later unimplemented capabilities.
+P01-R05 lifecycle, P01-R06 telemetry, and P01-R07 platform adapters are released. P01-R08 composition is active from corrective released `main`; deadlines, readiness, monitoring, health, configuration, real factories, Identity entrypoint and controlled process diagnostic are implemented locally. Acceptance and protected release closeout remain next. P01-R09 real integration and P01-R10 resource-aware Docker-only closeout remain later work.

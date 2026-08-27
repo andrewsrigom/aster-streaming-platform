@@ -2,6 +2,8 @@
 
 Only one item may be `IN_PROGRESS`.
 
+P01-R08 checkpoint (2026-08-27): executable Identity source `282ccb5` passes local acceptance and exact frozen checkout; protected publication/review/release remain. P01-R09 is not active yet.
+
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
 | 1 | Select and record the source-code license | P00-R01 | DONE |
@@ -25,8 +27,8 @@ Only one item may be `IN_PROGRESS`.
 | 19 | Calibrate risk-proportionate verification and affected-scope feedback | P00-R06 | DONE |
 | 20 | Implement lifecycle, health, and bounded graceful shutdown | P01-R05 | DONE |
 | 21 | Define the bounded telemetry contract and runtime metrics | P01-R06 | DONE |
-| 22 | Implement narrow PostgreSQL, Redis, broker, object-storage, clock, ID, and telemetry adapters | P01-R07 | IN_PROGRESS |
-| 23 | Compose startup deadlines, dependency readiness, health routes, and the Identity reference skeleton | P01-R08 | READY |
+| 22 | Implement narrow PostgreSQL, Redis, broker, object-storage, clock, ID, and telemetry adapters | P01-R07 | DONE |
+| 23 | Compose startup deadlines, dependency readiness, health routes, and the Identity reference skeleton | P01-R08 | IN_PROGRESS |
 | 24 | Prove the reference runtime against real local dependencies | P01-R09 | READY |
 | 25 | Publish resource-aware profiles, troubleshooting, and the clean Docker-only Phase 01 closeout | P01-R10 | READY |
 

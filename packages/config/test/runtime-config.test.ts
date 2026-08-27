@@ -15,7 +15,10 @@ const REDIS_CANARY = "redis-canary-never-emit";
 function validEnvironment(): Record<string, string> {
   return {
     ASTER_ENV: "local",
+    ASTER_HTTP_HOST: "127.0.0.1",
+    ASTER_HTTP_PORT: "3100",
     ASTER_SERVICE_NAME: "config-check",
+    ASTER_STARTUP_DEADLINE_MS: "15000",
     DATABASE_URL: credentialUrl("postgresql:", "aster", DATABASE_CANARY, "postgres:5432/aster"),
     REDIS_URL: credentialUrl("redis:", "", REDIS_CANARY, "redis:6379/0"),
   };
@@ -77,7 +80,10 @@ test("loads and freezes a valid typed runtime configuration", () => {
 
   assert.equal(sourceLengthReads, 1);
   assert.equal(configuration.environment, "local");
+  assert.equal(configuration.httpHost, "127.0.0.1");
+  assert.equal(configuration.httpPort, 3_100);
   assert.equal(configuration.serviceName, "config-check");
+  assert.equal(configuration.startupDeadlineMs, 15_000);
   assert.equal(digest(configuration.databaseUrl), digest(environment["DATABASE_URL"] ?? ""));
   assert.equal(digest(configuration.redisUrl), digest(environment["REDIS_URL"] ?? ""));
   assert.equal(Object.isFrozen(configuration), true);
@@ -95,10 +101,28 @@ test("reports non-secret values and only configured status for secrets", () => {
       value: "local",
     },
     {
+      name: "ASTER_HTTP_HOST",
+      classification: "non-secret",
+      status: "configured",
+      value: "127.0.0.1",
+    },
+    {
+      name: "ASTER_HTTP_PORT",
+      classification: "non-secret",
+      status: "configured",
+      value: "3100",
+    },
+    {
       name: "ASTER_SERVICE_NAME",
       classification: "non-secret",
       status: "configured",
       value: "config-check",
+    },
+    {
+      name: "ASTER_STARTUP_DEADLINE_MS",
+      classification: "non-secret",
+      status: "configured",
+      value: "15000",
     },
     { name: "DATABASE_URL", classification: "secret", status: "configured" },
     { name: "REDIS_URL", classification: "secret", status: "configured" },
@@ -112,7 +136,14 @@ test("fails closed for every missing variable with classified bounded issues", (
   assert.equal(error.code, "ASTER_CONFIGURATION_INVALID");
   assert.deepEqual(error.issues, [
     { variable: "ASTER_ENV", classification: "non-secret", reason: "missing" },
+    { variable: "ASTER_HTTP_HOST", classification: "non-secret", reason: "missing" },
+    { variable: "ASTER_HTTP_PORT", classification: "non-secret", reason: "missing" },
     { variable: "ASTER_SERVICE_NAME", classification: "non-secret", reason: "missing" },
+    {
+      variable: "ASTER_STARTUP_DEADLINE_MS",
+      classification: "non-secret",
+      reason: "missing",
+    },
     { variable: "DATABASE_URL", classification: "secret", reason: "missing" },
     { variable: "REDIS_URL", classification: "secret", reason: "missing" },
   ]);
@@ -121,6 +152,51 @@ test("fails closed for every missing variable with classified bounded issues", (
   Object.setPrototypeOf(inheritedEnvironment, validEnvironment());
   const inheritedError = captureRuntimeConfigError(() => loadEnvironment(inheritedEnvironment));
   assert.deepEqual(inheritedError.issues, error.issues);
+});
+
+test("rejects unsafe listener and startup budget values", () => {
+  const environment = validEnvironment();
+  environment["ASTER_HTTP_HOST"] = "localhost";
+  environment["ASTER_HTTP_PORT"] = "0";
+  environment["ASTER_STARTUP_DEADLINE_MS"] = "300001";
+
+  const error = captureRuntimeConfigError(() => loadEnvironment(environment));
+
+  assert.deepEqual(error.issues, [
+    { variable: "ASTER_HTTP_HOST", classification: "non-secret", reason: "invalid" },
+    { variable: "ASTER_HTTP_PORT", classification: "non-secret", reason: "invalid" },
+    {
+      variable: "ASTER_STARTUP_DEADLINE_MS",
+      classification: "non-secret",
+      reason: "invalid",
+    },
+  ]);
+
+  const container = validEnvironment();
+  container["ASTER_HTTP_HOST"] = "0.0.0.0";
+  container["ASTER_HTTP_PORT"] = "65535";
+  container["ASTER_STARTUP_DEADLINE_MS"] = "5000";
+  const configuration = loadEnvironment(container);
+  assert.equal(configuration.httpHost, "0.0.0.0");
+  assert.equal(configuration.httpPort, 65_535);
+  assert.equal(configuration.startupDeadlineMs, 5_000);
+
+  for (const value of ["01024", "1024.5", "+1024", " 1024", "1023", "65536"]) {
+    const invalid = { ...validEnvironment(), ASTER_HTTP_PORT: value };
+    assert.deepEqual(captureRuntimeConfigError(() => loadEnvironment(invalid)).issues, [
+      { variable: "ASTER_HTTP_PORT", classification: "non-secret", reason: "invalid" },
+    ]);
+  }
+  for (const value of ["4999", "300001", "1e4", "15000.0"]) {
+    const invalid = { ...validEnvironment(), ASTER_STARTUP_DEADLINE_MS: value };
+    assert.deepEqual(captureRuntimeConfigError(() => loadEnvironment(invalid)).issues, [
+      {
+        variable: "ASTER_STARTUP_DEADLINE_MS",
+        classification: "non-secret",
+        reason: "invalid",
+      },
+    ]);
+  }
 });
 
 test("classifies empty and malformed values without returning their contents", () => {

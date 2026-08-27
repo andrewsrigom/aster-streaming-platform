@@ -13,7 +13,7 @@ Aster subgraphs will run Apollo Server behind Node.js HTTP. The first transport 
 
 Apollo Server 5 distributes web-framework support separately. Apollo maintains the Express 5 integration and documents the required order: start Apollo, install JSON parsing before `expressMiddleware`, and attach the HTTP drain plugin for graceful shutdown. Fastify provides stronger server-level defaults for body parsing, prototype protection, and shutdown, but its Apollo integration is maintained by the community. Native Node.js HTTP avoids a framework dependency but would make Aster own routing, body parsing, media-type handling, error dispatch, and Apollo integration behavior before those are product differentiators.
 
-This decision selects a transport adapter. It does not create a service, a public product schema, authentication, CORS policy, process lifecycle, or readiness behavior.
+This decision selects a transport adapter. It does not create a service, a public product schema, authentication, CORS policy, process lifecycle, or dependency-readiness policy.
 
 ## Decision
 
@@ -32,6 +32,8 @@ The adapter exposes a Node.js `RequestListener` and a one-time GraphQL middlewar
 7. reject a `POST` whose parser produced no body;
 8. invoke the supplied GraphQL middleware;
 9. return stable JSON for unmatched routes and sanitize every unhandled error.
+
+P01-R08 adds fixed `GET` and `HEAD` `/health/live` and `/health/ready` routes before the GraphQL mount gate. A composition root supplies a repository-owned process-local snapshot containing only liveness, readiness, lifecycle phase, and stable reason. The adapter validates the complete snapshot without invoking accessors, sets `Cache-Control: no-store`, and returns `500 INTERNAL_HTTP_ERROR` when the provider throws or returns malformed state. Health requests never initiate dependency work inside this adapter.
 
 Apollo's HTTP drain plugin owns Apollo-to-HTTP drain compatibility. P01-R05 owns process signals, readiness transitions, generalized in-flight tracking, dependency closure, the overall shutdown deadline, and forced termination behavior. There is one future lifecycle coordinator, not competing transport shutdown mechanisms.
 
@@ -62,6 +64,7 @@ Fastify's richer built-in server behavior is valuable, but the current slice has
 - `POST /graphql` without supported UTF-8 JSON media type or with any non-identity request content encoding returns `415`.
 - Malformed JSON returns `400`; a body above the configured bound returns `413` before Apollo runs.
 - Requests before mount return `503`; unmatched and nested paths return `404`.
+- Exact health routes remain available before GraphQL mount. Unsupported health methods return `405` with `Allow: GET, HEAD`; live or ready state returns `200`, and the selected unhealthy dimension returns `503`.
 - The adapter disables Express disclosure and ETag generation. CORS is intentionally absent until an owning deployment or application requirement defines it.
 - The compatibility diagnostic binds only to an ephemeral loopback port and leaves no durable state.
 

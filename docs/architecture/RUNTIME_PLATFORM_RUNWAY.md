@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the implementation path for the remaining Phase 01 work. P01-R06 is released with a repository-owned telemetry package; it does not claim that a Collector, dependency client, Identity service, broker, object storage, or observability backend exists. Exact adapter dependencies and container images remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
+This document defines the remaining Phase 01 path. P01-R06 telemetry and P01-R07 adapters are released. The active P01-R08 candidate now composes an executable Identity reference process. Real dependency/container interoperability, Collector export, backends, profiles and the Docker-only service path remain P01-R09/P01-R10.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -174,6 +174,8 @@ The initial test budgets are 15 seconds for total startup, 3 seconds for Postgre
 
 Startup performs no retry loop. Later operation retries require a known-safe read or an idempotency mechanism and must fit inside the propagated overall deadline.
 
+P01-R08 implements `createAsterDeadline()` in `@aster/runtime` with a 1 millisecond through 5 minute monotonic budget, optional parent signal, sanitized derived signal, non-increasing remaining budget and idempotent cleanup. Identity now uses the configured startup budget, existing PostgreSQL/Redis limits and one 10-second shutdown budget. [Runtime Lifecycle](../operations/RUNTIME_LIFECYCLE.md) records the exact composition, monitor and terminal policy. Controlled and real unavailable-endpoint tests are not a substitute for P01-R09 protocol interoperability.
+
 ### Readiness model
 
 P01-R08 extends the current monotonic lifecycle with bounded readiness gates. Lifecycle phase and dependency readiness remain separate:
@@ -186,13 +188,15 @@ P01-R08 extends the current monotonic lifecycle with bounded readiness gates. Li
 
 The public health response contains only liveness, readiness, lifecycle phase, and a stable reason such as `dependency_unavailable`. Dependency names, endpoints, errors, credentials, retry counts, and topology stay in protected diagnostics, bounded logs, and metrics.
 
-The planned Identity reference skeleton declares PostgreSQL and Redis as critical for its Phase 01 startup contract. Broker and object storage are exercised by targeted diagnostics but are not fake dependencies of that service. The Collector is optional and never blocks readiness.
+The Identity reference skeleton declares PostgreSQL and Redis as critical for its Phase 01 startup contract. Broker and object storage are exercised by targeted diagnostics but are not fake dependencies of that service. The Collector is optional and never blocks readiness.
 
 A single bounded background monitor owns recovery probes. It allows one probe per dependency, applies jittered finite intervals, accepts cancellation, stops before dependency closure, and stores only the last stable state. Health routes read this snapshot and do not initiate network work per request.
 
 ### Reference service boundary
 
 `services/identity` composes configuration, logger, telemetry, lifecycle, Express transport, PostgreSQL, Redis, clock, and IDs. It exposes stable `/health/live` and `/health/ready` routes. It contains no signup, login, account, viewer profile, session, GraphQL schema, resolver, migration, or durable write; those belong to Phase 02.
+
+`pnpm identity:check` provides a controlled loopback diagnostic; `pnpm identity:start` executes the real factories. The real-client composition check exposed and corrected node-redis's mutation of frozen URL/socket options by copying those objects only at the vendor boundary. Internal immutable options, client versions, bounded reconnect and shutdown contracts are unchanged.
 
 ## P01-R09 — Real dependency proof
 

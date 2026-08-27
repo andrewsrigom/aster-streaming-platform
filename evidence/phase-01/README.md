@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Active Phase 01 work item: P01-R07 post-merge cold-task correction from squash `0dd4dad`
+- Active Phase 01 work item: P01-R08 on corrective released `main` at `61226eb`
 
 ## Work items
 
@@ -16,10 +16,11 @@
 | Express HTTP boundary and Apollo drain compatibility | P01-R11 | RELEASED | [`http-adapter.txt`](http-adapter.txt) |
 | Runtime lifecycle, health state, and bounded shutdown | P01-R05 | RELEASED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
 | Bounded runtime, HTTP, dependency, and export metrics | P01-R06 | RELEASED | [`runtime-telemetry.txt`](runtime-telemetry.txt) |
-| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | IMPLEMENTED; post-merge task-order correction pending | [`platform-adapters.txt`](platform-adapters.txt) |
+| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | RELEASED | [`platform-adapters.txt`](platform-adapters.txt) |
+| Propagated deadlines, recoverable readiness, health routes, and Identity runtime composition | P01-R08 | IMPLEMENTED locally; acceptance/release closeout pending | [`runtime-composition.txt`](runtime-composition.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; P00-R06 through `92d3531`; and P01-R05 through `4d24335`. P01-R06 is released through protected squash `8dff9d8`: exact source and clean-checkout gates, both review remediations, final review, protected closeout run `33012535152`, and post-merge run `33012664408` pass. P01-R07 adapter source passed focused, affected, forced, frozen-checkout, review, protected pull-request run `33024975611`, and merged as `0dd4dad`. Post-merge run `33026244011` exposed one cold typecheck/build ordering defect. Corrective candidate `f38485a` adds only the missing dependency-build edge and passes an exact frozen offline install plus 46/46 forced tasks without cache. Protected correction, merge, and successful post-merge confirmation remain pending. Real dependency containers and interoperability, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
+P01-R01 through P01-R07 and P01-R11 are released. P01-R07 passed pull request 14 exact-head run `33024975611`, corrective pull request 15 run `33026707150`, and exact corrective post-merge run `33026799005`; corrective squash `61226eb` is the P01-R08 base. P01-R08 is active locally. Real dependency containers and interoperability, Collector/backend, product schemas, and migrations remain unimplemented.
 
 ## Current limitations
 

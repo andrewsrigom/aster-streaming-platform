@@ -191,6 +191,34 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
+  services/identity:
+    dependencies:
+      '@aster/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@aster/http-express':
+        specifier: workspace:*
+        version: link:../../packages/http-express
+      '@aster/postgres':
+        specifier: workspace:*
+        version: link:../../packages/postgres
+      '@aster/redis':
+        specifier: workspace:*
+        version: link:../../packages/redis
+      '@aster/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@aster/telemetry':
+        specifier: workspace:*
+        version: link:../../packages/telemetry
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
 packages:
 
   '@apollo/cache-control-types@1.0.3':

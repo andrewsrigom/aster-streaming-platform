@@ -1,6 +1,6 @@
 # Runtime Lifecycle
 
-`@aster/runtime` owns the reusable process lifecycle for Node.js services. The current P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. It does not create a service or expose an HTTP health route.
+`@aster/runtime` owns reusable process lifecycle behavior for Node.js services. Released P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. The active P01-R08 candidate adds propagated deadlines, recoverable readiness, one bounded monitor, fixed health routes, and an executable Identity reference service. Real dependency-container interoperability remains P01-R09.
 
 ## State and health
 
@@ -16,7 +16,25 @@ Lifecycle state is process-local and monotonic:
 
 `markReady()` can move only `starting` to `ready`. `markStartupFailed()` can move only `starting` to `failed`. A process cannot become ready again after failure or shutdown. Health snapshots are frozen and expose no exception, hostname, port, URL, dependency name, credential, or request value.
 
-Dependency-specific readiness belongs to P01-R08. A future service health route may publish this stable snapshot, but no public endpoint exists yet.
+The P01-R08 readiness controller combines this phase with one through 32 anonymous critical gates. A pending or unavailable gate keeps a ready lifecycle live but not ready with `dependency_pending` or `dependency_unavailable`; recovery restores readiness without moving the lifecycle phase backward. Terminal lifecycle phases override dependency state, and work admission fails closed unless the combined snapshot is ready.
+
+The Express adapter can publish this repository-owned snapshot through exact `/health/live` and `/health/ready` routes. The routes expose no dependency name, endpoint, error, credential, retry count, process identifier, or topology.
+
+## Propagated deadlines
+
+`createAsterDeadline()` owns one finite monotonic budget from 1 millisecond through 5 minutes. It starts one unreferenced timer, optionally listens to one parent `AbortSignal`, and exposes a derived signal plus `remainingMs()`. Parent cancellation aborts the derived signal without copying the parent's reason. Expiry aborts the same signal. Callers pass that derived signal to every nested operation and derive any smaller child budget from the non-increasing remaining value; they do not restart the original budget per dependency or attempt.
+
+`remainingMs()` rounds a positive fractional remainder up to the next millisecond, never increases even if an injected clock regresses, and fails closed to zero plus abort if monotonic time becomes unavailable. `dispose()` cancels the timer and removes the parent listener after successful work without aborting that completed work. Disposal, expiry, and parent cancellation are idempotent. The default timer is unreferenced, so an unused deadline cannot keep a Node.js process alive.
+
+Options must be a plain own-data object with only `timeoutMs` and optional real `parentSignal`. Unknown properties, accessors, proxies that throw, non-finite or fractional budgets, and forged signals fail with bounded cause-free issues. Deadline code invokes the platform's `AbortSignal` and `EventTarget` operations directly so caller-owned property overrides cannot execute during propagation or cleanup.
+
+This primitive does not replace the released lifecycle shutdown coordinator or create a second shutdown budget. The Identity composition root uses it for service startup and nested dependency work.
+
+## Readiness recovery monitor
+
+One monitor owns dependency recovery. It executes at most one probe per anonymous critical gate in a sequential, non-overlapping cycle, applies a finite 20% jittered interval, and caps the complete cycle with one deadline. Probe rejection, malformed outcome, timeout, scheduler failure, or invalid randomness fails the affected readiness state closed without exposing the cause.
+
+Stopping the monitor aborts its ownership and prevents late completion from changing readiness or scheduling more work. Production timers are unreferenced. Identity stops this monitor before closing dependency clients.
 
 ## Composition
 
@@ -45,6 +63,18 @@ lifecycle.markReady();
 Domain and application code do not import this composition or Node.js HTTP types. Express and Apollo remain inside `@aster/http-express`.
 
 `forceClose` is the composition root's synchronous last-resort closure for every owned resource that can keep the event loop alive after a resource-closing hook rejects or ignores cancellation. It must attempt every owner and return `undefined`; a thrown error, returned Promise/thenable, or other returned value is classified as `force_close` failure. The example names HTTP, consumer, and dependency force paths explicitly; a service with fewer owners supplies only its real force paths. Each adapter keeps framework and client types behind its own boundary.
+
+### Identity orchestration checkpoint
+
+The local `services/identity` candidate composes the lifecycle, deadline, readiness controller, and monitor against source-owned HTTP, PostgreSQL, Redis, telemetry, and force-close ports. Startup starts the listener first, performs one connect and one probe per critical dependency under the same propagated deadline, and starts recovery monitoring after the bounded attempt. Dependency failure leaves the lifecycle live and ready-phase but the combined readiness false; no startup retry loop is created.
+
+`createAsterIdentityService(entries)` validates configuration before construction, then owns the logger, local telemetry, clock/IDs, real PostgreSQL/Redis adapters, HTTP listener, and coordinator. `pnpm identity:start` builds and runs the environment-backed entrypoint. `pnpm identity:check` uses real loopback HTTP and telemetry with explicitly controlled dependencies and a shortened monitor interval; it proves four readiness states and natural process exit without requiring containers or credentials. `pnpm identity:test` runs the focused suite.
+
+The normal monitor interval is 10 seconds with 20% jitter and an 8-second overall cycle budget. Startup is configured between 5 and 300 seconds; PostgreSQL connect/probe budgets are 3/2 seconds and Redis connect/probe budgets are 1.5/1 seconds. The same startup signal reaches both adapters. Once bound, the HTTP listener is detached from the startup deadline so a dependency timeout leaves liveness available. Shutdown retains one 10-second lifecycle budget. Partial factory failure closes every already-created owner under a separate construction-cleanup budget of 10 seconds; these paths never run as competing shutdown coordinators.
+
+The root treats only explicit completed/already-completed adapter close results as disposal evidence. Its force path closes HTTP synchronously and initiates remaining adapter cleanup. If an adapter is not yet proven closed, it reports `force_close` failure, and the process owner terminates explicitly (130/143 for signals or 1 for manual/startup failure). This intentionally does not promise asynchronous cleanup after forced termination. Ordinary shutdown leaves the process to exit naturally.
+
+Tests prove shared startup, unavailable recovery, snapshot-only health polling, HTTP metrics, partial construction/listener cleanup, real-client unavailable endpoints, one signal owner, graceful drain, and forced terminal fallback. Injected ports/factories are trusted source-owned composition code, not environment options or public request input. `aster.identity.startup_completed` carries a generated event ID, wall-clock start and measured duration; `aster.identity.readiness_changed` carries only finite readiness/reason values. Neither event includes dependency endpoints or credentials. Export is local-only; Collector/backend proof remains P01-R09.
 
 ## Shutdown contract
 
@@ -108,9 +138,9 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-The suite exercises hostile configuration, health transitions, shared shutdown, exact stage order, hook failure, deterministic deadline, repeated signals, logger failure, a graceful real `SIGTERM` subprocess, a live-handle subprocess whose force close throws and reaches the hard fallback, and real loopback sockets for graceful and forced HTTP closure. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
+The suite exercises hostile deadline, readiness, monitor, and lifecycle configuration; deterministic expiry and scheduling; parent cancellation; cleanup; unreferenced-timer subprocesses; health and dependency recovery; shared shutdown; hook failure; signals; logging failure; and real loopback sockets. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
 
-Current raw evidence and limitations are in [P01-R05 lifecycle evidence](../../evidence/phase-01/runtime-lifecycle.txt).
+Released lifecycle evidence is in [P01-R05 lifecycle evidence](../../evidence/phase-01/runtime-lifecycle.txt). The dependent deadline checkpoint is recorded in [P01-R08 runtime-composition evidence](../../evidence/phase-01/runtime-composition.txt).
 
 ## Recovery
 

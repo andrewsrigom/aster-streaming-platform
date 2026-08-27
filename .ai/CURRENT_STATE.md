@@ -1,6 +1,6 @@
 # Current State
 
-Last updated: 2026-08-26
+Last updated: 2026-08-27
 
 ## Active phase
 
@@ -117,11 +117,12 @@ Status: **IN_PROGRESS**
 - Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
 - P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
-- P01-R07 adapter behavior passed protected exact-head run `33024975611` at `613c1db` and pull request 14 squash-merged as `0dd4dadffa0cfdd688327b9e3f8b89734782ed24`. Post-merge run `33026244011` failed only because adapter typechecks could race the clean build of exported `@aster/telemetry` declarations. Corrective candidate `f38485a` adds the missing `^build` typecheck dependency and freezes it in the 20-test toolchain policy. Its exact no-generated-state checkout installed all 329 packages offline and passed 46/46 forced tasks with zero cache, all adapter diagnostics, high-severity audit, clean Git, and cleanup. No runtime source, dependency, lockfile, public contract, bounded context, durable data, or service changed. P01-R07 remains active until this correction passes protected CI, merges, and receives a successful post-merge run; real dependency interoperability remains P01-R09.
+- P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
+- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, based on corrective released `main`. Beyond controlled source `de90aa8`, the working candidate now includes real factories, bounded HTTP, executable `identity:start`, local `identity:check`, partial cleanup, readiness logs/HTTP metrics, and explicit force/terminal ownership. Identity passes 20 focused tests including real-client failure and natural/forced process exit; Redis passes 15 after correcting the vendor factory's mutation of frozen URL/socket options. No new registry dependency was added. Combined, forced, clean-checkout and release gates remain required.
 
 ## Not implemented
 
-- Applications and services
+- Containerized application services and product entrypoints (the local product-empty Identity entrypoint is implemented)
 - Product database schemas and migrations
 - Broker, object storage, and observability runtime
 - GraphQL schemas
@@ -137,11 +138,11 @@ Status: **IN_PROGRESS**
 - P01-R08 composes propagated deadlines, recoverable readiness gates, stable health routes, and an Identity reference service with no account, profile, session, schema, or resolver behavior.
 - P01-R09 selects the remaining local images and proves the runtime against real dependencies, OTLP export, Prometheus scrape, failure transitions, and bounded shutdown.
 - P01-R10 publishes measured core, runtime, integration, observability, and full profiles plus the clean Docker-only evaluator path.
-- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06 is released; every P01-R07 local adapter client is selected, including provisional `kafkajs@2.2.4`. The P01-R08 through P01-R10 composition, remaining container candidates, budgets, and paths remain unimplemented until their owning items record evidence.
+- `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` is the authoritative path. P01-R06/P01-R07 are released, including provisional `kafkajs@2.2.4`. P01-R08 composition is implemented locally; P01-R09/P01-R10 container interoperability, backend and Docker-only paths remain planned.
 
 ## Next outcome
 
-For P01-R07, publish corrective candidate `f38485a` once, require protected source/platform and stable aggregate gates, squash-merge, and verify the exact post-merge `main` run. Then rebase the saved local P01-R08 branch onto released `main`, repeat its affected gate, and resume readiness work.
+P01-R08 exact source `282ccb5` passes 49/49 affected tasks and a frozen no-local checkout with 49/49 forced uncached tasks, the diagnostic, high-severity audit and clean Git. Finish protected PR/review/merge closeout. Keep P01-R09 inactive until this candidate is released or explicitly frozen under the external-wait contract.
 
 ## Current risks
 
@@ -167,7 +168,7 @@ For P01-R07, publish corrective candidate `f38485a` once, require protected sour
 - P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. P01-R06 now implements bounded metrics and OTLP/HTTP failure behavior separately; retention and a real Collector/backend remain unimplemented.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
-- P01-R05 has no application composition or public health route yet. Dependency-specific startup/readiness remains P01-R08; released P01-R06 metrics are not composed into a service; native Windows signal semantics are intentionally unclaimed, while the supported WSL path has real socket and subprocess evidence.
+- Identity orchestration exists only against controlled ports. Real HTTP/client composition and a deployable entrypoint remain pending; asynchronous adapter close must not be mistaken for a synchronous force-close guarantee. Native Windows signal semantics remain intentionally unclaimed.
 - P01-R06 measures one warm process-local diagnostic and loopback exporter behavior, not representative throughput, long-running overhead, a Collector scrape, another operating system, or another architecture. The direct SDK contract includes development-status semantic conventions and exact pins that require deliberate upgrade evidence.
 - `pg@8.23.0`, `@redis/client@6.2.1`, `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, `@smithy/node-http-handler@4.11.3`, and provisional `kafkajs@2.2.4` are selected only for their P01-R07 narrow adapters after current registry, source, license, audit, install, failure, cancellation, and lifecycle review. The Kafka-compatible runtime image and the remaining P01-R09/P01-R10 container versions remain unselected. P01-R09 owns real authentication/protocol/recovery and all real-dependency multi-platform confirmation.
 - Node-postgres has no proven native `AbortSignal` query cancellation, and its client query timeout may return while server work continues. `@aster/postgres` deliberately destroys clients after abort, timeout, SQLSTATE `57014`, or unknown probe failure; this favors bounded correctness over connection reuse and must be rechecked on client upgrades.

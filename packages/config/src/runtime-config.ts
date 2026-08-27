@@ -8,6 +8,11 @@ const MAX_SOURCE_ENTRIES = 256;
 const MAX_VARIABLE_NAME_LENGTH = 128;
 const MAX_VALUE_LENGTH = 2_048;
 const SERVICE_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+const INTEGER_PATTERN = /^[1-9]\d*$/u;
+const HTTP_PORT_MIN = 1_024;
+const HTTP_PORT_MAX = 65_535;
+const STARTUP_DEADLINE_MIN_MS = 5_000;
+const STARTUP_DEADLINE_MAX_MS = 300_000;
 export const REFERENCE_RUNTIME_CONFIG_OWNED_PREFIXES = Object.freeze([
   "ASTER_",
   "DATABASE_",
@@ -36,7 +41,10 @@ interface RuntimeVariableDefinition {
 
 export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
   ASTER_ENV: Object.freeze({ classification: "non-secret" }),
+  ASTER_HTTP_HOST: Object.freeze({ classification: "non-secret" }),
+  ASTER_HTTP_PORT: Object.freeze({ classification: "non-secret" }),
   ASTER_SERVICE_NAME: Object.freeze({ classification: "non-secret" }),
+  ASTER_STARTUP_DEADLINE_MS: Object.freeze({ classification: "non-secret" }),
   DATABASE_URL: Object.freeze({ classification: "secret" }),
   REDIS_URL: Object.freeze({ classification: "secret" }),
 } satisfies Record<string, RuntimeVariableDefinition>);
@@ -48,7 +56,16 @@ const KNOWN_VARIABLE_SET = new Set<string>(KNOWN_VARIABLES);
 
 const runtimeConfigSchema = z.strictObject({
   ASTER_ENV: z.enum(RUNTIME_ENVIRONMENTS),
+  ASTER_HTTP_HOST: z.enum(["127.0.0.1", "0.0.0.0"]),
+  ASTER_HTTP_PORT: z
+    .string()
+    .regex(INTEGER_PATTERN)
+    .refine((value) => integerInRange(value, HTTP_PORT_MIN, HTTP_PORT_MAX)),
   ASTER_SERVICE_NAME: z.string().min(1).max(63).regex(SERVICE_NAME_PATTERN),
+  ASTER_STARTUP_DEADLINE_MS: z
+    .string()
+    .regex(INTEGER_PATTERN)
+    .refine((value) => integerInRange(value, STARTUP_DEADLINE_MIN_MS, STARTUP_DEADLINE_MAX_MS)),
   DATABASE_URL: z
     .string()
     .max(MAX_VALUE_LENGTH)
@@ -61,7 +78,10 @@ const runtimeConfigSchema = z.strictObject({
 
 export interface ReferenceRuntimeConfig {
   readonly environment: RuntimeEnvironment;
+  readonly httpHost: "0.0.0.0" | "127.0.0.1";
+  readonly httpPort: number;
   readonly serviceName: string;
+  readonly startupDeadlineMs: number;
   readonly databaseUrl: string;
   readonly redisUrl: string;
 }
@@ -73,7 +93,12 @@ export interface ReferenceRuntimeConfigIssue {
 }
 
 export interface ConfiguredNonSecretVariable {
-  readonly name: "ASTER_ENV" | "ASTER_SERVICE_NAME";
+  readonly name:
+    | "ASTER_ENV"
+    | "ASTER_HTTP_HOST"
+    | "ASTER_HTTP_PORT"
+    | "ASTER_SERVICE_NAME"
+    | "ASTER_STARTUP_DEADLINE_MS";
   readonly classification: "non-secret";
   readonly status: "configured";
   readonly value: string;
@@ -114,6 +139,11 @@ function hasUrlProtocol(value: string, protocols: ReadonlySet<string>): boolean 
   } catch {
     return false;
   }
+}
+
+function integerInRange(value: string, minimum: number, maximum: number): boolean {
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed >= minimum && parsed <= maximum;
 }
 
 function hasAsciiControl(value: string): boolean {
@@ -215,7 +245,10 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
   const issues: ReferenceRuntimeConfigIssue[] = [];
   const input: Record<ReferenceRuntimeConfigVariable, string | undefined> = {
     ASTER_ENV: undefined,
+    ASTER_HTTP_HOST: undefined,
+    ASTER_HTTP_PORT: undefined,
     ASTER_SERVICE_NAME: undefined,
+    ASTER_STARTUP_DEADLINE_MS: undefined,
     DATABASE_URL: undefined,
     REDIS_URL: undefined,
   };
@@ -349,7 +382,10 @@ function parseReferenceRuntimeConfig(
 
   return Object.freeze({
     environment: result.data.ASTER_ENV,
+    httpHost: result.data.ASTER_HTTP_HOST,
+    httpPort: Number(result.data.ASTER_HTTP_PORT),
     serviceName: result.data.ASTER_SERVICE_NAME,
+    startupDeadlineMs: Number(result.data.ASTER_STARTUP_DEADLINE_MS),
     databaseUrl: result.data.DATABASE_URL,
     redisUrl: result.data.REDIS_URL,
   });
@@ -382,10 +418,28 @@ export function createReferenceRuntimeConfigDiagnostic(
         value: config.environment,
       }),
       Object.freeze({
+        name: "ASTER_HTTP_HOST",
+        classification: "non-secret",
+        status: "configured",
+        value: config.httpHost,
+      }),
+      Object.freeze({
+        name: "ASTER_HTTP_PORT",
+        classification: "non-secret",
+        status: "configured",
+        value: String(config.httpPort),
+      }),
+      Object.freeze({
         name: "ASTER_SERVICE_NAME",
         classification: "non-secret",
         status: "configured",
         value: config.serviceName,
+      }),
+      Object.freeze({
+        name: "ASTER_STARTUP_DEADLINE_MS",
+        classification: "non-secret",
+        status: "configured",
+        value: String(config.startupDeadlineMs),
       }),
       Object.freeze({ name: "DATABASE_URL", classification: "secret", status: "configured" }),
       Object.freeze({ name: "REDIS_URL", classification: "secret", status: "configured" }),

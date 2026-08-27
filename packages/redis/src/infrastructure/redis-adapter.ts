@@ -398,7 +398,8 @@ function safeBoolean(read: () => boolean): boolean {
 }
 
 function defaultClientFactory(configuration: AsterRedisClientConfiguration): AsterRedisClient {
-  const client = createClient(configuration);
+  // node-redis normalizes URL fields into both objects; keep our internal snapshot immutable.
+  const client = createClient({ ...configuration, socket: { ...configuration.socket } });
   return {
     get isOpen(): boolean {
       return client.isOpen;

@@ -2,7 +2,7 @@
 
 ## Current status
 
-P01-R11 verifies the first shared HTTP transport boundary in `@aster/http-express`. The focused suite exercises Express 5, real Node.js sockets, Apollo Server 5, the Apollo-maintained Express integration, and the Apollo HTTP drain plugin. Local, clean-checkout, protected-CI, dependency, audit, and review evidence pass; protected merge and post-merge verification remain required before release. Current evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt).
+Released P01-R11 provides the first shared HTTP transport boundary in `@aster/http-express`. The active P01-R08 candidate adds fixed snapshot-only health routes; `services/identity` composes them into the first executable reference process. Current evidence is in [`evidence/phase-01/http-adapter.txt`](../../evidence/phase-01/http-adapter.txt) and [`evidence/phase-01/runtime-composition.txt`](../../evidence/phase-01/runtime-composition.txt).
 
 This package is not an application service. It contains no product schema, resolver, identity rule, database connection, Redis client, telemetry SDK, public port, or process-signal handler.
 
@@ -15,13 +15,14 @@ This package is not an application service. It contains no product schema, resol
 - bounding and parsing JSON before GraphQL middleware;
 - creating and cleaning a request-local `AbortSignal`;
 - translating transport failures into stable JSON responses;
+- serving exact non-cacheable liveness and readiness snapshots from a repository-owned provider;
 - disabling Express framework and ETag disclosure.
 
 Future service composition roots may import the adapter and the Apollo Express integration. Domain and application packages may not import Express, Apollo, HTTP objects, database clients, Redis clients, or telemetry SDKs.
 
 ## Startup order
 
-The reference composition order is:
+The future GraphQL composition order is:
 
 1. validate process configuration;
 2. create the process logger;
@@ -29,24 +30,33 @@ The reference composition order is:
 4. create Apollo Server with `ApolloServerPluginDrainHttpServer` for that HTTP server;
 5. await `apollo.start()`;
 6. mount `expressMiddleware` and provide the request-local signal through Apollo context;
-7. begin listening only after all mandatory startup work succeeds;
-8. allow the future lifecycle coordinator to mark the service ready.
+7. begin GraphQL traffic only after all mandatory startup work succeeds;
+8. allow the lifecycle coordinator to mark the service ready.
 
-The adapter returns `503 HTTP_ADAPTER_NOT_READY` if its listener receives traffic before mount. This is defense in depth, not a substitute for the required startup order or readiness control.
+The adapter returns `503 HTTP_ADAPTER_NOT_READY` for GraphQL traffic before mount. Exact health routes bypass that gate so a starting or dependency-degraded process remains diagnosable. This is defense in depth, not a substitute for the required startup order or readiness control.
+
+## Health routes
+
+`GET` and `HEAD` `/health/live` and `/health/ready` read one process-local snapshot per request. Both routes serialize only `liveness`, `phase`, `readiness`, and `reason`, set `Cache-Control: no-store`, and invoke no dependency adapter. Liveness returns `200` only for `live`; readiness returns `200` only for `ready`; the other state returns `503`. `HEAD` preserves the decision and headers without a response body.
+
+The provider may publish only coherent lifecycle and dependency-readiness combinations. A throw, accessor-backed field, additional field, invalid value, or incoherent combination returns stable `500 INTERNAL_HTTP_ERROR` without reflecting the provider value. Other methods return `405 HTTP_METHOD_NOT_ALLOWED` and `Allow: GET, HEAD` without invoking the provider. Routes remain strict and case-sensitive.
 
 ## Request path
 
+The Identity transport owner caps headers at 16,384 bytes, concurrent connections at 128, and requests per socket at 100. Request and idle-socket timeouts are 10 seconds, headers and keep-alive timeouts are 5 seconds, and timeout checks run every second. HTTP observations use only the existing `/graphql`, `/health/live`, `/health/ready` and finite method dimensions; unknown paths are never metric labels. Instrumentation failure cannot change the response. This root leaves GraphQL unmounted and has no product requests or HTTP upgrade protocol.
+
 The fixed route stack is:
 
-1. pre-mount availability gate;
-2. exact `/graphql` route matching;
-3. request cancellation setup;
-4. `POST` media-type enforcement;
-5. strict bounded JSON parsing;
-6. parser-only error translation;
-7. parsed-body presence enforcement for `POST`;
-8. caller-supplied GraphQL middleware;
-9. stable not-found and terminal error handlers.
+1. exact health-route handling;
+2. pre-mount GraphQL availability gate;
+3. exact `/graphql` route matching;
+4. request cancellation setup;
+5. `POST` media-type enforcement;
+6. strict bounded JSON parsing;
+7. parser-only error translation;
+8. parsed-body presence enforcement for `POST`;
+9. caller-supplied GraphQL middleware;
+10. stable not-found and terminal error handlers.
 
 The default JSON bound is `65,536` bytes. A composition root may lower it or raise it only to the package maximum of `262,144` bytes. The bound is enforced before Apollo executes. `POST` requires uncompressed UTF-8 `application/json`; malformed media parameters, duplicate charset parameters, unsupported charsets, and every non-identity request content encoding return the same stable `415` category without reflecting the header. `GET` remains available for GraphQL query semantics and does not require a body media type. Routing is strict and case-sensitive: `/graphql/internal`, `/graphql/`, and `/GRAPHQL` do not enter the GraphQL middleware.
 
@@ -55,6 +65,8 @@ The default JSON bound is `65,536` bytes. A composition root may lower it or rai
 | Condition | Status | Response code |
 |---|---:|---|
 | Adapter not mounted | 503 | `HTTP_ADAPTER_NOT_READY` |
+| Unsupported health method | 405 | `HTTP_METHOD_NOT_ALLOWED` |
+| Invalid health provider result | 500 | `INTERNAL_HTTP_ERROR` |
 | Unsupported or missing `POST` media type, charset, or non-identity content encoding | 415 | `UNSUPPORTED_MEDIA_TYPE` |
 | Missing or malformed strict JSON body | 400 | `INVALID_JSON_BODY` |
 | JSON body over the configured bound | 413 | `REQUEST_BODY_TOO_LARGE` |
@@ -86,6 +98,6 @@ The current dependency, failure, lifecycle, and process evidence is in the [P01-
 
 ## Limitations and recovery
 
-The current slice does not implement CORS, authentication, authorization, persisted operations, GraphQL cost limits, rate limiting, health endpoints, access logs, request metrics, tracing, a product schema, or a deployable service. Their owning phases must compose those controls without weakening this boundary.
+The shared adapter does not implement CORS, authentication, authorization, persisted operations, GraphQL cost limits, rate limiting, access logs, tracing, or a product schema. Identity now composes finite request metrics and a local reference process; container delivery and product controls remain with their owning work items.
 
 The adapter owns no durable state. Rollback removes `@aster/http-express`, its root command aliases, its exact dependencies and lock entries, ADR-0011, and P01-R11 documentation. A replacement must pass the same request, cancellation, Apollo, and lifecycle contract before service composition moves to it.
