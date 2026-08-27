@@ -235,8 +235,12 @@ export function validateWorkflowPolicy(
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
     [
-      /- name: Run source quality and tests\s+env:\s+ASTER_SCHEMA_BASE: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.before \|\| github\.sha \}\}\s+run: pnpm check:source/u,
-      "schema compatibility must use the event's previous source, not candidate output",
+      /- name: Run source quality and tests\s+env:\s+ASTER_SCHEMA_BASE: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.before \|\| '' \}\}\s+run: \|\s+ASTER_SCHEMA_BASE="\$\(node \.\/tools\/resolve-schema-baseline\.ts\)"\s+export ASTER_SCHEMA_BASE\s+pnpm check:source/u,
+      "schema compatibility must resolve a distinct event or manual baseline before the source gate",
+    ],
+    [
+      /\.\/tools\/resolve-schema-baseline\.test\.ts/u,
+      "schema compatibility baseline selection needs executable regression tests",
     ],
     [
       /quality:[\s\S]*?- name: Check out repository[\s\S]*?with:\s+fetch-depth: 0\s+persist-credentials: false/u,

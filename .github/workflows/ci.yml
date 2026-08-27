@@ -74,6 +74,7 @@ jobs:
           ./tools/verify-community-files.test.ts
           ./tools/scan-secrets.test.ts
           ./tools/classify-ci-change.test.ts
+          ./tools/resolve-schema-baseline.test.ts
           ./tools/verify-ci-policy.test.ts
           ./tools/reset-local-platform.test.mjs
           ./tools/verify-local-platform.test.mjs
@@ -116,8 +117,11 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run source quality and tests
         env:
-          ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
-        run: pnpm check:source
+          ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+        run: |
+          ASTER_SCHEMA_BASE="$(node ./tools/resolve-schema-baseline.ts)"
+          export ASTER_SCHEMA_BASE
+          pnpm check:source
       - name: Prove real platform integration
         if: needs.classify.outputs.platform == 'true'
         timeout-minutes: 15

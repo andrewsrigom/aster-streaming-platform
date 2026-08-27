@@ -181,6 +181,7 @@
         ".github/**",
         "infra/compose/**",
         "tools/verify-ci-policy.ts",
+        "tools/resolve-schema-baseline.ts",
         "tools/verify-local-platform.mjs"
       ]
     },
@@ -191,6 +192,8 @@
         "tools/classify-ci-change.test.ts",
         "tools/verify-ci-policy.ts",
         "tools/verify-ci-policy.test.ts",
+        "tools/resolve-schema-baseline.ts",
+        "tools/resolve-schema-baseline.test.ts",
         "tools/reset-local-platform.sh",
         "tools/reset-local-platform.test.mjs",
         "tools/verify-local-platform.mjs",

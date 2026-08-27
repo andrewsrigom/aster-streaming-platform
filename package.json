@@ -30,7 +30,7 @@
     "check:source": "turbo run build test toolchain:check toolchain:test typecheck lint:workspace format:check unused:check architecture:check architecture:test platform:check platform:test staged:test commit:test",
     "clean:foundation": "node ./tools/clean-foundation.mjs",
     "ci:check": "node ./tools/verify-ci-policy.ts",
-    "ci:test": "node --test ./tools/classify-ci-change.test.ts ./tools/verify-ci-policy.test.ts",
+    "ci:test": "node --test ./tools/classify-ci-change.test.ts ./tools/resolve-schema-baseline.test.ts ./tools/verify-ci-policy.test.ts",
     "commit:check": "node ./tools/validate-commit-message.ts",
     "commit:test": "node --test ./tools/validate-commit-message.test.ts",
     "community:check": "node ./tools/verify-community-files.ts",

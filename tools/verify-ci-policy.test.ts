@@ -29,11 +29,19 @@ test("schema compatibility cannot compare only against the candidate or a shallo
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [
     source.replace(
-      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}",
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}",
       "ASTER_SCHEMA_BASE: ${{ github.sha }}",
     ),
+    source.replace(
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}",
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}",
+    ),
+    source.replace('ASTER_SCHEMA_BASE="$(node ./tools/resolve-schema-baseline.ts)"', "true"),
+    source.replace("export ASTER_SCHEMA_BASE", "true"),
+    source.replace("./tools/resolve-schema-baseline.test.ts", "./tools/unreviewed.test.ts"),
     source.replaceAll("fetch-depth: 0", "fetch-depth: 1"),
   ]) {
+    assert.notEqual(changed, source);
     assert.ok(
       validateWorkflowPolicy(changed).some(({ detail }) => detail.includes("schema compatibility")),
     );

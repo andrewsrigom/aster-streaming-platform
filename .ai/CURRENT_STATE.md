@@ -16,7 +16,7 @@ Phase 03 has complete [acceptance](../evidence/phase-03/README.md): 94 Catalog t
 
 ## Current work
 
-All P04-R01 through P04-R10 are locally verified; protected release remains IN_PROGRESS. [Clean acceptance](../evidence/phase-04/clean-acceptance.txt) binds source b5d7ab7 to complete 55/55 gates, fresh-data Docker startup and real session/failure/isolation checks. PR 21's first CI run 33100857323 failed in two diagnostic paths. The packaged Identity probe now uses the internal Router; standalone Catalog uses the explicit diagnostic overlay without private credential mounts. Focused regression checks, the exact Identity command and fresh Catalog Docker proof pass, including ownership-checked cleanup. Normal runtime trust and deadlines are unchanged. The remediation candidate still needs publication and protected acceptance.
+Phase 04 runtime acceptance is complete locally; protected release remains IN_PROGRESS. [Clean acceptance](../evidence/phase-04/clean-acceptance.txt) records 55/55 source gates, fresh Docker and real session/failure/isolation checks. PR 21 head 0a8299d passed protected run 33102349933 after correcting two diagnostic paths. External automated review also identified manual schema self-comparison. Its local correction selects an actual merge base or predecessor; 26 CI tests, typecheck and focused lint pass. This P04-R05 correction needs the candidate gate and exact-head CI before resolving both review threads and merging. Normal runtime trust and deadlines are unchanged.
 
 ## Not implemented
 
@@ -24,7 +24,7 @@ Web UI, real-film worker/delivery/playback, engagement/discovery and hosted rele
 
 ## Next outcome
 
-Complete P04-R02: commit the combined CI remediation, run its clean-source candidate gate and push the same PR 21 once. Require exact-head CI, squash and post-merge confirmation. Then activate Phase 05's explicit synthetic-data seed and SSR web shell. Unchanged Router trace, SQL, media and normal Docker evidence remain applicable.
+Complete P04-R02: commit and gate the manual schema-baseline correction, then push the same PR 21. Require exact-head CI, resolved review threads, squash and post-merge confirmation. Then activate Phase 05's explicit synthetic-data seed and SSR web shell. Unchanged Router trace, SQL, media and normal Docker evidence remain applicable.
 
 ## Current risks
 

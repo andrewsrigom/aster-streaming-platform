@@ -2,7 +2,7 @@
 
 ## Resume point
 
-Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. PR 21 is open at 18f3c7e; its first protected run 33100857323 failed. Local remediation fixes the packaged Identity route and standalone Catalog diagnostic/cleanup compatibility. Do not restart runtime implementation or repeat unaffected heavyweight checks.
+Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. PR 21 head 0a8299d passed protected run 33102349933. Review also found manual schema self-comparison; the local P04-R05 correction selects a distinct merge base or parent and passes 26 focused CI tests. Do not merge before publishing and verifying that correction. Do not repeat unaffected runtime/media work.
 
 ## Current evidence
 
@@ -10,7 +10,7 @@ See evidence/phase-04/README.md, router-runtime.txt and clean-acceptance.txt. Or
 
 ## Next outcome
 
-Commit the combined remediation, run pnpm check:changed in the clean detached checkout /tmp/aster-p04-clean-Hke28c at that new head, then push the same PR 21 once. Require exact-head CI, resolved blocking review threads, squash and post-merge confirmation before Phase 05. Author confirmation of the changed diagnostic/cleanup boundary is in router-review.txt. The detached checkout currently remains at 18f3c7e, with no running gate.
+Commit and gate the schema-baseline correction, then update PR 21. Require exact-head CI, resolve the two evidenced review findings, squash and confirm post-merge CI before Phase 05. Author confirmation is in router-review.txt. The clean detached checkout /tmp/aster-p04-clean-Hke28c is at 0a8299d with no running gate; its last candidate gate passed 55/55, 39 cached, 29.517 s.
 
 ## Local resources
 

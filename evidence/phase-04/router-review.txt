@@ -40,3 +40,12 @@ dependencies and media are unchanged. Focused tests and both affected real
 container commands pass; clean-acceptance.txt records the results and first CI
 failure. No remaining blocker identified within this changed boundary. Require
 the final clean candidate gate and protected exact-head CI before squash.
+
+External automated findings: review on 18f3c7e identified the packaged Identity
+route (P1, fixed by 0a8299d and protected run 33102349933) and manual schema
+self-comparison (P2, blocking P04-R05). Confirmation of the latter inspects
+distinct merge-base/parent selection, explicit event SHAs, bounded argument-array
+Git calls, fail-closed history handling and executable real-history/CLI tests.
+All 26 focused CI tests, typecheck and changed-file lint pass. No new issue was
+identified in this changed contract. The next exact-head gate remains required;
+neither automated comments nor author confirmation imply human approval.

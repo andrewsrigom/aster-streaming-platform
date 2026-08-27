@@ -3,7 +3,7 @@
 - Status: IN_PROGRESS
 - Owner: Platform transport; Identity and Catalog retain their data
 - Phase: 04
-- Requirement IDs: P04-R02, P04-R03, P04-R06, P04-R07, P04-R09
+- Requirement IDs: P04-R02, P04-R03, P04-R05, P04-R06, P04-R07, P04-R09
 - Created: 2026-08-27
 - Updated: 2026-08-27
 
@@ -14,6 +14,8 @@ The local GraphQL entry point will execute the composed Identity/Catalog schema 
 ## Current behavior
 
 All Phase 04 local requirements and author confirmation pass at source b5d7ab7. PR 21's first protected run 33100857323 exposed stale compatibility wiring: the Identity demo omitted --compose-router, and the standalone Catalog probe inherited private-only networking and an unused credential mount. The correction uses the documented internal Router route and explicit standalone diagnostic overlay without owner trust mounts. Cleanup permits only exact owned PostgreSQL data and unused disposable trust volumes, with labels and foreign attachments checked. CI regression tests 25/25, Catalog guards 3/3, the exact Identity command and fresh Catalog Docker proof pass. Normal runtime trust, topology, deadlines and permissions do not change. Publish one combined remediation after the candidate gate; protected release remains open.
+
+Remediation head 0a8299d passed clean candidate checks (55/55) and was published once. External review confirmed the fixed Identity defect and identified a second blocking contract issue: workflow_dispatch falls back to the candidate SHA for schema compatibility. Resolve absent event baselines against the merge base with origin/main, or the candidate's first parent when the candidate is itself that base. Keep explicit PR/push SHAs, reject self-comparison and missing history, and verify selection against real temporary Git histories before publication. No runtime or media repeat is justified by this CI-only correction.
 
 ## Proposed behavior
 

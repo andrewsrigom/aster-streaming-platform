@@ -162,3 +162,36 @@ Repeat the clean-source candidate gate before the single same-PR update. The
 changed CI paths have focused real-container evidence; normal Router runtime,
 dependencies, sessions, SQL and media are unchanged. Earlier heavyweight results
 remain supporting evidence; exact-head protected CI and post-merge CI are required.
+
+Diagnostic-remediation publication and manual-baseline review
+-----------------------------------------------------------
+Head: 0a8299ddd9438d3d5b47e7795425e87b0ccff7c7
+Clean detached pnpm check:changed: exit 0, 55/55, 39 cached, 29.517 s.
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33102349933
+Result: success, attempt 1; all six jobs pass, including both formerly failing
+packaged diagnostic paths and the real platform/media/SQL integration.
+
+Automated review on 18f3c7e raised two findings: the now-fixed internal Identity
+route and workflow_dispatch comparing its candidate schema against itself.
+The latter is a P04-R05 blocker even though the normal PR run passes.
+Manual CI now resolves the merge base with origin/main, or its first parent
+when the candidate is the merge base. PR/push full SHAs remain explicit. Missing
+history, malformed references and explicit self-comparison fail closed.
+
+Focused command: pnpm ci:test && pnpm ci:check && pnpm typecheck
+Then: pnpm exec eslint tools/resolve-schema-baseline.ts tools/resolve-schema-baseline.test.ts tools/verify-ci-policy.ts tools/verify-ci-policy.test.ts
+Result: exit 0; 26/26 tests, policy, types and lint pass. Real temporary Git
+histories cover feature, main, detached candidate, advanced main, explicit event
+base, root without predecessor, missing origin, malformed/missing/self SHA, and
+CLI nonzero failure with no stdout. A rewritten candidate still reads the prior
+schema from its selected commit. Existing composition tests enforce API and
+previous-operation compatibility against that content.
+Initial regression-test attempt altered the classifier's similarly named base
+expression instead of the schema expression; the fixture was corrected to target
+the exact ASTER_SCHEMA_BASE assignment. No product or policy bypass was needed.
+Actual local CLI result: 135484183253ede7a6b6436f737794bfee2049d8.
+
+This correction changes only CI baseline selection and regression coverage.
+No dependency version, runtime, Docker instruction, rights or media changes.
+Require the new source candidate and protected exact-head gate; retain the
+already passing unchanged heavyweight evidence.

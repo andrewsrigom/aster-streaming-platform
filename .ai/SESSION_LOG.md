@@ -6,15 +6,15 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
-Published PR 21 at 18f3c7e after a clean 55/55 candidate gate. First protected run 33100857323 failed in packaged Identity and standalone Catalog probes. Corrected their routing/diagnostic configuration and exact-owned cleanup guards together, without changing normal runtime trust or weakening acceptance.
+Published PR 21 at 18f3c7e after a clean 55/55 candidate gate. First protected run 33100857323 failed in packaged Identity and standalone Catalog probes. Their combined correction 0a8299d passed protected run 33102349933. External automated review also found manual schema self-comparison; added distinct merge-base/parent selection with real Git-history regression tests, without changing runtime trust.
 
 ### Evidence
 
-CI policy 25/25, Catalog guards 3/3, typecheck, changed-file ESLint/formatting and platform policy pass. Exact packaged Identity journey passes. Fresh Catalog Docker proof passes in 39550 ms, including privilege/outage recovery, shutdown and zero residual resources. The intermediate failed proof was removed only after exact ownership and foreign-attachment checks. See evidence/phase-04/clean-acceptance.txt and router-review.txt.
+Diagnostic remediation: 55/55 candidate tasks, 39 cached, 29.517 s; exact packaged Identity journey and fresh Catalog Docker proof (39550 ms, zero residual resources) pass, followed by protected CI. Manual-baseline correction: CI 26/26, typecheck and focused ESLint pass. See evidence/phase-04/clean-acceptance.txt and router-review.txt.
 
 ### Next action
 
-Commit and gate this combined remediation, then update the same PR 21 once. Require protected exact-head CI, squash and post-merge confirmation before Phase 05. No duplicate PR, empty commit, manual rerun or bypass.
+Commit and gate the manual-baseline correction, then update PR 21 and resolve its two evidenced review findings after exact-head CI. Require squash and post-merge confirmation before Phase 05. No duplicate PR, empty commit, manual rerun or bypass.
 
 ## 2026-08-27 — Clean supergraph acceptance
 

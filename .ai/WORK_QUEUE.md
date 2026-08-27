@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–03 are released. PR 20 squash 135484183253ede7a6b6436f737794bfee2049d8 and post-merge run 33091716358 pass; [release evidence](../evidence/phase-03/release.txt). Phase 04 has local requirement acceptance at b5d7ab7; [clean evidence](../evidence/phase-04/clean-acceptance.txt). P04-R02 remains IN_PROGRESS for PR 21's CI remediation and protected release. Two stale diagnostic paths failed run 33100857323; their focused and real Docker corrections pass locally, awaiting the combined candidate gate and same-PR publication.
+Phases 00–03 are released. PR 20 squash 135484183253ede7a6b6436f737794bfee2049d8 and post-merge run 33091716358 pass; [release evidence](../evidence/phase-03/release.txt). Phase 04 has local runtime acceptance and protected run 33102349933 passes at 0a8299d; [clean evidence](../evidence/phase-04/clean-acceptance.txt). P04-R02 remains IN_PROGRESS for PR 21 release and the review-discovered P04-R05 manual-baseline correction. Its 26 focused CI tests pass; final candidate and protected gates remain.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
