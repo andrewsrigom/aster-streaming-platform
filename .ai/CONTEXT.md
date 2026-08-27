@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phase 00 and Phase 01 are released. Phase 02 now wires guarded local Federation v2 sessions/profiles and transactional audit/outbox into the Docker runtime, with separate finite migrations. Real HTTP/PostgreSQL and Docker product smoke checks pass; complete candidate verification/release remain pending. Router, browser UI and playable journeys remain planned. ADR-0014 resolves Apollo licensing; the owner authorizes autonomous compatible licensing decisions under AGENTS.md, so do not repeat a resolved permission pause. Exact progress is maintained in `.ai/CURRENT_STATE.md`.
+Phases 00–02 are released. Guarded local Federation v2 sessions/profiles and transactional audit/outbox run in Docker with separate finite migrations; protected and post-merge acceptance pass. Phase 03 starts with pure Catalog rights/lifecycle rules. Catalog persistence/public API, Router, browser UI and playable journeys remain planned. ADR-0014 resolves Apollo licensing; compatible licensing decisions are authorized without a repeated permission pause. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,8 +50,8 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 02 — Identity and Viewer Profiles**
+Active phase: **Phase 03 — Catalog and Content Rights**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 18 squash `b0544c9` and post-merge run `33047629326` close Phase 01. Phase 02 continues locally on `feat/p02-identity-session`; no Phase 02 publication yet. Keep local identity minimal, owner-authorized and impossible to activate through a hosted environment opt-in alone.
+PR 19 squash `ec6386c` and post-merge run `33066827332` close Phase 02. Phase 03 continues locally on `feat/p03-catalog-rights`; no Catalog runtime or media approval is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.

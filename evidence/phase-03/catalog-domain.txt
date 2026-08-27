@@ -1,0 +1,55 @@
+P03-R01 domain checkpoint — implemented, not full phase verified
+Date: 2026-08-27.
+Base: ec6386ca7add0f12ae748589be763d9e90ff0d6c, feat/p03-catalog-rights.
+Environment: WSL amd64, Node 24.19.0, pnpm 11.24.0, TypeScript 6.0.3.
+No runtime dependency added. Workspace lock adds only Catalog's existing Node types and TypeScript importer; no external package/version graph changes.
+
+Commands:
+pnpm install --ignore-scripts
+pnpm exec prettier --write services/catalog
+pnpm --filter @aster/catalog build
+pnpm --filter @aster/catalog test
+pnpm --filter @aster/catalog typecheck
+pnpm exec eslint services/catalog/src services/catalog/test
+pnpm exec knip
+
+All focused checks pass; final post-review tests: 52/52, 91.658842 ms.
+Tests use only fixed synthetic IDs, rights facts, publication references and time, not real media or a live review system.
+✔ complete reviewed rights approve without acquiring media and derive exact attribution (2.685567ms)
+✔ every required reviewed field and explicit permission must be resolved (6.721222ms)
+✔ contradictory use, unreviewed state, expiry and invalid clocks fail closed (1.023334ms)
+✔ unknown fields, hostile accessors, invalid identifiers, URLs and oversized evidence are rejected (0.77753ms)
+✔ the full 25-pair lifecycle table rejects every skipped or repeated transition (4.501067ms)
+✔ rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication (1.748695ms)
+✔ retirement survives disputed rights; reopening requires a newer review and new media linkage (0.222216ms)
+✔ public visibility rechecks current rights; malformed lifecycle and overflowing versions cannot advance (0.363919ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 91.658842
+
+Initial review: complete state/permission table, input bounds, immutable results, expiry and publication linkage. Batched two findings: symbolic array fields bypassed an Object.keys count, and retired media could have no historical rights revision. Reflect.ownKeys and the lifecycle consistency guard now reject both; adverse assertions pass. Reopening retains the last revision as a floor and rejects old approvals. Executing-agent confirmation finds no remaining domain requirement/security/data blocker; no independent review claimed.
+
+Official source preflight (not rights approval):
+curl --fail --location --max-redirs 3 --max-time 15 --max-filesize 262144 --silent --show-error https://peach.blender.org/about/
+curl --fail --location --max-redirs 3 --max-time 15 --max-filesize 131072 --silent --show-error https://download.blender.org/peach/bigbuckbunny_movies/
+Both succeeded. The official page identifies CC BY 3.0, requires the entire credit roll for full-film screenings and excludes logos/trademarks/DVD cover/print. The official index currently lists ZIP variants; no archive was downloaded. Exact-asset/credits/artwork review remains P03-R09. https://durian.blender.org/about/ was also reachable and identifies Sintel's CC BY 3.0/credit-scroll condition.
+Web extraction returned 402 for Blender pages; ordinary bounded public HTTPS retrieval succeeded without credentials. CC license terms were checked at https://creativecommons.org/licenses/by/3.0/. These are availability/selection notes, not a legal clearance or asset checksum.
+
+Limits: no PostgreSQL migration/transaction, operator authentication, outbox, public browse, schema, HLS fixture, real film approval or download. The code checks owner-supplied technical reference consistency, not remote object existence/bytes. Future application integration must verify provenance and authority. Pure changes cannot invalidate unchanged Identity/Docker evidence; do not rerun the entire platform matrix just for this slice.
+
+Candidate command: pnpm install --frozen-lockfile --ignore-scripts && pnpm check:changed && pnpm audit --audit-level=high && git diff --check
+Result: exit 0; all 52 source tasks pass, 33 cached, 18.031s; Catalog 52/52 and Identity 144/144 tests. Audit remains one moderate, no high/critical. Final confirmation complete; subsequent prose-only evidence updates use documentation/memory/secret/diff gates. No Docker rerun or remote Phase 03 pipeline.
+
+Exact source fingerprints (containing commit identifies this candidate):
+31429e680ce4a44183569f03899a31b05825ada01a50ba3ee9de1f3554ab39e7  services/catalog/src/domain/rights.ts
+a93b8e24b9ec21fecf3552175c86f463bb76d565b86a86a7b68ffa4270537f6c  services/catalog/src/domain/title.ts
+ba1fdcd261851cda09d8b0b5a4d22cd4f06bb18e02282ab9b1c9d8114104e965  services/catalog/src/domain/values.ts
+3fc74bfc48998466062d1fac67685f0e959269fd45647de6b98c9fff3b12a9a6  services/catalog/src/index.ts
+95e75d77c66d84a03220c013265d0ea400bee6dcb312548e16924b3e7ab6b823  services/catalog/test/catalog-domain.test.ts
+d4c438c1122407d1d4d25107110d42af71265601cbfd586e82cbe5f6546252bb  services/catalog/package.json
+cc7c07b550ec925d34e6d555f1bdd39fd065bc1771e7534575dae6ad5288eb9d  pnpm-lock.yaml

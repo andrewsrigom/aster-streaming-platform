@@ -1,15 +1,22 @@
 # Phase 02 Evidence Index
 
-- Phase status: IN_PROGRESS
-- Active item: P02-R09; P02-R01 through P02-R08 locally verified, not yet published
-- Base: Phase 01 PR 18 squash `b0544c9c6a86ac1cdb48963707eedf0f0e153621`; exact post-merge run `33047629326` passes.
+- Phase status: VERIFIED; local Identity API RELEASED.
+- Release: [PR 19](https://github.com/andrewsrigom/aster-streaming-platform/pull/19), squash `ec6386ca7add0f12ae748589be763d9e90ff0d6c`.
+- [Protected and post-merge evidence](release.txt): all applicable jobs pass, 144 Identity tests, eleven real scenarios and packaged product acceptance.
 
-| Requirement | Artifact | Checkpoint status |
-|---|---|---|
-| P02-R01 identity/session trust | [ADR-0013](../../docs/adr/0013-local-identity-and-sessions.md), [raw adapter evidence](identity-boundary.txt) | Local adapter implemented; 51 focused cases and all 49 source tasks pass; product integration remains planned |
-| P02-R02 account/session persistence; supporting R09/R10 failure cases | [Raw database evidence](account-sessions.txt), [migration/recovery](../../services/identity/migrations/README.md) | Locally verified; real database scenario, 29 PostgreSQL tests, 91 Identity tests, all 49 source tasks and audit pass; executing-agent confirmation complete |
-| P02-R03 through P02-R08 owned profiles and transactional facts; supporting R10 | [Raw profile evidence](profiles-outbox.txt), [policies and migrations](../../services/identity/migrations/README.md) | Locally verified; 111 Identity tests, real concurrency/isolation/rollback/retention/deletion checks, all 49 source tasks and audit pass |
+| Requirement | Implementation and evidence |
+|---|---|
+| P02-R01 identity trust | [ADR-0013](../../docs/adr/0013-local-identity-and-sessions.md), [assertion tests](identity-boundary.txt) |
+| P02-R02 accounts/sessions | [Sessions](../../services/identity/src/application/sessions.ts), [database proof](account-sessions.txt) |
+| P02-R03 normalization/limits | [Profile policy](../../services/identity/src/domain/profile.ts), [concurrency proof](profiles-outbox.txt) |
+| P02-R04 owned list | [Owner policies](../../services/identity/src/application/profiles.ts), [isolation proof](profiles-outbox.txt) |
+| P02-R05 update/delete | [Transactional repositories](../../services/identity/src/infrastructure/persistence/postgres-profiles.ts), [retry/rollback proof](profiles-outbox.txt) |
+| P02-R06 active selection | [Owner policies](../../services/identity/src/application/profiles.ts), [HTTP/database proof](identity-subgraph.txt) |
+| P02-R07 deletion/retention | [Migration policy](../../services/identity/migrations/README.md), [retention proof](profiles-outbox.txt) |
+| P02-R08 durable facts | [Event contract](../../services/identity/src/domain/profile-event.ts), [outbox proof](profiles-outbox.txt); broker relay belongs to Phase 08 |
+| P02-R09 stable errors | [Bounded subgraph](../../services/identity/src/transport/identity-subgraph.ts), [schema](identity-schema.graphql), [sanitization proof](identity-subgraph.txt) |
+| P02-R10 adverse acceptance | [Real HTTP/SQL fixture](../../services/identity/test/integration/subgraph-worker.ts), [local proof](identity-subgraph.txt), [hosted proof](release.txt) |
 
-P02-R09/R10 integrates the earlier checkpoints: [HTTP/database/Docker evidence](identity-subgraph.txt), [schema artifact](identity-schema.graphql), [API guide](../../services/identity/README.md). All 49 source tasks, 144 Identity tests, eleven real integration scenarios and the Docker six-step product smoke pass locally. Initial review remediation has focused HTTP/database proof; final candidate confirmation and protected release remain pending. The table above records historical slice results, not missing runtime wiring.
+[API guide](../../services/identity/README.md) covers cookies, limits, migration ownership, recovery and privacy. The sanitized sample is a correlated operation log, not an exported distributed span. Browser UI/accessibility, hosted authentication, Router, real media and distributed tracing remain planned.
 
-Persistence is now wired to the guarded local API and runtime. Owner authorization accepted [ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md); no dependency-license pause remains. Hosted authentication, Router and browser UI remain planned. Earlier checkpoint results are historical, not proof of later changed source.
+[ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md) records authorized dependency licensing. Audit has one moderate uuid advisory and no high/critical finding, not zero vulnerabilities. Historical slice artifacts retain their original checkpoints; the release artifact proves the integrated source. Phase 03 prerequisites were checked before activation.

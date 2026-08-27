@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Identity released; Catalog domain started
+
+### Completed
+
+- Squash merged Phase 02 PR 19 as `ec6386c` after protected `33066484199`; exact post-merge `33066827332` passes. One PR and one run per event, no bypass or independent approval claim. Local Docker demo remains healthy with retained data.
+- Started P03-R01 on `feat/p03-catalog-rights` from clean main. Added bounded rights normalization/approval, derived attribution and immutable title lifecycle rules. No runtime dependency, Catalog persistence/public API or media download.
+
+### Evidence
+
+- Hosted post-merge: 144 Identity tests, eleven scenarios (158185 ms, cleanup 1012 ms/zero remaining), UID 1000, six metric families and Docker six-step product smoke. Raw: `evidence/phase-02/release.txt`.
+- Catalog focused: 52/52 tests, 91.658842 ms; scoped lint/typecheck and Knip pass. Initial/confirmation review corrected hidden evidence fields and retired linkage; no remaining domain blocker. Raw: `evidence/phase-03/catalog-domain.txt`.
+
+### Next action
+
+- P03-R01 candidate gate passes 52 tasks, 52 Catalog tests and high/critical audit (18.031 s); commit the coherent local slice, then plan P03-R02 persistence/operator/public queries. Keep actual media attestation and rights authority separate from pure fixture validation. Do not publish a domain-only PR or rerun unchanged Identity containers.
+
 ## 2026-08-27 — Guarded Identity product candidate
 
 ### Completed
