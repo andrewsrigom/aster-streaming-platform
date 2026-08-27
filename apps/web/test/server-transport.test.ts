@@ -91,7 +91,7 @@ test("server cancellation releases a saturated bounded transport", async (t) => 
     ),
   );
   await admitted;
-  await assert.rejects(fetcher(endpoint, init), /rejected/u);
+  await assert.rejects(fetcher(endpoint, init), /Catalog is temporarily unavailable/u);
   controller.abort();
   assert.deepEqual(
     await Promise.all(requests),

@@ -1,11 +1,15 @@
-import { PreloadQuery } from "../lib/apollo/server";
-import { BROWSE, browseVariables } from "../lib/apollo/operations";
+import { PreloadQuery, readBrowseVariables } from "../lib/apollo/server";
+import { BROWSE } from "../lib/apollo/operations";
 import { Catalog } from "../features/catalog/catalog";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const variables = browseVariables({});
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const variables = readBrowseVariables(await searchParams);
   return (
     <>
       <section className="max-w-4xl py-16 sm:py-24">
@@ -19,7 +23,7 @@ export default function Home() {
           Discover a collection built around stories worth sharing — and the people who make them.
         </p>
       </section>
-      <PreloadQuery query={BROWSE} variables={variables}>
+      <PreloadQuery query={BROWSE} variables={variables} errorPolicy="all">
         <Catalog variables={variables} />
       </PreloadQuery>
     </>

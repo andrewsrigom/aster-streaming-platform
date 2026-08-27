@@ -10,7 +10,7 @@ PR 21 is merged without bypass. Final exact-head run 33103379545 and post-merge 
 
 ## Next outcome
 
-Public/seed c0b7585, profile/Redux 7857957 and the Docker candidate passed 58/58 source tasks. Final Docker browser confirmation passes 8/8 in 12.4 s, with 16 Web tests and supporting seed/isolation/lifecycle evidence; see evidence/phase-05/docker-runtime.txt. Implement artwork, public adverse states and performance next. Raw timeout HTML has no client error controls; retry and no-JavaScript failure recovery remain open. Keep critical public content outside Suspense. No Phase 05 publication until complete acceptance.
+Docker checkpoint befb432 is committed. Public recovery passes 58/58 source tasks, 17 Web tests and 11 browser journeys in 40.9 s; see evidence/phase-05/public-recovery.txt. Implement rights-safe responsive artwork, bundle/HTML scans and accessibility/performance next. Four routes render useful failure HTML without JavaScript; explicit retry and no automatic failed-preload request are verified. Preserve the consumer's transient explicit-request callback, safe error projection and critical public content outside Suspense. No Phase 05 publication until complete acceptance.
 
 ## Local resources
 

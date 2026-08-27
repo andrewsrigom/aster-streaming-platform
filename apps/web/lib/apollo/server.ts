@@ -1,4 +1,5 @@
 import "server-only";
+import { notFound } from "next/navigation";
 import { HttpLink } from "@apollo/client";
 import {
   ApolloClient,
@@ -8,6 +9,15 @@ import {
 import { publicCachePolicies } from "./policies";
 import { boundedGraphqlFetch } from "./transport";
 import { createPublicRouterFetch } from "./server-transport";
+import { browseVariables } from "./operations";
+
+export function readBrowseVariables(input: Record<string, string | string[] | undefined>) {
+  try {
+    return browseVariables(input);
+  } catch {
+    notFound();
+  }
+}
 
 // Share bounded sockets, never the request-scoped Apollo cache.
 const serverFetch = boundedGraphqlFetch(createPublicRouterFetch());

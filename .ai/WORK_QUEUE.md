@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item, based on released main b6c99c4. Public SSR/seed c0b7585, profile/Redux 7857957 and the [Docker Web slice](../evidence/phase-05/docker-runtime.txt) pass their source/browser checkpoints. Artwork, complete public failure/performance, clean-checkout acceptance and publication remain.
+Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item, based on released main b6c99c4. Public SSR/seed c0b7585, profile/Redux 7857957, Docker befb432 and [public recovery](../evidence/phase-05/public-recovery.txt) pass their source/browser checkpoints. Artwork, complete accessibility/performance/bundle checks, clean-checkout acceptance and publication remain.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

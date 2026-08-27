@@ -1,6 +1,6 @@
 # Public Web checkpoint
 
-Status: public browsing, local profiles and Docker packaging implemented; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. Artwork, complete public adverse-state/performance acceptance and the player remain unfinished.
+Status: public browsing, local profiles, Docker packaging and public recovery states implemented; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. Artwork, complete accessibility/performance acceptance and the player remain unfinished.
 
 ## Docker-only demo
 
@@ -37,6 +37,14 @@ The seed is opt-in. It runs the network-disabled generated HLS verifier, builds 
 - Cache policies retain one page and one detail root, distinguish different cursors/IDs, and collect unreferenced entities after a consumer update. A populated 25-page test bounds the normalized title store to 21 entities; this is not a whole-process memory benchmark.
 - Public links do not prefetch automatically. Locale is explicit (`en` or `pt-BR`), never inferred independently during hydration. Localized content carries its language tag.
 - `ASTER_WEB_ROUTER_URL` is server-only and accepts only the documented loopback/Compose Router URLs. Web owns no database, session or operator credentials. Router accepts only the exact local Web/diagnostic origins under [ADR-0018](../../docs/adr/0018-local-web-session-boundary.md).
+
+## Public failure and recovery
+
+Home, browse, title and attribution render a sanitized unavailable state when a public query fails, including with JavaScript disabled. This degraded HTML is HTTP 200; a successful HTML response alone does not prove Catalog availability. Missing titles, an empty collection and unavailable data are separate states. Invalid cursor syntax returns 404, and the home route respects the explicit locale.
+
+`Refresh collection` makes one read request. A React transition retains the previous snapshot with an explicit stale notice only while the four-second-bounded refresh is pending. A failed result removes those details; cached metadata never authorizes playback or proves current rights. `Try again` retries explicitly, and the normal `Reload page` link preserves the query/locale without JavaScript. No polling or background refresh is enabled.
+
+Apollo streaming 0.14.5 otherwise retries failed preloads in the browser. The public browser link requires the active consumer's transient explicit-request callback before opening HTTP; initial success or failure therefore makes no browser GraphQL request. This is request scheduling, not an authorization boundary. Every expected transport/parser/projection error is sanitized before hydration, and partial GraphQL errors are not rendered as successful empty data. The real paused-Router and browser tests cover this integration behavior on the pinned version.
 
 ## Local profiles
 

@@ -11,6 +11,11 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
         Your connection or the local API may be unavailable. You can try again.
       </p>
       <Button onClick={reset}>Try again</Button>
+      <p>
+        <a href="/browse" className="underline underline-offset-4">
+          Reload collection
+        </a>
+      </p>
     </section>
   );
 }

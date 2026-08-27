@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { PreloadQuery } from "../../lib/apollo/server";
-import { BROWSE, browseVariables } from "../../lib/apollo/operations";
+import { PreloadQuery, readBrowseVariables } from "../../lib/apollo/server";
+import { BROWSE } from "../../lib/apollo/operations";
 import { AttributionList } from "../../features/catalog/catalog";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,7 @@ export default async function Attribution({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const variables = browseVariables(await searchParams);
+  const variables = readBrowseVariables(await searchParams);
   return (
     <article className="max-w-2xl space-y-6 py-16">
       <p className="eyebrow">OPEN DOES NOT MEAN OWNERLESS</p>
@@ -30,7 +30,7 @@ export default async function Attribution({
       >
         Explore the collection
       </Link>
-      <PreloadQuery query={BROWSE} variables={variables}>
+      <PreloadQuery query={BROWSE} variables={variables} errorPolicy="all">
         <AttributionList variables={variables} />
       </PreloadQuery>
     </article>

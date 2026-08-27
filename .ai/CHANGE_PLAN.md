@@ -84,7 +84,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 - Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
 - Raw artifact path: evidence/phase-05/.
-- Acceptance result: public/seed, profile/Redux and Docker slices pass 58/58 source tasks, 16 Web and eight browser checks plus an actual one-operation Router assertion. Final Docker browser confirmation passes in 12.4 s. Artwork, complete public failure/performance and clean-checkout phase acceptance remain open.
+- Acceptance result: public/seed, profile/Redux, Docker and public recovery slices pass 58/58 source tasks. Recovery confirmation passes 17 Web tests and 11 browser journeys in 40.9 s, including four no-JavaScript failure routes and explicit one-query recovery. Artwork, accessibility/performance/bundle checks and clean-checkout phase acceptance remain open.
 - Iteration gate: cheapest changed adapter/cache/component checks and local production build.
 - Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
 - Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
@@ -112,9 +112,19 @@ Add `infra/compose/demo.yml` as an explicit overlay of the existing runtime prof
 
 Package the existing measured `evidence/phase-05/generated-media.json` report, not media bytes or FFmpeg. This reuses the reviewed local technical fixture; it is not a fresh media-generation run, playable delivery, or acquired-film approval. The initializer retains explicit local/operator/seed activation, deadlines, cancellation and the existing idempotent refusal to overwrite modified or retired data. No automatic seed is added to the normal Catalog server.
 
-Actual Docker acceptance found that pinned Node Fetch discards explicit Host. Server-only HTTP now supplies the fixed public Host/Origin, no forwarded private headers, a shared 16-request pool and existing bounded body/deadline behavior. Router policy and request-scoped Apollo ownership are unchanged. Six initial browser failures are recorded; the corrected Docker candidate passes all eight journeys and 16 Web tests. Raw error HTML and full client retry behavior remain assigned to the next public adverse-state slice, not claimed complete by liveness/reload recovery.
+Actual Docker acceptance found that pinned Node Fetch discards explicit Host. Server-only HTTP now supplies the fixed public Host/Origin, no forwarded private headers, a shared 16-request pool and existing bounded body/deadline behavior. Router policy and request-scoped Apollo ownership are unchanged. Six initial browser failures are recorded; the corrected Docker checkpoint befb432 passes all eight journeys and 16 Web tests. The subsequent public recovery slice below addresses raw error HTML and explicit retry separately from liveness.
 
 Iteration gate: Catalog seed tests, Web checks and Compose/source policy tests. Candidate evidence: one fresh project with the exact Docker-only command, repeat initialization without duplicate writes, SSR/profile browser checks, private-network/credential inspection, and bounded Web shutdown/recovery. Packaging, initialization, runtime configuration or generated-report changes invalidate these checks; prose alone does not. Preserve existing projects and volumes; stop only owned conflicting processes during loopback proof and restore them afterwards. The existing review stopping rule applies.
+
+## Public recovery slice
+
+Docker checkpoint befb432 is locally accepted. Implement P05-R06/P05-R10 in the existing public Catalog consumers: represent expected query failures with Apollo's `errorPolicy: all` and offer one user-triggered read refresh with a pending announcement. Keep the previous snapshot visible and explicitly stale only during that four-second-bounded refresh; remove it when the current query fails, rather than inventing a long-lived freshness guarantee. An initial failure must render useful sanitized HTML, never an empty Catalog or a missing-title success. Provide a normal reload link for disabled JavaScript. No private state, automatic retry, polling, new endpoint or persistence change.
+
+Both preload and consumer use the same error policy. Positive transport projection and complete-response validation remain in force; partial upstream errors cannot become successful public data. A transition keeps already rendered content visible during refresh, with no Suspense boundary around critical initial HTML. Cached metadata is informational only and never authorizes playback or confirms current rights. Unknown render errors retain the route boundary.
+
+Iteration gate: focused Web transport/cache tests and typecheck. Candidate gate: real Docker browser SSR outage/recovery, disabled-JavaScript failure HTML, delayed refresh, stale state, explicit retry, sanitized error, and existing no-duplicate hydration/profile journeys. Add deterministic empty/missing-title browser responses without writing fake Catalog product records. Repeat only Web build/browser evidence for this rendering change; Catalog seed/media and isolated network policy are unchanged. Keep one initial review and one confirmation; defer non-blocking speculative improvements.
+
+The pinned Apollo integration's automatic replay required an explicit-consumer callback guard in the browser link; a preload-context marker alone was insufficient. Confirmation passes 17 Web tests, 11 browser journeys and 58/58 source tasks. See evidence/phase-05/public-recovery.txt for failed iterations, actual commands and limits. Rollback returns to befb432 without data changes. Artwork/performance/clean-checkout acceptance and Phase 05 publication remain open.
 
 ## Completion checklist
 

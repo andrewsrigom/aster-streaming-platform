@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Public failure and explicit recovery
+
+### Completed
+
+Committed Docker checkpoint befb432. Added useful unavailable SSR on all public routes, bounded stale presentation during refresh, explicit retry and native reload. Sanitized parser errors before hydration; prevented Apollo's automatic failed-preload browser request without changing Router trust. Home now respects locale and invalid cursor syntax returns 404.
+
+### Evidence
+
+17 Web tests, 11 Docker browser journeys (40.9 s) and 58/58 source tasks pass. Four real Router-outage routes remain useful without JavaScript; failed hydration opens zero browser queries and one explicit retry recovers. Windows access returns 200 with title content. Failed iterations and review are recorded in evidence/phase-05/public-recovery.txt. Router was restored; retained product data is intact.
+
+### Next action
+
+Continue P05-R01 with responsive rights-safe artwork, bundle/HTML scans and accessibility/performance. Complete clean-checkout acceptance and protected publication remain mandatory. No player or Phase 05 release claim.
+
 ## 2026-08-27 — Docker Web and seed slice
 
 ### Completed

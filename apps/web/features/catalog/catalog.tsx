@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
-import { useApolloClient, useSuspenseQuery } from "@apollo/client/react";
 import {
   BROWSE,
   TITLE_DETAIL,
@@ -10,12 +8,11 @@ import {
   type PublicTitle,
 } from "../../lib/apollo/operations";
 import { buttonVariants } from "../../components/ui/button";
+import { usePublicQuery } from "./use-public-query";
+import { QueryFeedback } from "./query-feedback";
 
-function useCollectPreviousPages(data: unknown) {
-  const client = useApolloClient();
-  useEffect(() => {
-    client.cache.gc();
-  }, [client, data]);
+function pageQuery(variables: BrowseVariables): string {
+  return `?locale=${variables.locale}${variables.after ? `&after=${encodeURIComponent(variables.after)}` : ""}`;
 }
 
 function AttributionDetails({ title }: { title: PublicTitle }) {
@@ -67,8 +64,7 @@ function PageLink({ variables, endCursor }: { variables: BrowseVariables; endCur
 }
 
 export function Catalog({ variables }: { variables: BrowseVariables }) {
-  const { data } = useSuspenseQuery(BROWSE, { variables });
-  useCollectPreviousPages(data);
+  const { data, pending, refresh } = usePublicQuery(BROWSE, variables);
   return (
     <section aria-labelledby="catalog-heading" className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -96,7 +92,7 @@ export function Catalog({ variables }: { variables: BrowseVariables }) {
           </Link>
         </nav>
       </div>
-      {data.titles.edges.length === 0 ? (
+      {!data ? null : data.titles.edges.length === 0 ? (
         <div className="rounded-xl border border-border bg-card px-8 py-16">
           <h3 className="text-xl font-semibold">The collection is quiet. For now.</h3>
           <p className="mt-3 max-w-xl text-muted-foreground">
@@ -146,7 +142,13 @@ export function Catalog({ variables }: { variables: BrowseVariables }) {
           ))}
         </ul>
       )}
-      {data.titles.pageInfo.hasNextPage && data.titles.pageInfo.endCursor ? (
+      <QueryFeedback
+        available={!!data}
+        pending={pending}
+        refresh={refresh}
+        reloadHref={pageQuery(variables)}
+      />
+      {data?.titles.pageInfo.hasNextPage && data.titles.pageInfo.endCursor ? (
         <PageLink variables={variables} endCursor={data.titles.pageInfo.endCursor} />
       ) : null}
     </section>
@@ -154,8 +156,20 @@ export function Catalog({ variables }: { variables: BrowseVariables }) {
 }
 
 export function TitleDetail({ id, locale }: { id: string; locale: string }) {
-  const { data } = useSuspenseQuery(TITLE_DETAIL, { variables: { id, locale } });
-  useCollectPreviousPages(data);
+  const { data, pending, refresh } = usePublicQuery(TITLE_DETAIL, { id, locale });
+  if (!data) {
+    return (
+      <article className="max-w-3xl space-y-8 py-16">
+        <h1 className="text-4xl font-semibold">Title unavailable</h1>
+        <QueryFeedback
+          available={false}
+          pending={pending}
+          refresh={refresh}
+          reloadHref={`?locale=${locale}`}
+        />
+      </article>
+    );
+  }
   if (!data.title) {
     return (
       <section className="py-20">
@@ -196,16 +210,21 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
       <p className="rounded-md border border-border p-4 text-sm text-muted-foreground">
         This checkpoint supports browsing. Video playback is not available yet.
       </p>
+      <QueryFeedback
+        available
+        pending={pending}
+        refresh={refresh}
+        reloadHref={`?locale=${locale}`}
+      />
     </article>
   );
 }
 
 export function AttributionList({ variables }: { variables: BrowseVariables }) {
-  const { data } = useSuspenseQuery(BROWSE, { variables });
-  useCollectPreviousPages(data);
+  const { data, pending, refresh } = usePublicQuery(BROWSE, variables);
   return (
     <section aria-label="Published title attribution" className="space-y-10">
-      {data.titles.edges.length === 0 ? (
+      {!data ? null : data.titles.edges.length === 0 ? (
         <p>No published titles require attribution yet.</p>
       ) : (
         data.titles.edges.map(({ node }) => (
@@ -223,7 +242,13 @@ export function AttributionList({ variables }: { variables: BrowseVariables }) {
           </article>
         ))
       )}
-      {data.titles.pageInfo.hasNextPage && data.titles.pageInfo.endCursor ? (
+      <QueryFeedback
+        available={!!data}
+        pending={pending}
+        refresh={refresh}
+        reloadHref={pageQuery(variables)}
+      />
+      {data?.titles.pageInfo.hasNextPage && data.titles.pageInfo.endCursor ? (
         <PageLink variables={variables} endCursor={data.titles.pageInfo.endCursor} />
       ) : null}
     </section>

@@ -12,22 +12,25 @@ export function boundedGraphqlFetch(fetcher: typeof fetch = globalThis.fetch): t
     }
     const timeout = AbortSignal.timeout(4000);
     const signal = init.signal ? AbortSignal.any([init.signal, timeout]) : timeout;
-    const response = await fetcher(input, {
-      ...init,
-      signal,
-      cache: "no-store",
-      redirect: "error",
-    });
-    const body = await readGraphqlResponse(response, signal);
-    if ("errors" in body || !("data" in body)) {
+    try {
+      const response = await fetcher(input, {
+        ...init,
+        signal,
+        cache: "no-store",
+        redirect: "error",
+      });
+      const body = await readGraphqlResponse(response, signal);
+      if ("errors" in body || !("data" in body)) {
+        throw new Error("Catalog is temporarily unavailable.");
+      }
+      // No upstream headers or extensions are copied into the public preload.
+      return Response.json(
+        { data: projectPublicData(body["data"], operation.operationName) },
+        { headers: { "cache-control": "no-store" } },
+      );
+    } catch {
+      // Expected errors cross the hydration boundary too, including JSON parser failures.
       throw new Error("Catalog is temporarily unavailable.");
     }
-    // No upstream headers or extensions are copied into the public preload.
-    return Response.json(
-      { data: projectPublicData(body["data"], operation.operationName) },
-      {
-        headers: { "cache-control": "no-store" },
-      },
-    );
   };
 }

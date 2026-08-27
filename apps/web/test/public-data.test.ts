@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { InMemoryCache } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { parse, print, Kind } from "graphql";
 import {
   BROWSE,
@@ -143,6 +143,44 @@ test("public snapshot rejects incomplete or unbounded data and strips unselected
   assert.throws(() =>
     projectPublicData({ titles: { edges: Array.from({ length: 21 }, () => ({})) } }, "Browse"),
   );
+});
+
+test("expected errors are sanitized return values, never successful empty data or leaked parser input", async () => {
+  let fail = false;
+  const data = { titles: { edges: [], pageInfo: { endCursor: null, hasNextPage: false } } };
+  const client = new ApolloClient({
+    cache: new InMemoryCache({ typePolicies: publicCachePolicies }),
+    link: new HttpLink({
+      uri: "http://router.invalid/graphql",
+      fetch: boundedGraphqlFetch(() =>
+        Promise.resolve(
+          fail
+            ? new Response('private-parser-canary{"bad', {
+                headers: { "content-type": "application/json" },
+              })
+            : Response.json({ data }),
+        ),
+      ),
+    }),
+  });
+  try {
+    const options = {
+      query: BROWSE,
+      variables: browseVariables({}),
+      errorPolicy: "all" as const,
+      fetchPolicy: "network-only" as const,
+    };
+    assert.deepEqual((await client.query(options)).data, data);
+    fail = true;
+    const failed = await client.query(options);
+    assert.equal(failed.data, undefined);
+    assert.equal(failed.error?.message, "Catalog is temporarily unavailable.");
+    assert.doesNotMatch(JSON.stringify(failed.error), /private-parser-canary/u);
+    fail = false;
+    assert.deepEqual((await client.query(options)).data, data);
+  } finally {
+    client.stop();
+  }
 });
 
 test("cache retains only the current page and detail, never a different cursor as a hit", () => {

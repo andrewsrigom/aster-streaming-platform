@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { PreloadQuery } from "../../../lib/apollo/server";
-import { TITLE_DETAIL, titleIdentifier, browseVariables } from "../../../lib/apollo/operations";
+import { PreloadQuery, readBrowseVariables } from "../../../lib/apollo/server";
+import { TITLE_DETAIL, titleIdentifier } from "../../../lib/apollo/operations";
 import { TitleDetail } from "../../../features/catalog/catalog";
 
 export const dynamic = "force-dynamic";
@@ -13,12 +13,12 @@ export default async function Title({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
-  const { locale } = browseVariables(await searchParams);
+  const { locale } = readBrowseVariables(await searchParams);
   if (!titleIdentifier(id)) {
     notFound();
   }
   return (
-    <PreloadQuery query={TITLE_DETAIL} variables={{ id, locale }}>
+    <PreloadQuery query={TITLE_DETAIL} variables={{ id, locale }} errorPolicy="all">
       <TitleDetail id={id} locale={locale} />
     </PreloadQuery>
   );
