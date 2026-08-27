@@ -14,6 +14,7 @@ import { expressMiddleware } from "@as-integrations/express5";
 import {
   getExpressRequestAbortSignal,
   type AsterExpressGraphqlMiddleware,
+  type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
@@ -56,6 +57,7 @@ export interface IdentityOperationTrace {
 }
 
 export interface IdentitySubgraphOptions {
+  readonly routerTrust?: AsterLocalRouterTrust;
   readonly configuration: LocalIdentityConfiguration;
   readonly applications: IdentityGraphqlApplications;
   readonly nowSeconds?: () => number;
@@ -65,7 +67,11 @@ export interface IdentitySubgraphOptions {
 }
 
 export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
-  const policy = createLocalSessionTransport(options.configuration, options.nowSeconds);
+  const policy = createLocalSessionTransport(
+    options.configuration,
+    options.nowSeconds,
+    options.routerTrust,
+  );
   const schema = createIdentitySchema();
   const contexts = new WeakMap<IncomingMessage, IdentityGraphqlContext>();
   const errorCorrelations = new WeakMap<object, string>();
@@ -164,7 +170,7 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
     async (request, response, onError) => {
       const startedAt = now();
       const correlationId = randomUUID();
-      const traceId = randomUUID().replaceAll("-", "");
+      const traceId = policy.traceId(request) ?? randomUUID().replaceAll("-", "");
       const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
       let operation: IdentityOperation | "rejected" = "rejected";
       let code = "COMPLETED";

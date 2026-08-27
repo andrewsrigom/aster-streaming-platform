@@ -6,12 +6,27 @@ receivers:
         max_request_body_size: 1048576
 
 processors:
+  span/router_names:
+    name:
+      from_attributes: [otel.original_name]
+  attributes/router_privacy:
+    actions:
+      - key: graphql.operation.name
+        action: delete
+      - key: graphql.document
+        action: delete
+      - key: otel.name
+        action: delete
   memory_limiter:
     check_interval: 1s
     limit_mib: 96
     spike_limit_mib: 32
 
 exporters:
+  debug:
+    verbosity: detailed
+    sampling_initial: 10
+    sampling_thereafter: 100
   prometheus:
     endpoint: 0.0.0.0:8889
     metric_expiration: 1m
@@ -23,11 +38,15 @@ exporters:
 service:
   telemetry:
     logs:
-      level: warn
+      level: info
       encoding: json
     metrics:
       level: none
   pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, span/router_names, attributes/router_privacy]
+      exporters: [debug]
     metrics:
       receivers: [otlp]
       processors: [memory_limiter]

@@ -1,0 +1,151 @@
+supergraph:
+  listen: 0.0.0.0:4000
+  path: /graphql
+  introspection: false
+  redact_query_validation_errors: true
+  defer_support: false
+  early_cancel: true
+  connection_shutdown_timeout: 5s
+  query_planning:
+    cache:
+      in_memory:
+        limit: 128
+health_check:
+  listen: 0.0.0.0:8088
+  enabled: true
+sandbox:
+  enabled: false
+homepage:
+  enabled: false
+apq:
+  enabled: false
+csrf:
+  required_headers: [x-aster-csrf]
+cors:
+  policies:
+    - origins: [http://127.0.0.1:4000]
+  allow_credentials: true
+  methods: [POST]
+  allow_headers: [content-type, x-aster-csrf]
+limits:
+  router:
+    http_max_request_bytes: 32768
+    http1_max_request_headers: 64
+    http1_max_request_buf_size: 16 KiB
+    http2_max_headers_list_bytes: 16 KiB
+    parser_max_tokens: 2000
+    parser_max_recursion: 32
+    max_recursive_selections: 512
+  subgraph:
+    all:
+      http_max_response_size: 256 KiB
+traffic_shaping:
+  router:
+    timeout: 3s
+    concurrency_limit: 8
+    global_rate_limit:
+      capacity: 64
+      interval: 1s
+  all:
+    timeout: 2s
+    deduplicate_query: false
+    experimental_http2: disable
+include_subgraph_errors:
+  all: false
+headers:
+  all:
+    request:
+      operations:
+        - insert:
+            name: origin
+            value: http://127.0.0.1:4000
+        - insert:
+            name: x-aster-csrf
+            value: "1"
+  subgraphs:
+    identity:
+      request:
+        operations:
+          - propagate:
+              named: cookie
+          - insert:
+              name: x-aster-router-credential
+              value: ${file./run/aster-router/identity/identity.key}
+    catalog:
+      request:
+        operations:
+          - insert:
+              name: x-aster-router-credential
+              value: ${file./run/aster-router/catalog/catalog.key}
+rhai:
+  scripts: /dist/rhai
+  main: main.rhai
+plugins:
+  experimental.expose_query_plan: false
+telemetry:
+  instrumentation:
+    events:
+      supergraph:
+        aster.router.operation:
+          level: info
+          message: GraphQL operation completed
+          on: response
+          attributes:
+            aster.operation:
+              response_context: aster.operation
+              default: rejected
+            duration_ms:
+              response_context: aster.duration_ms
+            graphql_error:
+              on_graphql_error: true
+      subgraph:
+        aster.router.fetch:
+          level: info
+          message: Subgraph fetch completed
+          on: response
+          attributes:
+            subgraph.name: true
+            aster.operation:
+              request_context: aster.operation
+              default: rejected
+            graphql_error:
+              subgraph_on_graphql_error: true
+    spans:
+      mode: spec_compliant
+      default_attribute_requirement_level: none
+      supergraph:
+        attributes:
+          aster.operation:
+            request_context: aster.operation
+      subgraph:
+        attributes:
+          subgraph.name: true
+          aster.operation:
+            request_context: aster.operation
+  exporters:
+    logging:
+      common:
+        service_name: aster-router
+      stdout:
+        format: json
+    metrics:
+      prometheus:
+        enabled: true
+        listen: 0.0.0.0:9091
+        path: /metrics
+    tracing:
+      otlp:
+        enabled: ${env.ASTER_ROUTER_OTLP_ENABLED:-false}
+        endpoint: http://collector:4318
+        protocol: http
+        batch_processor:
+          scheduled_delay: 1s
+          max_queue_size: 128
+          max_export_batch_size: 64
+          max_export_timeout: 1s
+          max_concurrent_exports: 1
+      common:
+        service_name: aster-router
+        sampler: always_on
+      propagation:
+        trace_context: true

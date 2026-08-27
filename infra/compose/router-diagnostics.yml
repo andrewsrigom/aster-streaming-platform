@@ -1,0 +1,5 @@
+# Opt-in local query-plan inspection; never part of normal public responses.
+services:
+  router:
+    environment:
+      APOLLO_EXPOSE_QUERY_PLAN: "true"

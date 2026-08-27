@@ -2,7 +2,7 @@
 
 ## Current status
 
-The core uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without database host ports. The released Phase 01 runtime/optional profiles prove health, recovery and OTLP metrics. Phase 02 adds the guarded local Identity GraphQL API and a finite migration initializer; local product checks pass. [Current state](../../.ai/CURRENT_STATE.md) records candidate/release status. Router, browser UI and playable journeys remain planned.
+Phases 00–03 are released. Phase 04 adds an implemented local Apollo Router, private Identity/Catalog subgraphs, per-owner transport credentials and optional correlated traces. The core retains persistent PostgreSQL, disposable Redis and bounded resources. [Current state](../../.ai/CURRENT_STATE.md) records acceptance/release status. Browser UI and playable journeys remain planned.
 
 ### Identity reference process
 
@@ -39,16 +39,16 @@ From the repository root:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-Visit [readiness](http://127.0.0.1:3100/health/ready) and [liveness](http://127.0.0.1:3100/health/live). No host Node/pnpm, manual schema initialization or hosted account is needed. Docker builds the frozen production package and waits for PostgreSQL/Redis plus the finite `identity-init` migration job. That separate process holds admin credentials; the API uses `aster_identity_local`, not the database owner. Successful migrations are not reapplied. Build/pulls precede the 120-second readiness wait; the first build needs registry access.
+Use POST `http://127.0.0.1:4000/graphql`; GET intentionally has no landing page. `docker compose --project-name aster --file infra/compose/compose.yml ps --all` reports Router and owner health. No host Node/pnpm, manual schema initialization or hosted account is needed. Docker builds frozen production packages and waits for owner migrations and the finite trust initializer. Migration jobs hold admin credentials; each API uses its restricted owner/reader login. Successful migrations are not reapplied. Build/pulls precede the 120-second readiness wait; the first build needs registry access.
 
-Identity uses UID/GID 1000, a read-only root, no Linux capabilities, a 384 MiB/1 CPU/64 PID ceiling and a 15-second orchestrator grace around the ten-second application shutdown budget. Only Identity and the optional Prometheus UI join the `edge` bridge for localhost publication; databases remain exclusively on the internal `platform` network. The application can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL-image helper containers override the inherited data-volume path with 1 MiB tmpfs so they create no anonymous database volumes.
+Router, Identity and Catalog use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Only Router and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates two private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
 
-The seven-variable configuration retains health-only behavior. Compose additionally opts into local Identity with `ASTER_LOCAL_DEMO_ENABLED=true` and `ASTER_PUBLIC_ORIGIN=http://127.0.0.1:3100`; other environments cannot activate it. The separate password remains classified and conflicting sources fail before resource construction. Product readiness checks restricted database privileges and required schema columns. An unavailable dependency produces readiness 503 while liveness stays 200 and recovery remains monitored. `POST /graphql` now exposes the [local Identity API](../../services/identity/README.md); no product UI or application `/metrics` route exists. The optional overlay enables OTLP/HTTP to Collector, which Prometheus scrapes.
+The seven-variable Identity configuration retains standalone health-only behavior. Normal Compose opts into local Identity with `ASTER_LOCAL_DEMO_ENABLED=true`, `ASTER_PUBLIC_ORIGIN=http://127.0.0.1:4000` and private Router trust; other environments cannot activate it. Owner readiness checks restricted database privileges and required schema. An unavailable dependency produces owner readiness 503 while liveness stays 200 and recovery remains monitored. Router health measures the Router process, not aggregate owner availability: nullable mixed queries can retain one healthy owner. The optional overlay enables metrics and Router traces through the private Collector.
 
 Run the Docker-only product check from POSIX/WSL:
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
 ```
 
 It uses memory-only credentials and removes only its own synthetic profile. Inspect `identity-init` logs for failed or unknown-version migration state; do not delete retained data to repair startup. Application restart invalidates old local assertions but keeps accounts/profiles. Sign in again. The default account allows five profiles; outbox delivery/cleanup starts in Phase 08, so 128 pending events/account deliberately backpressure further writes. The script also needs free receipt/journal capacity.
@@ -63,19 +63,19 @@ The earlier core-only command remains light and does not start Identity or creat
 
 Measured on Linux/WSL amd64 with cached base/dependency layers: image rebuild plus empty-project startup 39.71 s; core-only startup 7.38 s; natural SIGTERM exit 143 in 561 ms including Docker CLI/inspection. A single healthy post-recovery sample reports Identity 51.59 MiB, PostgreSQL 25.11 MiB, Redis 6.004 MiB and status 1.609 MiB; these are observations, not sizing guarantees. Image size is 255272610 bytes; fresh PostgreSQL data is 47488 KiB. See [raw runtime evidence](../../evidence/phase-01/docker-demo.txt).
 
-If localhost fails, inspect `ps --all`, Identity logs and the published port; an internal-only Docker network may report container health without publishing host traffic. Use the checked-in edge network. For an occupied 3100, stop the conflicting local listener or this stack; never reset Docker or unrelated projects. Native Windows can open localhost while containers run through WSL; native Windows/macOS/arm64 execution is not proven.
+If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An internal-only Docker network may report container health without publishing host traffic. For an occupied 4000, stop the conflicting local listener or this stack; never reset Docker or unrelated projects. Earlier Phase 01 measurements above describe its historical Identity-only topology, not current Router startup or sizing. Native Windows/macOS/arm64 execution is not proven.
 
 ### Optional profiles
 
 | Selection | Services beyond the four-service core | Published localhost ports |
 |---|---|---|
 | no profile / core target | none | none |
-| `runtime` | Identity | 3100 |
-| `integration` | Identity, Kafka, S3 | 3100 |
-| `observability` + overlay | Identity, Collector, Prometheus | 3100, 9090 |
-| `full` + overlay | Identity, Kafka, S3, Collector, Prometheus | 3100, 9090 |
+| `runtime` | Router, Identity, Catalog | 4000 |
+| `integration` | Router, Identity, Catalog, Kafka, S3 | 4000 |
+| `observability` + overlay | Router, Identity, Catalog, Collector, Prometheus | 4000, 9090 |
+| `full` + overlay | Router, Identity, Catalog, Kafka, S3, Collector, Prometheus | 4000, 9090 |
 
-Every profile with Identity also runs the finite `identity-init` migration job before admitting API traffic.
+These profiles run finite Identity/Catalog migration jobs and `router-trust-init` before admitting federated API traffic.
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --profile integration up --build --wait --wait-timeout 120
@@ -128,7 +128,7 @@ pnpm integration:core
 
 The command builds Identity and runs four bounded subprocess scenarios: protocol success/disposal, adapter failure/recovery, real Identity health transitions, and termination during a held diagnostic HTTP request. To repeat only one scenario, append `protocol`, `adapters`, `identity`, or `http-drain`. This explicit laboratory does not run in ordinary unit tests, hooks, or every CI build.
 
-`infra/compose/integration.yml` inherits the reviewed core images and resource limits. The runner generates an `aster-integration-<random>` project, pins the local Docker socket, allocates temporary loopback ports that survive restart, and uses synthetic credentials. It refuses remote endpoints, Docker overrides and pre-existing names. The normal `aster` core dependencies remain unexposed and unchanged; its optional runtime profile publishes only Identity's loopback health port.
+`infra/compose/integration.yml` inherits the reviewed core images and resource limits. The runner generates an `aster-integration-<random>` project, pins the local Docker socket, allocates temporary loopback ports that survive restart, and uses synthetic credentials. It refuses remote endpoints, Docker overrides and pre-existing names. The normal `aster` core dependencies remain unexposed; its runtime profile publishes only Router's loopback GraphQL port.
 
 Stopping/pausing a dependency and final deletion require inspected exact project, fixture, service, environment and scope labels. Cleanup validates all containers, mounts, the network and volume before removing exact IDs. It runs after success, worker failure and handled interruption, then checks for residual resources. Only the disposable synthetic PostgreSQL volume is deleted irreversibly; images are retained. No global prune or default-project reset is used. A parent `SIGKILL` or unavailable daemon can prevent cleanup: retain the printed project ID, inspect its exact ownership, and do not apply the default Aster reset or a broad prefix deletion.
 

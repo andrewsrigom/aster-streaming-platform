@@ -1,4 +1,7 @@
 services:
+  router:
+    environment:
+      ASTER_ROUTER_OTLP_ENABLED: "true"
   identity:
     environment:
       ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics

@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
+import { randomBytes } from "node:crypto";
 import { once } from "node:events";
 import { createServer, request, type IncomingHttpHeaders, type IncomingMessage } from "node:http";
 import test from "node:test";
 
-import { createExpressHttpAdapter } from "@aster/http-express";
+import { createExpressHttpAdapter, createLocalRouterTrust } from "@aster/http-express";
 
 import { createLocalSessionTransport } from "../src/transport/local-session.js";
 
@@ -76,15 +77,19 @@ interface Reply {
   readonly body: string;
 }
 
-async function fixture() {
+async function fixture(routerCredential?: string) {
   const adapter = createExpressHttpAdapter();
   const server = createServer({ maxHeaderSize: 16_384 }, adapter.requestListener);
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
   const address = server.address();
   assert.ok(address && typeof address === "object");
-  const origin = `http://127.0.0.1:${address.port}`;
-  const policy = createLocalSessionTransport({ ...configuration, publicOrigin: origin }, () => NOW);
+  const origin = routerCredential ? "http://127.0.0.1:4000" : `http://127.0.0.1:${address.port}`;
+  const policy = createLocalSessionTransport(
+    { ...configuration, publicOrigin: origin },
+    () => NOW,
+    routerCredential ? createLocalRouterTrust("identity", routerCredential) : undefined,
+  );
   let calls = 0;
   let lastCredential: string | undefined;
   adapter.mountGraphql(
@@ -105,7 +110,7 @@ async function fixture() {
   );
   const baseHeaders = () => [
     "Host",
-    `127.0.0.1:${address.port}`,
+    routerCredential ? "identity:3100" : `127.0.0.1:${address.port}`,
     "Origin",
     origin,
     "X-Aster-CSRF",
@@ -311,6 +316,29 @@ test("real HTTP rejects ambiguity, cookie abuse and simple bodies without execut
     assert.equal((await http.send({ path: "/graphql?credential=untrusted" })).status, 400);
     assert.equal((await http.send({ body: "{" })).status, 400);
     assert.equal(http.calls(), 0);
+  } finally {
+    await http.close();
+  }
+});
+
+test("private Identity transport retains CSRF and cookie validation after Router authentication", async () => {
+  const key = randomBytes(32).toString("hex");
+  const http = await fixture(key);
+  try {
+    assert.equal((await http.send()).status, 403);
+    const trusted = [...http.headers(), "x-aster-router-credential", key];
+    assert.equal((await http.send({ headers: trusted })).status, 200);
+    for (const headers of [
+      [...trusted, "x-aster-account-id", "forged"],
+      [...trusted, "x-aster-router-credential", key],
+      replaceHeader([...trusted], "origin", "http://attacker.invalid"),
+      replaceHeader([...trusted], "x-aster-csrf"),
+      replaceHeader([...trusted], "x-aster-router-credential", randomBytes(32).toString("hex")),
+      [...trusted, "cookie", "aster_local_session=a.b.c; aster_local_session=d.e.f"],
+    ]) {
+      assert.ok((await http.send({ headers })).status >= 400);
+    }
+    assert.equal(http.calls(), 1);
   } finally {
     await http.close();
   }

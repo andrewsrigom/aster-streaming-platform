@@ -16,15 +16,15 @@ Phase 03 has complete [acceptance](../evidence/phase-03/README.md): 94 Catalog t
 
 ## Current work
 
-P04-R01/R04/R05/R08/R10 is locally verified: executable-owner schema printers, five deterministic artifacts, twelve known operations and committed-baseline compatibility in the existing gate. Nine focused tests pass. Rebased candidate gate: 55/55 tasks, 41 cached, 21.568 s. Clean source: frozen offline install, forced eleven-package build without cache (17.504 s), tests and read-only artifact check pass; [evidence](../evidence/phase-04/composition.txt). Router/session runtime is unchanged. P04-R02 is READY.
+P04-R01/R04/R05/R08/R10 schema delivery is locally verified; [evidence](../evidence/phase-04/composition.txt). P04-R02 with R03/R06/R07/R09 is IN_PROGRESS. Real Apollo Router 2.17.0 now fronts private Identity/Catalog, with separate file-backed transport credentials, owner-validated sessions, bounded traffic and optional sanitized traces. Focused trust/config/session tests (41) and platform/reset policy tests (35) pass. Real partial failure, revocation, capacity, trace privacy, client cancellation and bounded shutdown pass locally. Final packaging, consolidated candidate gates, clean-source acceptance and release remain open; no Phase 04 PR has been published.
 
 ## Not implemented
 
-Apollo Router runtime/trusted propagation, web UI, real-film worker/delivery/playback, engagement/discovery and hosted release. No playable VOD demo or approved film exists.
+Web UI, real-film worker/delivery/playback, engagement/discovery and hosted release. No playable VOD demo or approved film exists. Local Router implementation does not establish complete hosted GraphQL protection.
 
 ## Next outcome
 
-Start P04-R02 with P04-R03/R06/R07/R09: actual Router topology, trusted session propagation, bounded runtime telemetry and partial-failure acceptance. Use the handoff's exact paths/trust constraints. Do not publish this local schema slice as a completed Phase 04.
+Finish P04-R02 candidate packaging/evidence, initial and confirmation review, clean-source full gates and protected Phase 04 publication. Do not start the web phase before this runtime acceptance.
 
 ## Current risks
 

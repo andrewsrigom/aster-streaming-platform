@@ -1,0 +1,26 @@
+Phase 04 author review and confirmation — 2026-08-27
+Scope: P04-R02/R03/R06/R07/R09, current local runtime candidate based on a682b20.
+This is repository-author review, not an independent external approval.
+
+Initial review covered per-owner credentials, local-only activation, Host/Origin/CSRF,
+cookie ownership/revocation, cancellation/deadlines, nullable partial failure,
+telemetry privacy, packaging, destructive-reset ownership and documented Docker-only use.
+Remediation was batched before candidate publication:
+- Native internal trace operation names bypassed custom bounded attributes: Collector
+  normalizes structural span names and removes raw-name/document attributes before export.
+- Docker-only Identity proof needed an explicit internal Router route with the public Host.
+- Source-context allowlist, CI selectors and task inputs needed the new Router files.
+- Reset must validate the two per-owner mounts/volumes without weakening foreign-owner guards.
+- Trace proof must assert correlation independently for both owners, not their concatenated logs.
+
+Confirmation inspected the resulting YAML/Rhai, shared trust adapter, owner wrappers,
+runtime configuration, Dockerfiles, reset guards, diagnostics and affected tests.
+The full affected gate passed 55/55; focused negative guards and real runtime checks pass.
+Both-owner trace confirmation: 431435f6026c00489daedd7deb936e52.
+Actual trace/plan and runtime commands are indexed in README.md and router-runtime.txt.
+No remaining blocking finding was identified in this review scope.
+
+Complete clean-source acceptance, exact protected CI and release are still required.
+Hosted workload identity, end-user operation allowlisting/cost policy, full tracing
+backends and UI accessibility remain the named later-phase requirements, not silently
+claimed by these local checks. Repeat review only for a new/changed blocking boundary.

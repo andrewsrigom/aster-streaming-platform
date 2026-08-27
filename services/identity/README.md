@@ -8,7 +8,7 @@ From the repository root:
 
 ```sh
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
-docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
 ```
 
 The second command is a POSIX/WSL smoke check: sign in, create/select/list/delete its synthetic profile, sign out. It prints no credentials and requires one free profile slot plus journal capacity. No host Node/pnpm or hosted account is needed. The one-shot initializer applies pending SQL; the runtime uses a separate restricted login. Normal `down` preserves data; do not reset Docker to fix a failed migration.
@@ -16,12 +16,12 @@ The second command is a POSIX/WSL smoke check: sign in, create/select/list/delet
 Native PowerShell can pipe the same script to the container:
 
 ```powershell
-Get-Content -Raw tools/verify-local-identity.mjs | docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module
+Get-Content -Raw tools/verify-local-identity.mjs | docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router
 ```
 
 ## HTTP contract
 
-Send a JSON object to `http://127.0.0.1:3100/graphql`, containing one named `query` and optional `variables`/`operationName`. Every request, including sign-in, requires exact `Origin: http://127.0.0.1:3100`, `X-Aster-CSRF: 1`, and `Content-Type: application/json`. The Host must match; no CORS, forwarding or public identity headers are accepted. GET, query strings, duplicate headers, ambiguous cookies, batches and APQ extensions are rejected.
+Normal Compose exposes the [Router](../../apps/router/README.md) at `http://127.0.0.1:4000/graphql`; Identity's port is private. Send a JSON object with one named `query` and optional `variables`/`operationName`, exact `Origin: http://127.0.0.1:4000`, `X-Aster-CSRF: 1` and `Content-Type: application/json`. Router forwards cookies only to Identity. Private service credentials never replace signature, durable session/revocation or owner authorization checks. Direct port 3100 and its matching Origin are available only through the explicit standalone diagnostic overlay. GET, query strings, duplicate headers, ambiguous cookies, batches and APQ extensions are rejected.
 
 `demoSignIn` issues `aster_local_session` through Set-Cookie only: host-only, HttpOnly, SameSite=Strict, Path=/, absolute 30-minute expiry. The guarded loopback HTTP mode intentionally does not use Secure or a __Host- name. Never copy this policy to a hosted deployment. Credentials are never GraphQL fields. Failed/unknown sign-in commits issue no cookie; failed logout does not pretend revocation succeeded.
 

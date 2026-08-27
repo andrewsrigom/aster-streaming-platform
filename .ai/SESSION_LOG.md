@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Local Router runtime acceptance
+
+### Completed
+
+Implemented pinned Router with private Identity/Catalog, separate owner credentials, unchanged session authorization, finite traffic limits and sanitized trace export. Updated source-context/CI selectors, guarded reset ownership and Docker-only demo transport. Retained aster data is untouched; the development Router is restored without query-plan exposure.
+
+### Evidence
+
+evidence/phase-04/router-runtime.txt records actual Docker session/private-boundary/partial-failure/capacity/revocation checks, SQL-wait cancellation (20 ms owner duration), Collector outage, Router stop (392 ms, exit 0), query plan and sanitized correlated trace. Candidate gate: 55/55, 24 cached, 56.14 s. Focused platform/reset tests: 35/35. Earlier candidate failures were unused-entry metadata and a probe-only credential-reference scanner false positive, fixed without disabling gates. The real Compose build completed; clean-source final acceptance is still pending.
+
+### Next action
+
+Continue P04-R02: confirmation review, coherent candidate commit, clean-source acceptance, protected PR/merge and post-merge verification. Do not start web work before the Phase 04 runtime gate. No playable demo or hosted readiness is claimed.
+
 ## 2026-08-27 — Phase 03 release and local supergraph composition
 
 ### Completed

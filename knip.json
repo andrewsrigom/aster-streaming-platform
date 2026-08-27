@@ -8,13 +8,14 @@
     "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
   ],
   "workspaces": {
-    ".": { "entry": ["tools/media/generate-hls.mjs"] },
+    ".": { "entry": ["tools/media/generate-hls.mjs", "infra/router/init-trust.mjs"] },
     "apps/router": {
       "entry": ["src/main.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "services/catalog": {
       "entry": [
+        "test/router-cancellation-probe.mjs",
         "src/index.ts",
         "src/main.ts",
         "src/operate-local.ts",

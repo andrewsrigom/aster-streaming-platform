@@ -1,10 +1,21 @@
 # Phase 04 Evidence Index
 
-Phase status: IN_PROGRESS. P04-R01/R04/R05/R08/R10 schema delivery is locally VERIFIED, including clean-source generation, nine focused tests and 55/55 candidate gates. Runtime requirements remain open.
+Phase status: IN_PROGRESS. Schema delivery is locally VERIFIED. Router runtime is implemented with real local acceptance checks and a passing 55/55 affected candidate gate. Final clean-source, review and protected release gates remain open.
 
 - [Composition checkpoint](composition.txt): deterministic owner schema printers, five artifacts, twelve known operations, compatibility against committed baselines and negative tests.
+- [Router runtime checkpoint](router-runtime.txt): Docker-only session journey, private owner credentials, forged/duplicate headers, partial timeout, concurrency, revocation, cancellation, Collector outage and graceful stop/recovery.
+- [Actual query plan](router-query-plan.json) and [Collector trace](router-trace.txt): two-owner fetches, bounded operation attributes and private-canary checks.
+- [Author review and confirmation](router-review.txt): blocking boundaries, batched corrections and remaining release gates.
 - [Supergraph](../../infra/router/generated/supergraph.graphql), [public API](../../infra/router/generated/api.graphql), [ownership/hash manifest](../../infra/router/generated/manifest.json).
 - [Commands, bounds and conventions](../../apps/router/README.md).
 - Predecessor: [Phase 03 release](../phase-03/release.txt), PR 20 squash `1354841`, protected and post-merge CI passed.
 
-P04-R02/R03/R06/R07/R09 still require actual Apollo Router deployment, private subgraph topology, trusted identity propagation, bounded runtime telemetry and partial-failure proof. No phase exit or playable demo is claimed.
+| Requirements | Current implementation/evidence |
+|---|---|
+| P04-R01/R05/R08/R10 | Generated schemas/manifest, composition/baseline/known-operation tests and documented update/check commands |
+| P04-R02/R03 | Private Compose owners, per-owner credential adapters and real public/private/session negative probes |
+| P04-R04 | Router README conventions, nullable mixed query and sanitized public errors |
+| P04-R06 | Real Router operation/fetch events, query plan, Collector trace and authenticated owner correlation |
+| P04-R07/R09 | Bounded HTTP/parser/fetch/admission settings, real timeout/partial failure, cancellation and recovery |
+
+No phase exit, hosted readiness, approved real film or playable demo is claimed. Accessibility/browser interaction is not applicable to this HTTP-only phase; Phase 05 owns the web shell.

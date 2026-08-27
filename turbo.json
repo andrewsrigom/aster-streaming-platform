@@ -53,6 +53,7 @@
       "inputs": [
         "apps/**",
         "eslint.config.mjs",
+        "infra/router/**",
         "package.json",
         "packages/**",
         "services/**",
@@ -63,6 +64,7 @@
     },
     "//#format:check": {
       "inputs": [
+        "infra/**",
         ".github/**",
         ".githooks/**",
         "**/*.md",
@@ -76,6 +78,7 @@
     },
     "//#unused:check": {
       "inputs": [
+        "infra/router/**",
         "apps/**",
         "knip.json",
         "package.json",
@@ -100,6 +103,8 @@
     },
     "//#platform:check": {
       "inputs": [
+        "infra/router/**",
+        "tools/verify-router-runtime.mjs",
         ".dockerignore",
         "infra/docker/**",
         "packages/*/package.json",
@@ -117,6 +122,9 @@
     },
     "//#platform:test": {
       "inputs": [
+        "infra/router/**",
+        "tools/verify-router-runtime.mjs",
+        "tools/verify-router-runtime.test.mjs",
         ".dockerignore",
         "infra/docker/**",
         "packages/*/package.json",

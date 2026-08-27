@@ -103,6 +103,8 @@ platform-status
 postgres
 prometheus
 redis
+router
+router-trust-init
 storage'
 [ "$configured_services" = "$expected_services" ] || fail 'the Compose service set is not the reviewed local platform slice'
 
@@ -111,6 +113,8 @@ if ! configured_volumes=$(compose_local config --volumes 2>/dev/null); then
 fi
 configured_volumes=$(printf '%s\n' "$configured_volumes" | LC_ALL=C sort | tr -d '\r')
 expected_volumes='broker-data
+catalog-router-trust
+identity-router-trust
 postgres-data
 prometheus-data
 storage-data'
@@ -185,7 +189,7 @@ for container_id in $container_ids; do
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
-    identity | identity-init | catalog | catalog-init | broker | storage | collector | prometheus)
+    identity | identity-init | catalog | catalog-init | broker | storage | collector | prometheus | router | router-trust-init)
       [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'runtime and optional services require current ownership labels'
       ;;
     platform-init | platform-status | postgres | redis) ;;
@@ -198,9 +202,14 @@ for container_id in $container_ids; do
   if ! container_mounts=$(docker_local container inspect --format '{{range .Mounts}}{{.Type}}|{{.Name}}|{{.Destination}}{{"\n"}}{{end}}' "$container_id" 2>/dev/null); then
     fail "container $container_name mounts cannot be inspected"
   fi
+  container_mounts=$(printf '%s\n' "$container_mounts" | LC_ALL=C sort)
   case "$container_service|$container_mounts" in
     'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'identity-init|' | 'catalog|' | 'catalog-init|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
     'broker|volume|aster_broker-data|/var/lib/kafka/data' | 'storage|volume|aster_storage-data|/data' | 'prometheus|volume|aster_prometheus-data|/prometheus' | 'collector|') ;;
+    'identity|volume|aster_identity-router-trust|/run/aster-router' | 'catalog|volume|aster_catalog-router-trust|/run/aster-router') ;;
+    'router|volume|aster_catalog-router-trust|/run/aster-router/catalog
+volume|aster_identity-router-trust|/run/aster-router/identity' | 'router-trust-init|volume|aster_catalog-router-trust|/run/aster-router/catalog
+volume|aster_identity-router-trust|/run/aster-router/identity') ;;
     platform-init\|volume\|*\|/var/lib/postgresql | platform-status\|volume\|*\|/var/lib/postgresql)
       legacy_volume=$(printf '%s\n' "$container_mounts" | cut -d '|' -f 2)
       [ "${#legacy_volume}" -eq 64 ] || fail 'legacy helper volume is not an anonymous identifier'
@@ -215,7 +224,9 @@ for container_id in $container_ids; do
     fail "container $container_name networks cannot be inspected"
   fi
   case "$container_service|$container_networks" in
-    *\| | *\|aster_platform | 'identity|aster_edge
+    'router-trust-init|none') ;;
+    *\| | *\|aster_platform | 'router|aster_edge
+aster_platform' | 'identity|aster_edge
 aster_platform' | 'catalog|aster_edge
 aster_platform' | 'prometheus|aster_edge
 aster_platform') ;;
@@ -287,7 +298,7 @@ if ! volume_names=$(docker_local volume ls --quiet --filter "label=com.docker.co
 fi
 volume_count=0
 for volume_name in $volume_names; do
-  [ "$volume_count" -lt 4 ] || fail 'more than four Aster volumes are prohibited'
+  [ "$volume_count" -lt 6 ] || fail 'more than six Aster volumes are prohibited'
   if ! volume_labels=$(docker_local volume inspect --format '{{ index .Labels "com.docker.compose.project" }}|{{ index .Labels "com.docker.compose.volume" }}|{{ index .Labels "com.aster.authority" }}|{{ index .Labels "com.aster.environment" }}|{{ index .Labels "com.aster.owner" }}' "$volume_name" 2>/dev/null); then
     fail "volume $volume_name labels cannot be inspected"
   fi
@@ -295,6 +306,8 @@ for volume_name in $volume_names; do
     'aster_postgres-data|aster|postgres-data|durable-local|local|platform' | \
     'aster_broker-data|aster|broker-data|durable-local|local|platform' | \
     'aster_storage-data|aster|storage-data|durable-local|local|platform' | \
+    'aster_identity-router-trust|aster|identity-router-trust|disposable-local|local|platform' | \
+    'aster_catalog-router-trust|aster|catalog-router-trust|disposable-local|local|platform' | \
     'aster_prometheus-data|aster|prometheus-data|disposable-local|local|platform') ;;
     *) fail "volume $volume_name has unexpected project, volume, authority, environment, or owner labels" ;;
   esac

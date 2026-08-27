@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0017](../docs/adr/0017-local-router-trust.md) selects pinned Apollo Router 2.17.0 Core, per-owner local file credentials and private subgraph ports. Owners still authorize sessions/data. GraphOS-key-protected limits are not enabled; Collector removes native arbitrary operation/document attributes before trace export. Hosted identity and full operation protection remain later-phase decisions.
+
 [ADR-0016](../docs/adr/0016-isolated-generated-media-fixture.md) selects a network-disabled, resource-limited local FFmpeg fixture job. Aster stays MIT; GPL-containing Debian tooling remains a separate executable with notices and a binary-release compliance gate. Synthetic tests do not approve real films or prove CDN/browser delivery.
 
 Phase 02 identity/session selection is accepted in [ADR-0013](../docs/adr/0013-local-identity-and-sessions.md): guarded local ES256 assertions with durable owner-validated sessions. The assertion adapter is locally verified; account/session persistence passes real database tests. Cookie/GraphQL transport and hosted identity remain separate acceptance boundaries.
@@ -50,7 +52,7 @@ The owned-profile slice implements defaults of five profiles (configured 1–16)
 |---|---|---|
 | Core local container floor | Support Docker Engine `26.0.0` and Compose `2.26.1` as the measured floor; require the model and smoke path to pass on newer compatible releases | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Identity image packaging | Pin official Node `24.19.0-bookworm-slim` by multi-platform index; compile in Docker, deploy production dependencies with existing pnpm `--legacy`, run as UID 1000 and retain upstream notices. Source-only context and package file allowlists preserve isolation; actual proof is amd64 only | `evidence/phase-01/docker-demo.txt` |
-| Runtime Docker publication | Keep databases on the internal platform network; attach only Identity to a labelled edge bridge and publish loopback 3100. Docker 26 did not publish ports on an internal-only network. Helpers override inherited PostgreSQL image volumes with tmpfs; reset validates legacy anonymous owners before cleanup | `evidence/phase-01/docker-demo.txt` |
+| Runtime Docker publication | Phase 04 supersedes the historical Identity-only port: Router publishes loopback 4000; owners/databases remain private. The labelled edge bridge is retained because Docker 26 does not publish internal-only network ports. Helpers avoid anonymous volumes; reset accepts exact owned resources only | `docs/adr/0017-local-router-trust.md` |
 | Separate local database password | Add classified optional `ASTER_DATABASE_PASSWORD`, reject competing URL/query password sources and preserve seven-variable callers. Bound the encoded effective URL and never emit the secret; no scanner exception or hidden pg variable | `docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`, `evidence/phase-01/docker-demo.txt` |
 | Local PostgreSQL runtime | Pin Docker Official Image `postgres:18.6-alpine3.23` by multi-platform digest; persist `/var/lib/postgresql` with version-specific `PGDATA` | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Local Redis runtime | Pin Docker Official Image `redis:8.10.0-alpine` by multi-platform digest; select the AGPLv3 option for the unmodified external runtime and keep state disposable | `evidence/phase-01/local-platform-checkpoint.txt` |
@@ -75,8 +77,6 @@ Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterize
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
 | Additional observability backends | 12 | A concrete dashboard/trace requirement, bounded resources and verified operation before adding Grafana/Tempo/Loki | Phase 01 finite profiles and Collector/Prometheus are released; no product dashboard or capacity guarantee is claimed | Phase 12 observability |
-| Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
-| Router-to-subgraph identity-context protection | 04 | Threat model, forgery tests, key handling, local topology, deadline, and rotation path | No public route reaches a subgraph directly; no public identity header is trusted | Phase 04 verification |
 | Web UI primitive strategy | 05 | Current Next.js and React compatibility, accessibility, bundle impact, maintenance, customization ownership, license, and used-component inventory | Use semantic HTML and minimal local primitives; shadcn/ui is the preferred candidate | Phase 05 verification |
 | Player-control component strategy | 07 | HLS.js and React compatibility, SSR boundary, captions, quality, keyboard and screen-reader behavior, browser coverage, bundle impact, maintenance, customization ownership, and license | Native media controls remain the early technical fallback; Media Chrome is the preferred candidate | Phase 07 verification |
 | Hosted compute and deployment controller | 14 | Capacity, operational fit, cost, rollback, and artifact requirements | Local and integration environments only | Hosted release |

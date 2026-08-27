@@ -1,6 +1,6 @@
 # Catalog
 
-Status: implemented rights-aware editorial application, local operator CLI, published-only queries and Catalog Federation v2. The local Docker profile includes a read-only Catalog runtime. A generated HLS technical fixture exists; real-film processing, media delivery and browser playback remain planned. Phase 03 release acceptance is still in progress.
+Status: Phase 03 is [released](../../evidence/phase-03/release.txt): rights-aware editorial application, operator CLI, published-only queries and Federation v2. Phase 04 places the read-only Catalog runtime behind the local Router. A generated HLS technical fixture exists; real-film processing, media delivery and browser playback remain planned.
 
 ## Docker runtime and technical media
 
@@ -10,7 +10,7 @@ pnpm catalog:demo
 pnpm catalog:media
 ~~~
 
-The first command requires Docker only and exposes Catalog at http://127.0.0.1:3200/graphql with health routes on the same port. A new Catalog starts empty; no candidate is silently approved or published. Send a named POST JSON query, for example `{"operationName":"Browse","query":"query Browse { titles(first: 5) { edges { node { id localized(locale: \"en\") { title } } } } }"}`. Router is planned in Phase 04; this is a local subgraph diagnostic, not the final client endpoint.
+The first command requires Docker only and exposes the [Router](../../apps/router/README.md) at `http://127.0.0.1:4000/graphql`; Catalog and its health endpoints stay private. A new Catalog starts empty; no candidate is silently approved or published. Use the Router's Origin/CSRF headers and a named POST JSON query, for example `{"operationName":"Browse","query":"query Browse { titles(first: 5) { edges { node { id localized(locale: \"en\") { title } } } } }"}`. Port 3200 is reserved for explicit standalone diagnostic configuration.
 
 The other commands require the pinned Node/pnpm toolchain and Docker. `catalog:demo` builds a fresh isolated Compose project, tests HTTP, restricted reader privileges, database outage/recovery and shutdown, then verifies scoped cleanup. It does not reset the retained demo. `catalog:media` generates and decodes HLS in a network-disabled container, compares two generations, and exercises real PostgreSQL publication/retirement through the existing application commands. It does not fetch or approve a film. [Fixture decision](../../docs/adr/0016-isolated-generated-media-fixture.md).
 
@@ -104,7 +104,7 @@ first is 1–20. Cursors are opaque, versioned positions in ascending UUID order
 
 Each request has its own DataLoader, at most 128 cached IDs and 20 IDs per set-based query; duplicates/missing entities preserve input order. No Redis/cross-request cache is used. HTTP is POST-only JSON with Cache-Control: no-store, ignores viewer/operator headers and never issues cookies. The shared HTTP adapter bounds the body (32 KiB in the verified harness); subgraph preflight bounds source to 16 KiB, tokens to 2048, expanded fields to 128, depth to 10, aliases to 16, input nodes/depth to 256/8 and weighted cost to 4096. Lists use their real declared bounds. Eight requests may execute concurrently; the process-global token bucket allows a burst of 64 and refills eight/second. One three-second deadline and client disconnect cancel owner work; saturation returns 503, rate exhaustion 429. Input failures use sanitized INVALID_INPUT/LIMIT_EXCEEDED, dependency failure UNAVAILABLE and cancellation CANCELLED, with correlation IDs.
 
-Mount this transport through the shared Express adapter with a separate login granted only aster_catalog_reader, not operator credentials. The local initializer creates the reader group/view; Docker composition will provision its login. The current test runner mounts a temporary loopback HTTP endpoint and closes it. Operator commands remain CLI-only. Router trust, hosted trusted-operation policy and distributed rate controls belong to Phase 04; this is not a hosted deployment.
+The shared Express adapter uses a separate login granted only aster_catalog_reader, not operator credentials. The initializer provisions that login and the reader view. Normal Compose additionally requires the Catalog-only Router credential and rejects browser cookies on the private transport. Standalone test runners explicitly disable Router trust on their temporary isolated endpoint. Operator commands remain CLI-only; hosted trusted operations and distributed rate controls remain later-phase requirements.
 
 ## Atomicity and limits
 

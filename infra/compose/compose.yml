@@ -10,6 +10,70 @@ x-local-logging: &local-logging
     max-file: "2"
 
 services:
+  router:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/router.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    environment:
+      ASTER_ROUTER_OTLP_ENABLED: "false"
+      APOLLO_EXPOSE_QUERY_PLAN: "false"
+    depends_on:
+      router-trust-init:
+        condition: service_completed_successfully
+      identity:
+        condition: service_healthy
+      catalog:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:4000:4000"
+    volumes:
+      - identity-router-trust:/run/aster-router/identity:ro
+      - catalog-router-trust:/run/aster-router/catalog:ro
+    networks: [platform, edge]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 10s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 384M
+          pids: 64
+
+  router-trust-init:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/router-trust.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    volumes:
+      - identity-router-trust:/run/aster-router/identity
+      - catalog-router-trust:/run/aster-router/catalog
+    network_mode: none
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 5s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+          pids: 32
+
   catalog:
     logging: *local-logging
     profiles: [runtime, integration, observability, full]
@@ -22,6 +86,8 @@ services:
     depends_on:
       catalog-init:
         condition: service_completed_successfully
+      router-trust-init:
+        condition: service_completed_successfully
     environment:
       ASTER_ENVIRONMENT: local
       ASTER_CATALOG_LOCAL_ENABLED: "true"
@@ -29,9 +95,10 @@ services:
       ASTER_CATALOG_HTTP_PORT: "3200"
       ASTER_CATALOG_READER_DATABASE_URL: postgresql://aster_catalog_reader_local@postgres:5432/aster
       ASTER_CATALOG_READER_DATABASE_PASSWORD: aster-test-only
-    ports:
-      - "127.0.0.1:3200:3200"
-    networks: [platform, edge]
+      ASTER_ROUTER_TRUST_ENABLED: "true"
+    volumes:
+      - catalog-router-trust:/run/aster-router:ro
+    networks: [platform]
     user: "1000:1000"
     read_only: true
     cap_drop: [ALL]
@@ -91,6 +158,8 @@ services:
     depends_on:
       identity-init:
         condition: service_completed_successfully
+      router-trust-init:
+        condition: service_completed_successfully
     environment:
       ASTER_ENV: local
       ASTER_HTTP_HOST: 0.0.0.0
@@ -101,12 +170,12 @@ services:
       ASTER_DATABASE_PASSWORD: aster-test-only
       REDIS_URL: redis://redis:6379/0
       ASTER_LOCAL_DEMO_ENABLED: "true"
-      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100
-    ports:
-      - "127.0.0.1:3100:3100"
+      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:4000
+      ASTER_ROUTER_TRUST_ENABLED: "true"
+    volumes:
+      - identity-router-trust:/run/aster-router:ro
     networks:
       - platform
-      - edge
     user: "1000:1000"
     read_only: true
     cap_drop: [ALL]
@@ -447,6 +516,16 @@ networks:
       com.aster.scope: platform
 
 volumes:
+  identity-router-trust:
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  catalog-router-trust:
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.owner: platform
   postgres-data:
     labels:
       com.aster.authority: durable-local

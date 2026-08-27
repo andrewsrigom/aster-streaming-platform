@@ -1,0 +1,905 @@
+Collector debug export, captured 2026-08-27 through verify-router-observability.mjs.
+Each record is rendered as JSON metadata followed by decoded msg text; trailing formatting spaces are removed.
+Both owner logs share the mixed operation trace ID; three privacy canaries are absent.
+
+{"level":"info","ts":"2026-08-27T17:33:37.809Z","resource":{"service.instance.id":"e23a637f-3c3a-43df-a926-f23a3f082959","service.name":"otelcol","service.version":"0.159.0"},"otelcol.component.id":"debug","otelcol.component.kind":"exporter","otelcol.signal":"traces","resource spans":1,"spans":35}
+Traces
+
+{"level":"info","ts":"2026-08-27T17:33:37.809Z","resource":{"service.instance.id":"e23a637f-3c3a-43df-a926-f23a3f082959","service.name":"otelcol","service.version":"0.159.0"},"otelcol.component.id":"debug","otelcol.component.kind":"exporter","otelcol.signal":"traces"}
+ResourceSpans #0
+Resource SchemaURL:
+Resource attributes:
+     -> service.name: Str(aster-router)
+     -> service.version: Str(2.17.0)
+     -> process.executable.name: Str(router)
+ScopeSpans #0
+ScopeSpans SchemaURL:
+InstrumentationScope apollo-router 2.17.0
+Span #0
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : c5125b6b42cb13b8
+    ID             : 599b49eaa1fd60a9
+    Name           : compute_job.execution
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.869588963 +0000 UTC
+    End time       : 2026-08-27 17:33:36.870135434 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(181)
+     -> thread.id: Int(5)
+     -> job.type: Str(query_parsing)
+     -> job.age: Str(P4)
+     -> busy_ns: Int(530371)
+     -> idle_ns: Int(15829)
+Span #1
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 68fd857e86d48cac
+    ID             : c5125b6b42cb13b8
+    Name           : compute_job
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.868977276 +0000 UTC
+    End time       : 2026-08-27 17:33:36.870146382 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(300)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> job.type: Str(query_parsing)
+     -> job.outcome: Str(executed_ok)
+     -> busy_ns: Int(461473)
+     -> idle_ns: Int(707141)
+Events:
+SpanEvent #0
+     -> Name: compute job thread pool created
+     -> Timestamp: 2026-08-27 17:33:36.869205689 +0000 UTC
+     -> DroppedAttributesCount: 0
+     -> Attributes::
+          -> level: Str(INFO)
+          -> target: Str(apollo_router::compute_job)
+          -> threads: Str(1)
+          -> queue_capacity: Str(1000)
+          -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+          -> code.namespace: Str(apollo_router::compute_job)
+          -> code.lineno: Int(227)
+Span #2
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 8c91e42201d82510
+    ID             : 68fd857e86d48cac
+    Name           : parse_query
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.868947318 +0000 UTC
+    End time       : 2026-08-27 17:33:36.87014784 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/layers/query_analysis.rs)
+     -> code.namespace: Str(apollo_router::services::layers::query_analysis)
+     -> code.lineno: Int(127)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(429153)
+     -> idle_ns: Int(728365)
+Span #3
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : eacd46acab56f998
+    ID             : 14975b4698bf9a5d
+    Name           : compute_job.execution
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.870717938 +0000 UTC
+    End time       : 2026-08-27 17:33:36.871199713 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(181)
+     -> thread.id: Int(5)
+     -> job.type: Str(query_planning)
+     -> job.age: Str(P8)
+     -> busy_ns: Int(477420)
+     -> idle_ns: Int(3138)
+Span #4
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 9123f7c545e3dbc2
+    ID             : eacd46acab56f998
+    Name           : compute_job
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.870652954 +0000 UTC
+    End time       : 2026-08-27 17:33:36.871226718 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(300)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> job.type: Str(query_planning)
+     -> job.outcome: Str(executed_ok)
+     -> busy_ns: Int(60455)
+     -> idle_ns: Int(511643)
+Span #5
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 94a3adb9a596e0f9
+    ID             : 9123f7c545e3dbc2
+    Name           : query_planning
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.870388285 +0000 UTC
+    End time       : 2026-08-27 17:33:36.871685313 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/supergraph/service.rs)
+     -> code.namespace: Str(apollo_router::services::supergraph::service)
+     -> code.lineno: Int(451)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(752263)
+     -> idle_ns: Int(543505)
+Span #6
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 93796c4302ef93bc
+    ID             : cd48a2e547860d45
+    Name           : http_request
+    Kind           : Client
+    Start time     : 2026-08-27 17:33:36.872012168 +0000 UTC
+    End time       : 2026-08-27 17:33:36.882912215 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry)
+     -> code.lineno: Int(1233)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> net.peer.name: Str(catalog)
+     -> net.peer.port: Str(3200)
+     -> http.route: Str(/graphql)
+     -> http.url: Str(http://catalog:3200/graphql)
+     -> net.transport: Str(ip_tcp)
+     -> http.response.status_code: Int(200)
+     -> busy_ns: Int(1603764)
+     -> idle_ns: Int(9293487)
+Span #7
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : f17398953f768d0f
+    ID             : 93796c4302ef93bc
+    Name           : subgraph_request
+    Kind           : Client
+    Start time     : 2026-08-27 17:33:36.871995938 +0000 UTC
+    End time       : 2026-08-27 17:33:36.882952404 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/subgraph_service.rs)
+     -> code.namespace: Str(apollo_router::services::subgraph_service)
+     -> code.lineno: Int(833)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> net.peer.name: Str(catalog)
+     -> net.peer.port: Str(3200)
+     -> http.route: Str(/graphql)
+     -> http.url: Str(http://catalog:3200/graphql)
+     -> net.transport: Str(ip_tcp)
+     -> apollo.subgraph.name: Str(catalog)
+     -> idle_ns: Int(9289331)
+     -> busy_ns: Int(1671128)
+Span #8
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 3860f2ae8842f8ab
+    ID             : f17398953f768d0f
+    Name           : subgraph
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.87184813 +0000 UTC
+    End time       : 2026-08-27 17:33:36.883240594 +0000 UTC
+    Status code    : Ok
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(203)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> subgraph.name: Str(catalog)
+     -> aster.operation: Str(other)
+     -> busy_ns: Int(2171163)
+     -> idle_ns: Int(9219819)
+Events:
+SpanEvent #0
+     -> Name: Subgraph fetch completed
+     -> Timestamp: 2026-08-27 17:33:36.883109479 +0000 UTC
+     -> DroppedAttributesCount: 0
+     -> Attributes::
+          -> level: Str(INFO)
+          -> target: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> kind: Str(aster.router.fetch)
+          -> subgraph.name: Str(catalog)
+          -> aster.operation: Str(other)
+          -> graphql_error: Bool(false)
+          -> code.filepath: Str(apollo-router/src/plugins/telemetry/config_new/events.rs)
+          -> code.namespace: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> code.lineno: Int(414)
+Span #9
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : bf84d5d2deaa9861
+    ID             : 3860f2ae8842f8ab
+    Name           : fetch
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.871774686 +0000 UTC
+    End time       : 2026-08-27 17:33:36.883268378 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/fetch_service.rs)
+     -> code.namespace: Str(apollo_router::services::fetch_service)
+     -> code.lineno: Int(111)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> apollo.subgraph.name: Str(catalog)
+     -> busy_ns: Int(2225042)
+     -> idle_ns: Int(9268033)
+Span #10
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 94a3adb9a596e0f9
+    ID             : bf84d5d2deaa9861
+    Name           : execution
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.871725576 +0000 UTC
+    End time       : 2026-08-27 17:33:36.883644921 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry)
+     -> code.lineno: Int(942)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> graphql.operation.type: Str(query)
+     -> busy_ns: Int(2274530)
+     -> idle_ns: Int(9369273)
+Span #11
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : c1a50b5cfcdfbb5d
+    ID             : 94a3adb9a596e0f9
+    Name           : rhai_plugin
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.870202375 +0000 UTC
+    End time       : 2026-08-27 17:33:36.883647937 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/rhai/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::rhai)
+     -> code.lineno: Int(656)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> rhai service: Str(supergraph :: Request)
+     -> busy_ns: Int(2647715)
+     -> idle_ns: Int(10537980)
+Span #12
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 8c91e42201d82510
+    ID             : c1a50b5cfcdfbb5d
+    Name           : supergraph
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.870176357 +0000 UTC
+    End time       : 2026-08-27 17:33:36.883652257 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(157)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(2126885)
+     -> idle_ns: Int(11308856)
+Events:
+SpanEvent #0
+     -> Name: GraphQL operation completed
+     -> Timestamp: 2026-08-27 17:33:36.883519631 +0000 UTC
+     -> DroppedAttributesCount: 0
+     -> Attributes::
+          -> level: Str(INFO)
+          -> target: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> kind: Str(aster.router.operation)
+          -> aster.operation: Str(other)
+          -> graphql_error: Bool(false)
+          -> duration_ms: Int(13)
+          -> code.filepath: Str(apollo-router/src/plugins/telemetry/config_new/events.rs)
+          -> code.namespace: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> code.lineno: Int(414)
+Span #13
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      : 6c5480cdfa88e481
+    ID             : 8c91e42201d82510
+    Name           : rhai_plugin
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.868457527 +0000 UTC
+    End time       : 2026-08-27 17:33:36.883663111 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/rhai/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::rhai)
+     -> code.lineno: Int(647)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> rhai service: Str(router :: Request)
+     -> busy_ns: Int(3964510)
+     -> idle_ns: Int(11240718)
+Span #14
+    Trace ID       : 55979599c64fe3f0cc431c8f26b3d320
+    Parent ID      :
+    ID             : 6c5480cdfa88e481
+    Name           : router
+    Kind           : Server
+    Start time     : 2026-08-27 17:33:36.868150713 +0000 UTC
+    End time       : 2026-08-27 17:33:36.884125593 +0000 UTC
+    Status code    : Ok
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(101)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> otel.original_name: Str(router)
+     -> busy_ns: Int(4555810)
+     -> idle_ns: Int(11407615)
+Span #15
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 5b9d770c9fb7dd4d
+    ID             : 8358159e24d51bda
+    Name           : compute_job.execution
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899134604 +0000 UTC
+    End time       : 2026-08-27 17:33:36.899303678 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(181)
+     -> thread.id: Int(5)
+     -> job.type: Str(query_parsing)
+     -> job.age: Str(P4)
+     -> busy_ns: Int(161324)
+     -> idle_ns: Int(5395)
+Span #16
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 34c94d375ea7f408
+    ID             : 5b9d770c9fb7dd4d
+    Name           : compute_job
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899024849 +0000 UTC
+    End time       : 2026-08-27 17:33:36.899387171 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(300)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> job.type: Str(query_parsing)
+     -> job.outcome: Str(executed_ok)
+     -> busy_ns: Int(241234)
+     -> idle_ns: Int(112034)
+Span #17
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 38c19d2b92a305e3
+    ID             : 34c94d375ea7f408
+    Name           : parse_query
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899020966 +0000 UTC
+    End time       : 2026-08-27 17:33:36.899394573 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/layers/query_analysis.rs)
+     -> code.namespace: Str(apollo_router::services::layers::query_analysis)
+     -> code.lineno: Int(127)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(71570)
+     -> idle_ns: Int(300443)
+Span #18
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : c1e8e53059501084
+    ID             : 6a05024e5863a263
+    Name           : compute_job.execution
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899783559 +0000 UTC
+    End time       : 2026-08-27 17:33:36.900192894 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(181)
+     -> thread.id: Int(5)
+     -> job.type: Str(query_planning)
+     -> job.age: Str(P8)
+     -> busy_ns: Int(406620)
+     -> idle_ns: Int(1360)
+Span #19
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : ce5b3e7d5782f771
+    ID             : c1e8e53059501084
+    Name           : compute_job
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899712494 +0000 UTC
+    End time       : 2026-08-27 17:33:36.900202603 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/compute_job/mod.rs)
+     -> code.namespace: Str(apollo_router::compute_job)
+     -> code.lineno: Int(300)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> job.type: Str(query_planning)
+     -> job.outcome: Str(executed_ok)
+     -> busy_ns: Int(40633)
+     -> idle_ns: Int(448544)
+Span #20
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 6c53dff4ac6f3743
+    ID             : ce5b3e7d5782f771
+    Name           : query_planning
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899604633 +0000 UTC
+    End time       : 2026-08-27 17:33:36.900529514 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/supergraph/service.rs)
+     -> code.namespace: Str(apollo_router::services::supergraph::service)
+     -> code.lineno: Int(451)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(457321)
+     -> idle_ns: Int(466758)
+Span #21
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 094782f593accd04
+    ID             : 96024ac9d92d251d
+    Name           : http_request
+    Kind           : Client
+    Start time     : 2026-08-27 17:33:36.901146856 +0000 UTC
+    End time       : 2026-08-27 17:33:36.907855742 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry)
+     -> code.lineno: Int(1233)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> net.peer.name: Str(catalog)
+     -> net.peer.port: Str(3200)
+     -> http.route: Str(/graphql)
+     -> http.url: Str(http://catalog:3200/graphql)
+     -> net.transport: Str(ip_tcp)
+     -> http.response.status_code: Int(200)
+     -> busy_ns: Int(98324)
+     -> idle_ns: Int(6605682)
+Span #22
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : f66717b7ba5a0984
+    ID             : 094782f593accd04
+    Name           : subgraph_request
+    Kind           : Client
+    Start time     : 2026-08-27 17:33:36.901130836 +0000 UTC
+    End time       : 2026-08-27 17:33:36.907914088 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/subgraph_service.rs)
+     -> code.namespace: Str(apollo_router::services::subgraph_service)
+     -> code.lineno: Int(833)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> net.peer.name: Str(catalog)
+     -> net.peer.port: Str(3200)
+     -> http.route: Str(/graphql)
+     -> http.url: Str(http://catalog:3200/graphql)
+     -> net.transport: Str(ip_tcp)
+     -> apollo.subgraph.name: Str(catalog)
+     -> idle_ns: Int(6604819)
+     -> busy_ns: Int(177450)
+Span #23
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : b6c60b26fe1bc97f
+    ID             : f66717b7ba5a0984
+    Name           : subgraph
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.900831401 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908180252 +0000 UTC
+    Status code    : Ok
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(203)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> subgraph.name: Str(catalog)
+     -> aster.operation: Str(ViewerAndTitle)
+     -> busy_ns: Int(509771)
+     -> idle_ns: Int(6837651)
+Events:
+SpanEvent #0
+     -> Name: Subgraph fetch completed
+     -> Timestamp: 2026-08-27 17:33:36.908019308 +0000 UTC
+     -> DroppedAttributesCount: 0
+     -> Attributes::
+          -> level: Str(INFO)
+          -> target: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> kind: Str(aster.router.fetch)
+          -> subgraph.name: Str(catalog)
+          -> aster.operation: Str(ViewerAndTitle)
+          -> graphql_error: Bool(false)
+          -> code.filepath: Str(apollo-router/src/plugins/telemetry/config_new/events.rs)
+          -> code.namespace: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> code.lineno: Int(414)
+Span #24
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 181ecdaff7a66838
+    ID             : b6c60b26fe1bc97f
+    Name           : fetch
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.900719518 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908210059 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/fetch_service.rs)
+     -> code.namespace: Str(apollo_router::services::fetch_service)
+     -> code.lineno: Int(111)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> apollo.subgraph.name: Str(catalog)
+     -> busy_ns: Int(550981)
+     -> idle_ns: Int(6938524)
+Span #25
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 87a4465985fc9b93
+    ID             : bebb4fc6347c69af
+    Name           : http_request
+    Kind           : Client
+    Start time     : 2026-08-27 17:33:36.900919486 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908392051 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry)
+     -> code.lineno: Int(1233)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> net.peer.name: Str(identity)
+     -> net.peer.port: Str(3100)
+     -> http.route: Str(/graphql)
+     -> http.url: Str(http://identity:3100/graphql)
+     -> net.transport: Str(ip_tcp)
+     -> http.response.status_code: Int(200)
+     -> busy_ns: Int(915414)
+     -> idle_ns: Int(6555577)
+Span #26
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 2ef944adae6c1ed5
+    ID             : 87a4465985fc9b93
+    Name           : subgraph_request
+    Kind           : Client
+    Start time     : 2026-08-27 17:33:36.900903015 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908409672 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/subgraph_service.rs)
+     -> code.namespace: Str(apollo_router::services::subgraph_service)
+     -> code.lineno: Int(833)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> net.peer.name: Str(identity)
+     -> net.peer.port: Str(3100)
+     -> http.route: Str(/graphql)
+     -> http.url: Str(http://identity:3100/graphql)
+     -> net.transport: Str(ip_tcp)
+     -> apollo.subgraph.name: Str(identity)
+     -> idle_ns: Int(6542682)
+     -> busy_ns: Int(963330)
+Span #27
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 2abcf5bdbc5ae1f1
+    ID             : 2ef944adae6c1ed5
+    Name           : subgraph
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.90077425 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908661481 +0000 UTC
+    Status code    : Ok
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(203)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> subgraph.name: Str(identity)
+     -> aster.operation: Str(ViewerAndTitle)
+     -> busy_ns: Int(1326823)
+     -> idle_ns: Int(6559557)
+Events:
+SpanEvent #0
+     -> Name: Subgraph fetch completed
+     -> Timestamp: 2026-08-27 17:33:36.908593333 +0000 UTC
+     -> DroppedAttributesCount: 0
+     -> Attributes::
+          -> level: Str(INFO)
+          -> target: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> kind: Str(aster.router.fetch)
+          -> subgraph.name: Str(identity)
+          -> graphql_error: Bool(false)
+          -> aster.operation: Str(ViewerAndTitle)
+          -> code.filepath: Str(apollo-router/src/plugins/telemetry/config_new/events.rs)
+          -> code.namespace: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> code.lineno: Int(414)
+Span #28
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 181ecdaff7a66838
+    ID             : 2abcf5bdbc5ae1f1
+    Name           : fetch
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.900695303 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908680299 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/services/fetch_service.rs)
+     -> code.namespace: Str(apollo_router::services::fetch_service)
+     -> code.lineno: Int(111)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> apollo.subgraph.name: Str(identity)
+     -> busy_ns: Int(1387839)
+     -> idle_ns: Int(6590839)
+Span #29
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : f37d22fa2c0219b7
+    ID             : 181ecdaff7a66838
+    Name           : parallel
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.900598248 +0000 UTC
+    End time       : 2026-08-27 17:33:36.908693202 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/query_planner/execution.rs)
+     -> code.namespace: Str(apollo_router::query_planner::execution)
+     -> code.lineno: Int(191)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(1930754)
+     -> idle_ns: Int(6162979)
+Span #30
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 6c53dff4ac6f3743
+    ID             : f37d22fa2c0219b7
+    Name           : execution
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.900557296 +0000 UTC
+    End time       : 2026-08-27 17:33:36.909046977 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry)
+     -> code.lineno: Int(942)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> graphql.operation.type: Str(query)
+     -> busy_ns: Int(2128878)
+     -> idle_ns: Int(6075600)
+Span #31
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 96eeb608dda5f876
+    ID             : 6c53dff4ac6f3743
+    Name           : rhai_plugin
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.899494238 +0000 UTC
+    End time       : 2026-08-27 17:33:36.909049738 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/rhai/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::rhai)
+     -> code.lineno: Int(656)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> rhai service: Str(supergraph :: Request)
+     -> busy_ns: Int(2412393)
+     -> idle_ns: Int(6899101)
+Span #32
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : 38c19d2b92a305e3
+    ID             : 96eeb608dda5f876
+    Name           : supergraph
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.89947104 +0000 UTC
+    End time       : 2026-08-27 17:33:36.909052363 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(157)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> busy_ns: Int(1994608)
+     -> idle_ns: Int(7547264)
+Events:
+SpanEvent #0
+     -> Name: GraphQL operation completed
+     -> Timestamp: 2026-08-27 17:33:36.908934237 +0000 UTC
+     -> DroppedAttributesCount: 0
+     -> Attributes::
+          -> level: Str(INFO)
+          -> target: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> kind: Str(aster.router.operation)
+          -> duration_ms: Int(9)
+          -> graphql_error: Bool(false)
+          -> aster.operation: Str(ViewerAndTitle)
+          -> code.filepath: Str(apollo-router/src/plugins/telemetry/config_new/events.rs)
+          -> code.namespace: Str(apollo_router::plugins::telemetry::config_new::events)
+          -> code.lineno: Int(414)
+Span #33
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      : d54dcaa0d305e72c
+    ID             : 38c19d2b92a305e3
+    Name           : rhai_plugin
+    Kind           : Internal
+    Start time     : 2026-08-27 17:33:36.898697108 +0000 UTC
+    End time       : 2026-08-27 17:33:36.909061993 +0000 UTC
+    Status code    : Unset
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/rhai/mod.rs)
+     -> code.namespace: Str(apollo_router::plugins::rhai)
+     -> code.lineno: Int(647)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> rhai service: Str(router :: Request)
+     -> busy_ns: Int(3163158)
+     -> idle_ns: Int(7201364)
+Span #34
+    Trace ID       : 431435f6026c00489daedd7deb936e52
+    Parent ID      :
+    ID             : d54dcaa0d305e72c
+    Name           : router
+    Kind           : Server
+    Start time     : 2026-08-27 17:33:36.898547822 +0000 UTC
+    End time       : 2026-08-27 17:33:36.909398804 +0000 UTC
+    Status code    : Ok
+    Status message :
+    DroppedAttributesCount: 0
+    DroppedEventsCount: 0
+    DroppedLinksCount: 0
+Attributes:
+     -> code.filepath: Str(apollo-router/src/plugins/telemetry/span_factory.rs)
+     -> code.namespace: Str(apollo_router::plugins::telemetry::span_factory)
+     -> code.lineno: Int(101)
+     -> thread.id: Int(3)
+     -> thread.name: Str(tokio-rt-worker)
+     -> otel.original_name: Str(router)
+     -> busy_ns: Int(3559700)
+     -> idle_ns: Int(7285250)

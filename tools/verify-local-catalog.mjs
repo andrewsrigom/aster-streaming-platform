@@ -79,6 +79,8 @@ try {
       project + "-runtime",
       "--publish",
       "127.0.0.1::3200",
+      "--env",
+      "ASTER_ROUTER_TRUST_ENABLED=false",
       "catalog",
     ],
     20000,

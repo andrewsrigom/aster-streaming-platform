@@ -1,6 +1,6 @@
 import type { IncomingMessage } from "node:http";
 
-import type { AsterExpressGraphqlMiddleware } from "@aster/http-express";
+import type { AsterExpressGraphqlMiddleware, AsterLocalRouterTrust } from "@aster/http-express";
 
 import {
   LOCAL_SESSION_LIFETIME_SECONDS,
@@ -17,7 +17,7 @@ const COOKIE_VALUE =
   /^(?:"[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*"|[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*)$/u;
 const JSON_CONTENT_TYPE = /^application\/json(?:\s*;\s*charset=(?:"utf-8"|utf-8))?$/iu;
 
-type AcceptedRequest = Readonly<{ credential: string | undefined }>;
+type AcceptedRequest = Readonly<{ credential: string | undefined; traceId?: string }>;
 type Decision =
   | Readonly<{ status: "accepted"; value: AcceptedRequest }>
   | Readonly<{ status: "rejected"; httpStatus: 400 | 403 | 405 | 415; code: string }>;
@@ -89,7 +89,11 @@ function readCookie(raw: string | undefined): AcceptedRequest | undefined {
   return { credential };
 }
 
-function authorizeRequest(request: IncomingMessage, origin: URL): Decision {
+function authorizeRequest(
+  request: IncomingMessage,
+  origin: URL,
+  routerTrust?: AsterLocalRouterTrust,
+): Decision {
   const reject = (httpStatus: 400 | 403 | 405 | 415, code: string): Decision => ({
     status: "rejected",
     httpStatus,
@@ -102,8 +106,9 @@ function authorizeRequest(request: IncomingMessage, origin: URL): Decision {
   if (!headers || request.url !== "/graphql") {
     return reject(400, "BAD_REQUEST");
   }
+  const routerContext = routerTrust?.accept(request);
   if (
-    headers.get("host") !== origin.host ||
+    (routerTrust ? !routerContext : headers.get("host") !== origin.host) ||
     headers.get("origin") !== origin.origin ||
     headers.get("x-aster-csrf") !== "1" ||
     (headers.has("sec-fetch-site") && headers.get("sec-fetch-site") !== "same-origin") ||
@@ -112,7 +117,9 @@ function authorizeRequest(request: IncomingMessage, origin: URL): Decision {
         name === "authorization" ||
         name === "forwarded" ||
         name.startsWith("x-forwarded-") ||
-        (name.startsWith("x-aster-") && name !== "x-aster-csrf"),
+        (name.startsWith("x-aster-") &&
+          name !== "x-aster-csrf" &&
+          !(routerTrust && name === "x-aster-router-credential")),
     )
   ) {
     return reject(403, "FORBIDDEN");
@@ -125,22 +132,28 @@ function authorizeRequest(request: IncomingMessage, origin: URL): Decision {
     return reject(415, "UNSUPPORTED_MEDIA_TYPE");
   }
   const cookies = readCookie(headers.get("cookie"));
-  return cookies ? { status: "accepted", value: cookies } : reject(400, "BAD_REQUEST");
+  return cookies
+    ? { status: "accepted", value: { ...cookies, ...routerContext } }
+    : reject(400, "BAD_REQUEST");
 }
 
 export function createLocalSessionTransport(
   configuration: LocalIdentityConfiguration,
   now: () => number = () => Math.floor(Date.now() / 1_000),
+  routerTrust?: AsterLocalRouterTrust,
 ) {
   validateLocalIdentityConfiguration(configuration);
   const origin = new URL(configuration.publicOrigin);
+  if (routerTrust && origin.origin !== "http://127.0.0.1:4000") {
+    throw new Error("Invalid local Router public origin.");
+  }
   const accepted = new WeakMap<IncomingMessage, AcceptedRequest>();
   return Object.freeze({
     wrap(next: AsterExpressGraphqlMiddleware): AsterExpressGraphqlMiddleware {
       return (request, response, onError) => {
         response.set("Cache-Control", "no-store");
         response.set("X-Content-Type-Options", "nosniff");
-        const decision = authorizeRequest(request, origin);
+        const decision = authorizeRequest(request, origin, routerTrust);
         if (decision.status !== "accepted") {
           if (decision.httpStatus === 405) {
             response.set("Allow", "POST");
@@ -160,6 +173,9 @@ export function createLocalSessionTransport(
         throw new Error("Local session request context is unavailable.");
       }
       return accepted.get(request)?.credential;
+    },
+    traceId(request: IncomingMessage): string | undefined {
+      return accepted.get(request)?.traceId;
     },
     issueCookie(credential: string, expiresAt: number): string {
       const timestamp = now();

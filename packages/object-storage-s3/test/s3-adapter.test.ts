@@ -426,7 +426,8 @@ test("rejects declared and observed oversized reads while destroying owned strea
   assert.deepEqual(await observedAdapter.close(), { status: "completed" });
 });
 
-test("rejects excess operations before extending the client work queue", async () => {
+test("rejects excess operations before extending the client work queue", async (context) => {
+  context.mock.timers.enable({ apis: ["setTimeout"] });
   const telemetry = new RecordingTelemetry();
   const client = new FakeS3Client();
   const probe = deferred<undefined>();
@@ -437,6 +438,7 @@ test("rejects excess operations before extending the client work queue", async (
   );
   const first = adapter.probe();
   await nextTurn();
+  assert.equal(adapter.snapshot().inFlightOperations, 1);
 
   assert.deepEqual(await adapter.probe(), {
     status: "rejected",
@@ -607,8 +609,10 @@ test("runs an unavailable-endpoint diagnostic and keeps AWS SDK types private", 
   const diagnostic = spawnSync(process.execPath, [diagnosticPath], {
     encoding: "utf8",
     env: {},
-    timeout: 3_000,
+    // Include cold SDK loading under parallel builds, not only the adapter's own deadline.
+    timeout: 10_000,
   });
+  assert.ifError(diagnostic.error);
   assert.equal(diagnostic.status, 0, diagnostic.stderr);
   assert.equal(diagnostic.stderr, "");
   const output = JSON.parse(diagnostic.stdout) as Record<string, unknown>;
