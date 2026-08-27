@@ -235,6 +235,14 @@ export function validateWorkflowPolicy(
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
     [
+      /- name: Run source quality and tests\s+env:\s+ASTER_SCHEMA_BASE: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.before \|\| github\.sha \}\}\s+run: pnpm check:source/u,
+      "schema compatibility must use the event's previous source, not candidate output",
+    ],
+    [
+      /quality:[\s\S]*?- name: Check out repository[\s\S]*?with:\s+fetch-depth: 0\s+persist-credentials: false/u,
+      "schema compatibility requires complete checkout history",
+    ],
+    [
       /- name: Prove real platform integration\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: pnpm integration\s*\n/u,
       "real integration must run once with a deadline for applicable platform changes",
     ],

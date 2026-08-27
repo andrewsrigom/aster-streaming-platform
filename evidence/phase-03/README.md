@@ -1,6 +1,6 @@
 # Phase 03 Evidence Index
 
-- Phase status: VERIFIED locally; protected CI, merge and post-merge verification are pending. No hosted product release is claimed.
+- Phase status: VERIFIED and RELEASED through protected PR 20 squash `1354841` and successful post-merge CI; [release evidence](release.txt). No hosted product release is claimed.
 - Base: Phase 02 PR 19 squash ec6386ca7add0f12ae748589be763d9e90ff0d6c; [release evidence](../phase-02/release.txt).
 - P03-R01: [domain rules and tests](catalog-domain.txt), [current behavior](../../services/catalog/README.md).
 - P03-R02: [PostgreSQL rights history and provenance](catalog-persistence.txt), including real concurrency/rollback/migration proof.

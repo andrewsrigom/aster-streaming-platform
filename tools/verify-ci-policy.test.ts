@@ -25,6 +25,21 @@ test("rejects movable action tags", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "action-pin"));
 });
 
+test("schema compatibility cannot compare only against the candidate or a shallow checkout", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace(
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}",
+      "ASTER_SCHEMA_BASE: ${{ github.sha }}",
+    ),
+    source.replaceAll("fetch-depth: 0", "fetch-depth: 1"),
+  ]) {
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) => detail.includes("schema compatibility")),
+    );
+  }
+});
+
 test("rejects removal, suppression or unbounded real integration", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const weakened of [

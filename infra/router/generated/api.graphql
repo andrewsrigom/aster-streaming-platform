@@ -1,0 +1,162 @@
+enum CatalogAccessibility {
+  AUDIO_DESCRIPTION
+  CAPTIONS
+  TRANSCRIPT
+}
+
+type CatalogArtwork {
+  altText: String!
+  attribution: CatalogAttribution!
+  url: String!
+}
+
+type CatalogAttribution {
+  attributionText: String!
+  copyrightHolder: String!
+  creator: String!
+  licenseName: String!
+  licenseUrl: String!
+  licenseVersion: String!
+  modificationNotice: String!
+  sourceUrl: String!
+  workTitle: String!
+}
+
+type CatalogCredit {
+  name: String!
+  role: String!
+}
+
+type CatalogPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type CatalogTitleConnection {
+  edges: [CatalogTitleEdge!]!
+  pageInfo: CatalogPageInfo!
+}
+
+type CatalogTitleEdge {
+  cursor: String!
+  node: Title!
+}
+
+input CreateProfileInput {
+  mutationId: ID!
+  profile: ProfilePreferencesInput!
+}
+
+input DeleteProfileInput {
+  expectedVersion: Int!
+  mutationId: ID!
+  profileId: ID!
+}
+
+enum IdentityOutcome {
+  BACKPRESSURE
+  CANCELLED
+  COMPLETED
+  CONFLICT
+  INDETERMINATE
+  INVALID_INPUT
+  LIMIT_EXCEEDED
+  NOT_FOUND
+  UNAUTHENTICATED
+  UNAVAILABLE
+}
+
+type LocalizedTitle {
+  locale: String!
+  synopsis: String!
+  title: String!
+}
+
+type Mutation {
+  createProfile(input: CreateProfileInput!): ProfileMutationPayload!
+  deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload!
+  demoSignIn: SessionPayload!
+  selectProfile(id: ID!): ProfileSelectionPayload!
+  signOut: SessionPayload!
+  updateProfile(input: UpdateProfileInput!): ProfileMutationPayload!
+}
+
+type OwnedProfiles {
+  activeProfileId: ID
+  profiles: [Profile!]!
+}
+
+type Profile {
+  avatarRef: String
+  displayName: String!
+  id: ID!
+  locale: String!
+  maturity: ProfileMaturity!
+  version: Int!
+}
+
+enum ProfileMaturity {
+  GENERAL
+  MATURE
+  TEEN
+}
+
+type ProfileMutationPayload {
+  code: IdentityOutcome!
+  correlationId: ID!
+  profileId: ID
+  version: Int
+}
+
+input ProfilePreferencesInput {
+  displayName: String!
+  locale: String!
+  maturity: ProfileMaturity!
+}
+
+type ProfileSelectionPayload {
+  code: IdentityOutcome!
+  correlationId: ID!
+  profile: Profile
+}
+
+type Query {
+  activeProfile(id: ID!): Profile
+  me: Viewer
+  profile(id: ID!): Profile
+  profiles: OwnedProfiles!
+  title(id: ID!): Title
+  titles(after: String, first: Int!): CatalogTitleConnection!
+}
+
+type SessionPayload {
+  code: IdentityOutcome!
+  correlationId: ID!
+  viewer: Viewer
+}
+
+type Title {
+  accessibility: [CatalogAccessibility!]!
+  artwork: CatalogArtwork
+  attribution: CatalogAttribution!
+  credits: [CatalogCredit!]!
+  editorialLabels: [String!]!
+  genres: [String!]!
+  id: ID!
+  languages: [String!]!
+  localized(locale: String! = "en"): LocalizedTitle!
+  releaseYear: Int
+  runtimeSeconds: Int
+}
+
+input UpdateProfileInput {
+  expectedVersion: Int!
+  mutationId: ID!
+  profile: ProfilePreferencesInput!
+  profileId: ID!
+}
+
+type Viewer {
+  accountId: ID!
+  expiresAt: String!
+}

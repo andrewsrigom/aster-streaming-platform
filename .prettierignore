@@ -8,3 +8,4 @@ node_modules/
 *.md
 LICENSE
 pnpm-lock.yaml
+infra/router/generated/

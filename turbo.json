@@ -8,6 +8,18 @@
   },
   "globalDependencies": [".node-version", ".nvmrc"],
   "tasks": {
+    "@aster/router#test": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": ["ASTER_SCHEMA_BASE"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/infra/router/**",
+        "$TURBO_ROOT$/evidence/phase-02/identity-schema.graphql",
+        "$TURBO_ROOT$/evidence/phase-03/catalog-schema.graphql"
+      ],
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]

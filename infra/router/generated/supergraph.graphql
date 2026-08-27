@@ -1,0 +1,201 @@
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION) {
+  query: Query
+  mutation: Mutation
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false, resolvable: Boolean! = true, isInterfaceObject: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+enum CatalogAccessibility @join__type(graph: CATALOG) {
+  CAPTIONS @join__enumValue(graph: CATALOG)
+  AUDIO_DESCRIPTION @join__enumValue(graph: CATALOG)
+  TRANSCRIPT @join__enumValue(graph: CATALOG)
+}
+
+type CatalogArtwork @join__type(graph: CATALOG) {
+  url: String!
+  altText: String!
+  attribution: CatalogAttribution!
+}
+
+type CatalogAttribution @join__type(graph: CATALOG) {
+  workTitle: String!
+  creator: String!
+  copyrightHolder: String!
+  sourceUrl: String!
+  licenseName: String!
+  licenseVersion: String!
+  licenseUrl: String!
+  attributionText: String!
+  modificationNotice: String!
+}
+
+type CatalogCredit @join__type(graph: CATALOG) {
+  name: String!
+  role: String!
+}
+
+type CatalogPageInfo @join__type(graph: CATALOG) {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type CatalogTitleConnection @join__type(graph: CATALOG) {
+  edges: [CatalogTitleEdge!]!
+  pageInfo: CatalogPageInfo!
+}
+
+type CatalogTitleEdge @join__type(graph: CATALOG) {
+  cursor: String!
+  node: Title!
+}
+
+input CreateProfileInput @join__type(graph: IDENTITY) {
+  mutationId: ID!
+  profile: ProfilePreferencesInput!
+}
+
+input DeleteProfileInput @join__type(graph: IDENTITY) {
+  mutationId: ID!
+  profileId: ID!
+  expectedVersion: Int!
+}
+
+enum IdentityOutcome @join__type(graph: IDENTITY) {
+  COMPLETED @join__enumValue(graph: IDENTITY)
+  UNAUTHENTICATED @join__enumValue(graph: IDENTITY)
+  UNAVAILABLE @join__enumValue(graph: IDENTITY)
+  CANCELLED @join__enumValue(graph: IDENTITY)
+  INDETERMINATE @join__enumValue(graph: IDENTITY)
+  LIMIT_EXCEEDED @join__enumValue(graph: IDENTITY)
+  INVALID_INPUT @join__enumValue(graph: IDENTITY)
+  NOT_FOUND @join__enumValue(graph: IDENTITY)
+  CONFLICT @join__enumValue(graph: IDENTITY)
+  BACKPRESSURE @join__enumValue(graph: IDENTITY)
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  CATALOG @join__graph(name: "catalog", url: "http://catalog:3200/graphql")
+  IDENTITY @join__graph(name: "identity", url: "http://identity:3100/graphql")
+}
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+type LocalizedTitle @join__type(graph: CATALOG) {
+  locale: String!
+  title: String!
+  synopsis: String!
+}
+
+type Mutation @join__type(graph: IDENTITY) {
+  demoSignIn: SessionPayload!
+  signOut: SessionPayload!
+  createProfile(input: CreateProfileInput!): ProfileMutationPayload!
+  updateProfile(input: UpdateProfileInput!): ProfileMutationPayload!
+  deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload!
+  selectProfile(id: ID!): ProfileSelectionPayload!
+}
+
+type OwnedProfiles @join__type(graph: IDENTITY) {
+  profiles: [Profile!]!
+  activeProfileId: ID
+}
+
+type Profile @join__type(graph: IDENTITY, key: "id") {
+  id: ID!
+  displayName: String!
+  locale: String!
+  maturity: ProfileMaturity!
+  avatarRef: String
+  version: Int!
+}
+
+enum ProfileMaturity @join__type(graph: IDENTITY) {
+  GENERAL @join__enumValue(graph: IDENTITY)
+  TEEN @join__enumValue(graph: IDENTITY)
+  MATURE @join__enumValue(graph: IDENTITY)
+}
+
+type ProfileMutationPayload @join__type(graph: IDENTITY) {
+  code: IdentityOutcome!
+  correlationId: ID!
+  profileId: ID
+  version: Int
+}
+
+input ProfilePreferencesInput @join__type(graph: IDENTITY) {
+  displayName: String!
+  locale: String!
+  maturity: ProfileMaturity!
+}
+
+type ProfileSelectionPayload @join__type(graph: IDENTITY) {
+  code: IdentityOutcome!
+  correlationId: ID!
+  profile: Profile
+}
+
+type Query @join__type(graph: CATALOG) @join__type(graph: IDENTITY) {
+  titles(first: Int!, after: String): CatalogTitleConnection! @join__field(graph: CATALOG)
+  title(id: ID!): Title @join__field(graph: CATALOG)
+  me: Viewer @join__field(graph: IDENTITY)
+  profiles: OwnedProfiles! @join__field(graph: IDENTITY)
+  profile(id: ID!): Profile @join__field(graph: IDENTITY)
+  activeProfile(id: ID!): Profile @join__field(graph: IDENTITY)
+}
+
+type SessionPayload @join__type(graph: IDENTITY) {
+  code: IdentityOutcome!
+  correlationId: ID!
+  viewer: Viewer
+}
+
+type Title @join__type(graph: CATALOG, key: "id") {
+  id: ID!
+  localized(locale: String! = "en"): LocalizedTitle!
+  releaseYear: Int
+  runtimeSeconds: Int
+  genres: [String!]!
+  languages: [String!]!
+  accessibility: [CatalogAccessibility!]!
+  editorialLabels: [String!]!
+  credits: [CatalogCredit!]!
+  artwork: CatalogArtwork
+  attribution: CatalogAttribution!
+}
+
+input UpdateProfileInput @join__type(graph: IDENTITY) {
+  mutationId: ID!
+  profileId: ID!
+  expectedVersion: Int!
+  profile: ProfilePreferencesInput!
+}
+
+type Viewer @join__type(graph: IDENTITY) {
+  accountId: ID!
+  expiresAt: String!
+}

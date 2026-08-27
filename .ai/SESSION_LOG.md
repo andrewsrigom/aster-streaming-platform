@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Phase 03 release and local supergraph composition
+
+### Completed
+
+PR 20 passed protected CI and merged as 1354841; post-merge CI passed, both on attempt 1 without bypass or extra pipelines. A single unpublished dependent branch advanced executable-owner schema printers, deterministic supergraph/API/ownership artifacts and known operations while CI ran. Retained demo remains healthy.
+
+### Evidence
+
+Release: evidence/phase-03/release.txt. Composition: nine focused tests and initial 55/55 candidate tasks (27 cached, 51.096 s). After rebase onto clean main, the gate passes 55/55 (41 cached, 21.568 s). Clean source at 5553683: forced eleven-package build, zero cached, 17.504 s; nine tests and read-only schema check pass with manifest a886e82f2affdb01c7691074f29e727515d82cda21a3be7ff7a02e081b6136c7. Removed the disposable clean worktree. Initial/confirmation review corrected baseline isolation and moving-ref cache handling. No Router runtime or playable demo is claimed.
+
+### Next action
+
+P04-R01 is locally complete. Start READY P04-R02 for actual Router topology, separate service trust, session propagation and runtime evidence. No Phase 04 PR before its coherent acceptance.
+
 ## 2026-08-27 — Phase 03 local acceptance
 
 ### Completed

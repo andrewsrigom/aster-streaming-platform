@@ -1,0 +1,73 @@
+Aster P04-R01/R04/R05/R08/R10 — Offline supergraph delivery
+Recorded: 2026-08-27
+Base: Phase 03 candidate 9abf65e62c276e61e3fa82627843b74af6129546; dependent branch feat/p04-supergraph, not published.
+Environment: WSL Ubuntu-20.04 Linux amd64, Node 24.19.0, pnpm 11.24.0, Apollo composition 2.14.4, GraphQL 16.14.2.
+Scope: two executable owner schemas; no running service/database/registry and no runtime trust change.
+
+Commands and observed results
+pnpm install --offline --ignore-scripts: pass; no package download or newly resolved dependency version, only the apps/router importer and workspace edges.
+pnpm schema:update: builds both owners before the composer, generates and verifies five artifacts.
+pnpm --filter @aster/router test: nine tests pass, followed by read-only live-owner artifact verification.
+pnpm exec eslint apps/router services/catalog/src/print-schema.ts services/identity/src/print-schema.ts: pass.
+pnpm exec knip --no-config-hints: pass before the final baseline fixture addition; repeat in candidate gate.
+pnpm ci:test: 24 tests pass, including event-base and complete-history policy rejection.
+
+Raw focused summary
+tests 9
+pass 9
+fail 0
+duration_ms 813.731177
+{"check":"supergraph","status":"ok","mode":"--check","subgraphs":2,"compatibilityBase":"pre-supergraph","artifactCount":5,"manifestSha256":"a886e82f2affdb01c7691074f29e727515d82cda21a3be7ff7a02e081b6136c7"}
+Artifact bytes: api.graphql 2816; catalog.graphql 1307; identity.graphql 1738; manifest.json 7925; supergraph.graphql 5748; total 19534.
+Manifest: twelve named operations; Catalog ten contributed types/36 fields, Identity fourteen types/42 fields. Entity key ownership is explicit.
+
+Negative and review boundaries
+Malformed/empty/oversized SDL, ownership collision, unknown field, changed argument type, unnamed/duplicate/excess operations, breaking API removal, rewritten current operation fixtures, missing/stale artifacts, symbolic output and incomplete Git baseline are rejected. A temporary Git repository proves the baseline API/operations come from the named commit despite working-file edits. Its generated data is removed after the test.
+Initial author review identified same-candidate baseline checking and moving-ref cache invalidation. Remediation reads the immutable event base and previous operations, retains build caching but disables the small schema check cache, and validates both policies. Confirmation: focused tests/static checks pass; full candidate and clean-source composition remain pending.
+Later candidate gate: pnpm check:changed, exit 0.
+ Tasks:    55 successful, 55 total
+Cached:    27 cached, 55 total
+  Time:    51.096s
+Includes nine Router, 94 Catalog and 144 Identity tests, strict types, formatting, lint, Knip, architecture, governance, docs and secrets. Subsequent changes at this checkpoint are documentation/release evidence only. Phase 03 protected and post-merge runs have now passed; clean-source composition after the dependent rebase remains pending.
+No independent review is claimed. No request runtime, authorization, SLO, query plan, exported trace, CDN, real film or browser behavior is inferred.
+
+Rollback: revert tooling/artifacts without touching product data. Do not publish the dependent branch before the protected Phase 03 release. Rebase it onto the released squash and repeat affected gates before publication.
+
+Clean-source and rebased closeout
+Exact tested source: 5553683394a681d750d7aef401cfb76cdb02b0cf, on released main 135484183253ede7a6b6436f737794bfee2049d8.
+Commands: pnpm install --frozen-lockfile --offline && pnpm exec turbo run build --filter=@aster/router --force && pnpm --filter @aster/router test && pnpm schema:check && git status --short
+Fresh detached worktree; no pre-existing dependency/build outputs. The content-addressed pnpm store supplied the frozen offline install, with zero downloads.
+Build: 11 successful, 11 total; 0 cached; 17.504 s.
+Tests: 9/9 pass; duration_ms 800.999544.
+Read-only schema check: passes; manifest SHA-256 a886e82f2affdb01c7691074f29e727515d82cda21a3be7ff7a02e081b6136c7.
+Git status: empty. Clean temporary worktree was removed; no product data changed.
+Rebased working-checkout command: pnpm check:changed, exit 0.
+ Tasks:    55 successful, 55 total
+Cached:    41 cached, 55 total
+  Time:    21.568s
+
+P04-R01/R04/R05/R08/R10 is verified locally. The remaining Phase 04 runtime requirements are not complete and no dependent PR has been published. Later closeout changes only evidence/memory prose and does not invalidate these schema/source behaviors. Exact source fingerprints:
+e2bc1d42969c5df5d5f1c5cbe8658e479cbb1c34b9829358c688f6097b04192f  .github/workflows/ci.yml
+a866de2c310e92c62eb9ea225fde61df225acf8e72ff0ca413220c69a76243ab  .prettierignore
+befe458a267369f2faccbd0133f005ffc4dcd4a58b67ba2af7694006d5066b62  apps/router/README.md
+5f9baf9ff46bdd4be6f37eca97be2e45212b0c7aa49c9b7dc7f5d258f284a928  apps/router/package.json
+344df736e2bf0dc7e811033a5e48dca829264e28a86e7208f87aea9d1b98dfa3  apps/router/src/artifacts.ts
+fffbcc1ca154e207aa2c5b91f4cea5831b7c4689b8cdbbe80d44647ef4466999  apps/router/src/baseline.ts
+534006483aee055d90e66aa91af1f122452d9bb2d1989d79954469540fde2295  apps/router/src/composition.ts
+daaee2cf8fef676cbab26260585a4e0b09c5be7ef4c7e72ebbe793bf7b60f476  apps/router/src/main.ts
+51390e14fb1ca81b7262b0b602677dbfba60a977b685af85e3ca0ac5adb7325d  apps/router/test/composition.test.ts
+e1a7579283f84b3b6a6262b18e2293f5d5ec61e211324fbdca65d50d9eb87f72  apps/router/tsconfig.json
+38e1f37f7fc26234e9d2a9ec2ab23481935003177ded0d78dc77c82c9e1d6f4d  infra/router/generated/api.graphql
+8080e330dfb9a3422b8757e93643e1ca00dc0ca7b68bafb46490de11111d73b4  infra/router/generated/catalog.graphql
+0bf47aa04eddff6f02a4d486a1c2b663f952e52148cacf72aa11f7cf89d84324  infra/router/generated/identity.graphql
+a886e82f2affdb01c7691074f29e727515d82cda21a3be7ff7a02e081b6136c7  infra/router/generated/manifest.json
+aab8dade63ea878f77cfa0106562cff3ece047c61f6dd3831207d302e1029fea  infra/router/generated/supergraph.graphql
+fa061c66ec019cc51263a4f751ad36add4cc27f0a64bf51baec10fc11a0b148b  infra/router/known-operations.graphql
+3b609e65a7865d4bd52e11c9ef0b996f060fb6eaa5b85dbf4e47278bc20bbbb0  knip.json
+b466e90496b0544ddaf6382fc1261b549abe837b8910ba4a0a36a464cef64f7d  package.json
+5534db2017af2f7ca02d0cfc0e5aa20b923dd23bae3eb8c6906827677a9e3eab  pnpm-lock.yaml
+f0b14be9ab8aae999655b2977c87e3bec71f7542ef601e8cd06cefe04d2a4146  services/catalog/src/print-schema.ts
+924f49439ff166fc88b81ad086ed1b8fe28b620bf3b30743474548e84ced63e7  services/identity/src/print-schema.ts
+bc34334b042cbc5ae7a0fd9b3a49f21bdcef4b287a72e6c6505dbc247a03df61  tools/verify-ci-policy.test.ts
+fea5ad120ff0e8f8fb330ea3f70d41983b0198a89142d3dd0c59aa3161e0827e  tools/verify-ci-policy.ts
+b4f02ad243c403092068268d7a314a74bea5b52f526b85501722f9837eb4040b  turbo.json

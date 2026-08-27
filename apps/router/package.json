@@ -1,0 +1,23 @@
+{
+  "name": "@aster/router",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline supergraph composition and delivery contracts.",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "schema:check": "node ./dist/src/main.js --check",
+    "schema:update": "node ./dist/src/main.js --write",
+    "test": "node --test ./dist/test/*.test.js && node ./dist/src/main.js --check",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "devDependencies": {
+    "@apollo/composition": "2.14.4",
+    "@aster/catalog": "workspace:*",
+    "@aster/identity": "workspace:*",
+    "@types/node": "24.13.3",
+    "graphql": "16.14.2",
+    "typescript": "6.0.3"
+  }
+}
