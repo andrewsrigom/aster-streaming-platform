@@ -72,6 +72,23 @@ test("rejects write permissions and secret context", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "permissions"));
 });
 
+test("Docker context probe cannot be omitted, skipped or left unbounded", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace("run: node ./tools/verify-docker-context.mjs", "run: true"),
+    source.replace(
+      "Verify Docker context boundary\n        if: needs.classify.outputs.platform == 'true'",
+      "Verify Docker context boundary\n        if: false",
+    ),
+    source.replaceAll("timeout-minutes: 1\n", "timeout-minutes: 90\n"),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) => detail.includes("Docker context")),
+    );
+  }
+});
+
 test("rejects duplicate feature pushes and missing cancellation", async () => {
   const source = await readFile(workflowPath, "utf8");
   const weakened = source

@@ -89,6 +89,21 @@ Rendering/asset/optimizer/dependency/protocol changes repeat affected browser/la
 
 `pnpm check:changed` passed 58/58 tasks, 43 cached, in 3m8.983s, after the browser experiments. This includes the current production build, Web unit tests/types, lint, unused-code, formatting, architecture, documentation/state and secret checks. Subsequent changes are evidence/state prose only and receive focused checks. The earlier functional browser results remain applicable to the unchanged Docker application; the later test-only attribution/trace changes do not alter it. No full 15-test acceptance or timing-stability claim is made. No remote push, PR or pipeline was created.
 
+## Quiet-host confirmation — 2026-08-27
+
+Source 970abeb163036685e2366dcc9a7c78b356b08af6; Docker Web image sha256:0c1641b4de7113f48a2dcc7472571e2edd98b8c75fc20f17c49959862faad228. The predeclared confirmation used two independent invocations of the focused command above, three cold contexts each, unchanged library, workloads, throttling and budgets, no retries or competing build/browser suite. Both invocations passed (16.782 s and 16.712 s including runner). [All six raw samples, resource inventories and host observations](performance-confirmation.json).
+
+| Measurement | Block 1 | Block 2 | Budget |
+|---|---|---|---|
+| LCP, ms | 1628 / 1636 / 1640 | 1620 / 1680 / 1652 | 2500 |
+| INP, ms | 104 / 88 / 96 | 136 / 104 / 112 | 200 |
+| Provider hydration mark, ms | 3151.2 / 2820.7 / 2854.5 | 2702.9 / 3257.1 / 3002.6 | 3500 |
+| CLS | 0 / 0 / 0 | 0 / 0 / 0 | 0.1 |
+
+Every visit transferred 240853 initial JavaScript bytes, 259140 cumulative JavaScript bytes and 10204 initial image bytes, with zero automatic GraphQL/prefetch calls. Initial bytes are unchanged; the lazy busy-focus correction adds 38 transferred bytes relative to the earlier checkpoint. Preflight one-minute WSL loads were 1.94 and 1.11 on six CPUs; live idle samples were 93/94% and 93/93%. Post-run loads were 1.23 and 0.97. No underlying Windows process was stopped. Available memory before block one was 7042 MiB; retained swap was not cleared.
+
+This accepts the initial quiet-host laboratory baseline, not arbitrary-contention performance, field p75 or a hosted SLO. Earlier failed samples remain above and in their raw artifact. Lower measured host contention is consistent with reduced variation but is not proof of the sole cause of those misses. No application optimization or threshold increase is claimed. Complete phase acceptance still requires clean startup and actual screen-reader review.
+
 ## Sources
 
 - [Next ImageResponse](https://nextjs.org/docs/app/api-reference/functions/image-response) and [Image options](https://nextjs.org/docs/app/api-reference/components/image); configuration was also checked against installed 16.3.3 types and the actual optimizer.

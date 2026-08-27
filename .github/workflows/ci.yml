@@ -122,6 +122,10 @@ jobs:
           ASTER_SCHEMA_BASE="$(node ./tools/resolve-schema-baseline.ts)"
           export ASTER_SCHEMA_BASE
           pnpm check:source
+      - name: Verify Docker context boundary
+        if: needs.classify.outputs.platform == 'true'
+        timeout-minutes: 1
+        run: node ./tools/verify-docker-context.mjs
       - name: Prove real platform integration
         if: needs.classify.outputs.platform == 'true'
         timeout-minutes: 15

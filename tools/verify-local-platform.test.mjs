@@ -61,6 +61,18 @@ test("runtime image preserves the pinned non-root production packaging contract"
   assert.deepEqual(validateRuntimeImage(runtimeImage), []);
 });
 
+test("Web Docker context includes both exact public-build verifier files", () => {
+  for (const file of ["public-artifacts.ts", "verify-public-build.ts"]) {
+    const required = `!apps/web/scripts/${file}`;
+    assert.ok(runtimeImage[".dockerignore"].split("\n").includes(required), required);
+    const changed = {
+      ...runtimeImage,
+      ".dockerignore": runtimeImage[".dockerignore"].replace(`${required}\n`, ""),
+    };
+    assert.ok(validateRuntimeImage(changed).length > 0);
+  }
+});
+
 test("runtime image rejects weakened pin, install, user, entrypoint, health and license policy", () => {
   const file = "infra/docker/identity.Dockerfile";
   for (const [before, after] of [
@@ -81,6 +93,7 @@ test("runtime image rejects weakened pin, install, user, entrypoint, health and 
 test("runtime image refuses broader Docker context and source/test publication", () => {
   for (const changed of [
     { ...runtimeImage, ".dockerignore": `${runtimeImage[".dockerignore"]}!.env\n` },
+    { ...runtimeImage, ".dockerignore": `${runtimeImage[".dockerignore"]}!apps/web/**/\n` },
     { ...runtimeImage, ".dockerignore": runtimeImage[".dockerignore"].replace("**/dist/**", "") },
     { ...runtimeImage, "services/identity/package.json": '{"files":["dist"]}' },
     { ...runtimeImage, "packages/runtime/package.json": "{" },

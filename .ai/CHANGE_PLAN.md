@@ -84,7 +84,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 - Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
 - Raw artifact path: evidence/phase-05/.
-- Acceptance result: the current boundary checkpoint passes 58/58 source tasks and all 18 functional browser journeys, including fourteen axe scans and actual bundle/HTML isolation. Actual screen-reader review, timing stability and clean-checkout acceptance remain open.
+- Acceptance result: boundary checkpoint 970abeb passes 58/58 source tasks and all 18 functional browser journeys, including fourteen axe scans and actual bundle/HTML isolation. Two predeclared quiet-host laboratory blocks pass all six visits and unchanged budgets. Actual screen-reader review and clean-checkout acceptance remain open.
 - Iteration gate: cheapest changed adapter/cache/component checks and local production build.
 - Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
 - Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
@@ -154,7 +154,13 @@ Iteration gate: scanner negative fixtures, Web unit/types, focused browser scans
 
 The current runtime checkpoint passes all eighteen functional journeys. It fixes an actual busy-state focus escape by focusing enabled Close before paint and announcing pending work. Full axe scans cover stable states; rapid semantic/focus checks cover the transient state within the real four-second deadline. Image-covered fallback contrast and modal focus incompletes retain explicit supplementary evidence. See evidence/phase-05/web-boundaries.md for failed iterations, actual scope and remaining screen-reader/performance checks. No product timeout or accessibility rule was relaxed.
 
+## Clean Docker acceptance
+
+The first preflight checked only explicit path declarations and incorrectly inferred that the verifier scripts were absent. The actual Docker build and prior runtime manifest contradicted that inference. Docker disregards trailing slashes, so the broad directory exceptions admit unlisted descendants. Add a real scratch-build canary probe using only synthetic fixtures, remove broad directory exceptions and retain the exact approved file patterns, including both verifier scripts. This affects P05-R09, build-context confidentiality and reproducible startup, not data ownership, UI behavior or runtime dependencies. The iteration gate is the real context probe plus focused packaging tests; the candidate gate is a fresh checkout, the documented Docker-only start and browser acceptance. Existing seed/rights data must remain untouched; only the disposable proof project and probe fixtures may be removed after ownership checks.
+
 ## Completion checklist
+
+The clean-source gate stopped in the Express compatibility subprocess after 5.24 seconds with a null exit status; the same diagnostic completes in 622 ms in isolation. The wrapper currently budgets five seconds for cold module loading, execution and shutdown together and hides subprocess errors. Give only this test process a bounded fifteen-second startup/execution allowance and assert its error before its exit code. Keep the diagnostic's two-second HTTP deadline, one-second drain grace and all response assertions unchanged. Verify the focused adapter tests and an uncached clean-source gate. This is test-harness remediation, not an application performance change; it does not invalidate the completed Docker build or browser image.
 
 Performance confirmation will use two separately invoked three-visit blocks against the unchanged production image and existing budgets, with no retries. Before each block, record source/image/browser identity, host load and CPU/memory samples; run no overlapping build or browser suite. Require one-minute WSL load below half of its six CPUs and at least 70% idle in the two live vmstat samples; otherwise defer measurement, not the functional work. Record post-run host samples and every result. A budget failure stops confirmation and requires attribution-based diagnosis rather than more runs to select success. This defines a small reproducible quiet-host baseline, not performance under arbitrary host contention or field SLOs.
 

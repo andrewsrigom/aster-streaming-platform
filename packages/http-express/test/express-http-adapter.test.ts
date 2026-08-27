@@ -691,8 +691,10 @@ test("runs the Apollo compatibility diagnostic without framework disclosure", ()
   const result = spawnSync(process.execPath, [diagnosticPath], {
     encoding: "utf8",
     env: {},
-    timeout: 5_000,
+    // Include cold imports under concurrent builds; the HTTP deadline remains two seconds.
+    timeout: 15_000,
   });
+  assert.ifError(result.error);
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stderr, "");
   const output = JSON.parse(result.stdout.trim()) as Record<string, unknown>;

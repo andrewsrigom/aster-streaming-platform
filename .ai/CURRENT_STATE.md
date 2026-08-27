@@ -18,11 +18,11 @@ P05-R01 is the sole active item. Public build/runtime/HTML scans, authenticated 
 
 ## Not implemented
 
-Actual screen-reader review, stable performance confirmation and clean-checkout phase acceptance; playable VOD, engagement/discovery and hosted release. No real-film approval exists; current illustration is generic. Current local Router limits are not complete hosted GraphQL protection.
+Actual screen-reader review and clean-checkout phase acceptance; playable VOD, engagement/discovery and hosted release. No real-film approval exists; current illustration is generic. Current local Router limits are not complete hosted GraphQL protection.
 
 ## Next outcome
 
-Continue P05-R01: controlled performance confirmation and clean-checkout acceptance. Actual screen-reader review remains required: Windows control stopped before Narrator launch because it could not confirm the browser URL. Do not bypass that stop or substitute an accessibility tree for speech. Retain prior INP/hydration misses and budgets; do not rerun merely to select a green result. Keep the public explicit-request guard and existing data. No Phase 05 publication before acceptance; ADR-0018 governs sessions and ADR-0019 scopes the dev-only test tools.
+Continue P05-R01: clean-checkout acceptance. Two predeclared three-visit quiet-host performance blocks pass unchanged budgets; prior timing misses remain documented. A real scratch build exposed broad Docker directory exceptions; the corrected context includes all fifteen approved canaries and excludes all fifteen forbidden canaries. See [clean acceptance](../evidence/phase-05/clean-acceptance.md), including correction of the initial preflight inference. Actual screen-reader review remains required: Windows control stopped before Narrator launch because it could not confirm the browser URL. Do not bypass that stop or substitute an accessibility tree for speech. Keep the public explicit-request guard and existing data. No Phase 05 publication before acceptance.
 
 ## Current risks
 

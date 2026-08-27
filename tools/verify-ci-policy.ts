@@ -247,6 +247,10 @@ export function validateWorkflowPolicy(
       "schema compatibility requires complete checkout history",
     ],
     [
+      /- name: Verify Docker context boundary\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 1\s+run: node \.\/tools\/verify-docker-context\.mjs\s*\n/u,
+      "Docker context requires a bounded real canary probe for applicable platform changes",
+    ],
+    [
       /- name: Prove real platform integration\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: pnpm integration\s*\n/u,
       "real integration must run once with a deadline for applicable platform changes",
     ],

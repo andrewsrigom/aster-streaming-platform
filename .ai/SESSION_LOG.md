@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Quiet-host baseline and Docker context correction
+
+### Completed
+
+Committed boundary checkpoint 970abeb. Confirmed the existing Web performance budgets in two predeclared independent three-visit blocks without retries, competing builds or application changes. Removed broad Docker directory exceptions after a real canary probe; retained the explicit verifier files, runtime isolation and data.
+
+### Evidence
+
+All six cold-browser visits pass: LCP 1620–1680 ms, INP 88–136 ms, hydration mark 2702.9–3257.1 ms and CLS 0. Raw resources, host conditions and limits are in evidence/phase-05/performance-confirmation.json and artwork-performance.md. Earlier misses remain recorded. The first static packaging test checked declarations only; its missing-file inference was contradicted by the actual successful clean build. The scratch probe then exposed ten unwanted included files and passed all fifteen included/fifteen excluded canaries after correction. Forty-seven focused tests pass. The preceding `pnpm check:changed` passed 58/58 tasks, 43 cached, in 43.806 s; final clean-source gates remain required. See evidence/phase-05/clean-acceptance.md.
+
+### Next action
+
+Prove a clean-checkout Docker build/start and functional browser acceptance. Actual screen-reader review remains open after the Windows control stop. No Phase 05 publication yet.
+
 ## 2026-08-27 — Public artifacts and automated accessibility
 
 ### Completed
