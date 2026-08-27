@@ -12,5 +12,11 @@ export type {
   AsterPostgresOptions,
   AsterPostgresPoolSnapshot,
   AsterPostgresTelemetry,
+  AsterPostgresValue,
+  AsterPostgresQuery,
+  AsterPostgresRows,
+  AsterPostgresTransaction,
+  AsterPostgresTransactionDecision,
+  AsterPostgresTransactionResult,
 } from "./postgres-contract.js";
 export { createAsterPostgresAdapter } from "./infrastructure/postgres-adapter.js";

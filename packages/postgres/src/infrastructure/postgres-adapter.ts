@@ -17,7 +17,13 @@ import {
   type AsterPostgresOptions,
   type AsterPostgresPoolSnapshot,
   type AsterPostgresTelemetry,
+  type AsterPostgresValue,
+  type AsterPostgresTransaction,
+  type AsterPostgresTransactionDecision,
+  type AsterPostgresTransactionResult,
 } from "../postgres-contract.js";
+import { executeTransaction } from "./postgres-transaction.js";
+import { waitFor } from "./postgres-wait.js";
 
 const MAXIMUM_OPTION_COUNT = 8;
 const MAXIMUM_CONNECTION_STRING_LENGTH = 2_048;
@@ -67,7 +73,9 @@ type ValidatedOptions = Readonly<{
 }>;
 
 export interface AsterPostgresPoolClient {
-  query(config: Readonly<{ text: string; query_timeout: number }>): Promise<
+  query(
+    config: Readonly<{ text: string; values?: AsterPostgresValue[]; query_timeout: number }>,
+  ): Promise<
     Readonly<{
       rowCount: number | null;
       rows: readonly unknown[];
@@ -85,12 +93,6 @@ export interface AsterPostgresPool {
 }
 
 type PoolFactory = (config: PoolConfig) => AsterPostgresPool;
-
-type WaitResult<T> =
-  | Readonly<{ status: "completed"; value: T }>
-  | Readonly<{ status: "timed_out" }>
-  | Readonly<{ status: "aborted" }>
-  | Readonly<{ status: "failed"; error: unknown }>;
 
 function issue(
   option: AsterPostgresConfigurationIssue["option"],
@@ -284,44 +286,6 @@ function validSignal(signal: AbortSignal | undefined): boolean {
   return signal === undefined || signal instanceof AbortSignal;
 }
 
-function waitFor<T>(
-  promise: Promise<T>,
-  signal: AbortSignal | undefined,
-  timeoutMs: number,
-): Promise<WaitResult<T>> {
-  if (signal?.aborted) {
-    return Promise.resolve(ABORTED);
-  }
-  return new Promise((resolve) => {
-    let settled = false;
-    const finish = (result: WaitResult<T>): void => {
-      if (settled) {
-        return;
-      }
-      settled = true;
-      clearTimeout(timer);
-      signal?.removeEventListener("abort", onAbort);
-      resolve(result);
-    };
-    const onAbort = (): void => {
-      finish(ABORTED);
-    };
-    const timer = setTimeout(() => {
-      finish(TIMED_OUT);
-    }, timeoutMs);
-    timer.unref();
-    signal?.addEventListener("abort", onAbort, { once: true });
-    promise.then(
-      (value) => {
-        finish(Object.freeze({ status: "completed", value }));
-      },
-      (error: unknown) => {
-        finish(Object.freeze({ status: "failed", error }));
-      },
-    );
-  });
-}
-
 function observationFor(
   telemetry: ValidatedOptions["telemetry"],
   operation: AsterDependencyOperation,
@@ -449,10 +413,16 @@ export function createAsterPostgresAdapterWithPoolFactory(
   const isOpen = (): boolean => state === "open";
 
   const run = async (
-    operation: "connect" | "probe",
+    operation: "connect" | "probe" | "query",
     signal: AbortSignal | undefined,
+    work?: (
+      client: AsterPostgresPoolClient,
+      deadline: number,
+      leaseOpen: () => boolean,
+    ) => Promise<AsterPostgresOperationResult>,
   ): Promise<AsterPostgresOperationResult> => {
     const observation = observationFor(options.telemetry, operation);
+    const deadline = performance.now() + options.operationTimeoutMs;
     let finalResult: AsterPostgresOperationResult = FAILED;
     let completeOperation: (() => void) | undefined;
     let forceRelease: (() => void) | undefined;
@@ -463,6 +433,10 @@ export function createAsterPostgresAdapterWithPoolFactory(
     try {
       if (!validSignal(signal)) {
         finalResult = INVALID_SIGNAL_REJECTED;
+        return finalResult;
+      }
+      if (signal?.aborted) {
+        finalResult = ABORTED;
         return finalResult;
       }
       if (!isOpen()) {
@@ -491,7 +465,13 @@ export function createAsterPostgresAdapterWithPoolFactory(
         finalResult = UNAVAILABLE;
         return finalResult;
       }
-      const acquired = await waitFor(acquisition, signal, options.connectionTimeoutMs);
+      const acquired = await waitFor(
+        acquisition,
+        signal,
+        operation === "query"
+          ? Math.max(1, Math.min(options.connectionTimeoutMs, deadline - performance.now()))
+          : options.connectionTimeoutMs,
+      );
       if (acquired.status !== "completed") {
         if (acquired.status === "failed") {
           releaseSlot();
@@ -553,6 +533,12 @@ export function createAsterPostgresAdapterWithPoolFactory(
         return finalResult;
       }
 
+      if (work) {
+        finalResult = await work(client, deadline, () => isOpen() && !clientReleased);
+        releaseClient(finalResult.status !== "completed");
+        return finalResult;
+      }
+
       let query: ReturnType<AsterPostgresPoolClient["query"]>;
       try {
         query = Promise.resolve(
@@ -594,6 +580,21 @@ export function createAsterPostgresAdapterWithPoolFactory(
       completeOperation?.();
       activeOperations.delete(settlement);
     }
+  };
+
+  const transaction = async <T>(
+    work: (transaction: AsterPostgresTransaction) => Promise<AsterPostgresTransactionDecision<T>>,
+    signal?: AbortSignal,
+  ): Promise<AsterPostgresTransactionResult<T>> => {
+    let transactionResult: AsterPostgresTransactionResult<T> | undefined;
+    const result = await run("query", signal, async (client, deadline, leaseOpen) => {
+      transactionResult = await executeTransaction(client, work, signal, deadline, leaseOpen);
+      if (transactionResult.status === "committed" || transactionResult.status === "rolled_back") {
+        return COMPLETED;
+      }
+      return transactionResult.status === "indeterminate" ? FAILED : transactionResult;
+    });
+    return transactionResult ?? (result.status === "completed" ? FAILED : result);
   };
 
   const snapshot = (): AsterPostgresPoolSnapshot =>
@@ -669,6 +670,7 @@ export function createAsterPostgresAdapterWithPoolFactory(
   return Object.freeze({
     connect: (signal?: AbortSignal) => run("connect", signal),
     probe: (signal?: AbortSignal) => run("probe", signal),
+    transaction,
     snapshot,
     close,
     lifecycleHooks: () => lifecycleHooks,

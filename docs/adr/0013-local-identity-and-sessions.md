@@ -37,7 +37,7 @@ Local JWTs are not operator credentials or Router-internal identity context. Pha
 | Keycloak local identity server | Standards-based provider option; adds another process, configuration and resource/upgrade surface to the minimum local demonstration |
 | Hosted-only OIDC provider | Appropriate hosted option, but credentials/availability cannot be prerequisites of the local demo |
 
-`jose` supplies signing/verification, not a complete OIDC provider or login flow. Version 6.2.10 is the candidate exact pin: MIT, ESM, no runtime dependencies, registry unpacked size 258772 bytes. Verify the lock, Node 24 compatibility and audit before claiming this adapter implemented. `openid-client` 6.8.7 was evaluated as a maintained MIT OIDC client with a Node 20 baseline; it is not installed before an actual OIDC flow needs it.
+`jose` supplies signing/verification, not a complete OIDC provider or login flow. Version 6.2.10 is the verified exact pin: MIT, ESM, no runtime dependencies, registry unpacked size 258772 bytes. The frozen lock, Node 24 compatibility tests and audit pass in the linked Phase 02 evidence. `openid-client` 6.8.7 was evaluated as a maintained MIT OIDC client with a Node 20 baseline; it is not installed before an actual OIDC flow needs it.
 
 ## Consequences
 

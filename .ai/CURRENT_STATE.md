@@ -19,17 +19,17 @@ Status: **IN_PROGRESS**
 
 ## Current work
 
-P02-R01 on `feat/p02-identity-session` implements ADR-0013 and the local-only signed-assertion adapter. Its 51 new focused cases pass; the full Identity suite passes 85/85 and all 49 canonical source tasks pass (34 cached, 13.872 s). Registry audit and diff checks pass. [Raw evidence](../evidence/phase-02/identity-boundary.txt) includes exact source fingerprints, iteration failures and executing-agent confirmation. Account/session storage, cookie transport and profile GraphQL remain planned; the released health runtime is unchanged.
+P02-R01 and P02-R02 are locally verified on `feat/p02-identity-session`. Accounts/sessions use bounded one-client transactions, owner-held SQL and migration 0001. The real PostgreSQL scenario passes concurrent resolution/limits, rollback, revocation, restart, timeout/cancellation and restrictive migration round-trip (12334 ms; cleanup 1021 ms, zero remaining). Current source passes 91 Identity tests, 29 PostgreSQL tests, all 49 canonical tasks (33 cached, 14.369 s), audit and executing-agent confirmation. [Raw evidence](../evidence/phase-02/account-sessions.txt) includes exact fingerprints, commands and limits. P02-R03 is now active for profiles/outbox. The released health runtime is unchanged and this branch is not pushed.
 
 ## Not implemented
 
-- Account/session persistence, profile rules/ownership, product migrations/seed, GraphQL/Federation and browser UI.
+- Runtime wiring of account/session persistence and migrations; profile rules/ownership, product seed, GraphQL/Federation and browser UI.
 - Catalog/media/playback, engagement/discovery, advanced Redis/resilience, end-to-end traces/SLOs and hosted release.
 - No playable VOD demo exists. The current Docker command demonstrates health/recovery/metrics.
 
 ## Next outcome
 
-Finish the coherent local P02-R01 checkpoint, then activate P02-R02 for account/session persistence before profile and GraphQL work. Keep publication grouped with a meaningful product candidate, not a separate PR for the adapter or Phase 01 metadata. No hosted provider or credential is required.
+Implement P02-R03 through P02-R08: owned profile CRUD, explicit active selection, idempotent deletion/audit and versioned transactional outbox. Use the existing bounded transaction owner. Cookie/GraphQL transport remains the following item; group remote publication with a coherent product candidate.
 
 ## Current risks
 

@@ -1,0 +1,180 @@
+P02-R02 account/session candidate — 2026-08-27
+Base: local 64a3aa879f5074e92a2b3b1b7f837b410c798604; feat/p02-identity-session; not published.
+Environment: WSL Ubuntu-20.04, Linux amd64, Node24.19.0, pnpm11.24.0; existing pinned PostgreSQL18.6 and Redis8.10.0 images.
+Owner: Identity and Profiles. PostgreSQL durable sessions; no Redis/session cache, transport or hosted identity.
+
+Implementation: one-client READ COMMITTED transactions; finite shared pool, total operation deadline, sequential/parameter/row bounds; no automatic retry. Real account lock + schema uniqueness and numbered slots cap sessions at eight. Raw JWT never stored. Runtime role cannot change issuer/subject, own schema or mutate migration ledger. Expiry/revocation and signer restart remain owner checked.
+
+Initial executing-agent review (not independent): checked domain imports, credential/digest flow, rollback/non-completed outcomes, lock/isolation and DB slot constraints, runtime grants, migration restrictions, deadline/late callback/close, output sanitization and test cleanup.
+Remediation batched: dispatch SQL in the admission turn to prevent shutdown retiring a lease before deferred dispatch; add COMMIT abort/timeout and shutdown/capacity cases; bound migration lock/statement waits; destroy failed administrative migration leases.
+Iteration failures: corrected TS grouped-result narrowing; curly and closure-narrowing lint; integration local-config field names; dependency builds must use Turbo (Identity's standalone tsc does not rebuild upstream packages). One library-owned type was renamed AsterPostgresRows to preserve the existing vendor-declaration check. No acceptance/security check was weakened.
+
+Command: pnpm exec turbo run build --filter=@aster/identity && pnpm --filter @aster/postgres test && pnpm --filter @aster/identity integration:sessions
+Exit: 0. Final database candidate before a behavior-equivalent closure getter used only to satisfy static narrowing; final source gate confirms the getter. No SQL, protocol or schema behavior changed afterward.
+• turbo 2.10.12
+
+   • Packages in scope: @aster/identity
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/telemetry:build: cache hit, replaying logs a1897de2c8a4d558
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/http-express:build: cache hit, replaying logs 0c34eb6a76a3c9a4
+@aster/config:build: cache hit, replaying logs 6acc6835f8e7e50d
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 8a3b24daf27b4687
+@aster/postgres:build: cache miss, executing a4f02fdf43c7d3f0
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/broker-kafka:build: cache hit, replaying logs 79ea2f58a372fcfb
+@aster/redis:build: cache hit, replaying logs 61bd24a6704b29c1
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache hit, replaying logs d2ccf516423e7d51
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/identity:build: cache miss, executing deab02b6e99bfc2a
+@aster/identity:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    9 successful, 9 total
+Cached:    7 cached, 9 total
+  Time:    1.976s 
+
+$ node --test ./dist/test/*.test.js
+✔ real pool owns background errors without exposing vendor error details (1.97708ms)
+✔ validates bounded options before constructing a pool without leaking input (2.082498ms)
+✔ passes finite connection and server timeout policy to pg (1.285997ms)
+✔ connect and probe reserve one slot, release healthy clients, and emit finite telemetry (2.904629ms)
+✔ keeps an abandoned acquisition inside the finite capacity until it is destroyed (7.156873ms)
+✔ times out a stalled probe, destroys its connection, and remains closeable (21.622219ms)
+✔ caller abort during a query destroys the connection and records cancellation (0.965498ms)
+✔ concurrent close destroys in-flight work while an aborted waiter remains local (0.94008ms)
+✔ an already-aborted close is side-effect free (0.367755ms)
+✔ close returns within its deadline while the underlying drain can finish later (21.488899ms)
+✔ lifecycle close converts vendor failure to one cause-free repository error (0.86711ms)
+✔ runs an unavailable-endpoint diagnostic and keeps pg out of public declarations (143.232135ms)
+✔ one lease commits parameterized work or acknowledges a requested rollback (5.711022ms)
+✔ failed queries poison the transaction even when application code catches them (0.910123ms)
+✔ callback failure retires its connection and never commits partial work (0.479482ms)
+▶ query count, inputs, parallel work and escaped leases fail closed
+  ✔ count (1.274502ms)
+  ✔ control (0.255266ms)
+  ✔ value (0.316871ms)
+  ✔ rows (0.830873ms)
+  ✔ parallel (0.366625ms)
+  ✔ escaped (0.299007ms)
+✔ query count, inputs, parallel work and escaped leases fail closed (4.226269ms)
+✔ one total deadline bounds the callback; late work cannot use a retired lease (51.320085ms)
+✔ abort before admission is side-effect free; abort during a query retires the lease (0.744553ms)
+✔ lost COMMIT acknowledgment is indeterminate and never retried (0.432009ms)
+▶ cancellation and timeout during COMMIT never claim rollback
+  ✔ abort (0.381076ms)
+  ✔ timeout (20.700958ms)
+✔ cancellation and timeout during COMMIT never claim rollback (21.551348ms)
+✔ shutdown closes admission and prevents queries after lease retirement (0.821752ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 281.797903
+$ node ./dist/test/integration/integration.js sessions
+{"event":"fixture_start","project":"aster-integration-c6ccc02ec95441b08e6928be1d728709","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":3844}
+
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"0.05%","memory":"33.34MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.18%","memory":"6.211MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0}]}
+{"event":"scenario_start","mode":"sessions"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":330}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2608}
+{"event":"identity_migration_up","durationMs":64,"duplicateRefused":true}
+{"event":"identity_runtime_privileges","outcome":"passed"}
+{"event":"identity_atomic_rollback","faults":["after-insert-throw","after-insert-abort"],"accounts":0,"sessions":0}
+{"event":"identity_concurrent_first_login","callers":8,"accounts":1,"sessions":8,"signatureAloneRejected":true,"digestMismatchRejected":true}
+{"event":"identity_concurrent_session_limit","callers":8,"admitted":4,"rejected":4,"stored":8,"databaseCap":"enforced"}
+{"event":"identity_signer_restart_expiry","accountPreserved":true,"oldCredentialsRejected":true,"sessions":1}
+{"event":"identity_lock_failure","mode":"abort","durationMs":11,"connectionsRetired":true}
+{"event":"identity_lock_failure","mode":"timeout","durationMs":1005,"connectionsRetired":true}
+{"event":"identity_database_recovery_revocation","failClosed":true,"restoredAfterRestart":true,"idempotentRevocation":true}
+{"event":"identity_migration_round_trip","durationMs":29,"dependencyGuard":true,"accounts":0,"sessions":0}
+{"event":"identity_session_resources_closed","reservedSlots":0}
+{"event":"natural_exit","mode":"sessions"}
+{"event":"core_integration","outcome":"passed","scenarios":["sessions"],"durationMs":12334}
+{"event":"fixture_cleanup","project":"aster-integration-c6ccc02ec95441b08e6928be1d728709","remaining":0,"durationMs":1021}
+
+Interpretation: 8 simultaneous first logins -> 1 account/8 sessions. At 4 existing sessions, 8 simultaneous logins -> 4 admitted/4 limit outcomes, still8. Real post-insert throw and abort roll back both tables. Signer restart/expiry reclaim slots and preserve account. Database loss fails closed; recovery restores valid session; repeated logout is idempotent. Backward migration refuses later dependencies atomically, then forward succeeds from empty state.
+Limitations: local synthetic credentials, WSLamd64; no browser/cookie/CSRF, profiles, GraphQL or hosted release. COMMIT acknowledgment loss is deterministically injected at the driver seam, not a real network proxy experiment. Timing samples are not SLO/capacity claims.
+Cleanup: two labelled disposable fixtures were removed, zero remaining each; no unrelated Docker resources were targeted.
+
+Candidate/full gate: pnpm check:changed && pnpm audit --audit-level=high && git diff --check
+Exit 0. The affected graph selected every package and all 49 canonical tasks, so this one run also satisfies the complete source gate; no duplicate full run was necessary.
+   • Packages in scope: //, @aster/broker-kafka, @aster/config, @aster/http-express, @aster/identity, @aster/object-storage-s3, @aster/postgres, @aster/redis, @aster/runtime, @aster/telemetry
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 10 packages
+//:ai:test: ℹ tests 13
+//:ai:test: ℹ pass 13
+//:architecture:test: ℹ tests 6
+//:architecture:test: ℹ pass 6
+//:ci:test: ℹ tests 22
+//:ci:test: ℹ pass 22
+//:docs:test: ℹ tests 9
+//:docs:test: ℹ pass 9
+//:commit:test: ℹ tests 6
+//:commit:test: ℹ pass 6
+//:staged:test: ℹ tests 6
+//:staged:test: ℹ pass 6
+//:community:test: ℹ tests 10
+//:community:test: ℹ pass 10
+//:security:test: ℹ tests 6
+//:security:test: ℹ pass 6
+@aster/telemetry:test: ℹ tests 9
+@aster/telemetry:test: ℹ pass 9
+@aster/runtime:test: ℹ tests 80
+@aster/runtime:test: ℹ pass 80
+@aster/http-express:test: ℹ tests 10
+@aster/http-express:test: ℹ pass 10
+//:toolchain:test: ℹ tests 20
+//:toolchain:test: ℹ pass 20
+@aster/config:test: ℹ tests 20
+@aster/config:test: ℹ pass 20
+@aster/object-storage-s3:test: ℹ tests 16
+@aster/object-storage-s3:test: ℹ pass 16
+@aster/broker-kafka:test: ℹ tests 21
+@aster/broker-kafka:test: ℹ pass 21
+@aster/redis:test: ℹ tests 15
+@aster/redis:test: ℹ pass 15
+//:platform:test: ℹ tests 29
+//:platform:test: ℹ pass 29
+@aster/postgres:test: ℹ tests 29
+@aster/postgres:test: ℹ pass 29
+@aster/identity:test: ℹ tests 91
+@aster/identity:test: ℹ pass 91
+ Tasks:    49 successful, 49 total
+Cached:    33 cached, 49 total
+  Time:    14.369s 
+No known vulnerabilities found
+Initial candidate attempt stopped on one unused exported internal port. Removed only the unused export. Other cancelled jobs were Turbo fail-fast, not accepted test results. Final exact source passes all tasks.
+
+Executing-agent confirmation: PASS. Rechecked the whole remediation batch, credential suppression on every non-commit result, SQL lock/constraints/role boundaries, migration recovery, shutdown and escaped-query rejection, real DB evidence, unchanged health-only wiring, source graph and dependency diff. No remaining requirement/security/data/availability/public-contract blocker found. This is not independent approval. No hosted CI or Phase02 release is claimed.
+Post-database changes: an equivalent read-only closure getter and a TypeScript-only internal export removal, plus documentation. Neither changes SQL, schema, pool lifecycle or database scenario behavior; final 29 PostgreSQL cases/91 Identity cases and all49 tasks pass. Retain the real fixture evidence without repeating containers for those changes.
+
+Exact final implementation SHA-256 fingerprints (before documentation-only closeout):
+3e002f36bf1a3cdb596b5ca427cfb8256b3670f353353a5ba0bbc60220687db6  packages/postgres/src/index.ts
+f4200e8257be461b1261bc7acc1262b23c32ddf869aa1585fe46cdf2afb5fe71  packages/postgres/src/postgres-contract.ts
+439eb8f633c38542c355163a875bff71845614acadeab5f76374a3738a993afd  packages/postgres/src/infrastructure/postgres-adapter.ts
+732fdba3631cb67bcdc494b11debeb2148fb85110152a62e10ba9e9b4d09d403  packages/postgres/src/infrastructure/postgres-transaction.ts
+9d31b7d1cf30e3230de30d810b3c9d14d3c7dc6ff3bc83f80afe0f52488f7263  packages/postgres/src/infrastructure/postgres-wait.ts
+db0709f5117e32c541b2379c5067e1a5e014876ed6a51ccff56f29979ba0fb57  packages/postgres/test/postgres-transaction.test.ts
+13047bb6b76d335f35be6d311b6198ea020241aa6fa46e0d3f620730e268a9bc  services/identity/src/domain/session.ts
+f2999e26b3b4ace987bcc0da4fdad1f66eccb4fd4d15761ea7973041b00342b8  services/identity/src/application/session-ports.ts
+be66ff3a75c35beb6fbbb3a574c64c6df12fdd412ccfec239405ab8da7bc819a  services/identity/src/application/sessions.ts
+06c92df1369b4f9156f2cbea52013c4b5d53ec4d11bf603f06670d69b342f259  services/identity/src/infrastructure/persistence/postgres-sessions.ts
+7410b7c4f4c366054f1080f9f5ea40fbcf31d387f4dd60381ba9d6c602952232  services/identity/test/sessions.test.ts
+dfcd210e063412892af812b34b076c46d08035876c2de2588ea04e33df60c407  services/identity/test/integration/sessions-worker.ts
+b4058bad1742862b1beebf6afe3dc38e6d5a3d01dcd188632e1e1302417fe234  services/identity/test/integration/integration.ts
+74b1be85f4a91130ad1eb1694799d21b2df3e04f0a72ef04f1b552b02e7fde4f  services/identity/migrations/0001-accounts-sessions.up.sql
+b0869b43df8907617c2dfc4c4be58008d9f80e043e836d8c8516de7c2edce896  services/identity/migrations/0001-accounts-sessions.down.sql
+5dd71d3e9742597f50b013acb6f609c4db060de24eb38f5ce4f4c12474fa9771  services/identity/package.json
+10ab9f22a09bc019621aff4763a5a8f4c7a2d95a0fdb9b380437f839b03505f9  pnpm-lock.yaml
+
+P02-R02 locally verified. Profile ownership/outbox and cookie/GraphQL transport remain separate unfinished items.

@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Durable account/session candidate
+
+### Completed
+
+- Implemented account/session policies, bounded one-client PostgreSQL transactions, explicit owner SQL and migration 0001. No ORM, new service, public route or remote pipeline was added.
+- Added real database admission/rollback/revocation/restart/privilege/migration tests using the existing isolated fixture supervisor. Batched initial review remediation for dispatch/retirement, commit ambiguity and migration deadlines.
+
+### Evidence
+
+- PostgreSQL 29 tests, Identity 91 tests, all 49 canonical tasks (33 cached, 14.369 s), audit and executing-agent confirmation pass. Real database scenario: 12334 ms; cleanup: 1021 ms, zero remaining. Eight first logins produce one account/eight sessions; limit crossing admits four of eight at four existing sessions.
+- Two disposable test fixtures removed; unrelated Docker resources preserved. Raw commands, measured values and limitations: `evidence/phase-02/account-sessions.txt`.
+
+### Next action
+
+P02-R02 is locally verified; P02-R03 profiles/outbox is active. Consolidate the functional local checkpoint without another remote pipeline. Phase 02 remains unpublished; no independent review or runnable product login is claimed.
+
 ## 2026-08-27 — Phase 01 release and first Identity boundary
 
 ### Completed
@@ -16,7 +32,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Complete focused/candidate verification and record exact P02-R01 evidence. Do not expose signature-only authentication: the next slice must implement PostgreSQL session/account validity before GraphQL/cookie integration. Phase 01 release metadata is batched here, not a separate PR.
+P02-R01 is now locally committed as `64a3aa8`; final 51 focused cases, 85 Identity tests and all 49 tasks pass. P02-R02 is active for PostgreSQL session/account validity before GraphQL/cookie integration. No branch push or new pipeline was created. Activation memory edits belong to the next functional commit.
 
 ## 2026-08-27 — Complete Docker confirmation findings
 

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phase 01 is released through PR 18 squash `b0544c9`; protected run `33047330768` and exact post-merge `33047629326` pass. P02-R01 is the first active Phase 02 item: identity/session ADR and a guarded local assertion adapter. Account/session persistence and profile/subgraph integration remain ordered follow-up work; publication will group coherent product changes.
+Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-merge runs pass. P02-R01 and P02-R02 are locally verified: the current candidate passes 91 Identity tests, 29 PostgreSQL tests, real session/database failure tests, all 49 source tasks and audit. P02-R03 is active for owned profiles and transactional outbox. No Phase 02 remote publication or release is claimed; publication will group coherent product changes.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -31,9 +31,9 @@ Phase 01 is released through PR 18 squash `b0544c9`; protected run `33047330768`
 | 23 | Compose startup deadlines, dependency readiness, health routes, and the Identity reference skeleton | P01-R08 | DONE |
 | 24 | Prove the reference runtime against real local dependencies | P01-R09 | DONE |
 | 25 | Publish resource-aware profiles, troubleshooting, and the clean Docker-only Phase 01 closeout | P01-R10 | DONE |
-| 26 | Select identity/session trust and implement the guarded local assertion boundary | P02-R01 | IN_PROGRESS |
-| 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | READY |
-| 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | READY |
+| 26 | Select identity/session trust and implement the guarded local assertion boundary | P02-R01 | DONE |
+| 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | DONE |
+| 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | IN_PROGRESS |
 | 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | READY |
 
 ## Work-item rules

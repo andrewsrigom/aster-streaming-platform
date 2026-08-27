@@ -21,6 +21,7 @@
     "integration": "node ./dist/test/integration/integration.js all",
     "integration:broker": "node ./dist/test/integration/integration.js broker",
     "integration:core": "node ./dist/test/integration/integration.js",
+    "integration:sessions": "node ./dist/test/integration/integration.js sessions",
     "integration:storage": "node ./dist/test/integration/integration.js storage",
     "integration:telemetry": "node ./dist/test/integration/integration.js telemetry",
     "start": "node ./dist/src/main.js",
@@ -42,7 +43,9 @@
     "@aws-sdk/client-s3": "3.1118.0",
     "@smithy/node-http-handler": "4.11.3",
     "@types/node": "24.13.3",
+    "@types/pg": "8.23.1",
     "kafkajs": "2.2.4",
+    "pg": "8.23.0",
     "typescript": "6.0.3"
   }
 }
