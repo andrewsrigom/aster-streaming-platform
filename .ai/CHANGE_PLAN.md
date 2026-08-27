@@ -1,108 +1,97 @@
-# Work Item: Ship the Docker-only Phase 01 Demonstration
+# Work Item: Establish the Local Identity Trust Boundary
 
 - Status: IN_PROGRESS
-- Owner: Shared local platform and product-empty Identity runtime
-- Phase: 01
-- Requirement IDs: P01-R10
+- Owner: Identity and Profiles
+- Phase: 02
+- Requirement IDs: P02-R01
 - Created: 2026-08-27
 - Updated: 2026-08-27
 
 ## Outcome
 
-An evaluator with Git and Docker/Compose can build/start the reference Identity service, observe health and metrics, stop it cleanly and explicitly reset only local Aster data. Named lightweight and optional profiles avoid requiring the full laboratory. Complete Phase 01 evidence without claiming a playable product.
+Select the identity/session contract and implement the smallest local-only signed-assertion adapter with adverse tests. This establishes the credential boundary; account/session persistence and GraphQL integration follow as separate coherent slices.
 
 ## Current behavior
 
-P01-R09 is released through PR 17 squash `a1f728196aa7a4d8a79181042f75a876610d2b11`. Protected run `33041524806` and exact post-merge run `33041787663` pass the real eight-scenario matrix and all applicable gates. Local cold source `cbc5255` passed 49/49 uncached tasks, audit and clean Git. Executing-agent initial/confirmation reviews have no blocker; no independent approval is claimed. See `evidence/phase-01/real-integration.txt`.
-
-This branch starts from that clean merge. Image checkpoint `4837207` is followed by the locally passing runtime profile: packaged Identity with PostgreSQL/Redis, loopback 3100, optional classified database password, guarded five-service/two-network reset and helper tmpfs. Optional exporter/integration/observability/full profiles now pass local runtime checks; final clean/protected closeout remains.
+Phase 01 is released through PR 18 squash b0544c9. Protected run 33047330768 and exact post-merge run 33047629326 pass every applicable gate, Docker full-profile smoke and the real eight-scenario matrix. Identity currently exposes health only; no account, session or profile exists.
 
 ## Proposed behavior
 
-First prove portable production packaging and an immutable-base non-root Identity image. Then extend exact reset ownership and add the lightweight runtime profile. Reuse proven dependency images for optional integration/observability/full profiles; connect the existing OTLP exporter through validated optional configuration. Finish one clean Docker-only demonstration, resource/failure/reset evidence and protected release.
+ADR-0013 selects a server-controlled synthetic local identity, narrow JOSE verification and PostgreSQL-backed revocable browser sessions. Add an environment-guarded local signer and fixed-purpose assertion verifier. Preserve existing runtime startup until the owning account/session slice wires the adapter.
 
 ## Boundaries
 
-- Owner/data: shared infrastructure, product-empty Identity, synthetic local data only; Redis/telemetry non-authoritative.
-- Paths: `infra/docker/identity.Dockerfile`, `.dockerignore`, package file allowlists, Compose/configuration, reset/platform/CI tools and tests, config/Identity composition, docs/evidence.
-- Trust boundaries: build context, package/image artifacts, process configuration, UID/capabilities/mounts/ports, health probes and destructive cleanup.
-- External dependencies: already-pinned clients/images. Node candidate is official `24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df`; amd64/arm64 index and upstream MIT recipe verified, packaged runtime/footprint measured locally in the linked evidence.
-- No new framework, product service, authoritative owner or hosted resource.
-
-Optional-profile implementation: keep `compose.yml` as the core/runtime/integration model and use one explicit `observability.yml` overlay to enable Identity's OTLP input for observability/full commands only. Bake the two public telemetry configurations into minimal pinned Collector/Prometheus images, avoiding mutable host config mounts and reset path translation. Reset will inspect the fixed combined model and accept only the base or exact ordered base-plus-overlay provenance. The existing platform status helper will probe the real OTLP receiver and Prometheus in the overlay; telemetry failure must not affect Identity readiness. Broker/storage remain internal and are not Identity runtime dependencies.
+- Owning context/data: Identity and Profiles; no shared authoritative entity.
+- Paths: services/identity/src/domain, infrastructure/identity and focused tests; ADR/evidence and dependency lock.
+- Trust: untrusted compact JWT versus configured issuer/key/audience; local-only activation; no public user/profile/role headers.
+- Dependencies: candidate jose 6.2.10 (MIT, no runtime dependencies, ESM); exact lock and compatibility/audit required before acceptance.
+- No hosted provider, new service, database schema, HTTP endpoint, UI or Router change.
 
 ## Invariants
 
-- Evaluator requires no host Node, hosted credential or manual repair.
-- Preserve cheap core startup; optional profiles have finite resources and explicit persistence/cleanup ownership.
-- Extend reset guards before accepting new services/volumes; preserve unrelated resources and image caches.
-- Application image runs non-root, read-only where compatible, with dropped capabilities and bounded shutdown. Expose only documented loopback ports.
-- Exclude secrets, host dependency/build state and Git metadata from the Docker build context.
-- Do not add production broker/S3 dependencies to Identity or implement auth, GraphQL, media, SLOs or dashboards.
-- Collector/Prometheus serve existing metrics. Defer empty Tempo/Loki/Grafana until owned trace/log export or a concrete dashboard question requires them.
+- Local issuance requires explicit local environment, local opt-in and canonical loopback origin.
+- Issuer, audience, subject and token purpose are source-owned, not request-controlled.
+- Verify signature, fixed algorithm, required claims, expiry, issued-at, bounded lifetime and session identifier before returning a validated assertion.
+- A validated assertion is not proof of an active database session; the next slice must check its owning durable session.
+- Never return raw library errors or log tokens/keys. Bound input bytes and concurrent cryptographic work.
+- Domain contracts import no crypto, framework, SQL or telemetry SDK.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Evidence |
+| Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Docker unavailable, unsupported platform or occupied port | Visible bounded diagnosis, no broad repair | Compose/health output |
-| PostgreSQL/Redis unavailable | Live but not ready; recover through existing monitor | Finite dependency/readiness signals |
-| Optional telemetry unavailable | Readiness preserved; flush/export remains finite and truthful | Export and lifecycle result |
-| SIGTERM/container stop | Ordered drain within ten seconds, with orchestrator grace | Natural exit and lifecycle events |
-| Foreign or partial reset state | Validate all exact owners before deletion; refuse foreign state | Adverse tests and unchanged inventory |
-| Cold download failure | Fail visibly; retain caches, retry only the failed command | Actual build result |
+| Hosted or ambiguous local activation | Reject before generating keys | Sanitized configuration error |
+| Malformed, forged, expired or misdirected assertion | Unauthenticated result without raw cause | Finite outcome; no endpoint metric yet |
+| Cancelled request or saturated verification | Cancelled/unavailable result, no queued work | No secret-bearing detail |
+| Local process restart | Old ephemeral-key assertions invalid; durable profile data unaffected | Session wiring will document sign-in again |
 
 ## Data and contracts
 
-- Schema, GraphQL, events and cache policy: none.
-- Configuration: optional exporter settings and an explicitly classified optional database-password field for Docker configuration; current seven-variable URI callers remain compatible. Construct the effective URL at the validated configuration boundary, reject conflicting password sources and do not weaken the credential-URL scanner or rely on hidden vendor environment variables.
-- Packaging: production-only portable output and built-file allowlists; preserve dependency notices. No bundler or global workspace injection change.
-- Retention/deletion: named volumes explicitly classified; existing local intent and exact destructive confirmation remain required.
-- Compatibility: exact Node/pnpm; Docker 26.0.0/Compose 2.26.1 floor. Other OS/architectures remain unverified unless measured.
+- No migration, GraphQL, event or cache in this slice.
+- Planned session persistence: owner-held token digest, account link, absolute expiry and revocation; PostgreSQL required, Redis non-authoritative.
+- Browser cookie and CSRF enforcement are required in the transport slice, not claimed by this adapter.
+- Hosted OIDC provider, persisted signing keys and rotation remain Phase 14; Router internal-context trust remains Phase 04.
 
 ## Security and privacy
 
-No auth/trust-model change. Frozen installation and reviewed image digests remain mandatory. Exporter settings must reject unsafe/credential-bearing URLs without reflecting values. Validate profile/service/volume ownership, mounts and network attachments before reset. No global prune, daemon reset or unrelated-state cleanup.
+Read SECURITY.md and architecture/security/testing skills. Use synthetic fixed subject only. The local private key is ephemeral, non-exportable and never saved. Public inputs cannot select a subject, key, issuer or role. Native cryptographic work cannot be forcibly cancelled; retain its finite concurrency slot until completion and suppress any result after caller cancellation.
 
 ## Implementation steps
 
-1. [completed] Pinned non-root Identity image builds inside Docker and passes package/controlled HTTP diagnostics. Seven workspace packages load; all 114 external installed versions match the lockfile; no dev/test/host tree ships. Image: 255269001 bytes, UID 1000. Missing configuration exits 1; all probe containers are removed. Platform/CI tests pass 21/21 each and affected graph passes 49/49 (52.272 s). See `evidence/phase-01/docker-demo.txt`.
-2. [completed] Optional password/configuration, exact reset and runtime profile pass. Fixed internal-only port non-publication with an Identity-only edge bridge and inherited helper volumes with tmpfs. Real PostgreSQL/Redis loss keeps liveness 200 and changes readiness to 503; restart recovers automatically. Docker image/build-start 39.71 s with cached base/install layers; natural SIGTERM 561 ms; core-only start 7.38 s. Reset removes only synthetic owned resources, supports legacy helper volumes and preserves the complete unrelated inventory. Config 17/17, Identity 33/33, platform/reset 25/25, affected graph 49/49 (28 cached, 18.58 s).
-3. [completed] Optional integration/observability/full profiles, classified OTLP configuration and real metric delivery pass. Collector loss preserves Identity readiness and recovers; shutdown with unavailable Collector exits 143 in 4223 ms with truthful degradation. Exact reset removes nine containers, two networks and four volumes while preserving unrelated inventory. Focused config/Identity/platform/CI checks: 20/34/29/22 passing.
-4. [completed] Exact clean source `38801ce` passes no-host-Node/pnpm Docker full build/start (36.89 s), in-container CI smoke, occupied-port failure/recovery (4.56/5.60 s), stop preserving four volumes, partial reset and repeat. Full source gate 49/49 uncached (32.418 s), audit and clean Git pass. Exact 228M clone removed; caches retained. Runbooks cover ports/volume/profile/architecture/FFmpeg/resource limits.
-5. [in progress] PR 18 runs `33046068184`/`33046678570` pass all six jobs at `d148bf7`/`d751109`. Initial runway finding is resolved. Complete automated confirmation `5037946690` found two further documentation contradictions (`3869341714`/`3869341724`); one prose-only batch corrects README/runbook and related checkpoint labels. Verify the narrow remediation, resolve both threads and require the new exact-head protected gate before squash/post-merge. No independent approval is claimed or required; another round needs a demonstrated blocking boundary. P02-R01 owns the identity/session/local-trust ADR after Phase 01 release.
+1. [completed] ADR-0013 and exact jose 6.2.10 metadata/lock/audit evidence recorded.
+2. [completed] Domain contract, strict verifier and guarded local-only issuer implemented without changing runtime wiring.
+3. [completed] 51 focused cases pass; 85 total Identity tests pass. Initial lint issues and saturation-test ordering were corrected.
+4. [completed locally] All 49 canonical tasks pass (34 cached, 13.872 s), audit/diff checks and executing-agent confirmation pass. Evidence is in the named raw artifact. Commit this coherent checkpoint, then activate account/session work; group publication with a meaningful product candidate.
 
 ## Tests
 
-- Domain/browser/media: not applicable; no product behavior.
-- Unit/contracts: packaging/configuration, health probe, exact reset and container/CI policy.
-- Integration: packaged Identity with PostgreSQL/Redis, runtime/full health, OTLP/Prometheus, stop and reset.
-- Failure: occupied port, stopped dependency/backend, foreign ownership and partial state.
-- Performance: startup/idle observations only; no load/SLO/throughput claim.
+- Domain: framework-free contract and strict identifier/lifetime rules.
+- Adapter: real ES256 signing/verification, controlled clocks, hostile serialized tokens, local configuration guard.
+- Integration: cryptographic library on pinned Node; no hosted protocol/database claim.
+- Browser/media/load: not applicable; no endpoint or media behavior changes.
 
 ## Evidence
 
-- Commands: focused build/package/policy checks, `pnpm check:changed`, exact Docker-only commands and applicable integration; full `pnpm check --force` at the stabilized candidate.
-- Artifact: `evidence/phase-01/docker-demo.txt`.
-- Iteration gate: smallest changed package/policy test and affected packaging/profile experiment.
-- Candidate gate: affected graph plus affected runtime/full smoke and exact cleanup.
-- Complete gate: clean checkout with no host Node in the evaluator path, profile/failure/resource evidence, full source gate, audit, review and protected CI.
-- Heavyweight repeat triggers: image/client/dependency, packaging/context, config/entrypoint, Compose ownership/network/resources, deadlines/shutdown or reset. Do not repeat builds/containers/cold checkout for prose-only changes.
-- Review stopping rule: one initial complete review and one confirmation; further rounds only for demonstrated requirement/security/data/availability/public-contract blockers.
+- Iteration gate: Identity build/typecheck and focused test file; targeted lint/format.
+- Candidate gate: pnpm check:changed and registry audit.
+- Complete gate: all named adverse cases, package/license compatibility and complete source gate.
+- Raw artifact: evidence/phase-02/identity-boundary.txt.
+- Heavyweight repeat triggers: when wiring runtime/Compose/session persistence, run affected real integration and Docker acceptance. Do not repeat Phase 01 containers for an unwired adapter or prose.
+- Review stopping rule: one complete initial review and confirmation; further rounds only for demonstrated requirement/security/data/availability/public-contract blockers.
 
 ## Rollback or recovery
 
-Revert phase-owned packaging/profiles while retaining verified core commands. Remove only validated experiment resources; default data requires explicit reset confirmation. No product migration exists. Keep evidence for any failed image or packaging candidate.
+Remove the unwired adapter and its dependency; the released health-only runtime remains unchanged. No durable data or migration exists.
 
 ## Documentation updates
 
-README commands, local development/troubleshooting, profile table, config/reset contracts, image/license sources, measured resource envelope, Phase 01 evidence index and concise repository memory. Distinguish diagnostic runtime from playable VOD.
+ADR-0013, decision navigation, Phase 02 evidence and concise repository memory; batch Phase 01 hosted closeout here, without an extra metadata-only PR.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
+- [x] Requirements satisfied for the local adapter/decision boundary
+- [x] Tests pass
 - [x] Evidence captured
 - [x] Documentation current
-- [x] `.ai/` state updated
+- [x] .ai state updated
 - [x] Remaining risks recorded

@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+Phase 02 identity/session selection is accepted in [ADR-0013](../docs/adr/0013-local-identity-and-sessions.md): guarded local ES256 assertions with durable owner-validated sessions. The adapter is under implementation; persistence, cookie transport and hosted identity remain separate acceptance boundaries.
+
 | Decision | ADR | Status |
 |---|---|---|
 | Use a TypeScript monorepo with explicit application and package boundaries | `docs/adr/0001-monorepo.md` | Accepted |
@@ -66,7 +68,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 |---|---:|---|---|---|
 | Final profile sizing and any additional observability backends | 01 | Combined lifecycle proof, resource measurements and a concrete need before adding Grafana/Tempo/Loki | Core, Kafka, S3 and Collector/Prometheus are proved in isolated fixtures; no final evaluator profile or product dashboard is claimed | Phase 01 verification |
 | Typed SQL library | 02 | First real context-owned schema, transaction, query, migration, generated-type, compatibility, maintenance, and removal evidence | Phase 01 uses its selected PostgreSQL connectivity adapter without product tables or a synthetic query abstraction | Phase 02 persistence implementation |
-| Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
+| Identity/session integration after ADR-0013 | 02 | Durable session revocation, owner-side authorization, CSRF/cookies, clean seed and adverse tests | Local-only assertion adapter; no product endpoint until integration passes | Phase 02 verification |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
 | Router-to-subgraph identity-context protection | 04 | Threat model, forgery tests, key handling, local topology, deadline, and rotation path | No public route reaches a subgraph directly; no public identity header is trusted | Phase 04 verification |
 | Web UI primitive strategy | 05 | Current Next.js and React compatibility, accessibility, bundle impact, maintenance, customization ownership, license, and used-component inventory | Use semantic HTML and minimal local primitives; shadcn/ui is the preferred candidate | Phase 05 verification |

@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10 implements the Docker runtime and integration/observability/full profiles. Clean-checkout acceptance and protected CI pass; final release status is recorded in [current state](.ai/CURRENT_STATE.md). [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the verified runtime from the planned video application.
+Phase 00 and Phase 01 are released, including the Docker runtime and integration/observability/full profiles. Clean-checkout, protected CI and exact post-merge acceptance pass. Phase 02 identity work is in progress; [current state](.ai/CURRENT_STATE.md) distinguishes the new adapter from planned account/profile behavior. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the verified runtime from the planned video application.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

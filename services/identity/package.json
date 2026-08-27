@@ -33,7 +33,8 @@
     "@aster/postgres": "workspace:*",
     "@aster/redis": "workspace:*",
     "@aster/runtime": "workspace:*",
-    "@aster/telemetry": "workspace:*"
+    "@aster/telemetry": "workspace:*",
+    "jose": "6.2.10"
   },
   "devDependencies": {
     "@aster/broker-kafka": "workspace:*",

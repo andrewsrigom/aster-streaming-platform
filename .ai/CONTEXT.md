@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-The repository foundation and Phase 01 technical packages exist. Released P01-R09 proves the real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus matrix. P01-R10 implements a non-root production Identity image and Docker runtime profile with real PostgreSQL/Redis recovery, loopback health and safe scoped reset. Optional integration/observability/full profiles and exact Docker-only clean-checkout acceptance now pass locally. Protected Phase 01 release remains pending. No product schema/resolver/migration or playable journey exists yet.
+Phase 00 and Phase 01 are released. The Docker-only runtime provides health, recovery, bounded shutdown and optional real telemetry without hosted credentials. Phase 02 now implements the local identity boundary; account/session persistence, profiles, GraphQL and playable journeys remain unimplemented. Exact progress is maintained in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,8 +50,8 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
+Active phase: **Phase 02 — Identity and Viewer Profiles**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 through P01-R09 are released. PR 17 squash `a1f7281` passes protected run `33041524806` and exact post-merge run `33041787663`, including the complete real eight-scenario matrix. P01-R10 is active from that clean merge: portable production Identity packaging, resource-aware profiles, exact reset and Docker-only evaluator acceptance. No playable product is implemented yet.
+PR 18 squash `b0544c9` and post-merge run `33047629326` close Phase 01. P02-R01 begins from that clean main checkpoint. Keep local identity minimal, owner-authorized and impossible to activate through a hosted environment opt-in alone.

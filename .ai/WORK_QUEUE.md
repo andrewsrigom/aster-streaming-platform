@@ -2,9 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-P01-R09 is released through PR 17 squash `a1f7281`; protected run `33041524806` and exact post-merge run `33041787663` pass every applicable gate and the real eight-scenario matrix. P01-R10 starts locally from that clean merge: portable Identity packaging, resource-aware profiles and the clean Docker-only Phase 01 closeout.
-
-The optional-profile checkpoint passes real metrics, Collector outage isolation/recovery, bounded degraded shutdown and exact nine-service reset. Exact clean source `38801ce` passes Docker-only/occupied-port/reset acceptance, 49/49 uncached tasks and audit. PR 18 runs `33046068184`/`33046678570` pass all six jobs. The complete confirmation review identified two remaining status contradictions; the prose-only batch corrects both and related stale checkpoint labels. Remediation confirmation, final exact-head CI and release remain P01-R10 work.
+Phase 01 is released through PR 18 squash `b0544c9`; protected run `33047330768` and exact post-merge `33047629326` pass. P02-R01 is the first active Phase 02 item: identity/session ADR and a guarded local assertion adapter. Account/session persistence and profile/subgraph integration remain ordered follow-up work; publication will group coherent product changes.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -32,7 +30,11 @@ The optional-profile checkpoint passes real metrics, Collector outage isolation/
 | 22 | Implement narrow PostgreSQL, Redis, broker, object-storage, clock, ID, and telemetry adapters | P01-R07 | DONE |
 | 23 | Compose startup deadlines, dependency readiness, health routes, and the Identity reference skeleton | P01-R08 | DONE |
 | 24 | Prove the reference runtime against real local dependencies | P01-R09 | DONE |
-| 25 | Publish resource-aware profiles, troubleshooting, and the clean Docker-only Phase 01 closeout | P01-R10 | IN_PROGRESS |
+| 25 | Publish resource-aware profiles, troubleshooting, and the clean Docker-only Phase 01 closeout | P01-R10 | DONE |
+| 26 | Select identity/session trust and implement the guarded local assertion boundary | P02-R01 | IN_PROGRESS |
+| 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | READY |
+| 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | READY |
+| 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | READY |
 
 ## Work-item rules
 

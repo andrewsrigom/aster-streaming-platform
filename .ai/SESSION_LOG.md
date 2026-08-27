@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Phase 01 release and first Identity boundary
+
+### Completed
+
+- Resolved all three PR 18 documentation findings; final source-backed baseline sweep and executing-agent confirmation passed. Squash merged as `b0544c9` after protected run `33047330768`; exact post-merge `33047629326` passed. No independent approval is claimed.
+- Started P02-R01 from clean main on `feat/p02-identity-session`. ADR-0013 selects local-only signed assertions and mandatory owner-held session validity. Added the first domain contract and guarded JOSE adapter; runtime startup is unchanged.
+
+### Evidence
+
+- Final protected matrix: 145020 ms, cleanup 975 ms. Post-merge matrix: 153008 ms, cleanup 1053 ms. Both have zero residual fixture resources and passing Docker UID/health/six-metric proof; audit passes.
+- Initial Identity cryptographic suite passes 47 tests; corrected focused lint issues and removed an asynchronous saturation-test ordering race. Expanded opt-in cases and final candidate gates follow. jose 6.2.10 adds one MIT package, no runtime dependency; registry audit passes.
+
+### Next action
+
+Complete focused/candidate verification and record exact P02-R01 evidence. Do not expose signature-only authentication: the next slice must implement PostgreSQL session/account validity before GraphQL/cookie integration. Phase 01 release metadata is batched here, not a separate PR.
+
 ## 2026-08-27 — Complete Docker confirmation findings
 
 ### Completed

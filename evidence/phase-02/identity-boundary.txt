@@ -1,0 +1,104 @@
+P02-R01 local identity boundary — 2026-08-27
+Status: IMPLEMENTED and locally VERIFIED as an unwired credential adapter; no product authentication endpoint or durable session yet.
+Source: worktree based on b0544c9c6a86ac1cdb48963707eedf0f0e153621, exact changed source/lock fingerprints below; first coherent local commit follows this checkpoint. No hosted provider or browser proof is claimed.
+Environment: Windows host, Ubuntu WSL amd64; pinned Node 24.19.0 / pnpm 11.24.0.
+Requirement: P02-R01. Data owner: Identity and Profiles. ADR-0013 records fixed local claims, ES256, local activation, session/CSRF/persistence obligations and hosted deferrals.
+Dependency: jose 6.2.10, MIT, no runtime dependencies, ESM; registry unpacked size 258772 bytes. Integrity sha512-iiW7J9qRFlGxvCOIBDBDxFePQSn7ZMAnrYGhrrOo6siO/MIqwfyilLR27pkfDgUk+raLuzADS8A3S/KLBisc0g==. Installation added one package and registry audit passed; no install script was declared in the selected package metadata.
+Sources checked: https://github.com/panva/jose and https://registry.npmjs.org/jose; protocol/alternative references are in ADR-0013.
+
+Commands: pnpm --filter @aster/identity build; pnpm --filter @aster/identity typecheck; focused ESLint/Prettier; pnpm check:changed; then git rev-parse HEAD, node/pnpm --version, sha256sum on the five inputs below, node --test services/identity/dist/test/local-identity.test.js, pnpm audit --audit-level=high, git diff --check.
+Workload: real generated ES256 keys, controlled NumericDate clock, fixed synthetic subject/session UUID, no network and no private material in output. Cases cover required claims, purpose, signature/algorithm mismatch, invalid identifiers, token bounds, exact expiry, malformed input, eight shared slots, cancellation, restart and local/hosted configuration.
+
+Final raw focused acceptance:
+b0544c9c6a86ac1cdb48963707eedf0f0e153621
+v24.19.0
+11.24.0
+1c0c79af8de6dbb944206ea141d5bc93c82db96fbf844aae5ccd5c953d6ff8eb  services/identity/src/domain/identity-assertion.ts
+47445a40e75d1583becf90bd6502b6b3d0bbbb92e6f610da797a24604cfa2b38  services/identity/src/infrastructure/identity/local-identity.ts
+3a18c78a5c6911c6132f582029e9b991385f6677ea31ac618ea1fa0fde990cea  services/identity/test/local-identity.test.ts
+251d637c74c58abc52efcc879bb8ddc711d45aa3b5a746bffc0f1b9c82948e22  services/identity/package.json
+6fc80549289775012cf99e17bef3cb8e20dbe4b5772a05b3de8fd6887c261a4b  pnpm-lock.yaml
+✔ local issuer fixes identity claims and expires at the exact absolute boundary (11.019427ms)
+▶ local activation rejects hosted environments, missing opt-in and noncanonical origins
+  ✔ 0 (0.684247ms)
+  ✔ 1 (0.140067ms)
+  ✔ 2 (0.140497ms)
+  ✔ 3 (0.197759ms)
+  ✔ 4 (0.151097ms)
+  ✔ 5 (0.102889ms)
+  ✔ 6 (0.15052ms)
+  ✔ 7 (0.320102ms)
+  ✔ 8 (0.218803ms)
+  ✔ 9 (0.099751ms)
+  ✔ 10 (0.091469ms)
+  ✔ 11 (0.104881ms)
+  ✔ 12 (0.108378ms)
+  ✔ 13 (0.073057ms)
+  ✔ 14 (0.074639ms)
+  ✔ 15 (0.087298ms)
+  ✔ 16 (0.072182ms)
+  ✔ 17 (0.091996ms)
+  ✔ 18 (0.068847ms)
+  ✔ 19 (0.06331ms)
+  ✔ 20 (0.066282ms)
+  ✔ 21 (0.055046ms)
+✔ local activation rejects hosted environments, missing opt-in and noncanonical origins (5.032139ms)
+▶ real signatures fail closed for every required claim and token purpose
+  ✔ issuer (1.166234ms)
+  ✔ audience (0.914313ms)
+  ✔ audience array (0.765405ms)
+  ✔ subject (0.658298ms)
+  ✔ empty subject (0.719391ms)
+  ✔ session identifier (0.75169ms)
+  ✔ expired (0.72141ms)
+  ✔ future issue (0.648367ms)
+  ✔ negative issue (0.677607ms)
+  ✔ fractional issue (0.666659ms)
+  ✔ fractional expiry (0.696955ms)
+  ✔ excess lifetime (0.626918ms)
+  ✔ not before (0.672414ms)
+  ✔ purpose (0.622152ms)
+  ✔ key URL (0.618159ms)
+  ✔ unselected key id (0.624765ms)
+  ✔ missing iss (0.852567ms)
+  ✔ missing aud (2.283298ms)
+  ✔ missing sub (0.690325ms)
+  ✔ missing jti (0.619018ms)
+  ✔ missing iat (0.573034ms)
+  ✔ missing exp (0.841543ms)
+✔ real signatures fail closed for every required claim and token purpose (30.589756ms)
+✔ malformed and oversized tokens are rejected without coercing caller objects (0.615196ms)
+✔ signing and verification share eight slots, do not queue and release after cancellation (1.793928ms)
+✔ ephemeral signer restart invalidates earlier assertions (1.109542ms)
+✔ invalid or failed clocks cannot produce an authenticated result (1.872031ms)
+ℹ tests 51
+ℹ suites 0
+ℹ pass 51
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 133.232114
+No known vulnerabilities found
+
+Full canonical task graph selected by pnpm check:changed (all 49 tasks; no duplicate full run needed):
+{"check":"ai-state","status":"ok","files":10,"queueItems":29,"sessionEntries":60,"activeRequirement":"P02-R01","targetRequirement":"P02-R01","violations":[]}
+//:platform:check: {"check":"local-platform","status":"ok","violations":0}
+//:ci:check: {"check":"ci-policy","status":"ok","violations":0}
+//:toolchain:check: {"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":29,"sessionEntries":60,"activeRequirement":"P02-R01","targetRequirement":"P02-R01","violations":[]}
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:docs:check: {"check":"documentation","status":"ok","documents":138,"headings":2141,"links":415,"statusClaims":3,"violations":0}
+//:architecture:check: {"check":"architecture","status":"ok","violations":0}
+//:community:check: {"check":"community","files":6,"status":"ok","violations":0}
+@aster/identity:test: ℹ tests 85
+@aster/identity:test: ℹ pass 85
+@aster/identity:test: ℹ fail 0
+ Tasks:    49 successful, 49 total
+Cached:    34 cached, 49 total
+  Time:    13.872s 
+
+Iteration notes: initial 47 cryptographic cases passed; focused lint then identified brace/type-narrowing/dynamic-delete style issues, corrected without weakening checks. Added strict non-boolean opt-in rejection (51 total cases). Initial candidate gate stopped on queue formatting (multiple requirement IDs in one primary column); fixed the metadata, not the validator. Cancelled sibling test tasks from that fail-fast run were not independent runtime failures; the final complete graph passed.
+Executing-agent initial review found a saturation-test ordering race. Both overflow promises and cancellation are now captured before any await. Confirmation inspected the complete source/ADR diff and reran 51 focused cases plus all 49 canonical tasks; no remaining demonstrated blocking boundary found. No independent approval or hosted CI is claimed for this local-only candidate.
+Limits: the reference runtime is unchanged and does not call the new adapter yet. Cryptographic signature validity is not a durable active session. Account mapping, token digest/revocation/expiry checks, profile ownership, cookie/CSRF transport and GraphQL remain required before product exposure. Native crypto cannot be forcibly cancelled; eight slots remain owned until actual settlement. New Docker packaging/runtime integration must be checked when the adapter is wired, not inferred from prior Phase 01 image evidence.
+Rollback: remove the unwired module and one dependency; no database or user data exists.
