@@ -6,7 +6,7 @@ import { DockerFixture } from "./docker-fixture.js";
 assert.notEqual(process.platform, "win32", "Run this POSIX signal laboratory inside Linux or WSL.");
 const selected = process.argv[2];
 const fixture = new DockerFixture(
-  selected === "storage" || selected === "broker" ? selected : "core",
+  selected === "storage" || selected === "broker" || selected === "telemetry" ? selected : "core",
 );
 assert.ok(
   selected === undefined ||
@@ -15,7 +15,8 @@ assert.ok(
     selected === "identity" ||
     selected === "http-drain" ||
     selected === "storage" ||
-    selected === "broker",
+    selected === "broker" ||
+    selected === "telemetry",
   "Unknown integration scenario",
 );
 const started = performance.now();
@@ -30,21 +31,19 @@ function output(value: Record<string, unknown>): void {
   process.stdout.write(`${JSON.stringify(value)}\n`);
 }
 
-async function worker(mode: string, primaryPort: number, redisPort: number): Promise<void> {
+async function worker(mode: string, ports: readonly number[]): Promise<void> {
   const workerFile =
-    mode === "storage" ? "storage-worker" : mode === "broker" ? "broker-worker" : "core-worker";
-  const child = fork(
-    new URL(`./${workerFile}.js`, import.meta.url),
-    [mode, String(primaryPort), String(redisPort)],
-    {
-      execArgv: [],
-      env: {},
-      stdio: ["ignore", "pipe", "pipe", "ipc"],
-      signal: interruption.signal,
-      killSignal: "SIGKILL",
-      timeout: 150_000,
-    },
-  );
+    mode === "storage" || mode === "broker" || mode === "telemetry"
+      ? `${mode}-worker`
+      : "core-worker";
+  const child = fork(new URL(`./${workerFile}.js`, import.meta.url), [mode, ...ports.map(String)], {
+    execArgv: [],
+    env: {},
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+    signal: interruption.signal,
+    killSignal: "SIGKILL",
+    timeout: 150_000,
+  });
   let captured = "";
   let stderr = "";
   let outputExceeded = false;
@@ -148,11 +147,17 @@ try {
     stage: "before-workload",
     services: await fixture.sampleResources(),
   });
-  const primaryPort = await fixture.port(fixture.profile === "core" ? "postgres" : fixture.profile);
-  const redisPort = fixture.profile === "core" ? await fixture.port("redis") : 0;
+  const hasCore = fixture.hasService("postgres");
+  const primaryPort = await fixture.port(
+    hasCore ? "postgres" : selected === "broker" ? "broker" : "storage",
+  );
+  const ports = [primaryPort, hasCore ? await fixture.port("redis") : 0];
+  if (fixture.profile === "telemetry") {
+    ports.push(await fixture.port("collector"), await fixture.port("prometheus"));
+  }
   for (const mode of selected ? [selected] : ["protocol", "adapters", "identity", "http-drain"]) {
     output({ event: "scenario_start", mode });
-    await worker(mode, primaryPort, redisPort);
+    await worker(mode, ports);
   }
   output({
     event: `${fixture.profile}_integration`,

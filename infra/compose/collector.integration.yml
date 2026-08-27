@@ -1,0 +1,34 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        max_request_body_size: 1048576
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 96
+    spike_limit_mib: 32
+
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    metric_expiration: 1m
+    translation_strategy: UnderscoreEscapingWithSuffixes
+    without_scope_info: true
+    resource_to_telemetry_conversion:
+      enabled: false
+
+service:
+  telemetry:
+    logs:
+      level: warn
+      encoding: json
+    metrics:
+      level: none
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter]
+      exporters: [prometheus]

@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds explicit real PostgreSQL/Redis, Kafka and S3 integration laboratories below. No product schema, default broker/object-store application profile, telemetry backend, or playable journey exists yet.
+The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds explicit real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus integration laboratories below. No product schema, default application/observability profile or playable journey exists yet.
 
 ### Identity reference process
 
@@ -62,7 +62,21 @@ The S3 laboratory uses digest-pinned VersityGW 1.7.0 with a POSIX volume. It che
 
 Both fixtures use finite CPU/memory/PID/log limits, read-only roots, dropped capabilities, no-new-privileges and no host bind mounts. Kafka runs as the upstream non-root user; the storage fixture runs as root with all capabilities dropped to initialize its fresh owned POSIX volume. Only synthetic data is allowed. Cleanup verifies the exact owned volume before irreversible removal; image caches are retained. The supervisor reports startup/actions/cleanup and one pre-workload resource sample, not a steady-state benchmark. The ownership and interrupted-cleanup rules in the core section apply unchanged.
 
-Broker and S3 protocol scenarios pass locally; Collector/Prometheus, combined P01-R09 acceptance/protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
+Broker and S3 protocol scenarios pass locally; combined P01-R09 acceptance/protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
+
+### Real telemetry integration
+
+```bash
+pnpm integration:telemetry
+```
+
+This fixed fixture combines PostgreSQL/Redis with digest-pinned core OpenTelemetry Collector 0.159.0 and Prometheus 3.14.0. The test-only Identity composition exports real HTTP, dependency, CPU, memory and event-loop delay metrics through OTLP/HTTP. Prometheus scrapes bounded series; the test verifies HTTP histogram counts, backend/Collector restart, cumulative recovery, stalled-export cancellation and bounded shutdown while the Collector is down. A failed flush is reported as a degraded shutdown, not successful delivery; PostgreSQL, Redis and telemetry still close and the process exits naturally. Optional telemetry failure does not change Identity readiness.
+
+Collector and Prometheus run as their upstream non-root users with read-only roots, finite resource limits and exact read-only `rprivate` config mounts. The Collector's minimal image has no shell health utility: a bounded real OTLP request proves receiver readiness. Prometheus uses its readiness endpoint. Only loopback OTLP/query ports are published; the scrape endpoint stays inside the fixture network. Prometheus uses 1-hour/128 MB retention settings, not a hard filesystem quota or a production sizing result.
+
+Do not edit the two config files while the fixture runs. Docker Desktop/WSL can translate a bind path after restart; cleanup accepts that translation only for the matching distribution and identical file device/inode. Changed files, writable/shared binds or foreign mounts are refused before deletion. Normal teardown removes only the exact synthetic PostgreSQL/Prometheus volumes and fixture containers/network; images and repository config files remain. No host mount propagation, Docker daemon settings or unrelated resources are changed. The core interruption/ownership rules also apply here.
+
+See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). Whole-item multi-adapter HTTP-drain acceptance, protected release and the Docker-only evaluator profile remain pending.
 
 ### Pinned repository bootstrap
 

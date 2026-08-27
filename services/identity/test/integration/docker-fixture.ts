@@ -1,30 +1,51 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { lstat, realpath } from "node:fs/promises";
 import { createServer } from "node:net";
 import { devNull } from "node:os";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { httpProbe } from "./http-probe.js";
+
 const execute = promisify(execFile);
 const scope = "p01-r09";
 export type CoreService = "postgres" | "redis";
-export type FixtureService = CoreService | "storage" | "broker";
-export type FixtureProfile = "core" | "storage" | "broker";
+export type FixtureService = CoreService | "storage" | "broker" | "collector" | "prometheus";
+export type FixtureProfile = "core" | "storage" | "broker" | "telemetry";
 const servicePorts: Readonly<Record<FixtureService, number>> = {
   postgres: 5432,
   redis: 6379,
   storage: 9000,
   broker: 9092,
+  collector: 4318,
+  prometheus: 9090,
 };
 const profiles: Readonly<
-  Record<FixtureProfile, { file: string; services: readonly FixtureService[]; volume: string }>
+  Record<
+    FixtureProfile,
+    { files: readonly string[]; services: readonly FixtureService[]; volumes: readonly string[] }
+  >
 > = {
-  core: { file: "integration.yml", services: ["postgres", "redis"], volume: "postgres-data" },
-  storage: { file: "integration-storage.yml", services: ["storage"], volume: "storage-data" },
-  broker: { file: "integration-broker.yml", services: ["broker"], volume: "broker-data" },
+  core: { files: ["integration.yml"], services: ["postgres", "redis"], volumes: ["postgres-data"] },
+  storage: { files: ["integration-storage.yml"], services: ["storage"], volumes: ["storage-data"] },
+  broker: { files: ["integration-broker.yml"], services: ["broker"], volumes: ["broker-data"] },
+  telemetry: {
+    files: ["integration.yml", "integration-telemetry.yml"],
+    services: ["postgres", "redis", "collector", "prometheus"],
+    volumes: ["postgres-data", "prometheus-data"],
+  },
 };
+const configurationMounts = {
+  collector: { source: "collector.integration.yml", destination: "/etc/aster/collector.yml" },
+  prometheus: { source: "prometheus.integration.yml", destination: "/etc/aster/prometheus.yml" },
+} as const;
+
+function composePath(filename: string): string {
+  return fileURLToPath(new URL(`../../../../../infra/compose/${filename}`, import.meta.url));
+}
 type ResourceKind = "container" | "network" | "volume";
 type RecordValue = Record<string, unknown>;
 type Resource = Readonly<{ id: string; name: string; value: RecordValue; labels: RecordValue }>;
@@ -43,8 +64,54 @@ const runDocker: DockerCommand = async (args, environment, timeout) => {
     encoding: "utf8",
     windowsHide: true,
   });
-  return result.stdout.trim();
+  return (args.includes("logs") ? result.stdout + result.stderr : result.stdout).trim();
 };
+
+function safeDiagnostic(value: string, limit: number): string {
+  return value
+    .replace(/[a-z][a-z0-9+.-]*:\/\/[^\s"']+/gi, "[fixture endpoint]")
+    .replaceAll("aster-test-only", "[fixture credential]")
+    .slice(0, limit);
+}
+
+type FileIdentity = Readonly<{ dev: number; ino: number; isFile(): boolean }>;
+
+export async function configurationSourceMatches(
+  source: unknown,
+  expected: string,
+  wslDistribution: string | undefined,
+  identity: (path: string) => Promise<FileIdentity> = lstat,
+): Promise<boolean> {
+  if (source === expected) {
+    return true;
+  }
+  if (typeof source !== "string" || !wslDistribution) {
+    return false;
+  }
+  const match =
+    /^\/run\/desktop\/mnt\/host\/wsl\/docker-desktop-bind-mounts\/([a-zA-Z0-9._-]{1,64})\/([a-f0-9]{64})$/.exec(
+      source,
+    );
+  if (!match || match[1] !== wslDistribution) {
+    return false;
+  }
+  // Docker Desktop may rewrite a bind source on restart. A path prefix or equal contents
+  // alone is not ownership: the translated bind must be the very same device/inode.
+  try {
+    const [original, translated] = await Promise.all([
+      identity(expected),
+      identity(`/mnt/wsl/docker-desktop-bind-mounts/${match[1]}/${match[2]}`),
+    ]);
+    return (
+      original.isFile() &&
+      translated.isFile() &&
+      original.dev === translated.dev &&
+      original.ino === translated.ino
+    );
+  } catch {
+    return false;
+  }
+}
 
 function record(value: unknown): RecordValue {
   assert.ok(
@@ -90,10 +157,8 @@ export class DockerFixture {
     return profiles[this.profile];
   }
 
-  private get composeFile(): string {
-    return fileURLToPath(
-      new URL(`../../../../../infra/compose/${this.definition.file}`, import.meta.url),
-    );
+  private get composeFiles(): string[] {
+    return this.definition.files.map(composePath);
   }
 
   hasService(value: unknown): value is FixtureService {
@@ -126,8 +191,16 @@ export class DockerFixture {
         },
         timeout,
       );
-    } catch {
+    } catch (error) {
       // Docker errors can echo connection settings. Keep the failing operation, not its arguments.
+      const stderr =
+        typeof error === "object" && error !== null && "stderr" in error ? error.stderr : undefined;
+      if (typeof stderr === "string") {
+        process.stdout.write(
+          `${JSON.stringify({ event: "fixture_command_failed", operation: args[0], detail: safeDiagnostic(stderr, 2_048) })}\n`,
+        );
+      }
+      // eslint-disable-next-line preserve-caught-error -- Raw Docker causes may contain connection credentials.
       throw new Error(
         `Integration Docker ${args[0] ?? "command"} failed or exceeded its deadline.`,
       );
@@ -142,8 +215,7 @@ export class DockerFixture {
         devNull,
         "--project-name",
         this.project,
-        "--file",
-        this.composeFile,
+        ...this.composeFiles.flatMap((file) => ["--file", file]),
         ...args,
       ],
       timeout,
@@ -161,7 +233,12 @@ export class DockerFixture {
     ]);
     const identifiers = output.split(/\s+/).filter(Boolean);
     assert.ok(
-      identifiers.length <= (kind === "container" ? this.definition.services.length : 1),
+      identifiers.length <=
+        (kind === "container"
+          ? this.definition.services.length
+          : kind === "volume"
+            ? this.definition.volumes.length
+            : 1),
       "Unexpected fixture inventory",
     );
     if (identifiers.length === 0) {
@@ -180,15 +257,19 @@ export class DockerFixture {
         const service = labels["com.docker.compose.service"];
         assert.ok(this.hasService(service), "Unowned fixture service");
         assert.equal(name, `${this.project}-${service}-1`);
-        assert.equal(labels["com.docker.compose.project.config_files"], this.composeFile);
+        assert.equal(
+          labels["com.docker.compose.project.config_files"],
+          this.composeFiles.join(","),
+        );
       } else if (kind === "network") {
         assert.equal(labels["com.docker.compose.network"], "platform");
         assert.equal(name, `${this.project}_platform`);
       } else {
-        assert.equal(labels["com.docker.compose.volume"], this.definition.volume);
+        const volume = labels["com.docker.compose.volume"];
+        assert.ok(typeof volume === "string" && this.definition.volumes.includes(volume));
         assert.equal(labels["com.aster.authority"], "disposable-fixture");
         assert.equal(labels["com.aster.owner"], "integration");
-        assert.equal(name, `${this.project}_${this.definition.volume}`);
+        assert.equal(name, `${this.project}_${volume}`);
       }
       const id = kind === "volume" ? name : textField(value["Id"]);
       if (kind !== "volume") {
@@ -200,6 +281,14 @@ export class DockerFixture {
 
   async start(): Promise<void> {
     assert.equal(this.created, false, "Fixture cannot start twice");
+    for (const [service, mount] of Object.entries(configurationMounts)) {
+      if (this.hasService(service)) {
+        const path = composePath(mount.source);
+        const file = await lstat(path);
+        assert.ok(file.isFile() && file.size <= 64 * 1_024, "Invalid fixture configuration file");
+        assert.equal(await realpath(path), path, "Fixture configuration cannot traverse symlinks");
+      }
+    }
     for (const key of [
       "DOCKER_HOST",
       "DOCKER_CONTEXT",
@@ -275,10 +364,30 @@ export class DockerFixture {
       assert.equal(nameCollision, "", "Fixture name collides with an existing resource");
     }
     this.created = true;
-    await this.compose(["up", "--detach", "--wait", "--wait-timeout", "60"], 120_000);
+    try {
+      await this.compose(["up", "--detach", "--wait", "--wait-timeout", "60"], 120_000);
+    } catch (error) {
+      for (const container of await this.inventory("container")) {
+        const state = record(container.value["State"]);
+        const logs = safeDiagnostic(
+          await this.docker(["logs", "--tail", "12", container.id]),
+          4_096,
+        );
+        process.stdout.write(
+          `${JSON.stringify({
+            event: "fixture_start_failed",
+            service: container.labels["com.docker.compose.service"],
+            status: state["Status"],
+            exitCode: state["ExitCode"],
+            logs,
+          })}\n`,
+        );
+      }
+      throw error;
+    }
     assert.equal((await this.inventory("container")).length, this.definition.services.length);
     assert.equal((await this.inventory("network")).length, 1);
-    assert.equal((await this.inventory("volume")).length, 1);
+    assert.equal((await this.inventory("volume")).length, this.definition.volumes.length);
   }
 
   private async container(service: FixtureService): Promise<Resource> {
@@ -317,6 +426,14 @@ export class DockerFixture {
         `${service} healthy`,
         async () => {
           const current = await this.container(service);
+          if (service === "collector") {
+            if (record(current.value["State"])["Running"] !== true) {
+              return false;
+            }
+            return httpProbe(await this.port(service), "/v1/metrics", "{}")
+              .then((response) => response.status === 200)
+              .catch(() => false);
+          }
           return record(record(current.value["State"])["Health"])["Status"] === "healthy";
         },
         45_000,
@@ -327,11 +444,13 @@ export class DockerFixture {
 
   async sampleResources(): Promise<ReadonlyArray<Record<string, unknown>>> {
     const samples: Array<Record<string, unknown>> = [];
-    const dataPaths: Readonly<Record<FixtureService, string>> = {
+    const dataPaths: Readonly<Record<FixtureService, string | undefined>> = {
       postgres: "/var/lib/postgresql",
       redis: "/data",
       storage: "/data",
       broker: "/var/lib/kafka/data",
+      collector: undefined,
+      prometheus: "/prometheus",
     };
     for (const service of this.definition.services) {
       const container = await this.container(service);
@@ -344,9 +463,13 @@ export class DockerFixture {
       assert.match(imageId, /^sha256:[a-f0-9]{64}$/);
       const image = records(await this.docker(["image", "inspect", imageId]))[0];
       assert.ok(image);
-      const data = await this.docker(["exec", container.id, "du", "-sk", dataPaths[service]]);
-      const dataKiB = Number(data.split(/\s+/)[0]);
-      assert.ok(Number.isSafeInteger(dataKiB) && dataKiB >= 0);
+      const dataPath = dataPaths[service];
+      let dataKiB: number | null = null;
+      if (dataPath) {
+        const data = await this.docker(["exec", container.id, "du", "-sk", dataPath]);
+        dataKiB = Number(data.split(/\s+/)[0]);
+        assert.ok(Number.isSafeInteger(dataKiB) && dataKiB >= 0);
+      }
       samples.push({
         service,
         cpu: textField(sample["CPUPerc"]),
@@ -372,10 +495,30 @@ export class DockerFixture {
       assert.ok(Array.isArray(container.value["Mounts"]));
       for (const mount of container.value["Mounts"] as unknown[]) {
         const item = record(mount);
+        const service = container.labels["com.docker.compose.service"];
+        const allowedBind =
+          service === "collector" || service === "prometheus"
+            ? configurationMounts[service]
+            : undefined;
         assert.ok(
           item["Type"] === "tmpfs" ||
             (item["Type"] === "volume" &&
-              item["Name"] === `${this.project}_${this.definition.volume}`),
+              this.definition.volumes.some(
+                (volume) => item["Name"] === `${this.project}_${volume}`,
+              )) ||
+            (item["Type"] === "bind" &&
+              allowedBind !== undefined &&
+              (await configurationSourceMatches(
+                item["Source"],
+                composePath(allowedBind.source),
+                container.labels["desktop.docker.io/wsl-distro"] ===
+                  this.environment["WSL_DISTRO_NAME"]
+                  ? this.environment["WSL_DISTRO_NAME"]
+                  : undefined,
+              )) &&
+              item["Destination"] === allowedBind.destination &&
+              item["RW"] === false &&
+              item["Propagation"] === "rprivate"),
           "Unexpected fixture mount",
         );
       }

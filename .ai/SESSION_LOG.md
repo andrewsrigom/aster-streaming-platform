@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Real Collector and Prometheus integration checkpoint
+
+### Completed
+
+- Added digest-pinned core Collector 0.159.0 and Prometheus 3.14.0, an explicit telemetry fixture and real Identity OTLP/scrape/failure/recovery checks. No production dependency, adapter or public contract changed.
+- Proved HTTP/dependency histograms, CPU/memory/event-loop delay, backend restart, cumulative recovery, bounded stalled export and exporter-down shutdown with readiness preserved.
+- Corrected two measured Docker Desktop bind issues: explicit private propagation and exact file device/inode validation for translated mounts. No host/daemon change; rejected cleanup preserved resources until exact ownership was verified.
+
+### Evidence
+
+- `pnpm integration:telemetry`: 29.755 s plus 5.744 s cleanup, 202 series, unavailable flush 17 ms, stalled flush 306 ms, shutdown 15 ms with only `flush_telemetry` degraded and natural exit. All disposable resources removed; four unrelated stopped containers preserved.
+- `pnpm check:changed`: 49/49 tasks, 25 cached, 28.383 s; Identity 32/32, ten ownership guards and two bounded HTTP tests pass. Dependency graph/lockfile unchanged from the audited broker/S3 checkpoint `0cd02ef`.
+- Exact image references, source fingerprints, failed experiments and final output: `evidence/phase-01/real-integration.txt`. Executing-agent initial/confirmation review has no checkpoint blocker; no independent or hosted approval claimed.
+
+### Next action
+
+Finish P01-R09's test-only all-adapter HTTP drain and combined matrix after the shared harness stabilizes, then cold/forced/protected release gates. Do not add broker/S3 dependencies to production Identity or begin P01-R10 before release.
+
 ## 2026-08-27 — Real Kafka and S3 integration checkpoint
 
 ### Completed

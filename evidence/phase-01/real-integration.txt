@@ -342,3 +342,143 @@ One warm-image WSL amd64 host; resource samples are immediate pre-workload
 observations, not a steady-state benchmark, cross-platform guarantee or SLO.
 No Collector/Prometheus proof, combined whole-item acceptance, protected release,
 Kafka SASL/TLS, distributed failover, media publication or evaluator profile yet.
+
+2026-08-27: real Collector/Prometheus checkpoint
+===============================================
+Source: branch feat/p01-r09-real-integration, parent 0cd02ef plus the fingerprints
+below; candidate telemetry code/config unchanged by the subsequent prose closeout.
+Node 24.19.0, pnpm 11.24.0; Docker Desktop engine 26.0.0, Compose 2.26.1;
+Linux amd64 in the existing Ubuntu-20.04 WSL distribution. No production adapter,
+Identity factory, SDK dependency, lockfile, hosted resource or daemon change.
+
+Selection and primary references (inspected 2026-08-27)
+----------------------------------------------------
+Core Collector 0.159.0 released 2026-08-18T01:09:57Z, Apache-2.0:
+https://github.com/open-telemetry/opentelemetry-collector-releases/releases/tag/v0.159.0
+https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.159.0/LICENSE
+https://github.com/open-telemetry/opentelemetry-collector-releases/blob/v0.159.0/distributions/otelcol/manifest.yaml
+Core already contains OTLP, memory_limiter and the Prometheus exporter. No contrib
+distribution or extra SDK is needed. The Prometheus exporter is upstream beta.
+https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/v0.159.0/exporter/prometheusexporter/README.md
+https://github.com/open-telemetry/opentelemetry-collector/blob/v0.159.0/receiver/otlpreceiver/config.md
+
+Collector image index:
+docker.io/otel/opentelemetry-collector:0.159.0@sha256:7725a7a10c87d8853208bdd4bb3439ad3c0d7b32b4292b9300ac07c8daba14a2
+linux/amd64 sha256:435dd6f180af9e17cea7fbb6e9ba45360d7bfb8389269201269da43ec88f74e7
+linux/arm64 sha256:812a8cd0b5d0540923f5b1827a5745e02f6445827a396d68b38005036a5bfdab
+Local image 123692063 bytes; upstream user 10001:10001; no volume.
+The shell-free image is checked through actual bounded OTLP, not a fake shell probe.
+
+Prometheus 3.14.0 released 2026-08-18T08:49:40Z, Apache-2.0:
+https://github.com/prometheus/prometheus/releases/tag/v3.14.0
+https://github.com/prometheus/prometheus/blob/v3.14.0/Dockerfile
+https://prometheus.io/docs/prometheus/latest/installation/
+https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+https://prometheus.io/docs/prometheus/latest/command-line/prometheus/
+docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+linux/amd64 sha256:e906cef998316bbe319f98711e1b4d8613ad37e14b08ff831d7036e77b7464f9
+linux/arm64 sha256:2d25f68eb7aa2e654dadd83b45e5757259b32a1e4b6bc370f1eec927f491265b
+Local image 260925355 bytes; upstream user nobody; named test volume replaces /prometheus.
+No authentication/TLS is claimed for these loopback-only diagnostic ports.
+
+Fixture and failure behavior
+----------------------------
+The fixed telemetry profile composes the existing core file with
+integration-telemetry.yml: four containers, one owned network, exactly two named
+volumes. PG/Redis retain their tested limits. Collector: 0.5 CPU, 128 MiB, 64 PIDs,
+96 MiB memory limiter, 80 MiB Go target, 1 MiB OTLP body limit. Prometheus: 0.5 CPU,
+256 MiB, 64 PIDs, 192 MiB Go target, 16 web connections, two queries, 10000 query
+samples, 1 MiB/2000-series/16-label scrape limits, 1h/128 MB retention and 10 MB WAL
+segments. Retention is not a filesystem hard quota. Both use read-only roots,
+dropped capabilities, no-new-privileges, finite logs and 5 s stop grace.
+Stateless Collector dataKiB is null (not a fabricated disk measurement).
+
+Two exact regular repository files are mounted read-only/private. Preflight
+refuses oversized files and symlinks. A start failure initially reported:
+"path ...collector.integration.yml is mounted on / but it is not a shared mount."
+Explicit rprivate fixed startup; no host mount/daemon settings changed.
+https://docs.docker.com/engine/storage/bind-mounts/
+The first protocol-complete run (37.571 s) then correctly refused cleanup:
+Docker Desktop translated the restarted Prometheus source under
+/run/desktop/mnt/host/wsl/docker-desktop-bind-mounts/Ubuntu-20.04/<hash>.
+Read-only inspection proved the original and /mnt/wsl translated file had the
+same device 2096 and inode 2257678. Cleanup now accepts only matching distribution,
+regular file, device/inode identity, exact destination, RW=false and rprivate.
+It rejects another source, writable/shared bind, traversal, missing alias and
+different inode. The interrupted project 0a559fc088b24cd2ae9f6e50feac91f8 was
+resumed only for exact validated cleanup; all its resources were removed.
+A subsequent complete run passed in 43.620 s plus 4.927 s cleanup.
+
+Telemetry tests wait for real event-loop delay samples: upstream instrumentation
+requires at least five samples and can omit delay metrics from an immediate first
+flush. No artificial delay metric or production-code fix was introduced.
+The test-only Identity factory enables the existing OTLP exporter (300 ms export,
+1000 ms flush/shutdown, 60 s interval). Critical dependencies are still real
+PG/Redis. Query helpers bound loopback HTTP to 1000 ms and 128 KiB, reject redirects
+and cover body timeouts, not only headers.
+Prometheus stop does not prevent Collector acceptance; restart scrapes cumulative
+counts. Collector stop is visible as up=0 and failed flush, but live/ready remain
+200. Restart restores cumulative HTTP counts. Paused Collector causes finite
+failure; one cancelled flush join does not abandon the owner operation.
+Exporter-down shutdown truthfully returns degraded with only flush_telemetry
+failed, closes PG/Redis/telemetry and exits naturally without forced process exit.
+
+Final command: pnpm integration:telemetry
+----------------------------------------
+{"event":"fixture_start","project":"aster-integration-583ad3b56de8447bb00c6398ec260650","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":4131}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"1.18%","memory":"39.08MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.17%","memory":"19.42MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0},{"service":"collector","cpu":"0.10%","memory":"15.79MiB / 128MiB","pids":"7","imageBytes":123692063,"architecture":"amd64","dataKiB":null},{"service":"prometheus","cpu":"0.52%","memory":"30.54MiB / 256MiB","pids":"7","imageBytes":260925355,"architecture":"amd64","dataKiB":20}]}
+{"event":"scenario_start","mode":"telemetry"}
+{"event":"fixture_action","service":"prometheus","action":"stop","durationMs":772}
+{"event":"fixture_action","service":"prometheus","action":"start","durationMs":3587}
+{"event":"fixture_action","service":"collector","action":"stop","durationMs":931}
+{"event":"fixture_action","service":"collector","action":"start","durationMs":2757}
+{"event":"fixture_action","service":"collector","action":"pause","durationMs":355}
+{"event":"fixture_action","service":"collector","action":"unpause","durationMs":983}
+{"event":"fixture_action","service":"collector","action":"stop","durationMs":465}
+{"event":"otlp_prometheus_round_trip","outcome":"passed","series":202,"metricNames":["aster_dependency_operation_active","aster_dependency_operation_duration_seconds_bucket","aster_dependency_operation_duration_seconds_count","aster_dependency_operation_duration_seconds_sum","aster_dependency_operation_outcomes_total","http_server_active_requests","http_server_request_duration_seconds_bucket","http_server_request_duration_seconds_count","http_server_request_duration_seconds_sum","nodejs_eventloop_delay_max_seconds","nodejs_eventloop_delay_mean_seconds","nodejs_eventloop_delay_min_seconds","nodejs_eventloop_delay_p50_seconds","nodejs_eventloop_delay_p90_seconds","nodejs_eventloop_delay_p99_seconds","nodejs_eventloop_delay_stddev_seconds","nodejs_eventloop_time_seconds_total","nodejs_eventloop_utilization_ratio","process_cpu_time_seconds_total","process_cpu_utilization_ratio","process_memory_usage_bytes","process_uptime_seconds","scrape_duration_seconds","scrape_samples_post_metric_relabeling","scrape_samples_scraped","scrape_series_added","up","v8js_gc_duration_seconds_bucket","v8js_gc_duration_seconds_count","v8js_gc_duration_seconds_sum","v8js_memory_heap_space_available_size_bytes","v8js_memory_heap_space_physical_size_bytes","v8js_memory_heap_space_size_bytes","v8js_memory_heap_used_bytes","v8js_resource_active"]}
+{"event":"scrape_backend_down","readiness":"ready","export":"success"}
+{"event":"collector_stop_recovery","readiness":"ready","unavailableFlushMs":17,"recoveredCount":3}
+{"event":"collector_deadline_cancellation","outcome":"passed","flushMs":306}
+{"event":"exporter_down_shutdown","outcome":"degraded","failedStages":["flush_telemetry"],"durationMs":15,"connections":0}
+{"event":"natural_exit","mode":"telemetry"}
+{"event":"telemetry_integration","outcome":"passed","scenarios":["telemetry"],"durationMs":29755}
+{"event":"fixture_cleanup","project":"aster-integration-583ad3b56de8447bb00c6398ec260650","remaining":0,"durationMs":5744}
+
+Source SHA-256
+--------------
+a63a4a5ceb8656e60b144a56bec76731ce3c6e386abdd1a2b28e677b77771564  infra/compose/integration-telemetry.yml
+de291329382ba4c4028a8f679af2d80f3594fc348d5c7ee25ea5e48a5561341b  infra/compose/collector.integration.yml
+8b3a50a1f6e635ee956e0c22a41e61c20a84a1521319cbe73d227549870b23f6  infra/compose/prometheus.integration.yml
+4d249908c653ffa1e831ebac811724b81d5bc786bb74e822cb74cc3a6fa5486a  services/identity/test/integration/docker-fixture.ts
+df166b1f35b34175db2dca2521bc073e8361913c99e10dfb8e958ee2121a654b  services/identity/test/integration/integration.ts
+5574f5f6f36bb1b20c5d0271c99d30af7a98f423a05b5a040426a347f6a53bd4  services/identity/test/integration/telemetry-worker.ts
+6a78e93ecff93caae6deda5dd8116fe49b148784ceb62441a7e19dfddf99725f  services/identity/test/integration/http-probe.ts
+3d1d5aa4c4c1097dd10faa4335b7af24c667552deecbf15ad2f94a9165014da8  services/identity/test/docker-fixture.test.ts
+78df5ceffc1eb5f34f78095780d00c1c0088a73e3a5f3ccad5fa2652f1b93bfe  services/identity/test/http-probe.test.ts
+
+Verification and limits
+-----------------------
+pnpm --filter=@aster/identity test: 32/32, including ten ownership tests and two
+HTTP-boundary tests. Focused ESLint: PASS.
+pnpm check:changed: 49/49 tasks, 25 cached, 28.383 s. Includes build/typecheck,
+format, lint, Knip, architecture, secret/policy/memory and existing unit checks.
+No dependency graph change since the no-known-vulnerability audit at 0cd02ef;
+no redundant registry audit or cold install for this test-only checkpoint.
+Post-run inventory: no p01-r09 network/volume or Aster fixture container remains.
+The same four unrelated stopped containers listed above remain untouched.
+Synthetic PG/Prometheus data was deleted irreversibly; source configs and image
+caches were preserved.
+
+Executing-agent initial review and confirmation cover profile/file/volume
+ownership, Docker Desktop alias checks, deadlines and HTTP body bounds, optional
+readiness, shutdown failure truthfulness, metric series and test-only factories.
+No remaining local checkpoint blocker; no independent or hosted approval.
+Shared supervisor/port/profile code changed, so repeat core/broker/S3 once at the
+stabilized combined checkpoint. Historical results remain supporting evidence,
+not proof that the new whole matrix ran. Do not repeat containers for prose only.
+Still pending: test-only all-adapter in-flight HTTP shutdown, combined acceptance,
+applicable hosted integration/CI review, cold/forced candidate, protected release,
+post-merge verification and P01-R10 Docker-only evaluator profiles.
+No Grafana/Tempo/Loki, SLO, load benchmark, product feature, native Windows/macOS
+execution or actual arm64 runtime is claimed.
