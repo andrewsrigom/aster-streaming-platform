@@ -79,7 +79,7 @@ Add a Catalog-owned composition root and read-only database login, compose its f
 
 - Commands: focused Catalog build/tests, generator tests/run, scoped Docker acceptance, pnpm check:changed and full phase gate before merge.
 - Raw artifact path: evidence/phase-03/catalog-runtime.txt and generated-media.txt.
-- Acceptance result: candidate gate 52/52 and author confirmation pass; clean-source full phase acceptance and remote release remain pending. See evidence/phase-03/catalog-runtime.txt and generated-media.txt.
+- Acceptance result: candidate gate 52/52 and author confirmation pass. Clean-source frozen install and full gate at 4e29f5e pass 52/52 with zero cached in 53.227 s. Requirement matrix and Phase 04 prerequisite are in evidence/phase-03/README.md. Only protected CI, merge and post-merge verification remain; evidence-only closeout does not change the implementation boundary.
 - Iteration gate: focused compile and changed-boundary tests.
 - Candidate gate: pnpm check:changed plus real Catalog Docker/media checks.
 - Heavyweight repeat triggers: Docker/config/runtime/schema changes repeat affected Docker scenarios; recipe/validation changes repeat generation. Unchanged Identity and prior Catalog ownership evidence remain supporting evidence, not new runs.
@@ -95,9 +95,11 @@ Update runtime/fixture commands, source reviews and attribution, phase evidence 
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Requirements satisfied
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded
+
+Local acceptance is complete; IN_PROGRESS remains until the protected publication transition is recorded. No remote gate is inferred from local success.

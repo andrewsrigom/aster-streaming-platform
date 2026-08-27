@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–02 are released. P03-R05 is committed at 08a06ca. P03-R04/R09 is in progress: read-only Docker runtime, generated HLS publication/retirement and two unresolved source reviews pass focused/local integration checks. Complete the candidate gate and phase closeout before one Phase 03 remote publication.
+Phases 00–02 are released. Phase 03 implementation at 4e29f5e passes local acceptance: 52/52 tasks in a clean worktree with zero cache, real Docker/HLS/SQL checks and author confirmation. P03-R04/R09 remains in progress only for coherent protected publication, merge and post-merge verification; [requirement acceptance](../evidence/phase-03/README.md) is complete locally.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

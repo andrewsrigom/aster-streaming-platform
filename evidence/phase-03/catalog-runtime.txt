@@ -11,7 +11,7 @@ Raw output:
 
 Earlier proof before OID privilege-check remediation: 87526 ms total, shutdown 511 ms. Second proof above covers the current runtime behavior. Later formatting or tests/doc-only changes do not invalidate that image's behavioral evidence.
 Limitations: fresh local Linux amd64, empty Catalog, no hosted capacity/SLO, no retained-demo mutation, no media/browser delivery. Actual coexisting private Identity schema is covered by the generated PostgreSQL integration.
-Full phase/candidate gates and review are pending at this checkpoint.
+The following checkpoints supersede the initial pending gate/review state.
 
 Candidate checkpoint (2026-08-27)
 Command: pnpm check:changed
@@ -87,3 +87,17 @@ aadfd4b764a7274d4e10a182e277b2130333ab55498d9cc6a910503636985888  infra/compose/
 9bff945efceaee9b75bef6c8cec6785054e63fdb8abee1c1c84573da47e6e20c  tools/run-catalog-integration.mjs
 a1ecc18dc8ebad2c1867682bec19b8670c67014025ee70e8ec7a737a2c55d722  .github/workflows/ci.yml
 43fb3d69e30879b6c1805b76da20ed93b4246094233ca73cc6656825b5967ee0  pnpm-lock.yaml
+
+Clean-source phase acceptance (2026-08-27)
+Exact tested commit: 4e29f5eff7b5992abcd4911dcbec38aba1845e70
+Environment: detached fresh Git worktree, WSL Ubuntu-20.04 Linux amd64; Node 24.19.0, pnpm 11.24.0. No prior node_modules, build outputs or Turbo cache in that worktree. The existing content-addressed pnpm store supplied the offline frozen install.
+Command: pnpm install --frozen-lockfile --offline && pnpm check
+Result: exit 0.
+Raw final task summary:
+ Tasks:    52 successful, 52 total
+Cached:    0 cached, 52 total
+  Time:    53.227s
+Catalog: 94 tests pass. Identity: 144 tests pass. Source/static, governance, documentation, repository-memory, secrets and platform/media contract checks pass.
+The source gate does not itself run Docker integration. Fresh real PostgreSQL, generated-media and Catalog Docker acceptance are the separate passing experiments recorded above and in generated-media.txt. Their implementation fingerprints match this commit.
+Later closeout changes are evidence and repository-memory prose only: they cannot invalidate runtime, SQL, codec, cancellation or container behavior. Apply documentation/secret/diff checks to that closeout and require protected CI on the final PR candidate; do not mislabel the clean-source measurement as a test of a later hash.
+Temporary detached worktree was clean and removed after verification; it contained only disposable generated dependencies/build output and can be recreated from the tested commit. No retained demo or product data was removed.

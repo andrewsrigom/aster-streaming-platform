@@ -14,9 +14,9 @@ Phases 00–02 are released at main ec6386ca7add0f12ae748589be763d9e90ff0d6c (PR
 
 ## Current work
 
-P03-R04/R09 implementation is in progress on feat/p03-catalog-rights. New read-only Catalog Docker runtime and generated HLS fixture pass focused checks. 94 Catalog tests pass. Real Docker proves fresh/idempotent migrations, anonymous empty browse, reader isolation, privilege-loss detection, PostgreSQL outage/recovery and bounded SIGTERM shutdown. Real media generation produces six seconds at 320x180/24fps with audio and captions; repeated source/segment hashes match, corrupt/missing/symlinked segments and cancelled child processes are rejected. Real PostgreSQL proves the same Catalog application publishes and retires the generated reference, with derived attribution and two outbox facts. Two official-source candidate records remain NEEDS_CLARIFICATION and invisible; no films downloaded.
+P03-R04/R09 implementation is committed at 4e29f5eff7b5992abcd4911dcbec38aba1845e70 on feat/p03-catalog-rights. Read-only Catalog Docker runtime and generated HLS acceptance pass. 94 Catalog tests pass. Real Docker proves fresh/idempotent migrations, anonymous empty browse, reader isolation, privilege-loss detection, PostgreSQL outage/recovery and bounded SIGTERM shutdown. Real media generation produces six seconds at 320x180/24fps with audio and captions; repeated source/segment hashes match, corrupt/missing/symlinked segments and cancelled child processes are rejected. Real PostgreSQL proves the same Catalog application publishes and retires the generated reference, with derived attribution and two outbox facts. Two official-source candidate records remain NEEDS_CLARIFICATION and invisible; no films downloaded.
 
-[Docker checkpoint](../evidence/phase-03/catalog-runtime.txt), [media/application checkpoint](../evidence/phase-03/generated-media.txt), [source review](../evidence/phase-03/candidate-sources.md). Candidate gate passes: 52/52 tasks, 29 cached, 25.796 s; high-severity Node audit passes with one known moderate advisory. Author initial/confirmation review is complete. Clean-source full phase acceptance and remote release remain pending.
+[Phase acceptance matrix](../evidence/phase-03/README.md), [Docker and clean-source checkpoint](../evidence/phase-03/catalog-runtime.txt), [media/application checkpoint](../evidence/phase-03/generated-media.txt). Candidate gate: 52/52 tasks, 29 cached, 25.796 s. Clean-source frozen offline install and full gate at 4e29f5e: 52/52, zero cached, 53.227 s. High-severity Node audit passes with one known moderate advisory. Author initial/confirmation review and local phase acceptance are complete. Protected CI, merge and post-merge verification remain pending; documentation-only closeout does not invalidate the implementation evidence.
 
 ## Not implemented
 
@@ -24,7 +24,7 @@ Router, web UI, real-film media worker/delivery/playback, engagement/discovery a
 
 ## Next outcome
 
-Finish P03-R04/R09 candidate checks, initial/confirmation review and full phase acceptance; consolidate evidence and publish one coherent Phase 03 candidate. Keep P04 inactive until predecessor release conditions pass.
+Close P03-R04/R09 by publishing one coherent Phase 03 candidate, requiring protected CI and resolved review threads, squash merging the verified head and confirming post-merge CI. Phase 04's independently testable schema prerequisite is verified; keep it inactive until predecessor release conditions pass.
 
 ## Current risks
 

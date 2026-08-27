@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Phase 03 local acceptance
+
+### Completed
+
+Closed the requirement-by-requirement acceptance index and verified Phase 04's independently testable Identity/Catalog schema prerequisite. Clean-source acceptance covers implementation commit 4e29f5e. Removed only the clean disposable detached worktree; retained demo and durable data are unchanged.
+
+### Evidence
+
+pnpm install --frozen-lockfile --offline && pnpm check: exit 0, 52/52 tasks, zero cached, 53.227 s; 94 Catalog and 144 Identity tests pass. Existing source-fingerprinted real Docker, media and SQL checks remain valid for the evidence-only closeout. Results and limitations: evidence/phase-03/catalog-runtime.txt and README.md. No external review or remote CI result is inferred.
+
+### Next action
+
+Publish one coherent Phase 03 PR, require protected CI and resolved review threads, squash the exact accepted head, verify post-merge CI and activate Phase 04. No new film permission or hosted release is claimed.
+
 ## 2026-08-27 — Runnable Catalog and generated HLS checkpoint
 
 ### Completed
