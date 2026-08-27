@@ -2,6 +2,21 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented controlled Identity runtime orchestration
+
+### Completed
+
+- Added the product-empty Identity workspace with one startup deadline, two critical dependency gates, recoverable readiness, one monitor, work admission, ordered closure, and removable signal ownership against source-owned ports.
+- Kept real listener/client construction and the synchronous force-close or terminal fallback explicit as the next composition boundary.
+
+### Evidence
+
+- Identity build/typecheck, 9/9 focused tests, architecture, unused-code checks, and frozen offline installation pass. Lockfile changes only add the new workspace importer; existing versions are unchanged.
+
+### Next action
+
+Compose real factories, prove partial cleanup and terminal behavior, add the loopback process diagnostic, and run one combined affected gate.
+
 ## 2026-08-26 — Implemented reference listener and startup configuration
 
 ### Completed

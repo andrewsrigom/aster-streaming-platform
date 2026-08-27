@@ -70,6 +70,13 @@ Reference listener and startup configuration checkpoint
 - Configuration build, typecheck, targeted ESLint, and 13/13 tests pass. The updated README diagnostic command exits 0 and emits five non-secret values while retaining configured-only secret status.
 - Focused working-tree configuration evidence is based on `d6d6ffc`; the combined candidate will record exact source and affected-gate evidence.
 
+Controlled Identity orchestration checkpoint
+- Reference configuration was committed as `361d5d1` after its focused gate and documentation, memory, platform-policy, and secret checks passed.
+- Added `services/identity` with source-owned HTTP, PostgreSQL, Redis, telemetry, and force-close ports. It composes one lifecycle, one startup deadline, two critical readiness gates, one recovery monitor, and one removable process-signal owner without a product schema or executable listener.
+- Nine focused tests pass for shared startup, deadline propagation, unavailable startup/recovery, work drain, cancellation and late completion, listener cleanup, complete closure attempts, monitor failure, signal cleanup, and vendor-free declarations.
+- Package build/typecheck, architecture and unused-code validation, and frozen offline install pass. The lockfile adds only the Identity workspace importer; no existing package version changes. The initial offline metadata check failed for an existing AWS transitive, then normal pinned installation reused all packages with zero downloads and the frozen offline retry passed.
+- Real factories, partial-construction cleanup, synchronous force-close or terminal fallback, process diagnostic, combined affected gate, and exact clean checkout remain required before publication.
+
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
 - Monitor cancellation/non-overlap focused tests.

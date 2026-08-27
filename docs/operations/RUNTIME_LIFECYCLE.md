@@ -64,6 +64,12 @@ Domain and application code do not import this composition or Node.js HTTP types
 
 `forceClose` is the composition root's synchronous last-resort closure for every owned resource that can keep the event loop alive after a resource-closing hook rejects or ignores cancellation. It must attempt every owner and return `undefined`; a thrown error, returned Promise/thenable, or other returned value is classified as `force_close` failure. The example names HTTP, consumer, and dependency force paths explicitly; a service with fewer owners supplies only its real force paths. Each adapter keeps framework and client types behind its own boundary.
 
+### Identity orchestration checkpoint
+
+The local `services/identity` candidate composes the lifecycle, deadline, readiness controller, and monitor against source-owned HTTP, PostgreSQL, Redis, telemetry, and force-close ports. Startup starts the listener first, performs one connect and one probe per critical dependency under the same propagated deadline, and starts recovery monitoring after the bounded attempt. Dependency failure leaves the lifecycle live and ready-phase but the combined readiness false; no startup retry loop is created.
+
+Controlled tests prove shared startup, unavailable recovery, ready-only admission, deadline and shutdown cancellation, late-completion suppression, listener-failure cleanup, complete closure attempts, monitor-start failure, and one removable process-signal owner. The module is not yet a runnable service entrypoint: real HTTP/client factories, partial-construction cleanup, synchronous force-close or terminal fallback, and the process diagnostic remain pending. Its injected ports are trusted composition code, not public request input.
+
 ## Shutdown contract
 
 The first shutdown request immediately fails readiness and returns one shared Promise. Concurrent calls observe the same terminal result and never repeat hooks. The coordinator then gives these stages one bounded opportunity in fixed order:

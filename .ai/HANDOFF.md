@@ -18,8 +18,8 @@ P01-R08 is active on `feat/p01-r08-runtime-composition`, rebased onto corrective
 
 ## Resume point
 
-1. For P01-R08, create the controlled-port Identity service composition and prove startup deadline propagation, unavailable startup, readiness recovery, request admission, cleanup, signal ownership, and ordered stop.
-2. Compose the released real adapter factories behind that tested boundary, preserving the same lifecycle owner and no product behavior.
+1. For P01-R08, compose the released real HTTP, telemetry, PostgreSQL, and Redis factories behind the controlled `services/identity` runtime. Preserve one lifecycle owner, no product behavior, and explicit partial-construction cleanup.
+2. Resolve synchronous force-close or terminal fallback explicitly: the current database/cache adapters expose bounded asynchronous close, which alone is not a synchronous force guarantee. Add the loopback process diagnostic and exact startup/stop evidence.
 3. Run the next affected gate only after HTTP, configuration, and service composition form one candidate. Keep real dependency/container claims for P01-R09.
 
 ## Do not do yet

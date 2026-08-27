@@ -118,11 +118,11 @@ Status: **IN_PROGRESS**
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
 - P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
 - P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
-- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Deadline, readiness, recovery-monitor, fixed-health-route, and reference-configuration contracts are implemented. Health checkpoint `d6d6ffc` passes 10 HTTP tests; configuration passes 13 tests with classified listener and startup values. The product-empty Identity composition is next.
+- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Health checkpoint `d6d6ffc` passes 10 HTTP tests, and reference configuration `361d5d1` passes 13 tests. The new `services/identity` controlled orchestration passes 9 tests for startup, unavailable recovery, cancellation, cleanup, drain, and signal ownership. Real factory composition and the executable process diagnostic remain next.
 
 ## Not implemented
 
-- Applications and services
+- Deployable applications and service entrypoints
 - Product database schemas and migrations
 - Broker, object storage, and observability runtime
 - GraphQL schemas
@@ -142,7 +142,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-For P01-R08, create the product-empty Identity reference process using controlled dependency ports, then compose the released adapter factories behind the same boundary.
+For P01-R08, compose the real HTTP, telemetry, PostgreSQL, and Redis factories behind the controlled Identity boundary, with explicit partial-construction cleanup and force-close/terminal ownership; then add the bounded loopback process diagnostic.
 
 ## Current risks
 
@@ -168,7 +168,7 @@ For P01-R08, create the product-empty Identity reference process using controlle
 - P01-R04 process cost is one warm-filesystem startup observation, not a throughput, event-loop, backpressure, or steady-state memory benchmark. P01-R06 now implements bounded metrics and OTLP/HTTP failure behavior separately; retention and a real Collector/backend remain unimplemented.
 - Hosted dependency review reports informational low OpenSSF Scorecard values for Pino transitives `atomic-sleep@1.0.0` and `safe-stable-stringify@2.5.0`; the gate and high-severity audit pass, but later dependency changes must preserve the internal replacement boundary and re-evaluate this posture.
 - P01-R11 process cost is one warm-filesystem compatibility observation, not a throughput, latency, event-loop, concurrency, or steady-state memory benchmark. Fastify was evaluated but not installed or comparatively benchmarked; ADR-0011 defines measured revisit triggers.
-- No application composition exists yet. P01-R08 health routes are implemented only at the shared adapter boundary; released metrics and real dependencies are not composed into a service, and native Windows signal semantics remain intentionally unclaimed.
+- Identity orchestration exists only against controlled ports. Real HTTP/client composition and a deployable entrypoint remain pending; asynchronous adapter close must not be mistaken for a synchronous force-close guarantee. Native Windows signal semantics remain intentionally unclaimed.
 - P01-R06 measures one warm process-local diagnostic and loopback exporter behavior, not representative throughput, long-running overhead, a Collector scrape, another operating system, or another architecture. The direct SDK contract includes development-status semantic conventions and exact pins that require deliberate upgrade evidence.
 - `pg@8.23.0`, `@redis/client@6.2.1`, `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, `@smithy/node-http-handler@4.11.3`, and provisional `kafkajs@2.2.4` are selected only for their P01-R07 narrow adapters after current registry, source, license, audit, install, failure, cancellation, and lifecycle review. The Kafka-compatible runtime image and the remaining P01-R09/P01-R10 container versions remain unselected. P01-R09 owns real authentication/protocol/recovery and all real-dependency multi-platform confirmation.
 - Node-postgres has no proven native `AbortSignal` query cancellation, and its client query timeout may return while server work continues. `@aster/postgres` deliberately destroys clients after abort, timeout, SQLSTATE `57014`, or unknown probe failure; this favors bounded correctness over connection reuse and must be rechecked on client upgrades.

@@ -15,7 +15,7 @@ Provide one product-empty Identity reference process that starts and stops withi
 
 P01-R05 and P01-R06 released bounded lifecycle and telemetry. P01-R07 released the clock, ID, PostgreSQL, Redis, Kafka, and S3 adapter boundaries through corrective squash `61226eb3ce4976e31edde1f8b8198bcdd10095a6`; exact post-merge run `33026799005` passed. P01-R08 is now directly based on released `main`.
 
-The deadline, dependency-readiness controller, recovery monitor, fixed health routes, and reference listener/startup configuration are implemented locally. No deployable service, service startup coordinator, product schema, or GraphQL resolver exists yet.
+The deadline, dependency-readiness controller, recovery monitor, fixed health routes, reference configuration, and controlled Identity startup coordinator are implemented locally. Real HTTP/client factories, the executable service entrypoint, and process diagnostic remain pending. No product schema or GraphQL resolver exists.
 
 ## Proposed behavior
 
@@ -95,7 +95,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 4. [completed] Implement the single non-overlapping recovery monitor with deterministic scheduler/jitter seams, one probe per critical dependency, cancellation, stop-before-close, late-completion, and failure tests.
 5. [completed] Extend the Express adapter and ADR-0011 with fixed non-cacheable liveness/readiness routes, exact methods/status/body behavior, provider hardening, and real-socket tests while preserving `/graphql` behavior.
 6. [completed] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.
-7. [pending] Create the product-empty Identity composition root using injected controlled ports first, then compose the released real adapter factories behind the same boundary. Prove startup deadline propagation, unavailable startup, recovery, request admission, partial-start cleanup, one signal owner, ordered shutdown, and vendor-free inner declarations.
+7. [in progress] Create the product-empty Identity composition root using injected controlled ports first, then compose the released real adapter factories behind the same boundary. Prove startup deadline propagation, unavailable startup, recovery, request admission, partial-start cleanup, one signal owner, ordered shutdown, and vendor-free inner declarations. The real root must supply an explicit synchronous force-close or terminal fallback; asynchronous adapter close alone must not be presented as that guarantee.
 8. [pending] Add a loopback diagnostic that starts the reference process with controlled dependency ports, verifies stable health transitions and bounded stop, and exits naturally without product state.
 9. [pending] Consolidate documentation/evidence, run the affected and forced complete gates, repeat an exact frozen checkout for new workspace/package/export/public-command inputs, and perform one complete review plus one confirmation round.
 10. [completed] Rebase the unpublished branch after the P01-R07 corrective release; repeat the affected gate before the next source checkpoint.
@@ -113,7 +113,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 
 - Commands: Focused package typecheck/build/tests and targeted lint/format per checkpoint; `pnpm check:changed` per coherent candidate; one `pnpm check --force` when the entire item stabilizes; loopback process diagnostics; exact frozen no-generated-state checkout; audit and secret scan; protected CI only after predecessor-first rebase/publication.
 - Raw artifact path: `evidence/phase-01/runtime-composition.txt`.
-- Acceptance result: Deadline, readiness, recovery-monitor, fixed-health-route, and reference-configuration contracts are implemented; 80 runtime tests, 10 HTTP tests, and 13 configuration tests pass. Service composition remains pending.
+- Acceptance result: Deadline, readiness, recovery-monitor, fixed-health-route, reference-configuration, and controlled Identity orchestration are implemented; 80 runtime tests, 10 HTTP tests, 13 configuration tests, and 9 Identity tests pass. Real factory composition and the process diagnostic remain pending.
 - Iteration gate: Run only the changed runtime/HTTP/config/service build, typecheck, tests, diagnostic, and targeted lint/format after each coherent behavior checkpoint.
 - Candidate gate: Run `pnpm check:changed` after the combined runtime contracts, after the combined HTTP/service composition, and at closeout. Run the forced complete graph once after source, declarations, documentation, and evidence stabilize.
 - Heavyweight repeat triggers: Repeat exact frozen checkout for workspace, dependency, lockfile, package/export/declaration, install, bootstrap, service entrypoint, or public command changes. Repeat real-socket/subprocess handle evidence for listener, signal, timer, cancellation, monitor, request admission, startup, or shutdown changes. Real dependency/container evidence remains exclusively P01-R09.
