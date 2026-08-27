@@ -1,0 +1,37 @@
+{
+  "name": "@aster/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --hostname 127.0.0.1 --port 3000",
+    "start": "node ./scripts/start-production.mjs",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --test test/*.test.ts",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "@apollo/client": "4.2.12",
+    "@apollo/client-integration-nextjs": "0.14.5",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "graphql": "16.14.2",
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "rxjs": "7.8.2",
+    "server-only": "0.0.1",
+    "tailwind-merge": "3.6.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3"
+  }
+}

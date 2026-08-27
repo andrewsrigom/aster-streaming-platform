@@ -1,102 +1,106 @@
-# Work Item: Private subgraphs behind the local Apollo Router
+# Work Item: Server-rendered Catalog and deterministic browser state
 
 - Status: IN_PROGRESS
-- Owner: Platform transport; Identity and Catalog retain their data
-- Phase: 04
-- Requirement IDs: P04-R02, P04-R03, P04-R05, P04-R06, P04-R07, P04-R09
+- Owner: Web presentation; Catalog and Identity retain product data
+- Phase: 05
+- Requirement IDs: P05-R01, P05-R02, P05-R03, P05-R04, P05-R05, P05-R06, P05-R07, P05-R08, P05-R09, P05-R10, P05-R11
 - Created: 2026-08-27
 - Updated: 2026-08-27
 
 ## Outcome
 
-The local GraphQL entry point will execute the composed Identity/Catalog schema through the real Apollo Router, preserve owner-validated sessions and demonstrate bounded partial failure without publishing subgraph ports.
+The local browser will render public Catalog/title/attribution content before JavaScript, hydrate Apollo without a duplicate initial request, and exercise profile selection with separate local interaction state.
 
 ## Current behavior
 
-All Phase 04 local requirements and author confirmation pass at source b5d7ab7. PR 21's first protected run 33100857323 exposed stale compatibility wiring: the Identity demo omitted --compose-router, and the standalone Catalog probe inherited private-only networking and an unused credential mount. The correction uses the documented internal Router route and explicit standalone diagnostic overlay without owner trust mounts. Cleanup permits only exact owned PostgreSQL data and unused disposable trust volumes, with labels and foreign attachments checked. CI regression tests 25/25, Catalog guards 3/3, the exact Identity command and fresh Catalog Docker proof pass. Normal runtime trust, topology, deadlines and permissions do not change. Publish one combined remediation after the candidate gate; protected release remains open.
-
-Remediation head 0a8299d passed clean candidate checks (55/55) and was published once. External review confirmed the fixed Identity defect and identified a second blocking contract issue: workflow_dispatch falls back to the candidate SHA for schema compatibility. Resolve absent event baselines against the merge base with origin/main, or the candidate's first parent when the candidate is itself that base. Keep explicit PR/push SHAs, reject self-comparison and missing history, and verify selection against real temporary Git histories before publication. No runtime or media repeat is justified by this CI-only correction.
+Phase 04 is released at b6c99c4 after exact-head protected CI and successful post-merge run 33104100966. This unpublished branch is rebased onto that squash. Public SSR routes, positive public-data projection, finite normalized cache retention and an opt-in Catalog-owned seed pass focused and browser checks. Default catalogs remain empty until explicit seeding; the development stack contains the single labeled technical fixture. Full phase acceptance remains open.
 
 ## Proposed behavior
 
-Use the pinned upstream Router with source-owned YAML/Rhai hooks, generated SDL and private subgraphs. Define the separate local Router credential and cookie boundary in ADR-0017 before wiring it. Keep standalone owner transports available only through an explicit diagnostic configuration. Do not add an aggregation server or a hosted dependency.
+Start with a real Next.js App Router browse/title slice through Apollo Router, deterministic public query preloading and narrow UI primitives. Add the explicit Catalog-owned synthetic seed, profile flow, responsive artwork, Docker packaging and complete browser acceptance before closing this phase. No video player or invented film approval.
 
 ## Boundaries
 
-- Owning context: Identity authorizes sessions/profiles; Catalog owns published reads.
-- Affected services/packages: apps/router, packages/http-express and config, services/identity and catalog, infra/router, infra/compose, tools and focused tests.
-- Authoritative data: existing owner PostgreSQL records, unchanged.
-- Read models/caches: unchanged; Router credentials are not product authority.
-- Trust boundaries: public loopback HTTP to Router; separate authenticated private owner transport; public cookies go only to Identity.
-- External dependencies: pinned unmodified Apollo Router image, local Docker and existing PostgreSQL/Redis. No GraphOS account, license key or paid service.
+- Owning context: Web owns presentation; Catalog owns publication, rights and public metadata; Identity owns sessions/profiles.
+- Affected paths: apps/web, first-party operation inventory, Catalog local seed, Compose/Docker packaging and affected tooling.
+- Authoritative data: PostgreSQL through existing owner use cases; no Web SQL, Redis or owner imports.
+- Read models/caches: per-request server Apollo cache; browser normalized remote cache; Redux contains only coordinated local interactions.
+- Trust boundaries: public browser, server-rendered serialized data and public Router API. No private owner credential enters Web.
+- External dependencies: exact Next 16.3.3, React 19.2.8, Apollo Client 4.2.12 and integration 0.14.5; compatible minimal UI/test dependencies, frozen lock and reviewed install scripts.
 
 ## Invariants
 
-- Only Router publishes GraphQL in the target topology; public identity/forwarding headers cannot confer authority.
-- Identity retains signature, durable session/revocation, ownership, Origin and CSRF checks.
-- No raw operations, variables, cookies, service keys or account/profile IDs in telemetry.
-- No schema, database migration, owner boundary or event change. No unsafe mutation retries.
+- Public catalog/title content remains useful without client JavaScript.
+- Public query results never contain cookies, operator data or server configuration.
+- RSC preloads client-owned query data without a second independent RSC-rendered copy.
+- Session/profile changes clear the relevant browser cache; no durable data in Redux.
+- No publication before Phase 04 release; rebase onto its squash and repeat affected gates.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Invalid public headers or private credential | Reject before owner execution | Bounded rejection outcome |
-| Missing/malformed service key or SDL | Fail startup closed | Sanitized initialization error |
-| One subgraph unavailable or timed out | Nullable mixed query retains healthy owner's data | Subgraph/duration/outcome and trace |
-| Body/concurrency limit | Bounded rejection, no queue growth | Rejection outcome |
-| Client cancellation/shutdown | Cancel fetches; bounded drain | Runtime outcome |
-| Telemetry sink unavailable | Product work remains bounded | Export failure, no credentials |
+| Router unavailable or late | Bounded accessible error with explicit retry | Sanitized outcome, no response payload |
+| Empty Catalog | Honest empty state and documented opt-in seed | No synthetic success |
+| Invalid locale, cursor or title ID | Reject or canonicalize before the query | No input values in labels |
+| Slow or absent JavaScript | Server-rendered public content and normal links work | Browser acceptance evidence |
+| Session expired or changed | Owner authorization and cache invalidation | No credentials in snapshots/logs |
+| Incomplete rights or invalid media report | Seed refuses publication | Bounded local diagnostic |
 
 ## Data and contracts
 
-- Schema/migration: none; use existing generated supergraph and twelve known operations.
-- GraphQL: preserve nullable ViewerAndTitle roots, sanitized public errors and session cookies.
-- Events/cache/retention: unchanged. Runtime trust material is disposable and purpose-separated.
-- Compatibility: old direct HTTP checks use an explicit diagnostic mode; the normal demo uses Router.
+- Schema/migration: no Web persistence; seed uses Catalog contracts and existing generated-media attestation.
+- GraphQL: versioned first-party documents, stable IDs, explicit locale and bounded keyset pages.
+- Events: existing owner outbox behavior only.
+- Cache: explicit entity/connection policies and finite page retention; no cross-request server singleton.
+- Compatibility: existing HTTP-only demo remains available.
+- Retention/deletion: seed is explicit and idempotent; no overwrite of unrelated titles or retained data.
 
 ## Security and privacy
 
-- Authorization: owners remain authoritative; per-owner local service credentials authenticate transport only.
-- Input limits: 32 KiB bodies, finite headers, bounded edge parsing, existing owner depth/alias limits, deadlines and concurrency. Do not configure GraphOS-key-gated native operation limits.
-- Sensitive data: read-only secret mounts; no credentials in source, commands, evidence or logs.
-- Abuse cases: forged headers, direct calls, cookie leakage, duplicate credentials, cross-account access, query saturation and unavailable subgraphs.
+- Authorization: Identity remains authoritative. Any browser-origin extension must be explicit, narrow and covered by real CSRF/CORS tests before profile use.
+- Input limits: bounded query inputs, response bytes and outbound deadlines/cancellation.
+- Sensitive data: server-only modules, public-field-only preload, escaped transport and client bundle/snapshot scans.
+- Abuse cases: forged browser headers, cache cross-contamination, malformed responses and unapproved artwork/media.
 
 ## Implementation steps
 
-1. Verify exact Router license/configuration support; record ADR and credential lifecycle.
-2. Implement/test owner trust adapters and Router hooks/configuration.
-3. Wire resource-bounded Docker topology and diagnostic compatibility.
-4. Exercise real sessions, negative boundaries, partial failure, limits, query plans and traces.
-5. Review one coherent candidate, capture evidence and complete protected release gates.
+1. Add the pinned Web package, minimal UI foundation and real public SSR queries.
+2. Verify safe Apollo hydration, locale and cache behavior with focused tests.
+3. Add repeatable Catalog-owned seed and real profile flow with narrow origin policy.
+4. Package the same Web app in Docker and exercise complete browser/error/keyboard journeys.
+5. Record bundle, image, hydration and laboratory performance budgets and measurements.
+6. Review one coherent candidate, verify clean startup and complete protected release.
 
 ## Tests
 
-- Domain/application: existing owner suites; no business behavior changes.
-- Integration: real Router, Identity, Catalog and PostgreSQL; sign-in/select/revoke, private access and partial timeout.
-- Contract: schema check; Router startup against pinned version; transport negative tests.
-- Acceptance-gate remediation: use Node test MockTimers for the broker late-connect/close ordering test; retain its pending/closing/closed and late-result assertions. Run the focused broker suite, then repeat clean-source full acceptance. This test-only change does not invalidate Router, SQL, media or real-broker runtime evidence.
-- The forced clean run also exposed the same clock race in the S3 capacity fixture and a 3-second child-process startup cutoff during cold AWS SDK loading. Freeze only that fixture's timers and give the diagnostic process a finite 10-second startup/execution envelope; its actual 100/150/500 ms connection/operation/close deadlines and outcome assertions remain unchanged. Repeat the S3 suite and the complete gate, retaining successful unchanged task evidence.
-- Browser: not applicable before the web phase; HTTP cookie journey here.
-- Performance/failure: bounded admission, cancellation, body limit and one owner failure; no throughput claim.
+- Domain/application: existing owner invariants; focused seed idempotency and client-state tests.
+- Integration: real Router/Catalog/Identity; no replacement data endpoint.
+- Contract: first-party operation/schema compatibility and public snapshot filtering.
+- Browser: SSR HTML, disabled/slow JavaScript, hydration, no duplicate request, locales, navigation, keyboard/dialog/profile flow and negative bundle scans.
+- Performance/failure: measured initial JS/image/operation and Web Vitals laboratory budgets; Router outage and retry.
 
 ## Evidence
 
-- Commands: focused package builds/tests, Router config/runtime probe, pnpm check:changed and pnpm check.
-- Raw artifact path: evidence/phase-04/.
-- Acceptance result: local runtime, author review, full clean-source and fresh Docker acceptance pass; evidence/phase-04/clean-acceptance.txt. Exact protected CI and release remain pending.
-- Iteration gate: changed transport tests and pinned Router config/startup probe.
-- Candidate gate: affected-scope checks plus the full phase runtime acceptance and schema compatibility.
-- Heavyweight repeat triggers: changes to trust, routing, Docker packaging, deadlines, cookie propagation or telemetry repeat affected runtime checks; prose-only changes do not repeat Docker/media work.
-- Review stopping rule: one initial and one confirmation review; repeat only for a changed blocking requirement/security/data/availability/public-contract boundary.
+- Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
+- Raw artifact path: evidence/phase-05/.
+- Acceptance result: first public slice passes eight Web, 98 Catalog and four browser checks plus an actual one-operation Router assertion. Profile, artwork, failure/performance and Docker phase acceptance remain open.
+- Iteration gate: cheapest changed adapter/cache/component checks and local production build.
+- Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
+- Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
+- Review stopping rule: one initial and one confirmation round; additional rounds only for requirement/security/data/availability/public-contract blockers.
 
 ## Rollback or recovery
 
-Stop only the owned verification stack. Revert this runtime slice to the verified schema commit, leaving owner PostgreSQL data intact. Recreate ephemeral Router credentials and restart their consumers together to rotate trust. No broad Docker cleanup or production migration.
+Stop only the owned Web/proof services and return to the released HTTP-only topology. Do not remove retained PostgreSQL data. Retire only the explicitly identified synthetic seed through Catalog if removal is needed. Preserve the frozen Phase 04 branch and rebase this unpublished dependent work onto its squash.
+
+## First-slice decisions
+
+Critical public content has no Suspense/loading boundary: actual disabled-JavaScript testing proved that streamed replacement otherwise hides it. Public HTML waits for the four-second-bounded query; profile/client-only loading can remain independent. The local seed uses only the fixed source-owned ADR-0016 technical fixture and synthetic non-delivery media references; it refuses existing edits/takedowns. The Web receives no initializer or private Router credentials. Detailed scope and commands are in apps/web/README.md.
 
 ## Documentation updates
 
-ADR-0017, Router usage, local topology/runbook, phase evidence and repository memory at meaningful checkpoints.
+Update actual Web/Docker commands, UI inventory, phase evidence and repository memory at meaningful checkpoints.
 
 ## Completion checklist
 

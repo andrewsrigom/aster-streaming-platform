@@ -19,6 +19,7 @@
         "src/index.ts",
         "src/main.ts",
         "src/operate-local.ts",
+        "src/seed-local.ts",
         "src/migrate-local.ts",
         "src/print-schema.ts"
       ],

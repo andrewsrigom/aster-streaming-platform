@@ -29,6 +29,14 @@ const MAX_FILES = 10_000;
 const MAX_FILE_BYTES = 1_000_000;
 const MAX_IMPORTS_PER_FILE = 1_000;
 const MAX_DIRECTORY_DEPTH = 16;
+const WORKSPACE_OUTPUTS = new Set([
+  "node_modules",
+  "dist",
+  ".next",
+  ".turbo",
+  "test-results",
+  "playwright-report",
+]);
 
 const currentFile = fileURLToPath(import.meta.url);
 const defaultRepositoryRoot = resolve(dirname(currentFile), "..");
@@ -213,6 +221,9 @@ async function collectSourceFiles(repositoryRoot: string): Promise<string[]> {
       }
       const path = resolve(directory, entry.name);
       if (entry.isDirectory()) {
+        if (depth === 1 && WORKSPACE_OUTPUTS.has(entry.name)) {
+          continue;
+        }
         await walk(path, depth + 1);
       } else if (
         entry.isFile() &&

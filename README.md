@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–03 are released: local sessions/profiles, rights-aware Catalog, public queries and generated HLS technical checks. Phase 04 implements the local Apollo Router with private subgraphs, owner-validated sessions, bounded traffic and trace correlation; phase acceptance remains in progress. Browser UI and playable films remain planned. See [current state](.ai/CURRENT_STATE.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 03 release](evidence/phase-03/release.txt).
+Phases 00–04 are released: local sessions/profiles, rights-aware Catalog and the federated API. Phase 05 implements public Next.js browsing, title/attribution pages, Apollo hydration and an explicit synthetic seed; its complete UI/Docker acceptance remains in progress. Video playback remains planned. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 04 release](evidence/phase-04/release.txt).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -18,7 +18,7 @@ From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog with restricted database logins. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. There is no browser UI or playable video yet; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
+The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog with restricted database logins. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. This command does not yet start the [Web checkpoint](apps/web/README.md) or playable video; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
 
 Exercise sign-in, create/select/list/delete a synthetic profile and sign-out (POSIX/WSL, Docker only):
 
@@ -98,7 +98,7 @@ pnpm check
 pnpm audit --audit-level=high
 ```
 
-`pnpm check` is also the current runnable demonstration: it exercises the pinned toolchain, source policy, architecture boundaries, documentation, repository memory, community contract, secret scanning, CI policy, staged-file selection, commit policy, and their adverse tests. It intentionally does not pretend that the future video application exists.
+`pnpm check` exercises the pinned toolchain, source policy, architecture boundaries, documentation, repository memory, community contract, secret scanning, CI policy, staged-file selection, commit policy, and their adverse tests. It does not replace the separate Docker and browser acceptance commands.
 
 ### Clean generated foundation state
 

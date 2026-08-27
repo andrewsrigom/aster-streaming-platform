@@ -195,3 +195,9 @@ This correction changes only CI baseline selection and regression coverage.
 No dependency version, runtime, Docker instruction, rights or media changes.
 Require the new source candidate and protected exact-head gate; retain the
 already passing unchanged heavyweight evidence.
+
+Final candidate: 66d8ee1af158be8cca8006176514c788028952fa
+Clean detached pnpm check:changed: exit 0, 55/55, 30 cached, 26.698 s.
+Same-PR protected run 33103379545 is in progress. Both review findings were
+answered with their actual tests and resolved. No merge or post-merge success
+is claimed. The sole dependent Web item is unpublished and cannot release first.

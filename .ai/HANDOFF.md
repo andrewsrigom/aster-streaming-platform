@@ -2,26 +2,20 @@
 
 ## Resume point
 
-Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. PR 21 head 0a8299d passed protected run 33102349933. Review also found manual schema self-comparison; the local P04-R05 correction selects a distinct merge base or parent and passes 26 focused CI tests. Do not merge before publishing and verifying that correction. Do not repeat unaffected runtime/media work.
+P05-R01 is IN_PROGRESS on unpublished feat/p05-web-ssr, rebased onto released main b6c99c432603218d0a33c833e0b9a28b1c90e43b. P04-R02 is DONE.
 
-## Current evidence
+## External transition
 
-See evidence/phase-04/README.md, router-runtime.txt and clean-acceptance.txt. Original clean-source gate: 55/55; fresh normal Docker startup/journeys pass. Publication head 18f3c7e also passed 55/55. Remediation passes CI policy 25/25, Catalog diagnostic/cleanup guards 3/3, the exact packaged Identity journey and fresh Catalog Docker proof (39550 ms, zero residual resources). Earlier Router trace, SQL cancellation, media and shutdown evidence remains applicable. One moderate UUID advisory has a narrow reviewed disposition.
+PR 21 is merged without bypass. Final exact-head run 33103379545 and post-merge run 33104100966 passed. Both review threads are resolved. See evidence/phase-04/release.txt. No external Phase 04 wait remains.
 
 ## Next outcome
 
-Commit and gate the schema-baseline correction, then update PR 21. Require exact-head CI, resolve the two evidenced review findings, squash and confirm post-merge CI before Phase 05. Author confirmation is in router-review.txt. The clean detached checkout /tmp/aster-p04-clean-Hke28c is at 0a8299d with no running gate; its last candidate gate passed 55/55, 39 cached, 29.517 s.
+Continue P05-R01 using .ai/CHANGE_PLAN.md. Public home/browse/localized title/attribution, filtered Apollo hydration, finite normalized cache retention and explicit idempotent seed are implemented. Eight Web tests, 98 Catalog tests and four browser journeys pass. The initial no-JavaScript failure was fixed by removing critical-content Suspense; refined first test also proves exactly one Router Browse operation. See evidence/phase-05/public-runtime.txt. Source gate passes 58/58 tasks; frozen install and high-threshold audit pass. Next add profile/dialog/Redux shell with narrow Web-origin trust, artwork, adverse states, performance and Docker acceptance.
 
 ## Local resources
 
-The owned aster-p04-development stack uses new synthetic data, private subgraphs and Router loopback 4000. Retained aster Identity/status/PostgreSQL/Redis are unchanged. Diagnostic query-plan exposure was restored to false after trace capture. Development image IDs and source hashes are in the runtime evidence. Never run a global prune or reset retained data.
-
-Fresh proof project aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35 is removed: ten containers, three synthetic volumes, two networks; exact ownership and absence of foreign attachments were checked first. No retained data or image cache was deleted. Development Router is healthy again. Do not repeat or generalize that destructive cleanup to aster.
+Retained aster and aster-p04-development remain available. Development Router uses loopback 4000 with private owners and now contains only the additive seed title 00000000-0000-4000-8000-000005000001. Web production process uses loopback 3000. No proof stack is left from Phase 04/Catalog acceptance. /tmp/aster-p04-clean-Hke28c is the clean detached Phase 04 checkout at 66d8ee1; its gate is complete. Never prune globally or remove retained data.
 
 ## Do not do yet
 
-Phase 04 is not released. No UI, playable real film, hosted trust, SLO, advanced GraphQL protection or media rights approval exists. Compatible dependency licensing is authorized; preserve Aster MIT and upstream notices. Native GraphOS-key-protected limits remain disabled rather than bypassed.
-
-## Predecessor
-
-Phase 03 is released through PR 20: protected run 33090966906, squash 1354841 and post-merge run 33091716358 passed on attempt 1. evidence/phase-03/release.txt owns that record.
+Do not publish Phase 05 before its complete acceptance. No player, actual-film rights approval, hosted identity or SLO claim. No private owner keys in Web; no direct SQL/Redis/owner calls from the frontend.

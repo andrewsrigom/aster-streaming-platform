@@ -2,6 +2,48 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Public SSR and repeatable Catalog seed
+
+### Completed
+
+Implemented Next.js public/localized routes, full attribution, positive Apollo response projection and bounded normalized cache roots. The explicit fixed technical seed uses actual isolated HLS validation plus Catalog commands; real PostgreSQL repetition leaves one publication/event and four command audits. No retained data was removed.
+
+### Evidence
+
+Eight Web, 98 Catalog, nine composition and seven architecture tests pass; unused-code check passes. Four production-browser journeys pass after correcting the observed disabled-JavaScript Suspense failure. A refined first test proves one actual Router Browse and zero browser GraphQL/prefetch requests. See evidence/phase-05/public-runtime.txt.
+
+### Next action
+
+Source gate passes 58/58 tasks after correcting the session-log headings. Continue profile/dialog/Redux shell, artwork, failure/performance and Docker acceptance; Phase 05 is not complete.
+
+## 2026-08-27 — Phase 04 release and first Web build
+
+### Completed
+
+PR 21 merged without bypass at b6c99c4. Rebased the unpublished Phase 05 work with autostash, preserved its changes and fast-forwarded local main. No retained data was removed.
+
+### Evidence
+
+Exact-head protected run 33103379545 and post-merge run 33104100966 passed; evidence/phase-04/release.txt records the transition. Initial Next.js production build and five focused tests pass; corrected four lint findings.
+
+### Next action
+
+Real browser, seed, profiles and Docker acceptance remain next.
+
+## 2026-08-27 — Frozen Phase 04 candidate and dependent Web work
+
+### Completed
+
+Published final correction 66d8ee1 to PR 21. Both automated review findings are addressed and their threads resolved with evidence. P04-R02 is WAITING_EXTERNAL; created one unpublished dependent branch feat/p05-web-ssr and activated P05-R01 under the predecessor-first rule.
+
+### Evidence
+
+Final clean candidate: 55/55 tasks, 30 cached, 26.698 s; CI tests 26/26. Protected run 33103379545 is pending. Prior protected run 33102349933 passed. Runtime/media/Docker evidence is unchanged; no repeated heavy experiment or retained-data mutation.
+
+### Next action
+
+Implement the public SSR slice while completing the named CI/merge/post-merge transition. Rebase dependent work onto the squash before publication. Web behavior and browser acceptance remain unverified.
+
 ## 2026-08-27 — Phase 04 protected CI remediation
 
 ### Completed

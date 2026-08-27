@@ -1,6 +1,6 @@
 # Phase 04 Evidence Index
 
-Phase status: locally VERIFIED; protected release remains IN_PROGRESS. All ten requirements have local implementation and acceptance evidence, including clean-source 55/55 gates, fresh Docker startup and author confirmation. Exact-head protected CI, squash and post-merge CI remain open.
+Phase status: RELEASED through PR 21 at main `b6c99c4`. All ten requirements have local acceptance, exact-head protected CI, squash and successful post-merge CI. [Release evidence](release.txt).
 
 - [Composition checkpoint](composition.txt): deterministic owner schema printers, five artifacts, twelve known operations, compatibility against committed baselines and negative tests.
 - [Router runtime checkpoint](router-runtime.txt): Docker-only session journey, private owner credentials, forged/duplicate headers, partial timeout, concurrency, revocation, cancellation, Collector outage and graceful stop/recovery.
@@ -19,4 +19,4 @@ Phase status: locally VERIFIED; protected release remains IN_PROGRESS. All ten r
 | P04-R06 | Real Router operation/fetch events, query plan, Collector trace and authenticated owner correlation |
 | P04-R07/R09 | Bounded HTTP/parser/fetch/admission settings, real timeout/partial failure, cancellation and recovery |
 
-No protected release, hosted readiness, approved real film or playable demo is claimed. Accessibility/browser interaction is not applicable to this HTTP-only phase; Phase 05 owns the web shell. Its deterministic generated-publication prerequisite is inspected in the clean acceptance record; its default-data UI seed remains explicit Phase 05 work.
+No hosted readiness, approved real film or playable demo is claimed. Accessibility/browser interaction is not applicable to this HTTP-only phase; Phase 05 owns the web shell. Its deterministic generated-publication prerequisite is inspected in the clean acceptance record; its default-data UI seed remains explicit Phase 05 work.

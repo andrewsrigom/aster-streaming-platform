@@ -19,6 +19,8 @@ export default typescriptEslint.config(
       ".turbo/**",
       "coverage/**",
       "**/dist/**",
+      "**/.next/**",
+      "**/next-env.d.ts",
       "docs/**",
       "evidence/**",
       "node_modules/**",
