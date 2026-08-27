@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-The repository foundation and Phase 01 technical packages exist. Released P01-R09 proves the real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus matrix. P01-R10 implements a non-root production Identity image and Docker runtime profile with real PostgreSQL/Redis recovery, loopback health and safe scoped reset. Optional application integration/observability/full profiles and clean phase acceptance remain pending. No product schema/resolver/migration or playable journey exists yet.
+The repository foundation and Phase 01 technical packages exist. Released P01-R09 proves the real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus matrix. P01-R10 implements a non-root production Identity image and Docker runtime profile with real PostgreSQL/Redis recovery, loopback health and safe scoped reset. Optional integration/observability/full profiles and exact Docker-only clean-checkout acceptance now pass locally. Protected Phase 01 release remains pending. No product schema/resolver/migration or playable journey exists yet.
 
 ## Fixed boundaries
 

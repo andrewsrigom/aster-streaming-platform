@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10's Docker runtime checkpoint is implemented locally; integration/observability/full profiles pass local checks; clean-checkout and protected phase acceptance remain pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the delivered runtime from the planned video application.
+Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10's Docker runtime checkpoint is implemented locally; integration/observability/full profiles pass local checks; exact clean-checkout acceptance passes; protected phase acceptance remains pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the delivered runtime from the planned video application.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

@@ -2,7 +2,7 @@
 
 ## Current status
 
-The core checkpoint uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without host ports. P01-R10 adds the local Docker runtime profile below, including real Identity health and loopback-only port 3100. P01-R09's released laboratories separately prove Kafka, S3 and Collector/Prometheus. P01-R10 also supplies integration, observability and full profiles with real OTLP metrics. Clean-checkout/protected closeout, product schemas and playable journeys remain pending.
+The core checkpoint uses exact PostgreSQL/Redis images, health-gated initialization, persistent PostgreSQL state, disposable Redis state, bounded resources and an internal network without host ports. P01-R10 adds the local Docker runtime profile below, including real Identity health and loopback-only port 3100. P01-R09's released laboratories separately prove Kafka, S3 and Collector/Prometheus. P01-R10 also supplies integration, observability and full profiles with real OTLP metrics. Exact clean-checkout acceptance passes; protected closeout, product schemas and playable journeys remain pending.
 
 ### Identity reference process
 
@@ -51,7 +51,7 @@ Stop all profiles without deleting their named data volumes:
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
 ```
 
-The earlier core-only command remains light and does not start Identity or create the edge network. The complete clean-checkout evaluator run and protected release remain pending; the profile commands below pass local runtime checks.
+The earlier core-only command remains light and does not start Identity or create the edge network. Exact source `38801ce` passes the profile commands from a clean checkout with no host Node/pnpm in PATH and no local dependencies or Aster volumes. Full-profile build/start took 36.89 s with warm base/install caches and an uncached application build. Occupied 3100 failed clearly in 4.56 s without stopping its owner; removing only the synthetic conflict allowed the same runtime command to recover in 5.60 s. Normal all-profile stop preserved four data volumes, and the guarded reset removed them. Protected release remains pending.
 
 Measured on Linux/WSL amd64 with cached base/dependency layers: image rebuild plus empty-project startup 39.71 s; core-only startup 7.38 s; natural SIGTERM exit 143 in 561 ms including Docker CLI/inspection. A single healthy post-recovery sample reports Identity 51.59 MiB, PostgreSQL 25.11 MiB, Redis 6.004 MiB and status 1.609 MiB; these are observations, not sizing guarantees. Image size is 255272610 bytes; fresh PostgreSQL data is 47488 KiB. See [raw runtime evidence](../../evidence/phase-01/docker-demo.txt).
 
@@ -92,7 +92,7 @@ docker build --file infra/docker/identity.Dockerfile --tag aster-identity:p01-r1
 docker run --rm --network none --cpus 0.5 --memory 256m --pids-limit 64 --read-only --cap-drop ALL --security-opt no-new-privileges --label com.aster.scope=p01-r10 aster-identity:p01-r10 ./dist/src/check-identity.js
 ```
 
-The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The runtime command above adds real database connectivity; optional profiles below are implemented locally, while the complete clean-checkout closeout remains pending.
+The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The runtime command above adds real database connectivity; optional profiles below are implemented locally, and the exact clean-checkout acceptance passes; protected release remains pending.
 
 ### Complete integration matrix
 

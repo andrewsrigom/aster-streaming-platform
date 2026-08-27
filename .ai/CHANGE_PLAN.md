@@ -69,8 +69,8 @@ No auth/trust-model change. Frozen installation and reviewed image digests remai
 1. [completed] Pinned non-root Identity image builds inside Docker and passes package/controlled HTTP diagnostics. Seven workspace packages load; all 114 external installed versions match the lockfile; no dev/test/host tree ships. Image: 255269001 bytes, UID 1000. Missing configuration exits 1; all probe containers are removed. Platform/CI tests pass 21/21 each and affected graph passes 49/49 (52.272 s). See `evidence/phase-01/docker-demo.txt`.
 2. [completed] Optional password/configuration, exact reset and runtime profile pass. Fixed internal-only port non-publication with an Identity-only edge bridge and inherited helper volumes with tmpfs. Real PostgreSQL/Redis loss keeps liveness 200 and changes readiness to 503; restart recovers automatically. Docker image/build-start 39.71 s with cached base/install layers; natural SIGTERM 561 ms; core-only start 7.38 s. Reset removes only synthetic owned resources, supports legacy helper volumes and preserves the complete unrelated inventory. Config 17/17, Identity 33/33, platform/reset 25/25, affected graph 49/49 (28 cached, 18.58 s).
 3. [completed] Optional integration/observability/full profiles, classified OTLP configuration and real metric delivery pass. Collector loss preserves Identity readiness and recovers; shutdown with unavailable Collector exits 143 in 4223 ms with truthful degradation. Exact reset removes nine containers, two networks and four volumes while preserving unrelated inventory. Focused config/Identity/platform/CI checks: 20/34/29/22 passing.
-4. [in progress] Prove clean Docker-only runtime/full commands, partial profiles, dependency recovery, stop/reset preservation; document ports, volumes, architecture, FFmpeg and resources. Measure startup, idle footprint and image/volume sizes.
-5. [pending] Complete affected/full gates, applicable CI, one review plus confirmation and Phase 01 evidence index; check Phase 02 prerequisites, squash and verify post-merge before starting Phase 02.
+4. [completed] Exact clean source `38801ce` passes no-host-Node/pnpm Docker full build/start (36.89 s), in-container CI smoke, occupied-port failure/recovery (4.56/5.60 s), stop preserving four volumes, partial reset and repeat. Full source gate 49/49 uncached (32.418 s), audit and clean Git pass. Exact 228M clone removed; caches retained. Runbooks cover ports/volume/profile/architecture/FFmpeg/resource limits.
+5. [in progress] Local gates and initial executing-agent review pass. Publish candidate, require protected CI and confirmation, record hosted evidence, squash and verify post-merge. Phase 02 prerequisites are checked: P02-R01 owns the identity/session/local-trust ADR after Phase 01 release; no account work starts before that decision.
 
 ## Tests
 
@@ -102,7 +102,7 @@ README commands, local development/troubleshooting, profile table, config/reset 
 
 - [ ] Requirements satisfied
 - [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

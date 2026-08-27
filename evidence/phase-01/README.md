@@ -19,10 +19,10 @@
 | Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | RELEASED | [`platform-adapters.txt`](platform-adapters.txt) |
 | Propagated deadlines, recoverable readiness, health routes, and Identity runtime composition | P01-R08 | RELEASED through PR 16; exact post-merge passed | [`runtime-composition.txt`](runtime-composition.txt) |
 | Real core, Kafka, S3 and Collector/Prometheus protocol, recovery and shutdown | P01-R09 | RELEASED through PR 17; exact post-merge passed | [`real-integration.txt`](real-integration.txt) |
-| Docker-only Identity image and final evaluator profiles | P01-R10 | IMPLEMENTED image/runtime/optional profiles; final clean/protected acceptance pending | [`docker-demo.txt`](docker-demo.txt) |
+| Docker-only Identity image and final evaluator profiles | P01-R10 | VERIFIED locally at clean source 38801ce; protected CI/release pending | [`docker-demo.txt`](docker-demo.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 through P01-R09 and P01-R11 are released. PR 17 squash `a1f7281` passes protected run `33041524806` and exact post-merge run `33041787663`, including the complete matrix. P01-R10's non-root production runtime, real database/cache recovery, Windows localhost health, bounded stop and scoped reset pass locally; optional profiles and real metrics also pass locally. Clean-checkout and complete acceptance remain pending. Product schemas and migrations remain later work.
+P01-R01 through P01-R09 and P01-R11 are released. PR 17 squash `a1f7281` passes protected run `33041524806` and exact post-merge run `33041787663`, including the complete matrix. P01-R10's non-root production runtime, real database/cache recovery, Windows localhost health, bounded stop and scoped reset pass locally; optional profiles and real metrics also pass locally. Exact clean Docker-only acceptance, occupied-port recovery, 49/49 uncached source tasks and audit pass at `38801ce`; protected acceptance/release remain pending. Product schemas and migrations remain later work.
 
 ## Current limitations
 

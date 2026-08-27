@@ -4,7 +4,7 @@ Only one item may be `IN_PROGRESS`.
 
 P01-R09 is released through PR 17 squash `a1f7281`; protected run `33041524806` and exact post-merge run `33041787663` pass every applicable gate and the real eight-scenario matrix. P01-R10 starts locally from that clean merge: portable Identity packaging, resource-aware profiles and the clean Docker-only Phase 01 closeout.
 
-The optional-profile checkpoint now passes real metrics, Collector outage isolation/recovery, bounded degraded shutdown and exact nine-service reset. Focused config/Identity/platform/CI checks pass 20/34/29/22. CI image/profile coverage is added; final clean-checkout/occupied-port/source acceptance and protected release remain P01-R10 work.
+The optional-profile checkpoint now passes real metrics, Collector outage isolation/recovery, bounded degraded shutdown and exact nine-service reset. Focused config/Identity/platform/CI checks pass 20/34/29/22. CI image/profile coverage is added. Exact clean source `38801ce` passes Docker-only/occupied-port/reset acceptance, 49/49 uncached tasks and audit. Only publication, protected CI, confirmation and release remain P01-R10 work.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

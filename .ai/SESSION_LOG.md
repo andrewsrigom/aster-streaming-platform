@@ -16,7 +16,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the coherent local profile candidate, then prove its exact clean Docker-only checkout, occupied-port recovery, final source/audit and protected release. No P01-R10 push or PR yet; Phase 02 remains gated.
+Source `38801ce` then passed exact clean Docker-only acceptance (36.89 s), occupied-port/recovery (4.56/5.60 s), 49/49 uncached tasks (32.418 s), audit and preserved Docker state. The clean 228M temporary clone was removed. Initial executing-agent review has no blocker. Next publish the coherent candidate, require protected CI/confirmation and release; no P01-R10 PR yet, Phase 02 remains gated.
 
 ## 2026-08-27 — Docker runtime, real recovery and safe reset
 
