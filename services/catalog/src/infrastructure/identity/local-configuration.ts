@@ -1,22 +1,24 @@
 export function localCatalogDatabase(
   environment: Readonly<Record<string, string | undefined>>,
-  mode: "operator" | "migration",
+  mode: "operator" | "migration" | "reader",
 ): string {
   if (
     environment["ASTER_ENVIRONMENT"] !== "local" ||
-    environment["ASTER_CATALOG_OPERATOR_ENABLED"] !== "true"
+    environment[
+      mode === "reader" ? "ASTER_CATALOG_LOCAL_ENABLED" : "ASTER_CATALOG_OPERATOR_ENABLED"
+    ] !== "true"
   ) {
     throw new Error("Local Catalog activation rejected.");
   }
-  const field =
-    mode === "operator" ? "ASTER_CATALOG_DATABASE_URL" : "ASTER_CATALOG_ADMIN_DATABASE_URL";
+  const prefix =
+    mode === "reader"
+      ? "ASTER_CATALOG_READER_DATABASE"
+      : mode === "operator"
+        ? "ASTER_CATALOG_DATABASE"
+        : "ASTER_CATALOG_ADMIN_DATABASE";
+  const field = prefix + "_URL";
   const source = environment[field];
-  const pwd =
-    environment[
-      mode === "operator"
-        ? "ASTER_CATALOG_DATABASE_PASSWORD"
-        : "ASTER_CATALOG_ADMIN_DATABASE_PASSWORD"
-    ];
+  const pwd = environment[prefix + "_PASSWORD"];
   if (
     !source ||
     source.length > 2048 ||
@@ -34,7 +36,12 @@ export function localCatalogDatabase(
     url.pathname !== "/aster" ||
     url.hash ||
     url.search ||
-    url.username !== (mode === "operator" ? "aster_catalog_local" : "aster") ||
+    url.username !==
+      (mode === "reader"
+        ? "aster_catalog_reader_local"
+        : mode === "operator"
+          ? "aster_catalog_local"
+          : "aster") ||
     url.password !== "" ||
     (url.port !== "" && (Number(url.port) < 1024 || Number(url.port) > 65535))
   ) {

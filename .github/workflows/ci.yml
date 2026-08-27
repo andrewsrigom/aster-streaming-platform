@@ -119,6 +119,12 @@ jobs:
         if: needs.classify.outputs.platform == 'true'
         timeout-minutes: 15
         run: pnpm integration
+      - name: Prove Catalog runtime and generated publication
+        if: needs.classify.outputs.platform == 'true'
+        timeout-minutes: 10
+        run: |
+          pnpm catalog:media
+          pnpm catalog:demo
       - name: Audit known dependency vulnerabilities
         run: pnpm audit --audit-level=high
 

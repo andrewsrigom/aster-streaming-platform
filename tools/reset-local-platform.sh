@@ -93,8 +93,11 @@ if ! configured_services=$(compose_local config --services 2>/dev/null); then
 fi
 configured_services=$(printf '%s\n' "$configured_services" | LC_ALL=C sort | tr -d '\r')
 expected_services='broker
+catalog
+catalog-init
 collector
 identity
+identity-init
 platform-init
 platform-status
 postgres
@@ -182,7 +185,7 @@ for container_id in $container_ids; do
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
-    identity | broker | storage | collector | prometheus)
+    identity | identity-init | catalog | catalog-init | broker | storage | collector | prometheus)
       [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'runtime and optional services require current ownership labels'
       ;;
     platform-init | platform-status | postgres | redis) ;;
@@ -196,7 +199,7 @@ for container_id in $container_ids; do
     fail "container $container_name mounts cannot be inspected"
   fi
   case "$container_service|$container_mounts" in
-    'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
+    'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'identity-init|' | 'catalog|' | 'catalog-init|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
     'broker|volume|aster_broker-data|/var/lib/kafka/data' | 'storage|volume|aster_storage-data|/data' | 'prometheus|volume|aster_prometheus-data|/prometheus' | 'collector|') ;;
     platform-init\|volume\|*\|/var/lib/postgresql | platform-status\|volume\|*\|/var/lib/postgresql)
       legacy_volume=$(printf '%s\n' "$container_mounts" | cut -d '|' -f 2)
@@ -213,6 +216,7 @@ for container_id in $container_ids; do
   fi
   case "$container_service|$container_networks" in
     *\| | *\|aster_platform | 'identity|aster_edge
+aster_platform' | 'catalog|aster_edge
 aster_platform' | 'prometheus|aster_edge
 aster_platform') ;;
     *) fail "container $container_name has unreviewed network attachments" ;;

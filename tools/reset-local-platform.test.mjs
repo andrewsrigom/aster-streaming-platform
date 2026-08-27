@@ -72,7 +72,7 @@ if [ "$1" = "compose" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status identity broker storage collector prometheus
+    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init broker storage collector prometheus
     if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
       printf '%s\\n' unreviewed
     fi
@@ -125,7 +125,7 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
         legacy-helper | foreign-legacy-volume) printf '%s\\n' 'volume|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|/var/lib/postgresql' ;;
         *)
           case "$FAKE_DOCKER_SERVICE" in
-            collector) ;;
+            collector | identity-init | catalog | catalog-init) ;;
             broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
             storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
             prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
@@ -444,7 +444,15 @@ test("refuses unreviewed profiles, Identity ownership, mounts and shared resourc
 });
 
 test("accepts exact optional service mounts and ordered Compose provenance", async (t) => {
-  for (const service of ["broker", "storage", "collector", "prometheus"]) {
+  for (const service of [
+    "broker",
+    "storage",
+    "collector",
+    "prometheus",
+    "identity-init",
+    "catalog",
+    "catalog-init",
+  ]) {
     const result = await runReset(t, { service });
     assert.equal(result.code, 0, service + ": " + result.stderr);
     assert.match(result.stdout, /reset complete/u);

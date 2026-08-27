@@ -10,6 +10,7 @@ import { createPostgresCatalogRights } from "../../src/infrastructure/persistenc
 import { verifyWorkflow } from "./workflow-postgres.js";
 import { verifyOperatorCli } from "./operator-cli.js";
 import { verifyPublicCatalog } from "./public-postgres.js";
+import { verifySourceCandidates } from "./generated-publication.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -405,6 +406,12 @@ async function verify() {
   await verifyOperatorCli(admin, port);
   await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
   await verifyPublicCatalog(admin, makeDatabase(), makeDatabase("aster_catalog_reader_fixture"));
+  await verifySourceCandidates(
+    admin,
+    makeDatabase(),
+    makeDatabase("aster_catalog_reader_local"),
+    process.env["ASTER_GENERATED_HLS_REPORT"],
+  );
 }
 try {
   await verify();
@@ -417,7 +424,9 @@ try {
         ? error.stack
             ?.split("\n")
             .filter((line) =>
-              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres)\.js/u.test(line),
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication)\.js/u.test(
+                line,
+              ),
             )
             .slice(0, 3)
         : [],

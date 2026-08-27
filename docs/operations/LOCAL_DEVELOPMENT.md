@@ -306,7 +306,7 @@ The configured GitHub governance job runs repository-memory, documentation, publ
 
 ## Local endpoints
 
-The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate only through the internal `platform` network. The optional runtime publishes Identity on `127.0.0.1:3100` for `/health/live` and `/health/ready`. The observability overlay also publishes Prometheus on `127.0.0.1:9090`; PostgreSQL, Redis, broker, storage and Collector have no host ports.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate only through the internal `platform` network. The optional runtime publishes Identity on `127.0.0.1:3100` and Catalog on `127.0.0.1:3200`, both with `/graphql`, `/health/live` and `/health/ready`. The observability overlay also publishes Prometheus on `127.0.0.1:9090`; PostgreSQL, Redis, broker, storage and Collector have no host ports. [Catalog runtime and scoped verification commands](../../services/catalog/README.md#docker-runtime-and-technical-media) explain its read-only credentials and generated-media tests.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 
@@ -327,7 +327,7 @@ The startup path grows only when its owning phase closes:
 
 1. Phase 01 dependencies become healthy, the reference runtime validates configuration, and readiness passes.
 2. Phase 02 migrations and seed create a synthetic local account and profile session without hosted identity.
-3. Phase 03 Catalog migrations and seed create synthetic rights-shaped metadata and a small valid HLS fixture.
+3. Phase 03 Catalog migrations create its empty durable store; a separate generated-HLS integration command verifies synthetic publication and retirement without populating or approving real films in the retained demo.
 4. Phase 04 Apollo Router loads the composed supergraph.
 5. Phase 05 the web application renders public catalog routes.
 6. Phase 07 the Docker-only checkpoint exposes a seeded playable journey from empty project-scoped state.

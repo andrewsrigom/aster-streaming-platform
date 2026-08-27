@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–02 are released. Guarded local Federation v2 sessions/profiles and transactional audit/outbox run in Docker with protected/post-merge acceptance. Phase 03 has Catalog editorial commands, immutable rights/audit history, a guarded CLI and locally verified published-only SQL/GraphQL reads. Catalog Docker runtime, Router, UI and playable journeys remain planned. Compatible licensing decisions are authorized without another permission pause; ADR-0014 covers Apollo. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–02 are released. Guarded local Federation v2 sessions/profiles and transactional audit/outbox run in Docker with protected/post-merge acceptance. Phase 03 implements Catalog editorial commands, immutable rights/audit, public Federation reads, a read-only Docker runtime and isolated generated-HLS publication tests. Phase 03 acceptance/remote release is in progress; Router, UI and playable film journeys remain planned. Compatible licensing decisions are authorized; ADR-0014 covers Apollo and ADR-0016 the standalone fixture tooling. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 03 — Catalog and Content Rights**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 19 squash `ec6386c` and post-merge run `33066827332` close Phase 02. Phase 03 continues locally on `feat/p03-catalog-rights`; no Catalog runtime or media approval is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.
+PR 19 squash `ec6386c` and post-merge run `33066827332` close Phase 02. Phase 03 continues locally on `feat/p03-catalog-rights`; no actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.

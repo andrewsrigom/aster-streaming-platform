@@ -6,8 +6,16 @@ import { fileURLToPath, URL } from "node:url";
 import { performance } from "node:perf_hooks";
 import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
+import { runGeneratedMediaFixture } from "./run-media-fixture.mjs";
 
 const execute = promisify(execFile);
+assert.ok(
+  process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === "--generated"),
+);
+const generated = process.argv[2] === "--generated" ? await runGeneratedMediaFixture() : undefined;
+if (generated) {
+  process.stdout.write(JSON.stringify(generated) + "\n");
+}
 const root = fileURLToPath(new URL("../", import.meta.url));
 const compose = await readFile(new URL("../infra/compose/compose.yml", import.meta.url), "utf8");
 const image =
@@ -82,6 +90,10 @@ try {
     {
       cwd: root,
       timeout: 60000,
+      env: {
+        ...process.env,
+        ASTER_GENERATED_HLS_REPORT: generated ? JSON.stringify(generated) : "",
+      },
       maxBuffer: 1024 * 1024,
       windowsHide: true,
     },

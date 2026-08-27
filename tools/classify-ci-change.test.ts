@@ -30,6 +30,12 @@ test("requires full quality for unrelated source and environment templates", () 
 test("selects real integration for adapters, runtime, bootstrap and shared dependency changes", () => {
   for (const path of [
     "services/identity/src/create-service.ts",
+    "services/catalog/src/create-service.ts",
+    "tools/media/generate-hls.mjs",
+    "tools/run-media-fixture.mjs",
+    "tools/run-catalog-integration.mjs",
+    "tools/verify-local-catalog.mjs",
+    "tools/verify-catalog-runtime.mjs",
     "infra/docker/identity.Dockerfile",
     ".dockerignore",
     "tools/verify-runtime-image.mjs",

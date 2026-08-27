@@ -1,6 +1,24 @@
 # Catalog
 
-Status: implemented rights-aware editorial application, local operator CLI, published-only queries and Catalog Federation v2. Local SQL/HTTP tests pass. Real media validation and the Docker Catalog runtime remain planned; there is no permanent Catalog endpoint yet.
+Status: implemented rights-aware editorial application, local operator CLI, published-only queries and Catalog Federation v2. The local Docker profile includes a read-only Catalog runtime. A generated HLS technical fixture exists; real-film processing, media delivery and browser playback remain planned. Phase 03 release acceptance is still in progress.
+
+## Docker runtime and technical media
+
+~~~sh
+docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
+pnpm catalog:demo
+pnpm catalog:media
+~~~
+
+The first command requires Docker only and exposes Catalog at http://127.0.0.1:3200/graphql with health routes on the same port. A new Catalog starts empty; no candidate is silently approved or published. Send a named POST JSON query, for example `{"operationName":"Browse","query":"query Browse { titles(first: 5) { edges { node { id localized(locale: \"en\") { title } } } } }"}`. Router is planned in Phase 04; this is a local subgraph diagnostic, not the final client endpoint.
+
+The other commands require the pinned Node/pnpm toolchain and Docker. `catalog:demo` builds a fresh isolated Compose project, tests HTTP, restricted reader privileges, database outage/recovery and shutdown, then verifies scoped cleanup. It does not reset the retained demo. `catalog:media` generates and decodes HLS in a network-disabled container, compares two generations, and exercises real PostgreSQL publication/retirement through the existing application commands. It does not fetch or approve a film. [Fixture decision](../../docs/adr/0016-isolated-generated-media-fixture.md).
+
+The runtime uses `aster_catalog_reader_local`, with only the live Catalog public view. It receives no operator/admin credentials. Readiness checks actual schema and privileges, including absence of Identity access; a five-second bounded monitor recovers after dependency restoration. GraphQL keeps its existing request limits and deadlines. HTTP has 128 connection slots, 10-second request/socket limits, 5-second header/keepalive limits and bounded shutdown (10 seconds; forced exit on failure). The container runs UID 1000, read-only, without added capabilities, capped at 384 MiB/one CPU/64 PIDs. PostgreSQL has a four-connection pool and one-second connection/statement limits. Redis is not a Catalog read dependency.
+
+Structured operation/lifecycle logs contain correlation IDs, never query documents or database credentials. Shared local HTTP/dependency/runtime metrics are collected in process; remote Catalog metric export and exported distributed traces are not claimed. Stop only Catalog to roll back its runtime; retain rights, audit and outbox data. For unready service, inspect bounded logs and initializer exit status, restore database/schema/reader grants, then confirm `/health/ready` and a browse query. Do not grant administrator rights to make readiness pass.
+
+[Reviewed candidate records](examples/candidate-sources.json) are NEEDS_CLARIFICATION. [Source evidence](../../evidence/phase-03/candidate-sources.md) records retrieval limitations and missing asset-specific facts. Integration persists them, proves premature approval rejection and confirms public invisibility; the retained demo is not seeded with unapproved films.
 
 ## Local operator
 

@@ -1,0 +1,89 @@
+P03-R04 Catalog runtime checkpoint, 2026-08-27
+Source base: 08a06ca83fc9af99dd7ec271a1fcb370c7832b48 plus this worktree.
+Environment: WSL Ubuntu 20.04/Linux amd64, Node 24.19.0, pnpm 11.24.0, Docker.
+Command: pnpm catalog:demo
+Workload: fresh uniquely named Compose project; PostgreSQL 18.6; Catalog migrations twice; anonymous empty browse; reader write/history denial; extra privilege grant/revoke; database stop/start; SIGTERM; scoped resource cleanup.
+Outcome: all assertions pass. Catalog runtime has no Redis dependency.
+Raw output:
+{"event":"catalog_docker_started","image":"sha256:bb6727a0678e8dcd10b91597f0b8ed8591f73862ea79ef67b15c4e09bef87f4f","uid":1000,"emptyBrowse":true,"idempotentMigrations":true,"readerDeniedWriteAndHistory":true,"redisRequired":false}
+{"event":"catalog_docker_recovered","excessPrivilegeRejected":true,"databaseOutageRecovered":true,"shutdownMs":1108,"exitCode":143,"sanitizedLogs":true}
+{"event":"catalog_docker_cleaned","remaining":0,"durationMs":80580}
+
+Earlier proof before OID privilege-check remediation: 87526 ms total, shutdown 511 ms. Second proof above covers the current runtime behavior. Later formatting or tests/doc-only changes do not invalidate that image's behavioral evidence.
+Limitations: fresh local Linux amd64, empty Catalog, no hosted capacity/SLO, no retained-demo mutation, no media/browser delivery. Actual coexisting private Identity schema is covered by the generated PostgreSQL integration.
+Full phase/candidate gates and review are pending at this checkpoint.
+
+Candidate checkpoint (2026-08-27)
+Command: pnpm check:changed
+Result: 52/52 tasks pass, 29 cached, 25.796 s. Includes 94 Catalog tests, 34 platform/media tests, strict types, lint, formatting, Knip, architecture, documentation, repository-memory, secret and CI policy checks.
+Command: pnpm audit --audit-level=high
+Result: exit 0; one known moderate advisory. This is the Node dependency audit, not a container or codec patent audit.
+Author review: initial round identified private-schema privilege lookup, reader membership after the test-only migration round-trip, Catalog/initializer reset allowlisting and Docker entrypoint discovery. Batched remediation and confirmation pass against real private-schema SQL, repeated Docker recovery, generated publication/retirement and the complete candidate gate. No independent review is claimed.
+Retained runtime check: docker ps reports original Identity, platform-status, PostgreSQL and Redis containers healthy. Only new disposable synthetic fixtures/volumes were removed; regenerate them with the documented commands.
+Exact source SHA-256 checkpoint (later documentation-only closeout does not affect the measured behaviors):
+dbc281ca7e96175cf0f5e83244ecd8a16c5b51c40de1d817818527b299fef1b2  services/catalog/examples/candidate-sources.json
+6b45337fa3e24a15798f3386e9e9a88483978e17a08cc8264150b8b83b1dced5  services/catalog/examples/create-draft.json
+2084990c5323a6956e3d0d3d5f28c94463fc17d62abfe0960b167b57d542ec69  services/catalog/migrations/0001-rights-history.down.sql
+fc818734016235d2c5ed634862e670e38b0a5d646636caa2fa540c25d5d7b9b7  services/catalog/migrations/0001-rights-history.up.sql
+3d93597b768440c27647b9c2c0b41a2a0a0fbe2fbba0eb8f25e74f25c02b70b5  services/catalog/migrations/0002-editorial-workflow.down.sql
+d89d0f9949738b342c16553c4bffc9a2c94d14d86ac51c43e52fda2eccce8bc2  services/catalog/migrations/0002-editorial-workflow.up.sql
+fd90a860f9e7c34b01e33b3f8883eebe5814abb027747f5b54c6b58402fb52f1  services/catalog/migrations/0003-public-reads.down.sql
+8c9a9880f84b24e49ad792e1cc668ef69e2320c5b99808ae9e8e53a14749c0a8  services/catalog/migrations/0003-public-reads.up.sql
+744302c6b723ef66b3376d0554695b134290cf9c229cefaffe90a5b53f0132b5  services/catalog/migrations/README.md
+e711c6b886b08d23cac545129d3b09a954a626f1217533d06abed772ca54cdc1  services/catalog/src/application/command-input.ts
+8133534f4c38bbf62022fdebde18d91310b520a7722dc8f4bf8a672df279f0fe  services/catalog/src/application/commands.ts
+17666d0f412cc2a65139c6de0786df55dc40c3a09989f57944469edf6673a557  services/catalog/src/application/operator-ports.ts
+cc322f20d07f21a492028b1eec6d44afa9f2d8bb3116fc0a0566f67ea564f98a  services/catalog/src/application/public-ports.ts
+e1a1296ce012c16215c94b8d46a36239e6c15d2c41a81ca3150a2da217b6f8a1  services/catalog/src/application/public-queries.ts
+3f6fc40253ce5d3bb3dd58e40c0b8f93536541860c0137123fb4c12b5d09e534  services/catalog/src/application/rights-ports.ts
+de4e7836b6b9097d2793548bc4b0997c5d61d972d0c326cc4d890ae549902bc8  services/catalog/src/create-service.ts
+07b3626e5c18106f38c175a4b7c3464d782dd31f20d7ddfdaa8659dfac271bf4  services/catalog/src/domain/metadata.ts
+340690c88c3b4fc62772e73caecad55f3897c8e56a1255d6b41bc0147dcbfa81  services/catalog/src/domain/public-title.ts
+9d953524ada1f95da81d3a46aa4049ad7eec7849a7a68c7090e97a93b4e29e97  services/catalog/src/domain/rights.ts
+1c047cb492e131d34cf1502b2893a5fe9e988278baa7ab361d5a60d42667623f  services/catalog/src/domain/title.ts
+ba1fdcd261851cda09d8b0b5a4d22cd4f06bb18e02282ab9b1c9d8114104e965  services/catalog/src/domain/values.ts
+07add36ffa82d473636dc92925b83fe3bc6d554390cefb394a27793e18b63c83  services/catalog/src/index.ts
+1844136c4644eb7fb92bb8591dac229c021d635168b84a5f767155e10b3d28cb  services/catalog/src/infrastructure/identity/local-configuration.ts
+984173de4be0eeb83fe06d6e5088c427f13c7e9d760eaef94bd90f514293adbc  services/catalog/src/infrastructure/identity/local-operator.ts
+7d75e4bc09c7dfbd562eeeccecf44141e6cbb96be0ee55edc4a0494f7248448c  services/catalog/src/infrastructure/persistence/local-migrations.ts
+083c77c619883c3b61f99864131ff2739166ce8a2d8d686c215ab5bbc1405103  services/catalog/src/infrastructure/persistence/postgres-public.ts
+6228ad4be237108fd1929e9c10c4079598f5982510cd793853de5a467399da67  services/catalog/src/infrastructure/persistence/postgres-rights.ts
+8d14b75d336eba51720c36904476dbc6d0def19fc677c47102d90bb025c52b66  services/catalog/src/infrastructure/persistence/postgres-workflow.ts
+e6b7d2fbf204c9c2f911b1987fe315a48025e2e771bd36c52dfd508403a32afd  services/catalog/src/infrastructure/persistence/reader-readiness.ts
+8404889cc5ede04da484df2d5363bc8c3feeacec4ab2a7379b52ab445c44a96f  services/catalog/src/infrastructure/runtime-configuration.ts
+280e13cfa91006b67709da432de85c1d6fd57d2d23da461f691ba1178a2bff2b  services/catalog/src/main.ts
+25daedee490a74baa76330023a5aa70608585d79b4c638cde883ae6be9918867  services/catalog/src/migrate-local.ts
+f77eec2d4de6d733f33c61a89c55910dc2fb0eceadcf9d4eb48a2b61b6cb058a  services/catalog/src/operate-local.ts
+aebc388717a06611ab2367d5d00b5c312cc0b0285c312b47cd958669471c267a  services/catalog/src/transport/catalog-schema.ts
+4c99545e0890658b580331ede14a79e06db4aa8579d0ae78c12f4de6e987d765  services/catalog/src/transport/catalog-subgraph.ts
+630771a208f41fa34fccbe0da6eeba607ba3a621fc0e4db4f1d22f11c1eba037  services/catalog/src/transport/graphql-operation.ts
+3f573cee77cc6c8e71afda956e997ddfcd40bad762e2f41751f4733a893ef6b1  services/catalog/src/transport/http-server.ts
+788efbfae4477be8f4c731b420710f146254f97fab16fde06893f60d1c7aff39  services/catalog/src/transport/operator-input.ts
+95e75d77c66d84a03220c013265d0ea400bee6dcb312548e16924b3e7ab6b823  services/catalog/test/catalog-domain.test.ts
+e8c3447180f834890d59b2c709cac76507f446adf2514bbef74f5a8e4019a7d8  services/catalog/test/catalog-graphql.test.ts
+ea12cbb48b65b0ccef2d3bcc0c6b683ca951f58492ebeff8154ff33a0ac1e5a0  services/catalog/test/catalog-http-fixture.ts
+bebb315be85c8b2ab8a49fec8056ba5e56f94d32c0b71095f3402244920f9700  services/catalog/test/catalog-public.test.ts
+4ab763ba08be690389efa62e7d2fcee69ab40e14bf48481186eea9e13ca652fb  services/catalog/test/catalog-subgraph.test.ts
+e6c677449f3b8e645aabfd306ed36b349666d774816bc19ee0556021766b37e6  services/catalog/test/catalog-workflow.test.ts
+23dfaf053188d582311fd737c31a2d3a16c4a3b9ced6de6a02813d672072f8e3  services/catalog/test/integration/generated-publication.ts
+2bbfb647970b8b759c306b65a01d5bffe807f59e76d8693b774bbf4c37430c89  services/catalog/test/integration/operator-cli.ts
+65f81192fe0800222f596a58169e2686da46ea2b5090b4535e67312ee1c3449b  services/catalog/test/integration/public-postgres.ts
+ea5ec76bb720d99858ff88405b850cd03e56e2a2cdecc90fb49ee76a3dea89a4  services/catalog/test/integration/rights-postgres.ts
+b30e39c60d270162ed449ede002f50d9254c7b98d097c93e493fcedf6a4cd912  services/catalog/test/integration/workflow-postgres.ts
+be97dc640846e11e1263267c07fd1d0cfb8517bdcc15c7cdd5acc1cf6e00ba15  services/catalog/test/operator-input.test.ts
+21dc735837ca38de7efe8cdb275cb896fe6e089246786449439a8f77b4686c75  services/catalog/test/postgres-rights.test.ts
+3822aef5f785707d4228719e6fa678dfb1c38867e349a08c245b8927ef58c34c  services/catalog/test/public-fixture.ts
+fd0daf1477ea03dbdc918ee88d5320b8e1bcf1e38d900ab658297b9880ffce95  services/catalog/test/rights-fixture.ts
+5772fbfea6c445c5623c1862c74d6903f27273e4aa5d2a3aae6112d7c08538ac  services/catalog/test/runtime.test.ts
+0f5924cb75ce45940fb4c1c6306c9abd952f0ad7152981953f391c9100b29734  services/catalog/test/workflow-fixture.ts
+234f6095870dde33d9542e4c7bffd49e7ba782b566d685975a36263ab89e99ab  tools/media/generate-hls.mjs
+402b52a5ef55df311af5ea04ec9fc4e0eea3431b25a4860d110f626dc16d3542  tools/media/hls-contract.mjs
+848034191bba35eeb4aa4d87213efed0d6536d322225de33cb34302dd2207c8a  tools/media/hls-contract.test.mjs
+90a59a0ae76378557155326321654d53e05bc7897010783a70d32274ff49185a  infra/docker/catalog.Dockerfile
+b1dc3697f49593c622a903257c8eae8810a2a2d9da1d618724e83ac50255a384  infra/docker/media-fixture.Dockerfile
+aadfd4b764a7274d4e10a182e277b2130333ab55498d9cc6a910503636985888  infra/compose/compose.yml
+3ad11c48e506696258ee01d3687df477dd1a620507bd110f81d388bd8aed8265  tools/verify-local-catalog.mjs
+782e550d18de3ce4e8a39eacdb70cbabd79170bcd44fec50251b7e79679f6edc  tools/run-media-fixture.mjs
+9bff945efceaee9b75bef6c8cec6785054e63fdb8abee1c1c84573da47e6e20c  tools/run-catalog-integration.mjs
+a1ecc18dc8ebad2c1867682bec19b8670c67014025ee70e8ec7a737a2c55d722  .github/workflows/ci.yml
+43fb3d69e30879b6c1805b76da20ed93b4246094233ca73cc6656825b5967ee0  pnpm-lock.yaml

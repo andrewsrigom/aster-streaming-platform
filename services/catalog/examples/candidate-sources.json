@@ -1,0 +1,104 @@
+[
+  {
+    "titleId": "00000000-0000-4000-8000-000000080001",
+    "reviewDate": "2026-08-27",
+    "reviewer": "Aster source-review automation",
+    "decision": "NEEDS_CLARIFICATION",
+    "unresolved": [
+      "Fresh direct-page retrieval and exact asset selection",
+      "Complete creator/end-credit verification",
+      "Asset-specific music, caption and artwork review"
+    ],
+    "metadata": {
+      "defaultLocale": "en",
+      "localizations": [
+        {
+          "locale": "en",
+          "title": "Big Buck Bunny",
+          "synopsis": "Candidate for individual source and rights verification; not acquired or published."
+        }
+      ],
+      "genres": ["animation"],
+      "credits": [],
+      "artwork": null,
+      "releaseYear": null,
+      "runtimeSeconds": null,
+      "languages": [],
+      "accessibility": [],
+      "editorialLabels": ["candidate"]
+    },
+    "rights": {
+      "workTitle": "Big Buck Bunny",
+      "creator": null,
+      "copyrightHolder": "Blender Foundation",
+      "canonicalSourceUrl": "https://peach.blender.org/about/",
+      "assetSourceUrl": null,
+      "licenseName": "Creative Commons Attribution",
+      "licenseVersion": "3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "attributionText": "Retain the complete film end credits. Exact creator and asset-specific attribution remain unresolved.",
+      "modificationNotice": "No media acquired or modified; planned HLS conversion requires an approved asset.",
+      "redistributionAllowed": null,
+      "commercialUseAllowed": null,
+      "modificationAllowed": null,
+      "shareAlikeRequired": false,
+      "technicalRestrictions": "NONE",
+      "thirdPartyMaterialNotes": "Exact asset and its credits have not been inspected. Separate assets require separate review.",
+      "trademarkNotes": "Project license excludes logos, marks, DVD cover and disc artwork; some textures have separate credits.",
+      "sourceChecksum": null,
+      "validUntil": null,
+      "evidenceLocations": ["evidence/phase-03/candidate-sources.md"]
+    }
+  },
+  {
+    "titleId": "00000000-0000-4000-8000-000000080002",
+    "reviewDate": "2026-08-27",
+    "reviewer": "Aster source-review automation",
+    "decision": "NEEDS_CLARIFICATION",
+    "unresolved": [
+      "Fresh direct-page retrieval and exact asset selection",
+      "Complete creator/end-credit verification",
+      "Asset-specific music, caption and artwork review"
+    ],
+    "metadata": {
+      "defaultLocale": "en",
+      "localizations": [
+        {
+          "locale": "en",
+          "title": "Sintel",
+          "synopsis": "Candidate for individual source and rights verification; not acquired or published."
+        }
+      ],
+      "genres": ["animation"],
+      "credits": [],
+      "artwork": null,
+      "releaseYear": null,
+      "runtimeSeconds": null,
+      "languages": [],
+      "accessibility": [],
+      "editorialLabels": ["candidate"]
+    },
+    "rights": {
+      "workTitle": "Sintel",
+      "creator": null,
+      "copyrightHolder": "Blender Foundation",
+      "canonicalSourceUrl": "https://durian.blender.org/sharing/",
+      "assetSourceUrl": null,
+      "licenseName": "Creative Commons Attribution",
+      "licenseVersion": "3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "attributionText": "Retain the complete film end credits. Exact creator and asset-specific attribution remain unresolved.",
+      "modificationNotice": "No media acquired or modified; planned HLS conversion requires an approved asset.",
+      "redistributionAllowed": null,
+      "commercialUseAllowed": null,
+      "modificationAllowed": null,
+      "shareAlikeRequired": false,
+      "technicalRestrictions": "NONE",
+      "thirdPartyMaterialNotes": "Exact asset and its credits have not been inspected. Separate assets require separate review.",
+      "trademarkNotes": "Project license excludes logos, marks and material not produced by the Durian project.",
+      "sourceChecksum": null,
+      "validUntil": null,
+      "evidenceLocations": ["evidence/phase-03/candidate-sources.md"]
+    }
+  }
+]

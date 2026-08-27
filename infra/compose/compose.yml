@@ -10,6 +10,75 @@ x-local-logging: &local-logging
     max-file: "2"
 
 services:
+  catalog:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      catalog-init:
+        condition: service_completed_successfully
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_CATALOG_LOCAL_ENABLED: "true"
+      ASTER_CATALOG_HTTP_HOST: 0.0.0.0
+      ASTER_CATALOG_HTTP_PORT: "3200"
+      ASTER_CATALOG_READER_DATABASE_URL: postgresql://aster_catalog_reader_local@postgres:5432/aster
+      ASTER_CATALOG_READER_DATABASE_PASSWORD: aster-test-only
+    ports:
+      - "127.0.0.1:3200:3200"
+    networks: [platform, edge]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 15s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 384M
+          pids: 64
+
+  catalog-init:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_CATALOG_OPERATOR_ENABLED: "true"
+      ASTER_CATALOG_ADMIN_DATABASE_URL: postgresql://aster@postgres:5432/aster
+      ASTER_CATALOG_ADMIN_DATABASE_PASSWORD: aster-test-only
+    command: ["./dist/src/migrate-local.js"]
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      disable: true
+    stop_grace_period: 5s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+          pids: 32
+
   identity:
     logging: *local-logging
     profiles: [runtime, integration, observability, full]

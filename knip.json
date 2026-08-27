@@ -8,8 +8,9 @@
     "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
   ],
   "workspaces": {
+    ".": { "entry": ["tools/media/generate-hls.mjs"] },
     "services/catalog": {
-      "entry": ["src/index.ts", "src/operate-local.ts", "src/migrate-local.ts"],
+      "entry": ["src/index.ts", "src/main.ts", "src/operate-local.ts", "src/migrate-local.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "services/identity": {

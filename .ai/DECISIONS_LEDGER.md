@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0016](../docs/adr/0016-isolated-generated-media-fixture.md) selects a network-disabled, resource-limited local FFmpeg fixture job. Aster stays MIT; GPL-containing Debian tooling remains a separate executable with notices and a binary-release compliance gate. Synthetic tests do not approve real films or prove CDN/browser delivery.
+
 Phase 02 identity/session selection is accepted in [ADR-0013](../docs/adr/0013-local-identity-and-sessions.md): guarded local ES256 assertions with durable owner-validated sessions. The assertion adapter is locally verified; account/session persistence passes real database tests. Cookie/GraphQL transport and hosted identity remain separate acceptance boundaries.
 
 The owned-profile slice implements defaults of five profiles (configured 1–16), per-session active selection, optimistic versions, 24-hour idempotency receipts (64/account), 30-day audit (128/account), and a non-evicting pending outbox (128/account). Deletion removes preferences immediately; broker delivery/consumer acknowledgment remains Phase 08. These reversible owner policies preserve the accepted architecture; exact contracts and proof are in [migration policies](../services/identity/migrations/README.md) and [profile evidence](../evidence/phase-02/profiles-outbox.txt).

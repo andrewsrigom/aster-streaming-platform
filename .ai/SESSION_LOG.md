@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Runnable Catalog and generated HLS checkpoint
+
+### Completed
+
+Implemented local read-only Catalog composition, health/readiness recovery, guarded Docker init/runtime, generated HLS with audio/captions and byte validation, two unresolved source reviews, same-application publication/retirement integration and bounded CI wiring. Corrected private-schema privilege inspection to use OIDs; local reset recognizes both finite initializers and Catalog with exact ownership checks. No retained demo reset or remote mutation.
+
+### Evidence
+
+94 Catalog tests and focused media/platform checks pass. Fresh Catalog Docker proof passes in 80580 ms including cleanup; shutdown 1108 ms, exit 143, no OOM. Generated fixture repeats identical hashes, rejects corrupt/missing/symlinked segments and cancelled child work. Real PostgreSQL generated publication/retirement and two non-approved candidates pass, cleanup 22490 ms, zero residual fixtures. Raw checkpoints: evidence/phase-03/catalog-runtime.txt and generated-media.txt. First candidate attempt found handoff-heading and Docker-entry discovery metadata omissions; full gate is not yet claimed.
+
+### Next action
+
+Candidate gate and author confirmation now pass: 52/52 tasks, 29 cached, 25.796 s; high-severity Node audit passes. Finish clean-source full phase acceptance and publish one coherent Phase 03 PR. Router remains next, not active.
+
 ## 2026-08-27 — Published Catalog candidate
 
 ### Completed

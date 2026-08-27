@@ -76,6 +76,16 @@ export async function migrateLocalCatalog(
       throw new Error("Incompatible local Catalog role.");
     }
     await client.query("GRANT aster_catalog_runtime TO aster_catalog_local");
+    await client.query(
+      "DO $local$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_catalog_reader_local') THEN CREATE ROLE aster_catalog_reader_local LOGIN PASSWORD 'aster-test-only' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS; END IF; END $local$",
+    );
+    const reader = await client.query<{ allowed: boolean }>(
+      "SELECT rolcanlogin AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls) AND NOT pg_has_role('aster_catalog_reader_local', 'aster_catalog_runtime', 'MEMBER') AS allowed FROM pg_roles WHERE rolname = 'aster_catalog_reader_local'",
+    );
+    if (reader.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Catalog reader role.");
+    }
+    await client.query("GRANT aster_catalog_reader TO aster_catalog_reader_local");
     signal.throwIfAborted();
     return { applied: Object.freeze(applied) };
   } finally {
