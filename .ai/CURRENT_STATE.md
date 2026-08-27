@@ -118,7 +118,7 @@ Status: **IN_PROGRESS**
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
 - P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
 - P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
-- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Deadline, readiness, recovery-monitor, and fixed-health-route contracts are implemented. The HTTP package now has 10 passing tests for non-cacheable `GET`/`HEAD` liveness/readiness, dependency-unavailable status, hostile-provider sanitization, and preserved GraphQL behavior. Minimum reference configuration and the product-empty Identity composition remain next.
+- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Deadline, readiness, recovery-monitor, fixed-health-route, and reference-configuration contracts are implemented. Health checkpoint `d6d6ffc` passes 10 HTTP tests; configuration passes 13 tests with classified listener and startup values. The product-empty Identity composition is next.
 
 ## Not implemented
 
@@ -142,7 +142,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-For P01-R08, add only the minimum listener and startup configuration required by the product-empty Identity reference process.
+For P01-R08, create the product-empty Identity reference process using controlled dependency ports, then compose the released adapter factories behind the same boundary.
 
 ## Current risks
 

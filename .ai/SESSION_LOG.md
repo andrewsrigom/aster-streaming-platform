@@ -2,6 +2,21 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented reference listener and startup configuration
+
+### Completed
+
+- Added required non-secret HTTP host, unprivileged port, and total startup deadline values to the Phase 01 reference schema, typed result, and redacted diagnostic.
+- Kept internal dependency and monitor budgets in the upcoming composition policy; updated the existing README command without adding a service or dependency.
+
+### Evidence
+
+- Configuration build, typecheck, targeted ESLint, 13/13 tests, and the updated README diagnostic pass. The health checkpoint is committed as `d6d6ffc`.
+
+### Next action
+
+Create the product-empty Identity composition root with controlled ports and focused lifecycle tests.
+
 ## 2026-08-26 — Implemented fixed public health routes
 
 ### Completed

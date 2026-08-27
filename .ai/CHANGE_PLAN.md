@@ -15,7 +15,7 @@ Provide one product-empty Identity reference process that starts and stops withi
 
 P01-R05 and P01-R06 released bounded lifecycle and telemetry. P01-R07 released the clock, ID, PostgreSQL, Redis, Kafka, and S3 adapter boundaries through corrective squash `61226eb3ce4976e31edde1f8b8198bcdd10095a6`; exact post-merge run `33026799005` passed. P01-R08 is now directly based on released `main`.
 
-No deployable service, dependency readiness controller, recovery monitor, public health route, service startup coordinator, product schema, or GraphQL resolver exists. The Express adapter owns only its bounded `/graphql` transport today, and lifecycle health cannot yet become not ready and recover while the lifecycle phase remains `ready`.
+The deadline, dependency-readiness controller, recovery monitor, fixed health routes, and reference listener/startup configuration are implemented locally. No deployable service, service startup coordinator, product schema, or GraphQL resolver exists yet.
 
 ## Proposed behavior
 
@@ -77,6 +77,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 - Public runtime contracts: Finite deadline, critical-dependency readiness snapshot/transition, monitor lifecycle, stable public health snapshot, and Identity service start/stop result types using repository-owned types only.
 - HTTP contract: Fixed case-sensitive `/health/live` and `/health/ready`, `GET` and `HEAD` only, bounded JSON, `Cache-Control: no-store`, stable status codes, and no topology disclosure.
 - Compatibility: Pinned Node.js `24.19.0`, pnpm `11.24.0`, existing exact Express/Apollo compatibility boundary, existing exact PostgreSQL/Redis clients, and Linux/WSL process-signal support. Native Windows signal behavior remains unclaimed.
+- Reference configuration: Require non-secret `ASTER_HTTP_HOST` (`127.0.0.1` or isolated-container `0.0.0.0`), `ASTER_HTTP_PORT` (1024–65535), and `ASTER_STARTUP_DEADLINE_MS` (5000–300000). The service composition retains the phase-owned internal dependency and monitor budgets instead of introducing unused environment controls.
 - Retention/deletion: Deadline, readiness, monitor, and service state are process-local and end on shutdown. No durable record is created or deleted.
 
 ## Security and privacy
@@ -93,7 +94,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 3. [completed] Implement the bounded readiness controller over the released lifecycle with pending/ready/unavailable critical gates, stable public snapshots, recovery without phase rollback, and ready-only work leases.
 4. [completed] Implement the single non-overlapping recovery monitor with deterministic scheduler/jitter seams, one probe per critical dependency, cancellation, stop-before-close, late-completion, and failure tests.
 5. [completed] Extend the Express adapter and ADR-0011 with fixed non-cacheable liveness/readiness routes, exact methods/status/body behavior, provider hardening, and real-socket tests while preserving `/graphql` behavior.
-6. [pending] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.
+6. [completed] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.
 7. [pending] Create the product-empty Identity composition root using injected controlled ports first, then compose the released real adapter factories behind the same boundary. Prove startup deadline propagation, unavailable startup, recovery, request admission, partial-start cleanup, one signal owner, ordered shutdown, and vendor-free inner declarations.
 8. [pending] Add a loopback diagnostic that starts the reference process with controlled dependency ports, verifies stable health transitions and bounded stop, and exits naturally without product state.
 9. [pending] Consolidate documentation/evidence, run the affected and forced complete gates, repeat an exact frozen checkout for new workspace/package/export/public-command inputs, and perform one complete review plus one confirmation round.
@@ -112,7 +113,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 
 - Commands: Focused package typecheck/build/tests and targeted lint/format per checkpoint; `pnpm check:changed` per coherent candidate; one `pnpm check --force` when the entire item stabilizes; loopback process diagnostics; exact frozen no-generated-state checkout; audit and secret scan; protected CI only after predecessor-first rebase/publication.
 - Raw artifact path: `evidence/phase-01/runtime-composition.txt`.
-- Acceptance result: Deadline, readiness, recovery-monitor, and fixed-health-route contracts are implemented; 80 runtime tests and 10 HTTP tests pass. Configuration and service composition remain pending.
+- Acceptance result: Deadline, readiness, recovery-monitor, fixed-health-route, and reference-configuration contracts are implemented; 80 runtime tests, 10 HTTP tests, and 13 configuration tests pass. Service composition remains pending.
 - Iteration gate: Run only the changed runtime/HTTP/config/service build, typecheck, tests, diagnostic, and targeted lint/format after each coherent behavior checkpoint.
 - Candidate gate: Run `pnpm check:changed` after the combined runtime contracts, after the combined HTTP/service composition, and at closeout. Run the forced complete graph once after source, declarations, documentation, and evidence stabilize.
 - Heavyweight repeat triggers: Repeat exact frozen checkout for workspace, dependency, lockfile, package/export/declaration, install, bootstrap, service entrypoint, or public command changes. Repeat real-socket/subprocess handle evidence for listener, signal, timer, cancellation, monitor, request admission, startup, or shutdown changes. Real dependency/container evidence remains exclusively P01-R09.

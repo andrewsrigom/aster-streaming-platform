@@ -119,7 +119,10 @@ P01-R03 adds a server-only configuration package and process-start diagnostic. I
 
 ```bash
 ASTER_ENV=local \
+ASTER_HTTP_HOST=127.0.0.1 \
+ASTER_HTTP_PORT=3100 \
 ASTER_SERVICE_NAME=config-check \
+ASTER_STARTUP_DEADLINE_MS=15000 \
 DATABASE_URL=postgresql://postgres:5432/aster \
 REDIS_URL=redis://redis:6379/0 \
 pnpm config:check

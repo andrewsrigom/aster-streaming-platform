@@ -64,6 +64,12 @@ Fixed health route checkpoint
 - `@aster/http-express` build, typecheck, targeted ESLint, targeted formatting, and 10/10 tests pass. Real sockets prove starting, dependency-unavailable, ready, and failed statuses; `HEAD` body suppression; provider sanitization; and unchanged pre-mount `/graphql` behavior.
 - This is focused working-tree evidence based on source head `0a7cdc0`; the combined HTTP/configuration/service candidate will record its exact commit and affected gate.
 
+Reference listener and startup configuration checkpoint
+- Health source and documentation were committed as `d6d6ffc` after the focused HTTP gate, documentation validation, repository-memory validation, and staged secret check passed.
+- Added three required non-secret reference inputs: loopback or container-wildcard HTTP host, unprivileged decimal port, and 5000–300000 millisecond total startup deadline. Dependency and monitor budgets remain phase-owned composition policy rather than new environment variables.
+- Configuration build, typecheck, targeted ESLint, and 13/13 tests pass. The updated README diagnostic command exits 0 and emits five non-secret values while retaining configured-only secret status.
+- Focused working-tree configuration evidence is based on `d6d6ffc`; the combined candidate will record exact source and affected-gate evidence.
+
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
 - Monitor cancellation/non-overlap focused tests.

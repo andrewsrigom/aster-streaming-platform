@@ -21,7 +21,10 @@ function runDiagnostic(environment: Record<string, string>) {
 function validEnvironment(): Record<string, string> {
   return {
     ASTER_ENV: "integration",
+    ASTER_HTTP_HOST: "127.0.0.1",
+    ASTER_HTTP_PORT: "3100",
     ASTER_SERVICE_NAME: "config-check",
+    ASTER_STARTUP_DEADLINE_MS: "15000",
     DATABASE_URL: credentialUrl("postgresql:", "aster", DATABASE_CANARY, "postgres:5432/aster"),
     REDIS_URL: credentialUrl("redis:", "", REDIS_CANARY, "redis:6379/0"),
   };
@@ -58,7 +61,7 @@ test("process-start diagnostic exits zero and redacts configured secrets", () =>
   };
   assert.equal(diagnostic.event, "aster.configuration.valid");
   assert.equal(diagnostic.status, "ok");
-  assert.equal(diagnostic.variables.length, 4);
+  assert.equal(diagnostic.variables.length, 7);
   assertCanariesRedacted(result.stdout);
 });
 

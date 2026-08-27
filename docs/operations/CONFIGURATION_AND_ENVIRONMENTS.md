@@ -12,7 +12,7 @@
 
 ## Phase 01 reference runtime
 
-P01-R03 implements the first server-only configuration contract in `@aster/config`. It belongs to the Phase 01 reference Node.js runtime, which requires PostgreSQL and Redis. It is not a universal schema for every future service. A runtime unit with different dependencies owns a different schema and must not add unused variables to this contract.
+P01-R03 implements the first server-only configuration contract in `@aster/config`; the active P01-R08 candidate adds its listener and total-startup inputs. It belongs to the Phase 01 reference Node.js runtime, which requires PostgreSQL and Redis. It is not a universal schema for every future service. A runtime unit with different dependencies owns a different schema and must not add unused variables to this contract.
 
 The process-start order is:
 
@@ -28,11 +28,16 @@ The CLI captures the real process environment into entries once and filters unre
 | Variable | Classification | Required behavior |
 |---|---|---|
 | `ASTER_ENV` | Non-secret server runtime | Required; one of `local`, `integration`, `staging`, or `production` |
+| `ASTER_HTTP_HOST` | Non-secret reference listener | Required; loopback `127.0.0.1` or container wildcard `0.0.0.0` |
+| `ASTER_HTTP_PORT` | Non-secret reference listener | Required; unprivileged decimal port from `1024` through `65535` |
 | `ASTER_SERVICE_NAME` | Non-secret server runtime | Required; 1–63 lowercase alphanumeric or hyphen characters |
+| `ASTER_STARTUP_DEADLINE_MS` | Non-secret reference startup | Required; integer `5000` through `300000` milliseconds |
 | `DATABASE_URL` | Secret | Required; bounded PostgreSQL URL using `postgres:` or `postgresql:` |
 | `REDIS_URL` | Secret | Required; bounded Redis URL using `redis:` or `rediss:` |
 
-Database and Redis URLs are secret even when a local value has no credential because the same fields may carry credentials in another environment. All four values are limited before schema parsing. The runtime ignores unrelated host variables, rejects unexpected names beginning with `ASTER_`, `DATABASE_`, or `REDIS_`, and reports no more than eight issues.
+Database and Redis URLs are secret even when a local value has no credential because the same fields may carry credentials in another environment. All seven values are limited before schema parsing. The runtime ignores unrelated host variables, rejects unexpected names beginning with `ASTER_`, `DATABASE_`, or `REDIS_`, and reports no more than eight issues.
+
+Listener ports and startup budgets accept canonical decimal integers only; whitespace, leading zeros, fractions, exponent notation, and out-of-range values fail closed. The 5-second startup minimum remains above the planned 3-second PostgreSQL connection budget. The reference 15-second startup value is a test starting point, not a production SLO. `0.0.0.0` is intended for an isolated container listener; P01-R10 owns loopback-only host port publication.
 
 ### Focused diagnostic
 
@@ -40,19 +45,22 @@ After the frozen workspace install, run the process-start diagnostic without sta
 
 ```bash
 ASTER_ENV=local \
+ASTER_HTTP_HOST=127.0.0.1 \
+ASTER_HTTP_PORT=3100 \
 ASTER_SERVICE_NAME=config-check \
+ASTER_STARTUP_DEADLINE_MS=15000 \
 DATABASE_URL=postgresql://postgres:5432/aster \
 REDIS_URL=redis://redis:6379/0 \
 pnpm config:check
 ```
 
-A successful result contains the two non-secret values and only `configured` status for the secret variables:
+A successful result contains the five non-secret values and only `configured` status for the secret variables:
 
 ```json
-{"event":"aster.configuration.valid","status":"ok","variables":[{"name":"ASTER_ENV","classification":"non-secret","status":"configured","value":"local"},{"name":"ASTER_SERVICE_NAME","classification":"non-secret","status":"configured","value":"config-check"},{"name":"DATABASE_URL","classification":"secret","status":"configured"},{"name":"REDIS_URL","classification":"secret","status":"configured"}]}
+{"event":"aster.configuration.valid","status":"ok","variables":[{"name":"ASTER_ENV","classification":"non-secret","status":"configured","value":"local"},{"name":"ASTER_HTTP_HOST","classification":"non-secret","status":"configured","value":"127.0.0.1"},{"name":"ASTER_HTTP_PORT","classification":"non-secret","status":"configured","value":"3100"},{"name":"ASTER_SERVICE_NAME","classification":"non-secret","status":"configured","value":"config-check"},{"name":"ASTER_STARTUP_DEADLINE_MS","classification":"non-secret","status":"configured","value":"15000"},{"name":"DATABASE_URL","classification":"secret","status":"configured"},{"name":"REDIS_URL","classification":"secret","status":"configured"}]}
 ```
 
-Invalid configuration exits with status 1. Its stable issue contract contains only a variable name, classification, and reason such as `missing`, `empty`, `invalid`, `too_long`, `too_many`, or `unexpected`. It never includes an input value or a third-party validation message. Run the twelve focused success, failure, limit, URL-normalization, unexpected-source, and redaction tests with:
+Invalid configuration exits with status 1. Its stable issue contract contains only a variable name, classification, and reason such as `missing`, `empty`, `invalid`, `too_long`, `too_many`, or `unexpected`. It never includes an input value or a third-party validation message. Run the thirteen focused success, failure, listener, budget, limit, URL-normalization, unexpected-source, and redaction tests with:
 
 ```bash
 pnpm config:test

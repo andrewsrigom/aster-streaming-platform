@@ -18,8 +18,8 @@ P01-R08 is active on `feat/p01-r08-runtime-composition`, rebased onto corrective
 
 ## Resume point
 
-1. For P01-R08, add only the minimum listener and startup configuration fields required by the Identity reference process.
-2. Create the controlled-port service composition and prove startup deadline propagation, unavailable startup, readiness recovery, request admission, cleanup, signal ownership, and ordered stop.
+1. For P01-R08, create the controlled-port Identity service composition and prove startup deadline propagation, unavailable startup, readiness recovery, request admission, cleanup, signal ownership, and ordered stop.
+2. Compose the released real adapter factories behind that tested boundary, preserving the same lifecycle owner and no product behavior.
 3. Run the next affected gate only after HTTP, configuration, and service composition form one candidate. Keep real dependency/container claims for P01-R09.
 
 ## Do not do yet
