@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10's Docker runtime checkpoint is implemented locally; integration/observability/full profiles pass local checks; exact clean-checkout acceptance passes; protected phase acceptance remains pending. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the delivered runtime from the planned video application.
+Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10 implements the Docker runtime and integration/observability/full profiles. Clean-checkout acceptance and protected CI pass; final release status is recorded in [current state](.ai/CURRENT_STATE.md). [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the verified runtime from the planned video application.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -181,7 +181,7 @@ P01-R08 composes the reusable runtime into a product-empty Identity process with
 
 Run `pnpm integration` on Linux/WSL for the released eight-scenario real PostgreSQL/Redis/Identity, Kafka, S3 and Collector/Prometheus matrix, including in-flight HTTP shutdown with every adapter. It uses one disposable Docker project; the default project is unchanged. Focused `integration:core`, `integration:broker`, `integration:storage` and `integration:telemetry` commands remain available. These tests require pinned host Node/pnpm. See [integration operation and cleanup](docs/operations/LOCAL_DEVELOPMENT.md#complete-integration-matrix) and [current evidence](evidence/phase-01/real-integration.txt).
 
-P01-R10's [Identity image checkpoint](docs/operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) builds and runs a controlled diagnostic with Docker only. The non-root production image is implemented; the normal runtime/full profile and single evaluator-start command are still pending.
+P01-R10's [Identity image checkpoint](docs/operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) builds and runs a controlled diagnostic with Docker only. The non-root production image, database-connected runtime, optional profiles and Docker-only start commands above are implemented and verified by clean-checkout and protected CI evidence. This is a runtime demonstration, not a playable product.
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 
@@ -189,7 +189,7 @@ See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.m
 
 ## Product scope
 
-Aster provides:
+The planned product provides:
 
 - a browsable film catalog;
 - title pages with complete rights and attribution information;
@@ -275,7 +275,7 @@ Read these files in order:
 8. [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md)
 9. [`.ai/WORK_QUEUE.md`](.ai/WORK_QUEUE.md)
 
-The next implementation unit is defined in [`docs/specs/phase-01-local-platform.md`](docs/specs/phase-01-local-platform.md), and the planned P01-R06 through P01-R10 path is detailed in [`docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`](docs/architecture/RUNTIME_PLATFORM_RUNWAY.md). The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
+The active implementation unit is recorded in [the work queue](.ai/WORK_QUEUE.md). The [Phase 01 specification](docs/specs/phase-01-local-platform.md) and [runtime runway](docs/architecture/RUNTIME_PLATFORM_RUNWAY.md) describe the runtime contract and implementation sequence. The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
 
 ## Repository shape
 

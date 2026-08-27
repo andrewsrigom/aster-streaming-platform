@@ -83,7 +83,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
 Pending decisions are resolved only by their owning phase. A work item stops when it needs a pending decision whose required evidence is unavailable; it does not select a dependency implicitly.
 
-The Phase 01 preflight records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, client metadata and Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 resolves the process-local OpenTelemetry packages in `evidence/phase-01/runtime-telemetry.txt`; P01-R09 resolves the local Kafka, S3 and Collector/Prometheus images in `evidence/phase-01/real-integration.txt`. Final profile sizing and the remaining decisions above are still pending.
+The Phase 01 preflight records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, client metadata and Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 resolves the process-local OpenTelemetry packages in `evidence/phase-01/runtime-telemetry.txt`; P01-R09 resolves the local Kafka, S3 and Collector/Prometheus images in `evidence/phase-01/real-integration.txt`. P01-R10 records finite profile resources and measured local samples in `evidence/phase-01/docker-demo.txt`; these are not capacity guarantees. Later-phase decisions above remain deferred to their owners.
 
 ## Repository governance decisions
 

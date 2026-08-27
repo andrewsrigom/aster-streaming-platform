@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Complete Docker confirmation findings
+
+### Completed
+
+- Collected automated confirmation `5037946690`: README incorrectly called implemented profiles pending; the local runbook incorrectly called the first passing hosted run pending. Corrected both together and removed related stale checkpoint wording. Runtime/public-command bytes are unchanged.
+- Protected run `33046678570` passed all six jobs at `d751109`; retained earlier clean evidence at `38801ce` without repeating containers or cold checkout.
+
+### Evidence
+
+- Exact hosted full-profile UID/health/six metrics, matrix (145033 ms), cleanup (1025 ms, zero residual resources) and audit pass; raw excerpts in `evidence/phase-01/docker-demo.txt`.
+- Documentation, repository-memory, secret and diff gates verify this prose-only batch before publication. No independent approval is claimed.
+
+### Next action
+
+Confirm the narrow remediation, resolve both review threads, require exact-head CI and squash/post-merge, then activate P02-R01. Batch final release metadata with Phase 02 activation instead of creating a metadata-only pipeline loop.
+
 ## 2026-08-27 — Protected Docker candidate and runway correction
 
 ### Completed

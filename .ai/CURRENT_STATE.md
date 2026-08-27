@@ -19,26 +19,26 @@ Status: **IN_PROGRESS**
 
 ## Implemented local P01-R10 checkpoint
 
-- Branch `feat/p01-r10-docker-demo`; packaging/runtime commits `4837207` and `166cc3c`. Optional source `38801ce` passes clean acceptance; [PR 18](https://github.com/andrewsrigom/aster-streaming-platform/pull/18) publishes head `d148bf7`. Protected run `33046068184` passed; no duplicate run was requested.
+- Branch `feat/p01-r10-docker-demo`; packaging/runtime commits `4837207` and `166cc3c`. Optional source `38801ce` passes clean acceptance. [PR 18](https://github.com/andrewsrigom/aster-streaming-platform/pull/18) protected runs `33046068184` at `d148bf7` and `33046678570` at `d751109` pass all six jobs. No duplicate run was requested.
 - Docker-only Identity is production-only, UID/GID 1000, read-only, ALL capabilities dropped, 1 CPU/384 MiB/64 PIDs, loopback 3100 and 15-second Docker grace. PostgreSQL/Redis stay private. Optional classified database password preserves legacy URI callers. Helper tmpfs prevents anonymous database volumes.
 - Core=4 services; runtime=5; integration=7; observability=7; full=9. The last two require explicit base-plus-`observability.yml` files. Broker/S3 remain private; Collector/Prometheus configs are baked into pinned images. Prometheus publishes only loopback 9090. Reset validates exactly nine services, two networks, four named volumes, provenance and foreign attachments before deletion.
 - Optional `ASTER_OTLP_METRICS_ENDPOINT` is validated/redacted; omitted means no export. Real HTTP, dependency, CPU, memory, event-loop and export metrics reach Prometheus. Collector loss leaves Identity live/ready, makes the telemetry status helper unhealthy and recovers. Collector-down SIGTERM exits naturally with 143 in 4223 ms, truthfully degraded.
 - Full-profile resource/image/volume samples and successful nine-container/two-network/four-volume reset are in [Docker evidence](../evidence/phase-01/docker-demo.txt). Four unrelated stopped containers and 22 volume/network entries match before/after; no Aster resource remains.
 - Focused checks pass: configuration 20/20, Identity 34/34, platform/reset 29/29, CI policy/classification 22/22. Corrected test lint/tuple typing issues; final affected gate passes 49/49 tasks (33 cached, 14.863 s).
-- Protected run `33046068184` passes all six jobs, including the Docker-built full profile, in-container UID/health/metrics, real eight-scenario matrix (152950 ms, zero residual fixture resources), license/dependency review and audit. Automated review `3869300306` then found stale architecture-runway status; the documentation-only batch corrects it. Final confirmation/exact-head CI remain pending.
+- Protected run `33046678570` proves the same Docker-built full profile, in-container UID/health/six metrics and real eight-scenario matrix (145033 ms, cleanup 1025 ms with zero fixture resources), dependency/license review and audit. Confirmation review `5037946690` found two remaining documentation contradictions, comments `3869341714`/`3869341724`; this prose-only batch corrects README/runbook status and related stale checkpoint wording. No runtime or public command changes.
 
 - Exact clean source `38801ce`: Docker full build/start 36.89 s with PATH excluding Node/pnpm, no host dependencies or Aster volumes. In-container CI UID/health/six-metric check passes. Occupied-port failure 4.56 s, recovery 5.60 s, volume-preserving stop, partial reset and idempotent repeat pass. Cold source gate 49/49 uncached (32.418 s), frozen install and audit pass; clean 228M temporary clone removed after exact verification. Prior cached layers are disclosed.
-- Initial executing-agent review missed the stale runway text found by automated review. Comment `5435289209` was corrected to mark confirmation incomplete. Do not treat it as approval; collect one confirmation round after publishing the correction. P02-R01 owns identity/session choices after Phase 01 release.
+- Initial executing-agent review missed stale text found by automated review. Comment `5435289209` was corrected and is not approval. The complete automated confirmation round is collected; verify the prose remediation, resolve its two threads and require the new exact-head protected gate before merge. No independent approval is claimed. P02-R01 owns identity/session choices after Phase 01 release.
 
 ## Not implemented
 
-- Protected P01-R10 CI, confirmation and release.
+- Final P01-R10 documentation-remediation confirmation and release; earlier protected source results above are verified.
 - Accounts/profiles/sessions, product schemas/migrations/seed, GraphQL/Federation, browser UI, catalog/playback/media pipeline, engagement/discovery.
 - Product dashboards, traces/log backends, representative load/SLOs, hosted environments/deployment. No playable VOD demo exists yet.
 
 ## Next outcome
 
-Finish P01-R10: publish the batched runway/hosted-evidence correction, resolve review thread `PRRT_kwDOUEkeis6ct7Vd` with evidence and request one confirmation. Require final exact-head protected CI, squash and verify post-merge. Check Phase 02 prerequisites before its first READY item. Do not repeat local heavy experiments for prose-only changes.
+Finish P01-R10: publish the complete prose remediation for confirmation review `5037946690`, verify and resolve threads `PRRT_kwDOUEkeis6cuCCo`/`PRRT_kwDOUEkeis6cuCCt`, then require exact-head CI, squash and post-merge verification. The original runway thread is resolved. Check Phase 02 prerequisites before its first READY item. Clean/container evidence at `38801ce` remains applicable because no executable, dependency, image, Compose, reset or public-command input changed.
 
 ## Current risks
 
