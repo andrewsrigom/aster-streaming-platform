@@ -16,7 +16,7 @@ Phase 03 has complete [acceptance](../evidence/phase-03/README.md): 94 Catalog t
 
 ## Current work
 
-All P04-R01 through P04-R10 are locally verified; protected release remains IN_PROGRESS. [Clean acceptance](../evidence/phase-04/clean-acceptance.txt) binds source b5d7ab7 to complete 55/55 gates, fresh-data Docker build/startup, session/profile journey and real failure/isolation checks. Author initial and confirmation reviews pass. Broker/S3 gate fixtures now control timing without changing runtime deadlines. The proof stack and its three synthetic volumes were removed after ownership checks; development and retained demos are healthy. No Phase 04 PR has been published yet.
+All P04-R01 through P04-R10 are locally verified; protected release remains IN_PROGRESS. [Clean acceptance](../evidence/phase-04/clean-acceptance.txt) binds source b5d7ab7 to complete 55/55 gates, fresh-data Docker startup and real session/failure/isolation checks. PR 21's first CI run 33100857323 failed in two diagnostic paths. The packaged Identity probe now uses the internal Router; standalone Catalog uses the explicit diagnostic overlay without private credential mounts. Focused regression checks, the exact Identity command and fresh Catalog Docker proof pass, including ownership-checked cleanup. Normal runtime trust and deadlines are unchanged. The remediation candidate still needs publication and protected acceptance.
 
 ## Not implemented
 
@@ -24,7 +24,7 @@ Web UI, real-film worker/delivery/playback, engagement/discovery and hosted rele
 
 ## Next outcome
 
-Complete P04-R02 by publishing one protected Phase 04 PR after the evidence-only candidate gate; require exact-head CI, squash and post-merge confirmation. Then activate Phase 05's explicit synthetic-data seed and SSR web shell. No repeated Docker/media experiment is required for prose-only closeout.
+Complete P04-R02: commit the combined CI remediation, run its clean-source candidate gate and push the same PR 21 once. Require exact-head CI, squash and post-merge confirmation. Then activate Phase 05's explicit synthetic-data seed and SSR web shell. Unchanged Router trace, SQL, media and normal Docker evidence remain applicable.
 
 ## Current risks
 

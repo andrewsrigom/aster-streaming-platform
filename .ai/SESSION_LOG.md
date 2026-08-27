@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Phase 04 protected CI remediation
+
+### Completed
+
+Published PR 21 at 18f3c7e after a clean 55/55 candidate gate. First protected run 33100857323 failed in packaged Identity and standalone Catalog probes. Corrected their routing/diagnostic configuration and exact-owned cleanup guards together, without changing normal runtime trust or weakening acceptance.
+
+### Evidence
+
+CI policy 25/25, Catalog guards 3/3, typecheck, changed-file ESLint/formatting and platform policy pass. Exact packaged Identity journey passes. Fresh Catalog Docker proof passes in 39550 ms, including privilege/outage recovery, shutdown and zero residual resources. The intermediate failed proof was removed only after exact ownership and foreign-attachment checks. See evidence/phase-04/clean-acceptance.txt and router-review.txt.
+
+### Next action
+
+Commit and gate this combined remediation, then update the same PR 21 once. Require protected exact-head CI, squash and post-merge confirmation before Phase 05. No duplicate PR, empty commit, manual rerun or bypass.
+
 ## 2026-08-27 — Clean supergraph acceptance
 
 ### Completed

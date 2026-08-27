@@ -215,7 +215,7 @@ jobs:
         timeout-minutes: 1
         run: >-
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml
-          --profile full exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+          --profile full exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
       - name: Remove only the CI Compose project
         if: always()
         run: docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile "*" down --volumes --remove-orphans --timeout 10

@@ -30,3 +30,13 @@ Exact protected CI and release are still required.
 Hosted workload identity, end-user operation allowlisting/cost policy, full tracing
 backends and UI accessibility remain the named later-phase requirements, not silently
 claimed by these local checks. Repeat review only for a new/changed blocking boundary.
+
+CI-remediation confirmation after run 33100857323:
+Reviewed the internal Router argument, explicit diagnostic overlay, removed
+owner trust mounts and exact-owned proof cleanup. Negative tests reject direct
+subgraph/loopback substitution, unknown volumes, foreign labels/attachments and
+attached disposable credentials. Normal Compose trust, data access, deadlines,
+dependencies and media are unchanged. Focused tests and both affected real
+container commands pass; clean-acceptance.txt records the results and first CI
+failure. No remaining blocker identified within this changed boundary. Require
+the final clean candidate gate and protected exact-head CI before squash.

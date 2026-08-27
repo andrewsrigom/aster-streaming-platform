@@ -1,5 +1,24 @@
 import { serviceBlock } from "./verify-optional-platform.mjs";
 
+export function validateCatalogProofVolume(project, volume, attachedIds, ownedIds) {
+  const expected = new Map([
+    [project + "_postgres-data", "durable-local"],
+    [project + "_identity-router-trust", "disposable-local"],
+    [project + "_catalog-router-trust", "disposable-local"],
+  ]);
+  const authority = expected.get(volume.Name);
+  return (
+    /^aster-catalog-proof-[a-f0-9-]{36}$/.test(project) &&
+    authority !== undefined &&
+    volume.Labels?.["com.docker.compose.project"] === project &&
+    volume.Labels?.["com.aster.environment"] === "local" &&
+    volume.Labels?.["com.aster.owner"] === "platform" &&
+    volume.Labels?.["com.aster.authority"] === authority &&
+    attachedIds.every((id) => ownedIds.includes(id)) &&
+    (authority === "durable-local" || attachedIds.length === 0)
+  );
+}
+
 export function validateCatalogRuntime(source) {
   const violations = [];
   for (const name of ["catalog", "catalog-init"]) {

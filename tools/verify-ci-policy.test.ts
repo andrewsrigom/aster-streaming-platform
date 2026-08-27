@@ -142,6 +142,17 @@ test("rejects a missing repository-memory check", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
 });
 
+test("the packaged product journey cannot use container loopback or bypass Router", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const replacement of ["", " - --direct-subgraph"]) {
+    const changed = source.replace(" - --compose-router", replacement);
+    assert.notEqual(changed, source);
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) => detail.includes("internal Router")),
+    );
+  }
+});
+
 test("rejects removal of the reviewed MITNFA license", async () => {
   const source = await readFile(workflowPath, "utf8");
   const weakened = source.replace(", MIT, MITNFA", ", MIT");

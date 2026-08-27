@@ -2,15 +2,15 @@
 
 ## Resume point
 
-Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. Source b5d7ab7 has complete local Phase 04 acceptance. Only evidence-only closeout and protected release remain; do not restart runtime implementation or repeat unaffected heavyweight checks.
+Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. PR 21 is open at 18f3c7e; its first protected run 33100857323 failed. Local remediation fixes the packaged Identity route and standalone Catalog diagnostic/cleanup compatibility. Do not restart runtime implementation or repeat unaffected heavyweight checks.
 
 ## Current evidence
 
-See evidence/phase-04/README.md, router-runtime.txt and clean-acceptance.txt. Complete clean-source gate: 55/55, 26 cached, 58.96 s. Fresh Docker build/start: 149.50 s with new data, warm base/install caches. Docker-only profile journey, ten public negatives, private owners, partial failure, admission and revocation pass. Earlier trace, SQL cancellation and shutdown evidence remains applicable. Two timing fixtures and a cold child-process envelope were corrected; runtime deadlines are unchanged. One moderate UUID advisory has a narrow reviewed disposition. No Phase 04 PR exists yet.
+See evidence/phase-04/README.md, router-runtime.txt and clean-acceptance.txt. Original clean-source gate: 55/55; fresh normal Docker startup/journeys pass. Publication head 18f3c7e also passed 55/55. Remediation passes CI policy 25/25, Catalog diagnostic/cleanup guards 3/3, the exact packaged Identity journey and fresh Catalog Docker proof (39550 ms, zero residual resources). Earlier Router trace, SQL cancellation, media and shutdown evidence remains applicable. One moderate UUID advisory has a narrow reviewed disposition.
 
 ## Next outcome
 
-Commit the evidence-only closeout, run its applicable candidate gate, then publish one protected Phase 04 PR. Require exact-head CI, resolved blocking review threads, squash and post-merge confirmation before Phase 05. Initial/confirmation author review is recorded in router-review.txt. The clean detached checkout /tmp/aster-p04-clean-Hke28c remains available at b5d7ab7; no running gate is left there.
+Commit the combined remediation, run pnpm check:changed in the clean detached checkout /tmp/aster-p04-clean-Hke28c at that new head, then push the same PR 21 once. Require exact-head CI, resolved blocking review threads, squash and post-merge confirmation before Phase 05. Author confirmation of the changed diagnostic/cleanup boundary is in router-review.txt. The detached checkout currently remains at 18f3c7e, with no running gate.
 
 ## Local resources
 

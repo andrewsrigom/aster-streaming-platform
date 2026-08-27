@@ -54,4 +54,4 @@ Active phase: **Phase 04 — Federated Supergraph**, schema delivery locally ver
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 20 squash `1354841` and post-merge run `33091716358` close Phase 03. `feat/p04-supergraph` is rebased onto released main and remains local. No actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.
+PR 20 squash `1354841` and post-merge run `33091716358` close Phase 03. PR 21 publishes `feat/p04-supergraph`; its first CI run failed in two stale diagnostic paths. Focused remediation passes locally; exact-head protected acceptance and release remain pending. No actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.

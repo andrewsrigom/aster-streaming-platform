@@ -284,8 +284,8 @@ export function validateWorkflowPolicy(
       "Docker-only full profile must build and start with a bounded deadline",
     ],
     [
-      /- name: Verify local Identity product API\s+timeout-minutes: 1\s+run: >-\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml\s+--profile full exec -T identity node --input-type=module < tools\/verify-local-identity.mjs/u,
-      "packaged Identity product behavior must pass within a bounded deadline",
+      /- name: Verify local Identity product API\s+timeout-minutes: 1\s+run: >-\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml\s+--profile full exec -T identity node --input-type=module - --compose-router < tools\/verify-local-identity.mjs/u,
+      "packaged Identity product behavior must use the internal Router within a bounded deadline",
     ],
     [
       /- name: Verify packaged health and real telemetry\s+timeout-minutes: 2\s+run: \|/u,

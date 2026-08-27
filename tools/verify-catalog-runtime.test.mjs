@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { URL } from "node:url";
-import { validateCatalogRuntime } from "./verify-catalog-runtime.mjs";
+import { validateCatalogProofVolume, validateCatalogRuntime } from "./verify-catalog-runtime.mjs";
 import { serviceBlock } from "./verify-optional-platform.mjs";
 
 const source = await readFile(new URL("../infra/compose/compose.yml", import.meta.url), "utf8");
@@ -26,5 +26,61 @@ test("Catalog Compose enforces reader credentials, isolation, bounds and finite 
       validateCatalogRuntime(source.replace(block, block.replace(before, after))).length > 0,
       before,
     );
+  }
+});
+
+test("standalone owner probes use diagnostics without private Router credential mounts", async () => {
+  const diagnostic = await readFile(
+    new URL("../infra/compose/subgraph-diagnostics.yml", import.meta.url),
+    "utf8",
+  );
+  const probe = await readFile(new URL("./verify-local-catalog.mjs", import.meta.url), "utf8");
+  assert.ok(probe.includes('"infra/compose/subgraph-diagnostics.yml"'));
+  for (const owner of ["identity", "catalog"]) {
+    const block = serviceBlock(diagnostic, owner);
+    assert.ok(block.includes("    volumes: !reset []"));
+    assert.ok(block.includes('      ASTER_ROUTER_TRUST_ENABLED: "false"'));
+    assert.ok(block.includes("    networks: [platform, edge]"));
+  }
+  assert.ok(probe.includes('"--no-deps"'));
+  assert.ok(probe.includes('"127.0.0.1::3200"'));
+});
+
+test("Catalog proof cleanup allows only owned data and unused trust volumes", () => {
+  const project = "aster-catalog-proof-00000000-0000-4000-8000-000000000001";
+  const labels = {
+    "com.docker.compose.project": project,
+    "com.aster.environment": "local",
+    "com.aster.owner": "platform",
+  };
+  for (const [suffix, authority, attached] of [
+    ["postgres-data", "durable-local", ["owned"]],
+    ["identity-router-trust", "disposable-local", []],
+    ["catalog-router-trust", "disposable-local", []],
+  ]) {
+    const volume = {
+      Name: project + "_" + suffix,
+      Labels: { ...labels, "com.aster.authority": authority },
+    };
+    assert.equal(validateCatalogProofVolume(project, volume, attached, ["owned"]), true);
+    assert.equal(validateCatalogProofVolume(project, volume, ["foreign"], ["owned"]), false);
+    assert.equal(
+      validateCatalogProofVolume(project, { ...volume, Name: project + "_unknown" }, [], []),
+      false,
+    );
+    for (const key of Object.keys(volume.Labels)) {
+      assert.equal(
+        validateCatalogProofVolume(
+          project,
+          { ...volume, Labels: { ...volume.Labels, [key]: "foreign" } },
+          attached,
+          ["owned"],
+        ),
+        false,
+      );
+    }
+    if (authority === "disposable-local") {
+      assert.equal(validateCatalogProofVolume(project, volume, ["owned"], ["owned"]), false);
+    }
   }
 });

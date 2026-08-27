@@ -13,7 +13,7 @@ The local GraphQL entry point will execute the composed Identity/Catalog schema 
 
 ## Current behavior
 
-All Phase 04 local requirements and author confirmation pass at source b5d7ab7. Clean-source 55/55 gates and fresh-data Docker startup, sessions, private boundaries, partial failure and recovery pass. Broker/S3 gate remediation controls fixture timing and cold diagnostic startup without changing product deadlines. The owned proof stack is removed and development Router restored. Only the evidence-only candidate gate and protected publication/release remain.
+All Phase 04 local requirements and author confirmation pass at source b5d7ab7. PR 21's first protected run 33100857323 exposed stale compatibility wiring: the Identity demo omitted --compose-router, and the standalone Catalog probe inherited private-only networking and an unused credential mount. The correction uses the documented internal Router route and explicit standalone diagnostic overlay without owner trust mounts. Cleanup permits only exact owned PostgreSQL data and unused disposable trust volumes, with labels and foreign attachments checked. CI regression tests 25/25, Catalog guards 3/3, the exact Identity command and fresh Catalog Docker proof pass. Normal runtime trust, topology, deadlines and permissions do not change. Publish one combined remediation after the candidate gate; protected release remains open.
 
 ## Proposed behavior
 
