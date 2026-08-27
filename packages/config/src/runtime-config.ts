@@ -37,6 +37,7 @@ export type ReferenceRuntimeConfigIssueReason =
 
 interface RuntimeVariableDefinition {
   readonly classification: ConfigClassification;
+  readonly optional?: boolean;
 }
 
 export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
@@ -47,12 +48,19 @@ export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
   ASTER_STARTUP_DEADLINE_MS: Object.freeze({ classification: "non-secret" }),
   DATABASE_URL: Object.freeze({ classification: "secret" }),
   REDIS_URL: Object.freeze({ classification: "secret" }),
+  ASTER_DATABASE_PASSWORD: Object.freeze({ classification: "secret", optional: true }),
+  ASTER_OTLP_METRICS_ENDPOINT: Object.freeze({ classification: "secret", optional: true }),
 } satisfies Record<string, RuntimeVariableDefinition>);
 
 const KNOWN_VARIABLES = Object.freeze(
   Object.keys(REFERENCE_RUNTIME_CONFIG_VARIABLES) as ReferenceRuntimeConfigVariable[],
 );
 const KNOWN_VARIABLE_SET = new Set<string>(KNOWN_VARIABLES);
+const OPTIONAL_VARIABLE_SET = new Set<string>(
+  Object.entries(REFERENCE_RUNTIME_CONFIG_VARIABLES)
+    .filter(([, definition]) => "optional" in definition)
+    .map(([name]) => name),
+);
 
 const runtimeConfigSchema = z.strictObject({
   ASTER_ENV: z.enum(RUNTIME_ENVIRONMENTS),
@@ -74,6 +82,11 @@ const runtimeConfigSchema = z.strictObject({
     .string()
     .max(MAX_VALUE_LENGTH)
     .refine((value) => hasUrlProtocol(value, REDIS_PROTOCOLS)),
+  ASTER_DATABASE_PASSWORD: z
+    .string()
+    .refine((value) => !hasAsciiControl(value))
+    .optional(),
+  ASTER_OTLP_METRICS_ENDPOINT: z.string().refine(isOtlpMetricsEndpoint).optional(),
 });
 
 export interface ReferenceRuntimeConfig {
@@ -83,7 +96,9 @@ export interface ReferenceRuntimeConfig {
   readonly serviceName: string;
   readonly startupDeadlineMs: number;
   readonly databaseUrl: string;
+  readonly databasePasswordConfigured: boolean;
   readonly redisUrl: string;
+  readonly otlpMetricsEndpoint?: string;
 }
 
 export interface ReferenceRuntimeConfigIssue {
@@ -105,7 +120,8 @@ export interface ConfiguredNonSecretVariable {
 }
 
 export interface ConfiguredSecretVariable {
-  readonly name: "DATABASE_URL" | "REDIS_URL";
+  readonly name:
+    "DATABASE_URL" | "REDIS_URL" | "ASTER_DATABASE_PASSWORD" | "ASTER_OTLP_METRICS_ENDPOINT";
   readonly classification: "secret";
   readonly status: "configured";
 }
@@ -144,6 +160,25 @@ function hasUrlProtocol(value: string, protocols: ReadonlySet<string>): boolean 
 function integerInRange(value: string, minimum: number, maximum: number): boolean {
   const parsed = Number(value);
   return Number.isSafeInteger(parsed) && parsed >= minimum && parsed <= maximum;
+}
+
+function isOtlpMetricsEndpoint(value: string): boolean {
+  if (hasAsciiControl(value) || value !== value.trim()) {
+    return false;
+  }
+  try {
+    const url = new URL(value);
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.hostname.length > 0 &&
+      !url.username &&
+      !url.password &&
+      !url.search &&
+      !url.hash
+    );
+  } catch {
+    return false;
+  }
 }
 
 function hasAsciiControl(value: string): boolean {
@@ -251,6 +286,8 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
     ASTER_STARTUP_DEADLINE_MS: undefined,
     DATABASE_URL: undefined,
     REDIS_URL: undefined,
+    ASTER_DATABASE_PASSWORD: undefined,
+    ASTER_OTLP_METRICS_ENDPOINT: undefined,
   };
   const seenKnownVariables = new Set<ReferenceRuntimeConfigVariable>();
   let ownedVariableCount = 0;
@@ -327,7 +364,9 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
 
   for (const variable of KNOWN_VARIABLES) {
     if (!seenKnownVariables.has(variable)) {
-      issues.push(knownIssue(variable, "missing"));
+      if (!OPTIONAL_VARIABLE_SET.has(variable)) {
+        issues.push(knownIssue(variable, "missing"));
+      }
       continue;
     }
 
@@ -380,14 +419,37 @@ function parseReferenceRuntimeConfig(
     );
   }
 
+  let databaseUrl = result.data.DATABASE_URL;
+  const databasePassword = result.data.ASTER_DATABASE_PASSWORD;
+  if (databasePassword !== undefined) {
+    const parsedUrl = new URL(databaseUrl);
+    if (parsedUrl.password.length > 0 || parsedUrl.searchParams.has("password")) {
+      throw new ReferenceRuntimeConfigError([knownIssue("ASTER_DATABASE_PASSWORD", "invalid")]);
+    }
+    if (parsedUrl.username.length === 0) {
+      throw new ReferenceRuntimeConfigError([knownIssue("DATABASE_URL", "invalid")]);
+    }
+    // Encode literal percent signs too; URL.password otherwise preserves escape sequences.
+    const encoded = encodeURIComponent(databasePassword);
+    parsedUrl.password = encoded;
+    databaseUrl = parsedUrl.toString();
+    if (databaseUrl.length > MAX_VALUE_LENGTH) {
+      throw new ReferenceRuntimeConfigError([knownIssue("ASTER_DATABASE_PASSWORD", "too_long")]);
+    }
+  }
+
   return Object.freeze({
     environment: result.data.ASTER_ENV,
     httpHost: result.data.ASTER_HTTP_HOST,
     httpPort: Number(result.data.ASTER_HTTP_PORT),
     serviceName: result.data.ASTER_SERVICE_NAME,
     startupDeadlineMs: Number(result.data.ASTER_STARTUP_DEADLINE_MS),
-    databaseUrl: result.data.DATABASE_URL,
+    databaseUrl,
+    databasePasswordConfigured: databasePassword !== undefined,
     redisUrl: result.data.REDIS_URL,
+    ...(result.data.ASTER_OTLP_METRICS_ENDPOINT === undefined
+      ? {}
+      : { otlpMetricsEndpoint: result.data.ASTER_OTLP_METRICS_ENDPOINT }),
   });
 }
 
@@ -443,6 +505,24 @@ export function createReferenceRuntimeConfigDiagnostic(
       }),
       Object.freeze({ name: "DATABASE_URL", classification: "secret", status: "configured" }),
       Object.freeze({ name: "REDIS_URL", classification: "secret", status: "configured" }),
+      ...(config.databasePasswordConfigured
+        ? [
+            Object.freeze({
+              name: "ASTER_DATABASE_PASSWORD" as const,
+              classification: "secret" as const,
+              status: "configured" as const,
+            }),
+          ]
+        : []),
+      ...(config.otlpMetricsEndpoint === undefined
+        ? []
+        : [
+            Object.freeze({
+              name: "ASTER_OTLP_METRICS_ENDPOINT" as const,
+              classification: "secret" as const,
+              status: "configured" as const,
+            }),
+          ]),
     ]),
   });
 }

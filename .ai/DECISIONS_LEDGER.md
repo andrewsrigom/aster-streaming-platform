@@ -41,6 +41,9 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Decision | Resolution | Evidence |
 |---|---|---|
 | Core local container floor | Support Docker Engine `26.0.0` and Compose `2.26.1` as the measured floor; require the model and smoke path to pass on newer compatible releases | `evidence/phase-01/local-platform-checkpoint.txt` |
+| Identity image packaging | Pin official Node `24.19.0-bookworm-slim` by multi-platform index; compile in Docker, deploy production dependencies with existing pnpm `--legacy`, run as UID 1000 and retain upstream notices. Source-only context and package file allowlists preserve isolation; actual proof is amd64 only | `evidence/phase-01/docker-demo.txt` |
+| Runtime Docker publication | Keep databases on the internal platform network; attach only Identity to a labelled edge bridge and publish loopback 3100. Docker 26 did not publish ports on an internal-only network. Helpers override inherited PostgreSQL image volumes with tmpfs; reset validates legacy anonymous owners before cleanup | `evidence/phase-01/docker-demo.txt` |
+| Separate local database password | Add classified optional `ASTER_DATABASE_PASSWORD`, reject competing URL/query password sources and preserve seven-variable callers. Bound the encoded effective URL and never emit the secret; no scanner exception or hidden pg variable | `docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`, `evidence/phase-01/docker-demo.txt` |
 | Local PostgreSQL runtime | Pin Docker Official Image `postgres:18.6-alpine3.23` by multi-platform digest; persist `/var/lib/postgresql` with version-specific `PGDATA` | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Local Redis runtime | Pin Docker Official Image `redis:8.10.0-alpine` by multi-platform digest; select the AGPLv3 option for the unmodified external runtime and keep state disposable | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Destructive local reset boundary | Require explicit local intent and confirmation, fixed Aster project and Compose file, local-socket and exact resource-label verification, zero-resource postconditions, and no broad fallback cleanup | `evidence/phase-01/local-reset.txt` |
@@ -80,7 +83,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
 Pending decisions are resolved only by their owning phase. A work item stops when it needs a pending decision whose required evidence is unavailable; it does not select a dependency implicitly.
 
-The Phase 01 preflight records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, client metadata and Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 resolves the process-local OpenTelemetry packages in `evidence/phase-01/runtime-telemetry.txt`; P01-R09 resolves the local Kafka, S3 and Collector/Prometheus images in `evidence/phase-01/real-integration.txt`. Final profile sizing and the remaining decisions above are still pending.
+The Phase 01 preflight records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, client metadata and Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 resolves the process-local OpenTelemetry packages in `evidence/phase-01/runtime-telemetry.txt`; P01-R09 resolves the local Kafka, S3 and Collector/Prometheus images in `evidence/phase-01/real-integration.txt`. P01-R10 records finite profile resources and measured local samples in `evidence/phase-01/docker-demo.txt`; these are not capacity guarantees. Later-phase decisions above remain deferred to their owners.
 
 ## Repository governance decisions
 

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { createServer } from "node:net";
+import { createServer as createHttpServer } from "node:http";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -73,6 +74,7 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
     redis: () => redis,
     telemetry: (options) => {
       assert.equal(options.environment, "test");
+      assert.deepEqual(options.export, { mode: "none" });
       telemetry = createAsterTelemetry(options);
       return telemetry;
     },
@@ -178,6 +180,68 @@ test("rejects invalid environment before constructing resources", async () => {
     ReferenceRuntimeConfigError,
   );
   assert.equal(constructions, 0);
+});
+
+test("configured OTLP export stays optional for readiness and reports failed flush truthfully", async (t) => {
+  for (const available of [true, false]) {
+    let requests = 0;
+    const collector = createHttpServer((request, response) => {
+      requests += 1;
+      request.resume();
+      response.statusCode = available ? 200 : 503;
+      response.end();
+    });
+    t.after(async () => {
+      collector.closeAllConnections();
+      await new Promise<void>((resolve) => {
+        collector.close(() => {
+          resolve();
+        });
+      });
+    });
+    await new Promise<void>((resolve) => collector.listen(0, "127.0.0.1", resolve));
+    const address = collector.address();
+    assert.ok(address && typeof address === "object");
+    const endpoint = `http://127.0.0.1:${address.port}/v1/metrics`;
+    const postgresql = controlledDependency();
+    const redis = controlledDependency();
+    let telemetry: AsterTelemetry | undefined;
+    const service = await createIdentityServiceWithFactories(
+      [...configurationEntries, ["ASTER_OTLP_METRICS_ENDPOINT", endpoint]],
+      {
+        logger: silentLogger,
+        postgresql: () => postgresql,
+        redis: () => redis,
+        http: (options) => createIdentityHttpServer({ ...options, port: 0 }),
+        telemetry: (options) => {
+          assert.deepEqual(options.export, {
+            mode: "otlp-http",
+            endpoint,
+            intervalMs: 5_000,
+            timeoutMs: 1_000,
+          });
+          assert.equal(options.shutdownTimeoutMs, 2_000);
+          telemetry = createAsterTelemetry(options);
+          return telemetry;
+        },
+        terminate: () => assert.fail("Optional export must close without process force."),
+      },
+    );
+    try {
+      assert.deepEqual(await service.start(), { status: "started", readiness: "ready" });
+      assert.ok(telemetry);
+      const flush = await telemetry.forceFlush();
+      assert.equal(flush.status === "completed", available);
+      assert.equal(service.health().readiness, "ready");
+      assert.ok(requests > 0);
+      const shutdown = await service.shutdown();
+      assert.equal(shutdown.outcome, available ? "completed" : "degraded");
+      assert.equal(postgresql.state.closed, true);
+      assert.equal(redis.state.closed, true);
+    } finally {
+      await service.shutdown();
+    }
+  }
 });
 
 test("cleans already-created owners on partial factory failure without reflecting its cause", async () => {

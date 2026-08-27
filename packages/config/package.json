@@ -6,6 +6,9 @@
   "description": "Bounded process-start configuration validation for the Aster reference Node.js runtime.",
   "license": "MIT",
   "sideEffects": false,
+  "files": [
+    "dist/src"
+  ],
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",

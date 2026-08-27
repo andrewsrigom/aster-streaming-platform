@@ -89,3 +89,31 @@ test("process-start diagnostic exits one with bounded safe issues", () => {
   ]);
   assertCanariesRedacted(result.stderr);
 });
+
+test("process diagnostic classifies the optional password without emitting it", () => {
+  const environment = {
+    ...validEnvironment(),
+    DATABASE_URL: "postgresql://aster@postgres:5432/aster",
+    ASTER_DATABASE_PASSWORD: DATABASE_CANARY,
+  };
+  const valid = runDiagnostic(environment);
+  assert.equal(valid.status, 0, valid.stderr);
+  assert.match(valid.stdout, /ASTER_DATABASE_PASSWORD/u);
+  assertCanariesRedacted(valid.stdout);
+  const conflicting = runDiagnostic({
+    ...environment,
+    DATABASE_URL: validEnvironment()["DATABASE_URL"] ?? "",
+  });
+  assert.equal(conflicting.status, 1);
+  assert.match(conflicting.stderr, /ASTER_DATABASE_PASSWORD/u);
+  assertCanariesRedacted(conflicting.stderr);
+});
+
+test("process diagnostic accepts optional export without exposing the endpoint", () => {
+  const endpoint = "http://collector:4318/v1/metrics";
+  const result = runDiagnostic({ ...validEnvironment(), ASTER_OTLP_METRICS_ENDPOINT: endpoint });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /ASTER_OTLP_METRICS_ENDPOINT/u);
+  assert.equal(result.stdout.includes(endpoint), false);
+  assertCanariesRedacted(result.stdout);
+});

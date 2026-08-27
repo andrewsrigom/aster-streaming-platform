@@ -6,9 +6,35 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-**The Phase 00 repository foundation and Phase 01 requirements P01-R01 through P01-R04 plus P01-R11 are released. A bounded P00-R06 governance correction is currently implemented on its candidate branch and remains unreleased. [Phase 01 evidence](evidence/phase-01/README.md) distinguishes every implemented checkpoint from the remaining runtime and application work.**
+Phase 00 and Phase 01 requirements P01-R01 through P01-R09 plus P01-R11 are released. P01-R10 implements the Docker runtime and integration/observability/full profiles. Clean-checkout acceptance and protected CI pass; final release status is recorded in [current state](.ai/CURRENT_STATE.md). [Phase 01 evidence](evidence/phase-01/README.md) distinguishes the verified runtime from the planned video application.
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
+
+## Run the Docker Identity checkpoint
+
+From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
+```
+
+Open [readiness](http://127.0.0.1:3100/health/ready) or [liveness](http://127.0.0.1:3100/health/live). Docker builds the application from the frozen lockfile and starts real PostgreSQL/Redis; no host Node, pnpm or hosted credential is needed. The first build needs registry access. This is a health/recovery demonstration, not a catalog, login or playable video interface. Native Windows localhost access was checked with containers running through WSL; other host/CPU combinations remain unverified.
+
+For real metrics, Kafka and S3, start the optional full laboratory:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120
+```
+
+Open [Prometheus](http://127.0.0.1:9090) and query `process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds` or `aster_dependency_operation_outcomes_total`. Broker/storage remain internal; Collector failure does not make Identity unready. Smaller [profiles](docs/operations/LOCAL_DEVELOPMENT.md#optional-profiles) are available.
+
+Stop all enabled Aster profiles while retaining named local data:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
+```
+
+Use the explicit reset below only to delete local data. [Runtime instructions and evidence](docs/operations/LOCAL_DEVELOPMENT.md#docker-runtime-checkpoint) cover limits and troubleshooting.
 
 ## Run the current foundation
 
@@ -103,7 +129,7 @@ Stop the checkpoint while preserving its PostgreSQL volume with:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-Delete the complete Aster local project, including its durable PostgreSQL volume, only with the explicit destructive reset:
+Delete the complete Aster local project, including PostgreSQL, broker, S3 and Prometheus volumes, only with the explicit destructive reset:
 
 ```bash
 ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
@@ -153,7 +179,9 @@ pnpm --filter @aster/runtime test
 
 P01-R08 composes the reusable runtime into a product-empty Identity process with real HTTP and dependency adapters. Run `pnpm identity:check` for a self-contained loopback diagnostic with controlled dependencies, or `pnpm identity:start` after configuring the seven reference environment variables. The default Docker core does not expose host ports. See [Runtime Lifecycle](docs/operations/RUNTIME_LIFECYCLE.md) and [P01-R08 evidence](evidence/phase-01/runtime-composition.txt).
 
-Run `pnpm integration` on Linux/WSL for the eight-scenario real PostgreSQL/Redis/Identity, Kafka, S3 and Collector/Prometheus matrix, including in-flight HTTP shutdown with every adapter. It uses one disposable Docker project; the default project is unchanged. Focused `integration:core`, `integration:broker`, `integration:storage` and `integration:telemetry` commands remain available. These tests require pinned host Node/pnpm; the Docker-only application command belongs to P01-R10. The local matrix and exact cold acceptance pass; protected release remains pending. See [integration operation and cleanup](docs/operations/LOCAL_DEVELOPMENT.md#complete-integration-matrix) and [current evidence](evidence/phase-01/real-integration.txt).
+Run `pnpm integration` on Linux/WSL for the released eight-scenario real PostgreSQL/Redis/Identity, Kafka, S3 and Collector/Prometheus matrix, including in-flight HTTP shutdown with every adapter. It uses one disposable Docker project; the default project is unchanged. Focused `integration:core`, `integration:broker`, `integration:storage` and `integration:telemetry` commands remain available. These tests require pinned host Node/pnpm. See [integration operation and cleanup](docs/operations/LOCAL_DEVELOPMENT.md#complete-integration-matrix) and [current evidence](evidence/phase-01/real-integration.txt).
+
+P01-R10's [Identity image checkpoint](docs/operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) builds and runs a controlled diagnostic with Docker only. The non-root production image, database-connected runtime, optional profiles and Docker-only start commands above are implemented and verified by clean-checkout and protected CI evidence. This is a runtime demonstration, not a playable product.
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 
@@ -161,7 +189,7 @@ See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.m
 
 ## Product scope
 
-Aster provides:
+The planned product provides:
 
 - a browsable film catalog;
 - title pages with complete rights and attribution information;
@@ -247,7 +275,7 @@ Read these files in order:
 8. [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md)
 9. [`.ai/WORK_QUEUE.md`](.ai/WORK_QUEUE.md)
 
-The next implementation unit is defined in [`docs/specs/phase-01-local-platform.md`](docs/specs/phase-01-local-platform.md), and the planned P01-R06 through P01-R10 path is detailed in [`docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`](docs/architecture/RUNTIME_PLATFORM_RUNWAY.md). The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
+The active implementation unit is recorded in [the work queue](.ai/WORK_QUEUE.md). The [Phase 01 specification](docs/specs/phase-01-local-platform.md) and [runtime runway](docs/architecture/RUNTIME_PLATFORM_RUNWAY.md) describe the runtime contract and implementation sequence. The completed foundation contract remains in [`docs/specs/phase-00-foundation.md`](docs/specs/phase-00-foundation.md).
 
 ## Repository shape
 

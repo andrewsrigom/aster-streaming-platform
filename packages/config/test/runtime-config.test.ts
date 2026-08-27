@@ -130,6 +130,130 @@ test("reports non-secret values and only configured status for secrets", () => {
   assertCanariesRedacted(serialized);
 });
 
+test("combines an optional separate password without changing legacy URI callers", () => {
+  assert.equal(loadEnvironment(validEnvironment()).databasePasswordConfigured, false);
+  const password = `${DATABASE_CANARY}:@/?#%42 +á`;
+  const environment = {
+    ...validEnvironment(),
+    DATABASE_URL: "postgresql://aster@postgres:5432/aster?application_name=identity",
+    ASTER_DATABASE_PASSWORD: password,
+  };
+  const configuration = loadEnvironment(environment);
+  const url = new URL(configuration.databaseUrl);
+  assert.equal(decodeURIComponent(url.password), password);
+  assert.equal(url.username, "aster");
+  assert.equal(url.hostname, "postgres");
+  assert.equal(url.searchParams.get("application_name"), "identity");
+  assert.equal(configuration.databasePasswordConfigured, true);
+  assert.equal(environment.DATABASE_URL.includes(password), false);
+  const diagnostic = createReferenceRuntimeConfigDiagnostic(configuration);
+  assert.deepEqual(diagnostic.variables.at(-1), {
+    name: "ASTER_DATABASE_PASSWORD",
+    classification: "secret",
+    status: "configured",
+  });
+  assertCanariesRedacted(diagnostic);
+});
+
+test("rejects conflicting password sources and missing explicit database user", () => {
+  for (const databaseUrl of [
+    validEnvironment()["DATABASE_URL"],
+    "postgresql://aster@postgres/aster?password=",
+    "postgresql://aster@postgres/aster?%70assword=ignored",
+  ]) {
+    const error = captureRuntimeConfigError(() =>
+      loadEnvironment({
+        ...validEnvironment(),
+        DATABASE_URL: databaseUrl,
+        ASTER_DATABASE_PASSWORD: DATABASE_CANARY,
+      }),
+    );
+    assert.deepEqual(error.issues, [
+      { variable: "ASTER_DATABASE_PASSWORD", classification: "secret", reason: "invalid" },
+    ]);
+    assertCanariesRedacted(error);
+  }
+  assert.deepEqual(
+    captureRuntimeConfigError(() =>
+      loadEnvironment({
+        ...validEnvironment(),
+        DATABASE_URL: "postgresql://postgres/aster",
+        ASTER_DATABASE_PASSWORD: DATABASE_CANARY,
+      }),
+    ).issues,
+    [{ variable: "DATABASE_URL", classification: "secret", reason: "invalid" }],
+  );
+});
+
+test("bounds optional passwords including the encoded effective connection URL", () => {
+  for (const [value, reason] of [
+    [undefined, "missing"],
+    ["", "empty"],
+    ["   ", "empty"],
+    ["invalid\npassword", "invalid"],
+    ["x".repeat(2_049), "too_long"],
+    ["%".repeat(700), "too_long"],
+  ] as const) {
+    const error = captureRuntimeConfigError(() =>
+      loadEnvironment({
+        ...validEnvironment(),
+        DATABASE_URL: "postgresql://aster@postgres/aster",
+        ASTER_DATABASE_PASSWORD: value,
+      }),
+    );
+    assert.deepEqual(error.issues, [
+      { variable: "ASTER_DATABASE_PASSWORD", classification: "secret", reason },
+    ]);
+    assertCanariesRedacted(error);
+  }
+});
+
+test("optional metrics endpoint remains absent by default and redacted when configured", () => {
+  assert.equal(loadEnvironment(validEnvironment()).otlpMetricsEndpoint, undefined);
+  for (const endpoint of [
+    "http://collector:4318/v1/metrics",
+    "https://telemetry.example.invalid/v1/metrics",
+  ]) {
+    const configuration = loadEnvironment({
+      ...validEnvironment(),
+      ASTER_OTLP_METRICS_ENDPOINT: endpoint,
+    });
+    assert.equal(configuration.otlpMetricsEndpoint, endpoint);
+    const diagnostic = createReferenceRuntimeConfigDiagnostic(configuration);
+    assert.deepEqual(diagnostic.variables.at(-1), {
+      name: "ASTER_OTLP_METRICS_ENDPOINT",
+      classification: "secret",
+      status: "configured",
+    });
+    assert.equal(JSON.stringify(diagnostic).includes(endpoint), false);
+  }
+});
+
+test("rejects unsafe metrics endpoints without returning credentials or topology", () => {
+  for (const [value, reason] of [
+    [undefined, "missing"],
+    ["", "empty"],
+    ["x".repeat(2_049), "too_long"],
+    ["ftp://collector/v1/metrics", "invalid"],
+    ["http://collector:invalid/v1/metrics", "invalid"],
+    ["http://collector/v1/metrics?key=private", "invalid"],
+    ["http://collector/v1/metrics#private", "invalid"],
+    ["http://user@collector/v1/metrics", "invalid"],
+    [" http://collector/v1/metrics", "invalid"],
+    ["http://col\nlector/v1/metrics", "invalid"],
+  ] as const) {
+    const error = captureRuntimeConfigError(() =>
+      loadEnvironment({ ...validEnvironment(), ASTER_OTLP_METRICS_ENDPOINT: value }),
+    );
+    assert.deepEqual(error.issues, [
+      { variable: "ASTER_OTLP_METRICS_ENDPOINT", classification: "secret", reason },
+    ]);
+    assert.equal(JSON.stringify(error).includes("collector"), false);
+    assert.equal(JSON.stringify(error).includes("private"), false);
+    assertCanariesRedacted(error);
+  }
+});
+
 test("fails closed for every missing variable with classified bounded issues", () => {
   const error = captureRuntimeConfigError(() => loadEnvironment({ PATH: "/usr/bin" }));
 

@@ -30,6 +30,10 @@ test("requires full quality for unrelated source and environment templates", () 
 test("selects real integration for adapters, runtime, bootstrap and shared dependency changes", () => {
   for (const path of [
     "services/identity/src/create-service.ts",
+    "infra/docker/identity.Dockerfile",
+    ".dockerignore",
+    "tools/verify-runtime-image.mjs",
+    "tools/verify-optional-platform.mjs",
     "packages/runtime/src/index.ts",
     "packages/config/package.json",
     "packages/telemetry/src/index.ts",

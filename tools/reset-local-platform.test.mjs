@@ -9,6 +9,7 @@ import { clearTimeout, setTimeout } from "node:timers";
 const repositoryRoot = resolve(import.meta.dirname, "..");
 const resetPath = resolve(repositoryRoot, "tools", "reset-local-platform.sh");
 const composePath = resolve(repositoryRoot, "infra", "compose", "compose.yml");
+const observabilityPath = resolve(repositoryRoot, "infra", "compose", "observability.yml");
 const confirmationArguments = ["--confirm", "DELETE-ASTER-LOCAL-DATA"];
 const shellExecutable = process.platform === "win32" ? "sh" : "/bin/sh";
 const resetFixtureTimeoutMs = process.platform === "win32" ? 15_000 : 5_000;
@@ -63,15 +64,22 @@ if [ "$1" = "compose" ]; then
   shift 2
   [ "$1" = "--file" ] && [ "$2" = "$FAKE_COMPOSE_FILE" ] || exit 92
   shift 2
+  [ "$1" = "--file" ] && [ "$2" = "$FAKE_OBSERVABILITY_FILE" ] || exit 96
+  shift 2
+  [ "$1" = "--profile" ] && [ "$2" = "*" ] || exit 95
+  shift 2
   if [ "$1" = "config" ] && [ "$2" = "--quiet" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status
+    printf '%s\\n' redis postgres platform-init platform-status identity broker storage collector prometheus
+    if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
+      printf '%s\\n' unreviewed
+    fi
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--volumes" ]; then
-    printf '%s\\n' postgres-data
+    printf '%s\\n' postgres-data broker-data storage-data prometheus-data
     exit 0
   fi
   if [ "$1" = "down" ] && [ "$2" = "--volumes" ]; then
@@ -92,12 +100,52 @@ if [ "$FAKE_DOCKER_SCENARIO" != "empty" ]; then
 fi
 
 if [ "$1" = "container" ] && [ "$2" = "ls" ]; then
+  case "$*" in
+    *'volume='*)
+      if [ "$FAKE_DOCKER_SCENARIO" = "foreign-volume" ] || [ "$FAKE_DOCKER_SCENARIO" = "foreign-legacy-volume" ]; then
+        printf '%s\\n' foreign-id
+      fi
+      exit 0
+      ;;
+  esac
   if [ "$resource_present" = true ]; then
     printf '%s\\n' container-id
+    if [ "$FAKE_DOCKER_SCENARIO" = "duplicate-identity" ]; then
+      printf '%s\\n' second-container-id
+    fi
   fi
   exit 0
 fi
 if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
+  case "$4" in
+    *'.Mounts'*)
+      case "$FAKE_DOCKER_SCENARIO" in
+        foreign-mount) printf '%s\\n' 'bind||/private' ;;
+        runtime | legacy-identity | duplicate-identity) ;;
+        legacy-helper | foreign-legacy-volume) printf '%s\\n' 'volume|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|/var/lib/postgresql' ;;
+        *)
+          case "$FAKE_DOCKER_SERVICE" in
+            collector) ;;
+            broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
+            storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
+            prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
+            *) printf '%s\\n' 'volume|aster_postgres-data|/var/lib/postgresql' ;;
+          esac
+          ;;
+      esac
+      exit 0
+      ;;
+    *'.NetworkSettings.Networks'*)
+      if [ "$FAKE_DOCKER_SCENARIO" = "foreign-attachment" ]; then
+        printf '%s\\n' foreign-network
+      elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ]; then
+        printf '%s\\n' aster_edge aster_platform
+      else
+        printf '%s\\n' aster_platform
+      fi
+      exit 0
+      ;;
+  esac
   if [ "$4" = "{{.Name}}" ]; then
     printf '%s\\n' /aster-postgres-1
   elif [ "$4" = "{{ index .Config.Labels \\"com.docker.compose.project\\" }}" ]; then
@@ -106,6 +154,16 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
     printf 'aster|postgres|local||%s\\n' "$FAKE_COMPOSE_FILE"
   elif [ "$FAKE_DOCKER_SCENARIO" = "previous-revision" ]; then
     printf 'aster|postgres|||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "legacy-identity" ]; then
+    printf 'aster|identity|||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "legacy-helper" ] || [ "$FAKE_DOCKER_SCENARIO" = "foreign-legacy-volume" ]; then
+    printf 'aster|platform-init|||%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ] || [ "$FAKE_DOCKER_SCENARIO" = "duplicate-identity" ]; then
+    printf 'aster|identity|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SCENARIO" = "foreign-compose" ]; then
+    printf 'aster|postgres|local|platform|%s,%s\\n' "$FAKE_OBSERVABILITY_FILE" "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SERVICE" != "postgres" ]; then
+    printf 'aster|%s|local|platform|%s,%s\\n' "$FAKE_DOCKER_SERVICE" "$FAKE_COMPOSE_FILE" "$FAKE_OBSERVABILITY_FILE"
   else
     printf 'aster|postgres|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
   fi
@@ -114,28 +172,56 @@ fi
 if [ "$1" = "network" ] && [ "$2" = "ls" ]; then
   if [ "$resource_present" = true ]; then
     printf '%s\\n' network-id
+    if [ "$FAKE_DOCKER_SCENARIO" = "runtime" ]; then
+      printf '%s\\n' edge-network-id
+    fi
   fi
   exit 0
 fi
 if [ "$1" = "network" ] && [ "$2" = "inspect" ]; then
+  case "$4" in
+    *'.Containers'*)
+      if [ "$FAKE_DOCKER_SCENARIO" = "foreign-network" ]; then
+        printf '%s\\n' foreign-id
+      else
+        printf '%s\\n' container-id
+      fi
+      exit 0
+      ;;
+  esac
   if [ "$4" = "{{.Name}}" ]; then
-    printf '%s\\n' aster_platform
+    if [ "$5" = "edge-network-id" ]; then
+      printf '%s\\n' aster_edge
+    else
+      printf '%s\\n' aster_platform
+    fi
   elif [ "$4" = "{{ index .Labels \\"com.docker.compose.project\\" }}" ]; then
     printf '%s\\n' aster
   else
-    printf '%s\\n' 'aster|platform|local|platform'
+    if [ "$5" = "edge-network-id" ]; then
+      printf '%s\\n' 'aster|edge|local|platform'
+    else
+      printf '%s\\n' 'aster|platform|local|platform'
+    fi
   fi
   exit 0
 fi
 if [ "$1" = "volume" ] && [ "$2" = "ls" ]; then
   if [ "$resource_present" = true ]; then
     if [ "$FAKE_DOCKER_SCENARIO" != "missing-project-label" ] || printf '%s' "$*" | grep -q 'name='; then
-      printf '%s\\n' aster_postgres-data
+      printf '%s\\n' "aster_$FAKE_VOLUME_NAME"
     fi
   fi
   exit 0
 fi
 if [ "$1" = "volume" ] && [ "$2" = "inspect" ]; then
+  if [ "$resource_present" = false ]; then
+    exit 1
+  fi
+  if [ "$4" = "{{json .Labels}}" ]; then
+    printf '%s\\n' '{"com.docker.volume.anonymous":""}'
+    exit 0
+  fi
   if [ "$4" = "{{ index .Labels \\"com.docker.compose.project\\" }}" ]; then
     if [ "$FAKE_DOCKER_SCENARIO" = "missing-project-label" ]; then
       printf '%s\\n' foreign-project
@@ -143,7 +229,7 @@ if [ "$1" = "volume" ] && [ "$2" = "inspect" ]; then
       printf '%s\\n' aster
     fi
   else
-    printf '%s\\n' 'aster|postgres-data|durable-local|local|platform'
+    printf 'aster|%s|%s|local|platform\\n' "$FAKE_VOLUME_NAME" "$FAKE_VOLUME_AUTHORITY"
   fi
   exit 0
 fi
@@ -187,6 +273,12 @@ async function runReset(t, options = {}) {
   Object.assign(environment, {
     ASTER_ENVIRONMENT: "local",
     FAKE_COMPOSE_FILE: shellPath(composePath),
+    FAKE_OBSERVABILITY_FILE: shellPath(observabilityPath),
+    FAKE_DOCKER_SERVICE: options.service ?? "postgres",
+    FAKE_VOLUME_NAME: ["broker", "storage", "prometheus"].includes(options.service)
+      ? options.service + "-data"
+      : "postgres-data",
+    FAKE_VOLUME_AUTHORITY: options.service === "prometheus" ? "disposable-local" : "durable-local",
     FAKE_DOCKER_ENDPOINT: "unix:///var/run/docker.sock",
     FAKE_DOCKER_LOG: shellPath(logPath),
     FAKE_DOCKER_SCENARIO: options.scenario ?? "populated",
@@ -288,7 +380,7 @@ test("removes only the fixed populated Aster project and proves postconditions",
   assert.match(
     result.log,
     new RegExp(
-      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} down --volumes`,
+      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} --file ${shellPath(observabilityPath).replaceAll("/", "\\/")} --profile \\* down --volumes`,
       "u",
     ),
   );
@@ -318,4 +410,43 @@ test("fails when any project resource remains after teardown", async (t) => {
   const result = await runReset(t, { scenario: "postcondition-failure" });
   assert.equal(result.code, 1);
   assert.match(result.stderr, /containers=1 networks=1 volumes=1/u);
+});
+
+test("accepts a partial runtime profile and tears down all reviewed profiles", async (t) => {
+  const result = await runReset(t, { scenario: "runtime" });
+  assert.equal(result.code, 0, result.stderr);
+  assert.match(result.log, /--profile \* down --volumes/u);
+  assert.match(result.stdout, /networks=2/u);
+});
+
+test("removes only validated legacy helper anonymous volumes and verifies their absence", async (t) => {
+  const result = await runReset(t, { scenario: "legacy-helper" });
+  assert.equal(result.code, 0, result.stderr);
+  assert.match(result.stdout, /legacy helper volumes=1/u);
+});
+
+test("refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion", async (t) => {
+  for (const scenario of [
+    "unexpected-service",
+    "legacy-identity",
+    "duplicate-identity",
+    "foreign-mount",
+    "foreign-compose",
+    "foreign-attachment",
+    "foreign-network",
+    "foreign-volume",
+    "foreign-legacy-volume",
+  ]) {
+    const result = await runReset(t, { scenario });
+    assert.equal(result.code, 1, scenario);
+    assert.doesNotMatch(result.log, / down --volumes/u, scenario);
+  }
+});
+
+test("accepts exact optional service mounts and ordered Compose provenance", async (t) => {
+  for (const service of ["broker", "storage", "collector", "prometheus"]) {
+    const result = await runReset(t, { service });
+    assert.equal(result.code, 0, service + ": " + result.stderr);
+    assert.match(result.stdout, /reset complete/u);
+  }
 });

@@ -676,3 +676,47 @@ availability or public-contract blocker in the complete candidate. No independen
 approval claimed. Strict main rules still require CI required and resolved review
 threads; zero approving reviews are configured. No protections were changed.
 Next: one protected PR, real hosted matrix, squash merge and exact post-merge run.
+
+Protected release — 2026-08-27
+=============================
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/17
+Reviewed/published head: b17596718e0f00ae0ecef514d9cf688d8f2f26bf
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33041524806
+Confirmation: https://github.com/andrewsrigom/aster-streaming-platform/pull/17#issuecomment-5434669574
+Squash: a1f728196aa7a4d8a79181042f75a876610d2b11 (2026-08-27T05:12:42Z)
+Exact post-merge: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33041787663
+Both runs pass every applicable job; dependency review is PR-only and correctly
+skipped post-merge. No bypass, rerun, empty commit or duplicated PR. Zero review
+threads; executing-agent initial/confirmation, not independent approval.
+Published amendment changes evidence/prose only; cold-tested executable inputs
+are identical. Merge tree equals the protected candidate tree.
+Temporary clean clone /tmp/aster-p01-r09-0sHuGs (212M) was removed after exact
+resolved path and clean Git checks. Repository source and caches are preserved.
+
+Protected CI excerpts
+---------------------
+Install and source quality	Run source quality and tests	2026-08-27T05:09:06.0844776Z  Tasks:    39 successful, 39 total
+Install and source quality	Prove real platform integration	2026-08-27T05:09:06.6508829Z  Tasks:    9 successful, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T05:09:07.1874276Z {"event":"fixture_start","project":"aster-integration-8ae20ed8d546445aa72cdd6c0b8942b5","node":"v24.19.0"}
+Install and source quality	Prove real platform integration	2026-08-27T05:11:20.5663139Z {"event":"all_adapter_http_drain","outcome":"passed","durationMs":83,"stages":["consumers","flush","adapters","telemetry"],"httpCount":1,"closed":["http","postgresql","redis","broker","object_storage","telemetry"]}
+Install and source quality	Prove real platform integration	2026-08-27T05:11:30.3243570Z {"event":"otlp_prometheus_round_trip","outcome":"passed","series":429,"metricNames":["aster_dependency_operation_active","aster_dependency_operation_duration_seconds_bucket","aster_dependency_operation_duration_seconds_count","aster_dependency_operation_duration_seconds_sum","aster_dependency_operation_outcomes_total","aster_telemetry_export_attempts_total","http_server_active_requests","http_server_request_duration_seconds_bucket","http_server_request_duration_seconds_count","http_server_request_duration_seconds_sum","nodejs_eventloop_delay_max_seconds","nodejs_eventloop_delay_mean_seconds","nodejs_eventloop_delay_min_seconds","nodejs_eventloop_delay_p50_seconds","nodejs_eventloop_delay_p90_seconds","nodejs_eventloop_delay_p99_seconds","nodejs_eventloop_delay_stddev_seconds","nodejs_eventloop_time_seconds_total","nodejs_eventloop_utilization_ratio","process_cpu_time_seconds_total","process_cpu_utilization_ratio","process_memory_usage_bytes","process_uptime_seconds","scrape_duration_seconds","scrape_samples_post_metric_relabeling","scrape_samples_scraped","scrape_series_added","up","v8js_gc_duration_seconds_bucket","v8js_gc_duration_seconds_count","v8js_gc_duration_seconds_sum","v8js_memory_heap_space_available_size_bytes","v8js_memory_heap_space_physical_size_bytes","v8js_memory_heap_space_size_bytes","v8js_memory_heap_used_bytes","v8js_resource_active"]}
+Install and source quality	Prove real platform integration	2026-08-27T05:11:30.3259388Z {"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","broker","storage","runtime","telemetry"],"durationMs":143136}
+Install and source quality	Prove real platform integration	2026-08-27T05:11:31.3660596Z {"event":"fixture_cleanup","project":"aster-integration-8ae20ed8d546445aa72cdd6c0b8942b5","remaining":0,"durationMs":1043}
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T05:11:32.1265565Z No known vulnerabilities found
+{"headRefOid":"b17596718e0f00ae0ecef514d9cf688d8f2f26bf","mergeStateStatus":"CLEAN","reviews":[],"state":"OPEN"}
+{"nodes":[],"totalCount":0}
+
+Exact post-merge excerpts
+-------------------------
+{"conclusion":"success","headSha":"a1f728196aa7a4d8a79181042f75a876610d2b11","status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33041787663"}
+Install and source quality	Run source quality and tests	2026-08-27T05:13:44.6385430Z  Tasks:    39 successful, 39 total
+Install and source quality	Prove real platform integration	2026-08-27T05:13:45.0885302Z  Tasks:    9 successful, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T05:16:04.7000907Z {"event":"all_adapter_http_drain","outcome":"passed","durationMs":74,"stages":["consumers","flush","adapters","telemetry"],"httpCount":1,"closed":["http","postgresql","redis","broker","object_storage","telemetry"]}
+Install and source quality	Prove real platform integration	2026-08-27T05:16:14.3848269Z {"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","broker","storage","runtime","telemetry"],"durationMs":148892}
+Install and source quality	Prove real platform integration	2026-08-27T05:16:15.3986322Z {"event":"fixture_cleanup","project":"aster-integration-4d1f135365894d16aee74587fc7bc326","remaining":0,"durationMs":1015}
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T05:16:16.0005625Z No known vulnerabilities found
+
+P01-R09 acceptance: RELEASED. The whole integration matrix, named failure modes,
+ownership cleanup, optional telemetry behavior, ten-second all-adapter HTTP
+drain, cold gate, audit, review, protected CI and exact post-merge pass.
+P01-R10 starts from the clean merge for final Docker-only evaluator profiles.

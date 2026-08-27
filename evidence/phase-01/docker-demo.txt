@@ -1,0 +1,1195 @@
+P01-R10 — Identity image checkpoint — 2026-08-27
+================================================
+Status: IMPLEMENTED locally; complete P01-R10 profiles and acceptance pending.
+Base: a1f728196aa7a4d8a79181042f75a876610d2b11 (released P01-R09).
+Branch: feat/p01-r10-docker-demo. Exact input fingerprints below.
+
+Environment and workload
+------------------------
+Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace, amd64.
+Docker 26.0.0, Compose 2.26.1-desktop.1; daemon 6 CPUs / 12543180800 memory bytes.
+Host Node 24.19.0 / pnpm 11.24.0 are used only for repository quality checks.
+The image builds and its diagnostics require Docker only, no host dependencies.
+No product data, media, hosted credential, published port or live dependency stack.
+
+Image and packaging decision
+----------------------------
+Official Node index:
+docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+amd64 manifest: e5a8dee7bc1e6a215d224a7ef8206f7e77271bc3cabd5febf2beafac0674f174
+arm64 manifest: be8929e08ae137e81b5e1edba02259e6c4cb2f5ad655092bb9f56b97e41c4536
+Actual runtime tested: amd64 only. Bookworm/glibc avoids introducing a new libc
+compatibility variable. Existing Node/pnpm pins are unchanged.
+Sources checked 2026-08-27:
+https://hub.docker.com/_/node/tags?name=24.19.0-bookworm-slim
+https://github.com/nodejs/docker-node/tree/fd1bf45c51970427bc899084b5381f6827722246/24/bookworm-slim
+https://raw.githubusercontent.com/nodejs/docker-node/fd1bf45c51970427bc899084b5381f6827722246/LICENSE
+https://pnpm.io/cli/deploy
+The Node image recipe is MIT; this is not a blanket MIT claim for every Debian
+base package. Upstream files/notices remain intact and Aster's LICENSE is copied.
+Project and representative pg license files were checked in the final image.
+
+Multi-stage build installs the exact frozen workspace graph, compiles dependencies
+before Identity, then uses pnpm deploy --prod --legacy to create /out. Existing
+workspace injection/link policy remains unchanged. Seven package file allowlists
+ship dist/src, not source/test trees; the runtime contains six workspace
+dependencies plus the Identity entrypoint. All 114 external production package
+versions match an exact reviewed pnpm-lock.yaml package key; no unlocked version.
+Runtime is UID 1000, direct Node PID 1, 192 MiB old-space bound and finite readiness
+probe. The probe rejects redirects and cancels its response body. Docker context
+is source-only; host node_modules, dist, Git and secret files are excluded.
+The existing platform gate guards these exact inputs plus file allowlists.
+Turborepo platform inputs include Docker context/recipe/manifests/validator, and
+CI classification recognizes the new paths; no new task, job or pipeline.
+
+Build commands and observations
+-------------------------------
+docker build --file infra/docker/identity.Dockerfile --tag aster-identity:p01-r10 --progress plain .
+First build pulled the Node base in 8.5 s and transferred 857.59 kB of context.
+Frozen installation downloaded all 329 packages in 7.9 s, with supply-chain
+verification. The first image built successfully as 1aab1543b741ba72aac83ee2a45c76e89bc520c5f585eb4925d3003a6a4be1a8.
+An initial diagnostic incorrectly checked pg/LICENSE from the Identity root;
+pg is a dependency of @aster/postgres. Owner-relative resolution proved that the
+notice existed; no production packaging change was needed for that finding.
+A final build followed manifest formatting and disabling build-runner analytics.
+It ran concurrently with the affected source gate, so durations are observations
+under contention, not comparable build benchmarks or service-start targets.
+
+Final build excerpt
+-------------------
+#3 transferring context: 603B done
+#5 [internal] load build context
+#5 transferring context: 21.24kB 0.0s done
+#17 [build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#17 9.656 ✓ Lockfile passes supply-chain policies (375 entries in 7.5s)
+#17 10.28 Done in 9.1s using pnpm v11.24.0
+#21 [build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#21 28.64  Tasks:    9 successful, 9 total
+#21 28.64 Cached:    0 cached, 9 total
+#21 28.64   Time:    26.658s
+#21 29.43 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#21 29.52 ✓ Lockfile passes supply-chain policies (verified 30s ago)
+#25 writing image sha256:3c6b9646863b08d8e0f47ef0180d019d86bf21c7a15be9fad570f4bf1b888005 done
+
+Final runtime proof
+-------------------
+sha256:3c6b9646863b08d8e0f47ef0180d019d86bf21c7a15be9fad570f4bf1b888005 size=255269001 user=node architecture=amd64
+{"event":"identity_image_packaging","uid":1000,"node":"v24.19.0","workspacePackages":7,"developmentDependencies":false,"hostWorkspace":false,"licenseNotices":true,"outcome":"passed"}
+{"event":"identity_diagnostic_passed","dependencyMode":"controlled","healthStatesChecked":4,"httpMetrics":"collected","shutdown":"completed"}
+Image size is 255269001 bytes (uncompressed Docker image size), not process RSS.
+The diagnostic uses controlled dependencies and real loopback HTTP. This proves
+packaging, not a real database-connected Docker profile or playable demo.
+
+Exact run prefix:
+docker run --rm --network none --cpus 0.5 --memory 256m --pids-limit 64 --read-only --cap-drop ALL --security-opt no-new-privileges --label com.aster.scope=p01-r10 sha256:3c6b9646863b08d8e0f47ef0180d019d86bf21c7a15be9fad570f4bf1b888005
+Packaging probe arguments: --input-type=module --eval <code below>
+import assert from 'node:assert/strict'; import { existsSync, realpathSync } from 'node:fs'; import { createRequire } from 'node:module'; import { dirname, resolve } from 'node:path'; import { fileURLToPath } from 'node:url'; const require = createRequire(import.meta.url); assert.equal(process.getuid(), 1000); const packages = ['@aster/identity','@aster/config','@aster/runtime','@aster/http-express','@aster/postgres','@aster/redis','@aster/telemetry']; for (const name of packages) { await import(name); assert.ok(realpathSync(fileURLToPath(import.meta.resolve(name))).startsWith('/app/')); } for (const name of ['typescript','eslint','turbo','kafkajs','@aws-sdk/client-s3']) { assert.throws(() => require.resolve(name), { code: 'MODULE_NOT_FOUND' }); } for (const path of ['/app/dist/test','/app/src','/workspace']) assert.equal(existsSync(path), false); assert.equal(existsSync('/app/LICENSE'), true); const pg = createRequire(import.meta.resolve('@aster/postgres')).resolve('pg'); assert.equal(existsSync(resolve(dirname(pg), '..', 'LICENSE')), true); console.log(JSON.stringify({event:'identity_image_packaging',uid:process.getuid(),node:process.version,workspacePackages:packages.length,developmentDependencies:false,hostWorkspace:false,licenseNotices:true,outcome:'passed'}));
+Diagnostic arguments: ./dist/src/check-identity.js
+
+Production graph inspection code (same run prefix, --input-type=module --eval):
+import { readdirSync, readFileSync } from 'node:fs'; const ids = new Set(); const root='/app/node_modules/.pnpm'; for (const entry of readdirSync(root,{withFileTypes:true})) { if (!entry.isDirectory() || entry.name==='node_modules') continue; const base=root+'/'+entry.name+'/node_modules'; for (const item of readdirSync(base,{withFileTypes:true})) { if (!item.isDirectory()) continue; const paths=item.name.startsWith('@') ? readdirSync(base+'/'+item.name,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>base+'/'+item.name+'/'+x.name) : [base+'/'+item.name]; for (const path of paths) { const p=JSON.parse(readFileSync(path+'/package.json','utf8')); ids.add(p.name+'@'+p.version); } } } console.log(JSON.stringify([...ids].sort()));
+Compare each external name@version against the exact package keys from:
+rg '^  .*@[0-9].*:$' pnpm-lock.yaml
+{"event":"production_graph_lockfile_match","workspacePackages":6,"externalPackages":114,"unlocked":[]}
+
+Default entrypoint without configuration exits 1, without starting resources:
+{"event":"aster.identity.startup_failed","status":"error","code":"ASTER_CONFIGURATION_INVALID","issues":[{"variable":"ASTER_ENV","classification":"non-secret","reason":"missing"},{"variable":"ASTER_HTTP_HOST","classification":"non-secret","reason":"missing"},{"variable":"ASTER_HTTP_PORT","classification":"non-secret","reason":"missing"},{"variable":"ASTER_SERVICE_NAME","classification":"non-secret","reason":"missing"},{"variable":"ASTER_STARTUP_DEADLINE_MS","classification":"non-secret","reason":"missing"},{"variable":"DATABASE_URL","classification":"secret","reason":"missing"},{"variable":"REDIS_URL","classification":"secret","reason":"missing"}]}
+All three disposable runtime probes remove their own containers automatically.
+Final label-filtered p01-r10 container inventory is empty. No volume was created,
+no default project was changed, and image/build caches remain available.
+
+Source SHA-256
+--------------
+e4dcc66eedfebffa6ca1870a47e91b00df37fbcc4ba81f21396e1a5eeca045bc  .dockerignore
+84e7c3c6c62bc59551d6779a8ec62e1f37a5e626157560af104edbebaf4e2329  infra/docker/identity.Dockerfile
+61328bd3ebe9e8f46eecaee9aba0b7776bd3bacf20a432d9055757744a5d16bd  packages/config/package.json
+526679f07aa1fbf192aa6f219364d10a40c6d3afce8607669ff835e943bad254  packages/runtime/package.json
+644f221b1c26c4c93fbd0821fc19301413fbc8a84434a27a594eb70df9f6b266  packages/telemetry/package.json
+d3401f98cca808d774875d46be18984ef84c6fa442095663c4a20a6a9a7fb02b  packages/http-express/package.json
+1f51df90496fe3bb2f559c21daa2cf218688a657ece7c8d671568b15dd32a86a  packages/postgres/package.json
+950e6404d02aaca27977dfe48708c4aec96535d36c9467c7938faa33e31c6b24  packages/redis/package.json
+1e3b6650d9819814e603a2e5d399e6f0dc49c8beab7bba8f5dac3faf4190b833  services/identity/package.json
+24241de4e0dff6824c1cbec73a0c9d4cfd30550087eb103574563c3571f24f99  tools/verify-runtime-image.mjs
+d7e4e4c16421bb0871c505b0f7bf5966eac4c723032a47b58c0396277d22651a  tools/verify-local-platform.mjs
+80c7eefbdf38fb1ab84fa6f46bcd502754bc5fe2571d09e6d33ade0a7ca22bef  tools/verify-local-platform.test.mjs
+320d4f071ae8293f3a4264399802bde6b3d374d88142e633eb6cbc45895d2101  tools/classify-ci-change.ts
+71d25dfa94de7ea20b51ddc72cdc68c75266fd98d3a80d06740dd3f3fb7d15dd  tools/classify-ci-change.test.ts
+8bfb8c047429c3c7744fa4e1d0de75ee93c7a439198abaed7adc21add834b36f  turbo.json
+
+Candidate verification and review
+---------------------------------
+pnpm platform:check: PASS.
+pnpm platform:test: 21/21 (including three packaging/adverse contract tests).
+pnpm ci:test: 21/21.
+pnpm check:changed: 49/49 successful, 0 cached, 52.272 s.
+Identity: 33/33. Formatting, lint, typecheck, architecture, Knip, secret and memory
+gates pass. No dependency/lockfile change since the passing P01-R09 audit.
+git diff --check: PASS.
+Executing-agent image checkpoint review/confirmation: no blocker. Checks cover
+source-only context, exact pins/frozen graph, portable production output, non-root
+execution, finite probe, notices, failed configuration and no residual container.
+Static policy is a reviewed high-confidence guard, not a complete Dockerfile
+security proof. No independent review, container CVE scan or hosted P01-R10 gate
+is claimed.
+
+Next acceptance
+---------------
+Add validated optional database-password configuration (preserve URI callers and
+reject conflicting sources), then extend reset ownership before the runtime
+profile. Add real optional exporter configuration and integration/observability/
+full profiles. Prove clean Docker-only startup, real readiness/recovery, actual
+healthcheck execution, idle resources, scoped reset and final protected release.
+Do not repeat this image build for evidence-only edits. Repeat after relevant
+packaging/client/config/Compose/entrypoint changes. No Phase 02 behavior yet.
+
+
+P01-R10 RUNTIME CHECKPOINT — 2026-08-27
+Status: IMPLEMENTED locally, not released; optional profiles and complete phase acceptance pending.
+Source: feat/p01-r10-docker-demo after image checkpoint 4837207; exact executable/policy SHA-256 below.
+Environment: same WSL/Linux amd64, Node 24.19.0, pnpm 11.24.0, Docker 26.0.0, Compose 2.26.1-desktop.1.
+Scope: synthetic empty default Aster project only. Docker is the evaluator build/start path; Node below drives assertions, not application execution.
+
+Changes and review:
+- Classified optional ASTER_DATABASE_PASSWORD builds a bounded effective URL without changing seven-variable URI callers. Rejects conflicting URL/query passwords, missing user, empty/control/oversized inputs. Literal percent/reserved/unicode password handling and safe CLI diagnostics pass. No secret-scanner exception, rule weakening or hidden vendor configuration was added; a false-positive on an encoding expression was resolved by naming the encoded intermediate.
+- Identity profile runs UID/GID 1000, read-only, cap_drop ALL, no-new-privileges, 1 CPU/384 MiB/64 PID limits, 15 s Docker grace with direct Node PID1.
+- Initial internal-only network reported healthy but had no effective published port; curl and Windows localhost failed. Added an application-only edge bridge; databases remain internal. Outbound access through edge exists; no egress restriction is claimed.
+- PostgreSQL helper image inherited two anonymous /var/lib/postgresql volumes. Changed helpers to 1 MiB tmpfs; their final Mounts arrays are empty. Reset can safely clean the validated legacy anonymous case too.
+- Reset enables all reviewed profiles, checks all exact service/volume/network ownership and mounts, rejects foreign/shared resources before teardown, checks postconditions and retains caches. Core P01-R01 backward compatibility retained; Identity requires current labels.
+
+Initial failed network observation:
+Container healthy; HostConfig.PortBindings requested 127.0.0.1:3100, NetworkSettings.Ports={}; network.Internal=true.
+Host curl: exit 7; Windows Invoke-WebRequest: connection refused.
+Initial build + start was 48.58 s, not a successful external demo.
+Initial fixture cleanup (includes only the two inherited helper volumes):
+$ node ./tools/scan-secrets.ts --all
+{"check":"secrets","status":"ok","mode":"all","findings":0}
+ Container aster-identity-1  Stopping
+ Container aster-platform-status-1  Stopping
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-identity-1  Stopped
+ Container aster-identity-1  Removing
+ Container aster-identity-1  Removed
+ Container aster-platform-init-1  Stopping
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-platform-init-1  Removed
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopping
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Volume aster_postgres-data  Removing
+ Network aster_platform  Removing
+ Volume aster_postgres-data  Removed
+ Network aster_platform  Removed
+aster local platform reset complete
+removed project resources: containers=5 networks=1 volumes=1
+removed legacy helper volumes=2
+
+Final Docker-only command and raw output (cached base/install layers; empty Aster project):
+/usr/bin/time -f 'runtime_build_start_seconds=%e' docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
+#0 building with "default" instance using docker driver
+
+#1 [identity internal] load build definition from identity.Dockerfile
+#1 transferring dockerfile: 2.02kB done
+#1 DONE 0.0s
+
+#2 [identity internal] load metadata for docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#2 DONE 0.0s
+
+#3 [identity internal] load .dockerignore
+#3 transferring context: 603B done
+#3 DONE 0.0s
+
+#4 [identity build  1/17] FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#4 DONE 0.0s
+
+#5 [identity internal] load build context
+#5 transferring context: 25.61kB 0.0s done
+#5 DONE 0.0s
+
+#6 [identity build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#6 CACHED
+
+#7 [identity build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#7 CACHED
+
+#8 [identity build 12/17] COPY services/identity/package.json ./services/identity/
+#8 CACHED
+
+#9 [identity build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#9 CACHED
+
+#10 [identity build  9/17] COPY packages/redis/package.json ./packages/redis/
+#10 CACHED
+
+#11 [identity build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#11 CACHED
+
+#12 [identity build  4/17] COPY packages/config/package.json ./packages/config/
+#12 CACHED
+
+#13 [identity build  2/17] WORKDIR /workspace
+#13 CACHED
+
+#14 [identity build 11/17] COPY packages/object-storage-s3/package.json ./packages/object-storage-s3/
+#14 CACHED
+
+#15 [identity build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#15 CACHED
+
+#16 [identity build 10/17] COPY packages/broker-kafka/package.json ./packages/broker-kafka/
+#16 CACHED
+
+#17 [identity build  8/17] COPY packages/postgres/package.json ./packages/postgres/
+#17 CACHED
+
+#18 [identity build 14/17] COPY tsconfig.base.json turbo.json LICENSE ./
+#18 CACHED
+
+#19 [identity build 15/17] COPY packages ./packages
+#19 DONE 0.1s
+
+#20 [identity build 16/17] COPY services/identity ./services/identity
+#20 DONE 0.1s
+
+#21 [identity build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#21 0.613 • turbo 2.10.12
+#21 0.626
+#21 0.626    • Packages in scope: @aster/identity
+#21 0.626    • Running build in 1 packages
+#21 0.626    • Remote caching disabled
+#21 0.626
+#21 0.630 @aster/http-express:build: cache miss, executing 6574acd81c3fb22c
+#21 0.630 @aster/config:build: cache miss, executing 9e5d62f6d31ee21e
+#21 0.631 @aster/telemetry:build: cache miss, executing e146cb5197792a18
+#21 0.631 @aster/runtime:build: cache miss, executing 7d7993214c23e8a2
+#21 1.099 @aster/telemetry:build: $ tsc --build ./tsconfig.json
+#21 1.109 @aster/config:build: $ tsc --build ./tsconfig.json
+#21 1.120 @aster/http-express:build: $ tsc --build ./tsconfig.json
+#21 1.126 @aster/runtime:build: $ tsc --build ./tsconfig.json
+#21 5.038 @aster/object-storage-s3:build: cache miss, executing 1be68303111b3e00
+#21 5.039 @aster/postgres:build: cache miss, executing 4feaef7e8cd5f4a9
+#21 5.041 @aster/broker-kafka:build: cache miss, executing 42fb1ae2447e2b76
+#21 5.042 @aster/redis:build: cache miss, executing 9973346cc272a933
+#21 5.663 @aster/postgres:build: $ tsc --build ./tsconfig.json
+#21 5.691 @aster/redis:build: $ tsc --build ./tsconfig.json
+#21 5.695 @aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+#21 5.745 @aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+#21 9.068 @aster/identity:build: cache miss, executing 9dee8975065bd79e
+#21 9.457 @aster/identity:build: $ tsc --build ./tsconfig.json
+#21 12.01
+#21 12.01  Tasks:    9 successful, 9 total
+#21 12.01 Cached:    0 cached, 9 total
+#21 12.01   Time:    11.396s
+#21 12.01
+#21 12.47 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#21 12.52 Packages are copied from the content-addressable store to the virtual store.
+#21 12.52   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#21 12.52   Virtual store is at:             ../out/node_modules/.pnpm
+#21 12.52 ✓ Lockfile passes supply-chain policies (verified 21m ago)
+#21 12.55 Progress: resolved 1, reused 0, downloaded 0, added 0
+#21 13.55 Progress: resolved 32, reused 0, downloaded 0, added 0
+#21 14.59 Progress: resolved 162, reused 0, downloaded 0, added 0
+#21 15.68 Progress: resolved 172, reused 0, downloaded 0, added 0
+#21 16.68 Progress: resolved 263, reused 0, downloaded 0, added 0
+#21 17.68 Progress: resolved 303, reused 0, downloaded 0, added 0
+#21 18.68 Progress: resolved 361, reused 0, downloaded 0, added 0
+#21 18.96 Progress: resolved 383, reused 0, downloaded 0, added 0, done
+#21 19.00 .                                        | +120 ++++++++++++
+#21 DONE 28.8s
+
+#22 [identity runtime 2/4] WORKDIR /app
+#22 CACHED
+
+#23 [identity runtime 3/4] COPY --from=build --chown=node:node /out ./
+#23 DONE 0.6s
+
+#24 [identity runtime 4/4] COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+#24 DONE 0.1s
+
+#25 [identity] exporting to image
+#25 exporting layers
+#25 exporting layers 0.5s done
+#25 writing image sha256:802aca851543412bfb7da3941605138579b5547ab7fb6242ed59b6d8864c58ab done
+#25 naming to docker.io/library/aster-identity done
+#25 DONE 0.6s
+ Network aster_edge  Creating
+ Network aster_edge  Created
+ Network aster_platform  Creating
+ Network aster_platform  Created
+ Volume "aster_postgres-data"  Creating
+ Volume "aster_postgres-data"  Created
+ Container aster-postgres-1  Creating
+ Container aster-redis-1  Creating
+ Container aster-redis-1  Created
+ Container aster-postgres-1  Created
+ Container aster-platform-init-1  Creating
+ Container aster-platform-init-1  Created
+ Container aster-platform-status-1  Creating
+ Container aster-identity-1  Creating
+ Container aster-identity-1  Created
+ Container aster-platform-status-1  Created
+ Container aster-redis-1  Starting
+ Container aster-postgres-1  Starting
+ Container aster-postgres-1  Started
+ Container aster-redis-1  Started
+ Container aster-redis-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-postgres-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-postgres-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-platform-status-1  Starting
+ Container aster-platform-init-1  Exited
+ Container aster-identity-1  Starting
+ Container aster-platform-status-1  Started
+ Container aster-identity-1  Started
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-platform-status-1  Waiting
+ Container aster-identity-1  Waiting
+ Container aster-platform-init-1  Exited
+ Container aster-postgres-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-platform-status-1  Healthy
+ Container aster-identity-1  Healthy
+runtime_build_start_seconds=39.71
+
+Real dependency failure/recovery verifier (node --input-type=module -e with the following code):
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {setTimeout as delay} from 'node:timers/promises';
+const docker = args => execFileSync('docker', args, {encoding:'utf8',timeout:40000,stdio:['ignore','pipe','pipe']}).trim();
+const base = ['compose','--project-name','aster','--file','infra/compose/compose.yml','--profile','runtime'];
+async function health(path='/health/ready') {
+ const r = await fetch('http://127.0.0.1:3100'+path,{signal:AbortSignal.timeout(1500),redirect:'error'});
+ const body = await r.text(); assert.ok(body.length < 2048); return {status:r.status,body:JSON.parse(body)};
+}
+async function waitFor(status) {
+ const started=Date.now(); let last;
+ while(Date.now()-started<20000) {
+  last=await health(); if(last.status===status) return {...last,observedAfterMs:Date.now()-started};
+  await delay(250);
+ }
+ throw new Error('readiness transition missing: '+JSON.stringify(last));
+}
+console.log(JSON.stringify({event:'runtime_initial_health',...await waitFor(200)}));
+const inspect=JSON.parse(docker(['inspect','aster-identity-1']))[0];
+assert.equal(inspect.Config.User,'1000:1000'); assert.equal(inspect.HostConfig.ReadonlyRootfs,true);
+assert.deepEqual(inspect.HostConfig.CapDrop,['ALL']); assert.equal(inspect.HostConfig.Memory,402653184);
+assert.equal(inspect.HostConfig.PidsLimit,64); assert.equal(inspect.HostConfig.NanoCpus,1000000000);
+assert.deepEqual(inspect.NetworkSettings.Ports['3100/tcp'],[{HostIp:'127.0.0.1',HostPort:'3100'}]);
+console.log(JSON.stringify({event:'runtime_isolation',image:inspect.Image,user:inspect.Config.User,readOnly:inspect.HostConfig.ReadonlyRootfs,capDrop:inspect.HostConfig.CapDrop,memory:inspect.HostConfig.Memory,pids:inspect.HostConfig.PidsLimit,ports:inspect.NetworkSettings.Ports}));
+for(const service of ['postgres','redis']) {
+ const owner=JSON.parse(docker(['inspect','aster-'+service+'-1']))[0];
+ assert.equal(owner.Config.Labels['com.docker.compose.project'],'aster');
+ assert.equal(owner.Config.Labels['com.aster.environment'],'local');
+ assert.equal(owner.Config.Labels['com.docker.compose.project.config_files'],process.cwd()+'/infra/compose/compose.yml');
+ docker([...base,'stop',service]);
+ try {
+  const unavailable=await waitFor(503); const live=await health('/health/live'); assert.equal(live.status,200);
+  console.log(JSON.stringify({event:'runtime_dependency_unavailable',dependency:service,...unavailable,liveStatus:live.status}));
+ } finally {docker([...base,'start',service]);}
+ console.log(JSON.stringify({event:'runtime_dependency_recovered',dependency:service,...await waitFor(200)}));
+}
+console.log(JSON.stringify({event:'runtime_real_dependency_smoke_passed'}));
+Raw results:
+{"event":"runtime_initial_health","status":200,"body":{"liveness":"live","phase":"ready","readiness":"ready","reason":"ready"},"observedAfterMs":39}
+{"event":"runtime_isolation","image":"sha256:802aca851543412bfb7da3941605138579b5547ab7fb6242ed59b6d8864c58ab","user":"1000:1000","readOnly":true,"capDrop":["ALL"],"memory":402653184,"pids":64,"ports":{"3100/tcp":[{"HostIp":"127.0.0.1","HostPort":"3100"}]}}
+{"event":"runtime_dependency_unavailable","dependency":"postgres","status":503,"body":{"liveness":"live","phase":"ready","readiness":"not_ready","reason":"dependency_unavailable"},"observedAfterMs":10914,"liveStatus":200}
+{"event":"runtime_dependency_recovered","dependency":"postgres","status":200,"body":{"liveness":"live","phase":"ready","readiness":"ready","reason":"ready"},"observedAfterMs":8114}
+{"event":"runtime_dependency_unavailable","dependency":"redis","status":503,"body":{"liveness":"live","phase":"ready","readiness":"not_ready","reason":"dependency_unavailable"},"observedAfterMs":12475,"liveStatus":200}
+{"event":"runtime_dependency_recovered","dependency":"redis","status":200,"body":{"liveness":"live","phase":"ready","readiness":"ready","reason":"ready"},"observedAfterMs":7610}
+{"event":"runtime_real_dependency_smoke_passed"}
+
+Windows host check: Invoke-WebRequest http://127.0.0.1:3100/health/live -TimeoutSec 3 returned status 200 and {"liveness":"live","phase":"ready","readiness":"ready","reason":"ready"}.
+
+Single healthy post-recovery resource sample, no product workload:
+Commands: curl --max-time 3 --include http://127.0.0.1:3100/health/ready; docker stats --no-stream for the four running Aster containers; docker compose exec -T postgres du -sk /var/lib/postgresql/18/docker; docker inspect image/isolation.
+HTTP/1.1 200 OK
+Cache-Control: no-store
+Content-Type: application/json; charset=utf-8
+Content-Length: 72
+Date: Thu, 27 Aug 2026 05:52:31 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5, max=100
+
+{"liveness":"live","phase":"ready","readiness":"ready","reason":"ready"}aster-identity-1 8.02% 51.59MiB / 384MiB 11
+aster-postgres-1 2.34% 25.11MiB / 768MiB 10
+aster-redis-1 0.18% 6.004MiB / 256MiB 7
+aster-platform-status-1 0.00% 1.609MiB / 128MiB 2
+47488	/var/lib/postgresql/18/docker
+945b998f1e46f7be9fef7f75c3545a705e96afc4e1df0c3b4ee53e7841ef8f74 sha256:802aca851543412bfb7da3941605138579b5547ab7fb6242ed59b6d8864c58ab healthy {"3100/tcp":[{"HostIp":"127.0.0.1","HostPort":"3100"}]}
+3db2e99e6770e098d4ce7100bb3d5d718b6734c4e12887dfbd8c0b6b8c7be2d9  packages/config/src/runtime-config.ts
+5a055728d550bf324aa16596b0c2be388c7b132b774d1015a4bf1111c3aaec0d  infra/compose/compose.yml
+df1e28e4547bd0de5f56e78a571b0087e43efd930e9ba3712d2ea55afed74f7c  tools/reset-local-platform.sh
+
+Natural SIGTERM and log-redaction verifier:
+import assert from 'node:assert/strict'; import {execFileSync} from 'node:child_process';
+const run=args=>execFileSync('docker',args,{encoding:'utf8',timeout:20000,stdio:['ignore','pipe','pipe']}).trim();
+const started=Date.now();run(['compose','--project-name','aster','--file','infra/compose/compose.yml','--profile','runtime','stop','identity']);
+const state=JSON.parse(run(['inspect','aster-identity-1']))[0].State;
+assert.equal(state.ExitCode,143); assert.equal(state.OOMKilled,false);
+const logs=run(['logs','aster-identity-1']); assert.ok(logs.includes('aster.lifecycle.shutdown_completed'));
+assert.ok(!logs.includes('aster-test-only'));assert.ok(!logs.includes('postgresql://'));assert.ok(!logs.includes('redis://'));
+console.log(JSON.stringify({event:'runtime_sigterm',elapsedMs:Date.now()-started,exitCode:state.ExitCode,oomKilled:state.OOMKilled}));
+console.log(logs);
+{"event":"runtime_sigterm","elapsedMs":561,"exitCode":143,"oomKilled":false}
+{"level":"info","time":"2026-08-27T05:51:08.187Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.lifecycle.ready","operation":"runtime.lifecycle","outcome":"ok","attributes":{"phase":"ready"}}
+{"level":"info","time":"2026-08-27T05:51:08.188Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.identity.readiness_changed","outcome":"ok","attributes":{"readiness":"ready","reason":"ready"}}
+{"level":"info","time":"2026-08-27T05:51:08.188Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.identity.startup_completed","outcome":"ok","eventId":"222f7aa3-07d6-4eaa-865c-712743a4ddff","durationMs":94.04608199999996,"attributes":{"started_at":"2026-08-27T05:51:08.094Z","status":"started"}}
+{"level":"info","time":"2026-08-27T05:51:51.768Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.identity.readiness_changed","outcome":"degraded","attributes":{"readiness":"not_ready","reason":"dependency_unavailable"}}
+{"level":"info","time":"2026-08-27T05:52:00.203Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.identity.readiness_changed","outcome":"ok","attributes":{"readiness":"ready","reason":"ready"}}
+{"level":"info","time":"2026-08-27T05:52:13.002Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.identity.readiness_changed","outcome":"degraded","attributes":{"readiness":"not_ready","reason":"dependency_unavailable"}}
+{"level":"info","time":"2026-08-27T05:52:21.015Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.identity.readiness_changed","outcome":"ok","attributes":{"readiness":"ready","reason":"ready"}}
+{"level":"info","time":"2026-08-27T05:52:58.969Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.lifecycle.shutdown_started","operation":"runtime.lifecycle","outcome":"ok","attributes":{"trigger":"sigterm"}}
+{"level":"info","time":"2026-08-27T05:52:58.972Z","service":"identity","environment":"local","version":"0.0.0","event":"aster.lifecycle.shutdown_completed","operation":"runtime.lifecycle","outcome":"ok","attributes":{"outcome":"completed","trigger":"sigterm"}}
+
+Exact scoped reset and idempotent repeat:
+ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+ Container aster-identity-1  Stopping
+ Container aster-platform-status-1  Stopping
+ Container aster-identity-1  Stopped
+ Container aster-identity-1  Removing
+ Container aster-identity-1  Removed
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-platform-init-1  Stopping
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-platform-init-1  Removed
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopping
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Volume aster_postgres-data  Removing
+ Network aster_platform  Removing
+ Network aster_edge  Removing
+ Volume aster_postgres-data  Removed
+ Network aster_platform  Removed
+ Network aster_edge  Removed
+aster local platform reset complete
+removed project resources: containers=5 networks=2 volumes=1
+removed legacy helper volumes=0
+aster local platform is already reset
+
+Core-only regression from empty Aster state, then exact reset:
+/usr/bin/time -f 'core_start_seconds=%e' docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status
+ Network aster_platform  Creating
+ Network aster_platform  Created
+ Volume "aster_postgres-data"  Creating
+ Volume "aster_postgres-data"  Created
+ Container aster-postgres-1  Creating
+ Container aster-redis-1  Creating
+ Container aster-postgres-1  Created
+ Container aster-redis-1  Created
+ Container aster-platform-init-1  Creating
+ Container aster-platform-init-1  Created
+ Container aster-platform-status-1  Creating
+ Container aster-platform-status-1  Created
+ Container aster-redis-1  Starting
+ Container aster-postgres-1  Starting
+ Container aster-postgres-1  Started
+ Container aster-redis-1  Started
+ Container aster-redis-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-platform-init-1  Exited
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-status-1  Starting
+ Container aster-platform-status-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-platform-status-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Exited
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-status-1  Healthy
+core_start_seconds=7.38
+NAME                      IMAGE                                                                                                                COMMAND                  SERVICE           CREATED         STATUS                     PORTS
+aster-platform-init-1     docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f   "/bin/sh -ec 'psql -…"   platform-init     8 seconds ago   Exited (0) 4 seconds ago
+aster-platform-status-1   docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f   "/bin/sh -ec 'printf…"   platform-status   7 seconds ago   Up 3 seconds (healthy)
+aster-postgres-1          docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f   "docker-entrypoint.s…"   postgres          8 seconds ago   Up 6 seconds (healthy)
+aster-redis-1             docker.io/library/redis:8.10.0-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241        "docker-entrypoint.s…"   redis             8 seconds ago   Up 6 seconds (healthy)
+aster_platform
+ Container aster-platform-status-1  Stopping
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-platform-init-1  Stopping
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-platform-init-1  Removed
+ Container aster-redis-1  Stopping
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Volume aster_postgres-data  Removing
+ Network aster_platform  Removing
+ Volume aster_postgres-data  Removed
+ Network aster_platform  Removed
+aster local platform reset complete
+removed project resources: containers=4 networks=1 volumes=1
+removed legacy helper volumes=0
+
+Inventory postcondition: exact sorted pre/post inventories match: four unrelated containers plus 22 unrelated volume/network entries; zero Aster experiment resources remain. Images and build caches intentionally retained. Deleted only synthetic test databases and validated inherited helper volumes, without backup.
+
+Source fingerprints (runtime source is unchanged after this experiment; later policy/prose checks recorded below):
+3db2e99e6770e098d4ce7100bb3d5d718b6734c4e12887dfbd8c0b6b8c7be2d9  packages/config/src/runtime-config.ts
+5a055728d550bf324aa16596b0c2be388c7b132b774d1015a4bf1111c3aaec0d  infra/compose/compose.yml
+df1e28e4547bd0de5f56e78a571b0087e43efd930e9ba3712d2ea55afed74f7c  tools/reset-local-platform.sh
+c70a7d4dce6ee8704487eb02acbaf1ce920dfbcd500157b7b57fdf4a1a3c1cbe  tools/verify-local-platform.mjs
+8011e8a408087e9d1a1239c8dea2effc8938dd6489b8f80e8f914cf3870d76df  tools/reset-local-platform.test.mjs
+be2406f3862532c4ad76727529717d2a8f963b825c93754a218edff6c4e94a86  tools/verify-local-platform.test.mjs
+723def559cd4ad59cefcd4510619e5b7f6091201d8ce5e3d649d21c3cef0b336  packages/config/test/runtime-config.test.ts
+c9a08c4335a01ba32a1c7c54beb0d55be018ef091d4e2e72470f81ca594957f2  packages/config/test/check-runtime-config.test.ts
+Focused checks: config 17/17; Identity 33/33; platform/reset 25/25. Static lint, Compose model and secret scan pass. The affected candidate gate is recorded at the next checkpoint below.
+Interpretation: localhost reaches the actual packaged service, real database/cache failures change readiness without killing liveness, automatic recovery works, and termination/reset are bounded. Observed transition times include the ten-second monitor cadence and are not SLO targets. Resource samples are not load benchmarks.
+Remaining: optional integration/observability/full profiles, real configured exporter delivery, occupied-port acceptance, final cold-checkout build/start, image/profile CI and full Phase 01 acceptance/release. No playable VOD, native Windows container runtime, macOS/arm64 execution or image CVE audit is claimed.
+Official references: https://docs.docker.com/compose/how-tos/profiles/ ; https://docs.docker.com/reference/compose-file/services/ ; https://nodejs.org/api/url.html#urlpassword
+
+Candidate checkpoint gate:
+pnpm check:changed -> exit 0; 49 successful / 49 total; 28 cached; 18.58 s.
+Config: 17/17; Identity: 33/33; platform/reset: 25/25. Lint/types/format/unused/architecture/security/docs/memory/CI policy and all other selected gates pass.
+After evidence and memory consolidation, pnpm docs:check, ai:check, security:check and platform:check pass. Heavy Docker evidence is retained: executable config, image, Compose and reset bytes are unchanged; later edits affect only command-policy assertions and prose.
+Final command-policy fingerprint: 920fa40a7ac4cb1602c1a471754813018a5bdb42dc64f4784122d3603349d18c  tools/verify-local-platform.mjs
+Checkpoint review by executing agent: password classification/conflicts/encoding, loopback exposure, private database ownership, exact reset (including foreign references and legacy volumes), absence of test/host files and bounded shutdown examined. No current-checkpoint blocker; no independent review or complete P01-R10 acceptance is claimed. Final profile review follows implementation of remaining profiles.
+
+
+2026-08-27 — Optional Docker profiles and real configured metrics
+Source: feat/p01-r10-docker-demo following runtime commit 166cc3c; executable fingerprints below identify this local experiment. Final clean/protected source remains pending.
+Environment: same Windows/WSL amd64, Docker 26.0.0 and Compose 2.26.1; empty Aster project, existing immutable image/install caches. Workload: health probes and single-node synthetic laboratory only.
+Commands: docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120
+Result: exit 0. Nine services created; initializer exited 0, six dependency/Identity/status health checks passed, shell-less Collector receiver verified by status's real OTLP request. Only loopback 3100/9090 are published. No host configuration mounts.
+Build/start final output:
+                                   | +120 ++++++++++++
+#35 DONE 32.7s
+
+#36 [identity runtime 2/4] WORKDIR /app
+#36 CACHED
+
+#37 [identity runtime 3/4] COPY --from=build --chown=node:node /out ./
+#37 DONE 0.7s
+
+#38 [identity runtime 4/4] COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+#38 DONE 0.1s
+
+#39 [identity] exporting to image
+#39 exporting layers
+#39 exporting layers 0.5s done
+#39 writing image sha256:d94b81120e75970ece8d3bd6998e819a0fe7281662573685783f9e4d231aecdf done
+#39 naming to docker.io/library/aster-identity done
+#39 DONE 0.6s
+ Network aster_platform  Creating
+ Network aster_platform  Created
+ Network aster_edge  Creating
+ Network aster_edge  Created
+ Volume "aster_storage-data"  Creating
+ Volume "aster_storage-data"  Created
+ Volume "aster_postgres-data"  Creating
+ Volume "aster_postgres-data"  Created
+ Volume "aster_broker-data"  Creating
+ Volume "aster_broker-data"  Created
+ Volume "aster_prometheus-data"  Creating
+ Volume "aster_prometheus-data"  Created
+ Container aster-prometheus-1  Creating
+ Container aster-postgres-1  Creating
+ Container aster-redis-1  Creating
+ Container aster-storage-1  Creating
+ Container aster-broker-1  Creating
+ Container aster-collector-1  Creating
+ Container aster-postgres-1  Created
+ Container aster-redis-1  Created
+ Container aster-platform-init-1  Creating
+ Container aster-prometheus-1  Created
+ Container aster-collector-1  Created
+ Container aster-storage-1  Created
+ Container aster-broker-1  Created
+ Container aster-platform-init-1  Created
+ Container aster-platform-status-1  Creating
+ Container aster-identity-1  Creating
+ Container aster-identity-1  Created
+ Container aster-platform-status-1  Created
+ Container aster-prometheus-1  Starting
+ Container aster-redis-1  Starting
+ Container aster-postgres-1  Starting
+ Container aster-storage-1  Starting
+ Container aster-broker-1  Starting
+ Container aster-collector-1  Starting
+ Container aster-redis-1  Started
+ Container aster-broker-1  Started
+ Container aster-collector-1  Started
+ Container aster-postgres-1  Started
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-storage-1  Started
+ Container aster-prometheus-1  Started
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-prometheus-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-prometheus-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-identity-1  Starting
+ Container aster-redis-1  Healthy
+ Container aster-platform-status-1  Starting
+ Container aster-platform-status-1  Started
+ Container aster-identity-1  Started
+ Container aster-redis-1  Waiting
+ Container aster-identity-1  Waiting
+ Container aster-collector-1  Waiting
+ Container aster-platform-status-1  Waiting
+ Container aster-storage-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-prometheus-1  Waiting
+ Container aster-broker-1  Waiting
+ Container aster-prometheus-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-storage-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-collector-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-identity-1  Healthy
+ Container aster-broker-1  Healthy
+ Container aster-platform-status-1  Healthy
+
+Read-only bounded HTTP/Prometheus queries and exact container inspection; then stop/start only inspected aster-collector-1:
+{"metric":"http_server_request_duration_seconds_count","series":[{"metric":{"__name__":"http_server_request_duration_seconds_count","aster_outcome":"success","exported_job":"identity","http_request_method":"GET","http_response_status_class":"2xx","http_route":"/health/ready","instance":"collector:8889","job":"aster-local"},"value":[1787811209.375,"15"]}]}
+{"metric":"aster_dependency_operation_outcomes_total","series":[{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"postgresql","aster_operation":"connect","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]},{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"postgresql","aster_operation":"probe","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]},{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"redis","aster_operation":"connect","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]},{"metric":{"__name__":"aster_dependency_operation_outcomes_total","aster_dependency":"redis","aster_operation":"probe","aster_outcome":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.382,"5"]}]}
+{"metric":"process_cpu_time_seconds_total","series":[{"metric":{"__name__":"process_cpu_time_seconds_total","cpu_mode":"system","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.387,"0.143069"]},{"metric":{"__name__":"process_cpu_time_seconds_total","cpu_mode":"user","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.387,"0.860687"]}]}
+{"metric":"process_memory_usage_bytes","series":[{"metric":{"__name__":"process_memory_usage_bytes","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.391,"102699008"]}]}
+{"metric":"nodejs_eventloop_delay_p99_seconds","series":[{"metric":{"__name__":"nodejs_eventloop_delay_p99_seconds","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.396,"0.010264575"]}]}
+{"metric":"aster_telemetry_export_attempts_total","series":[{"metric":{"__name__":"aster_telemetry_export_attempts_total","aster_export_result":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811209.399,"8"]}]}
+{"container":"/aster-identity-1","image":"sha256:d94b81120e75970ece8d3bd6998e819a0fe7281662573685783f9e4d231aecdf","user":"1000:1000","readOnly":true,"capDrop":["ALL"],"nanoCpus":1000000000,"memory":402653184,"pids":64,"ports":{"3100/tcp":[{"HostIp":"127.0.0.1","HostPort":"3100"}]},"mounts":[],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-collector-1","image":"sha256:8e0033e4d656ea5857165f5a36b4b7346564cb76933677564844a786f8327517","user":"10001:10001","readOnly":true,"capDrop":["ALL"],"nanoCpus":500000000,"memory":134217728,"pids":64,"ports":{},"mounts":[],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-prometheus-1","image":"sha256:fc8e3bcb58548588aac18110fb5cf87283bc304fb1627e773c05d23d910092cb","user":"nobody","readOnly":true,"capDrop":["ALL"],"nanoCpus":500000000,"memory":268435456,"pids":64,"ports":{"9090/tcp":[{"HostIp":"127.0.0.1","HostPort":"9090"}]},"mounts":[{"type":"volume","name":"aster_prometheus-data","destination":"/prometheus"}],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-broker-1","image":"sha256:47dccc76b32761bc57462b8753144cdbb73a16b123b1d13d3eedb92bb7952b11","user":"appuser","readOnly":true,"capDrop":["ALL"],"nanoCpus":1000000000,"memory":805306368,"pids":192,"ports":{},"mounts":[{"type":"volume","name":"aster_broker-data","destination":"/var/lib/kafka/data"}],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"container":"/aster-storage-1","image":"sha256:975a7a21693eb9fad7c0c1998a9e505964e3ed67adb0bbdd000efc17d6cc80dc","user":"","readOnly":true,"capDrop":["ALL"],"nanoCpus":1000000000,"memory":402653184,"pids":96,"ports":{},"mounts":[{"type":"volume","name":"aster_storage-data","destination":"/data"}],"log":{"Type":"json-file","Config":{"max-file":"2","max-size":"5m"}}}
+{"collectorStopped":true,"identityReady":true,"identityLive":true,"platformStatus":"unhealthy","scrapeUp":0}
+file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/[eval1]:19
+ throw Error("timeout: "+name);
+       ^
+
+Error: timeout: failed export observable
+    at until (file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/[eval1]:19:8)
+    at async file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/[eval1]:36:1
+
+Node.js v24.19.0
+
+The last ad hoc assertion incorrectly inspected a nonexistent outcome label; the application and Collector recovered. Without repeating the outage, the corrected declared aster_export_result assertion passed:
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"__name__":"aster_telemetry_export_attempts_total","aster_export_result":"success","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811259.171,"13"]},{"metric":{"__name__":"aster_telemetry_export_attempts_total","aster_export_result":"failure","exported_job":"identity","instance":"collector:8889","job":"aster-local"},"value":[1787811259.171,"5"]}]}}
+PASS: recovered cumulative export-success and export-failure metrics; assertion corrected to declared aster_export_result label.
+
+Footprint commands: docker stats --no-stream with fixed eight live service names; docker image inspect aster-identity aster-collector aster-prometheus; docker exec <owned service> du -sk <owned data path>.
+aster-identity-1|41.98MiB / 384MiB|1.20%|11
+aster-postgres-1|58.05MiB / 768MiB|0.55%|10
+aster-redis-1|12.68MiB / 256MiB|0.18%|7
+aster-broker-1|335.8MiB / 768MiB|2.29%|77
+aster-storage-1|9.141MiB / 384MiB|0.03%|7
+aster-collector-1|19MiB / 128MiB|0.02%|8
+aster-prometheus-1|30.26MiB / 256MiB|0.34%|8
+aster-platform-status-1|752KiB / 128MiB|0.00%|2
+sha256:d94b81120e75970ece8d3bd6998e819a0fe7281662573685783f9e4d231aecdf|255275702|node
+sha256:8e0033e4d656ea5857165f5a36b4b7346564cb76933677564844a786f8327517|123692717|10001:10001
+sha256:fc8e3bcb58548588aac18110fb5cf87283bc304fb1627e773c05d23d910092cb|260925664|nobody
+47656	/var/lib/postgresql
+64	/var/lib/kafka/data
+4	/data
+48	/prometheus
+
+Shutdown: stop exact aster-collector-1, then time docker stop --time 15 aster-identity-1; inspect state and bounded logs. Collector unavailability does not prevent natural exit; failed flush is honestly degraded. No force kill or OOM:
+{"collectorUnavailable":true,"stopCommandMs":4223.058028,"exitCode":143,"oomKilled":false,"logs":"{\"level\":\"info\",\"time\":\"2026-08-27T06:12:34.161Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.ready\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"ok\",\"attributes\":{\"phase\":\"ready\"}}\n{\"level\":\"info\",\"time\":\"2026-08-27T06:12:34.162Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.identity.readiness_changed\",\"outcome\":\"ok\",\"attributes\":{\"readiness\":\"ready\",\"reason\":\"ready\"}}\n{\"level\":\"info\",\"time\":\"2026-08-27T06:12:34.163Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.identity.startup_completed\",\"outcome\":\"ok\",\"eventId\":\"f3c8bc7b-eaeb-4eb5-b67b-9d11144e434e\",\"durationMs\":90.50526400000001,\"attributes\":{\"started_at\":\"2026-08-27T06:12:34.072Z\",\"status\":\"started\"}}\n{\"level\":\"info\",\"time\":\"2026-08-27T06:14:43.260Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.shutdown_started\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"ok\",\"attributes\":{\"trigger\":\"sigterm\"}}\n{\"level\":\"warn\",\"time\":\"2026-08-27T06:14:45.262Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.stage_failed\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"degraded\",\"attributes\":{\"stage\":\"flush_telemetry\"}}\n{\"level\":\"warn\",\"time\":\"2026-08-27T06:14:47.248Z\",\"service\":\"identity\",\"environment\":\"local\",\"version\":\"0.0.0\",\"event\":\"aster.lifecycle.shutdown_completed\",\"operation\":\"runtime.lifecycle\",\"outcome\":\"degraded\",\"attributes\":{\"outcome\":\"degraded\",\"trigger\":\"sigterm\"}}\n"}
+
+Reset command: ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
+ Container aster-broker-1  Stopping
+ Container aster-platform-status-1  Stopping
+ Container aster-storage-1  Stopping
+ Container aster-identity-1  Stopping
+ Container aster-identity-1  Stopped
+ Container aster-identity-1  Removing
+ Container aster-identity-1  Removed
+ Container aster-storage-1  Stopped
+ Container aster-storage-1  Removing
+ Container aster-storage-1  Removed
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-prometheus-1  Stopping
+ Container aster-platform-init-1  Stopping
+ Container aster-collector-1  Stopping
+ Container aster-collector-1  Stopped
+ Container aster-collector-1  Removing
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-collector-1  Removed
+ Container aster-platform-init-1  Removed
+ Container aster-redis-1  Stopping
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Container aster-broker-1  Stopped
+ Container aster-broker-1  Removing
+ Container aster-broker-1  Removed
+ Container aster-prometheus-1  Stopped
+ Container aster-prometheus-1  Removing
+ Container aster-prometheus-1  Removed
+ Volume aster_prometheus-data  Removing
+ Volume aster_postgres-data  Removing
+ Volume aster_storage-data  Removing
+ Volume aster_broker-data  Removing
+ Volume aster_prometheus-data  Removed
+ Volume aster_storage-data  Removed
+ Network aster_platform  Removing
+ Network aster_edge  Removing
+ Volume aster_postgres-data  Removed
+ Volume aster_broker-data  Removed
+ Network aster_platform  Removed
+ Network aster_edge  Removed
+aster local platform reset complete
+removed project resources: containers=9 networks=2 volumes=4
+removed legacy helper volumes=0
+
+Inventory proof: before/after normalized container ID/name/image/state/networks/mounts/ports and complete volume/network names match: true. Four unrelated stopped containers and 22 unrelated volume/network entries are unchanged. Only the four named synthetic-data volumes and nine Aster containers/two networks were removed; no backup, no global prune, images/caches remain.
+Resolved profile service counts: core 4; runtime 5; integration 7; observability with overlay 7; full with overlay 9. Base-only configuration never sets the OTLP endpoint. Default runtime remains no-export.
+Focused checks: config 20/20; Identity 34/34; platform/reset 29/29; CI policy/classification 22/22. New CI path builds the full profile and checks UID/health/six metric families inside Identity; first hosted run pending. Initial affected checks found test-only lint/tuple typing errors; corrected before the final candidate gate below.
+Source fingerprints:
+84be38ea996e40b87a99597ea4cec9d1787bafac65dfc8351b0897c8432eae5e  infra/compose/compose.yml
+cbdb9ab89a7b39a4c4c3f12a4389e1679f021267f44e52b584cde03adfa5f033  infra/compose/observability.yml
+de291329382ba4c4028a8f679af2d80f3594fc348d5c7ee25ea5e48a5561341b  infra/compose/collector.integration.yml
+d8b547eba9ee5a7e5f35bb4707ba2d64af40de4f839c6cf389a2512a008a218f  infra/compose/prometheus.local.yml
+84e7c3c6c62bc59551d6779a8ec62e1f37a5e626157560af104edbebaf4e2329  infra/docker/identity.Dockerfile
+c5ad0ec8450d471108f30d6d787d2cd79e2b54a2a3ef123cd32d6fc2936f292a  infra/docker/collector.Dockerfile
+d24f442676924b4142e04b46af103ca71109ae78367d78a9618c82bf51779841  infra/docker/prometheus.Dockerfile
+f684b955264a0b3bba27ef190aedbafec3cd0a09420eb896b22b356b1479f5cc  packages/config/src/runtime-config.ts
+43ec4eee217fd88213ecc65fd0c6b48800ee7bbc61c34e2c60fc28f92f1dbd94  services/identity/src/create-service.ts
+5d84992c5cb183dff0c7ef8491333179571cac3cd4a392325a3acdbb7bda2822  tools/reset-local-platform.sh
+bb9fe75ba94a65f7a49371f34e19ab4a7c644394090a3956edc9bdf6358a9c79  .dockerignore
+
+Interpretation: actual packaged runtime emits bounded metrics and remains available without telemetry. Broker/S3 remain optional diagnostic services, not Identity dependencies. Resource values are snapshots, not SLO/capacity guarantees; Prometheus retention is not a hard disk quota. Initial full build reused base/install caches; final clean checkout remains required. No new package/license/framework choice.
+Official Compose merge reference: https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+
+Optional-profile candidate gate: pnpm check:changed -> exit 0, 49/49 tasks, 33 cached, 14.863 s. Configuration 20/20, Identity 34/34, platform/reset 29/29 and CI 22/22 pass. Initial test-only lint/tuple issues are corrected. Later memory/prose consolidation does not change executable behavior; clean Docker-only evaluator proof and hosted CI still remain.
+
+
+2026-08-27 — Exact clean Docker-only candidate acceptance
+Exact source: 38801cece201eb2c976a808b958c34a16c3e9e71
+Clone command: git clone --no-hardlinks --branch feat/p01-r10-docker-demo /home/andrews/personal/portfolio-2026/aster-streaming-platform /tmp/aster-p01-r10-cold.QK8sc226
+Initial checks: exact git rev-parse HEAD, empty git status, no node_modules or .turbo. env PATH=/usr/bin:/bin sh confirmed neither node nor pnpm was resolvable. Docker-only commands below use that restricted PATH. No host package install occurred before Docker verification.
+Full command: /usr/bin/time -f docker_only_full_elapsed_seconds=%e env PATH=/usr/bin:/bin docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120
+Exit: 0. Clean checkout/empty Aster volumes; cached immutable bases/install, uncached TypeScript application build. Not an empty Docker cache or offline-registry guarantee.
+ing
+ Container aster-storage-1  Creating
+ Container aster-redis-1  Creating
+ Container aster-postgres-1  Creating
+ Container aster-collector-1  Creating
+ Container aster-broker-1  Creating
+ Container aster-prometheus-1  Created
+ Container aster-storage-1  Created
+ Container aster-redis-1  Created
+ Container aster-collector-1  Created
+ Container aster-postgres-1  Created
+ Container aster-platform-init-1  Creating
+ Container aster-broker-1  Created
+ Container aster-platform-init-1  Created
+ Container aster-platform-status-1  Creating
+ Container aster-identity-1  Creating
+ Container aster-identity-1  Created
+ Container aster-platform-status-1  Created
+ Container aster-collector-1  Starting
+ Container aster-storage-1  Starting
+ Container aster-redis-1  Starting
+ Container aster-broker-1  Starting
+ Container aster-prometheus-1  Starting
+ Container aster-postgres-1  Starting
+ Container aster-redis-1  Started
+ Container aster-broker-1  Started
+ Container aster-collector-1  Started
+ Container aster-storage-1  Started
+ Container aster-postgres-1  Started
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-prometheus-1  Started
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-prometheus-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Exited
+ Container aster-identity-1  Starting
+ Container aster-postgres-1  Healthy
+ Container aster-prometheus-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-platform-status-1  Starting
+ Container aster-platform-status-1  Started
+ Container aster-identity-1  Started
+ Container aster-platform-status-1  Waiting
+ Container aster-collector-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-identity-1  Waiting
+ Container aster-storage-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-prometheus-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-broker-1  Waiting
+ Container aster-collector-1  Healthy
+ Container aster-redis-1  Healthy
+ Container aster-storage-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-prometheus-1  Healthy
+ Container aster-identity-1  Healthy
+ Container aster-broker-1  Healthy
+ Container aster-platform-status-1  Healthy
+docker_only_full_elapsed_seconds=36.89
+
+Exact in-container CI smoke copied from checked-in workflow, executed with restricted host PATH:
+{"check":"docker-only-demo","status":"ok","uid":1000,"metrics":["http_server_request_duration_seconds_count","aster_dependency_operation_outcomes_total","process_cpu_time_seconds_total","process_memory_usage_bytes","nodejs_eventloop_delay_p99_seconds","aster_telemetry_export_attempts_total"]}
+{"liveness":"live","phase":"ready","readiness":"ready","reason":"ready"}
+Normal all-profile down retained all four named volumes; explicit reset then removed only that owned volume-only state:
+ Container aster-identity-1  Stopping
+ Container aster-broker-1  Stopping
+ Container aster-storage-1  Stopping
+ Container aster-platform-status-1  Stopping
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-prometheus-1  Stopping
+ Container aster-collector-1  Stopping
+ Container aster-storage-1  Stopped
+ Container aster-storage-1  Removing
+ Container aster-storage-1  Removed
+ Container aster-identity-1  Stopped
+ Container aster-identity-1  Removing
+ Container aster-identity-1  Removed
+ Container aster-platform-init-1  Stopping
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-platform-init-1  Removed
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopping
+ Container aster-collector-1  Stopped
+ Container aster-collector-1  Removing
+ Container aster-collector-1  Removed
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Container aster-prometheus-1  Stopped
+ Container aster-prometheus-1  Removing
+ Container aster-prometheus-1  Removed
+ Container aster-broker-1  Stopped
+ Container aster-broker-1  Removing
+ Container aster-broker-1  Removed
+ Network aster_platform  Removing
+ Network aster_edge  Removing
+ Network aster_platform  Removed
+ Network aster_edge  Removed
+aster_broker-data
+aster_postgres-data
+aster_prometheus-data
+aster_storage-data
+ Volume aster_postgres-data  Removing
+ Volume aster_broker-data  Removing
+ Volume aster_storage-data  Removing
+ Volume aster_prometheus-data  Removing
+ Volume aster_postgres-data  Removed
+ Volume aster_storage-data  Removed
+ Volume aster_broker-data  Removed
+ Volume aster_prometheus-data  Removed
+aster local platform reset complete
+removed project resources: containers=0 networks=0 volumes=4
+removed legacy helper volumes=0
+
+Occupied-port scenario: a bounded read-only, capability-dropped synthetic Node container p01-r10-port-conflict-QK8sc226 owned loopback 3100. Runtime up did not replace/stop it and failed clearly:
+aster-postgres-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-redis-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-identity-1  Starting
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-platform-status-1  Starting
+ Container aster-platform-status-1  Started
+Error response from daemon: driver failed programming external connectivity on endpoint aster-identity-1 (16f9fb5d48ad7e82765d656433057bb5fbe686d16d731096349ede9fc29fcf64): Bind for 127.0.0.1:3100 failed: port is already allocated
+Command exited with non-zero status 1
+occupied_port_attempt_seconds=4.56
+
+Fixture inspection and HTTP response after failure:
+73de2859de13e6df4728b3a3672ed62491e01f11180fc1e7b4150fbafdcbf806|p01-r10-port-check|QK8sc226|true|[]
+p01-r10-port-fixture
+After matching exact ID, scope and fixture labels and zero mounts, only that disposable fixture was stopped and removed. Re-running the same runtime command repaired the partial stack without deleting data:
+ity build 14/17] COPY tsconfig.base.json turbo.json LICENSE ./
+#22 CACHED
+
+#23 [identity build  2/17] WORKDIR /workspace
+#23 CACHED
+
+#24 [identity runtime 4/4] COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+#24 CACHED
+
+#25 [identity] exporting to image
+#25 exporting layers done
+#25 writing image sha256:f17e55a8b31a75c4d009c49b3d3625ecb357ba85a5f4817af959258949925f00 done
+#25 naming to docker.io/library/aster-identity done
+#25 DONE 0.0s
+ Container aster-redis-1  Running
+ Container aster-postgres-1  Running
+ Container aster-platform-init-1  Created
+ Container aster-platform-status-1  Running
+ Container aster-redis-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-platform-init-1  Starting
+ Container aster-platform-init-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-init-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-platform-init-1  Exited
+ Container aster-identity-1  Starting
+ Container aster-redis-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-postgres-1  Healthy
+ Container aster-identity-1  Started
+ Container aster-platform-init-1  Waiting
+ Container aster-platform-status-1  Waiting
+ Container aster-identity-1  Waiting
+ Container aster-postgres-1  Waiting
+ Container aster-redis-1  Waiting
+ Container aster-platform-status-1  Healthy
+ Container aster-platform-init-1  Exited
+ Container aster-redis-1  Healthy
+ Container aster-postgres-1  Healthy
+ Container aster-identity-1  Healthy
+runtime_recovery_elapsed_seconds=5.60
+
+Restricted-PATH in-container assertion confirmed runtime readiness and absence of ASTER_OTLP_METRICS_ENDPOINT; guarded base-profile reset and repeat:
+PASS: runtime profile ready without OTLP configuration
+ Container aster-platform-status-1  Stopping
+ Container aster-identity-1  Stopping
+ Container aster-platform-status-1  Stopped
+ Container aster-platform-status-1  Removing
+ Container aster-platform-status-1  Removed
+ Container aster-identity-1  Stopped
+ Container aster-identity-1  Removing
+ Container aster-identity-1  Removed
+ Container aster-platform-init-1  Stopping
+ Container aster-platform-init-1  Stopped
+ Container aster-platform-init-1  Removing
+ Container aster-platform-init-1  Removed
+ Container aster-postgres-1  Stopping
+ Container aster-redis-1  Stopping
+ Container aster-redis-1  Stopped
+ Container aster-redis-1  Removing
+ Container aster-redis-1  Removed
+ Container aster-postgres-1  Stopped
+ Container aster-postgres-1  Removing
+ Container aster-postgres-1  Removed
+ Volume aster_postgres-data  Removing
+ Volume aster_broker-data  Removing
+ Volume aster_storage-data  Removing
+ Volume aster_prometheus-data  Removing
+ Network aster_edge  Removing
+ Network aster_platform  Removing
+ Volume aster_storage-data  Removed
+ Volume aster_broker-data  Removed
+ Volume aster_prometheus-data  Removed
+ Volume aster_postgres-data  Removed
+ Network aster_edge  Removed
+ Network aster_platform  Removed
+aster local platform reset complete
+removed project resources: containers=5 networks=2 volumes=1
+removed legacy helper volumes=0
+aster local platform is already reset
+
+Only after Docker-only acceptance: pnpm install --frozen-lockfile; pnpm check --force.
+Scope: all 10 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2h ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +329
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: /home/andrews/.local/share/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 329, reused 329, downloaded 0, added 329, done
+
+devDependencies:
++ @eslint/js 10.0.1
++ @types/node 24.13.3
++ eslint 10.9.1
++ knip 6.32.2
++ prettier 3.9.6
++ turbo 2.10.12
++ typescript 6.0.3
++ typescript-eslint 8.68.0
+
+Done in 1.3s using pnpm v11.24.0
+@aster/identity:test: ✔ broker cleanup removes its exact named volume and rejects an anonymous image volume (1.398467ms)
+@aster/identity:test: ✔ telemetry fixture allows only exact read-only config mounts and its two volumes (11.648193ms)
+@aster/identity:test: ✔ Docker Desktop bind translation requires exact distro and file identity, not a path prefix (1.024455ms)
+@aster/identity:test: ✔ combined matrix owns only six fixed services and four labelled volumes (5.026157ms)
+@aster/identity:test: ✔ fixture HTTP probe bounds response bytes and refuses redirects (59.498517ms)
+@aster/identity:test: ✔ fixture HTTP deadline covers a stalled response body, not only headers (1003.767992ms)
+@aster/identity:test: ✔ a startup deadline after binding cannot close the live health listener (45.272455ms)
+@aster/identity:test: ✔ cancels a pending bind and tolerates cleanup before any listener exists (2.943721ms)
+@aster/identity:test: ✔ starts once under one propagated deadline and drains work before ordered closure (10.254116ms)
+@aster/identity:test: ✔ remains live on unavailable startup and recovers without lifecycle rollback (2.627732ms)
+@aster/identity:test: ✔ bounds a startup dependency that ignores cancellation and ignores late completion (11.613348ms)
+@aster/identity:test: ✔ shutdown cancels startup and prevents a late ready transition or monitor start (1.556798ms)
+@aster/identity:test: ✔ listener failure closes the constructed owners and returns no raw cause (1.142957ms)
+@aster/identity:test: ✔ attempts every closure and reaches explicit force ownership on failure (1.503811ms)
+@aster/identity:test: ✔ fails readiness closed when the recovery monitor cannot start (0.515438ms)
+@aster/identity:test: ✔ binds one process signal owner and removes it after manual shutdown (0.642041ms)
+@aster/identity:test: ✔ keeps framework and vendor types out of the reference runtime declarations (5.318094ms)
+@aster/identity:test: ✔ composes real health HTTP, controlled recovery, local metrics, clock/IDs and ordered resource closure (70.662266ms)
+@aster/identity:test: ✔ rejects invalid environment before constructing resources (1.296475ms)
+@aster/identity:test: ✔ configured OTLP export stays optional for readiness and reports failed flush truthfully (984.768647ms)
+@aster/identity:test: ✔ cleans already-created owners on partial factory failure without reflecting its cause (1.8314ms)
+@aster/identity:test: ✔ listener bind failure closes both dependency owners and telemetry (4.933409ms)
+@aster/identity:test: ✔ diagnostic runs real loopback health transitions and exits naturally (639.589789ms)
+@aster/identity:test: ✔ real PostgreSQL and Redis adapters fail readiness safely and release their handles (770.460418ms)
+@aster/identity:test: ✔ executable rejects missing configuration with a bounded, cause-free diagnostic (326.922791ms)
+@aster/identity:test: ✔ SIGTERM drains accepted work, disposes owners, and exits naturally with 143 (361.373277ms)
+@aster/identity:test: ✔ unclosable dependency invokes bounded terminal fallback for signal and manual shutdown (879.054574ms)
+@aster/identity:test: ℹ tests 34
+@aster/identity:test: ℹ suites 0
+@aster/identity:test: ℹ pass 34
+@aster/identity:test: ℹ fail 0
+@aster/identity:test: ℹ cancelled 0
+@aster/identity:test: ℹ skipped 0
+@aster/identity:test: ℹ todo 0
+@aster/identity:test: ℹ duration_ms 4470.215289
+
+ Tasks:    49 successful, 49 total
+Cached:    0 cached, 49 total
+  Time:    32.418s
+
+
+pnpm audit --audit-level=high; git status --porcelain; git rev-parse HEAD; du -sh clone:
+No known vulnerabilities found
+38801cece201eb2c976a808b958c34a16c3e9e71
+228M	/tmp/aster-p01-r10-cold.QK8sc226
+
+Final image inspection:
+/tmp/aster-p01-r10-cold.QK8sc226
+38801cece201eb2c976a808b958c34a16c3e9e71
+sha256:f17e55a8b31a75c4d009c49b3d3625ecb357ba85a5f4817af959258949925f00|255275702|node
+
+Final unrelated Docker inventory preserved: true. No Aster resources or port fixture remain. After exact realpath/source/clean-Git inspection, removed only the 228M disposable /tmp/aster-p01-r10-cold.QK8sc226 clone; no unique work or source was removed. Docker images and package/build caches remain.
+Initial review by executing agent: packaging and licenses, classified inputs, no-export compatibility, real metric delivery and failure isolation, process bounds, all-profile reset/provenance/foreign-state safety, source/CI selection and public command recovery checked. No requirement/security/data/availability/public-contract blocker found. This is not independent approval. Confirmation and protected CI remain before merge.
+Phase 02 prerequisite audit: the runtime foundation supplies required HTTP, database, telemetry and lifecycle ports. Phase 01 release is still pending; P02-R01 must evaluate/record identity adapter/session/local trust choices before account implementation. No Phase 02 implementation is authorized ahead of that decision.
+
+
+2026-08-27 — First protected PR 18 verification and complete review round
+Candidate head: d148bf77de86b819ec104426aaf58b4fe52a9351
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33046068184
+{"conclusion":"success","headSha":"d148bf77de86b819ec104426aaf58b4fe52a9351","jobs":[{"conclusion":"success","name":"Classify change","status":"completed"},{"conclusion":"success","name":"Dependency review","status":"completed"},{"conclusion":"success","name":"Documentation and security","status":"completed"},{"conclusion":"success","name":"Local platform","status":"completed"},{"conclusion":"success","name":"Install and source quality","status":"completed"},{"conclusion":"success","name":"CI required","status":"completed"}],"status":"completed","url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33046068184"}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:34.1621843Z {"event":"all_adapter_http_drain","outcome":"passed","durationMs":89,"stages":["consumers","flush","adapters","telemetry"],"httpCount":1,"closed":["http","postgresql","redis","broker","object_storage","telemetry"]}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:35.3373561Z {"event":"fixture_action","service":"prometheus","action":"stop","durationMs":158}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:40.7243228Z {"event":"fixture_action","service":"prometheus","action":"start","durationMs":5375}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:42.3311149Z {"event":"fixture_action","service":"collector","action":"stop","durationMs":161}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:43.5152792Z {"event":"fixture_action","service":"collector","action":"start","durationMs":377}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.2083679Z {"event":"fixture_action","service":"collector","action":"pause","durationMs":57}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.6985380Z {"event":"fixture_action","service":"collector","action":"unpause","durationMs":184}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.8662952Z {"event":"fixture_action","service":"collector","action":"stop","durationMs":163}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.9007871Z {"event":"otlp_prometheus_round_trip","outcome":"passed","series":429,"metricNames":["aster_dependency_operation_active","aster_dependency_operation_duration_seconds_bucket","aster_dependency_operation_duration_seconds_count","aster_dependency_operation_duration_seconds_sum","aster_dependency_operation_outcomes_total","aster_telemetry_export_attempts_total","http_server_active_requests","http_server_request_duration_seconds_bucket","http_server_request_duration_seconds_count","http_server_request_duration_seconds_sum","nodejs_eventloop_delay_max_seconds","nodejs_eventloop_delay_mean_seconds","nodejs_eventloop_delay_min_seconds","nodejs_eventloop_delay_p50_seconds","nodejs_eventloop_delay_p90_seconds","nodejs_eventloop_delay_p99_seconds","nodejs_eventloop_delay_stddev_seconds","nodejs_eventloop_time_seconds_total","nodejs_eventloop_utilization_ratio","process_cpu_time_seconds_total","process_cpu_utilization_ratio","process_memory_usage_bytes","process_uptime_seconds","scrape_duration_seconds","scrape_samples_post_metric_relabeling","scrape_samples_scraped","scrape_series_added","up","v8js_gc_duration_seconds_bucket","v8js_gc_duration_seconds_count","v8js_gc_duration_seconds_sum","v8js_memory_heap_space_available_size_bytes","v8js_memory_heap_space_physical_size_bytes","v8js_memory_heap_space_size_bytes","v8js_memory_heap_used_bytes","v8js_resource_active"]}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.9020298Z {"event":"collector_deadline_cancellation","outcome":"passed","flushMs":302}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.9022199Z {"event":"exporter_down_shutdown","outcome":"degraded","failedStages":["flush_telemetry"],"durationMs":10,"connections":0}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:44.9024838Z {"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","broker","storage","runtime","telemetry"],"durationMs":152950}
+Install and source quality	Prove real platform integration	2026-08-27T06:33:45.9413240Z {"event":"fixture_cleanup","project":"aster-integration-23cc0f37fc7140bfa7be64bed54a4116","remaining":0,"durationMs":1042}
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T06:33:46.6212252Z No known vulnerabilities found
+
+Hosted Docker full-profile proof:
+Local platform	Verify versions, protocols, initialization, and status	2026-08-27T06:30:21.6845886Z aster-ci-33046068184-1-postgres-1          docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f   "docker-entrypoint.s…"   postgres          12 seconds ago   Up 12 seconds (healthy)
+Local platform	Verify versions, protocols, initialization, and status	2026-08-27T06:30:21.6849223Z aster-ci-33046068184-1-redis-1             docker.io/library/redis:8.10.0-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241        "docker-entrypoint.s…"   redis             12 seconds ago   Up 12 seconds (healthy)
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:30:58.1801694Z #40 19.81  Tasks:    9 successful, 9 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:30:58.1802254Z #40 19.81 Cached:    0 cached, 9 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:30:58.1802704Z #40 19.81   Time:    19.192s
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:10.9732158Z  Container aster-ci-33046068184-1-redis-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:10.9760525Z  Container aster-ci-33046068184-1-postgres-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:11.6239940Z  Container aster-ci-33046068184-1-redis-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:11.6244789Z  Container aster-ci-33046068184-1-postgres-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:16.1236170Z  Container aster-ci-33046068184-1-prometheus-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:16.8026283Z  Container aster-ci-33046068184-1-storage-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:16.8040193Z  Container aster-ci-33046068184-1-redis-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:16.8050587Z  Container aster-ci-33046068184-1-collector-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:16.8055114Z  Container aster-ci-33046068184-1-postgres-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:16.8059272Z  Container aster-ci-33046068184-1-prometheus-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:17.3024294Z  Container aster-ci-33046068184-1-identity-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:18.8016244Z  Container aster-ci-33046068184-1-broker-1  Healthy
+Local platform	Build and start the Docker-only full profile	2026-08-27T06:31:21.8025138Z  Container aster-ci-33046068184-1-platform-status-1  Healthy
+Local platform	Verify packaged health and real telemetry	2026-08-27T06:31:21.8104713Z console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present }));
+Local platform	Verify packaged health and real telemetry	2026-08-27T06:31:23.0285542Z {"check":"docker-only-demo","status":"ok","uid":1000,"metrics":["http_server_request_duration_seconds_count","aster_dependency_operation_outcomes_total","process_cpu_time_seconds_total","process_memory_usage_bytes","nodejs_eventloop_delay_p99_seconds","aster_telemetry_export_attempts_total"]}
+Automated initial review 5037893399 / comment 3869300306 found stale architecture-runway status: it still described delivered runtime/profiles/clean commands as unavailable. This violates documentation consistency and is a blocking finding despite passing code tests.
+Remediation: update runway status, actual paths/profile contents, optional overlay/health/reset ownership and proven clean evaluator behavior; retain only protected closeout/release as pending. Correct the related historical-versus-current scope labels in the same document. No executable, image, dependency, test, public command or Docker input changed; do not repeat clean/container experiments for this documentation-only remediation.
+A provisional executing-agent confirmation comment 5435289209 initially overlooked the just-arrived thread; it was immediately corrected to say confirmation is incomplete. It is not approval. Request one final automated confirmation after publishing the batch, resolve the evidence-backed thread, and require exact-head protected CI before merge.
+Documentation, memory, secret and diff checks pass on the correction. Final hosted confirmation and release remain pending.
+
+2026-08-27 complete confirmation checkpoint (subsequent to the snapshot above)
+{"conclusion":"success","headSha":"d7511090e47dd839c5f8a21b46788c78052cd0be","jobs":[{"conclusion":"success","name":"Dependency review","status":"completed"},{"conclusion":"success","name":"Classify change","status":"completed"},{"conclusion":"success","name":"Local platform","status":"completed"},{"conclusion":"success","name":"Documentation and security","status":"completed"},{"conclusion":"success","name":"Install and source quality","status":"completed"},{"conclusion":"success","name":"CI required","status":"completed"}],"status":"completed"}
+Local platform	Verify packaged health and real telemetry	2026-08-27T06:41:21.5663719Z {"check":"docker-only-demo","status":"ok","uid":1000,"metrics":["http_server_request_duration_seconds_count","aster_dependency_operation_outcomes_total","process_cpu_time_seconds_total","process_memory_usage_bytes","nodejs_eventloop_delay_p99_seconds","aster_telemetry_export_attempts_total"]}
+Install and source quality	Prove real platform integration	2026-08-27T06:43:25.8409539Z {"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","broker","storage","runtime","telemetry"],"durationMs":145033}
+Install and source quality	Prove real platform integration	2026-08-27T06:43:26.8641162Z {"event":"fixture_cleanup","project":"aster-integration-a267a98366ee4b54b02c1c6d5685b6d0","remaining":0,"durationMs":1025}
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T06:43:27.5311154Z No known vulnerabilities found
+Confirmation review 5037946690 at d751109 found README comment 3869341714 and local-runbook comment 3869341724. Both are stale current-status statements and therefore documentation-contract blockers. The complete batch corrects them and related labels, retaining exact-source CI results rather than implying a later commit/release already passed.
+No executable, public command, image, dependency, Compose, configuration or reset input changes. Clean/container source 38801ce and hosted source d751109 remain supporting evidence. Execute documentation/memory/secret/diff checks and inspect the complete prose diff; the protected gate still applies to the new head. No repeated local heavyweight experiment is warranted.
+Initial and confirmation automated rounds are complete. Verify this narrow documentation remediation as executing agent and resolve the two evidenced threads; no independent approval is claimed. Another review round requires a new demonstrated requirement, security, data, availability or public-contract blocker.
+Remediation verification: pnpm check:changed passes 49/49 tasks (36 cached, 13.717 s); git diff --check passes. git diff --exit-code 38801ce excluding only .ai/docs/evidence/README returns 0, proving unchanged executable and public-command inputs. Executing-agent review of every changed paragraph against exact-source evidence finds no remaining blocker; this is not an independent approval. Final protected head and post-merge checks still apply.
+Phase 02 prerequisite reading additionally exposed historical Phase 01 candidate/deferred wording in TECHNOLOGY_BASELINE and RUNTIME_LIFECYCLE. The final status sweep replaces that wording with the already verified image selections, real integration and optional export behavior. No new architecture decision, version, command or runtime input is introduced. This source-backed prose correction receives documentation/memory/secret/diff checks and executing-agent confirmation; local heavy proof remains unchanged.

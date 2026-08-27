@@ -2,6 +2,86 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Complete Docker confirmation findings
+
+### Completed
+
+- Collected automated confirmation `5037946690`: README incorrectly called implemented profiles pending; the local runbook incorrectly called the first passing hosted run pending. Corrected both together and removed related stale checkpoint wording. Runtime/public-command bytes are unchanged.
+- Protected run `33046678570` passed all six jobs at `d751109`; retained earlier clean evidence at `38801ce` without repeating containers or cold checkout.
+
+### Evidence
+
+- Exact hosted full-profile UID/health/six metrics, matrix (145033 ms), cleanup (1025 ms, zero residual resources) and audit pass; raw excerpts in `evidence/phase-01/docker-demo.txt`.
+- Documentation, repository-memory, secret and diff gates verify this prose-only batch before publication. No independent approval is claimed.
+
+### Next action
+
+Confirm the narrow remediation, resolve both review threads, require exact-head CI and squash/post-merge, then activate P02-R01. Batch final release metadata with Phase 02 activation instead of creating a metadata-only pipeline loop.
+
+## 2026-08-27 — Protected Docker candidate and runway correction
+
+### Completed
+
+- Published PR 18 at `d148bf7`; protected run `33046068184` passed all six jobs. Automated review `3869300306` found stale runway claims; corrected current paths, profiles and evaluator evidence in one documentation-only batch.
+- Corrected provisional executing-agent comment `5435289209`: confirmation is incomplete until the new review finding is resolved. No independent approval is claimed.
+
+### Evidence
+
+- Hosted Docker full profile and six real metrics pass. The real eight-scenario matrix passed in 152950 ms, cleanup 1042 ms with zero fixture resources; audit/license checks pass. Raw results: `evidence/phase-01/docker-demo.txt`.
+- Documentation/memory/secret checks pass. No executable/public-command bytes changed after clean source `38801ce`; no local heavy experiment repeated for prose.
+
+### Next action
+
+Publish this correction, reply/resolve the finding and request one confirmation review. Require final exact-head CI before squash and post-merge verification; only then activate P02-R01.
+
+## 2026-08-27 — Optional Docker profiles and real configured telemetry
+
+### Completed
+
+- Added validated optional OTLP configuration, integration/observability/full profiles, baked telemetry configs, bounded logs and exact nine-service/four-volume reset. Identity still owns only PostgreSQL/Redis runtime dependencies.
+- Extended the existing conditional CI platform job with Docker image/full-profile health and six real metric checks; hosted execution remains pending. Condensed current memory; historical detail remains in evidence and this log.
+
+### Evidence
+
+- Config 20/20, Identity 34/34, platform/reset 29/29, CI 22/22; final affected gate 49/49 (33 cached, 14.863 s). Corrected test-only lint/tuple errors before acceptance.
+- Real metrics, Collector loss with Identity still ready/live, telemetry status/recovery and degraded SIGTERM pass (4223 ms, exit 143). A wrong ad hoc metric-label assertion was corrected against the declared contract without repeating the outage. Exact reset removed only nine Aster containers, two networks and four synthetic volumes; unrelated inventory matches. Raw outputs/fingerprints: `evidence/phase-01/docker-demo.txt`.
+
+### Next action
+
+Source `38801ce` then passed exact clean Docker-only acceptance (36.89 s), occupied-port/recovery (4.56/5.60 s), 49/49 uncached tasks (32.418 s), audit and preserved Docker state. The clean 228M temporary clone was removed. Initial executing-agent review has no blocker. Next publish the coherent candidate, require protected CI/confirmation and release; no P01-R10 PR yet, Phase 02 remains gated.
+
+## 2026-08-27 — Docker runtime, real recovery and safe reset
+
+### Completed
+
+- Committed portable image checkpoint `4837207`; added the runtime profile, optional classified database-password input and guarded all-profile reset. No product scope or hosted mutation.
+- Fixed two measured Docker behaviors: internal-only port publication and inherited helper anonymous volumes. Identity alone joins the edge bridge; PostgreSQL/Redis remain internal and helpers use tmpfs.
+
+### Evidence
+
+- Config 17/17, Identity 33/33, platform/reset 25/25; affected gate 49/49 (28 cached, 18.58 s). Real readiness 503/live 200 on each stopped dependency and automatic recovery pass. Windows localhost access passes; SIGTERM exits naturally with 143 in 561 ms including CLI/inspection.
+- Warm-layer image rebuild plus empty-project start 39.71 s; core-only start 7.38 s. Exact reset, repeat and legacy-helper cleanup pass; unrelated four containers and 22 volume/network entries match pre/post. Only synthetic test data was deleted. Raw commands, image IDs, fingerprints and limitations: `evidence/phase-01/docker-demo.txt`.
+
+### Next action
+
+Connect optional validated OTLP export and integration/observability/full profiles; extend exact reset ownership before new resources. Then final cold/occupied-port/CI evidence and Phase 01 protected closeout. No P01-R10 publication yet.
+
+## 2026-08-27 — P01-R09 released; Docker-only closeout activated
+
+### Completed
+
+- Squash-merged PR 17 as `a1f7281` after protected run `33041524806` passed every applicable gate. Exact post-merge run `33041787663` also passed, including the real matrix. No bypass, rerun or additional PR.
+- Started P01-R10 locally from clean main on `feat/p01-r10-docker-demo`; its plan covers portable production packaging, lightweight/optional profiles, exact reset and Docker-only evaluator evidence. Condensed the handoff to current resume facts and linked historical evidence.
+
+### Evidence
+
+- Protected matrix: 143.136 s plus 1.043 s cleanup, 83 ms all-adapter shutdown. Post-merge: 148.892 s plus 1.015 s cleanup, 74 ms shutdown. Audit and all applicable jobs pass; zero unresolved review threads.
+- `evidence/phase-01/real-integration.txt` records exact heads, runs and confirmation comment `5434669574`. The 212M clean clone was removed after exact-path/clean-Git verification; source and caches remain.
+
+### Next action
+
+P01-R10's image checkpoint now builds and passes: UID 1000, 255269001 bytes, seven workspace imports, all 114 external production versions matching the lockfile, controlled HTTP diagnostic and missing-config exit 1. Platform/CI tests pass 21/21 each; affected gate passes 49/49 in 52.272 s. Raw evidence: `evidence/phase-01/docker-demo.txt`. Next implement validated optional database-password configuration and guarded runtime/profile/reset behavior. No product capability or full evaluator profile is claimed.
+
 ## 2026-08-27 — Complete real-dependency matrix and scoped CI
 
 ### Completed

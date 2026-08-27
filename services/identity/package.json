@@ -6,6 +6,9 @@
   "description": "Product-empty Identity reference runtime composition.",
   "license": "MIT",
   "sideEffects": false,
+  "files": [
+    "dist/src"
+  ],
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
