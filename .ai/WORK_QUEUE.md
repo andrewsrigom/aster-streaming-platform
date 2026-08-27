@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–02 are released. Phase 03 implementation at 4e29f5e passes local acceptance: 52/52 tasks in a clean worktree with zero cache, real Docker/HLS/SQL checks and author confirmation. P03-R04/R09 remains in progress only for coherent protected publication, merge and post-merge verification; [requirement acceptance](../evidence/phase-03/README.md) is complete locally.
+Phases 00–03 are released. PR 20 squash 135484183253ede7a6b6436f737794bfee2049d8 and post-merge run 33091716358 pass; [release evidence](../evidence/phase-03/release.txt). Phase 04 has local runtime acceptance and protected run 33102349933 passes at 0a8299d; [clean evidence](../evidence/phase-04/clean-acceptance.txt). P04-R02 remains IN_PROGRESS for PR 21 release and the review-discovered P04-R05 manual-baseline correction. Its 26 focused CI tests pass; final candidate and protected gates remain.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -39,9 +39,11 @@ Phases 00–02 are released. Phase 03 implementation at 4e29f5e passes local acc
 | 31 | Persist structured rights revisions and immutable review provenance | P03-R02 | DONE |
 | 32 | Implement authorized operator workflow and publication/retirement transactions | P03-R06 | DONE |
 | 33 | Implement published-only browse/detail, locale fallback and Catalog Federation schema | P03-R05 | DONE |
-| 34 | Verify generated HLS publication, candidate-source reviews and the Catalog Docker runtime | P03-R04 | IN_PROGRESS |
+| 34 | Verify generated HLS publication, candidate-source reviews and the Catalog Docker runtime | P03-R04 | DONE |
+| 35 | Compose versioned Identity/Catalog schemas and protect known operations | P04-R01 | DONE |
+| 36 | Run Apollo Router with private subgraphs, trusted context, telemetry and partial-failure acceptance | P04-R02 | IN_PROGRESS |
 
-P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). No Phase 03 remote publication or actual-film approval yet.
+P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; no actual-film approval exists.
 
 ## Work-item rules
 

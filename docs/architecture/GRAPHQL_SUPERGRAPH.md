@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router will compose execution plans across five subgraphs. Identity is released; Catalog's public contract is locally verified. Router and the remaining subgraphs are planned.
+The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router will compose execution plans across five subgraphs. Identity and Catalog schemas now have [offline composition and known-operation checks](../../apps/router/README.md). Router runtime and the remaining subgraphs are planned; a composed artifact does not prove network trust or query execution.
 
 ## Subgraphs
 
@@ -164,3 +164,5 @@ CI builds each subgraph schema and composes the supergraph. A change fails when:
 - an entity key becomes unresolved;
 - an inaccessible field leaks;
 - a required authorization test is missing.
+
+Current schema-only commands are `pnpm schema:check` and `pnpm schema:update`. They print executable owner schemas, compose deterministic files and compare the current API with a committed baseline. [The manifest](../../infra/router/generated/manifest.json) enumerates current field/entity ownership; [conventions](../../apps/router/README.md#schema-conventions) preserve existing scalars, pagination, errors and nullability. Runtime authorization and later-subgraph evolution remain separate gates.

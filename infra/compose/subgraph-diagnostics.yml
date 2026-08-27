@@ -1,0 +1,17 @@
+# Explicit standalone owner diagnostics, not the federated demo topology.
+services:
+  identity:
+    volumes: !reset []
+    environment:
+      ASTER_ROUTER_TRUST_ENABLED: "false"
+      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100
+    ports:
+      - "127.0.0.1:3100:3100"
+    networks: [platform, edge]
+  catalog:
+    volumes: !reset []
+    environment:
+      ASTER_ROUTER_TRUST_ENABLED: "false"
+    ports:
+      - "127.0.0.1:3200:3200"
+    networks: [platform, edge]

@@ -72,14 +72,14 @@ if [ "$1" = "compose" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init broker storage collector prometheus
+    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init broker storage collector prometheus router router-trust-init
     if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
       printf '%s\\n' unreviewed
     fi
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--volumes" ]; then
-    printf '%s\\n' postgres-data broker-data storage-data prometheus-data
+    printf '%s\\n' postgres-data broker-data storage-data prometheus-data identity-router-trust catalog-router-trust
     exit 0
   fi
   if [ "$1" = "down" ] && [ "$2" = "--volumes" ]; then
@@ -121,11 +121,15 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
     *'.Mounts'*)
       case "$FAKE_DOCKER_SCENARIO" in
         foreign-mount) printf '%s\\n' 'bind||/private' ;;
+        wrong-owner-mount) printf '%s\\n' 'volume|aster_catalog-router-trust|/run/aster-router' ;;
+        extra-trust-mount) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router' 'volume|aster_catalog-router-trust|/unexpected' ;;
         runtime | legacy-identity | duplicate-identity) ;;
         legacy-helper | foreign-legacy-volume) printf '%s\\n' 'volume|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|/var/lib/postgresql' ;;
         *)
           case "$FAKE_DOCKER_SERVICE" in
-            collector | identity-init | catalog | catalog-init) ;;
+            collector | identity-init | catalog-init) ;;
+            identity | catalog) printf 'volume|aster_%s-router-trust|/run/aster-router\\n' "$FAKE_DOCKER_SERVICE" ;;
+            router | router-trust-init) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' ;;
             broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
             storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
             prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
@@ -138,8 +142,10 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
     *'.NetworkSettings.Networks'*)
       if [ "$FAKE_DOCKER_SCENARIO" = "foreign-attachment" ]; then
         printf '%s\\n' foreign-network
-      elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ]; then
+      elif [ "$FAKE_DOCKER_SCENARIO" = "runtime" ] || [ "$FAKE_DOCKER_SERVICE" = "router" ]; then
         printf '%s\\n' aster_edge aster_platform
+      elif [ "$FAKE_DOCKER_SERVICE" = "router-trust-init" ]; then
+        printf '%s\\n' none
       else
         printf '%s\\n' aster_platform
       fi
@@ -452,9 +458,45 @@ test("accepts exact optional service mounts and ordered Compose provenance", asy
     "identity-init",
     "catalog",
     "catalog-init",
+    "identity",
+    "router",
+    "router-trust-init",
   ]) {
     const result = await runReset(t, { service });
     assert.equal(result.code, 0, service + ": " + result.stderr);
     assert.match(result.stdout, /reset complete/u);
+  }
+});
+
+test("Router trust reset accepts only owned disposable volumes and exact per-owner mounts", async (t) => {
+  for (const owner of ["identity", "catalog"]) {
+    const result = await runReset(t, {
+      service: owner,
+      environment: {
+        FAKE_VOLUME_NAME: owner + "-router-trust",
+        FAKE_VOLUME_AUTHORITY: "disposable-local",
+      },
+    });
+    assert.equal(result.code, 0, result.stderr);
+    const incorrectAuthority = await runReset(t, {
+      service: owner,
+      environment: {
+        FAKE_VOLUME_NAME: owner + "-router-trust",
+        FAKE_VOLUME_AUTHORITY: "durable-local",
+      },
+    });
+    assert.equal(incorrectAuthority.code, 1);
+    assert.doesNotMatch(incorrectAuthority.log, / down --volumes/u);
+  }
+  for (const scenario of [
+    "wrong-owner-mount",
+    "extra-trust-mount",
+    "foreign-volume",
+    "foreign-network",
+    "foreign-attachment",
+  ]) {
+    const result = await runReset(t, { service: "identity", scenario });
+    assert.equal(result.code, 1, scenario);
+    assert.doesNotMatch(result.log, / down --volumes/u, scenario);
   }
 });

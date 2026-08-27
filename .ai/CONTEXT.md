@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–02 are released. Guarded local Federation v2 sessions/profiles and transactional audit/outbox run in Docker with protected/post-merge acceptance. Phase 03 implements Catalog editorial commands, immutable rights/audit, public Federation reads, a read-only Docker runtime and isolated generated-HLS publication tests. Phase 03 local acceptance passes; protected publication/merge remains pending. Router, UI and playable film journeys remain planned. Compatible licensing decisions are authorized; ADR-0014 covers Apollo and ADR-0016 the standalone fixture tooling. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–03 are released. Guarded local sessions/profiles and rights-aware Catalog run in Docker with protected/post-merge acceptance. Generated HLS proves Catalog publication, not playback. Phase 04 implements offline composition and a local Apollo Router with private authenticated owner transports; final phase acceptance is in progress. UI and playable film journeys remain planned. Compatible licensing decisions are authorized; ADR-0014 covers Apollo, ADR-0016 fixture tooling and ADR-0017 the local Router. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,8 +50,8 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 03 — Catalog and Content Rights**
+Active phase: **Phase 04 — Federated Supergraph**, schema delivery locally verified; Router runtime acceptance in progress.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 19 squash `ec6386c` and post-merge run `33066827332` close Phase 02. Phase 03 continues locally on `feat/p03-catalog-rights`; no actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.
+PR 20 squash `1354841` and post-merge run `33091716358` close Phase 03. PR 21 publishes `feat/p04-supergraph`; its first CI run failed in two stale diagnostic paths. Focused remediation passes locally; exact-head protected acceptance and release remain pending. No actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.

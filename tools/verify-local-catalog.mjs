@@ -5,6 +5,7 @@ import { performance } from "node:perf_hooks";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath, URL } from "node:url";
 import { promisify } from "node:util";
+import { validateCatalogProofVolume } from "./verify-catalog-runtime.mjs";
 
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL("../", import.meta.url));
@@ -15,6 +16,8 @@ const args = [
   project,
   "--file",
   "infra/compose/compose.yml",
+  "--file",
+  "infra/compose/subgraph-diagnostics.yml",
   "--profile",
   "runtime",
 ];
@@ -182,8 +185,10 @@ try {
   }
 } finally {
   // This proof owns a fresh project only. Verify every resource before scoped teardown.
+  const ownedIds = [];
   for (const id of await list("container")) {
     const info = JSON.parse(await docker(["container", "inspect", id]))[0];
+    ownedIds.push(info.Id);
     assert.equal(info.Config.Labels["com.docker.compose.project"], project);
     assert.ok(
       ["postgres", "catalog", "catalog-init"].includes(
@@ -196,8 +201,16 @@ try {
       ),
     );
   }
-  for (const name of await list("volume")) {
-    assert.equal(name, project + "_postgres-data");
+  const volumes = await list("volume");
+  assert.ok(volumes.length <= 3);
+  for (const name of volumes) {
+    const [volume] = JSON.parse(await docker(["volume", "inspect", name]));
+    const attachedIds = (
+      await docker(["ps", "--all", "--quiet", "--no-trunc", "--filter", "volume=" + name])
+    )
+      .split("\n")
+      .filter(Boolean);
+    assert.ok(validateCatalogProofVolume(project, volume, attachedIds, ownedIds));
   }
   for (const id of await list("network")) {
     const info = JSON.parse(await docker(["network", "inspect", id]))[0];

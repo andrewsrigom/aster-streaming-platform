@@ -109,6 +109,10 @@ Store the phase evidence index under `evidence/phase-13/` when implementation be
 
 Every measured result must identify commit, environment, exact command, workload, raw artifact, interpretation, and limitations.
 
+## Carried-forward dependency review
+
+Dependency re-review carried from Phase 04: reassess UUID GHSA-w5hq-g745-h8pq when changing Apollo/UUID or preparing this security inventory. [The recorded audit](../../evidence/phase-04/clean-acceptance.txt) identifies one moderate advisory and no affected v3/v5/v6 buffer call in the inspected pinned Apollo imports. That narrow result does not waive future dependency/usage review or change the existing high-severity gate.
+
 ## Non-goals
 
 - Arbitrary third-party GraphQL clients in the initial hosted release

@@ -2,22 +2,26 @@
 
 ## Resume point
 
-Continue IN_PROGRESS P03-R04/R09 protected publication on feat/p03-catalog-rights. Implementation commit 4e29f5eff7b5992abcd4911dcbec38aba1845e70 has complete local phase acceptance. Later closeout changes are evidence/memory prose only. Inspect current HEAD and any PR before publishing; do not duplicate a PR/run or start P04 before predecessor release.
+Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. PR 21 head 0a8299d passed protected run 33102349933. Review also found manual schema self-comparison; the local P04-R05 correction selects a distinct merge base or parent and passes 26 focused CI tests. Do not merge before publishing and verifying that correction. Do not repeat unaffected runtime/media work.
 
-## Evidence and remaining work
+## Current evidence
 
-- 94 Catalog tests pass; media parser/probe tests and platform guard tests pass before final formatting.
-- Docker proof passes fresh/idempotent migrations, HTTP, privilege and PostgreSQL outage recovery, SIGTERM 143, zero resource cleanup. Source changed after the first proof only to fix OID-based privilege checking; a second proof covers that fix.
-- Generated HLS output: six seconds, 320x180/24fps, mono AAC, three H.264 TS segments and English WebVTT. Source checksum a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae. Repeatability and corrupt/missing/symlink/cancellation checks pass in one pinned image/build.
-- Real PostgreSQL generated publication/retirement and two unresolved candidate records pass; cleanup left zero fixtures in 22490 ms. Failed intermediate assertions were test reader-role regrant and the probe's schema-name lookup; the latter required OID lookup, now passing against private Identity.
-- Candidate gate passes: 52/52 tasks, 29 cached, 25.796 s; high-severity Node audit passes. Initial/confirmation author review is complete. Fresh detached worktree at 4e29f5e: pnpm install --frozen-lockfile --offline && pnpm check, 52/52 tasks, zero cached, 53.227 s. Temporary worktree was clean and removed; source fingerprints and the exact test boundary are in catalog-runtime.txt.
-- CI now invokes catalog:media and catalog:demo once for platform changes; verify its policy tests and classifier.
-- Existing Identity evidence remains supporting evidence. Only new labelled disposable fixtures changed; retained demo, public remote and unrelated PR 1 were not modified.
+See evidence/phase-04/README.md, router-runtime.txt and clean-acceptance.txt. Original clean-source gate: 55/55; fresh normal Docker startup/journeys pass. Publication head 18f3c7e also passed 55/55. Remediation passes CI policy 25/25, Catalog diagnostic/cleanup guards 3/3, the exact packaged Identity journey and fresh Catalog Docker proof (39550 ms, zero residual resources). Earlier Router trace, SQL cancellation, media and shutdown evidence remains applicable. One moderate UUID advisory has a narrow reviewed disposition.
 
 ## Next outcome
 
-Commit documentation-only acceptance closeout, publish one Phase 03 PR and require CI required on its exact head. Inspect reviews/threads, squash merge without bypass, confirm main post-merge CI, then activate Phase 04 from clean main. Its independently testable Identity/Catalog schema prerequisite is verified in the phase index. Remote IDs and results must be recorded when they exist, not predicted.
+Commit and gate the schema-baseline correction, then update PR 21. Require exact-head CI, resolve the two evidenced review findings, squash and confirm post-merge CI before Phase 05. Author confirmation is in router-review.txt. The clean detached checkout /tmp/aster-p04-clean-Hke28c is at 0a8299d with no running gate; its last candidate gate passed 55/55, 39 cached, 29.517 s.
+
+## Local resources
+
+The owned aster-p04-development stack uses new synthetic data, private subgraphs and Router loopback 4000. Retained aster Identity/status/PostgreSQL/Redis are unchanged. Diagnostic query-plan exposure was restored to false after trace capture. Development image IDs and source hashes are in the runtime evidence. Never run a global prune or reset retained data.
+
+Fresh proof project aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35 is removed: ten containers, three synthetic volumes, two networks; exact ownership and absence of foreign attachments were checked first. No retained data or image cache was deleted. Development Router is healthy again. Do not repeat or generalize that destructive cleanup to aster.
 
 ## Do not do yet
 
-Keep MIT and third-party notices; no license permission pause. No actual film approval, media delivery or browser playback claim. Roll back only new runtime/tooling; do not drop product/audit data or broadly prune Docker. Real source acquisition/worker is Phase 06, hosted operator trust Phase 14.
+Phase 04 is not released. No UI, playable real film, hosted trust, SLO, advanced GraphQL protection or media rights approval exists. Compatible dependency licensing is authorized; preserve Aster MIT and upstream notices. Native GraphOS-key-protected limits remain disabled rather than bypassed.
+
+## Predecessor
+
+Phase 03 is released through PR 20: protected run 33090966906, squash 1354841 and post-merge run 33091716358 passed on attempt 1. evidence/phase-03/release.txt owns that record.

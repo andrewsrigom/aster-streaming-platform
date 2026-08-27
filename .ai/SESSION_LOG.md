@@ -2,6 +2,62 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Phase 04 protected CI remediation
+
+### Completed
+
+Published PR 21 at 18f3c7e after a clean 55/55 candidate gate. First protected run 33100857323 failed in packaged Identity and standalone Catalog probes. Their combined correction 0a8299d passed protected run 33102349933. External automated review also found manual schema self-comparison; added distinct merge-base/parent selection with real Git-history regression tests, without changing runtime trust.
+
+### Evidence
+
+Diagnostic remediation: 55/55 candidate tasks, 39 cached, 29.517 s; exact packaged Identity journey and fresh Catalog Docker proof (39550 ms, zero residual resources) pass, followed by protected CI. Manual-baseline correction: CI 26/26, typecheck and focused ESLint pass. See evidence/phase-04/clean-acceptance.txt and router-review.txt.
+
+### Next action
+
+Commit and gate the manual-baseline correction, then update PR 21 and resolve its two evidenced review findings after exact-head CI. Require squash and post-merge confirmation before Phase 05. No duplicate PR, empty commit, manual rerun or bypass.
+
+## 2026-08-27 — Clean supergraph acceptance
+
+### Completed
+
+Completed Phase 04 local acceptance at b5d7ab7. Controlled broker/S3 fixture clocks and allowed bounded cold SDK process startup after clean gates exposed timing assumptions; product deadlines are unchanged. Verified a fresh Docker installation, then removed only its ten containers, three synthetic volumes and two networks after ownership checks. Development Router restored; retained aster untouched. Corrected the stale roadmap status table.
+
+### Evidence
+
+evidence/phase-04/clean-acceptance.txt: frozen offline install; final pnpm check 55/55, 26 cached, 58.96 s; broker 21/21 and S3 16/16; Docker build/start 149.50 s, profile journey and real private/failure checks. Earlier failed clean attempts are recorded, not hidden. Author confirmation extended to test-only remediation. Audit passes the existing high threshold with one moderate UUID advisory and no affected method identified in inspected Apollo imports.
+
+### Next action
+
+Publish the evidence-complete Phase 04 candidate once; require protected CI, squash and post-merge CI. Then begin Phase 05 with an explicit repeatable synthetic UI seed and SSR, not a real-film approval or a playable-video claim.
+
+## 2026-08-27 — Local Router runtime acceptance
+
+### Completed
+
+Implemented pinned Router with private Identity/Catalog, separate owner credentials, unchanged session authorization, finite traffic limits and sanitized trace export. Updated source-context/CI selectors, guarded reset ownership and Docker-only demo transport. Retained aster data is untouched; the development Router is restored without query-plan exposure.
+
+### Evidence
+
+evidence/phase-04/router-runtime.txt records actual Docker session/private-boundary/partial-failure/capacity/revocation checks, SQL-wait cancellation (20 ms owner duration), Collector outage, Router stop (392 ms, exit 0), query plan and sanitized correlated trace. Candidate gate: 55/55, 24 cached, 56.14 s. Focused platform/reset tests: 35/35. Earlier candidate failures were unused-entry metadata and a probe-only credential-reference scanner false positive, fixed without disabling gates. The real Compose build completed; clean-source final acceptance is still pending.
+
+### Next action
+
+Continue P04-R02: confirmation review, coherent candidate commit, clean-source acceptance, protected PR/merge and post-merge verification. Do not start web work before the Phase 04 runtime gate. No playable demo or hosted readiness is claimed.
+
+## 2026-08-27 — Phase 03 release and local supergraph composition
+
+### Completed
+
+PR 20 passed protected CI and merged as 1354841; post-merge CI passed, both on attempt 1 without bypass or extra pipelines. A single unpublished dependent branch advanced executable-owner schema printers, deterministic supergraph/API/ownership artifacts and known operations while CI ran. Retained demo remains healthy.
+
+### Evidence
+
+Release: evidence/phase-03/release.txt. Composition: nine focused tests and initial 55/55 candidate tasks (27 cached, 51.096 s). After rebase onto clean main, the gate passes 55/55 (41 cached, 21.568 s). Clean source at 5553683: forced eleven-package build, zero cached, 17.504 s; nine tests and read-only schema check pass with manifest a886e82f2affdb01c7691074f29e727515d82cda21a3be7ff7a02e081b6136c7. Removed the disposable clean worktree. Initial/confirmation review corrected baseline isolation and moving-ref cache handling. No Router runtime or playable demo is claimed.
+
+### Next action
+
+P04-R01 is locally complete. Start READY P04-R02 for actual Router topology, separate service trust, session propagation and runtime evidence. No Phase 04 PR before its coherent acceptance.
+
 ## 2026-08-27 — Phase 03 local acceptance
 
 ### Completed

@@ -1,37 +1,72 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
+import { request } from "node:http";
+import { URL } from "node:url";
 
-const origin = "http://127.0.0.1:3100";
+const args = process.argv.slice(2);
+assert.ok(
+  args.length === 0 ||
+    (args.length === 1 && ["--direct-subgraph", "--compose-router"].includes(args[0])),
+);
+const origin = args[0] === "--direct-subgraph" ? "http://127.0.0.1:3100" : "http://127.0.0.1:4000";
+const endpoint = args[0] === "--compose-router" ? "http://router:4000" : origin;
 const signal = globalThis.AbortSignal.timeout(15_000);
 let cookie = "";
 let createdProfile;
 let stage = "sign-in";
 const call = async (query, variables = {}) => {
-  const response = await globalThis.fetch(origin + "/graphql", {
-    method: "POST",
-    headers: {
-      origin,
-      "x-aster-csrf": "1",
-      "content-type": "application/json",
-      connection: "close",
-      ...(cookie ? { cookie } : {}),
-    },
-    body: JSON.stringify({ query, variables }),
-    signal,
+  const body = JSON.stringify({
+    query,
+    variables,
+    operationName: /^(?:query|mutation)\s+(\w+)/.exec(query)?.[1],
   });
-  const json = await response.json();
+  const response = await new Promise((resolve, reject) => {
+    const client = request(
+      endpoint + "/graphql",
+      {
+        method: "POST",
+        headers: {
+          origin,
+          host: new URL(origin).host,
+          "x-aster-csrf": "1",
+          "content-type": "application/json",
+          "content-length": Buffer.byteLength(body),
+          connection: "close",
+          ...(cookie ? { cookie } : {}),
+        },
+        signal,
+      },
+      (message) => {
+        let text = "";
+        message.setEncoding("utf8");
+        message.on("data", (chunk) => {
+          text += chunk;
+          if (Buffer.byteLength(text) > 32768) {
+            message.destroy(new Error("Demo response exceeded its bound."));
+          }
+        });
+        message.on("error", reject);
+        message.on("end", () =>
+          resolve({ status: message.statusCode, headers: message.headers, text }),
+        );
+      },
+    );
+    client.on("error", reject);
+    client.end(body);
+  });
+  const json = JSON.parse(response.text);
   assert.equal(response.status, 200);
   assert.equal(json.errors, undefined);
-  const issued = response.headers.get("set-cookie");
+  const issued = response.headers["set-cookie"]?.[0];
   if (issued) {
     cookie = issued.split(";")[0];
   }
   return json.data;
 };
-const logout = () => call("mutation Logout { signOut { code } }");
+const logout = () => call("mutation SignOut { signOut { code } }");
 const remove = async () => {
   const result = await call(
-    "mutation Delete($input:DeleteProfileInput!) { deleteProfile(input:$input) { code } }",
+    "mutation DeleteProfile($input:DeleteProfileInput!) { deleteProfile(input:$input) { code } }",
     { input: { mutationId: randomUUID(), profileId: createdProfile, expectedVersion: 1 } },
   );
   assert.equal(result.deleteProfile.code, "COMPLETED");
@@ -39,11 +74,11 @@ const remove = async () => {
 };
 
 try {
-  const signed = await call("mutation Login { demoSignIn { code } }");
+  const signed = await call("mutation DemoSignIn { demoSignIn { code } }");
   assert.equal(signed.demoSignIn.code, "COMPLETED");
   stage = "create";
   const created = await call(
-    "mutation Create($input:CreateProfileInput!) { createProfile(input:$input) { code profileId } }",
+    "mutation CreateProfile($input:CreateProfileInput!) { createProfile(input:$input) { code profileId } }",
     {
       input: {
         mutationId: randomUUID(),
@@ -55,7 +90,7 @@ try {
   createdProfile = created.createProfile.profileId;
   stage = "select";
   const selected = await call(
-    "mutation Select($id:ID!) { selectProfile(id:$id) { code profile { id } } }",
+    "mutation SelectProfile($id:ID!) { selectProfile(id:$id) { code profile { id } } }",
     { id: createdProfile },
   );
   assert.equal(selected.selectProfile.profile.id, createdProfile);

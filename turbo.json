@@ -8,6 +8,18 @@
   },
   "globalDependencies": [".node-version", ".nvmrc"],
   "tasks": {
+    "@aster/router#test": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "env": ["ASTER_SCHEMA_BASE"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/infra/router/**",
+        "$TURBO_ROOT$/evidence/phase-02/identity-schema.graphql",
+        "$TURBO_ROOT$/evidence/phase-03/catalog-schema.graphql"
+      ],
+      "outputs": []
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
@@ -41,6 +53,7 @@
       "inputs": [
         "apps/**",
         "eslint.config.mjs",
+        "infra/router/**",
         "package.json",
         "packages/**",
         "services/**",
@@ -51,6 +64,7 @@
     },
     "//#format:check": {
       "inputs": [
+        "infra/**",
         ".github/**",
         ".githooks/**",
         "**/*.md",
@@ -64,6 +78,7 @@
     },
     "//#unused:check": {
       "inputs": [
+        "infra/router/**",
         "apps/**",
         "knip.json",
         "package.json",
@@ -88,6 +103,8 @@
     },
     "//#platform:check": {
       "inputs": [
+        "infra/router/**",
+        "tools/verify-router-runtime.mjs",
         ".dockerignore",
         "infra/docker/**",
         "packages/*/package.json",
@@ -105,6 +122,9 @@
     },
     "//#platform:test": {
       "inputs": [
+        "infra/router/**",
+        "tools/verify-router-runtime.mjs",
+        "tools/verify-router-runtime.test.mjs",
         ".dockerignore",
         "infra/docker/**",
         "packages/*/package.json",
@@ -161,6 +181,7 @@
         ".github/**",
         "infra/compose/**",
         "tools/verify-ci-policy.ts",
+        "tools/resolve-schema-baseline.ts",
         "tools/verify-local-platform.mjs"
       ]
     },
@@ -171,6 +192,8 @@
         "tools/classify-ci-change.test.ts",
         "tools/verify-ci-policy.ts",
         "tools/verify-ci-policy.test.ts",
+        "tools/resolve-schema-baseline.ts",
+        "tools/resolve-schema-baseline.test.ts",
         "tools/reset-local-platform.sh",
         "tools/reset-local-platform.test.mjs",
         "tools/verify-local-platform.mjs",

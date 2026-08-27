@@ -1,0 +1,86 @@
+Phase 04 local Router runtime checkpoint
+Date: 2026-08-27
+Base commit: a682b2092a9cef71ee17dd1ca9827bd2390212ae
+Candidate: uncommitted runtime slice; source fingerprints below bind this checkpoint.
+Environment: Linux/WSL Ubuntu-20.04 amd64; Docker Engine 26 / Compose 2.26.1; Node 24.19.0; pnpm 11.24.0.
+Project: aster-p04-development, created for this phase; retained aster data untouched.
+
+Images after source build:
+Router sha256:47857bbd39f71d00b6e0e0e95afe062261c40a11aeda7f81b5fc053a78af7ab1
+Identity sha256:6a3f38fbfe42d66434f58911cada14e58642e6b8579d43d5821f66618d5b3c51
+Catalog sha256:0f5da00a5a219c0debaf0505df3f7dc606b4fd2a2bb866ce297a6e3841eb1855
+Collector sha256:bdf9963cb9bf64d85af50aae35965e01782f136b2297b6a1583e22fc639e6044
+Trust initializer sha256:ea11b6cb22fac7b8b142db33f62f7ac6940d971836d5635800c5d0cb4a17a77e
+
+Commands and actual outcomes:
+docker compose -p aster-p04-development -f infra/compose/compose.yml -f infra/compose/observability.yml --profile observability build router router-trust-init identity identity-init catalog catalog-init collector
+exit 0; frozen installation, bounded non-root packaging and real pinned Router.
+docker compose -p aster-p04-development -f infra/compose/compose.yml -f infra/compose/observability.yml --profile observability up --detach --no-build --wait --wait-timeout 60 router collector
+exit 0; finite initialization completed and long-running services healthy.
+
+docker compose -p aster-p04-development -f infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
+{"event":"aster.identity.demo_verified","steps":["sign-in","create","select","list","delete","sign-out"]}
+
+pnpm router:demo --project aster-p04-development
+$ node ./tools/verify-local-router.mjs --project aster-p04-development
+{"event":"aster.router.public_boundary_verified","cases":10}
+{"event":"aster.router.session_and_two_owners_verified"}
+{"event":"aster.router.private_boundary_verified","publishedSubgraphPorts":0,"crossOwnerCredentialStatus":403}
+{"event":"aster.router.partial_timeout_verified","durationMs":2010,"healthyOwnerPreserved":true}
+{"event":"aster.router.concurrency_verified","requests":12,"rejected":4}
+{"event":"aster.router.recovery_verified","durationMs":175}
+{"event":"aster.router.revocation_verified"}
+
+pnpm router:lifecycle aster-p04-development
+$ node ./tools/verify-router-lifecycle.mjs aster-p04-development
+{"event":"aster.router.cancellation_verified","ownerDurationMs":20,"readObserved":true}
+{"event":"aster.router.telemetry_outage_verified"}
+{"event":"aster.router.shutdown_verified","durationMs":392,"exitCode":0}
+{"event":"aster.router.health_recovered"}
+Cancellation first observes a Catalog SQL read blocked on a held table lock, then disconnects the public client. CANCELLED precedes the 1000 ms statement timeout. The test rolls back its lock and restarts only its inspected Router/Collector containers.
+
+node tools/verify-router-observability.mjs aster-p04-development
+exit 0; diagnostic overlay explicitly enabled for this check, then removed.
+{"event":"aster.router.observability_verified","operation":{"timestamp":"2026-08-27T17:33:36.908938636Z","level":"INFO","trace_id":"431435f6026c00489daedd7deb936e52","span_id":"96eeb608dda5f876","duration_ms":9,"graphql_error":false,"aster.operation":"ViewerAndTitle","message":"GraphQL operation completed","kind":"aster.router.operation","target":"apollo_router::plugins::telemetry::config_new::events","spans":[{"name":"router"},{"rhai service":"router :: Request","name":"rhai_plugin"},{"name":"supergraph"}],"resource":{"service.version":"2.17.0","service.name":"aster-router","process.executable.name":"router"}},"privacyCanaries":3,"ownerTraceCorrelation":true}
+Actual Parallel identity/catalog query plan: router-query-plan.json.
+Actual Collector export: router-trace.txt (decoded JSON msg text, not a fabricated trace).
+All three private canaries absent from Router/owner logs, traces and internal metrics.
+Default-mode router:demo also asserts that a query-plan request header exposes no plan.
+
+Trust reuse: after inspecting both exact development volumes' project, disposable-local, local and platform ownership, a finite network-disabled initializer image ran with both volumes read-only. It imported /app/init-trust.mjs, compared before/after file contents in memory, and emitted only:
+{"event":"aster.router.trust_initialized","owners":2}
+{"event":"aster.router.trust_reuse_verified","owners":2}
+No key or digest was printed; the --rm probe container was removed automatically.
+
+pnpm check:changed
+exit 0: 55/55 tasks, 24 cached, 56.14 s; 145 Identity tests.
+Earlier focused trust/config/session: 41/41.
+Platform/reset/trust policies: 35/35, including forbidden mounts and foreign attachments.
+Earlier candidate attempts rejected unused-entry metadata and a credential-assignment false positive in the probe; fixed without excluding files or weakening gates.
+
+Limits:
+This is functional local acceptance, not a benchmark/SLO or hosted policy approval.
+No business/schema migration or media change invalidates Phase 03 SQL/HLS evidence.
+Complete final clean-source acceptance, review closeout, protected CI and merge remain pending.
+The development stack is restored with query-plan exposure disabled; no broad cleanup occurred.
+
+SHA-256 source fingerprints:
+d34fc7829d2660041e0471e81e8c1f3c18b4ab35c98d4b6b469d5d43370c09c1  infra/router/router.yaml
+ef2ad065e6a8bebab40430f4551d9091ad3f529abf5f9378ce156626e7c2ca8e  infra/router/main.rhai
+2d1544979d4c77f4e8ac34e195c26c56213174b75742c8fe006d4b84696a1f63  infra/router/init-trust.mjs
+aab8dade63ea878f77cfa0106562cff3ece047c61f6dd3831207d302e1029fea  infra/router/generated/supergraph.graphql
+2d563aefd3d35e6ffbbbca9c75d306517c956e3346b90b7d569091571005ab03  infra/docker/router.Dockerfile
+454cfc15d66dae9d7d962fa6e08961551bf7a1d7a588b74f05881ed725a837c3  infra/docker/router-trust.Dockerfile
+0e92e2743c1014b04b13792a76c5150f0cdd2d6f9f6bc6d7c8a537efd48b940c  infra/compose/compose.yml
+4cee9b36bca58e0e1baa55847f60d5e4c95825a0126312cbe50b1d0666bf1909  infra/compose/collector.integration.yml
+3e73ea8e23534b159b159561ee1958207cc27f754dc580247d3ad506012c7796  infra/compose/observability.yml
+6c18a59c00d41aab1b03bdf49d143c723dd920a52b131b118a466655b91575a7  packages/http-express/src/local-router-trust.ts
+080d0af64c7ec74777de34cccd59db84c2d31fa4ffe060e7d025ff46712eeccb  packages/config/src/runtime-config.ts
+631e45424ecc079e83671c9e0119a2bb46c83843723f41d9e2b5e687ae6d4295  services/identity/src/transport/local-session.ts
+20b6c35292ba3f3accb4454fad169552326855d880fe0abdaa8eb5f97cb062f3  services/identity/src/transport/identity-subgraph.ts
+1b38eb3d90943ef8d94bd066774971a0dc93c10b6d464ecd3b31a63977a68d19  services/catalog/src/transport/catalog-subgraph.ts
+cc4999bbf758ded1a1fde053acf199e5babb8487803ed866af68524924285ab4  tools/verify-local-identity.mjs
+5b30e45119168bb0ae86a7afb72a1bfacdbb99165ab58ce65be7fbeaa929be44  tools/verify-local-router.mjs
+3ed4844fc444e75f471956c01b79565b0f156f9c3779ecdfcefa0c3853cc3702  tools/verify-router-lifecycle.mjs
+abc0e982142c81424edd6163629f684138695b1b63fcb640022e586cd014eb67  services/catalog/test/router-cancellation-probe.mjs
+4f434a7497adf68a849559188f3c52131e00c25c65495657b614db9f4664a2dc  tools/verify-router-observability.mjs

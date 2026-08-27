@@ -1,0 +1,322 @@
+{
+  "formatVersion": 1,
+  "composerVersion": "2.14.4",
+  "graphqlVersion": "16.14.2",
+  "files": {
+    "api.graphql": "38e1f37f7fc26234e9d2a9ec2ab23481935003177ded0d78dc77c82c9e1d6f4d",
+    "supergraph.graphql": "aab8dade63ea878f77cfa0106562cff3ece047c61f6dd3831207d302e1029fea",
+    "catalog.graphql": "8080e330dfb9a3422b8757e93643e1ca00dc0ca7b68bafb46490de11111d73b4",
+    "identity.graphql": "0bf47aa04eddff6f02a4d486a1c2b663f952e52148cacf72aa11f7cf89d84324"
+  },
+  "subgraphs": [
+    {
+      "name": "catalog",
+      "routingUrl": "http://catalog:3200/graphql",
+      "ownership": [
+        {
+          "type": "CatalogAccessibility",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "CatalogArtwork",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "altText",
+            "attribution",
+            "url"
+          ],
+          "keys": []
+        },
+        {
+          "type": "CatalogAttribution",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "attributionText",
+            "copyrightHolder",
+            "creator",
+            "licenseName",
+            "licenseUrl",
+            "licenseVersion",
+            "modificationNotice",
+            "sourceUrl",
+            "workTitle"
+          ],
+          "keys": []
+        },
+        {
+          "type": "CatalogCredit",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "name",
+            "role"
+          ],
+          "keys": []
+        },
+        {
+          "type": "CatalogPageInfo",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "endCursor",
+            "hasNextPage"
+          ],
+          "keys": []
+        },
+        {
+          "type": "CatalogTitleConnection",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "edges",
+            "pageInfo"
+          ],
+          "keys": []
+        },
+        {
+          "type": "CatalogTitleEdge",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "cursor",
+            "node"
+          ],
+          "keys": []
+        },
+        {
+          "type": "LocalizedTitle",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "locale",
+            "synopsis",
+            "title"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "title",
+            "titles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Title",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "accessibility",
+            "artwork",
+            "attribution",
+            "credits",
+            "editorialLabels",
+            "genres",
+            "id",
+            "languages",
+            "localized",
+            "releaseYear",
+            "runtimeSeconds"
+          ],
+          "keys": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "identity",
+      "routingUrl": "http://identity:3100/graphql",
+      "ownership": [
+        {
+          "type": "CreateProfileInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "mutationId",
+            "profile"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DeleteProfileInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "expectedVersion",
+            "mutationId",
+            "profileId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "IdentityOutcome",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "Mutation",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "createProfile",
+            "deleteProfile",
+            "demoSignIn",
+            "selectProfile",
+            "signOut",
+            "updateProfile"
+          ],
+          "keys": []
+        },
+        {
+          "type": "OwnedProfiles",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "activeProfileId",
+            "profiles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Profile",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "avatarRef",
+            "displayName",
+            "id",
+            "locale",
+            "maturity",
+            "version"
+          ],
+          "keys": [
+            "id"
+          ]
+        },
+        {
+          "type": "ProfileMaturity",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "ProfileMutationPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "profileId",
+            "version"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProfilePreferencesInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "displayName",
+            "locale",
+            "maturity"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProfileSelectionPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "profile"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "activeProfile",
+            "me",
+            "profile",
+            "profiles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "SessionPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "viewer"
+          ],
+          "keys": []
+        },
+        {
+          "type": "UpdateProfileInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "expectedVersion",
+            "mutationId",
+            "profile",
+            "profileId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Viewer",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "accountId",
+            "expiresAt"
+          ],
+          "keys": []
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "name": "Browse",
+      "sha256": "c2fbe70d68ed4d94481fe73d22b24c612e21ceebc7cc8cfc9a61ecff327063ee"
+    },
+    {
+      "name": "CreateProfile",
+      "sha256": "7978000a3a2f9afd2c6b7e731ba8f5f07f6c4342332268bb2cab2da0c8b240f1"
+    },
+    {
+      "name": "DeleteProfile",
+      "sha256": "ac6173acb992d914fdcab21834a4af914bc911543aa528547a9391aa6cc5520a"
+    },
+    {
+      "name": "DemoSignIn",
+      "sha256": "f03c4f69957fe92779ca8ea19650e3e9547004560e3e4d0050aa4601b87c095e"
+    },
+    {
+      "name": "Profile",
+      "sha256": "8d2a85baad76cfcf586e945d6f3caf9af768055fbea943bf03fefa98e8f75c10"
+    },
+    {
+      "name": "Profiles",
+      "sha256": "7d8e9b19c20793c860a61d94e382c59259180db2478fa0bed1bbf66a77952058"
+    },
+    {
+      "name": "SelectProfile",
+      "sha256": "c7caf2e116489e472740a1da3531da7bbdd6351a9fc238d44c68004d1ba28a0d"
+    },
+    {
+      "name": "SignOut",
+      "sha256": "ce80f08dd4b79df2df945a6e1d01908cb679f4f51dc85cc848f8fe64374f0282"
+    },
+    {
+      "name": "TitleDetail",
+      "sha256": "d9da9a34ad8aadf8dd137dbda52b94e0b88b27da71ea98f63b7423fb81fce47e"
+    },
+    {
+      "name": "UpdateProfile",
+      "sha256": "95a9d6c0190986f97d4da2c0bd4de628af1af8694a00ebfa9a20bb2948424801"
+    },
+    {
+      "name": "Viewer",
+      "sha256": "3f94bf51f9f758f42c021fe492d5488de9128d9815f1e1868121c5a8588334e5"
+    },
+    {
+      "name": "ViewerAndTitle",
+      "sha256": "8176ac34cbfd58058188ac87177475816afb768e2a0d7335f9d4841ab2164aed"
+    }
+  ]
+}

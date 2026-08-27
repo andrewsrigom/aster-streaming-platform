@@ -133,6 +133,36 @@ test("local product mode requires explicit opt-in, local environment and a canon
   }
 });
 
+test("Router trust requires the local product and the exact public Router origin", () => {
+  const configured = {
+    ...validEnvironment(),
+    ASTER_LOCAL_DEMO_ENABLED: "true",
+    ASTER_PUBLIC_ORIGIN: "http://127.0.0.1:4000",
+    ASTER_ROUTER_TRUST_ENABLED: "true",
+  };
+  const parsed = loadEnvironment(configured);
+  assert.deepEqual(parsed.localDemo, {
+    publicOrigin: configured.ASTER_PUBLIC_ORIGIN,
+    routerTrust: true,
+  });
+  assert.ok(
+    createReferenceRuntimeConfigDiagnostic(parsed).variables.some(
+      (entry) => entry.name === "ASTER_ROUTER_TRUST_ENABLED",
+    ),
+  );
+  for (const override of [
+    { ASTER_ENV: "production" },
+    { ASTER_LOCAL_DEMO_ENABLED: "false" },
+    { ASTER_PUBLIC_ORIGIN: "http://127.0.0.1:3100" },
+    { ASTER_ROUTER_TRUST_ENABLED: "yes" },
+  ]) {
+    assert.throws(
+      () => loadEnvironment({ ...configured, ...override }),
+      ReferenceRuntimeConfigError,
+    );
+  }
+});
+
 test("reports non-secret values and only configured status for secrets", () => {
   const diagnostic = createReferenceRuntimeConfigDiagnostic(loadEnvironment(validEnvironment()));
   const serialized = JSON.stringify(diagnostic);

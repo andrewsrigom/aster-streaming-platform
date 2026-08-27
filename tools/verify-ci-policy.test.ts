@@ -25,6 +25,29 @@ test("rejects movable action tags", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "action-pin"));
 });
 
+test("schema compatibility cannot compare only against the candidate or a shallow checkout", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace(
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}",
+      "ASTER_SCHEMA_BASE: ${{ github.sha }}",
+    ),
+    source.replace(
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || '' }}",
+      "ASTER_SCHEMA_BASE: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}",
+    ),
+    source.replace('ASTER_SCHEMA_BASE="$(node ./tools/resolve-schema-baseline.ts)"', "true"),
+    source.replace("export ASTER_SCHEMA_BASE", "true"),
+    source.replace("./tools/resolve-schema-baseline.test.ts", "./tools/unreviewed.test.ts"),
+    source.replaceAll("fetch-depth: 0", "fetch-depth: 1"),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) => detail.includes("schema compatibility")),
+    );
+  }
+});
+
 test("rejects removal, suppression or unbounded real integration", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const weakened of [
@@ -125,6 +148,17 @@ test("rejects a missing repository-memory check", async () => {
     .replace("node ./tools/verify-ai-state.ts", "node ./tools/verify-documentation.ts")
     .replace("./tools/verify-ai-state.test.ts", "./tools/verify-documentation.test.ts");
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "commands"));
+});
+
+test("the packaged product journey cannot use container loopback or bypass Router", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const replacement of ["", " - --direct-subgraph"]) {
+    const changed = source.replace(" - --compose-router", replacement);
+    assert.notEqual(changed, source);
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) => detail.includes("internal Router")),
+    );
+  }
 });
 
 test("rejects removal of the reviewed MITNFA license", async () => {

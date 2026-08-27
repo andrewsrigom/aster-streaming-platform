@@ -1,0 +1,68 @@
+Aster Phase 03 — Protected local release
+Recorded: 2026-08-27
+Requirements: P03-R01 through P03-R10; requirement matrix in README.md.
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/20
+Candidate: 9abf65e62c276e61e3fa82627843b74af6129546
+Protected CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33090966906
+Squash/main: 135484183253ede7a6b6436f737794bfee2049d8
+Merged at: 2026-08-27T16:09:03Z
+Post-merge CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33091716358
+
+Both runs succeeded on attempt 1. Required aggregate and all applicable jobs passed. Dependency review passed on the PR and was correctly skipped for main push. No rerun, empty commit, duplicate PR, admin bypass or protection change.
+Before merge: exact candidate head matched, mergeStateStatus CLEAN, no review threads or external reviews. Initial/confirmation author reviews are in the local evidence; no independent approval is claimed. Ruleset 21535199 requires strict CI required, PR path, thread resolution, squash and linear history, with no bypass actors; no unavailable external approval is required.
+Command: gh pr merge 20 --repo andrewsrigom/aster-streaming-platform --squash --match-head-commit 9abf65e62c276e61e3fa82627843b74af6129546 --subject 'feat(catalog): deliver rights-aware catalog and generated HLS acceptance (#20)'
+Post-merge candidate/squash tree diff: empty.
+This closes a protected local implementation phase, not a hosted product/media release. No real-film approval, CDN delivery or playable UI. The four retained local core containers remain healthy and unchanged.
+
+Protected raw result extracts (Ubuntu 24.04 runner; exact Node/lock and immutable images from workflow):
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:02:10.9732859Z #56 22.03  Tasks:    5 successful, 5 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:02:10.9733339Z #56 22.03 Cached:    0 cached, 5 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:02:10.9733763Z #56 22.03   Time:    21.323s 
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:02:19.4572359Z #57 30.67  Tasks:    9 successful, 9 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:02:19.4573381Z #57 30.67 Cached:    0 cached, 9 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:02:19.4574001Z #57 30.67   Time:    29.981s 
+Local platform	Verify packaged health and real telemetry	2026-08-27T16:02:49.0243430Z {"check":"docker-only-demo","status":"ok","uid":1000,"metrics":["http_server_request_duration_seconds_count","aster_dependency_operation_outcomes_total","process_cpu_time_seconds_total","process_memory_usage_bytes","nodejs_eventloop_delay_p99_seconds","aster_telemetry_export_attempts_total"]}
+Install and source quality	Run source quality and tests	2026-08-27T16:02:08.3827000Z  Tasks:    42 successful, 42 total
+Install and source quality	Run source quality and tests	2026-08-27T16:02:08.3827397Z Cached:    0 cached, 42 total
+Install and source quality	Run source quality and tests	2026-08-27T16:02:08.3827774Z   Time:    51.435s 
+Install and source quality	Prove real platform integration	2026-08-27T16:02:08.8212018Z  Tasks:    9 successful, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T16:02:08.8212568Z Cached:    9 cached, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T16:02:08.8213383Z   Time:    23ms >>> FULL TURBO
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:04:55.0986889Z  Tasks:    5 successful, 5 total
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:04:55.0987867Z Cached:    5 cached, 5 total
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:04:55.0988966Z   Time:    18ms >>> FULL TURBO
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:05:51.0953549Z {"event":"catalog_candidate_reviews","reviewed":2,"state":"NEEDS_CLARIFICATION","incompleteApprovalRejected":true,"publicInvisible":true,"filmDownloads":0}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:05:51.0959427Z {"event":"catalog_generated_publication","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","sameApplicationContract":true,"absentAttestationRejected":true,"publishedAndRetired":true,"derivedAttribution":{"workTitle":"Synthetic fixture","creator":"Synthetic creator","copyrightHolder":"Synthetic owner","sourceUrl":"https://example.invalid/work","licenseName":"Synthetic test permission","licenseVersion":"1.0","licenseUrl":"https://example.invalid/license","attributionText":"Synthetic creator — test only","modificationNotice":"Generated fixture"},"events":[{"event_type":"catalog.title-published"},{"event_type":"catalog.title-retired"}]}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:06:30.7507193Z {"event":"catalog_docker_started","image":"sha256:5cb74c7d370e301ebbe970d873943314fcc37ff2978a4d98fc58fd2313759c30","uid":1000,"emptyBrowse":true,"idempotentMigrations":true,"readerDeniedWriteAndHistory":true,"redisRequired":false}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:06:52.5293348Z {"event":"catalog_docker_recovered","excessPrivilegeRejected":true,"databaseOutageRecovered":true,"shutdownMs":205,"exitCode":143,"sanitizedLogs":true}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:06:53.0906104Z {"event":"catalog_docker_cleaned","remaining":0,"durationMs":60986}
+
+Post-merge run metadata and raw result extracts:
+{"conclusion":"success","event":"pull_request","head_sha":"9abf65e62c276e61e3fa82627843b74af6129546","html_url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33090966906","id":33090966906,"run_attempt":1,"status":"completed"}
+{"conclusion":"success","event":"push","head_sha":"135484183253ede7a6b6436f737794bfee2049d8","html_url":"https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33091716358","id":33091716358,"run_attempt":1,"status":"completed"}
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:10:28.1452271Z #57 25.42  Tasks:    5 successful, 5 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:10:28.1452853Z #57 25.42 Cached:    0 cached, 5 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:10:28.1453559Z #57 25.42   Time:    24.623s 
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:10:35.0118024Z #56 32.36  Tasks:    9 successful, 9 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:10:35.0118316Z #56 32.36 Cached:    0 cached, 9 total
+Local platform	Build and start the Docker-only full profile	2026-08-27T16:10:35.0118621Z #56 32.36   Time:    31.568s 
+Install and source quality	Run source quality and tests	2026-08-27T16:10:37.6889270Z  Tasks:    42 successful, 42 total
+Install and source quality	Run source quality and tests	2026-08-27T16:10:37.6889798Z Cached:    0 cached, 42 total
+Install and source quality	Run source quality and tests	2026-08-27T16:10:37.6890256Z   Time:    1m8.288s 
+Install and source quality	Prove real platform integration	2026-08-27T16:10:38.2565515Z  Tasks:    9 successful, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T16:10:38.2565914Z Cached:    9 cached, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T16:10:38.2566205Z   Time:    20ms >>> FULL TURBO
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:13:21.6745213Z  Tasks:    5 successful, 5 total
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:13:21.6745869Z Cached:    5 cached, 5 total
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:13:21.6746508Z   Time:    27ms >>> FULL TURBO
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:14:05.3092164Z {"event":"catalog_candidate_reviews","reviewed":2,"state":"NEEDS_CLARIFICATION","incompleteApprovalRejected":true,"publicInvisible":true,"filmDownloads":0}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:14:05.3096627Z {"event":"catalog_generated_publication","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","sameApplicationContract":true,"absentAttestationRejected":true,"publishedAndRetired":true,"derivedAttribution":{"workTitle":"Synthetic fixture","creator":"Synthetic creator","copyrightHolder":"Synthetic owner","sourceUrl":"https://example.invalid/work","licenseName":"Synthetic test permission","licenseVersion":"1.0","licenseUrl":"https://example.invalid/license","attributionText":"Synthetic creator — test only","modificationNotice":"Generated fixture"},"events":[{"event_type":"catalog.title-published"},{"event_type":"catalog.title-retired"}]}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:14:42.7645705Z {"event":"catalog_docker_started","image":"sha256:1befd79e56f3904ff78df8dd6794c14a687a303d2d1da4b4cb12399da90b3722","uid":1000,"emptyBrowse":true,"idempotentMigrations":true,"readerDeniedWriteAndHistory":true,"redisRequired":false}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:15:00.9460529Z {"event":"catalog_docker_recovered","excessPrivilegeRejected":true,"databaseOutageRecovered":true,"shutdownMs":195,"exitCode":143,"sanitizedLogs":true}
+Install and source quality	Prove Catalog runtime and generated publication	2026-08-27T16:15:01.4366266Z {"event":"catalog_docker_cleaned","remaining":0,"durationMs":55450}
+aster-identity-1 Up 5 hours (healthy)
+aster-platform-status-1 Up 5 hours (healthy)
+aster-redis-1 Up 5 hours (healthy)
+aster-postgres-1 Up 5 hours (healthy)
+
+Rollback: stop only new Catalog runtime; retain durable title/rights/audit/outbox data and compatible metadata decoding. Use the documented migration/roll-forward policy, never a broad Docker reset.

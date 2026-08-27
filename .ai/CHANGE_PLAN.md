@@ -1,105 +1,108 @@
-# Work Item: Generated media and runnable Catalog
+# Work Item: Private subgraphs behind the local Apollo Router
 
 - Status: IN_PROGRESS
-- Owner: Catalog
-- Phase: 03
-- Requirement IDs: P03-R04, P03-R09; preserves P03-R01 through P03-R10
+- Owner: Platform transport; Identity and Catalog retain their data
+- Phase: 04
+- Requirement IDs: P04-R02, P04-R03, P04-R05, P04-R06, P04-R07, P04-R09
 - Created: 2026-08-27
 - Updated: 2026-08-27
 
 ## Outcome
 
-Run the real read-only Catalog subgraph in the local Docker profile, prove publication through existing editorial application commands using a byte-validated generated HLS fixture, and retain reviewed, non-approved real-film candidates with explicit unresolved rights facts. This is not a playable film release or the Phase 06 worker.
+The local GraphQL entry point will execute the composed Identity/Catalog schema through the real Apollo Router, preserve owner-validated sessions and demonstrate bounded partial failure without publishing subgraph ports.
 
 ## Current behavior
 
-08a06ca contains locally verified Catalog lifecycle, immutable rights/audit/outbox, operator CLI and public Federation queries. The 91 tests and SQL/HTTP evidence use synthetic attestations, not generated media bytes. No Catalog Docker runtime exists.
+All Phase 04 local requirements and author confirmation pass at source b5d7ab7. PR 21's first protected run 33100857323 exposed stale compatibility wiring: the Identity demo omitted --compose-router, and the standalone Catalog probe inherited private-only networking and an unused credential mount. The correction uses the documented internal Router route and explicit standalone diagnostic overlay without owner trust mounts. Cleanup permits only exact owned PostgreSQL data and unused disposable trust volumes, with labels and foreign attachments checked. CI regression tests 25/25, Catalog guards 3/3, the exact Identity command and fresh Catalog Docker proof pass. Normal runtime trust, topology, deadlines and permissions do not change. Publish one combined remediation after the candidate gate; protected release remains open.
+
+Remediation head 0a8299d passed clean candidate checks (55/55) and was published once. External review confirmed the fixed Identity defect and identified a second blocking contract issue: workflow_dispatch falls back to the candidate SHA for schema compatibility. Resolve absent event baselines against the merge base with origin/main, or the candidate's first parent when the candidate is itself that base. Keep explicit PR/push SHAs, reject self-comparison and missing history, and verify selection against real temporary Git histories before publication. No runtime or media repeat is justified by this CI-only correction.
 
 ## Proposed behavior
 
-Add a Catalog-owned composition root and read-only database login, compose its finite initializer and healthy HTTP runtime, generate a small deterministic HLS package outside the server, and verify its attestation before the normal publication commands. Review two official film sources without downloading films. Keep unresolved candidates invisible.
+Use the pinned upstream Router with source-owned YAML/Rhai hooks, generated SDL and private subgraphs. Define the separate local Router credential and cookie boundary in ADR-0017 before wiring it. Keep standalone owner transports available only through an explicit diagnostic configuration. Do not add an aggregation server or a hosted dependency.
 
 ## Boundaries
 
-- Owning context: Catalog owns editorial state, rights and publication pointers.
-- Affected services/packages: services/catalog, infra/docker, infra/compose, focused tools/tests.
-- Authoritative data: PostgreSQL Catalog schema; no cross-context reads.
-- Read models/caches: existing live public_candidates view; no Redis cache.
-- Trust boundaries: HTTP untrusted/read-only; explicit local initializer holds admin authority; operator cannot write attestations; generated files are untrusted until validated.
-- External dependencies: PostgreSQL and pinned Docker/FFmpeg tooling; public official rights pages are evidence, never implicit asset permission.
+- Owning context: Identity authorizes sessions/profiles; Catalog owns published reads.
+- Affected services/packages: apps/router, packages/http-express and config, services/identity and catalog, infra/router, infra/compose, tools and focused tests.
+- Authoritative data: existing owner PostgreSQL records, unchanged.
+- Read models/caches: unchanged; Router credentials are not product authority.
+- Trust boundaries: public loopback HTTP to Router; separate authenticated private owner transport; public cookies go only to Identity.
+- External dependencies: pinned unmodified Apollo Router image, local Docker and existing PostgreSQL/Redis. No GraphOS account, license key or paid service.
 
 ## Invariants
 
-- No film acquisition or publication without complete rights; candidate uncertainty stays NEEDS_CLARIFICATION.
-- No FFmpeg or video proxy in the request server; resource-limited, network-disabled generation.
-- No fake production media URL or playback claim; synthetic local fixture remains labelled and excluded from real-film approval.
-- Reader credentials cannot mutate Catalog or read Identity; no admin/operator credentials in the HTTP container.
+- Only Router publishes GraphQL in the target topology; public identity/forwarding headers cannot confer authority.
+- Identity retains signature, durable session/revocation, ownership, Origin and CSRF checks.
+- No raw operations, variables, cookies, service keys or account/profile IDs in telemetry.
+- No schema, database migration, owner boundary or event change. No unsafe mutation retries.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| PostgreSQL/schema/authority unavailable | Readiness fails, GraphQL rejects, bounded probe recovers | Sanitized readiness and dependency outcomes |
-| Termination or request disconnect | Stop admission, cancel/drain within deadline, close resources | Lifecycle and operation outcomes |
-| Generator timeout, invalid playlist, absent/corrupt segment | No attestation/publication; scoped temporary cleanup | Bounded technical report, nonzero exit |
-| Uncertain source permissions | Candidate retained, approval denied | Reviewed evidence and unresolved facts |
+| Invalid public headers or private credential | Reject before owner execution | Bounded rejection outcome |
+| Missing/malformed service key or SDL | Fail startup closed | Sanitized initialization error |
+| One subgraph unavailable or timed out | Nullable mixed query retains healthy owner's data | Subgraph/duration/outcome and trace |
+| Body/concurrency limit | Bounded rejection, no queue growth | Rejection outcome |
+| Client cancellation/shutdown | Cancel fetches; bounded drain | Runtime outcome |
+| Telemetry sink unavailable | Product work remains bounded | Export failure, no credentials |
 
 ## Data and contracts
 
-- Schema/migration: use existing 0001–0003; local initializer provisions a least-privilege reader login.
-- GraphQL/events: existing contracts unchanged; publication flows through existing application transactions/outbox.
-- Cache: none; no-store remains.
-- Compatibility: preserve existing metadata decoding and idempotency receipts.
-- Retention/deletion: immutable rights/audit; only new labelled disposable experiments cleaned up. Preserve retained demo and unrelated resources.
+- Schema/migration: none; use existing generated supergraph and twelve known operations.
+- GraphQL: preserve nullable ViewerAndTitle roots, sanitized public errors and session cookies.
+- Events/cache/retention: unchanged. Runtime trust material is disposable and purpose-separated.
+- Compatibility: old direct HTTP checks use an explicit diagnostic mode; the normal demo uses Router.
 
 ## Security and privacy
 
-- Authorization: explicit local process authority; runtime only receives reader credentials.
-- Input limits: existing GraphQL bounds; finite process, output, file count/size and generation deadline.
-- Sensitive data: synthetic fixtures only; no URL credentials or raw errors in logs/evidence.
-- Abuse cases: privilege substitution, missing migrations, malformed manifests, escaping paths, symlinks, oversized output and cancellation.
+- Authorization: owners remain authoritative; per-owner local service credentials authenticate transport only.
+- Input limits: 32 KiB bodies, finite headers, bounded edge parsing, existing owner depth/alias limits, deadlines and concurrency. Do not configure GraphOS-key-gated native operation limits.
+- Sensitive data: read-only secret mounts; no credentials in source, commands, evidence or logs.
+- Abuse cases: forged headers, direct calls, cookie leakage, duplicate credentials, cross-account access, query saturation and unavailable subgraphs.
 
 ## Implementation steps
 
-1. Compose and test Catalog runtime/readiness/shutdown with PostgreSQL-only dependency.
-2. Add Docker runtime/init and a scoped real-container verification.
-3. Pin isolated generator, validate repeated HLS output and publication via Catalog commands.
-4. Record two official candidate-source reviews and test unresolved publication rejection.
-5. Run phase acceptance, author review/confirmation, consolidate evidence and memory; publish one coherent Phase 03 candidate only when accepted.
+1. Verify exact Router license/configuration support; record ADR and credential lifecycle.
+2. Implement/test owner trust adapters and Router hooks/configuration.
+3. Wire resource-bounded Docker topology and diagnostic compatibility.
+4. Exercise real sessions, negative boundaries, partial failure, limits, query plans and traces.
+5. Review one coherent candidate, capture evidence and complete protected release gates.
 
 ## Tests
 
-- Domain/application: reuse lifecycle/rights/editorial tests; generated attestation positive and invalid/absent negative paths.
-- Integration: real PostgreSQL reader isolation, schema check, Docker HTTP browse, dependency outage/recovery and graceful shutdown; idempotent initializer.
-- Contract: existing Federation composition and public queries unchanged; bounded HLS references/checksums/probe and captions.
-- Browser: not applicable until Phase 05; no browser playback claim.
-- Performance/failure: measured resource/deadline behavior, not a capacity/SLO claim.
+- Domain/application: existing owner suites; no business behavior changes.
+- Integration: real Router, Identity, Catalog and PostgreSQL; sign-in/select/revoke, private access and partial timeout.
+- Contract: schema check; Router startup against pinned version; transport negative tests.
+- Acceptance-gate remediation: use Node test MockTimers for the broker late-connect/close ordering test; retain its pending/closing/closed and late-result assertions. Run the focused broker suite, then repeat clean-source full acceptance. This test-only change does not invalidate Router, SQL, media or real-broker runtime evidence.
+- The forced clean run also exposed the same clock race in the S3 capacity fixture and a 3-second child-process startup cutoff during cold AWS SDK loading. Freeze only that fixture's timers and give the diagnostic process a finite 10-second startup/execution envelope; its actual 100/150/500 ms connection/operation/close deadlines and outcome assertions remain unchanged. Repeat the S3 suite and the complete gate, retaining successful unchanged task evidence.
+- Browser: not applicable before the web phase; HTTP cookie journey here.
+- Performance/failure: bounded admission, cancellation, body limit and one owner failure; no throughput claim.
 
 ## Evidence
 
-- Commands: focused Catalog build/tests, generator tests/run, scoped Docker acceptance, pnpm check:changed and full phase gate before merge.
-- Raw artifact path: evidence/phase-03/catalog-runtime.txt and generated-media.txt.
-- Acceptance result: candidate gate 52/52 and author confirmation pass. Clean-source frozen install and full gate at 4e29f5e pass 52/52 with zero cached in 53.227 s. Requirement matrix and Phase 04 prerequisite are in evidence/phase-03/README.md. Only protected CI, merge and post-merge verification remain; evidence-only closeout does not change the implementation boundary.
-- Iteration gate: focused compile and changed-boundary tests.
-- Candidate gate: pnpm check:changed plus real Catalog Docker/media checks.
-- Heavyweight repeat triggers: Docker/config/runtime/schema changes repeat affected Docker scenarios; recipe/validation changes repeat generation. Unchanged Identity and prior Catalog ownership evidence remain supporting evidence, not new runs.
-- Review stopping rule: one complete author initial review, batched blockers, one confirmation; extend only for requirement/security/data/availability/public-contract blockers.
+- Commands: focused package builds/tests, Router config/runtime probe, pnpm check:changed and pnpm check.
+- Raw artifact path: evidence/phase-04/.
+- Acceptance result: local runtime, author review, full clean-source and fresh Docker acceptance pass; evidence/phase-04/clean-acceptance.txt. Exact protected CI and release remain pending.
+- Iteration gate: changed transport tests and pinned Router config/startup probe.
+- Candidate gate: affected-scope checks plus the full phase runtime acceptance and schema compatibility.
+- Heavyweight repeat triggers: changes to trust, routing, Docker packaging, deadlines, cookie propagation or telemetry repeat affected runtime checks; prose-only changes do not repeat Docker/media work.
+- Review stopping rule: one initial and one confirmation review; repeat only for a changed blocking requirement/security/data/availability/public-contract boundary.
 
 ## Rollback or recovery
 
-Stop only the new Catalog service; retain existing database/audit and Identity demo. Revert runtime/tooling changes without dropping product data. Preserve expanded metadata decoder. Clean only validated disposable experiment names and labels. No broad prune, reset, new hosted resources or protection bypass.
+Stop only the owned verification stack. Revert this runtime slice to the verified schema commit, leaving owner PostgreSQL data intact. Recreate ephemeral Router credentials and restart their consumers together to rotate trust. No broad Docker cleanup or production migration.
 
 ## Documentation updates
 
-Update runtime/fixture commands, source reviews and attribution, phase evidence index, relevant operational limits and repository memory at a meaningful checkpoint.
+ADR-0017, Router usage, local topology/runbook, phase evidence and repository memory at meaningful checkpoints.
 
 ## Completion checklist
 
-- [x] Requirements satisfied
-- [x] Tests pass
-- [x] Evidence captured
-- [x] Documentation current
-- [x] `.ai/` state updated
-- [x] Remaining risks recorded
-
-Local acceptance is complete; IN_PROGRESS remains until the protected publication transition is recorded. No remote gate is inferred from local success.
+- [ ] Requirements satisfied
+- [ ] Tests pass
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

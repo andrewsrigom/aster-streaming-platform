@@ -1,0 +1,49 @@
+{
+  "object": {
+    "kind": "QueryPlan",
+    "node": {
+      "kind": "Parallel",
+      "nodes": [
+        {
+          "kind": "Fetch",
+          "serviceName": "identity",
+          "variableUsages": [],
+          "operation": "query ViewerAndTitle__identity__0 { me { accountId } }",
+          "operationName": "ViewerAndTitle__identity__0",
+          "operationKind": "query",
+          "id": null,
+          "inputRewrites": null,
+          "outputRewrites": null,
+          "contextRewrites": null,
+          "schemaAwareHash": "d317a2fb2c8fdd5d55f3348ddafc1af6085d8ed15139cdf17812b7b3b7f1e3fd",
+          "authorization": {
+            "is_authenticated": false,
+            "scopes": [],
+            "policies": []
+          }
+        },
+        {
+          "kind": "Fetch",
+          "serviceName": "catalog",
+          "variableUsages": [
+            "id"
+          ],
+          "operation": "query ViewerAndTitle__catalog__1($id: ID!) { title(id: $id) { id } }",
+          "operationName": "ViewerAndTitle__catalog__1",
+          "operationKind": "query",
+          "id": null,
+          "inputRewrites": null,
+          "outputRewrites": null,
+          "contextRewrites": null,
+          "schemaAwareHash": "e935ca72b2823e188133d83ee79959cf39b344f61979f4f7a8dd2772bd7cacd9",
+          "authorization": {
+            "is_authenticated": false,
+            "scopes": [],
+            "policies": []
+          }
+        }
+      ]
+    }
+  },
+  "text": "QueryPlan {\n  Parallel {\n    Fetch(service: \"identity\") {\n      {\n        me {\n          accountId\n        }\n      }\n    },\n    Fetch(service: \"catalog\") {\n      {\n        title(id: $id) {\n          id\n        }\n      }\n    },\n  },\n}"
+}

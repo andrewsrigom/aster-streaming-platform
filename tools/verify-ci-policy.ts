@@ -235,6 +235,18 @@ export function validateWorkflowPolicy(
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
     [
+      /- name: Run source quality and tests\s+env:\s+ASTER_SCHEMA_BASE: \$\{\{ github\.event\.pull_request\.base\.sha \|\| github\.event\.before \|\| '' \}\}\s+run: \|\s+ASTER_SCHEMA_BASE="\$\(node \.\/tools\/resolve-schema-baseline\.ts\)"\s+export ASTER_SCHEMA_BASE\s+pnpm check:source/u,
+      "schema compatibility must resolve a distinct event or manual baseline before the source gate",
+    ],
+    [
+      /\.\/tools\/resolve-schema-baseline\.test\.ts/u,
+      "schema compatibility baseline selection needs executable regression tests",
+    ],
+    [
+      /quality:[\s\S]*?- name: Check out repository[\s\S]*?with:\s+fetch-depth: 0\s+persist-credentials: false/u,
+      "schema compatibility requires complete checkout history",
+    ],
+    [
       /- name: Prove real platform integration\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: pnpm integration\s*\n/u,
       "real integration must run once with a deadline for applicable platform changes",
     ],
@@ -276,8 +288,8 @@ export function validateWorkflowPolicy(
       "Docker-only full profile must build and start with a bounded deadline",
     ],
     [
-      /- name: Verify local Identity product API\s+timeout-minutes: 1\s+run: >-\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml\s+--profile full exec -T identity node --input-type=module < tools\/verify-local-identity.mjs/u,
-      "packaged Identity product behavior must pass within a bounded deadline",
+      /- name: Verify local Identity product API\s+timeout-minutes: 1\s+run: >-\s+docker compose --file "\$COMPOSE_FILE" --file infra\/compose\/observability.yml\s+--profile full exec -T identity node --input-type=module - --compose-router < tools\/verify-local-identity.mjs/u,
+      "packaged Identity product behavior must use the internal Router within a bounded deadline",
     ],
     [
       /- name: Verify packaged health and real telemetry\s+timeout-minutes: 2\s+run: \|/u,

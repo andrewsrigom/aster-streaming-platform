@@ -6,11 +6,11 @@ The phase order is also the engineering demonstration path. [`docs/00-start-here
 
 | Phase | Outcome | Status |
 |---|---|---|
-| 00 | Repository foundation and execution harness | IN_PROGRESS |
-| 01 | Local platform and production-ready service skeleton | Planned |
-| 02 | Identity, accounts, and viewer profiles | Planned |
-| 03 | Catalog and rights-aware content model | Planned |
-| 04 | Apollo Federation supergraph | Planned |
+| 00 | Repository foundation and execution harness | Released |
+| 01 | Local platform and production-ready service skeleton | Released |
+| 02 | Identity, accounts, and viewer profiles | Released |
+| 03 | Catalog and rights-aware content model | Released |
+| 04 | Apollo Federation supergraph | Verified locally; protected release in progress |
 | 05 | Next.js shell, SSR, and hydration | Planned |
 | 06 | Media ingest, transcode, package, and publish | Planned |
 | 07 | Playback sessions and accessible player | Planned |
@@ -28,4 +28,4 @@ Optional extensions begin only after Phase 14:
 - scheduled live channels;
 - subscriptions and entitlements.
 
-Detailed requirements are under `docs/specs/`.
+Detailed requirements are under `docs/specs/`. [Phase 03 release](evidence/phase-03/release.txt), [Phase 04 acceptance](evidence/phase-04/README.md) and [current state](.ai/CURRENT_STATE.md) provide the evidence and exact next action.

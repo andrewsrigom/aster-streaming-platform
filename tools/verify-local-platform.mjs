@@ -4,6 +4,11 @@ import { fileURLToPath, pathToFileURL, URL } from "node:url";
 
 import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
 import { validateCatalogRuntime } from "./verify-catalog-runtime.mjs";
+import {
+  readRouterSources,
+  validateRouterRuntime,
+  validateRouterSources,
+} from "./verify-router-runtime.mjs";
 
 import {
   readObservabilitySources,
@@ -47,12 +52,13 @@ function validateRuntimeService(source) {
     ],
     [
       "configuration",
-      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster_identity_local@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n      ASTER_LOCAL_DEMO_ENABLED: "true"\n      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100\n',
+      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster_identity_local@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n      ASTER_LOCAL_DEMO_ENABLED: "true"\n      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:4000\n      ASTER_ROUTER_TRUST_ENABLED: "true"\n',
     ],
     [
       "network",
-      '    ports:\n      - "127.0.0.1:3100:3100"\n    networks:\n      - platform\n      - edge\n',
+      "    volumes:\n      - identity-router-trust:/run/aster-router:ro\n    networks:\n      - platform\n",
     ],
+    ["readiness", "      router-trust-init:\n        condition: service_completed_successfully\n"],
     [
       "security",
       '    user: "1000:1000"\n    read_only: true\n    cap_drop: [ALL]\n    security_opt:\n      - no-new-privileges:true\n',
@@ -72,7 +78,7 @@ function validateRuntimeService(source) {
     "entrypoint:",
     "command:",
     "healthcheck:",
-    "volumes:",
+    "ports:",
     "env_file:",
     "image:",
     "privileged:",
@@ -86,6 +92,13 @@ function validateRuntimeService(source) {
         detail: "Identity runtime cannot override " + forbidden,
       });
     }
+  }
+  if (source.match(/^ {6}- /gm)?.length !== 3) {
+    violations.push({
+      rule: "security",
+      detail:
+        "Identity permits only its own read-only trust mount, private network and no-new-privileges",
+    });
   }
   return violations;
 }
@@ -118,8 +131,12 @@ export function validateLocalPlatform(source) {
 
   violations.push(...validateIntegrationServices(source));
   violations.push(...validateCatalogRuntime(source));
-  for (const name of ["catalog", "catalog-init"]) {
+  violations.push(...validateRouterRuntime(source));
+  for (const name of ["catalog", "catalog-init", "router", "router-trust-init"]) {
     source = source.replace(serviceBlock(source, name), "");
+  }
+  for (const owner of ["identity", "catalog"]) {
+    source = source.replace(volumeBlock(owner + "-router-trust", "disposable-local"), "");
   }
   for (const name of ["broker", "storage"]) {
     source = source
@@ -439,7 +456,7 @@ export function validatePublicPlatformCommands(documents) {
 
 export async function runLocalPlatformCheck(path = composePath) {
   try {
-    const [source, reset, readme, localDevelopment, runtimeImage, observability] =
+    const [source, reset, readme, localDevelopment, runtimeImage, observability, router] =
       await Promise.all([
         readFile(path, "utf8"),
         readFile(resetPath, "utf8"),
@@ -447,12 +464,14 @@ export async function runLocalPlatformCheck(path = composePath) {
         readFile(localDevelopmentPath, "utf8"),
         readRuntimeImageSources(repositoryRoot),
         readObservabilitySources(repositoryRoot),
+        readRouterSources(repositoryRoot),
       ]);
     const violations = [
       ...validateLocalPlatform(source),
       ...validateLocalReset(reset),
       ...validateRuntimeImage(runtimeImage),
       ...validateObservabilityProfile(observability),
+      ...validateRouterSources(router),
       ...validatePublicPlatformCommands([
         { file: "README.md", source: readme },
         { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopment },

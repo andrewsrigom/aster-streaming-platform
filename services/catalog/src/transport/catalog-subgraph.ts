@@ -14,6 +14,7 @@ import { expressMiddleware } from "@as-integrations/express5";
 import {
   getExpressRequestAbortSignal,
   type AsterExpressGraphqlMiddleware,
+  type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
@@ -48,6 +49,7 @@ export interface CatalogOperationTrace {
 }
 
 export interface CatalogSubgraphOptions {
+  readonly routerTrust?: AsterLocalRouterTrust;
   readonly queries: CatalogPublicQueries;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: CatalogOperationTrace) => void;
@@ -150,9 +152,10 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
   });
 
   const middleware: AsterExpressGraphqlMiddleware = async (request, response, onError) => {
+    const routerContext = options.routerTrust?.accept(request);
     const startedAt = now();
     const correlationId = randomUUID();
-    const traceId = randomUUID().replaceAll("-", "");
+    const traceId = routerContext?.traceId ?? randomUUID().replaceAll("-", "");
     const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
     let operation: CatalogOperation | "rejected" = "rejected";
     let code = "COMPLETED";
@@ -181,6 +184,11 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     };
     response.set("X-Request-Id", correlationId);
     response.set("Cache-Control", "no-store");
+    if (options.routerTrust && !routerContext) {
+      reject(403, "FORBIDDEN");
+      record();
+      return;
+    }
     if (request.method !== "POST") {
       response.set("Allow", "POST");
       reject(405, "INVALID_INPUT");

@@ -173,7 +173,7 @@ test("rejects unsafe or unbounded Compose text", () => {
 test("runtime profile rejects broad ports, entrypoint overrides and weakened isolation", () => {
   for (const [before, after] of [
     ["[runtime, integration, observability, full]", "[full]"],
-    ["127.0.0.1:3100:3100", "0.0.0.0:3100:3100"],
+    ["127.0.0.1:4000:4000", "0.0.0.0:4000:4000"],
     ['user: "1000:1000"', 'user: "0:0"'],
     ["cap_drop: [ALL]", "cap_add: [SYS_ADMIN]"],
     ["stop_grace_period: 15s", "stop_grace_period: 1s"],
@@ -211,6 +211,12 @@ test("optional telemetry retains bounded collection without becoming an Identity
     ["observability.yml", "--post-data=", "--data="],
     ["collector.integration.yml", "enabled: false", "enabled: true"],
     ["collector.integration.yml", "limit_mib: 96", "limit_mib: 0"],
+    [
+      "collector.integration.yml",
+      "span/router_names, attributes/router_privacy",
+      "span/router_names",
+    ],
+    ["collector.integration.yml", "key: graphql.document", "key: ignored"],
     ["prometheus.local.yml", "sample_limit: 2000", "sample_limit: 0"],
     ["prometheus.local.yml", "label_limit: 16", "label_limit: 0"],
   ]) {

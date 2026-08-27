@@ -1,4 +1,5 @@
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
+import { loadLocalRouterTrust } from "@aster/http-express";
 import {
   bindAsterProcessSignals,
   createAsterDeadline,
@@ -54,6 +55,7 @@ export async function createCatalogService(
   let graph: Awaited<ReturnType<typeof createCatalogSubgraph>>;
   try {
     graph = await createCatalogSubgraph({
+      ...(config.routerTrust ? { routerTrust: await loadLocalRouterTrust("catalog") } : {}),
       queries: createCatalogPublicQueries({
         transactions: createPostgresCatalogPublic(database),
         policy: { commercial: true },

@@ -8,13 +8,30 @@
     "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
   ],
   "workspaces": {
-    ".": { "entry": ["tools/media/generate-hls.mjs"] },
+    ".": { "entry": ["tools/media/generate-hls.mjs", "infra/router/init-trust.mjs"] },
+    "apps/router": {
+      "entry": ["src/main.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
     "services/catalog": {
-      "entry": ["src/index.ts", "src/main.ts", "src/operate-local.ts", "src/migrate-local.ts"],
+      "entry": [
+        "test/router-cancellation-probe.mjs",
+        "src/index.ts",
+        "src/main.ts",
+        "src/operate-local.ts",
+        "src/migrate-local.ts",
+        "src/print-schema.ts"
+      ],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "services/identity": {
-      "entry": ["src/index.ts", "src/main.ts", "src/migrate-local.ts", "src/check-identity.ts"],
+      "entry": [
+        "src/index.ts",
+        "src/main.ts",
+        "src/migrate-local.ts",
+        "src/check-identity.ts",
+        "src/print-schema.ts"
+      ],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "packages/http-express": {

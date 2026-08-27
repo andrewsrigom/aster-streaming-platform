@@ -1,0 +1,207 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { mkdtemp, rm, writeFile, symlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { test } from "node:test";
+import { composeLocalSupergraph, sha256 } from "../src/composition.js";
+import { readBoundedFile, verifyArtifacts, writeArtifacts } from "../src/artifacts.js";
+import { readGitBaseline } from "../src/baseline.js";
+import { fileURLToPath } from "node:url";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const root = new URL("../../../../", import.meta.url);
+const sources = {
+  catalog: readFileSync(new URL("evidence/phase-03/catalog-schema.graphql", root), "utf8"),
+  identity: readFileSync(new URL("evidence/phase-02/identity-schema.graphql", root), "utf8"),
+};
+const operations = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
+
+test("two owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
+  const first = composeLocalSupergraph(sources, operations);
+  assert.deepEqual(composeLocalSupergraph(sources, operations), first);
+  assert.equal(Object.keys(first).length, 5);
+  assert.match(first["supergraph.graphql"] ?? "", /http:\/\/identity:3100\/graphql/u);
+  assert.match(first["supergraph.graphql"] ?? "", /http:\/\/catalog:3200\/graphql/u);
+  assert.match(first["manifest.json"] ?? "", /"type": "Title"/u);
+  assert.match(first["manifest.json"] ?? "", /"type": "Profile"/u);
+  assert.match(first["manifest.json"] ?? "", /"name": "ViewerAndTitle"/u);
+  assert.ok((first["manifest.json"] ?? "").includes(sha256(first["api.graphql"] ?? "")));
+  assert.doesNotMatch(
+    first["api.graphql"] ?? "",
+    /_entities|_service|join__|reviewedBy|sourceChecksum/u,
+  );
+});
+
+test("an ownership collision or mismatched type fails composition", () => {
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        {
+          ...sources,
+          catalog: sources.catalog.replace("type Query {", "type Query {\n  me: String"),
+        },
+        operations,
+      ),
+    /Composition failed/u,
+  );
+});
+
+test("unknown fields, argument changes, unnamed or duplicate operations fail compatibility", () => {
+  assert.throws(
+    () => composeLocalSupergraph(sources, "query Broken { missingField }"),
+    /Known operation incompatible/u,
+  );
+  assert.throws(() => composeLocalSupergraph(sources, "{ me { accountId } }"), /named operations/u);
+  assert.throws(
+    () =>
+      composeLocalSupergraph(sources, "query X { me { accountId } } query X { me { expiresAt } }"),
+    /Known operation incompatible/u,
+  );
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        {
+          ...sources,
+          catalog: sources.catalog.replace("title(id: ID!)", "title(id: Int!)"),
+        },
+        operations,
+      ),
+    /Known operation incompatible/u,
+  );
+});
+
+test("a breaking field removal cannot be hidden by removing the corresponding operation", () => {
+  const before = composeLocalSupergraph(sources, operations);
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        {
+          ...sources,
+          identity: sources.identity.replace("  avatarRef: String\n", ""),
+        },
+        "query Viewer { me { accountId } }",
+        before["api.graphql"],
+      ),
+    /Breaking API change/u,
+  );
+});
+
+test("malformed, empty and excessive source/operation inputs fail before acceptance", () => {
+  for (const catalog of ["", "type Invalid {", " ".repeat(131_073)]) {
+    assert.throws(() => composeLocalSupergraph({ ...sources, catalog }, operations));
+  }
+  assert.throws(() => composeLocalSupergraph(sources, ""));
+  assert.throws(() => composeLocalSupergraph(sources, " ".repeat(131_073)));
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        sources,
+        Array.from({ length: 33 }, (_, i) => "query Q" + String(i) + " { me { accountId } }").join(
+          "\n",
+        ),
+      ),
+    /1–32/u,
+  );
+});
+
+test("baseline operations remain protected even when current fixtures are rewritten", () => {
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        {
+          ...sources,
+          identity: sources.identity.replace("  avatarRef: String\n", ""),
+        },
+        "query Viewer { me { accountId } }",
+        undefined,
+        "query Previous { profiles { profiles { avatarRef } } }",
+      ),
+    /Baseline operation incompatible/u,
+  );
+});
+
+test("Git baseline is explicit and the predecessor without supergraph artifacts is a valid bootstrap", async () => {
+  assert.equal(
+    await readGitBaseline(fileURLToPath(root), "ec6386ca7add0f12ae748589be763d9e90ff0d6c"),
+    undefined,
+  );
+  await assert.rejects(readGitBaseline(fileURLToPath(root), "--all"), /commit SHA/u);
+});
+
+test("Git baseline reads the committed API and operations, not modified working files", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "aster-supergraph-git-"));
+  const execute = promisify(execFile);
+  const git = async (...args: string[]) =>
+    (
+      await execute("git", args, {
+        cwd: directory,
+        encoding: "utf8",
+        timeout: 5_000,
+        maxBuffer: 16_384,
+        windowsHide: true,
+      })
+    ).stdout.trim();
+  const artifactDirectory = join(directory, "infra/router/generated");
+  const operationPath = join(directory, "infra/router/known-operations.graphql");
+  const artifacts = composeLocalSupergraph(sources, operations);
+  try {
+    await git("init", "-b", "main", "--quiet");
+    await writeArtifacts(artifactDirectory, artifacts);
+    await writeFile(operationPath, operations);
+    await git("add", "infra");
+    await git(
+      "-c",
+      "user.name=Aster fixture",
+      "-c",
+      "user.email=fixture@example.invalid",
+      "-c",
+      "commit.gpgsign=false",
+      "commit",
+      "-qm",
+      "test: record fixture baseline",
+    );
+    const commit = await git("rev-parse", "HEAD");
+    await writeFile(operationPath, "query Rewritten { me { accountId } }");
+    const baseline = await readGitBaseline(directory, commit);
+    assert.deepEqual(baseline, { commit, api: artifacts["api.graphql"], operations });
+    assert.deepEqual(await readGitBaseline(directory), baseline);
+    await rm(operationPath);
+    await git("add", "infra");
+    await git(
+      "-c",
+      "user.name=Aster fixture",
+      "-c",
+      "user.email=fixture@example.invalid",
+      "-c",
+      "commit.gpgsign=false",
+      "commit",
+      "-qm",
+      "test: remove fixture operation contract",
+    );
+    await assert.rejects(readGitBaseline(directory, await git("rev-parse", "HEAD")), /incomplete/u);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("artifact checks are read-only, detect missing/stale output and regeneration refuses symlinks", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "aster-supergraph-test-"));
+  const artifacts = composeLocalSupergraph(sources, operations);
+  try {
+    await assert.rejects(verifyArtifacts(directory, artifacts));
+    await writeArtifacts(directory, artifacts);
+    await verifyArtifacts(directory, artifacts);
+    await writeFile(join(directory, "api.graphql"), "stale");
+    await assert.rejects(verifyArtifacts(directory, artifacts), /Stale/u);
+    assert.equal(await readBoundedFile(join(directory, "api.graphql")), "stale");
+    await writeArtifacts(directory, artifacts);
+    await rm(join(directory, "identity.graphql"));
+    await symlink(join(directory, "catalog.graphql"), join(directory, "identity.graphql"));
+    await assert.rejects(writeArtifacts(directory, artifacts), /regular/u);
+    await assert.rejects(readBoundedFile(join(directory, "catalog.graphql"), 10), /bounded/u);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});

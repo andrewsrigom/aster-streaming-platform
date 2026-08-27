@@ -6,11 +6,11 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–02 are released, including local sign-in, durable sessions, owned profiles and the Federation v2 Identity API. Protected and post-merge CI prove real HTTP/PostgreSQL and Docker product behavior. Phase 03 implements Catalog rights/editorial commands, public Federation queries, a local Docker runtime and generated HLS technical tests; its release acceptance is in progress. Router, browser UI and playable films remain planned. See [current state](.ai/CURRENT_STATE.md), [Catalog](services/catalog/README.md), [Identity API](services/identity/README.md) and [release evidence](evidence/phase-02/release.txt).
+Phases 00–03 are released: local sessions/profiles, rights-aware Catalog, public queries and generated HLS technical checks. Phase 04 implements the local Apollo Router with private subgraphs, owner-validated sessions, bounded traffic and trace correlation; phase acceptance remains in progress. Browser UI and playable films remain planned. See [current state](.ai/CURRENT_STATE.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 03 release](evidence/phase-03/release.txt).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
-## Run the Docker Identity checkpoint
+## Run the Docker federated API checkpoint
 
 From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 
@@ -18,12 +18,12 @@ From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-Open [readiness](http://127.0.0.1:3100/health/ready) or [liveness](http://127.0.0.1:3100/health/live). Docker builds from the frozen lockfile, starts PostgreSQL/Redis, applies pending owner migrations once and starts Identity with a separate restricted database login. No host Node, pnpm or hosted credential is needed. The first build needs registry access. The API has local sign-in/profiles, but no browser UI or playable video yet. Native Windows localhost access was checked through WSL; other host/CPU combinations remain unverified.
+The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog with restricted database logins. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. There is no browser UI or playable video yet; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
 
 Exercise sign-in, create/select/list/delete a synthetic profile and sign-out (POSIX/WSL, Docker only):
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module < tools/verify-local-identity.mjs
+docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
 ```
 
 The check keeps credentials in memory and cleans up its own profile. It requires one free profile slot and available journal capacity; it never deletes existing profiles. [API operations, limits and recovery](services/identity/README.md).
@@ -137,7 +137,7 @@ Stop the checkpoint while preserving its PostgreSQL volume with:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-Delete the complete Aster local project, including PostgreSQL, broker, S3 and Prometheus volumes, only with the explicit destructive reset:
+Delete the complete Aster local project, including PostgreSQL, broker, S3, Prometheus and both disposable Router trust volumes, only with the explicit destructive reset:
 
 ```bash
 ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA

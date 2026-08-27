@@ -1,0 +1,159 @@
+query Viewer {
+  me {
+    accountId
+    expiresAt
+  }
+}
+query Profiles {
+  profiles {
+    profiles {
+      id
+      displayName
+      locale
+      maturity
+      avatarRef
+      version
+    }
+    activeProfileId
+  }
+}
+query Profile($id: ID!) {
+  profile(id: $id) {
+    id
+    displayName
+    locale
+    maturity
+    avatarRef
+    version
+  }
+  activeProfile(id: $id) {
+    id
+    displayName
+  }
+}
+mutation DemoSignIn {
+  demoSignIn {
+    code
+    correlationId
+    viewer {
+      accountId
+      expiresAt
+    }
+  }
+}
+mutation SignOut {
+  signOut {
+    code
+    correlationId
+    viewer {
+      accountId
+    }
+  }
+}
+mutation CreateProfile($input: CreateProfileInput!) {
+  createProfile(input: $input) {
+    code
+    correlationId
+    profileId
+    version
+  }
+}
+mutation UpdateProfile($input: UpdateProfileInput!) {
+  updateProfile(input: $input) {
+    code
+    correlationId
+    profileId
+    version
+  }
+}
+mutation DeleteProfile($input: DeleteProfileInput!) {
+  deleteProfile(input: $input) {
+    code
+    correlationId
+    profileId
+    version
+  }
+}
+mutation SelectProfile($id: ID!) {
+  selectProfile(id: $id) {
+    code
+    correlationId
+    profile {
+      id
+      displayName
+    }
+  }
+}
+query Browse($first: Int! = 20, $after: String, $locale: String! = "en") {
+  titles(first: $first, after: $after) {
+    edges {
+      cursor
+      node {
+        id
+        localized(locale: $locale) {
+          locale
+          title
+          synopsis
+        }
+        runtimeSeconds
+        releaseYear
+        languages
+        genres
+        accessibility
+        editorialLabels
+        credits {
+          name
+          role
+        }
+        artwork {
+          url
+          altText
+          attribution {
+            creator
+            licenseUrl
+          }
+        }
+        attribution {
+          workTitle
+          creator
+          copyrightHolder
+          sourceUrl
+          licenseName
+          licenseVersion
+          licenseUrl
+          attributionText
+          modificationNotice
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}
+query TitleDetail($id: ID!) {
+  title(id: $id) {
+    id
+    localized {
+      locale
+      title
+      synopsis
+    }
+    attribution {
+      creator
+      licenseUrl
+    }
+  }
+}
+query ViewerAndTitle($id: ID!) {
+  me {
+    accountId
+  }
+  title(id: $id) {
+    id
+    localized {
+      title
+    }
+  }
+}

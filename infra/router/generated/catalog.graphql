@@ -1,0 +1,70 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+enum CatalogAccessibility {
+  CAPTIONS
+  AUDIO_DESCRIPTION
+  TRANSCRIPT
+}
+
+type CatalogAttribution {
+  workTitle: String!
+  creator: String!
+  copyrightHolder: String!
+  sourceUrl: String!
+  licenseName: String!
+  licenseVersion: String!
+  licenseUrl: String!
+  attributionText: String!
+  modificationNotice: String!
+}
+
+type CatalogArtwork {
+  url: String!
+  altText: String!
+  attribution: CatalogAttribution!
+}
+
+type CatalogCredit {
+  name: String!
+  role: String!
+}
+
+type LocalizedTitle {
+  locale: String!
+  title: String!
+  synopsis: String!
+}
+
+type Title @key(fields: "id") {
+  id: ID!
+  localized(locale: String! = "en"): LocalizedTitle!
+  releaseYear: Int
+  runtimeSeconds: Int
+  genres: [String!]!
+  languages: [String!]!
+  accessibility: [CatalogAccessibility!]!
+  editorialLabels: [String!]!
+  credits: [CatalogCredit!]!
+  artwork: CatalogArtwork
+  attribution: CatalogAttribution!
+}
+
+type CatalogTitleEdge {
+  cursor: String!
+  node: Title!
+}
+
+type CatalogPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type CatalogTitleConnection {
+  edges: [CatalogTitleEdge!]!
+  pageInfo: CatalogPageInfo!
+}
+
+type Query {
+  titles(first: Int!, after: String): CatalogTitleConnection!
+  title(id: ID!): Title
+}

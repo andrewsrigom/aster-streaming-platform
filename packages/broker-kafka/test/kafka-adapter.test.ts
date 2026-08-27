@@ -431,7 +431,8 @@ test("a timed-out connect retires its generation and remains recoverable", async
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
-test("a late connect completion cannot reopen a closing broker adapter", async () => {
+test("a late connect completion cannot reopen a closing broker adapter", async (context) => {
+  context.mock.timers.enable({ apis: ["setTimeout"] });
   const telemetry = new RecordingTelemetry();
   const bundle = new FakeBundle();
   const connected = deferred<undefined>();
@@ -443,7 +444,10 @@ test("a late connect completion cannot reopen a closing broker adapter", async (
 
   const connecting = adapter.connect();
   await nextTurn();
-  assert.deepEqual(await adapter.close(), { status: "timed_out" });
+  assert.equal(adapter.snapshot().state, "connecting");
+  const closing = adapter.close();
+  context.mock.timers.tick(20);
+  assert.deepEqual(await closing, { status: "timed_out" });
   assert.equal(adapter.snapshot().state, "closing");
 
   connected.resolve(undefined);
