@@ -142,7 +142,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-For P01-R08, the combined affected gate passes 49/49 tasks. Commit the coherent executable candidate, run the forced complete gate inside one exact frozen checkout, then finish review/publication closeout. Keep P01-R09 inactive until this candidate is accepted or explicitly frozen under the external-wait contract.
+P01-R08 exact source `282ccb5` passes 49/49 affected tasks and a frozen no-local checkout with 49/49 forced uncached tasks, the diagnostic, high-severity audit and clean Git. Finish protected PR/review/merge closeout. Keep P01-R09 inactive until this candidate is released or explicitly frozen under the external-wait contract.
 
 ## Current risks
 

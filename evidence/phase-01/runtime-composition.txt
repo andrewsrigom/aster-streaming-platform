@@ -1,7 +1,7 @@
 Evidence: P01-R08 deadlines, readiness, health, and Identity runtime composition
 Date: 2026-08-26
 Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; amd64; Node.js 24.19.0; pnpm 11.24.0
-Status: IMPLEMENTED locally; executable composition checkpoint; acceptance/release closeout pending
+Status: IMPLEMENTED; local acceptance and exact frozen checkout passed; protected release pending
 
 Scope and ownership
 - Requirement: P01-R08.
@@ -92,6 +92,16 @@ Executable composition checkpoint — 2026-08-27
 - Compatibility reference: https://github.com/redis/node-redis/blob/redis@6.2.1/packages/client/lib/client/index.ts (parseOptions mutates both options and options.socket; confirmed against pinned installed source).
 - Combined candidate gate: pnpm check:changed PASS, 49/49 tasks, 11 cached, 56.409s Turborepo time. The first attempt stopped on missing session-log section headings; after restoring the required Completed/Evidence/Next action structure, focused documentation/memory/format checks and the complete affected rerun passed. No source test failure was concealed by that formatting correction.
 - Remaining source-independent context prose was reconciled after this gate; documentation/memory validation is repeated before the candidate commit. The forced full gate will run once inside the exact frozen checkout, satisfying both acceptance and clean-build evidence without duplicating it in the warm workspace.
+
+Exact source acceptance — 282ccb5d1ba561e1237570d622b09e3c771b3345
+- Environment unchanged: WSL Linux amd64, Node.js 24.19.0, pnpm 11.24.0. A separate no-local Git clone contained no node_modules, generated declarations or Turbo cache before validation. It reused the local pnpm content-addressed store; this is not an internet-download or empty-machine timing claim.
+- pnpm install --frozen-lockfile --offline: PASS; 329 packages reused, zero downloads, unchanged lockfile.
+- pnpm check --force: PASS; 49/49 tasks, zero cached, 1m21.592s Turborepo time. This single cold run is also the complete P01-R08 local acceptance gate.
+- pnpm identity:check: PASS from the exact clean clone; four controlled health states, HTTP metrics collected, shutdown completed and natural exit.
+- pnpm audit --audit-level=high: PASS; No known vulnerabilities found.
+- git status --porcelain: empty after installation, full gate, diagnostic and audit.
+- Local source inspection covered environment preflight, owner construction/cleanup, deadline propagation, monitor stop/late-completion rules, HTTP snapshot sanitization, finite metrics, inner declarations, real-client configuration copying and manual/signal terminal ownership. No remaining local blocking finding was identified. This is executing-agent review, not a claim of independent or hosted approval.
+- Later evidence/memory-only edits do not alter source, package/export/declaration inputs, dependencies, public commands or bootstrap behavior. This exact cold source evidence remains applicable; only the affected documentation/memory/security gates need repetition for closeout prose.
 
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.

@@ -97,7 +97,7 @@ Correct the repository task graph so every package `typecheck` waits for depende
 6. [completed] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.
 7. [completed] Create the product-empty Identity composition root using controlled ports then real factories. Focused tests prove startup propagation, unavailable startup/recovery, admission, partial/listener cleanup, one signal owner, ordered shutdown, inner declaration isolation and explicit terminal fallback.
 8. [completed] Add the real-HTTP controlled-dependency loopback diagnostic with four health states, local metrics, bounded stop and natural process exit.
-9. [in progress] Documentation/evidence and the combined affected gate pass (49/49 tasks). Run the forced complete gate inside one exact frozen checkout for new workspace/package/export/public-command inputs, then perform complete review and confirmation closeout.
+9. [in progress] Exact source `282ccb5` passes the 49/49 affected gate and a frozen no-local clone with 49/49 forced tasks, diagnostic, high-severity audit and clean Git. Local source inspection found no remaining blocker; protected publication/review/merge closeout remains. No independent review is claimed.
 10. [completed] Rebase the unpublished branch after the P01-R07 corrective release; repeat the affected gate before the next source checkpoint.
 
 ## Tests
@@ -115,7 +115,7 @@ Composition checkpoint decisions: `services/identity/src/create-service.ts` owns
 
 - Commands: Focused package typecheck/build/tests and targeted lint/format per checkpoint; `pnpm check:changed` per coherent candidate; one `pnpm check --force` when the entire item stabilizes; loopback process diagnostics; exact frozen no-generated-state checkout; audit and secret scan; protected CI only after predecessor-first rebase/publication.
 - Raw artifact path: `evidence/phase-01/runtime-composition.txt`.
-- Acceptance result: All planned local P01-R08 source is implemented. Focused supporting evidence passes 80 runtime tests, 10 HTTP tests, 13 configuration tests, 20 Identity tests and 15 Redis tests. The combined affected gate passes 49/49 tasks. Forced full/exact clean-checkout and release gates remain pending.
+- Acceptance result: All planned local P01-R08 source is implemented. Supporting evidence passes 80 runtime tests, 10 HTTP tests, 13 configuration tests, 20 Identity tests and 15 Redis tests. Exact source `282ccb5` passes both 49/49 affected and 49/49 forced cold-checkout gates, diagnostic, audit and clean Git. Protected review/release remains pending.
 - Iteration gate: Run only the changed runtime/HTTP/config/service build, typecheck, tests, diagnostic, and targeted lint/format after each coherent behavior checkpoint.
 - Candidate gate: Run `pnpm check:changed` after the combined runtime contracts, after the combined HTTP/service composition, and at closeout. Run the forced complete graph once after source, declarations, documentation, and evidence stabilize.
 - Heavyweight repeat triggers: Repeat exact frozen checkout for workspace, dependency, lockfile, package/export/declaration, install, bootstrap, service entrypoint, or public command changes. Repeat real-socket/subprocess handle evidence for listener, signal, timer, cancellation, monitor, request admission, startup, or shutdown changes. Real dependency/container evidence remains exclusively P01-R09.

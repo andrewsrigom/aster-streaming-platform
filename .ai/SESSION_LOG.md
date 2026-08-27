@@ -16,7 +16,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-The combined affected gate now passes 49/49 tasks. Commit the coherent candidate, then run the forced complete gate in one exact frozen checkout and finish protected publication closeout for P01-R08.
+Source commit `282ccb5` passes the 49/49 affected gate and a separate frozen clone with 49/49 forced uncached tasks, diagnostic, high-severity audit and clean Git. Finish protected publication closeout for P01-R08; no independent/hosted review is claimed yet.
 
 ## 2026-08-26 — Implemented controlled Identity runtime orchestration
 

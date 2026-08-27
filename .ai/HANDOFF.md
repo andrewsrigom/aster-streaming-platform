@@ -20,7 +20,7 @@ P01-R08 is active on `feat/p01-r08-runtime-composition`, rebased onto corrective
 
 1. P01-R08 real composition is now implemented locally: `create-service.ts`, `main.ts`, bounded `transport/http-server.ts`, `identity:check`, resource ownership and terminal fallback. Twenty Identity tests, fifteen Redis tests, the diagnostic, targeted lint, architecture and unused-code checks pass.
 2. A real-client failure test exposed node-redis 6.2.1 mutating frozen options before opening a socket. The default factory now copies only the outer/socket objects for the vendor; the internal contract stays frozen. A package-level real TCP regression and the composed real-client subprocess pass.
-3. The combined affected gate passes 49/49 tasks (11 cached, 56.409s). Commit this coherent candidate, then run the forced acceptance gate inside one exact frozen checkout, followed by initial/confirmation review and protected publication closeout. New workspace links and executable commands require this fresh clean-checkout evidence. Keep real dependency/container claims for P01-R09. No new public PR or remote mutation has been made for P01-R08.
+3. Exact source candidate `282ccb5d1ba561e1237570d622b09e3c771b3345` passes the 49/49 affected gate and a separate frozen no-local clone with 49/49 forced tasks (zero cached, 1m21.592s), `identity:check`, high-severity audit and clean Git. Local source inspection identified no remaining blocker; no independent/hosted approval is claimed. Finish protected PR/review/merge closeout without repeating the cold run for evidence-only prose. Keep real dependency/container claims for P01-R09. No public P01-R08 PR has been opened yet.
 
 ## Do not do yet
 
