@@ -124,6 +124,36 @@ test("refresh announces stale data only while pending, rejects partial errors, a
   await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
 });
 
+test("explicit refresh follows the current consumer after shared-query route changes", async ({
+  page,
+}) => {
+  await page.goto("/browse");
+  await page.waitForLoadState("networkidle");
+  let requests = 0;
+  page.on("request", (request) => {
+    if (request.url() === endpoint) {
+      requests++;
+    }
+  });
+  for (const [link, heading] of [
+    ["Attribution", "Credit where it belongs."],
+    ["Collection", "Browse the Aster collection"],
+  ] as const) {
+    const previousRequests = requests;
+    await page.getByRole("link", { name: link, exact: true }).click();
+    await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    expect(requests).toBe(previousRequests);
+    await page.getByRole("button", { name: "Refresh collection", exact: true }).click();
+    await expect.poll(() => requests).toBe(previousRequests + 1);
+    await expect(
+      page.getByRole("button", { name: "Refresh collection", exact: true }),
+    ).toBeEnabled();
+    await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Signal / 01", exact: true })).toBeVisible();
+  }
+});
+
 test("empty, missing and invalid inputs differ from unavailable data; home locale is respected", async ({
   page,
 }) => {

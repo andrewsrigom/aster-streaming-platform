@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import type { OperationVariables, TypedDocumentNode } from "@apollo/client";
 import { useApolloClient, useSuspenseQuery } from "@apollo/client/react";
 
@@ -10,11 +10,13 @@ export function usePublicQuery<TData, TVariables extends OperationVariables>(
 ) {
   const client = useApolloClient();
   const explicitRequest = useRef(false);
+  // Apollo compares callbacks by source text; a non-serialized identity distinguishes their closures.
+  const [asterRequestOwner] = useState(() => Symbol("public-query-consumer"));
   const asterExplicitRequest = useCallback(() => explicitRequest.current, []);
   const result = useSuspenseQuery(query, {
     variables,
     errorPolicy: "all",
-    context: { asterExplicitRequest },
+    context: { asterExplicitRequest, asterRequestOwner },
   });
   const [pending, startTransition] = useTransition();
   const data = result.error ? undefined : result.data;
