@@ -2,6 +2,27 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Corrected the post-merge cold typecheck graph
+
+### Completed
+
+- Observed exact P01-R07 protected run `33024975611` pass at `613c1db`, squash-merged pull request 14 as `0dd4dadffa0cfdd688327b9e3f8b89734782ed24`, and preserved the two local P01-R08 commits through a predecessor-first rebase.
+- Diagnosed post-merge run `33026244011`: `@aster/broker-kafka` and other adapter typechecks started before the cold runner emitted exported `@aster/telemetry` declarations. The source-quality lane and stable aggregate failed; documentation/security and local platform passed.
+- Added only the missing Turbo edge from package typecheck to dependency build while retaining dependency typecheck, plus one exact policy regression. Adapter source, dependencies, lockfile, exports, and runtime behavior are unchanged.
+- Excluded one local switched-branch run from evidence because ignored P01-R08 runtime `dist` files remained outside Git. The exact detached checkout began without generated state and is the acceptance proof.
+
+### Evidence
+
+- Corrective source candidate: `f38485aa5200e4b284dddba1af95cf0e33022f2d`.
+- Twenty toolchain tests, formatting, documentation, repository memory, secret scanning, and Git whitespace checks pass before the exact checkout.
+- The exact checkout installed all 329 packages from the offline store with zero download in `1.62s` at `399748 KiB` maximum RSS.
+- Its forced graph passed 46/46 tasks with zero cache in `40.365s` of Turborepo time and `41.62s` elapsed at `873456 KiB` maximum RSS. High-severity audit reports no known vulnerability, Git is clean, and the validated worktree was removed.
+- Raw ledger: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Publish one corrective pull request, require protected exact-head CI, merge, verify the post-merge run, then rebase and resume the saved P01-R08 deadline/readiness branch.
+
 ## 2026-08-26 — Passed hosted policy confirmation and remediated late review
 
 ### Completed
