@@ -25,6 +25,22 @@ test("rejects movable action tags", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "action-pin"));
 });
 
+test("rejects removal, suppression or unbounded real integration", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const weakened of [
+    source.replace("run: pnpm integration", "run: pnpm identity:check"),
+    source.replace("timeout-minutes: 15", "timeout-minutes: 90"),
+    source.replace(
+      "Prove real platform integration\n        if: needs.classify.outputs.platform == 'true'",
+      "Prove real platform integration\n        if: false",
+    ),
+  ]) {
+    assert.ok(
+      validateWorkflowPolicy(weakened).some(({ detail }) => detail.includes("real integration")),
+    );
+  }
+});
+
 test("rejects write permissions and secret context", async () => {
   const source = await readFile(workflowPath, "utf8");
   const weakened = source

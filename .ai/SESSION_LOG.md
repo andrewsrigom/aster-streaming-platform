@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Complete real-dependency matrix and scoped CI
+
+### Completed
+
+- Added one six-service/four-volume fixture and `pnpm integration` covering eight existing and new scenarios. Test-only held HTTP now proves ordered shutdown of every real adapter and final metric delivery; production Identity ownership is unchanged.
+- Added real integration to the existing protected quality job only for affected platform/runtime/bootstrap inputs, with a 15-minute deadline. No new job, pipeline or commit hook.
+
+### Evidence
+
+- Complete matrix: 135.621 s plus 5.004 s cleanup; all-adapter shutdown 70 ms; telemetry 429 bounded series, 304 ms stalled flush and 7 ms exporter-down shutdown with only `flush_telemetry` degraded. Every worker exits naturally. All disposable resources removed; the same four unrelated stopped containers remain.
+- Affected gate: 49/49 tasks, 25 cached, 18.951 s; Identity 33/33 including eleven ownership guards. CI classification/policy 21/21, Compose validation and no-known-vulnerability audit pass. Raw output and source fingerprints: `evidence/phase-01/real-integration.txt`.
+
+### Next action
+
+Source `cbc5255` also passes frozen offline installation and 49/49 uncached tasks in a fresh no-local clone (40.586 s), audit, clean Git and executing-agent confirmation. Publish one protected PR and verify post-merge. P01-R10 follows release; do not repeat the matrix or cold checkout for prose-only updates.
+
 ## 2026-08-27 — Real Collector and Prometheus integration checkpoint
 
 ### Completed

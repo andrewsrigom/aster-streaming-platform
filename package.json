@@ -36,6 +36,7 @@
     "identity:check": "turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity check",
     "identity:start": "turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity start",
     "identity:test": "turbo run test --filter=@aster/identity",
+    "integration": "turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity integration",
     "integration:broker": "turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity integration:broker",
     "integration:core": "turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity integration:core",
     "integration:storage": "turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity integration:storage",

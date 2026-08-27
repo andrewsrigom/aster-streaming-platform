@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the remaining Phase 01 path. P01-R06 telemetry, P01-R07 adapters and P01-R08 executable Identity composition are released. P01-R09 implements isolated PostgreSQL/Redis, broker, S3 and Collector/Prometheus laboratories. Whole-item multi-adapter shutdown/acceptance, protected release, final profiles and the Docker-only service path remain P01-R09/P01-R10.
+This document defines the remaining Phase 01 path. P01-R06 telemetry, P01-R07 adapters and P01-R08 executable Identity composition are released. P01-R09 implements the combined real PostgreSQL/Redis, broker, S3 and Collector/Prometheus laboratory, including all-adapter HTTP shutdown. Cold acceptance, protected release, final profiles and the Docker-only service path remain P01-R09/P01-R10.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -220,7 +220,9 @@ The final selection requires health behavior, startup and shutdown duration, idl
 
 The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured only on WSL amd64. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish these tests from the pending evaluator profile, complete acceptance and release. No product event, bucket/media publication or Identity production dependency was added.
 
-The [telemetry laboratory](../operations/LOCAL_DEVELOPMENT.md#real-telemetry-integration) proves real Identity metrics through core Collector/Prometheus, bounded scrape series, optional-backend failure, cumulative recovery and exporter-down shutdown. Core Collector 0.159.0 and Prometheus 3.14.0 are Apache-2.0 upstream images pinned by amd64/arm64 index digest. Fixed read-only private mounts and exact device/inode validation handle Docker Desktop's translated bind paths without changing host mount policy. No production dependency or telemetry contract changed. The whole-matrix shutdown/acceptance checkpoint remains pending.
+The [telemetry laboratory](../operations/LOCAL_DEVELOPMENT.md#real-telemetry-integration) proves real Identity metrics through core Collector/Prometheus, bounded scrape series, optional-backend failure, cumulative recovery and exporter-down shutdown. Core Collector 0.159.0 and Prometheus 3.14.0 are Apache-2.0 upstream images pinned by amd64/arm64 index digest. Fixed read-only private mounts and exact device/inode validation handle Docker Desktop's translated bind paths without changing host mount policy. No production dependency or telemetry contract changed. The combined matrix also passes; cold acceptance and protected release remain pending.
+
+The complete local command is `pnpm integration`: all eight scenarios share one fresh six-service/four-volume fixture and pass in 135.621 seconds plus 5.004 seconds cleanup. The final synthetic HTTP request is scraped before all owners exit naturally; ordered shutdown takes 70 ms in this run. This test-only composition does not add production Identity dependencies. The existing protected quality job runs the matrix only for applicable runtime, adapter, Compose and shared bootstrap/dependency changes. Cold acceptance and hosted confirmation remain pending.
 
 ### Integration matrix
 

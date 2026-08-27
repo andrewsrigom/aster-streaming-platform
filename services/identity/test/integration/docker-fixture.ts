@@ -14,7 +14,7 @@ const execute = promisify(execFile);
 const scope = "p01-r09";
 export type CoreService = "postgres" | "redis";
 export type FixtureService = CoreService | "storage" | "broker" | "collector" | "prometheus";
-export type FixtureProfile = "core" | "storage" | "broker" | "telemetry";
+export type FixtureProfile = "core" | "storage" | "broker" | "telemetry" | "all";
 const servicePorts: Readonly<Record<FixtureService, number>> = {
   postgres: 5432,
   redis: 6379,
@@ -36,6 +36,16 @@ const profiles: Readonly<
     files: ["integration.yml", "integration-telemetry.yml"],
     services: ["postgres", "redis", "collector", "prometheus"],
     volumes: ["postgres-data", "prometheus-data"],
+  },
+  all: {
+    files: [
+      "integration.yml",
+      "integration-broker.yml",
+      "integration-storage.yml",
+      "integration-telemetry.yml",
+    ],
+    services: ["postgres", "redis", "broker", "storage", "collector", "prometheus"],
+    volumes: ["postgres-data", "broker-data", "storage-data", "prometheus-data"],
   },
 };
 const configurationMounts = {

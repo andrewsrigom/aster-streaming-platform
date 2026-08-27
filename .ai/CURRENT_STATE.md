@@ -124,6 +124,8 @@ Status: **IN_PROGRESS**
 
 The local telemetry checkpoint also passes: core Collector 0.159.0 and Prometheus 3.14.0 export/scrape 202 bounded series including HTTP/dependency histograms, CPU, memory and event-loop delay. Collector/backend stop/recovery and stalled-export cancellation preserve Identity readiness. Exporter-down shutdown reports only `flush_telemetry` degraded, closes all actual Identity owners in 15 ms and exits naturally. The command passes in 29.755 s plus 5.744 s exact cleanup; ten ownership guards, two HTTP-boundary tests, Identity 32/32 and 49/49 affected tasks pass. Whole-item acceptance/release remains pending; see `evidence/phase-01/real-integration.txt`.
 
+The complete local P01-R09 matrix now passes all eight scenarios in one fresh six-service fixture (135.621 s plus 5.004 s exact cleanup). A test-only shared-runtime composition drains held HTTP, stops consumers, flushes telemetry and closes every real adapter in 70 ms; the final HTTP metric is scraped and the worker exits naturally. Identity remains product-empty. Eleven ownership tests, Identity 33/33 and 49/49 affected tasks pass; CI classification/policy has 21/21 passing tests. Applicable protected CI now selects this explicit matrix inside the existing quality job. Cold/forced acceptance and hosted release confirmation remain pending.
+
 ## Not implemented
 
 
@@ -147,7 +149,7 @@ The local telemetry checkpoint also passes: core Collector 0.159.0 and Prometheu
 
 ## Next outcome
 
-For P01-R09, finish one test-only HTTP-drain composition with every adapter and real telemetry closing inside the overall budget, without adding fake broker/S3 dependencies to production Identity. Run the combined matrix after the shared fixture stabilizes, review the applicable hosted integration lane, then cold/forced acceptance and protected release. Telemetry passes 49/49 affected tasks (25 cached, 28.383 s), Identity 32/32 and exact cleanup. The P01-R10 evaluator profile follows release.
+For P01-R09, publish the locally accepted candidate through one protected PR, verify the real hosted matrix and exact post-merge run. `cbc5255` passes a frozen offline install and 49/49 uncached tasks in a fresh no-local clone (40.586 s), audit, clean Git and executing-agent confirmation review. The eight-scenario matrix remains applicable because the amendment changes evidence/prose only. CI executes it only for applicable platform changes. The P01-R10 evaluator profile follows release.
 
 ## Current risks
 

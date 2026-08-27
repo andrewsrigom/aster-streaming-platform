@@ -234,6 +234,10 @@ export function validateWorkflowPolicy(
     [/\.\/tools\/reset-local-platform\.test\.mjs/u, "local-reset adverse tests are required"],
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
+    [
+      /- name: Prove real platform integration\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: pnpm integration\s*\n/u,
+      "real integration must run once with a deadline for applicable platform changes",
+    ],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],
     [/^\s{4}name:\s*Local platform\s*$/mu, "local-platform job is required"],
     [

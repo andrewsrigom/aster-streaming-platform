@@ -31,6 +31,20 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 
 ## Toolchain validation
 
+### Complete integration matrix
+
+After the pinned repository installation, on Linux/WSL with local Linux Docker containers:
+
+```bash
+pnpm integration
+```
+
+One fresh six-service project runs protocol probes, adapter faults, Identity recovery, held HTTP drain, Kafka, S3, all-adapter HTTP shutdown and telemetry faults sequentially. The test-only all-adapter composition confirms that HTTP work finishes before consumers stop, telemetry flushes, PostgreSQL/Redis/Kafka/S3 close, and telemetry shuts down within the ten-second budget. Prometheus observes the final HTTP metric. Production Identity does not acquire broker or storage dependencies.
+
+The matrix passes locally in 135.621 seconds plus 5.004 seconds cleanup; this warm-image observation is not a startup target or steady-state benchmark. It removes only its six verified containers, network and four synthetic-data volumes. Images and repository configuration remain. The focused commands below use smaller fixtures. Neither hooks nor ordinary unit tests run this matrix; the existing protected quality job invokes it once, with a 15-minute deadline, for runtime/adapter/Compose and shared bootstrap/dependency changes. Documentation-only and unrelated web changes do not select it.
+
+The following ownership, interruption and Linux/WSL limitations apply to every profile. The Docker-only evaluator path remains P01-R10.
+
 ### Real PostgreSQL/Redis integration
 
 After frozen installation, on Linux/WSL with local Linux Docker containers:
@@ -62,7 +76,7 @@ The S3 laboratory uses digest-pinned VersityGW 1.7.0 with a POSIX volume. It che
 
 Both fixtures use finite CPU/memory/PID/log limits, read-only roots, dropped capabilities, no-new-privileges and no host bind mounts. Kafka runs as the upstream non-root user; the storage fixture runs as root with all capabilities dropped to initialize its fresh owned POSIX volume. Only synthetic data is allowed. Cleanup verifies the exact owned volume before irreversible removal; image caches are retained. The supervisor reports startup/actions/cleanup and one pre-workload resource sample, not a steady-state benchmark. The ownership and interrupted-cleanup rules in the core section apply unchanged.
 
-Broker and S3 protocol scenarios pass locally; combined P01-R09 acceptance/protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
+Broker and S3 protocol scenarios pass individually and in the combined matrix; the exact cold source gate also passes. Protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
 
 ### Real telemetry integration
 
@@ -76,7 +90,7 @@ Collector and Prometheus run as their upstream non-root users with read-only roo
 
 Do not edit the two config files while the fixture runs. Docker Desktop/WSL can translate a bind path after restart; cleanup accepts that translation only for the matching distribution and identical file device/inode. Changed files, writable/shared binds or foreign mounts are refused before deletion. Normal teardown removes only the exact synthetic PostgreSQL/Prometheus volumes and fixture containers/network; images and repository config files remain. No host mount propagation, Docker daemon settings or unrelated resources are changed. The core interruption/ownership rules also apply here.
 
-See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). Whole-item multi-adapter HTTP-drain acceptance, protected release and the Docker-only evaluator profile remain pending.
+See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). The combined matrix proves multi-adapter HTTP drain and the exact cold source gate passes; protected release and the Docker-only evaluator profile remain pending.
 
 ### Pinned repository bootstrap
 

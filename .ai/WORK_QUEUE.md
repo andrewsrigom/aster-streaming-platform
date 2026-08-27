@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-P01-R08 is released through PR 16 squash `f174aa6`, with protected and post-merge CI passing. P01-R09's core, Kafka, S3 and Collector/Prometheus integration passes locally. The telemetry checkpoint passes 49/49 affected tasks and Identity 32/32. Continue whole-matrix multi-adapter HTTP-drain acceptance within the same item; do not publish or mark P01-R09 done before complete acceptance.
+P01-R08 is released through PR 16 squash `f174aa6`, with protected and post-merge CI passing. P01-R09's complete eight-scenario matrix passes locally in 135.621 s plus exact cleanup, including all-adapter HTTP shutdown. Source `cbc5255` passes 49/49 uncached tasks in a fresh frozen clone (40.586 s), audit, clean Git and executing-agent confirmation. Continue one protected PR and exact post-merge confirmation before marking P01-R09 done.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

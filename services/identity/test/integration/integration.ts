@@ -6,7 +6,11 @@ import { DockerFixture } from "./docker-fixture.js";
 assert.notEqual(process.platform, "win32", "Run this POSIX signal laboratory inside Linux or WSL.");
 const selected = process.argv[2];
 const fixture = new DockerFixture(
-  selected === "storage" || selected === "broker" || selected === "telemetry" ? selected : "core",
+  selected === "all" || selected === "runtime"
+    ? "all"
+    : selected === "storage" || selected === "broker" || selected === "telemetry"
+      ? selected
+      : "core",
 );
 assert.ok(
   selected === undefined ||
@@ -16,7 +20,9 @@ assert.ok(
     selected === "http-drain" ||
     selected === "storage" ||
     selected === "broker" ||
-    selected === "telemetry",
+    selected === "telemetry" ||
+    selected === "runtime" ||
+    selected === "all",
   "Unknown integration scenario",
 );
 const started = performance.now();
@@ -31,9 +37,20 @@ function output(value: Record<string, unknown>): void {
   process.stdout.write(`${JSON.stringify(value)}\n`);
 }
 
-async function worker(mode: string, ports: readonly number[]): Promise<void> {
+async function worker(mode: string): Promise<void> {
+  const services =
+    mode === "broker"
+      ? (["broker"] as const)
+      : mode === "storage"
+        ? (["storage"] as const)
+        : mode === "runtime"
+          ? (["postgres", "redis", "broker", "storage", "collector", "prometheus"] as const)
+          : mode === "telemetry"
+            ? (["postgres", "redis", "collector", "prometheus"] as const)
+            : (["postgres", "redis"] as const);
+  const ports = await Promise.all(services.map((service) => fixture.port(service)));
   const workerFile =
-    mode === "storage" || mode === "broker" || mode === "telemetry"
+    mode === "storage" || mode === "broker" || mode === "telemetry" || mode === "runtime"
       ? `${mode}-worker`
       : "core-worker";
   const child = fork(new URL(`./${workerFile}.js`, import.meta.url), [mode, ...ports.map(String)], {
@@ -118,7 +135,7 @@ async function worker(mode: string, ports: readonly number[]): Promise<void> {
   if (requestError) {
     throw new Error("Fixture control failed", { cause: requestError });
   }
-  const expectedCode = mode === "identity" || mode === "http-drain" ? 143 : 0;
+  const expectedCode = mode === "identity" || mode === "http-drain" || mode === "runtime" ? 143 : 0;
   if (result.code !== expectedCode || result.signal !== null) {
     // Unhandled vendor errors may carry client objects, including connection secrets.
     output({
@@ -147,22 +164,29 @@ try {
     stage: "before-workload",
     services: await fixture.sampleResources(),
   });
-  const hasCore = fixture.hasService("postgres");
-  const primaryPort = await fixture.port(
-    hasCore ? "postgres" : selected === "broker" ? "broker" : "storage",
-  );
-  const ports = [primaryPort, hasCore ? await fixture.port("redis") : 0];
-  if (fixture.profile === "telemetry") {
-    ports.push(await fixture.port("collector"), await fixture.port("prometheus"));
-  }
-  for (const mode of selected ? [selected] : ["protocol", "adapters", "identity", "http-drain"]) {
+  const scenarios =
+    selected === "all"
+      ? [
+          "protocol",
+          "adapters",
+          "identity",
+          "http-drain",
+          "broker",
+          "storage",
+          "runtime",
+          "telemetry",
+        ]
+      : selected
+        ? [selected]
+        : ["protocol", "adapters", "identity", "http-drain"];
+  for (const mode of scenarios) {
     output({ event: "scenario_start", mode });
-    await worker(mode, ports);
+    await worker(mode);
   }
   output({
     event: `${fixture.profile}_integration`,
     outcome: "passed",
-    scenarios: selected ? [selected] : ["protocol", "adapters", "identity", "http-drain"],
+    scenarios,
     durationMs: Math.round(performance.now() - started),
   });
 } finally {

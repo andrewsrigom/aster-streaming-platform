@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 through P01-R08 are released. P01-R09 is active from squash `f174aa6`; core and broker/S3 checkpoints are committed at `0fb247c` and `0cd02ef`. Real telemetry export/scrape/failure/recovery now passes in 29.755 s plus 5.744 s exact cleanup; the candidate passes 49/49 affected tasks and Identity 32/32. Continue whole-matrix multi-adapter HTTP-drain acceptance and protected release. P01-R10 Docker-only closeout remains later work.
+P01-R05 through P01-R08 are released. P01-R09 is active from squash `f174aa6`; checkpoints `0fb247c`, `0cd02ef` and `8ef472d` establish core, broker/S3 and telemetry proof. The complete `pnpm integration` matrix passes eight scenarios in 135.621 s plus 5.004 s cleanup, including 70 ms all-adapter HTTP shutdown. Source `cbc5255` passes 49/49 uncached tasks in a fresh frozen clone (40.586 s), audit, clean Git and executing-agent confirmation. Continue protected release. P01-R10 Docker-only closeout remains later work.

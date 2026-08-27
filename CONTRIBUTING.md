@@ -51,6 +51,7 @@ Do not run the entire repository, integration, browser, media, or load suite on 
 - Commit hooks inspect only commit metadata and changed files with fast formatting, lint, and secret checks.
 - Before push, run the affected formatting, lint, type, unit, and documentation checks.
 - For `infra/compose/` changes, run `pnpm platform:check`, `pnpm platform:test`, `pnpm platform:compose:check`, and the documented Docker-only checkpoint in a unique project.
+- At a coherent runtime/adapter/Compose or bootstrap/dependency candidate, run `pnpm integration` when changed inputs invalidate real-dependency evidence. Applicable protected CI executes it once inside the existing quality job with a 15-minute deadline; documentation-only and unrelated web changes do not select this matrix.
 - A ready-for-review pull request runs the authoritative path-aware CI gate.
 - Phase and release gates run clean installs, containers, browser, media, failure, load, soak, and other heavyweight evidence required by their specification.
 - Superseded pull-request runs are cancelled, and branch pushes do not duplicate the full pull-request pipeline for the same revision.

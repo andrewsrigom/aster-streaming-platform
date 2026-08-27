@@ -10,17 +10,21 @@ import {
 
 function dockerModel(profile: FixtureProfile = "core") {
   const services =
-    profile === "core"
-      ? ["postgres", "redis"]
-      : profile === "telemetry"
-        ? ["postgres", "redis", "collector", "prometheus"]
-        : [profile];
+    profile === "all"
+      ? ["postgres", "redis", "broker", "storage", "collector", "prometheus"]
+      : profile === "core"
+        ? ["postgres", "redis"]
+        : profile === "telemetry"
+          ? ["postgres", "redis", "collector", "prometheus"]
+          : [profile];
   const volumeNames =
-    profile === "core"
-      ? ["postgres-data"]
-      : profile === "telemetry"
-        ? ["postgres-data", "prometheus-data"]
-        : [`${profile}-data`];
+    profile === "all"
+      ? ["postgres-data", "broker-data", "storage-data", "prometheus-data"]
+      : profile === "core"
+        ? ["postgres-data"]
+        : profile === "telemetry"
+          ? ["postgres-data", "prometheus-data"]
+          : [`${profile}-data`];
   const calls: string[][] = [];
   let resources: Record<string, Array<Record<string, unknown>>> = {
     container: [],
@@ -313,4 +317,15 @@ test("Docker Desktop bind translation requires exact distro and file identity, n
     ),
     false,
   );
+});
+
+test("combined matrix owns only six fixed services and four labelled volumes", async () => {
+  const model = dockerModel("all");
+  await model.fixture.start();
+  assert.equal(model.resources()["container"]?.length, 6);
+  assert.equal(model.resources()["volume"]?.length, 4);
+  assert.equal(model.fixture.hasService("unowned"), false);
+  await model.fixture.cleanup();
+  assert.equal(model.calls.filter((args) => args[1] === "rm").length, 11);
+  assert.ok(Object.values(model.resources()).every((resources) => resources.length === 0));
 });
