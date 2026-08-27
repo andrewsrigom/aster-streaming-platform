@@ -14,15 +14,15 @@ Phases 00–04 are released. PR 21 squash b6c99c4 has successful exact-head prot
 
 ## Current work
 
-P05-R01 is the sole active item. Public SSR/seed checkpoint c0b7585 passed 58/58 source tasks. The next slice implements real local profile creation/selection, a separate disposable Identity Apollo cache and Redux dialog coordination. Build/typecheck, 13 Web tests and eight production-browser journeys pass, including cookie privacy, cross-tab logout, expiry, keyboard and CORS rejection. [Profile evidence](../evidence/phase-05/profile-runtime.txt). Complete phase acceptance remains open.
+P05-R01 is the sole active item. Public SSR/seed c0b7585, profile/Redux 7857957 and the Docker candidate pass 58/58 source tasks. Docker adds standalone Web and explicit seed initialization in one command, correcting a Docker-only SSR Host failure without weakening Router trust. Final confirmation passes eight browser journeys in 12.4 s; 16 Web tests, seed repeat, isolation, SIGTERM and Router deadline/recovery also pass. [Docker evidence](../evidence/phase-05/docker-runtime.txt). Complete phase acceptance remains open.
 
 ## Not implemented
 
-Artwork, complete public Web failure/performance/Docker acceptance, playable VOD, engagement/discovery and hosted release. No real-film approval exists. Current local Router limits are not complete hosted GraphQL protection.
+Artwork, complete public Web failure/performance and clean-checkout phase acceptance, playable VOD, engagement/discovery and hosted release. No real-film approval exists. Current local Router limits are not complete hosted GraphQL protection.
 
 ## Next outcome
 
-Continue P05-R01 with artwork, public adverse-state/performance tests and Docker-only Web startup before publishing the phase. The profile slice passes 58/58 source tasks, frozen install and high-threshold audit. ADR-0018 records exact browser-origin/session boundaries and the Web-only upstream declaration compatibility exception.
+Continue P05-R01 with artwork and public adverse-state/performance acceptance. Raw timeout HTML has no client error controls and complete Retry behavior is not yet verified. ADR-0018 still governs browser sessions; server HTTP preserves its exact public trust boundary.
 
 ## Current risks
 

@@ -7,6 +7,10 @@ import {
 } from "@apollo/client-integration-nextjs";
 import { publicCachePolicies } from "./policies";
 import { boundedGraphqlFetch } from "./transport";
+import { createPublicRouterFetch } from "./server-transport";
+
+// Share bounded sockets, never the request-scoped Apollo cache.
+const serverFetch = boundedGraphqlFetch(createPublicRouterFetch());
 
 function routerUrl(): string {
   const uri = process.env["ASTER_WEB_ROUTER_URL"] ?? "http://127.0.0.1:4000/graphql";
@@ -22,8 +26,7 @@ export const { PreloadQuery } = registerApolloClient(
       cache: new InMemoryCache({ typePolicies: publicCachePolicies }),
       link: new HttpLink({
         uri: routerUrl(),
-        fetch: boundedGraphqlFetch(),
-        headers: { host: "127.0.0.1:4000", origin: "http://127.0.0.1:4000", "x-aster-csrf": "1" },
+        fetch: serverFetch,
         fetchOptions: { cache: "no-store" },
       }),
     }),

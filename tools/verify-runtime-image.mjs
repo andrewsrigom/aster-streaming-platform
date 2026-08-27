@@ -42,10 +42,34 @@ const allowedContext = [
   "!services/catalog/src/**/*.ts",
   "!services/catalog/test/**/*.ts",
   "!services/catalog/migrations/*.sql",
+  "!apps/",
+  "!apps/web/",
+  "!apps/web/**/",
+  "!apps/web/package.json",
+  "!apps/web/tsconfig.json",
+  "!apps/web/next-env.d.ts",
+  "!apps/web/next.config.ts",
+  "!apps/web/postcss.config.mjs",
+  "!apps/web/THIRD_PARTY_NOTICES.md",
+  "!apps/web/app/**/*.ts",
+  "!apps/web/app/**/*.tsx",
+  "!apps/web/app/**/*.css",
+  "!apps/web/app/icon.svg",
+  "!apps/web/components/**/*.tsx",
+  "!apps/web/features/**/*.ts",
+  "!apps/web/features/**/*.tsx",
+  "!apps/web/lib/**/*.ts",
+  "!apps/web/lib/**/*.tsx",
+  "!apps/web/store/**/*.ts",
+  "!apps/web/store/**/*.tsx",
+  "!evidence/",
+  "!evidence/phase-05/",
+  "!evidence/phase-05/generated-media.json",
   "!infra/",
   "!infra/docker/",
   "!infra/docker/identity.Dockerfile",
   "!infra/docker/catalog.Dockerfile",
+  "!infra/docker/web.Dockerfile",
   "!infra/docker/media-fixture.Dockerfile",
   "!infra/docker/collector.Dockerfile",
   "!infra/docker/prometheus.Dockerfile",
@@ -68,6 +92,7 @@ const allowedContext = [
   "**/dist/**",
   "**/.git/**",
   "**/.turbo/**",
+  "**/.next/**",
   "**/.env*",
   "**/*.pem",
   "**/*.key",
@@ -78,6 +103,8 @@ export async function readRuntimeImageSources(root) {
   const files = [
     "infra/docker/identity.Dockerfile",
     "infra/docker/catalog.Dockerfile",
+    "infra/docker/web.Dockerfile",
+    "infra/compose/demo.yml",
     "infra/docker/collector.Dockerfile",
     "infra/docker/prometheus.Dockerfile",
     ".dockerignore",
@@ -134,6 +161,69 @@ export function validateRuntimeImage(sources) {
         reject(`runtime image contract missing: ${required}`);
       }
     }
+  }
+  const web = sources["infra/docker/web.Dockerfile"] ?? "";
+  const webFrom = web.match(/^FROM .+$/gm) ?? [];
+  if (
+    webFrom.join("\n") !==
+    `FROM ${IDENTITY_BASE_IMAGE} AS build\nFROM ${IDENTITY_BASE_IMAGE} AS runtime`
+  ) {
+    reject("Web build and runtime must use the reviewed immutable Node image");
+  }
+  for (const required of [
+    "pnpm install --frozen-lockfile",
+    "pnpm --filter=@aster/web build",
+    "COPY --from=build --chown=node:node /workspace/apps/web/.next/standalone ./",
+    "COPY --from=build --chown=node:node /workspace/apps/web/.next/static ./apps/web/.next/static",
+    "COPY --from=build --chown=node:node /workspace/apps/web/public ./apps/web/public",
+    "COPY --from=build --chown=node:node /workspace/apps/web/THIRD_PARTY_NOTICES.md ./THIRD_PARTY_NOTICES.md",
+    "COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE",
+    'ENV NODE_OPTIONS="--max-old-space-size=256 --max-http-header-size=16384"',
+    "USER node\n",
+    "STOPSIGNAL SIGTERM\n",
+    'ENTRYPOINT ["node"]\nCMD ["./apps/web/server.js"]',
+    "http://127.0.0.1:3000/health/live",
+    "AbortSignal.timeout(1000)",
+    "redirect: 'error'",
+  ]) {
+    if (!web.includes(required)) {
+      reject("Web image contract missing: " + required);
+    }
+  }
+  if (/^COPY (?:\. |--from=build .*node_modules)/mu.test(web)) {
+    reject("Web runtime must contain only traced production output and public assets");
+  }
+  const demo = sources["infra/compose/demo.yml"] ?? "";
+  const webService = demo.split("  catalog-init:")[0] ?? "";
+  const environment = webService.match(/^ {4}environment:\n(?: {6}[^\n]*\n)+/mu)?.[0];
+  if (
+    environment !== "    environment:\n      ASTER_WEB_ROUTER_URL: http://router:4000/graphql\n" ||
+    [
+      "volumes:",
+      "env_file:",
+      "privileged:",
+      "cap_add:",
+      "network_mode:",
+      "entrypoint:",
+      "command:",
+      "${",
+    ].some((text) => webService.includes(text)) ||
+    [
+      "    profiles: [runtime, integration, observability, full]\n",
+      "    networks: [edge]\n",
+      '      - "127.0.0.1:3000:3000"\n',
+      '    user: "1000:1000"\n    read_only: true\n',
+      "      - /app/apps/web/.next/cache:size=32m,uid=1000,gid=1000,mode=0700\n",
+      "    cap_drop: [ALL]\n    security_opt: [no-new-privileges:true]\n",
+      "    stop_grace_period: 10s\n",
+      '          cpus: "1.00"\n          memory: 512M\n          pids: 64\n',
+      '        max-size: "5m"\n        max-file: "2"\n',
+    ].some((text) => !webService.includes(text)) ||
+    demo.match(/^ {2}[a-z-]+:\n/gm)?.join("") !== "  web:\n  catalog-init:\n" ||
+    !demo.includes('      ASTER_CATALOG_UI_SEED_ENABLED: "true"\n') ||
+    !demo.includes('    command: ["./dist/src/initialize-web-demo.js"]\n')
+  ) {
+    reject("Web demo must preserve bounded public-only Web and explicit Catalog initialization");
   }
   const patterns = (sources[".dockerignore"] ?? "").replace(/\r\n/g, "\n").trim().split("\n");
   if (patterns.join("\n") !== allowedContext.join("\n")) {

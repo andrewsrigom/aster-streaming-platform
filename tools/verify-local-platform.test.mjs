@@ -37,6 +37,26 @@ const localDevelopmentSource = await readFile(localDevelopmentPath, "utf8");
 const observability = await readObservabilitySources(resolve(import.meta.dirname, ".."));
 const runtimeImage = await readRuntimeImageSources(resolve(import.meta.dirname, ".."));
 
+test("Web demo rejects private credentials, mounts, public ports and unbounded runtime", () => {
+  const file = "infra/compose/demo.yml";
+  for (const [before, after] of [
+    ["networks: [edge]", "networks: [edge, platform]"],
+    ["127.0.0.1:3000:3000", "0.0.0.0:3000:3000"],
+    ["http://router:4000/graphql", "http://router:4000/graphql\n      DATABASE_URL: private"],
+    ["    tmpfs:", "    volumes: [private-trust:/run/trust]\n    tmpfs:"],
+    ["memory: 512M", "memory: 0"],
+    ["size=32m", "size=1g"],
+    ["read_only: true", "read_only: false"],
+    ["ASTER_CATALOG_UI_SEED_ENABLED", "UNREVIEWED_SEED_ENABLED"],
+  ]) {
+    assert.notEqual(runtimeImage[file].indexOf(before), -1);
+    assert.ok(
+      validateRuntimeImage({ ...runtimeImage, [file]: runtimeImage[file].replace(before, after) })
+        .length > 0,
+    );
+  }
+});
+
 test("runtime image preserves the pinned non-root production packaging contract", () => {
   assert.deepEqual(validateRuntimeImage(runtimeImage), []);
 });

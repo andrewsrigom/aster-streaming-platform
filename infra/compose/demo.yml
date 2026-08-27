@@ -1,0 +1,43 @@
+services:
+  web:
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/web.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    environment:
+      ASTER_WEB_ROUTER_URL: http://router:4000/graphql
+    depends_on:
+      router:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks: [edge]
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /app/apps/web/.next/cache:size=32m,uid=1000,gid=1000,mode=0700
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 10s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+          pids: 64
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  catalog-init:
+    environment:
+      ASTER_CATALOG_UI_SEED_ENABLED: "true"
+      ASTER_CATALOG_DATABASE_URL: postgresql://aster_catalog_local@postgres:5432/aster
+      ASTER_CATALOG_DATABASE_PASSWORD: aster-test-only
+    command: ["./dist/src/initialize-web-demo.js"]

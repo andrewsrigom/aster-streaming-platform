@@ -10,6 +10,7 @@ const repositoryRoot = resolve(import.meta.dirname, "..");
 const resetPath = resolve(repositoryRoot, "tools", "reset-local-platform.sh");
 const composePath = resolve(repositoryRoot, "infra", "compose", "compose.yml");
 const observabilityPath = resolve(repositoryRoot, "infra", "compose", "observability.yml");
+const demoPath = resolve(repositoryRoot, "infra", "compose", "demo.yml");
 const confirmationArguments = ["--confirm", "DELETE-ASTER-LOCAL-DATA"];
 const shellExecutable = process.platform === "win32" ? "sh" : "/bin/sh";
 const resetFixtureTimeoutMs = process.platform === "win32" ? 15_000 : 5_000;
@@ -66,13 +67,15 @@ if [ "$1" = "compose" ]; then
   shift 2
   [ "$1" = "--file" ] && [ "$2" = "$FAKE_OBSERVABILITY_FILE" ] || exit 96
   shift 2
+  [ "$1" = "--file" ] && [ "$2" = "$FAKE_DEMO_FILE" ] || exit 97
+  shift 2
   [ "$1" = "--profile" ] && [ "$2" = "*" ] || exit 95
   shift 2
   if [ "$1" = "config" ] && [ "$2" = "--quiet" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init broker storage collector prometheus router router-trust-init
+    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init broker storage collector prometheus router router-trust-init web
     if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
       printf '%s\\n' unreviewed
     fi
@@ -128,6 +131,7 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
         *)
           case "$FAKE_DOCKER_SERVICE" in
             collector | identity-init | catalog-init) ;;
+            web) ;;
             identity | catalog) printf 'volume|aster_%s-router-trust|/run/aster-router\\n' "$FAKE_DOCKER_SERVICE" ;;
             router | router-trust-init) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' ;;
             broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
@@ -146,6 +150,8 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
         printf '%s\\n' aster_edge aster_platform
       elif [ "$FAKE_DOCKER_SERVICE" = "router-trust-init" ]; then
         printf '%s\\n' none
+      elif [ "$FAKE_DOCKER_SERVICE" = "web" ]; then
+        printf '%s\\n' aster_edge
       else
         printf '%s\\n' aster_platform
       fi
@@ -168,6 +174,8 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
     printf 'aster|identity|local|platform|%s\\n' "$FAKE_COMPOSE_FILE"
   elif [ "$FAKE_DOCKER_SCENARIO" = "foreign-compose" ]; then
     printf 'aster|postgres|local|platform|%s,%s\\n' "$FAKE_OBSERVABILITY_FILE" "$FAKE_COMPOSE_FILE"
+  elif [ "$FAKE_DOCKER_SERVICE" = "web" ]; then
+    printf 'aster|web|local|platform|%s,%s\\n' "$FAKE_COMPOSE_FILE" "$FAKE_DEMO_FILE"
   elif [ "$FAKE_DOCKER_SERVICE" != "postgres" ]; then
     printf 'aster|%s|local|platform|%s,%s\\n' "$FAKE_DOCKER_SERVICE" "$FAKE_COMPOSE_FILE" "$FAKE_OBSERVABILITY_FILE"
   else
@@ -280,6 +288,7 @@ async function runReset(t, options = {}) {
     ASTER_ENVIRONMENT: "local",
     FAKE_COMPOSE_FILE: shellPath(composePath),
     FAKE_OBSERVABILITY_FILE: shellPath(observabilityPath),
+    FAKE_DEMO_FILE: shellPath(demoPath),
     FAKE_DOCKER_SERVICE: options.service ?? "postgres",
     FAKE_VOLUME_NAME: ["broker", "storage", "prometheus"].includes(options.service)
       ? options.service + "-data"
@@ -386,7 +395,7 @@ test("removes only the fixed populated Aster project and proves postconditions",
   assert.match(
     result.log,
     new RegExp(
-      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} --file ${shellPath(observabilityPath).replaceAll("/", "\\/")} --profile \\* down --volumes`,
+      `--context default compose --project-name aster --file ${shellPath(composePath).replaceAll("/", "\\/")} --file ${shellPath(observabilityPath).replaceAll("/", "\\/")} --file ${shellPath(demoPath).replaceAll("/", "\\/")} --profile \\* down --volumes`,
       "u",
     ),
   );
@@ -403,6 +412,16 @@ test("is idempotent when Aster has no local resources", async (t) => {
   assert.equal(result.code, 0);
   assert.match(result.stdout, /already reset/u);
   assert.doesNotMatch(result.log, / down --volumes/u);
+});
+
+test("recognizes the reviewed Web demo without accepting private or foreign mounts", async (t) => {
+  const valid = await runReset(t, { service: "web" });
+  assert.equal(valid.code, 0, valid.stderr);
+  for (const scenario of ["foreign-mount", "wrong-owner-mount", "foreign-attachment"]) {
+    const invalid = await runReset(t, { service: "web", scenario });
+    assert.equal(invalid.code, 1);
+    assert.doesNotMatch(invalid.log, / down --volumes/u);
+  }
 });
 
 test("reports Compose failure without a broad fallback", async (t) => {

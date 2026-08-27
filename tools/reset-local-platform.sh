@@ -53,7 +53,8 @@ fi
 
 compose_file=$repository_root/infra/compose/compose.yml
 observability_file=$repository_root/infra/compose/observability.yml
-for repository_file in "$repository_root/AGENTS.md" "$repository_root/package.json" "$compose_file" "$observability_file"; do
+demo_file=$repository_root/infra/compose/demo.yml
+for repository_file in "$repository_root/AGENTS.md" "$repository_root/package.json" "$compose_file" "$observability_file" "$demo_file"; do
   [ -f "$repository_file" ] || fail 'required regular repository files are missing'
   [ ! -L "$repository_file" ] || fail 'symbolic repository inputs are prohibited'
 done
@@ -79,7 +80,7 @@ docker_local() {
 }
 
 compose_local() {
-  docker_local compose --project-name "$PROJECT_NAME" --file "$compose_file" --file "$observability_file" --profile '*' "$@"
+  docker_local compose --project-name "$PROJECT_NAME" --file "$compose_file" --file "$observability_file" --file "$demo_file" --profile '*' "$@"
 }
 
 if ! docker_os=$(docker_local info --format '{{.OSType}}' 2>/dev/null); then
@@ -105,7 +106,8 @@ prometheus
 redis
 router
 router-trust-init
-storage'
+storage
+web'
 [ "$configured_services" = "$expected_services" ] || fail 'the Compose service set is not the reviewed local platform slice'
 
 if ! configured_volumes=$(compose_local config --volumes 2>/dev/null); then
@@ -181,7 +183,7 @@ for container_id in $container_ids; do
   container_compose_file=$(printf '%s\n' "$container_labels" | cut -d '|' -f 5)
   [ "$container_project" = "$PROJECT_NAME" ] || fail "container $container_name has unexpected project ownership"
   case "$container_compose_file" in
-    "$compose_file" | "$compose_file,$observability_file") ;;
+    "$compose_file" | "$compose_file,$observability_file" | "$compose_file,$demo_file" | "$compose_file,$observability_file,$demo_file") ;;
     *) fail "container $container_name has an unexpected Compose-file label" ;;
   esac
   case "$container_environment|$container_scope" in
@@ -189,7 +191,7 @@ for container_id in $container_ids; do
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
-    identity | identity-init | catalog | catalog-init | broker | storage | collector | prometheus | router | router-trust-init)
+    identity | identity-init | catalog | catalog-init | broker | storage | collector | prometheus | router | router-trust-init | web)
       [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'runtime and optional services require current ownership labels'
       ;;
     platform-init | platform-status | postgres | redis) ;;
@@ -206,6 +208,7 @@ for container_id in $container_ids; do
   case "$container_service|$container_mounts" in
     'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'identity-init|' | 'catalog|' | 'catalog-init|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
     'broker|volume|aster_broker-data|/var/lib/kafka/data' | 'storage|volume|aster_storage-data|/data' | 'prometheus|volume|aster_prometheus-data|/prometheus' | 'collector|') ;;
+    'web|' | 'web|tmpfs||/app/apps/web/.next/cache') ;;
     'identity|volume|aster_identity-router-trust|/run/aster-router' | 'catalog|volume|aster_catalog-router-trust|/run/aster-router') ;;
     'router|volume|aster_catalog-router-trust|/run/aster-router/catalog
 volume|aster_identity-router-trust|/run/aster-router/identity' | 'router-trust-init|volume|aster_catalog-router-trust|/run/aster-router/catalog
@@ -225,6 +228,7 @@ volume|aster_identity-router-trust|/run/aster-router/identity') ;;
   fi
   case "$container_service|$container_networks" in
     'router-trust-init|none') ;;
+    'web|aster_edge') ;;
     *\| | *\|aster_platform | 'router|aster_edge
 aster_platform' | 'identity|aster_edge
 aster_platform' | 'catalog|aster_edge

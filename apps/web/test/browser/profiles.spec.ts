@@ -69,6 +69,7 @@ test("real local session creates/selects a profile with keyboard focus and priva
     await expect(modal).toBeVisible();
     const close = page.getByRole("button", { name: "Close profiles" });
     await expect(close).toBeFocused();
+    await expect(page.getByRole("button", { name: "Start local session" })).toBeVisible();
     await page.keyboard.press("Tab");
     await expect(page.getByRole("button", { name: "Start local session" })).toBeFocused();
     await page.keyboard.press("Enter");
@@ -188,7 +189,9 @@ test("profile outage exposes retry and keeps public browsing available", async (
   );
   await page.goto("/");
   await page.getByRole("button", { name: "Profiles", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText("Profiles are temporarily unavailable");
+  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
+    "Profiles are temporarily unavailable",
+  );
   await expect(page.getByRole("dialog")).not.toContainText("private failure canary");
   await page.unroute(endpoint);
   await page.getByRole("button", { name: "Retry session" }).click();

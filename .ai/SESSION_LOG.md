@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Docker Web and seed slice
+
+### Completed
+
+Added the explicit Docker Web/seed overlay, standalone non-root Web image and finite Catalog initializer. Corrected a real Docker-only SSR failure: Node Fetch discards Host, so server HTTP now preserves Router's exact public boundary. No trust policy was weakened. Seed remains idempotent and refuses conflicting/retired data.
+
+### Evidence
+
+Six initial browser failures were investigated; all eight Docker browser journeys then passed. Final source gate passes 58/58 tasks and sequential browser confirmation passes 8/8 in 12.4 s. Sixteen Web and 39 focused seed/platform/reset tests passed. Real seed repeat preserved one title/version 5, four audits, two rights revisions, one publication and one outbox event. Web SIGTERM took 423 ms; paused Router failed within 4094 ms while Web stayed live and recovered after unpause. See evidence/phase-05/docker-runtime.txt, including failed gate attempts and the timing-test fixture cleanup. Deleted only validated disposable proof data and owned test fixtures; retained data is intact.
+
+### Next action
+
+Continue P05-R01 artwork and public adverse-state/performance acceptance. Development now uses Docker Web on 3000 and its existing Router on 4000. No Phase 05 publication or player claim.
+
 ## 2026-08-27 — Local profile and interaction slice
 
 ### Completed

@@ -10,11 +10,11 @@ PR 21 is merged without bypass. Final exact-head run 33103379545 and post-merge 
 
 ## Next outcome
 
-Public/seed checkpoint c0b7585 passed 58/58 source tasks. Profile/Redux slice now passes 58/58 source tasks (42 cached, 28.067 s), 13 focused and eight production-browser tests; see evidence/phase-05/profile-runtime.txt and ADR-0018. Next implement artwork, public adverse states, performance and Docker-only Web acceptance. Keep critical public content outside Suspense; it must remain visible without JavaScript. No Phase 05 publication until complete acceptance.
+Public/seed c0b7585, profile/Redux 7857957 and the Docker candidate passed 58/58 source tasks. Final Docker browser confirmation passes 8/8 in 12.4 s, with 16 Web tests and supporting seed/isolation/lifecycle evidence; see evidence/phase-05/docker-runtime.txt. Implement artwork, public adverse states and performance next. Raw timeout HTML has no client error controls; retry and no-JavaScript failure recovery remain open. Keep critical public content outside Suspense. No Phase 05 publication until complete acceptance.
 
 ## Local resources
 
-Retained aster and aster-p04-development remain available. Development Router uses loopback 4000 with private owners and now contains only the additive seed title 00000000-0000-4000-8000-000005000001. Web production process uses loopback 3000. No proof stack is left from Phase 04/Catalog acceptance. /tmp/aster-p04-clean-Hke28c is the clean detached Phase 04 checkout at 66d8ee1; its gate is complete. Never prune globally or remove retained data.
+Retained aster is untouched. aster-p04-development Router was restored on 4000, with existing private owners and the additive seed title 00000000-0000-4000-8000-000005000001. Its new Docker Web uses 3000; the old host Web process is stopped. For Web commands include base Compose, observability.yml and demo.yml with --profile observability; --no-deps can rebuild only Web. The aster-p05-demo-proof stack and all three owned synthetic volumes were removed after ownership/attachment validation; no proof resources remain. /tmp/aster-p04-clean-Hke28c remains the detached Phase 04 checkout. Never prune globally or remove retained data.
 
 ## Do not do yet
 

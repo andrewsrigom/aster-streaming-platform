@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { Readable } from "node:stream";
 import { workflowFixture } from "./workflow-fixture.js";
 import { catalogTestTime } from "./rights-fixture.js";
 import {
@@ -8,6 +9,10 @@ import {
   validateUiSeedReport,
 } from "../src/infrastructure/fixtures/generated-ui-fixture.js";
 import { seedGeneratedCatalog } from "../src/infrastructure/fixtures/seed-catalog.js";
+import {
+  readUiSeedReport,
+  seedLocalCatalog,
+} from "../src/infrastructure/fixtures/local-ui-seed.js";
 
 function report() {
   return {
@@ -48,6 +53,58 @@ function fixture() {
   };
   return { ...fixture, input };
 }
+
+test("local seed report input is bounded, UTF-8 validated and cancelled", async () => {
+  const signal = new AbortController().signal;
+  assert.deepEqual(
+    await readUiSeedReport(Readable.from([Buffer.from(JSON.stringify(report()))]), signal),
+    report(),
+  );
+  for (const bytes of [
+    Buffer.alloc(16385),
+    Buffer.from([0xff]),
+    Buffer.from("{}"),
+    Buffer.from("not-json"),
+  ]) {
+    const source = Readable.from([bytes]);
+    await assert.rejects(readUiSeedReport(source, signal));
+    assert.equal(source.destroyed, true);
+  }
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(
+    readUiSeedReport(Readable.from([Buffer.from(JSON.stringify(report()))]), controller.signal),
+  );
+});
+
+test("local seed rejects non-local or missing opt-in before opening a database", async () => {
+  const environment = {
+    ASTER_ENVIRONMENT: "local",
+    ASTER_CATALOG_OPERATOR_ENABLED: "true",
+    ASTER_CATALOG_UI_SEED_ENABLED: "true",
+    ASTER_CATALOG_DATABASE_URL: "postgresql://aster_catalog_local@postgres:5432/aster",
+    ASTER_CATALOG_DATABASE_PASSWORD: "aster-test-only",
+    ASTER_CATALOG_ADMIN_DATABASE_URL: "postgresql://aster@postgres:5432/aster",
+    ASTER_CATALOG_ADMIN_DATABASE_PASSWORD: "aster-test-only",
+  };
+  for (const field of [
+    "ASTER_ENVIRONMENT",
+    "ASTER_CATALOG_OPERATOR_ENABLED",
+    "ASTER_CATALOG_UI_SEED_ENABLED",
+  ]) {
+    await assert.rejects(
+      seedLocalCatalog(
+        { ...environment, [field]: "disabled" },
+        report(),
+        new AbortController().signal,
+      ),
+    );
+  }
+  await assert.rejects(seedLocalCatalog(environment, {}, new AbortController().signal));
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(seedLocalCatalog(environment, report(), controller.signal));
+});
 
 test("UI seed uses rights/media/publication commands and repeated execution is a no-op", async () => {
   const f = fixture();
