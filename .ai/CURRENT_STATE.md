@@ -4,39 +4,33 @@ Last updated: 2026-08-27
 
 ## Active phase
 
-**Phase 02 — Identity and Viewer Profiles**
+**Phase 03 — Catalog and Content Rights**
 
 Status: **IN_PROGRESS**
 
 ## Verified
 
-- Phase 00 and every Phase 01 requirement are released. PR 18 squash `b0544c9c6a86ac1cdb48963707eedf0f0e153621` is the clean main base.
-- Final protected run `33047330768` passes all six jobs at `b9f816a`; exact post-merge `33047629326` passes every applicable job (dependency review correctly skipped for push).
-- Both prove packaged UID 1000, real health/six metric families and eight real integration scenarios. Post-merge matrix: 153008 ms; cleanup: 1053 ms, zero residual fixture resources. Audit passes.
-- Local clean source `38801ce` proves Docker-only startup without host Node/pnpm, occupied-port recovery, safe reset and 49/49 uncached tasks. Documentation-only later changes do not invalidate it. Full details: [Phase 01 evidence](../evidence/phase-01/README.md).
-- Automated initial/confirmation reviews found three stale status claims, all corrected/resolved. Executing-agent confirmation covered the final source-backed prose sweep; no independent approval is claimed.
-- Exact Node 24.19.0/pnpm 11.24.0, strict source/memory/security checks, staged-only hooks and protected squash-only main remain in force. No unrelated Docker resource was changed.
+Phases 00–02 are released at main ec6386ca7add0f12ae748589be763d9e90ff0d6c (PR 19). [Release evidence](../evidence/phase-02/release.txt). Catalog P03-R05 is committed at 08a06ca: 91 tests and prior candidate gate pass; see [public query evidence](../evidence/phase-03/catalog-public.txt).
 
 ## Current work
 
-P02-R09 completes the local API on `feat/p02-identity-session`: durable sessions/profiles, request-scoped entity batching, sanitized outcomes, cookies/CSRF, admission/deadlines and separate finite migrations. Initial candidate: 49 source tasks and 144 Identity tests pass. Eleven real integration scenarios pass in 162778 ms; cleanup 2732 ms, zero remaining. Initial review found late-response header handling and stale status prose; the code fix passes focused HTTP and fresh database acceptance (12545 ms; cleanup 1387 ms). Rebuilt Docker image and six-step product smoke pass; repeated initialization is a no-op and all 189 packaged third-party versions match the frozen source graph. No branch push or pipeline yet. [Evidence](../evidence/phase-02/identity-subgraph.txt).
+P03-R04/R09 implementation is committed at 4e29f5eff7b5992abcd4911dcbec38aba1845e70 on feat/p03-catalog-rights. Read-only Catalog Docker runtime and generated HLS acceptance pass. 94 Catalog tests pass. Real Docker proves fresh/idempotent migrations, anonymous empty browse, reader isolation, privilege-loss detection, PostgreSQL outage/recovery and bounded SIGTERM shutdown. Real media generation produces six seconds at 320x180/24fps with audio and captions; repeated source/segment hashes match, corrupt/missing/symlinked segments and cancelled child processes are rejected. Real PostgreSQL proves the same Catalog application publishes and retires the generated reference, with derived attribution and two outbox facts. Two official-source candidate records remain NEEDS_CLARIFICATION and invisible; no films downloaded.
+
+[Phase acceptance matrix](../evidence/phase-03/README.md), [Docker and clean-source checkpoint](../evidence/phase-03/catalog-runtime.txt), [media/application checkpoint](../evidence/phase-03/generated-media.txt). Candidate gate: 52/52 tasks, 29 cached, 25.796 s. Clean-source frozen offline install and full gate at 4e29f5e: 52/52, zero cached, 53.227 s. High-severity Node audit passes with one known moderate advisory. Author initial/confirmation review and local phase acceptance are complete. Protected CI, merge and post-merge verification remain pending; documentation-only closeout does not invalidate the implementation evidence.
 
 ## Not implemented
 
-- Router, hosted authentication and browser UI.
-- Catalog/media/playback, engagement/discovery, advanced Redis/resilience, end-to-end traces/SLOs and hosted release.
-- No playable VOD demo exists. Docker now demonstrates local Identity API behavior plus health/recovery/metrics.
+Router, web UI, real-film media worker/delivery/playback, engagement/discovery and hosted release. No playable VOD demo or approved film exists. The retained demo was not reseeded or reset.
 
 ## Next outcome
 
-Finish P02-R09: final pre-push gate passes all 49 tasks (34 cached, 17.891 s), 144 Identity tests and high/critical audit; executing-agent confirmation is complete. Publish one coherent Phase 02 PR, require exact-head CI, squash and verify post-merge before Phase 03. The containing candidate commit identifies the source after `5a263e8`. ADR-0014 resolves licensing without changing Aster MIT. No hosted/UI/streaming release is claimed.
+Close P03-R04/R09 by publishing one coherent Phase 03 candidate, requiring protected CI and resolved review threads, squash merging the verified head and confirming post-merge CI. Phase 04's independently testable schema prerequisite is verified; keep it inactive until predecessor release conditions pass.
 
 ## Current risks
 
-- Apollo's authorized Elastic-2.0 dependencies retain their own terms; Aster remains MIT. Audit passes the high/critical gate but reports moderate uuid 9 GHSA-w5hq-g745-h8pq. Installed Apollo calls v1()/v4() without buffers, outside the affected paths; recheck on upgrades. Full candidate verification is pending.
-- Local identity must never become a hosted authentication bypass. Ephemeral local signing keys deliberately invalidate local assertions on process restart; database session checks remain mandatory.
-- Phase 02 local routes are implemented but not released; the released main remains Phase 01. No hosted JWT/JWKS integration is claimed. Correlated structured operation records are not exported distributed traces.
-- Pending outbox facts cap at 128/account and are never silently evicted; further event-producing mutations return backpressure until Phase 08 enables delivery. Names/preferences are deleted immediately; receipts last 24 hours, audit 30 days, with bounded cleanup on mutations.
-- Docker proof covers WSL amd64 and Windows localhost access, not native Windows containers/macOS/arm64/rootless/Podman. Samples are not capacity/SLO guarantees.
-- Exact local reset irreversibly deletes only validated Aster data. Never reset/prune Docker or WSL or touch unrelated projects.
-- No media rights record is approved. Future dependency/provider/media decisions belong to their owning phases. Unrelated Dependabot PR 1 remains untouched.
+- ADR-0016 keeps FFmpeg outside the request image and preserves MIT for Aster. Binary image distribution needs matching sources/notices; no image was pushed.
+- Source reviews include cached official statements and failed direct retrieval. Exact asset permissions remain unresolved, blocking acquisition, not candidate-review completion.
+- The fixture uses synthetic rights and non-deliverable HTTPS references. It proves media-byte validation and Catalog orchestration, not CDN or browser playback.
+- Catalog HTTP receives only reader credentials. It cannot create operator authority or attestations; its PostgreSQL-only readiness also rejects excess privileges.
+- A corrected readiness probe uses relation OIDs so inspecting privilege metadata does not require access to the private Identity schema.
+- Expanded metadata decoder and durable audit/outbox must survive rollback. No broad prune/reset, changes to unrelated resources or bypass of protected gates.

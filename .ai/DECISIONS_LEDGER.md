@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0016](../docs/adr/0016-isolated-generated-media-fixture.md) selects a network-disabled, resource-limited local FFmpeg fixture job. Aster stays MIT; GPL-containing Debian tooling remains a separate executable with notices and a binary-release compliance gate. Synthetic tests do not approve real films or prove CDN/browser delivery.
+
 Phase 02 identity/session selection is accepted in [ADR-0013](../docs/adr/0013-local-identity-and-sessions.md): guarded local ES256 assertions with durable owner-validated sessions. The assertion adapter is locally verified; account/session persistence passes real database tests. Cookie/GraphQL transport and hosted identity remain separate acceptance boundaries.
 
 The owned-profile slice implements defaults of five profiles (configured 1–16), per-session active selection, optimistic versions, 24-hour idempotency receipts (64/account), 30-day audit (128/account), and a non-evicting pending outbox (128/account). Deletion removes preferences immediately; broker delivery/consumer acknowledgment remains Phase 08. These reversible owner policies preserve the accepted architecture; exact contracts and proof are in [migration policies](../services/identity/migrations/README.md) and [profile evidence](../evidence/phase-02/profiles-outbox.txt).
@@ -21,6 +23,7 @@ The owned-profile slice implements defaults of five profiles (configured 1–16)
 | Use Express 5 behind a bounded HTTP adapter | `docs/adr/0011-express-http-adapter.md` | Accepted |
 | Recognize MITNFA in dependency license review | `docs/adr/0012-mitnfa-dependency-license.md` | Accepted |
 | Accept Elastic-2.0 Apollo dependencies and 0BSD tslib while preserving Aster MIT | `docs/adr/0014-apollo-federation-license-policy.md` | Accepted; owner authorization and narrow CI policy implemented |
+| Separate local Catalog operators from viewer identity; reserve bounded takedown capacity | `docs/adr/0015-local-catalog-operator.md` | Accepted; local CLI, audit and transaction checks implemented |
 
 ## Resolved Phase 00 decisions
 
@@ -72,7 +75,6 @@ Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterize
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
 | Additional observability backends | 12 | A concrete dashboard/trace requirement, bounded resources and verified operation before adding Grafana/Tempo/Loki | Phase 01 finite profiles and Collector/Prometheus are released; no product dashboard or capacity guarantee is claimed | Phase 12 observability |
-| Identity/session closeout after ADR-0013 | 02 | Protected CI, evidence review and post-merge acceptance after passing local product tests | Guarded local subgraph; hosted trust stays deferred | Phase 02 verification |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |
 | Router-to-subgraph identity-context protection | 04 | Threat model, forgery tests, key handling, local topology, deadline, and rotation path | No public route reaches a subgraph directly; no public identity header is trusted | Phase 04 verification |
 | Web UI primitive strategy | 05 | Current Next.js and React compatibility, accessibility, bundle impact, maintenance, customization ownership, license, and used-component inventory | Use semantic HTML and minimal local primitives; shadcn/ui is the preferred candidate | Phase 05 verification |
@@ -93,7 +95,7 @@ The Phase 01 preflight records the archived MinIO upstream, active VersityGW and
 
 ## Repository governance decisions
 
-- On 2026-08-27 the owner authorized Elastic-2.0 Apollo dependencies (ADR-0014), then authorized autonomous compatible licensing decisions for the public portfolio, including a necessary project-license adjustment. Retain actual terms/notices and narrow checks; keep MIT absent a demonstrated compatibility need. Do not pause merely for an unfamiliar allowlist entry. Unresolved rights, paid resources, credentials and irreversible data loss remain separate boundaries.
+- On 2026-08-27 the owner authorized Elastic-2.0 Apollo dependencies (ADR-0014), then authorized autonomous compatible licensing decisions for the public repository, including a necessary project-license adjustment. Retain actual terms/notices and narrow checks; keep MIT absent a demonstrated compatibility need. Do not pause merely for an unfamiliar allowlist entry. Unresolved rights, paid resources, credentials and irreversible data loss remain separate boundaries.
 - Source code and project-authored documentation use the MIT License (`MIT`) with the project notice `Aster contributors`.
 - Media assets and third-party materials retain independent licensing terms.
 - GitHub is the selected public code host. The repository owner authorized `andrewsrigom/aster-streaming-platform` on 2026-08-25; the public repository was created and audited on 2026-08-26.

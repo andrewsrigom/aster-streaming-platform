@@ -147,8 +147,8 @@ test("rejects incorrect PostgreSQL persistence and durable Redis claims", () => 
 
 test("rejects weakened readiness and one-shot ordering", () => {
   const noCompletionGate = validSource.replace(
-    "        condition: service_completed_successfully",
-    "        condition: service_started",
+    "      identity-init:\n        condition: service_completed_successfully",
+    "      identity-init:\n        condition: service_started",
   );
   const missingHealth = validSource.replace(
     "    healthcheck:\n      test: [CMD-SHELL, pg_isready",

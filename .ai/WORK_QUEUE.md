@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-merge runs pass. Phase 02 local acceptance includes 144 Identity tests, all 49 source tasks, eleven real integration scenarios and the Docker Identity product smoke. P02-R09 remains active through final candidate confirmation and protected publication. No Phase 02 remote release is claimed; one PR groups the coherent product changes.
+Phases 00–02 are released. Phase 03 implementation at 4e29f5e passes local acceptance: 52/52 tasks in a clean worktree with zero cache, real Docker/HLS/SQL checks and author confirmation. P03-R04/R09 remains in progress only for coherent protected publication, merge and post-merge verification; [requirement acceptance](../evidence/phase-03/README.md) is complete locally.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -34,9 +34,14 @@ Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-me
 | 26 | Select identity/session trust and implement the guarded local assertion boundary | P02-R01 | DONE |
 | 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | DONE |
 | 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | DONE |
-| 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | IN_PROGRESS |
+| 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | DONE |
+| 30 | Model rights review, attribution and the title publication lifecycle | P03-R01 | DONE |
+| 31 | Persist structured rights revisions and immutable review provenance | P03-R02 | DONE |
+| 32 | Implement authorized operator workflow and publication/retirement transactions | P03-R06 | DONE |
+| 33 | Implement published-only browse/detail, locale fallback and Catalog Federation schema | P03-R05 | DONE |
+| 34 | Verify generated HLS publication, candidate-source reviews and the Catalog Docker runtime | P03-R04 | IN_PROGRESS |
 
-P02-R09 licensing is resolved by accepted [ADR-0014](../docs/adr/0014-apollo-federation-license-policy.md). Wiring, bounded transport, empty/repeated bootstrap, owner isolation and real product tests pass. Finish candidate confirmation, protected CI and post-merge acceptance before activating Phase 03. Evidence: [HTTP checkpoint](../evidence/phase-02/identity-subgraph.txt).
+P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). No Phase 03 remote publication or actual-film approval yet.
 
 ## Work-item rules
 

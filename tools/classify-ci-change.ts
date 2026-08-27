@@ -14,6 +14,8 @@ const PLATFORM_PREFIXES = [
   "infra/compose/",
   "infra/docker/",
   "services/identity/",
+  "services/catalog/",
+  "tools/media/",
   "packages/runtime/",
   "packages/config/",
   "packages/http-express/",
@@ -40,6 +42,11 @@ const PLATFORM_FILES = new Set([
   "tools/verify-local-platform.mjs",
   "tools/verify-local-platform.test.mjs",
   "tools/verify-runtime-image.mjs",
+  "tools/verify-catalog-runtime.mjs",
+  "tools/verify-catalog-runtime.test.mjs",
+  "tools/verify-local-catalog.mjs",
+  "tools/run-catalog-integration.mjs",
+  "tools/run-media-fixture.mjs",
   "tools/verify-optional-platform.mjs",
 ]);
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));

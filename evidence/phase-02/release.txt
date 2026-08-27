@@ -1,0 +1,61 @@
+# Phase 02 Release Evidence
+
+Date: 2026-08-27.
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/19
+Candidate: 52b5c69cdd96bbececd01c571b2d260eb2fc3699.
+Squash/main: ec6386ca7add0f12ae748589be763d9e90ff0d6c.
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33066484199
+Exact post-merge: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33066827332
+
+GitHub Ubuntu 24.04 amd64, Node 24.19.0, pnpm 11.24.0, frozen source installation, Docker-only full profile and eleven isolated integration scenarios. Both runs pass every applicable job; dependency review passes on the PR and is correctly skipped on push. No bypass, rerun or duplicate PR. No unresolved review threads existed before the protected squash merge. Executing-agent initial and confirmation reviews are in identity-subgraph.txt; no independent approval is claimed.
+
+Commands:
+gh pr view 19 --repo andrewsrigom/aster-streaming-platform --json headRefOid,mergeStateStatus,statusCheckRollup
+gh run view 33066484199 --repo andrewsrigom/aster-streaming-platform --log
+gh pr merge 19 --repo andrewsrigom/aster-streaming-platform --squash --match-head-commit 52b5c69cdd96bbececd01c571b2d260eb2fc3699
+gh run view 33066827332 --repo andrewsrigom/aster-streaming-platform --json status,conclusion,headSha,jobs
+gh run view 33066827332 --repo andrewsrigom/aster-streaming-platform --log
+
+Selected raw output:
+{"checks":[{"conclusion":"SUCCESS","name":"Classify change","status":"COMPLETED"},{"conclusion":"SUCCESS","name":"Dependency review","status":"COMPLETED"},{"conclusion":"SUCCESS","name":"Documentation and security","status":"COMPLETED"},{"conclusion":"SUCCESS","name":"Install and source quality","status":"COMPLETED"},{"conclusion":"SUCCESS","name":"Local platform","status":"COMPLETED"},{"conclusion":"SUCCESS","name":"CI required","status":"COMPLETED"}],"headRefOid":"52b5c69cdd96bbececd01c571b2d260eb2fc3699","mergeStateStatus":"CLEAN"}
+Install and source quality	Run source quality and tests	2026-08-27T11:15:40.7505454Z ℹ tests 144
+Install and source quality	Run source quality and tests	2026-08-27T11:15:40.7508851Z  Tasks:    39 successful, 39 total
+Install and source quality	Prove real platform integration	2026-08-27T11:15:41.2989629Z  Tasks:    9 successful, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T11:18:21.8407832Z {"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","subgraph","sessions","profiles","broker","storage","runtime","telemetry"],"durationMs":160038}
+Install and source quality	Prove real platform integration	2026-08-27T11:18:22.8843356Z {"event":"fixture_cleanup","project":"aster-integration-ca957411cc3845909ab66d67766e921e","remaining":0,"durationMs":1045}
+Install and source quality	Audit known dependency vulnerabilities	﻿2026-08-27T11:18:22.9390346Z ##[group]Run pnpm audit --audit-level=high
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:18:22.9390726Z pnpm audit --audit-level=high
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:18:22.9430636Z shell: /usr/bin/bash -e {0}
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:18:22.9431091Z ##[endgroup]
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:18:23.6096760Z 1 vulnerabilities found
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:18:23.6097355Z Severity: 1 moderate
+Local platform	Build and start the Docker-only full profile	2026-08-27T11:15:51.1581639Z #40 14.78  Tasks:    9 successful, 9 total
+Local platform	Verify packaged health and real telemetry	2026-08-27T11:16:25.0250964Z console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present }));
+Local platform	Verify packaged health and real telemetry	2026-08-27T11:16:28.6935849Z {"check":"docker-only-demo","status":"ok","uid":1000,"metrics":["http_server_request_duration_seconds_count","aster_dependency_operation_outcomes_total","process_cpu_time_seconds_total","process_memory_usage_bytes","nodejs_eventloop_delay_p99_seconds","aster_telemetry_export_attempts_total"]}
+Local platform	Verify local Identity product API	2026-08-27T11:16:29.1609072Z {"event":"aster.identity.demo_verified","steps":["sign-in","create","select","list","delete","sign-out"]}
+
+{"conclusion":"success","headSha":"ec6386ca7add0f12ae748589be763d9e90ff0d6c","jobs":[{"conclusion":"success","name":"Classify change","status":"completed"},{"conclusion":"skipped","name":"Dependency review","status":"completed"},{"conclusion":"success","name":"Install and source quality","status":"completed"},{"conclusion":"success","name":"Local platform","status":"completed"},{"conclusion":"success","name":"Documentation and security","status":"completed"},{"conclusion":"success","name":"CI required","status":"completed"}],"status":"completed"}
+Install and source quality	Run source quality and tests	2026-08-27T11:20:18.4936262Z ℹ tests 144
+Install and source quality	Run source quality and tests	2026-08-27T11:20:18.4938465Z  Tasks:    39 successful, 39 total
+Install and source quality	Prove real platform integration	2026-08-27T11:20:19.0447498Z  Tasks:    9 successful, 9 total
+Install and source quality	Prove real platform integration	2026-08-27T11:22:57.7532580Z {"event":"all_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain","subgraph","sessions","profiles","broker","storage","runtime","telemetry"],"durationMs":158185}
+Install and source quality	Prove real platform integration	2026-08-27T11:22:58.7629803Z {"event":"fixture_cleanup","project":"aster-integration-9689da4681aa43ee8c2d343fef73e394","remaining":0,"durationMs":1012}
+Install and source quality	Audit known dependency vulnerabilities	﻿2026-08-27T11:22:58.8118736Z ##[group]Run pnpm audit --audit-level=high
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:22:58.8119141Z pnpm audit --audit-level=high
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:22:58.8156065Z shell: /usr/bin/bash -e {0}
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:22:58.8156347Z ##[endgroup]
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:22:59.5178250Z 1 vulnerabilities found
+Install and source quality	Audit known dependency vulnerabilities	2026-08-27T11:22:59.5178913Z Severity: 1 moderate
+Local platform	Build and start the Docker-only full profile	2026-08-27T11:20:07.6734567Z #40 18.26  Tasks:    9 successful, 9 total
+Local platform	Verify packaged health and real telemetry	2026-08-27T11:20:31.9736749Z console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present }));
+Local platform	Verify packaged health and real telemetry	2026-08-27T11:20:35.2154375Z {"check":"docker-only-demo","status":"ok","uid":1000,"metrics":["http_server_request_duration_seconds_count","aster_dependency_operation_outcomes_total","process_cpu_time_seconds_total","process_memory_usage_bytes","nodejs_eventloop_delay_p99_seconds","aster_telemetry_export_attempts_total"]}
+Local platform	Verify local Identity product API	2026-08-27T11:20:35.5999762Z {"event":"aster.identity.demo_verified","steps":["sign-in","create","select","list","delete","sign-out"]}
+
+
+Interpretation: source/crypto/application/HTTP tests, migration round trips, empty-state product bootstrap, owner isolation, duplicate/concurrent profile limits, expiry/revocation/restart, real dependency failure and graceful shutdown pass on exact hosted source. Both packaged runs prove UID 1000, six metric families and the six-step local Identity journey. Fixture cleanup reports zero remaining resources. Registry audit has one moderate uuid advisory, no high/critical; reachability assessment is in ADR-0014 and identity-subgraph.txt. A non-blocking js-levenshtein OpenSSF score annotation is not a failed vulnerability or license gate.
+
+The local Aster Docker demo remains running at final image e3056cf9, with retained data and four healthy long-lived containers. One idle observation: Identity 54.37 MiB, PostgreSQL 42.38 MiB, Redis 6.477 MiB, status helper 2.215 MiB. These are samples, not capacity guarantees.
+
+Phase 02 is verified/released for the documented local Identity API. Browser accessibility, hosted authentication, Router, media processing/playback, broker relay and distributed traces remain planned. API operation records are correlated structured logs, not exported spans. No real film has been approved or downloaded.
+
+Phase 03 prerequisite: the official Big Buck Bunny source page and directory were reachable through bounded HTTPS reads on 2026-08-27. Source availability is not rights approval. Phase 03 activates from clean main ec6386c on feat/p03-catalog-rights. Release metadata is consolidated with the first functional Catalog change instead of a metadata-only remote pipeline.

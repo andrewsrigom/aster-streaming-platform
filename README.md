@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phase 00 and Phase 01 are released. Phase 02's local Identity API is implemented: guarded demo sign-in, durable sessions, owned profiles, selection and Federation v2. Real HTTP/PostgreSQL and Docker product checks pass locally; protected candidate CI/review/release remain pending. See [current state](.ai/CURRENT_STATE.md), [Identity API](services/identity/README.md) and [Phase 02 evidence](evidence/phase-02/README.md). Catalog, browser UI and playable video are still planned.
+Phases 00–02 are released, including local sign-in, durable sessions, owned profiles and the Federation v2 Identity API. Protected and post-merge CI prove real HTTP/PostgreSQL and Docker product behavior. Phase 03 implements Catalog rights/editorial commands, public Federation queries, a local Docker runtime and generated HLS technical tests; its release acceptance is in progress. Router, browser UI and playable films remain planned. See [current state](.ai/CURRENT_STATE.md), [Catalog](services/catalog/README.md), [Identity API](services/identity/README.md) and [release evidence](evidence/phase-02/release.txt).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

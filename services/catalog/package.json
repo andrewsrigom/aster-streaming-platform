@@ -1,0 +1,45 @@
+{
+  "name": "@aster/catalog",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Catalog-owned rights and publication lifecycle policies.",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "dist/src",
+    "migrations/*.sql"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "start": "node ./dist/src/main.js",
+    "operator": "node ./dist/src/operate-local.js",
+    "migrate:local": "node ./dist/src/migrate-local.js",
+    "test": "node --test ./dist/test/*.test.js",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "dependencies": {
+    "@apollo/server": "5.5.1",
+    "@apollo/subgraph": "2.14.4",
+    "@as-integrations/express5": "1.1.2",
+    "@aster/http-express": "workspace:*",
+    "@aster/postgres": "workspace:*",
+    "@aster/runtime": "workspace:*",
+    "@aster/telemetry": "workspace:*",
+    "pg": "8.23.0",
+    "dataloader": "2.2.3",
+    "graphql": "16.14.2"
+  },
+  "devDependencies": {
+    "@apollo/composition": "2.14.4",
+    "@types/pg": "8.23.1",
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

@@ -2,33 +2,31 @@
 
 ## Purpose
 
-The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router composes execution plans across five subgraphs.
+The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router will compose execution plans across five subgraphs. Identity is released; Catalog's public contract is locally verified. Router and the remaining subgraphs are planned.
 
 ## Subgraphs
 
 | Subgraph | Primary fields |
 |---|---|
-| Identity | `me`, `account`, `profiles`, profile mutations |
-| Catalog | public title browse, title detail, rights and operator mutations |
+| Identity | `me`, `profiles`, owned Profile entities and profile mutations |
+| Catalog | public title browse/detail, localized metadata and attribution; editorial operations use the local CLI |
 | Playback | playback-session mutation, playback capability |
 | Engagement | watchlist, progress, history, continue-watching |
 | Discovery | home, search, trending, optional recommendations |
 
 ## Entity ownership
 
-Illustrative schema:
+Current Catalog contract (excerpt; [complete schema](../../evidence/phase-03/catalog-schema.graphql)):
 
 ```graphql
 type Title @key(fields: "id") {
   id: ID!
-  name: String!
-  synopsis: String!
-  publication: MediaPublication
-  attribution: Attribution!
+  localized(locale: String! = "en"): LocalizedTitle!
+  attribution: CatalogAttribution!
 }
 ```
 
-Engagement contributes profile-scoped fields:
+Planned Engagement contribution:
 
 ```graphql
 extend type Title @key(fields: "id") {
@@ -38,7 +36,7 @@ extend type Title @key(fields: "id") {
 }
 ```
 
-Playback contributes a capability, but playback creation remains an explicit mutation:
+Planned Playback contribution; playback creation remains an explicit mutation:
 
 ```graphql
 extend type Title @key(fields: "id") {
@@ -47,15 +45,17 @@ extend type Title @key(fields: "id") {
 }
 ```
 
-Discovery returns title references and ranking metadata rather than duplicating Catalog fields.
+Discovery will return title references and ranking metadata rather than duplicating Catalog fields.
 
 ## Query shape
+
+Target query surface below combines implemented Catalog/Identity with planned Discovery/Engagement. Catalog currently has no browse filter or search field.
 
 ```graphql
 type Query {
   me: Viewer
   title(id: ID!): Title
-  titles(first: Int!, after: String, filter: TitleFilter): TitleConnection!
+  titles(first: Int!, after: String): CatalogTitleConnection!
   home(profileId: ID): Home!
   search(query: String!, first: Int!, after: String): TitleConnection!
   continueWatching(profileId: ID!, first: Int!): ContinueWatchingConnection!
@@ -94,6 +94,8 @@ Suggested categories:
 
 ## Pagination
 
+Catalog implements ascending UUID keysets, first 1–20, first+1 lookahead and no total count. Public eligibility is checked before LIMIT and again by domain projection; retired/disputed/expired titles are absent. Each SQL statement uses a consistent snapshot; pages do not promise one shared snapshot. See [Catalog controls](../../services/catalog/README.md#public-graphql).
+
 Unbounded collections use keyset pagination.
 
 Rules:
@@ -107,11 +109,11 @@ Rules:
 
 ## Authorization
 
-The router authenticates and forwards a signed internal identity context. Subgraphs verify its trust source and enforce owner-side policy.
+Phase 04 will define and verify Router-to-subgraph identity trust. Owning applications enforce access policy; an unverified public header is never an identity source.
 
 A `profileId` argument never proves access. Engagement and Playback verify that the active account owns the profile.
 
-Operator mutations require an explicit operator role and audit event.
+Catalog editorial operations currently use the explicit local process authority and audited CLI in ADR-0015, not public GraphQL mutations. Hosted operator identity remains Phase 14.
 
 ## DataLoader
 

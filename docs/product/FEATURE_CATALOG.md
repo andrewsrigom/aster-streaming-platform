@@ -4,12 +4,12 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 
 | Capability | Owner | Phase | Status |
 |---|---|---:|---|
-| Repository execution harness | Platform | 00 | PLANNED |
-| Local dependency stack | Platform | 01 | PLANNED |
-| Production-ready Node service skeleton | Platform | 01 | PLANNED |
-| Accounts and sessions | Identity and Profiles | 02 | PLANNED |
-| Multiple viewer profiles | Identity and Profiles | 02 | PLANNED |
-| Profile authorization | Identity and Profiles | 02 | PLANNED |
+| Repository execution harness | Platform | 00 | RELEASED |
+| Local dependency stack | Platform | 01 | RELEASED |
+| Bounded Node service skeleton | Platform | 01 | RELEASED |
+| Local accounts and sessions | Identity and Profiles | 02 | RELEASED |
+| Multiple viewer profiles | Identity and Profiles | 02 | RELEASED |
+| Profile authorization | Identity and Profiles | 02 | RELEASED |
 | Rights-aware title lifecycle | Catalog | 03 | PLANNED |
 | Public catalog browse | Catalog | 03 | PLANNED |
 | Attribution page | Catalog | 03 | PLANNED |
@@ -48,3 +48,5 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Recommendations | Discovery | Extension | PLANNED |
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
+
+Phase 02 release evidence: [local Identity API](../../evidence/phase-02/release.txt). Hosted identity remains planned. Catalog has [tested domain rules and durable rights history](../../services/catalog/README.md), but its operator/public capability is not yet implemented.

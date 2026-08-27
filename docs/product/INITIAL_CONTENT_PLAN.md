@@ -24,7 +24,7 @@ Use a short generated or clearly licensed technical fixture for fast CI validati
 - known dimensions, frame rate, and duration;
 - no personal or restricted content.
 
-This fixture validates code mechanics. It is not a public catalog title.
+This fixture validates code mechanics. It is not a production catalog title or approved third-party film. Explicit local integration tests publish and retire it through the normal Catalog contract, using synthetic rights and non-deliverable references; they do not claim playback. [Recipe and isolation decision](../adr/0016-isolated-generated-media-fixture.md).
 
 ### Wave 1 — One complete film
 
@@ -73,8 +73,8 @@ Initial candidates for review:
 
 | Candidate | Review state | Purpose |
 |---|---|---|
-| Big Buck Bunny | NOT_REVIEWED | Broadly recognized animation and multiple source variants |
-| Sintel | NOT_REVIEWED | Longer animated film with dialogue and subtitle needs |
+| Big Buck Bunny | NEEDS_CLARIFICATION | Exact asset and current official evidence still required |
+| Sintel | NEEDS_CLARIFICATION | Exact asset, credits and subtitle review still required |
 | Tears of Steel | NOT_REVIEWED | Mixed live action and visual effects |
 | Elephants Dream | NOT_REVIEWED | Older source and compatibility variation |
 | Cosmos Laundromat | NOT_REVIEWED | High-quality animation and modern assets |
@@ -84,6 +84,8 @@ Initial candidates for review:
 | Charge | NOT_REVIEWED | Short-form modern candidate |
 
 `NOT_REVIEWED` means no permission claim has been made.
+
+The [two initial reviews](../../evidence/phase-03/candidate-sources.md) record indexed official license statements and direct-retrieval limitations. Neither record authorizes acquisition or publication.
 
 ## Asset categories
 

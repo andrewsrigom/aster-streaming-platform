@@ -2,16 +2,22 @@
 
 ## Resume point
 
-1. Phase 01 is released: PR 18 squash `b0544c9c6a86ac1cdb48963707eedf0f0e153621`; protected `33047330768` and exact post-merge `33047629326` pass. No more Phase 01 metadata-only publication.
-2. Local branch `feat/p02-identity-session` is not pushed. R01 assertion checkpoint `64a3aa8`; R02 durable sessions `1b45ebd`; R03–R08 profile checkpoint is identified by the containing commit and exact fingerprints in `evidence/phase-02/profiles-outbox.txt`.
-3. Profiles are locally verified: Identity 111 tests, PostgreSQL 29 tests, all 49 tasks (34 cached, 16.103 s), audit, executing-agent initial/confirmation review. Real profile run 10780 ms; cleanup 1048 ms/zero remaining. No independent approval claimed. Use Turbo for dependency-aware builds.
-4. P02-R09 resumed with explicit owner authorization on 2026-08-27. ADR-0014 accepts Elastic-2.0 Apollo and 0BSD tslib; the owner also permits future compatible licensing decisions without a new pause. Exact pins/lockfile/CI policy are updated. Audit has one moderate uuid advisory outside installed Apollo's v1/v4 call paths; no high/critical issue. Preserve notices and keep Aster MIT.
-5. Profile commit is `5a263e87b6abfd1f72860529a90f6f4f9ce9b8b0`. Current transport/schema/config/runtime/initializer/tests/Compose/docs edits are ours. The candidate has 144 passing Identity tests and all 49 tasks; eleven real scenarios pass (162778 ms, cleanup 2732 ms/zero remaining). Review corrected late-response header cleanup and stale status prose; fresh subgraph acceptance passes (12545 ms, cleanup 1387 ms) and focused HTTP confirmation passes. Docker image `e3056cf9` is healthy with retained data; six-step smoke and migration no-op pass, 189 packaged dependency versions match source. No unrelated resources changed. Final pre-push gate and protected publication remain; exact evidence is in `evidence/phase-02/identity-subgraph.txt`.
-6. Preserve owner validation and account-then-session lock order. Profile defaults/retention/deletion/retry semantics are in `services/identity/migrations/README.md`. Pending outbox never expires; relay/consumer cleanup belongs to Phase 08.
-7. Final source gate and executing-agent confirmation pass: 49 tasks, 144 Identity tests, high/critical audit; no remaining local blocker. Publish the coherent candidate once, require protected exact-head CI and review-thread resolution, squash and confirm post-merge before Phase 03. No heavyweight rerun for prose; hosted clean-checkout integration/image gates verify the exact publication. Preserve local edits, retain the running demo and avoid metadata-only publication loops.
+Continue IN_PROGRESS P03-R04/R09 protected publication on feat/p03-catalog-rights. Implementation commit 4e29f5eff7b5992abcd4911dcbec38aba1845e70 has complete local phase acceptance. Later closeout changes are evidence/memory prose only. Inspect current HEAD and any PR before publishing; do not duplicate a PR/run or start P04 before predecessor release.
+
+## Evidence and remaining work
+
+- 94 Catalog tests pass; media parser/probe tests and platform guard tests pass before final formatting.
+- Docker proof passes fresh/idempotent migrations, HTTP, privilege and PostgreSQL outage recovery, SIGTERM 143, zero resource cleanup. Source changed after the first proof only to fix OID-based privilege checking; a second proof covers that fix.
+- Generated HLS output: six seconds, 320x180/24fps, mono AAC, three H.264 TS segments and English WebVTT. Source checksum a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae. Repeatability and corrupt/missing/symlink/cancellation checks pass in one pinned image/build.
+- Real PostgreSQL generated publication/retirement and two unresolved candidate records pass; cleanup left zero fixtures in 22490 ms. Failed intermediate assertions were test reader-role regrant and the probe's schema-name lookup; the latter required OID lookup, now passing against private Identity.
+- Candidate gate passes: 52/52 tasks, 29 cached, 25.796 s; high-severity Node audit passes. Initial/confirmation author review is complete. Fresh detached worktree at 4e29f5e: pnpm install --frozen-lockfile --offline && pnpm check, 52/52 tasks, zero cached, 53.227 s. Temporary worktree was clean and removed; source fingerprints and the exact test boundary are in catalog-runtime.txt.
+- CI now invokes catalog:media and catalog:demo once for platform changes; verify its policy tests and classifier.
+- Existing Identity evidence remains supporting evidence. Only new labelled disposable fixtures changed; retained demo, public remote and unrelated PR 1 were not modified.
+
+## Next outcome
+
+Commit documentation-only acceptance closeout, publish one Phase 03 PR and require CI required on its exact head. Inspect reviews/threads, squash merge without bypass, confirm main post-merge CI, then activate Phase 04 from clean main. Its independently testable Identity/Catalog schema prerequisite is verified in the phase index. Remote IDs and results must be recorded when they exist, not predicted.
 
 ## Do not do yet
 
-- No public signup/recovery/email/MFA UI, hosted identity credentials or later-phase product work.
-- No Router trust shortcut, public identity headers, cross-context database access or Redis session authority.
-- No broad Docker/WSL reset/prune, unrelated resources, protection bypass or unrelated dependency-major update.
+Keep MIT and third-party notices; no license permission pause. No actual film approval, media delivery or browser playback claim. Roll back only new runtime/tooling; do not drop product/audit data or broadly prune Docker. Real source acquisition/worker is Phase 06, hosted operator trust Phase 14.

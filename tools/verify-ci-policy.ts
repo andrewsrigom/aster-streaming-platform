@@ -238,6 +238,10 @@ export function validateWorkflowPolicy(
       /- name: Prove real platform integration\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: pnpm integration\s*\n/u,
       "real integration must run once with a deadline for applicable platform changes",
     ],
+    [
+      /- name: Prove Catalog runtime and generated publication\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 10\s+run: \|\s+pnpm catalog:media\s+pnpm catalog:demo/u,
+      "Catalog changes require bounded generated-media and real Docker acceptance",
+    ],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],
     [/^\s{4}name:\s*Local platform\s*$/mu, "local-platform job is required"],
     [

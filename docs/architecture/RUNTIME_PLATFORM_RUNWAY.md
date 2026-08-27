@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document records the Phase 01 implementation sequence and current boundaries. P01-R06 through P01-R09 are released, including the real combined dependency/telemetry/shutdown matrix. P01-R10 implements the non-root Docker runtime, resource-aware integration/observability/full profiles and the exact clean Docker-only evaluator path. Final protected and exact post-merge acceptance pass through PR 18; [Phase 01 evidence](../../evidence/phase-01/README.md) distinguishes local acceptance from release.
+This document records the historical Phase 01 implementation sequence and its checkpoint boundaries. P01-R06 through P01-R10 are released through PR 18, including real dependency/telemetry/shutdown and clean Docker-only acceptance. Phase 02 subsequently adds the guarded Identity API, migrations and durable writes; use [current state](../../.ai/CURRENT_STATE.md) and [Phase 02 evidence](../../evidence/phase-02/README.md) for current product behavior.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 

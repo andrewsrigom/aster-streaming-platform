@@ -2,6 +2,92 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Phase 03 local acceptance
+
+### Completed
+
+Closed the requirement-by-requirement acceptance index and verified Phase 04's independently testable Identity/Catalog schema prerequisite. Clean-source acceptance covers implementation commit 4e29f5e. Removed only the clean disposable detached worktree; retained demo and durable data are unchanged.
+
+### Evidence
+
+pnpm install --frozen-lockfile --offline && pnpm check: exit 0, 52/52 tasks, zero cached, 53.227 s; 94 Catalog and 144 Identity tests pass. Existing source-fingerprinted real Docker, media and SQL checks remain valid for the evidence-only closeout. Results and limitations: evidence/phase-03/catalog-runtime.txt and README.md. No external review or remote CI result is inferred.
+
+### Next action
+
+Publish one coherent Phase 03 PR, require protected CI and resolved review threads, squash the exact accepted head, verify post-merge CI and activate Phase 04. No new film permission or hosted release is claimed.
+
+## 2026-08-27 — Runnable Catalog and generated HLS checkpoint
+
+### Completed
+
+Implemented local read-only Catalog composition, health/readiness recovery, guarded Docker init/runtime, generated HLS with audio/captions and byte validation, two unresolved source reviews, same-application publication/retirement integration and bounded CI wiring. Corrected private-schema privilege inspection to use OIDs; local reset recognizes both finite initializers and Catalog with exact ownership checks. No retained demo reset or remote mutation.
+
+### Evidence
+
+94 Catalog tests and focused media/platform checks pass. Fresh Catalog Docker proof passes in 80580 ms including cleanup; shutdown 1108 ms, exit 143, no OOM. Generated fixture repeats identical hashes, rejects corrupt/missing/symlinked segments and cancelled child work. Real PostgreSQL generated publication/retirement and two non-approved candidates pass, cleanup 22490 ms, zero residual fixtures. Raw checkpoints: evidence/phase-03/catalog-runtime.txt and generated-media.txt. First candidate attempt found handoff-heading and Docker-entry discovery metadata omissions; full gate is not yet claimed.
+
+### Next action
+
+Candidate gate and author confirmation now pass: 52/52 tasks, 29 cached, 25.796 s; high-severity Node audit passes. Finish clean-source full phase acceptance and publish one coherent Phase 03 PR. Router remains next, not active.
+
+## 2026-08-27 — Published Catalog candidate
+
+### Completed
+
+Implemented public SQL keysets/detail, complete bounded metadata, reader isolation and Catalog Federation/HTTP with request-scoped batching and abuse controls. Preserved legacy command replay. Author initial/confirmation review is complete.
+
+### Evidence
+
+91 tests and all 52 candidate tasks pass (38 cached, 42.253 s). Real SQL/CLI/HTTP verifies expiry before LIMIT, stable pages, one-query entities, immediate takedown, indexed plans and cancellation in a confirmed lock wait. Fixture cleanup: 18575 ms total, zero remaining. Evidence: evidence/phase-03/catalog-public.txt. No remote or retained demo mutation.
+
+### Next action
+
+P03-R05 is complete locally. Activate READY P03-R04/R09 generated HLS fixture, source reviews and Docker Catalog. Phase 03 is not released.
+
+## 2026-08-27 — Catalog editorial workflow candidate
+
+### Completed
+
+Completed local P03-R06 commands, authority/CLI, metadata and independent artwork review, immutable SQL audit, receipts and publish/retire outbox. Reserved takedown capacity and rechecked expiry before commit. Initial/confirmation review and credential-policy remediation confirmation pass.
+
+### Evidence
+
+74 tests, high-severity audit and all 52 candidate tasks pass (40 cached, 20.936 s). Real PostgreSQL/CLI passes both publish/dispute orders, atomic failures, bounded capacity, Unicode, migrations, restricted roles and stdin deadline; final fixture cleanup took 17229 ms total and left zero resources. Evidence: evidence/phase-03/catalog-workflow.txt. No retained demo or public remote changed.
+
+### Next action
+
+Activate P03-R05 public browse/schema from this coherent source checkpoint. Actual HLS fixture, source review and full Phase 03 release remain required.
+
+## 2026-08-27 — Durable Catalog rights history
+
+### Completed
+
+- P03-R01 committed as 4968d42. P03-R02 adds the Catalog schema, immutable rights/provenance, version/revision compare-and-set and bounded history reads using existing PostgreSQL infrastructure.
+
+### Evidence
+
+- 61 focused tests and reviewed real PostgreSQL integration pass: eight synchronized writers yield one commit; rollback/abort/timeout, Unicode, ownership/privilege and migration guards pass. Fixture cleaned in 3261 ms total with zero remaining; retained demo stays healthy.
+
+### Next action
+
+- Initial review added transaction synchronization and a real Unicode round-trip; confirmation complete, no independent approval claim. Candidate gate passes 52 tasks (38 cached, 17.092 s), 61 Catalog tests and high/critical audit. P03-R02 closed locally; next READY P03-R06 operator/lifecycle/outbox, then public queries/schema. Evidence/completed plan: `evidence/phase-03/catalog-persistence.txt`.
+
+## 2026-08-27 — Identity released; Catalog domain started
+
+### Completed
+
+- Squash merged Phase 02 PR 19 as `ec6386c` after protected `33066484199`; exact post-merge `33066827332` passes. One PR and one run per event, no bypass or independent approval claim. Local Docker demo remains healthy with retained data.
+- Started P03-R01 on `feat/p03-catalog-rights` from clean main. Added bounded rights normalization/approval, derived attribution and immutable title lifecycle rules. No runtime dependency, Catalog persistence/public API or media download.
+
+### Evidence
+
+- Hosted post-merge: 144 Identity tests, eleven scenarios (158185 ms, cleanup 1012 ms/zero remaining), UID 1000, six metric families and Docker six-step product smoke. Raw: `evidence/phase-02/release.txt`.
+- Catalog focused: 52/52 tests, 91.658842 ms; scoped lint/typecheck and Knip pass. Initial/confirmation review corrected hidden evidence fields and retired linkage; no remaining domain blocker. Raw: `evidence/phase-03/catalog-domain.txt`.
+
+### Next action
+
+- P03-R01 candidate gate passes 52 tasks, 52 Catalog tests and high/critical audit (18.031 s); commit the coherent local slice, then plan P03-R02 persistence/operator/public queries. Keep actual media attestation and rights authority separate from pure fixture validation. Do not publish a domain-only PR or rerun unchanged Identity containers.
+
 ## 2026-08-27 — Guarded Identity product candidate
 
 ### Completed

@@ -1,6 +1,6 @@
 # Local Identity API
 
-Status: implemented, locally tested over HTTP with real PostgreSQL; Phase 02 release is pending. This is a local-only Federation v2 subgraph, not hosted authentication, a Router or a browser application.
+Status: verified and released through [Phase 02](../../evidence/phase-02/release.txt), including protected/post-merge HTTP/PostgreSQL and Docker acceptance. This is a local-only Federation v2 subgraph, not hosted authentication, a Router or a browser application.
 
 ## Run
 
@@ -63,4 +63,3 @@ pnpm --filter @aster/identity integration:subgraph
 The isolated fixture verifies empty/repeated bootstrap, migration serialization, unknown versions, non-admin startup, actual login/profile/session paths, duplicate/concurrent limits, foreign-owner reads/writes/entities, rollback/deadlines and restart. It deletes only its own fixture resources. Focused transport tests additionally cover CSRF, sanitization, abuse and non-cooperative cancellation. See [Phase 02 evidence](../../evidence/phase-02/README.md).
 
 Dependencies retain their own notices. [ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md) accepts Apollo's Elastic-2.0 internals and tslib's 0BSD; Aster-authored source remains MIT.
-
