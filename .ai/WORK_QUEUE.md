@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item, based on released main b6c99c4. Public SSR/seed c0b7585, profile/Redux 7857957, Docker befb432, recovery bb39f35, artwork/laboratory f9d67cf and boundaries 970abeb are committed. Eighteen functional journeys and 58/58 source tasks pass. [Quiet-host performance confirmation](../evidence/phase-05/artwork-performance.md) passes all six visits. Actual screen-reader review, clean-checkout acceptance and publication remain.
+Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item, based on released main b6c99c4. Clean startup, isolation and consumer-refresh fix e130e8e pass [19 browser journeys and 58/58 source tasks](../evidence/phase-05/clean-acceptance.md). The prior [quiet-host baseline](../evidence/phase-05/artwork-performance.md) passes six visits. Final-image performance confirmation, actual screen-reader review and publication remain.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

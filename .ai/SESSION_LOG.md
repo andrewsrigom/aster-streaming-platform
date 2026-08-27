@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Clean demo acceptance and refresh ownership
+
+### Completed
+
+Clean Docker startup/seed/isolation passed. A cold Express diagnostic exceeded its test-process allowance; the wrapper now reports subprocess errors and allows fifteen seconds without changing HTTP/drain deadlines. Source 56a1320 then passed all 58 tasks uncached in 132.078 s.
+
+### Evidence
+
+Browser acceptance found a genuine refresh failure: a previous consumer's callback survived Apollo's function-source comparison. A route-change regression reproduced zero requests where one was required. Source e130e8e adds a non-serialized consumer identity and passes 19/19 browser scenarios in 74.076 s, fourteen axe scans and 58/58 source tasks in 48.789 s. Before/after evidence is in evidence/phase-05/clean-acceptance.md and clean-browser.jsonl.
+
+Removed only the checked proof project's containers, networks and three disposable volumes. Restored healthy development Web/Router and confirmed the accepted application's filesystem layers. Retained databases are untouched. Final-image performance was deferred by measured host contention; actual screen-reader review and protected publication remain. No public remote mutation occurred.
+
+### Next action
+
+Confirm final-image performance when the host meets the recorded preconditions, complete actual screen-reader review, then publish through protected CI/review.
+
 ## 2026-08-27 — Quiet-host baseline and Docker context correction
 
 ### Completed

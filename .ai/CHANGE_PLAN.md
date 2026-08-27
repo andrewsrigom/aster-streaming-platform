@@ -84,7 +84,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 - Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
 - Raw artifact path: evidence/phase-05/.
-- Acceptance result: boundary checkpoint 970abeb passes 58/58 source tasks and all 18 functional browser journeys, including fourteen axe scans and actual bundle/HTML isolation. Two predeclared quiet-host laboratory blocks pass all six visits and unchanged budgets. Actual screen-reader review and clean-checkout acceptance remain open.
+- Acceptance result: clean startup/isolation and refresh fix e130e8e pass 19 browser journeys, fourteen axe scans and 58/58 source tasks; an earlier uncached gate also passed 58/58. See evidence/phase-05/clean-acceptance.md. The prior image passed six quiet-host visits. Final-image performance, actual screen-reader review and protected publication remain open.
 - Iteration gate: cheapest changed adapter/cache/component checks and local production build.
 - Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
 - Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.

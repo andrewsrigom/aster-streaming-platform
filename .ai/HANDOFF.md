@@ -2,26 +2,34 @@
 
 ## Resume point
 
-P05-R01 is IN_PROGRESS on unpublished feat/p05-web-ssr, rebased onto released main b6c99c432603218d0a33c833e0b9a28b1c90e43b. P04-R02 is DONE.
+P05-R01 is IN_PROGRESS on unpublished feat/p05-web-ssr, based on released main b6c99c4. Application checkpoint e130e8e fixes refresh ownership. Phases 00–04 are released; no external Phase 04 wait remains.
 
-## External transition
+## Verified checkpoint
 
-PR 21 is merged without bypass. Final exact-head run 33103379545 and post-merge run 33104100966 passed. Both review threads are resolved. See evidence/phase-04/release.txt. No external Phase 04 wait remains.
+Clean source 56a1320 passed an uncached 58/58 gate in 132.078 s after fixing the Express diagnostic test wrapper (15 s subprocess allowance; its 2 s HTTP deadline and 1 s drain are unchanged). Clean Docker-only startup, seed, runtime isolation and actual context canaries pass.
 
-## Next outcome
+Browser acceptance exposed a real callback-owner bug, not a network timeout: after a shared-query route change the old image sent zero requests on explicit refresh. Apollo compares callback source text, so a stable non-serialized per-consumer Symbol now distinguishes closure owners. Final source e130e8e passes 19/19 browser scenarios in 74.076 s and 58/58 source tasks in 48.789 s (43 cached). Fourteen axe scans and public/authenticated artifact isolation pass. See evidence/phase-05/clean-acceptance.md and clean-browser.jsonl for before/after results, scope and limitations.
 
-Artwork/laboratory checkpoint f9d67cf is committed. The new boundary checkpoint passes all eighteen functional journeys in 90.389 s against image sha256:0c1641b4de7113f48a2dcc7472571e2edd98b8c75fc20f17c49959862faad228. It adds full public-asset scans, authenticated HTML isolation, fourteen default axe scans and explicit supplementary contrast/focus checks. Busy state now focuses enabled Close before paint and announces work. Full axe scans of the transient busy state could outlive the real timeout; its final checks are rapid semantic/keyboard assertions instead. Raw artifacts and failed iterations are in evidence/phase-05/web-boundaries.md and JSON Lines. Source gate passes 58/58 tasks, 45 cached, in 33.182 s; only evidence prose changed afterwards.
+## Next action
 
-Next: clean-checkout acceptance. Boundary checkpoint 970abeb is committed. Two predeclared independent three-visit quiet-host blocks pass all unchanged budgets; raw samples and pre/post host observations are in evidence/phase-05/performance-confirmation.json. Keep earlier failed samples; this accepts a quiet-host baseline, not arbitrary host contention. Actual Docker matching contradicted the initial omitted-script inference: broad directory exceptions admitted ten forbidden fixture files. Removing those exceptions now passes the real fifteen-include/fifteen-exclude scratch probe and 47 focused tests. Clean source 60364aa built successfully, but the stricter context requires a fresh candidate build. The detached clean checkout is /tmp/aster-p05-clean-pDkoZQ; proof project aster-p05-clean-proof has images only, no running resources. See evidence/phase-05/clean-acceptance.md.
+Confirm the final image's three-visit performance workload under the recorded quiet-host conditions, then complete actual screen-reader review and protected publication. Earlier six visits passed on the prior image, but the later CSS/context correction and callback fix require final-image confirmation. At 19:55 the preflight found load 4.67 and other active headless browsers, so no measurement started. Do not stop unrelated builds or select only passing samples.
 
-Actual screen-reader review remains required (not an accessibility-tree substitute). Computer Use stopped before Narrator launch because it could not confirm the Windows browser URL; no reader was launched or installed and no bypass was attempted. Keep 200 ms INP / 3500 ms hydration budgets, zero automatic GraphQL, the explicit-request guard, positive projection and public content outside Suspense. No publication before complete acceptance.
+Actual screen-reader review remains required. Existing Windows Narrator is available; the previous control attempt stopped before launch because it could not establish the browser URL. Follow the supported target-selection/activation workflow and do not bypass a policy stop. A DOM/accessibility tree or axe report is not speech evidence.
 
-## Local resources
+Preserve the explicit-request guard, per-consumer identity, public positive projection, useful non-Suspense SSR, four-second transport deadline, 200 ms INP and 3500 ms hydration budgets.
 
-Current source checkpoint passes 58/58 tasks. The runtime image includes the final application changes; later edits only refined checks, policy and evidence. Temporary copied public assets remain at /tmp/aster-p05-public-hBvqP2/static (about 1 MiB); their scan passed. All three test engines fail resolution inside the runtime, as intended. No public remote mutation occurred. ADR-0019 records the two package-scoped MPL test exceptions; separate tests enforce exact version/dev/lock placement.
+## Runtime and retained data
 
-Retained aster is untouched. aster-p04-development Router was restored on 4000, with existing private owners and the additive seed title 00000000-0000-4000-8000-000005000001. Its new Docker Web uses 3000; the old host Web process is stopped. For Web commands include base Compose, observability.yml and demo.yml with --profile observability; --no-deps can rebuild only Web. The aster-p05-demo-proof stack and all three owned synthetic volumes were removed after ownership/attachment validation; no proof resources remain. /tmp/aster-p04-clean-Hke28c remains the detached Phase 04 checkout. Never prune globally or remove retained data.
+The proof project aster-p05-clean-proof was fully removed after checking its labels and all volume attachments: no containers, networks or volumes remain. Only its three disposable volumes were deleted. The clean detached checkout /tmp/aster-p05-clean-pDkoZQ remains at e130e8e with installed verification dependencies.
+
+Development Web/Router are restored and healthy on 3000/4000. Web image sha256:1a1a10c44282573f33538b9e4c297e964f3450a7203d2e6845c8b6b54ef400f8 has the same eleven filesystem layers as accepted proof image sha256:f295e856d810619a3a6d4011d07ad99d2d8025aec184078b9f0bd1f86ac3e6f9. Router image remains sha256:76b37d0452e418ffe2c5f05d4e58dda9986bc2b84d0fadf55ae731c043604561.
+
+Use base Compose plus observability.yml and demo.yml with --profile observability for this development project. Browser tests use ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 and ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome. Retained aster, old development owner data and both PostgreSQL volumes are untouched. Never prune globally.
+
+## Logs and publication
+
+Local logs: /tmp/aster-p05-clean-source-gate.log (initial failure), /tmp/aster-p05-clean-source-confirmation.log (uncached pass), /tmp/aster-p05-clean-start.log, /tmp/aster-p05-clean-browser.log (17/18), /tmp/aster-p05-refresh-remount-before.log (red regression), /tmp/aster-p05-refresh-build.log, /tmp/aster-p05-clean-browser-confirmation.log (19/19), /tmp/aster-p05-refresh-source-gate.log, /tmp/aster-p05-clean-cleanup.log and /tmp/aster-p05-development-restore.log. Exported public evidence excludes private cookies and raw trace payloads.
 
 ## Do not do yet
 
-Do not publish Phase 05 before its complete acceptance. No player, actual-film rights approval, hosted identity or SLO claim. No private owner keys in Web; no direct SQL/Redis/owner calls from the frontend.
+Do not publish Phase 05 until acceptance is complete. No player, playable demo, acquired-film approval or hosted identity/SLO is claimed. Phase 06 must begin with an actual complete rights review before acquisition; the synthetic seed is not a substitute for those prerequisites.

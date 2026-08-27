@@ -14,15 +14,15 @@ Phases 00–04 are released. PR 21 squash b6c99c4 has successful exact-head prot
 
 ## Current work
 
-P05-R01 is the sole active item. Public build/runtime/HTML scans, authenticated SSR isolation and automated accessibility pass all 18 functional browser journeys. Busy-state focus now moves to enabled Close instead of retaining a disabled action. Fourteen axe scans have zero violations; incomplete contrast/focus cases have supplementary evidence. The source gate passes 58/58 tasks. [Boundary checkpoint](../evidence/phase-05/web-boundaries.md). Docker Web remains healthy on 3000; complete phase acceptance remains open.
+P05-R01 is the sole active item. Clean Docker startup/isolation pass. Acceptance exposed a real refresh bug: Apollo retained a previous consumer's callback. Source e130e8e fixes consumer identity and passes 19 browser journeys, fourteen axe scans and 58/58 source tasks. A preceding uncached gate also passed 58/58. [Clean acceptance](../evidence/phase-05/clean-acceptance.md). Proof resources were removed; development Web/Router are restored and healthy with retained data.
 
 ## Not implemented
 
-Actual screen-reader review and clean-checkout phase acceptance; playable VOD, engagement/discovery and hosted release. No real-film approval exists; current illustration is generic. Current local Router limits are not complete hosted GraphQL protection.
+Actual screen-reader review and final-image performance acceptance; playable VOD, engagement/discovery and hosted release. No real-film approval exists; current illustration is generic. Current local Router limits are not complete hosted GraphQL protection.
 
 ## Next outcome
 
-Continue P05-R01: clean-checkout acceptance. Two predeclared three-visit quiet-host performance blocks pass unchanged budgets; prior timing misses remain documented. A real scratch build exposed broad Docker directory exceptions; the corrected context includes all fifteen approved canaries and excludes all fifteen forbidden canaries. See [clean acceptance](../evidence/phase-05/clean-acceptance.md), including correction of the initial preflight inference. Actual screen-reader review remains required: Windows control stopped before Narrator launch because it could not confirm the browser URL. Do not bypass that stop or substitute an accessibility tree for speech. Keep the public explicit-request guard and existing data. No Phase 05 publication before acceptance.
+Continue P05-R01: final-image laboratory confirmation when the host satisfies recorded load/idle preconditions, then actual screen-reader review and protected publication. Earlier six quiet-host visits passed, but the context correction and refresh fix require final-asset confirmation. No measurement started during unrelated builds/browser runs. The previous Windows-control stop occurred before Narrator launch; do not bypass URL policy or substitute an accessibility tree for speech. Preserve the explicit-request guard, consumer identity and retained data. No publication before acceptance.
 
 ## Current risks
 
