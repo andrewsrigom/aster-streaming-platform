@@ -41,6 +41,17 @@ Deadline verification
 - Targeted Prettier: PASS; 0.69s elapsed; 142192 KiB maximum RSS.
 - Final affected repository gate: PASS; 46/46 tasks, 32 cached, 13.173s Turborepo time, 14.24s elapsed, 869316 KiB maximum RSS. It includes the final 62-test runtime suite, documentation, repository memory, architecture, security, unused-code, toolchain, CI policy, community, local-platform policy, formatting, lint, typecheck, build, and every selected test.
 
+Readiness checkpoint
+- Added a bounded readiness controller with one through 32 anonymous critical gates. Gate identity and topology never enter its public snapshot.
+- Lifecycle phase and dependency readiness remain separate. Pending or unavailable dependencies keep a ready lifecycle live but not ready; all gates can recover readiness without phase rollback.
+- Work admission delegates to the lifecycle only while every critical gate and the lifecycle are ready. Draining, failed, stopped, malformed-provider, and late-transition paths fail closed.
+- Nine focused readiness cases cover hostile construction, bounded counts, snapshot validation, failure/recovery, transition outcomes, admission, terminal state, malformed providers, captured operations, declaration isolation, and no topology disclosure.
+
+Combined runtime-contract verification
+- @aster/runtime typecheck, build, targeted ESLint, and targeted formatting: PASS.
+- @aster/runtime complete suite: PASS; 71/71 tests.
+- pnpm check:changed: PASS; 14/14 selected tasks, 3 cached, 22.358s Turborepo time, 23.51s elapsed, 860052 KiB maximum RSS.
+
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
 - Monitor cancellation/non-overlap focused tests.

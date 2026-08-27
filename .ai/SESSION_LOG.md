@@ -2,6 +2,21 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented recoverable dependency readiness
+
+### Completed
+
+- Added a bounded readiness controller over the released lifecycle with up to 32 anonymous critical gates, pending/ready/unavailable transitions, topology-free frozen snapshots, recovery without lifecycle rollback, and ready-only work leases.
+- Hardened options, lifecycle snapshots, and leases against accessors, malformed values, thrown providers, unbounded counts, invalid transitions, and late recovery after drain.
+
+### Evidence
+
+- Runtime typecheck/build and 71/71 runtime tests pass; the combined deadline/readiness affected gate passes 14/14 tasks in `22.358s` of Turborepo time and `23.51s` elapsed at `860052 KiB` maximum RSS.
+
+### Next action
+
+Implement the single non-overlapping recovery monitor with focused deterministic tests.
+
 ## 2026-08-26 — Implemented the propagated deadline checkpoint
 
 ### Completed

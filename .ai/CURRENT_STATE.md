@@ -118,7 +118,7 @@ Status: **IN_PROGRESS**
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
 - P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
 - P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
-- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Its dependency-free monotonic deadline has finite bounds, parent cancellation without reason copying, non-increasing remaining budget, idempotent cleanup, hostile-input hardening, and an unreferenced timer; 16 focused deadline cases and the complete 62-test runtime package passed before the rebase. Recoverable readiness is the current checkpoint; monitor, health routes, and product-empty Identity composition remain later.
+- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. Its deadline and readiness contracts are implemented: bounded cancellation, pending/ready/unavailable critical gates, recovery without lifecycle rollback, topology-free snapshots, and ready-only work admission pass 71 runtime tests and the 14-task combined affected gate. The single recovery monitor is next; health routes and product-empty Identity composition remain later.
 
 ## Not implemented
 
@@ -142,7 +142,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-For P01-R08, verify the rebased deadline checkpoint once, then implement the bounded readiness controller with focused tests before the next combined runtime-contract gate.
+For P01-R08, implement the single non-overlapping recovery monitor with deterministic scheduling, cancellation, late-completion, and stop-before-close tests.
 
 ## Current risks
 
