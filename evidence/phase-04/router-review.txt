@@ -20,7 +20,13 @@ Both-owner trace confirmation: 431435f6026c00489daedd7deb936e52.
 Actual trace/plan and runtime commands are indexed in README.md and router-runtime.txt.
 No remaining blocking finding was identified in this review scope.
 
-Complete clean-source acceptance, exact protected CI and release are still required.
+Clean-source confirmation at b5d7ab7: clean-acceptance.txt records the full 55/55
+gate and fresh Docker startup/journeys. Gate remediation changes only broker/S3
+test-clock control and the diagnostic process startup envelope. Runtime limits,
+asserted outcomes and all original security/data/availability boundaries remain
+unchanged. No new scoped blocking finding; the moderate UUID advisory has its
+actual method reachability and later re-review trigger recorded in that evidence.
+Exact protected CI and release are still required.
 Hosted workload identity, end-user operation allowlisting/cost policy, full tracing
 backends and UI accessibility remain the named later-phase requirements, not silently
 claimed by these local checks. Repeat review only for a new/changed blocking boundary.

@@ -1,0 +1,117 @@
+Phase 04 clean-source acceptance — 2026-08-27
+Source: b5d7ab774042d0d9d7aecc0825d9859967ccca06
+Detached checkout: /tmp/aster-p04-clean-Hke28c
+Environment: Linux/WSL amd64, Node 24.19.0, pnpm 11.24.0,
+Docker Engine 26.0.0, Compose 2.26.1-desktop.1.
+
+Source gate
+-----------
+Initial command: pnpm install --frozen-lockfile --offline && pnpm check
+The frozen offline install passed. The initial clean gate at 42ecc0b failed:
+a late broker connect/close test consumed its real 200 ms connect deadline
+before the setImmediate test continuation. The close then legitimately completed.
+
+At ffbbb85, pnpm check --force passed the fixed broker assertion, but exposed
+the same real-clock race in the S3 capacity fixture (389 ms test duration)
+and the S3 diagnostic child startup cutoff (3012 ms versus its 3000 ms limit).
+37 tasks succeeded before cancellation; those results are not a complete gate.
+
+Remediation is test-only:
+- Node TestContext MockTimers control setTimeout in the two ordering fixtures.
+- Explicit assertions retain the pending connection and occupied capacity.
+- The S3 diagnostic gets a finite 10000 ms process envelope for cold SDK loading;
+  its real 100/150/500 ms connection/operation/close deadlines are unchanged.
+- Child-process errors are asserted explicitly.
+Focused broker 21/21 and S3 16/16 pass, with typecheck, ESLint and formatting.
+
+Final command at b5d7ab7: pnpm check
+exit 0
+ Tasks:    55 successful, 55 total
+Cached:    26 cached, 55 total
+  Time:    58.96s
+
+The same initially empty detached checkout retained its verified offline install
+and successful unchanged task cache after the failed attempt. This is a complete
+clean-source acceptance, not a claim that all 55 tasks ran without caches in the
+final invocation. Broker 21, S3 16, Identity 145, Catalog 94 and composition 9 pass.
+git status --porcelain was empty before Docker acceptance.
+
+Fresh Docker proof
+------------------
+Project: aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35
+Preflight: no project containers, volumes or networks existed.
+Only the inspected development Router was stopped to free loopback port 4000.
+Retained aster and all its data were untouched.
+
+Command from the detached checkout:
+/usr/bin/time -f 'aster_clean_docker_elapsed_seconds=%e' docker compose --project-name aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35 --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
+exit 0
+aster_clean_docker_elapsed_seconds=149.50
+Ten containers; finite initializers exit 0; six long-running services healthy.
+Three new volumes and two new networks; no manual schema/key initialization.
+Base/install Docker caches were warm, application build layers were rebuilt.
+Build time precedes the 120-second readiness wait.
+
+Docker-only product command:
+docker compose --project-name aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35 --file infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
+
+Additional failure/transport command:
+node tools/verify-local-router.mjs --project aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35
+
+Both exit 0. Actual output and image fingerprints:
+{"event":"aster.identity.demo_verified","steps":["sign-in","create","select","list","delete","sign-out"]}
+{"event":"aster.router.public_boundary_verified","cases":10}
+{"event":"aster.router.session_and_two_owners_verified"}
+{"event":"aster.router.private_boundary_verified","publishedSubgraphPorts":0,"crossOwnerCredentialStatus":403}
+{"event":"aster.router.partial_timeout_verified","durationMs":2033,"healthyOwnerPreserved":true}
+{"event":"aster.router.concurrency_verified","requests":12,"rejected":4}
+{"event":"aster.router.recovery_verified","durationMs":189}
+{"event":"aster.router.revocation_verified"}
+router sha256:1b31eeca8e1a6c316594efc71810af38f9f08f831773a021ad27a71d86eab40a healthy
+identity sha256:f05bd6eb9b551be5c31e9ec4a6c86d8150a16a7fa4930186da2a472200c01ef1 healthy
+catalog sha256:7d4191bd576c93beaa43dc40989f67f4eb2ebf1492c3c983de78b3f41263eb2e unhealthy
+
+The immediately observed Catalog health was temporarily unhealthy after the
+intentional pause. Subsequent Docker ps confirmed Catalog and all other long-
+running proof services healthy before cleanup; public query recovery was 189 ms.
+
+Cleanup validated exact project, service, scope and environment labels; exactly
+the three owned volume names/authority labels and two networks; no foreign
+volume/network attachments. The proof-only compose down --volumes then removed
+its ten containers, three synthetic volumes and two networks. Postconditions
+showed none left. Image caches were retained. The development Router restarted:
+{"event":"aster.router.clean_ownership_verified","containers":10,"volumes":3,"networks":2,"foreignAttachments":0}
+{"event":"aster.router.clean_project_removed","containers":10,"volumes":3,"networks":2}
+{"event":"aster.router.development_restored","health":"healthy"}
+
+Dependency review
+-----------------
+pnpm audit --audit-level high: exit 0; 1 moderate, no high/critical findings.
+uuid 9.0.1 is transitive through Apollo Federation 2.14.4.
+Primary advisory: https://github.com/uuidjs/uuid/security/advisories/GHSA-w5hq-g745-h8pq
+The affected methods are v3/v5/v6 with caller-provided output buffers.
+Inspected installed @apollo/query-graphs dist/graphPath.js:508 calls v4()
+without arguments; @apollo/federation-internals dist/operations.js:266 calls
+v1() without arguments. No affected call path was identified in those imports.
+This is not proof the entire graph is vulnerability-free. Preserve the existing
+high-severity gate; do not force an unsupported major transitive override.
+Reassess on Apollo/UUID changes and in the Phase 13 security inventory.
+
+Review and remaining limits
+---------------------------
+The author confirmation in router-review.txt remains applicable: later code
+changes only stabilize test clocks/startup envelopes, not product runtime,
+transport trust, schema, Docker instructions, data or media. Current real Docker
+startup/journeys additionally revalidated packaging after these changes.
+The earlier actual trace, SQL cancellation, Collector outage and graceful-stop
+evidence remains supporting evidence; no unrelated heavyweight rerun is needed.
+Evidence-only closeout will receive its applicable source/governance gates and
+the exact public PR head must pass protected CI before squash and post-merge CI.
+
+Next-phase prerequisite inspected: services/catalog/test/integration/generated-publication.ts
+uses the generated HLS report with real owner publication and published queries.
+Phase 03 recorded its successful execution. The default database is intentionally
+empty; Phase 05 must explicitly provide the repeatable local UI seed, not invent
+approved real films or silently seed production. The phase remains HTTP-only:
+no browser accessibility, playable film, SLO, hosted trust or hosted release claim.
+

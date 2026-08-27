@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–03 are released. PR 20 squash 135484183253ede7a6b6436f737794bfee2049d8 and post-merge run 33091716358 pass; [release evidence](../evidence/phase-03/release.txt). P04-R01 is locally verified, including clean composition; [schema evidence](../evidence/phase-04/composition.txt). P04-R02 is IN_PROGRESS with implemented Router/private-owner trust and focused real runtime checks. Final candidate, clean-source and release gates remain; Phase 04 is not released.
+Phases 00–03 are released. PR 20 squash 135484183253ede7a6b6436f737794bfee2049d8 and post-merge run 33091716358 pass; [release evidence](../evidence/phase-03/release.txt). Phase 04 is locally verified through all ten requirements, author confirmation, clean-source 55/55 gates and fresh Docker acceptance at b5d7ab7; [clean evidence](../evidence/phase-04/clean-acceptance.txt). P04-R02 remains IN_PROGRESS only for protected publication and release; no Phase 04 PR yet.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

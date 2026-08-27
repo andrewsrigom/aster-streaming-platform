@@ -2,21 +2,21 @@
 
 ## Resume point
 
-Continue IN_PROGRESS P04-R02 on feat/p04-supergraph, based on released main 1354841. Schema delivery is locally verified; the runtime candidate now implements Router 2.17.0, private Identity/Catalog, per-owner file credentials, owner-validated sessions and bounded telemetry. Do not restart implementation from the historical schema-only handoff.
+Continue IN_PROGRESS P04-R02 release on feat/p04-supergraph, based on released main 1354841. Source b5d7ab7 has complete local Phase 04 acceptance. Only evidence-only closeout and protected release remain; do not restart runtime implementation or repeat unaffected heavyweight checks.
 
 ## Current evidence
 
-See evidence/phase-04/README.md and router-runtime.txt. Docker-only sign-in/profile/sign-out, ten public-negative cases, private ports, wrong-owner key rejection, nullable partial timeout, 12-call admission, revocation, real SQL-wait cancellation, Collector outage, natural Router stop and health recovery pass. Query-plan and actual Collector export are stored. Candidate gate passed 55/55 tasks, 24 cached, 56.14 s; final evidence/confirmation changes still need their gate. No Phase 04 PR exists yet.
+See evidence/phase-04/README.md, router-runtime.txt and clean-acceptance.txt. Complete clean-source gate: 55/55, 26 cached, 58.96 s. Fresh Docker build/start: 149.50 s with new data, warm base/install caches. Docker-only profile journey, ten public negatives, private owners, partial failure, admission and revocation pass. Earlier trace, SQL cancellation and shutdown evidence remains applicable. Two timing fixtures and a cold child-process envelope were corrected; runtime deadlines are unchanged. One moderate UUID advisory has a narrow reviewed disposition. No Phase 04 PR exists yet.
 
 ## Next outcome
 
-Author review and confirmation are recorded in evidence/phase-04/router-review.txt. Commit the coherent candidate, run clean-source full acceptance plus fresh Docker startup/journey, then publish one protected Phase 04 PR. Require exact-head CI, squash and post-merge confirmation before Phase 05. No repeated media/broker experiment is needed for prose-only closeout; runtime changes repeat their affected probes.
+Commit the evidence-only closeout, run its applicable candidate gate, then publish one protected Phase 04 PR. Require exact-head CI, resolved blocking review threads, squash and post-merge confirmation before Phase 05. Initial/confirmation author review is recorded in router-review.txt. The clean detached checkout /tmp/aster-p04-clean-Hke28c remains available at b5d7ab7; no running gate is left there.
 
 ## Local resources
 
 The owned aster-p04-development stack uses new synthetic data, private subgraphs and Router loopback 4000. Retained aster Identity/status/PostgreSQL/Redis are unchanged. Diagnostic query-plan exposure was restored to false after trace capture. Development image IDs and source hashes are in the runtime evidence. Never run a global prune or reset retained data.
 
-A new proof project must use an exact UUID name and new owned volumes. Stop only the development Router to free port 4000, then restore it after proof cleanup. Validate exact project/service/volume ownership and foreign attachments before cleanup; the fixed aster reset is not a proof-project cleanup tool.
+Fresh proof project aster-router-proof-0c7a2132-e984-45a4-9c59-85fc4d930a35 is removed: ten containers, three synthetic volumes, two networks; exact ownership and absence of foreign attachments were checked first. No retained data or image cache was deleted. Development Router is healthy again. Do not repeat or generalize that destructive cleanup to aster.
 
 ## Do not do yet
 

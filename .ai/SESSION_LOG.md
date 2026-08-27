@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Clean supergraph acceptance
+
+### Completed
+
+Completed Phase 04 local acceptance at b5d7ab7. Controlled broker/S3 fixture clocks and allowed bounded cold SDK process startup after clean gates exposed timing assumptions; product deadlines are unchanged. Verified a fresh Docker installation, then removed only its ten containers, three synthetic volumes and two networks after ownership checks. Development Router restored; retained aster untouched. Corrected the stale roadmap status table.
+
+### Evidence
+
+evidence/phase-04/clean-acceptance.txt: frozen offline install; final pnpm check 55/55, 26 cached, 58.96 s; broker 21/21 and S3 16/16; Docker build/start 149.50 s, profile journey and real private/failure checks. Earlier failed clean attempts are recorded, not hidden. Author confirmation extended to test-only remediation. Audit passes the existing high threshold with one moderate UUID advisory and no affected method identified in inspected Apollo imports.
+
+### Next action
+
+Publish the evidence-complete Phase 04 candidate once; require protected CI, squash and post-merge CI. Then begin Phase 05 with an explicit repeatable synthetic UI seed and SSR, not a real-film approval or a playable-video claim.
+
 ## 2026-08-27 — Local Router runtime acceptance
 
 ### Completed

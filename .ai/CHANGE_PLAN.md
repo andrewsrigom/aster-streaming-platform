@@ -13,7 +13,7 @@ The local GraphQL entry point will execute the composed Identity/Catalog schema 
 
 ## Current behavior
 
-The schema slice is locally verified at a682b20. Runtime candidate 42ecc0b runs Router with private owner transports and has focused real trust, query-plan/trace, cancellation and failure evidence; its affected gate passed 55/55 tasks. Clean-source acceptance exposed a wall-clock-sensitive broker test: a delayed event-loop turn can consume the connection deadline before the close-under-test starts. Control that test's timeout clock without changing the broker runtime. Final clean-source acceptance and protected release are not yet complete.
+All Phase 04 local requirements and author confirmation pass at source b5d7ab7. Clean-source 55/55 gates and fresh-data Docker startup, sessions, private boundaries, partial failure and recovery pass. Broker/S3 gate remediation controls fixture timing and cold diagnostic startup without changing product deadlines. The owned proof stack is removed and development Router restored. Only the evidence-only candidate gate and protected publication/release remain.
 
 ## Proposed behavior
 
@@ -82,7 +82,7 @@ Use the pinned upstream Router with source-owned YAML/Rhai hooks, generated SDL 
 
 - Commands: focused package builds/tests, Router config/runtime probe, pnpm check:changed and pnpm check.
 - Raw artifact path: evidence/phase-04/.
-- Acceptance result: runtime implementation and focused checks pass; full candidate/clean-source/release acceptance remains pending.
+- Acceptance result: local runtime, author review, full clean-source and fresh Docker acceptance pass; evidence/phase-04/clean-acceptance.txt. Exact protected CI and release remain pending.
 - Iteration gate: changed transport tests and pinned Router config/startup probe.
 - Candidate gate: affected-scope checks plus the full phase runtime acceptance and schema compatibility.
 - Heavyweight repeat triggers: changes to trust, routing, Docker packaging, deadlines, cookie propagation or telemetry repeat affected runtime checks; prose-only changes do not repeat Docker/media work.

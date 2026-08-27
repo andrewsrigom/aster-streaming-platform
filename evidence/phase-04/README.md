@@ -1,11 +1,12 @@
 # Phase 04 Evidence Index
 
-Phase status: IN_PROGRESS. Schema delivery is locally VERIFIED. Router runtime is implemented with real local acceptance checks and a passing 55/55 affected candidate gate. Final clean-source, review and protected release gates remain open.
+Phase status: locally VERIFIED; protected release remains IN_PROGRESS. All ten requirements have local implementation and acceptance evidence, including clean-source 55/55 gates, fresh Docker startup and author confirmation. Exact-head protected CI, squash and post-merge CI remain open.
 
 - [Composition checkpoint](composition.txt): deterministic owner schema printers, five artifacts, twelve known operations, compatibility against committed baselines and negative tests.
 - [Router runtime checkpoint](router-runtime.txt): Docker-only session journey, private owner credentials, forged/duplicate headers, partial timeout, concurrency, revocation, cancellation, Collector outage and graceful stop/recovery.
 - [Actual query plan](router-query-plan.json) and [Collector trace](router-trace.txt): two-owner fetches, bounded operation attributes and private-canary checks.
 - [Author review and confirmation](router-review.txt): blocking boundaries, batched corrections and remaining release gates.
+- [Clean-source acceptance](clean-acceptance.txt): deterministic test remediation, complete 55/55 gate, fresh-data Docker build/journey/failure proof, guarded cleanup and the moderate dependency-advisory disposition.
 - [Supergraph](../../infra/router/generated/supergraph.graphql), [public API](../../infra/router/generated/api.graphql), [ownership/hash manifest](../../infra/router/generated/manifest.json).
 - [Commands, bounds and conventions](../../apps/router/README.md).
 - Predecessor: [Phase 03 release](../phase-03/release.txt), PR 20 squash `1354841`, protected and post-merge CI passed.
@@ -18,4 +19,4 @@ Phase status: IN_PROGRESS. Schema delivery is locally VERIFIED. Router runtime i
 | P04-R06 | Real Router operation/fetch events, query plan, Collector trace and authenticated owner correlation |
 | P04-R07/R09 | Bounded HTTP/parser/fetch/admission settings, real timeout/partial failure, cancellation and recovery |
 
-No phase exit, hosted readiness, approved real film or playable demo is claimed. Accessibility/browser interaction is not applicable to this HTTP-only phase; Phase 05 owns the web shell.
+No protected release, hosted readiness, approved real film or playable demo is claimed. Accessibility/browser interaction is not applicable to this HTTP-only phase; Phase 05 owns the web shell. Its deterministic generated-publication prerequisite is inspected in the clean acceptance record; its default-data UI seed remains explicit Phase 05 work.

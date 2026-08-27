@@ -16,7 +16,7 @@ Phase 03 has complete [acceptance](../evidence/phase-03/README.md): 94 Catalog t
 
 ## Current work
 
-P04-R01/R04/R05/R08/R10 schema delivery is locally verified; [evidence](../evidence/phase-04/composition.txt). P04-R02 with R03/R06/R07/R09 is IN_PROGRESS. Real Apollo Router 2.17.0 now fronts private Identity/Catalog, with separate file-backed transport credentials, owner-validated sessions, bounded traffic and optional sanitized traces. Focused trust/config/session tests (41) and platform/reset policy tests (35) pass. Real partial failure, revocation, capacity, trace privacy, client cancellation and bounded shutdown pass locally. Final packaging, consolidated candidate gates, clean-source acceptance and release remain open; no Phase 04 PR has been published.
+All P04-R01 through P04-R10 are locally verified; protected release remains IN_PROGRESS. [Clean acceptance](../evidence/phase-04/clean-acceptance.txt) binds source b5d7ab7 to complete 55/55 gates, fresh-data Docker build/startup, session/profile journey and real failure/isolation checks. Author initial and confirmation reviews pass. Broker/S3 gate fixtures now control timing without changing runtime deadlines. The proof stack and its three synthetic volumes were removed after ownership checks; development and retained demos are healthy. No Phase 04 PR has been published yet.
 
 ## Not implemented
 
@@ -24,7 +24,7 @@ Web UI, real-film worker/delivery/playback, engagement/discovery and hosted rele
 
 ## Next outcome
 
-Finish P04-R02 candidate packaging/evidence, initial and confirmation review, clean-source full gates and protected Phase 04 publication. Do not start the web phase before this runtime acceptance.
+Complete P04-R02 by publishing one protected Phase 04 PR after the evidence-only candidate gate; require exact-head CI, squash and post-merge confirmation. Then activate Phase 05's explicit synthetic-data seed and SSR web shell. No repeated Docker/media experiment is required for prose-only closeout.
 
 ## Current risks
 
@@ -32,3 +32,4 @@ Finish P04-R02 candidate packaging/evidence, initial and confirmation review, cl
 - Composition/known-operation checks do not establish runtime routing, trust or allowlisting.
 - Preserve MIT and third-party notices. No compatible-license permission pause; no invented media rights.
 - Only bounded synthetic data and owned temporary resources; retained demo remains unchanged.
+- Audit reports one moderate UUID advisory, below the existing high-severity gate. Inspected Apollo calls use unaffected v1/v4 without buffers; no affected path identified, not a universal safety claim. Recheck with dependency changes and Phase 13.
