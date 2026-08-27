@@ -133,7 +133,7 @@ jobs:
           fail-on-severity: high
           fail-on-scopes: runtime, development, unknown
           license-check: true
-          allow-licenses: Apache-2.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1.0.0, ISC, MIT
+          allow-licenses: Apache-2.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1.0.0, ISC, MIT, MITNFA
           vulnerability-check: true
           comment-summary-in-pr: never
 

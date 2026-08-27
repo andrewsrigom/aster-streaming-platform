@@ -11,7 +11,7 @@ export const QUALITY_GATE_TASKS = Object.freeze([
   "toolchain:check",
   "toolchain:test",
   "typecheck",
-  "lint",
+  "lint:workspace",
   "format:check",
   "unused:check",
   "architecture:check",

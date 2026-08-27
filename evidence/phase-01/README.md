@@ -3,7 +3,7 @@
 - Phase status: `IN_PROGRESS`
 - Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace
 - Evidence date: 2026-08-26
-- Active Phase 01 work item: P01-R06 is active from released P01-R05 squash `4d24335`
+- Active Phase 01 work item: P01-R07 is active from released P01-R06 squash `8dff9d8`
 
 ## Work items
 
@@ -15,10 +15,11 @@
 | Structured logging, redaction, and trace correlation | P01-R04 | RELEASED | [`runtime-logging.txt`](runtime-logging.txt) |
 | Express HTTP boundary and Apollo drain compatibility | P01-R11 | RELEASED | [`http-adapter.txt`](http-adapter.txt) |
 | Runtime lifecycle, health state, and bounded shutdown | P01-R05 | RELEASED | [`runtime-lifecycle.txt`](runtime-lifecycle.txt) |
-| Bounded runtime, HTTP, dependency, and export metrics | P01-R06 | IMPLEMENTED; verification pending | [`runtime-telemetry.txt`](runtime-telemetry.txt) |
+| Bounded runtime, HTTP, dependency, and export metrics | P01-R06 | RELEASED | [`runtime-telemetry.txt`](runtime-telemetry.txt) |
+| Narrow clock, ID, PostgreSQL, Redis, broker, and object-storage adapters | P01-R07 | IMPLEMENTED; hosted license confirmation pending | [`platform-adapters.txt`](platform-adapters.txt) |
 | Remaining runtime design preflight | P01-R06–R10 | PLANNED | [`runtime-runway-preflight.txt`](runtime-runway-preflight.txt) |
 
-P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; and P00-R06 through `92d3531`. P01-R05 is released through protected squash `4d24335`: closeout run `33004817099`, all review discussions, final review, and exact post-merge run `33004926766` pass. P01-R06 is active from that clean released head. Candidate `b277c68` passes focused tests, compatibility diagnostic, changed-scope gate, zero-cache complete graph, audit, secret scan, and an exact isolated frozen offline checkout; review, protected CI, and release gates remain pending. Broker, object storage, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
+P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protected squash `c5a707d`; P01-R04 through `e33f90b`; P01-R11 through `93147ac`; P00-R06 through `92d3531`; and P01-R05 through `4d24335`. P01-R06 is released through protected squash `8dff9d8`: exact source and clean-checkout gates, both review remediations, final review, protected closeout run `33012535152`, and post-merge run `33012664408` pass. P01-R07 is implemented through source candidate `3e55990`: focused adapter suites, the complete uncached graph, exact frozen clean checkout, four unavailable-dependency diagnostics, cold standalone lint, audit, secret scanning, initial remediation, and confirmation review pass. Pull-request run `33023269145` passed source, audit, documentation, and security but correctly blocked on transitive Bowser's unreviewed `MIT AND MITNFA` expression; ADR-0012 and the narrow policy remediation await an exact-head protected rerun. Merge and post-merge verification remain pending. Real dependency containers and interoperability, Collector/backend, Identity service composition, product schemas, and migrations remain unimplemented.
 
 ## Current limitations
 
@@ -29,4 +30,4 @@ P01-R01 and P01-R02 are released on `main`. P01-R03 is released through protecte
 - The destructive reset intentionally has no backup or seed recovery yet; deleted local PostgreSQL data is irreversible until the owning phases implement those capabilities.
 - The current reset allowlists only the P01-R01 services and volume; later local dependencies must extend its ownership checks before becoming resettable.
 - P01-R11 uses a synthetic Apollo schema and loopback-only diagnostic. P01-R05 proves reusable process shutdown separately, but no deployable service, representative load, or comparative Express/Fastify performance exists yet.
-- The remaining-runtime preflight does not select a client or image; upstream metadata and every affected compatibility result must be repeated by the owning work item.
+- The remaining-runtime preflight does not select the P01-R09/P01-R10 service images; upstream metadata and every affected compatibility result must be repeated by the owning work item.

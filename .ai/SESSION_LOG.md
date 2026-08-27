@@ -2,6 +2,177 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Passed hosted policy confirmation and remediated late review
+
+### Completed
+
+- Published the narrow ADR-0012 policy remediation as exact head `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a` on pull request 14 without changing dependencies or adapter runtime source.
+- Observed protected run `33023896325` complete successfully after the delayed pull-request event was delivered during the documented GitHub Actions degradation.
+- Received two late independent review comments after the run: `3867503077` found that accepted Kafka publish interruption was not publicly distinguished as delivery-ambiguous, and `3867503082` found that an S3 bucket-probe 404 was incorrectly treated as a healthy object miss.
+- Implemented the warranted additional-round remediation: accepted Kafka publish interruption now returns a finite `delivery_ambiguous` result with abort/timeout reason, pre-acceptance abort remains ordinary abort, and only S3 object reads treat 404 as normal `not_found`; bucket probe reports degraded/unavailable.
+
+### Evidence
+
+- Classify change, Dependency review, Documentation and security, Install and source quality including the frozen install and high-severity audit, Local platform including health-gated Compose verification, and `CI required` all pass.
+- Dependency review accepts the complete `MIT AND MITNFA` expression under ADR-0012 without a package exclusion. Its seven low OpenSSF Scorecard annotations remain informational and no high-or-higher vulnerability is reported.
+- Exact hosted candidate: `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`; run: `33023896325`.
+- Targeted formatting, lint, typecheck, build, Kafka 21/21, and S3 16/16 pass for the late-review remediation.
+- The remediation affected graph passes 46/46 tasks with 29 cached in `18.538` seconds of Turborepo time and `19.66` seconds elapsed, with `861432` KiB maximum RSS.
+- Exact source candidate `d3a23dc9fd6016a4369c977532b129a507c15316` passed a no-generated-state frozen offline install reusing all 329 packages with zero download in `1.75` seconds and `402136` KiB maximum RSS.
+- Its forced exact-checkout graph passed 46/46 tasks with zero cache in `48.283` seconds of Turborepo time and `49.55` seconds elapsed, with `842380` KiB maximum RSS. All four diagnostics, high-severity audit, clean Git, and validated checkout removal pass; confirmation review found no blocker.
+
+### Next action
+
+Commit and publish the exact-checkout evidence closeout, resolve both discussions with exact evidence, and require protected exact-head confirmation before squash merge.
+
+## 2026-08-26 — Identified the hosted MITNFA license blocker
+
+### Completed
+
+- Published exact evidence head `811857b` once as pull request 14.
+- Observed run `33023269145`: source quality, frozen install, high-severity audit, documentation, repository memory, security, and classification pass; Dependency review and the aggregate fail only on transitive `bowser@2.14.1` classified as `MIT AND MITNFA`.
+- Confirmed the transitive path through `@aws-sdk/core@3.977.9`, inspected the distributed license, the SPDX `MITNFA` record, GitHub configuration guidance, and the pinned action's compound-expression implementation.
+- Accepted ADR-0012: recognize only SPDX `MITNFA`, preserve notices, require new review before modified/bundled use, and keep package-level license checking plus all vulnerability scopes enabled.
+
+### Evidence
+
+- Hosted run: `33023269145`; exact head: `811857ba3be5886b469055d097ed083c9d20bedc`.
+- Dependency review reports no high-or-higher vulnerability. Seven low Scorecard messages and workspace-license notices are informational; `MIT AND MITNFA` is the only blocking finding.
+- The pinned action's own tests prove a compound `AND` dependency is accepted only when both simple identifiers are allowed; a compound allowlist item is ignored.
+- Targeted formatting, lint, CI policy, 11/11 focused tests, documentation over 136 documents and 364 links, repository memory, and the 46/46 affected gate pass; the gate used 33 cached tasks, `16.015` seconds of Turborepo time, and `17.10` seconds elapsed.
+
+### Next action
+
+Pass the affected local gate, commit and push one policy remediation to pull request 14, then require the protected exact-head dependency review and stable aggregate before merge.
+
+## 2026-08-26 — Remediated and confirmed the platform adapter candidate
+
+### Completed
+
+- Completed the initial review of source candidate `37e6db8` across contracts, trust boundaries, state ownership, deadlines, telemetry, lifecycle, declarations, tests, and task ordering.
+- Corrected normal S3 not-found availability telemetry and hostile write input; prevented late Redis/Kafka completions from reviving shutdown state; accounted for active Kafka wrappers during close; and restricted consumed broker records to bounded own data properties.
+- Recorded source remediation `3e55990` and completed the confirmation review with no blocking requirement, security/data invariant, availability, lifecycle, or public-contract finding.
+
+### Evidence
+
+- Focused Prettier, ESLint, typecheck, build, and tests pass: S3 16/16, Redis 14/14, and Kafka 20/20.
+- `pnpm check:changed` passes 46/46 tasks with 24 cached in `18.664` seconds of Turborepo time and `19.93` seconds elapsed; `pnpm check --force` passes 46/46 uncached in `32.206` seconds and `33.42` seconds elapsed.
+- The consolidated evidence/memory candidate passes a final 46/46 affected gate with 35 cached in `14.658` seconds of Turborepo time and `15.78` seconds elapsed.
+- The exact clean-checkout and cold-lint proof at `8361f11` remains applicable because the review remediation changes no dependency, lockfile, workspace, export, declaration contract, install, bootstrap, native module, or public command. Lifecycle and hostile-input suites and all four subprocess diagnostics were repeated.
+
+### Next action
+
+Commit this consolidated evidence, push once, open one pull request, pass protected CI, squash-merge, verify the post-merge run, and activate P01-R08 from clean released `main`.
+
+## 2026-08-26 — Implemented provisional bounded Kafka adapter candidate
+
+### Completed
+
+- Compared current `@confluentinc/kafka-javascript@1.10.0` with `kafkajs@2.2.4` through live registry, source, official support, install, license, dependency, audit, log, retry, cancellation, lifecycle, and removal evidence.
+- Rejected Confluent for this checkpoint after its unavailable-broker lifecycle took `31.129` seconds against Aster's ten-second shutdown budget; selected exact provisional KafkaJS because the equivalent lifecycle completed in `127` milliseconds with natural process exit.
+- Added `@aster/broker-kafka` with bounded connect/metadata/keyed publish, finite-attempt idempotence, one sequential manual-commit consumer, no automatic crash restart, stable telemetry/results, ambiguous-generation retirement, explicit stop, and lifecycle close without product events, outbox, or replay policy.
+
+### Evidence
+
+- Broker typecheck/build, 17 of 17 focused tests, refused-loopback diagnostic, ESLint, Prettier, Knip, architecture validation, vendor-free declarations, exact MIT dependency inventory, high-severity audit, and finite stalled-work shutdown pass.
+- `pnpm check:changed` passes 46 of 46 selected tasks, 32 cached, in `13.832` seconds of Turborepo time and `14.91` seconds elapsed.
+- Commit `a932822` records the broker checkpoint. The first stabilized complete graph passes 46 of 46 tasks uncached in `29.021` seconds of Turborepo time and `30.09` seconds elapsed.
+- An exact no-local checkout of `a932822` installed 329 packages entirely from the offline content-addressed store in `1.44` seconds, then exposed a real cold-state ordering defect: 45 of 46 uncached tasks passed, while root type-aware lint began before telemetry declarations existed.
+- The remediation separates public `pnpm lint` from the internal workspace lint task, prepares telemetry declarations for the public command, and makes the integrated lint task depend explicitly on the telemetry build. The 20-test toolchain suite, direct lint, and repeated affected graph pass; the latter completed 46 of 46 tasks with 24 cached in `15.802` seconds of Turborepo time and `16.92` seconds elapsed.
+- Commit `8361f11` records the lint-order remediation. Its exact no-local checkout reused 329 packages with zero download, passed 46 of 46 uncached tasks in `37.964` seconds of Turborepo time and `39.09` seconds elapsed, passed all four adapter diagnostics, audit, secret scanning, clean Git, and exact cleanup.
+- A separate exact no-local clone with no telemetry declaration proved standalone `pnpm lint`: frozen install completed in `1.50` seconds, the prerequisite telemetry build ran uncached, type-aware lint passed in `13.60` seconds total, Git stayed clean, and the validated root was removed.
+- Raw comparison and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Commit the exact clean-checkout evidence, then perform the bounded initial review at source candidate `8361f11`.
+
+## 2026-08-26 — Implemented bounded S3-compatible storage candidate
+
+### Completed
+
+- Selected exact `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3` after release-age, registry, source, license, engine, install, dependency, audit, checksum, streaming, cancellation, lifecycle, and removal review.
+- Added `@aster/object-storage-s3` with bounded path-style no-retry construction, probe/head, exact-length streaming writes, bounded streaming reads, fixture-only deletion, finite capacity/deadlines, dependency telemetry, generation retirement, and idempotent lifecycle close.
+- Added no product object, rights/publication policy, HLS/CDN behavior, signed URL, broad deletion, service, container, or real-interoperability claim.
+
+### Evidence
+
+- S3 typecheck/build, 16 of 16 focused tests, refused-loopback diagnostic, ESLint, Prettier, Knip, architecture validation, vendor-free declarations, dependency/license inventory, high-severity audit, and finite forced-retirement behavior pass. The affected graph passes 43 of 43 tasks, 29 cached, in `15.106` seconds; the coherent source commit remains next.
+- Raw selection and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Commit the green S3 checkpoint, then perform the Kafka client install/lifecycle comparison.
+
+## 2026-08-26 — Implemented bounded Redis connectivity candidate
+
+### Completed
+
+- Selected exact `@redis/client@6.2.1` after current registry, exact-source, license, engine, install, dependency, audit, cancellation, reconnect, lifecycle, and removal review.
+- Added `@aster/redis` with disabled offline queueing, bounded command capacity and reconnect attempts/delay, shared finite connect, fixed `PING`, caller cancellation, stable sanitized outcomes, finite telemetry/state, generation replacement, and idempotent lifecycle close.
+- Exposed no generic Redis command, cache key/value, TTL, invalidation, Lua, lease, rate limit, or product state. Redis remains non-authoritative and real interoperability remains P01-R09.
+
+### Evidence
+
+- Redis typecheck/build, 13 of 13 focused tests, ESLint, Prettier, Knip, architecture validation, refused-loopback diagnostic, vendor-free declarations, exact MIT/Apache-2.0 graph, high-severity audit, and secret scan pass. The affected graph passes 40 of 40 tasks, 27 cached, in `11.562` seconds of Turborepo time and `12.64` seconds elapsed; the coherent source commit remains next.
+- Raw selection and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Pass and record the affected-scope gate, commit the Redis checkpoint, then start the S3 streaming adapter.
+
+## 2026-08-26 — Implemented bounded PostgreSQL connectivity candidate
+
+### Completed
+
+- Selected exact `pg@8.23.0` and development-only `@types/pg@8.23.1` after current registry, official documentation, exact source, license, engine, install-script, dependency, audit, cancellation, lifecycle, and removal review.
+- Added `@aster/postgres` with bounded pool reservations, finite connection/server/query/operation/close deadlines, a fixed probe, stable sanitized outcomes, released dependency telemetry, a bounded pool snapshot, one shared close, and runtime lifecycle hooks.
+- Destroyed clients after abort, timeout, SQLSTATE `57014`, or unknown probe failure because the selected client does not prove native `AbortSignal` cancellation or reusable protocol state after its query timeout. Kept product schema, migration, repository, typed SQL, transaction policy, and real-container claims out of scope.
+
+### Evidence
+
+- PostgreSQL typecheck/build, 11 of 11 focused tests, targeted ESLint/Prettier, refused-loopback diagnostic, public declaration isolation, exact MIT/ISC graph, and high-severity audit pass. The affected graph passes 37 of 37 tasks, 23 cached, in `9.435` seconds of Turborepo time and `10.46` seconds elapsed; the coherent source commit remains next.
+- Raw selection and behavior evidence: `evidence/phase-01/platform-adapters.txt`.
+
+### Next action
+
+Pass and record the affected-scope gate, commit the PostgreSQL checkpoint, then start the Redis adapter.
+
+## 2026-08-26 — Implemented deterministic clock and identifier checkpoint
+
+### Completed
+
+- Added repository-owned `AsterClock` and `AsterIdentifierGenerator` contracts to `@aster/runtime` with system/fixed clocks, UUID v4 generation through `crypto.randomUUID`, and a copied finite deterministic unique sequence.
+- Added bounded cause-free configuration and exhaustion errors, epoch and sequence limits, accessor-safe input inspection, immutable returned adapters, isolated `Date` values, and no global mutation or new dependency.
+- Kept product-specific identity rules, deadlines, network clients, service composition, schema, cache, events, and durable data outside this checkpoint.
+
+### Evidence
+
+- Runtime typecheck/build, 46 of 46 tests including seven new clock/ID tests, ESLint, Prettier, architecture validation, public-declaration isolation, and `git diff --check` pass. The affected graph passed 13 of 13 tasks with zero cached in `10.341` seconds.
+- Raw evidence: `evidence/phase-01/platform-adapters.txt`; P01-R07 remains `IN_PROGRESS` and external client selections remain pending.
+
+### Next action
+
+Commit the green clock/ID checkpoint, then research exact current dependency clients before lockfile changes.
+
+## 2026-08-26 — Released telemetry and activated platform adapters
+
+### Completed
+
+- Protected P01-R06 closeout run `33012535152` passed; pull request 13 was squash-merged as `8dff9d8d57572b2eac944ae98406f3da2979682c`, and exact post-merge run `33012664408` passed every applicable job.
+- Synchronized clean `main`, created `feat/p01-r07-platform-adapters` from exact released head `8dff9d8`, and moved P01-R07 to `IN_PROGRESS` with no product context or durable data change.
+- Reconciled the broker gate: P01-R07 may implement one evidence-backed provisional client, while P01-R09 owns real-broker confirmation and mandatory replacement before Phase 01 closeout if bounded lifecycle fails.
+- Defined separate clock/ID, PostgreSQL, Redis, S3, and broker checkpoints with focused iteration gates, one stabilized complete gate, exact dependency evidence, rollback, and bounded review.
+
+### Evidence
+
+- P01-R06 evidence now records protected closeout, exact squash, post-merge success, and `RELEASED` status.
+- P01-R07 activation evidence is in `evidence/phase-01/platform-adapters.txt`; no P01-R07 package or client is claimed implemented.
+
+### Next action
+
+Pass the repository-memory/documentation activation gate, then implement the dependency-free P01-R07 clock and ID checkpoint before selecting external clients.
+
 ## 2026-08-26 — Verified bounded runtime telemetry
 
 ### Completed

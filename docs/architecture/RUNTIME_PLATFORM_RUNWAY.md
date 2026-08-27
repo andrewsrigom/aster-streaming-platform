@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the implementation path for the remaining Phase 01 work. P01-R06 has an implemented local candidate; it does not claim that a Collector, dependency client, Identity service, broker, object storage, or observability backend exists. Exact dependencies and container images outside the telemetry package remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
+This document defines the implementation path for the remaining Phase 01 work. P01-R06 is released with a repository-owned telemetry package; it does not claim that a Collector, dependency client, Identity service, broker, object storage, or observability backend exists. Exact adapter dependencies and container images remain pending until their owning work item records compatibility, license, security, resource, failure, and integration evidence.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -36,7 +36,7 @@ This order prevents three expensive forms of rework:
 
 | Path | Owning item | Planned responsibility |
 |---|---|---|
-| `packages/telemetry/` | P01-R06 | Implemented repository-owned metrics API with OpenTelemetry infrastructure hidden behind it; protected verification and release are pending |
+| `packages/telemetry/` | P01-R06 | Released repository-owned metrics API with OpenTelemetry infrastructure hidden behind it |
 | `packages/runtime/src/clock.ts` | P01-R07 | Deterministic test clock contract and system-clock implementation |
 | `packages/runtime/src/ids.ts` | P01-R07 | Deterministic test identifier contract and random UUID implementation |
 | `packages/postgres/` | P01-R07 | PostgreSQL connection, probe, cancellation, telemetry, and close behavior without product repositories |
@@ -96,7 +96,7 @@ Metric attributes never contain account, profile, title, user, request, event, t
 
 ### P01-R06 exit
 
-The implemented candidate has generated declarations free of OpenTelemetry SDK types, deterministic metric tests, bounded stalled and successful loopback exporter tests, finite dimensions, and one compatibility diagnostic on Node.js `24.19.0`. The item is not verified or released until its complete candidate gate, clean-checkout proof, review, protected CI, and merge gates pass. It does not add Grafana dashboards or SLOs.
+Protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` released the package after generated-declaration isolation, deterministic metric tests, bounded stalled and successful loopback exporter tests, finite dimensions, a Node.js `24.19.0` compatibility diagnostic, complete and clean-checkout gates, bounded review, protected CI, and post-merge run `33012664408` passed. It does not add Grafana dashboards or SLOs.
 
 ## P01-R07 — Narrow platform adapters
 
@@ -106,29 +106,52 @@ Create one package per operational dependency rather than one kitchen-sink adapt
 
 | Adapter | Current candidate | First complete slice | Explicitly deferred |
 |---|---|---|---|
-| PostgreSQL | `pg` | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, pool telemetry, close | product schema, migrations, repositories, typed SQL selection |
-| Redis | `@redis/client` | connect, `PING`, bounded offline behavior, abortable command, reconnect policy, telemetry, idempotent close | cache keys, Lua scripts, rate limits, leases |
-| Broker | Confluent JavaScript client and KafkaJS compared at the item gate | connect, metadata, bounded producer send, one bounded consumer, stop, telemetry | product events, outbox relay, replay policy |
-| Object storage | AWS SDK S3 client | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy |
+| PostgreSQL | exact `pg@8.23.0` local candidate | connect, reserve/release, `SELECT 1` probe, statement/query bounds, abort recovery, bounded pool snapshot and operation telemetry, close | product schema, migrations, repositories, typed SQL selection, real-container proof |
+| Redis | exact `@redis/client@6.2.1` local candidate | connect, `PING`, disabled offline queue, bounded command/reconnect policy, cancellation recovery, telemetry, idempotent close | generic commands, cache keys, Lua scripts, rate limits, leases, real-container proof |
+| Broker | exact provisional `kafkajs@2.2.4` local candidate | connect, bounded topic metadata probe, keyed producer send, one sequential at-least-once consumer, stop, telemetry | product events, outbox relay, replay policy, real-broker proof |
+| Object storage | exact AWS SDK `3.1118.0` plus Smithy Node HTTP handler `4.11.3` local candidate | bucket probe, streaming put/get, head, bounded deletion for fixtures, abort, telemetry, close | rights-aware source acquisition, HLS publication, CDN policy, real-container proof |
 | Clock | Node.js built-ins | current instant and deterministic fake | domain-specific scheduling |
 | IDs | `crypto.randomUUID` | UUID generation and deterministic fake | aggregate-specific identity rules |
 
 The PostgreSQL client and typed SQL decision are intentionally separate. Phase 01 can prove connection and failure semantics with `pg`. A typed SQL library is selected in Phase 02 against the first real schema, transaction, query, migration, generated type, and removal path rather than against a synthetic table.
 
-### Kafka selection gate
+### Clock and identifier checkpoint
 
-The broker client remains unresolved. The maintained Confluent client has current releases and production `librdkafka` behavior, but adds a native install boundary and its KafkaJS-compatible disconnect currently uses a fixed five-second native close. KafkaJS is small and pure JavaScript but its latest registry release is from 2023. P01-R07 must compare:
+The local P01-R07 candidate now exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package, complete uncached, exact clean-checkout, initial-remediation, and confirmation-review gates pass; protected release gates remain pending.
 
-- Node.js 24 and amd64/arm64 installation;
-- broker protocol compatibility;
-- startup and operation deadline behavior;
-- cancellation and forced close;
-- producer idempotence and retry controls;
-- consumer stop and rebalance behavior;
-- log redaction and endpoint disclosure;
-- dependency size, license, maintenance, and exit path.
+### PostgreSQL connectivity checkpoint
 
-No client is selected until the real broker smoke proves the chosen shutdown path can fit inside the service lifecycle budget.
+The local `@aster/postgres` candidate exact-pins `pg@8.23.0` after current registry, license, engine, install, audit, source, lifecycle, cancellation, and removal review. Its public contract is deliberately smaller than `pg`: bounded connect, a fixed `SELECT 1 AS aster_probe` probe, a bounded process-local pool snapshot, stable outcomes, one shared close, and lifecycle hooks. It exposes no generic query method because no context-owned schema or second concrete repository use case exists.
+
+Node-postgres does not currently provide the adapter a reliable `AbortSignal` query-cancellation seam, and its client-side query timeout can finish before the server-side work. A caller abort, local timeout, query read timeout, SQLSTATE `57014`, or unknown probe failure therefore destroys the reserved connection instead of returning possibly busy protocol state to the pool. Adapter-owned reservations cap acquisitions before the vendor FIFO; timed-out acquisitions retain capacity until their eventual connection is destroyed or the acquisition fails. Connection, idle, server-statement, client-query, operation, and close budgets are finite.
+
+Eleven focused tests and a refused-loopback diagnostic prove the repository boundary, hostile configuration handling, capacity, stable telemetry, cancellation, timeout, concurrent/idempotent shutdown, side-effect-free pre-aborted close, later completion of a timed-out drain, sanitized failures, and vendor-free declarations. These are controlled local proofs, not real PostgreSQL compatibility; P01-R09 owns container startup, authentication, protocol, failure/recovery, and handle-exit confirmation.
+
+### Redis connectivity checkpoint
+
+The local `@aster/redis` candidate exact-pins `@redis/client@6.2.1` after current registry, license, engine, dependency, install, audit, source, lifecycle, cancellation, and removal review. Its repository-owned contract exposes only bounded connect, fixed `PING`, an availability snapshot, stable outcomes, and lifecycle close. No raw command API is exposed because Phase 01 has no context-owned cache, lease, rate limit, or second concrete command use case.
+
+Exact client source removes command abort and timeout listeners after a command moves onto the connection's waiting-for-reply queue, and connect itself accepts no `AbortSignal`. The adapter therefore applies outer deadlines, disables offline queueing, caps repository and vendor queue capacity, and destroys an ambiguous client generation after probe abort, timeout, malformed reply, or unknown failure. Explicit connect can create a fresh generation. Automatic reconnect uses a finite attempt count and bounded linear delay; vendor error and reconnect causes never enter public results or Aster telemetry.
+
+Thirteen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, finite client options, connect sharing, caller-local cancellation, capacity, destructive cancellation recovery, explicit generation recovery, bounded reconnect state, concurrent/idempotent close, close timeout, vendor-destroy failure, cause-free lifecycle errors, sanitized output, and vendor-free declarations. These are controlled local proofs, not real Redis compatibility; P01-R09 owns authentication, protocol, stop/recover transitions, reconnect timing, and process-handle confirmation against the selected container.
+
+### S3-compatible object-storage checkpoint
+
+The local `@aster/object-storage-s3` candidate exact-pins `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3`. The newer SDK `3.1119.0` was less than 24 hours old at selection time and therefore failed the repository release-age policy. The selected packages support Node.js 24, use Apache-2.0, add no native install boundary, and remain isolated behind repository-owned declarations.
+
+The adapter uses path-style addressing for local S3-compatible runtimes, disables SDK retries, applies finite connection/request/operation/close budgets, caps repository concurrency, and bounds multipart buffering through finite queue and part sizes. Writes validate the exact declared byte length and transfer ownership only after acceptance; reads enforce both declared and observed size bounds. Checksums are requested where supported, fixture deletion accepts only one exact non-root key under a configured prefix, and buckets, keys, endpoints, credentials, signed URLs, or vendor errors never enter stable telemetry or public failures.
+
+Caller cancellation returns promptly while the retired SDK generation receives a bounded grace period to finish multipart-abort cleanup before forced destruction. Sixteen focused tests and a refused-loopback subprocess diagnostic prove hostile construction, client policy, probe/head, exact-length streaming writes, bounded reads, capacity, generation recovery, safe deletion, finite shutdown even when vendor work ignores cancellation, sanitized lifecycle failures, and vendor-free declarations. These are controlled local proofs; P01-R09 owns authentication, checksum interoperability, multipart abort/cleanup, backpressure, and handle-exit confirmation against the selected S3-compatible container.
+
+### Kafka-compatible broker checkpoint
+
+P01-R07 compares exact `@confluentinc/kafka-javascript@1.10.0` with `kafkajs@2.2.4`. The Confluent client is actively maintained, installed and loaded on Node.js 24, supports Linux x64/arm64 through `librdkafka`, and has a larger native dependency boundary. In the isolated unavailable-broker lifecycle spike, the caller reached its outer timeout after `1.255` seconds but disconnect completed only after `31.129` seconds, exceeding Aster's ten-second shutdown deadline. It is rejected for this checkpoint without making a broker-compatibility judgment.
+
+KafkaJS is MIT, pure JavaScript, has no runtime dependency, and the equivalent unavailable-broker connect/disconnect spike completed in `127` milliseconds with natural process exit. Its last release is from February 2023, so it is selected only provisionally. P01-R09 must confirm it against the selected real broker and replace it before Phase 01 closeout if authentication, metadata, idempotent delivery, retry timing, rebalance, manual commit, stop, recovery, or process-exit evidence fails.
+
+The local `@aster/broker-kafka` candidate copies bounded inputs only after accepting finite capacity, disables auto-topic creation and vendor logs, caps request concurrency and retry attempts, and uses keyed `acks=-1` idempotent sends without claiming exactly-once delivery. Before acceptance, cancellation returns the ordinary finite aborted result. After acceptance, timeout or cancellation returns the explicit `delivery_ambiguous` result with a finite cause, retires the generation, and never performs an external retry. The single consumer processes one partition callback at a time, exposes an adapter-owned cancellation signal, commits the next offset only after handler success, leaves failures uncommitted, disables automatic crash restart, and requires explicit recovery.
+
+Twenty-one focused tests and a refused-loopback subprocess diagnostic prove hostile construction, finite configuration, metadata/publish telemetry, copied bytes, capacity, explicit pre-acceptance and delivery-ambiguous interruption results, generation recovery, consumer bounds, at-least-once failure behavior, crash retirement, caller-local stop/close, finite shutdown with stalled work, sanitized lifecycle failure, and vendor-free declarations. These are controlled local proofs; P01-R09 owns real protocol and lifecycle verification.
 
 ## P01-R08 — Deadlines and readiness composition
 

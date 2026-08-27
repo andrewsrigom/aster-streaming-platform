@@ -14,6 +14,8 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Separate Apollo remote state from Redux local interaction state | `docs/adr/0008-client-state.md` | Accepted |
 | Standardize telemetry through OpenTelemetry | `docs/adr/0009-observability.md` | Accepted |
 | Require verified rights records before media publication | `docs/adr/0010-content-rights.md` | Accepted |
+| Use Express 5 behind a bounded HTTP adapter | `docs/adr/0011-express-http-adapter.md` | Accepted |
+| Recognize MITNFA in dependency license review | `docs/adr/0012-mitnfa-dependency-license.md` | Accepted |
 
 ## Resolved Phase 00 decisions
 
@@ -46,13 +48,18 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Structured runtime logging | Exact-pin Pino `10.3.1` behind repository-owned declarations; emit bounded JSON to standard output with reviewed sensitive-key redaction, sanitized errors, and injected validated trace context | `evidence/phase-01/runtime-logging.txt` |
 | Service HTTP adapter | Use exact-pinned Express `5.2.1` behind `@aster/http-express`; use Apollo's maintained Express 5 integration at service composition roots and keep framework types out of domain and application layers | `docs/adr/0011-express-http-adapter.md`; `evidence/phase-01/http-adapter.txt` |
 | Runtime metrics implementation | Exact-pin the OpenTelemetry API `1.9.1`, core/resources/metrics SDK `2.10.0`, OTLP HTTP metrics exporter `0.221.0`, and Node.js runtime instrumentation `0.34.0` behind repository-owned `@aster/telemetry`; omit host metrics and aggregate SDK packages | `evidence/phase-01/runtime-telemetry.txt` |
+| Runtime clock and identifier primitives | Use Node.js `Date` and `crypto.randomUUID` behind repository-owned interfaces; provide fixed-clock and finite unique-sequence generators for deterministic tests without a new dependency or global mutation | `evidence/phase-01/platform-adapters.txt` |
+| PostgreSQL connectivity client | Exact-pin `pg@8.23.0` behind `@aster/postgres`; bound adapter capacity and every deadline, destroy clients after abort/timeout or unknown protocol state, expose only repository-owned contracts, and defer schema/query tooling and real-container proof | `evidence/phase-01/platform-adapters.txt` |
+| Redis connectivity client | Exact-pin `@redis/client@6.2.1` behind `@aster/redis`; disable offline queueing, cap commands and reconnect, destroy ambiguous generations after abort/timeout, expose no generic command or cache policy, and keep Redis non-authoritative | `evidence/phase-01/platform-adapters.txt` |
+| S3-compatible object-storage client | Exact-pin `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, and `@smithy/node-http-handler@4.11.3` behind `@aster/object-storage-s3`; disable SDK retries, bound stream size/multipart buffering and deadlines, retire ambiguous generations after cancellation, and defer real interoperability and publication policy | `evidence/phase-01/platform-adapters.txt` |
+| Kafka-compatible broker client | Exact-pin provisional `kafkajs@2.2.4` behind `@aster/broker-kafka`; bound retries, bytes, capacity, deadlines and logging, use finite idempotent keyed publish, commit offsets only after successful handling, and require P01-R09 real-broker confirmation or replacement | `evidence/phase-01/platform-adapters.txt` |
+| MITNFA dependency policy | Allow the reviewed SPDX `MITNFA` identifier without exempting packages from license checks; preserve notices and repeat review before modifying or bundling affected code | `docs/adr/0012-mitnfa-dependency-license.md`; `evidence/phase-01/platform-adapters.txt` |
 
 ## Pending decisions
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
 | Local broker, object-storage, and observability-container versions | 01 | Architecture support, local resource use, health behavior, license, and integration smoke tests | Only the verified PostgreSQL and Redis core checkpoint and process-local telemetry candidate are claimed | Phase 01 verification |
-| PostgreSQL, Redis, Kafka, and object-storage client libraries | 01 | Node.js 24 compatibility, deadline and cancellation behavior, close semantics, maintenance, license, security, runtime cost, exit strategy, and focused real-dependency spike | Use only repository-owned ports and the currently released local core | Affected Phase 01 work item |
 | Typed SQL library | 02 | First real context-owned schema, transaction, query, migration, generated-type, compatibility, maintenance, and removal evidence | Phase 01 uses its selected PostgreSQL connectivity adapter without product tables or a synthetic query abstraction | Phase 02 persistence implementation |
 | Identity adapter and session model | 02 | ADR comparing standards, local development, hosted operation, security, maintenance, and migration | No product identity behavior is implemented | Phase 02 start |
 | Local Apollo Router distribution and schema-delivery workflow | 04 | Supported Federation behavior, reproducible composition, local operation, and upgrade path | Subgraph schemas remain independently testable and private | Phase 04 verification |

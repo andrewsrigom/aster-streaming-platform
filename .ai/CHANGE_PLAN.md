@@ -1,119 +1,128 @@
-# Work Item: Define the Bounded Telemetry Contract and Runtime Metrics
+# Work Item: Implement Narrow Runtime Platform Adapters
 
 - Status: IN_PROGRESS
-- Owner: Aster shared telemetry and runtime infrastructure
+- Owner: Aster shared runtime and dependency-adapter infrastructure
 - Phase: 01
-- Requirement IDs: P01-R06
+- Requirement IDs: P01-R07
 - Created: 2026-08-26
 - Updated: 2026-08-26
 
 ## Outcome
 
-Provide one repository-owned telemetry package that exposes bounded Node.js runtime, HTTP, dependency, and export-health metrics without leaking OpenTelemetry SDK types to service, transport, domain, or application code. The package must remain useful without a Collector, fail safely when export is unavailable, integrate with the existing lifecycle flush stage, and prove that caller-controlled values cannot create high-cardinality series or disclose sensitive data.
+Provide reusable, independently removable packages for system clock and identifiers plus PostgreSQL, Redis, Kafka-compatible broker, and S3-compatible object-storage clients. Every network adapter exposes repository-owned contracts, finite lifecycle and concurrency behavior, caller cancellation, stable sanitized failures, dependency telemetry, and idempotent close without adding product schemas, cache keys, events, media publication, or service composition.
 
 ## Current behavior
 
-`@aster/runtime` provides structured Pino-compatible logs, validated trace correlation through a repository-owned context provider, stable lifecycle events, and a bounded `flushTelemetry` shutdown hook. No OpenTelemetry API or SDK dependency, metric provider, runtime collector, exporter, metric reader, Collector, scrape endpoint, dashboard, alert, or drop signal exists.
-
-P01-R05 is released through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`; exact post-merge run `33004926766` passed every applicable job. This branch starts from that clean released `main` head.
+P01-R06 is released through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c`; exact post-merge run `33012664408` passed every applicable job. This branch starts from that clean released `main` head. Commits `2309f94`, `1ded757`, `f507c77`, `353646e`, and `a932822` record the clock/ID, PostgreSQL, Redis, S3, and Kafka checkpoints. The broker exact-pins provisional `kafkajs@2.2.4` behind `@aster/broker-kafka` after the current Confluent client exceeded the Aster shutdown budget in an isolated lifecycle spike. The exact clean checkout exposed and `8361f11` fixed a type-aware lint/build ordering defect. Initial-review remediation `3e55990` corrects normal S3 not-found telemetry, hostile input handling, late Redis/Kafka completion, Kafka close accounting, and broker-record descriptor access; focused suites and the 46-task affected and forced complete graphs pass, and confirmation review found no blocker. The item creates no database, schema, migration, repository, transaction/cache policy, generic Redis command, product event, outbox, replay policy, media publication policy, or application service; real dependency interoperability remains P01-R09.
 
 ## Proposed behavior
 
-Create `@aster/telemetry` as the only package that imports selected OpenTelemetry API, metrics SDK, instrumentation, or exporter modules. It exposes repository-owned options, metric recorders, lifecycle hooks, stable finite dimension types, and sanitized result categories. Runtime collection covers event-loop delay and utilization, garbage collection, heap and process memory, process CPU, uptime, and bounded active-resource observations. Explicit HTTP and dependency recorders cover duration, concurrency, and stable outcomes.
+Retain the implemented system/fixed clock and UUID/deterministic ID contracts in `@aster/runtime`. Add one package per operational dependency: `@aster/postgres`, `@aster/redis`, `@aster/broker-kafka`, and `@aster/object-storage-s3`. Each package keeps the vendor client private and implements only the first Phase 01 slice: bounded connection/probe/operation ownership, propagated `AbortSignal`, finite capacity or queue behavior, stable outcomes, telemetry leases, and close.
 
-Use an in-memory reader for deterministic tests and one optional periodic OTLP/HTTP path with finite interval and export timeout. Export failure must not fail product work or readiness. The implementation exposes a stable export-failure/drop observation and bounded `forceFlush` plus shutdown hooks that compose with P01-R05. A real Collector, Prometheus scrape, dashboard, SLO, product metric, service composition, and dependency adapter remain outside this item.
+PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution, cancellation recovery, pool saturation observation, and close. Redis covers connect, `PING`, disabled or bounded offline behavior, abortable commands, finite reconnect policy, availability state, and close. The broker covers metadata, bounded keyed send, one bounded consumer loop, stop, and close using a provisional client selected by current compatibility and process-lifecycle evidence; P01-R09 must confirm that candidate against a real broker and replace it before Phase 01 closeout if it cannot meet the lifecycle budget. Object storage covers bucket probe, streaming put/get, head, fixture-only deletion, cancellation, checksum-safe stream ownership, and close.
 
 ## Boundaries
 
-- Owning context: Shared telemetry and runtime infrastructure; no product bounded context or durable data owner changes.
-- Affected services/packages: New `@aster/telemetry`; workspace and lockfile; documentation, Phase 01 evidence, and repository memory. Existing runtime or HTTP packages change only if a narrow repository-owned metric seam is required and proven.
-- Authoritative data: Process-local counters, histograms, gauges, collection state, and exporter health. They are operational observations, not authoritative product data.
-- Read models/caches: None. Metric aggregation is bounded ephemeral state, not a product cache.
-- Trust boundaries: Constructor configuration, service identity, HTTP route/method/status categories, dependency/operation/outcome categories, Node.js performance observers, active-resource names, clocks, metric reader/exporter behavior, OTLP endpoint configuration, cancellation, and lifecycle flush/shutdown.
-- External dependencies: Exact OpenTelemetry packages selected after current registry, license, engine, dependency, API-stability, and Node.js `24.19.0` compatibility evidence. No container or hosted resource is added.
+- Owning context: Shared runtime and dependency-adapter infrastructure; no product bounded context changes.
+- Affected services/packages: `@aster/runtime`, `@aster/telemetry` only if its existing finite seam needs a compatible extension, four new adapter packages, workspace/lockfile, tests, documentation, evidence, and repository memory. No service is composed in this item.
+- Authoritative data: None created. PostgreSQL remains the future durable authority; Redis and adapter state are non-authoritative and process-local.
+- Read models/caches: None. Redis keys and cache policy are deferred.
+- Trust boundaries: Configuration URLs and credentials, vendor callbacks/errors/loggers, network responses, database result metadata, broker records and topic configuration, S3 buckets/keys/metadata/streams, caller `AbortSignal`, injected clocks/IDs, metric categories, and close races.
+- External dependencies: Exact `pg@8.23.0`, `@redis/client@6.2.1`, `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, `@smithy/node-http-handler@4.11.3`, and provisional `kafkajs@2.2.4`, selected after registry, official documentation, license, engine, install, audit, architecture, shutdown, redaction, and removal evidence. Real service containers and public endpoints remain P01-R09.
 
 ## Invariants
 
-- Domain, application, service, and transport contracts import no OpenTelemetry SDK or exporter type.
-- Metric names, units, descriptions, bucket boundaries, and allowed attributes are explicit and stable.
-- Caller-controlled identifiers, URLs, query text, GraphQL documents, headers, exception messages, credentials, trace IDs, span IDs, request IDs, and object keys never become metric attributes.
-- Service and environment values come only from already validated process configuration.
-- Dependency, operation, route, method, outcome, status, runtime-resource, and export-result values use finite reviewed sets or fail closed to one bounded fallback.
-- Recording and instrument creation do not require a Collector or network connection.
-- HTTP and dependency active counts cannot become negative; each acquired observation completes at most once.
-- Periodic export, force flush, and shutdown have finite deadlines and cannot block request correctness, readiness, or the lifecycle deadline.
-- Export failure and dropped observations are observable without recursively exporting unbounded failure telemetry.
-- Runtime observers, timers, and readers are owned once, idempotently stopped, and release their event-loop resources.
+- Domain and application packages import no web framework, database, Redis, broker, object-storage, or telemetry SDK type.
+- One package owns each vendor dependency; generated public declarations contain only repository-owned or Node.js platform types.
+- Every outbound operation accepts or derives a finite deadline and observes caller cancellation; no adapter performs an unbounded retry loop.
+- Cancellation and timeout do not return a pooled or shared client to service until its protocol state is safe; unsafe connections are discarded.
+- Retries are disabled in the generic adapter unless the operation is explicitly safe or made idempotent and the attempt budget fits the caller deadline.
+- PostgreSQL is authoritative only for later context-owned schemas; Redis never becomes durable truth.
+- Broker delivery remains at-least-once and product event envelopes, outbox behavior, replay, and topic ownership remain deferred.
+- Object operations stream bytes with bounded buffering; application services never proxy media bytes and fixture deletion cannot target unbounded prefixes.
+- Buckets, object keys, topics, endpoints, SQL text, Redis keys/values, payloads, credentials, errors, and record identifiers never enter logs or metric attributes.
+- Dependency operations use the existing finite telemetry vocabulary and complete each telemetry lease exactly once.
+- Connect, probe, operation, stop, and close paths are race-safe; close is idempotent and releases timers, sockets, consumers, and queued work.
+- Clock and ID fakes are deterministic without global mutation; production IDs use `crypto.randomUUID`.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Missing, accessor-backed, excessive, or invalid options | Fail construction before installing observers, timers, or exporters with one bounded cause-free issue set | Sanitized initialization result only |
-| Unknown route, method, dependency, operation, outcome, or resource value | Reject or map to one documented bounded fallback; never create a caller-named series | Stable invalid-observation result |
-| Duplicate completion of HTTP or dependency observation | Return an unchanged result without decrementing active state twice | No duplicate duration/count |
-| Runtime observer or synchronous collection throws | Preserve product work, classify the collector, and allow later collection or shutdown | Stable collector failure category |
-| Exporter rejects, times out, or Collector is unreachable | Bound the attempt, record stable failure/drop state, and continue product work and readiness | Export result and bounded dropped-observation count |
-| Exporter ignores cancellation or never settles | Lifecycle deadline remains authoritative; shutdown returns without awaiting the exporter forever | Timeout/drop category when locally observable |
-| `forceFlush` or shutdown called concurrently/repeatedly | Share one bounded provider operation while each waiter retains caller-local cancellation; close the provider once | One stable result per caller without duplicate provider work |
-| Clock moves backward or supplies invalid duration | Reject the observation or clamp only according to an explicit tested rule | Stable invalid-duration category |
-| Active-resource inventory exceeds its ceiling | Aggregate overflow into one bounded category; never emit arbitrary resource names | Stable overflow resource series |
+| Invalid, accessor-backed, excessive, or credential-bearing public configuration | Fail before client construction with bounded cause-free issues; never echo an endpoint or credential | Sanitized initialization result only |
+| Connection unavailable, refused, or handshake stalls | Stop at the configured deadline, release partial resources, and return `unavailable` or `timeout` | One bounded `connect` outcome |
+| Caller aborts while queued, connecting, probing, or operating | Remove or ignore only that caller's work, cancel vendor work where supported, and return `cancelled` promptly | One bounded operation outcome |
+| PostgreSQL query is cancelled or times out | Cancel safely; release the connection only if protocol recovery is proven, otherwise destroy it | `query` outcome and bounded pool state |
+| PostgreSQL pool is exhausted | Reject at the adapter capacity/deadline instead of growing an unbounded wait queue | `rejected` or `timeout`, no caller label |
+| Redis is offline or reconnecting | Bound or disable offline queueing, expose unavailable state, and cap reconnect attempts/delay | `command` or `connect` stable outcome |
+| Broker send/consume fails or rebalance occurs | Preserve at-least-once semantics, bound in-flight records, stop intake on cancellation, and avoid claiming product-level deduplication | `publish` or `consume` stable outcome |
+| Broker client cannot close within the lifecycle budget | Force-close if the selected client safely supports it; otherwise reject the candidate and use the documented alternative | Stable close failure in logs; no endpoint |
+| Publish is aborted or times out after it may have reached a broker | Retire the producer generation and return an explicitly ambiguous stable result; do not retry outside the finite idempotent client attempt without later outbox/deduplication policy | `publish` cancelled or timeout; no topic/key/payload |
+| S3 body exceeds bounds, stream fails, or checksum mismatches | Abort the transfer, destroy owned streams, return a stable error, and leave publication semantics untouched | `read` or `write` stable outcome |
+| Fixture deletion receives an excessive or unsafe target | Reject before issuing network work; no broad prefix or bucket deletion | `delete` rejected |
+| Telemetry is closed or at capacity | Preserve adapter correctness and finish the dependency operation without throwing from telemetry | Existing telemetry drop accounting |
+| Close is concurrent or repeated | Share or serialize one close operation, give callers independent cancellation, and release resources once | No duplicate dependency operation |
 
 ## Data and contracts
 
-- Schema/migration: None.
+- Schema/migration: None; no table, migration, repository, or typed SQL library.
 - GraphQL: None.
-- Events: None.
-- Cache: None.
-- Public telemetry API: Repository-owned immutable options, finite metric dimensions, HTTP/dependency observation leases, runtime collection lifecycle, export health snapshot, and bounded flush/shutdown hooks.
-- Compatibility: Generated declarations contain no OpenTelemetry SDK, OTLP exporter, Express, Apollo, PostgreSQL, Redis, broker, object-storage, or product-domain types. The package supports pinned Node.js `24.19.0`.
-- Retention/deletion: Process-local aggregation is released on shutdown. Backend retention remains unimplemented until P01-R09/P01-R10.
+- Events: No product event or outbox. The broker package accepts only bounded synthetic records through a repository-owned transport contract.
+- Cache: No Redis key, TTL, invalidation, Lua script, lease, rate limit, or stale policy.
+- Public adapter contracts: Immutable options; stable initialization and operation results/errors; clock and ID ports; PostgreSQL reservation/probe/query seam; Redis probe/command seam; broker producer/consumer lifecycle seam; S3 probe/head/streaming operation seam; idempotent close hooks.
+- Compatibility: Pinned Node.js `24.19.0`; exact dependency engines, peer ranges, licenses, install scripts, native architecture implications, and generated declarations recorded before candidate publication.
+- Retention/deletion: Adapter process state ends on close. Only explicitly named bounded synthetic fixture objects/records may be cleaned up; no product retention behavior exists.
 
 ## Security and privacy
 
-- Authorization: None; this package exposes no public endpoint. Future scrape and health exposure retain their owning authorization and network boundary.
-- Input limits: Bound option keys, string lengths, registered operation/route inventory, attribute sets, histogram boundaries, collection interval, exporter timeout, active observation count, active-resource categories, and exporter failure accounting.
-- Sensitive data: Never read or emit request bodies, headers, documents, tokens, cookies, emails, profile/account/title identifiers, endpoints with credentials, signed URLs, errors, stacks, or arbitrary caller objects.
-- Abuse cases: Hostile metric labels causing memory growth, accessor execution, series explosion, negative active counts, duplicate completion, recursive export-failure telemetry, stalled export preventing shutdown, and fake runtime values corrupting instruments.
+- Authorization: No public endpoint or product operation exists. Future service and domain owners remain responsible for authorization before invoking these adapters.
+- Input limits: Bound configuration entries and lengths, connect/operation deadlines, pool and queue capacity, Redis reconnects, broker record bytes and in-flight count, consumer concurrency, bucket/key/topic lengths, S3 metadata, stream size, and fixture deletion count.
+- Sensitive data: Credentials remain inside validated configuration and vendor construction. Never expose URLs with user info, SQL, Redis commands/values, topic/bucket/key names, record bodies, signed URLs, error messages/stacks, or vendor diagnostics through public errors, logs, or metrics.
+- Abuse cases: Pool starvation, offline-queue growth, reconnect storms, retry amplification, poison broker records, oversized records/objects, slow or infinite streams, cancellation races, accessor execution, log injection, endpoint disclosure, and broad fixture deletion.
 
 ## Implementation steps
 
-1. Select the smallest exact OpenTelemetry dependency set from current official compatibility, stability, license, engine, transitive, audit, and removal-path evidence.
-2. Define finite repository-owned metric vocabulary, validation, public result types, and deterministic clock/reader seams in `@aster/telemetry`.
-3. Implement HTTP and dependency duration/concurrency/outcome recorders with one-shot completion and cardinality controls.
-4. Implement Node.js runtime collection with bounded observer ownership, resource classification, start/stop behavior, and deterministic tests.
-5. Add optional in-memory and bounded OTLP/HTTP composition, export health/drop behavior, and lifecycle-compatible flush/shutdown hooks.
-6. Add declaration-isolation, hostile-input, unavailable-exporter, timer/handle cleanup, and Node.js compatibility diagnostics.
-7. Update observability/runtime documentation, dependency decisions, evidence, state, queue, session log, and handoff at candidate and closeout checkpoints.
+1. [completed] Record the P01-R06 release, activate P01-R07, reconcile the broker selection/confirmation boundary, and create the raw evidence ledger.
+2. [completed] Implement repository-owned system/fake clock and UUID/deterministic ID contracts with focused deterministic tests and no new dependency.
+3. [completed] Repeat live registry and official compatibility research for `pg`, `@redis/client`, the AWS S3 client modules, and Kafka candidates; record exact versions, licenses, engines, scripts, dependency cost, known advisories, cancellation/deadline seams, redaction, and removal paths before installation.
+4. [completed checkpoint] Implement PostgreSQL as the first network adapter, including bounded pool acquisition, probe/query cancellation recovery, telemetry, close, hostile construction tests, and vendor-free public declarations.
+5. [completed checkpoint] Implement Redis with bounded offline/reconnect behavior, abortable probe execution, telemetry, availability state, close, and equivalent boundary tests. No generic command is exposed before a context-owned use case exists.
+6. [completed checkpoint] Implement S3-compatible storage with streaming put/get, head/probe, bounded fixture deletion, abort and owned-stream cleanup, telemetry, and equivalent boundary tests.
+7. [completed checkpoint] Compare the Kafka candidates with install and process-lifecycle diagnostics, select one provisional client, implement bounded producer/consumer lifecycle, and document the mandatory real-broker confirmation gate for P01-R09.
+8. [completed checkpoint] Consolidate dependency, failure, cancellation, handle-cleanup, declaration, audit, and package evidence; update architecture and operations documentation without claiming real-container interoperability.
+9. [confirmation review completed] The complete initial review at candidate `37e6db8` found one bounded batch: preserve normal S3 not-found availability telemetry, reject hostile write input without throwing, prevent late Redis/Kafka completions from reviving closing state, account for active Kafka wrappers during close, and consume broker records only from own data properties. Remediation `3e55990` and its focused, affected, and forced complete gates pass; the exact-source confirmation review found no blocker.
+10. [completed] Pull-request run `33023269145` passed source quality, audit, documentation, security, and classification but blocked on the GitHub dependency graph's `MIT AND MITNFA` classification for transitive `bowser@2.14.1`. ADR-0012 records the license decision; only SPDX `MITNFA` was added to the reviewed allowlist, and the adverse policy test plus 46-task affected gate pass. Protected exact-head run `33023896325` then passed Dependency review, the complete source/audit and documentation/security lanes, the real local-platform lane, and the stable `CI required` aggregate at remediation head `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`.
+11. [local confirmation completed; protected confirmation pending] A late independent review on `f8aa6f8` found two blocking boundary defects that satisfy the written reason for one additional round: an accepted Kafka publish returned ordinary abort/timeout despite uncertain delivery, and an S3 bucket-probe 404 was treated as a healthy object miss. Source candidate `d3a23dc` returns a distinct finite `delivery_ambiguous` result only after publish acceptance, classifies probe 404 as unavailable while preserving object-read `not_found`, and adds focused abort/timeout/readiness regressions. Focused Kafka 21/21, S3 16/16, the 46-task affected graph, and an exact frozen checkout with 46/46 forced uncached tasks pass. Confirmation review found no remaining requirement, security/data, availability, lifecycle, or public-contract blocker; protected exact-head CI and evidence-backed discussion resolution remain.
 
 ## Tests
 
-- Domain: None; no product domain rule changes.
-- Application: Pure recorder tests for finite vocabulary, one-shot completion, active counts, duration/outcome mapping, overflow aggregation, and hostile values.
-- Integration: In-memory OpenTelemetry reader and a loopback unreachable/stalled OTLP endpoint; no Collector container.
-- Contract: Metric names, units, descriptions, attributes, histogram boundaries, generated declarations, package exports, and lifecycle hook shape.
+- Domain: None; no product domain behavior.
+- Application: Deterministic clock/ID tests and pure state/capacity/result tests for every adapter.
+- Integration: Vendor-client boundary tests using controlled fakes, protocol-safe loopback or client middleware where useful, and subprocess handle/exit diagnostics; real PostgreSQL, Redis, broker, and S3 containers remain P01-R09.
+- Contract: Package exports, exact public error/result shapes, finite option bounds, telemetry vocabulary, vendor-free generated declarations, and architecture import direction.
 - Browser: Not applicable.
-- Performance/failure: Bounded runtime observer start/stop, event-loop delay observation, GC/heap/process collection compatibility, exporter timeout, concurrent flush/shutdown, no live timer/observer after stop, no unhandled rejection, and no high-cardinality labels.
+- Performance/failure: Deadline and abort latency, queue/pool saturation, reconnect bound, consumer stop, concurrent/repeated close, stalled callbacks/sockets/streams, bounded memory/backpressure for S3 streams, no unhandled rejection, and no live owned handles after close.
 
 ## Evidence
 
-- Commands: Exact package typecheck/build/test/check, targeted lint/format, diagnostic, `pnpm check:changed`, one stabilized complete `pnpm check --force`, `pnpm audit --audit-level=high`, dependency/license inventory, and exact clean checkout when the final dependency/lockfile/public-package contract stabilizes.
-- Raw artifact path: `evidence/phase-01/runtime-telemetry.txt`.
-- Acceptance result: Pending.
-- Iteration gate: Focused `@aster/telemetry` typecheck/build/test/check plus targeted lint and format after each coherent behavior slice.
-- Candidate gate: `pnpm check:changed` after the package contract, runtime collection, and export failure path form one complete candidate; one forced complete graph before publication.
-- Heavyweight repeat triggers: Repeat clean checkout for dependency, lockfile, workspace, packaging, generated-declaration, install-script, or public-command changes. Repeat runtime/handle and unreachable-exporter diagnostics for observer, timer, reader, exporter, flush, or shutdown changes. P01-R06 adds no Docker path, so container evidence is not applicable.
-- Review stopping rule: One complete review and one confirmation. Additional review only if remediation changes or reveals a requirement, security/data invariant, availability behavior, metric public contract, or cardinality boundary.
+- Commands: Focused package typecheck/build/test/check and targeted lint/format during each coherent package slice; `pnpm check:changed` at package candidates; `pnpm check --force` once the complete work item stabilizes; `pnpm audit --audit-level=high`; license/dependency/install-script inventories; exact runtime diagnostics; isolated frozen clean checkout; protected CI and review evidence.
+- Raw artifact path: `evidence/phase-01/platform-adapters.txt`.
+- Acceptance result: Implemented and locally verified at exact source candidate `d3a23dc9fd6016a4369c977532b129a507c15316`; protected exact-head confirmation and release remain pending.
+- Iteration gate: Run only the affected package build/typecheck/tests plus targeted lint/format after a coherent contract or failure-path change. Clock/ID, PostgreSQL, Redis, S3, and broker are separate iteration checkpoints.
+- Candidate gate: Run `pnpm check:changed` when each package forms a coherent candidate. Run one forced complete graph only after all four adapters, clock/ID, dependency graph, declarations, documentation, and evidence stabilize.
+- Heavyweight repeat triggers: Repeat frozen isolated checkout for dependency, lockfile, workspace, package export, generated declaration, install-script, native module, or public-command changes. Repeat subprocess/handle diagnostics for client lifecycle, cancellation, retry, timer, consumer, stream, or close changes. Repeat stream memory/backpressure evidence for S3 body ownership changes. Real container interoperability is owned and repeated in P01-R09.
+- Review stopping rule: Collect one complete initial review and batch related blocking remediation. Run one confirmation review. Start another round only if remediation changes or reveals a requirement, security/data invariant, availability behavior, lifecycle guarantee, or public adapter contract.
 
 ## Rollback or recovery
 
-Remove `@aster/telemetry`, its exact OpenTelemetry dependencies, lockfile entries, documentation, and tests. Stop and shut down any created provider before replacement. Existing logs, lifecycle, Express transport, product data, Docker resources, and hosted settings remain unchanged. Export outage recovery is to keep local bounded recording operational, preserve readiness, and restore the optional exporter without replaying unbounded observations.
+Each dependency package can be removed independently with its exact dependency and lockfile entries because no product context or service imports it in this phase. Clock and ID exports can be removed before service composition. If a client cannot meet cancellation, bounded shutdown, license, architecture, audit, or declaration-isolation requirements, remove it, record the failure, select the documented alternative, and repeat only affected install/lifecycle gates. Synthetic adapter state has no recovery promise and no broad deletion is permitted.
 
 ## Documentation updates
 
-- Document the exact metric catalog, units, dimensions, bucket rationale, runtime collection ownership, export lifecycle, failure behavior, privacy exclusions, and operational limitations.
-- Record dependency compatibility, license, audit, Node.js runtime, timer/handle, in-memory collection, and unreachable-exporter evidence.
-- Update `docs/architecture/OBSERVABILITY_ARCHITECTURE.md`, `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md`, the Phase 01 specification/evidence index, repository dependency documentation, and `.ai/` memory without claiming a Collector, scrape path, dashboard, SLO, or product service.
+- Record P01-R06 release and P01-R07 activation in the evidence index, runtime runway, state, queue, session log, and handoff.
+- Record exact client versions and selection evidence in the technology baseline, dependency documentation, runtime runway, raw evidence, and decisions ledger when decisions are made.
+- Document repository-owned contracts, lifecycle/failure semantics, telemetry mapping, public-type isolation, limitations, rollback, and the P01-R09 real-dependency confirmation matrix.
+- Keep Docker Compose, public evaluator commands, service readiness, product schemas, caches, events, media rights/publication, dashboards, and SLOs explicitly planned until their owning items verify them.
 
 ## Completion checklist
 

@@ -12,6 +12,22 @@
       "entry": ["src/index.ts", "src/check-http-express.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
+    "packages/postgres": {
+      "entry": ["src/index.ts", "src/check-postgres.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "packages/redis": {
+      "entry": ["src/index.ts", "src/check-redis.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "packages/object-storage-s3": {
+      "entry": ["src/index.ts", "src/check-object-storage.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "packages/broker-kafka": {
+      "entry": ["src/index.ts", "src/check-broker.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
     "packages/config": {
       "entry": ["src/index.ts", "src/check-runtime-config.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]

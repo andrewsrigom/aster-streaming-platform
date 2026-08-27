@@ -316,15 +316,23 @@ test("keeps manifest commands and task-level affected inputs aligned", async () 
   };
   const turbo = JSON.parse(await readFile(resolve(repositoryRoot, "turbo.json"), "utf8")) as {
     futureFlags: { affectedUsingTaskInputs: boolean };
-    tasks: Record<string, { inputs?: string[] }>;
+    tasks: Record<string, { dependsOn?: string[]; inputs?: string[] }>;
   };
 
   assert.equal(manifest.scripts["check"], "node ./tools/run-quality-gate.ts");
   assert.equal(manifest.scripts["check:changed"], "node ./tools/run-quality-gate.ts --changed");
+  assert.equal(
+    manifest.scripts["lint"],
+    "turbo run build --filter=@aster/telemetry && pnpm lint:workspace",
+  );
+  assert.equal(manifest.scripts["lint:workspace"], "eslint .");
   assert.ok(manifest.scripts["toolchain:test"]?.includes("./tools/run-quality-gate.test.ts"));
   assert.equal(turbo.futureFlags.affectedUsingTaskInputs, true);
 
-  const lintInputs = turbo.tasks["//#lint"]?.inputs ?? [];
+  const lintTask = turbo.tasks["//#lint:workspace"];
+  assert.ok(lintTask);
+  assert.deepEqual(lintTask.dependsOn, ["@aster/telemetry#build"]);
+  const lintInputs = lintTask.inputs ?? [];
   for (const path of ["apps/**", "packages/**", "services/**", "workers/**"]) {
     assert.ok(lintInputs.includes(path));
   }

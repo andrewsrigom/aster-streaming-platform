@@ -264,7 +264,7 @@ export function validateWorkflowPolicy(
       "local-platform job must always remove only its unique Compose project",
     ],
     [
-      /allow-licenses:\s*Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, ISC, MIT/u,
+      /allow-licenses:\s*Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, ISC, MIT, MITNFA/u,
       "dependency review must enforce the reviewed license set",
     ],
   ] as const) {

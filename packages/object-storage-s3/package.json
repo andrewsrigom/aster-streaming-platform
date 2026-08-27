@@ -1,0 +1,31 @@
+{
+  "name": "@aster/object-storage-s3",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bounded streaming S3-compatible object operations for Aster.",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "check": "node ./dist/src/check-object-storage.js",
+    "test": "node --test ./dist/test/*.test.js",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "dependencies": {
+    "@aster/telemetry": "workspace:*",
+    "@aws-sdk/client-s3": "3.1118.0",
+    "@aws-sdk/lib-storage": "3.1118.0",
+    "@smithy/node-http-handler": "4.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "6.0.3"
+  }
+}

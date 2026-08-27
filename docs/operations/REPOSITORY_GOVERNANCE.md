@@ -103,7 +103,7 @@ The following source gates are implemented:
 - Markdown UTF-8, title, fence, unresolved-merge-marker, local-link, heading-fragment, canonical-terminology, and evidence-supported current-status validation.
 - Bounded repository-memory files, queue order and blockers, active-plan binding, resume-target, and session-structure validation.
 
-Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the hosted full CI path. Pull-request dependency and license review is configured and its first hosted execution passed. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
+Secret and credential scanning is executable locally and in the configured workflow. High-severity registry audit is executable locally and in the hosted full CI path. Pull-request dependency and license review is configured and its first hosted execution passed. P01-R07 review run `33023269145` later exercised the fail-closed policy by rejecting transitive `bowser@2.14.1` as `MIT AND MITNFA`; [ADR-0012](../adr/0012-mitnfa-dependency-license.md) records the narrow `MITNFA` policy remediation, which remains pending protected exact-head confirmation. Conventional Commit validation for pull-request titles and merge results remains planned and must not be described as executable yet.
 
 Auto-fix commands remain separate from check commands. CI runs checks and does not rewrite source.
 
