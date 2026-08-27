@@ -1,0 +1,39 @@
+Evidence: P01-R08 deadlines, readiness, health, and Identity runtime composition
+Date: 2026-08-26
+Environment: Windows host; WSL distribution registered as Ubuntu-20.04 with Ubuntu 24.04 userspace; amd64; Node.js 24.19.0; pnpm 11.24.0
+Status: IN_PROGRESS; active on corrective released main
+
+Scope and ownership
+- Requirement: P01-R08.
+- Shared runtime infrastructure owns propagated deadlines, dependency readiness, and the single recovery monitor.
+- Identity and Profiles owns only the reference composition root. No account, profile, session, GraphQL, schema, migration, durable write, cache key, product event, media, or hosted resource is in scope.
+- PostgreSQL and Redis are the only critical dependencies for the reference runtime. Redis remains non-authoritative. Broker, object storage, and telemetry export do not gate readiness.
+
+Predecessor and base
+- P01-R07 passed pull request 14 exact-head run 33024975611 and merged as 0dd4dadffa0cfdd688327b9e3f8b89734782ed24.
+- Its cold task-order correction passed pull request 15 run 33026707150, merged as 61226eb3ce4976e31edde1f8b8198bcdd10095a6, and exact post-merge run 33026799005 passed.
+- This P01-R08 branch is rebased onto that corrective released main. Its affected gate must pass before the next source checkpoint.
+
+Activation state
+- Active branch: feat/p01-r08-runtime-composition.
+- Active plan: .ai/CHANGE_PLAN.md.
+- Required source, tests, operations documentation, ADR-0011, runtime runway, and relevant repository skills were restored before implementation.
+- The activation checkpoint added no P01-R08 source. Deadline implementation follows in the next rebased commit; readiness, service, health routes, configuration, dependencies, and lockfile changes remain unimplemented here.
+
+Activation verification
+- pnpm format:check: PASS; 3.16s elapsed; 323740 KiB maximum RSS.
+- pnpm docs:check: PASS; 136 documents, 2047 headings, 365 links, 4 status claims, 0 violations; 0.84s elapsed; 142388 KiB maximum RSS.
+- pnpm ai:check: PASS; 10 files, 25 queue items, 42 session entries, P01-R08 active and targeted, 0 violations; 0.53s elapsed; 142316 KiB maximum RSS.
+- git diff --check: PASS.
+
+Planned evidence sequence
+- Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
+- Monitor cancellation/non-overlap focused tests.
+- Real-socket health and service-composition focused tests followed by one combined affected gate.
+- Controlled Identity composition and process-exit diagnostic.
+- Forced complete graph, exact frozen checkout, review, protected CI, merge, and post-merge verification.
+
+Limitations
+- Real PostgreSQL/Redis authentication, stop/recovery, container health, and service integration belong to P01-R09.
+- Compose exposure, resource profiles, and the clean Docker-only evaluator command belong to P01-R10.
+- No benchmark, SLO, hosted availability, native Windows signal, or product behavior is claimed.

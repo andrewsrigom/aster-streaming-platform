@@ -1,139 +1,138 @@
-# Work Item: Implement Narrow Runtime Platform Adapters
+# Work Item: Compose Deadlines, Readiness, Health, and the Identity Runtime Skeleton
 
 - Status: IN_PROGRESS
-- Owner: Aster shared runtime and dependency-adapter infrastructure
+- Owner: Aster shared runtime infrastructure and the Identity and Profiles reference composition root
 - Phase: 01
-- Requirement IDs: P01-R07
+- Requirement IDs: P01-R08
 - Created: 2026-08-26
 - Updated: 2026-08-26
 
 ## Outcome
 
-Provide reusable, independently removable packages for system clock and identifiers plus PostgreSQL, Redis, Kafka-compatible broker, and S3-compatible object-storage clients. Every network adapter exposes repository-owned contracts, finite lifecycle and concurrency behavior, caller cancellation, stable sanitized failures, dependency telemetry, and idempotent close without adding product schemas, cache keys, events, media publication, or service composition.
+Provide one product-empty Identity reference process that starts and stops within finite budgets, exposes stable liveness and readiness routes, reports critical dependency failure without topology disclosure, recovers readiness through one bounded PostgreSQL/Redis monitor, rejects new tracked work while not ready, and composes the already released configuration, logging, HTTP, lifecycle, telemetry, clock, ID, PostgreSQL, and Redis boundaries without adding account, profile, session, GraphQL, schema, migration, cache, or event behavior.
 
 ## Current behavior
 
-P01-R06 is released through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c`; exact post-merge run `33012664408` passed every applicable job. P01-R07 source and review completed through exact head `613c1db`, protected pull-request run `33024975611` passed, and pull request 14 squash-merged as `0dd4dadffa0cfdd688327b9e3f8b89734782ed24`. Post-merge run `33026244011` then exposed a clean-run task-order defect: adapter `typecheck` tasks can start before `@aster/telemetry` emits the declarations referenced by workspace package exports. Cached and earlier exact runs masked this incomplete graph edge. The correction branch starts from exact merged `main`; the saved dependent P01-R08 branch is not published and will rebase again after this corrective release. The item creates no database, schema, migration, repository, transaction/cache policy, generic Redis command, product event, outbox, replay policy, media publication policy, or application service; real dependency interoperability remains P01-R09.
+P01-R05 and P01-R06 released bounded lifecycle and telemetry. P01-R07 released the clock, ID, PostgreSQL, Redis, Kafka, and S3 adapter boundaries through corrective squash `61226eb3ce4976e31edde1f8b8198bcdd10095a6`; exact post-merge run `33026799005` passed. P01-R08 is now directly based on released `main`.
+
+No deployable service, dependency readiness controller, recovery monitor, public health route, service startup coordinator, product schema, or GraphQL resolver exists. The Express adapter owns only its bounded `/graphql` transport today, and lifecycle health cannot yet become not ready and recover while the lifecycle phase remains `ready`.
 
 ## Proposed behavior
 
-Retain the implemented system/fixed clock and UUID/deterministic ID contracts in `@aster/runtime`. Add one package per operational dependency: `@aster/postgres`, `@aster/redis`, `@aster/broker-kafka`, and `@aster/object-storage-s3`. Each package keeps the vendor client private and implements only the first Phase 01 slice: bounded connection/probe/operation ownership, propagated `AbortSignal`, finite capacity or queue behavior, stable outcomes, telemetry leases, and close.
+Add a dependency-free deadline primitive to `@aster/runtime` that combines a finite monotonic timeout with an optional parent `AbortSignal`, exposes only the derived signal and remaining budget, and releases listeners/timers idempotently. Add a finite readiness controller that combines lifecycle phase with bounded critical-dependency states and delegates in-flight leases only while overall readiness is ready. Add one monitor that performs at most one probe per declared critical dependency, never overlaps monitor cycles, uses a finite jittered interval, accepts cancellation, and stops before dependency closure.
 
-PostgreSQL covers pool reservation/release, `SELECT 1`, bounded query execution, cancellation recovery, pool saturation observation, and close. Redis covers connect, `PING`, disabled or bounded offline behavior, abortable commands, finite reconnect policy, availability state, and close. The broker covers metadata, bounded keyed send, one bounded consumer loop, stop, and close using a provisional client selected by current compatibility and process-lifecycle evidence; P01-R09 must confirm that candidate against a real broker and replace it before Phase 01 closeout if it cannot meet the lifecycle budget. Object storage covers bucket probe, streaming put/get, head, fixture-only deletion, cancellation, checksum-safe stream ownership, and close.
+Extend `@aster/http-express` with fixed `GET`/`HEAD` `/health/live` and `/health/ready` routes backed by a repository-owned snapshot provider. Both routes emit the same bounded snapshot containing only liveness, readiness, lifecycle phase, and stable reason; HTTP status reflects the route's liveness or readiness decision, responses are non-cacheable, and health requests perform no dependency I/O. Keep the existing strict `/graphql` boundary and its unmounted `503` behavior unchanged.
+
+Create `services/identity` as the first composition root. It validates reference configuration, creates logger/telemetry/runtime/transport/dependency owners, starts the HTTP health surface, performs one PostgreSQL and Redis startup attempt inside the propagated startup deadline, marks readiness from those two critical gates, starts the single recovery monitor, binds one lifecycle/signal owner, and closes monitor, telemetry, and dependencies in the existing shutdown order. It contains no Identity product use case and does not mount GraphQL.
 
 Correct the repository task graph so every package `typecheck` waits for dependency builds as well as dependency typechecks. Add a policy regression for the exact edge. Do not change adapter runtime source, dependencies, lockfile, public contracts, or quality-gate scope.
 
 ## Boundaries
 
-- Owning context: Shared runtime and dependency-adapter infrastructure; no product bounded context changes.
-- Affected services/packages: `@aster/runtime`, `@aster/telemetry` only if its existing finite seam needs a compatible extension, four new adapter packages, workspace/lockfile, tests, documentation, evidence, and repository memory. No service is composed in this item.
-- Authoritative data: None created. PostgreSQL remains the future durable authority; Redis and adapter state are non-authoritative and process-local.
-- Read models/caches: None. Redis keys and cache policy are deferred.
-- Trust boundaries: Configuration URLs and credentials, vendor callbacks/errors/loggers, network responses, database result metadata, broker records and topic configuration, S3 buckets/keys/metadata/streams, caller `AbortSignal`, injected clocks/IDs, metric categories, and close races.
-- External dependencies: Exact `pg@8.23.0`, `@redis/client@6.2.1`, `@aws-sdk/client-s3@3.1118.0`, `@aws-sdk/lib-storage@3.1118.0`, `@smithy/node-http-handler@4.11.3`, and provisional `kafkajs@2.2.4`, selected after registry, official documentation, license, engine, install, audit, architecture, shutdown, redaction, and removal evidence. Real service containers and public endpoints remain P01-R09.
+- Owning context: Shared runtime infrastructure owns deadline/readiness/monitor contracts; Identity and Profiles owns only the reference composition root and no product behavior or data.
+- Affected services/packages: `@aster/runtime`, `@aster/http-express`, `@aster/config` only for the minimum reference listener/startup settings proven necessary, new `services/identity`, workspace tasks/tests, ADR-0011 wording, lifecycle/HTTP/configuration operations docs, Phase 01 runway/evidence, and repository memory.
+- Authoritative data: None created. PostgreSQL remains the future durable authority; Redis remains non-authoritative; startup probes perform no durable write.
+- Read models/caches: None.
+- Trust boundaries: Process environment, listener host/port, startup and operation budgets, parent/caller signals, timer/scheduler/random providers, dependency probe outcomes and exceptions, health snapshot providers, HTTP methods/routes, concurrent monitor/start/stop calls, process signals, and partial construction/shutdown.
+- External dependencies: Only the exact dependencies already selected by P01-R03 through P01-R07. No new registry package, container, hosted service, broker, object-storage runtime, Collector, or GraphQL dependency is added.
 
 ## Invariants
 
-- Domain and application packages import no web framework, database, Redis, broker, object-storage, or telemetry SDK type.
-- One package owns each vendor dependency; generated public declarations contain only repository-owned or Node.js platform types.
-- Every outbound operation accepts or derives a finite deadline and observes caller cancellation; no adapter performs an unbounded retry loop.
-- Cancellation and timeout do not return a pooled or shared client to service until its protocol state is safe; unsafe connections are discarded.
-- Retries are disabled in the generic adapter unless the operation is explicitly safe or made idempotent and the attempt budget fits the caller deadline.
-- PostgreSQL is authoritative only for later context-owned schemas; Redis never becomes durable truth.
-- Broker delivery remains at-least-once and product event envelopes, outbox behavior, replay, and topic ownership remain deferred.
-- Object operations stream bytes with bounded buffering; application services never proxy media bytes and fixture deletion cannot target unbounded prefixes.
-- Buckets, object keys, topics, endpoints, SQL text, Redis keys/values, payloads, credentials, errors, and record identifiers never enter logs or metric attributes.
-- Dependency operations use the existing finite telemetry vocabulary and complete each telemetry lease exactly once.
-- Connect, probe, operation, stop, and close paths are race-safe; close is idempotent and releases timers, sockets, consumers, and queued work.
-- Clock and ID fakes are deterministic without global mutation; production IDs use `crypto.randomUUID`.
-- A clean task graph must emit each workspace dependency's exported declarations before a consumer typecheck resolves them; local generated state and remote cache cannot be correctness prerequisites.
+- Domain and application packages import no runtime, HTTP, PostgreSQL, Redis, or telemetry infrastructure type.
+- Startup performs one attempt per critical dependency and has one overall deadline; it contains no retry loop.
+- Every nested connection/probe budget is finite and less than the startup budget, and every operation receives the propagated parent signal.
+- Lifecycle phase and dependency readiness remain separate: dependency failure never moves lifecycle backward, while draining/failed/stopped always override dependency state.
+- Only PostgreSQL and Redis are critical for the Identity reference process. Broker, object storage, and telemetry export cannot become fake readiness dependencies.
+- A monitor cycle never overlaps itself and owns at most one probe per critical dependency. It stores only finite stable state and stops before dependencies close.
+- Health requests read process-local snapshots and initiate no dependency work, retry, allocation proportional to caller input, or topology lookup.
+- Public health never includes dependency names, endpoint/host topology, error text, credentials, retry counts, process identifiers, or arbitrary values.
+- `tryBeginWork()` returns no lease unless lifecycle and every critical gate are ready.
+- Configuration or listener construction failure fails closed and cleans partial resources. Dependency unavailability keeps a live process not ready so bounded recovery can succeed.
+- One lifecycle coordinator and one process-signal binding own shutdown. No package installs a competing signal handler or deadline.
+- Shutdown stops traffic, drains accepted work, stops the monitor, flushes telemetry, and closes dependencies inside the one lifecycle budget.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Invalid, accessor-backed, excessive, or credential-bearing public configuration | Fail before client construction with bounded cause-free issues; never echo an endpoint or credential | Sanitized initialization result only |
-| Connection unavailable, refused, or handshake stalls | Stop at the configured deadline, release partial resources, and return `unavailable` or `timeout` | One bounded `connect` outcome |
-| Caller aborts while queued, connecting, probing, or operating | Remove or ignore only that caller's work, cancel vendor work where supported, and return `cancelled` promptly | One bounded operation outcome |
-| PostgreSQL query is cancelled or times out | Cancel safely; release the connection only if protocol recovery is proven, otherwise destroy it | `query` outcome and bounded pool state |
-| PostgreSQL pool is exhausted | Reject at the adapter capacity/deadline instead of growing an unbounded wait queue | `rejected` or `timeout`, no caller label |
-| Redis is offline or reconnecting | Bound or disable offline queueing, expose unavailable state, and cap reconnect attempts/delay | `command` or `connect` stable outcome |
-| Broker send/consume fails or rebalance occurs | Preserve at-least-once semantics, bound in-flight records, stop intake on cancellation, and avoid claiming product-level deduplication | `publish` or `consume` stable outcome |
-| Broker client cannot close within the lifecycle budget | Force-close if the selected client safely supports it; otherwise reject the candidate and use the documented alternative | Stable close failure in logs; no endpoint |
-| Publish is aborted or times out after it may have reached a broker | Retire the producer generation and return an explicitly ambiguous stable result; do not retry outside the finite idempotent client attempt without later outbox/deduplication policy | `publish` cancelled or timeout; no topic/key/payload |
-| S3 body exceeds bounds, stream fails, or checksum mismatches | Abort the transfer, destroy owned streams, return a stable error, and leave publication semantics untouched | `read` or `write` stable outcome |
-| Fixture deletion receives an excessive or unsafe target | Reject before issuing network work; no broad prefix or bucket deletion | `delete` rejected |
-| Telemetry is closed or at capacity | Preserve adapter correctness and finish the dependency operation without throwing from telemetry | Existing telemetry drop accounting |
-| Close is concurrent or repeated | Share or serialize one close operation, give callers independent cancellation, and release resources once | No duplicate dependency operation |
-| A clean checkout typechecks adapters before telemetry declarations exist | Turbo orders dependency build and dependency typecheck before the consumer typecheck; a policy test freezes the graph edge | Build-system result only; no runtime telemetry |
+| Invalid, accessor-backed, excessive, or secret-bearing configuration | Fail before listener or client construction with bounded cause-free issues; never reflect input | Existing redacted configuration diagnostic only |
+| Parent cancellation or startup deadline expires | Abort every in-progress startup owner, keep or move the process to finite not-ready behavior, and start no nested retry | Finite dependency cancelled/timeout outcomes plus one stable startup event |
+| PostgreSQL or Redis initial connect/probe is unavailable | Process remains live and not ready with `dependency_unavailable`; the single monitor owns later recovery | Existing finite dependency operation outcomes; no dependency label in public health |
+| A ready critical dependency later fails | Overall readiness becomes not ready without changing lifecycle phase; new work leases are rejected | One probe outcome and bounded readiness transition event |
+| All critical dependencies recover | Overall readiness becomes ready while lifecycle stays ready; no process restart | One stable recovery transition event |
+| Probe throws, returns malformed data, or ignores caller state | Classify the gate unavailable, sanitize the cause, and rely on adapter/monitor deadlines without overlap | `error`, `unavailable`, or timeout at the owning dependency boundary |
+| Monitor scheduler or random provider fails | Fail closed to dependency-unavailable, stop scheduling unbounded work, and keep shutdown available | One sanitized monitor failure event |
+| Health provider throws or returns an invalid/accessor snapshot | Return stable `500 INTERNAL_HTTP_ERROR`; never reflect the value | Bounded HTTP failure outcome only when HTTP telemetry is composed |
+| Health route receives unsupported method or path | Preserve strict routing and return a stable bounded error without invoking dependency or GraphQL work | Bounded HTTP route/status only |
+| Telemetry export is unavailable | Requests and readiness remain correct; flush/shutdown remains finite | Existing telemetry failure/drop signals |
+| Listener bind fails | Abort partial startup, close constructed owners, mark startup failure, and return a sanitized start result | Stable startup failure event without host, port, or raw error |
+| Shutdown races monitor/startup/recovery | One shutdown owns cancellation; no new probe or lease starts; late completions cannot restore readiness | Existing lifecycle stages plus finite dependency outcomes |
 
 ## Data and contracts
 
-- Schema/migration: None; no table, migration, repository, or typed SQL library.
-- GraphQL: None.
-- Events: No product event or outbox. The broker package accepts only bounded synthetic records through a repository-owned transport contract.
-- Cache: No Redis key, TTL, invalidation, Lua script, lease, rate limit, or stale policy.
-- Public adapter contracts: Immutable options; stable initialization and operation results/errors; clock and ID ports; PostgreSQL reservation/probe/query seam; Redis probe/command seam; broker producer/consumer lifecycle seam; S3 probe/head/streaming operation seam; idempotent close hooks.
-- Compatibility: Pinned Node.js `24.19.0`; exact dependency engines, peer ranges, licenses, install scripts, native architecture implications, and generated declarations recorded before candidate publication.
-- Retention/deletion: Adapter process state ends on close. Only explicitly named bounded synthetic fixture objects/records may be cleaned up; no product retention behavior exists.
+- Schema/migration: None.
+- GraphQL: No schema, Apollo instance, resolver, Federation directive, or `/graphql` implementation. The unmounted adapter response remains stable.
+- Events: None.
+- Cache: No Redis command, key, TTL, lease, invalidation, or durable assumption.
+- Public runtime contracts: Finite deadline, critical-dependency readiness snapshot/transition, monitor lifecycle, stable public health snapshot, and Identity service start/stop result types using repository-owned types only.
+- HTTP contract: Fixed case-sensitive `/health/live` and `/health/ready`, `GET` and `HEAD` only, bounded JSON, `Cache-Control: no-store`, stable status codes, and no topology disclosure.
+- Compatibility: Pinned Node.js `24.19.0`, pnpm `11.24.0`, existing exact Express/Apollo compatibility boundary, existing exact PostgreSQL/Redis clients, and Linux/WSL process-signal support. Native Windows signal behavior remains unclaimed.
+- Retention/deletion: Deadline, readiness, monitor, and service state are process-local and end on shutdown. No durable record is created or deleted.
 
 ## Security and privacy
 
-- Authorization: No public endpoint or product operation exists. Future service and domain owners remain responsible for authorization before invoking these adapters.
-- Input limits: Bound configuration entries and lengths, connect/operation deadlines, pool and queue capacity, Redis reconnects, broker record bytes and in-flight count, consumer concurrency, bucket/key/topic lengths, S3 metadata, stream size, and fixture deletion count.
-- Sensitive data: Credentials remain inside validated configuration and vendor construction. Never expose URLs with user info, SQL, Redis commands/values, topic/bucket/key names, record bodies, signed URLs, error messages/stacks, or vendor diagnostics through public errors, logs, or metrics.
-- Abuse cases: Pool starvation, offline-queue growth, reconnect storms, retry amplification, poison broker records, oversized records/objects, slow or infinite streams, cancellation races, accessor execution, log injection, endpoint disclosure, and broad fixture deletion.
+- Authorization: Health endpoints contain no user or privileged data and perform no mutation. Product routes do not exist. Future product endpoints retain owning-context authorization.
+- Input limits: Exact routes and methods, bounded listener values, finite dependency set, finite startup/operation/monitor/shutdown budgets, one non-overlapping cycle, and bounded stable snapshots.
+- Sensitive data: Database/Redis URLs remain inside configuration and adapter construction. Health, public errors, logs, metrics, tests, and diagnostics exclude URLs, credentials, raw dependency errors, request values, and topology.
+- Abuse cases: Health polling cannot trigger network probes; slow dependencies cannot create overlapping monitor cycles; request traffic cannot bypass readiness leases; malformed providers/accessors cannot execute during validation; shutdown cannot leave a monitor creating new work.
 
 ## Implementation steps
 
-1. [completed] Record the P01-R06 release, activate P01-R07, reconcile the broker selection/confirmation boundary, and create the raw evidence ledger.
-2. [completed] Implement repository-owned system/fake clock and UUID/deterministic ID contracts with focused deterministic tests and no new dependency.
-3. [completed] Repeat live registry and official compatibility research for `pg`, `@redis/client`, the AWS S3 client modules, and Kafka candidates; record exact versions, licenses, engines, scripts, dependency cost, known advisories, cancellation/deadline seams, redaction, and removal paths before installation.
-4. [completed checkpoint] Implement PostgreSQL as the first network adapter, including bounded pool acquisition, probe/query cancellation recovery, telemetry, close, hostile construction tests, and vendor-free public declarations.
-5. [completed checkpoint] Implement Redis with bounded offline/reconnect behavior, abortable probe execution, telemetry, availability state, close, and equivalent boundary tests. No generic command is exposed before a context-owned use case exists.
-6. [completed checkpoint] Implement S3-compatible storage with streaming put/get, head/probe, bounded fixture deletion, abort and owned-stream cleanup, telemetry, and equivalent boundary tests.
-7. [completed checkpoint] Compare the Kafka candidates with install and process-lifecycle diagnostics, select one provisional client, implement bounded producer/consumer lifecycle, and document the mandatory real-broker confirmation gate for P01-R09.
-8. [completed checkpoint] Consolidate dependency, failure, cancellation, handle-cleanup, declaration, audit, and package evidence; update architecture and operations documentation without claiming real-container interoperability.
-9. [confirmation review completed] The complete initial review at candidate `37e6db8` found one bounded batch: preserve normal S3 not-found availability telemetry, reject hostile write input without throwing, prevent late Redis/Kafka completions from reviving closing state, account for active Kafka wrappers during close, and consume broker records only from own data properties. Remediation `3e55990` and its focused, affected, and forced complete gates pass; the exact-source confirmation review found no blocker.
-10. [completed] Pull-request run `33023269145` passed source quality, audit, documentation, security, and classification but blocked on the GitHub dependency graph's `MIT AND MITNFA` classification for transitive `bowser@2.14.1`. ADR-0012 records the license decision; only SPDX `MITNFA` was added to the reviewed allowlist, and the adverse policy test plus 46-task affected gate pass. Protected exact-head run `33023896325` then passed Dependency review, the complete source/audit and documentation/security lanes, the real local-platform lane, and the stable `CI required` aggregate at remediation head `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`.
-11. [local confirmation completed; protected confirmation pending] A late independent review on `f8aa6f8` found two blocking boundary defects that satisfy the written reason for one additional round: an accepted Kafka publish returned ordinary abort/timeout despite uncertain delivery, and an S3 bucket-probe 404 was treated as a healthy object miss. Source candidate `d3a23dc` returns a distinct finite `delivery_ambiguous` result only after publish acceptance, classifies probe 404 as unavailable while preserving object-read `not_found`, and adds focused abort/timeout/readiness regressions. Focused Kafka 21/21, S3 16/16, the 46-task affected graph, and an exact frozen checkout with 46/46 forced uncached tasks pass. Confirmation review found no remaining requirement, security/data, availability, lifecycle, or public-contract blocker; protected exact-head CI and evidence-backed discussion resolution remain.
-12. [local correction completed; protected confirmation pending] Correct the post-merge cold typecheck ordering exposed by run `33026244011`, add the exact task-policy regression, remove generated state, repeat the forced graph, publish one corrective pull request, require protected CI, merge, verify `main`, and rebase the saved P01-R08 branch. Exact corrective candidate `f38485a` passes the frozen offline install and 46/46 forced tasks with zero cache.
+1. [completed] Release P01-R07 and rebase P01-R08 onto corrective released `main` at `61226eb`.
+2. [pending] Implement the dependency-free propagated deadline contract with hostile-input, parent-cancellation, deterministic-timeout, remaining-budget, and idempotent-disposal tests.
+3. [pending] Implement the bounded readiness controller over the released lifecycle with pending/ready/unavailable critical gates, stable public snapshots, recovery without phase rollback, and ready-only work leases.
+4. [pending] Implement the single non-overlapping recovery monitor with deterministic scheduler/jitter seams, one probe per critical dependency, cancellation, stop-before-close, late-completion, and failure tests.
+5. [pending] Extend the Express adapter and ADR-0011 with fixed non-cacheable liveness/readiness routes, exact methods/status/body behavior, provider hardening, and real-socket tests while preserving `/graphql` behavior.
+6. [pending] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.
+7. [pending] Create the product-empty Identity composition root using injected controlled ports first, then compose the released real adapter factories behind the same boundary. Prove startup deadline propagation, unavailable startup, recovery, request admission, partial-start cleanup, one signal owner, ordered shutdown, and vendor-free inner declarations.
+8. [pending] Add a loopback diagnostic that starts the reference process with controlled dependency ports, verifies stable health transitions and bounded stop, and exits naturally without product state.
+9. [pending] Consolidate documentation/evidence, run the affected and forced complete gates, repeat an exact frozen checkout for new workspace/package/export/public-command inputs, and perform one complete review plus one confirmation round.
+10. [completed] Rebase the unpublished branch after the P01-R07 corrective release; repeat the affected gate before the next source checkpoint.
 
 ## Tests
 
-- Domain: None; no product domain behavior.
-- Application: Deterministic clock/ID tests and pure state/capacity/result tests for every adapter.
-- Integration: Vendor-client boundary tests using controlled fakes, protocol-safe loopback or client middleware where useful, and subprocess handle/exit diagnostics; real PostgreSQL, Redis, broker, and S3 containers remain P01-R09.
-- Contract: Package exports, exact public error/result shapes, finite option bounds, telemetry vocabulary, vendor-free generated declarations, and architecture import direction.
-- Browser: Not applicable.
-- Performance/failure: Deadline and abort latency, queue/pool saturation, reconnect bound, consumer stop, concurrent/repeated close, stalled callbacks/sockets/streams, bounded memory/backpressure for S3 streams, no unhandled rejection, and no live owned handles after close.
+- Domain: Not applicable; no product domain behavior.
+- Application: Pure deterministic deadline, readiness transition, admission, monitor scheduling/cancellation, and startup orchestration tests with controlled ports.
+- Integration: Real Node.js sockets for health route and lifecycle behavior. Real PostgreSQL and Redis containers, stop/recovery transitions, and authentication remain P01-R09.
+- Contract: Exact public health JSON/status/method/cache behavior; repository-owned declarations; no Express/vendor type leakage into runtime or service inner boundaries; configuration classification; package exports.
+- Browser: Not applicable; no UI.
+- Performance/failure: Startup and operation timeout, parent abort, no overlapping probes, one probe per dependency, scheduler/provider failure, missing dependency, recovery, partial listener/client failure, concurrent stop, termination during tracked work, natural process exit, and no residual timer/socket handle.
 
 ## Evidence
 
-- Commands: Focused package typecheck/build/test/check and targeted lint/format during each coherent package slice; `pnpm check:changed` at package candidates; `pnpm check --force` once the complete work item stabilizes; `pnpm audit --audit-level=high`; license/dependency/install-script inventories; exact runtime diagnostics; isolated frozen clean checkout; protected CI and review evidence.
-- Raw artifact path: `evidence/phase-01/platform-adapters.txt`.
-- Acceptance result: Adapter behavior is implemented and pull request 14 merged as `0dd4dad`; release remains blocked by the post-merge cold typecheck ordering failure in run `33026244011` until the corrective task-graph candidate passes an exact clean gate, protected CI, merge, and post-merge confirmation.
-- Iteration gate: Run only the affected package build/typecheck/tests plus targeted lint/format after a coherent contract or failure-path change. Clock/ID, PostgreSQL, Redis, S3, and broker are separate iteration checkpoints.
-- Candidate gate: Run `pnpm check:changed` when each package forms a coherent candidate. Run one forced complete graph only after all four adapters, clock/ID, dependency graph, declarations, documentation, and evidence stabilize.
-- Heavyweight repeat triggers: Repeat frozen isolated checkout for dependency, lockfile, workspace, package export, generated declaration, install-script, native module, or public-command changes. Repeat subprocess/handle diagnostics for client lifecycle, cancellation, retry, timer, consumer, stream, or close changes. Repeat stream memory/backpressure evidence for S3 body ownership changes. Real container interoperability is owned and repeated in P01-R09.
-- Review stopping rule: Collect one complete initial review and batch related blocking remediation. Run one confirmation review. Start another round only if remediation changes or reveals a requirement, security/data invariant, availability behavior, lifecycle guarantee, or public adapter contract.
+- Commands: Focused package typecheck/build/tests and targeted lint/format per checkpoint; `pnpm check:changed` per coherent candidate; one `pnpm check --force` when the entire item stabilizes; loopback process diagnostics; exact frozen no-generated-state checkout; audit and secret scan; protected CI only after predecessor-first rebase/publication.
+- Raw artifact path: `evidence/phase-01/runtime-composition.txt`.
+- Acceptance result: Pending.
+- Iteration gate: Run only the changed runtime/HTTP/config/service build, typecheck, tests, diagnostic, and targeted lint/format after each coherent behavior checkpoint.
+- Candidate gate: Run `pnpm check:changed` after the combined runtime contracts, after the combined HTTP/service composition, and at closeout. Run the forced complete graph once after source, declarations, documentation, and evidence stabilize.
+- Heavyweight repeat triggers: Repeat exact frozen checkout for workspace, dependency, lockfile, package/export/declaration, install, bootstrap, service entrypoint, or public command changes. Repeat real-socket/subprocess handle evidence for listener, signal, timer, cancellation, monitor, request admission, startup, or shutdown changes. Real dependency/container evidence remains exclusively P01-R09.
+- Review stopping rule: Collect one complete initial review and batch related blocking remediation. Run one confirmation review. Start another round only when remediation changes or reveals a requirement, security/data invariant, availability behavior, lifecycle guarantee, or public contract.
 
 ## Rollback or recovery
 
-Each dependency package can be removed independently with its exact dependency and lockfile entries because no product context or service imports it in this phase. Clock and ID exports can be removed before service composition. If a client cannot meet cancellation, bounded shutdown, license, architecture, audit, or declaration-isolation requirements, remove it, record the failure, select the documented alternative, and repeat only affected install/lifecycle gates. Synthetic adapter state has no recovery promise and no broad deletion is permitted.
+Before release, remove `services/identity` and the new runtime/HTTP/config exports independently because they own no durable state and no later service consumes them. If health-route composition weakens ADR-0011, restore the previous adapter and propose a replacement ADR. If a dependency cannot meet the propagated deadline or monitor contract, keep the service live/not-ready, remove that composition, and return the behavior to P01-R07 or P01-R09 with exact failure evidence. If P01-R07 changes, rebase from its released squash and repeat affected tests before any publication.
 
 ## Documentation updates
 
-- Record P01-R06 release and P01-R07 activation in the evidence index, runtime runway, state, queue, session log, and handoff.
-- Record exact client versions and selection evidence in the technology baseline, dependency documentation, runtime runway, raw evidence, and decisions ledger when decisions are made.
-- Document repository-owned contracts, lifecycle/failure semantics, telemetry mapping, public-type isolation, limitations, rollback, and the P01-R09 real-dependency confirmation matrix.
-- Keep Docker Compose, public evaluator commands, service readiness, product schemas, caches, events, media rights/publication, dashboards, and SLOs explicitly planned until their owning items verify them.
+- Update ADR-0011, Runtime Lifecycle, HTTP Transport, Configuration and Environments, Runtime Platform Runway, technology baseline, Phase 01 evidence index, and local development only when their described behavior exists.
+- Record exact health shapes, startup/dependency budget hierarchy, monitor ownership, shutdown order, local diagnostic, limitations, and recovery without claiming real-container interoperability.
+- Keep GraphQL, accounts/profiles/sessions, schemas/migrations, cache policy, real dependency recovery, Compose exposure, Collector/backend, dashboards, SLOs, and final evaluator commands explicitly planned.
 
 ## Completion checklist
 
-- [x] Requirements satisfied
-- [x] Tests pass
-- [x] Evidence captured
-- [x] Documentation current
-- [x] `.ai/` state updated
-- [x] Remaining risks recorded
+- [ ] Requirements satisfied
+- [ ] Tests pass
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

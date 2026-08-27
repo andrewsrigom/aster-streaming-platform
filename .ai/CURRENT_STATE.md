@@ -117,7 +117,8 @@ Status: **IN_PROGRESS**
 - Exact-head run `32999250730` passed at closeout `6e25100`, both final-confirmation discussions are resolved, and P00-R06 is `RELEASED` through protected squash `92d3531b684ea259b840942f858584e5e364937c`; post-merge run `32999467446` passed every applicable job.
 - P01-R05 is `RELEASED` through protected squash `4d243351bb46ae6b63a80a9ca3b9186baa3c68ac`: implementation `60e9808` plus availability remediations through `fc44892` provides stable lifecycle health, ready-only in-flight leases, one ordered bounded shutdown, removable signal ownership, race-safe Node.js HTTP closure, and stable lifecycle events without adding a service or dependency. Protected closeout run `33004817099` passed, all three review discussions are resolved, final review reported no major issue at exact reviewed source head `3d4ba3e`, and exact post-merge run `33004926766` passed every applicable job.
 - P01-R06 is `RELEASED` through protected squash `8dff9d8d57572b2eac944ae98406f3da2979682c` on pull request 13. Source candidate `fbac8cc0f893b01392683549e86f47d6230fb0fe`, exact reviewed source/evidence head `068f9fd0835e38d432e5a7bd3627beeb42f9b405`, nine focused tests, changed and exact 34/34 uncached gates, audit, secret scan, cleanup, both resolved discussions, and final review comment `5430926105` pass. Protected closeout run `33012535152` and exact post-merge run `33012664408` passed every applicable job.
-- P01-R07 adapter behavior passed protected exact-head run `33024975611` at `613c1db` and pull request 14 squash-merged as `0dd4dadffa0cfdd688327b9e3f8b89734782ed24`. Post-merge run `33026244011` failed only because adapter typechecks could race the clean build of exported `@aster/telemetry` declarations. Corrective candidate `f38485a` adds the missing `^build` typecheck dependency and freezes it in the 20-test toolchain policy. Its exact no-generated-state checkout installed all 329 packages offline and passed 46/46 forced tasks with zero cache, all adapter diagnostics, high-severity audit, clean Git, and cleanup. No runtime source, dependency, lockfile, public contract, bounded context, durable data, or service changed. P01-R07 remains active until this correction passes protected CI, merges, and receives a successful post-merge run; real dependency interoperability remains P01-R09.
+- P01-R07 is `RELEASED`: pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; the cold task-order correction then passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
+- P01-R08 is active on local branch `feat/p01-r08-runtime-composition`, rebased directly onto corrective released `main`. It owns propagated deadlines, recoverable PostgreSQL/Redis readiness, one non-overlapping monitor, stable health routes, and a product-empty Identity composition root.
 
 ## Not implemented
 
@@ -141,7 +142,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-For P01-R07, publish corrective candidate `f38485a` once, require protected source/platform and stable aggregate gates, squash-merge, and verify the exact post-merge `main` run. Then rebase the saved local P01-R08 branch onto released `main`, repeat its affected gate, and resume readiness work.
+For P01-R08, verify the rebased deadline checkpoint once, then implement the bounded readiness controller with focused tests before the next combined runtime-contract gate.
 
 ## Current risks
 

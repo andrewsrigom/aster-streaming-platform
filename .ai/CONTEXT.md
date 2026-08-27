@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 lifecycle and P01-R06 telemetry are released. P01-R07 adapter behavior merged through pull request 14, but its post-merge cold task graph failed and P01-R07 remains active on one corrective ordering branch. P01-R08 deadline/readiness work is saved locally and unpublished until that correction releases, followed by P01-R09 real integration and P01-R10 resource-aware closeout. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` distinguishes the released telemetry baseline, active adapter closeout, and later unimplemented capabilities.
+P01-R05 lifecycle, P01-R06 telemetry, and P01-R07 platform adapters are released. P01-R08 deadline/readiness composition is active from corrective released `main`; P01-R09 real integration and P01-R10 resource-aware closeout remain later work. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` distinguishes released capabilities from the active composition work and later unimplemented capabilities.
