@@ -1,6 +1,6 @@
-# Catalog Domain
+# Catalog
 
-Status: implemented pure domain rules with focused tests; no Catalog server, database or public API yet.
+Status: implemented domain rules and PostgreSQL rights-history storage with focused and real integration tests. No Catalog server, operator authentication or public API yet.
 
 ## Rights
 
@@ -18,13 +18,22 @@ Any non-retired title can be retired, including after dispute or expiry. Reopeni
 
 Transitions return new frozen domain values with bounded increasing versions. Persistence must serialize concurrent publish/dispute and commit lifecycle/audit/outbox together; none of that is claimed by domain tests.
 
+## Durable rights history
+
+The Catalog-owned transaction adapter creates draft titles and appends immutable rights snapshots with actor/time/correlation provenance. Compare-and-set advances the title version and next review revision atomically. Runtime credentials cannot overwrite/delete rights or audit facts, alter lifecycle columns or read Identity tables. Deferred foreign keys require matching title ownership and provenance at commit.
+
+Rights history uses descending revision keysets, at most 50 entries. Source JSON is capped at 30000 UTF-8 bytes, persisted JSONB at 32768 bytes. Rights/provenance are retained as product evidence, not silently pruned. No broker or public lifecycle event is emitted by this storage slice.
+
+Storage validates structure, not operator authority or approval. Future application commands must authorize the actor, invoke approval rules and enforce publication/retirement/outbox together. See [migration behavior and recovery](migrations/README.md).
+
 ## Verification
 
 Run from the repository root:
 
 ~~~sh
-pnpm --filter @aster/catalog build
+pnpm exec turbo run build --filter=@aster/catalog
 pnpm --filter @aster/catalog test
+pnpm catalog:integration
 ~~~
 
-Synthetic fixtures cover all 25 state pairs, required fields, incompatible permissions, expiry, stale/wrong-title media, immutable outputs, accessors, hidden evidence fields and reopening. No actual film is downloaded or published. See [evidence](../../evidence/phase-03/README.md).
+Synthetic fixtures cover all 25 state pairs, required fields, incompatible permissions, expiry, stale/wrong-title media, immutable outputs, accessors, hidden evidence fields and reopening. Real PostgreSQL additionally proves concurrent revision conflicts, stable pages, Unicode preservation, atomic audit/rollback, cancellation, lock deadlines, privileges and migration round-trip. The integration runner requires the repository-pinned PostgreSQL image already available and removes only its uniquely labelled disposable fixture. No actual film is downloaded or published. See [evidence](../../evidence/phase-03/README.md).

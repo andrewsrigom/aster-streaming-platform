@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Durable Catalog rights history
+
+### Completed
+
+- P03-R01 committed as 4968d42. P03-R02 adds the Catalog schema, immutable rights/provenance, version/revision compare-and-set and bounded history reads using existing PostgreSQL infrastructure.
+
+### Evidence
+
+- 61 focused tests and reviewed real PostgreSQL integration pass: eight synchronized writers yield one commit; rollback/abort/timeout, Unicode, ownership/privilege and migration guards pass. Fixture cleaned in 3261 ms total with zero remaining; retained demo stays healthy.
+
+### Next action
+
+- Initial review added transaction synchronization and a real Unicode round-trip; confirmation complete, no independent approval claim. Candidate gate passes 52 tasks (38 cached, 17.092 s), 61 Catalog tests and high/critical audit. P03-R02 closed locally; next READY P03-R06 operator/lifecycle/outbox, then public queries/schema. Evidence/completed plan: `evidence/phase-03/catalog-persistence.txt`.
+
 ## 2026-08-27 — Identity released; Catalog domain started
 
 ### Completed

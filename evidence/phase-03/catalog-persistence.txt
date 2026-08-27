@@ -1,0 +1,201 @@
+Catalog persistence checkpoint — 2026-08-27
+Requirement: P03-R02; storage support for P03-R03/R06, not operator/API acceptance.
+Base: 4968d42e8ba570ca6b9715048de98009df29bfcb on feat/p03-catalog-rights.
+Environment: WSL Ubuntu 20.04 Linux amd64, Node 24.19.0, pnpm 11.24.0,
+Docker 26.0.0, repository-pinned PostgreSQL 18.6-alpine3.23 image digest
+697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f.
+
+Implemented: structured immutable rights revisions/provenance; title version/revision CAS;
+bounded history keysets; restricted Catalog role; deferred owner/audit constraints;
+application-facing transaction port and existing bounded PostgreSQL adapter.
+No new external dependency version (only existing workspace/importer links).
+No hosted CI or Catalog runtime release yet.
+
+Commands:
+pnpm install --lockfile-only --ignore-scripts
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm exec turbo run build test --filter=@aster/catalog
+pnpm exec eslint services/catalog tools/run-catalog-integration.mjs
+pnpm unused:check
+pnpm catalog:integration
+git diff --check
+
+Focused result: 61 tests pass (52 existing domain + 9 persistence), 80.522327 ms.
+Initial implementation compile/lint issues were fixed before acceptance.
+Initial review found verification gaps: synchronize all eight transactions before CAS and
+prove large Unicode JSON through real PostgreSQL, not only a query fake.
+Both were addressed together; confirmation finds no scoped blocking issue.
+The runtime SQL/adapter did not change during that review remediation.
+Executing-agent review only, not independent approval.
+Candidate gate passes: all 52 tasks (38 cached), 17.092 s; 61 Catalog tests and high/critical audit.
+One initial gate stopped on missing Session Log section headings; those prose headings were fixed,
+AI/docs preflight passed and the final full candidate passed. No code or SQL changed after integration.
+
+Final reviewed integration output:
+$ turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs
+• turbo 2.10.12
+
+   • Packages in scope: @aster/catalog
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache miss, executing 6c93814b9db62416
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    3 successful, 3 total
+Cached:    2 cached, 3 total
+  Time:    1.35s 
+
+{"event":"catalog_migration_isolation","duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_rights_round_trip","revisions":2,"provenance":true,"staleVersionRefused":true}
+{"event":"catalog_concurrency_keyset","callers":8,"committed":1,"stale":7,"stablePages":true,"synchronizedTransactions":8}
+{"event":"catalog_atomic_rollback","faults":["throw","rollback","abort"],"retainedRevisions":4,"titleVersion":5}
+{"event":"catalog_lock_failure","mode":"abort","durationMs":18,"retainedRevisions":4}
+{"event":"catalog_lock_failure","mode":"timeout","durationMs":1010,"retainedRevisions":4}
+{"event":"catalog_constraints_query_plan","provenanceRequired":true,"ownerProjectionRequired":true,"latestMustExist":true,"plan":[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Plans":[{"Node Type":"Index Only Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Backward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"rights_revisions","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000001'::uuid) AND (revision < 4))"}]}}]}]}
+{"event":"catalog_adapter_reconnect","retainedRevisions":4,"closedAdapterFails":true}
+{"event":"catalog_unicode_orphan_guard","jsonBytes":10856,"exactRoundTrip":true,"missingTitleRejected":true}
+{"event":"catalog_migration_round_trip","dependencyGuard":true,"cleanReinstall":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":3261}
+
+
+Interpretation:
+Eight real concurrent admitted transactions share a barrier; exactly one writes revision 3.
+Throw, application rollback, abort and lock timeout preserve four original revisions/version 5.
+Ten forbidden statements prove role isolation, no DDL/lifecycle-column writes and immutable history.
+A 10856-byte Unicode record round-trips exactly with the shared 4096-character parameter guard.
+Revision pages retain their keyset under an intervening append.
+SQL refuses missing provenance, mismatched owner projections and nonexistent latest pointers.
+Down migration rejects unknown dependents, then up/down/up succeeds in disposable storage.
+Cleanup removes only the uniquely labelled synthetic fixture; zero slots/resources remain.
+The retained Aster demo remains healthy (identity, PostgreSQL, Redis, platform-status).
+
+Limits:
+Storage is not operator authentication or license approval. Actor IDs are supplied by the future
+trusted application boundary. Nullable review fields remain explicit uncertainty.
+No publish/dispute application race, real rights record, public GraphQL, HLS or asset acquisition.
+The query plan is for four synthetic revisions, not a throughput/capacity or public-browse benchmark.
+Rights/provenance are durable evidence, no automatic eviction. JSON source cap 30000 UTF-8 bytes,
+JSONB cap 32768; each page <=50; no broker/outbox yet.
+Identity source/runtime is unchanged, retaining Phase 02 protected/post-merge proof; do not rerun
+its whole Docker matrix for this separate storage slice.
+
+Source SHA-256:
+15ee99025bb7f1bb0f9cb1162d452d7ac35fb6979e295b5f4bdd00c0e030e6c7  services/catalog/src/application/rights-ports.ts
+a77e760d0b1f84b5de960f313ff7ca4b546c8d78ddbb3daac297e5b3df93cdd9  services/catalog/src/infrastructure/persistence/postgres-rights.ts
+2084990c5323a6956e3d0d3d5f28c94463fc17d62abfe0960b167b57d542ec69  services/catalog/migrations/0001-rights-history.down.sql
+fc818734016235d2c5ed634862e670e38b0a5d646636caa2fa540c25d5d7b9b7  services/catalog/migrations/0001-rights-history.up.sql
+21dc735837ca38de7efe8cdb275cb896fe6e089246786449439a8f77b4686c75  services/catalog/test/postgres-rights.test.ts
+993ddc006ae1b14e766ae0046d3ed707f4eba9234c5c8766bb5d7cfcafec1fb6  services/catalog/test/integration/rights-postgres.ts
+fcbee2e23e6d5500f01388706dd70babc8dc351b7c2e0edacf6a41d16fec00ba  tools/run-catalog-integration.mjs
+3ca5721ea54d61e43c6a50e490c3e4431d5382a891e040b1875e660f2bcaafa2  services/catalog/package.json
+7242725193e02563985d54e4074f7e83d7af0cbc4bf9a3c1dafff1cbbbdba1c0  pnpm-lock.yaml
+
+Final candidate command:
+pnpm ai:check && pnpm docs:check && pnpm check:changed && pnpm audit --audit-level=high && git diff --check
+Exit: 0
+Tasks:    52 successful, 52 total
+Cached:    38 cached, 52 total
+  Time:    17.092s 
+
+1 vulnerabilities found
+Severity: 1 moderate
+
+Completed implementation plan (scope recorded before implementation):
+# Work Item: Durable Catalog Rights History
+
+- Status: VERIFIED
+- Owner: Catalog
+- Phase: 03
+- Requirement IDs: P03-R02, P03-R03, P03-R06
+- Created: 2026-08-27
+- Updated: 2026-08-27
+
+## Outcome
+
+Persist structured rights revisions and actor/time/correlation provenance in Catalog-owned PostgreSQL. Prove atomic history and concurrency with real PostgreSQL. This is a persistence slice, not operator authentication, public browse or a running API.
+
+## Current behavior
+
+P03-R01 is committed as 4968d42 on feat/p03-catalog-rights: 52 domain tests and 52 source tasks pass. Phase 02 main ec6386c and its protected/post-merge Docker proof remain unchanged. Catalog has no durable data yet.
+
+## Proposed behavior
+
+Add the first Catalog migration, application-facing transaction port and PostgreSQL adapter. Each immutable rights snapshot has an increasing per-title revision and audit provenance. A transaction serializes against its title, advances its version and inserts rights/audit atomically. Reads use bounded revision keysets. Reuse the existing PostgreSQL adapter and pg version; no ORM, runtime or new external version.
+
+## Boundaries
+
+- Owner/data: Catalog schema, titles, rights history and review provenance.
+- Paths: services/catalog application/persistence/migrations/tests, tools/run-catalog-integration.mjs and workspace wiring.
+- Decisions: ADR-0002, 0003, 0004, 0006, 0007, 0010, 0013, 0014.
+- Skills: agent, architecture, node-runtime, data-events, security, testing, documentation.
+- Trust: storage does not authenticate actors or approve licenses; the future owning application must do so. No transport exposes these methods. Viewer credentials remain unrelated.
+- Dependency: PostgreSQL 18.6 through the bounded adapter. A disposable labelled loopback-only integration container must not touch the Aster demo.
+
+## Invariants
+
+- Every stored rights revision is domain-normalized, bounded and matches its relational identity/revision/status.
+- Runtime credentials cannot update/delete rights history or provenance.
+- Append requires the current title version and next revision; stale writers fail without partial rows.
+- SQL locks cover database operations only; no media or external review calls.
+- Catalog credentials cannot read other contexts or perform DDL.
+- History pages use descending immutable revision keys, maximum 50.
+- Stored APPROVED status is not proof of authorization: the next operator slice must invoke approval policy and authenticate the reviewer.
+
+## Failure behavior
+
+| Failure | Expected behavior | Telemetry |
+|---|---|---|
+| Invalid input/corrupt row | Reject or roll back | Bounded dependency outcome |
+| Stale title/revision | Conflict, no writes | Returned result |
+| Cancel/timeout/database outage | Abort or indeterminate, never false success | PostgreSQL telemetry |
+| Post-write failure/missing title | No orphan history/audit | Rollback |
+| Migration/rollback dependency failure | Transaction fails intact | Integration artifact |
+
+## Data and contracts
+
+Migration 0001 adds Catalog-owned tables and restricted privileges, forward/down SQL and no backfill. Rights use a bounded structured JSONB snapshot plus relational identity/revision/status and foreign keys. Immutable audit binds actor/time/correlation to each revision. No broker/outbox yet: publication/retirement events belong to the later lifecycle application slice. No cache/GraphQL/browser change. Rights/audit are durable product evidence, not time-evicted logs; paginate and never silently prune them.
+
+## Security and privacy
+
+No public entry point or operator credentials. Validate IDs, versions, rights and provenance before parameterized source-owned SQL. Synthetic actors only; no personal data, credentials or media bytes. Runtime has neither cross-context grants nor history-mutation privileges.
+
+## Implementation steps
+
+1. Add schema, transaction port and adapter.
+2. Add focused input/row/result tests.
+3. Prove real round-trip, conflicts, locks, rollback/cancellation, history and role isolation.
+4. Initial review, batched remediation, confirmation; candidate gate and evidence.
+5. Commit the local functional block. Operator/public queries follow before a single Phase 03 PR.
+
+## Tests
+
+Existing domain rules; focused hostile input/corrupt row/bounded page/result mapping; real migration up/down/up, FK/constraints, concurrent revisions, stable pages, atomic provenance, failure/abort/timeout and isolation. Browser/media/GraphQL do not apply to this unexposed slice.
+
+## Evidence
+
+- Iteration gate: Catalog build/test and scoped lint/typecheck.
+- Candidate gate: pnpm check:changed, frozen install/high-critical audit for lock wiring, catalog integration.
+- Heavyweight repeat triggers: SQL/persistence/driver/fixture changes; retain unchanged Identity Docker proof.
+- Review stopping rule: initial plus confirmation; requirement/security/data/availability/public-contract violations block.
+- Artifact: evidence/phase-03/catalog-persistence.txt with environment, commands, fingerprints, results and limitations.
+
+## Rollback or recovery
+
+Revert the local source block before deployment. Down SQL is destructive and only runs on the new disposable fixture, never retained demo/real data. No CASCADE: unknown dependents fail closed. Later durable deployment needs backup/roll-forward.
+
+## Documentation updates
+
+Catalog README/migration notes, evidence and consolidated .ai state at candidate checkpoint. Keep operator/API/media planned.
+
+## Completion checklist
+
+- [x] Persistence requirements satisfied
+- [x] Focused and real integration tests pass
+- [x] Evidence and review captured
+- [x] Documentation and memory current

@@ -10,32 +10,28 @@ Status: **IN_PROGRESS**
 
 ## Verified
 
-- Phases 00–02 are released. Phase 02 PR 19 squash `ec6386ca7add0f12ae748589be763d9e90ff0d6c` is the clean main base.
-- Protected `33066484199` and exact post-merge `33066827332` pass every applicable job. Both verify 144 Identity tests, eleven real scenarios, packaged UID 1000, six metric families and the Docker local login/profile journey. Post-merge matrix: 158185 ms, cleanup 1012 ms, zero remaining.
-- Executing-agent initial/confirmation reviews are complete; no independent approval claimed. No bypass, duplicate PR or repeated pipeline. [Release evidence](../evidence/phase-02/release.txt).
-- The local Aster Docker demo remains healthy with retained data. No unrelated Docker/WSL resource was modified.
+- Phases 00–02 are released. PR 19 squash ec6386ca7add0f12ae748589be763d9e90ff0d6c is the main base.
+- Protected 33066484199 and post-merge 33066827332 pass: 144 Identity tests, eleven real scenarios, UID 1000, six metric families and Docker local login/profile journey. [Release evidence](../evidence/phase-02/release.txt).
+- The four retained Aster containers remain healthy. No demo data, unrelated resources or public remote changed during the Catalog slices.
 
 ## Current work
 
-P03-R01 on `feat/p03-catalog-rights`: pure Catalog rights completeness/approval, derived attribution and title lifecycle rules. 52 focused tests, scoped lint/typecheck and unused-code checks pass. The 25-pair transition matrix, expiry, wrong-title/stale media, reopening and bounded hostile inputs are covered. Initial review fixed hidden evidence fields and invalid retired linkage; confirmation passes. Candidate gate passes all 52 tasks (33 cached, 18.031 s), 52 Catalog tests and high/critical audit. Coherent local commit remains. [Evidence](../evidence/phase-03/catalog-domain.txt).
+P03-R01 is committed as 4968d42. P03-R02 on feat/p03-catalog-rights is locally verified: PostgreSQL rights revisions and immutable actor/time/correlation provenance. 61 tests and real PostgreSQL integration pass, including eight synchronized writers (one commit/seven conflicts), rollback/abort/timeout, keysets, Unicode, privileges and migration round-trip. Initial/confirmation review and all 52 candidate tasks pass (38 cached, 17.092 s); no independent approval or remote release claimed. [Evidence and completed plan](../evidence/phase-03/catalog-persistence.txt).
 
 ## Not implemented
 
-- Catalog persistence, operator authorization, public browse/schema, real rights records and generated HLS fixture.
-- Router, browser UI, media pipeline/playback, engagement/discovery, advanced Redis/resilience, distributed traces/SLOs and hosted release.
-- No playable VOD demo or approved film exists.
+Catalog operator authentication/commands, publish-dispute transactions/outbox, public browse/schema, localized metadata, real rights records and generated HLS fixture. Router, web UI, media/playback, engagement/discovery and hosted release remain planned. No playable VOD demo or approved film exists.
 
 ## Next outcome
 
-Commit the verified P03-R01 domain slice, then plan P03-R02 to implement Catalog persistence/operator policies and public queries under a new bounded plan. No remote PR for a domain-only slice. The official Big Buck Bunny source and index are reachable; no media downloaded or rights approved. Use the existing owner boundaries and Node/SQL/GraphQL infrastructure.
+Activate READY P03-R06 with a new bounded plan: owning operator workflow, lifecycle/audit/outbox and deterministic publication contract; public queries/schema follow. P03-R02 is complete locally with its evidence and source checkpoint. Keep one Phase 03 publication rather than storage-only PRs.
 
 ## Current risks
 
-- Keep Aster MIT; ADR-0014 authorizes Elastic-2.0/0BSD dependencies and standing compatible licensing decisions. Do not repeat that permission pause. Preserve notices and exact terms.
-- Audit passes high/critical with moderate uuid 9 GHSA-w5hq-g745-h8pq outside inspected Apollo v1/v4 call paths; recheck on upgrades.
-- Local JWTs never grant operator/Router/hosted trust. Restart deliberately invalidates local sessions while durable data survives.
-- Identity pending outbox caps at 128/account; no silent eviction. Phase 08 owns relay/cleanup.
-- Catalog domain tests validate supplied reference consistency, not actual media bytes, operator identity or database concurrency.
-- Rights approval precedes acquisition; missing pre-acquisition checksum is not itself missing permission. Share-alike delivery remains unsupported by the initial domain policy.
-- Docker proof covers WSL/hosted Linux amd64 and Windows localhost access, not native Windows containers/macOS/arm64. Samples are not capacity/SLO guarantees.
-- No broad reset/prune, unrelated changes, protection bypass or private motivation in docs. Dependabot PR 1 remains unrelated.
+- Compatible licensing decisions are authorized; retain MIT unless actual compatibility requires change. Preserve notices/terms. No repeated Apollo permission pause.
+- High/critical audit passes with the known moderate uuid advisory outside inspected Apollo v1/v4 paths; recheck on upgrades.
+- Viewer JWTs are not operator credentials. Persistence accepts facts from a future authorized owning application; storing APPROVED is not a license review or authorization.
+- Rights/provenance are durable, immutable to runtime roles, not auto-evicted. Catalog publication events are not implemented; Identity pending outbox remains capped at 128/account until Phase 08 relay.
+- Domain publication references validate structure, not media bytes. Pre-acquisition checksum can be null; actual rights permission must precede download.
+- SQL evidence covers synthetic revisions/local Linux amd64, not hosted capacity, publish/dispute behavior or other operating systems.
+- No broad reset/prune, remote bypass, private motivation in docs or changes to unrelated Dependabot PR 1.

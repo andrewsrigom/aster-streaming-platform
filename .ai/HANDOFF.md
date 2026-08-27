@@ -2,20 +2,19 @@
 
 ## Resume point
 
-1. Phase 02 is released: PR 19 squash `ec6386ca7add0f12ae748589be763d9e90ff0d6c`; protected `33066484199` and exact post-merge `33066827332` pass. Read `evidence/phase-02/release.txt`; do not republish release metadata alone.
-2. Branch `feat/p03-catalog-rights` was created from clean main. Current Catalog/package/lock/docs edits are ours. P03-R01 domain slice has 52 passing focused tests and lint/typecheck/Knip; candidate gate also passes all 52 tasks (18.031 s) and high/critical audit; local commit remains. No Phase 03 remote publication.
-3. Read CHANGE_PLAN, Phase 03 specification and `services/catalog/README.md`. Rights normalization/approval/attribution and immutable lifecycle rules are pure. The next slice must add real PostgreSQL persistence, operator trust, concurrency/audit/outbox and public queries before claiming a running Catalog feature.
-4. Initial review fixed symbol-bearing evidence arrays and retired media without a rights revision. Confirmation passes. Unchanged Identity/Docker behavior retains exact hosted proof; no platform rerun for pure Catalog rules.
-5. Official Big Buck Bunny/Sintel source pages were reachable through bounded HTTPS. Search extraction returned 402 but ordinary public HTTPS worked without credentials. No film asset downloaded/approved; detailed source/credits/artwork review remains P03-R09.
-6. Docker Aster runtime remains healthy with image `e3056cf9`, retained data and loopback 3100. Do not prune/reset Docker/WSL or unrelated projects.
-7. Compatible licensing decisions are authorized. Keep Aster MIT absent a real compatibility reason, preserve terms/notices and use ADR-0014; never invent media rights, credentials or paid-resource authority.
+1. Phase 02 is released: PR 19 squash ec6386c and post-merge 33066827332 pass. Preserve its evidence; no metadata-only republication.
+2. Branch feat/p03-catalog-rights has committed P03-R01 domain rules at 4968d42. P03-R02 persistence is locally verified: all 52 candidate tasks and audit pass, plus 61 Catalog tests and real PostgreSQL proof. Resolve the latest commit before editing; its coherent functional block contains this closeout. Next is READY P03-R06.
+3. Read Phase 03 specification, Catalog README/migrations and the completed P03-R02 plan in evidence/phase-03/catalog-persistence.txt. CHANGE_PLAN is idle until P03-R06 activation. Rights storage is not operator authentication or approval; no public entry point exists.
+4. Real PostgreSQL confirms eight synchronized writers, immutable rights/audit, owner constraints, stable revision pages, Unicode, rollback/abort/lock timeout and up/down/up. Initial/confirmation review complete. Do not repeat unchanged Identity containers.
+5. Define P03-R06 operator commands and publication/dispute transactions with versioned audit/outbox. Then public browse/keyset/locales and Federation schema. Do not release incomplete Phase 03 as a finished product.
+6. The four Aster demo containers remain healthy with retained data and loopback 3100. Integration created/removed only its uniquely labelled synthetic PostgreSQL container.
+7. Compatible licensing decisions are authorized; preserve terms and MIT absent a real reason to change. No rights assumptions, paid resources or credential invention.
+8. Big Buck Bunny/Sintel source pages are reachable; no film downloaded or approved. Source/artwork/credits review remains P03-R09.
 
 ## Next outcome
 
-Commit verified P03-R01, then activate P03-R02 for the persistence/operator/public-query slice. Group functional work before a single protected Phase 03 publication. Pure domain fixtures do not prove media validation, authorization or SQL atomicity.
+Activate READY P03-R06 with a bounded new plan. No Phase 03 remote PR yet; unchanged heavyweight Identity proof remains valid.
 
 ## Do not do yet
 
-- No public operator role/header, viewer-token privilege escalation or cross-context database access.
-- No real-film download/transcoding before its rights record, and no media processing before Phase 06.
-- No hosted provider or playable/UI claim.
+No public operator header, viewer privilege escalation, cross-context SQL, real-film processing, hosted provider or playable/UI claim.

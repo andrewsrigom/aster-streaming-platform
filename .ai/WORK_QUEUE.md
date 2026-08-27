@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–02 are released. PR 19 squash `ec6386c`, protected run `33066484199` and exact post-merge `33066827332` pass. P03-R01 is active on `feat/p03-catalog-rights`; 52 domain tests and all 52 source tasks pass; coherent local commit remains. Catalog persistence/public API and actual media remain planned.
+Phases 00–02 are released. P03-R01 is committed as 4968d42. P03-R02 rights persistence is locally verified: 61 tests, real PostgreSQL proof and all 52 candidate tasks pass. Next is P03-R06 on feat/p03-catalog-rights. Operator/public API and actual media remain planned.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -35,9 +35,11 @@ Phases 00–02 are released. PR 19 squash `ec6386c`, protected run `33066484199`
 | 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | DONE |
 | 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | DONE |
 | 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | DONE |
-| 30 | Model rights review, attribution and the title publication lifecycle | P03-R01 | IN_PROGRESS |
+| 30 | Model rights review, attribution and the title publication lifecycle | P03-R01 | DONE |
+| 31 | Persist structured rights revisions and immutable review provenance | P03-R02 | DONE |
+| 32 | Implement authorized operator workflow and publication/retirement transactions | P03-R06 | READY |
 
-P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 models rights and publication rules; [domain evidence](../evidence/phase-03/catalog-domain.txt). No Phase 03 remote publication or actual-film approval yet.
+P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). No Phase 03 remote publication or actual-film approval yet.
 
 ## Work-item rules
 

@@ -49,4 +49,4 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
 
-Phase 02 release evidence: [local Identity API](../../evidence/phase-02/release.txt). Hosted identity remains planned. Catalog has [tested domain rules](../../services/catalog/README.md), but its complete persistent/public capability is not yet implemented.
+Phase 02 release evidence: [local Identity API](../../evidence/phase-02/release.txt). Hosted identity remains planned. Catalog has [tested domain rules and durable rights history](../../services/catalog/README.md), but its operator/public capability is not yet implemented.

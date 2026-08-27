@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–02 are released, including local sign-in, durable sessions, owned profiles and the Federation v2 Identity API. Protected and post-merge CI prove real HTTP/PostgreSQL and Docker product behavior. Phase 03 has started with tested Catalog domain rules; Catalog persistence/public API, browser UI and playable video remain planned. See [current state](.ai/CURRENT_STATE.md), [Identity API](services/identity/README.md) and [release evidence](evidence/phase-02/release.txt).
+Phases 00–02 are released, including local sign-in, durable sessions, owned profiles and the Federation v2 Identity API. Protected and post-merge CI prove real HTTP/PostgreSQL and Docker product behavior. Phase 03 has tested Catalog domain rules and PostgreSQL rights-history storage; operator/public API, browser UI and playable video remain planned. See [current state](.ai/CURRENT_STATE.md), [Identity API](services/identity/README.md) and [release evidence](evidence/phase-02/release.txt).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
