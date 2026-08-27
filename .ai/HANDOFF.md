@@ -2,19 +2,20 @@
 
 ## Resume point
 
-1. P03-R06 is locally verified on feat/p03-catalog-rights over 12db9fb. Resolve the latest coherent commit before editing. Its completed plan and final fingerprints are in evidence/phase-03/catalog-workflow.txt; CHANGE_PLAN is idle until P03-R05 activation.
-2. 74 tests, real PostgreSQL/CLI and all 52 candidate tasks pass (40 cached, 20.936 s). Initial/confirmation author review plus credential-policy remediation confirmation are complete; no independent approval claimed.
-3. Real tests prove both forced publish/dispute orderings, post-outbox rollback/abort, exact replay, receipt expiry, 63/127 normal capacity with reserved 64/128 takedown slots, immutable artwork metadata, privileges, migrations and CLI timeout.
-4. The local CLI has separate migration/runtime credentials, OS-owned non-serializable authority, default-deny hosted guard and sanitized logs. Its guide is services/catalog/README.md; examples/create-draft.json deliberately cannot approve unresolved rights.
-5. Activate READY P03-R05 public browse/detail and Federation schema. Keep one Phase 03 PR after the phase's actual fixture/source-review requirements pass. Operator URLs use separate password variables; do not reintroduce literal credentials in examples.
-6. Phase 02 remains released at main ec6386c, PR 19, post-merge 33066827332. Four retained demo containers are healthy; no schema/reset/remote mutation was done. Do not repeat unchanged Identity heavyweight proof.
-7. Generated technical HLS fixture and real candidate-source review remain Phase 03; real worker processing remains Phase 06. Current publication attestations are test-only synthetic records, not media-byte validation.
-8. Compatible licensing is authorized; existing pins/terms were reused, Aster remains MIT. No rights assumptions, paid resources, viewer privilege shortcuts or public operator headers.
+1. P03-R05 is locally verified on feat/p03-catalog-rights over 63e4c7e. Resolve the latest coherent commit before editing. Published-only queries, migration 0003, complete metadata and Catalog Federation/HTTP exist; its completed plan is in evidence/phase-03/catalog-public.txt.
+2. 91 tests and all 52 candidate tasks pass (38 cached, 42.253 s), including ESLint/Knip, secret scan and high-severity audit. Real PostgreSQL/CLI/HTTP passes with zero fixture resources after 18575 ms total. Schema: evidence/phase-03/catalog-schema.graphql.
+3. Initial author review found metadata-upgrade receipt compatibility and tightened HTTP freshness/method and malformed batch boundaries. Batched fixes and confirmation pass; no independent approval claimed.
+4. One SQL batch resolves duplicate/missing Title references in order. Current rights/artwork expiry is filtered before LIMIT; retirement/dispute disappears next request. Reader role cannot write or directly read audit/history. Queries never return operator facts or media delivery URLs.
+5. HTTP is anonymous/read-only, POST JSON, no-store, bounded request-scoped DataLoader, cost/depth/list/admission/rate/deadline controls and sanitized correlated outcomes. Only temporary loopback test servers exist; no permanent Catalog endpoint, Router or UI.
+6. Keep expanded metadata decoding on rollback after new writes. Old command fingerprints remain replayable only when added fields remain unknown. Down 0003 removes its view/index/role, not product/history data.
+7. Phase 02 main base ec6386c, PR 19 and post-merge 33066827332 remain unchanged. Retained demo and public remote were not mutated; do not repeat unchanged Identity Docker proof.
+8. Compatible licensing is authorized. Existing exact Apollo pins and terms reused; MIT unchanged. One known moderate uuid advisory, no high/critical. No paid resources, rights assumptions, viewer/operator shortcut or broad reset.
+9. Next READY item is P03-R04, including P03-R09: restore its context and write a fresh change plan for generated HLS, source review and Docker Catalog before implementation.
 
 ## Next outcome
 
-Implement P03-R05 from the verified P03-R06 source checkpoint. No external blocker or remote PR wait exists.
+Activate READY P03-R04/R09: generated technical HLS fixture, reviewed candidate sources and Catalog Docker demo. Real-film download/worker processing remains Phase 06. Keep one Phase 03 PR after acceptance, then protected merge/post-merge.
 
 ## Do not do yet
 
-No real-film processing, hosted operator identity or playable/UI claim. expire is explicit; public reads must recheck current rights and exclude expired/disputed state. Do not remove pending events to bypass backpressure.
+Do not claim actual film approval, media-byte validation, a playable UI or hosted operator identity. Do not remove pending events to bypass backpressure. No external blocker or remote PR wait exists.

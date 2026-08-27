@@ -68,7 +68,7 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   assert.equal(initialized.code, 0, initialized.stderr);
   assert.deepEqual(JSON.parse(initialized.stdout), {
     event: "aster.catalog.migration_completed",
-    applied: [1, 2],
+    applied: [1, 2, 3],
   });
   const repeated = await run("migrate-local", undefined);
   assert.equal(repeated.code, 0);
@@ -156,7 +156,7 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   process.stdout.write(
     JSON.stringify({
       event: "catalog_cli_verified",
-      freshMigrations: [1, 2],
+      freshMigrations: [1, 2, 3],
       idempotentInit: true,
       createReviewRetire: true,
       inspect: true,

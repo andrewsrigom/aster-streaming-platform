@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Published Catalog candidate
+
+### Completed
+
+Implemented public SQL keysets/detail, complete bounded metadata, reader isolation and Catalog Federation/HTTP with request-scoped batching and abuse controls. Preserved legacy command replay. Author initial/confirmation review is complete.
+
+### Evidence
+
+91 tests and all 52 candidate tasks pass (38 cached, 42.253 s). Real SQL/CLI/HTTP verifies expiry before LIMIT, stable pages, one-query entities, immediate takedown, indexed plans and cancellation in a confirmed lock wait. Fixture cleanup: 18575 ms total, zero remaining. Evidence: evidence/phase-03/catalog-public.txt. No remote or retained demo mutation.
+
+### Next action
+
+P03-R05 is complete locally. Activate READY P03-R04/R09 generated HLS fixture, source reviews and Docker Catalog. Phase 03 is not released.
+
 ## 2026-08-27 — Catalog editorial workflow candidate
 
 ### Completed

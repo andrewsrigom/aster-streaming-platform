@@ -241,6 +241,7 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
     digest: string,
     actor: CatalogOperator,
     request: CatalogCommandRequest,
+    legacyDigest: string | undefined,
   ): Promise<Outcome> {
     const created = command.kind === "create" ? await tx.createDraft(command.titleId) : false;
     const title = await tx.lockTitle(command.titleId);
@@ -257,7 +258,9 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
     await tx.pruneReceipts(title.id, now);
     const receipt = await tx.findReceipt(title.id, command.mutationId);
     if (receipt) {
-      return receipt.actorId === actor.id && receipt.digest === digest && receipt.expiresAt > now
+      return receipt.actorId === actor.id &&
+        (receipt.digest === digest || receipt.digest === legacyDigest) &&
+        receipt.expiresAt > now
         ? { status: "completed", value: receipt.result }
         : { status: "conflict" };
     }
@@ -408,11 +411,31 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
         return { status: "invalid_input" };
       }
       const digest = ports.digest(JSON.stringify(command));
-      if (!catalogChecksum(digest)) {
+      let legacyDigest: string | undefined;
+      if (
+        (command.kind === "create" || command.kind === "edit") &&
+        command.metadata.releaseYear === null &&
+        command.metadata.runtimeSeconds === null &&
+        command.metadata.languages.length === 0 &&
+        command.metadata.accessibility.length === 0 &&
+        command.metadata.editorialLabels.length === 0
+      ) {
+        // Preserve the 24-hour replay window across the additive metadata rollout.
+        const metadata = Object.fromEntries(
+          Object.entries(command.metadata).filter(([key]) =>
+            ["defaultLocale", "localizations", "genres", "credits", "artwork"].includes(key),
+          ),
+        );
+        legacyDigest = ports.digest(JSON.stringify({ ...command, metadata }));
+      }
+      if (
+        !catalogChecksum(digest) ||
+        (legacyDigest !== undefined && !catalogChecksum(legacyDigest))
+      ) {
         return { status: "invalid_input" };
       }
       return ports.transactions.run(async (tx) => {
-        const result = await execute(tx, command, digest, actor, request);
+        const result = await execute(tx, command, digest, actor, request, legacyDigest);
         if (request.signal.aborted) {
           return { status: "cancelled" };
         }

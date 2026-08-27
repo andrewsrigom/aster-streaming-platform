@@ -9,6 +9,7 @@ import { createAsterTelemetry } from "@aster/telemetry";
 import { createPostgresCatalogRights } from "../../src/infrastructure/persistence/postgres-rights.js";
 import { verifyWorkflow } from "./workflow-postgres.js";
 import { verifyOperatorCli } from "./operator-cli.js";
+import { verifyPublicCatalog } from "./public-postgres.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -37,15 +38,18 @@ const telemetry = createAsterTelemetry({
   environment: "test",
   export: { mode: "none" },
 });
-const makeDatabase = () =>
-  createAsterPostgresAdapter({
-    connectionString,
+const makeDatabase = (username = "aster_catalog_fixture") => {
+  const endpoint = new URL(connectionString);
+  endpoint.username = username;
+  return createAsterPostgresAdapter({
+    connectionString: endpoint.toString(),
     telemetry,
     maxConnections: 8,
     connectionTimeoutMs: 1000,
     operationTimeoutMs: 2000,
     statementTimeoutMs: 1000,
   });
+};
 let database = makeDatabase();
 let store = createPostgresCatalogRights(database);
 const signal = () => new AbortController().signal;
@@ -399,6 +403,8 @@ async function verify() {
   await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
   await verifyWorkflow(admin, makeDatabase());
   await verifyOperatorCli(admin, port);
+  await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
+  await verifyPublicCatalog(admin, makeDatabase(), makeDatabase("aster_catalog_reader_fixture"));
 }
 try {
   await verify();
@@ -410,7 +416,9 @@ try {
       error instanceof Error
         ? error.stack
             ?.split("\n")
-            .filter((line) => /(?:rights-postgres|workflow-postgres|operator-cli)\.js/u.test(line))
+            .filter((line) =>
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres)\.js/u.test(line),
+            )
             .slice(0, 3)
         : [],
   });

@@ -1,6 +1,6 @@
 # Catalog
 
-Status: implemented rights-aware editorial application, immutable PostgreSQL history, local operator CLI and metadata/localization. Public browse/Federation, real media validation and Docker Catalog runtime remain planned.
+Status: implemented rights-aware editorial application, local operator CLI, published-only queries and Catalog Federation v2. Local SQL/HTTP tests pass. Real media validation and the Docker Catalog runtime remain planned; there is no permanent Catalog endpoint yet.
 
 ## Local operator
 
@@ -54,9 +54,39 @@ Create/edit accept rights facts, never id, titleId, revision, status, reviewedAt
 
 A source checksum can be null before acquisition: rights permission must precede download. media-ready/publish require an owner-held publication attestation with checksum, validation report, exact title/review linkage and compatible validation time. The runtime cannot insert/update/delete attestations; no CLI command registers media or accepts a validated flag. SQL test attestations are synthetic, not proof that media bytes exist.
 
-Metadata has up to four localizations, eight unique genre slugs and sixteen credits. Titles/synopses are bounded to 160/1024 characters. Locale tags are canonicalized; fallback is exact locale, then lexically first same-language locale, then the declared default. Artwork is optional and has independent rights facts; the review command reviews both assets, verifies the artwork URL matches its source and preserves immutable metadata/review snapshots in command audit.
+Metadata has up to four localizations, eight unique genre slugs and sixteen credits. Titles/synopses are bounded to 160/1024 characters. releaseYear is null or 1888–9999; runtimeSeconds is null or 1–86400. languages has at most eight canonical BCP-47 tags; editorialLabels has at most eight unique slugs. accessibility accepts CAPTIONS, AUDIO_DESCRIPTION and TRANSCRIPT without duplicates. Unknown facts remain null/empty, not inferred accessibility claims. Legacy five-field snapshots decode with these defaults without rewriting audit; old same-input command receipts remain replayable for their original lifetime.
 
-Public-eligibility rules recheck rights/expiry and publication consistency. The public read path is not yet implemented. expire is an explicit operator command, not a background expiry scheduler.
+Locale fallback is exact canonical locale, then lexically first same-language locale, then the declared default. Artwork is optional and has independent rights facts; the review command reviews both assets, verifies the artwork URL matches its source and preserves immutable metadata/review snapshots in command audit.
+
+Public reads recheck rights/expiry, independent artwork and publication consistency. expire is an explicit operator command, not a background expiry scheduler; expired content disappears from reads without waiting for it.
+
+## Public GraphQL
+
+The [schema](../../evidence/phase-03/catalog-schema.graphql) owns Title keyed by id. Anonymous title(id) and titles(first, after) return only currently published, approved, compatible titles. Missing, retired, disputed or expired entities return null; browse excludes them before its SQL LIMIT. A malformed persisted candidate fails closed as UNAVAILABLE. Reviewed attribution is projected from rights, never supplied by client text; reviewer IDs, evidence history, asset URLs, checksums and media manifests are not public fields.
+
+~~~graphql
+query Browse($first: Int! = 12, $after: String) {
+  titles(first: $first, after: $after) {
+    edges {
+      cursor
+      node {
+        id
+        localized(locale: "pt-BR") { locale title synopsis }
+        releaseYear
+        runtimeSeconds
+        attribution { creator licenseName licenseUrl attributionText }
+      }
+    }
+    pageInfo { endCursor hasNextPage }
+  }
+}
+~~~
+
+first is 1–20. Cursors are opaque, versioned positions in ascending UUID order, not release-date ranking. Do not construct or parse them in clients. Removing the cursor title does not break the next page; insertions before it appear on refresh. A read uses one SQL-statement snapshot and its application clock, not a snapshot spanning multiple requests. No total count, offset, search or filters are exposed.
+
+Each request has its own DataLoader, at most 128 cached IDs and 20 IDs per set-based query; duplicates/missing entities preserve input order. No Redis/cross-request cache is used. HTTP is POST-only JSON with Cache-Control: no-store, ignores viewer/operator headers and never issues cookies. The shared HTTP adapter bounds the body (32 KiB in the verified harness); subgraph preflight bounds source to 16 KiB, tokens to 2048, expanded fields to 128, depth to 10, aliases to 16, input nodes/depth to 256/8 and weighted cost to 4096. Lists use their real declared bounds. Eight requests may execute concurrently; the process-global token bucket allows a burst of 64 and refills eight/second. One three-second deadline and client disconnect cancel owner work; saturation returns 503, rate exhaustion 429. Input failures use sanitized INVALID_INPUT/LIMIT_EXCEEDED, dependency failure UNAVAILABLE and cancellation CANCELLED, with correlation IDs.
+
+Mount this transport through the shared Express adapter with a separate login granted only aster_catalog_reader, not operator credentials. The local initializer creates the reader group/view; Docker composition will provision its login. The current test runner mounts a temporary loopback HTTP endpoint and closes it. Operator commands remain CLI-only. Router trust, hosted trusted-operation policy and distributed rate controls belong to Phase 04; this is not a hosted deployment.
 
 ## Atomicity and limits
 
@@ -74,4 +104,4 @@ pnpm --filter @aster/catalog test
 pnpm catalog:integration
 ~~~
 
-Integration uses the existing pinned PostgreSQL image and deletes only its new, labelled, tmpfs-only fixture. It proves both lock orderings of publish/dispute, rollback after outbox writes, replay, receipt expiry, reserved retirement capacity, forbidden privileges, Unicode/artwork history, migration round-trips and real CLI processes including stdin deadline. [Evidence](../../evidence/phase-03/README.md) distinguishes local acceptance from remote release. No film is approved or playable by these tests.
+Integration uses the existing pinned PostgreSQL image and deletes only its new, labelled, tmpfs-only fixture. It proves both lock orderings of publish/dispute, rollback after outbox writes, replay, receipt expiry, reserved retirement capacity, forbidden privileges, Unicode/artwork history, migration round-trips and real CLI processes including stdin deadline. Public-read proof additionally covers expiry before LIMIT, keyset stability, a one-query entity batch over real HTTP/PostgreSQL, immediate takedown, query plans and cancellation during a confirmed SQL lock wait. [Evidence](../../evidence/phase-03/README.md) distinguishes local acceptance from remote release. No film is approved or playable by these tests.

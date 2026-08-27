@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { Client } from "pg";
 import { localCatalogDatabase } from "../identity/local-configuration.js";
 
-const migrations = ["0001-rights-history", "0002-editorial-workflow"] as const;
+const migrations = ["0001-rights-history", "0002-editorial-workflow", "0003-public-reads"] as const;
 export async function migrateLocalCatalog(
   environment: Readonly<Record<string, string | undefined>>,
   signal: AbortSignal,
@@ -43,7 +43,7 @@ export async function migrateLocalCatalog(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 3",
+              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 4",
             )
           ).rows.map((row) => row.version);
     if (

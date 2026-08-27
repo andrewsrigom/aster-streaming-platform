@@ -22,6 +22,11 @@ import { catalogTestId as id, catalogTestTime as now, rightsFixture } from "./ri
 export const hash = (text: string): string => createHash("sha256").update(text).digest("hex");
 export const metadataFixture = (): TitleMetadata => ({
   defaultLocale: "en",
+  releaseYear: null,
+  runtimeSeconds: null,
+  languages: [],
+  accessibility: [],
+  editorialLabels: [],
   localizations: [{ locale: "en", title: "Synthetic title", synopsis: "Generated test content." }],
   genres: ["animation"],
   credits: [{ name: "Synthetic creator", role: "director" }],

@@ -1,0 +1,416 @@
+Aster P03-R05 — Published Catalog reads and Federation
+Recorded: 2026-08-27
+Source base: 63e4c7e on feat/p03-catalog-rights; exact candidate files below.
+Status: locally verified; all 52 candidate tasks pass (38 cached, 42.253 s).
+Requirements: P03-R05/R07/R08/R10, CAT-R03, GQL-R03.
+Environment: WSL Ubuntu-20.04 Linux amd64, Node v24.19.0, pnpm 11.24.0.
+PostgreSQL: pinned 18.6 image from the existing Compose/fixture driver.
+No public remote, retained demo, real film or hosted resource changed.
+
+Acceptance and limitations
+- Published-only keysets use ascending UUID order, first 1–20, one lookahead row and no total count.
+- Rights/artwork expiry is excluded before LIMIT; application validation fails closed on corrupt candidates.
+- New metadata facts are bounded and explicitly unknown by default. Legacy snapshots and same-input receipts stay compatible.
+- Reader group has only schema usage/view select; direct history/audit/Identity access and writes are refused.
+- Anonymous GraphQL Title references batch in one SQL statement, preserve duplicate/missing positions and reload next request after retirement.
+- Only public reviewed attribution/metadata is returned; no asset/manifest URLs, checksums, reviewer identity or audit history.
+- POST-only JSON/no-store, request-owned loader (20/batch, 128 keys), bounded input/depth/aliases/fields/list cost, 8 concurrent operations, burst64/refill8/s and 3s deadline.
+- Exact Catalog schema artifact is compared to live source; composition with the released Identity contract has zero breaking changes and representative old/new operations validate.
+- Tests use synthetic rights and attestations, not proof of actual media rights or byte validation.
+- A statement snapshot plus its captured application clock defines read eligibility. No continuous expiry guarantee during response transmission or snapshot across pages is claimed.
+- HTTP test harness uses a 32KiB body cap; runtime/Router wiring remains future Phase03/04 work.
+- Transport callbacks prove correlation and finite outcomes, not exported production traces or dashboards.
+- No playable UI, real HLS fixture, permanent Catalog endpoint or large-scale performance claim.
+
+Measured query plans
+Small disposable fixture: 2000 draft rows; 22 visible titles after expiry/takedown.
+Keyset EXPLAIN ANALYZE: 0.322ms, eight lookahead rows, partial published-title index and owner-join indexes.
+Detail EXPLAIN ANALYZE: 0.139ms, one row, the same partial/owner indexes.
+Raw plans retain the filter/sort/join details; this is not an O(first) or production SLO claim.
+Full SQL/CLI/HTTP fixture duration: 18575ms including startup, existing workflow/CLI tests and cleanup. Remaining fixture resources: zero.
+Real HTTP entity batch: four positions (one duplicate, one retired), one SQL query; next HTTP request observes takedown.
+
+Review
+One initial executing-agent review and one confirmation; no independent approval claimed.
+The complete initial round identified cross-version metadata receipt replay, explicit HTTP freshness/POST-only handling and malformed internal ID arrays.
+Batched remediation preserves old digest matching only for unknown extension fields, rejects sparse/accessor arrays before SQL, and adds no-store/POST enforcement.
+Confirmation: new regression tests, existing operator suite and real SQL/HTTP pass; no active requirement/security/data/availability/public-contract blocker remains.
+Focused iteration also corrected test-only TypeScript/lint issues, exact SQL view rejection classification (55000 is non-updatable; grants independently assert no write privilege), and charged scalar/list work consistently.
+No gate was weakened. New lock-wait evidence waits for pg_stat_activity, not arbitrary cancellation timing.
+
+Commands
+1. pnpm install --ignore-scripts — reused exact Identity Apollo/GraphQL/DataLoader pins, no new resolved versions.
+2. pnpm --filter @aster/catalog build
+3. pnpm --filter @aster/catalog test — 91/91 pass, including real loopback HTTP.
+4. pnpm exec eslint services/catalog/src services/catalog/test — pass.
+5. pnpm exec knip — pass; existing configuration hints only.
+6. pnpm audit --audit-level high — pass, one known moderate uuid advisory.
+7. pnpm catalog:integration — pass, real PostgreSQL/CLI/HTTP and bounded fixture cleanup.
+8. pnpm check:changed — exit 0, all 52 tasks pass (38 cached, 42.253 s), including 91 Catalog and 144 Identity tests.
+
+No heavyweight Identity Docker rerun: its source, dependencies' resolved versions and runtime configuration are unchanged. The importer-only lock change reuses the accepted graph. Catalog SQL/HTTP was rerun after its source changed. Later evidence/docs-only edits do not invalidate those measurements.
+
+Rollback
+0003 down removes its view/index/reader role without deleting product/audit data. Keep expanded metadata decoding after new writes; do not start an old incompatible writer. No broad cleanup or reset is required.
+
+Source fingerprints
+2084990c5323a6956e3d0d3d5f28c94463fc17d62abfe0960b167b57d542ec69  services/catalog/migrations/0001-rights-history.down.sql
+fc818734016235d2c5ed634862e670e38b0a5d646636caa2fa540c25d5d7b9b7  services/catalog/migrations/0001-rights-history.up.sql
+3d93597b768440c27647b9c2c0b41a2a0a0fbe2fbba0eb8f25e74f25c02b70b5  services/catalog/migrations/0002-editorial-workflow.down.sql
+d89d0f9949738b342c16553c4bffc9a2c94d14d86ac51c43e52fda2eccce8bc2  services/catalog/migrations/0002-editorial-workflow.up.sql
+fd90a860f9e7c34b01e33b3f8883eebe5814abb027747f5b54c6b58402fb52f1  services/catalog/migrations/0003-public-reads.down.sql
+8c9a9880f84b24e49ad792e1cc668ef69e2320c5b99808ae9e8e53a14749c0a8  services/catalog/migrations/0003-public-reads.up.sql
+744302c6b723ef66b3376d0554695b134290cf9c229cefaffe90a5b53f0132b5  services/catalog/migrations/README.md
+e711c6b886b08d23cac545129d3b09a954a626f1217533d06abed772ca54cdc1  services/catalog/src/application/command-input.ts
+8133534f4c38bbf62022fdebde18d91310b520a7722dc8f4bf8a672df279f0fe  services/catalog/src/application/commands.ts
+17666d0f412cc2a65139c6de0786df55dc40c3a09989f57944469edf6673a557  services/catalog/src/application/operator-ports.ts
+cc322f20d07f21a492028b1eec6d44afa9f2d8bb3116fc0a0566f67ea564f98a  services/catalog/src/application/public-ports.ts
+e1a1296ce012c16215c94b8d46a36239e6c15d2c41a81ca3150a2da217b6f8a1  services/catalog/src/application/public-queries.ts
+3f6fc40253ce5d3bb3dd58e40c0b8f93536541860c0137123fb4c12b5d09e534  services/catalog/src/application/rights-ports.ts
+07b3626e5c18106f38c175a4b7c3464d782dd31f20d7ddfdaa8659dfac271bf4  services/catalog/src/domain/metadata.ts
+340690c88c3b4fc62772e73caecad55f3897c8e56a1255d6b41bc0147dcbfa81  services/catalog/src/domain/public-title.ts
+9d953524ada1f95da81d3a46aa4049ad7eec7849a7a68c7090e97a93b4e29e97  services/catalog/src/domain/rights.ts
+1c047cb492e131d34cf1502b2893a5fe9e988278baa7ab361d5a60d42667623f  services/catalog/src/domain/title.ts
+ba1fdcd261851cda09d8b0b5a4d22cd4f06bb18e02282ab9b1c9d8114104e965  services/catalog/src/domain/values.ts
+07add36ffa82d473636dc92925b83fe3bc6d554390cefb394a27793e18b63c83  services/catalog/src/index.ts
+dc4c170a12b17cbca859fa8cc674bc43891e8f89abbe2ffca9ec1375e78de743  services/catalog/src/infrastructure/identity/local-configuration.ts
+984173de4be0eeb83fe06d6e5088c427f13c7e9d760eaef94bd90f514293adbc  services/catalog/src/infrastructure/identity/local-operator.ts
+9de4ced4d27ca5bc8ebf4fa117b5357b0bb5663b56838abc52ad0910057d4904  services/catalog/src/infrastructure/persistence/local-migrations.ts
+083c77c619883c3b61f99864131ff2739166ce8a2d8d686c215ab5bbc1405103  services/catalog/src/infrastructure/persistence/postgres-public.ts
+6228ad4be237108fd1929e9c10c4079598f5982510cd793853de5a467399da67  services/catalog/src/infrastructure/persistence/postgres-rights.ts
+8d14b75d336eba51720c36904476dbc6d0def19fc677c47102d90bb025c52b66  services/catalog/src/infrastructure/persistence/postgres-workflow.ts
+25daedee490a74baa76330023a5aa70608585d79b4c638cde883ae6be9918867  services/catalog/src/migrate-local.ts
+f77eec2d4de6d733f33c61a89c55910dc2fb0eceadcf9d4eb48a2b61b6cb058a  services/catalog/src/operate-local.ts
+aebc388717a06611ab2367d5d00b5c312cc0b0285c312b47cd958669471c267a  services/catalog/src/transport/catalog-schema.ts
+4c99545e0890658b580331ede14a79e06db4aa8579d0ae78c12f4de6e987d765  services/catalog/src/transport/catalog-subgraph.ts
+630771a208f41fa34fccbe0da6eeba607ba3a621fc0e4db4f1d22f11c1eba037  services/catalog/src/transport/graphql-operation.ts
+788efbfae4477be8f4c731b420710f146254f97fab16fde06893f60d1c7aff39  services/catalog/src/transport/operator-input.ts
+95e75d77c66d84a03220c013265d0ea400bee6dcb312548e16924b3e7ab6b823  services/catalog/test/catalog-domain.test.ts
+e8c3447180f834890d59b2c709cac76507f446adf2514bbef74f5a8e4019a7d8  services/catalog/test/catalog-graphql.test.ts
+ea12cbb48b65b0ccef2d3bcc0c6b683ca951f58492ebeff8154ff33a0ac1e5a0  services/catalog/test/catalog-http-fixture.ts
+bebb315be85c8b2ab8a49fec8056ba5e56f94d32c0b71095f3402244920f9700  services/catalog/test/catalog-public.test.ts
+4ab763ba08be690389efa62e7d2fcee69ab40e14bf48481186eea9e13ca652fb  services/catalog/test/catalog-subgraph.test.ts
+e6c677449f3b8e645aabfd306ed36b349666d774816bc19ee0556021766b37e6  services/catalog/test/catalog-workflow.test.ts
+2bbfb647970b8b759c306b65a01d5bffe807f59e76d8693b774bbf4c37430c89  services/catalog/test/integration/operator-cli.ts
+65f81192fe0800222f596a58169e2686da46ea2b5090b4535e67312ee1c3449b  services/catalog/test/integration/public-postgres.ts
+90b72fe0a9833595fcd16bc1e2072bd63e6320e3b46ef22d5eb75752f72fbd4d  services/catalog/test/integration/rights-postgres.ts
+b30e39c60d270162ed449ede002f50d9254c7b98d097c93e493fcedf6a4cd912  services/catalog/test/integration/workflow-postgres.ts
+be97dc640846e11e1263267c07fd1d0cfb8517bdcc15c7cdd5acc1cf6e00ba15  services/catalog/test/operator-input.test.ts
+21dc735837ca38de7efe8cdb275cb896fe6e089246786449439a8f77b4686c75  services/catalog/test/postgres-rights.test.ts
+3822aef5f785707d4228719e6fa678dfb1c38867e349a08c245b8927ef58c34c  services/catalog/test/public-fixture.ts
+fd0daf1477ea03dbdc918ee88d5320b8e1bcf1e38d900ab658297b9880ffce95  services/catalog/test/rights-fixture.ts
+0f5924cb75ce45940fb4c1c6306c9abd952f0ad7152981953f391c9100b29734  services/catalog/test/workflow-fixture.ts
+c80050f13477812235e1e6661360d4e231151eb3fad62694ca54aef9bed34391  services/catalog/package.json
+43fb3d69e30879b6c1805b76da20ed93b4246094233ca73cc6656825b5967ee0  pnpm-lock.yaml
+ff1e4d1e869276ca0e63bc836bb59130b7736a833c5444ce68e44a5690b88e4a  evidence/phase-02/identity-schema.graphql
+ef0a3b76d0a45fd98060e1a7a630cd34b8b52e35b0fa0ef864912b235cc0b897  evidence/phase-03/catalog-schema.graphql
+
+Focused gate raw output
+$ tsc --build ./tsconfig.json
+$ node --test ./dist/test/*.test.js
+✔ complete reviewed rights approve without acquiring media and derive exact attribution (5.885728ms)
+▶ every required reviewed field and explicit permission must be resolved
+  ✔ workTitle (1.626203ms)
+  ✔ creator (0.412737ms)
+  ✔ copyrightHolder (0.370112ms)
+  ✔ canonicalSourceUrl (0.393146ms)
+  ✔ assetSourceUrl (0.341792ms)
+  ✔ licenseName (0.346259ms)
+  ✔ licenseVersion (0.354683ms)
+  ✔ licenseUrl (0.856532ms)
+  ✔ attributionText (1.740634ms)
+  ✔ modificationNotice (0.313267ms)
+  ✔ thirdPartyMaterialNotes (0.52635ms)
+  ✔ trademarkNotes (0.200686ms)
+  ✔ redistributionAllowed (0.246373ms)
+  ✔ commercialUseAllowed (0.229181ms)
+  ✔ modificationAllowed (0.226995ms)
+  ✔ shareAlikeRequired (0.328016ms)
+  ✔ technicalRestrictions (0.17219ms)
+  ✔ reviewedAt (0.187138ms)
+  ✔ reviewedBy (0.113261ms)
+✔ every required reviewed field and explicit permission must be resolved (11.981323ms)
+✔ contradictory use, unreviewed state, expiry and invalid clocks fail closed (1.300601ms)
+✔ unknown fields, hostile accessors, invalid identifiers, URLs and oversized evidence are rejected (1.108636ms)
+▶ the full 25-pair lifecycle table rejects every skipped or repeated transition
+  ✔ DRAFT -> DRAFT (0.383598ms)
+  ✔ DRAFT -> RIGHTS_REVIEWED (0.207269ms)
+  ✔ DRAFT -> MEDIA_READY (0.095031ms)
+  ✔ DRAFT -> PUBLISHED (0.091542ms)
+  ✔ DRAFT -> RETIRED (0.076867ms)
+  ✔ RIGHTS_REVIEWED -> DRAFT (0.126718ms)
+  ✔ RIGHTS_REVIEWED -> RIGHTS_REVIEWED (0.086814ms)
+  ✔ RIGHTS_REVIEWED -> MEDIA_READY (0.444648ms)
+  ✔ RIGHTS_REVIEWED -> PUBLISHED (0.167759ms)
+  ✔ RIGHTS_REVIEWED -> RETIRED (0.131502ms)
+  ✔ MEDIA_READY -> DRAFT (0.084221ms)
+  ✔ MEDIA_READY -> RIGHTS_REVIEWED (0.072832ms)
+  ✔ MEDIA_READY -> MEDIA_READY (0.333494ms)
+  ✔ MEDIA_READY -> PUBLISHED (0.258343ms)
+  ✔ MEDIA_READY -> RETIRED (0.098725ms)
+  ✔ PUBLISHED -> DRAFT (0.06603ms)
+  ✔ PUBLISHED -> RIGHTS_REVIEWED (0.062471ms)
+  ✔ PUBLISHED -> MEDIA_READY (0.062331ms)
+  ✔ PUBLISHED -> PUBLISHED (0.06047ms)
+  ✔ PUBLISHED -> RETIRED (0.882193ms)
+  ✔ RETIRED -> DRAFT (0.133564ms)
+  ✔ RETIRED -> RIGHTS_REVIEWED (0.106486ms)
+  ✔ RETIRED -> MEDIA_READY (0.101967ms)
+  ✔ RETIRED -> PUBLISHED (0.36032ms)
+  ✔ RETIRED -> RETIRED (0.079615ms)
+✔ the full 25-pair lifecycle table rejects every skipped or repeated transition (6.692328ms)
+✔ rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication (2.603066ms)
+✔ retirement survives disputed rights; reopening requires a newer review and new media linkage (0.319754ms)
+✔ public visibility rechecks current rights; malformed lifecycle and overflowing versions cannot advance (0.475977ms)
+✔ Catalog composes with the released Identity schema without breaking its API or representative operations (142.695542ms)
+✔ realistic browse, detail and twenty Title references pass bounded preflight (4.025506ms)
+✔ public GraphQL rejects mutation, introspection, invalid entity references, body extensions and ambiguous documents (2.279068ms)
+✔ page, source, tokens, aliases, fields, list expansion and literal/default input budgets reject before execution (2.888647ms)
+✔ pre-extension command receipts replay without rewriting audit or ignoring newly supplied metadata (8.427649ms)
+✔ public metadata extends legacy snapshots without inventing facts and enforces every collection bound (2.238529ms)
+✔ public projection derives attribution and excludes operator facts and all delivery credentials (5.400946ms)
+✔ public browse uses exact positive keysets, lookahead and deterministic locale fallback (6.170465ms)
+✔ invalid pages and entity inputs reject before SQL; batches preserve duplicate order and explicit nulls (2.995333ms)
+✔ public reads reject corrupt owner rows, excessive pages, wrong order and dependency faults (6.119464ms)
+✔ anonymous real HTTP browse/detail use owner attribution, safe metadata and finite correlated telemetry (142.560835ms)
+✔ entity resolution batches repeated IDs once, preserves order/nulls and never retains a cross-request hit (39.025746ms)
+✔ invalid operations and oversized/simple bodies are rejected without application access (64.538746ms)
+✔ private dependency failures and unknown fields become sanitized correlated errors (26.378361ms)
+✔ three-second deadline cancels owner work; global rate and concurrency bounds are enforced (3264.45054ms)
+✔ client disconnect cancels its owner request (12.708941ms)
+✔ request cache is bounded and schema rejects an unowned execution context (6.989827ms)
+✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events (15.186917ms)
+✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed (1.440525ms)
+✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time (0.53357ms)
+✔ exact replay preserves response and audit; changed input, actor, version or command conflicts (2.683562ms)
+✔ unresolved review, expired rights and foreign/unattested media never publish (4.449981ms)
+✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures (12.033631ms)
+✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields (1.531661ms)
+✔ artwork receives its own operator review and cannot silently substitute a different source (2.033125ms)
+✔ documented draft example is executable but cannot approve unresolved rights (13.890167ms)
+✔ clarification, rejection and expiry have explicit transitions without silent approval (3.361747ms)
+✔ CLI reads exactly one bounded UTF-8 command and rejects malformed/extra/oversized input (6.43156ms)
+✔ CLI database guard separates administrator/runtime and excludes hosted or cross-context endpoints (1.306879ms)
+✔ operator inspection is authorized and read-only; publication rechecks expiry before commit (4.439243ms)
+✔ append atomically advances title, inserts facts and provenance with bounded parameters (3.972463ms)
+✔ stale append returns false without facts or provenance inserts (0.523071ms)
+✔ invalid rights, versions and provenance reject before SQL (1.25282ms)
+✔ large Unicode records preserve surrogate pairs within the shared parameter limit (0.980309ms)
+✔ aggregate rights payload has a byte bound even if each field is individually valid (1.471579ms)
+✔ draft creation, missing title and existing title use explicit results (0.325606ms)
+✔ title and revision reads validate owner, linkage, timestamps and persisted domain fields (1.866776ms)
+✔ history keysets are bounded, descending, owner-filtered and immutable (1.835449ms)
+✔ caller rejection rolls back and adapter outcomes never become success (0.601793ms)
+ℹ tests 91
+ℹ suites 0
+ℹ pass 91
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4055.829477
+Configuration hints (11)
+…js,cts,js,jsx,mjs,mts,ts,tsx}, …]                              knip.json  Remove, or move unused top-level project to …
+src/index.ts                        services/identity           knip.json  Remove redundant entry pattern
+src/index.ts                        services/catalog            knip.json  Remove redundant entry pattern
+src/index.ts                        packages/object-storage-s3  knip.json  Remove redundant entry pattern
+src/index.ts                        packages/broker-kafka       knip.json  Remove redundant entry pattern
+src/index.ts                        packages/postgres           knip.json  Remove redundant entry pattern
+src/index.ts                        packages/redis              knip.json  Remove redundant entry pattern
+src/index.ts                        packages/http-express       knip.json  Remove redundant entry pattern
+src/index.ts                        packages/telemetry          knip.json  Remove redundant entry pattern
+src/index.ts                        packages/runtime            knip.json  Remove redundant entry pattern
+src/index.ts                        packages/config             knip.json  Remove redundant entry pattern
+1 vulnerabilities found
+Severity: 1 moderate
+
+Real integration raw output
+$ turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs
+• turbo 2.10.12
+
+   • Packages in scope: @aster/catalog
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/http-express:build: cache hit, replaying logs e839e779b7e9401d
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache miss, executing 535281c0280bc1ca
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    5 successful, 5 total
+Cached:    4 cached, 5 total
+  Time:    2.726s
+
+{"event":"catalog_migration_isolation","duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_rights_round_trip","revisions":2,"provenance":true,"staleVersionRefused":true}
+{"event":"catalog_concurrency_keyset","callers":8,"committed":1,"stale":7,"stablePages":true,"synchronizedTransactions":8}
+{"event":"catalog_atomic_rollback","faults":["throw","rollback","abort"],"retainedRevisions":4,"titleVersion":5}
+{"event":"catalog_lock_failure","mode":"abort","durationMs":19,"retainedRevisions":4}
+{"event":"catalog_lock_failure","mode":"timeout","durationMs":1009,"retainedRevisions":4}
+{"event":"catalog_constraints_query_plan","provenanceRequired":true,"ownerProjectionRequired":true,"latestMustExist":true,"plan":[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Plans":[{"Node Type":"Index Only Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Backward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"rights_revisions","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000001'::uuid) AND (revision < 4))"}]}}]}]}
+{"event":"catalog_adapter_reconnect","retainedRevisions":4,"closedAdapterFails":true}
+{"event":"catalog_unicode_orphan_guard","jsonBytes":10856,"exactRoundTrip":true,"missingTitleRejected":true}
+{"event":"catalog_migration_round_trip","dependencyGuard":true,"cleanReinstall":true}
+{"event":"catalog_workflow_migration_privileges","roundTrip":true,"forbiddenStatements":8}
+{"event":"catalog_publish_dispute_serialization","first":"publish","staleContender":"conflict","finalState":"RETIRED","events":2}
+{"event":"catalog_publish_dispute_serialization","first":"dispute","staleContender":"conflict","finalState":"RETIRED","events":1}
+{"event":"catalog_workflow_atomic_faults","faults":["throw-after-outbox","abort-after-outbox"],"unchanged":true}
+{"event":"catalog_workflow_replay_expiry","exactlyOnceAudit":true,"changedReplayRejected":true,"expiredReceiptsReclaimed":4}
+{"event":"catalog_reserved_takedown_capacity","resource":"receipts","normalLimit":63,"retiredAtFullCapacity":64,"databaseBound":true}
+{"event":"catalog_reserved_takedown_capacity","resource":"outbox","normalLimit":127,"retiredAtFullCapacity":128,"databaseBound":true}
+{"event":"catalog_metadata_audit","unicodeRoundTrip":true,"immutableArtworkReviews":2}
+{"event":"catalog_cli_verified","freshMigrations":[1,2,3],"idempotentInit":true,"createReviewRetire":true,"inspect":true,"safeReplay":true,"unattestedMediaRejected":true,"hostedRejected":true,"unavailableDatabase":true,"inputDeadlineMs":10000,"sanitizedCorrelatedLogs":true}
+{"event":"catalog_public_migration","roundTrip":true,"duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_public_visibility","draftReviewedAndMediaReadyExcluded":true,"expiredTitleAndArtworkExcludedBeforeLimit":true,"cursorRemovalAndInsertStable":true,"retirementAndDisputeImmediate":true,"batchQueries":1,"orderedTitles":22,"attributionDerived":true,"internalsExcluded":true}
+{"event":"catalog_public_query_plans","draftRows":2000,"plans":[[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":21.92,"Total Cost":21.93,"Plan Rows":1,"Plan Width":599,"Actual Startup Time":0.214,"Actual Total Time":0.215,"Actual Rows":8,"Actual Loops":1,"Disabled":false,"Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Sort","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Startup Cost":21.92,"Total Cost":21.93,"Plan Rows":1,"Plan Width":599,"Actual Startup Time":0.213,"Actual Total Time":0.214,"Actual Rows":8,"Actual Loops":1,"Disabled":false,"Sort Key":["public_candidates.id"],"Sort Method":"top-N heapsort","Sort Space Used":41,"Sort Space Type":"Memory","Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Subquery Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Alias":"public_candidates","Startup Cost":0.43,"Total Cost":21.91,"Plan Rows":1,"Plan Width":599,"Actual Startup Time":0.054,"Actual Total Time":0.178,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Filter":"(((public_candidates.rights ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((public_candidates.rights ->> 'status'::text) = 'APPROVED'::text) AND ((public_candidates.rights ->> 'redistributionAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'modificationAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((public_candidates.rights ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((public_candidates.rights ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.rights ->> 'sourceChecksum'::text) IS NULL) OR ((public_candidates.rights ->> 'sourceChecksum'::text) = (public_candidates.publication ->> 'sourceChecksum'::text))) AND (((public_candidates.rights ->> 'validUntil'::text) IS NULL) OR (((public_candidates.rights ->> 'validUntil'::text))::bigint > '1787800011'::bigint)) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint >= ((public_candidates.rights ->> 'reviewedAt'::text))::bigint) AND (((public_candidates.metadata -> 'artwork'::text) = 'null'::jsonb) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'status'::text) = 'APPROVED'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'redistributionAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'modificationAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text) IS NULL) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text))::bigint > '1787800011'::bigint)))))","Rows Removed by Filter":0,"Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Subquery","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.43,"Total Cost":21.69,"Plan Rows":1,"Plan Width":599,"Actual Startup Time":0.045,"Actual Total Time":0.138,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"((r.title_id = t.id) AND (r.revision = t.rights_revision))","Rows Removed by Join Filter":0,"Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.28,"Total Cost":20.97,"Plan Rows":1,"Plan Width":1371,"Actual Startup Time":0.026,"Actual Total Time":0.051,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Shared Hit Blocks":40,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Index Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"catalog_published_titles","Relation Name":"titles","Alias":"t","Startup Cost":0.14,"Total Cost":12.63,"Plan Rows":1,"Plan Width":535,"Actual Startup Time":0.015,"Actual Total Time":0.02,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Index Cond":"(id > '00000000-0000-4000-8000-000000000110'::uuid)","Rows Removed by Index Recheck":0,"Filter":"(rights_revision = latest_rights_revision)","Rows Removed by Filter":0,"Index Searches":1,"Shared Hit Blocks":4,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"publications_title_id_id_rights_revision_key","Relation Name":"publications","Alias":"p","Startup Cost":0.14,"Total Cost":8.16,"Plan Rows":1,"Plan Width":836,"Actual Startup Time":0.001,"Actual Total Time":0.001,"Actual Rows":1,"Actual Loops":18,"Disabled":false,"Index Cond":"((title_id = t.id) AND (id = t.publication_id) AND (rights_revision = t.rights_revision))","Rows Removed by Index Recheck":0,"Index Searches":18,"Shared Hit Blocks":36,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"r","Startup Cost":0.15,"Total Cost":0.71,"Plan Rows":1,"Plan Width":52,"Actual Startup Time":0.001,"Actual Total Time":0.001,"Actual Rows":1,"Actual Loops":18,"Disabled":false,"Index Cond":"((title_id = p.title_id) AND (revision = p.rights_revision))","Rows Removed by Index Recheck":0,"Filter":"((status)::text = 'APPROVED'::text)","Rows Removed by Filter":0,"Index Searches":18,"Shared Hit Blocks":36,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]}]}]}]},"Planning":{"Shared Hit Blocks":173,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},"Planning Time":1.356,"Triggers":[],"Execution Time":0.322}]}],[{"QUERY PLAN":[{"Plan":{"Node Type":"Subquery Scan","Parallel Aware":false,"Async Capable":false,"Alias":"public_candidates","Startup Cost":0.43,"Total Cost":24.74,"Plan Rows":1,"Plan Width":599,"Actual Startup Time":0.052,"Actual Total Time":0.054,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Filter":"(((public_candidates.rights ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((public_candidates.rights ->> 'status'::text) = 'APPROVED'::text) AND ((public_candidates.rights ->> 'redistributionAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'modificationAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((public_candidates.rights ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((public_candidates.rights ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.rights ->> 'sourceChecksum'::text) IS NULL) OR ((public_candidates.rights ->> 'sourceChecksum'::text) = (public_candidates.publication ->> 'sourceChecksum'::text))) AND (((public_candidates.rights ->> 'validUntil'::text) IS NULL) OR (((public_candidates.rights ->> 'validUntil'::text))::bigint > '1787800011'::bigint)) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint >= ((public_candidates.rights ->> 'reviewedAt'::text))::bigint) AND (((public_candidates.metadata -> 'artwork'::text) = 'null'::jsonb) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'status'::text) = 'APPROVED'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'redistributionAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'modificationAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text) IS NULL) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text))::bigint > '1787800011'::bigint)))))","Rows Removed by Filter":0,"Shared Hit Blocks":6,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Subquery","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.43,"Total Cost":24.52,"Plan Rows":1,"Plan Width":599,"Actual Startup Time":0.044,"Actual Total Time":0.045,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"(r.revision = t.rights_revision)","Rows Removed by Join Filter":0,"Shared Hit Blocks":6,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.28,"Total Cost":16.33,"Plan Rows":1,"Plan Width":1371,"Actual Startup Time":0.025,"Actual Total Time":0.025,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"((p.rights_revision = t.rights_revision) AND (p.id = t.publication_id))","Rows Removed by Join Filter":0,"Shared Hit Blocks":4,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Index Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"catalog_published_titles","Relation Name":"titles","Alias":"t","Startup Cost":0.14,"Total Cost":8.16,"Plan Rows":1,"Plan Width":535,"Actual Startup Time":0.016,"Actual Total Time":0.016,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Index Cond":"(id = '00000000-0000-4000-8000-000000000128'::uuid)","Rows Removed by Index Recheck":0,"Filter":"(rights_revision = latest_rights_revision)","Rows Removed by Filter":0,"Index Searches":1,"Shared Hit Blocks":2,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"publications_title_id_id_rights_revision_key","Relation Name":"publications","Alias":"p","Startup Cost":0.14,"Total Cost":8.16,"Plan Rows":1,"Plan Width":836,"Actual Startup Time":0.007,"Actual Total Time":0.007,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Index Cond":"(title_id = '00000000-0000-4000-8000-000000000128'::uuid)","Rows Removed by Index Recheck":0,"Index Searches":1,"Shared Hit Blocks":2,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"r","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":52,"Actual Startup Time":0.009,"Actual Total Time":0.009,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000128'::uuid) AND (revision = p.rights_revision))","Rows Removed by Index Recheck":0,"Filter":"((status)::text = 'APPROVED'::text)","Rows Removed by Filter":0,"Index Searches":1,"Shared Hit Blocks":2,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]}]},"Planning":{"Shared Hit Blocks":0,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},"Planning Time":0.3,"Triggers":[],"Execution Time":0.139}]}]]}
+{"event":"catalog_public_http_postgres","anonymousEntities":{"_entities":[{"id":"00000000-0000-4000-8000-000000000128","localized":{"title":"Synthetic title"},"attribution":{"creator":"Synthetic creator","licenseUrl":"https://example.invalid/license"}},null,{"id":"00000000-0000-4000-8000-000000000110","localized":{"title":"Synthetic title"},"attribution":{"creator":"Synthetic creator","licenseUrl":"https://example.invalid/license"}},{"id":"00000000-0000-4000-8000-000000000128","localized":{"title":"Synthetic title"},"attribution":{"creator":"Synthetic creator","licenseUrl":"https://example.invalid/license"}}]},"sqlQueries":1,"retirementNextRequest":true,"correlated":true}
+{"event":"catalog_public_failures","blockedReadCancelled":true,"nextReadRecovered":true,"closedAdapterUnavailable":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":18575}
+
+Change plan at candidate checkpoint
+# Work Item: Published Catalog Reads and Federation
+
+- Status: DONE
+- Owner: Catalog
+- Phase: 03
+- Requirement IDs: P03-R05, P03-R07, P03-R08, P03-R10, CAT-R03, GQL-R03
+- Created: 2026-08-27
+- Updated: 2026-08-27
+
+## Outcome
+
+Provide anonymous published-only browse/detail and a composable Catalog subgraph. Return reviewed attribution and localized product metadata without operator history, source-asset URLs or media delivery credentials.
+
+## Current behavior
+
+P03-R06 is committed at 63e4c7e with 74 tests and real SQL/CLI proof. No public queries, Catalog schema or Catalog server exists. Metadata still lacks release year, runtime, languages, accessibility and editorial labels required by CAT-R03.
+
+## Proposed behavior
+
+Complete bounded metadata with explicit unknown values and backwards-compatible decoding of existing snapshots. Add a read-only Catalog role/view and indexed UUID keyset reads. Project verified public DTOs through the owning application. Add Federation Title, request-scoped batch loading, bounded read-only Apollo/Express transport and schema composition/operation tests using the exact existing Identity pins.
+
+## Boundaries
+
+- Owner: Catalog schema and public eligibility; no Identity SQL or new service/database/framework.
+- Paths: services/catalog domain/application/infrastructure/transport, migration 0003 and tests; dependency importer/configuration/docs.
+- ADRs: 0002/0003/0004/0006/0007/0010/0013/0014/0015. Fixed trust and architecture unchanged.
+- Skills: agent, architecture, graphql-federation, security, node-runtime, data-events, testing, documentation.
+- Anonymous reads never receive operator authority. The separate read-only SQL role cannot write or read audit/history tables directly.
+- No Redis cache or external request while reading. Keep every PostgreSQL operation bounded/cancellable.
+
+## Invariants
+
+- Browse/detail/entity resolution share current published/rights/expiry/artwork/publication eligibility.
+- Retired/disputed/draft/expired titles are absent, including the next request after a prior DataLoader hit.
+- Metadata uses null/empty lists for facts not reviewed yet, never invented values; legacy immutable snapshots remain readable without rewriting history.
+- Stable ascending UUID order, versioned opaque cursor, positive first <=20 and first+1 lookahead. No total count or offset scan.
+- One set-based batch query preserves requested order/missing nulls. DataLoader cache is request-scoped and bounded.
+- Public DTO/schema omit reviewer IDs, evidence locations, rights history, checksums and media/asset source URLs.
+- Entity references cannot inject owned fields. Operators remain on the separate local CLI.
+- GraphQL has bounded body/source/tokens/fields/depth/aliases/list/cost/concurrency/rate and one deadline; no mutation/introspection/APQ/batched HTTP surface.
+
+## Failure behavior
+
+| Failure | Result | Telemetry |
+|---|---|---|
+| Malformed cursor, locale, ID or page size | invalid_input before SQL | Sanitized code/correlation |
+| Nonpublic or missing title | null; excluded from browse | Normal read |
+| Invalid persisted public facts | unavailable, no unsafe DTO | Sanitized dependency failure |
+| Database failure/timeout/abort | unavailable/cancelled; no stale fallback | Existing PostgreSQL telemetry |
+| Abusive operation/saturation | bounded rejection before execution | Finite outcome and duration |
+
+## Data and contracts
+
+Migration 0003 adds the joined non-materialized published-candidate view, partial published-title index and read-only role. Dynamic expiry and permission checks are applied before SQL LIMIT; application domain rules validate the resulting DTO boundary. Rights/metadata remain authoritative, not a duplicated read model.
+
+Public schema: Title keyed by id; titles connection, title detail, localized(locale) metadata, attribution, bounded credits/genres/languages/accessibility/editorialLabels. Media playback fields remain owned by later Playback work. Ordering is by stable ID, not an undocumented newest-release ranking. New insertions before the cursor appear on a refreshed listing; no snapshot token is promised.
+
+## Security and privacy
+
+Only read operations; no viewer session requirement or operator credential forwarding. Read-only transport registration is private/local until the documented runtime/Router composition. Source URLs are data, never fetched. No automatic metadata or media rights approval. Source/app dependency versions and licenses are already accepted.
+
+## Implementation steps
+
+1. Complete metadata and public projection/query contracts.
+2. Add role/view/index and bounded SQL reads with real visibility/query-plan tests.
+3. Add Catalog schema, request loaders, HTTP controls and composition/operation tests.
+4. Review once, batch fixes, confirm and run candidate gates.
+5. Record evidence and hand off to generated technical fixture/source-review/runtime closeout before Phase 03 release.
+
+## Tests
+
+Domain projection/locale/cursor bounds; batch ordering/missing/cancellation; real PostgreSQL keysets/retirement/expiry/role isolation/query counts/plans; real HTTP anonymous reads/error sanitation/limits/deadlines; composition with Identity and operation compatibility. Existing editorial regression suite remains. Browser/playback is not claimed by schema tests.
+
+## Evidence
+
+- Iteration gate: focused Catalog build/test/lint.
+- Candidate gate: pnpm check:changed, pnpm catalog:integration, schema composition and representative operation tests; high-severity audit for lock change.
+- Heavyweight repeats: repeat Catalog SQL/HTTP experiments when schema, query, metadata or transport can change their results; keep unchanged Identity Docker evidence.
+- Review stopping rule: one initial and one confirmation; extend only for active requirement/security/data/availability/public-contract blockers.
+- Artifact: evidence/phase-03/catalog-public.txt; exact source fingerprints, commands, measurements and limitations.
+
+## Rollback or recovery
+
+Local source revert before new metadata writes; afterwards retain the expanded decoder or roll forward. Migration 0003 down removes only its view/index/role. Preserve rights/audit/operator data. Old same-input command receipts remain compatible when added metadata fields are unknown. No retained demo reset or public remote mutation in this slice.
+
+## Documentation updates
+
+Catalog guide/migration contract, public schema notes, evidence and consolidated .ai state. Update stale CONTEXT operator status. Phase 03 still needs actual generated HLS fixture, candidate records and release acceptance.
+
+## Completion checklist
+
+- [x] Public reads and metadata implemented
+- [x] SQL, schema and HTTP verified
+- [x] Review and candidate gates pass
+- [x] Evidence and memory current
+
+Candidate closeout
+Command: pnpm check:changed
+Exit: 0
+52 successful tasks; 38 cached; 42.253s.
+Closeout checks: formatting passes; ai-state has 34 queue items, no active requirement and target P03-R04; documentation has 145 documents/488 links and zero violations; staged secret scan has zero findings; git diff --cached --check passes. Source fingerprints match the measured candidate exactly. Corrected the handoff resume-target text before these final checks.
+91 Catalog tests and 144 Identity tests pass; protected hosted CI is not claimed.
+Only evidence/docs/memory changed after this candidate gate. Recheck formatting, links, AI state and staged secrets at commit; unchanged source retains the SQL/HTTP evidence above.
+
+   • Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/http-express, @aster/identity, @aster/object-storage-s3, @aster/postgres, @aster/redis, @aster/runtime, @aster/telemetry
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 11 packages
+//:architecture:check: cache miss, executing 8595edbd07132028
+//:docs:check: cache miss, executing f685a25210c9ffae
+//:ai:check: cache miss, executing 2211047954f7b84e
+//:community:check: cache miss, executing bbb4e1a5ca2a32e4
+//:security:check: cache bypass, force executing 7807b4798ca6bf81
+//:ai:check: $ node ./tools/verify-ai-state.ts
+//:community:check: $ node ./tools/verify-community-files.ts
+//:docs:check: $ node ./tools/verify-documentation.ts
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":34,"sessionEntries":68,"activeRequirement":"P03-R05","targetRequirement":"P03-R05","violations":[]}
+//:security:test: $ node --test ./tools/scan-secrets.test.ts
+//:ci:check: cache hit, replaying logs 29b3954ad9ca320e
+//:ci:check: $ node ./tools/verify-ci-policy.ts
+//:ci:check: {"check":"ci-policy","status":"ok","violations":0}
+//:ci:test: ✔ deduplicates changed paths before classification (0.144575ms)
+//:staged:test: ✔ deduplicates paths without widening the selected scope (0.942365ms)
+//:architecture:check: $ node ./tools/verify-architecture.ts
+//:security:check: $ node ./tools/scan-secrets.ts --all
+//:community:check: {"check":"community","files":6,"status":"ok","violations":0}
+@aster/config:test: ✔ process-start diagnostic exits zero and redacts configured secrets (322.754436ms)
+@aster/config:test: ✔ reports non-secret values and only configured status for secrets (8.039405ms)
+@aster/object-storage-s3:test: ✔ validates bounded own-data configuration without invoking accessors or leaking secrets (12.645027ms)
+@aster/redis:test: ✔ validates bounded own-data options without invoking accessors or leaking secrets (1.655381ms)
+@aster/identity:test: ▶ audit, outbox or receipt failure rolls back application intent and sanitizes errors
+@aster/identity:test:   ✔ audit (1.229728ms)
+@aster/identity:test: ✔ audit, outbox or receipt failure rolls back application intent and sanitizes errors (3.351376ms)
+//:docs:check: {"check":"documentation","status":"ok","documents":145,"headings":2207,"links":488,"statusClaims":3,"violations":0}
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:architecture:check: {"check":"architecture","status":"ok","violations":0}
+@aster/catalog:test: ✔ pre-extension command receipts replay without rewriting audit or ignoring newly supplied metadata (27.310882ms)
+@aster/catalog:test: ✔ exact replay preserves response and audit; changed input, actor, version or command conflicts (25.022098ms)
+ Tasks:    52 successful, 52 total
+Cached:    38 cached, 52 total
+  Time:    42.253s

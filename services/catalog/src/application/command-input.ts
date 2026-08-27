@@ -1,4 +1,4 @@
-import { normalizeTitleMetadata, type TitleMetadata } from "../domain/metadata.js";
+import { metadataInput, normalizeTitleMetadata, type TitleMetadata } from "../domain/metadata.js";
 import { draftRightsFromFacts, type RightsRecord } from "../domain/rights.js";
 import { catalogIdentifier, catalogRecord, catalogText, catalogVersion } from "../domain/values.js";
 import type { CatalogCommandKind } from "./operator-ports.js";
@@ -28,13 +28,7 @@ const fields: Readonly<Record<CatalogCommandKind, readonly string[]>> = {
   expire: ["reason"],
 };
 function editableMetadata(value: unknown, titleId: string): TitleMetadata | undefined {
-  const input = catalogRecord(value, [
-    "defaultLocale",
-    "localizations",
-    "genres",
-    "credits",
-    "artwork",
-  ]);
+  const input = metadataInput(value);
   if (!input) {
     return undefined;
   }

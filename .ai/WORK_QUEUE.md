@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–02 are released. P03-R01/R02 are committed at 4968d42/12db9fb. P03-R06 is locally verified: editorial commands, SQL/audit/outbox and guarded CLI; 74 tests, real integration and all 52 candidate tasks pass. Next is READY P03-R05. Public API and actual media remain planned.
+Phases 00–02 are released. Catalog rights/editorial work is committed through 63e4c7e. P03-R05 public queries/Federation is locally verified: 91 tests, real PostgreSQL/HTTP and all 52 candidate tasks pass. Generated media, source reviews and Catalog Docker remain next.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -38,7 +38,8 @@ Phases 00–02 are released. P03-R01/R02 are committed at 4968d42/12db9fb. P03-R
 | 30 | Model rights review, attribution and the title publication lifecycle | P03-R01 | DONE |
 | 31 | Persist structured rights revisions and immutable review provenance | P03-R02 | DONE |
 | 32 | Implement authorized operator workflow and publication/retirement transactions | P03-R06 | DONE |
-| 33 | Implement published-only browse/detail, locale fallback and Catalog Federation schema | P03-R05 | READY |
+| 33 | Implement published-only browse/detail, locale fallback and Catalog Federation schema | P03-R05 | DONE |
+| 34 | Verify generated HLS publication, candidate-source reviews and the Catalog Docker runtime | P03-R04 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). No Phase 03 remote publication or actual-film approval yet.
 
