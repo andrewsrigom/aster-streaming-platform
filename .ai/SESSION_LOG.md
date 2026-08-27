@@ -2,6 +2,21 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented the bounded readiness recovery monitor
+
+### Completed
+
+- Added one sequential, non-overlapping monitor with bounded anonymous probes, 20% jitter, one overall cycle timeout, cancellation, terminal stop, late-completion suppression, and unreferenced production timers.
+- Scheduler/random/probe/readiness failures produce stable unavailable state without leaking causes or starting unbounded work.
+
+### Evidence
+
+- Targeted formatting, ESLint, typecheck, build, declaration isolation, natural process exit, and 80/80 runtime tests pass. Per the checkpoint policy, no additional full affected gate was run after the green combined deadline/readiness candidate.
+
+### Next action
+
+Add the fixed Express liveness/readiness routes and focused real-socket contract tests.
+
 ## 2026-08-26 — Implemented recoverable dependency readiness
 
 ### Completed

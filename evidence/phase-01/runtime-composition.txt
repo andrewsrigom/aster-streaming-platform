@@ -52,6 +52,12 @@ Combined runtime-contract verification
 - @aster/runtime complete suite: PASS; 71/71 tests.
 - pnpm check:changed: PASS; 14/14 selected tasks, 3 cached, 22.358s Turborepo time, 23.51s elapsed, 860052 KiB maximum RSS.
 
+Recovery monitor checkpoint
+- Added one sequential monitor with one probe per anonymous critical gate, one overall cycle timeout, a jittered interval, no overlapping cycles, and explicit start/terminal stop ownership.
+- Stop aborts active monitor ownership and resolves without waiting for a probe that ignores cancellation. Late completion cannot change readiness or schedule another cycle.
+- Probe rejection/malformed outcomes, timeout, scheduler failure, invalid randomness, and synchronous scheduling fail closed to unavailable without reflecting causes. Production timers are unreferenced.
+- Targeted formatting, ESLint, typecheck, build, declaration isolation, natural process exit, and the complete 80-test runtime suite pass. No additional affected gate was required after the unchanged package/workspace boundary and green combined runtime-contract candidate.
+
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
 - Monitor cancellation/non-overlap focused tests.

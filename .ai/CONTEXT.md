@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 lifecycle, P01-R06 telemetry, and P01-R07 platform adapters are released. P01-R08 deadline/readiness composition is active from corrective released `main`; deadline and recoverable readiness are implemented, and the single recovery monitor is next. P01-R09 real integration and P01-R10 resource-aware closeout remain later work. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` distinguishes released capabilities from the active composition work and later unimplemented capabilities.
+P01-R05 lifecycle, P01-R06 telemetry, and P01-R07 platform adapters are released. P01-R08 deadline/readiness composition is active from corrective released `main`; deadline, recoverable readiness, and the single recovery monitor are implemented, and fixed health routes are next. P01-R09 real integration and P01-R10 resource-aware closeout remain later work. `docs/architecture/RUNTIME_PLATFORM_RUNWAY.md` distinguishes released capabilities from the active composition work and later unimplemented capabilities.
