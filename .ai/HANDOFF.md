@@ -18,7 +18,7 @@ P01-R08 is active on `feat/p01-r08-runtime-composition`, rebased onto corrective
 
 ## Resume point
 
-1. Verify the rebased deadline implementation once.
+1. Verify the rebased deadline implementation once; its 16 focused cases and 62-test runtime suite passed before rebase.
 2. Implement the bounded readiness controller and focused tests without intermediate documentation churn.
 3. Run the combined runtime-contract candidate gate, then continue to the monitor. Keep real dependency/container claims for P01-R09.
 

@@ -1,6 +1,6 @@
 # Runtime Lifecycle
 
-`@aster/runtime` owns the reusable process lifecycle for Node.js services. The current P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. It does not create a service or expose an HTTP health route.
+`@aster/runtime` owns reusable process lifecycle behavior for Node.js services. Released P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. The dependent P01-R08 candidate implements the first composition checkpoint: a propagated finite deadline. It does not yet create a service, compose dependency readiness, or expose an HTTP health route.
 
 ## State and health
 
@@ -17,6 +17,16 @@ Lifecycle state is process-local and monotonic:
 `markReady()` can move only `starting` to `ready`. `markStartupFailed()` can move only `starting` to `failed`. A process cannot become ready again after failure or shutdown. Health snapshots are frozen and expose no exception, hostname, port, URL, dependency name, credential, or request value.
 
 Dependency-specific readiness belongs to P01-R08. A future service health route may publish this stable snapshot, but no public endpoint exists yet.
+
+## Propagated deadlines
+
+`createAsterDeadline()` owns one finite monotonic budget from 1 millisecond through 5 minutes. It starts one unreferenced timer, optionally listens to one parent `AbortSignal`, and exposes a derived signal plus `remainingMs()`. Parent cancellation aborts the derived signal without copying the parent's reason. Expiry aborts the same signal. Callers pass that derived signal to every nested operation and derive any smaller child budget from the non-increasing remaining value; they do not restart the original budget per dependency or attempt.
+
+`remainingMs()` rounds a positive fractional remainder up to the next millisecond, never increases even if an injected clock regresses, and fails closed to zero plus abort if monotonic time becomes unavailable. `dispose()` cancels the timer and removes the parent listener after successful work without aborting that completed work. Disposal, expiry, and parent cancellation are idempotent. The default timer is unreferenced, so an unused deadline cannot keep a Node.js process alive.
+
+Options must be a plain own-data object with only `timeoutMs` and optional real `parentSignal`. Unknown properties, accessors, proxies that throw, non-finite or fractional budgets, and forged signals fail with bounded cause-free issues. Deadline code invokes the platform's `AbortSignal` and `EventTarget` operations directly so caller-owned property overrides cannot execute during propagation or cleanup.
+
+This primitive does not replace the released lifecycle shutdown coordinator or create a second shutdown budget. P01-R08 will use it for service startup and nested dependency work; readiness gates, the recovery monitor, and service composition remain planned checkpoints.
 
 ## Composition
 
@@ -108,9 +118,9 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-The suite exercises hostile configuration, health transitions, shared shutdown, exact stage order, hook failure, deterministic deadline, repeated signals, logger failure, a graceful real `SIGTERM` subprocess, a live-handle subprocess whose force close throws and reaches the hard fallback, and real loopback sockets for graceful and forced HTTP closure. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
+The suite exercises hostile deadline and lifecycle configuration, deterministic monotonic expiry, parent cancellation without reason copying, cleanup, an unreferenced-timer subprocess, health transitions, shared shutdown, exact stage order, hook failure, repeated signals, logger failure, a graceful real `SIGTERM` subprocess, a live-handle subprocess whose force close throws and reaches the hard fallback, and real loopback sockets for graceful and forced HTTP closure. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
 
-Current raw evidence and limitations are in [P01-R05 lifecycle evidence](../../evidence/phase-01/runtime-lifecycle.txt).
+Released lifecycle evidence is in [P01-R05 lifecycle evidence](../../evidence/phase-01/runtime-lifecycle.txt). The dependent deadline checkpoint is recorded in [P01-R08 runtime-composition evidence](../../evidence/phase-01/runtime-composition.txt).
 
 ## Recovery
 

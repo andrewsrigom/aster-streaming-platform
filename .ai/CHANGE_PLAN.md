@@ -89,8 +89,8 @@ Correct the repository task graph so every package `typecheck` waits for depende
 ## Implementation steps
 
 1. [completed] Release P01-R07 and rebase P01-R08 onto corrective released `main` at `61226eb`.
-2. [pending] Implement the dependency-free propagated deadline contract with hostile-input, parent-cancellation, deterministic-timeout, remaining-budget, and idempotent-disposal tests.
-3. [pending] Implement the bounded readiness controller over the released lifecycle with pending/ready/unavailable critical gates, stable public snapshots, recovery without phase rollback, and ready-only work leases.
+2. [completed] Implement the dependency-free propagated deadline contract with hostile-input, parent-cancellation, deterministic-timeout, remaining-budget, and idempotent-disposal tests.
+3. [in progress] Implement the bounded readiness controller over the released lifecycle with pending/ready/unavailable critical gates, stable public snapshots, recovery without phase rollback, and ready-only work leases.
 4. [pending] Implement the single non-overlapping recovery monitor with deterministic scheduler/jitter seams, one probe per critical dependency, cancellation, stop-before-close, late-completion, and failure tests.
 5. [pending] Extend the Express adapter and ADR-0011 with fixed non-cacheable liveness/readiness routes, exact methods/status/body behavior, provider hardening, and real-socket tests while preserving `/graphql` behavior.
 6. [pending] Add only the reference listener/startup configuration fields required by the service, with classification, hostile-source, bounds, diagnostics, and compatibility tests.

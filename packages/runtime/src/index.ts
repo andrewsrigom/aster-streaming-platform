@@ -74,3 +74,15 @@ export {
   createAsterUuidGenerator,
 } from "./ids.js";
 export type { AsterIdentifierConfigurationIssue, AsterIdentifierGenerator } from "./ids.js";
+export {
+  ASTER_DEADLINE_MAX_MS,
+  ASTER_DEADLINE_MIN_MS,
+  AsterDeadlineError,
+  createAsterDeadline,
+} from "./deadline.js";
+export type {
+  AsterDeadline,
+  AsterDeadlineDisposalResult,
+  AsterDeadlineIssue,
+  AsterDeadlineOptions,
+} from "./deadline.js";

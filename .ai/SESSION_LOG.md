@@ -2,6 +2,27 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented the propagated deadline checkpoint
+
+### Completed
+
+- Added a dependency-free `@aster/runtime` deadline with a finite 1–300000 millisecond monotonic budget, derived cancellation signal, non-increasing remaining budget, and idempotent disposal.
+- Parent cancellation does not copy its reason. Plain own-data validation rejects unknown/accessor/proxy input and forged signals; platform AbortSignal/EventTarget operations bypass caller-owned properties.
+- The default timer is unreferenced. A subprocess with a five-minute unused deadline exits naturally, and disposal releases resources without aborting completed work.
+- Documented the implemented local checkpoint separately from the still-planned readiness, monitor, health, configuration, and Identity composition behavior.
+
+### Evidence
+
+- Sixteen focused deadline cases and the complete 62-test runtime package pass, including deterministic timeout, parent cancellation, clock regression/failure, synchronous and invalid scheduler behavior, cleanup, declaration isolation, real expiry, and natural process exit.
+- Runtime typecheck passed in `2.53s` at `327472 KiB` maximum RSS; build passed in `1.58s` at `257576 KiB`; the measured 60-test package run passed in `0.97s` at `141996 KiB` before the final two scheduler regressions, and the final 62-test run also passes.
+- Targeted ESLint passed in `2.36s` at `374004 KiB`; targeted formatting passed in `0.69s` at `142192 KiB`.
+- The final affected graph passed 46/46 tasks with 32 cached in `13.173s` of Turborepo time and `14.24s` elapsed at `869316 KiB` maximum RSS; it executed the final 62-test runtime suite and every selected repository validator.
+- Raw ledger: `evidence/phase-01/runtime-composition.txt`.
+
+### Next action
+
+Verify the rebased deadline checkpoint once, then implement the bounded readiness controller.
+
 ## 2026-08-26 — Released P01-R07 and activated P01-R08 on released main
 
 ### Completed

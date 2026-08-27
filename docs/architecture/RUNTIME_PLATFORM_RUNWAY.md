@@ -174,6 +174,8 @@ The initial test budgets are 15 seconds for total startup, 3 seconds for Postgre
 
 Startup performs no retry loop. Later operation retries require a known-safe read or an idempotency mechanism and must fit inside the propagated overall deadline.
 
+The first dependent P01-R08 checkpoint implements `createAsterDeadline()` in `@aster/runtime`. It accepts a 1 millisecond through 5 minute monotonic budget and an optional parent signal, exposes one sanitized derived signal and a non-increasing remaining budget, removes its timer/listener idempotently, and uses an unreferenced default timer. Deterministic tests cover timeout, clock regression, parent cancellation, hostile inputs and signal properties, scheduler failure, cleanup, declaration isolation, and natural subprocess exit. It does not yet assign the service or nested dependency values shown above; those values remain composition inputs for the later service checkpoint.
+
 ### Readiness model
 
 P01-R08 extends the current monotonic lifecycle with bounded readiness gates. Lifecycle phase and dependency readiness remain separate:
