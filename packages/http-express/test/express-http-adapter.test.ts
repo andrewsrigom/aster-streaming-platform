@@ -17,6 +17,7 @@ import {
   AsterExpressAdapterError,
   createExpressHttpAdapter,
   getExpressRequestAbortSignal,
+  type AsterExpressHealthSnapshot,
   type AsterExpressHttpAdapterOptions,
 } from "../src/index.js";
 
@@ -169,6 +170,13 @@ test("validates bounded options, mount state, and request context without invoki
   assert.equal(reads, 0);
   assert.deepEqual(hostileError.issues, [{ option: "<options>", reason: "invalid" }]);
 
+  const invalidProvider = captureAdapterError(() =>
+    createExpressHttpAdapter({ healthSnapshotProvider: "invalid" as never }),
+  );
+  assert.deepEqual(invalidProvider.issues, [
+    { option: "healthSnapshotProvider", reason: "invalid" },
+  ]);
+
   const adapter = createExpressHttpAdapter();
   const invalidMiddleware = captureAdapterError(() => {
     adapter.mountGraphql(null as unknown as RequestHandler);
@@ -186,6 +194,143 @@ test("validates bounded options, mount state, and request context without invoki
     getExpressRequestAbortSignal({} as ExpressResponse),
   );
   assert.deepEqual(missingContext.issues, [{ option: "requestContext", reason: "missing" }]);
+});
+
+test("serves stable non-cacheable health snapshots before GraphQL mount", async (context) => {
+  let snapshot: AsterExpressHealthSnapshot = {
+    liveness: "live",
+    phase: "starting",
+    readiness: "not_ready",
+    reason: "starting",
+  };
+  let providerCalls = 0;
+  const adapter = createExpressHttpAdapter({
+    healthSnapshotProvider: () => {
+      providerCalls += 1;
+      return snapshot;
+    },
+  });
+  const server = createServer(adapter.requestListener);
+  context.after(async () => closeServer(server));
+  const url = await listen(server);
+
+  const liveStarting = await fetch(`${url}/health/live`);
+  assert.equal(liveStarting.status, 200);
+  assert.equal(liveStarting.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await responsePayload(liveStarting), snapshot);
+
+  const readyStarting = await fetch(`${url}/health/ready`);
+  assert.equal(readyStarting.status, 503);
+  assert.equal(readyStarting.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await responsePayload(readyStarting), snapshot);
+
+  snapshot = {
+    liveness: "live",
+    phase: "ready",
+    readiness: "not_ready",
+    reason: "dependency_unavailable",
+  };
+  const liveUnavailable = await fetch(`${url}/health/live`);
+  assert.equal(liveUnavailable.status, 200);
+  assert.deepEqual(await responsePayload(liveUnavailable), snapshot);
+  const readyUnavailable = await fetch(`${url}/health/ready`);
+  assert.equal(readyUnavailable.status, 503);
+  assert.deepEqual(await responsePayload(readyUnavailable), snapshot);
+
+  snapshot = {
+    liveness: "live",
+    phase: "ready",
+    readiness: "ready",
+    reason: "ready",
+  };
+  const ready = await fetch(`${url}/health/ready`, { method: "HEAD" });
+  assert.equal(ready.status, 200);
+  assert.equal(ready.headers.get("cache-control"), "no-store");
+  assert.equal(await ready.text(), "");
+
+  snapshot = {
+    liveness: "not_live",
+    phase: "failed",
+    readiness: "not_ready",
+    reason: "startup_failed",
+  };
+  const failedLive = await fetch(`${url}/health/live`);
+  assert.equal(failedLive.status, 503);
+  assert.deepEqual(await responsePayload(failedLive), snapshot);
+
+  const unsupported = await fetch(`${url}/health/ready`, { method: "POST" });
+  assert.equal(unsupported.status, 405);
+  assert.equal(unsupported.headers.get("allow"), "GET, HEAD");
+  assert.equal(unsupported.headers.get("cache-control"), "no-store");
+  assert.deepEqual(await responsePayload(unsupported), {
+    error: { code: "HTTP_METHOD_NOT_ALLOWED" },
+  });
+  assert.equal(providerCalls, 6);
+
+  const unavailableGraphql = await fetch(`${url}/graphql`);
+  assert.equal(unavailableGraphql.status, 503);
+  assert.deepEqual(await responsePayload(unavailableGraphql), {
+    error: { code: "HTTP_ADAPTER_NOT_READY" },
+  });
+});
+
+test("sanitizes throwing and malformed health snapshot providers", async (context) => {
+  const canary = "health-provider-secret-never-emit";
+  let candidate: unknown = Object.assign(new Error(canary));
+  const adapter = createExpressHttpAdapter({
+    healthSnapshotProvider: () => {
+      if (candidate instanceof Error) {
+        throw candidate;
+      }
+      return candidate as AsterExpressHealthSnapshot;
+    },
+  });
+  const server = createServer(adapter.requestListener);
+  context.after(async () => closeServer(server));
+  const url = await listen(server);
+
+  const thrown = await fetch(`${url}/health/live`);
+  const thrownBody = await thrown.text();
+  assert.equal(thrown.status, 500);
+  assert.equal(thrown.headers.get("cache-control"), "no-store");
+  assert.equal(thrownBody.includes(canary), false);
+  assert.deepEqual(JSON.parse(thrownBody) as unknown, {
+    error: { code: "INTERNAL_HTTP_ERROR" },
+  });
+
+  let accessorReads = 0;
+  candidate = Object.defineProperty(
+    {
+      phase: "ready",
+      readiness: "ready",
+      reason: "ready",
+    },
+    "liveness",
+    {
+      get(): string {
+        accessorReads += 1;
+        return canary;
+      },
+      enumerable: true,
+    },
+  );
+  const accessor = await fetch(`${url}/health/ready`);
+  const accessorBody = await accessor.text();
+  assert.equal(accessor.status, 500);
+  assert.equal(accessorReads, 0);
+  assert.equal(accessorBody.includes(canary), false);
+
+  candidate = {
+    liveness: "live",
+    phase: "ready",
+    readiness: "ready",
+    reason: "dependency_unavailable",
+    detail: canary,
+  };
+  const incoherent = await fetch(`${url}/health/ready`);
+  const incoherentBody = await incoherent.text();
+  assert.equal(incoherent.status, 500);
+  assert.equal(incoherentBody.includes(canary), false);
 });
 
 test("enforces parser-before-handler ordering and hides framework headers", async (context) => {

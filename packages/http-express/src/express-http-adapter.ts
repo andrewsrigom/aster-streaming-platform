@@ -19,8 +19,28 @@ const responseAbortSignals = new WeakMap<Response, AbortSignal>();
 
 export type AsterExpressGraphqlMiddleware = RequestHandler;
 
+export type AsterExpressHealthPhase = "draining" | "failed" | "ready" | "starting" | "stopped";
+export type AsterExpressHealthReason =
+  | "dependency_pending"
+  | "dependency_unavailable"
+  | "draining"
+  | "ready"
+  | "starting"
+  | "startup_failed"
+  | "stopped";
+
+export interface AsterExpressHealthSnapshot {
+  readonly liveness: "live" | "not_live";
+  readonly phase: AsterExpressHealthPhase;
+  readonly readiness: "not_ready" | "ready";
+  readonly reason: AsterExpressHealthReason;
+}
+
+export type AsterExpressHealthSnapshotProvider = () => AsterExpressHealthSnapshot;
+
 export interface AsterExpressHttpAdapterOptions {
   readonly bodyLimitBytes?: number;
+  readonly healthSnapshotProvider?: AsterExpressHealthSnapshotProvider;
 }
 
 export interface AsterExpressHttpAdapter {
@@ -29,7 +49,12 @@ export interface AsterExpressHttpAdapter {
 }
 
 export interface AsterExpressAdapterIssue {
-  readonly option: "<options>" | "bodyLimitBytes" | "graphqlMiddleware" | "requestContext";
+  readonly option:
+    | "<options>"
+    | "bodyLimitBytes"
+    | "graphqlMiddleware"
+    | "healthSnapshotProvider"
+    | "requestContext";
   readonly reason: "already_mounted" | "internal" | "invalid" | "missing";
 }
 
@@ -63,7 +88,17 @@ class InvalidAdapterError extends Error {
 
 interface NormalizedAdapterOptions {
   readonly bodyLimitBytes: number;
+  readonly healthSnapshotProvider: () => unknown;
 }
+
+const STARTING_HEALTH_SNAPSHOT: AsterExpressHealthSnapshot = Object.freeze({
+  liveness: "live",
+  phase: "starting",
+  readiness: "not_ready",
+  reason: "starting",
+});
+
+const HEALTH_SNAPSHOT_KEYS = new Set<PropertyKey>(["liveness", "phase", "readiness", "reason"]);
 
 function isObject(value: unknown): value is object {
   return (typeof value === "object" && value !== null) || typeof value === "function";
@@ -84,15 +119,31 @@ function normalizeOptions(
   input: AsterExpressHttpAdapterOptions | undefined,
 ): NormalizedAdapterOptions {
   if (input === undefined) {
-    return { bodyLimitBytes: ASTER_GRAPHQL_BODY_LIMIT_BYTES };
+    return {
+      bodyLimitBytes: ASTER_GRAPHQL_BODY_LIMIT_BYTES,
+      healthSnapshotProvider: () => STARTING_HEALTH_SNAPSHOT,
+    };
   }
   if (!isObject(input) || Array.isArray(input)) {
     throw new InvalidAdapterError("<options>", "invalid");
   }
   const candidate = ownDataValue(input, "bodyLimitBytes");
-  if (candidate === ABSENT) {
-    return { bodyLimitBytes: ASTER_GRAPHQL_BODY_LIMIT_BYTES };
+  const bodyLimitBytes =
+    candidate === ABSENT ? ASTER_GRAPHQL_BODY_LIMIT_BYTES : normalizeBodyLimit(candidate);
+  const provider = ownDataValue(input, "healthSnapshotProvider");
+  if (provider !== ABSENT && typeof provider !== "function") {
+    throw new InvalidAdapterError("healthSnapshotProvider", "invalid");
   }
+  return {
+    bodyLimitBytes,
+    healthSnapshotProvider:
+      provider === ABSENT
+        ? () => STARTING_HEALTH_SNAPSHOT
+        : (): unknown => Reflect.apply(provider, undefined, []) as unknown,
+  };
+}
+
+function normalizeBodyLimit(candidate: unknown): number {
   if (
     typeof candidate !== "number" ||
     !Number.isSafeInteger(candidate) ||
@@ -101,7 +152,7 @@ function normalizeOptions(
   ) {
     throw new InvalidAdapterError("bodyLimitBytes", "invalid");
   }
-  return { bodyLimitBytes: candidate };
+  return candidate;
 }
 
 function requestCancellationMiddleware(
@@ -154,6 +205,70 @@ function safeOwnValue(value: unknown, key: PropertyKey): unknown {
   } catch {
     return ABSENT;
   }
+}
+
+function hasPlainPrototype(value: object): boolean {
+  try {
+    const prototype: unknown = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  } catch {
+    return false;
+  }
+}
+
+function normalizeHealthSnapshot(candidate: unknown): AsterExpressHealthSnapshot | undefined {
+  if (!isObject(candidate) || Array.isArray(candidate) || !hasPlainPrototype(candidate)) {
+    return undefined;
+  }
+
+  let keys: readonly PropertyKey[];
+  try {
+    keys = Reflect.ownKeys(candidate);
+  } catch {
+    return undefined;
+  }
+  if (
+    keys.length !== HEALTH_SNAPSHOT_KEYS.size ||
+    keys.some((key) => !HEALTH_SNAPSHOT_KEYS.has(key))
+  ) {
+    return undefined;
+  }
+
+  const liveness = safeOwnValue(candidate, "liveness");
+  const phase = safeOwnValue(candidate, "phase");
+  const readiness = safeOwnValue(candidate, "readiness");
+  const reason = safeOwnValue(candidate, "reason");
+  const coherent =
+    (phase === "starting" &&
+      liveness === "live" &&
+      readiness === "not_ready" &&
+      reason === "starting") ||
+    (phase === "ready" &&
+      liveness === "live" &&
+      ((readiness === "ready" && reason === "ready") ||
+        (readiness === "not_ready" &&
+          (reason === "dependency_pending" || reason === "dependency_unavailable")))) ||
+    (phase === "draining" &&
+      liveness === "live" &&
+      readiness === "not_ready" &&
+      reason === "draining") ||
+    (phase === "failed" &&
+      liveness === "not_live" &&
+      readiness === "not_ready" &&
+      reason === "startup_failed") ||
+    (phase === "stopped" &&
+      liveness === "not_live" &&
+      readiness === "not_ready" &&
+      reason === "stopped");
+
+  return coherent
+    ? Object.freeze({
+        liveness,
+        phase,
+        readiness,
+        reason,
+      })
+    : undefined;
 }
 
 function writeError(response: Response, status: number, code: string): void {
@@ -219,6 +334,38 @@ const requireParsedJsonBody: RequestHandler = (
 const notFoundHandler: RequestHandler = (_request: Request, response: Response): void => {
   writeError(response, 404, "HTTP_NOT_FOUND");
 };
+
+function createHealthHandler(
+  provider: () => unknown,
+  dimension: "liveness" | "readiness",
+): RequestHandler {
+  return (request: Request, response: Response): void => {
+    response.set("Cache-Control", "no-store");
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      response.set("Allow", "GET, HEAD");
+      writeError(response, 405, "HTTP_METHOD_NOT_ALLOWED");
+      return;
+    }
+
+    let snapshot: AsterExpressHealthSnapshot | undefined;
+    try {
+      snapshot = normalizeHealthSnapshot(provider());
+    } catch {
+      snapshot = undefined;
+    }
+    if (!snapshot) {
+      writeError(response, 500, "INTERNAL_HTTP_ERROR");
+      return;
+    }
+
+    const healthy =
+      dimension === "liveness" ? snapshot.liveness === "live" : snapshot.readiness === "ready";
+    response
+      .status(healthy ? 200 : 503)
+      .type("application/json")
+      .send(JSON.stringify(snapshot));
+  };
+}
 
 function hasDuplicateCharsetParameter(rawContentType: string): boolean {
   let parameterStart = -1;
@@ -323,6 +470,14 @@ export function createExpressHttpAdapter(
   application.disable("x-powered-by");
   application.enable("case sensitive routing");
   application.enable("strict routing");
+  application.all(
+    "/health/live",
+    createHealthHandler(normalized.healthSnapshotProvider, "liveness"),
+  );
+  application.all(
+    "/health/ready",
+    createHealthHandler(normalized.healthSnapshotProvider, "readiness"),
+  );
   let mounted = false;
   application.use((_request: Request, response: Response, next: NextFunction): void => {
     if (!mounted) {

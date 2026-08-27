@@ -7,6 +7,10 @@ export {
 } from "./express-http-adapter.js";
 export type {
   AsterExpressAdapterIssue,
+  AsterExpressHealthPhase,
+  AsterExpressHealthReason,
+  AsterExpressHealthSnapshot,
+  AsterExpressHealthSnapshotProvider,
   AsterExpressHttpAdapter,
   AsterExpressHttpAdapterOptions,
   AsterExpressGraphqlMiddleware,

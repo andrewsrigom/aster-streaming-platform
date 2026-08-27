@@ -18,9 +18,9 @@ P01-R08 is active on `feat/p01-r08-runtime-composition`, rebased onto corrective
 
 ## Resume point
 
-1. For P01-R08, add fixed `GET`/`HEAD` `/health/live` and `/health/ready` routes to the Express adapter.
-2. Prove stable status/body/cache behavior and hostile provider handling through focused real-socket tests while preserving `/graphql`.
-3. Continue to configuration/service composition without another full gate until the next combined candidate. Keep real dependency/container claims for P01-R09.
+1. For P01-R08, add only the minimum listener and startup configuration fields required by the Identity reference process.
+2. Create the controlled-port service composition and prove startup deadline propagation, unavailable startup, readiness recovery, request admission, cleanup, signal ownership, and ordered stop.
+3. Run the next affected gate only after HTTP, configuration, and service composition form one candidate. Keep real dependency/container claims for P01-R09.
 
 ## Do not do yet
 

@@ -58,6 +58,12 @@ Recovery monitor checkpoint
 - Probe rejection/malformed outcomes, timeout, scheduler failure, invalid randomness, and synchronous scheduling fail closed to unavailable without reflecting causes. Production timers are unreferenced.
 - Targeted formatting, ESLint, typecheck, build, declaration isolation, natural process exit, and the complete 80-test runtime suite pass. No additional affected gate was required after the unchanged package/workspace boundary and green combined runtime-contract candidate.
 
+Fixed health route checkpoint
+- Added exact case-sensitive `GET` and `HEAD` `/health/live` and `/health/ready` routes before the GraphQL mount gate. Both read one repository-owned process-local snapshot, set `Cache-Control: no-store`, and return status from only the selected liveness/readiness dimension.
+- The adapter accepts only coherent finite snapshots containing liveness, lifecycle phase, readiness, and stable reason. Throwing, accessor-backed, excessive, and incoherent provider results return sanitized `500 INTERNAL_HTTP_ERROR`; unsupported methods return `405 HTTP_METHOD_NOT_ALLOWED` without invoking the provider.
+- `@aster/http-express` build, typecheck, targeted ESLint, targeted formatting, and 10/10 tests pass. Real sockets prove starting, dependency-unavailable, ready, and failed statuses; `HEAD` body suppression; provider sanitization; and unchanged pre-mount `/graphql` behavior.
+- This is focused working-tree evidence based on source head `0a7cdc0`; the combined HTTP/configuration/service candidate will record its exact commit and affected gate.
+
 Planned evidence sequence
 - Rebased deadline focused verification, followed by readiness focused tests and one combined runtime-contract affected gate.
 - Monitor cancellation/non-overlap focused tests.

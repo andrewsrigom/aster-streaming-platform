@@ -1,6 +1,6 @@
 # Runtime Lifecycle
 
-`@aster/runtime` owns reusable process lifecycle behavior for Node.js services. Released P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. The dependent P01-R08 candidate implements the first composition checkpoint: a propagated finite deadline. It does not yet create a service, compose dependency readiness, or expose an HTTP health route.
+`@aster/runtime` owns reusable process lifecycle behavior for Node.js services. Released P01-R05 source implements health state, bounded in-flight drain, ordered shutdown hooks, process signals, Node.js HTTP closure, and stable lifecycle logging. The active P01-R08 candidate adds a propagated finite deadline, recoverable critical-dependency readiness, one bounded monitor, and fixed health transport routes. It does not yet create the Identity reference service or prove real dependency integration.
 
 ## State and health
 
@@ -16,7 +16,9 @@ Lifecycle state is process-local and monotonic:
 
 `markReady()` can move only `starting` to `ready`. `markStartupFailed()` can move only `starting` to `failed`. A process cannot become ready again after failure or shutdown. Health snapshots are frozen and expose no exception, hostname, port, URL, dependency name, credential, or request value.
 
-Dependency-specific readiness belongs to P01-R08. A future service health route may publish this stable snapshot, but no public endpoint exists yet.
+The P01-R08 readiness controller combines this phase with one through 32 anonymous critical gates. A pending or unavailable gate keeps a ready lifecycle live but not ready with `dependency_pending` or `dependency_unavailable`; recovery restores readiness without moving the lifecycle phase backward. Terminal lifecycle phases override dependency state, and work admission fails closed unless the combined snapshot is ready.
+
+The Express adapter can publish this repository-owned snapshot through exact `/health/live` and `/health/ready` routes. The routes expose no dependency name, endpoint, error, credential, retry count, process identifier, or topology.
 
 ## Propagated deadlines
 
@@ -26,7 +28,13 @@ Dependency-specific readiness belongs to P01-R08. A future service health route 
 
 Options must be a plain own-data object with only `timeoutMs` and optional real `parentSignal`. Unknown properties, accessors, proxies that throw, non-finite or fractional budgets, and forged signals fail with bounded cause-free issues. Deadline code invokes the platform's `AbortSignal` and `EventTarget` operations directly so caller-owned property overrides cannot execute during propagation or cleanup.
 
-This primitive does not replace the released lifecycle shutdown coordinator or create a second shutdown budget. P01-R08 will use it for service startup and nested dependency work; readiness gates, the recovery monitor, and service composition remain planned checkpoints.
+This primitive does not replace the released lifecycle shutdown coordinator or create a second shutdown budget. The Identity composition root will use it for service startup and nested dependency work.
+
+## Readiness recovery monitor
+
+One monitor owns dependency recovery. It executes at most one probe per anonymous critical gate in a sequential, non-overlapping cycle, applies a finite 20% jittered interval, and caps the complete cycle with one deadline. Probe rejection, malformed outcome, timeout, scheduler failure, or invalid randomness fails the affected readiness state closed without exposing the cause.
+
+Stopping the monitor aborts its ownership and prevents late completion from changing readiness or scheduling more work. Production timers are unreferenced. The future service shutdown order stops this monitor before closing dependency clients.
 
 ## Composition
 
@@ -118,7 +126,7 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-The suite exercises hostile deadline and lifecycle configuration, deterministic monotonic expiry, parent cancellation without reason copying, cleanup, an unreferenced-timer subprocess, health transitions, shared shutdown, exact stage order, hook failure, repeated signals, logger failure, a graceful real `SIGTERM` subprocess, a live-handle subprocess whose force close throws and reaches the hard fallback, and real loopback sockets for graceful and forced HTTP closure. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
+The suite exercises hostile deadline, readiness, monitor, and lifecycle configuration; deterministic expiry and scheduling; parent cancellation; cleanup; unreferenced-timer subprocesses; health and dependency recovery; shared shutdown; hook failure; signals; logging failure; and real loopback sockets. The process-signal diagnostics are skipped on native Windows because their Unix signal semantics are not portable; the supported WSL path executes them.
 
 Released lifecycle evidence is in [P01-R05 lifecycle evidence](../../evidence/phase-01/runtime-lifecycle.txt). The dependent deadline checkpoint is recorded in [P01-R08 runtime-composition evidence](../../evidence/phase-01/runtime-composition.txt).
 

@@ -2,6 +2,21 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-26 — Implemented fixed public health routes
+
+### Completed
+
+- Added exact non-cacheable `GET`/`HEAD` liveness and readiness routes before the GraphQL mount gate.
+- Added coherent finite snapshot validation, stable status selection, unsupported-method handling, and sanitization for throwing, accessor-backed, excessive, or incoherent providers without dependency I/O in the adapter.
+
+### Evidence
+
+- HTTP build, typecheck, targeted ESLint, targeted formatting, and 10/10 tests pass. Real sockets cover starting, dependency-unavailable, ready, failed, `HEAD`, unsupported method, hostile provider, and preserved pre-mount GraphQL behavior.
+
+### Next action
+
+Add the minimum listener and startup configuration needed by the product-empty Identity composition root.
+
 ## 2026-08-26 — Implemented the bounded readiness recovery monitor
 
 ### Completed
