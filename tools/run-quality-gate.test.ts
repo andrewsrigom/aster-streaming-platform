@@ -332,6 +332,7 @@ test("keeps manifest commands and task-level affected inputs aligned", async () 
   const lintTask = turbo.tasks["//#lint:workspace"];
   assert.ok(lintTask);
   assert.deepEqual(lintTask.dependsOn, ["@aster/telemetry#build"]);
+  assert.deepEqual(turbo.tasks["typecheck"]?.dependsOn, ["^build", "^typecheck"]);
   const lintInputs = lintTask.inputs ?? [];
   for (const path of ["apps/**", "packages/**", "services/**", "workers/**"]) {
     assert.ok(lintInputs.includes(path));
