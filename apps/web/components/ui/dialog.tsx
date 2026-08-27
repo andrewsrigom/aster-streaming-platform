@@ -1,15 +1,23 @@
 "use client";
 
 import * as Primitive from "@radix-ui/react-dialog";
-import type { PropsWithChildren } from "react";
+import { useLayoutEffect, useRef, type PropsWithChildren } from "react";
 import { Button } from "./button";
 
 // Adapted from shadcn/ui; Radix owns modal focus, keyboard and screen-reader semantics.
 export function Dialog({
   children,
+  busy,
   close,
   restoreFocus,
-}: PropsWithChildren<{ close: () => void; restoreFocus: () => void }>) {
+}: PropsWithChildren<{ busy: boolean; close: () => void; restoreFocus: () => void }>) {
+  const closeButton = useRef<HTMLButtonElement>(null);
+  useLayoutEffect(() => {
+    // Disabling the focused action can leave Radix's previous target unfocusable.
+    if (busy) {
+      closeButton.current?.focus();
+    }
+  }, [busy]);
   return (
     <Primitive.Root
       open
@@ -36,7 +44,7 @@ export function Dialog({
               </Primitive.Description>
             </div>
             <Primitive.Close asChild>
-              <Button variant="outline" aria-label="Close profiles">
+              <Button ref={closeButton} variant="outline" aria-label="Close profiles">
                 Close
               </Button>
             </Primitive.Close>

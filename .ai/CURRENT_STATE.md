@@ -14,15 +14,15 @@ Phases 00–04 are released. PR 21 squash b6c99c4 has successful exact-head prot
 
 ## Current work
 
-P05-R01 is the sole active item. Responsive source-owned artwork, finite optimization and image failure behavior pass 18 Web tests and all 14 functional browser journeys; the current source gate passes 58/58 tasks. The mobile laboratory defines budgets and records real bytes, hydration and Web Vitals. Its latest three visits pass, but earlier INP/hydration misses remain unresolved; do not call timing stability verified. [Artwork and performance evidence](../evidence/phase-05/artwork-performance.md). Docker Web remains healthy on 3000. Complete phase acceptance remains open.
+P05-R01 is the sole active item. Public build/runtime/HTML scans, authenticated SSR isolation and automated accessibility pass all 18 functional browser journeys. Busy-state focus now moves to enabled Close instead of retaining a disabled action. Fourteen axe scans have zero violations; incomplete contrast/focus cases have supplementary evidence. The source gate passes 58/58 tasks. [Boundary checkpoint](../evidence/phase-05/web-boundaries.md). Docker Web remains healthy on 3000; complete phase acceptance remains open.
 
 ## Not implemented
 
-Complete accessibility, stable performance confirmation, bundle secret scans and clean-checkout phase acceptance; playable VOD, engagement/discovery and hosted release. No real-film approval exists; current illustration is generic. Current local Router limits are not complete hosted GraphQL protection.
+Actual screen-reader review, stable performance confirmation and clean-checkout phase acceptance; playable VOD, engagement/discovery and hosted release. No real-film approval exists; current illustration is generic. Current local Router limits are not complete hosted GraphQL protection.
 
 ## Next outcome
 
-Continue P05-R01 bundle/HTML scans and accessibility while investigating timing stability with the retained raw samples. Do not repeat runs just to select a green result. Keep the public explicit-request guard and existing data. No Phase 05 publication before complete acceptance; ADR-0018 still governs browser sessions.
+Continue P05-R01: controlled performance confirmation and clean-checkout acceptance. Actual screen-reader review remains required: Windows control stopped before Narrator launch because it could not confirm the browser URL. Do not bypass that stop or substitute an accessibility tree for speech. Retain prior INP/hydration misses and budgets; do not rerun merely to select a green result. Keep the public explicit-request guard and existing data. No Phase 05 publication before acceptance; ADR-0018 governs sessions and ADR-0019 scopes the dev-only test tools.
 
 ## Current risks
 

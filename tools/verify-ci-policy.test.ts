@@ -178,6 +178,26 @@ test("rejects removal or expansion of the owner-approved Federation license set"
   }
 });
 
+test("accessibility tooling cannot broaden the package-specific license exceptions", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace("pkg:npm/%40axe-core/playwright, pkg:npm/axe-core", "pkg:npm/axe-core"),
+    source.replace(
+      "pkg:npm/%40axe-core/playwright, pkg:npm/axe-core",
+      "pkg:npm/%40axe-core/playwright, pkg:npm/axe-core, pkg:npm/unreviewed",
+    ),
+    source.replace("allow-dependencies-licenses:", "unreviewed-exceptions:"),
+    source.replace(
+      "vulnerability-check: true",
+      "allow-dependencies-licenses: pkg:npm/unreviewed\n          vulnerability-check: true",
+    ),
+    source.replace(", MIT, MITNFA", ", MIT, MITNFA, MPL-2.0"),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(validateWorkflowPolicy(changed).some(({ rule }) => rule === "commands"));
+  }
+});
+
 test("requires both bounded weekly dependency ecosystems", () => {
   assert.deepEqual(
     validateDependabotPolicy(`version: 2

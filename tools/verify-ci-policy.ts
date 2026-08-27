@@ -304,8 +304,20 @@ export function validateWorkflowPolicy(
       /^\s*allow-licenses: *0BSD, Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, Elastic-2\.0, ISC, MIT, MITNFA *$/mu,
       "dependency review must enforce the reviewed license set",
     ],
+    [
+      /^\s*allow-dependencies-licenses: *pkg:npm\/%40axe-core\/playwright, pkg:npm\/axe-core *$/mu,
+      "dependency review license exceptions must be limited to the two ADR-0019 test packages",
+    ],
   ] as const) {
     addRequirement(violations, file, source, "commands", pattern, detail);
+  }
+  if ((source.match(/^\s*allow-dependencies-licenses:/gmu) ?? []).length !== 1) {
+    violations.push({
+      detail: "dependency license exceptions must be declared exactly once",
+      file,
+      line: 1,
+      rule: "commands",
+    });
   }
   if (/docker\s+(?:system|container|volume|network|image)\s+prune/u.test(source)) {
     violations.push({

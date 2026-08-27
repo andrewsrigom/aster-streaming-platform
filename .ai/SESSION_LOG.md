@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Public artifacts and automated accessibility
+
+### Completed
+
+Added build/runtime/HTML scans and authenticated SSR isolation checks, dev-only axe under ADR-0019, and supplementary focus/contrast checks. Fixed busy-modal focus escape by focusing enabled Close before paint and announcing pending work. No public data, ownership, request deadline or general license policy changed.
+
+### Evidence
+
+All eighteen functional browser journeys pass in 90.389 s, including fourteen full axe scans with zero violations. Incomplete results retain complementary measured contrast and real keyboard checks; transient busy state uses rapid semantics/focus checks. Actual runtime assets pass, and test engines are absent from runtime resolution. Failed iterations and raw records are in evidence/phase-05/web-boundaries.md and JSON Lines. Source gate passes 58/58 tasks in 33.182 s after resume-ID and lint corrections. Only the disposable browser-created profile was removed through Identity; retained data remains.
+
+### Next action
+
+Continue comparable-host performance and clean-checkout acceptance. Native reader review remains open: Windows control stopped before Narrator launch because it could not confirm the browser URL. No installation or bypass occurred. No performance rerun under the earlier 7.19 load on six CPUs; prior misses remain recorded. No Phase 05 publication yet.
+
 ## 2026-08-27 — Responsive artwork and measured Web budgets
 
 ### Completed

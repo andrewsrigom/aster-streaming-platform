@@ -84,7 +84,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 - Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
 - Raw artifact path: evidence/phase-05/.
-- Acceptance result: public/seed, profile/Redux, Docker and public recovery slices pass 58/58 source tasks. Recovery confirmation passes 17 Web tests and 11 browser journeys in 40.9 s, including four no-JavaScript failure routes and explicit one-query recovery. Artwork, accessibility/performance/bundle checks and clean-checkout phase acceptance remain open.
+- Acceptance result: the current boundary checkpoint passes 58/58 source tasks and all 18 functional browser journeys, including fourteen axe scans and actual bundle/HTML isolation. Actual screen-reader review, timing stability and clean-checkout acceptance remain open.
 - Iteration gate: cheapest changed adapter/cache/component checks and local production build.
 - Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
 - Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
@@ -144,7 +144,19 @@ Iteration: Web types and focused laboratory test. Candidate: all browser journey
 
 The actual three-visit attribution run passes, but prior complete and diagnostic runs missed INP/hydration, including after disabling trace recording. Keep those raw results and leave timing stability open. The laboratory now uses the attribution build, disables browser cache and tracing, and finalizes metrics through real document navigation because headless tab switching did not hide the page. No threshold was increased and no speculative application fix is claimed. Bundle secret scans and accessibility can progress within this same item while timing is investigated.
 
+## Public-artifact and accessibility acceptance
+
+Close P05-R09 with a bounded build-time scan of every emitted public JavaScript/CSS/JSON asset, rejecting source maps, private Aster configuration/owner endpoints and credential signatures. Missing or empty output fails. Reuse the redacting checks on actual SSR HTML and browser-loaded chunks, and verify signed-in HTML never serializes the session cookie or the disposable profile fixture. Negative fixtures must demonstrate detection; this is a regression check for named boundaries, not proof that arbitrary obfuscated secrets are impossible. No production credentials are read or added. The normal Web build runs the scan, including Docker and protected source CI.
+
+Complete automated accessibility coverage for public routes and signed-out, profile-list, create, busy and failure dialog states. Use the reviewed dev-only axe Playwright adapter under ADR-0019. The dependency-review action ignores package URL versions, so use two package-scoped license exceptions with separate exact-version/dev-only/lock checks; Aster remains MIT. Preserve keyboard/focus/reduced-motion checks and record screen-reader review separately from automated accessibility-tree inspection. No unused UI primitives or private data in evidence.
+
+Iteration gate: scanner negative fixtures, Web unit/types, focused browser scans. Candidate gate: rebuilt public artifacts, real Docker HTML/profile isolation and accessibility journeys, affected source checks. Rendering or runtime dependency changes repeat relevant browser/performance evidence; test-only additions do not invalidate previous media/seed/network-isolation experiments. Existing initial/confirmation review stopping rule applies. Rollback removes the checks/dev tool and its narrow CI exceptions without data changes. Timing stability and full clean-checkout acceptance remain open until independently proved.
+
+The current runtime checkpoint passes all eighteen functional journeys. It fixes an actual busy-state focus escape by focusing enabled Close before paint and announcing pending work. Full axe scans cover stable states; rapid semantic/focus checks cover the transient state within the real four-second deadline. Image-covered fallback contrast and modal focus incompletes retain explicit supplementary evidence. See evidence/phase-05/web-boundaries.md for failed iterations, actual scope and remaining screen-reader/performance checks. No product timeout or accessibility rule was relaxed.
+
 ## Completion checklist
+
+Performance confirmation will use two separately invoked three-visit blocks against the unchanged production image and existing budgets, with no retries. Before each block, record source/image/browser identity, host load and CPU/memory samples; run no overlapping build or browser suite. Require one-minute WSL load below half of its six CPUs and at least 70% idle in the two live vmstat samples; otherwise defer measurement, not the functional work. Record post-run host samples and every result. A budget failure stops confirmation and requires attribution-based diagnosis rather than more runs to select success. This defines a small reproducible quiet-host baseline, not performance under arbitrary host contention or field SLOs.
 
 - [ ] Requirements satisfied
 - [ ] Tests pass

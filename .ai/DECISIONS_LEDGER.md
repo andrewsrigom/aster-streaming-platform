@@ -97,6 +97,8 @@ The Phase 01 preflight records the archived MinIO upstream, active VersityGW and
 
 ## Repository governance decisions
 
+- [ADR-0019](../docs/adr/0019-accessibility-test-tooling.md): accept unmodified axe Playwright/core 4.13.0 as dev-only MPL-2.0 tooling. Two package-specific CI exceptions plus separate exact-version/lock/dev checks preserve the general license policy and MIT source. No production inclusion or broader MPL exception is authorized by this decision.
+
 - On 2026-08-27 the owner authorized Elastic-2.0 Apollo dependencies (ADR-0014), then authorized autonomous compatible licensing decisions for the public repository, including a necessary project-license adjustment. Retain actual terms/notices and narrow checks; keep MIT absent a demonstrated compatibility need. Do not pause merely for an unfamiliar allowlist entry. Unresolved rights, paid resources, credentials and irreversible data loss remain separate boundaries.
 - Source code and project-authored documentation use the MIT License (`MIT`) with the project notice `Aster contributors`.
 - Media assets and third-party materials retain independent licensing terms.

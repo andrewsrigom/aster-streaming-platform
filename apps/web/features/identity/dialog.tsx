@@ -43,6 +43,7 @@ export default function ProfileDialog({
   const mounted = useRef(false);
   const dispatch = useShellDispatch();
   const notice = useShellSelector((state) => state.shell.notice);
+  const busy = useShellSelector((state) => state.shell.busy);
   const replace = useCallback(
     (nextNotice: Notice) => {
       if (!mounted.current) {
@@ -94,7 +95,12 @@ export default function ProfileDialog({
     dispatch(shellActions.refreshed("expired"));
   };
   return (
-    <Dialog close={close} restoreFocus={restoreFocus}>
+    <Dialog busy={busy} close={close} restoreFocus={restoreFocus}>
+      {busy ? (
+        <p role="status" className="mt-5 text-sm">
+          Saving with Identity…
+        </p>
+      ) : null}
       {notice && (
         <p role="status" className="mt-5 rounded-md border border-border p-3 text-sm">
           {notices[notice]}
@@ -298,7 +304,6 @@ function ProfileFlow({
               Sign out
             </Button>
           </div>
-          {busy && <p role="status">Saving with Identity…</p>}
         </>
       )}
     </div>

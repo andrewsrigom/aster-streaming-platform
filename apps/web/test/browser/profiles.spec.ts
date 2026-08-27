@@ -1,5 +1,6 @@
 import { test, expect, type APIRequestContext } from "@playwright/test";
 import { randomUUID } from "node:crypto";
+import { publicArtifactFindings } from "../../scripts/public-artifacts";
 
 const endpoint = "http://127.0.0.1:4000/graphql";
 const headers = {
@@ -102,6 +103,38 @@ test("real local session creates/selects a profile with keyboard focus and priva
     );
     expect(added).toHaveLength(1);
     created = added[0]?.id;
+    if (!created || !cookie?.value) {
+      throw new Error("Expected a disposable profile and an HTTP-only session.");
+    }
+    for (const path of [
+      "/",
+      "/browse",
+      "/title/00000000-0000-4000-8000-000005000001",
+      "/attribution",
+      "/profiles",
+    ]) {
+      const publicResponse = await context.request.get(`http://127.0.0.1:3000${path}`, {
+        timeout: 8000,
+      });
+      expect(publicResponse.status()).toBe(200);
+      expect(
+        publicArtifactFindings(await publicResponse.text(), [
+          created,
+          "Browser fixture",
+          cookie.value,
+        ]),
+      ).toEqual([]);
+      expect(publicResponse.headers()["set-cookie"]).toBeUndefined();
+      await publicResponse.dispose();
+    }
+    console.log(
+      JSON.stringify({
+        event: "web_authenticated_ssr_isolation",
+        routes: 5,
+        privateValues: 3,
+        findings: 0,
+      }),
+    );
     const choice = page.getByRole("button", { name: /Browser fixture/u });
     await expect(choice).toBeVisible();
     await expect(choice).toContainText("pt-BR");
