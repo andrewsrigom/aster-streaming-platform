@@ -99,9 +99,11 @@ The agent may autonomously make a decision when it is:
 
 Examples include exact supported tool versions, local package selection, file organization inside an accepted boundary, and focused test strategy.
 
+Standing owner authorization (2026-08-27): resolve tooling and dependency licensing autonomously for this public portfolio, including a necessary compatible project-license adjustment, instead of pausing solely because a reviewed license is absent from the allowlist. Check the actual use and authoritative terms, preserve third-party rights/notices, record material decisions in an ADR and update the narrow policy/tests. Keep MIT for Aster-authored materials unless a real compatibility requirement justifies changing it. This does not authorize incompatible use, invented media rights, paid resources, credentials or irreversible data loss; ask only when a material unresolved condition falls outside the authorization.
+
 The agent must stop for owner input or an ADR when a decision:
 
-- changes a fixed architecture invariant, product scope, data owner, security trust model, or license;
+- changes a fixed architecture invariant, product scope, data owner or security trust model, or has an unresolved license restriction outside the standing authorization;
 - creates paid or hosted resources, mutates a public remote, or requires credentials;
 - makes an irreversible migration or destructive production change;
 - asserts media rights or attribution that current evidence does not prove;

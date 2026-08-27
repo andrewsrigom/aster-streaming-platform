@@ -33,7 +33,9 @@ export class AsterLocalIdentityConfigurationError extends Error {
   }
 }
 
-function validateLocalConfiguration(configuration: LocalIdentityConfiguration): void {
+export function validateLocalIdentityConfiguration(
+  configuration: LocalIdentityConfiguration,
+): void {
   try {
     if (typeof configuration.publicOrigin !== "string" || configuration.publicOrigin.length > 128) {
       throw new AsterLocalIdentityConfigurationError();
@@ -159,7 +161,7 @@ export async function createLocalIdentityAdapter(
   configuration: LocalIdentityConfiguration,
   now: Clock = currentSeconds,
 ) {
-  validateLocalConfiguration(configuration);
+  validateLocalIdentityConfiguration(configuration);
   let keys: Awaited<ReturnType<typeof generateKeyPair>>;
   try {
     keys = await generateKeyPair("ES256", { extractable: false });

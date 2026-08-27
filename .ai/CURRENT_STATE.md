@@ -19,22 +19,23 @@ Status: **IN_PROGRESS**
 
 ## Current work
 
-P02-R01 through P02-R08 are locally verified on `feat/p02-identity-session`: signed identity, durable sessions, owned profile CRUD/selection, retry receipts, audit and transactional outbox. Migration 0002 preserves the account/session owner. Current source passes 111 Identity tests, 29 PostgreSQL tests, all 49 canonical tasks (34 cached, 16.103 s), audit and executing-agent initial/confirmation review. Real profile scenario: 10780 ms; cleanup 1048 ms, zero remaining. [Raw evidence](../evidence/phase-02/profiles-outbox.txt) records concurrency, isolation, rollback, deletion, retention/backpressure and restrictive migration proof. P02-R09 is active for cookie/GraphQL transport. Released health runtime is unchanged; no branch push or new pipeline.
+P02-R09 completes the local API on `feat/p02-identity-session`: durable sessions/profiles, request-scoped entity batching, sanitized outcomes, cookies/CSRF, admission/deadlines and separate finite migrations. Initial candidate: 49 source tasks and 144 Identity tests pass. Eleven real integration scenarios pass in 162778 ms; cleanup 2732 ms, zero remaining. Initial review found late-response header handling and stale status prose; the code fix passes focused HTTP and fresh database acceptance (12545 ms; cleanup 1387 ms). Rebuilt Docker image and six-step product smoke pass; repeated initialization is a no-op and all 189 packaged third-party versions match the frozen source graph. No branch push or pipeline yet. [Evidence](../evidence/phase-02/identity-subgraph.txt).
 
 ## Not implemented
 
-- Runtime wiring of product persistence/migrations, cookie/CSRF protection, GraphQL/Federation, clean product seed and browser UI.
+- Router, hosted authentication and browser UI.
 - Catalog/media/playback, engagement/discovery, advanced Redis/resilience, end-to-end traces/SLOs and hosted release.
-- No playable VOD demo exists. The current Docker command demonstrates health/recovery/metrics.
+- No playable VOD demo exists. Docker now demonstrates local Identity API behavior plus health/recovery/metrics.
 
 ## Next outcome
 
-P02-R09: expose the guarded local Identity subgraph, sanitized outcomes and cookie/CSRF boundary; wire finite startup/migration ownership and prove empty-state product access. Group remote publication with this runnable product candidate.
+Finish P02-R09: final pre-push gate passes all 49 tasks (34 cached, 17.891 s), 144 Identity tests and high/critical audit; executing-agent confirmation is complete. Publish one coherent Phase 02 PR, require exact-head CI, squash and verify post-merge before Phase 03. The containing candidate commit identifies the source after `5a263e8`. ADR-0014 resolves licensing without changing Aster MIT. No hosted/UI/streaming release is claimed.
 
 ## Current risks
 
+- Apollo's authorized Elastic-2.0 dependencies retain their own terms; Aster remains MIT. Audit passes the high/critical gate but reports moderate uuid 9 GHSA-w5hq-g745-h8pq. Installed Apollo calls v1()/v4() without buffers, outside the affected paths; recheck on upgrades. Full candidate verification is pending.
 - Local identity must never become a hosted authentication bypass. Ephemeral local signing keys deliberately invalidate local assertions on process restart; database session checks remain mandatory.
-- Phase 01 runtime still exposes health only. Owner-side profile authorization is locally verified, but no public authentication route, cookie control or hosted JWT/JWKS integration is claimed.
+- Phase 02 local routes are implemented but not released; the released main remains Phase 01. No hosted JWT/JWKS integration is claimed. Correlated structured operation records are not exported distributed traces.
 - Pending outbox facts cap at 128/account and are never silently evicted; further event-producing mutations return backpressure until Phase 08 enables delivery. Names/preferences are deleted immediately; receipts last 24 hours, audit 30 days, with bounded cleanup on mutations.
 - Docker proof covers WSL amd64 and Windows localhost access, not native Windows containers/macOS/arm64/rootless/Podman. Samples are not capacity/SLO guarantees.
 - Exact local reset irreversibly deletes only validated Aster data. Never reset/prune Docker or WSL or touch unrelated projects.

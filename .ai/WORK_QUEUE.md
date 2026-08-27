@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-merge runs pass. P02-R01 through P02-R08 are locally verified: 111 Identity tests, 29 PostgreSQL tests, real session/profile database scenarios, all 49 source tasks and audit. P02-R09 is active for protected cookie/GraphQL transport. No Phase 02 remote publication or release is claimed; publication will group coherent product changes.
+Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-merge runs pass. Phase 02 local acceptance includes 144 Identity tests, all 49 source tasks, eleven real integration scenarios and the Docker Identity product smoke. P02-R09 remains active through final candidate confirmation and protected publication. No Phase 02 remote release is claimed; one PR groups the coherent product changes.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -35,6 +35,8 @@ Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-me
 | 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | DONE |
 | 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | DONE |
 | 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | IN_PROGRESS |
+
+P02-R09 licensing is resolved by accepted [ADR-0014](../docs/adr/0014-apollo-federation-license-policy.md). Wiring, bounded transport, empty/repeated bootstrap, owner isolation and real product tests pass. Finish candidate confirmation, protected CI and post-merge acceptance before activating Phase 03. Evidence: [HTTP checkpoint](../evidence/phase-02/identity-subgraph.txt).
 
 ## Work-item rules
 

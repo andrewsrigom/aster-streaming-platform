@@ -2,6 +2,38 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Guarded Identity product candidate
+
+### Completed
+
+- Implemented and wired the bounded Federation v2 Identity API, request-scoped entity batching, cookies/CSRF, sanitized outcomes, cancellation, restricted runtime readiness and separate finite migrations. Docker now runs the real local login/profile journey; no UI/Router/playback claim.
+- Owner authorized Apollo Elastic-2.0 and standing compatible licensing decisions. ADR-0014 accepts Elastic-2.0/0BSD; Aster stays MIT. Initial review corrected late-response header cleanup and stale status prose in one batch; focused confirmation passes. No independent approval or remote release claimed.
+
+### Evidence
+
+- Initial candidate: all 49 tasks and 144 Identity tests pass. Eleven real scenarios pass in 162778 ms; cleanup 2732 ms/zero remaining. After review, HTTP tests and a fresh subgraph fixture pass (12545 ms, cleanup 1387 ms). Rebuilt Docker six-step smoke passes; repeat migration is a no-op, notices retained, 189 packaged dependency versions match source.
+- Exact commands, fingerprints and limits: `evidence/phase-02/identity-subgraph.txt`. Audit passes high/critical with one moderate uuid advisory outside inspected Apollo v1/v4 call paths. Disposable fixtures removed only their own synthetic data; the Aster demo and retained user data remain.
+
+### Next action
+
+- Final pre-push gate passed (49 tasks, 34 cached, 17.891 s; 144 Identity tests; high/critical audit) and executing-agent confirmation is complete. Publish one coherent PR, require protected exact-head CI, squash and verify post-merge; then check Phase 03 prerequisites. No more licensing permission pause for this accepted graph.
+
+## 2026-08-27 — Local cookie/CSRF checkpoint; license decision
+
+### Completed
+
+- Committed owned profiles/outbox as `5a263e8`. Implemented the next local transport boundary: exact Host/Origin, custom-header CSRF, bounded unambiguous cookies/headers, absolute HttpOnly cookie lifetime and preserved Express async error handling. Still unwired; new files remain uncommitted for the next functional block.
+- Verified Apollo dependency metadata and exact upstream source. Selected Federation internals/composition use Elastic-2.0, outside current license policy. Created proposed ADR-0014; no packages installed, policy changed, remote write or pipeline.
+
+### Evidence
+
+- Focused 70/70 tests (19 transport + 51 crypto); full Identity 130/130, all 49 tasks (35 cached, 14.98 s), audit and diff checks pass. Test-only shorthand callbacks corrected after focused ESLint; no gate weakened.
+- Commands, fingerprints, limits and license sources: `evidence/phase-02/identity-subgraph.txt`. No Docker resources changed.
+
+### Next action
+
+Owner decision on proposed ADR-0014 is required by AGENTS/skill agent before installing the new license graph or altering policy. P02-R09 stays unfinished, not WAITING_EXTERNAL or phase verified. After authorization, continue schema/resolvers and real product startup; do not repeat unchanged tests merely while waiting.
+
 ## 2026-08-27 — Owned profiles and transactional facts
 
 ### Completed

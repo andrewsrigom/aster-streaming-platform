@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phase 00 and Phase 01 are released. The Docker-only runtime provides health, recovery, bounded shutdown and optional real telemetry without hosted credentials. Phase 02 locally verifies signed identity, durable sessions and owned profiles with transactional audit/outbox. These product modules are not yet wired into runtime startup; cookies, GraphQL and playable journeys remain unimplemented. Exact progress is maintained in `.ai/CURRENT_STATE.md`.
+Phase 00 and Phase 01 are released. Phase 02 now wires guarded local Federation v2 sessions/profiles and transactional audit/outbox into the Docker runtime, with separate finite migrations. Real HTTP/PostgreSQL and Docker product smoke checks pass; complete candidate verification/release remain pending. Router, browser UI and playable journeys remain planned. ADR-0014 resolves Apollo licensing; the owner authorizes autonomous compatible licensing decisions under AGENTS.md, so do not repeat a resolved permission pause. Exact progress is maintained in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 

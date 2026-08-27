@@ -89,6 +89,50 @@ test("loads and freezes a valid typed runtime configuration", () => {
   assert.equal(Object.isFrozen(configuration), true);
 });
 
+test("local product mode requires explicit opt-in, local environment and a canonical loopback origin", () => {
+  const enabled = {
+    ...validEnvironment(),
+    ASTER_LOCAL_DEMO_ENABLED: "true",
+    ASTER_PUBLIC_ORIGIN: "http://127.0.0.1:3100",
+  };
+  const configuration = loadEnvironment(enabled);
+  assert.deepEqual(configuration.localDemo, { publicOrigin: "http://127.0.0.1:3100" });
+  assert.equal(Object.isFrozen(configuration.localDemo), true);
+  assert.equal(loadEnvironment(validEnvironment()).localDemo, undefined);
+  assert.equal(
+    loadEnvironment({ ...validEnvironment(), ASTER_LOCAL_DEMO_ENABLED: "false" }).localDemo,
+    undefined,
+  );
+  assert.equal(createReferenceRuntimeConfigDiagnostic(configuration).variables.length, 9);
+  for (const environment of ["integration", "staging", "production"]) {
+    assert.throws(
+      () => loadEnvironment({ ...enabled, ASTER_ENV: environment }),
+      ReferenceRuntimeConfigError,
+    );
+  }
+  for (const origin of [
+    "http://localhost:3100",
+    "http://127.0.0.1:3100/",
+    "https://127.0.0.1:3100",
+    "http://127.0.0.1:80",
+    "http://127.0.0.1:65536",
+    "http://127.0.0.1:03100",
+    "http://127.0.0.1:3100@attacker.invalid",
+  ]) {
+    assert.throws(
+      () => loadEnvironment({ ...enabled, ASTER_PUBLIC_ORIGIN: origin }),
+      ReferenceRuntimeConfigError,
+    );
+  }
+  for (const override of [
+    { ASTER_LOCAL_DEMO_ENABLED: "false" },
+    { ASTER_LOCAL_DEMO_ENABLED: "1" },
+    { ASTER_PUBLIC_ORIGIN: undefined },
+  ]) {
+    assert.throws(() => loadEnvironment({ ...enabled, ...override }), ReferenceRuntimeConfigError);
+  }
+});
+
 test("reports non-secret values and only configured status for secrets", () => {
   const diagnostic = createReferenceRuntimeConfigDiagnostic(loadEnvironment(validEnvironment()));
   const serialized = JSON.stringify(diagnostic);

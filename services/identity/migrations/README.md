@@ -1,8 +1,10 @@
 # Identity migrations and profile policies
 
-Migration 0001 adds the Identity-owned `identity.accounts`, `identity.sessions` and version ledger, plus a non-login runtime privilege role. It does not alter the released health-only startup. Product transport and automatic local startup migration are still planned.
+Migration 0001 adds the Identity-owned `identity.accounts`, `identity.sessions` and version ledger, plus a non-login runtime privilege role. Phase 02's local Compose initializer now applies pending owner migrations before starting product traffic; the API process never migrates.
 
-Migration 0002 adds owned profiles, per-session selection, retry receipts, audit and transactional outbox. Both migrations are locally verified against PostgreSQL 18.6; neither is automatically applied by released startup.
+Migration 0002 adds owned profiles, per-session selection, retry receipts, audit and transactional outbox. Both migrations and empty/repeated local initialization are locally verified against PostgreSQL 18.6; Phase 02 remote release remains pending.
+
+The finite `identity-init` command uses one admin connection, nonblocking advisory lock `(42781, 2)`, a ten-second overall deadline and bounded SQL waits. It accepts only absent/[1]/[1,2] ledger state, rejects unknown versions and never resets retained data or reapplies successful SQL. It creates `aster_identity_local` with fixed synthetic local credentials and restricted role membership; existing passwords are not overwritten. Runtime readiness rejects admin credentials and missing product columns. This local-only initializer is not a hosted migration service.
 
 The account key is unique by verified issuer/subject. Session IDs and signer generation IDs are UUIDs; credentials are stored only as SHA-256 digests. Eight numbered slots and a unique `(account_id, slot)` constraint enforce the per-account storage bound. Application admission also locks the account before cleanup/count/insert. Expired or obsolete-signer sessions are reclaimed on sign-in. Deleting a session revokes it; no durable tombstone or implicit renewal exists.
 
