@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the remaining Phase 01 path. P01-R06 through P01-R09 are released, including the real combined dependency/telemetry/shutdown matrix. P01-R10 implements a local non-root Identity image checkpoint; resource-aware application profiles and clean Docker-only phase acceptance remain pending.
+This document records the Phase 01 implementation sequence and current boundaries. P01-R06 through P01-R09 are released, including the real combined dependency/telemetry/shutdown matrix. P01-R10 implements the non-root Docker runtime, resource-aware integration/observability/full profiles and the exact clean Docker-only evaluator path. Protected final acceptance/release remain pending; [Phase 01 evidence](../../evidence/phase-01/README.md) distinguishes local acceptance from release.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -25,16 +25,16 @@ This order prevents three expensive forms of rework:
 ## Ownership and boundaries
 
 - Shared runtime infrastructure owns telemetry, process lifecycle, clock, identifier, and dependency-client behavior.
-- The Identity and Profiles context owns no product behavior in Phase 01. Its planned service skeleton is only the first composition root for the reusable runtime.
+- The Identity and Profiles context owns no product behavior in Phase 01. Its implemented service skeleton is the first composition root for the reusable runtime.
 - PostgreSQL remains the durable authority. Phase 01 creates no product table or migration.
 - Redis remains non-authoritative. Phase 01 creates no cache key family or durable Redis assumption.
 - The broker carries no product event until an owning context creates a real outbox and contract.
 - Object storage contains only bounded synthetic smoke objects until rights-aware media work begins.
 - Domain and application layers import no Express, PostgreSQL, Redis, Kafka, S3, or OpenTelemetry SDK type.
 
-## Planned repository paths
+## Implemented repository paths
 
-| Path | Owning item | Planned responsibility |
+| Path | Owning item | Responsibility |
 |---|---|---|
 | `packages/telemetry/` | P01-R06 | Released repository-owned metrics API with OpenTelemetry infrastructure hidden behind it |
 | `packages/runtime/src/clock.ts` | P01-R07 | Deterministic test clock contract and system-clock implementation |
@@ -44,11 +44,13 @@ This order prevents three expensive forms of rework:
 | `packages/broker-kafka/` | P01-R07 | Kafka-compatible producer and consumer lifecycle with bounded concurrency and no product event definitions |
 | `packages/object-storage-s3/` | P01-R07 | Streaming S3-compatible operations, probe, cancellation, telemetry, and close behavior without publication policy |
 | `services/identity/` | P01-R08 | Reference composition root, health routes, and no account, profile, session, resolver, or schema behavior |
-| `infra/compose/compose.yml` | P01-R09 | Reviewed optional dependency profiles, immutable image pins, health checks, resource bounds, and ownership labels |
-| `infra/compose/collector.integration.yml`, `infra/compose/prometheus.integration.yml` | P01-R09 | Exact read-only Collector/Prometheus test configuration; final evaluator profiles remain P01-R10 |
+| `infra/compose/compose.yml` | P01-R01/P01-R10 | Core/runtime/integration profiles, immutable images, health checks, resource bounds and ownership labels |
+| `infra/compose/collector.integration.yml`, `infra/compose/prometheus.integration.yml` | P01-R09 | Read-only Collector/Prometheus test configuration for isolated integration fixtures |
+| `infra/compose/observability.yml`, `infra/compose/prometheus.local.yml` | P01-R10 | Explicit optional metrics overlay and bounded local scrape configuration |
+| `infra/docker/` | P01-R10 | Production-only Identity image and pinned telemetry images with baked public configuration |
 | `evidence/phase-01/` | P01-R06–R10 | Raw compatibility, failure, integration, clean-start, and resource evidence |
 
-These are planned paths, not permission to scaffold every directory at once. Each work item creates only the paths required for its smallest complete slice.
+These paths exist. The following P01-R06–R09 sections preserve their implementation-stage scope and evidence: a capability deferred from an adapter-only item can be delivered by a later item below. Future work still creates only the paths needed by its smallest complete slice.
 
 ## P01-R06 — Telemetry contract before adapters
 
@@ -117,7 +119,7 @@ The PostgreSQL client and typed SQL decision are intentionally separate. Phase 0
 
 ### Clock and identifier checkpoint
 
-The local P01-R07 candidate now exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package, complete uncached, exact clean-checkout, initial-remediation, and confirmation-review gates pass; protected release gates remain pending.
+P01-R07 exposes a system clock, fixed deterministic clock, UUID generator, and finite deterministic unique-identifier sequence from `@aster/runtime`. Each returned object is frozen; fixed instants return fresh `Date` values; invalid epoch and identifier configuration produces bounded cause-free repository errors; sequence input is copied without invoking accessors; exhaustion is explicit. These primitives add no dependency, global clock mutation, product-specific identity rule, network behavior, or durable state. Focused package, complete uncached, exact clean-checkout, review and protected release gates pass; the phase evidence index records the release.
 
 ### PostgreSQL connectivity checkpoint
 
@@ -218,7 +220,7 @@ P01-R09 selects and pins exact multi-platform images by digest only after licens
 
 The final selection requires health behavior, startup and shutdown duration, idle CPU and memory, image and volume size, amd64 and arm64 manifests, license, current maintenance, local reset ownership, and protocol smoke evidence.
 
-The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured only on WSL amd64. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish these tests from the pending evaluator profile and the released integration matrix. No product event, bucket/media publication or Identity production dependency was added.
+The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured on WSL amd64 and hosted Ubuntu CI. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish isolated adapter tests from P01-R10's implemented Docker evaluator profiles. No product event, media publication or Identity production dependency was added.
 
 The [telemetry laboratory](../operations/LOCAL_DEVELOPMENT.md#real-telemetry-integration) proves real Identity metrics through core Collector/Prometheus, bounded scrape series, optional-backend failure, cumulative recovery and exporter-down shutdown. Core Collector 0.159.0 and Prometheus 3.14.0 are Apache-2.0 upstream images pinned by amd64/arm64 index digest. Fixed read-only private mounts and exact device/inode validation handle Docker Desktop's translated bind paths without changing host mount policy. No production dependency or telemetry contract changed. The complete matrix, cold acceptance and protected/post-merge CI pass.
 
@@ -240,25 +242,25 @@ Fixtures use synthetic identifiers and bounded payloads. The tests create no pro
 
 ## P01-R10 — Resource-aware demonstration and closeout
 
-### Planned profiles
+### Implemented profiles
 
 | Profile | Contents | Use |
 |---|---|---|
 | core | PostgreSQL, Redis, initializer, status | cheapest platform and database/cache work |
 | runtime | core plus Identity reference service | normal Phase 01 Docker-only demonstration |
-| integration | broker and S3-compatible storage added to core | adapter and event/storage smoke tests |
-| observability | Collector and Prometheus for existing metrics | add trace/log backends and dashboards only when their owning signal or diagnostic question exists |
-| full | runtime, integration, and observability together | Phase 01 acceptance and recorded demonstration |
+| integration | core, Identity, broker and S3-compatible storage | local dependency laboratory without telemetry backends |
+| observability + overlay | core, Identity, Collector and Prometheus | existing runtime metrics without broker/storage |
+| full + overlay | core, Identity, broker/storage and Collector/Prometheus | Phase 01 acceptance and recorded demonstration |
 
-The default development path does not require the full profile. Every optional service receives exact labels, finite resources, health checks, a cleanup classification, and a measured reason to persist or remain disposable. The destructive reset must understand every reviewed partial profile before any new named volume is accepted.
+The default path does not require the full profile. The explicit `observability.yml` overlay supplies Identity's optional OTLP endpoint only for observability/full commands. Collector receiver health is proved by a real OTLP request from the existing status helper; other long-running dependencies have their own health checks. Every optional service has exact labels, finite resources and a cleanup classification. Reset validates the nine-service/two-network/four-volume model, exact base or ordered base-plus-overlay provenance, mounts and foreign attachments; real full and partial resets pass. Trace/log backends and dashboards remain outside this metrics-only checkpoint.
 
 ### Evaluator path
 
-The [Identity image checkpoint](../operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) is implemented: source-only multi-stage build, immutable Node base, production deployment, non-root execution and a passing controlled HTTP diagnostic. It does not yet provide the database-connected runtime profile described below. Exact size, lockfile agreement and isolation evidence are in [Docker demo evidence](../../evidence/phase-01/docker-demo.txt).
+The [Identity image checkpoint](../operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) and [database-connected runtime](../operations/LOCAL_DEVELOPMENT.md#docker-runtime-checkpoint) are implemented: source-only multi-stage build, immutable Node base, production deployment, non-root execution, real PostgreSQL/Redis readiness and loopback health URLs. Exact size, lockfile agreement and isolation evidence are in [Docker demo evidence](../../evidence/phase-01/docker-demo.txt).
 
-The Phase 01 closeout will publish one copyable Docker-only command that builds and starts the runtime profile from an empty project-scoped state, waits for health, and exposes a loopback Identity readiness URL. A second documented command enables the full laboratory. Neither path requires a host Node.js installation, hosted credentials, personal data, or manual container repair.
+The README supplies one copyable Docker-only runtime command and a second full-laboratory command using the explicit observability overlay. Neither path requires host Node.js/pnpm, hosted credentials, personal data or manual container repair. Identity stays live/ready when Collector fails; the status helper reports telemetry failure, and shutdown remains bounded with truthful degraded delivery.
 
-The README command remains planned until a clean checkout proves it. The evidence records exact commit, host, Docker and Compose versions, command, start duration, image and volume footprint, idle resources, health output, stop behavior, reset behavior, and limitations.
+Exact clean source `38801ce` proves the documented path with no host Node/pnpm in PATH and no local dependencies or Aster volumes: full build/start 36.89 s with warm base/install caches, occupied-port refusal/recovery 4.56/5.60 s, volume-preserving stop and guarded partial/idempotent reset. The cold source gate passes 49/49 uncached tasks and audit. The first protected PR 18 run `33046068184` also passes the Docker-built profile, real metrics and eight-scenario matrix. Final review/closeout acceptance and release remain pending. Evidence records environment, commands, image/volume footprints, resource snapshots and limitations; no playable product or capacity/SLO claim is made.
 
 ## Cross-item failure and rollback rules
 

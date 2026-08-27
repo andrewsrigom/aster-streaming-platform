@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Protected Docker candidate and runway correction
+
+### Completed
+
+- Published PR 18 at `d148bf7`; protected run `33046068184` passed all six jobs. Automated review `3869300306` found stale runway claims; corrected current paths, profiles and evaluator evidence in one documentation-only batch.
+- Corrected provisional executing-agent comment `5435289209`: confirmation is incomplete until the new review finding is resolved. No independent approval is claimed.
+
+### Evidence
+
+- Hosted Docker full profile and six real metrics pass. The real eight-scenario matrix passed in 152950 ms, cleanup 1042 ms with zero fixture resources; audit/license checks pass. Raw results: `evidence/phase-01/docker-demo.txt`.
+- Documentation/memory/secret checks pass. No executable/public-command bytes changed after clean source `38801ce`; no local heavy experiment repeated for prose.
+
+### Next action
+
+Publish this correction, reply/resolve the finding and request one confirmation review. Require final exact-head CI before squash and post-merge verification; only then activate P02-R01.
+
 ## 2026-08-27 — Optional Docker profiles and real configured telemetry
 
 ### Completed

@@ -19,16 +19,16 @@ Status: **IN_PROGRESS**
 
 ## Implemented local P01-R10 checkpoint
 
-- Branch `feat/p01-r10-docker-demo`; packaging/runtime commits `4837207` and `166cc3c`. Optional-profile source `38801ce` passes clean acceptance; publication/hosted confirmation are next.
+- Branch `feat/p01-r10-docker-demo`; packaging/runtime commits `4837207` and `166cc3c`. Optional source `38801ce` passes clean acceptance; [PR 18](https://github.com/andrewsrigom/aster-streaming-platform/pull/18) publishes head `d148bf7`. Protected run `33046068184` passed; no duplicate run was requested.
 - Docker-only Identity is production-only, UID/GID 1000, read-only, ALL capabilities dropped, 1 CPU/384 MiB/64 PIDs, loopback 3100 and 15-second Docker grace. PostgreSQL/Redis stay private. Optional classified database password preserves legacy URI callers. Helper tmpfs prevents anonymous database volumes.
 - Core=4 services; runtime=5; integration=7; observability=7; full=9. The last two require explicit base-plus-`observability.yml` files. Broker/S3 remain private; Collector/Prometheus configs are baked into pinned images. Prometheus publishes only loopback 9090. Reset validates exactly nine services, two networks, four named volumes, provenance and foreign attachments before deletion.
 - Optional `ASTER_OTLP_METRICS_ENDPOINT` is validated/redacted; omitted means no export. Real HTTP, dependency, CPU, memory, event-loop and export metrics reach Prometheus. Collector loss leaves Identity live/ready, makes the telemetry status helper unhealthy and recovers. Collector-down SIGTERM exits naturally with 143 in 4223 ms, truthfully degraded.
 - Full-profile resource/image/volume samples and successful nine-container/two-network/four-volume reset are in [Docker evidence](../evidence/phase-01/docker-demo.txt). Four unrelated stopped containers and 22 volume/network entries match before/after; no Aster resource remains.
 - Focused checks pass: configuration 20/20, Identity 34/34, platform/reset 29/29, CI policy/classification 22/22. Corrected test lint/tuple typing issues; final affected gate passes 49/49 tasks (33 cached, 14.863 s).
-- CI source now adds a Docker-built full-profile check inside the existing conditional platform job, with in-container UID/health/metrics assertions and all-profile cleanup. First hosted execution is pending.
+- Protected run `33046068184` passes all six jobs, including the Docker-built full profile, in-container UID/health/metrics, real eight-scenario matrix (152950 ms, zero residual fixture resources), license/dependency review and audit. Automated review `3869300306` then found stale architecture-runway status; the documentation-only batch corrects it. Final confirmation/exact-head CI remain pending.
 
 - Exact clean source `38801ce`: Docker full build/start 36.89 s with PATH excluding Node/pnpm, no host dependencies or Aster volumes. In-container CI UID/health/six-metric check passes. Occupied-port failure 4.56 s, recovery 5.60 s, volume-preserving stop, partial reset and idempotent repeat pass. Cold source gate 49/49 uncached (32.418 s), frozen install and audit pass; clean 228M temporary clone removed after exact verification. Prior cached layers are disclosed.
-- Initial executing-agent review found no blocking requirement/security/data/availability/public-contract issue; no independent approval is claimed. Phase 02 identity/session choices belong to its first P02-R01 decision after Phase 01 release.
+- Initial executing-agent review missed the stale runway text found by automated review. Comment `5435289209` was corrected to mark confirmation incomplete. Do not treat it as approval; collect one confirmation round after publishing the correction. P02-R01 owns identity/session choices after Phase 01 release.
 
 ## Not implemented
 
@@ -38,7 +38,7 @@ Status: **IN_PROGRESS**
 
 ## Next outcome
 
-Finish P01-R10: publish the locally accepted candidate, require protected CI and one confirmation review, record hosted evidence, squash and verify post-merge. Check Phase 02 prerequisites before starting its first READY item. Follow [change plan](CHANGE_PLAN.md); do not repeat heavy experiments for prose-only changes.
+Finish P01-R10: publish the batched runway/hosted-evidence correction, resolve review thread `PRRT_kwDOUEkeis6ct7Vd` with evidence and request one confirmation. Require final exact-head protected CI, squash and verify post-merge. Check Phase 02 prerequisites before its first READY item. Do not repeat local heavy experiments for prose-only changes.
 
 ## Current risks
 
