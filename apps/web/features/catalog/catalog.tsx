@@ -10,6 +10,7 @@ import {
 import { buttonVariants } from "../../components/ui/button";
 import { usePublicQuery } from "./use-public-query";
 import { QueryFeedback } from "./query-feedback";
+import { CollectionArtwork } from "./collection-artwork";
 
 function pageQuery(variables: BrowseVariables): string {
   return `?locale=${variables.locale}${variables.after ? `&after=${encodeURIComponent(variables.after)}` : ""}`;
@@ -109,13 +110,8 @@ export function Catalog({ variables }: { variables: BrowseVariables }) {
                 href={`/title/${node.id}?locale=${variables.locale}`}
                 className="group block overflow-hidden rounded-xl border border-border bg-card focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
               >
-                <div
-                  className="flex aspect-[16/10] items-end border-b border-border p-6"
-                  aria-hidden="true"
-                >
-                  <span className="text-4xl font-semibold tracking-tight text-foreground/70">
-                    {node.localized.title}
-                  </span>
+                <div className="border-b border-border">
+                  <CollectionArtwork />
                 </div>
                 <div className="space-y-3 p-6">
                   <p className="eyebrow">
@@ -198,6 +194,22 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
       <p className="text-sm text-muted-foreground">
         {title.releaseYear} · {title.runtimeSeconds} seconds · {title.genres.join(" / ")}
       </p>
+      <figure className="space-y-3">
+        <div className="overflow-hidden rounded-xl">
+          <CollectionArtwork detail />
+        </div>
+        <figcaption className="text-xs leading-relaxed text-muted-foreground">
+          Generic Aster illustration, not film artwork. Created by Aster contributors under{" "}
+          <a
+            href="https://github.com/andrewsrigom/aster-streaming-platform/blob/main/LICENSE"
+            className="underline underline-offset-4"
+            rel="noreferrer"
+          >
+            MIT
+          </a>
+          .
+        </figcaption>
+      </figure>
       <p lang={title.localized.locale} className="text-lg leading-relaxed text-muted-foreground">
         {title.localized.synopsis}
       </p>

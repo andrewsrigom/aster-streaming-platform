@@ -1,6 +1,6 @@
 # Public Web checkpoint
 
-Status: public browsing, local profiles, Docker packaging and public recovery states implemented; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. Artwork, complete accessibility/performance acceptance and the player remain unfinished.
+Status: public browsing, local profiles, Docker packaging, public recovery and responsive generic artwork implemented; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. Complete accessibility/performance acceptance and the player remain unfinished.
 
 ## Docker-only demo
 
@@ -45,6 +45,14 @@ Home, browse, title and attribution render a sanitized unavailable state when a 
 `Refresh collection` makes one read request. A React transition retains the previous snapshot with an explicit stale notice only while the four-second-bounded refresh is pending. A failed result removes those details; cached metadata never authorizes playback or proves current rights. `Try again` retries explicitly, and the normal `Reload page` link preserves the query/locale without JavaScript. No polling or background refresh is enabled.
 
 Apollo streaming 0.14.5 otherwise retries failed preloads in the browser. The public browser link requires the active consumer's transient explicit-request callback before opening HTTP; initial success or failure therefore makes no browser GraphQL request. This is request scheduling, not an authorization boundary. Every expected transport/parser/projection error is sanitized before hydration, and partial GraphQL errors are not rendered as successful empty data. The real paused-Router and browser tests cover this integration behavior on the pinned version.
+
+## Artwork and performance baseline
+
+The Web builds a source-owned generic PNG illustration at `/artwork/aster-v1.png`. It is not approved film artwork or a replacement for Catalog rights records. The local image optimizer accepts only that exact path, five widths and quality 75, with finite body/cache limits and no remote sources. Cards have decorative alt text and lazy loading; the detail figure describes/credits the illustration and loads eagerly. A fixed-ratio fallback preserves navigation without image delivery or JavaScript. Actual title-poster acquisition/generation and delivery remain Phase 06.
+
+`test/browser/performance.spec.ts` defines the initial budgets and exercises the real Docker browse/refresh/profile flow in three fresh mobile contexts with reduced CPU/network capacity. It uses dev-only web-vitals, disables trace recording for the measurement, and captures actual encoded bytes plus a local `aster.web.hydrated` Performance mark. The mark times the public-provider hydration effect from navigation start; it sends nothing externally.
+
+Budgets: initial JavaScript 250 KiB, cumulative dialog JavaScript 350 KiB, each image 100 KiB / initial images 200 KiB, LCP 2500 ms, INP 200 ms, CLS 0.1, provider hydration 3500 ms, zero automatic initial browser GraphQL/prefetch. These are initial laboratory targets, not a hosted SLO. Latest focused samples meet them, but earlier runs missed INP/hydration and stability remains open. See [raw evidence and protocol](../../evidence/phase-05/artwork-performance.md); do not select passing samples and discard failures.
 
 ## Local profiles
 

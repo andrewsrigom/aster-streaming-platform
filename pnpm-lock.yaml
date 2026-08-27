@@ -120,6 +120,9 @@ importers:
       typescript:
         specifier: 6.0.3
         version: 6.0.3
+      web-vitals:
+        specifier: 6.2.1
+        version: 6.2.1
 
   packages/broker-kafka:
     dependencies:
@@ -3052,6 +3055,9 @@ packages:
     resolution: {integrity: sha512-3hu+tD8YzSLGuFYtPRb48vdhKMi0KQV5sn+uWr8+7dMEq/2G/dtLrdDinkLjqq5TIbIBjYJ4Ax/n3YiaW7QM8A==}
     engines: {node: 20 || >=22}
 
+  web-vitals@6.2.1:
+    resolution: {integrity: sha512-rLcLXA2sx6+9dE88NHFubwTtGxpK4yYBLj6qHPdFoCaLr0cXGb4efOqtKLlm4loGA4OEKHIQKMKzZkKyOh5ctw==}
+
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
     engines: {node: '>=18'}
@@ -5738,6 +5744,8 @@ snapshots:
   vary@1.1.2: {}
 
   walk-up-path@4.0.0: {}
+
+  web-vitals@6.2.1: {}
 
   whatwg-mimetype@4.0.0: {}
 

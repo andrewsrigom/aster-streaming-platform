@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Responsive artwork and measured Web budgets
+
+### Completed
+
+Added a source-owned static PNG, finite responsive image optimization, correct card/detail semantics, credits and fixed-ratio failure behavior. Added a local provider hydration mark and a dev-only web-vitals laboratory with explicit byte/timing/query budgets. Catalog seed and rights records are unchanged.
+
+### Evidence
+
+58/58 source tasks, 18 Web tests and all 14 functional browser journeys pass. Full-suite timing confirmation failed INP 256 ms; diagnostic runs also missed hydration/INP. Latest attribution-based three visits pass, but timing stability remains open. Raw measurements, image hashes/sizes, commands and failed experiments are retained in evidence/phase-05/artwork-performance.md and JSON. Docker Web remains healthy; Router was restored after its existing outage test. No retained data was removed.
+
+### Next action
+
+Continue bundle/HTML secret scans and accessibility; investigate timing using retained attribution and comparable host conditions, not repeated runs until green. Complete clean-checkout acceptance and protected Phase 05 publication remain required.
+
 ## 2026-08-27 — Public failure and explicit recovery
 
 ### Completed

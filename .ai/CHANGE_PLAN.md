@@ -126,6 +126,24 @@ Iteration gate: focused Web transport/cache tests and typecheck. Candidate gate:
 
 The pinned Apollo integration's automatic replay required an explicit-consumer callback guard in the browser link; a preload-context marker alone was insufficient. Confirmation passes 17 Web tests, 11 browser journeys and 58/58 source tasks. See evidence/phase-05/public-recovery.txt for failed iterations, actual commands and limits. Rollback returns to befb432 without data changes. Artwork/performance/clean-checkout acceptance and Phase 05 publication remain open.
 
+## Responsive artwork slice
+
+Implement P05-R07 and the image part of P05-R08 in Web only. Render a deterministic, source-owned abstract PNG at build time with the installed Next ImageResponse, then serve finite responsive variants through next/image. It is generic Aster illustration, not acquired film artwork or Catalog metadata. Keep the existing seed and rights records unchanged; actual title-poster generation and object-storage delivery remain Phase 06.
+
+Only the exact versioned local artwork path is optimizable: no remote hosts, arbitrary local routes, source queries, redirects, SVG or local-IP fetches. Limit widths, quality, upstream bytes and disk cache within the existing Docker resource bounds. Cards are decorative beside their title; the detail figure describes and credits the illustration. Missing images retain a fixed-ratio readable fallback, including without JavaScript. Loading policy is explicit and must not add GraphQL traffic.
+
+Iteration gate: focused policy tests, Web types and production build. Candidate gate: real optimized PNG/WebP responses, width/quality/path rejection, responsive selection at mobile/desktop sizes, image failure with and without JavaScript, accessible names and all existing browser journeys. Define a 100 KiB per-image response budget before measuring. Asset, layout or optimizer changes repeat this evidence; unchanged seed/media/network-isolation proof remains supporting evidence. One initial review and one confirmation; rollback removes the Web asset/component/config without touching data.
+
+## Web laboratory baseline
+
+Implement the remaining P05-R08 measurement contract with exact dev-only web-vitals 6.2.1 (Apache-2.0, no runtime dependencies or install/postinstall hook). The unmodified package stays outside application imports and production artifacts. Use three cold-browser visits to the real seeded Docker browse page, warm server/image cache, 390x844 viewport at DPR 2, Chrome CDP 4x CPU slowdown and 1.6 Mbit/s down / 750 kbit/s up / 150 ms latency. No concurrent builds or browser suites.
+
+Before measurement, set per-visit budgets: 250 KiB initial JavaScript encoded bytes, 350 KiB cumulative JavaScript after opening Profiles, 100 KiB per image / 200 KiB initial image bytes, LCP 2500 ms, INP 200 ms, CLS 0.1, public-provider hydration mark within 3500 ms of navigation start, and zero initial browser GraphQL/prefetch requests. The mark is one local Performance API entry after provider hydration, not a duration for every component. Exercise explicit refresh, profile dialog opening and Escape; measure with Google's library rather than approximate INP. Capture raw samples, environment, source/image identity and limits. This is a small instrumented laboratory baseline, not field p75 or a hosted SLO.
+
+Iteration: Web types and focused laboratory test. Candidate: all browser journeys after the same production build, affected source gate, reviewed raw measurements. Asset, application/dependency, layout or performance-protocol changes invalidate affected measurements. Accessibility/manual screen-reader, bundle secret scans and full phase clean-checkout acceptance remain separate obligations. Rollback removes the measurement mark and dev tool without product data changes.
+
+The actual three-visit attribution run passes, but prior complete and diagnostic runs missed INP/hydration, including after disabling trace recording. Keep those raw results and leave timing stability open. The laboratory now uses the attribution build, disables browser cache and tracing, and finalizes metrics through real document navigation because headless tab switching did not hide the page. No threshold was increased and no speculative application fix is claimed. Bundle secret scans and accessibility can progress within this same item while timing is investigated.
+
 ## Completion checklist
 
 - [ ] Requirements satisfied

@@ -1,6 +1,6 @@
 "use client";
 
-import type { PropsWithChildren } from "react";
+import { useEffect, type PropsWithChildren } from "react";
 import { ApolloLink, HttpLink, Observable } from "@apollo/client";
 import {
   ApolloClient,
@@ -43,5 +43,8 @@ function makeClient() {
 }
 
 export function GraphqlProvider({ children }: PropsWithChildren) {
+  useEffect(() => {
+    performance.mark("aster.web.hydrated");
+  }, []);
   return <ApolloNextAppProvider makeClient={makeClient}>{children}</ApolloNextAppProvider>;
 }
