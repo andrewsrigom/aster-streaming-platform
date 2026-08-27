@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. The active P01-R08 candidate adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. No product schema, broker/object-store runtime, telemetry backend, or playable journey exists yet.
+The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds the explicit real integration laboratory below. No product schema, broker/object-store runtime, telemetry backend, or playable journey exists yet.
 
 ### Identity reference process
 
@@ -30,6 +30,24 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 - a browser supported by the current test matrix.
 
 ## Toolchain validation
+
+### Real PostgreSQL/Redis integration
+
+After frozen installation, on Linux/WSL with local Linux Docker containers:
+
+```bash
+pnpm integration:core
+```
+
+The command builds Identity and runs four bounded subprocess scenarios: protocol success/disposal, adapter failure/recovery, real Identity health transitions, and termination during a held diagnostic HTTP request. To repeat only one scenario, append `protocol`, `adapters`, `identity`, or `http-drain`. This explicit laboratory does not run in ordinary unit tests, hooks, or every CI build.
+
+`infra/compose/integration.yml` inherits the reviewed core images and resource limits. The runner generates an `aster-integration-<random>` project, pins the local Docker socket, allocates temporary loopback ports that survive restart, and uses synthetic credentials. It refuses remote endpoints, Docker overrides and pre-existing names. The normal `aster` project remains unexposed and unchanged.
+
+Stopping/pausing a dependency and final deletion require inspected exact project, fixture, service, environment and scope labels. Cleanup validates all containers, mounts, the network and volume before removing exact IDs. It runs after success, worker failure and handled interruption, then checks for residual resources. Only the disposable synthetic PostgreSQL volume is deleted irreversibly; images are retained. No global prune or default-project reset is used. A parent `SIGKILL` or unavailable daemon can prevent cleanup: retain the printed project ID, inspect its exact ownership, and do not apply the default Aster reset or a broad prefix deletion.
+
+The core slice is implemented with [real integration evidence](../../evidence/phase-01/real-integration.txt); the complete P01-R09 broker/S3/Collector/Prometheus matrix and P01-R10 Docker-only application profile remain pending. The held handler is test-only, not a product GraphQL endpoint. Native Windows signal semantics remain unsupported by this command; use WSL.
+
+### Pinned repository bootstrap
 
 After activating the pinned Node.js runtime, provision the repository package manager through Corepack, install from the lockfile, and run the current foundation gate:
 

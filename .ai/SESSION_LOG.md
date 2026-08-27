@@ -2,6 +2,42 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Real core integration and idle-pool disconnect correction
+
+### Completed
+
+- Added explicit isolated PostgreSQL/Redis/Identity integration with exact-owned Docker cleanup, bounded subprocesses, temporary stable loopback ports and no default Compose change.
+- Real PostgreSQL stop exposed an unhandled idle-pool error; added its adapter-owned handler and real Pool regression. Exercised timeouts, cancellation, Redis capacity, readiness recovery, natural signals and held HTTP drain.
+- Kept this implementation and the prior activation memory in one local checkpoint; no remote pipeline or new dependency/image.
+
+### Evidence
+
+- Combined four-scenario run passed in 66.401 seconds. Signal and held-HTTP drain took 53 ms and 61 ms in that run; these are observations, not SLOs. Zero fixture resources remain; four unrelated containers are preserved.
+- Identity 26/26 and PostgreSQL 12/12 focused tests pass, including six no-Docker fixture guards. First affected gate identified the synthetic credential URL form; corrected without changing scanner policy. Final core checkpoint passes 30/30 affected tasks (13 cached) in 20.178 seconds and all four real scenarios in 64.118 seconds, including 57 ms signal drain and 77 ms held-HTTP drain. Executing-agent confirmation found no core blocker.
+- Raw artifact: `evidence/phase-01/real-integration.txt`.
+
+### Next action
+
+Continue P01-R09 with broker/S3 compatibility and Collector/Prometheus from the completed local core checkpoint. The complete item and P01-R10 Docker-only closeout are not claimed.
+
+## 2026-08-27 — Released P01-R08 and activated real integration
+
+### Completed
+
+- Published PR 16 once, recorded executing-agent confirmation review without claiming independence, and squash-merged the accepted candidate as `f174aa6` with protections intact.
+- Confirmed the exact post-merge run, fast-forwarded clean main, and created `feat/p01-r09-real-integration` for the accepted real-dependency item.
+- Read-only Docker preflight passed; no integration container or new image has been started. Removed only the validated temporary cold-checkout directory.
+
+### Evidence
+
+- Protected run `33036056777` and exact post-merge run `33036182208`: all applicable jobs PASS.
+- Source `282ccb5`: 49/49 forced cold tasks, frozen offline install, diagnostic, audit and clean Git. Evidence-only `ce2ab18` preserved those source inputs.
+- Docker Engine 26.0.0 responds; default Aster running-container listing is empty; core services remain unchanged.
+
+### Next action
+
+Implement P01-R09's isolated PostgreSQL/Redis happy-path and cleanup harness, then real failure/recovery. Include this activation memory with the next coherent implementation commit rather than creating an extra documentation-only pipeline.
+
 ## 2026-08-27 — Executable Identity composition and process diagnostic
 
 ### Completed

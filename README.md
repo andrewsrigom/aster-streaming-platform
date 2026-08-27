@@ -151,7 +151,9 @@ pnpm --filter @aster/runtime build
 pnpm --filter @aster/runtime test
 ```
 
-P01-R05 is reusable runtime behavior. The active P01-R08 candidate now composes it into a product-empty Identity process with real HTTP and dependency adapters. Run `pnpm identity:check` for a self-contained loopback diagnostic with controlled dependencies, or `pnpm identity:start` after configuring the seven reference environment variables. The existing Docker core does not expose host ports; real container integration and the Docker-only service command remain P01-R09/P01-R10. See [Runtime Lifecycle](docs/operations/RUNTIME_LIFECYCLE.md) and [P01-R08 evidence](evidence/phase-01/runtime-composition.txt).
+P01-R08 composes the reusable runtime into a product-empty Identity process with real HTTP and dependency adapters. Run `pnpm identity:check` for a self-contained loopback diagnostic with controlled dependencies, or `pnpm identity:start` after configuring the seven reference environment variables. The default Docker core does not expose host ports. See [Runtime Lifecycle](docs/operations/RUNTIME_LIFECYCLE.md) and [P01-R08 evidence](evidence/phase-01/runtime-composition.txt).
+
+The local P01-R09 core slice adds `pnpm integration:core` on Linux/WSL: real PostgreSQL/Redis probes, failure/recovery, Identity readiness and bounded HTTP shutdown using isolated disposable Docker resources. It preserves the default project and requires the pinned host Node/pnpm. Broker, S3 and telemetry-backend integration remain pending; the Docker-only application command belongs to P01-R10. See [integration operation and cleanup](docs/operations/LOCAL_DEVELOPMENT.md#real-postgresqlredis-integration) and [current evidence](evidence/phase-01/real-integration.txt).
 
 Phase 07 owns the first clean-start playable HLS journey. There is still no supported `pnpm dev`, application URL, or playable demo command.
 

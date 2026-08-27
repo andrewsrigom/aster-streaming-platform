@@ -1,0 +1,145 @@
+P01-R09 real integration — PostgreSQL/Redis/Identity checkpoint
+Date: 2026-08-27
+Status: VERIFIED local core slice; whole P01-R09 IN_PROGRESS, not released
+Base: f174aa6a7ffb432136c7a757ec05983fe48195d6
+Branch: feat/p01-r09-real-integration
+
+Environment
+Windows host; WSL Ubuntu-20.04 registration, Linux amd64.
+Node v24.19.0; pnpm 11.24.0; Docker Engine 26.0.0;
+Docker Compose v2.26.1-desktop.1; local unix:///var/run/docker.sock.
+Existing immutable images inherited from infra/compose/compose.yml:
+postgres:18.6-alpine3.23
+sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f
+redis:8.10.0-alpine
+sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
+No new image, package, product table, event or media.
+
+Command/workload
+pnpm integration:core
+Optional argument: protocol | adapters | identity | http-drain.
+One unique project, two containers, one network, one PostgreSQL volume,
+Redis tmpfs; inherited resource limits, temporary host-loopback ports,
+bounded Node subprocesses and synthetic credentials/data only.
+Normal unit tests/hooks do not start Docker.
+
+Demonstrated defect
+First fixture: aster-integration-d1426825f4034409a635a9dcceaec179.
+SELECT 1/PING and normal disposal passed. Stopping PostgreSQL with a healthy
+idle connection caused an unhandled pg-pool error, SQLSTATE 57P01, exit 1,
+and a vendor-client dump. Parent cleanup still removed only its resources.
+The adapter now owns pool background errors. pg-pool already removes the
+failed idle client; subsequent probes report availability and recovery.
+No global exception handler, invented operation metric, retry or API change.
+Regression emits two errors through a real Pool and proves bounded close.
+Reference: https://node-postgres.com/apis/pool#error
+Source inspected: pg-pool@3.14.0 makeIdleListener removes before emit(error).
+
+Harness corrections
+- Docker-assigned port=0 changed from 64082 to 64085 on stop/start; explicit
+  allocated loopback ports now survive restart. A bind race fails safely.
+- SIGTERM natural termination follows the released contract: exit 143.
+- Test telemetry delegates prototype methods rather than spreading an instance.
+- Secret scan flagged the literal fixture credential URL. URL components now
+  use the same explicit test-only credential; scanner policy is unchanged.
+
+Combined integration, before final candidate checkpoint
+Command: pnpm integration:core
+Fixture: aster-integration-313754474bd04b76870cfde3cc6ed229
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"protocol"}
+{"event":"postgres_stop_recovery","outcome":"passed"}
+{"event":"postgres_timeout_cancellation","outcome":"passed","reservedSlots":0}
+{"event":"redis_stop_recovery","outcome":"passed"}
+{"event":"redis_cancellation_capacity_timeout","outcome":"passed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"adapters"}
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":53}
+{"event":"natural_exit","mode":"identity"}
+{"event":"http_inflight_drain","durationMs":61,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"core_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain"],"durationMs":66401}
+{"event":"fixture_cleanup","project":"aster-integration-313754474bd04b76870cfde3cc6ed229","remaining":0}
+
+Assertions
+PostgreSQL: authenticated connect/SELECT 1, unavailable fresh startup,
+idle disconnect, stop/recovery, paused-query timeout, AbortSignal cancellation,
+healthy later probe, zero reserved/pool connections, idempotent close.
+Redis: PING, unavailable fresh startup, bounded reconnect, pause/cancel,
+capacity=1 and explicit overflow rejection, timeout retirement, recovery,
+zero in-flight commands, idempotent close and closed socket state.
+Identity: default ten-second jittered monitor, real Express health/adapters,
+200 -> 503 with liveness 200 -> 200 for each dependency, no degraded work
+admission or topology in public health bodies. SIGTERM drains accepted work.
+HTTP drain: a test-only Express handler holds a real HTTP request; shutdown
+waits response/lease completion, then flushes local telemetry and closes
+PostgreSQL/Redis/telemetry. Natural exit 143; no product schema/endpoint added.
+
+Focused source checks
+pnpm exec turbo run test --filter=@aster/identity --filter=@aster/postgres
+PASS: Identity 26/26, PostgreSQL 12/12; 9/9 tasks (5 cached), 10.819s.
+Six no-Docker fixture tests cover remote endpoints, name collisions,
+changed ownership, foreign mounts/attachments, exact/idempotent removal.
+Targeted ESLint, Knip and secret scan passed after fixture corrections.
+First affected gate stopped at the literal fixture-URL finding. Cancelled
+parallel tasks were not independent failures.
+
+Final core candidate checkpoint
+Command: pnpm check:changed && pnpm integration:core
+Affected gate: 30/30 tasks PASS, 13 cached, 20.178s.
+Identity 26/26 and PostgreSQL 12/12; type/lint/format/architecture/unused,
+platform/reset, documentation/memory, CI/community and secrets passed.
+Compose default model: config --quiet PASS; git diff --check PASS.
+Final fixture: aster-integration-4fed9dbb65b64ac7aa1bcc4b68ce1332
+The protocol/adapter/recovery output matches the successful run above.
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":57}
+{"event":"natural_exit","mode":"identity"}
+{"event":"http_inflight_drain","durationMs":77,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"core_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain"],"durationMs":64118}
+{"event":"fixture_cleanup","project":"aster-integration-4fed9dbb65b64ac7aa1bcc4b68ce1332","remaining":0}
+
+Exact source SHA-256 fingerprints (base plus these implementation changes)
+525e1d658fc4c8d043d129195403e15a2640e7afb48b2d2554f56fd94327e5b1  infra/compose/integration.yml
+4a7b495849ef544d880f21dc06619d832c6ee41583c1327bf48c7b917240de2e  packages/postgres/src/infrastructure/postgres-adapter.ts
+1e14541897f0c5ca4293867ea1e717976a7747c0080ca0cea33c57b9aed50dd8  packages/postgres/test/pool-events.test.ts
+6e89bc2663c113cc4dba41dc1560c5f53334c097b4958e44001740fcbf312871  services/identity/test/docker-fixture.test.ts
+77abaa3c4d5232cdfb899d86a7120880461e326fdd05b281b84045598b1656be  services/identity/test/integration/core-integration.ts
+dee2ca230b1240e629fdf639441825a23f04bffe264c09ab1fb652964e35043f  services/identity/test/integration/core-worker.ts
+904ea5a68a35747e82825b160192580fb1a501e09203f512919ad13d6648462a  services/identity/test/integration/docker-fixture.ts
+9da33d47b241e3ffb387f58d1fa3134b9b8e79f0f00f3fd544a307d57cc65065  services/identity/test/integration/http-drain.ts
+7c09704da7b684361b8eb7f6c88faed7828b1287d8601a02043c10be8e3da177  services/identity/package.json
+0bc53560403a8930fd7c599bdaccffd773d039937964a25a0dcefbbe0623b2f3  package.json
+Later evidence/memory-only closeout does not change these inputs. No cold
+clone, full force gate or hosted run is required for this intermediate
+checkpoint; the stabilized complete P01-R09 matrix still owns those gates.
+
+Preservation inspection
+docker container/network/volume ls --filter label=com.aster.scope=p01-r09
+All three inventories empty after the combined run.
+Four unrelated container IDs from preflight remain present and exited:
+5c91b929fa48663a76b372ed63178b089030dd8a83572a80b098d17db0b8133a
+b03fbb6cc926033445c0c0f53f41dddb228a4d4180a4ee5b16b98cff92fd6f8f
+d6bd9b628185e610b58beb7856351d6286b9e0e93b85851b8088f5df06878c05
+b4f5eb2da9c24434beabcbd374effa79a2c724f6e2cf5c012b65f903ab488568
+Default Aster startup/reset/exposure unchanged. No global prune.
+
+Review/limitations
+Executing-agent review, not independent/hosted approval. Initial review and
+experiments addressed the idle-pool crash, port lifetime, process outcomes,
+stderr bounds and exact Docker ownership. Confirmation review found no
+remaining core requirement/security/data/availability/contract blocker.
+No independent review, whole-item verification or protected release claimed.
+One warm-image WSL amd64 host, not a benchmark, SLO or cross-platform proof.
+Native Windows command fails before Docker mutation; use WSL.
+Only synthetic fixture volumes are irreversibly deleted; images are retained.
+Parent SIGKILL/daemon loss can prevent automatic cleanup: retain the printed
+exact project ID, inspect ownership, and remove only that fixture.
+Broker/S3/OTLP/Collector/Prometheus/all-adapter shutdown remain P01-R09 work.
+Docker-only application profiles/resource/clean-start proof remain P01-R10.
+No product, media, hosted or release claim.

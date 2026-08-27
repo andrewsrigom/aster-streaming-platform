@@ -388,6 +388,10 @@ function isPgQueryTimeout(error: unknown): boolean {
 
 function defaultPoolFactory(config: PoolConfig): AsterPostgresPool {
   const pool = new Pool(config);
+  pool.on("error", () => {
+    // pg has already removed the failed idle client. The next probe reports availability;
+    // never let a recoverable disconnect crash the process or print the vendor client object.
+  });
   return {
     get totalCount(): number {
       return pool.totalCount;

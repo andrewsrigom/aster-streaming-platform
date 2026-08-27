@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the remaining Phase 01 path. P01-R06 telemetry and P01-R07 adapters are released. The active P01-R08 candidate now composes an executable Identity reference process. Real dependency/container interoperability, Collector export, backends, profiles and the Docker-only service path remain P01-R09/P01-R10.
+This document defines the remaining Phase 01 path. P01-R06 telemetry, P01-R07 adapters and P01-R08 executable Identity composition are released. P01-R09 now implements the isolated PostgreSQL/Redis protocol, failure/recovery and Identity shutdown laboratory. Broker/S3 interoperability, Collector export, backends, profiles and the Docker-only service path remain P01-R09/P01-R10.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -199,6 +199,8 @@ A single bounded background monitor owns recovery probes. It allows one probe pe
 `pnpm identity:check` provides a controlled loopback diagnostic; `pnpm identity:start` executes the real factories. The real-client composition check exposed and corrected node-redis's mutation of frozen URL/socket options by copying those objects only at the vendor boundary. Internal immutable options, client versions, bounded reconnect and shutdown contracts are unchanged.
 
 ## P01-R09 — Real dependency proof
+
+The first local slice is `pnpm integration:core`: existing pinned PostgreSQL/Redis images, temporary loopback connectivity, exact fixture ownership and cleanup, real client probes, stop/recovery, pause/cancellation/capacity, Identity health transitions and held-HTTP shutdown. It exposed and corrected an unhandled idle-pool PostgreSQL error. [Local Development](../operations/LOCAL_DEVELOPMENT.md#real-postgresqlredis-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) record operation and limitations. This slice does not complete the remaining matrix or add final runtime profiles.
 
 ### Container candidate gate
 
