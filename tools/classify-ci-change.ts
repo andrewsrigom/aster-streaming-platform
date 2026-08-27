@@ -12,6 +12,7 @@ const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
 const PLATFORM_PREFIXES = [
   "infra/compose/",
+  "infra/docker/",
   "services/identity/",
   "packages/runtime/",
   "packages/config/",
@@ -24,6 +25,7 @@ const PLATFORM_PREFIXES = [
 ] as const;
 const PLATFORM_FILES = new Set([
   ".github/workflows/ci.yml",
+  ".dockerignore",
   ".node-version",
   ".nvmrc",
   "package.json",
@@ -37,6 +39,7 @@ const PLATFORM_FILES = new Set([
   "tools/reset-local-platform.test.mjs",
   "tools/verify-local-platform.mjs",
   "tools/verify-local-platform.test.mjs",
+  "tools/verify-runtime-image.mjs",
 ]);
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
 

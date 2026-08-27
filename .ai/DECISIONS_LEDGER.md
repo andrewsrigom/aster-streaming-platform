@@ -41,6 +41,7 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 | Decision | Resolution | Evidence |
 |---|---|---|
 | Core local container floor | Support Docker Engine `26.0.0` and Compose `2.26.1` as the measured floor; require the model and smoke path to pass on newer compatible releases | `evidence/phase-01/local-platform-checkpoint.txt` |
+| Identity image packaging | Pin official Node `24.19.0-bookworm-slim` by multi-platform index; compile in Docker, deploy production dependencies with existing pnpm `--legacy`, run as UID 1000 and retain upstream notices. Source-only context and package file allowlists preserve isolation; actual proof is amd64 only | `evidence/phase-01/docker-demo.txt` |
 | Local PostgreSQL runtime | Pin Docker Official Image `postgres:18.6-alpine3.23` by multi-platform digest; persist `/var/lib/postgresql` with version-specific `PGDATA` | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Local Redis runtime | Pin Docker Official Image `redis:8.10.0-alpine` by multi-platform digest; select the AGPLv3 option for the unmodified external runtime and keep state disposable | `evidence/phase-01/local-platform-checkpoint.txt` |
 | Destructive local reset boundary | Require explicit local intent and confirmation, fixed Aster project and Compose file, local-socket and exact resource-label verification, zero-resource postconditions, and no broad fallback cleanup | `evidence/phase-01/local-reset.txt` |

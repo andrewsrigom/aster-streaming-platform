@@ -1,110 +1,100 @@
-# Work Item: Prove the Reference Runtime Against Real Local Dependencies
+# Work Item: Ship the Docker-only Phase 01 Demonstration
 
 - Status: IN_PROGRESS
-- Owner: Aster shared runtime infrastructure and Identity reference composition
+- Owner: Shared local platform and product-empty Identity runtime
 - Phase: 01
-- Requirement IDs: P01-R09
+- Requirement IDs: P01-R10
 - Created: 2026-08-27
 - Updated: 2026-08-27
 
 ## Outcome
 
-Prove the released technical adapters and Identity lifecycle against isolated local PostgreSQL, Redis, Kafka-compatible broker, S3-compatible storage, and Collector/Prometheus containers. Produce runnable synthetic smoke tests and measured failure/recovery evidence without adding product data, GraphQL, media, dashboards, SLOs or hosted resources.
+An evaluator with Git and Docker/Compose can build/start the reference Identity service, observe health and metrics, stop it cleanly and explicitly reset only local Aster data. Named lightweight and optional profiles avoid requiring the full laboratory. Complete Phase 01 evidence without claiming a playable product.
 
 ## Current behavior
 
-P01-R08 is released through PR 16 squash `f174aa6a7ffb432136c7a757ec05983fe48195d6`. Protected exact-head run `33036056777` and exact post-merge run `33036182208` passed. Source `282ccb5` passed 49/49 affected tasks and 49/49 forced tasks in an exact frozen clone, the loopback diagnostic, audit and clean Git. This proves controlled recovery and real-client unavailable endpoints, not database/broker/storage interoperability.
+P01-R09 is released through PR 17 squash `a1f728196aa7a4d8a79181042f75a876610d2b11`. Protected run `33041524806` and exact post-merge run `33041787663` pass the real eight-scenario matrix and all applicable gates. Local cold source `cbc5255` passed 49/49 uncached tasks, audit and clean Git. Executing-agent initial/confirmation reviews have no blocker; no independent approval is claimed. See `evidence/phase-01/real-integration.txt`.
 
-P01-R09 checkpoints `0fb247c`, `0cd02ef` and `8ef472d` implement real core, broker/S3 and Collector/Prometheus proof. The only production correction owns PostgreSQL idle-pool errors so dependency stop cannot crash Node or expose the vendor client. Existing core Compose/default project and production Identity dependencies are unchanged.
-
-The complete local matrix now passes all eight scenarios in one fresh six-service/four-volume fixture (135.621 s plus 5.004 s cleanup), including 70 ms all-adapter held-HTTP shutdown. Identity 33/33, eleven ownership guards, 49/49 affected tasks, 21 CI classification/policy tests, Compose validation and audit pass. Cold/forced acceptance and protected release remain pending.
+This branch starts from that clean merge. Core Compose has PostgreSQL/Redis plus initialization/status and no application port. Identity runs from host Node with no exporter by default. Real broker/S3/Collector/Prometheus laboratories are test-only. Reset currently accepts four core services and one PostgreSQL volume.
 
 ## Proposed behavior
 
-Implement PostgreSQL/Redis and Identity real-runtime smoke proof first using the already-pinned core images. Add only the isolated test connectivity and harness required to run bounded synthetic checks; do not change the default core exposure or begin the final P01-R10 evaluator profile. Then select/pin the remaining approved container candidates using current official maintenance, license, multi-architecture and runtime evidence. Prove broker, object-streaming and telemetry round trips in separate focused slices before one combined acceptance checkpoint.
+First prove portable production packaging and an immutable-base non-root Identity image. Then extend exact reset ownership and add the lightweight runtime profile. Reuse proven dependency images for optional integration/observability/full profiles; connect the existing OTLP exporter through validated optional configuration. Finish one clean Docker-only demonstration, resource/failure/reset evidence and protected release.
 
 ## Boundaries
 
-- Owning context: Shared infrastructure and the product-empty Identity composition root.
-- Authoritative data: No product data. PostgreSQL owns only temporary synthetic fixtures; Redis remains non-authoritative.
-- Affected areas: Existing adapter infrastructure/tests, Identity integration tests, scoped integration tooling/Compose configuration, operational evidence and repository memory.
-- Trust boundaries: Docker context/endpoint and inspected labels, generated connection settings, process environment, network/protocol responses, timeouts/signals, payload streams, fixture cleanup and image provenance.
-- External dependencies: Existing pinned PostgreSQL/Redis images first. Broker/storage/Collector/Prometheus candidates follow the accepted Runtime Platform Runway; no new hosted or paid resource.
-- No new framework, database owner, public API, license or architecture boundary without the applicable ADR/owner decision.
+- Owner/data: shared infrastructure, product-empty Identity, synthetic local data only; Redis/telemetry non-authoritative.
+- Paths: `infra/docker/identity.Dockerfile`, `.dockerignore`, package file allowlists, Compose/configuration, reset/platform/CI tools and tests, config/Identity composition, docs/evidence.
+- Trust boundaries: build context, package/image artifacts, process configuration, UID/capabilities/mounts/ports, health probes and destructive cleanup.
+- External dependencies: already-pinned clients/images. Node candidate is official `24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df`; amd64/arm64 index and upstream MIT recipe verified, runtime/footprint still pending.
+- No new framework, product service, authoritative owner or hosted resource.
 
 ## Invariants
 
-- One unique test project owns every created container, network and fixture; validate exact labels/targets before teardown. Never prune global Docker resources or delete the default/user project.
-- Keep normal core startup unchanged and unexposed. Any test-only connectivity is explicit, local, bounded and removed with its fixture.
-- Real integration runs are explicit commands, not hidden additions to every unit-test or commit hook.
-- One lifecycle/signal owner and the existing startup/shutdown bounds remain authoritative.
-- Test success requires observed protocol behavior, not an open TCP port, image tag, fake client or shell health output alone.
-- Fix only demonstrated adapter/composition blockers, preserving public contracts where possible.
-- No product schema, repository, cache policy, event contract, account/profile/session, GraphQL resolver, media asset or CDN publication.
+- Evaluator requires no host Node, hosted credential or manual repair.
+- Preserve cheap core startup; optional profiles have finite resources and explicit persistence/cleanup ownership.
+- Extend reset guards before accepting new services/volumes; preserve unrelated resources and image caches.
+- Application image runs non-root, read-only where compatible, with dropped capabilities and bounded shutdown. Expose only documented loopback ports.
+- Exclude secrets, host dependency/build state and Git metadata from the Docker build context.
+- Do not add production broker/S3 dependencies to Identity or implement auth, GraphQL, media, SLOs or dashboards.
+- Collector/Prometheus serve existing metrics. Defer empty Tempo/Loki/Grafana until owned trace/log export or a concrete dashboard question requires them.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Evidence |
 |---|---|---|
-| Docker is unavailable or points at an unsafe/non-local endpoint | Fail before resource creation with a scoped diagnosis | Preflight result |
-| A critical dependency stops or restarts | Identity becomes not ready, remains diagnosable, and recovers through its monitor | Real HTTP snapshots and finite dependency outcomes |
-| A database/cache operation times out or is cancelled | Work returns within its budget, ambiguous resources are retired, later safe probes recover | Adapter result and socket/process cleanup |
-| Broker or storage is unavailable or partially completes work | Preserve existing delivery/stream ambiguity semantics and bounded cancellation | Synthetic round trip, interruption and checksum evidence |
-| Exporter/backend stops | Requests/readiness remain correct and flush/shutdown stays bounded | Collector/Prometheus and failure output |
-| A test or process fails mid-fixture | Run finite cleanup only for verified test-owned resources; preserve evidence | Post-cleanup inventory |
-| Candidate image has unresolved license or compatibility risk | Stop that selection or use the documented alternative with evidence | Decision and official references |
+| Docker unavailable, unsupported platform or occupied port | Visible bounded diagnosis, no broad repair | Compose/health output |
+| PostgreSQL/Redis unavailable | Live but not ready; recover through existing monitor | Finite dependency/readiness signals |
+| Optional telemetry unavailable | Readiness preserved; flush/export remains finite and truthful | Export and lifecycle result |
+| SIGTERM/container stop | Ordered drain within ten seconds, with orchestrator grace | Natural exit and lifecycle events |
+| Foreign or partial reset state | Validate all exact owners before deletion; refuse foreign state | Adverse tests and unchanged inventory |
+| Cold download failure | Fail visibly; retain caches, retry only the failed command | Actual build result |
 
 ## Data and contracts
 
-- Schema/migration: No product migration. Temporary synthetic fixtures are created and removed by the harness.
-- GraphQL/events/cache: No product contracts or cache policy. Broker tests use a test-owned topic/key and bounded synthetic messages.
-- Object storage: A test-owned bucket/prefix and bounded bytes only; no copyrighted media or publication rights claim.
-- Public health: Preserve the released finite shape and no-topology rule.
-- Compatibility: Exact repository Node/pnpm; exact image digests and architecture/license evidence before adoption. Native-Windows signal support remains unclaimed.
+- Schema, GraphQL, events and cache policy: none.
+- Configuration: optional exporter settings and an explicitly classified optional database-password field for Docker configuration; current seven-variable URI callers remain compatible. Construct the effective URL at the validated configuration boundary, reject conflicting password sources and do not weaken the credential-URL scanner or rely on hidden vendor environment variables.
+- Packaging: production-only portable output and built-file allowlists; preserve dependency notices. No bundler or global workspace injection change.
+- Retention/deletion: named volumes explicitly classified; existing local intent and exact destructive confirmation remain required.
+- Compatibility: exact Node/pnpm; Docker 26.0.0/Compose 2.26.1 floor. Other OS/architectures remain unverified unless measured.
 
 ## Security and privacy
 
-- Confirm local Docker ownership before destructive test actions and use argument arrays for spawned commands.
-- Do not read hosted credentials or personal data; generated endpoints and test-only credentials stay out of public health and recorded output.
-- Bound payload sizes, fixture counts, operation concurrency, command/process deadlines and retries.
-- Preserve isolation and resource limits. Do not weaken image/secret/architecture/CI policies to make a smoke test green.
+No auth/trust-model change. Frozen installation and reviewed image digests remain mandatory. Exporter settings must reject unsafe/credential-bearing URLs without reflecting values. Validate profile/service/volume ownership, mounts and network attachments before reset. No global prune, daemon reset or unrelated-state cleanup.
 
 ## Implementation steps
 
-1. [completed] Confirm P01-R08 protected release/post-merge success, start from clean main, and perform read-only Docker/core preflight.
-2. [completed] Add one explicit PostgreSQL/Redis integration harness with isolated fixture ownership and safe cleanup. Prove successful probes and close before fault injection.
-3. [completed] Prove real critical-dependency stop/recovery, operation cancellation/timeout and Identity signal/drain behavior; fix the demonstrated idle-pool error. Core candidate: 30/30 affected tasks, all four integration scenarios and executing-agent confirmation pass.
-4. [completed] Pin/test Apache Kafka 4.3.1 and VersityGW 1.7.0; prove bounded synthetic delivery, offset replay, object streams/checksums, cancellation, restart and exact cleanup. The closed `core`/`storage`/`broker` test profiles reuse `services/identity/test/integration/integration.ts` and ownership/control guards. Administrative SDKs are test-only. Core was repeated once after the shared harness stabilized; no new production Identity dependency.
-5. [completed] Pin core Collector 0.159.0 and Prometheus 3.14.0 (Apache-2.0, amd64/arm64 indexes). `pnpm integration:telemetry` combines real core databases with Collector/Prometheus and passes export/scrape, HTTP/dependency/runtime metrics, optional-backend interruption/recovery and bounded exporter-down shutdown. Exact read-only private config mounts support Docker Desktop translation only with matching distribution/device/inode. Final run: 29.755 s plus 5.744 s cleanup; 49/49 affected tasks and Identity 32/32 pass. No production adapter or composition change.
-6. [completed] Add the fixed `all` profile from the four existing Compose files (six services/four volumes) and `pnpm integration`. Test-only `runtime-worker.ts` composes the shared lifecycle/HTTP adapter with real PG/Redis/Kafka/S3/OTLP owners, holds one request across SIGTERM, proves ordered closure and observes the final HTTP metric. All eight scenarios pass sequentially in that fresh fixture, ending with exporter-down telemetry. Production Identity dependencies are unchanged. The existing CI quality job selects the matrix once for applicable platform inputs, bounded to 15 minutes; 21 classification/policy tests pass.
-7. [in progress] Exact candidate `cbc5255` passes frozen offline installation in a fresh no-local clone, 49/49 uncached tasks in 40.586 s, audit and clean Git. Executing-agent initial/confirmation reviews have no blocker. Publish one protected PR, complete hosted matrix/squash/post-merge verification before P01-R10 resource profiles and Docker-only evaluator closeout. Preserve the passing matrix/cold source for evidence-only changes; no independent approval is claimed.
+1. [completed] Pinned non-root Identity image builds inside Docker and passes package/controlled HTTP diagnostics. Seven workspace packages load; all 114 external installed versions match the lockfile; no dev/test/host tree ships. Image: 255269001 bytes, UID 1000. Missing configuration exits 1; all probe containers are removed. Platform/CI tests pass 21/21 each and affected graph passes 49/49 (52.272 s). See `evidence/phase-01/docker-demo.txt`.
+2. [in progress] Add the classified optional database-password input, preserving current URI callers and rejecting conflicts. Extend reset/platform ownership tests before adding runtime services; implement minimal runtime profile with loopback health, finite resources and graceful stop. No reset/Compose/application configuration change has been implemented yet.
+3. [pending] Add optional integration, Collector/Prometheus and full profiles from proven pins; validate optional OTLP configuration and real metric delivery. No unused diagnostic services.
+4. [pending] Prove clean Docker-only runtime/full commands, partial profiles, dependency recovery, stop/reset preservation; document ports, volumes, architecture, FFmpeg and resources. Measure startup, idle footprint and image/volume sizes.
+5. [pending] Complete affected/full gates, applicable CI, one review plus confirmation and Phase 01 evidence index; check Phase 02 prerequisites, squash and verify post-merge before starting Phase 02.
 
 ## Tests
 
-The broker slice uses the already-approved Apache Kafka KRaft alternative: upstream JVM image 4.3.1 (2026-06-25, Apache-2.0), index `sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837` with amd64/arm64 manifests. Redpanda 26.2.2 still carries BSL 1.1 plus an additional-use grant; the Apache alternative avoids adding that conditional license to this runtime. This does not change the Kafka protocol or the accepted context boundary. Add the fixed `broker` fixture profile, `integration-broker.yml` and `broker-worker.ts`; KafkaJS inspection is test-only. Runtime/footprint proof still gates adoption.
-
-- Unit/contract: Existing adapter/lifecycle/security contracts plus focused regressions for defects demonstrated by real integration.
-- Integration: Real PostgreSQL/Redis protocol probes, pool/client disposal, failure/recovery; broker metadata/keyed produce-consume; object stream/checksum/missing/abort; OTLP/Prometheus; bounded service termination.
-- Isolation: Unique resource labels, default/unrelated project preservation, cleanup after success/failure and no residual fixture handles.
-- Browser/domain/media: Not applicable; no product behavior or UI.
+- Domain/browser/media: not applicable; no product behavior.
+- Unit/contracts: packaging/configuration, health probe, exact reset and container/CI policy.
+- Integration: packaged Identity with PostgreSQL/Redis, runtime/full health, OTLP/Prometheus, stop and reset.
+- Failure: occupied port, stopped dependency/backend, foreign ownership and partial state.
+- Performance: startup/idle observations only; no load/SLO/throughput claim.
 
 ## Evidence
 
-- Raw artifact: `evidence/phase-01/real-integration.txt`.
-- Iteration gate: Changed adapter/service tests and static checks plus only the relevant real dependency experiment.
-- Candidate gate: `pnpm check:changed` and the combined explicit integration command after a coherent slice; no per-micro-edit full stack.
-- Complete gate: One forced acceptance run and applicable integration matrix at stabilized source.
-- Heavyweight repeat triggers: Image/digest, Compose ownership/network/resource policy, client version, bootstrap/entrypoint/command, signal/timeout/connection/stream behavior that can invalidate the measurement. Evidence-only prose does not repeat containers or cold install.
-- Review stopping rule: One complete initial review and one confirmation; another round only for a changed or newly demonstrated requirement, security/data, availability or public-contract blocker.
-- Every measurement records exact source, environment, command/workload, output and limitations. Preflight alone is not integration proof.
+- Commands: focused build/package/policy checks, `pnpm check:changed`, exact Docker-only commands and applicable integration; full `pnpm check --force` at the stabilized candidate.
+- Artifact: `evidence/phase-01/docker-demo.txt`.
+- Iteration gate: smallest changed package/policy test and affected packaging/profile experiment.
+- Candidate gate: affected graph plus affected runtime/full smoke and exact cleanup.
+- Complete gate: clean checkout with no host Node in the evaluator path, profile/failure/resource evidence, full source gate, audit, review and protected CI.
+- Heavyweight repeat triggers: image/client/dependency, packaging/context, config/entrypoint, Compose ownership/network/resources, deadlines/shutdown or reset. Do not repeat builds/containers/cold checkout for prose-only changes.
+- Review stopping rule: one initial complete review and one confirmation; further rounds only for demonstrated requirement/security/data/availability/public-contract blockers.
 
 ## Rollback or recovery
 
-Stop and remove only validated test-owned resources, preserving unrelated/default Aster state and collected evidence. Revert the isolated harness/Compose additions if necessary. A failed client or image returns to its documented alternative with focused compatibility proof. No durable product migration needs reversal.
+Revert phase-owned packaging/profiles while retaining verified core commands. Remove only validated experiment resources; default data requires explicit reset confirmation. No product migration exists. Keep evidence for any failed image or packaging candidate.
 
 ## Documentation updates
 
-Record explicit integration commands, resource ownership/cleanup, selected image provenance, measured results and limitations. Keep the final Docker-only service profile and evaluator command with P01-R10. Update memory and evidence at coherent candidate/closeout checkpoints, not after each probe.
+README commands, local development/troubleshooting, profile table, config/reset contracts, image/license sources, measured resource envelope, Phase 01 evidence index and concise repository memory. Distinguish diagnostic runtime from playable VOD.
 
 ## Completion checklist
 

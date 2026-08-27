@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-The repository foundation and Phase 01 technical packages exist. Released P01-R08 provides a product-empty Identity entrypoint, bounded health/lifecycle composition and a controlled loopback diagnostic. P01-R09 provides local PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus integration fixtures. No containerized product service, product schema/resolver/migration or default application/observability profile exists yet.
+The repository foundation and Phase 01 technical packages exist. Released P01-R09 proves the real PostgreSQL/Redis, Kafka, S3 and Collector/Prometheus matrix. P01-R10 implements a local non-root production Identity image and controlled diagnostic. No default application/observability profile, product schema/resolver/migration or playable journey exists yet.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 through P01-R08 are released. P01-R09 is active from squash `f174aa6`; checkpoints `0fb247c`, `0cd02ef` and `8ef472d` establish core, broker/S3 and telemetry proof. The complete `pnpm integration` matrix passes eight scenarios in 135.621 s plus 5.004 s cleanup, including 70 ms all-adapter HTTP shutdown. Source `cbc5255` passes 49/49 uncached tasks in a fresh frozen clone (40.586 s), audit, clean Git and executing-agent confirmation. Continue protected release. P01-R10 Docker-only closeout remains later work.
+P01-R05 through P01-R09 are released. PR 17 squash `a1f7281` passes protected run `33041524806` and exact post-merge run `33041787663`, including the complete real eight-scenario matrix. P01-R10 is active from that clean merge: portable production Identity packaging, resource-aware profiles, exact reset and Docker-only evaluator acceptance. No playable product is implemented yet.

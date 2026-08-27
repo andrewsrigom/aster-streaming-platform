@@ -2,7 +2,7 @@
 
 ## Status and purpose
 
-This document defines the remaining Phase 01 path. P01-R06 telemetry, P01-R07 adapters and P01-R08 executable Identity composition are released. P01-R09 implements the combined real PostgreSQL/Redis, broker, S3 and Collector/Prometheus laboratory, including all-adapter HTTP shutdown. Cold acceptance, protected release, final profiles and the Docker-only service path remain P01-R09/P01-R10.
+This document defines the remaining Phase 01 path. P01-R06 through P01-R09 are released, including the real combined dependency/telemetry/shutdown matrix. P01-R10 implements a local non-root Identity image checkpoint; resource-aware application profiles and clean Docker-only phase acceptance remain pending.
 
 The runway preserves one principle: build the runtime contracts before composing a service, then prove those contracts against real local dependencies, and only then publish the final Docker-only demonstration path.
 
@@ -200,7 +200,7 @@ A single bounded background monitor owns recovery probes. It allows one probe pe
 
 ## P01-R09 — Real dependency proof
 
-The first local slice is `pnpm integration:core`: existing pinned PostgreSQL/Redis images, temporary loopback connectivity, exact fixture ownership and cleanup, real client probes, stop/recovery, pause/cancellation/capacity, Identity health transitions and held-HTTP shutdown. It exposed and corrected an unhandled idle-pool PostgreSQL error. [Local Development](../operations/LOCAL_DEVELOPMENT.md#real-postgresqlredis-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) record operation and limitations. This slice does not complete the remaining matrix or add final runtime profiles.
+The core command `pnpm integration:core` uses pinned PostgreSQL/Redis images, temporary loopback connectivity, exact fixture ownership/cleanup, real probes, fault/recovery, Identity health and held-HTTP shutdown. It exposed and corrected the idle-pool PostgreSQL error. It is part of the released complete matrix; [Local Development](../operations/LOCAL_DEVELOPMENT.md#real-postgresqlredis-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) record operation and limitations.
 
 ### Container candidate gate
 
@@ -218,11 +218,11 @@ P01-R09 selects and pins exact multi-platform images by digest only after licens
 
 The final selection requires health behavior, startup and shutdown duration, idle CPU and memory, image and volume size, amd64 and arm64 manifests, license, current maintenance, local reset ownership, and protocol smoke evidence.
 
-The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured only on WSL amd64. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish these tests from the pending evaluator profile, complete acceptance and release. No product event, bucket/media publication or Identity production dependency was added.
+The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured only on WSL amd64. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish these tests from the pending evaluator profile and the released integration matrix. No product event, bucket/media publication or Identity production dependency was added.
 
-The [telemetry laboratory](../operations/LOCAL_DEVELOPMENT.md#real-telemetry-integration) proves real Identity metrics through core Collector/Prometheus, bounded scrape series, optional-backend failure, cumulative recovery and exporter-down shutdown. Core Collector 0.159.0 and Prometheus 3.14.0 are Apache-2.0 upstream images pinned by amd64/arm64 index digest. Fixed read-only private mounts and exact device/inode validation handle Docker Desktop's translated bind paths without changing host mount policy. No production dependency or telemetry contract changed. The combined matrix also passes; cold acceptance and protected release remain pending.
+The [telemetry laboratory](../operations/LOCAL_DEVELOPMENT.md#real-telemetry-integration) proves real Identity metrics through core Collector/Prometheus, bounded scrape series, optional-backend failure, cumulative recovery and exporter-down shutdown. Core Collector 0.159.0 and Prometheus 3.14.0 are Apache-2.0 upstream images pinned by amd64/arm64 index digest. Fixed read-only private mounts and exact device/inode validation handle Docker Desktop's translated bind paths without changing host mount policy. No production dependency or telemetry contract changed. The complete matrix, cold acceptance and protected/post-merge CI pass.
 
-The complete local command is `pnpm integration`: all eight scenarios share one fresh six-service/four-volume fixture and pass in 135.621 seconds plus 5.004 seconds cleanup. The final synthetic HTTP request is scraped before all owners exit naturally; ordered shutdown takes 70 ms in this run. This test-only composition does not add production Identity dependencies. The existing protected quality job runs the matrix only for applicable runtime, adapter, Compose and shared bootstrap/dependency changes. Cold acceptance and hosted confirmation remain pending.
+The complete local command is `pnpm integration`: all eight scenarios share one fresh six-service/four-volume fixture and pass in 135.621 seconds plus 5.004 seconds cleanup. The final synthetic HTTP request is scraped before all owners exit naturally; ordered shutdown takes 70 ms in this run. This test-only composition does not add production Identity dependencies. The existing protected quality job runs the matrix only for applicable runtime, adapter, Compose and shared bootstrap/dependency changes. Exact cold acceptance and protected/post-merge CI pass; P01-R10 still owns the evaluator profiles.
 
 ### Integration matrix
 
@@ -247,12 +247,14 @@ Fixtures use synthetic identifiers and bounded payloads. The tests create no pro
 | core | PostgreSQL, Redis, initializer, status | cheapest platform and database/cache work |
 | runtime | core plus Identity reference service | normal Phase 01 Docker-only demonstration |
 | integration | broker and S3-compatible storage added to core | adapter and event/storage smoke tests |
-| observability | Collector, Prometheus, Tempo, Loki, Grafana | telemetry investigation only |
+| observability | Collector and Prometheus for existing metrics | add trace/log backends and dashboards only when their owning signal or diagnostic question exists |
 | full | runtime, integration, and observability together | Phase 01 acceptance and recorded demonstration |
 
 The default development path does not require the full profile. Every optional service receives exact labels, finite resources, health checks, a cleanup classification, and a measured reason to persist or remain disposable. The destructive reset must understand every reviewed partial profile before any new named volume is accepted.
 
 ### Evaluator path
+
+The [Identity image checkpoint](../operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) is implemented: source-only multi-stage build, immutable Node base, production deployment, non-root execution and a passing controlled HTTP diagnostic. It does not yet provide the database-connected runtime profile described below. Exact size, lockfile agreement and isolation evidence are in [Docker demo evidence](../../evidence/phase-01/docker-demo.txt).
 
 The Phase 01 closeout will publish one copyable Docker-only command that builds and starts the runtime profile from an empty project-scoped state, waits for health, and exposes a loopback Identity readiness URL. A second documented command enables the full laboratory. Neither path requires a host Node.js installation, hosted credentials, personal data, or manual container repair.
 

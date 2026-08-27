@@ -88,6 +88,11 @@
     },
     "//#platform:check": {
       "inputs": [
+        ".dockerignore",
+        "infra/docker/**",
+        "packages/*/package.json",
+        "services/identity/package.json",
+        "tools/verify-runtime-image.mjs",
         "README.md",
         "docs/operations/LOCAL_DEVELOPMENT.md",
         "infra/compose/**",
@@ -97,6 +102,11 @@
     },
     "//#platform:test": {
       "inputs": [
+        ".dockerignore",
+        "infra/docker/**",
+        "packages/*/package.json",
+        "services/identity/package.json",
+        "tools/verify-runtime-image.mjs",
         "README.md",
         "docs/operations/LOCAL_DEVELOPMENT.md",
         "infra/compose/**",

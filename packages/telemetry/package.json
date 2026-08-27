@@ -6,6 +6,9 @@
   "description": "Bounded OpenTelemetry metrics for Aster Node.js services.",
   "license": "MIT",
   "sideEffects": false,
+  "files": [
+    "dist/src"
+  ],
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",

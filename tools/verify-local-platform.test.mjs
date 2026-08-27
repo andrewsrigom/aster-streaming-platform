@@ -3,6 +3,8 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import test from "node:test";
 
+import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
+
 import {
   POSTGRES_IMAGE,
   REDIS_IMAGE,
@@ -25,6 +27,40 @@ const validSource = await readFile(composePath, "utf8");
 const validReset = await readFile(resetPath, "utf8");
 const readmeSource = await readFile(readmePath, "utf8");
 const localDevelopmentSource = await readFile(localDevelopmentPath, "utf8");
+const runtimeImage = await readRuntimeImageSources(resolve(import.meta.dirname, ".."));
+
+test("runtime image preserves the pinned non-root production packaging contract", () => {
+  assert.deepEqual(validateRuntimeImage(runtimeImage), []);
+});
+
+test("runtime image rejects weakened pin, install, user, entrypoint, health and license policy", () => {
+  const file = "infra/docker/identity.Dockerfile";
+  for (const [before, after] of [
+    ["@sha256:", "@changed:"],
+    ["--frozen-lockfile", "--no-frozen-lockfile"],
+    ["--prod deploy", "deploy"],
+    ["USER node", "USER root"],
+    ['ENTRYPOINT ["node"]', 'ENTRYPOINT ["sh"]'],
+    ["AbortSignal.timeout(1000)", "undefined"],
+    ["await r.body?.cancel()", "void r"],
+    ["/workspace/LICENSE", "/workspace/README.md"],
+  ]) {
+    const changed = { ...runtimeImage, [file]: runtimeImage[file].replace(before, after) };
+    assert.ok(validateRuntimeImage(changed).length > 0, before);
+  }
+});
+
+test("runtime image refuses broader Docker context and source/test publication", () => {
+  for (const changed of [
+    { ...runtimeImage, ".dockerignore": `${runtimeImage[".dockerignore"]}!.env\n` },
+    { ...runtimeImage, ".dockerignore": runtimeImage[".dockerignore"].replace("**/dist/**", "") },
+    { ...runtimeImage, "services/identity/package.json": '{"files":["dist"]}' },
+    { ...runtimeImage, "packages/runtime/package.json": "{" },
+    { ...runtimeImage, ".dockerignore": "x".repeat(16_385) },
+  ]) {
+    assert.ok(validateRuntimeImage(changed).length > 0);
+  }
+});
 
 test("the checked-in local platform policy passes", () => {
   assert.deepEqual(validateLocalPlatform(validSource), []);

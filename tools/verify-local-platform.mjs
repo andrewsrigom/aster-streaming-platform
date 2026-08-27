@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL, URL } from "node:url";
 
+import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
+
 const MAX_COMPOSE_BYTES = 100_000;
 const MAX_RESET_BYTES = 50_000;
 const repositoryRoot = resolve(fileURLToPath(new URL("..", import.meta.url)));
@@ -287,15 +289,17 @@ export function validatePublicPlatformCommands(documents) {
 
 export async function runLocalPlatformCheck(path = composePath) {
   try {
-    const [source, reset, readme, localDevelopment] = await Promise.all([
+    const [source, reset, readme, localDevelopment, runtimeImage] = await Promise.all([
       readFile(path, "utf8"),
       readFile(resetPath, "utf8"),
       readFile(readmePath, "utf8"),
       readFile(localDevelopmentPath, "utf8"),
+      readRuntimeImageSources(repositoryRoot),
     ]);
     const violations = [
       ...validateLocalPlatform(source),
       ...validateLocalReset(reset),
+      ...validateRuntimeImage(runtimeImage),
       ...validatePublicPlatformCommands([
         { file: "README.md", source: readme },
         { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopment },

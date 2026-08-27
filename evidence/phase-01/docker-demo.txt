@@ -1,0 +1,143 @@
+P01-R10 — Identity image checkpoint — 2026-08-27
+================================================
+Status: IMPLEMENTED locally; complete P01-R10 profiles and acceptance pending.
+Base: a1f728196aa7a4d8a79181042f75a876610d2b11 (released P01-R09).
+Branch: feat/p01-r10-docker-demo. Exact input fingerprints below.
+
+Environment and workload
+------------------------
+Windows host; WSL Ubuntu-20.04 registration with Ubuntu 24.04 userspace, amd64.
+Docker 26.0.0, Compose 2.26.1-desktop.1; daemon 6 CPUs / 12543180800 memory bytes.
+Host Node 24.19.0 / pnpm 11.24.0 are used only for repository quality checks.
+The image builds and its diagnostics require Docker only, no host dependencies.
+No product data, media, hosted credential, published port or live dependency stack.
+
+Image and packaging decision
+----------------------------
+Official Node index:
+docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+amd64 manifest: e5a8dee7bc1e6a215d224a7ef8206f7e77271bc3cabd5febf2beafac0674f174
+arm64 manifest: be8929e08ae137e81b5e1edba02259e6c4cb2f5ad655092bb9f56b97e41c4536
+Actual runtime tested: amd64 only. Bookworm/glibc avoids introducing a new libc
+compatibility variable. Existing Node/pnpm pins are unchanged.
+Sources checked 2026-08-27:
+https://hub.docker.com/_/node/tags?name=24.19.0-bookworm-slim
+https://github.com/nodejs/docker-node/tree/fd1bf45c51970427bc899084b5381f6827722246/24/bookworm-slim
+https://raw.githubusercontent.com/nodejs/docker-node/fd1bf45c51970427bc899084b5381f6827722246/LICENSE
+https://pnpm.io/cli/deploy
+The Node image recipe is MIT; this is not a blanket MIT claim for every Debian
+base package. Upstream files/notices remain intact and Aster's LICENSE is copied.
+Project and representative pg license files were checked in the final image.
+
+Multi-stage build installs the exact frozen workspace graph, compiles dependencies
+before Identity, then uses pnpm deploy --prod --legacy to create /out. Existing
+workspace injection/link policy remains unchanged. Seven package file allowlists
+ship dist/src, not source/test trees; the runtime contains six workspace
+dependencies plus the Identity entrypoint. All 114 external production package
+versions match an exact reviewed pnpm-lock.yaml package key; no unlocked version.
+Runtime is UID 1000, direct Node PID 1, 192 MiB old-space bound and finite readiness
+probe. The probe rejects redirects and cancels its response body. Docker context
+is source-only; host node_modules, dist, Git and secret files are excluded.
+The existing platform gate guards these exact inputs plus file allowlists.
+Turborepo platform inputs include Docker context/recipe/manifests/validator, and
+CI classification recognizes the new paths; no new task, job or pipeline.
+
+Build commands and observations
+-------------------------------
+docker build --file infra/docker/identity.Dockerfile --tag aster-identity:p01-r10 --progress plain .
+First build pulled the Node base in 8.5 s and transferred 857.59 kB of context.
+Frozen installation downloaded all 329 packages in 7.9 s, with supply-chain
+verification. The first image built successfully as 1aab1543b741ba72aac83ee2a45c76e89bc520c5f585eb4925d3003a6a4be1a8.
+An initial diagnostic incorrectly checked pg/LICENSE from the Identity root;
+pg is a dependency of @aster/postgres. Owner-relative resolution proved that the
+notice existed; no production packaging change was needed for that finding.
+A final build followed manifest formatting and disabling build-runner analytics.
+It ran concurrently with the affected source gate, so durations are observations
+under contention, not comparable build benchmarks or service-start targets.
+
+Final build excerpt
+-------------------
+#3 transferring context: 603B done
+#5 [internal] load build context
+#5 transferring context: 21.24kB 0.0s done
+#17 [build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#17 9.656 ✓ Lockfile passes supply-chain policies (375 entries in 7.5s)
+#17 10.28 Done in 9.1s using pnpm v11.24.0
+#21 [build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#21 28.64  Tasks:    9 successful, 9 total
+#21 28.64 Cached:    0 cached, 9 total
+#21 28.64   Time:    26.658s 
+#21 29.43 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#21 29.52 ✓ Lockfile passes supply-chain policies (verified 30s ago)
+#25 writing image sha256:3c6b9646863b08d8e0f47ef0180d019d86bf21c7a15be9fad570f4bf1b888005 done
+
+Final runtime proof
+-------------------
+sha256:3c6b9646863b08d8e0f47ef0180d019d86bf21c7a15be9fad570f4bf1b888005 size=255269001 user=node architecture=amd64
+{"event":"identity_image_packaging","uid":1000,"node":"v24.19.0","workspacePackages":7,"developmentDependencies":false,"hostWorkspace":false,"licenseNotices":true,"outcome":"passed"}
+{"event":"identity_diagnostic_passed","dependencyMode":"controlled","healthStatesChecked":4,"httpMetrics":"collected","shutdown":"completed"}
+Image size is 255269001 bytes (uncompressed Docker image size), not process RSS.
+The diagnostic uses controlled dependencies and real loopback HTTP. This proves
+packaging, not a real database-connected Docker profile or playable demo.
+
+Exact run prefix:
+docker run --rm --network none --cpus 0.5 --memory 256m --pids-limit 64 --read-only --cap-drop ALL --security-opt no-new-privileges --label com.aster.scope=p01-r10 sha256:3c6b9646863b08d8e0f47ef0180d019d86bf21c7a15be9fad570f4bf1b888005
+Packaging probe arguments: --input-type=module --eval <code below>
+import assert from 'node:assert/strict'; import { existsSync, realpathSync } from 'node:fs'; import { createRequire } from 'node:module'; import { dirname, resolve } from 'node:path'; import { fileURLToPath } from 'node:url'; const require = createRequire(import.meta.url); assert.equal(process.getuid(), 1000); const packages = ['@aster/identity','@aster/config','@aster/runtime','@aster/http-express','@aster/postgres','@aster/redis','@aster/telemetry']; for (const name of packages) { await import(name); assert.ok(realpathSync(fileURLToPath(import.meta.resolve(name))).startsWith('/app/')); } for (const name of ['typescript','eslint','turbo','kafkajs','@aws-sdk/client-s3']) { assert.throws(() => require.resolve(name), { code: 'MODULE_NOT_FOUND' }); } for (const path of ['/app/dist/test','/app/src','/workspace']) assert.equal(existsSync(path), false); assert.equal(existsSync('/app/LICENSE'), true); const pg = createRequire(import.meta.resolve('@aster/postgres')).resolve('pg'); assert.equal(existsSync(resolve(dirname(pg), '..', 'LICENSE')), true); console.log(JSON.stringify({event:'identity_image_packaging',uid:process.getuid(),node:process.version,workspacePackages:packages.length,developmentDependencies:false,hostWorkspace:false,licenseNotices:true,outcome:'passed'}));
+Diagnostic arguments: ./dist/src/check-identity.js
+
+Production graph inspection code (same run prefix, --input-type=module --eval):
+import { readdirSync, readFileSync } from 'node:fs'; const ids = new Set(); const root='/app/node_modules/.pnpm'; for (const entry of readdirSync(root,{withFileTypes:true})) { if (!entry.isDirectory() || entry.name==='node_modules') continue; const base=root+'/'+entry.name+'/node_modules'; for (const item of readdirSync(base,{withFileTypes:true})) { if (!item.isDirectory()) continue; const paths=item.name.startsWith('@') ? readdirSync(base+'/'+item.name,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>base+'/'+item.name+'/'+x.name) : [base+'/'+item.name]; for (const path of paths) { const p=JSON.parse(readFileSync(path+'/package.json','utf8')); ids.add(p.name+'@'+p.version); } } } console.log(JSON.stringify([...ids].sort()));
+Compare each external name@version against the exact package keys from:
+rg '^  .*@[0-9].*:$' pnpm-lock.yaml
+{"event":"production_graph_lockfile_match","workspacePackages":6,"externalPackages":114,"unlocked":[]}
+
+Default entrypoint without configuration exits 1, without starting resources:
+{"event":"aster.identity.startup_failed","status":"error","code":"ASTER_CONFIGURATION_INVALID","issues":[{"variable":"ASTER_ENV","classification":"non-secret","reason":"missing"},{"variable":"ASTER_HTTP_HOST","classification":"non-secret","reason":"missing"},{"variable":"ASTER_HTTP_PORT","classification":"non-secret","reason":"missing"},{"variable":"ASTER_SERVICE_NAME","classification":"non-secret","reason":"missing"},{"variable":"ASTER_STARTUP_DEADLINE_MS","classification":"non-secret","reason":"missing"},{"variable":"DATABASE_URL","classification":"secret","reason":"missing"},{"variable":"REDIS_URL","classification":"secret","reason":"missing"}]}
+All three disposable runtime probes remove their own containers automatically.
+Final label-filtered p01-r10 container inventory is empty. No volume was created,
+no default project was changed, and image/build caches remain available.
+
+Source SHA-256
+--------------
+e4dcc66eedfebffa6ca1870a47e91b00df37fbcc4ba81f21396e1a5eeca045bc  .dockerignore
+84e7c3c6c62bc59551d6779a8ec62e1f37a5e626157560af104edbebaf4e2329  infra/docker/identity.Dockerfile
+61328bd3ebe9e8f46eecaee9aba0b7776bd3bacf20a432d9055757744a5d16bd  packages/config/package.json
+526679f07aa1fbf192aa6f219364d10a40c6d3afce8607669ff835e943bad254  packages/runtime/package.json
+644f221b1c26c4c93fbd0821fc19301413fbc8a84434a27a594eb70df9f6b266  packages/telemetry/package.json
+d3401f98cca808d774875d46be18984ef84c6fa442095663c4a20a6a9a7fb02b  packages/http-express/package.json
+1f51df90496fe3bb2f559c21daa2cf218688a657ece7c8d671568b15dd32a86a  packages/postgres/package.json
+950e6404d02aaca27977dfe48708c4aec96535d36c9467c7938faa33e31c6b24  packages/redis/package.json
+1e3b6650d9819814e603a2e5d399e6f0dc49c8beab7bba8f5dac3faf4190b833  services/identity/package.json
+24241de4e0dff6824c1cbec73a0c9d4cfd30550087eb103574563c3571f24f99  tools/verify-runtime-image.mjs
+d7e4e4c16421bb0871c505b0f7bf5966eac4c723032a47b58c0396277d22651a  tools/verify-local-platform.mjs
+80c7eefbdf38fb1ab84fa6f46bcd502754bc5fe2571d09e6d33ade0a7ca22bef  tools/verify-local-platform.test.mjs
+320d4f071ae8293f3a4264399802bde6b3d374d88142e633eb6cbc45895d2101  tools/classify-ci-change.ts
+71d25dfa94de7ea20b51ddc72cdc68c75266fd98d3a80d06740dd3f3fb7d15dd  tools/classify-ci-change.test.ts
+8bfb8c047429c3c7744fa4e1d0de75ee93c7a439198abaed7adc21add834b36f  turbo.json
+
+Candidate verification and review
+---------------------------------
+pnpm platform:check: PASS.
+pnpm platform:test: 21/21 (including three packaging/adverse contract tests).
+pnpm ci:test: 21/21.
+pnpm check:changed: 49/49 successful, 0 cached, 52.272 s.
+Identity: 33/33. Formatting, lint, typecheck, architecture, Knip, secret and memory
+gates pass. No dependency/lockfile change since the passing P01-R09 audit.
+git diff --check: PASS.
+Executing-agent image checkpoint review/confirmation: no blocker. Checks cover
+source-only context, exact pins/frozen graph, portable production output, non-root
+execution, finite probe, notices, failed configuration and no residual container.
+Static policy is a reviewed high-confidence guard, not a complete Dockerfile
+security proof. No independent review, container CVE scan or hosted P01-R10 gate
+is claimed.
+
+Next acceptance
+---------------
+Add validated optional database-password configuration (preserve URI callers and
+reject conflicting sources), then extend reset ownership before the runtime
+profile. Add real optional exporter configuration and integration/observability/
+full profiles. Prove clean Docker-only startup, real readiness/recovery, actual
+healthcheck execution, idle resources, scoped reset and final protected release.
+Do not repeat this image build for evidence-only edits. Repeat after relevant
+packaging/client/config/Compose/entrypoint changes. No Phase 02 behavior yet.

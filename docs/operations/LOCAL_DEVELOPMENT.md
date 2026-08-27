@@ -31,6 +31,17 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 
 ## Toolchain validation
 
+### Identity image checkpoint
+
+The P01-R10 image builds and runs its existing controlled diagnostic with Docker only, on the verified Linux/WSL amd64 path:
+
+```bash
+docker build --file infra/docker/identity.Dockerfile --tag aster-identity:p01-r10 .
+docker run --rm --network none --cpus 0.5 --memory 256m --pids-limit 64 --read-only --cap-drop ALL --security-opt no-new-privileges --label com.aster.scope=p01-r10 aster-identity:p01-r10 ./dist/src/check-identity.js
+```
+
+The image runs as UID 1000, contains production dependencies and compiled source, and retains upstream notices. The diagnostic checks real loopback health against controlled dependencies and exits naturally; it does not start a database-connected application profile or a playable demo. No port or volume is created. The image/build caches remain; the diagnostic container removes itself. [Image evidence](../../evidence/phase-01/docker-demo.txt) records exact sources, measured size, dependency-lock agreement, isolation and limitations. The normal runtime/full profile and single evaluator-start command are still pending in P01-R10.
+
 ### Complete integration matrix
 
 After the pinned repository installation, on Linux/WSL with local Linux Docker containers:
@@ -76,7 +87,7 @@ The S3 laboratory uses digest-pinned VersityGW 1.7.0 with a POSIX volume. It che
 
 Both fixtures use finite CPU/memory/PID/log limits, read-only roots, dropped capabilities, no-new-privileges and no host bind mounts. Kafka runs as the upstream non-root user; the storage fixture runs as root with all capabilities dropped to initialize its fresh owned POSIX volume. Only synthetic data is allowed. Cleanup verifies the exact owned volume before irreversible removal; image caches are retained. The supervisor reports startup/actions/cleanup and one pre-workload resource sample, not a steady-state benchmark. The ownership and interrupted-cleanup rules in the core section apply unchanged.
 
-Broker and S3 protocol scenarios pass individually and in the combined matrix; the exact cold source gate also passes. Protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
+Broker and S3 protocol scenarios pass individually and in the released combined matrix; exact cold and protected/post-merge gates pass. The P01-R10 application profiles remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
 
 ### Real telemetry integration
 
@@ -90,7 +101,7 @@ Collector and Prometheus run as their upstream non-root users with read-only roo
 
 Do not edit the two config files while the fixture runs. Docker Desktop/WSL can translate a bind path after restart; cleanup accepts that translation only for the matching distribution and identical file device/inode. Changed files, writable/shared binds or foreign mounts are refused before deletion. Normal teardown removes only the exact synthetic PostgreSQL/Prometheus volumes and fixture containers/network; images and repository config files remain. No host mount propagation, Docker daemon settings or unrelated resources are changed. The core interruption/ownership rules also apply here.
 
-See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). The combined matrix proves multi-adapter HTTP drain and the exact cold source gate passes; protected release and the Docker-only evaluator profile remain pending.
+See [raw telemetry evidence](../../evidence/phase-01/real-integration.txt). The released combined matrix proves multi-adapter HTTP drain, with exact cold and protected/post-merge gates passing. The Docker-only evaluator profile remains P01-R10 work.
 
 ### Pinned repository bootstrap
 

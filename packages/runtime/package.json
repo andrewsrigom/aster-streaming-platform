@@ -6,6 +6,9 @@
   "description": "Reusable bounded Node.js runtime behavior for Aster services.",
   "license": "MIT",
   "sideEffects": false,
+  "files": [
+    "dist/src"
+  ],
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",

@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — P01-R09 released; Docker-only closeout activated
+
+### Completed
+
+- Squash-merged PR 17 as `a1f7281` after protected run `33041524806` passed every applicable gate. Exact post-merge run `33041787663` also passed, including the real matrix. No bypass, rerun or additional PR.
+- Started P01-R10 locally from clean main on `feat/p01-r10-docker-demo`; its plan covers portable production packaging, lightweight/optional profiles, exact reset and Docker-only evaluator evidence. Condensed the handoff to current resume facts and linked historical evidence.
+
+### Evidence
+
+- Protected matrix: 143.136 s plus 1.043 s cleanup, 83 ms all-adapter shutdown. Post-merge: 148.892 s plus 1.015 s cleanup, 74 ms shutdown. Audit and all applicable jobs pass; zero unresolved review threads.
+- `evidence/phase-01/real-integration.txt` records exact heads, runs and confirmation comment `5434669574`. The 212M clean clone was removed after exact-path/clean-Git verification; source and caches remain.
+
+### Next action
+
+P01-R10's image checkpoint now builds and passes: UID 1000, 255269001 bytes, seven workspace imports, all 114 external production versions matching the lockfile, controlled HTTP diagnostic and missing-config exit 1. Platform/CI tests pass 21/21 each; affected gate passes 49/49 in 52.272 s. Raw evidence: `evidence/phase-01/docker-demo.txt`. Next implement validated optional database-password configuration and guarded runtime/profile/reset behavior. No product capability or full evaluator profile is claimed.
+
 ## 2026-08-27 — Complete real-dependency matrix and scoped CI
 
 ### Completed
