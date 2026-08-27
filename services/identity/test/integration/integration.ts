@@ -1,17 +1,21 @@
 import assert from "node:assert/strict";
 import { fork } from "node:child_process";
 
-import { CoreDockerFixture } from "./docker-fixture.js";
+import { DockerFixture } from "./docker-fixture.js";
 
 assert.notEqual(process.platform, "win32", "Run this POSIX signal laboratory inside Linux or WSL.");
-const fixture = new CoreDockerFixture();
 const selected = process.argv[2];
+const fixture = new DockerFixture(
+  selected === "storage" || selected === "broker" ? selected : "core",
+);
 assert.ok(
   selected === undefined ||
     selected === "protocol" ||
     selected === "adapters" ||
     selected === "identity" ||
-    selected === "http-drain",
+    selected === "http-drain" ||
+    selected === "storage" ||
+    selected === "broker",
   "Unknown integration scenario",
 );
 const started = performance.now();
@@ -26,10 +30,12 @@ function output(value: Record<string, unknown>): void {
   process.stdout.write(`${JSON.stringify(value)}\n`);
 }
 
-async function worker(mode: string, postgresPort: number, redisPort: number): Promise<void> {
+async function worker(mode: string, primaryPort: number, redisPort: number): Promise<void> {
+  const workerFile =
+    mode === "storage" ? "storage-worker" : mode === "broker" ? "broker-worker" : "core-worker";
   const child = fork(
-    new URL("./core-worker.js", import.meta.url),
-    [mode, String(postgresPort), String(redisPort)],
+    new URL(`./${workerFile}.js`, import.meta.url),
+    [mode, String(primaryPort), String(redisPort)],
     {
       execArgv: [],
       env: {},
@@ -74,13 +80,20 @@ async function worker(mode: string, postgresPort: number, redisPort: number): Pr
         assert.ok(typeof message === "object" && message !== null);
         const request = message as Record<string, unknown>;
         assert.ok(++requests <= 32);
-        assert.ok(request["service"] === "postgres" || request["service"] === "redis");
+        assert.ok(fixture.hasService(request["service"]));
         const action = request["action"];
         assert.ok(
           action === "start" || action === "stop" || action === "pause" || action === "unpause",
         );
         assert.ok(Number.isSafeInteger(request["id"]));
+        const actionStarted = performance.now();
         await fixture.change(request["service"], action);
+        output({
+          event: "fixture_action",
+          service: request["service"],
+          action,
+          durationMs: Math.round(performance.now() - actionStarted),
+        });
         if (child.connected) {
           child.send({ id: request["id"], status: "completed" });
         }
@@ -128,23 +141,35 @@ async function worker(mode: string, postgresPort: number, redisPort: number): Pr
 try {
   output({ event: "fixture_start", project: fixture.project, node: process.version });
   await fixture.start();
+  output({ event: "fixture_ready", durationMs: Math.round(performance.now() - started) });
   interruption.signal.throwIfAborted();
-  const postgresPort = await fixture.port("postgres");
-  const redisPort = await fixture.port("redis");
+  output({
+    event: "fixture_resource_sample",
+    stage: "before-workload",
+    services: await fixture.sampleResources(),
+  });
+  const primaryPort = await fixture.port(fixture.profile === "core" ? "postgres" : fixture.profile);
+  const redisPort = fixture.profile === "core" ? await fixture.port("redis") : 0;
   for (const mode of selected ? [selected] : ["protocol", "adapters", "identity", "http-drain"]) {
     output({ event: "scenario_start", mode });
-    await worker(mode, postgresPort, redisPort);
+    await worker(mode, primaryPort, redisPort);
   }
   output({
-    event: "core_integration",
+    event: `${fixture.profile}_integration`,
     outcome: "passed",
     scenarios: selected ? [selected] : ["protocol", "adapters", "identity", "http-drain"],
     durationMs: Math.round(performance.now() - started),
   });
 } finally {
+  const cleanupStarted = performance.now();
   await fixture.cleanup();
   await fixture.cleanup();
-  output({ event: "fixture_cleanup", project: fixture.project, remaining: 0 });
+  output({
+    event: "fixture_cleanup",
+    project: fixture.project,
+    remaining: 0,
+    durationMs: Math.round(performance.now() - cleanupStarted),
+  });
   process.removeListener("SIGINT", interrupt);
   process.removeListener("SIGTERM", interrupt);
 }

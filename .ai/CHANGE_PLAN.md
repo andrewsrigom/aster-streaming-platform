@@ -17,6 +17,8 @@ P01-R08 is released through PR 16 squash `f174aa6a7ffb432136c7a757ec05983fe48195
 
 P01-R09 starts from released main on `feat/p01-r09-real-integration`. The isolated core checkpoint passes 30/30 affected tasks and four real protocol/failure/recovery/Identity/HTTP-drain scenarios. It exposed and corrected the PostgreSQL idle-pool error that crashed Node on dependency stop. Existing core Compose/default project is unchanged. Broker/storage/telemetry and whole-matrix acceptance still gate the complete item.
 
+The next local checkpoint adds real broker/storage fixtures without changing production adapters. Kafka and S3 scenarios pass in 50.796/17.635 seconds; all four core scenarios pass after the shared-supervisor change in 74.790 seconds. Eight fixture-ownership guards, Identity 28/28, 49/49 affected tasks and audit pass. Collector/Prometheus is next; the complete item is not yet verified or released.
+
 ## Proposed behavior
 
 Implement PostgreSQL/Redis and Identity real-runtime smoke proof first using the already-pinned core images. Add only the isolated test connectivity and harness required to run bounded synthetic checks; do not change the default core exposure or begin the final P01-R10 evaluator profile. Then select/pin the remaining approved container candidates using current official maintenance, license, multi-architecture and runtime evidence. Prove broker, object-streaming and telemetry round trips in separate focused slices before one combined acceptance checkpoint.
@@ -72,12 +74,14 @@ Implement PostgreSQL/Redis and Identity real-runtime smoke proof first using the
 1. [completed] Confirm P01-R08 protected release/post-merge success, start from clean main, and perform read-only Docker/core preflight.
 2. [completed] Add one explicit PostgreSQL/Redis integration harness with isolated fixture ownership and safe cleanup. Prove successful probes and close before fault injection.
 3. [completed] Prove real critical-dependency stop/recovery, operation cancellation/timeout and Identity signal/drain behavior; fix the demonstrated idle-pool error. Core candidate: 30/30 affected tasks, all four integration scenarios and executing-agent confirmation pass.
-4. [pending] Verify/pin broker and S3-compatible candidates; prove bounded synthetic message and object-stream round trips, cancellation and cleanup.
+4. [completed] Pin/test Apache Kafka 4.3.1 and VersityGW 1.7.0; prove bounded synthetic delivery, offset replay, object streams/checksums, cancellation, restart and exact cleanup. The closed `core`/`storage`/`broker` test profiles reuse `services/identity/test/integration/integration.ts` and ownership/control guards. Administrative SDKs are test-only. Core was repeated once after the shared harness stabilized; no new production Identity dependency.
 5. [pending] Verify/pin Collector/Prometheus and prove real OTLP export/scrape plus unavailable-exporter shutdown.
 6. [pending] Run combined integration and affected gates, collect one complete review plus confirmation, and capture exact cold/forced evidence only where changed inputs require it.
 7. [pending] Complete protected release and post-merge verification before P01-R10 resource profiles and Docker-only evaluator closeout.
 
 ## Tests
+
+The broker slice uses the already-approved Apache Kafka KRaft alternative: upstream JVM image 4.3.1 (2026-06-25, Apache-2.0), index `sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837` with amd64/arm64 manifests. Redpanda 26.2.2 still carries BSL 1.1 plus an additional-use grant; the Apache alternative avoids adding that conditional license to this runtime. This does not change the Kafka protocol or the accepted context boundary. Add the fixed `broker` fixture profile, `integration-broker.yml` and `broker-worker.ts`; KafkaJS inspection is test-only. Runtime/footprint proof still gates adoption.
 
 - Unit/contract: Existing adapter/lifecycle/security contracts plus focused regressions for defects demonstrated by real integration.
 - Integration: Real PostgreSQL/Redis protocol probes, pool/client disposal, failure/recovery; broker metadata/keyed produce-consume; object stream/checksum/missing/abort; OTLP/Prometheus; bounded service termination.

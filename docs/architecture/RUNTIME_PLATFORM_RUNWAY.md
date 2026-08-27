@@ -208,8 +208,8 @@ P01-R09 selects and pins exact multi-platform images by digest only after licens
 
 | Capability | Primary candidate | Alternative or concern |
 |---|---|---|
-| Kafka-compatible broker | Redpanda single-node runtime | Apache Kafka KRaft if license, compatibility, or lifecycle evidence is stronger |
-| S3-compatible local storage | VersityGW with a POSIX backend | SeaweedFS single-node S3; the archived MinIO repository is not the default |
+| Kafka-compatible broker | Apache Kafka 4.3.1 KRaft, selected for local integration | Approved alternative to Redpanda; Apache-2.0 avoids adding the Redpanda BSL conditional-use grant |
+| S3-compatible local storage | VersityGW 1.7.0 POSIX, selected for local integration | SeaweedFS remains fallback; the archived MinIO repository is not the default |
 | Telemetry transport | OpenTelemetry Collector Contrib | Core Collector if every required receiver/exporter exists |
 | Metrics | Prometheus | no alternative needed before evidence |
 | Traces | Tempo | enabled only when trace work begins or required for the Phase 01 diagnostic |
@@ -217,6 +217,8 @@ P01-R09 selects and pins exact multi-platform images by digest only after licens
 | Diagnosis | Grafana | provisioned dashboards remain minimal and question-driven |
 
 The final selection requires health behavior, startup and shutdown duration, idle CPU and memory, image and volume size, amd64 and arm64 manifests, license, current maintenance, local reset ownership, and protocol smoke evidence.
+
+The local broker/S3 checkpoint uses separate fixed integration profiles and digest-pinned upstream images with amd64/arm64 manifests. Actual execution is measured only on WSL amd64. Kafka keyed delivery, manual commit, cancellation/failure replay, ambiguous publish outcomes and restart pass; S3 authentication rejection, SHA-256/multipart streaming, abort cleanup and restart pass. The [operation guide](../operations/LOCAL_DEVELOPMENT.md#real-broker-and-object-storage-integration) and [raw evidence](../../evidence/phase-01/real-integration.txt) distinguish these tests from the pending evaluator profile, telemetry backend, complete acceptance and release. No product event, bucket/media publication or Identity production dependency was added.
 
 ### Integration matrix
 

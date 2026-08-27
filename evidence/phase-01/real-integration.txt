@@ -143,3 +143,202 @@ exact project ID, inspect ownership, and remove only that fixture.
 Broker/S3/OTLP/Collector/Prometheus/all-adapter shutdown remain P01-R09 work.
 Docker-only application profiles/resource/clean-start proof remain P01-R10.
 No product, media, hosted or release claim.
+
+
+P01-R09 broker/storage checkpoint — 2026-08-27
+=============================================
+Working branch: feat/p01-r09-real-integration, based on local core commit 0fb247c.
+These are integration fixtures, not default application/evaluator profiles.
+Node 24.19.0, pnpm 11.24.0, local Linux Docker 26.0.0, WSL amd64.
+No application adapter or public contract changed in this checkpoint.
+
+Image provenance (upstream references inspected on 2026-08-27)
+- VersityGW v1.7.0, published 2026-07-15T02:34:54Z, Apache-2.0.
+  https://github.com/versity/versitygw/releases/tag/v1.7.0
+  https://raw.githubusercontent.com/versity/versitygw/v1.7.0/LICENSE
+  https://github.com/versity/versitygw/wiki/POSIX-Backend
+  https://github.com/versity/versitygw/wiki/Global-Options
+  Image index sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad
+  linux/amd64 sha256:ef1c6bf0180abd9583da8a0466b3cba1cfc1ed368afebdf7280c0774081d2c82
+  linux/arm64 sha256:06ab1492d9ff5b851dc9e3dfdd4221383ca135c1a42246853ed72e49618ff1d0
+- Apache Kafka JVM 4.3.1, released 2026-06-25, Apache-2.0.
+  https://kafka.apache.org/community/downloads/
+  https://kafka.apache.org/43/getting-started/docker/
+  https://raw.githubusercontent.com/apache/kafka/4.3.1/LICENSE
+  https://raw.githubusercontent.com/apache/kafka/4.3.1/docker/jvm/Dockerfile
+  Image index sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
+  linux/amd64 sha256:ccd1314e47ec76909e01f86308b4dcf2064f19f7c89759234322314b0e319e26
+  linux/arm64 sha256:c2b5172ab20d66381ec1729796a410fd611135821994526d4d42d2f256054af3
+The accepted Apache alternative avoids adding Redpanda's BSL conditional-use grant.
+Redpanda v26.2.2 was inspected but not pulled/adopted:
+https://raw.githubusercontent.com/redpanda-data/redpanda/v26.2.2/licenses/bsl.md
+Manifest inspection proves image availability, not runtime execution on arm64.
+Image and upstream notices remain unmodified; no image rebundling is claimed.
+
+Implementation/workload
+Shared supervisor with closed core/storage/broker profiles, exact-owned cleanup,
+fixed Compose paths, stable allocated loopback ports, bounded IPC/output/child
+lifetimes and natural-exit evidence. SDK administration is test-only.
+Storage: empty, 262144-byte and 7340049-byte deterministic streamed objects;
+SHA-256/full and multipart-composite checksum comparisons; backpressured sink;
+one acknowledged 5242880-byte part before cancelling a held multipart upload;
+zero residual uploads, read cancellation/limit, missing bucket/key, bad credential,
+capacity, paused deadline/cancellation, persistent stop/start, exact fixture delete.
+Broker: one partition/topic/group, keyed messages, explicit starting offset,
+manual commits, cancelled/failed-handler replay, no retry of ambiguous publishes,
+capacity, paused publish abort/timeout, persistent progress after restart,
+exact group/topic deletion, idempotent close and natural process exit.
+No Kafka SASL/TLS, cluster failover, product deduplication or media claim.
+
+Investigations/remediation (test harness, not production adapter changes)
+- First storage run passed all scenarios in 21479 ms and cleaned its exact project.
+- The broker harness initially requested one retry attempt; the accepted idempotent
+  adapter contract requires at least two. Corrected the fixture setting.
+- Initial group metadata is not immediately ready; only coordinator startup codes
+  14/15/16 and the explicit missing-coordinator condition receive bounded read-only
+  retries. Code 69 means the fresh group does not exist, not a broker outage.
+- KafkaJS admin.setOffsets creates a hidden consumer whose default 5000 ms fetch
+  wait conflicts with the inspector deadline. Replaced it with an explicitly owned
+  100 ms-wait initializer, initial commit and disconnect; no production API expansion.
+- First complete broker run passed in 111972 ms. Health logs showed repeated JVM
+  CLI startup exceeding its 5 s deadline, including a valid topic response after
+  the deadline. Its two unpause waits took 30501/30576 ms. Limited the health-only
+  JVM to 16/64 MiB heap, one logical CPU and tier-1 compilation; retained a real
+  Kafka metadata command and an explicit 10 s health deadline. Broker heap is unchanged.
+  Java option reference: https://docs.oracle.com/en/java/javase/21/docs/specs/man/java.html
+
+Command: pnpm integration:broker (final broker source/Compose checkpoint)
+{"event":"fixture_start","project":"aster-integration-7f5eba9fb6f04d899a6fae7ce25aa54b","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":11050}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"broker","cpu":"3.78%","memory":"286.5MiB / 768MiB","pids":"80","imageBytes":441627906,"architecture":"amd64","dataKiB":32}]}
+{"event":"scenario_start","mode":"broker"}
+{"event":"fixture_action","service":"broker","action":"pause","durationMs":271}
+{"event":"fixture_action","service":"broker","action":"unpause","durationMs":7892}
+{"event":"fixture_action","service":"broker","action":"pause","durationMs":236}
+{"event":"fixture_action","service":"broker","action":"unpause","durationMs":8540}
+{"event":"fixture_action","service":"broker","action":"stop","durationMs":1202}
+{"event":"fixture_action","service":"broker","action":"start","durationMs":15043}
+{"event":"broker_topic_ready"}
+{"event":"broker_coordinator_ready"}
+{"event":"broker_initial_offset_ready"}
+{"event":"broker_keyed_delivery","committed":3,"cancelledReplay":"passed","failedReplay":"passed"}
+{"event":"broker_fault_recovery","capacity":"passed","ambiguousAbort":"passed","ambiguousTimeout":"passed","restart":"passed"}
+{"event":"broker_fixture_empty","topics":0,"groups":0}
+{"event":"broker_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"broker"}
+{"event":"broker_integration","outcome":"passed","scenarios":["broker"],"durationMs":50796}
+{"event":"fixture_cleanup","project":"aster-integration-7f5eba9fb6f04d899a6fae7ce25aa54b","remaining":0,"durationMs":1355}
+
+Command: pnpm integration:storage (shared supervisor/resource sample confirmation)
+{"event":"fixture_start","project":"aster-integration-8745b16d0fce4e09aeab8a8c36a98168","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":4300}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"storage","cpu":"0.47%","memory":"24.41MiB / 384MiB","pids":"7","imageBytes":62775913,"architecture":"amd64","dataKiB":4}]}
+{"event":"scenario_start","mode":"storage"}
+{"event":"fixture_action","service":"storage","action":"stop","durationMs":353}
+{"event":"fixture_action","service":"storage","action":"start","durationMs":2855}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":243}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2534}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":253}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2638}
+{"event":"storage_round_trip","bytes":0,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":262144,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":7340049,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_multipart_abort","acknowledgedPartBytes":5242880,"remainingUploads":0}
+{"event":"storage_fault_recovery","restart":"passed","timeout":"passed","cancellation":"passed"}
+{"event":"storage_fixture_empty","objects":0,"multipartUploads":0,"buckets":0}
+{"event":"storage_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"storage"}
+{"event":"storage_integration","outcome":"passed","scenarios":["storage"],"durationMs":17635}
+{"event":"fixture_cleanup","project":"aster-integration-8745b16d0fce4e09aeab8a8c36a98168","remaining":0,"durationMs":1081}
+
+
+Command: pnpm integration:core (shared-harness regression, all four scenarios)
+{"event":"fixture_start","project":"aster-integration-b2f69f6d1e444378b652ffeb442d1e4a","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":6563}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"1.25%","memory":"52.46MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.64%","memory":"12.33MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0}]}
+{"event":"scenario_start","mode":"protocol"}
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"protocol"}
+{"event":"scenario_start","mode":"adapters"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":458}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2796}
+{"event":"fixture_action","service":"postgres","action":"pause","durationMs":248}
+{"event":"fixture_action","service":"postgres","action":"unpause","durationMs":2576}
+{"event":"fixture_action","service":"postgres","action":"pause","durationMs":235}
+{"event":"fixture_action","service":"postgres","action":"unpause","durationMs":2692}
+{"event":"fixture_action","service":"redis","action":"stop","durationMs":430}
+{"event":"fixture_action","service":"redis","action":"start","durationMs":2782}
+{"event":"fixture_action","service":"redis","action":"pause","durationMs":249}
+{"event":"fixture_action","service":"redis","action":"unpause","durationMs":2634}
+{"event":"fixture_action","service":"redis","action":"pause","durationMs":296}
+{"event":"fixture_action","service":"redis","action":"unpause","durationMs":2617}
+{"event":"protocol_probes","postgresql":"completed","redis":"completed"}
+{"event":"postgres_stop_recovery","outcome":"passed"}
+{"event":"postgres_timeout_cancellation","outcome":"passed","reservedSlots":0}
+{"event":"redis_stop_recovery","outcome":"passed"}
+{"event":"redis_cancellation_capacity_timeout","outcome":"passed"}
+{"event":"adapter_close","outcome":"passed","connections":0}
+{"event":"natural_exit","mode":"adapters"}
+{"event":"scenario_start","mode":"identity"}
+{"event":"fixture_action","service":"postgres","action":"stop","durationMs":450}
+{"event":"fixture_action","service":"postgres","action":"start","durationMs":2766}
+{"event":"fixture_action","service":"redis","action":"stop","durationMs":398}
+{"event":"fixture_action","service":"redis","action":"start","durationMs":2902}
+{"event":"identity_dependency_recovery","dependency":"postgres","outcome":"passed"}
+{"event":"identity_dependency_recovery","dependency":"redis","outcome":"passed"}
+{"event":"identity_signal_drain","outcome":"passed","durationMs":58}
+{"event":"natural_exit","mode":"identity"}
+{"event":"scenario_start","mode":"http-drain"}
+{"event":"http_inflight_drain","durationMs":70,"outcome":"passed"}
+{"event":"natural_exit","mode":"http-drain"}
+{"event":"core_integration","outcome":"passed","scenarios":["protocol","adapters","identity","http-drain"],"durationMs":74790}
+{"event":"fixture_cleanup","project":"aster-integration-b2f69f6d1e444378b652ffeb442d1e4a","remaining":0,"durationMs":1726}
+
+Focused guard command: node --test services/identity/dist/test/docker-fixture.test.js
+8 tests; 8 passed; 0 failed; no Docker required (124.469402 ms).
+
+Source fingerprints (sha256, working tree based on 0fb247c)
+acc662904e6931419dae6ddf3c496338ab7cf894ff31b2888282fb23df8cee13  infra/compose/integration-broker.yml
+874ea0caa8538c7207f82cc82bec06b3cae0225200e0476cf022f24dac28ad29  infra/compose/integration-storage.yml
+525e1d658fc4c8d043d129195403e15a2640e7afb48b2d2554f56fd94327e5b1  infra/compose/integration.yml
+acdcc086e07ee8520ec6b62cfdf369fc6a0a98299c1773c2673e382650a8716e  services/identity/test/integration/broker-worker.ts
+81b7152b01d4a9c45165643a09970112c87f72d8fc1dfb80fa7f391f42cdf8a7  services/identity/test/integration/core-worker.ts
+8daf9c142cfbef948977476a61e0c12bba0219fb1bb5993137233c23f65c6b5d  services/identity/test/integration/docker-fixture.ts
+9da33d47b241e3ffb387f58d1fa3134b9b8e79f0f00f3fd544a307d57cc65065  services/identity/test/integration/http-drain.ts
+05dfdb98db97d6e66e3c492071f8b7fc26ca085499f016d4a0120c7ccba993c8  services/identity/test/integration/integration.ts
+3a82a44138a87bd1fdbbffc92b26df1179b156f38349f98a95b29892f5c6bd3c  services/identity/test/integration/storage-worker.ts
+ad8d7e3c710fc8d0eddce9978055de5dc8aa1a50defadc65ffd1fcc2631e90a4  services/identity/test/integration/worker-control.ts
+79ab66d11c557712866d0dc9f9bba0dd3d09e8ee782b1f17344479adfc52c2f7  services/identity/test/docker-fixture.test.ts
+ae6c3bf8763a556eda81bbbd3832ff454c5d8d53ffd81cd1053cc5733e464a1b  services/identity/package.json
+011a52725be5e0877c21e91e8824c4d446d6d71eff4e9f8d41f910160ddea345  package.json
+58f1496a14e6aa56368e95a505b3ea6a954ff6f59eda2b6063f0b763b39fcd0b  pnpm-lock.yaml
+
+Candidate verification
+pnpm check:changed: 49/49 tasks passed, 25 cached, 37.066 s.
+Identity: 28/28 tests, including 8 no-Docker ownership guards.
+ESLint, formatting, typecheck, Knip, architecture, platform, CI policy,
+documentation, memory, secret and existing package tests passed.
+pnpm audit --audit-level=high: No known vulnerabilities found.
+pnpm install --frozen-lockfile --offline: unchanged lockfile; passed in 598 ms.
+Final prose/evidence-only checks: docs 136 files / 2095 headings / 378 links;
+ai-state 10 files / 25 queue items / 52 sessions, P01-R09 active; secrets zero;
+git diff --check passed. No source/Compose changed after the recorded matrix.
+Final Docker inventories filtered by com.aster.scope=p01-r09: zero containers,
+networks and volumes. The same four unrelated containers remain exited:
+5c91b929fa48663a76b372ed63178b089030dd8a83572a80b098d17db0b8133a
+b03fbb6cc926033445c0c0f53f41dddb228a4d4180a4ee5b16b98cff92fd6f8f
+d6bd9b628185e610b58beb7856351d6286b9e0e93b85851b8088f5df06878c05
+b4f5eb2da9c24434beabcbd374effa79a2c724f6e2cf5c012b65f903ab488568
+
+Executing-agent initial review and confirmation found no remaining checkpoint
+blocker. Reviewed fixed profiles/ownership, fresh/inherited mounts, finite worker
+and SDK lifetimes, ambiguous outcomes, manual commit/replay, stream checksums,
+multipart cleanup, resource budgets and dev-only dependency scope. KafkaJS group
+deletion rejects nonzero per-group errors; no successful deletion is inferred
+from merely sending a request. No independent or hosted approval is claimed.
+The heavyweight matrix is not repeated for these evidence/memory-only updates.
+One warm-image WSL amd64 host; resource samples are immediate pre-workload
+observations, not a steady-state benchmark, cross-platform guarantee or SLO.
+No Collector/Prometheus proof, combined whole-item acceptance, protected release,
+Kafka SASL/TLS, distributed failover, media publication or evaluator profile yet.

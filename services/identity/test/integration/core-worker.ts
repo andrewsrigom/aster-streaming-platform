@@ -11,8 +11,9 @@ import {
   type IdentityHttpServer,
 } from "../../src/transport/http-server.js";
 import { configurationEntries, silentLogger } from "../fixtures.js";
-import { eventually, type CoreService } from "./docker-fixture.js";
+import { eventually } from "./docker-fixture.js";
 import { verifyHttpDrain } from "./http-drain.js";
+import { change } from "./worker-control.js";
 
 const mode = process.argv[2];
 const postgresPort = Number(process.argv[3]);
@@ -25,37 +26,9 @@ databaseUrl.username = "aster";
 databaseUrl.password = "aster-test-only";
 const connectionString = databaseUrl.toString();
 const redisUrl = `redis://127.0.0.1:${redisPort}/0`;
-let requestId = 0;
 
 function output(event: string, details: Record<string, unknown> = {}): void {
   process.stdout.write(`${JSON.stringify({ event, ...details })}\n`);
-}
-
-async function change(
-  service: CoreService,
-  action: "stop" | "start" | "pause" | "unpause",
-): Promise<void> {
-  const id = ++requestId;
-  await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      process.off("message", onMessage);
-      reject(new Error("Fixture control deadline exceeded"));
-    }, 60_000);
-    function onMessage(message: unknown): void {
-      if (
-        typeof message === "object" &&
-        message !== null &&
-        (message as Record<string, unknown>)["id"] === id
-      ) {
-        clearTimeout(timer);
-        process.off("message", onMessage);
-        resolve();
-      }
-    }
-    process.on("message", onMessage);
-    assert.equal(typeof process.send, "function");
-    process.send?.({ id, service, action });
-  });
 }
 
 async function adapters(): Promise<void> {

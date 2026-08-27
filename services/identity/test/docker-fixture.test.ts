@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { CoreDockerFixture } from "./integration/docker-fixture.js";
+import { DockerFixture, type FixtureProfile } from "./integration/docker-fixture.js";
 
-function dockerModel() {
+function dockerModel(profile: FixtureProfile = "core") {
+  const services = profile === "core" ? ["postgres", "redis"] : [profile];
+  const volumeName = profile === "core" ? "postgres-data" : `${profile}-data`;
   const calls: string[][] = [];
   let resources: Record<string, Array<Record<string, unknown>>> = {
     container: [],
@@ -12,7 +14,7 @@ function dockerModel() {
   };
   let endpoint = "unix:///var/run/docker.sock";
   let collision = false;
-  const fixture = new CoreDockerFixture((input, environment, timeout) => {
+  const fixture = new DockerFixture(profile, (input, environment, timeout) => {
     assert.ok(timeout > 0 && timeout <= 120_000);
     const args = input[0] === "--host" ? input.slice(2) : input;
     calls.push(args);
@@ -35,12 +37,12 @@ function dockerModel() {
     }
     if (args[0] === "compose") {
       if (args.includes("config")) {
-        return result("postgres\nredis");
+        return result(services.join("\n"));
       }
       assert.ok(args.includes("up"));
       const composeFile = args[args.indexOf("--file") + 1];
       resources = {
-        container: ["postgres", "redis"].map((service, index) => ({
+        container: services.map((service, index) => ({
           Id: String(index + 1).repeat(64),
           Name: `/${project}-${service}-1`,
           Config: {
@@ -52,8 +54,8 @@ function dockerModel() {
           },
           State: { Paused: false },
           Mounts:
-            service === "postgres"
-              ? [{ Type: "volume", Name: `${project}_postgres-data` }]
+            service !== "redis"
+              ? [{ Type: "volume", Name: `${project}_${volumeName}` }]
               : [{ Type: "tmpfs" }],
         })),
         network: [
@@ -66,10 +68,10 @@ function dockerModel() {
         ],
         volume: [
           {
-            Name: `${project}_postgres-data`,
+            Name: `${project}_${volumeName}`,
             Labels: {
               ...labels,
-              "com.docker.compose.volume": "postgres-data",
+              "com.docker.compose.volume": volumeName,
               "com.aster.authority": "disposable-fixture",
               "com.aster.owner": "integration",
             },
@@ -181,4 +183,34 @@ test("fixture cleanup refuses foreign mounts and network attachments", async () 
     await assert.rejects(model.fixture.cleanup());
     assert.ok(!model.calls.some((args) => args[1] === "rm"));
   }
+});
+
+test("storage cleanup owns only its fixed service and volume, not the core profile", async () => {
+  const model = dockerModel("storage");
+  await model.fixture.start();
+  await assert.rejects(model.fixture.change("postgres", "stop"), /outside this fixture profile/);
+  assert.equal(model.fixture.hasService("storage"), true);
+  assert.equal(model.fixture.hasService("postgres"), false);
+  await model.fixture.cleanup();
+  assert.deepEqual(
+    model.calls.filter((args) => args[1] === "rm").map((args) => args.at(-1)),
+    ["1".repeat(64), `${model.fixture.project}_storage-data`, "3".repeat(64)],
+  );
+});
+
+test("broker cleanup removes its exact named volume and rejects an anonymous image volume", async () => {
+  const model = dockerModel("broker");
+  await model.fixture.start();
+  const container = model.resources()["container"]?.[0];
+  assert.ok(container);
+  const originalMounts = container["Mounts"];
+  container["Mounts"] = [{ Type: "volume", Name: "anonymous-unowned" }];
+  await assert.rejects(model.fixture.cleanup(), /Unexpected fixture mount/);
+  assert.ok(!model.calls.some((args) => args[1] === "rm"));
+  container["Mounts"] = originalMounts;
+  await model.fixture.cleanup();
+  assert.deepEqual(
+    model.calls.filter((args) => args[1] === "rm").map((args) => args.at(-1)),
+    ["1".repeat(64), `${model.fixture.project}_broker-data`, "3".repeat(64)],
+  );
 });

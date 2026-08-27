@@ -8,11 +8,23 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
 const execute = promisify(execFile);
-const composeFile = fileURLToPath(
-  new URL("../../../../../infra/compose/integration.yml", import.meta.url),
-);
 const scope = "p01-r09";
 export type CoreService = "postgres" | "redis";
+export type FixtureService = CoreService | "storage" | "broker";
+export type FixtureProfile = "core" | "storage" | "broker";
+const servicePorts: Readonly<Record<FixtureService, number>> = {
+  postgres: 5432,
+  redis: 6379,
+  storage: 9000,
+  broker: 9092,
+};
+const profiles: Readonly<
+  Record<FixtureProfile, { file: string; services: readonly FixtureService[]; volume: string }>
+> = {
+  core: { file: "integration.yml", services: ["postgres", "redis"], volume: "postgres-data" },
+  storage: { file: "integration-storage.yml", services: ["storage"], volume: "storage-data" },
+  broker: { file: "integration-broker.yml", services: ["broker"], volume: "broker-data" },
+};
 type ResourceKind = "container" | "network" | "volume";
 type RecordValue = Record<string, unknown>;
 type Resource = Readonly<{ id: string; name: string; value: RecordValue; labels: RecordValue }>;
@@ -68,13 +80,30 @@ export async function eventually(
   assert.fail(`Timed out: ${description}`);
 }
 
-export class CoreDockerFixture {
-  constructor(private readonly command: DockerCommand = runDocker) {}
+export class DockerFixture {
+  constructor(
+    readonly profile: FixtureProfile = "core",
+    private readonly command: DockerCommand = runDocker,
+  ) {}
+
+  private get definition() {
+    return profiles[this.profile];
+  }
+
+  private get composeFile(): string {
+    return fileURLToPath(
+      new URL(`../../../../../infra/compose/${this.definition.file}`, import.meta.url),
+    );
+  }
+
+  hasService(value: unknown): value is FixtureService {
+    return this.definition.services.some((service) => service === value);
+  }
 
   readonly project = `aster-integration-${randomUUID().replaceAll("-", "")}`;
   private endpoint: string | undefined;
   private created = false;
-  private ports: Readonly<{ postgres: number; redis: number }> | undefined;
+  private readonly ports: Partial<Record<FixtureService, number>> = {};
   private readonly environment = Object.fromEntries(
     Object.entries(process.env).filter(
       ([key]) => !key.startsWith("DOCKER_") && !key.startsWith("COMPOSE_"),
@@ -88,8 +117,12 @@ export class CoreDockerFixture {
         {
           ...this.environment,
           ASTER_INTEGRATION_PROJECT: this.project,
-          ASTER_INTEGRATION_POSTGRES_PORT: String(this.ports?.postgres ?? ""),
-          ASTER_INTEGRATION_REDIS_PORT: String(this.ports?.redis ?? ""),
+          ...Object.fromEntries(
+            Object.entries(this.ports).map(([service, port]) => [
+              `ASTER_INTEGRATION_${service.toUpperCase()}_PORT`,
+              String(port),
+            ]),
+          ),
         },
         timeout,
       );
@@ -110,7 +143,7 @@ export class CoreDockerFixture {
         "--project-name",
         this.project,
         "--file",
-        composeFile,
+        this.composeFile,
         ...args,
       ],
       timeout,
@@ -127,7 +160,10 @@ export class CoreDockerFixture {
       `label=com.docker.compose.project=${this.project}`,
     ]);
     const identifiers = output.split(/\s+/).filter(Boolean);
-    assert.ok(identifiers.length <= (kind === "container" ? 2 : 1), "Unexpected fixture inventory");
+    assert.ok(
+      identifiers.length <= (kind === "container" ? this.definition.services.length : 1),
+      "Unexpected fixture inventory",
+    );
     if (identifiers.length === 0) {
       return [];
     }
@@ -142,17 +178,17 @@ export class CoreDockerFixture {
       assert.equal(labels["com.aster.scope"], scope);
       if (kind === "container") {
         const service = labels["com.docker.compose.service"];
-        assert.ok(service === "postgres" || service === "redis", "Unowned fixture service");
+        assert.ok(this.hasService(service), "Unowned fixture service");
         assert.equal(name, `${this.project}-${service}-1`);
-        assert.equal(labels["com.docker.compose.project.config_files"], composeFile);
+        assert.equal(labels["com.docker.compose.project.config_files"], this.composeFile);
       } else if (kind === "network") {
         assert.equal(labels["com.docker.compose.network"], "platform");
         assert.equal(name, `${this.project}_platform`);
       } else {
-        assert.equal(labels["com.docker.compose.volume"], "postgres-data");
+        assert.equal(labels["com.docker.compose.volume"], this.definition.volume);
         assert.equal(labels["com.aster.authority"], "disposable-fixture");
         assert.equal(labels["com.aster.owner"], "integration");
-        assert.equal(name, `${this.project}_postgres-data`);
+        assert.equal(name, `${this.project}_${this.definition.volume}`);
       }
       const id = kind === "volume" ? name : textField(value["Id"]);
       if (kind !== "volume") {
@@ -210,23 +246,22 @@ export class CoreDockerFixture {
           }),
       };
     };
-    const postgres = await reserve();
+    const reservations: Array<Awaited<ReturnType<typeof reserve>>> = [];
     try {
-      const redis = await reserve();
-      try {
-        this.ports = { postgres: postgres.port, redis: redis.port };
-      } finally {
-        await redis.release();
+      for (const service of this.definition.services) {
+        const reservation = await reserve();
+        reservations.push(reservation);
+        this.ports[service] = reservation.port;
       }
     } finally {
-      await postgres.release();
+      await Promise.all(reservations.map((reservation) => reservation.release()));
     }
     // Explicit allocated ports survive container stop/start; Docker's port=0 does not.
     // A competing bind fails startup safely instead of killing or reusing another service.
-    assert.deepEqual((await this.compose(["config", "--services"])).split(/\s+/).sort(), [
-      "postgres",
-      "redis",
-    ]);
+    assert.deepEqual(
+      (await this.compose(["config", "--services"])).split(/\s+/).sort(),
+      [...this.definition.services].sort(),
+    );
     for (const kind of ["container", "network", "volume"] as const) {
       assert.equal((await this.inventory(kind)).length, 0, "Fixture project already exists");
       const nameCollision = await this.docker([
@@ -241,12 +276,13 @@ export class CoreDockerFixture {
     }
     this.created = true;
     await this.compose(["up", "--detach", "--wait", "--wait-timeout", "60"], 120_000);
-    assert.equal((await this.inventory("container")).length, 2);
+    assert.equal((await this.inventory("container")).length, this.definition.services.length);
     assert.equal((await this.inventory("network")).length, 1);
     assert.equal((await this.inventory("volume")).length, 1);
   }
 
-  private async container(service: CoreService): Promise<Resource> {
+  private async container(service: FixtureService): Promise<Resource> {
+    assert.ok(this.hasService(service), "Service is outside this fixture profile");
     const matching = (await this.inventory("container")).filter(
       (item) => item.labels["com.docker.compose.service"] === service,
     );
@@ -254,21 +290,21 @@ export class CoreDockerFixture {
     return matching[0] as Resource;
   }
 
-  async port(service: CoreService): Promise<number> {
+  async port(service: FixtureService): Promise<number> {
     const container = await this.container(service);
     const ports = record(record(container.value["NetworkSettings"])["Ports"]);
-    const bindings: unknown = ports[service === "postgres" ? "5432/tcp" : "6379/tcp"];
+    const bindings: unknown = ports[`${servicePorts[service]}/tcp`];
     assert.ok(Array.isArray(bindings) && bindings.length === 1);
     const binding = record(bindings[0]);
     assert.equal(binding["HostIp"], "127.0.0.1");
     const port = Number(textField(binding["HostPort"]));
     assert.ok(Number.isSafeInteger(port) && port >= 1024 && port <= 65535);
-    assert.equal(port, this.ports?.[service], "Fixture port changed across restart");
+    assert.equal(port, this.ports[service], "Fixture port changed across restart");
     return port;
   }
 
   async change(
-    service: CoreService,
+    service: FixtureService,
     action: "stop" | "start" | "pause" | "unpause",
   ): Promise<void> {
     const container = await this.container(service);
@@ -289,6 +325,41 @@ export class CoreDockerFixture {
     }
   }
 
+  async sampleResources(): Promise<ReadonlyArray<Record<string, unknown>>> {
+    const samples: Array<Record<string, unknown>> = [];
+    const dataPaths: Readonly<Record<FixtureService, string>> = {
+      postgres: "/var/lib/postgresql",
+      redis: "/data",
+      storage: "/data",
+      broker: "/var/lib/kafka/data",
+    };
+    for (const service of this.definition.services) {
+      const container = await this.container(service);
+      const sample = record(
+        JSON.parse(
+          await this.docker(["stats", "--no-stream", "--format", "{{json .}}", container.id]),
+        ) as unknown,
+      );
+      const imageId = textField(container.value["Image"]);
+      assert.match(imageId, /^sha256:[a-f0-9]{64}$/);
+      const image = records(await this.docker(["image", "inspect", imageId]))[0];
+      assert.ok(image);
+      const data = await this.docker(["exec", container.id, "du", "-sk", dataPaths[service]]);
+      const dataKiB = Number(data.split(/\s+/)[0]);
+      assert.ok(Number.isSafeInteger(dataKiB) && dataKiB >= 0);
+      samples.push({
+        service,
+        cpu: textField(sample["CPUPerc"]),
+        memory: textField(sample["MemUsage"]),
+        pids: textField(sample["PIDs"]),
+        imageBytes: image["Size"],
+        architecture: image["Architecture"],
+        dataKiB,
+      });
+    }
+    return samples;
+  }
+
   async cleanup(): Promise<void> {
     if (!this.created) {
       return;
@@ -303,7 +374,8 @@ export class CoreDockerFixture {
         const item = record(mount);
         assert.ok(
           item["Type"] === "tmpfs" ||
-            (item["Type"] === "volume" && item["Name"] === `${this.project}_postgres-data`),
+            (item["Type"] === "volume" &&
+              item["Name"] === `${this.project}_${this.definition.volume}`),
           "Unexpected fixture mount",
         );
       }

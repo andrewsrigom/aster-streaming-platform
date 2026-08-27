@@ -1,0 +1,65 @@
+name: ${ASTER_INTEGRATION_PROJECT:?Run through pnpm integration:storage}
+
+x-fixture-labels: &fixture-labels
+  com.aster.environment: integration
+  com.aster.scope: p01-r09
+  com.aster.fixture: ${ASTER_INTEGRATION_PROJECT:?Run through pnpm integration:storage}
+
+services:
+  storage:
+    image: docker.io/versity/versitygw:v1.7.0@sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad
+    labels: *fixture-labels
+    entrypoint: ["/usr/local/bin/versitygw"]
+    command:
+      - --port
+      - :9000
+      - --health
+      - /health
+      - --quiet
+      - --max-connections
+      - "64"
+      - --max-requests
+      - "16"
+      - posix
+      - --concurrency
+      - "8"
+      - /data
+    environment:
+      ROOT_ACCESS_KEY: aster-test-access
+      ROOT_SECRET_KEY: aster-test-only
+    ports:
+      - "127.0.0.1:${ASTER_INTEGRATION_STORAGE_PORT:?Run through pnpm integration:storage}:9000"
+    networks: [platform]
+    volumes:
+      - storage-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 1
+    mem_limit: 384m
+    pids_limit: 96
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9000/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  platform:
+    labels: *fixture-labels
+
+volumes:
+  storage-data:
+    labels:
+      <<: *fixture-labels
+      com.aster.authority: disposable-fixture
+      com.aster.owner: integration

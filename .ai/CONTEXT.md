@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-The repository foundation and Phase 01 technical packages exist. Released P01-R08 provides a product-empty Identity entrypoint, bounded health/lifecycle composition and a controlled loopback diagnostic. No containerized product service, product schema/resolver/migration, broker/object-storage runtime or observability backend exists yet. P01-R09 owns the next real integration proof.
+The repository foundation and Phase 01 technical packages exist. Released P01-R08 provides a product-empty Identity entrypoint, bounded health/lifecycle composition and a controlled loopback diagnostic. P01-R09 provides separate local PostgreSQL/Redis, Kafka and S3 integration fixtures. No containerized product service, product schema/resolver/migration, default broker/object-storage application profile or observability backend exists yet.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 01 — Local Platform and Runtime Skeleton**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-P01-R05 through P01-R08 are released. P01-R09 is active from squash `f174aa6`: its PostgreSQL/Redis/Identity core checkpoint passes 30/30 affected tasks and four real integration scenarios, including timeout, cancellation, readiness recovery and HTTP drain. A demonstrated unhandled PostgreSQL idle-pool error is corrected. Continue with broker/S3 and Collector/Prometheus proof within P01-R09. P01-R10 Docker-only closeout remains later work.
+P01-R05 through P01-R08 are released. P01-R09 is active from squash `f174aa6`; the core checkpoint is committed at `0fb247c`. Core/Kafka/S3 integration, offset replay, multipart cleanup, 49/49 affected tasks and audit pass locally. Continue Collector/Prometheus and whole-item acceptance. P01-R10 Docker-only closeout remains later work.

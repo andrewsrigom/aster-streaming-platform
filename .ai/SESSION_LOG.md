@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Real Kafka and S3 integration checkpoint
+
+### Completed
+
+- Added separate digest-pinned Apache Kafka 4.3.1 KRaft and VersityGW 1.7.0 POSIX fixtures, shared bounded supervision and exact-owned cleanup. SDK administration stays test-only; no production adapter or Identity dependency change.
+- Proved keyed delivery/manual commit, cancelled and failed handler replay, ambiguous publish outcomes, multipart SHA-256/backpressure/cancellation cleanup, credential rejection, dependency restart and natural client exit.
+- Corrected only test-harness initialization and reduced Kafka health CLI overhead. No remote pipeline or additional product behavior.
+
+### Evidence
+
+- Broker passed in 50.796 s; storage in 17.635 s; the shared-harness four-scenario core regression in 74.790 s. Eight no-Docker ownership tests and Identity 28/28 tests pass.
+- `pnpm check:changed`: 49/49 tasks, 25 cached, 37.066 s. Documentation, memory, architecture, formatting, lint, secrets and existing tests pass; high-severity audit reports no known vulnerability. All fixture resources are removed and the same four unrelated stopped containers remain.
+- Source fingerprints, exact commands, resource samples, primary image references and limitations: `evidence/phase-01/real-integration.txt`. Executing-agent initial/confirmation review, not independent or hosted approval.
+
+### Next action
+
+Continue P01-R09 with Collector/Prometheus and real export/scrape/failure proof, then complete acceptance and protected release. P01-R10 and product functionality remain later work.
+
 ## 2026-08-27 — Real core integration and idle-pool disconnect correction
 
 ### Completed

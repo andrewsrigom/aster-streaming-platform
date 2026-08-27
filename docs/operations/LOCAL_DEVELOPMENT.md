@@ -2,7 +2,7 @@
 
 ## Current status
 
-The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds the explicit real integration laboratory below. No product schema, broker/object-store runtime, telemetry backend, or playable journey exists yet.
+The Docker-only infrastructure checkpoint uses exact PostgreSQL and Redis images, health-gated initialization, ongoing status, explicit Aster project selection, bounded resources, persistent PostgreSQL state, disposable Redis state, an internal network, and no host ports. [P01-R02 evidence](../../evidence/phase-01/local-reset.txt) covers scoped reset and preservation behavior. Released P01-R08 adds an executable Node Identity reference process and loopback health diagnostic, separately from Compose. P01-R09 adds explicit real PostgreSQL/Redis, Kafka and S3 integration laboratories below. No product schema, default broker/object-store application profile, telemetry backend, or playable journey exists yet.
 
 ### Identity reference process
 
@@ -45,7 +45,24 @@ The command builds Identity and runs four bounded subprocess scenarios: protocol
 
 Stopping/pausing a dependency and final deletion require inspected exact project, fixture, service, environment and scope labels. Cleanup validates all containers, mounts, the network and volume before removing exact IDs. It runs after success, worker failure and handled interruption, then checks for residual resources. Only the disposable synthetic PostgreSQL volume is deleted irreversibly; images are retained. No global prune or default-project reset is used. A parent `SIGKILL` or unavailable daemon can prevent cleanup: retain the printed project ID, inspect its exact ownership, and do not apply the default Aster reset or a broad prefix deletion.
 
-The core slice is implemented with [real integration evidence](../../evidence/phase-01/real-integration.txt); the complete P01-R09 broker/S3/Collector/Prometheus matrix and P01-R10 Docker-only application profile remain pending. The held handler is test-only, not a product GraphQL endpoint. Native Windows signal semantics remain unsupported by this command; use WSL.
+The core slice is implemented with [real integration evidence](../../evidence/phase-01/real-integration.txt). The held handler is test-only, not a product GraphQL endpoint. Native Windows signal semantics remain unsupported by this command; use WSL.
+
+### Real broker and object-storage integration
+
+With the same pinned Linux/WSL toolchain and local Docker:
+
+```bash
+pnpm integration:broker
+pnpm integration:storage
+```
+
+Each command owns a separate disposable project through the same guarded supervisor. The broker laboratory uses digest-pinned Apache Kafka 4.3.1 in single-node KRaft, a synthetic topic/group, keyed delivery, manual offset inspection, cancellation/failure replay, bounded capacity, ambiguous publish outcomes, stop/restart and natural client exit. It uses plaintext on an allocated loopback port; SASL/TLS, distributed failover and product outbox/deduplication are not claimed. The small health CLI has its own JVM budget, independent of the broker heap.
+
+The S3 laboratory uses digest-pinned VersityGW 1.7.0 with a POSIX volume. It checks a missing bucket, bad credentials, empty/small/multipart objects, SHA-256 including multipart composite checksums, streaming read backpressure, read size/cancellation, acknowledged multipart abort cleanup, pause/timeout and persistence across restart. It creates no media title. Administrative SDKs are test-only dependencies, not new Identity runtime dependencies.
+
+Both fixtures use finite CPU/memory/PID/log limits, read-only roots, dropped capabilities, no-new-privileges and no host bind mounts. Kafka runs as the upstream non-root user; the storage fixture runs as root with all capabilities dropped to initialize its fresh owned POSIX volume. Only synthetic data is allowed. Cleanup verifies the exact owned volume before irreversible removal; image caches are retained. The supervisor reports startup/actions/cleanup and one pre-workload resource sample, not a steady-state benchmark. The ownership and interrupted-cleanup rules in the core section apply unchanged.
+
+Broker and S3 protocol scenarios pass locally; Collector/Prometheus, combined P01-R09 acceptance/protected release and the P01-R10 Docker-only application profile remain pending. See [raw integration evidence](../../evidence/phase-01/real-integration.txt).
 
 ### Pinned repository bootstrap
 

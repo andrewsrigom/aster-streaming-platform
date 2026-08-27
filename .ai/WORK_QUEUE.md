@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-P01-R08 is released through PR 16 squash `f174aa6`, with protected and post-merge CI passing. P01-R09's isolated PostgreSQL/Redis/Identity checkpoint passes 30/30 affected tasks and four real integration scenarios. Continue with broker/S3 and Collector/Prometheus within the same active item; do not publish or mark P01-R09 done before the complete matrix.
+P01-R08 is released through PR 16 squash `f174aa6`, with protected and post-merge CI passing. P01-R09's core, Kafka and S3 integration, 49/49 affected tasks and audit pass locally. Continue Collector/Prometheus within the same active item; do not publish or mark P01-R09 done before the complete matrix.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
