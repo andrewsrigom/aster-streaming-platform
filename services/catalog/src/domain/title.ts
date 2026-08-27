@@ -35,7 +35,10 @@ export interface ValidatedPublicationReference {
   readonly validatedAt: number;
 }
 
-function publication(value: unknown, now: number): ValidatedPublicationReference | undefined {
+export function normalizePublication(
+  value: unknown,
+  now: number,
+): ValidatedPublicationReference | undefined {
   const input = catalogRecord(value, [
     "id",
     "titleId",
@@ -123,7 +126,7 @@ function eligibleMedia(
   if (!approved || approved.titleId !== title.id || approved.revision !== title.rightsRevision) {
     return undefined;
   }
-  const ready = publication(media, now);
+  const ready = normalizePublication(media, now);
   if (
     !ready ||
     ready.titleId !== title.id ||

@@ -1,0 +1,485 @@
+P03-R06 — local editorial workflow checkpoint
+Recorded 2026-08-27T14:35:24Z; branch feat/p03-catalog-rights; base 12db9fba47346de2ee98aa1a8d7e4bee3e2d9d44.
+Environment: WSL Linux amd64, Node 24.19.0, pnpm 11.24.0; PostgreSQL 18.6 uses the existing digest-pinned Compose image.
+Status: locally verified. The end-of-file closeout contains final fingerprints and gates; earlier entries preserve checkpoint history.
+
+Scope: Catalog commands, guarded local CLI, immutable rights/metadata audit, publication references, 24-hour receipts and versioned publish/retire outbox.
+Requirements: P03-R06 plus supporting P03-R01/R03/R04/R07/R08/R10.
+Owner/trust: Catalog only; OS-owned local operator, never viewer JWT or input-selected authority. No actual media approval/validation, public API, hosted access or remote release.
+Rollback: source revert before publication; migration downs only for driver-owned disposable fixtures. Real rights/audit/outbox must be preserved and recovered by roll-forward.
+
+Review: one initial author review and one confirmation, not independent approval.
+Initial review addressed coupled receipt/outbox takedown capacity, immutable artwork-review snapshots, expiry before commit, CLI database-failure classification and missing clarify/reject/example tests.
+Confirmation: inspected final authorization, transaction boundaries, replay, limits, cleanup and CLI wiring; no known active requirement/security/data/availability blocker remains. Candidate gate still required.
+During implementation, TypeScript descriptor/AbortSignal annotations and test trace-field expectations were corrected. The migration round-trip test had to restore fixture role membership after dropping/recreating the role; no production permission bypass was introduced.
+No new registry dependency/version was introduced. Existing @aster/runtime/@aster/telemetry/pg pins are reused; only Catalog importer dependency scopes changed.
+Retain Phase 02 heavyweight evidence: Identity source, Docker packaging, topology and schema are unchanged. The four retained containers are healthy. Integration touched only its new labelled tmpfs-only PostgreSQL fixture, then removed it.
+
+Source fingerprints (exclude documentation; changes after this checkpoint must be evaluated against repeat triggers):
+2084990c5323a6956e3d0d3d5f28c94463fc17d62abfe0960b167b57d542ec69  services/catalog/migrations/0001-rights-history.down.sql
+fc818734016235d2c5ed634862e670e38b0a5d646636caa2fa540c25d5d7b9b7  services/catalog/migrations/0001-rights-history.up.sql
+3d93597b768440c27647b9c2c0b41a2a0a0fbe2fbba0eb8f25e74f25c02b70b5  services/catalog/migrations/0002-editorial-workflow.down.sql
+d89d0f9949738b342c16553c4bffc9a2c94d14d86ac51c43e52fda2eccce8bc2  services/catalog/migrations/0002-editorial-workflow.up.sql
+073c9e34e984cc20d60f4f1cc448db95e5c797b5f558ebbfcf9e9a3420b08063  services/catalog/src/application/command-input.ts
+37567ff7cabecbc233e88eb0f54cedf5ce8a6f9987c4020a341d98e7041416eb  services/catalog/src/application/commands.ts
+17666d0f412cc2a65139c6de0786df55dc40c3a09989f57944469edf6673a557  services/catalog/src/application/operator-ports.ts
+3f6fc40253ce5d3bb3dd58e40c0b8f93536541860c0137123fb4c12b5d09e534  services/catalog/src/application/rights-ports.ts
+02597801b7291a9c904cb27451f369b51325d5ee3d0aeb007b577f9d01b70725  services/catalog/src/domain/metadata.ts
+9d953524ada1f95da81d3a46aa4049ad7eec7849a7a68c7090e97a93b4e29e97  services/catalog/src/domain/rights.ts
+1c047cb492e131d34cf1502b2893a5fe9e988278baa7ab361d5a60d42667623f  services/catalog/src/domain/title.ts
+ba1fdcd261851cda09d8b0b5a4d22cd4f06bb18e02282ab9b1c9d8114104e965  services/catalog/src/domain/values.ts
+07add36ffa82d473636dc92925b83fe3bc6d554390cefb394a27793e18b63c83  services/catalog/src/index.ts
+bd7278fe1f4adf9a4449b907d24a5e6d63b262e4679a032ab0d72fb8d05437ab  services/catalog/src/infrastructure/identity/local-configuration.ts
+984173de4be0eeb83fe06d6e5088c427f13c7e9d760eaef94bd90f514293adbc  services/catalog/src/infrastructure/identity/local-operator.ts
+74843e2de71f5e1f1a51666528253838b59bc71139e8f9679fca4580c1a28ea7  services/catalog/src/infrastructure/persistence/local-migrations.ts
+6228ad4be237108fd1929e9c10c4079598f5982510cd793853de5a467399da67  services/catalog/src/infrastructure/persistence/postgres-rights.ts
+8d14b75d336eba51720c36904476dbc6d0def19fc677c47102d90bb025c52b66  services/catalog/src/infrastructure/persistence/postgres-workflow.ts
+c109fa0060a0a8aeb0386d984cdee8284715857fdfcf459ff7eb3245f33264e4  services/catalog/src/migrate-local.ts
+f77eec2d4de6d733f33c61a89c55910dc2fb0eceadcf9d4eb48a2b61b6cb058a  services/catalog/src/operate-local.ts
+788efbfae4477be8f4c731b420710f146254f97fab16fde06893f60d1c7aff39  services/catalog/src/transport/operator-input.ts
+95e75d77c66d84a03220c013265d0ea400bee6dcb312548e16924b3e7ab6b823  services/catalog/test/catalog-domain.test.ts
+e6c677449f3b8e645aabfd306ed36b349666d774816bc19ee0556021766b37e6  services/catalog/test/catalog-workflow.test.ts
+41033195116ac0123a221b67f531dda0af53ebb91ce5de234e8ccd3c3438749b  services/catalog/test/integration/operator-cli.ts
+8d9f31be35f0308e189f13c9b3351c3761e2be3b8f2f9523cc2d86f5ee7f023d  services/catalog/test/integration/rights-postgres.ts
+b30e39c60d270162ed449ede002f50d9254c7b98d097c93e493fcedf6a4cd912  services/catalog/test/integration/workflow-postgres.ts
+0f37d1463b7820a24c613150c56614339a2d67330e4e72db1bb40baa721e9981  services/catalog/test/operator-input.test.ts
+21dc735837ca38de7efe8cdb275cb896fe6e089246786449439a8f77b4686c75  services/catalog/test/postgres-rights.test.ts
+fd0daf1477ea03dbdc918ee88d5320b8e1bcf1e38d900ab658297b9880ffce95  services/catalog/test/rights-fixture.ts
+5331c175175f721d5389556563e793f665ae30d57cdb53fd796c30bbf734e3e4  services/catalog/test/workflow-fixture.ts
+
+Command: pnpm --filter @aster/catalog test
+$ node --test ./dist/test/*.test.js
+✔ complete reviewed rights approve without acquiring media and derive exact attribution (5.215637ms)
+▶ every required reviewed field and explicit permission must be resolved
+  ✔ workTitle (0.94924ms)
+  ✔ creator (0.228595ms)
+  ✔ copyrightHolder (1.004047ms)
+  ✔ canonicalSourceUrl (0.228664ms)
+  ✔ assetSourceUrl (0.19778ms)
+  ✔ licenseName (0.235714ms)
+  ✔ licenseVersion (0.366272ms)
+  ✔ licenseUrl (0.692563ms)
+  ✔ attributionText (2.688112ms)
+  ✔ modificationNotice (0.17308ms)
+  ✔ thirdPartyMaterialNotes (0.290038ms)
+  ✔ trademarkNotes (0.121426ms)
+  ✔ redistributionAllowed (0.346395ms)
+  ✔ commercialUseAllowed (0.20439ms)
+  ✔ modificationAllowed (0.175587ms)
+  ✔ shareAlikeRequired (0.395684ms)
+  ✔ technicalRestrictions (0.368604ms)
+  ✔ reviewedAt (0.96378ms)
+  ✔ reviewedBy (0.189249ms)
+✔ every required reviewed field and explicit permission must be resolved (13.073765ms)
+✔ contradictory use, unreviewed state, expiry and invalid clocks fail closed (2.438427ms)
+✔ unknown fields, hostile accessors, invalid identifiers, URLs and oversized evidence are rejected (1.475271ms)
+▶ the full 25-pair lifecycle table rejects every skipped or repeated transition
+  ✔ DRAFT -> DRAFT (0.658478ms)
+  ✔ DRAFT -> RIGHTS_REVIEWED (0.307331ms)
+  ✔ DRAFT -> MEDIA_READY (0.143974ms)
+  ✔ DRAFT -> PUBLISHED (0.1597ms)
+  ✔ DRAFT -> RETIRED (0.144981ms)
+  ✔ RIGHTS_REVIEWED -> DRAFT (0.132311ms)
+  ✔ RIGHTS_REVIEWED -> RIGHTS_REVIEWED (0.159186ms)
+  ✔ RIGHTS_REVIEWED -> MEDIA_READY (0.67862ms)
+  ✔ RIGHTS_REVIEWED -> PUBLISHED (0.420836ms)
+  ✔ RIGHTS_REVIEWED -> RETIRED (0.186753ms)
+  ✔ MEDIA_READY -> DRAFT (0.125044ms)
+  ✔ MEDIA_READY -> RIGHTS_REVIEWED (0.130332ms)
+  ✔ MEDIA_READY -> MEDIA_READY (0.402455ms)
+  ✔ MEDIA_READY -> PUBLISHED (0.469006ms)
+  ✔ MEDIA_READY -> RETIRED (0.129999ms)
+  ✔ PUBLISHED -> DRAFT (0.10611ms)
+  ✔ PUBLISHED -> RIGHTS_REVIEWED (0.110253ms)
+  ✔ PUBLISHED -> MEDIA_READY (0.140741ms)
+  ✔ PUBLISHED -> PUBLISHED (0.102758ms)
+  ✔ PUBLISHED -> RETIRED (0.130619ms)
+  ✔ RETIRED -> DRAFT (0.331884ms)
+  ✔ RETIRED -> RIGHTS_REVIEWED (0.218161ms)
+  ✔ RETIRED -> MEDIA_READY (0.10734ms)
+  ✔ RETIRED -> PUBLISHED (0.491457ms)
+  ✔ RETIRED -> RETIRED (0.110193ms)
+✔ the full 25-pair lifecycle table rejects every skipped or repeated transition (11.707681ms)
+✔ rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication (4.913553ms)
+✔ retirement survives disputed rights; reopening requires a newer review and new media linkage (0.931011ms)
+✔ public visibility rechecks current rights; malformed lifecycle and overflowing versions cannot advance (1.32386ms)
+✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events (42.109357ms)
+✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed (1.790582ms)
+✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time (0.549987ms)
+✔ exact replay preserves response and audit; changed input, actor, version or command conflicts (14.179381ms)
+✔ unresolved review, expired rights and foreign/unattested media never publish (14.721989ms)
+✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures (14.545435ms)
+✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields (0.893069ms)
+✔ artwork receives its own operator review and cannot silently substitute a different source (1.410469ms)
+✔ documented draft example is executable but cannot approve unresolved rights (18.197221ms)
+✔ clarification, rejection and expiry have explicit transitions without silent approval (5.726467ms)
+✔ CLI reads exactly one bounded UTF-8 command and rejects malformed/extra/oversized input (9.288899ms)
+✔ CLI database guard separates administrator/runtime and excludes hosted or cross-context endpoints (1.202639ms)
+✔ operator inspection is authorized and read-only; publication rechecks expiry before commit (19.056702ms)
+✔ append atomically advances title, inserts facts and provenance with bounded parameters (7.88371ms)
+✔ stale append returns false without facts or provenance inserts (0.668987ms)
+✔ invalid rights, versions and provenance reject before SQL (9.394255ms)
+✔ large Unicode records preserve surrogate pairs within the shared parameter limit (0.901974ms)
+✔ aggregate rights payload has a byte bound even if each field is individually valid (2.685021ms)
+✔ draft creation, missing title and existing title use explicit results (0.770704ms)
+✔ title and revision reads validate owner, linkage, timestamps and persisted domain fields (8.857496ms)
+✔ history keysets are bounded, descending, owner-filtered and immutable (6.807108ms)
+✔ caller rejection rolls back and adapter outcomes never become success (0.930834ms)
+ℹ tests 74
+ℹ suites 0
+ℹ pass 74
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 323.902629
+
+Command: pnpm catalog:integration
+$ turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs
+• turbo 2.10.12
+
+   • Packages in scope: @aster/catalog
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache miss, executing fd94d8751e6449b1
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    4 successful, 4 total
+Cached:    3 cached, 4 total
+  Time:    625ms
+
+
+{"event":"catalog_migration_isolation","duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_rights_round_trip","revisions":2,"provenance":true,"staleVersionRefused":true}
+{"event":"catalog_concurrency_keyset","callers":8,"committed":1,"stale":7,"stablePages":true,"synchronizedTransactions":8}
+{"event":"catalog_atomic_rollback","faults":["throw","rollback","abort"],"retainedRevisions":4,"titleVersion":5}
+{"event":"catalog_lock_failure","mode":"abort","durationMs":21,"retainedRevisions":4}
+{"event":"catalog_lock_failure","mode":"timeout","durationMs":1010,"retainedRevisions":4}
+{"event":"catalog_constraints_query_plan","provenanceRequired":true,"ownerProjectionRequired":true,"latestMustExist":true,"plan":[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Plans":[{"Node Type":"Index Only Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Backward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"rights_revisions","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000001'::uuid) AND (revision < 4))"}]}}]}]}
+{"event":"catalog_adapter_reconnect","retainedRevisions":4,"closedAdapterFails":true}
+{"event":"catalog_unicode_orphan_guard","jsonBytes":10856,"exactRoundTrip":true,"missingTitleRejected":true}
+{"event":"catalog_migration_round_trip","dependencyGuard":true,"cleanReinstall":true}
+{"event":"catalog_workflow_migration_privileges","roundTrip":true,"forbiddenStatements":8}
+{"event":"catalog_publish_dispute_serialization","first":"publish","staleContender":"conflict","finalState":"RETIRED","events":2}
+{"event":"catalog_publish_dispute_serialization","first":"dispute","staleContender":"conflict","finalState":"RETIRED","events":1}
+{"event":"catalog_workflow_atomic_faults","faults":["throw-after-outbox","abort-after-outbox"],"unchanged":true}
+{"event":"catalog_workflow_replay_expiry","exactlyOnceAudit":true,"changedReplayRejected":true,"expiredReceiptsReclaimed":4}
+{"event":"catalog_reserved_takedown_capacity","resource":"receipts","normalLimit":63,"retiredAtFullCapacity":64,"databaseBound":true}
+{"event":"catalog_reserved_takedown_capacity","resource":"outbox","normalLimit":127,"retiredAtFullCapacity":128,"databaseBound":true}
+{"event":"catalog_metadata_audit","unicodeRoundTrip":true,"immutableArtworkReviews":2}
+{"event":"catalog_cli_verified","freshMigrations":[1,2],"idempotentInit":true,"createReviewRetire":true,"inspect":true,"safeReplay":true,"unattestedMediaRejected":true,"hostedRejected":true,"unavailableDatabase":true,"inputDeadlineMs":10000,"sanitizedCorrelatedLogs":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":17291}
+
+Commands: pnpm exec eslint services/catalog/src services/catalog/test; pnpm unused:check
+Outcome: exit 0; no findings.
+Command: pnpm audit --audit-level=high
+Outcome: exit 0; one previously recorded moderate vulnerability, no high/critical.
+Command: git diff --check
+Outcome: exit 0.
+Limitations: synthetic technical attestations are inserted by a test administrator, not the operator. Generated HLS fixture/real worker validation remains P03-R04/Phase 06. No public filtering/schema, browser journey, exported trace or release claim. Real SQL/CLI evidence is local Linux amd64 only.
+
+Completed work-item plan (initial context and proposed behavior retained):
+# Work Item: Authorized Catalog Editorial Workflow
+
+- Status: DONE
+- Owner: Catalog
+- Phase: 03
+- Requirement IDs: P03-R06, P03-R01, P03-R03, P03-R04, P03-R07, P03-R08, P03-R10
+- Created: 2026-08-27
+- Updated: 2026-08-27
+
+## Outcome
+
+Provide usable local operator commands to create/edit metadata and rights, review, mark media ready, publish, retire, dispute and reopen titles. Serialize rights/publication decisions with audit and versioned outbox facts, reject viewer/forged authority, and replay duplicate commands safely. Public browse/schema and real-media integration remain separate Phase 03/06 requirements, not waived.
+
+## Current behavior
+
+Phases 00–02 are released. Catalog domain and rights persistence are committed at 12db9fb with 61 tests and real PostgreSQL proof. No operator command, metadata, publication store or Catalog endpoint exists.
+
+## Proposed behavior
+
+Accept ADR-0015 for the local operator boundary: an explicit local-only CLI whose in-process authority cannot be supplied by a JSON input, browser role or viewer JWT. Implement metadata/locale rules, editorial application commands and PostgreSQL migration 0002. Use the current adapter, immutable rights history, per-title locks, 24-hour receipts, audit and publish/retire outbox. Commands take publication IDs and resolve trusted owner-held publication attestations; never accept a caller's validated boolean.
+
+## Boundaries
+
+- Owner/data: Catalog schema; no Identity SQL, remote actor service, broker client or media proxy.
+- Paths: services/catalog domain/application/infrastructure/transport, migrations/tests, command wiring and evidence.
+- ADRs: 0002/0003/0004/0006/0007/0010/0013/0014; new local-operator decision 0015.
+- Skills: agent, architecture, product, node-runtime, data-events, media-streaming, security, testing, documentation.
+- Trust: CLI operator controls the local process; inputs cannot select actor, grant roles or register media attestations. Runtime cannot write the publication-validation table.
+- No new external version. Database deadlines/cancellation and existing structured dependency telemetry remain.
+
+## Invariants
+
+- Default deny; recheck local authority before transaction success. No remote calls while locks are held.
+- Exact bounded command shapes, expected title version, title-bound idempotency key/digest and actor.
+- Create/edit use draft rights; only a complete compatible review can advance RIGHTS_REVIEWED.
+- Every rights/status/metadata/lifecycle change is auditable and atomic with its receipt.
+- Publication rechecks latest rights, expiry, title/revision/checksum/validation timing and selected publication.
+- Dispute/expiry retires immediately, preserves immutable history, and writes a retirement outbox event.
+- Up to 128 pending publication events/title, with the last slot reserved for retirement. Never evict pending events; publishing backpressures before takedown does.
+- Metadata supports bounded localizations/credits/genres and optional independently attributed artwork. Locale fallback is deterministic.
+- Rights approval is not invented by synthetic fixtures; trusted publication records in tests remain explicitly synthetic until P03-R04 fixture verification.
+
+## Failure behavior
+
+| Failure | Result | Telemetry |
+|---|---|---|
+| Missing/forged/revoked/expired authority | unauthorized, no commit | Sanitized command outcome |
+| Invalid metadata/rights/command/context | invalid_input | Bounded outcome |
+| Stale version or changed replay | conflict | Bounded outcome |
+| Missing approval/media | rights_not_approved/media_not_ready | Bounded outcome |
+| Saturated receipt/outbox | backpressure, no partial change | Bounded outcome |
+| Abort/SQL fault/unknown commit | cancelled/unavailable/indeterminate; no blind retry | Existing PostgreSQL telemetry |
+
+## Data and contracts
+
+Migration 0002 expands titles with metadata and adds trusted publication references, command audit, receipts and publish/retire outbox. Publication attestations are immutable and writable only by a trusted initializer/worker, not operator input. Receipts expire after 24 hours, max 64/title; cleanup bounded. Audit and rights remain durable evidence. Outbox relay is Phase 08. Events retain the standard versioned envelope, title aggregate version and correlation/causation without URLs or credentials. No public GraphQL mutation surface is added by this CLI.
+
+## Security and privacy
+
+No hosted identity claim or Node sandbox claim. Source/environment ownership is the local trust boundary, not a browser flag. CLI rejects hosted mode and supplied operator data, bounds stdin/output and lifetime, uses restricted database credentials and sanitizes failures. Artwork/source URLs are data, not fetched. Fixture actors are synthetic. Real media permissions require recorded review.
+
+## Implementation steps
+
+1. Record ADR-0015 and implement authority, metadata, commands and deterministic tests.
+2. Expand SQL/adapter for lifecycle, publication lookup, audit, receipts and bounded outbox.
+3. Add guarded local CLI composition and finite local migration wiring.
+4. Prove real publish/dispute races, replay, rollback, cancellation, privileges and reserved retirement capacity.
+5. Initial review, batch remediation, confirmation, candidate gate and evidence.
+6. Next public browse/schema plus real technical fixture/candidate review before Phase 03 release.
+
+## Tests
+
+Domain/metadata/authority; orchestration and idempotency; real PostgreSQL state/audit/outbox atomicity and synchronized publish/dispute; stale/expiry/forgery/media substitution; CLI activation/input/deadline/exit; migration round-trip. Actual media validation remains P03-R04/Phase 06, and browser/public GraphQL tests run in their following slice.
+
+## Evidence
+
+- Iteration gate: Catalog build/test and scoped lint/typecheck.
+- Candidate gate: pnpm check:changed, catalog integration, CLI smoke and audit if lock changes.
+- Heavyweight repeat triggers: SQL/authority/commands/CLI/fixture changes; retain unrelated Phase 02 Docker proof.
+- Review stopping rule: initial plus confirmation; only requirement/security/data/availability/public-contract blockers extend it.
+- Artifact: evidence/phase-03/catalog-workflow.txt with exact commands, fingerprints, outcomes and limits.
+
+## Rollback or recovery
+
+Local source revert before publication; rollback migration 0002 only on disposable tests. Preserve retained data and immutable rights history. No public remote or demo reset in this block. After real publication, roll forward or retire via the owning command; never erase audit/outbox.
+
+## Documentation updates
+
+ADR/ledger, Catalog command/migration guide, evidence and consolidated .ai memory. Do not describe the unfinished public catalog or synthetic references as a playable release.
+
+## Completion checklist
+
+- [x] Application/authorization/metadata complete
+- [x] SQL, CLI and real integration verified
+- [x] Review and candidate gate pass
+- [x] Evidence and memory current
+
+Final local closeout
+Status: P03-R06 locally verified, not released remotely.
+Candidate command: pnpm check:changed
+Exit: 0
+
+ Tasks:    52 successful, 52 total
+Cached:    40 cached, 52 total
+  Time:    20.936s
+
+
+The first candidate attempt flagged test-only URL credentials under the repository policy; no live secret was present. Replaced embedded password URLs with separate secret-classified ASTER_CATALOG_DATABASE_PASSWORD / ASTER_CATALOG_ADMIN_DATABASE_PASSWORD variables. Added rejection of missing, oversized, control-character and competing password inputs. No scanner rule or allowlist was weakened. A later formatting-only failure was fixed.
+Follow-up confirmation of this security-boundary remediation passes focused tests, ESLint, secret scan and real CLI/SQL. The final migration-entry formatting change only expands an existing abort callback and cannot invalidate the already-passing runtime behavior; the exact formatted source passes the final candidate gate.
+No dependency versions changed; the high-severity audit remains valid. Full Phase 02 Docker/browser proof is retained for unchanged source/topology.
+Final source fingerprints:
+2084990c5323a6956e3d0d3d5f28c94463fc17d62abfe0960b167b57d542ec69  services/catalog/migrations/0001-rights-history.down.sql
+fc818734016235d2c5ed634862e670e38b0a5d646636caa2fa540c25d5d7b9b7  services/catalog/migrations/0001-rights-history.up.sql
+3d93597b768440c27647b9c2c0b41a2a0a0fbe2fbba0eb8f25e74f25c02b70b5  services/catalog/migrations/0002-editorial-workflow.down.sql
+d89d0f9949738b342c16553c4bffc9a2c94d14d86ac51c43e52fda2eccce8bc2  services/catalog/migrations/0002-editorial-workflow.up.sql
+073c9e34e984cc20d60f4f1cc448db95e5c797b5f558ebbfcf9e9a3420b08063  services/catalog/src/application/command-input.ts
+37567ff7cabecbc233e88eb0f54cedf5ce8a6f9987c4020a341d98e7041416eb  services/catalog/src/application/commands.ts
+17666d0f412cc2a65139c6de0786df55dc40c3a09989f57944469edf6673a557  services/catalog/src/application/operator-ports.ts
+3f6fc40253ce5d3bb3dd58e40c0b8f93536541860c0137123fb4c12b5d09e534  services/catalog/src/application/rights-ports.ts
+02597801b7291a9c904cb27451f369b51325d5ee3d0aeb007b577f9d01b70725  services/catalog/src/domain/metadata.ts
+9d953524ada1f95da81d3a46aa4049ad7eec7849a7a68c7090e97a93b4e29e97  services/catalog/src/domain/rights.ts
+1c047cb492e131d34cf1502b2893a5fe9e988278baa7ab361d5a60d42667623f  services/catalog/src/domain/title.ts
+ba1fdcd261851cda09d8b0b5a4d22cd4f06bb18e02282ab9b1c9d8114104e965  services/catalog/src/domain/values.ts
+07add36ffa82d473636dc92925b83fe3bc6d554390cefb394a27793e18b63c83  services/catalog/src/index.ts
+dc4c170a12b17cbca859fa8cc674bc43891e8f89abbe2ffca9ec1375e78de743  services/catalog/src/infrastructure/identity/local-configuration.ts
+984173de4be0eeb83fe06d6e5088c427f13c7e9d760eaef94bd90f514293adbc  services/catalog/src/infrastructure/identity/local-operator.ts
+74843e2de71f5e1f1a51666528253838b59bc71139e8f9679fca4580c1a28ea7  services/catalog/src/infrastructure/persistence/local-migrations.ts
+6228ad4be237108fd1929e9c10c4079598f5982510cd793853de5a467399da67  services/catalog/src/infrastructure/persistence/postgres-rights.ts
+8d14b75d336eba51720c36904476dbc6d0def19fc677c47102d90bb025c52b66  services/catalog/src/infrastructure/persistence/postgres-workflow.ts
+25daedee490a74baa76330023a5aa70608585d79b4c638cde883ae6be9918867  services/catalog/src/migrate-local.ts
+f77eec2d4de6d733f33c61a89c55910dc2fb0eceadcf9d4eb48a2b61b6cb058a  services/catalog/src/operate-local.ts
+788efbfae4477be8f4c731b420710f146254f97fab16fde06893f60d1c7aff39  services/catalog/src/transport/operator-input.ts
+95e75d77c66d84a03220c013265d0ea400bee6dcb312548e16924b3e7ab6b823  services/catalog/test/catalog-domain.test.ts
+e6c677449f3b8e645aabfd306ed36b349666d774816bc19ee0556021766b37e6  services/catalog/test/catalog-workflow.test.ts
+768076897bf4d251ad81e5f89d6fe00a086eb92d6b9a0be35caeaa85e3722c6c  services/catalog/test/integration/operator-cli.ts
+8d9f31be35f0308e189f13c9b3351c3761e2be3b8f2f9523cc2d86f5ee7f023d  services/catalog/test/integration/rights-postgres.ts
+b30e39c60d270162ed449ede002f50d9254c7b98d097c93e493fcedf6a4cd912  services/catalog/test/integration/workflow-postgres.ts
+be97dc640846e11e1263267c07fd1d0cfb8517bdcc15c7cdd5acc1cf6e00ba15  services/catalog/test/operator-input.test.ts
+21dc735837ca38de7efe8cdb275cb896fe6e089246786449439a8f77b4686c75  services/catalog/test/postgres-rights.test.ts
+fd0daf1477ea03dbdc918ee88d5320b8e1bcf1e38d900ab658297b9880ffce95  services/catalog/test/rights-fixture.ts
+5331c175175f721d5389556563e793f665ae30d57cdb53fd796c30bbf734e3e4  services/catalog/test/workflow-fixture.ts
+
+Remediation commands: pnpm security:check; pnpm exec turbo run build --filter=@aster/catalog; pnpm --filter @aster/catalog test; pnpm exec eslint services/catalog/src services/catalog/test
+$ node ./tools/scan-secrets.ts --all
+{"check":"secrets","status":"ok","mode":"all","findings":0}
+• turbo 2.10.12
+
+   • Packages in scope: @aster/catalog
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache miss, executing 39850349ebedaed3
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    4 successful, 4 total
+Cached:    3 cached, 4 total
+  Time:    1.949s
+
+$ node --test ./dist/test/*.test.js
+✔ complete reviewed rights approve without acquiring media and derive exact attribution (3.979914ms)
+▶ every required reviewed field and explicit permission must be resolved
+  ✔ workTitle (0.912942ms)
+  ✔ creator (0.245501ms)
+  ✔ copyrightHolder (0.326884ms)
+  ✔ canonicalSourceUrl (0.206006ms)
+  ✔ assetSourceUrl (0.176057ms)
+  ✔ licenseName (0.154748ms)
+  ✔ licenseVersion (0.205243ms)
+  ✔ licenseUrl (0.550204ms)
+  ✔ attributionText (1.784933ms)
+  ✔ modificationNotice (0.309584ms)
+  ✔ thirdPartyMaterialNotes (0.464434ms)
+  ✔ trademarkNotes (0.202144ms)
+  ✔ redistributionAllowed (0.250372ms)
+  ✔ commercialUseAllowed (0.23383ms)
+  ✔ modificationAllowed (0.177531ms)
+  ✔ shareAlikeRequired (0.46444ms)
+  ✔ technicalRestrictions (0.306001ms)
+  ✔ reviewedAt (0.219007ms)
+  ✔ reviewedBy (0.171133ms)
+✔ every required reviewed field and explicit permission must be resolved (10.543978ms)
+✔ contradictory use, unreviewed state, expiry and invalid clocks fail closed (2.136127ms)
+✔ unknown fields, hostile accessors, invalid identifiers, URLs and oversized evidence are rejected (1.357345ms)
+▶ the full 25-pair lifecycle table rejects every skipped or repeated transition
+  ✔ DRAFT -> DRAFT (0.646298ms)
+  ✔ DRAFT -> RIGHTS_REVIEWED (0.261446ms)
+  ✔ DRAFT -> MEDIA_READY (0.116279ms)
+  ✔ DRAFT -> PUBLISHED (0.095931ms)
+  ✔ DRAFT -> RETIRED (0.080111ms)
+  ✔ RIGHTS_REVIEWED -> DRAFT (0.0748ms)
+  ✔ RIGHTS_REVIEWED -> RIGHTS_REVIEWED (0.073509ms)
+  ✔ RIGHTS_REVIEWED -> MEDIA_READY (0.440059ms)
+  ✔ RIGHTS_REVIEWED -> PUBLISHED (0.235911ms)
+  ✔ RIGHTS_REVIEWED -> RETIRED (0.201701ms)
+  ✔ MEDIA_READY -> DRAFT (0.097606ms)
+  ✔ MEDIA_READY -> RIGHTS_REVIEWED (0.079084ms)
+  ✔ MEDIA_READY -> MEDIA_READY (0.114057ms)
+  ✔ MEDIA_READY -> PUBLISHED (0.30925ms)
+  ✔ MEDIA_READY -> RETIRED (0.073728ms)
+  ✔ PUBLISHED -> DRAFT (0.063086ms)
+  ✔ PUBLISHED -> RIGHTS_REVIEWED (0.054637ms)
+  ✔ PUBLISHED -> MEDIA_READY (0.054452ms)
+  ✔ PUBLISHED -> PUBLISHED (0.057058ms)
+  ✔ PUBLISHED -> RETIRED (0.661206ms)
+  ✔ RETIRED -> DRAFT (0.05792ms)
+  ✔ RETIRED -> RIGHTS_REVIEWED (0.049131ms)
+  ✔ RETIRED -> MEDIA_READY (0.049481ms)
+  ✔ RETIRED -> PUBLISHED (0.167875ms)
+  ✔ RETIRED -> RETIRED (0.059553ms)
+✔ the full 25-pair lifecycle table rejects every skipped or repeated transition (5.928163ms)
+✔ rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication (2.147474ms)
+✔ retirement survives disputed rights; reopening requires a newer review and new media linkage (0.260973ms)
+✔ public visibility rechecks current rights; malformed lifecycle and overflowing versions cannot advance (0.612413ms)
+✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events (15.726899ms)
+✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed (2.467576ms)
+✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time (1.155398ms)
+✔ exact replay preserves response and audit; changed input, actor, version or command conflicts (2.894529ms)
+✔ unresolved review, expired rights and foreign/unattested media never publish (5.671043ms)
+✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures (9.088086ms)
+✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields (1.64155ms)
+✔ artwork receives its own operator review and cannot silently substitute a different source (1.797223ms)
+✔ documented draft example is executable but cannot approve unresolved rights (11.48696ms)
+✔ clarification, rejection and expiry have explicit transitions without silent approval (5.999544ms)
+✔ CLI reads exactly one bounded UTF-8 command and rejects malformed/extra/oversized input (7.303051ms)
+✔ CLI database guard separates administrator/runtime and excludes hosted or cross-context endpoints (2.003381ms)
+✔ operator inspection is authorized and read-only; publication rechecks expiry before commit (4.265678ms)
+✔ append atomically advances title, inserts facts and provenance with bounded parameters (3.777964ms)
+✔ stale append returns false without facts or provenance inserts (0.538752ms)
+✔ invalid rights, versions and provenance reject before SQL (1.236349ms)
+✔ large Unicode records preserve surrogate pairs within the shared parameter limit (0.812379ms)
+✔ aggregate rights payload has a byte bound even if each field is individually valid (1.401829ms)
+✔ draft creation, missing title and existing title use explicit results (0.335593ms)
+✔ title and revision reads validate owner, linkage, timestamps and persisted domain fields (2.268372ms)
+✔ history keysets are bounded, descending, owner-filtered and immutable (2.089298ms)
+✔ caller rejection rolls back and adapter outcomes never become success (0.393449ms)
+ℹ tests 74
+ℹ suites 0
+ℹ pass 74
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 118.021086
+
+Repeated heavy gate because the CLI credential contract changed:
+Command: pnpm catalog:integration
+$ turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs
+• turbo 2.10.12
+
+   • Packages in scope: @aster/catalog
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache hit, replaying logs 39850349ebedaed3
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    4 successful, 4 total
+Cached:    4 cached, 4 total
+  Time:    27ms >>> FULL TURBO
+
+
+{"event":"catalog_migration_isolation","duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_rights_round_trip","revisions":2,"provenance":true,"staleVersionRefused":true}
+{"event":"catalog_concurrency_keyset","callers":8,"committed":1,"stale":7,"stablePages":true,"synchronizedTransactions":8}
+{"event":"catalog_atomic_rollback","faults":["throw","rollback","abort"],"retainedRevisions":4,"titleVersion":5}
+{"event":"catalog_lock_failure","mode":"abort","durationMs":22,"retainedRevisions":4}
+{"event":"catalog_lock_failure","mode":"timeout","durationMs":1010,"retainedRevisions":4}
+{"event":"catalog_constraints_query_plan","provenanceRequired":true,"ownerProjectionRequired":true,"latestMustExist":true,"plan":[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Plans":[{"Node Type":"Index Only Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Backward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"rights_revisions","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000001'::uuid) AND (revision < 4))"}]}}]}]}
+{"event":"catalog_adapter_reconnect","retainedRevisions":4,"closedAdapterFails":true}
+{"event":"catalog_unicode_orphan_guard","jsonBytes":10856,"exactRoundTrip":true,"missingTitleRejected":true}
+{"event":"catalog_migration_round_trip","dependencyGuard":true,"cleanReinstall":true}
+{"event":"catalog_workflow_migration_privileges","roundTrip":true,"forbiddenStatements":8}
+{"event":"catalog_publish_dispute_serialization","first":"publish","staleContender":"conflict","finalState":"RETIRED","events":2}
+{"event":"catalog_publish_dispute_serialization","first":"dispute","staleContender":"conflict","finalState":"RETIRED","events":1}
+{"event":"catalog_workflow_atomic_faults","faults":["throw-after-outbox","abort-after-outbox"],"unchanged":true}
+{"event":"catalog_workflow_replay_expiry","exactlyOnceAudit":true,"changedReplayRejected":true,"expiredReceiptsReclaimed":4}
+{"event":"catalog_reserved_takedown_capacity","resource":"receipts","normalLimit":63,"retiredAtFullCapacity":64,"databaseBound":true}
+{"event":"catalog_reserved_takedown_capacity","resource":"outbox","normalLimit":127,"retiredAtFullCapacity":128,"databaseBound":true}
+{"event":"catalog_metadata_audit","unicodeRoundTrip":true,"immutableArtworkReviews":2}
+{"event":"catalog_cli_verified","freshMigrations":[1,2],"idempotentInit":true,"createReviewRetire":true,"inspect":true,"safeReplay":true,"unattestedMediaRejected":true,"hostedRejected":true,"unavailableDatabase":true,"inputDeadlineMs":10000,"sanitizedCorrelatedLogs":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":17229}
+
+Completion: all active work-item checkboxes complete. Public Catalog queries/schema, actual generated HLS fixture, candidate rights reviews and Phase 03 remote acceptance remain next requirements. Do not infer a playable demo or actual media approval from these synthetic tests.

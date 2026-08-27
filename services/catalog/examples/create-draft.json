@@ -1,0 +1,43 @@
+{
+  "command": "create",
+  "input": {
+    "titleId": "00000000-0000-4000-8000-000000000001",
+    "mutationId": "00000000-0000-4000-8000-000000000010",
+    "expectedVersion": 0,
+    "metadata": {
+      "defaultLocale": "en",
+      "localizations": [
+        {
+          "locale": "en",
+          "title": "Synthetic draft",
+          "synopsis": "An unpublished example with unresolved rights."
+        }
+      ],
+      "genres": [],
+      "credits": [],
+      "artwork": null
+    },
+    "rights": {
+      "workTitle": "Synthetic draft",
+      "creator": null,
+      "copyrightHolder": null,
+      "canonicalSourceUrl": null,
+      "assetSourceUrl": null,
+      "licenseName": null,
+      "licenseVersion": null,
+      "licenseUrl": null,
+      "attributionText": null,
+      "modificationNotice": null,
+      "thirdPartyMaterialNotes": null,
+      "trademarkNotes": null,
+      "redistributionAllowed": null,
+      "commercialUseAllowed": null,
+      "modificationAllowed": null,
+      "shareAlikeRequired": null,
+      "technicalRestrictions": null,
+      "sourceChecksum": null,
+      "validUntil": null,
+      "evidenceLocations": []
+    }
+  }
+}

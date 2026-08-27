@@ -8,6 +8,10 @@
     "workers/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}"
   ],
   "workspaces": {
+    "services/catalog": {
+      "entry": ["src/index.ts", "src/operate-local.ts", "src/migrate-local.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
     "services/identity": {
       "entry": ["src/index.ts", "src/main.ts", "src/migrate-local.ts", "src/check-identity.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]

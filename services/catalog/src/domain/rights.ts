@@ -71,6 +71,24 @@ const KEYS = [
   "evidenceLocations",
 ];
 
+export function draftRightsFromFacts(value: unknown, titleId: string): RightsRecord | undefined {
+  const fields = KEYS.filter(
+    (key) => !["id", "titleId", "revision", "status", "reviewedAt", "reviewedBy"].includes(key),
+  );
+  const input = catalogRecord(value, fields);
+  return input
+    ? normalizeRightsRecord({
+        ...input,
+        id: titleId,
+        titleId,
+        revision: 1,
+        status: "DRAFT",
+        reviewedAt: null,
+        reviewedBy: null,
+      })
+    : undefined;
+}
+
 function evidenceList(value: unknown): readonly string[] | undefined {
   if (!Array.isArray(value)) {
     return undefined;

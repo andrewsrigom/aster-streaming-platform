@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Catalog editorial workflow candidate
+
+### Completed
+
+Completed local P03-R06 commands, authority/CLI, metadata and independent artwork review, immutable SQL audit, receipts and publish/retire outbox. Reserved takedown capacity and rechecked expiry before commit. Initial/confirmation review and credential-policy remediation confirmation pass.
+
+### Evidence
+
+74 tests, high-severity audit and all 52 candidate tasks pass (40 cached, 20.936 s). Real PostgreSQL/CLI passes both publish/dispute orders, atomic failures, bounded capacity, Unicode, migrations, restricted roles and stdin deadline; final fixture cleanup took 17229 ms total and left zero resources. Evidence: evidence/phase-03/catalog-workflow.txt. No retained demo or public remote changed.
+
+### Next action
+
+Activate P03-R05 public browse/schema from this coherent source checkpoint. Actual HLS fixture, source review and full Phase 03 release remain required.
+
 ## 2026-08-27 — Durable Catalog rights history
 
 ### Completed

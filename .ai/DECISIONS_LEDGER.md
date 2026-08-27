@@ -21,6 +21,7 @@ The owned-profile slice implements defaults of five profiles (configured 1–16)
 | Use Express 5 behind a bounded HTTP adapter | `docs/adr/0011-express-http-adapter.md` | Accepted |
 | Recognize MITNFA in dependency license review | `docs/adr/0012-mitnfa-dependency-license.md` | Accepted |
 | Accept Elastic-2.0 Apollo dependencies and 0BSD tslib while preserving Aster MIT | `docs/adr/0014-apollo-federation-license-policy.md` | Accepted; owner authorization and narrow CI policy implemented |
+| Separate local Catalog operators from viewer identity; reserve bounded takedown capacity | `docs/adr/0015-local-catalog-operator.md` | Accepted; local CLI, audit and transaction checks implemented |
 
 ## Resolved Phase 00 decisions
 

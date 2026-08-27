@@ -7,6 +7,8 @@ import { createAsterPostgresAdapter } from "@aster/postgres";
 import { createAsterTelemetry } from "@aster/telemetry";
 
 import { createPostgresCatalogRights } from "../../src/infrastructure/persistence/postgres-rights.js";
+import { verifyWorkflow } from "./workflow-postgres.js";
+import { verifyOperatorCli } from "./operator-cli.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -394,6 +396,9 @@ async function verify() {
   );
   assert.equal(empty.rows[0]?.count, 0);
   output("catalog_migration_round_trip", { dependencyGuard: true, cleanReinstall: true });
+  await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
+  await verifyWorkflow(admin, makeDatabase());
+  await verifyOperatorCli(admin, port);
 }
 try {
   await verify();
@@ -405,7 +410,7 @@ try {
       error instanceof Error
         ? error.stack
             ?.split("\n")
-            .filter((line) => line.includes("rights-postgres.js"))
+            .filter((line) => /(?:rights-postgres|workflow-postgres|operator-cli)\.js/u.test(line))
             .slice(0, 3)
         : [],
   });

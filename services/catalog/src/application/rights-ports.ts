@@ -20,7 +20,17 @@ export type CatalogStoreResult<T> =
   | Readonly<{ status: "completed"; value: T }>
   | Readonly<{
       status:
-        "conflict" | "not_found" | "invalid_input" | "unavailable" | "cancelled" | "indeterminate";
+        | "conflict"
+        | "not_found"
+        | "invalid_input"
+        | "unavailable"
+        | "cancelled"
+        | "indeterminate"
+        | "unauthorized"
+        | "invalid_transition"
+        | "rights_not_approved"
+        | "media_not_ready"
+        | "backpressure";
     }>;
 
 export interface CatalogRightsTransaction {

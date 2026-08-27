@@ -18,16 +18,19 @@
   },
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
+    "operator": "node ./dist/src/operate-local.js",
+    "migrate:local": "node ./dist/src/migrate-local.js",
     "test": "node --test ./dist/test/*.test.js",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
   "dependencies": {
-    "@aster/postgres": "workspace:*"
+    "@aster/postgres": "workspace:*",
+    "@aster/runtime": "workspace:*",
+    "@aster/telemetry": "workspace:*",
+    "pg": "8.23.0"
   },
   "devDependencies": {
-    "@aster/telemetry": "workspace:*",
     "@types/pg": "8.23.1",
-    "pg": "8.23.0",
     "@types/node": "24.13.3",
     "typescript": "6.0.3"
   }

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–02 are released. P03-R01 is committed as 4968d42. P03-R02 rights persistence is locally verified: 61 tests, real PostgreSQL proof and all 52 candidate tasks pass. Next is P03-R06 on feat/p03-catalog-rights. Operator/public API and actual media remain planned.
+Phases 00–02 are released. P03-R01/R02 are committed at 4968d42/12db9fb. P03-R06 is locally verified: editorial commands, SQL/audit/outbox and guarded CLI; 74 tests, real integration and all 52 candidate tasks pass. Next is READY P03-R05. Public API and actual media remain planned.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -37,7 +37,8 @@ Phases 00–02 are released. P03-R01 is committed as 4968d42. P03-R02 rights per
 | 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | DONE |
 | 30 | Model rights review, attribution and the title publication lifecycle | P03-R01 | DONE |
 | 31 | Persist structured rights revisions and immutable review provenance | P03-R02 | DONE |
-| 32 | Implement authorized operator workflow and publication/retirement transactions | P03-R06 | READY |
+| 32 | Implement authorized operator workflow and publication/retirement transactions | P03-R06 | DONE |
+| 33 | Implement published-only browse/detail, locale fallback and Catalog Federation schema | P03-R05 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). No Phase 03 remote publication or actual-film approval yet.
 

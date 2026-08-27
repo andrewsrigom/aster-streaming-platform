@@ -16,25 +16,25 @@ import {
   catalogVersion,
 } from "../../domain/values.js";
 
-class InvalidCatalogInput extends Error {
+export class InvalidCatalogInput extends Error {
   constructor() {
     super("Invalid Catalog persistence input.");
   }
 }
-function invalidRow(): never {
+export function invalidRow(): never {
   throw new Error("Catalog persistence returned an invalid row.");
 }
-function requireId(value: unknown): asserts value is string {
+export function requireId(value: unknown): asserts value is string {
   if (!catalogIdentifier(value)) {
     throw new InvalidCatalogInput();
   }
 }
-function one(count: number): void {
+export function one(count: number): void {
   if (count !== 1) {
     invalidRow();
   }
 }
-function row(value: unknown): Record<string, unknown> {
+export function row(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return invalidRow();
   }
@@ -96,7 +96,7 @@ const columns =
 const join = "catalog.rights_revisions r JOIN catalog.rights_audit a USING (title_id, revision)";
 
 // Keep the shared adapter's 4096-character parameter cap, including surrogate-pair boundaries.
-function chunks(text: string): readonly string[] {
+export function chunks(text: string): readonly string[] {
   const result: string[] = [];
   for (let start = 0; start < text.length;) {
     let end = Math.min(start + 4000, text.length);
@@ -109,7 +109,7 @@ function chunks(text: string): readonly string[] {
   }
   return Array.from({ length: 9 }, (_, index) => result[index] ?? "");
 }
-function repositories(tx: AsterPostgresTransaction): CatalogRightsTransaction {
+export function rightsRepositories(tx: AsterPostgresTransaction): CatalogRightsTransaction {
   return {
     async createDraft(titleId) {
       requireId(titleId);
@@ -236,9 +236,15 @@ function repositories(tx: AsterPostgresTransaction): CatalogRightsTransaction {
 export function createPostgresCatalogRights(
   database: Pick<AsterPostgresAdapter, "transaction">,
 ): CatalogRightsUnitOfWork {
+  return catalogUnitOfWork(database, rightsRepositories);
+}
+export function catalogUnitOfWork<Repository>(
+  database: Pick<AsterPostgresAdapter, "transaction">,
+  makeRepository: (tx: AsterPostgresTransaction) => Repository,
+) {
   return Object.freeze({
     async run<T>(
-      operation: (transaction: CatalogRightsTransaction) => Promise<CatalogStoreResult<T>>,
+      operation: (transaction: Repository) => Promise<CatalogStoreResult<T>>,
       signal: AbortSignal,
     ): Promise<CatalogStoreResult<T>> {
       const cancelled = (): boolean => signal.aborted;
@@ -249,7 +255,7 @@ export function createPostgresCatalogRights(
         const result = await database.transaction(async (tx) => {
           let value: CatalogStoreResult<T>;
           try {
-            value = await operation(repositories(tx));
+            value = await operation(makeRepository(tx));
           } catch (error) {
             if (!(error instanceof InvalidCatalogInput)) {
               throw error;
