@@ -17,6 +17,7 @@ assert.ok(
     selected === "protocol" ||
     selected === "adapters" ||
     selected === "sessions" ||
+    selected === "profiles" ||
     selected === "identity" ||
     selected === "http-drain" ||
     selected === "storage" ||
@@ -55,7 +56,8 @@ async function worker(mode: string): Promise<void> {
     mode === "broker" ||
     mode === "telemetry" ||
     mode === "runtime" ||
-    mode === "sessions"
+    mode === "sessions" ||
+    mode === "profiles"
       ? `${mode}-worker`
       : "core-worker";
   const child = fork(new URL(`./${workerFile}.js`, import.meta.url), [mode, ...ports.map(String)], {
@@ -177,6 +179,7 @@ try {
           "identity",
           "http-drain",
           "sessions",
+          "profiles",
           "broker",
           "storage",
           "runtime",

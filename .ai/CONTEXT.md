@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phase 00 and Phase 01 are released. The Docker-only runtime provides health, recovery, bounded shutdown and optional real telemetry without hosted credentials. Phase 02 now implements the local identity boundary; account/session persistence, profiles, GraphQL and playable journeys remain unimplemented. Exact progress is maintained in `.ai/CURRENT_STATE.md`.
+Phase 00 and Phase 01 are released. The Docker-only runtime provides health, recovery, bounded shutdown and optional real telemetry without hosted credentials. Phase 02 locally verifies signed identity, durable sessions and owned profiles with transactional audit/outbox. These product modules are not yet wired into runtime startup; cookies, GraphQL and playable journeys remain unimplemented. Exact progress is maintained in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 02 — Identity and Viewer Profiles**
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 18 squash `b0544c9` and post-merge run `33047629326` close Phase 01. P02-R01 begins from that clean main checkpoint. Keep local identity minimal, owner-authorized and impossible to activate through a hosted environment opt-in alone.
+PR 18 squash `b0544c9` and post-merge run `33047629326` close Phase 01. Phase 02 continues locally on `feat/p02-identity-session`; no Phase 02 publication yet. Keep local identity minimal, owner-authorized and impossible to activate through a hosted environment opt-in alone.

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-merge runs pass. P02-R01 and P02-R02 are locally verified: the current candidate passes 91 Identity tests, 29 PostgreSQL tests, real session/database failure tests, all 49 source tasks and audit. P02-R03 is active for owned profiles and transactional outbox. No Phase 02 remote publication or release is claimed; publication will group coherent product changes.
+Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-merge runs pass. P02-R01 through P02-R08 are locally verified: 111 Identity tests, 29 PostgreSQL tests, real session/profile database scenarios, all 49 source tasks and audit. P02-R09 is active for protected cookie/GraphQL transport. No Phase 02 remote publication or release is claimed; publication will group coherent product changes.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -33,8 +33,8 @@ Phase 01 is released through PR 18 squash `b0544c9`; protected and exact post-me
 | 25 | Publish resource-aware profiles, troubleshooting, and the clean Docker-only Phase 01 closeout | P01-R10 | DONE |
 | 26 | Select identity/session trust and implement the guarded local assertion boundary | P02-R01 | DONE |
 | 27 | Resolve accounts and implement durable revocable local sessions | P02-R02 | DONE |
-| 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | IN_PROGRESS |
-| 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | READY |
+| 28 | Implement owned profiles, active selection, deletion policy and transactional outbox (also P02-R04 through P02-R08) | P02-R03 | DONE |
+| 29 | Expose the Identity subgraph and verify sanitized authorization and concurrency behavior (also P02-R10) | P02-R09 | IN_PROGRESS |
 
 ## Work-item rules
 

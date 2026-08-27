@@ -1,0 +1,84 @@
+P02-R03 through P02-R08 — owned profiles and transactional facts
+Date: 2026-08-27
+Status: locally verified; no Phase 02 publication or released product transport.
+Source base: 1b45ebd2591cd4cbb09dbfd409fac29c93303aa5 on feat/p02-identity-session.
+Exact candidate: changed/new source SHA-256 fingerprints below; containing commit records the local checkpoint.
+Environment: WSL Ubuntu amd64, Node 24.19.0, pnpm 11.24.0, PostgreSQL 18.6 isolated existing fixture.
+Workload: real local JOSE identity, real restricted-role PostgreSQL transactions; eight simultaneous duplicate creates and eight callers crossing a configured two-profile limit; synthetic records only.
+
+Scope: owner-authorized profiles/selection, optimistic versioning, bounded idempotency receipts, deletion, audit and versioned outbox. No dependency, deployable, relay or remote write added.
+Policies/rollback: services/identity/migrations/README.md. Account-then-session lock prevents revocation passing a committing authorized mutation. Composite FK prevents foreign selection. Pending outbox never evicted; profile mutation is rejected atomically at capacity.
+
+Initial executing-agent review (not independent): complete domain/application/persistence/migration/worker round covered normalization, ownership/session revalidation, lock order, idempotency/privacy, statement/row/retention bounds, atomic writes and restrictive rollback. No blocking finding remained.
+Earlier iteration corrections: test fixture timestamp corrected to 07:00Z; Array.from intentionally counts code points; removed redundant null-avatar comparison/optional access for lint; SQL CHECK uses COALESCE(false) so missing envelope fields cannot pass through NULL. No gate was weakened.
+Confirmation: after full candidate tests, rechecked owner/selection FK, transaction rollback, commit ambiguity mapping, release gates and source fingerprints. No new blocking finding; no independent approval claimed.
+
+Command: pnpm exec turbo run build --filter=@aster/identity
+Result: 9/9 successful, 8 cached, 2.273s.
+Focused ESLint passed for changed source/tests and integration harness.
+Focused profile/session tests: 26/26 passed (20 profile cases including nested adverse cases, six session cases).
+
+Command: pnpm --filter @aster/identity integration:profiles
+Result: exit 0; measured raw output:
+{"event":"fixture_ready","durationMs":4290}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"postgres","cpu":"0.04%","memory":"51.59MiB / 768MiB","pids":"9","imageBytes":302294786,"architecture":"amd64","dataKiB":47424},{"service":"redis","cpu":"0.18%","memory":"12.41MiB / 256MiB","pids":"7","imageBytes":118619095,"architecture":"amd64","dataKiB":0}]}
+{"event":"scenario_start","mode":"profiles"}
+{"event":"profiles_concurrent_admission","duplicateCallers":8,"duplicateFacts":1,"limitCallers":8,"admitted":1,"limitRejected":7,"stored":2}
+{"event":"profiles_owner_isolation","operations":["get","update","delete","select","active"],"foreignKey":"enforced","restrictedRuntime":true}
+{"event":"profiles_atomic_failure","afterWrites":["audit","outbox","receipt"],"allRolledBack":true}
+{"event":"profiles_deletion_retry","selectionsCleared":2,"preferencesRemoved":true,"replayDoesNotRecreate":true}
+{"event":"profiles_revocation_order","mutationBeforeRevocation":true,"revokedSessionRejected":true}
+{"event":"profiles_retention_backpressure","receipts":64,"audit":128,"pendingOutbox":128,"expiryCleanup":"passed","pendingFactsPreserved":true,"malformedEnvelopeRejected":true}
+{"event":"profiles_lock_failure","mode":"abort","durationMs":12}
+{"event":"profiles_lock_failure","mode":"timeout","durationMs":1003}
+{"event":"profiles_absolute_expiry","expiredRejected":true,"newSessionWorks":true}
+{"event":"profiles_migration_round_trip","accountsAndSessionsPreserved":true,"dependencyGuard":true}
+{"event":"profile_resources_closed","reservedSlots":0}
+{"event":"natural_exit","mode":"profiles"}
+{"event":"core_integration","outcome":"passed","scenarios":["profiles"],"durationMs":10780}
+{"event":"fixture_cleanup","project":"aster-integration-6ca74127d47648919ce124b1b616f4b2","remaining":0,"durationMs":1048}
+
+Interpretation: duplicate concurrency produces one profile/receipt/audit/outbox; at one existing profile with limit two, one new profile commits and seven callers are limited. All five foreign-profile operations fail closed. Real failures after audit, outbox and receipt writes roll back profile/version and journal counts. Delete removes preferences and both active selections; receipt replay never resurrects state. Logout waits behind an already authorized mutation, then old session access fails. Receipt/audit expiry cleanup and pending-outbox backpressure preserve limits and facts. Cancellation/statement timeout retire leases; restrictive migration rollback preserves accounts/sessions and refuses later dependencies.
+Cleanup: one exact labelled synthetic fixture removed, 1048ms, zero remaining; no unrelated Docker resources touched. Disposable fixture data is not retained; it is reproducible from the test.
+
+Command: pnpm check:changed && pnpm audit --audit-level=high
+Result: exit 0; complete selected source graph 49/49, 34 cached, 16.103s. Identity 111/111; PostgreSQL 29/29; no known vulnerabilities found.
+Selected output:
+$ node ./tools/run-quality-gate.ts --changed
+   • Packages in scope: //, @aster/broker-kafka, @aster/config, @aster/http-express, @aster/identity, @aster/object-storage-s3, @aster/postgres, @aster/redis, @aster/runtime, @aster/telemetry
+//:toolchain:test: $ node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs ./tools/run-quality-gate.test.ts
+//:ci:test: ✔ requires full quality for unrelated source and environment templates (0.264267ms)
+//:ci:test: ✔ fails safe to full quality for an empty diff (0.180363ms)
+//:staged:test: ✔ deduplicates paths without widening the selected scope (0.227669ms)
+@aster/postgres:test: ℹ tests 29
+@aster/postgres:test: ℹ pass 29
+@aster/identity:test: ✔ a supplied foreign profile or account cannot authorize reads, writes or selection (1.403586ms)
+//:platform:test: ℹ tests 29
+//:platform:test: ℹ pass 29
+//:format:check: All matched files use Prettier code style!
+@aster/identity:test: ℹ tests 111
+@aster/identity:test: ℹ pass 111
+ Tasks:    49 successful, 49 total
+Cached:    34 cached, 49 total
+  Time:    16.103s 
+No known vulnerabilities found
+
+Limits: application unknown-COMMIT replay is deterministically tested with an acknowledged-intent fake; driver COMMIT-loss behavior remains the separately verified R02 seam, not a new real network-proxy experiment. Profile DB proof includes real R02 sign-in after row-decoder extraction. Existing Phase 01 health/package evidence is supporting only; no changed startup/HTTP/image code warrants repeating it for this unwired slice. Full combined protected matrix and clean product startup remain required before eventual merge. No browser/CSRF/GraphQL/hosted/relay acceptance claimed. Timing samples are not SLO or capacity guarantees. Final prose-only checkpoint needs docs/memory/secret/format/diff gates, not another database experiment.
+
+Checkpoint prose gates: pnpm docs:check && pnpm ai:check && pnpm security:check && git diff --check -> exit 0. Documentation: 139 files/427 links/zero violations; memory: 29 items, active P02-R09, zero violations; secrets: zero findings. One initial memory check correctly required the explicit P02-R09 next-outcome identifier; corrected prose without weakening the validator. Changed Markdown formatted with the pinned Prettier. Runtime/source bytes unchanged after database and complete source proof.
+
+Source fingerprints:
+1b45ebd2591cd4cbb09dbfd409fac29c93303aa5
+162c64765d323e12a9a90faa3c5640813d0944d91ebddf9ba7e0404e51f05002  services/identity/migrations/0002-profiles-outbox.down.sql
+8204ad0c07d1593a198deeac384b724211d60c7208fb24f1db368a3db9ebff44  services/identity/migrations/0002-profiles-outbox.up.sql
+b0a3651189adfcaa6b96d5e4b56c6c1ca7cc4516774717fdcfecded7de0cfc31  services/identity/src/application/profile-ports.ts
+f6bbedc7924e7867975d688488bd64252d940122a77ac671e1b5094fd8ff7d5a  services/identity/src/application/profiles.ts
+5384030fd6061450a3035b404994a8e81aec12fe04bd631433c29d7dac5f6662  services/identity/src/domain/profile-event.ts
+4d18281722bac34325fbfb7135ac90831a7d1c994631bf07d3354772f5d71608  services/identity/src/domain/profile.ts
+831ae7ba82d98584463b685db8d5313587e84fc480e8aa238708f4c8e38ed7a7  services/identity/src/infrastructure/persistence/identity-rows.ts
+36564f6692d656a845c27a881e3868b557fdda6404107c4035080b03acd5f562  services/identity/src/infrastructure/persistence/postgres-profiles.ts
+e241f69b0f5b7ff920f79e348b3d2ef03565f9b6c1d832c21d0070870d685f1b  services/identity/test/integration/profiles-worker.ts
+bdf184d0583de7491a1b70f8cc80d3bbd9e56466848f9b02bb19f45f47e77ede  services/identity/test/profiles.test.ts
+699cd866170e079607c56bc2ea4d954ea377972f8da29c275a7b4ed521661450  services/identity/package.json
+1bd7e17a7bc0686106385a4d7145dbdc39a8b3eb1cff0856daec38ce6e781e51  services/identity/src/infrastructure/persistence/postgres-sessions.ts
+15ba7b8f87aa6a51be484e52265e1bd8b6cb4453611d827ca95668fe8190291d  services/identity/test/integration/integration.ts

@@ -1,100 +1,100 @@
-# Work Item: Owned Profiles and Transactional Profile Events
+# Work Item: Guarded Local Identity Subgraph
 
 - Status: IN_PROGRESS
 - Owner: Identity and Profiles
 - Phase: 02
-- Requirement IDs: P02-R03, P02-R04, P02-R05, P02-R06, P02-R07, P02-R08, P02-R09, P02-R10
+- Requirement IDs: P02-R01, P02-R02, P02-R03, P02-R04, P02-R05, P02-R06, P02-R07, P02-R08, P02-R09, P02-R10
 - Created: 2026-08-27
 - Updated: 2026-08-27
 
 ## Outcome
 
-Implement bounded owned-profile creation, listing, update, active selection and idempotent deletion with audit and versioned outbox facts in the same durable transaction. No browser or broker relay is part of this item.
+Expose the implemented session/profile policies through a bounded local Federation v2 subgraph, with protected cookie transport, stable errors and a reproducible empty-state product startup. Publish one coherent candidate only after local acceptance; no browser UI or Router trust shortcut.
 
 ## Current behavior
 
-P02-R01/R02 are locally verified on feat/p02-identity-session: guarded signed identity, durable account/session policies, explicit PostgreSQL repositories, migration 0001 and bounded one-client transactions. Current source passes 91 Identity tests, 29 PostgreSQL tests, all 49 source tasks, audit and real database failure/migration checks. Health-only runtime remains released behavior; product transport is unwired.
+P02-R01 through P02-R08 are locally verified: local signed assertions, account/session persistence, owned profiles/selection and transactional audit/outbox. Identity has 111 passing tests; real profile scenario and all 49 source tasks pass. Evidence: evidence/phase-02/profiles-outbox.txt. Runtime still exposes Phase 01 health only; product modules are unwired and this branch is not pushed.
 
 ## Proposed behavior
 
-Build profile invariants and application ports inside Identity, extend its schema with migration 0002, then prove owner isolation, concurrent limits, atomic audit/outbox and retry-safe deletion against the existing isolated PostgreSQL fixture. Define concrete normalization, configuration, version, idempotency and retention policies before implementing their contracts.
+Use the existing Express adapter and maintained Apollo integration. Select exact compatible Federation/schema dependencies from current primary sources, create a small owner schema/resolver boundary, protect every local credential/mutation request, compose sessions/profiles into runtime, and verify real HTTP-to-database behavior. Preserve health-only startup when local product mode is disabled.
 
 ## Boundaries
 
-- Owner/data: Identity and Profiles owns accounts, sessions, profiles, selection and profile audit/outbox writes.
-- Paths: services/identity domain, application, infrastructure/persistence, migrations and tests; use the existing packages/postgres transaction owner.
-- Trust: require an authenticated durable session; a supplied account/profile ID alone is never authorization.
-- Events: durable identity.profile-created, identity.profile-updated and identity.profile-deleted, schema version 1. No publication before commit; relay and consumers remain Phase 08.
-- Dependencies: current PostgreSQL and Node primitives; no new ORM, broker client, service or hosted resource.
-- Relevant decisions: ADR-0002, ADR-0004, ADR-0007 and ADR-0013; product IDP-R02 through IDP-R05.
+- Owner/data: Identity and Profiles; existing PostgreSQL schema and bounded transaction adapter.
+- Paths: services/identity transport/composition/migrations/tests; packages/config and packages/http-express only where shared runtime contracts require extension; existing local Compose/CI scripts for runnable acceptance.
+- Trust: browser input/cookies/Host/Origin/GraphQL are untrusted. Authenticate and authorize in owner application code; no public account/role header.
+- Decisions: ADR-0002, 0003, 0004, 0007, 0011 and 0013.
+- Skills: agent, architecture, node-runtime, graphql-federation, security, resilience, observability, data-events, testing, release-operations and documentation.
+- No hosted provider, Router, broker relay, new service or UI before its owning phase. Phase 04 defines protected Router-to-subgraph context.
 
 ## Invariants
 
-- An account cannot read, mutate or select another account's profile, including identifier substitution.
-- Configured profile count holds under concurrent transactions; acquire the account lock before count/write.
-- Normalize and bound display name, locale and maturity input at the owner; reject unknown/unsafe values.
-- Deletion cannot delete its account or leave a selected deleted profile usable.
-- State, audit and outbox changes commit together; failure in any part rolls back all.
-- Duplicate/stale mutations have documented bounded idempotency/version behavior.
-- Events/audit contain necessary opaque identifiers and facts, never credentials or unnecessary profile display data.
+- Local activation requires local environment, explicit opt-in and canonical HTTP loopback origin. No hosted flag-only bypass.
+- Credentials exist only in host-only HttpOnly/SameSite=Strict cookies and owner verification; never GraphQL data/errors, URLs, logs or client state.
+- Mutations, including unauthenticated sign-in, require exact Host/Origin, non-simple JSON and an explicit CSRF request header; reject forged/ambiguous headers and cross-origin requests before execution.
+- Runtime credentials cannot migrate or change ownership keys. Migrations are separate finite owner work; startup cannot blindly recreate/drop retained state.
+- Resolvers translate typed use cases, not SQL/business rules. Owner isolation remains enforced on entity resolution and list/read/mutation paths.
+- Cap bodies, tokens, aliases/depth/cost, batch size, concurrency and execution time. Propagate request AbortSignal; no retry of uncertain writes.
+- Product startup/shutdown has one resource owner; preserve finite health/recovery and graceful drain.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Evidence |
+| Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Missing, expired or revoked durable session | Unauthenticated before profile access | Application and real DB tests |
-| Unknown or wrong-account profile | Stable non-disclosing outcome; no side effects | Owner-isolation matrix |
-| Concurrent create at the configured limit | No committed excess profile | Barrier-coordinated DB test |
-| Stale update or duplicate mutation | Defined version/idempotency outcome | Domain and DB tests |
-| Audit/outbox insert failure | Profile and related state rolled back | Real transaction fault injection |
-| Repeated deletion or selected-profile deletion | Retry-safe result and unusable deleted selection | Application and DB tests |
-| Database timeout/cancel/outage | Fail closed, retire uncertain lease, no automatic write retry | Existing transaction proof plus affected profile cases |
+| Invalid origin/host/CSRF/cookie or unsupported method | Reject before credentials or mutation execution | Stable code, no request content |
+| Invalid/expired/revoked session or wrong-account profile | Owner-checked sanitized unauthenticated/not-found outcome | Bounded operation/result labels |
+| Invalid input, stale version, profile/journal limit | Stable validation/conflict/limit/backpressure code | No raw schema/database cause |
+| Database unavailable, cancelled or unknown commit | Fail closed; no automatic write retry; receipt semantics preserved | Existing bounded dependency status |
+| Oversized or abusive operation | Reject before unbounded resolver/database work | Finite rejection categories |
+| Process shutdown or failed product startup | Stop admission, cancel/drain, close each constructed owner once | Sanitized lifecycle status |
 
 ## Data and contracts
 
-- Migration 0002 is additive to accounts/sessions; define ownership, constraints, indexes and restrictive rollback before executing it.
-- Reuse the account lock and bounded SQL seam; keep each result within its 64-row bound.
-- Resolve profile limit/default, display-name normalization, locale/maturity values and optional avatar policy from the minimal accepted product scope; record exact choices here before code.
-- Define selection scope (session/request), deletion retention/retry behavior, audit/outbox limits and later cleanup/relay ownership explicitly; no unbounded process cache or silent retention default.
-- Use the existing versioned event envelope with opaque IDs, producer, aggregate version, correlation/causation and optional trace context.
-- GraphQL/error transport remains the next item. Current application outcomes must be ready to map to stable public codes without raw database causes.
+- Preserve migrations 0001/0002 and existing profile retention/deletion policies in services/identity/migrations/README.md.
+- Plan schema artifacts under services/identity transport; stable Profile key, explicit owned viewer/selection and mutation metadata. Never expose raw persistence session records.
+- Profile entity batching must be request-scoped, owner-authorized and bounded; no process-wide data cache.
+- Single-subgraph composition proves Federation compatibility now; multi-context composition/routing and hosted trusted operations remain Phase 04.
+- Use a distinct local cookie name and no Domain attribute. Absolute cookie expiry must match the durable 30-minute session; clear on acknowledged logout only, never pretend failed revocation succeeded.
+- Source/metadata compatibility research and exact operation budgets must be recorded before implementing those boundaries.
 
 ## Security and privacy
 
-Revalidate durable session and profile ownership in the owning application transaction. Never accept a request-selected account as authority or log session credentials. Use synthetic fixtures only. Profile deletion removes display/preference data according to the recorded policy; retained audit/outbox facts must be minimally identifying and have explicit retention/replay bounds.
+Read SECURITY.md and skills/security.md. Reject client-selected identity/roles, duplicate credentials and spoofed forwarding headers; do not trust proxy headers by default. Same-origin JSON/custom-header CSRF policy includes sign-in; CORS does not allow foreign origins. Public errors are fixed messages/codes without documents, variables, token fragments or database causes. Test real sockets and actual owner persistence.
 
 ## Implementation steps
 
-1. Inspect existing product/context contracts and select reversible bounded profile, selection, idempotency and deletion policies.
-2. Add profile domain/application behavior and deterministic tests before transport.
-3. Add migration 0002, owner repositories, audit/outbox writes and transaction composition.
-4. Prove real owner isolation, concurrent limits, duplicate/stale behavior, deletion and rollback on audit/outbox faults.
-5. Capture evidence, complete candidate/full checks and one initial plus confirmation review; checkpoint locally with coherent code, not metadata-only publication.
+1. Restore transport/runtime/configuration contracts and verify exact Apollo/Federation compatibility.
+2. Implement local Host/Origin/CSRF/cookie policy and focused adverse tests.
+3. Build owner schema/resolvers, sanitized errors and bounded request-scoped entity batching; prove composition and operation controls.
+4. Wire finite product startup/migration ownership and existing local packaging without weakening health-only behavior.
+5. Verify empty-state sign-in/profile/selection/update/delete/sign-out and adversarial/failure cases against real PostgreSQL and HTTP.
+6. Capture candidate evidence; initial plus confirmation review; publish once, wait protected exact-head CI, squash and verify post-merge before Phase 03.
 
 ## Tests
 
-- Domain: normalization, locale/maturity, configured count, versions, deletion and duplicate semantics.
-- Application: authenticated ownership on create/list/update/delete/select; stable errors.
-- Integration: real concurrency, session expiry/revocation, cross-account substitution, audit/outbox atomicity, migration up/down and deadline retirement.
-- Events: exact versioned envelope and required facts; no secrets or unnecessary preference fields.
-- Browser/media/broker delivery: not applicable until their owning items.
+- Domain/application: retain existing suites and add only new required policies.
+- Transport: real sockets for headers/cookies/CSRF, errors, expiry/revocation, ownership/substitution, duplicate/concurrent requests, cancellation and bounded abuse.
+- Contract: schema build/composition, entity ownership/batching, supported operations, no credential fields.
+- Runtime: empty-state migration/start, separate privileges, repeated start without data loss, shutdown/failure cleanup and exact package contents.
+- Browser UI: not applicable until Phase 05; browser-independent HTTP acceptance required now.
 
 ## Evidence
 
-- Iteration gate: dependency-aware focused build, profile/session tests and affected static checks.
-- Candidate gate: pnpm check:changed and the real profile PostgreSQL scenario.
-- Complete gate: all named owner/security/data/failure tests, migration evidence, complete source graph and audit; protected exact-head CI before eventual merge.
-- Artifact: evidence/phase-02/profiles-outbox.txt.
-- Heavyweight repeat triggers: behavior changes to profile SQL, migrations, transactions, failure handling or fixture ownership repeat affected DB proof. Prose/type-only changes with passing source checks retain unchanged evidence.
-- Review stopping rule: one complete initial review plus one confirmation; further rounds only for demonstrated requirement, security, data, availability or public-contract blockers.
+- Iteration gate: cheapest focused dependency-aware build/test/static check for the changed boundary.
+- Candidate gate: pnpm check:changed, schema/operation checks and affected real HTTP/database scenario.
+- Complete gate: Phase 02 acceptance from clean local state, full protected exact-head CI including combined integration and Docker product proof, dependency audit.
+- Raw artifact: evidence/phase-02/identity-subgraph.txt; update phase index at candidate checkpoints.
+- Heavyweight repeat triggers: changes affecting HTTP security, schema/SQL, startup/migration/image or failure semantics repeat that evidence; documentation/type-only changes retain unchanged runtime proof.
+- Review stopping rule: one complete initial review and one confirmation; another round only for a demonstrated requirement, security/data/availability or public-contract blocker.
 
 ## Rollback or recovery
 
-Keep migration 0001 and account/session validity intact. Test restrictive rollback of only the new profile-owned schema objects against disposable data. No destructive user-data recovery, hosted migration or unrelated Docker cleanup is authorized. Before real retained profile data exists, document when roll-forward is required.
+Disable local product mode without dropping Identity data; keep the released health-only path. Roll forward retained schema data and pending facts. Disposable integration reset remains exact project-scoped and explicit; no broad Docker/WSL cleanup.
 
 ## Documentation updates
 
-Record actual profile policies, deletion/retention and event contracts in the relevant product/phase/operations documents; update evidence and concise repository memory at the coherent candidate checkpoint.
+Record public operations/cookie policy, exact local product commands, migration ownership, limits, evidence and concise repository memory at coherent checkpoints. Do not claim hosted readiness or playable media.
 
 ## Completion checklist
 

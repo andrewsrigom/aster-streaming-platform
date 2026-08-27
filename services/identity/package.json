@@ -21,6 +21,7 @@
     "integration": "node ./dist/test/integration/integration.js all",
     "integration:broker": "node ./dist/test/integration/integration.js broker",
     "integration:core": "node ./dist/test/integration/integration.js",
+    "integration:profiles": "node ./dist/test/integration/integration.js profiles",
     "integration:sessions": "node ./dist/test/integration/integration.js sessions",
     "integration:storage": "node ./dist/test/integration/integration.js storage",
     "integration:telemetry": "node ./dist/test/integration/integration.js telemetry",

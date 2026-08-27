@@ -2,6 +2,23 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Owned profiles and transactional facts
+
+### Completed
+
+- Implemented normalized owned profiles, per-session active selection, optimistic versions and 24-hour retry receipts. Migration 0002 atomically stores audit/outbox facts; deletion removes preferences and clears every selected reference without deleting the account.
+- Bounded profiles/receipts/audit/outbox and defined backpressure without pending-event loss. Reused existing PostgreSQL transactions and fixture supervision; no new dependency, service, remote write or pipeline.
+
+### Evidence
+
+- Identity 111 tests, PostgreSQL 29 tests, all 49 source tasks (34 cached, 16.103 s), audit and executing-agent initial/confirmation review pass. No independent review claimed.
+- Real profile run 10780 ms; eight duplicate callers create one fact; eight callers crossing a two-profile limit admit one/reject seven. Foreign ownership, post-write rollback, revocation ordering, deletion replay, retention, timeout/cancellation and restrictive migration round-trip pass. Cleanup removed only one synthetic fixture in 1048 ms, zero remaining.
+- Exact commands/fingerprints and raw output: `evidence/phase-02/profiles-outbox.txt`.
+
+### Next action
+
+P02-R09 cookie/GraphQL transport is active. Wire product startup before publishing a runnable candidate; existing health-only Docker behavior is not a login demo. No broker relay until Phase 08.
+
 ## 2026-08-27 — Durable account/session candidate
 
 ### Completed

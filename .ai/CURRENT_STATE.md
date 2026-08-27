@@ -19,22 +19,23 @@ Status: **IN_PROGRESS**
 
 ## Current work
 
-P02-R01 and P02-R02 are locally verified on `feat/p02-identity-session`. Accounts/sessions use bounded one-client transactions, owner-held SQL and migration 0001. The real PostgreSQL scenario passes concurrent resolution/limits, rollback, revocation, restart, timeout/cancellation and restrictive migration round-trip (12334 ms; cleanup 1021 ms, zero remaining). Current source passes 91 Identity tests, 29 PostgreSQL tests, all 49 canonical tasks (33 cached, 14.369 s), audit and executing-agent confirmation. [Raw evidence](../evidence/phase-02/account-sessions.txt) includes exact fingerprints, commands and limits. P02-R03 is now active for profiles/outbox. The released health runtime is unchanged and this branch is not pushed.
+P02-R01 through P02-R08 are locally verified on `feat/p02-identity-session`: signed identity, durable sessions, owned profile CRUD/selection, retry receipts, audit and transactional outbox. Migration 0002 preserves the account/session owner. Current source passes 111 Identity tests, 29 PostgreSQL tests, all 49 canonical tasks (34 cached, 16.103 s), audit and executing-agent initial/confirmation review. Real profile scenario: 10780 ms; cleanup 1048 ms, zero remaining. [Raw evidence](../evidence/phase-02/profiles-outbox.txt) records concurrency, isolation, rollback, deletion, retention/backpressure and restrictive migration proof. P02-R09 is active for cookie/GraphQL transport. Released health runtime is unchanged; no branch push or new pipeline.
 
 ## Not implemented
 
-- Runtime wiring of account/session persistence and migrations; profile rules/ownership, product seed, GraphQL/Federation and browser UI.
+- Runtime wiring of product persistence/migrations, cookie/CSRF protection, GraphQL/Federation, clean product seed and browser UI.
 - Catalog/media/playback, engagement/discovery, advanced Redis/resilience, end-to-end traces/SLOs and hosted release.
 - No playable VOD demo exists. The current Docker command demonstrates health/recovery/metrics.
 
 ## Next outcome
 
-Implement P02-R03 through P02-R08: owned profile CRUD, explicit active selection, idempotent deletion/audit and versioned transactional outbox. Use the existing bounded transaction owner. Cookie/GraphQL transport remains the following item; group remote publication with a coherent product candidate.
+P02-R09: expose the guarded local Identity subgraph, sanitized outcomes and cookie/CSRF boundary; wire finite startup/migration ownership and prove empty-state product access. Group remote publication with this runnable product candidate.
 
 ## Current risks
 
 - Local identity must never become a hosted authentication bypass. Ephemeral local signing keys deliberately invalidate local assertions on process restart; database session checks remain mandatory.
-- Phase 01 runtime still exposes health only. No new authentication route, cookie control, profile authorization or hosted JWT/JWKS integration is claimed.
+- Phase 01 runtime still exposes health only. Owner-side profile authorization is locally verified, but no public authentication route, cookie control or hosted JWT/JWKS integration is claimed.
+- Pending outbox facts cap at 128/account and are never silently evicted; further event-producing mutations return backpressure until Phase 08 enables delivery. Names/preferences are deleted immediately; receipts last 24 hours, audit 30 days, with bounded cleanup on mutations.
 - Docker proof covers WSL amd64 and Windows localhost access, not native Windows containers/macOS/arm64/rootless/Podman. Samples are not capacity/SLO guarantees.
 - Exact local reset irreversibly deletes only validated Aster data. Never reset/prune Docker or WSL or touch unrelated projects.
 - No media rights record is approved. Future dependency/provider/media decisions belong to their owning phases. Unrelated Dependabot PR 1 remains untouched.

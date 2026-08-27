@@ -5,52 +5,12 @@ import type {
   IdentitySessionUnitOfWork,
   SessionResult,
 } from "../../application/session-ports.js";
-import type { IdentityAccount, StoredIdentitySession } from "../../domain/session.js";
-
-const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
-
-function invalidRow(): never {
-  throw new Error("Identity persistence contract failed.");
-}
-
-function row(value: unknown): Record<string, unknown> {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) {
-    return invalidRow();
-  }
-  return value as Record<string, unknown>;
-}
-
-function text(value: unknown, maximum: number, pattern?: RegExp): string {
-  if (
-    typeof value !== "string" ||
-    value.length < 1 ||
-    value.length > maximum ||
-    (pattern && !pattern.test(value))
-  ) {
-    return invalidRow();
-  }
-  return value;
-}
-
-function numericDate(value: unknown): number {
-  if (typeof value !== "string" || !/^\d{1,13}$/.test(value)) {
-    return invalidRow();
-  }
-  const number = Number(value);
-  if (!Number.isSafeInteger(number) || number < 0 || number > 8_640_000_000_000) {
-    return invalidRow();
-  }
-  return number;
-}
-
-function account(value: unknown): IdentityAccount {
-  const item = row(value);
-  return Object.freeze({
-    id: text(item["account_id"], 36, uuid),
-    issuer: text(item["issuer"], 256),
-    subject: text(item["subject"], 256),
-  });
-}
+import {
+  identityRow as row,
+  invalidIdentityRow as invalidRow,
+  readIdentityAccount as account,
+  readIdentitySession,
+} from "./identity-rows.js";
 
 function repositories(tx: AsterPostgresTransaction): IdentitySessionTransaction {
   return {
@@ -123,19 +83,7 @@ function repositories(tx: AsterPostgresTransaction): IdentitySessionTransaction 
       if (found.rowCount !== 1) {
         return invalidRow();
       }
-      const item = row(found.rows[0]);
-      const result: StoredIdentitySession = Object.freeze({
-        id: text(item["id"], 36, uuid),
-        account: account(item),
-        signerId: text(item["signer_id"], 36, uuid),
-        credentialDigest: text(item["credential_digest"], 64, /^[a-f0-9]{64}$/),
-        issuedAt: numericDate(item["issued_at"]),
-        expiresAt: numericDate(item["expires_at"]),
-      });
-      if (result.expiresAt <= result.issuedAt || result.expiresAt - result.issuedAt > 1_800) {
-        return invalidRow();
-      }
-      return result;
+      return readIdentitySession(found.rows[0]);
     },
     async deleteSession(sessionId, digest, signerId) {
       await tx.query({
