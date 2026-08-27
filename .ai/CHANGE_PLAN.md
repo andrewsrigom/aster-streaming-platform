@@ -34,7 +34,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 - Public query results never contain cookies, operator data or server configuration.
 - RSC preloads client-owned query data without a second independent RSC-rendered copy.
 - Session/profile changes clear the relevant browser cache; no durable data in Redux.
-- No publication before Phase 04 release; rebase onto its squash and repeat affected gates.
+- Phase 04 release is the base; Phase 05 publication still requires complete acceptance.
 
 ## Failure behavior
 
@@ -84,7 +84,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 - Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
 - Raw artifact path: evidence/phase-05/.
-- Acceptance result: first public slice passes eight Web, 98 Catalog and four browser checks plus an actual one-operation Router assertion. Profile, artwork, failure/performance and Docker phase acceptance remain open.
+- Acceptance result: public/seed and profile/Redux slices pass 58/58 source tasks, 13 Web and eight browser checks plus an actual one-operation Router assertion. Catalog's 98 tests remain passing. Artwork, complete public failure/performance and Docker phase acceptance remain open.
 - Iteration gate: cheapest changed adapter/cache/component checks and local production build.
 - Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
 - Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
@@ -92,11 +92,15 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 ## Rollback or recovery
 
-Stop only the owned Web/proof services and return to the released HTTP-only topology. Do not remove retained PostgreSQL data. Retire only the explicitly identified synthetic seed through Catalog if removal is needed. Preserve the frozen Phase 04 branch and rebase this unpublished dependent work onto its squash.
+Stop only the owned Web/proof services and return to the released HTTP-only topology. Do not remove retained PostgreSQL data. Retire only the explicitly identified synthetic seed through Catalog if removal is needed. The branch is already based on the Phase 04 squash; no predecessor wait remains.
 
 ## First-slice decisions
 
 Critical public content has no Suspense/loading boundary: actual disabled-JavaScript testing proved that streamed replacement otherwise hides it. Public HTML waits for the four-second-bounded query; profile/client-only loading can remain independent. The local seed uses only the fixed source-owned ADR-0016 technical fixture and synthetic non-delivery media references; it refuses existing edits/takedowns. The Web receives no initializer or private Router credentials. Detailed scope and commands are in apps/web/README.md.
+
+## Profile slice
+
+Public source checkpoint is c0b7585 (58/58 source tasks). Implement ADR-0018: exact Web-origin CORS/fetch metadata, separate interaction-only Apollo session cache with cancellation/replacement, Redux dialog coordination and the minimal accessible profile-selection/create flow. Identity remains authoritative; no owner transport or persistence changes. Verify keyboard/cookie/negative-origin behavior against the real Router before publication. Mutation retries are explicit only after owner-state refresh. Preserve all retained profiles and data.
 
 ## Documentation updates
 

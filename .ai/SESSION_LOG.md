@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-27 — Local profile and interaction slice
+
+### Completed
+
+Committed public SSR/seed checkpoint c0b7585 after 58/58 source tasks. Implemented the real local profile dialog, Redux shell and disposable private Apollo clients under ADR-0018. Exact Web-origin CORS/fetch metadata preserves private owner trust. Expiry requires explicit recheck; cross-tab logout clears visible private state.
+
+### Evidence
+
+Build/typecheck, 13 Web tests and eight browser journeys pass. Evidence/phase-05/profile-runtime.txt records commands, failures corrected, keyboard/cookie/expiry behavior and limits. Only test-created profiles were removed through Identity; retained data and audit history remain. No Phase 05 remote publication.
+
+### Next action
+
+Profile source gate passes 58/58 tasks, with frozen install and high-threshold audit passing. Next: artwork, public adverse states, performance and Docker-only Web acceptance. Phase 05 remains IN_PROGRESS; Phases 06–14 remain ahead.
+
 ## 2026-08-27 — Public SSR and repeatable Catalog seed
 
 ### Completed

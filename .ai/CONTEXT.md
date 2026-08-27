@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–04 are released. Guarded local sessions/profiles, rights-aware Catalog and Apollo Router run in Docker with protected/post-merge acceptance. Generated HLS proves Catalog publication, not playback. Public Next.js SSR/Apollo routes and an opt-in synthetic seed pass focused and real browser checks; profile UI, complete Web acceptance and playable film journeys remain unfinished. Compatible licensing decisions are authorized; ADR-0014 covers Apollo, ADR-0016 fixture tooling and ADR-0017 the local Router. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–04 are released. Guarded local sessions/profiles, rights-aware Catalog and Apollo Router run in Docker with protected/post-merge acceptance. Generated HLS proves Catalog publication, not playback. Public Next.js SSR, opt-in synthetic seed and local profile/Redux flows pass focused and real browser checks; complete Web acceptance and playable journeys remain unfinished. ADR-0018 scopes the exact browser origin and disposable private Apollo cache. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 

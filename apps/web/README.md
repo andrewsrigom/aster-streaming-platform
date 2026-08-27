@@ -1,6 +1,6 @@
 # Public Web checkpoint
 
-Status: implemented public browsing slice; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. No player, profile UI or complete Docker-only Web demo is claimed yet.
+Status: public browsing and local profile slices implemented; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. No player or complete Docker-only Web demo is claimed yet.
 
 ## Run locally
 
@@ -25,7 +25,15 @@ The seed is opt-in. It runs the network-disabled generated HLS verifier, builds 
 - The transport permits 256 KiB and four seconds, combines caller cancellation, rejects redirects and does not retry automatically.
 - Cache policies retain one page and one detail root, distinguish different cursors/IDs, and collect unreferenced entities after a consumer update. A populated 25-page test bounds the normalized title store to 21 entities; this is not a whole-process memory benchmark.
 - Public links do not prefetch automatically. Locale is explicit (`en` or `pt-BR`), never inferred independently during hydration. Localized content carries its language tag.
-- `ASTER_WEB_ROUTER_URL` is server-only and accepts only the documented loopback/Compose Router URLs. Web owns no database, session or operator credentials. Browser-origin/profile integration remains to be implemented with explicit CORS/CSRF acceptance.
+- `ASTER_WEB_ROUTER_URL` is server-only and accepts only the documented loopback/Compose Router URLs. Web owns no database, session or operator credentials. Router accepts only the exact local Web/diagnostic origins under [ADR-0018](../../docs/adr/0018-local-web-session-boundary.md).
+
+## Local profiles
+
+Open Profiles in the header or `/profiles`, then start the local demonstration session. Create a fictional profile, choose language/maturity preferences and select it. This does not create a hosted account or implement password/email flows. Browser cookies are HTTP-only and SameSite Strict; Identity still validates the durable session for every operation.
+
+The dialog loads on demand. Its separate Apollo client holds remote profiles, while a per-render-tree Redux store coordinates only the dialog, local step, busy state and finite notices. Input drafts stay in component state. Closing, session/profile changes, cross-tab invalidation and expiry cancel requests and discard the private cache. Expiry requires explicit recheck rather than an automatic refresh loop; a skewed browser clock cannot authorize a session. No Identity data is serialized into public SSR or persisted in browser storage.
+
+Web source remains strict TypeScript. Its declaration-file-only compatibility exception for upstream RTK types is recorded in ADR-0018; other packages retain declaration checking.
 
 ## Verification
 
@@ -36,4 +44,4 @@ pnpm --filter @aster/web exec playwright install chromium
 pnpm --filter @aster/web test:browser
 ```
 
-Browser checks require the production Web server and seeded Docker Router to be running, with no concurrent traffic to the test stack. They read Router logs to confirm one initial Browse operation. `ASTER_ROUTER_CONTAINER` selects a non-default local container (default `aster-router-1`); `ASTER_BROWSER_EXECUTABLE_PATH` optionally selects an existing Chrome executable. Tests cover actual public HTML, no duplicate hydration request, disabled/delayed JavaScript, locale and keyboard navigation. [Evidence and remaining acceptance](../../evidence/phase-05/README.md).
+Browser checks require the production Web server and seeded Docker Router to be running, with no concurrent traffic to the test stack. They read Router logs to confirm one initial Browse operation. `ASTER_ROUTER_CONTAINER` selects a non-default local container (default `aster-router-1`); `ASTER_BROWSER_EXECUTABLE_PATH` optionally selects an existing Chrome executable. Tests cover public HTML/hydration, disabled/delayed JavaScript, keyboard/dialog focus, real local profile/cookie flows, cross-tab logout, browser-clock expiry, retry and negative origin checks. The profile test removes only its newly created fixture through Identity, preserving its audit. Use a dedicated test stack, not a concurrently used viewer session. [Evidence and remaining acceptance](../../evidence/phase-05/README.md).

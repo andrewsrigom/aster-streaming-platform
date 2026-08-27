@@ -14,15 +14,15 @@ Phases 00–04 are released. PR 21 squash b6c99c4 has successful exact-head prot
 
 ## Current work
 
-P05-R01 is the sole active item. Public Next.js home/browse/title/attribution routes render through Router in English/Portuguese. The opt-in Catalog-owned synthetic seed is persisted and idempotent. Build, eight Web tests, 98 Catalog tests, four real browser journeys and the refined one-Router-operation check pass. [First-slice evidence](../evidence/phase-05/public-runtime.txt). Complete phase acceptance remains open.
+P05-R01 is the sole active item. Public SSR/seed checkpoint c0b7585 passed 58/58 source tasks. The next slice implements real local profile creation/selection, a separate disposable Identity Apollo cache and Redux dialog coordination. Build/typecheck, 13 Web tests and eight production-browser journeys pass, including cookie privacy, cross-tab logout, expiry, keyboard and CORS rejection. [Profile evidence](../evidence/phase-05/profile-runtime.txt). Complete phase acceptance remains open.
 
 ## Not implemented
 
-Profile UI/Redux shell, artwork, complete Web failure/performance/Docker acceptance, playable VOD, engagement/discovery and hosted release. No real-film approval exists. Current local Router limits are not complete hosted GraphQL protection.
+Artwork, complete public Web failure/performance/Docker acceptance, playable VOD, engagement/discovery and hosted release. No real-film approval exists. Current local Router limits are not complete hosted GraphQL protection.
 
 ## Next outcome
 
-The public-slice source gate passes 58/58 tasks (22 cached, 55.362 s), with frozen install and high-threshold audit passing. Implement P05-R01 profile/dialog flow and Redux shell with explicit narrow Web-origin trust. Complete artwork, adverse-state/performance tests and Docker-only Web startup before publishing the phase.
+Continue P05-R01 with artwork, public adverse-state/performance tests and Docker-only Web startup before publishing the phase. The profile slice passes 58/58 source tasks, frozen install and high-threshold audit. ADR-0018 records exact browser-origin/session boundaries and the Web-only upstream declaration compatibility exception.
 
 ## Current risks
 

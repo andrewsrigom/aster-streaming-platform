@@ -105,6 +105,7 @@ export function validateRouterSources(sources) {
       'ENTRYPOINT ["node", "/app/init-trust.mjs"]',
     ],
     "infra/router/router.yaml": [
+      "csrf:\n  required_headers: [x-aster-csrf]\ncors:\n  policies:\n    - origins: [http://127.0.0.1:4000, http://127.0.0.1:3000]\n  allow_credentials: true\n  methods: [POST]\n  allow_headers: [content-type, x-aster-csrf]\n",
       "  introspection: false\n",
       "  redact_query_validation_errors: true\n",
       "  early_cancel: true\n",

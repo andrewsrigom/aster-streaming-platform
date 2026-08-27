@@ -10,7 +10,7 @@ PR 21 is merged without bypass. Final exact-head run 33103379545 and post-merge 
 
 ## Next outcome
 
-Continue P05-R01 using .ai/CHANGE_PLAN.md. Public home/browse/localized title/attribution, filtered Apollo hydration, finite normalized cache retention and explicit idempotent seed are implemented. Eight Web tests, 98 Catalog tests and four browser journeys pass. The initial no-JavaScript failure was fixed by removing critical-content Suspense; refined first test also proves exactly one Router Browse operation. See evidence/phase-05/public-runtime.txt. Source gate passes 58/58 tasks; frozen install and high-threshold audit pass. Next add profile/dialog/Redux shell with narrow Web-origin trust, artwork, adverse states, performance and Docker acceptance.
+Public/seed checkpoint c0b7585 passed 58/58 source tasks. Profile/Redux slice now passes 58/58 source tasks (42 cached, 28.067 s), 13 focused and eight production-browser tests; see evidence/phase-05/profile-runtime.txt and ADR-0018. Next implement artwork, public adverse states, performance and Docker-only Web acceptance. Keep critical public content outside Suspense; it must remain visible without JavaScript. No Phase 05 publication until complete acceptance.
 
 ## Local resources
 

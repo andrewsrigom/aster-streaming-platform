@@ -1,0 +1,78 @@
+Phase 05 profile/interaction checkpoint — 2026-08-27
+Source: accompanying feat/p05-web-ssr changes after c0b7585.
+Environment: WSL Ubuntu 20.04 amd64, Node 24.19.0, pnpm 11.24.0,
+TypeScript 6.0.3, Next 16.3.3 production standalone, local Chrome,
+Playwright 1.62.1. Retained aster-p04-development Router/Identity/Catalog/PG.
+No remote publication, database migration or actual media-rights change.
+
+Implementation
+  /profiles and on-demand shared modal; real sign-in, create, select and logout.
+  Separate non-persisted Identity Apollo client; public preload stays public-only.
+  Finite Redux dialog/step/busy/notice state; component-owned input drafts.
+  Abort/discard cache on close, changed session/profile, expiry and other-tab change.
+  Four-second, 256 KiB response, 16 KiB request, two-operation client bounds.
+  Expiry closes private data until explicit recheck, avoiding clock-skew refetch loops.
+  Exact Web origin 127.0.0.1:3000 with same-site metadata; owner trust unchanged.
+
+Commands/results
+  pnpm install --frozen-lockfile: passed (431 ms); no new install hooks were enabled.
+  Exact author-published package metadata: RTK, React Redux and Radix Dialog have no
+    preinstall/install/postinstall hooks; reviewed scripts are development/package tasks.
+  pnpm audit --audit-level=high: exit 0; the existing moderate UUID advisory remains.
+  node --test tools/verify-router-runtime.test.mjs: 3/3, including narrow CORS regressions.
+  Final pnpm check:changed: 58/58 tasks, 42 cached, 28.067 s. First attempt stopped
+    because the next-outcome paragraph omitted its required P05-R01 identifier;
+    restored the reference, without changing runtime code or weakening the check.
+  pnpm install --ignore-scripts: 34 packages added; exact peer resolution succeeded.
+  pnpm --filter @aster/web typecheck: passed after scoped declaration compatibility decision.
+  pnpm exec eslint apps/web --no-warn-ignored: passed before final test-only additions.
+  pnpm --filter @aster/web test: 13/13 passed, 544.642 ms on final focused run.
+  pnpm unused:check: passed.
+  pnpm --filter @aster/web build: passed; /profiles is static, public data routes dynamic.
+  pnpm --filter @aster/web start: standalone loopback 3000, no missing-static warning.
+  agent-browser: public/profile page loads, meaningful controls, no console/page errors;
+    modal and route screenshots inspected; browser closed and manual session signed out.
+  docker compose -p aster-p04-development -f infra/compose/compose.yml
+    -f infra/compose/observability.yml --profile observability build router
+  Same Compose invocation: up -d --no-deps router
+    Passed; image sha256:76b37d0452e418ffe2c5f05d4e58dda9986bc2b84d0fadf55ae731c043604561.
+    Router healthy; only that development container recreated, trust/data preserved.
+
+  ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome
+  ASTER_ROUTER_CONTAINER=aster-p04-development-router-1
+  pnpm --filter @aster/web test:browser
+    8 passed (10.0s), 1 worker, no retries:
+      real cookie + keyboard create/select + restore + cross-tab logout/cache reset;
+      exact CORS preflight + six denied origin/metadata/CSRF/claim cases;
+      intercepted profile outage + explicit retry, public browsing remains useful;
+      browser-clock expiry, zero automatic requests, modal focus/reduced motion;
+      SSR/hydration: one actual Router Browse, zero browser GraphQL/prefetch;
+      pt-BR navigation/title attribution with JavaScript disabled;
+      delayed scripts preserve public content and deterministic hydration;
+      keyboard public navigation.
+    {"event":"web_public_hydration","browserGraphqlOrPrefetch":0,
+     "consoleErrorsOrWarnings":0,"ssrTitle":true,"routerBrowseOperations":1}
+
+Observed failures and corrections
+  RTK 2.12.0 declarations fail six checks under exact-optional TypeScript 6.
+  ADR-0018 scopes skipLibCheck to Web declarations; strict application checks remain.
+  Initial lint reported braces/void callbacks and test annotations; corrected.
+  First Compose invocation omitted --profile observability; configuration rejected it
+  before mutation. Corrected invocation preserved existing observability settings.
+  First browser profile test could not reread a completed/disposed fetch body via CDP.
+  Test now verifies saved Identity state through GraphQL plus visible UI, without
+  weakening cancellation. A second attempt used an ambiguous two-status locator;
+  narrowed it. Neither was represented as passing acceptance.
+  Removed only the two test-created leftover profiles after exact ID/name/version
+  checks through Identity DeleteProfile. Final harness also cleans its own new ID.
+  No retained Catalog title, user-created profile, PostgreSQL volume or audit removed.
+
+Limitations
+  Author boundary review found the browser-clock auto-refetch risk; the explicit
+    expiry/recheck flow and zero-request browser test address it. Confirmation
+    found no remaining blocker in this slice's stated cache/session/origin boundary.
+  Expiry test advances only the browser clock; it proves client cleanup, not server
+  expiry (owner expiry/revocation proof remains in Phase 02). Profile outage is an
+  intercepted browser failure, not a new owner-process fault experiment.
+  These checks do not prove screen-reader interoperability, Web Vitals/bundle budgets,
+  artwork, Docker-only Web startup, hosted identity or complete Phase 05 acceptance.

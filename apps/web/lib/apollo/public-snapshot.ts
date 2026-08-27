@@ -1,4 +1,4 @@
-import { Kind, type SelectionSetNode } from "graphql";
+import { Kind, type SelectionSetNode, type DocumentNode } from "graphql";
 import { BROWSE, TITLE_DETAIL } from "./operations.ts";
 
 function project(value: unknown, selection: SelectionSetNode | undefined): unknown {
@@ -49,7 +49,14 @@ export function projectPublicData(value: unknown, operationName: unknown): unkno
       : operationName === "TitleDetail"
         ? TITLE_DETAIL
         : undefined;
-  const operation = document?.definitions[0];
+  if (!document) {
+    throw new Error("Unknown public operation.");
+  }
+  return projectSelectedData(value, document);
+}
+
+export function projectSelectedData(value: unknown, document: DocumentNode): unknown {
+  const operation = document.definitions[0];
   if (
     operation?.kind !== Kind.OPERATION_DEFINITION ||
     !value ||
