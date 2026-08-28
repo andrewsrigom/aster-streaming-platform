@@ -1,0 +1,277 @@
+import assert from "node:assert/strict";
+import { randomBytes } from "node:crypto";
+import { once } from "node:events";
+import { createServer, request } from "node:http";
+import test from "node:test";
+import { graphql } from "graphql";
+import { createExpressHttpAdapter, createLocalRouterTrust } from "@aster/http-express";
+import { createEngagementSchema } from "../src/transport/engagement-schema.js";
+import {
+  createEngagementSubgraph,
+  type EngagementSubgraphOptions,
+} from "../src/transport/engagement-subgraph.js";
+import { inspectEngagementOperation } from "../src/transport/graphql-operation.js";
+import type { ProgressInput, ProgressState } from "../src/domain/progress.js";
+
+const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+const input: ProgressInput = {
+  profileId: id(1),
+  titleId: id(2),
+  playbackSessionId: id(3),
+  idempotencyKey: id(4),
+  sequence: 1,
+  positionMs: 1000,
+  durationMs: 6000,
+  occurredAt: 100,
+};
+const state: ProgressState = {
+  id: id(5),
+  accountId: id(6),
+  profileId: input.profileId,
+  titleId: input.titleId,
+  playbackSessionId: input.playbackSessionId,
+  sequence: 1,
+  version: 1,
+  positionMs: 1000,
+  durationMs: 6000,
+  status: "IN_PROGRESS",
+  occurredAt: 100,
+  updatedAt: 100,
+};
+const query =
+  "mutation RecordProgress($input: RecordProgressInput!) { recordProgress(input: $input) { code correlationId progress { id profileId titleId sequence version positionMs durationMs status occurredAt updatedAt } } }";
+const body = { query, operationName: "RecordProgress", variables: { input } };
+type RecordProgress = EngagementSubgraphOptions["recorder"]["record"];
+
+test("progress preflight bounds input, mutation fan-out and schema exposure", async () => {
+  assert.equal(inspectEngagementOperation(body).status, "accepted");
+  assert.equal(
+    inspectEngagementOperation({ query: "query Service { _service { sdl } }" }).status,
+    "accepted",
+  );
+  for (const value of [
+    { ...body, variables: { input: { ...input, accountId: id(6) } } },
+    { ...body, variables: { input: { ...input, sequence: 0 } } },
+    { ...body, variables: { input, unused: { arbitrary: "object" } } },
+    { ...body, query: query.replace("id profileId", "accountId profileId") },
+    {
+      ...body,
+      query:
+        query.replace("recordProgress(input: $input)", "a: recordProgress(input: $input)") +
+        " mutation Other { __typename }",
+    },
+    { ...body, query: "query Introspect { __schema { types { name } } }" },
+    { ...body, query: query + " ".repeat(4096) },
+    {
+      ...body,
+      query:
+        "mutation RecordProgress($input: RecordProgressInput!) { a: recordProgress(input: $input) { code } b: recordProgress(input: $input) { code } }",
+    },
+  ]) {
+    assert.equal(inspectEngagementOperation(value).status, "rejected");
+  }
+  const schema = createEngagementSchema();
+  const result = await graphql({
+    schema,
+    source: query,
+    variableValues: { input },
+    contextValue: {
+      recorder: {
+        record: () => {
+          throw new Error("must not dispatch");
+        },
+      },
+    },
+  });
+  assert.equal(result.errors?.[0]?.extensions["code"], "UNAVAILABLE");
+});
+
+async function fixture(record: RecordProgress) {
+  const key = randomBytes(32).toString("hex");
+  const adapter = createExpressHttpAdapter({ bodyLimitBytes: 16384 });
+  const server = createServer({ maxHeaderSize: 16384 }, adapter.requestListener);
+  const graph = await createEngagementSubgraph({
+    routerTrust: createLocalRouterTrust("engagement", key),
+    recorder: { record },
+  });
+  adapter.mountGraphql(graph.middleware);
+  server.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  const address = server.address();
+  assert.ok(address && typeof address === "object");
+  const headers = {
+    host: "engagement:3400",
+    origin: "http://127.0.0.1:4000",
+    "x-aster-csrf": "1",
+    "x-aster-router-credential": key,
+    cookie: "aster_local_session=synthetic.viewer.signature",
+  };
+  return {
+    key,
+    headers,
+    graph,
+    send(value: unknown = body, suppliedHeaders: Record<string, string> = headers) {
+      return new Promise<{
+        status: number;
+        text: string;
+        cache: string | undefined;
+        cookie: string[] | undefined;
+      }>((resolve, reject) => {
+        const outgoing = request(
+          {
+            hostname: "127.0.0.1",
+            port: address.port,
+            method: "POST",
+            path: "/graphql",
+            signal: AbortSignal.timeout(4000),
+            headers: {
+              "content-type": "application/json",
+              connection: "close",
+              ...suppliedHeaders,
+            },
+          },
+          (incoming) => {
+            const chunks: Buffer[] = [];
+            incoming.on("data", (chunk: Buffer) => {
+              chunks.push(chunk);
+            });
+            incoming.once("error", reject);
+            incoming.once("end", () => {
+              resolve({
+                status: incoming.statusCode ?? 500,
+                text: Buffer.concat(chunks).toString("utf8"),
+                cache: incoming.headers["cache-control"],
+                cookie: incoming.headers["set-cookie"],
+              });
+            });
+          },
+        );
+        outgoing.once("error", reject);
+        outgoing.end(JSON.stringify(value));
+      });
+    },
+    async close() {
+      await graph.stop();
+      await new Promise<void>((resolve, reject) => {
+        server.close((error) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+        server.closeAllConnections();
+      });
+    },
+  };
+}
+
+test("HTTP progress exposes only committed result fields and rejects forged transport before dispatch", async () => {
+  let calls = 0;
+  const f = await fixture((value, request) => {
+    calls++;
+    assert.deepEqual(value, input);
+    assert.equal(request.credential, "synthetic.viewer.signature");
+    assert.ok(request.signal instanceof AbortSignal);
+    return Promise.resolve({ status: "completed", value: state });
+  });
+  try {
+    const accepted = await f.send();
+    assert.equal(accepted.status, 200);
+    assert.equal(accepted.cache, "no-store");
+    assert.equal(accepted.cookie, undefined);
+    const value = JSON.parse(accepted.text) as {
+      data: { recordProgress: { code: string; progress: Record<string, unknown> } };
+    };
+    assert.equal(value.data.recordProgress.code, "COMPLETED");
+    assert.equal(value.data.recordProgress.progress["positionMs"], 1000);
+    assert.doesNotMatch(accepted.text, /accountId|playbackSessionId|signature|credential/u);
+    for (const headers of [
+      {},
+      { ...f.headers, "x-aster-account-id": id(6) },
+      { ...f.headers, "x-aster-engagement-credential": f.key },
+      { ...f.headers, host: "identity:3100" },
+    ]) {
+      assert.equal((await f.send(body, headers)).status, 403);
+    }
+    assert.equal(
+      (
+        await f.send(body, {
+          ...f.headers,
+          cookie: f.headers.cookie + "; aster_local_session=other.viewer.signature",
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (await f.send({ ...body, variables: { input: { ...input, durationMs: -1 } } })).status,
+      400,
+    );
+    assert.equal(calls, 1);
+  } finally {
+    await f.close();
+  }
+});
+
+test("non-success, ambiguous commit and exceptions never fabricate progress", async () => {
+  for (const status of [
+    "unauthenticated",
+    "stale",
+    "conflict",
+    "backpressure",
+    "indeterminate",
+  ] as const) {
+    const f = await fixture(() => Promise.resolve({ status }));
+    try {
+      const value = JSON.parse((await f.send()).text) as {
+        data: { recordProgress: { code: string; progress: unknown } };
+      };
+      assert.equal(value.data.recordProgress.code, status.toUpperCase());
+      assert.equal(value.data.recordProgress.progress, null);
+    } finally {
+      await f.close();
+    }
+  }
+  const f = await fixture(() => Promise.reject(new Error("private SQL cookie details")));
+  try {
+    const result = await f.send();
+    assert.doesNotMatch(result.text, /private SQL|cookie details|stack/u);
+    assert.match(result.text, /UNAVAILABLE/u);
+  } finally {
+    await f.close();
+  }
+});
+
+test("four admitted progress requests are bounded and shutdown cancels their owner signals", async () => {
+  let entered = 0;
+  const ready = Promise.withResolvers<undefined>();
+  const f = await fixture(
+    (_value, request) =>
+      new Promise((resolve) => {
+        if (++entered === 4) {
+          ready.resolve(undefined);
+        }
+        const cancel = () => {
+          resolve({ status: "cancelled" });
+        };
+        if (request.signal.aborted) {
+          cancel();
+        } else {
+          request.signal.addEventListener("abort", cancel, { once: true });
+        }
+      }),
+  );
+  const pending = Array.from({ length: 4 }, () => f.send());
+  try {
+    await ready.promise;
+    assert.equal((await f.send()).status, 503);
+    assert.equal(entered, 4);
+    await f.graph.stop();
+    const results = await Promise.all(pending);
+    assert.ok(results.every((result) => result.text.includes("CANCELLED")));
+    assert.equal((await f.send()).status, 503);
+  } finally {
+    await Promise.allSettled(pending);
+    await f.close();
+  }
+});

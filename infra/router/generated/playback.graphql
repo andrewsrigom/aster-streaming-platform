@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3")
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@inaccessible"])
 
 enum PlaybackSessionCode {
   COMPLETED
@@ -15,6 +15,19 @@ type PlaybackSession {
   titleId: ID!
   manifestUrl: String!
   expiresAt: Float!
+}
+
+type EngagementSessionAuthority @inaccessible {
+  code: PlaybackSessionCode!
+  sessionId: ID
+  titleId: ID
+  checkedAt: Float
+  createdAt: Float
+  expiresAt: Float
+}
+
+type Query {
+  _engagementSession(sessionId: ID!, titleId: ID!): EngagementSessionAuthority! @inaccessible
 }
 
 type PlaybackSessionPayload {

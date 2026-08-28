@@ -3,8 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { composeServices } from "@apollo/composition";
-import { printSubgraphSchema } from "@apollo/subgraph";
-import { parse, print } from "graphql";
+import { parse, findBreakingChanges } from "graphql";
 
 import { inspectIdentityOperation } from "../src/transport/graphql-operation.js";
 import { createIdentitySchema, IDENTITY_TYPE_DEFS } from "../src/transport/identity-schema.js";
@@ -14,21 +13,28 @@ const inspect = (query: string, variables?: Record<string, unknown>) =>
   inspectIdentityOperation({ query, ...(variables ? { variables } : {}) }, schema);
 
 test("Identity composes as Federation v2 with an owned Profile entity and no credential fields", () => {
-  assert.equal(
-    print(
-      parse(
+  // Historical evidence is immutable; compare its public contract, not additive private fields.
+  const previous = composeServices([
+    {
+      name: "identity",
+      url: "http://identity:3100/graphql",
+      typeDefs: parse(
         readFileSync(
           new URL("../../../../evidence/phase-02/identity-schema.graphql", import.meta.url),
           "utf8",
         ),
       ),
-    ),
-    print(parse(printSubgraphSchema(schema))),
-  );
+    },
+  ]);
+  assert.equal(previous.errors, undefined);
   const composed = composeServices([
     { name: "identity", typeDefs: IDENTITY_TYPE_DEFS, url: "http://identity:3100/graphql" },
   ]);
   assert.equal(composed.errors, undefined);
+  const api = composed.schema.toAPISchema().toGraphQLJSSchema();
+  assert.deepEqual(findBreakingChanges(previous.schema.toAPISchema().toGraphQLJSSchema(), api), []);
+  assert.equal(api.getType("EngagementProfileAuthority"), undefined);
+  assert.equal(api.getQueryType()?.getFields()["_engagementProfile"], undefined);
   assert.ok(composed.supergraphSdl.includes('@join__type(graph: IDENTITY, key: "id")'));
   for (const type of Object.values(schema.getTypeMap())) {
     if ("getFields" in type) {
@@ -38,6 +44,7 @@ test("Identity composes as Federation v2 with an owned Profile entity and no cre
     }
   }
   assert.deepEqual(Object.keys(schema.getQueryType()?.getFields() ?? {}).sort(), [
+    "_engagementProfile",
     "_entities",
     "_service",
     "activeProfile",

@@ -19,7 +19,10 @@ export {
   createLocalRouterTrust,
   loadLocalRouterTrust,
   createLocalCatalogPlaybackTrust,
+  createLocalEngagementReadTrust,
+  loadLocalEngagementReadCredential,
   loadLocalCatalogPlaybackTrust,
   loadLocalCatalogPlaybackCredential,
 } from "./local-router-trust.js";
 export type { AsterLocalRouterTrust } from "./local-router-trust.js";
+export { parseLocalSessionCookie } from "./local-session-cookie.js";

@@ -21,6 +21,7 @@ import { GraphQLError, type GraphQLFormattedError } from "graphql";
 import type { LocalIdentityConfiguration } from "../infrastructure/identity/local-identity.js";
 
 import { createLocalSessionTransport } from "./local-session.js";
+import { inspectIdentityEngagementOperation } from "./engagement-operation.js";
 import {
   IDENTITY_GRAPHQL_LIMITS,
   inspectIdentityOperation,
@@ -58,6 +59,7 @@ export interface IdentityOperationTrace {
 
 export interface IdentitySubgraphOptions {
   readonly routerTrust?: AsterLocalRouterTrust;
+  readonly engagementTrust?: AsterLocalRouterTrust;
   readonly configuration: LocalIdentityConfiguration;
   readonly applications: IdentityGraphqlApplications;
   readonly nowSeconds?: () => number;
@@ -71,6 +73,7 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
     options.configuration,
     options.nowSeconds,
     options.routerTrust,
+    options.engagementTrust,
   );
   const schema = createIdentitySchema();
   const contexts = new WeakMap<IncomingMessage, IdentityGraphqlContext>();
@@ -169,7 +172,7 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
   const middleware: AsterExpressGraphqlMiddleware = policy.wrap(
     async (request, response, onError) => {
       const startedAt = now();
-      const correlationId = randomUUID();
+      const correlationId = policy.correlationId(request) ?? randomUUID();
       const traceId = policy.traceId(request) ?? randomUUID().replaceAll("-", "");
       const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
       let operation: IdentityOperation | "rejected" = "rejected";
@@ -218,7 +221,10 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
         return;
       }
       credit -= 1;
-      const decision = inspectIdentityOperation(request.body as unknown, schema);
+      const engagement = policy.isEngagement(request);
+      const decision = engagement
+        ? inspectIdentityEngagementOperation(request.body as unknown)
+        : inspectIdentityOperation(request.body as unknown, schema);
       if (decision.status !== "accepted") {
         reject(400, decision.code);
         record();
@@ -254,6 +260,7 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
             response.set("Set-Cookie", policy.clearCookie());
           },
         },
+        engagement,
       );
       contexts.set(request, context);
       const timer = setTimeout(() => {

@@ -2,6 +2,8 @@ import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/po
 import {
   loadLocalRouterTrust,
   loadLocalCatalogPlaybackCredential,
+  createLocalEngagementReadTrust,
+  loadLocalEngagementReadCredential,
   type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import { randomUUID } from "node:crypto";
@@ -17,6 +19,8 @@ import {
 } from "@aster/runtime";
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createPlaybackSessions } from "./application/create-session.js";
+import { createPlaybackSessionInspector } from "./application/inspect-session.js";
+import { createPostgresPlaybackSessionReader } from "./infrastructure/postgres-session-read.js";
 import type { PlaybackSessionPorts } from "./application/session-ports.js";
 import { playbackRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { createPostgresPlaybackSessions } from "./infrastructure/postgres-sessions.js";
@@ -75,6 +79,20 @@ export async function createPlaybackService(
       });
     graph = await createPlaybackSubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("playback")),
+      ...(config.engagementRead
+        ? {
+            engagement: {
+              trust: createLocalEngagementReadTrust(
+                "playback",
+                await loadLocalEngagementReadCredential("playback"),
+              ),
+              inspector: createPlaybackSessionInspector(
+                createPostgresPlaybackSessionReader(database),
+                () => Math.floor(Date.now() / 1000),
+              ),
+            },
+          }
+        : {}),
       sessions: createPlaybackSessions({
         catalog,
         sessions: createPostgresPlaybackSessions(database),

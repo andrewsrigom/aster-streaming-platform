@@ -243,6 +243,24 @@ export function createIdentityProfiles(ports: IdentityProfilePorts) {
     });
 
   return Object.freeze({
+    authorize: (request: ProfileRequest, profileId: unknown) =>
+      run(request, async (tx, session) => {
+        if (!profileIdentifier(profileId)) {
+          return { status: "invalid_input" };
+        }
+        const profile = await owned(tx, session.account.id, profileId);
+        return profile
+          ? {
+              status: "completed",
+              value: Object.freeze({
+                accountId: session.account.id,
+                profileId: profile.id,
+                checkedAt: now(),
+                expiresAt: session.expiresAt,
+              }),
+            }
+          : { status: "not_found" };
+      }),
     create: (request: ProfileRequest, input: unknown) => mutate("create", request, input),
     update: (request: ProfileRequest, input: unknown) => mutate("update", request, input),
     delete: (request: ProfileRequest, input: unknown) => mutate("delete", request, input),

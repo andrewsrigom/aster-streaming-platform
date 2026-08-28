@@ -132,7 +132,7 @@ export function createProgressRecorder(ports: ProgressPorts) {
       ) {
         return { status: "unauthenticated" };
       }
-      const signal = AbortSignal.any([request.signal, AbortSignal.timeout(3000)]);
+      const signal = AbortSignal.any([request.signal, AbortSignal.timeout(2500)]);
       const ownerRequest = {
         signal,
         correlationId: request.correlationId,

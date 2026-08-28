@@ -1,6 +1,10 @@
 import type { IncomingMessage } from "node:http";
 
-import type { AsterExpressGraphqlMiddleware, AsterLocalRouterTrust } from "@aster/http-express";
+import {
+  parseLocalSessionCookie,
+  type AsterExpressGraphqlMiddleware,
+  type AsterLocalRouterTrust,
+} from "@aster/http-express";
 
 import {
   LOCAL_SESSION_LIFETIME_SECONDS,
@@ -13,11 +17,14 @@ const COOKIE_ATTRIBUTES = "Path=/; HttpOnly; SameSite=Strict";
 const MAX_CREDENTIAL_BYTES = 3_800;
 const COMPACT_JWT = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/u;
 const HEADER_NAME = /^[!#$%&'*+\-.^_\x60|~0-9A-Za-z]+$/u;
-const COOKIE_VALUE =
-  /^(?:"[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*"|[\x21\x23-\x2b\x2d-\x3a\x3c-\x5b\x5d-\x7e]*)$/u;
 const JSON_CONTENT_TYPE = /^application\/json(?:\s*;\s*charset=(?:"utf-8"|utf-8))?$/iu;
 
-type AcceptedRequest = Readonly<{ credential: string | undefined; traceId?: string }>;
+type AcceptedRequest = Readonly<{
+  credential: string | undefined;
+  traceId?: string;
+  correlationId?: string;
+  engagement?: boolean;
+}>;
 type Decision =
   | Readonly<{ status: "accepted"; value: AcceptedRequest }>
   | Readonly<{ status: "rejected"; httpStatus: 400 | 403 | 405 | 415; code: string }>;
@@ -51,48 +58,11 @@ function readHeaders(request: IncomingMessage): Map<string, string> | undefined 
   return result;
 }
 
-function readCookie(raw: string | undefined): AcceptedRequest | undefined {
-  if (raw === undefined) {
-    return { credential: undefined };
-  }
-  if (raw.length === 0 || raw.length > 8_192) {
-    return undefined;
-  }
-  const pairs = raw.split(";");
-  if (pairs.length > 32) {
-    return undefined;
-  }
-  const names = new Set<string>();
-  let credential: string | undefined;
-  for (const pair of pairs) {
-    const field = pair.trim();
-    const equals = field.indexOf("=");
-    const name = field.slice(0, equals);
-    const value = field.slice(equals + 1);
-    if (
-      equals < 1 ||
-      name.length > 128 ||
-      !HEADER_NAME.test(name) ||
-      !COOKIE_VALUE.test(value) ||
-      names.has(name)
-    ) {
-      return undefined;
-    }
-    names.add(name);
-    if (name === COOKIE_NAME) {
-      if (value.length > MAX_CREDENTIAL_BYTES || !COMPACT_JWT.test(value)) {
-        return undefined;
-      }
-      credential = value;
-    }
-  }
-  return { credential };
-}
-
 function authorizeRequest(
   request: IncomingMessage,
   origin: URL,
   routerTrust?: AsterLocalRouterTrust,
+  engagementTrust?: AsterLocalRouterTrust,
 ): Decision {
   const reject = (httpStatus: 400 | 403 | 405 | 415, code: string): Decision => ({
     status: "rejected",
@@ -107,9 +77,10 @@ function authorizeRequest(
     return reject(400, "BAD_REQUEST");
   }
   const routerContext = routerTrust?.accept(request);
+  const engagementContext = engagementTrust?.accept(request);
   if (
-    (routerTrust ? !routerContext : headers.get("host") !== origin.host) ||
-    headers.get("origin") !== origin.origin ||
+    (!engagementContext && (routerTrust ? !routerContext : headers.get("host") !== origin.host)) ||
+    headers.get("origin") !== (engagementContext ? "http://engagement:3400" : origin.origin) ||
     headers.get("x-aster-csrf") !== "1" ||
     (headers.has("sec-fetch-site") && headers.get("sec-fetch-site") !== "same-origin") ||
     [...headers.keys()].some(
@@ -119,6 +90,10 @@ function authorizeRequest(
         name.startsWith("x-forwarded-") ||
         (name.startsWith("x-aster-") &&
           name !== "x-aster-csrf" &&
+          !(
+            engagementContext &&
+            ["x-aster-engagement-credential", "x-aster-correlation-id"].includes(name)
+          ) &&
           !(routerTrust && name === "x-aster-router-credential")),
     )
   ) {
@@ -131,9 +106,17 @@ function authorizeRequest(
   ) {
     return reject(415, "UNSUPPORTED_MEDIA_TYPE");
   }
-  const cookies = readCookie(headers.get("cookie"));
+  const cookies = parseLocalSessionCookie(headers.get("cookie"));
   return cookies
-    ? { status: "accepted", value: { ...cookies, ...routerContext } }
+    ? {
+        status: "accepted",
+        value: {
+          ...cookies,
+          ...routerContext,
+          ...engagementContext,
+          engagement: !!engagementContext,
+        },
+      }
     : reject(400, "BAD_REQUEST");
 }
 
@@ -141,6 +124,7 @@ export function createLocalSessionTransport(
   configuration: LocalIdentityConfiguration,
   now: () => number = () => Math.floor(Date.now() / 1_000),
   routerTrust?: AsterLocalRouterTrust,
+  engagementTrust?: AsterLocalRouterTrust,
 ) {
   validateLocalIdentityConfiguration(configuration);
   const origin = new URL(configuration.publicOrigin);
@@ -153,7 +137,7 @@ export function createLocalSessionTransport(
       return (request, response, onError) => {
         response.set("Cache-Control", "no-store");
         response.set("X-Content-Type-Options", "nosniff");
-        const decision = authorizeRequest(request, origin, routerTrust);
+        const decision = authorizeRequest(request, origin, routerTrust, engagementTrust);
         if (decision.status !== "accepted") {
           if (decision.httpStatus === 405) {
             response.set("Allow", "POST");
@@ -176,6 +160,12 @@ export function createLocalSessionTransport(
     },
     traceId(request: IncomingMessage): string | undefined {
       return accepted.get(request)?.traceId;
+    },
+    correlationId(request: IncomingMessage): string | undefined {
+      return accepted.get(request)?.correlationId;
+    },
+    isEngagement(request: IncomingMessage): boolean {
+      return accepted.get(request)?.engagement === true;
     },
     issueCookie(credential: string, expiresAt: number): string {
       const timestamp = now();

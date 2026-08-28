@@ -44,6 +44,9 @@ const expectedVolumes = new Set([
   "catalog-router-trust",
   "playback-router-trust",
   "playback-catalog-trust",
+  "engagement-router-trust",
+  "engagement-identity-trust",
+  "engagement-playback-trust",
 ]);
 const emit = (event, facts) => process.stdout.write(JSON.stringify({ event, ...facts }) + "\n");
 let failure;

@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Owner-authorized federated progress
+
+### Completed
+
+Implemented private Identity/profile and Playback/session reads, separate credentials, protected Engagement mutation/runtime and fourth-subgraph Docker/CI wiring.
+
+### Evidence
+
+[Real Docker proof](../evidence/phase-08/federated-runtime.txt) passes durable replay/ordering, foreign-owner rejection, expiry/revocation, blocked-owner recovery, trace correlation and anonymous playback after optional owners stop. [Candidate gate](../evidence/phase-08/candidate-gate.txt) passes 67/67 tasks. Exact disposable cleanup left zero resources; retained demo/media untouched. No CPU test.
+
+### Next action
+
+Full candidate gate and protected review/release; browser save and remaining Phase 08 are not claimed.
+
 ## 2026-08-28 — Durable progress persistence
 
 ### Completed

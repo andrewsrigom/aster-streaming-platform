@@ -8,7 +8,7 @@ import type { ProfileRequest, ProfileResult } from "../application/profile-ports
 import { profileIdentifier, type ViewerProfile } from "../domain/profile.js";
 
 export const IDENTITY_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
   enum IdentityOutcome {
     COMPLETED UNAUTHENTICATED UNAVAILABLE CANCELLED INDETERMINATE
     LIMIT_EXCEEDED INVALID_INPUT NOT_FOUND CONFLICT BACKPRESSURE
@@ -23,6 +23,9 @@ export const IDENTITY_TYPE_DEFS = parse(`
     version: Int!
   }
   type Viewer { accountId: ID! expiresAt: String! }
+  type EngagementProfileAuthority @inaccessible {
+    code: IdentityOutcome! accountId: ID profileId: ID checkedAt: Float expiresAt: Float
+  }
   type OwnedProfiles { profiles: [Profile!]! activeProfileId: ID }
   type SessionPayload { code: IdentityOutcome! correlationId: ID! viewer: Viewer }
   type ProfileMutationPayload {
@@ -46,6 +49,7 @@ export const IDENTITY_TYPE_DEFS = parse(`
   }
   input DeleteProfileInput { mutationId: ID! profileId: ID! expectedVersion: Int! }
   type Query {
+    _engagementProfile(profileId: ID!): EngagementProfileAuthority! @inaccessible
     me: Viewer
     profiles: OwnedProfiles!
     profile(id: ID!): Profile
@@ -81,6 +85,7 @@ export interface IdentityGraphqlContext {
   readonly issueCookie: (credential: string, expiresAt: number) => void;
   readonly clearCookie: () => void;
   readonly outcome: { code: string };
+  readonly engagement: boolean;
 }
 
 export class IdentityGraphqlError extends GraphQLError {
@@ -118,12 +123,14 @@ export function createIdentityGraphqlContext(
   applications: IdentityGraphqlApplications,
   request: ProfileRequest,
   cookies: Pick<IdentityGraphqlContext, "issueCookie" | "clearCookie">,
+  engagement = false,
 ): IdentityGraphqlContext {
   let snapshot: Promise<ProfileSnapshot> | undefined;
   const context: IdentityGraphqlContext = {
     applications,
     request,
     ...cookies,
+    engagement,
     outcome: { code: "COMPLETED" },
     snapshot: () => {
       snapshot ??= applications.profiles
@@ -152,6 +159,20 @@ export function createIdentitySchema() {
     typeDefs: IDENTITY_TYPE_DEFS,
     resolvers: {
       Query: {
+        _engagementProfile: async (_: unknown, args: { profileId: unknown }, raw: unknown) => {
+          const context = identityContext(raw);
+          if (!context.engagement || context.request.signal.aborted) {
+            throw new IdentityGraphqlError("UNAVAILABLE");
+          }
+          const result = await context.applications.profiles.authorize(
+            context.request,
+            args.profileId,
+          );
+          return {
+            code: payload(result, context).code,
+            ...(result.status === "completed" ? result.value : {}),
+          };
+        },
         me: async (_: unknown, _args: unknown, rawContext: unknown) => {
           const context = identityContext(rawContext);
           const result = await context.applications.sessions.restore(

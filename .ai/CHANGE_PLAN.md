@@ -13,7 +13,7 @@ Save progress for an owned profile and valid title-bound playback context, with 
 
 ## Current behavior
 
-Identity profiles and Playback sessions exist. Engagement domain/application/PostgreSQL pass 32 focused tests and ten real SQL scenarios; private owner transport is not implemented. Phase 07 is released: PR 25 head c7f9f7c0e5ad14134fe260284fe7c1f8f2921efe passed protected CI/confirmation, squash 854592e5ff1213a306b45d61a547ad4f2a2d9395 passed exact post-merge 33171284170. This branch is already rebased on that identical tree. [Player release/rollback](../evidence/phase-07/release.md), [progress checkpoint](../evidence/phase-08/README.md).
+Engagement domain/application and isolated PostgreSQL pass focused and real SQL tests. The protected fourth subgraph now saves through current private Identity/Playback checks in Docker. Replay, ordering, cross-account rejection, lock recovery, session expiry, revocation and anonymous-media independence pass. The full candidate gate and protected release remain pending. Phase 07 is released at main 854592e5ff1213a306b45d61a547ad4f2a2d9395. [Evidence](../evidence/phase-08/README.md).
 
 ## Proposed behavior
 
@@ -57,7 +57,7 @@ Iteration: focused node:test, strict types and ESLint. Candidate: affected works
 
 ## Rollback or recovery
 
-No dependent publication before PR 25 release; rebase and rerun affected gates if it changes. Stop additive Engagement runtime and retain data on rollback. Never remove Identity/Playback/Catalog state. Migration down must refuse retained acknowledged data outside an explicitly disposable or approved backup/recovery target.
+Stop additive Engagement and restore the prior compatible Router artifacts. Preserve all owner schemas/data/media. Disable new owner-read flags when rolling back Identity/Playback, whose old runtime rejects unknown configuration; keep trust volumes unless explicitly rotating exact verified disposable keys. Down migration refuses retained data. The guarded reset recognizes the new exact services/volumes and is tested with fake Docker only; it is not used against retained data.
 
 ## Documentation updates
 
@@ -65,8 +65,8 @@ Record implemented versus planned behavior, threshold/receipt/retention contract
 
 ## Completion checklist
 
-- [x] Domain/application acceptance (pure/application fakes; real persistence/transport still pending)
-- [x] Durable isolation/concurrency/atomicity (disposable PostgreSQL; owner network still pending)
-- [ ] Owner transport and public contract
-- [ ] Evidence and memory current
-- [ ] Predecessor and protected release complete
+- [x] Domain/application acceptance
+- [x] Durable isolation/concurrency/atomicity (disposable PostgreSQL)
+- [x] Owner transport and public contract
+- [x] Evidence and memory current
+- [ ] Protected candidate review/CI, merge and exact post-merge complete

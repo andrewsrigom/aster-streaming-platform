@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–06 and Phase 07's [short-lived Playback sessions](services/playback/README.md) are released. The accessible HLS player and Docker-only playable demo are implemented; their candidate acceptance and protected release remain in progress. See [current state](.ai/CURRENT_STATE.md), [playback guide](apps/web/PLAYBACK.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 06 release](evidence/phase-06/release.md).
+Phases 00–07 are released locally, including the accessible player and Docker-only playable demo. Phase 08's [owner-authorized progress API](services/engagement/README.md) is implemented and passes disposable Docker acceptance; protected release and browser saving remain pending. See [current state](.ai/CURRENT_STATE.md), [playback guide](apps/web/PLAYBACK.md), [Router](apps/router/README.md) and [Phase 07 release](evidence/phase-07/release.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -44,7 +44,7 @@ From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog/Playback with restricted database logins. Playback has a separate current-publication read credential shared only with Catalog. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. This command does not yet start the [Web checkpoint](apps/web/README.md) or playable video; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
+The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog/Playback/Engagement with restricted database logins. Playback has a separate Catalog read credential; Engagement has distinct private Identity and Playback read credentials. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. This command does not yet start the [Web checkpoint](apps/web/README.md) or playable video; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
 
 Exercise sign-in, create/select/list/delete a synthetic profile and sign-out (POSIX/WSL, Docker only):
 
@@ -163,7 +163,7 @@ Stop the checkpoint while preserving its PostgreSQL volume with:
 docker compose --project-name aster --file infra/compose/compose.yml down
 ```
 
-Delete the complete Aster local project, including PostgreSQL, broker, S3, Prometheus and both disposable Router trust volumes, only with the explicit destructive reset:
+Delete the complete Aster local project, including PostgreSQL, broker, S3, Prometheus and the seven disposable transport-trust volumes, only with the explicit destructive reset:
 
 ```bash
 ASTER_ENVIRONMENT=local ./tools/reset-local-platform.sh --confirm DELETE-ASTER-LOCAL-DATA
@@ -217,7 +217,7 @@ Run `pnpm integration` on Linux/WSL for the released eight-scenario real Postgre
 
 P01-R10's [Identity image checkpoint](docs/operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) builds and runs a controlled diagnostic with Docker only. The non-root production image, database-connected runtime, optional profiles and Docker-only start commands above are implemented and verified by clean-checkout and protected CI evidence. This is a runtime demonstration, not a playable product.
 
-Phase 07 owns the first clean-start playable HLS journey. The Docker Web demo above already exposes browsing; there is still no supported `pnpm dev` or product-player demo command.
+The Docker-only playable demo above is the released Phase 07 journey. There is no supported `pnpm dev` command; Phase 08 browser saving remains planned.
 
 See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) for command behavior, feedback lanes, and future checkpoints.
 

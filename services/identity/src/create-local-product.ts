@@ -1,7 +1,11 @@
 import { createHash } from "node:crypto";
 
 import type { ReferenceRuntimeConfig } from "@aster/config";
-import { loadLocalRouterTrust } from "@aster/http-express";
+import {
+  loadLocalRouterTrust,
+  createLocalEngagementReadTrust,
+  loadLocalEngagementReadCredential,
+} from "@aster/http-express";
 import type { AsterPostgresAdapter } from "@aster/postgres";
 import type { AsterClock, AsterIdentifierGenerator, AsterLogger } from "@aster/runtime";
 
@@ -40,6 +44,14 @@ export async function createLocalIdentityProduct(
   const graph = await createIdentitySubgraph({
     configuration: local,
     nowSeconds: now,
+    ...(configuration.localDemo.engagementRead
+      ? {
+          engagementTrust: createLocalEngagementReadTrust(
+            "identity",
+            await loadLocalEngagementReadCredential("identity"),
+          ),
+        }
+      : {}),
     ...(configuration.localDemo.routerTrust
       ? { routerTrust: await loadLocalRouterTrust("identity") }
       : {}),

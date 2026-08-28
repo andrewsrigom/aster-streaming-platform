@@ -1,0 +1,55 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3")
+
+enum ProgressStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum ProgressCode {
+  COMPLETED
+  INVALID_INPUT
+  UNAUTHENTICATED
+  NOT_FOUND
+  NOT_PLAYABLE
+  STALE
+  CONFLICT
+  BACKPRESSURE
+  UNAVAILABLE
+  CANCELLED
+  INDETERMINATE
+}
+
+input RecordProgressInput {
+  profileId: ID!
+  titleId: ID!
+  playbackSessionId: ID!
+  idempotencyKey: ID!
+  sequence: Int!
+  positionMs: Int!
+  durationMs: Int!
+  occurredAt: Float!
+}
+
+type Progress {
+  id: ID!
+  profileId: ID!
+  titleId: ID!
+  sequence: Int!
+  version: Int!
+  positionMs: Int!
+  durationMs: Int!
+  status: ProgressStatus!
+  occurredAt: Float!
+  updatedAt: Float!
+}
+
+type ProgressPayload {
+  code: ProgressCode!
+  correlationId: ID!
+  progress: Progress
+}
+
+type Mutation {
+  recordProgress(input: RecordProgressInput!): ProgressPayload!
+}

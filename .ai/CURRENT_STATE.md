@@ -16,21 +16,17 @@ Phase 06 includes current rights approval, bounded acquisition, isolated full-fi
 
 ## Current work
 
-P08-R01 domain/application are implemented: exact/conflicting replay, global per-profile/title sequence, configured opening/completion, clamped positions, bounded clocks, owner-validation ports, transaction/outbox intent and cancellation. [32 focused tests and ten real SQL scenarios](../evidence/phase-08/README.md), strict TypeScript, scoped lint and architecture pass. PostgreSQL migration/adapter now prove durable atomic progress/receipt/outbox, replay, ordering, bounds and safe rollback. Owner adapters and running save UI remain next.
+P08-R01 now includes current private Identity/profile and Playback/session reads, protected Engagement GraphQL, restricted runtime/migrator/readiness, fourth-subgraph composition and Docker/CI wiring. The [real federated proof](../evidence/phase-08/federated-runtime.txt) passes durable acknowledgement, concurrent replay, conflict/stale rejection, foreign ownership, expired context, lock failure/recovery, deletion/revocation denial and trace correlation. Anonymous Playback succeeds after Identity/Engagement stop. The disposable project left zero resources; retained demo/media are untouched.
 
-P07-R01's public Playback mutation, private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are released. Real PostgreSQL covers admission, expiry, retention, restricted credentials and migrations. The connected Router/Catalog/Playback proof covers rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Player/demo acceptance and local application upgrade are also complete.
-
-[ADR-0027](../docs/adr/0027-local-playback-sessions.md) defines a distinct credential for the bounded private Catalog GraphQL read, separate Router credentials, current rights/URL validation, two-second deadline and fifteen-minute expiry capped by rights. No cross-owner SQL, media proxy or optional personalization dependency. [Active plan](CHANGE_PLAN.md).
-
-Saved P07 work is restored and rebased on released main. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy; do not apply it again.
+[Core/SQL evidence](../evidence/phase-08/README.md) remains supporting evidence for unchanged transaction/constraint behavior. Candidate quality passes 67/67 tasks; protected review/release remain pending. No browser save/resume is implemented.
 
 ## Not implemented
 
-Engagement private transport/subgraph, durable player save, watchlist, projections/relay, Discovery and hosted release remain unimplemented. Signal / 01 is a non-delivery browse fixture; Signal / 02 is a playable generated technical sample, not a third-party film.
+Player progress reports/resume, watchlist/history reads, relay/consumers, Discovery and hosted release remain planned. Engagement's backend is implemented and Docker-tested, not released. Signal / 01 is browse-only; Signal / 02 is the generated captioned playable sample.
 
 ## Next outcome
 
-Continue P08-R01 with private owner reads and runtime under ADR-0030. SQL/concurrency/rollback are proven; the fixture and its private network are removed. PR 25 and post-merge are complete; this branch is rebased. No duplicate review/pipeline or unchanged CPU/film test.
+Close the P08-R01 coherent candidate with full affected gate, one initial review and one confirmation, protected CI and exact post-merge. Then start the next Phase 08 work item. No repeated CPU, unchanged film or browser experiment.
 
 ## Runtime and recovery
 

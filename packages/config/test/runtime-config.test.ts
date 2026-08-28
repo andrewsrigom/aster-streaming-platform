@@ -163,6 +163,32 @@ test("Router trust requires the local product and the exact public Router origin
   }
 });
 
+test("Engagement profile reads require explicit local Identity and Router activation", () => {
+  const configured = {
+    ...validEnvironment(),
+    ASTER_SERVICE_NAME: "identity",
+    ASTER_LOCAL_DEMO_ENABLED: "true",
+    ASTER_PUBLIC_ORIGIN: "http://127.0.0.1:4000",
+    ASTER_ROUTER_TRUST_ENABLED: "true",
+    ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: "true",
+  };
+  const result = loadEnvironment(configured);
+  assert.equal(result.localDemo?.engagementRead, true);
+  assert.ok(
+    createReferenceRuntimeConfigDiagnostic(result).variables.some(
+      (entry) => entry.name === "ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED",
+    ),
+  );
+  for (const change of [
+    { ASTER_ROUTER_TRUST_ENABLED: "false" },
+    { ASTER_ENV: "production" },
+    { ASTER_SERVICE_NAME: "other" },
+    { ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: "yes" },
+  ]) {
+    assert.throws(() => loadEnvironment({ ...configured, ...change }), ReferenceRuntimeConfigError);
+  }
+});
+
 test("reports non-secret values and only configured status for secrets", () => {
   const diagnostic = createReferenceRuntimeConfigDiagnostic(loadEnvironment(validEnvironment()));
   const serialized = JSON.stringify(diagnostic);

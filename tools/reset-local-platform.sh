@@ -97,6 +97,8 @@ expected_services='broker
 catalog
 catalog-init
 collector
+engagement
+engagement-init
 identity
 identity-init
 platform-init
@@ -118,6 +120,9 @@ fi
 configured_volumes=$(printf '%s\n' "$configured_volumes" | LC_ALL=C sort | tr -d '\r')
 expected_volumes='broker-data
 catalog-router-trust
+engagement-identity-trust
+engagement-playback-trust
+engagement-router-trust
 identity-router-trust
 playback-catalog-trust
 playback-router-trust
@@ -195,7 +200,7 @@ for container_id in $container_ids; do
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
-    identity | identity-init | catalog | catalog-init | playback | playback-init | broker | storage | collector | prometheus | router | router-trust-init | web)
+    identity | identity-init | catalog | catalog-init | playback | playback-init | engagement | engagement-init | broker | storage | collector | prometheus | router | router-trust-init | web)
       [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'runtime and optional services require current ownership labels'
       ;;
     platform-init | platform-status | postgres | redis) ;;
@@ -214,7 +219,26 @@ for container_id in $container_ids; do
     'broker|volume|aster_broker-data|/var/lib/kafka/data' | 'storage|volume|aster_storage-data|/data' | 'prometheus|volume|aster_prometheus-data|/prometheus' | 'collector|') ;;
     'web|' | 'web|tmpfs||/app/apps/web/.next/cache') ;;
     'identity|volume|aster_identity-router-trust|/run/aster-router' | 'catalog|volume|aster_catalog-router-trust|/run/aster-router') ;;
-    'playback-init|') ;;
+    'playback-init|' | 'engagement-init|') ;;
+    'identity|volume|aster_engagement-identity-trust|/run/aster-engagement-identity
+volume|aster_identity-router-trust|/run/aster-router') ;;
+    'playback|volume|aster_engagement-playback-trust|/run/aster-engagement-playback
+volume|aster_playback-catalog-trust|/run/aster-playback-catalog
+volume|aster_playback-router-trust|/run/aster-router') ;;
+    'engagement|volume|aster_engagement-identity-trust|/run/aster-engagement-identity
+volume|aster_engagement-playback-trust|/run/aster-engagement-playback
+volume|aster_engagement-router-trust|/run/aster-router') ;;
+    'router|volume|aster_catalog-router-trust|/run/aster-router/catalog
+volume|aster_engagement-router-trust|/run/aster-router/engagement
+volume|aster_identity-router-trust|/run/aster-router/identity
+volume|aster_playback-router-trust|/run/aster-router/playback') ;;
+    'router-trust-init|volume|aster_catalog-router-trust|/run/aster-router/catalog
+volume|aster_engagement-identity-trust|/run/aster-engagement-identity
+volume|aster_engagement-playback-trust|/run/aster-engagement-playback
+volume|aster_engagement-router-trust|/run/aster-router/engagement
+volume|aster_identity-router-trust|/run/aster-router/identity
+volume|aster_playback-catalog-trust|/run/aster-playback-catalog
+volume|aster_playback-router-trust|/run/aster-router/playback') ;;
     'catalog|volume|aster_catalog-router-trust|/run/aster-router
 volume|aster_playback-catalog-trust|/run/aster-playback-catalog') ;;
     'playback|volume|aster_playback-catalog-trust|/run/aster-playback-catalog
@@ -318,7 +342,7 @@ if ! volume_names=$(docker_local volume ls --quiet --filter "label=com.docker.co
 fi
 volume_count=0
 for volume_name in $volume_names; do
-  [ "$volume_count" -lt 8 ] || fail 'more than eight Aster volumes are prohibited'
+  [ "$volume_count" -lt 11 ] || fail 'more than eleven Aster volumes are prohibited'
   if ! volume_labels=$(docker_local volume inspect --format '{{ index .Labels "com.docker.compose.project" }}|{{ index .Labels "com.docker.compose.volume" }}|{{ index .Labels "com.aster.authority" }}|{{ index .Labels "com.aster.environment" }}|{{ index .Labels "com.aster.owner" }}' "$volume_name" 2>/dev/null); then
     fail "volume $volume_name labels cannot be inspected"
   fi
@@ -330,6 +354,9 @@ for volume_name in $volume_names; do
     'aster_catalog-router-trust|aster|catalog-router-trust|disposable-local|local|platform' | \
     'aster_playback-router-trust|aster|playback-router-trust|disposable-local|local|platform' | \
     'aster_playback-catalog-trust|aster|playback-catalog-trust|disposable-local|local|platform' | \
+    'aster_engagement-router-trust|aster|engagement-router-trust|disposable-local|local|platform' | \
+    'aster_engagement-identity-trust|aster|engagement-identity-trust|disposable-local|local|platform' | \
+    'aster_engagement-playback-trust|aster|engagement-playback-trust|disposable-local|local|platform' | \
     'aster_prometheus-data|aster|prometheus-data|disposable-local|local|platform') ;;
     *) fail "volume $volume_name has unexpected project, volume, authority, environment, or owner labels" ;;
   esac

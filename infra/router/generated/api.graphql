@@ -77,6 +77,7 @@ type Mutation {
   createProfile(input: CreateProfileInput!): ProfileMutationPayload!
   deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload!
   demoSignIn: SessionPayload!
+  recordProgress(input: RecordProgressInput!): ProgressPayload!
   selectProfile(id: ID!): ProfileSelectionPayload!
   signOut: SessionPayload!
   updateProfile(input: UpdateProfileInput!): ProfileMutationPayload!
@@ -144,6 +145,45 @@ type ProfileSelectionPayload {
   profile: Profile
 }
 
+type Progress {
+  durationMs: Int!
+  id: ID!
+  occurredAt: Float!
+  positionMs: Int!
+  profileId: ID!
+  sequence: Int!
+  status: ProgressStatus!
+  titleId: ID!
+  updatedAt: Float!
+  version: Int!
+}
+
+enum ProgressCode {
+  BACKPRESSURE
+  CANCELLED
+  COMPLETED
+  CONFLICT
+  INDETERMINATE
+  INVALID_INPUT
+  NOT_FOUND
+  NOT_PLAYABLE
+  STALE
+  UNAUTHENTICATED
+  UNAVAILABLE
+}
+
+type ProgressPayload {
+  code: ProgressCode!
+  correlationId: ID!
+  progress: Progress
+}
+
+enum ProgressStatus {
+  COMPLETED
+  IN_PROGRESS
+  NOT_STARTED
+}
+
 type Query {
   activeProfile(id: ID!): Profile
   me: Viewer
@@ -151,6 +191,17 @@ type Query {
   profiles: OwnedProfiles!
   title(id: ID!): Title
   titles(after: String, first: Int!): CatalogTitleConnection!
+}
+
+input RecordProgressInput {
+  durationMs: Int!
+  idempotencyKey: ID!
+  occurredAt: Float!
+  playbackSessionId: ID!
+  positionMs: Int!
+  profileId: ID!
+  sequence: Int!
+  titleId: ID!
 }
 
 type SessionPayload {

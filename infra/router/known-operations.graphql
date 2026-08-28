@@ -194,3 +194,22 @@ mutation StartPlayback($titleId: ID!) {
     }
   }
 }
+
+mutation RecordProgress($input: RecordProgressInput!) {
+  recordProgress(input: $input) {
+    code
+    correlationId
+    progress {
+      id
+      profileId
+      titleId
+      sequence
+      version
+      positionMs
+      durationMs
+      status
+      occurredAt
+      updatedAt
+    }
+  }
+}

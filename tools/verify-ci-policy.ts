@@ -264,6 +264,10 @@ export function validateWorkflowPolicy(
       "Playback changes require bounded real persistence and federated runtime acceptance",
     ],
     [
+      /- name: Prove Engagement persistence and federated progress\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 10\s+run: \|\s+pnpm engagement:integration\s+pnpm engagement:runtime/u,
+      "Engagement changes require bounded real persistence and owner-authorized progress acceptance",
+    ],
+    [
       /- name: Prove Docker-only playable demo\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15/u,
       "playable demo requires a bounded affected-scope acceptance gate",
     ],

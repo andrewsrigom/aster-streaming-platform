@@ -3,11 +3,12 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "ae3c14f8a9a7566715b5c25f267be73f55dde5fc752d04cff73a604b3ef67b84",
-    "supergraph.graphql": "edf36603bdd2eaa3272adbc67af464a029a305754b709e7e66fc7995c85d13b0",
+    "api.graphql": "7897c9eb6b48e0cf6f0065e5f40113842627f97687341fe39d05223183c91540",
+    "supergraph.graphql": "18ef8e86b0ff92f3df04ae817ddabf19c3265ae0388e543d2467cbdf7f18c412",
     "catalog.graphql": "6f6cac428556c841c9e41aaf576087547ef57b3b5b3d1afd10d04d77e33adb08",
-    "identity.graphql": "0bf47aa04eddff6f02a4d486a1c2b663f952e52148cacf72aa11f7cf89d84324",
-    "playback.graphql": "aa6c86cb4aac6ca80f3843e43cc5ab48311872ea7fbb2e15acdd6e09f6e32918"
+    "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
+    "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
+    "engagement.graphql": "17f1e979466ffca06d3de480bcbda3a82303a192980982ae616608a4c0773d96"
   },
   "subgraphs": [
     {
@@ -161,6 +162,18 @@
           "keys": []
         },
         {
+          "type": "EngagementProfileAuthority",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "accountId",
+            "checkedAt",
+            "code",
+            "expiresAt",
+            "profileId"
+          ],
+          "keys": []
+        },
+        {
           "type": "IdentityOutcome",
           "kind": "EnumTypeDefinition",
           "fields": [],
@@ -244,6 +257,7 @@
           "type": "Query",
           "kind": "ObjectTypeDefinition",
           "fields": [
+            "_engagementProfile",
             "activeProfile",
             "me",
             "profile",
@@ -288,6 +302,19 @@
       "routingUrl": "http://playback:3300/graphql",
       "ownership": [
         {
+          "type": "EngagementSessionAuthority",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "checkedAt",
+            "code",
+            "createdAt",
+            "expiresAt",
+            "sessionId",
+            "titleId"
+          ],
+          "keys": []
+        },
+        {
           "type": "Mutation",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -321,6 +348,82 @@
             "session"
           ],
           "keys": []
+        },
+        {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "_engagementSession"
+          ],
+          "keys": []
+        }
+      ]
+    },
+    {
+      "name": "engagement",
+      "routingUrl": "http://engagement:3400/graphql",
+      "ownership": [
+        {
+          "type": "Mutation",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "recordProgress"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Progress",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "durationMs",
+            "id",
+            "occurredAt",
+            "positionMs",
+            "profileId",
+            "sequence",
+            "status",
+            "titleId",
+            "updatedAt",
+            "version"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProgressCode",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "ProgressPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "progress"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProgressStatus",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "RecordProgressInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "durationMs",
+            "idempotencyKey",
+            "occurredAt",
+            "playbackSessionId",
+            "positionMs",
+            "profileId",
+            "sequence",
+            "titleId"
+          ],
+          "keys": []
         }
       ]
     }
@@ -349,6 +452,10 @@
     {
       "name": "Profiles",
       "sha256": "7d8e9b19c20793c860a61d94e382c59259180db2478fa0bed1bbf66a77952058"
+    },
+    {
+      "name": "RecordProgress",
+      "sha256": "309817337c3df075af2926d1ba9f527df627000dbd754346cd7e446c5c42190c"
     },
     {
       "name": "SelectProfile",

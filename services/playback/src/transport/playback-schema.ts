@@ -1,9 +1,10 @@
 import { buildSubgraphSchema } from "@apollo/subgraph";
 import { GraphQLError, parse } from "graphql";
 import type { PlaybackSessions } from "../application/create-session.js";
+import type { createPlaybackSessionInspector } from "../application/inspect-session.js";
 
 export const PLAYBACK_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3")
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@inaccessible"])
   enum PlaybackSessionCode {
     COMPLETED INVALID_INPUT NOT_PLAYABLE UNAVAILABLE CANCELLED INDETERMINATE LIMIT_EXCEEDED
   }
@@ -12,6 +13,12 @@ export const PLAYBACK_TYPE_DEFS = parse(`
     titleId: ID!
     manifestUrl: String!
     expiresAt: Float!
+  }
+  type EngagementSessionAuthority @inaccessible {
+    code: PlaybackSessionCode! sessionId: ID titleId: ID checkedAt: Float createdAt: Float expiresAt: Float
+  }
+  type Query {
+    _engagementSession(sessionId: ID!, titleId: ID!): EngagementSessionAuthority! @inaccessible
   }
   type PlaybackSessionPayload {
     code: PlaybackSessionCode!
@@ -34,6 +41,7 @@ export interface PlaybackGraphqlContext {
   readonly correlationId: string;
   readonly traceparent?: string;
   readonly sessions: PlaybackSessions;
+  readonly engagement?: ReturnType<typeof createPlaybackSessionInspector>;
   readonly outcome: { code: string };
 }
 const OWNER = Symbol("playback-request-owner");
@@ -59,9 +67,11 @@ export function createPlaybackGraphqlContext(
   signal: AbortSignal,
   correlationId: string,
   traceparent?: string,
+  engagement?: ReturnType<typeof createPlaybackSessionInspector>,
 ): PlaybackGraphqlContext {
   const context: PlaybackGraphqlContext = {
     sessions,
+    ...(engagement ? { engagement } : {}),
     signal,
     correlationId,
     ...(traceparent ? { traceparent } : {}),
@@ -76,6 +86,28 @@ export function createPlaybackSchema() {
   return buildSubgraphSchema({
     typeDefs: PLAYBACK_TYPE_DEFS,
     resolvers: {
+      Query: {
+        _engagementSession: async (
+          _: unknown,
+          args: { sessionId: unknown; titleId: unknown },
+          raw: unknown,
+        ) => {
+          const context = owned(raw);
+          if (!context.engagement) {
+            throw new PlaybackGraphqlError("FORBIDDEN");
+          }
+          const result = await context.engagement.inspect(
+            args.sessionId,
+            args.titleId,
+            context.signal,
+          );
+          context.outcome.code = result.status.toUpperCase();
+          return {
+            code: context.outcome.code,
+            ...(result.status === "completed" ? result.value : {}),
+          };
+        },
+      },
       Mutation: {
         createPlaybackSession: async (_: unknown, args: { titleId: unknown }, raw: unknown) => {
           const context = owned(raw);

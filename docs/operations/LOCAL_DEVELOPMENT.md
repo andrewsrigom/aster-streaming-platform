@@ -2,7 +2,7 @@
 
 ## Current status
 
-Phases 00–06 are released. The local stack includes Apollo Router, private Identity/Catalog subgraphs, per-owner transport credentials, public Web browsing and the first-film pipeline. Phase 07 adds locally implemented [Playback sessions](../../services/playback/README.md), a private owner listener and a separate current-Catalog credential. The core retains persistent PostgreSQL, disposable Redis and bounded resources. [Current state](../../.ai/CURRENT_STATE.md) records acceptance/release status. The product player and clean-start playable journey remain unfinished.
+Phases 00–07 are released locally, including the accessible player and Docker-only playable journey. Phase 08 adds the implemented [owner-authorized progress backend](../../services/engagement/README.md); its disposable Docker proof passes, while protected release and browser save/resume remain pending. PostgreSQL is durable, Redis disposable, and private owner credentials/resource limits remain explicit. [Current state](../../.ai/CURRENT_STATE.md).
 
 ### Identity reference process
 
@@ -49,7 +49,7 @@ docker compose --project-name aster --file infra/compose/compose.yml --profile r
 
 Use POST `http://127.0.0.1:4000/graphql`; GET intentionally has no landing page. `docker compose --project-name aster --file infra/compose/compose.yml ps --all` reports Router and owner health. No host Node/pnpm, manual schema initialization or hosted account is needed. Docker builds frozen production packages and waits for owner migrations and the finite trust initializer. Migration jobs hold admin credentials; each API uses its restricted owner/reader login. Successful migrations are not reapplied. Build/pulls precede the 120-second readiness wait; the first build needs registry access.
 
-Router, Identity and Catalog use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Router, optional Web and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router and Web can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates two private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
+Router, Identity, Catalog, Playback and Engagement use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Router, optional Web and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router and Web can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates seven private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
 
 The seven-variable Identity configuration retains standalone health-only behavior. Normal Compose opts into local Identity with `ASTER_LOCAL_DEMO_ENABLED=true`, `ASTER_PUBLIC_ORIGIN=http://127.0.0.1:4000` and private Router trust; other environments cannot activate it. Owner readiness checks restricted database privileges and required schema. An unavailable dependency produces owner readiness 503 while liveness stays 200 and recovery remains monitored. Router health measures the Router process, not aggregate owner availability: nullable mixed queries can retain one healthy owner. The optional overlay enables metrics and Router traces through the private Collector.
 
@@ -78,10 +78,10 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | Selection | Services beyond the four-service core | Published localhost ports |
 |---|---|---|
 | no profile / core target | none | none |
-| `runtime` | Router, Identity, Catalog | 4000 |
-| `integration` | Router, Identity, Catalog, Kafka, S3 | 4000 |
-| `observability` + overlay | Router, Identity, Catalog, Collector, Prometheus | 4000, 9090 |
-| `full` + overlay | Router, Identity, Catalog, Kafka, S3, Collector, Prometheus | 4000, 9090 |
+| `runtime` | Router, Identity, Catalog, Playback, Engagement | 4000 |
+| `integration` | Router, Identity, Catalog, Playback, Engagement, Kafka, S3 | 4000 |
+| `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus | 4000, 9090 |
+| `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus | 4000, 9090 |
 
 These profiles run finite Identity/Catalog migration jobs and `router-trust-init` before admitting federated API traffic.
 
@@ -314,7 +314,7 @@ The configured GitHub governance job runs repository-memory, documentation, publ
 
 ## Local endpoints
 
-The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate through the internal `platform` network. Normal runtime publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200 and Playback 3300 remain private, with `/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics overlay alone exposes Identity/Catalog on loopback and disables private trust; it is not the federated topology. The Web overlay publishes 3000 and observability publishes Prometheus 9090. PostgreSQL, Redis, broker, private storage and Collector have no host ports. [Playback operations](../../services/playback/README.md) and [Catalog verification](../../services/catalog/README.md#docker-runtime-and-technical-media) describe the scoped checks.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate through the internal `platform` network. Normal runtime publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200, Playback 3300 and Engagement 3400 remain private, with `/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics overlay alone exposes Identity/Catalog on loopback and disables private trust; it is not the federated topology. The Web overlay publishes 3000 and observability publishes Prometheus 9090. PostgreSQL, Redis, broker, private storage and Collector have no host ports. [Playback operations](../../services/playback/README.md) and [Catalog verification](../../services/catalog/README.md#docker-runtime-and-technical-media) describe the scoped checks.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 

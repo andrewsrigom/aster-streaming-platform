@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
 
 enum IdentityOutcome {
   COMPLETED
@@ -31,6 +31,14 @@ type Profile @key(fields: "id") {
 type Viewer {
   accountId: ID!
   expiresAt: String!
+}
+
+type EngagementProfileAuthority @inaccessible {
+  code: IdentityOutcome!
+  accountId: ID
+  profileId: ID
+  checkedAt: Float
+  expiresAt: Float
 }
 
 type OwnedProfiles {
@@ -82,6 +90,7 @@ input DeleteProfileInput {
 }
 
 type Query {
+  _engagementProfile(profileId: ID!): EngagementProfileAuthority! @inaccessible
   me: Viewer
   profiles: OwnedProfiles!
   profile(id: ID!): Profile

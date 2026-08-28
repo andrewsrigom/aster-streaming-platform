@@ -106,6 +106,23 @@ test("Playback persistence and federated runtime checks cannot be omitted or sup
   }
 });
 
+test("Engagement persistence and private-owner runtime checks cannot be suppressed", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace("pnpm engagement:integration", "true"),
+    source.replace("pnpm engagement:runtime", "true"),
+    source.replace(
+      "Prove Engagement persistence and federated progress\n        if: needs.classify.outputs.platform == 'true'",
+      "Prove Engagement persistence and federated progress\n        if: false",
+    ),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(
+      validateWorkflowPolicy(changed).some(({ detail }) => detail.startsWith("Engagement")),
+    );
+  }
+});
+
 test("Docker context probe cannot be omitted, skipped or left unbounded", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [

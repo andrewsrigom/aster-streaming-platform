@@ -1,0 +1,241 @@
+import { createHash, randomUUID } from "node:crypto";
+import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
+import {
+  loadLocalRouterTrust,
+  loadLocalEngagementReadCredential,
+  type AsterLocalRouterTrust,
+} from "@aster/http-express";
+import {
+  bindAsterProcessSignals,
+  createAsterDeadline,
+  createAsterLogger,
+  createAsterReadinessController,
+  createAsterReadinessMonitor,
+  createAsterServiceLifecycle,
+  type AsterLogger,
+  type AsterProcessSignalBinding,
+} from "@aster/runtime";
+import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
+import { createProgressRecorder } from "./application/record-progress.js";
+import type { ProgressPorts } from "./application/progress-ports.js";
+import { DEFAULT_PROGRESS_POLICY } from "./domain/progress.js";
+import { createPostgresProgress } from "./infrastructure/postgres-progress.js";
+import { createProgressOwnerClients } from "./infrastructure/owner-clients.js";
+import { engagementRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
+import { probeEngagementStore } from "./infrastructure/store-readiness.js";
+import { createEngagementSubgraph } from "./transport/engagement-subgraph.js";
+import { createEngagementHttpServer, type EngagementHttpServer } from "./transport/http-server.js";
+
+interface RuntimeResources {
+  readonly database?: AsterPostgresAdapter;
+  readonly owners?: Pick<ProgressPorts, "identity" | "playback">;
+  readonly routerTrust?: AsterLocalRouterTrust;
+  readonly telemetry?: AsterTelemetry;
+  readonly logger?: AsterLogger;
+  readonly terminate?: (code: number) => void;
+}
+export async function createEngagementService(
+  environment: Readonly<Record<string, string | undefined>>,
+  resources: RuntimeResources = {},
+) {
+  const config = engagementRuntimeConfiguration(environment);
+  const logger =
+    resources.logger ??
+    createAsterLogger({ service: "engagement", version: "0.0.0", environment: "local" });
+  const telemetry =
+    resources.telemetry ??
+    createAsterTelemetry({
+      serviceName: "engagement",
+      serviceVersion: "0.0.0",
+      environment: "local",
+    });
+  let database: AsterPostgresAdapter;
+  try {
+    database =
+      resources.database ??
+      createAsterPostgresAdapter({
+        connectionString: config.connectionString,
+        telemetry,
+        maxConnections: 4,
+        connectionTimeoutMs: 1000,
+        statementTimeoutMs: 900,
+        operationTimeoutMs: 1000,
+      });
+  } catch (error) {
+    await telemetry.shutdown(AbortSignal.timeout(2000));
+    throw error;
+  }
+  let graph: Awaited<ReturnType<typeof createEngagementSubgraph>>;
+  try {
+    const owners =
+      resources.owners ??
+      createProgressOwnerClients({
+        identityCredential: await loadLocalEngagementReadCredential("identity"),
+        playbackCredential: await loadLocalEngagementReadCredential("playback"),
+      });
+    graph = await createEngagementSubgraph({
+      routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("engagement")),
+      recorder: createProgressRecorder({
+        ...owners,
+        ...createPostgresProgress(database),
+        now: () => Math.floor(Date.now() / 1000),
+        nextId: randomUUID,
+        digest: (value) => createHash("sha256").update(value).digest("hex"),
+        policy: DEFAULT_PROGRESS_POLICY,
+        limits: { receiptSeconds: 3600, maximumReceipts: 1024, maximumOutbox: 1024 },
+      }),
+      onOperation: (trace) =>
+        logger.info({
+          event: "aster.engagement.graphql_completed",
+          operation: trace.operation,
+          requestId: trace.correlationId,
+          durationMs: trace.durationMs,
+          outcome: trace.code === "COMPLETED" ? "ok" : "rejected",
+          properties: [
+            ["code", trace.code],
+            ["trace_id", trace.traceId],
+            ["span_id", trace.spanId],
+          ],
+        }),
+      onDiagnostic: (code) =>
+        logger.warn({ event: "aster.engagement.graphql_diagnostic", errorCategory: code }),
+    });
+  } catch (error) {
+    await Promise.allSettled([
+      database.close(AbortSignal.timeout(2000)),
+      telemetry.shutdown(AbortSignal.timeout(2000)),
+    ]);
+    throw error;
+  }
+  const startupController = new AbortController();
+  let http: EngagementHttpServer | undefined;
+  let binding: AsterProcessSignalBinding | undefined;
+  const lifecycle = createAsterServiceLifecycle({
+    shutdownDeadlineMs: 10000,
+    logger,
+    stopTraffic: async (signal) => {
+      startupController.abort();
+      await http?.stopTraffic(signal);
+    },
+    stopConsumers: async () => {
+      await monitor.stop();
+      await graph.stop();
+    },
+    flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
+    closeDependencies: async (signal) => {
+      const results = await Promise.all([database.close(signal), telemetry.shutdown(signal)]);
+      if (
+        results.some(
+          (result) => result.status !== "completed" && result.status !== "already_completed",
+        )
+      ) {
+        throw new Error("Engagement resource closure failed.");
+      }
+    },
+    forceClose: () => {
+      startupController.abort();
+      http?.forceClose();
+      void monitor.stop();
+      void graph.stop();
+      (resources.terminate ?? ((code) => process.exit(code)))(1);
+    },
+  });
+  const readiness = createAsterReadinessController({ lifecycle, criticalDependencyCount: 1 });
+  let previousReadiness = "pending";
+  // Owners are current per-request checks. Their failure rejects a save, never health/media traffic.
+  const checkReadiness = async (signal: AbortSignal): Promise<"ready" | "unavailable"> => {
+    const status = await probeEngagementStore(database, signal).catch(() => "unavailable" as const);
+    readiness.setCriticalDependencyState(0, status);
+    if (status !== previousReadiness) {
+      previousReadiness = status;
+      logger.info({
+        event: "aster.engagement.readiness_changed",
+        outcome: status === "ready" ? "ok" : "degraded",
+        properties: [["state", status]],
+      });
+    }
+    return status;
+  };
+  const monitor = createAsterReadinessMonitor({
+    readiness,
+    probes: [checkReadiness],
+    intervalMs: 5000,
+    probeTimeoutMs: 1500,
+  });
+  try {
+    http = createEngagementHttpServer({
+      host: config.host,
+      port: config.port,
+      health: () => readiness.health(),
+      telemetry,
+      onFatalError: () => {
+        void lifecycle.forceShutdown("stage_failure");
+      },
+      graphql: async (request, response, next) => {
+        const work = readiness.tryBeginWork();
+        if (!work) {
+          response.set("Cache-Control", "no-store");
+          response.status(503).json({
+            errors: [{ message: "Engagement unavailable.", extensions: { code: "UNAVAILABLE" } }],
+          });
+          return;
+        }
+        try {
+          await graph.middleware(request, response, next);
+        } finally {
+          work.complete();
+        }
+      },
+    });
+  } catch (error) {
+    await lifecycle.shutdown();
+    throw error;
+  }
+  const server = http;
+  let starting: Promise<"ready" | "degraded" | "failed" | "stopped"> | undefined;
+  const start = async (): Promise<"ready" | "degraded" | "failed" | "stopped"> => {
+    const deadline = createAsterDeadline({
+      timeoutMs: 8000,
+      parentSignal: startupController.signal,
+    });
+    try {
+      await server.listen(deadline.signal);
+      const status = await checkReadiness(deadline.signal);
+      if (startupController.signal.aborted) {
+        return "stopped";
+      }
+      lifecycle.markReady();
+      monitor.start();
+      return status === "ready" ? "ready" : "degraded";
+    } catch {
+      if (startupController.signal.aborted) {
+        return "stopped";
+      }
+      lifecycle.markStartupFailed();
+      await lifecycle.shutdown();
+      return "failed";
+    } finally {
+      deadline.dispose();
+    }
+  };
+  return Object.freeze({
+    health: () => readiness.health(),
+    port: () => server.port(),
+    checkReadiness,
+    start: () => {
+      starting ??= start();
+      return starting;
+    },
+    async shutdown() {
+      try {
+        return await lifecycle.shutdown();
+      } finally {
+        binding?.dispose();
+      }
+    },
+    bindProcessSignals() {
+      binding ??= bindAsterProcessSignals(lifecycle);
+      return binding;
+    },
+  });
+}

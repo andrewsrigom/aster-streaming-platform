@@ -11,6 +11,8 @@ import {
   createLocalRouterTrust,
   loadLocalRouterTrust,
   createLocalCatalogPlaybackTrust,
+  createLocalEngagementReadTrust,
+  loadLocalEngagementReadCredential,
   loadLocalCatalogPlaybackCredential,
   loadLocalCatalogPlaybackTrust,
 } from "../src/local-router-trust.js";
@@ -34,6 +36,41 @@ function request(owner: "identity" | "catalog", extra: string[] = []) {
   ];
   return value;
 }
+
+test("Engagement private credentials are purpose-bound and carry only validated correlation", () => {
+  const correlationId = "00000000-0000-4000-8000-000000000001";
+  for (const owner of ["identity", "playback"] as const) {
+    const reader = createLocalEngagementReadTrust(owner, key);
+    const value = request("identity");
+    value.rawHeaders[1] = owner === "identity" ? "identity:3100" : "playback:3300";
+    value.rawHeaders[value.rawHeaders.indexOf("origin") + 1] = "http://engagement:3400";
+    value.rawHeaders[value.rawHeaders.indexOf("x-aster-router-credential")] =
+      "x-aster-engagement-credential";
+    value.rawHeaders.push("x-aster-correlation-id", correlationId);
+    assert.deepEqual(reader.accept(value), { correlationId });
+    assert.equal(createLocalRouterTrust(owner, key).accept(value), undefined);
+    assert.equal(
+      createLocalEngagementReadTrust(owner === "identity" ? "playback" : "identity", key).accept(
+        value,
+      ),
+      undefined,
+    );
+    for (const extra of [
+      ["x-aster-router-credential", key],
+      ["x-aster-profile-id", "forged"],
+      ["x-aster-correlation-id", correlationId],
+    ]) {
+      value.rawHeaders.push(...extra);
+      assert.equal(reader.accept(value), undefined);
+      value.rawHeaders.splice(-extra.length);
+    }
+    value.rawHeaders.push("cookie", "aster_local_session=a.b.c");
+    assert.equal(reader.accept(value) !== undefined, owner === "identity");
+    value.rawHeaders.splice(-2);
+    value.rawHeaders[value.rawHeaders.indexOf("x-aster-correlation-id") + 1] = "forged";
+    assert.equal(reader.accept(value), undefined);
+  }
+});
 
 test("separate Router transport authenticates only its owner and correlates trusted traces", () => {
   const identity = createLocalRouterTrust("identity", key);
@@ -143,6 +180,28 @@ test("owner-read file is separate, bounded and private with sanitized startup fa
       loadLocalCatalogPlaybackCredential(directory),
       /credential is unavailable/,
     );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("Engagement owner credential files are separate and private", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "aster-engagement-trust-"));
+  try {
+    for (const owner of ["identity", "playback"] as const) {
+      const path = join(directory, `${owner}.key`);
+      await assert.rejects(
+        loadLocalEngagementReadCredential(owner, directory),
+        /credential is unavailable/,
+      );
+      await writeFile(path, key, { mode: 0o400 });
+      assert.equal(await loadLocalEngagementReadCredential(owner, directory), key);
+      await chmod(path, 0o644);
+      await assert.rejects(
+        loadLocalEngagementReadCredential(owner, directory),
+        /credential is unavailable/,
+      );
+    }
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

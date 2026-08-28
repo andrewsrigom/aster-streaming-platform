@@ -93,7 +93,14 @@ function fixtureDatabase() {
 
 test("Playback runtime requires explicit local activation, fixed owner credentials and protected listener", () => {
   assert.equal(playbackRuntimeConfiguration(environment).port, 3300);
+  assert.equal(playbackRuntimeConfiguration(environment).engagementRead, false);
+  assert.equal(
+    playbackRuntimeConfiguration({ ...environment, ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED: "true" })
+      .engagementRead,
+    true,
+  );
   for (const change of [
+    { ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED: "yes" },
     { ASTER_ENVIRONMENT: "production" },
     { ASTER_PLAYBACK_LOCAL_ENABLED: "false" },
     { ASTER_ROUTER_TRUST_ENABLED: "false" },

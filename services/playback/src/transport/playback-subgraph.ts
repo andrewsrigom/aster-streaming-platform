@@ -19,6 +19,8 @@ import {
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
 import type { PlaybackSessions } from "../application/create-session.js";
+import type { createPlaybackSessionInspector } from "../application/inspect-session.js";
+import { inspectPlaybackEngagementOperation } from "./engagement-operation.js";
 import {
   PLAYBACK_GRAPHQL_LIMITS,
   inspectPlaybackOperation,
@@ -54,6 +56,10 @@ export interface PlaybackOperationTrace {
 export interface PlaybackSubgraphOptions {
   readonly routerTrust: AsterLocalRouterTrust;
   readonly sessions: PlaybackSessions;
+  readonly engagement?: Readonly<{
+    trust: AsterLocalRouterTrust;
+    inspector: ReturnType<typeof createPlaybackSessionInspector>;
+  }>;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: PlaybackOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
@@ -156,9 +162,11 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
 
   const middleware: AsterExpressGraphqlMiddleware = async (request, response, onError) => {
     const routerContext = options.routerTrust.accept(request);
+    const engagementContext = options.engagement?.trust.accept(request);
     const startedAt = now();
-    const correlationId = randomUUID();
-    const traceId = routerContext?.traceId ?? randomUUID().replaceAll("-", "");
+    const correlationId = engagementContext?.correlationId ?? randomUUID();
+    const traceId =
+      routerContext?.traceId ?? engagementContext?.traceId ?? randomUUID().replaceAll("-", "");
     const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
     let operation: PlaybackOperation | "rejected" = "rejected";
     let code = "COMPLETED";
@@ -189,7 +197,7 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
     };
     response.set("X-Request-Id", correlationId);
     response.set("Cache-Control", "no-store");
-    if (!routerContext) {
+    if (!routerContext && !engagementContext) {
       reject(403, "FORBIDDEN");
       record();
       return;
@@ -218,7 +226,9 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
       return;
     }
     credit -= 1;
-    const decision = inspectPlaybackOperation(request.body as unknown);
+    const decision = engagementContext
+      ? inspectPlaybackEngagementOperation(request.body as unknown)
+      : inspectPlaybackOperation(request.body as unknown);
     if (decision.status !== "accepted") {
       reject(400, decision.code);
       record();
@@ -235,6 +245,7 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
       typeof request.headers["traceparent"] === "string"
         ? request.headers["traceparent"]
         : undefined,
+      engagementContext ? options.engagement?.inspector : undefined,
     );
     contexts.set(request, context);
     const timer = setTimeout(() => {

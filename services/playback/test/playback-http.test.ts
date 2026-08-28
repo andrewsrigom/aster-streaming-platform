@@ -1,7 +1,80 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createLocalEngagementReadTrust } from "@aster/http-express";
+import { createPlaybackSessionInspector } from "../src/application/inspect-session.js";
+import { PLAYBACK_ENGAGEMENT_OPERATION } from "../src/transport/engagement-operation.js";
 import type { PublicationLookup } from "../src/application/session-ports.js";
 import { playbackHttpFixture, playbackBody, testTitleId } from "./playback-http-fixture.js";
+
+test("Engagement session HTTP read is title-bound, exact, read-only and absent for Router callers", async () => {
+  const key = "c".repeat(64);
+  const correlationId = "00000000-0000-4000-8000-000000000002";
+  let reads = 0;
+  const f = await playbackHttpFixture(undefined, {
+    trust: createLocalEngagementReadTrust("playback", key),
+    inspector: createPlaybackSessionInspector(
+      {
+        read: (sessionId, titleId) => {
+          reads++;
+          return Promise.resolve({
+            status: "completed",
+            value:
+              sessionId === correlationId && titleId === testTitleId
+                ? { sessionId, titleId, createdAt: 100, expiresAt: 1000 }
+                : null,
+          });
+        },
+      },
+      () => 101,
+    ),
+  });
+  const body = {
+    query: PLAYBACK_ENGAGEMENT_OPERATION,
+    operationName: "EngagementSession",
+    variables: { sessionId: correlationId, titleId: testTitleId },
+  };
+  const headers = {
+    host: "playback:3300",
+    origin: "http://engagement:3400",
+    "x-aster-csrf": "1",
+    "x-aster-engagement-credential": key,
+    "x-aster-correlation-id": correlationId,
+  };
+  try {
+    const result = await f.send(body, headers);
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.json.data?._engagementSession, {
+      code: "COMPLETED",
+      sessionId: correlationId,
+      titleId: testTitleId,
+      createdAt: 100,
+      expiresAt: 1000,
+      checkedAt: 101,
+    });
+    assert.equal(result.headers["x-request-id"], correlationId);
+    assert.doesNotMatch(result.text, /manifestUrl|publication|credential/u);
+    assert.equal((await f.send(body)).status, 400);
+    assert.equal((await f.send(playbackBody, headers)).status, 400);
+    assert.equal((await f.send({ ...body, query: body.query + " " }, headers)).status, 400);
+    assert.equal(
+      (await f.send(body, { ...headers, cookie: "aster_local_session=a.b.c" })).status,
+      403,
+    );
+    assert.equal(
+      (await f.send(body, { ...headers, "x-aster-engagement-credential": f.key })).status,
+      403,
+    );
+    const other = await f.send(
+      { ...body, variables: { ...body.variables, titleId: correlationId } },
+      headers,
+    );
+    assert.equal(other.json.data?._engagementSession?.["code"], "NOT_PLAYABLE");
+    assert.equal(reads, 2);
+    assert.equal(f.state.writes.length, 0);
+  } finally {
+    await f.close();
+  }
+});
 
 test("private transport returns an auditable anonymous session, propagates trusted trace and redacts internal state", async () => {
   const f = await playbackHttpFixture();

@@ -35,6 +35,7 @@ services:
       - identity-router-trust:/run/aster-router/identity:ro
       - catalog-router-trust:/run/aster-router/catalog:ro
       - playback-router-trust:/run/aster-router/playback:ro
+      - engagement-router-trust:/run/aster-router/engagement:ro
     networks: [platform, edge]
     user: "1000:1000"
     read_only: true
@@ -62,7 +63,10 @@ services:
       - identity-router-trust:/run/aster-router/identity
       - catalog-router-trust:/run/aster-router/catalog
       - playback-router-trust:/run/aster-router/playback
+      - engagement-router-trust:/run/aster-router/engagement
       - playback-catalog-trust:/run/aster-playback-catalog
+      - engagement-identity-trust:/run/aster-engagement-identity
+      - engagement-playback-trust:/run/aster-engagement-playback
     network_mode: none
     user: "1000:1000"
     read_only: true
@@ -175,9 +179,11 @@ services:
       ASTER_PLAYBACK_DATABASE_URL: postgresql://aster_playback_local@postgres:5432/aster
       ASTER_PLAYBACK_DATABASE_PASSWORD: aster-test-only
       ASTER_ROUTER_TRUST_ENABLED: "true"
+      ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED: "true"
     volumes:
       - playback-router-trust:/run/aster-router:ro
       - playback-catalog-trust:/run/aster-playback-catalog:ro
+      - engagement-playback-trust:/run/aster-engagement-playback:ro
     networks: [platform]
     user: "1000:1000"
     read_only: true
@@ -226,6 +232,80 @@ services:
           memory: 128M
           pids: 32
 
+  engagement:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/engagement.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      engagement-init:
+        condition: service_completed_successfully
+      router-trust-init:
+        condition: service_completed_successfully
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_ENGAGEMENT_LOCAL_ENABLED: "true"
+      ASTER_ENGAGEMENT_HTTP_HOST: 0.0.0.0
+      ASTER_ENGAGEMENT_HTTP_PORT: "3400"
+      ASTER_ENGAGEMENT_DATABASE_URL: postgresql://aster_engagement_local@postgres:5432/aster
+      ASTER_ENGAGEMENT_DATABASE_PASSWORD: aster-test-only
+      ASTER_ROUTER_TRUST_ENABLED: "true"
+    volumes:
+      - engagement-router-trust:/run/aster-router:ro
+      - engagement-identity-trust:/run/aster-engagement-identity:ro
+      - engagement-playback-trust:/run/aster-engagement-playback:ro
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 15s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 384M
+          pids: 64
+
+  engagement-init:
+    logging: *local-logging
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/engagement.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_ENGAGEMENT_MIGRATION_ENABLED: "true"
+      ASTER_ENGAGEMENT_ADMIN_DATABASE_URL: postgresql://aster@postgres:5432/aster
+      ASTER_ENGAGEMENT_ADMIN_DATABASE_PASSWORD: aster-test-only
+    command: ["./dist/src/migrate-local.js"]
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      disable: true
+    stop_grace_period: 15s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+          pids: 32
+
   identity:
     logging: *local-logging
     profiles: [runtime, integration, observability, full]
@@ -252,8 +332,10 @@ services:
       ASTER_LOCAL_DEMO_ENABLED: "true"
       ASTER_PUBLIC_ORIGIN: http://127.0.0.1:4000
       ASTER_ROUTER_TRUST_ENABLED: "true"
+      ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: "true"
     volumes:
       - identity-router-trust:/run/aster-router:ro
+      - engagement-identity-trust:/run/aster-engagement-identity:ro
     networks:
       - platform
     user: "1000:1000"
@@ -620,6 +702,21 @@ volumes:
   postgres-data:
     labels:
       com.aster.authority: durable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  engagement-router-trust:
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  engagement-identity-trust:
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  engagement-playback-trust:
+    labels:
+      com.aster.authority: disposable-local
       com.aster.environment: local
       com.aster.owner: platform
   broker-data:

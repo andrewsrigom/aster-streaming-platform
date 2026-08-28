@@ -1,6 +1,6 @@
 # Phase 08 progress implementation
 
-P08-R01 is IN_PROGRESS on feat/p08-progress. Domain/application and isolated PostgreSQL persistence are implemented and tested. Private owner transports, subgraph, relay and player integration remain planned; there is no running Engagement/save feature yet.
+P08-R01 is IN_PROGRESS on feat/p08-progress. Domain/application, isolated PostgreSQL, private owner reads, public Engagement mutation and Docker runtime are implemented. Actual federated saves pass in a disposable stack. Protected release, player integration, relay and other Phase 08 features remain pending.
 
 ## Implemented core
 
@@ -20,4 +20,16 @@ SQL proves atomic commit, synchronized replay, stale rejection/newer backward se
 
 Existing PostgreSQL adapter and pinned pg/types are reused, with supply-chain checks enabled. The standard runner is `pnpm engagement:integration`. Native Windows could not resolve this workspace's Linux pnpm links, cleaned its fixture, and the exact compiled verifier passed in Linux tooling instead. Both disposable databases and their private network were removed after ownership checks; retained demo/media were untouched.
 
-Next: current Identity/profile and Playback/session reads, then protected federated runtime. No complete candidate, hosted CI/release or complete Phase 08 claim is made.
+## Connected runtime candidate
+
+[Real Docker proof](federated-runtime.txt) uses Router → Engagement → private Identity/Playback → PostgreSQL. It proves durable progress/receipt/event, concurrent exact replay, conflicting/stale rejection, intentional backward seek, foreign-profile exclusion, title-bound/expired Playback rejection, bounded Identity row-lock failure/recovery, accepted replay after expiry, deleted-profile/revoked-session denial and shared trace/correlation. Stopping Identity and Engagement leaves anonymous Playback available. The initializer replay preserves data; exact cleanup leaves zero containers/volumes/networks.
+
+Command: `node tools/run-engagement-runtime.mjs` after strict workspace compilation. Node 24.19.0 on Windows supervises the pinned Linux Docker services; exact images/project are in the raw artifact. The database is tmpfs, all data is synthetic, and no media is fetched. [Runtime contract](../../services/engagement/README.md). This validates backend saving, not a browser save/resume journey, event delivery, deletion consumer or hosted service identity.
+
+[Owner-focused tests](owner-tests.txt) record the earlier private-transport checkpoint. Subsequent focused checks pass 70 runtime/HTTP/transport tests, 58 platform/CI checks and 17 safe-reset/diagnostic checks. The final candidate gate and exact source hashes are recorded at closeout. SQL migration/transaction code is unchanged from the prior ten-scenario proof; the shorter outer application budget is exercised by current cancellation/owner-lock tests. No repeat of unchanged media/browser/CPU measurements is needed.
+
+The [final candidate gate](candidate-gate.txt) passes 67/67 tasks (44 cached, 1m10.717s), including 147 Identity, 35 Playback, 45 Engagement and nine Router tests. Command: the existing check:changed invocation with Turbo concurrency two and continue=always, in Node 24.19.0 tooling with 4 GiB memory/2 GiB Node heap. [Exact executable source hashes](candidate-source.sha256) identify the candidate over released main 854592e. The [dependency audit](dependency-audit.txt) has zero high/critical and one moderate finding. Initial local gate attempts exposed only missing session-log sections, one formatting issue and a regex style rule; these were corrected without weakening checks.
+
+After the Docker proof, only unused export visibility, formatting, safe-reset/diagnostics and gate/docs metadata changed; no owner authorization, transaction, schema, wire contract or runtime behavior changed. The passing Docker/SQL evidence therefore remains applicable; protected CI will independently exercise the fresh package. No retained application was upgraded.
+
+Next: one initial and one confirmation review, protected merge/post-merge. No complete Phase 08 or hosted release claim is made.

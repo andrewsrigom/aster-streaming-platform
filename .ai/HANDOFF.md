@@ -6,11 +6,9 @@ P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 
 
 ## Exact next actions
 
-1. Continue P08-R01 with the ADR-0030 private Identity/profile and Playback/session reads, then runtime/subgraph. [SQL checkpoint](../evidence/phase-08/README.md): 32 focused tests and ten real PostgreSQL scenarios pass. Migration 0001, atomic state/receipt/outbox, bounds and replay are implemented; live owner authentication/save UI remain planned.
-2. Phase 07 and PR 25 are closed, including post-merge 33171284170. Do not poll/request another review/rerun its CI. Continue the active Phase 08 item; its SQL checkpoint has no running Engagement service or save UI yet.
-3. Main/origin/main and this branch base are 854592e. Recovery stash 0a477fb62adef5b74dbf4084cf47b3e491bd6e3b was already restored after rebase; never apply it again. Earlier player stashes are also restored. Whole-workspace candidate gates use 2 GiB Node heap, 4 GiB tooling memory and Turbo concurrency two. No CPU/film loop.
-
-P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
+1. Finish P08-R01 candidate quality, evidence and protected review/release. Domain/SQL/private owner reads/Engagement GraphQL/Docker are implemented. [Federated runtime proof](../evidence/phase-08/federated-runtime.txt) passed all scenarios and removed its exact project; no retained state changed.
+2. The current backend provides recordProgress, not player save/resume, watchlist, paginated reads or broker relay. Keep those as the next explicit Phase 08 items.
+3. Main/origin/main remains 854592e; P08 commits 39d1b76 and 82ff1cf precede the current owner/runtime candidate. All recovery stashes are already restored; never reapply them. Candidate gates use 2 GiB Node heap, 4 GiB tooling and Turbo concurrency two. No CPU/film loop or closed PR 25 polling.
 
 ## Retained runtime
 
@@ -28,4 +26,4 @@ Windows Codex, repository through WSL UNC. WSL launch is unreliable; do not rest
 
 ## Do not do yet
 
-Do not claim Phase 08 transport/player or phase completion before their real acceptance. SQL fixtures were exact-ownership checked and removed. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
+Do not claim Phase 08 completion or browser saving. The federated proof cleaned all its containers, trust volumes and networks. Preserve retained demo/media and user processes. No broad Docker reset or media encode. Docker Git is authoritative for Linux modes; never use a codex/ branch.
