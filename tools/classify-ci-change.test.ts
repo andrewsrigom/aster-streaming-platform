@@ -31,6 +31,12 @@ test("selects real integration for adapters, runtime, bootstrap and shared depen
   for (const path of [
     "services/identity/src/create-service.ts",
     "services/catalog/src/create-service.ts",
+    "services/playback/src/create-service.ts",
+    "services/playback/migrations/0001_playback_sessions.up.sql",
+    "tools/run-playback-integration.mjs",
+    "tools/run-playback-runtime.mjs",
+    "tools/verify-playback-runtime.mjs",
+    "tools/verify-playback-runtime.test.mjs",
     "tools/media/generate-hls.mjs",
     "tools/run-media-fixture.mjs",
     "tools/run-catalog-integration.mjs",

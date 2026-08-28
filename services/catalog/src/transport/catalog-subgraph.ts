@@ -19,6 +19,8 @@ import {
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
 import type { CatalogPublicQueries } from "../application/public-queries.js";
+import type { CatalogPlaybackQueries } from "../application/playback-queries.js";
+import { inspectCatalogPlaybackOperation } from "./playback-operation.js";
 import {
   CATALOG_GRAPHQL_LIMITS,
   inspectCatalogOperation,
@@ -37,6 +39,7 @@ const OUTCOMES = new Set([
   "CANCELLED",
   "LIMIT_EXCEEDED",
   "INVALID_INPUT",
+  "FORBIDDEN",
 ]);
 
 export interface CatalogOperationTrace {
@@ -51,12 +54,19 @@ export interface CatalogOperationTrace {
 export interface CatalogSubgraphOptions {
   readonly routerTrust?: AsterLocalRouterTrust;
   readonly queries: CatalogPublicQueries;
+  readonly playback?: Readonly<{
+    trust: AsterLocalRouterTrust;
+    queries: CatalogPlaybackQueries;
+  }>;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: CatalogOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
 }
 
 export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
+  if (options.playback && !options.routerTrust) {
+    throw new Error("Catalog owner reads require protected transport.");
+  }
   const schema = createCatalogSchema();
   const contexts = new WeakMap<IncomingMessage, CatalogGraphqlContext>();
   const errorCorrelations = new WeakMap<object, string>();
@@ -153,9 +163,11 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
 
   const middleware: AsterExpressGraphqlMiddleware = async (request, response, onError) => {
     const routerContext = options.routerTrust?.accept(request);
+    const playbackContext = options.playback?.trust.accept(request);
     const startedAt = now();
     const correlationId = randomUUID();
-    const traceId = routerContext?.traceId ?? randomUUID().replaceAll("-", "");
+    const traceId =
+      routerContext?.traceId ?? playbackContext?.traceId ?? randomUUID().replaceAll("-", "");
     const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
     let operation: CatalogOperation | "rejected" = "rejected";
     let code = "COMPLETED";
@@ -184,7 +196,7 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     };
     response.set("X-Request-Id", correlationId);
     response.set("Cache-Control", "no-store");
-    if (options.routerTrust && !routerContext) {
+    if (options.routerTrust && !routerContext && !playbackContext) {
       reject(403, "FORBIDDEN");
       record();
       return;
@@ -213,7 +225,9 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
       return;
     }
     credit -= 1;
-    const decision = inspectCatalogOperation(request.body as unknown, schema);
+    const decision = playbackContext
+      ? inspectCatalogPlaybackOperation(request.body as unknown)
+      : inspectCatalogOperation(request.body as unknown, schema);
     if (decision.status !== "accepted") {
       reject(400, decision.code);
       record();
@@ -223,7 +237,12 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     const controller = new AbortController();
     controllers.add(controller);
     const signal = AbortSignal.any([getExpressRequestAbortSignal(response), controller.signal]);
-    const context = createCatalogGraphqlContext(options.queries, signal, correlationId);
+    const context = createCatalogGraphqlContext(
+      options.queries,
+      signal,
+      correlationId,
+      playbackContext ? options.playback?.queries : undefined,
+    );
     contexts.set(request, context);
     const timer = setTimeout(() => {
       controller.abort();

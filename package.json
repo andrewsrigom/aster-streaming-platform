@@ -11,6 +11,8 @@
   },
   "packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000",
   "scripts": {
+    "playback:integration": "turbo run build --filter=@aster/playback && node ./tools/run-playback-integration.mjs",
+    "playback:runtime": "turbo run build --filter=@aster/playback && node ./tools/run-playback-runtime.mjs",
     "router:demo": "node ./tools/verify-local-router.mjs",
     "router:observability": "node ./tools/verify-router-observability.mjs",
     "router:lifecycle": "node ./tools/verify-router-lifecycle.mjs",
@@ -64,7 +66,7 @@
     "logging:test": "turbo run test --filter=@aster/runtime",
     "platform:check": "node ./tools/verify-local-platform.mjs",
     "platform:compose:check": "docker compose -f ./infra/compose/compose.yml config --quiet",
-    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs",
+    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs",
     "security:check": "node ./tools/scan-secrets.ts --all",
     "security:staged": "node ./tools/scan-secrets.ts --staged",
     "security:test": "node --test ./tools/scan-secrets.test.ts",

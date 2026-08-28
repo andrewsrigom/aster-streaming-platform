@@ -5,6 +5,8 @@ export function validateCatalogProofVolume(project, volume, attachedIds, ownedId
     [project + "_postgres-data", "durable-local"],
     [project + "_identity-router-trust", "disposable-local"],
     [project + "_catalog-router-trust", "disposable-local"],
+    [project + "_playback-router-trust", "disposable-local"],
+    [project + "_playback-catalog-trust", "disposable-local"],
   ]);
   const authority = expected.get(volume.Name);
   return (
@@ -38,8 +40,9 @@ export function validateCatalogRuntime(source) {
             '      ASTER_CATALOG_LOCAL_ENABLED: "true"\n      ASTER_CATALOG_HTTP_HOST: 0.0.0.0\n      ASTER_CATALOG_HTTP_PORT: "3200"\n',
             "      ASTER_CATALOG_READER_DATABASE_URL: postgresql://aster_catalog_reader_local@postgres:5432/aster\n      ASTER_CATALOG_READER_DATABASE_PASSWORD: aster-test-only\n",
             '      ASTER_ROUTER_TRUST_ENABLED: "true"\n',
+            '      ASTER_CATALOG_PLAYBACK_READ_ENABLED: "true"\n',
             "      router-trust-init:\n        condition: service_completed_successfully\n",
-            "    volumes:\n      - catalog-router-trust:/run/aster-router:ro\n    networks: [platform]\n",
+            "    volumes:\n      - catalog-router-trust:/run/aster-router:ro\n      - playback-catalog-trust:/run/aster-playback-catalog:ro\n    networks: [platform]\n",
             "    stop_grace_period: 15s\n",
             '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
           ]
@@ -66,7 +69,7 @@ export function validateCatalogRuntime(source) {
     if (
       required.some((text) => !block.includes(text)) ||
       forbidden.some((text) => block.includes(text)) ||
-      (name === "catalog" && block.match(/^ {6}- /gm)?.length !== 1)
+      (name === "catalog" && block.match(/^ {6}- /gm)?.length !== 2)
     ) {
       violations.push({
         rule: "catalog-runtime",

@@ -7,6 +7,7 @@ const fields = new Set([
   "ASTER_CATALOG_HTTP_PORT",
   "ASTER_CATALOG_READER_DATABASE_URL",
   "ASTER_CATALOG_READER_DATABASE_PASSWORD",
+  "ASTER_CATALOG_PLAYBACK_READ_ENABLED",
 ]);
 
 export function catalogRuntimeConfiguration(
@@ -20,12 +21,15 @@ export function catalogRuntimeConfiguration(
   const host = environment["ASTER_CATALOG_HTTP_HOST"] ?? "127.0.0.1";
   const port = environment["ASTER_CATALOG_HTTP_PORT"] ?? "3200";
   const routerTrust = environment["ASTER_ROUTER_TRUST_ENABLED"];
+  const playbackRead = environment["ASTER_CATALOG_PLAYBACK_READ_ENABLED"];
   if (
     (host !== "127.0.0.1" && host !== "0.0.0.0") ||
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
     Number(port) < 1024 ||
     Number(port) > 65535 ||
-    (routerTrust !== undefined && routerTrust !== "true" && routerTrust !== "false")
+    (routerTrust !== undefined && routerTrust !== "true" && routerTrust !== "false") ||
+    (playbackRead !== undefined && playbackRead !== "true" && playbackRead !== "false") ||
+    (playbackRead === "true" && routerTrust !== "true")
   ) {
     throw new Error("Invalid Catalog listener configuration.");
   }
@@ -34,5 +38,6 @@ export function catalogRuntimeConfiguration(
     port: Number(port),
     connectionString: localCatalogDatabase(environment, "reader"),
     ...(routerTrust === "true" ? { routerTrust: true as const } : {}),
+    ...(playbackRead === "true" ? { playbackRead: true as const } : {}),
   });
 }

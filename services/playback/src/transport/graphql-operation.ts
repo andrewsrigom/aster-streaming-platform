@@ -1,0 +1,203 @@
+import {
+  Kind,
+  OperationTypeNode,
+  parse,
+  valueFromASTUntyped,
+  type FragmentDefinitionNode,
+  type SelectionSetNode,
+} from "graphql";
+import { playbackIdentifier } from "../domain/session.js";
+
+export const PLAYBACK_GRAPHQL_LIMITS = Object.freeze({
+  bodyBytes: 16384,
+  sourceBytes: 4096,
+  tokens: 512,
+  fields: 16,
+  depth: 3,
+  aliases: 4,
+  cost: 80,
+  concurrent: 4,
+  deadlineMs: 2500,
+  rateBurst: 32,
+  ratePerSecond: 4,
+});
+export type PlaybackOperation = "mutation" | "query";
+type Decision =
+  | Readonly<{ status: "accepted"; operation: PlaybackOperation }>
+  | Readonly<{ status: "rejected"; code: "INVALID_INPUT" | "LIMIT_EXCEEDED" }>;
+type Scope = "Query" | "Mutation" | "Payload" | "Session" | "Service";
+const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = {
+  Query: { _service: "Service" },
+  Mutation: { createPlaybackSession: "Payload" },
+  Payload: { code: null, correlationId: null, session: "Session" },
+  Session: { id: null, titleId: null, manifestUrl: null, expiresAt: null },
+  Service: { sdl: null },
+};
+class Rejected extends Error {
+  constructor(readonly code: "INVALID_INPUT" | "LIMIT_EXCEEDED" = "INVALID_INPUT") {
+    super("Playback operation rejected.");
+  }
+}
+function record(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function scalar(value: unknown): boolean {
+  return (
+    value === null ||
+    typeof value === "boolean" ||
+    (typeof value === "string" && value.length <= 64)
+  );
+}
+
+export function inspectPlaybackOperation(body: unknown): Decision {
+  try {
+    if (
+      !record(body) ||
+      Object.keys(body).some((key) => !["query", "variables", "operationName"].includes(key)) ||
+      typeof body["query"] !== "string" ||
+      (body["operationName"] !== undefined && typeof body["operationName"] !== "string") ||
+      (body["variables"] !== undefined && !record(body["variables"]))
+    ) {
+      throw new Rejected();
+    }
+    if (Buffer.byteLength(body["query"]) > PLAYBACK_GRAPHQL_LIMITS.sourceBytes) {
+      throw new Rejected("LIMIT_EXCEEDED");
+    }
+    const variables = { ...(body["variables"] ?? {}) };
+    if (
+      Object.keys(variables).length > 4 ||
+      Object.values(variables).some((value) => !scalar(value))
+    ) {
+      throw new Rejected();
+    }
+    const document = parse(body["query"], {
+      maxTokens: PLAYBACK_GRAPHQL_LIMITS.tokens,
+      noLocation: true,
+    });
+    const operations = document.definitions.filter(
+      (definition) => definition.kind === Kind.OPERATION_DEFINITION,
+    );
+    const operation = operations[0];
+    if (
+      operations.length !== 1 ||
+      !operation?.name ||
+      (body["operationName"] !== undefined && body["operationName"] !== operation.name.value) ||
+      (operation.operation !== OperationTypeNode.MUTATION &&
+        operation.operation !== OperationTypeNode.QUERY) ||
+      (operation.variableDefinitions?.length ?? 0) > 4 ||
+      document.definitions.length > 5
+    ) {
+      throw new Rejected();
+    }
+    for (const definition of operation.variableDefinitions ?? []) {
+      if (definition.defaultValue !== undefined) {
+        const value: unknown = valueFromASTUntyped(definition.defaultValue);
+        if (!scalar(value)) {
+          throw new Rejected();
+        }
+        if (!Object.hasOwn(variables, definition.variable.name.value)) {
+          variables[definition.variable.name.value] = value;
+        }
+      }
+    }
+    const fragments = new Map<string, FragmentDefinitionNode>();
+    for (const definition of document.definitions) {
+      if (definition.kind === Kind.FRAGMENT_DEFINITION) {
+        if (fragments.has(definition.name.value)) {
+          throw new Rejected();
+        }
+        fragments.set(definition.name.value, definition);
+      } else if (definition.kind !== Kind.OPERATION_DEFINITION) {
+        throw new Rejected();
+      }
+    }
+    let fields = 0,
+      aliases = 0,
+      cost = 0,
+      expansions = 0,
+      roots = 0;
+    const walk = (
+      selection: SelectionSetNode,
+      scope: Scope,
+      depth: number,
+      ancestors: ReadonlySet<string>,
+    ): void => {
+      if (++expansions > 16 || depth > PLAYBACK_GRAPHQL_LIMITS.depth) {
+        throw new Rejected("LIMIT_EXCEEDED");
+      }
+      for (const item of selection.selections) {
+        if (
+          item.directives?.some((directive) => !["skip", "include"].includes(directive.name.value))
+        ) {
+          throw new Rejected();
+        }
+        if (item.kind === Kind.FRAGMENT_SPREAD || item.kind === Kind.INLINE_FRAGMENT) {
+          const fragment =
+            item.kind === Kind.FRAGMENT_SPREAD ? fragments.get(item.name.value) : item;
+          if (!fragment || (item.kind === Kind.FRAGMENT_SPREAD && ancestors.has(item.name.value))) {
+            throw new Rejected();
+          }
+          walk(
+            fragment.selectionSet,
+            scope,
+            depth,
+            item.kind === Kind.FRAGMENT_SPREAD
+              ? new Set([...ancestors, item.name.value])
+              : ancestors,
+          );
+          continue;
+        }
+        fields++;
+        aliases += item.alias ? 1 : 0;
+        cost++;
+        const name = item.name.value;
+        const child = name === "__typename" ? null : FIELDS[scope][name];
+        if (child === undefined) {
+          throw new Rejected();
+        }
+        if (name !== "__typename" && (scope === "Query" || scope === "Mutation")) {
+          if (++roots > 1) {
+            throw new Rejected("LIMIT_EXCEEDED");
+          }
+          if (scope === "Mutation") {
+            // One current owner read plus one bounded transaction; no alias/list mutation fan-out.
+            cost += 64;
+            const args = item.arguments ?? [];
+            if (
+              args.length !== 1 ||
+              args[0]?.name.value !== "titleId" ||
+              !playbackIdentifier(valueFromASTUntyped(args[0].value, variables))
+            ) {
+              throw new Rejected();
+            }
+          }
+        }
+        if (
+          fields > PLAYBACK_GRAPHQL_LIMITS.fields ||
+          aliases > PLAYBACK_GRAPHQL_LIMITS.aliases ||
+          cost > PLAYBACK_GRAPHQL_LIMITS.cost
+        ) {
+          throw new Rejected("LIMIT_EXCEEDED");
+        }
+        if (child === null ? item.selectionSet !== undefined : item.selectionSet === undefined) {
+          throw new Rejected();
+        }
+        if (child !== null && item.selectionSet) {
+          walk(item.selectionSet, child, depth + 1, ancestors);
+        }
+      }
+    };
+    walk(
+      operation.selectionSet,
+      operation.operation === OperationTypeNode.MUTATION ? "Mutation" : "Query",
+      1,
+      new Set(),
+    );
+    if (roots !== 1) {
+      throw new Rejected();
+    }
+    return { status: "accepted", operation: operation.operation };
+  } catch (error) {
+    return { status: "rejected", code: error instanceof Rejected ? error.code : "INVALID_INPUT" };
+  }
+}

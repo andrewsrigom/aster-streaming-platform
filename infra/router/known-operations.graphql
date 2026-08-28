@@ -182,3 +182,15 @@ query ViewerAndTitle($id: ID!) {
     }
   }
 }
+mutation StartPlayback($titleId: ID!) {
+  createPlaybackSession(titleId: $titleId) {
+    code
+    correlationId
+    session {
+      id
+      titleId
+      manifestUrl
+      expiresAt
+    }
+  }
+}

@@ -2,11 +2,12 @@ import { buildSubgraphSchema } from "@apollo/subgraph";
 import DataLoader from "dataloader";
 import { GraphQLError, parse } from "graphql";
 import type { CatalogPublicQueries, CatalogReadResult } from "../application/public-queries.js";
+import type { CatalogPlaybackQueries } from "../application/playback-queries.js";
 import type { PublicCatalogTitle } from "../domain/public-title.js";
 import { catalogIdentifier, catalogRecord } from "../domain/values.js";
 
 export const CATALOG_TYPE_DEFS = parse(`
-  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+  extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
   enum CatalogAccessibility { CAPTIONS AUDIO_DESCRIPTION TRANSCRIPT }
   type CatalogAttribution {
     workTitle: String!
@@ -38,9 +39,18 @@ export const CATALOG_TYPE_DEFS = parse(`
   type CatalogTitleEdge { cursor: String! node: Title! }
   type CatalogPageInfo { endCursor: String hasNextPage: Boolean! }
   type CatalogTitleConnection { edges: [CatalogTitleEdge!]! pageInfo: CatalogPageInfo! }
+  type CurrentPlaybackPublication @inaccessible {
+    titleId: ID!
+    publicationId: ID!
+    titleVersion: Int!
+    manifestUrl: String!
+    checkedAt: Float!
+    validUntil: Float
+  }
   type Query {
     titles(first: Int!, after: String): CatalogTitleConnection!
     title(id: ID!): Title
+    _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
   }
 `);
 
@@ -57,6 +67,7 @@ export interface CatalogGraphqlContext {
   readonly queries: CatalogPublicQueries;
   readonly titles: DataLoader<string, PublicCatalogTitle | null>;
   readonly outcome: { code: string };
+  readonly playback?: CatalogPlaybackQueries;
 }
 function owned(value: unknown): CatalogGraphqlContext {
   const owner: unknown =
@@ -86,12 +97,14 @@ export function createCatalogGraphqlContext(
   queries: CatalogPublicQueries,
   signal: AbortSignal,
   correlationId: string,
+  playback?: CatalogPlaybackQueries,
 ): CatalogGraphqlContext {
   const cache = new Map<string, Promise<PublicCatalogTitle | null>>();
   const context: CatalogGraphqlContext = {
     queries,
     signal,
     correlationId,
+    ...(playback ? { playback } : {}),
     outcome: { code: "COMPLETED" },
     titles: new DataLoader(async (ids) => completed(await queries.byIds(ids, signal), context), {
       maxBatchSize: 20,
@@ -130,6 +143,17 @@ export function createCatalogSchema() {
     typeDefs: CATALOG_TYPE_DEFS,
     resolvers: {
       Query: {
+        _playbackPublications: async (
+          _: unknown,
+          args: { ids: readonly unknown[] },
+          raw: unknown,
+        ) => {
+          const context = owned(raw);
+          if (!context.playback) {
+            throw new CatalogGraphqlError("FORBIDDEN");
+          }
+          return completed(await context.playback.byIds(args.ids, context.signal), context);
+        },
         title: (_: unknown, args: { id: unknown }, raw: unknown) => loadTitle(owned(raw), args.id),
         titles: async (_: unknown, args: { first: unknown; after?: unknown }, raw: unknown) => {
           const context = owned(raw);

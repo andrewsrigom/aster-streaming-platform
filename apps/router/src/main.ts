@@ -12,6 +12,7 @@ const directory = resolve(root, "infra/router/generated");
 const printers = {
   catalog: fileURLToPath(new URL("./print-schema.js", import.meta.resolve("@aster/catalog"))),
   identity: fileURLToPath(new URL("./print-schema.js", import.meta.resolve("@aster/identity"))),
+  playback: fileURLToPath(new URL("./print-schema.js", import.meta.resolve("@aster/playback"))),
 };
 
 async function printOwner(path: string): Promise<string> {
@@ -47,13 +48,14 @@ async function run(): Promise<void> {
       throw error;
     }
   }
-  const [catalog, identity] = await Promise.all([
+  const [catalog, identity, playback] = await Promise.all([
     printOwner(printers.catalog),
     printOwner(printers.identity),
+    printOwner(printers.playback),
   ]);
   const previous = await readGitBaseline(root, process.env["ASTER_SCHEMA_BASE"]);
   const artifacts = composeLocalSupergraph(
-    { catalog, identity },
+    { catalog, identity, playback },
     operations,
     previous?.api ?? baseline,
     previous?.operations,
@@ -67,7 +69,7 @@ async function run(): Promise<void> {
       check: "supergraph",
       status: "ok",
       mode: args[0],
-      subgraphs: 2,
+      subgraphs: 3,
       compatibilityBase: previous?.commit ?? "pre-supergraph",
       artifactCount: Object.keys(artifacts).length,
       manifestSha256: sha256(artifacts["manifest.json"] ?? ""),

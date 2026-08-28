@@ -1,0 +1,3 @@
+{"event":"catalog_docker_started","image":"sha256:5d386ff4f1df919a642cb65bd6e49a3e9344638e1a1560b89248ca98f07db6d7","uid":1000,"emptyBrowse":true,"idempotentMigrations":true,"readerDeniedWriteAndHistory":true,"redisRequired":false}
+{"event":"catalog_docker_recovered","excessPrivilegeRejected":true,"databaseOutageRecovered":true,"shutdownMs":1870,"exitCode":143,"sanitizedLogs":true}
+{"event":"catalog_docker_cleaned","remaining":0,"durationMs":102255}

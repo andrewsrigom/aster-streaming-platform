@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. Big Buck Bunny is locally published through restricted technical registration and the existing editorial commands, with immutable HLS/JPEG/attribution at loopback 9001. [Publication evidence](../evidence/phase-06/publication.md). Compatible rollback now passes focused/real PostgreSQL checks ([evidence](../evidence/phase-06/rollback.md)). Next: Phase 06 protected CI, confirmation and release. Preserve the bundle and private candidates; no further source GET/encoding.
+Phases 00–06 are released; [Phase 06 release evidence](../evidence/phase-06/release.md). P07-R01 is the sole active item on feat/p07-playback, based on released main 4083ea65edcf750bf4ba3e253654a529b72cd105. Preserve the locally published film and private candidates; no source GET/encoding.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -43,13 +43,15 @@ Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/re
 | 35 | Compose versioned Identity/Catalog schemas and protect known operations | P04-R01 | DONE |
 | 36 | Run Apollo Router with private subgraphs, trusted context, telemetry and partial-failure acceptance | P04-R02 | DONE |
 | 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | DONE |
-| 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | IN_PROGRESS |
+| 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | DONE |
+| 39 | Create owner-validated short-lived playback sessions through Federation | P07-R01 | IN_PROGRESS |
+| 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
 
-All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md). Initial review/CI corrections passed full protected CI at 9723032, but confirmation found a rights/access race and stale guide. The [current correction](../evidence/phase-06/rights-access-confirmation.md) compensates rejected new grants while preserving prior ones. Finish its final gates, push one coherent correction to ready PR 23, require exact-head CI/confirmation and squash/post-merge; then Phase 07. Immutable media is retained, disposable scratch alone is cleaned. No repeated CPU test or unchanged film encode.
+All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md) and passed the documented protected release. P07-R01's real owner transport, isolated persistence and Federation pass [local acceptance](../evidence/phase-07/README.md); candidate governance/protected review/release remain. P07-R04 also covers P07-R05 through P07-R08 and P07-R10 through P07-R12. Immutable media is retained, disposable scratch alone is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

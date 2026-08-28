@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key", "@inaccessible"])
 
 enum CatalogAccessibility {
   CAPTIONS
@@ -64,7 +64,17 @@ type CatalogTitleConnection {
   pageInfo: CatalogPageInfo!
 }
 
+type CurrentPlaybackPublication @inaccessible {
+  titleId: ID!
+  publicationId: ID!
+  titleVersion: Int!
+  manifestUrl: String!
+  checkedAt: Float!
+  validUntil: Float
+}
+
 type Query {
   titles(first: Int!, after: String): CatalogTitleConnection!
   title(id: ID!): Title
+  _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
 }

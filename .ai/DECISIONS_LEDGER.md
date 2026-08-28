@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0027](../docs/adr/0027-local-playback-sessions.md) defines a private credential-separated Catalog GraphQL read and Playback-owned fifteen-minute sessions capped by current rights. Local persistence has 4096 SQL slots, 24-hour post-expiry audit and at most 64 pruned rows per admission. No shared Router credentials, cross-owner SQL, media proxy or optional personalization dependency. Real connected service/Compose and SQL acceptance pass. Router startup no longer depends on Identity; player and protected backend release remain open.
+
 [ADR-0026](../docs/adr/0026-local-media-publication.md) now keeps the access barrier through current-rights/SQL confirmation and compensates rejected new grants to the exact recorded prior policy. Prior grants survive failed replay. Uncertain writes or failed compensation require explicit origin containment and fenced recovery; this is bounded compensation, not distributed atomicity or retroactive CC revocation. No schema, data-owner or retained-media change.
 
 [ADR-0026](../docs/adr/0026-local-media-publication.md) now enforces private incomplete copies and one exact verified-prefix public grant. The pinned POSIX backend lacks object ACL/tag-condition support; use its supported bucket policy, bounded to 100 prefixes, with a conditional-create non-expiring recovery barrier to serialize updates. The known retained bundle was verified/restricted without media/editorial changes. Explicit fencing precedes stale-barrier cleanup; no automatic hosted lock/lifecycle claim.

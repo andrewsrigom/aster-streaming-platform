@@ -50,6 +50,9 @@ traffic_shaping:
     timeout: 2s
     deduplicate_query: false
     experimental_http2: disable
+  subgraphs:
+    playback:
+      timeout: 2700ms
 include_subgraph_errors:
   all: false
 headers:
@@ -77,6 +80,12 @@ headers:
           - insert:
               name: x-aster-router-credential
               value: ${file./run/aster-router/catalog/catalog.key}
+    playback:
+      request:
+        operations:
+          - insert:
+              name: x-aster-router-credential
+              value: ${file./run/aster-router/playback/playback.key}
 rhai:
   scripts: /dist/rhai
   main: main.rhai

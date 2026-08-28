@@ -2,6 +2,48 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Playback startup and fixture review correction
+
+### Completed
+
+Published backend PR 24. Initial review identified optional Identity coupling at startup; removed it from the base graph and removed the proof override. CI independently found the obsolete Catalog fixture volume ceiling; corrected it with exact-ownership checks retained. Saved seven-test player session/preferences/QoE progress in stash 2e85504b before returning to the backend.
+
+### Evidence
+
+[Batched correction](../evidence/phase-07/backend-review.md): seven focused policy tests, real base-topology session proof and standalone Catalog lifecycle/cleanup. Both fixtures leave zero resources; retained media/Windows processes untouched. No CPU or film experiment repeated.
+
+### Next action
+
+Publish the corrected candidate, require exact-head CI and one confirmation, then squash/post-merge. Rebase/resume the saved player work. Full Phase 00–14 goal remains active.
+
+## 2026-08-28 — Playback connected backend candidate
+
+### Completed
+
+Added the public Federation mutation, bounded Apollo/Express transport, restricted PostgreSQL runtime/migrator, readiness/shutdown and separate Router/private-Catalog credentials in Docker. No optional Identity dependency, media proxy or retained-runtime mutation. Corrected two disposable-fixture setup defects and one lint-only assertion before the recorded passes.
+
+### Evidence
+
+[Backend evidence](../evidence/phase-07/README.md): 248/248 owner tests, source 54/54, exact-release schema compatibility, real runtime-role SQL checks and Router-to-owner-to-store success/rejection/failure/recovery. Exact fixture cleanup leaves zero resources. No CPU check, source download or media encode repeated.
+
+### Next action
+
+Close candidate governance/hashes, publish one coherent backend PR and require protected CI/review. Then accessible player and fresh-volume demo. Full Phase 00–14 goal remains active.
+
+## 2026-08-28 — Phase 06 released; Playback core advances
+
+### Completed
+
+Merged PR 23 at 4083ea65 after exact-head protected CI and resolved reviews; exact post-merge CI 33156505851 passed. Restored/rebased P07 work on released main. Implemented current Catalog publication, protected private GraphQL reads, bounded HTTP consumer, anonymous session rules and isolated PostgreSQL persistence. ADR-0027 records the trust and finite retention/capacity policy. Explicit INSERT parameter types corrected the first SQL integration failure. Public Playback mutation/runtime/Compose/player remain planned.
+
+### Evidence
+
+[Phase 06 release](../evidence/phase-06/release.md), [233 affected tests, real PostgreSQL and static/schema checks](../evidence/phase-07/README.md). Disposable fixtures were removed with ownership checks. No CPU, download, encode or unchanged browser experiment repeated. Retained media/runtime are untouched.
+
+### Next action
+
+Complete P07-R01's public Playback Federation API, runtime/Compose and connected owner/session acceptance, then player/demo. Stash 2b0341c is an already-restored recovery copy, not pending work. Full goal remains active.
+
 ## 2026-08-28 — Final lock-recovery diagnosis and saved Playback progress
 
 ### Completed
@@ -15,6 +57,20 @@ The d885647 candidate passed protected CI. Its complete confirmation reported on
 ### Next action
 
 Push the narrow coherent correction, close the diagnosed review finding and require exact-head protected CI before squash/post-merge. Restore/rebase the saved P07 work; no dependent publication before predecessor release. Full goal remains active.
+
+## 2026-08-28 — Dependent local Playback work
+
+### Completed
+
+Froze Phase 06 at d885647 with all local gates passing; PR 23 now waits only on exact-head CI 33155106519 and the single requested confirmation. Started local feat/p07-playback under the WAITING_EXTERNAL protocol to avoid an idle hosted wait. P07-R01 is the only active item; no new Playback behavior is claimed yet.
+
+### Evidence
+
+[Frozen predecessor](../evidence/phase-06/rights-access-confirmation.md) and the active change plan record gates, exact base, rollback, dependency and rebase/publication rules.
+
+### Next action
+
+Implement focused Catalog publication/session rules; release the predecessor through protected squash/post-merge before publishing any dependent work. Preserve retained media and do not repeat CPU/encode tests.
 
 ## 2026-08-28 — Phase 06 rights/access confirmation correction
 

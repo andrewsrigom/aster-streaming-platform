@@ -1,0 +1,7 @@
+{"event":"playback_migration_up","version":1,"postgres":"18.6"}
+{"event":"playback_durable_owner_boundary","sessions":5,"concurrentCreates":4,"crossOwnerAndDdl":"rejected"}
+{"event":"playback_expiry_freshness_cancellation","staleFutureExpired":"rejected","blockedWrite":"bounded","laterRecovery":"passed"}
+{"event":"playback_retention","eligible":65,"purged":64,"recentAndLivePreserved":2}
+{"event":"playback_sql_capacity","maximum":4096,"concurrentLastSlotWinners":1,"rejected":3}
+{"event":"playback_migration_roundtrip","upDownUp":"passed","unrelatedData":"preserved"}
+{"event":"playback_local_runtime_readiness","initializerIdempotent":true,"crossOwnerAndColumnGrantRejected":true,"incompatibleSchemaRejected":true,"recovery":"passed"}

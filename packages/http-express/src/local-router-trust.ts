@@ -4,7 +4,7 @@ import { open } from "node:fs/promises";
 import type { IncomingMessage } from "node:http";
 import { join } from "node:path";
 
-export type AsterRouterOwner = "identity" | "catalog";
+export type AsterRouterOwner = "identity" | "catalog" | "playback";
 interface AsterRouterContext {
   readonly traceId?: string;
 }
@@ -13,18 +13,42 @@ export interface AsterLocalRouterTrust {
 }
 
 const CREDENTIAL = /^[a-f0-9]{64}$/u;
+const ROUTER_OWNERS = new Set<string>(["identity", "catalog", "playback"]);
 const TRACEPARENT = /^00-([a-f0-9]{32})-([a-f0-9]{16})-0[01]$/u;
-const HOSTS = { identity: "identity:3100", catalog: "catalog:3200" } as const;
+const HOSTS = {
+  identity: "identity:3100",
+  catalog: "catalog:3200",
+  playback: "playback:3300",
+  "catalog-playback": "catalog:3200",
+} as const;
 
 /** Transport authentication only; no account, profile or operator authority. */
 export function createLocalRouterTrust(
   owner: AsterRouterOwner,
   credential: string,
 ): AsterLocalRouterTrust {
+  if (!ROUTER_OWNERS.has(owner)) {
+    throw new Error("Invalid local Router owner.");
+  }
+  return createTransportTrust(owner, credential);
+}
+
+/** Separate read-only caller; never grants Router or viewer authority. */
+export function createLocalCatalogPlaybackTrust(credential: string): AsterLocalRouterTrust {
+  return createTransportTrust("catalog-playback", credential);
+}
+
+function createTransportTrust(
+  owner: keyof typeof HOSTS,
+  credential: string,
+): AsterLocalRouterTrust {
   if (!Object.hasOwn(HOSTS, owner) || !CREDENTIAL.test(credential)) {
     throw new Error("Invalid local Router trust configuration.");
   }
   const expected = Buffer.from(credential, "ascii");
+  const credentialHeader =
+    owner === "catalog-playback" ? "x-aster-playback-credential" : "x-aster-router-credential";
+  const origin = owner === "catalog-playback" ? "http://playback:3300" : "http://127.0.0.1:4000";
   return Object.freeze({
     accept(request: IncomingMessage): AsterRouterContext | undefined {
       if (
@@ -54,19 +78,17 @@ export function createLocalRouterTrust(
           // Empty W3C vendor state conveys no context; nonempty vendor state is not trusted.
           (name === "tracestate" && value !== "") ||
           name.startsWith("x-forwarded-") ||
-          (name.startsWith("x-aster-") &&
-            name !== "x-aster-csrf" &&
-            name !== "x-aster-router-credential") ||
-          (owner === "catalog" && name === "cookie")
+          (name.startsWith("x-aster-") && name !== "x-aster-csrf" && name !== credentialHeader) ||
+          (owner !== "identity" && name === "cookie")
         ) {
           return undefined;
         }
         headers.set(name, value);
       }
-      const supplied = headers.get("x-aster-router-credential") ?? "";
+      const supplied = headers.get(credentialHeader) ?? "";
       if (
         headers.get("host") !== HOSTS[owner] ||
-        headers.get("origin") !== "http://127.0.0.1:4000" ||
+        headers.get("origin") !== origin ||
         headers.get("x-aster-csrf") !== "1" ||
         !CREDENTIAL.test(supplied) ||
         !timingSafeEqual(expected, Buffer.from(supplied, "ascii"))
@@ -93,14 +115,27 @@ export async function loadLocalRouterTrust(
   owner: AsterRouterOwner,
   directory = "/run/aster-router",
 ): Promise<AsterLocalRouterTrust> {
-  if (!Object.hasOwn(HOSTS, owner)) {
+  if (!ROUTER_OWNERS.has(owner)) {
     throw new Error("Invalid local Router owner.");
   }
+  return createLocalRouterTrust(owner, await readCredential(join(directory, `${owner}.key`)));
+}
+
+export async function loadLocalCatalogPlaybackCredential(
+  directory = "/run/aster-playback-catalog",
+): Promise<string> {
+  return readCredential(join(directory, "catalog.key"));
+}
+
+export async function loadLocalCatalogPlaybackTrust(
+  directory = "/run/aster-playback-catalog",
+): Promise<AsterLocalRouterTrust> {
+  return createLocalCatalogPlaybackTrust(await loadLocalCatalogPlaybackCredential(directory));
+}
+
+async function readCredential(path: string): Promise<string> {
   try {
-    const file = await open(
-      join(directory, `${owner}.key`),
-      constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK,
-    );
+    const file = await open(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
     try {
       const stat = await file.stat();
       if (!stat.isFile() || stat.size !== 64 || (stat.mode & 0o077) !== 0) {
@@ -111,7 +146,11 @@ export async function loadLocalRouterTrust(
       if (bytesRead !== 64) {
         throw new Error("Invalid credential size.");
       }
-      return createLocalRouterTrust(owner, buffer.subarray(0, 64).toString("utf8"));
+      const credential = buffer.subarray(0, 64).toString("utf8");
+      if (!CREDENTIAL.test(credential)) {
+        throw new Error("Invalid credential value.");
+      }
+      return credential;
     } finally {
       await file.close();
     }

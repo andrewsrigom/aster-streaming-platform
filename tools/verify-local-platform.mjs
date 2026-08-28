@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL, URL } from "node:url";
 
 import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
 import { validateCatalogRuntime } from "./verify-catalog-runtime.mjs";
+import { validatePlaybackRuntime } from "./verify-playback-runtime.mjs";
 import {
   readRouterSources,
   validateRouterRuntime,
@@ -131,13 +132,22 @@ export function validateLocalPlatform(source) {
 
   violations.push(...validateIntegrationServices(source));
   violations.push(...validateCatalogRuntime(source));
+  violations.push(...validatePlaybackRuntime(source));
   violations.push(...validateRouterRuntime(source));
-  for (const name of ["catalog", "catalog-init", "router", "router-trust-init"]) {
+  for (const name of [
+    "catalog",
+    "catalog-init",
+    "playback",
+    "playback-init",
+    "router",
+    "router-trust-init",
+  ]) {
     source = source.replace(serviceBlock(source, name), "");
   }
-  for (const owner of ["identity", "catalog"]) {
+  for (const owner of ["identity", "catalog", "playback"]) {
     source = source.replace(volumeBlock(owner + "-router-trust", "disposable-local"), "");
   }
+  source = source.replace(volumeBlock("playback-catalog-trust", "disposable-local"), "");
   for (const name of ["broker", "storage"]) {
     source = source
       .replace(serviceBlock(source, name), "")

@@ -8,6 +8,7 @@ const ARTIFACT_NAMES = new Set([
   "supergraph.graphql",
   "catalog.graphql",
   "identity.graphql",
+  "playback.graphql",
   "manifest.json",
 ]);
 

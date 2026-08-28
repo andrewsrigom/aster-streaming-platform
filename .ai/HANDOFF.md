@@ -2,37 +2,32 @@
 
 ## Resume point
 
-P06-R01 final diagnostic correction is local: external confirmation of d885647 found only ambiguous barrier creation reporting recovery false. Focused strict build/lint/tests pass; no policy/SQL/media behavior changed. Commit/push and resolve review thread PRRT_kwDOUEkeis6dG01W (comment 3879091432), then require exact-head protected CI. Do not request another broad review or repeat media evidence for this reporting-only correction. Preserve P07 local work in stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef; feat/p07-playback currently points to d885647. Its publication projection/queries passed 12 tests, but are not a running Playback service.
-
-P06-R01 / Phase 06 remains IN_PROGRESS on feat/p06-media-pipeline; PR 23 is ready. Full Phase 00–14 goal remains active. Released main is f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 (Phases 00–05).
-
-Head 9723032 passed full protected CI 33153640859. Confirmation found a new rights/access race and stale guide. Current correction holds the policy barrier through current approval/restricted SQL registration, restores only rejected new grants, preserves prior grants and records bounded uncertain-failure recovery. Focused 27/27, source 51/51 and real S3 race/rejection tests pass. [Current evidence](../evidence/phase-06/rights-access-confirmation.md). Finish final storage/docs closeout and one coherent commit/push; require new exact-head protected CI and confirmation, not another ready transition.
-
-Initial PR head 459607b407d1b6f0fd63b5416d06a9fc34b4b36d / CI 33151304060 is not release proof. Initial review found partial-object exposure; CI found the standalone probe's obsolete migrations 1–3 expectation. Both are corrected locally. [Access evidence](../evidence/phase-06/publication-access.md) records the real storage test and retained migration. Candidate source/confirmation/protected release still must close.
+P07-R01 / Phase 07 is IN_PROGRESS on feat/p07-playback, based on released main 4083ea65edcf750bf4ba3e253654a529b72cd105. Phases 00–06 are released; [PR 23 and exact protected/post-merge evidence](../evidence/phase-06/release.md). No further Phase 06 review/pipeline request. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Final diagnostic correction passes focused 32/32, strict build and affected lint. Prior source 51/51 and real S3 remain supporting evidence; new exact-head source CI is required.
-2. Commit with normal hooks, push the existing PR branch once and resolve the diagnosed review finding. The complete external round and local remediation confirmation are recorded; no new broad review, old-head rerun or bypass.
-3. Squash only after checks/review pass, fetch clean main and verify the exact post-merge CI.
-4. Mark P06-R01 done and start Phase 07 (Playback owner, product player and fresh-volume Docker playable demo). No other active work item.
+Priority correction: initial review and first CI found base Router Identity coupling and the Catalog fixture's obsolete three-volume ceiling. Both are fixed locally; base-graph Playback and standalone Catalog proofs pass with zero remaining resources. Finish corrected candidate/protected CI and request one confirmation, then rebase/resume the tested player stash 2e85504b1739e3192484c37f5af63977b305eec1 on feat/p07-player. [Current correction](../evidence/phase-07/backend-review.md). The numbered initial candidate description below is historical.
 
-The unsupported ACL experiment is not retained in code. Exact-prefix bucket policy is the supported path; a private conditional-create control lock serializes grants. Ambiguous failures keep the barrier until operator recovery fences publishers/private writer. Read the recovery section before deleting any control lock. No automatic S3 lifecycle deletion or hosted multi-writer claim.
+1. Core commit 9ab840abd236c49eca6195f1b8c36627609891ad has a coherent uncommitted API/runtime/Compose successor. Affected suite 248/248, full source 54/54, actual restricted-role PostgreSQL/migration checks and the disposable federated Docker journey pass. [Evidence](../evidence/phase-07/README.md). Do not reimplement this completed local boundary.
+2. Finish candidate governance/changed-scope checks, source hashes and a coherent commit, then one PR with protected CI and initial/confirmation review. No Phase 07 push/PR yet at this checkpoint. Local main ref is stale f36f9aa; explicit schema compatibility against released 4083ea65 already passed. Generated manifest d4b22c951a4ec16709271439036fcac27a00198f7e1f8d6a6ee1587052161ddd.
+3. Start the accessible HLS player/demo after backend acceptance or the explicit frozen WAITING_EXTERNAL checkpoint. Migration 0001, 4096 SQL slots, 24-hour post-expiry audit and bounded cleanup are verified. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) and the [session runbook](../services/playback/README.md) define separate Router and private Catalog credentials. Do not repeat unchanged PostgreSQL/film/runtime experiments for prose changes.
+
+P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
 
 ## Retained runtime
 
-Project aster-p04-development: actual Big Buck Bunny is PUBLISHED, title 00000000-0000-4000-8000-000000080001, version 9, rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. Original review 2 and all immutable source/processing/audit remain.
+Project aster-p04-development: Big Buck Bunny is PUBLISHED, title 00000000-0000-4000-8000-000000080001, version 9, rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. Original review 2 and all immutable source/processing/audit remain.
 
-Bundle 3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d: 209 objects / 95496764 bytes under aster-media-published/publications/HASH/. Policy now grants only that complete prefix. All 209 anonymous HEADs, CORS, Range, negative private/listing/other-prefix checks and Web 200 pass after restriction. No media or editorial bytes changed. The migration barrier was removed successfully.
-
-HLS attempt 68e41f87-ca12-44ff-96d3-8a9e66d67795; artwork attempt 7674df29-2a04-4055-bcc8-cef60449520f. Full checksums/manifests are in [publication evidence](../evidence/phase-06/publication.md) and [browser evidence](../evidence/phase-06/browser.md). Do not re-download or re-encode unchanged media.
+Bundle 3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d: 209 objects / 95496764 bytes. Exact-prefix policy, anonymous HEADs, CORS, Range, private/listing/other-prefix rejection and Web 200 pass. [Publication](../evidence/phase-06/publication.md), [browser evidence](../evidence/phase-06/browser.md). Do not re-download or re-encode unchanged media.
 
 Retained schema is 0007. Additive 0008 is tested but must be applied before replace/rollback. Serving Catalog remains image sha256:25d7222f4118115d8bb034bd573401714b9ac7078a5621ff7d6b98bd8e80f860. Media origin is loopback 9001, edge-only, storage read-only; private writer remains concurrency one. Web/Router remain 3000/4000.
 
+Uncertain publication grants retain their recovery barrier. Read the publication recovery procedure and fence publishers/private writer before changing it. No automatic S3 lifecycle deletion or hosted multi-writer claim.
+
 ## Execution environment
 
-Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do not restart or diagnose host/CPU. Use the existing aster-p06-tooling:git Docker image with canonical repo mount, UID 1002, bounded resources. Full source gate uses pnpm check:source --concurrency=2 and pids-limit 256; this limits test scheduling, not a benchmark. Native Docker and Windows Node can run built-in-only supervisors. Native Windows Git credential helper can push; local commits use Docker Git and normal hooks.
+Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do not restart or diagnose host/CPU. Existing aster-p06-tooling:git Docker image supports canonical repo mount, UID 1002 and bounded resources. Full source gate uses pnpm check:source --concurrency=2 and pids-limit 256. Native Docker/Windows Node handle built-in-only supervisors. Native Git credentials can push; local commits use Docker Git and normal hooks. Do not overlap Git writes.
 
 ## Do not do yet
 
-Do not merge before corrected exact-head CI/confirmation or start Phase 07 before the documented transition. Preserve all retained volumes/media, user Windows processes and existing app. No broad Docker prune/reset, no new film encode or unchanged browser/CPU benchmark. Native Git may show spurious UNC executable-mode changes; Docker Git is authoritative for Linux modes. Never create/use a codex/ branch.
+Do not claim player/phase completion from the backend runtime proof or claim the retained app was upgraded. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
