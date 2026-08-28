@@ -19,9 +19,16 @@ import { runMediaAcquisition } from "./infrastructure/media/run-acquisition.js";
 import { createCatalogProcessing } from "./application/process-media.js";
 import { createPostgresCatalogProcessing } from "./infrastructure/persistence/postgres-processing.js";
 import { runMediaProcessing } from "./infrastructure/media/run-processing.js";
+import { ARTWORK_RECIPE_VERSION } from "./domain/media-processing.js";
+import { MEDIA_RECIPE_VERSION } from "./domain/media-request.js";
 
 const controller = new AbortController();
-const preparing = ["--prepare-decoder", "--reuse-decoder"].includes(process.argv[3] ?? "");
+const preparing = [
+  "--prepare-decoder",
+  "--reuse-decoder",
+  "--prepare-artwork",
+  "--reuse-artwork",
+].includes(process.argv[3] ?? "");
 const stop = () => {
   controller.abort();
 };
@@ -50,7 +57,10 @@ let storage: AsterObjectStorageAdapter | undefined;
 let operator: ReturnType<typeof createLocalCatalogOperator> | undefined;
 try {
   const requestId = process.argv[2];
-  const reuse = process.argv[3] === "--reuse-decoder";
+  const reuse = ["--reuse-decoder", "--reuse-artwork"].includes(process.argv[3] ?? "");
+  const recipeVersion = ["--prepare-artwork", "--reuse-artwork"].includes(process.argv[3] ?? "")
+    ? ARTWORK_RECIPE_VERSION
+    : MEDIA_RECIPE_VERSION;
   const selector =
     reuse && catalogChecksum(process.argv[4]) && catalogChecksum(process.argv[5])
       ? { manifestHash: process.argv[4], reportChecksum: process.argv[5] }
@@ -130,6 +140,7 @@ try {
   const result = preparing
     ? await runMediaProcessing(requestId, request, {
         processing: createCatalogProcessing({
+          recipeVersion,
           authority: operator.authority,
           transactions: createPostgresCatalogProcessing(database),
           policy: { commercial: true },

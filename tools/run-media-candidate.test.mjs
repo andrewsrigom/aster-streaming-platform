@@ -11,6 +11,9 @@ test("media candidate runner refuses wrong targets and remote overrides before D
   for (const [args, extra] of [
     [["production", valid[1]], {}],
     [[valid[0], "../../escape"], {}],
+    [[...valid, "--artwork", "unexpected"], {}],
+    [[...valid, "--artwork", "--reuse", "invalid", "invalid"], {}],
+    [[...valid, "--artwork"], { DOCKER_HOST: "ssh://remote.invalid" }],
     [valid, { DOCKER_HOST: "ssh://remote.invalid" }],
     [valid, { DOCKER_CONTEXT: "remote" }],
     [valid, { CI: "true" }],

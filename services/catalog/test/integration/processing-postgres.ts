@@ -10,6 +10,7 @@ import type { ProcessingUnitOfWork } from "../../src/application/processing-port
 import { originalKey } from "../../src/domain/media-acquisition.js";
 import {
   PROCESSING_LEASE_SECONDS,
+  ARTWORK_RECIPE_VERSION,
   type ProcessingAttempt,
 } from "../../src/domain/media-processing.js";
 import { createLocalCatalogOperator } from "../../src/infrastructure/identity/local-operator.js";
@@ -230,6 +231,43 @@ export async function verifyProcessing(admin: Pool, database: AsterPostgresAdapt
       sameBytesReused: true,
       requestingRightsRechecked: true,
       publicationAuthority: false,
+    });
+
+    const artwork = createCatalogProcessing({
+      ...common,
+      transactions: store,
+      recipeVersion: ARTWORK_RECIPE_VERSION,
+    });
+    const artworkClaim = await artwork.claim(first.acquisitionId, request);
+    assert.equal(artworkClaim.status, "completed");
+    assert.equal(artworkClaim.value.recipeVersion, ARTWORK_RECIPE_VERSION);
+    assert.notEqual(artworkClaim.value.processingKey, active.value.processingKey);
+    assert.equal((await processing().check(artworkClaim.value.id, request)).status, "conflict");
+    assert.equal((await artwork.check(active.value.id, request)).status, "conflict");
+    const blockedSource = await prepare();
+    assert.equal(
+      (await processing().claim(blockedSource.acquisitionId, request)).status,
+      "backpressure",
+    );
+    const artworkDone = await artwork.complete(
+      artworkClaim.value.id,
+      { ...candidate(artworkClaim.value), files: 5 },
+      request,
+    );
+    assert.equal(artworkDone.status, "completed");
+    assert.deepEqual(await artwork.claim(first.acquisitionId, request), artworkDone);
+    assert.deepEqual(await processing().claim(first.acquisitionId, request), success);
+    assert.equal(
+      (await artwork.claim(sameBytes.acquisitionId, request)).status,
+      "rights_not_approved",
+    );
+    output("catalog_artwork_recipe_isolation", {
+      separateKey: true,
+      sameGlobalSlot: true,
+      exactReplay: true,
+      hlsUnchanged: true,
+      crossRecipeCompletionRefused: true,
+      currentRightsRequired: true,
     });
 
     const second = await prepare();

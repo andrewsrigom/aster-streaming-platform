@@ -9,12 +9,22 @@ import type { createCatalogAcquisitions } from "../../application/acquire-media.
 import type { CatalogCommandRequest } from "../../application/operator-ports.js";
 import { catalogChecksum, catalogRecord } from "../../domain/values.js";
 import { MEDIA_RECIPE_VERSION } from "../../domain/media-request.js";
-import { processingKeyInput } from "../../domain/media-processing.js";
+import {
+  ARTWORK_RECIPE_VERSION,
+  processingKeyInput,
+  type ProcessingRecipe,
+} from "../../domain/media-processing.js";
 import { MediaProcessingError } from "./processing-error.js";
+import { validateArtworkReport } from "./candidate-artwork.js";
 
 type CandidateObject = Readonly<{ name: string; bytes: number; sha256: string }>;
-function filesFromReport(value: unknown): readonly CandidateObject[] {
-  if (!Array.isArray(value) || value.length < 3 || value.length > 2048) {
+function filesFromReport(value: unknown, recipe: ProcessingRecipe): readonly CandidateObject[] {
+  const artwork = recipe === ARTWORK_RECIPE_VERSION;
+  if (
+    !Array.isArray(value) ||
+    value.length < (artwork ? 4 : 3) ||
+    value.length > (artwork ? 5 : 2048)
+  ) {
     throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate object count");
   }
   const names = new Set<string>();
@@ -24,13 +34,17 @@ function filesFromReport(value: unknown): readonly CandidateObject[] {
     if (
       !file ||
       typeof file["name"] !== "string" ||
-      !/^(?:master\.m3u8|v[0-9]{2,3}(?:\.m3u8|-[0-9]{4}\.ts))$/u.test(file["name"]) ||
+      !(
+        artwork
+          ? /^(?:poster-[0-9]{3}|poster-[0-9]{4}|thumbnail-0[123])\.jpg$/u
+          : /^(?:master\.m3u8|v[0-9]{2,3}(?:\.m3u8|-[0-9]{4}\.ts))$/u
+      ).test(file["name"]) ||
       names.has(file["name"]) ||
       !catalogChecksum(file["sha256"]) ||
       typeof file["bytes"] !== "number" ||
       !Number.isSafeInteger(file["bytes"]) ||
       file["bytes"] < 1 ||
-      file["bytes"] > 16 * 1024 * 1024
+      file["bytes"] > (artwork ? 2 : 16) * 1024 * 1024
     ) {
       throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate object");
     }
@@ -107,6 +121,7 @@ export async function verifyCandidateObject(
 export function parseCandidateReport(
   reportBytes: Buffer,
   expected: Readonly<{ sha256: string; bytes: number; container: "zip" | "mp4" }>,
+  recipe: ProcessingRecipe = MEDIA_RECIPE_VERSION,
 ) {
   let parsed: unknown;
   try {
@@ -123,20 +138,26 @@ export function parseCandidateReport(
   const report = parsed as Record<string, unknown>;
   const identity = catalogRecord(report["identity"], ["sha256", "bytes", "container"]);
   const processingKey = createHash("sha256")
-    .update(processingKeyInput(expected.sha256))
+    .update(processingKeyInput(expected.sha256, recipe))
     .digest("hex");
-  const files = filesFromReport(report["files"]);
+  const files = filesFromReport(report["files"], recipe);
+  if (recipe === ARTWORK_RECIPE_VERSION) {
+    validateArtworkReport(
+      report,
+      files.map((file) => file.name),
+    );
+  }
   const manifestHash = createHash("sha256").update(JSON.stringify(files)).digest("hex");
   if (
     report["event"] !== "media_candidate_validated" ||
     report["publicationAuthority"] !== false ||
-    report["recipe"] !== MEDIA_RECIPE_VERSION ||
+    report["recipe"] !== recipe ||
     report["processingKey"] !== processingKey ||
     report["manifestHash"] !== manifestHash ||
     identity?.["sha256"] !== expected.sha256 ||
     identity["bytes"] !== expected.bytes ||
     identity["container"] !== expected.container ||
-    !files.some((file) => file.name === "master.m3u8")
+    (recipe === MEDIA_RECIPE_VERSION && !files.some((file) => file.name === "master.m3u8"))
   ) {
     throw new MediaProcessingError("INVALID_OUTPUT", "Candidate source identity mismatch");
   }
@@ -149,6 +170,7 @@ export async function retainDecoderCandidate(
   request: CatalogCommandRequest,
   acquisitions: Pick<ReturnType<typeof createCatalogAcquisitions>, "original">,
   storage: Pick<AsterObjectStorageAdapter, "write" | "read">,
+  recipe: ProcessingRecipe = MEDIA_RECIPE_VERSION,
 ) {
   async function current() {
     const result = await acquisitions.original(attemptId, request);
@@ -184,10 +206,14 @@ export async function retainDecoderCandidate(
   } finally {
     await reportHandle.close();
   }
-  const { processingKey, manifestHash, files } = parseCandidateReport(reportBytes, {
-    ...original.original,
-    container: original.media.input.source.container,
-  });
+  const { processingKey, manifestHash, files } = parseCandidateReport(
+    reportBytes,
+    {
+      ...original.original,
+      container: original.media.input.source.container,
+    },
+    recipe,
+  );
   const expectedNames = [...files.map((file) => file.name), "report.json"].sort();
   const actualNames: string[] = [];
   for await (const entry of await opendir(directory)) {
@@ -251,6 +277,7 @@ export async function awaitDecoderCandidate(
   request: CatalogCommandRequest,
   acquisitions: Pick<ReturnType<typeof createCatalogAcquisitions>, "original">,
   storage: Pick<AsterObjectStorageAdapter, "write" | "read">,
+  recipe: ProcessingRecipe = MEDIA_RECIPE_VERSION,
 ) {
   for (;;) {
     request.signal.throwIfAborted();
@@ -273,6 +300,7 @@ export async function awaitDecoderCandidate(
       request,
       acquisitions,
       storage,
+      recipe,
     );
   }
 }

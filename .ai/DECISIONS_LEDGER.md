@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0025](../docs/adr/0025-derived-artwork.md) adds frame-jpeg-v1 to the same isolated worker and durable Catalog processing owner. It derives bounded no-upscale posters/thumbnails, reuses current-rights/lease guards and keeps the HLS key unchanged. No schema or publication permission changes; image generation/inspection does not itself approve artwork rights.
+
 [ADR-0024](../docs/adr/0024-durable-media-processing.md) adds Catalog-owned processing leases, three attempts per checksum/recipe, current-rights reuse and explicit private-candidate recovery. Additive migration 0006 grants no publication access. The retained real candidate is adopted and replayed without another encode.
 
 [ADR-0023](../docs/adr/0023-isolated-media-decoder.md) defines the finite network-disabled TypeScript decoder, bounded ZIP/probe/HLS policy and Catalog-owned private candidate retention. The real source is 640×359, so the no-upscale ladder uses 240/358 heights. MIT yauzl 3.4.0 and pend 1.2.0 retain notices; separate FFmpeg compliance is unchanged. Private reports do not grant attestation/publication authority.

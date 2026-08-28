@@ -9,7 +9,11 @@ import {
   retryableProcessing,
   type ProcessingAttempt,
 } from "../domain/media-processing.js";
-import { mediaRequestEligible, type CatalogMediaRequest } from "../domain/media-request.js";
+import {
+  MEDIA_RECIPE_VERSION,
+  mediaRequestEligible,
+  type CatalogMediaRequest,
+} from "../domain/media-request.js";
 import { catalogIdentifier, catalogTimestamp } from "../domain/values.js";
 import type { CatalogCommandRequest } from "./operator-ports.js";
 import type { ProcessingPorts, ProcessingTransaction } from "./processing-ports.js";
@@ -17,6 +21,7 @@ import type { CatalogStoreResult } from "./rights-ports.js";
 
 type Source = Readonly<{ media: CatalogMediaRequest; original: AcquiredOriginal }>;
 export function createCatalogProcessing(ports: ProcessingPorts) {
+  const recipeVersion = ports.recipeVersion ?? MEDIA_RECIPE_VERSION;
   async function authorized<T>(
     id: unknown,
     request: CatalogCommandRequest,
@@ -110,7 +115,9 @@ export function createCatalogProcessing(ports: ProcessingPorts) {
       if (
         current.value.media.input.requestId !== attempt.requestId ||
         current.value.original.sha256 !== attempt.sourceChecksum ||
-        ports.digest(processingKeyInput(attempt.sourceChecksum)) !== attempt.processingKey
+        attempt.recipeVersion !== recipeVersion ||
+        ports.digest(processingKeyInput(attempt.sourceChecksum, recipeVersion)) !==
+          attempt.processingKey
       ) {
         return { status: "conflict" };
       }
@@ -131,7 +138,9 @@ export function createCatalogProcessing(ports: ProcessingPorts) {
         if (!eligible()) {
           return { status: "rights_not_approved" };
         }
-        const processingKey = ports.digest(processingKeyInput(current.value.original.sha256));
+        const processingKey = ports.digest(
+          processingKeyInput(current.value.original.sha256, recipeVersion),
+        );
         let history = await tx.listProcessing(processingKey);
         let last = history.at(-1);
         // A completed key needs no execution slot, but never inherits old source rights.
@@ -172,7 +181,7 @@ export function createCatalogProcessing(ports: ProcessingPorts) {
           correlationId: request.correlationId,
           processingKey,
           sourceChecksum: current.value.original.sha256,
-          recipeVersion: current.value.media.input.recipeVersion,
+          recipeVersion,
           number: history.length + 1,
           requestedAt: current.value.media.requestedAt,
           startedAt,

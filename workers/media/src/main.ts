@@ -1,10 +1,11 @@
 import { createHash } from "node:crypto";
 import { lstat, mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { performance } from "node:perf_hooks";
-import { MediaError, RECIPE, sourceIdentity } from "./domain/policy.js";
+import { MediaError, sourceIdentity } from "./domain/policy.js";
 import { extractOriginal } from "./infrastructure/extract.js";
 import { encodeHls, probeSource } from "./infrastructure/encode.js";
 import { runProcess } from "./infrastructure/process.js";
+import { encodeArtwork } from "./infrastructure/artwork.js";
 
 const controller = new AbortController();
 const abort = () => {
@@ -26,7 +27,8 @@ const samples = setInterval(() => {
   };
 }, 1000);
 try {
-  if (process.argv.length !== 2 || process.env["ASTER_MEDIA_DECODER"] !== "local") {
+  const artwork = process.argv.length === 3 && process.argv[2] === "--artwork";
+  if ((!artwork && process.argv.length !== 2) || process.env["ASTER_MEDIA_DECODER"] !== "local") {
     throw new MediaError("INVALID_SOURCE");
   }
   const stat = await lstat("/input/job/identity.json");
@@ -55,14 +57,18 @@ try {
   process.stdout.write(
     JSON.stringify({ event: "media_source_verified", identity, extracted, probe }) + "\n",
   );
-  const encoded = await encodeHls(
-    "/work/job/source.mp4",
-    "/output/candidate",
-    probe,
-    controller.signal,
-    (height) =>
-      process.stdout.write(JSON.stringify({ event: "media_rendition_verified", height }) + "\n"),
-  );
+  const encoded = artwork
+    ? await encodeArtwork("/work/job/source.mp4", "/output/candidate", probe, controller.signal)
+    : await encodeHls(
+        "/work/job/source.mp4",
+        "/output/candidate",
+        probe,
+        controller.signal,
+        (height) =>
+          process.stdout.write(
+            JSON.stringify({ event: "media_rendition_verified", height }) + "\n",
+          ),
+      );
   const ffmpeg = (await runProcess("ffmpeg", ["-version"], "/work", controller.signal, 5000)).split(
     "\n",
   )[0];
@@ -74,7 +80,7 @@ try {
     ...encoded,
     ffmpeg,
     processingKey: createHash("sha256")
-      .update(identity.sha256 + "\0" + RECIPE)
+      .update(identity.sha256 + "\0" + encoded.recipe)
       .digest("hex"),
     elapsedMs: performance.now() - started,
     peakNodeMemory: peakMemory,

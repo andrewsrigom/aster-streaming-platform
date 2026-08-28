@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Independent derived artwork
+
+### Completed
+
+Closed durable processing at 155cefc with normal hooks. Implemented frame-jpeg-v1 in the existing isolated worker and Catalog coordinator: source-aware posters/thumbnails, strict report grammar, separate recipe keys and unchanged HLS. Generated five real JPEGs, retained them privately, inspected every image and replayed the same durable attempt without another decoder/write. No migration, publication, new source GET or full-film encode.
+
+### Evidence
+
+Evidence/phase-06/artwork.md: 48 focused tests, deterministic synthetic FFmpeg output, PostgreSQL recipe/slot/rights isolation, actual retained result and independent SQL/hash readback. Source gate 51/51 passed (36 cached). Initial test expectation/lint issues were corrected; the Windows-native PostgreSQL harness could not resolve Linux symlinks, so the same suite passed in a scoped Docker client. Owner programs, retained data and normal Git hooks remain intact. No CPU benchmark.
+
+### Next action
+
+Restricted attestation, artwork approval, truthful public modification attribution and immutable origin/Catalog publication. Keep P06-R01 and the complete Phase 00–14 goal active. Do not repeat successful artwork/HLS experiments for prose-only closeout.
+
 ## 2026-08-28 — Durable processing and candidate replay
 
 ### Completed

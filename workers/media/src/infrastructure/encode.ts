@@ -16,7 +16,7 @@ import { validatePlaylist } from "../domain/hls.js";
 import { fileDigest } from "./files.js";
 import { runProcess } from "./process.js";
 
-const inputOptions = [
+export const sourceInputOptions = [
   "-threads",
   "1",
   "-protocol_whitelist",
@@ -45,7 +45,7 @@ export async function probeSource(
     [
       "-v",
       "error",
-      ...inputOptions,
+      ...sourceInputOptions,
       "-show_entries",
       "stream=codec_type,codec_name,width,height,avg_frame_rate,r_frame_rate,pix_fmt,channels,sample_rate,sample_aspect_ratio:stream_disposition=attached_pic:stream_tags=rotate:stream_side_data=rotation:format=format_name,duration,start_time",
       "-of",
@@ -92,7 +92,7 @@ export async function encodeHls(
       "ffmpeg",
       [
         ...common,
-        ...inputOptions,
+        ...sourceInputOptions,
         "-i",
         source,
         "-map",

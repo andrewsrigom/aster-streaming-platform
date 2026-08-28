@@ -4,7 +4,12 @@ import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
 import type { createCatalogAcquisitions } from "../../application/acquire-media.js";
 import type { CatalogCommandRequest } from "../../application/operator-ports.js";
 import { catalogChecksum } from "../../domain/values.js";
-import { processingKeyInput, type ProcessingCandidate } from "../../domain/media-processing.js";
+import {
+  processingKeyInput,
+  type ProcessingCandidate,
+  type ProcessingRecipe,
+} from "../../domain/media-processing.js";
+import { MEDIA_RECIPE_VERSION } from "../../domain/media-request.js";
 import { MediaProcessingError } from "./processing-error.js";
 import { parseCandidateReport, verifyCandidateObject } from "./retain-candidate.js";
 
@@ -18,6 +23,7 @@ export async function reuseDecoderCandidate(
   request: CatalogCommandRequest,
   acquisitions: Pick<ReturnType<typeof createCatalogAcquisitions>, "original">,
   storage: Pick<AsterObjectStorageAdapter, "read">,
+  recipe: ProcessingRecipe = MEDIA_RECIPE_VERSION,
 ): Promise<ProcessingCandidate> {
   if (!catalogChecksum(selector.manifestHash) || !catalogChecksum(selector.reportChecksum)) {
     throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate selector");
@@ -35,7 +41,7 @@ export async function reuseDecoderCandidate(
   }
   const original = await current();
   const processingKey = createHash("sha256")
-    .update(processingKeyInput(original.original.sha256))
+    .update(processingKeyInput(original.original.sha256, recipe))
     .digest("hex");
   const prefix = "candidates/" + processingKey + "/" + selector.manifestHash + "/";
   const chunks: Buffer[] = [];
@@ -66,10 +72,14 @@ export async function reuseDecoderCandidate(
   if (createHash("sha256").update(bytes).digest("hex") !== selector.reportChecksum) {
     throw new MediaProcessingError("INVALID_OUTPUT", "Candidate report checksum mismatch");
   }
-  const report = parseCandidateReport(bytes, {
-    ...original.original,
-    container: original.media.input.source.container,
-  });
+  const report = parseCandidateReport(
+    bytes,
+    {
+      ...original.original,
+      container: original.media.input.source.container,
+    },
+    recipe,
+  );
   if (report.manifestHash !== selector.manifestHash) {
     throw new MediaProcessingError("INVALID_OUTPUT", "Candidate manifest mismatch");
   }

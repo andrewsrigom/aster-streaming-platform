@@ -1,0 +1,101 @@
+node:internal/modules/package_json_reader:301
+  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+        ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'pg' imported from \\wsl.localhost\Ubuntu-20.04\home\andrews\personal\portfolio-2026\aster-streaming-platform\services\catalog\dist\test\integration\rights-postgres.js
+    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+    at packageResolve (node:internal/modules/esm/resolve:768:81)
+    at moduleResolve (node:internal/modules/esm/resolve:859:18)
+    at defaultResolve (node:internal/modules/esm/resolve:992:11)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+    at #resolve (node:internal/modules/esm/loader:683:17)
+    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+  code: 'ERR_MODULE_NOT_FOUND'
+}
+
+Node.js v24.19.0
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":5091}
+file://wsl.localhost/Ubuntu-20.04/home/andrews/personal/portfolio-2026/aster-streaming-platform/tools/run-catalog-integration.mjs:156
+  throw new Error("Catalog integration failed.", { cause: primaryError });
+        ^
+
+Error: Catalog integration failed.
+    at file://wsl.localhost/Ubuntu-20.04/home/andrews/personal/portfolio-2026/aster-streaming-platform/tools/run-catalog-integration.mjs:156:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  [cause]: Error: Command failed: C:\Users\andre\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe services/catalog/dist/test/integration/rights-postgres.js 55155
+  node:internal/modules/package_json_reader:301
+
+    throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+
+          ^
+
+  
+
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'pg' imported from \\wsl.localhost\Ubuntu-20.04\home\andrews\personal\portfolio-2026\aster-streaming-platform\services\catalog\dist\test\integration\rights-postgres.js
+
+      at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)
+
+      at packageResolve (node:internal/modules/esm/resolve:768:81)
+
+      at moduleResolve (node:internal/modules/esm/resolve:859:18)
+
+      at defaultResolve (node:internal/modules/esm/resolve:992:11)
+
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)
+
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)
+
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)
+
+      at #resolve (node:internal/modules/esm/loader:683:17)
+
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)
+
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {
+
+    code: 'ERR_MODULE_NOT_FOUND'
+
+  }
+
+  
+
+  Node.js v24.19.0
+
+  
+      at genericNodeError (node:internal/errors:985:15)
+      at wrappedFn (node:internal/errors:539:14)
+      at ChildProcess.exithandler (node:child_process:417:12)
+      at ChildProcess.emit (node:events:509:28)
+      at maybeClose (node:internal/child_process:1141:16)
+      at ChildProcess._handle.onexit (node:internal/child_process:306:5) {
+    code: 1,
+    killed: false,
+    signal: null,
+    cmd: 'C:\\Users\\andre\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe services/catalog/dist/test/integration/rights-postgres.js 55155',
+    stdout: '',
+    stderr: 'node:internal/modules/package_json_reader:301\r\n' +
+      '  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\r\n' +
+      '        ^\r\n' +
+      '\r\n' +
+      "Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'pg' imported from \\\\wsl.localhost\\Ubuntu-20.04\\home\\andrews\\personal\\portfolio-2026\\aster-streaming-platform\\services\\catalog\\dist\\test\\integration\\rights-postgres.js\r\n" +
+      '    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)\r\n' +
+      '    at packageResolve (node:internal/modules/esm/resolve:768:81)\r\n' +
+      '    at moduleResolve (node:internal/modules/esm/resolve:859:18)\r\n' +
+      '    at defaultResolve (node:internal/modules/esm/resolve:992:11)\r\n' +
+      '    at #cachedDefaultResolve (node:internal/modules/esm/loader:701:20)\r\n' +
+      '    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:721:38)\r\n' +
+      '    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:759:56)\r\n' +
+      '    at #resolve (node:internal/modules/esm/loader:683:17)\r\n' +
+      '    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:603:35)\r\n' +
+      '    at ModuleJob.syncLink (node:internal/modules/esm/module_job:163:33) {\r\n' +
+      "  code: 'ERR_MODULE_NOT_FOUND'\r\n" +
+      '}\r\n' +
+      '\r\n' +
+      'Node.js v24.19.0\r\n'
+  }
+}
+
+Node.js v24.19.0

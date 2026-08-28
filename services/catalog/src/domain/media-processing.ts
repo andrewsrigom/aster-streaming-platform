@@ -3,6 +3,8 @@ import { catalogChecksum, catalogIdentifier, catalogRecord, catalogTimestamp } f
 
 export const PROCESSING_LEASE_SECONDS = 1800;
 export const MAX_PROCESSING_ATTEMPTS = 3;
+export const ARTWORK_RECIPE_VERSION = "frame-jpeg-v1";
+export type ProcessingRecipe = typeof MEDIA_RECIPE_VERSION | typeof ARTWORK_RECIPE_VERSION;
 const failures = [
   "STORAGE_FAILURE",
   "CONTROL_UNAVAILABLE",
@@ -28,7 +30,7 @@ export interface ProcessingAttempt {
   readonly correlationId: string;
   readonly processingKey: string;
   readonly sourceChecksum: string;
-  readonly recipeVersion: typeof MEDIA_RECIPE_VERSION;
+  readonly recipeVersion: ProcessingRecipe;
   readonly number: number;
   readonly requestedAt: number;
   readonly startedAt: number;
@@ -47,8 +49,11 @@ export function retryableProcessing(failure: ProcessingFailure | null): boolean 
     ["STORAGE_FAILURE", "CONTROL_UNAVAILABLE", "CANCELLED", "LEASE_EXPIRED"].includes(failure)
   );
 }
-export function processingKeyInput(sourceChecksum: string): string {
-  return sourceChecksum + "\0" + MEDIA_RECIPE_VERSION;
+export function processingKeyInput(
+  sourceChecksum: string,
+  recipeVersion: ProcessingRecipe = MEDIA_RECIPE_VERSION,
+): string {
+  return sourceChecksum + "\0" + recipeVersion;
 }
 export function normalizeProcessingCandidate(
   value: unknown,
@@ -114,7 +119,8 @@ export function normalizeProcessingAttempt(value: unknown): ProcessingAttempt | 
     ) ||
     !catalogChecksum(data["processingKey"]) ||
     !catalogChecksum(data["sourceChecksum"]) ||
-    data["recipeVersion"] !== MEDIA_RECIPE_VERSION ||
+    (data["recipeVersion"] !== MEDIA_RECIPE_VERSION &&
+      data["recipeVersion"] !== ARTWORK_RECIPE_VERSION) ||
     typeof data["number"] !== "number" ||
     !Number.isInteger(data["number"]) ||
     data["number"] < 1 ||

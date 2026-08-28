@@ -14,4 +14,6 @@ Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and 
 
 - [Durable processing and reuse](processing.md): fenced attempts, bounded retries, current-rights deduplication and actual retained-candidate adoption/default replay without another encode.
 
-Rights, request admission, acquisition, decoding, private retention and durable processing/reuse pass locally. Restricted attestation, artwork, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.
+- [Derived artwork](artwork.md): five validated/reviewed JPEGs, independent recipe, durable replay and unchanged HLS.
+
+Rights, request admission, acquisition, decoding, private retention, durable processing/reuse and artwork generation/inspection pass locally. Restricted attestation, artwork approval, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.

@@ -17,13 +17,15 @@ Phases 00–05 are released. PR 22 squash f36f9aa7043dc1fe7b6394a0a800e4e842bf68
 
 Catalog has durable rights/history, operator commands, publication transactions and generated-fixture attestations. Big Buck Bunny's selected official archive has approved rights revision 2 / title version 3 and a verified private original; it remains unpublished. The isolated decoder now produces a complete, privately retained HLS candidate. [Decoder evidence](../evidence/phase-06/decoder.md). Historical unresolved source reviews remain unchanged.
 
-The owner-side request, acquisition and durable-processing slices are locally verified: additive migrations 0004/0005/0006, fenced attempts, bounded streaming, current rights and private immutable originals/candidates. The decoder/retention path passes the real film, and durable adoption/replay preserves that result without re-encoding. Artwork, attestation and publication remain unfinished. Existing Web/acquisition evidence remains applicable.
+The owner-side request, acquisition and durable-processing slices are locally verified: additive migrations 0004/0005/0006, fenced attempts, bounded streaming, current rights and private immutable originals/candidates. Both the full-film HLS and five derived JPEGs are privately retained and replayable. Artwork approval, attestation and publication remain unfinished. Existing Web/acquisition evidence remains applicable.
 
 ## Proposed behavior
 
 Request admission and the finite owner acquisition coordinator under [ADR-0022](../docs/adr/0022-local-media-execution.md) are implemented. Continue with bounded ZIP extraction/probe and a separate network-disabled decoder. Define verified-result registration before granting any technical attestation permission; acquisition never grants it.
 
-Decoder checkpoint is committed at `5d4e0e9`; full-film media evidence remains valid. [ADR-0024](../docs/adr/0024-durable-media-processing.md) now implements verified Catalog processing leases, checksum/recipe reuse and private candidate recovery. A claim precedes filesystem/media work; the same current-rights and lease guard covers handoff, waiting and uploads. The existing candidate was independently verified, adopted and replayed without another download or encode. [Evidence](../evidence/phase-06/processing.md). This records durable technical work, not publication authority. Artwork and restricted attestation/publication follow.
+Decoder checkpoint is committed at `5d4e0e9`; durable processing at `155cefc`. Full-film media evidence remains valid. [ADR-0024](../docs/adr/0024-durable-media-processing.md) implements verified Catalog processing leases, checksum/recipe reuse and private candidate recovery. The existing candidate was independently verified, adopted and replayed without another download or encode. [Evidence](../evidence/phase-06/processing.md). This records durable technical work, not publication authority.
+
+Current slice: [ADR-0025](../docs/adr/0025-derived-artwork.md) adds an independently versioned JPEG-frame recipe to the same isolated worker and Catalog processing owner. Generate source-aware posters and timeline thumbnails, validate/decode/hash every image, retain privately and review the actual frames. The existing processing record supports the second recipe without a migration; existing HLS keys/results stay unchanged. Restricted attestation and public publication remain subsequent acceptance work, not authority granted by artwork generation.
 
 ## Boundaries
 
@@ -89,8 +91,8 @@ Use the existing local Catalog operator, never viewer credentials or input-selec
 
 - Commands: focused Catalog/media tests during iteration; affected source gate at candidate.
 - Raw artifact path: evidence/phase-06/.
-- Acceptance result: rights, requests, acquisition and a private full-length HLS candidate pass locally. The complete phase/publication/release gate remains pending.
-- Iteration gate: focused processing/coordinator tests and Catalog build; verify the new transaction/migration against disposable PostgreSQL, then adopt/replay the retained candidate once. Acquisition/HLS/Web evidence remains valid because this slice does not change source, recipe or serving code. Do not repeat source GET, film encoding or Web benchmarks.
+- Acceptance result: rights, requests, acquisition, private full-length HLS, derived artwork/inspection and independent durable replay pass locally. Source gates 51/51 and documentation/security 10/10 pass for the artwork checkpoint. The complete phase/publication/release gate remains pending.
+- Iteration gate: focused artwork/processing/coordinator tests and affected builds; real synthetic JPEG decoding, recipe isolation against disposable PostgreSQL, then one real artwork run/replay from the retained original. Inspect actual frames. Acquisition/HLS/Web evidence remains valid because their source, HLS recipe and serving behavior are unchanged. Do not repeat source GET, full-film encoding or Web benchmarks.
 - Candidate gate: complete first-film pipeline, real persistence/storage, adverse cases and affected source checks.
 - Heavyweight repeat triggers: source, recipe, worker, storage, publication or packaging changes repeat their affected experiment; prose does not repeat transcoding/browser/clean startup.
 - Review stopping rule: one initial and one confirmation; extra rounds only for requirement, security/data, availability or public-contract blockers.

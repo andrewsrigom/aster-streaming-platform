@@ -1,5 +1,5 @@
 import type { AcquisitionAttempt } from "../domain/media-acquisition.js";
-import type { ProcessingAttempt } from "../domain/media-processing.js";
+import type { ProcessingAttempt, ProcessingRecipe } from "../domain/media-processing.js";
 import type { CatalogMediaPorts, CatalogMediaTransaction } from "./media-ports.js";
 import type { CatalogStoreResult } from "./rights-ports.js";
 
@@ -19,6 +19,7 @@ export interface ProcessingUnitOfWork {
   ): Promise<CatalogStoreResult<T>>;
 }
 export interface ProcessingPorts extends Omit<CatalogMediaPorts, "transactions"> {
+  readonly recipeVersion?: ProcessingRecipe;
   readonly transactions: ProcessingUnitOfWork;
   readonly nextId: () => string;
 }

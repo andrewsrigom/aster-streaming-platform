@@ -9,7 +9,10 @@ import test from "node:test";
 import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
 import type { createCatalogAcquisitions } from "../src/application/acquire-media.js";
 import type { createCatalogProcessing } from "../src/application/process-media.js";
-import { normalizeProcessingAttempt } from "../src/domain/media-processing.js";
+import {
+  ARTWORK_RECIPE_VERSION,
+  normalizeProcessingAttempt,
+} from "../src/domain/media-processing.js";
 import { normalizeMediaRequest } from "../src/domain/media-request.js";
 import { prepareDecoder } from "../src/infrastructure/media/prepare-decoder.js";
 import { retainDecoderCandidate } from "../src/infrastructure/media/retain-candidate.js";
@@ -188,6 +191,75 @@ test("refuses revoked authority before filesystem/storage side effects", async (
     );
     assert.equal(f.writes(), 0);
     assert.deepEqual(await readdir(f.root), ["candidate"]);
+  });
+});
+
+test("retains and reuses a separate complete artwork candidate without overwriting HLS", async () => {
+  await fixture(async (f) => {
+    const hls = await retainDecoderCandidate(
+      id(9),
+      f.directory,
+      f.request,
+      f.acquisitions,
+      f.storage,
+    );
+    for (const name of await readdir(f.directory)) {
+      await unlink(join(f.directory, name));
+    }
+    const frames = [
+      { name: "poster-320.jpg", purpose: "poster", width: 320, height: 180, atSeconds: 2 },
+      { name: "poster-640.jpg", purpose: "poster", width: 640, height: 360, atSeconds: 2 },
+      ...[1, 5, 8.5].map((atSeconds, index) => ({
+        name: "thumbnail-0" + String(index + 1) + ".jpg",
+        purpose: "thumbnail",
+        width: 160,
+        height: 90,
+        atSeconds,
+      })),
+    ];
+    const files = frames.map(({ name }) => ({ name, bytes: f.body.length, sha256: hash(f.body) }));
+    Object.assign(f.report, {
+      recipe: ARTWORK_RECIPE_VERSION,
+      processingKey: hash(f.original.sha256 + "\0" + ARTWORK_RECIPE_VERSION),
+      probe: { width: 640, height: 360, duration: 10 },
+      frames,
+      files,
+      manifestHash: hash(JSON.stringify(files)),
+    });
+    for (const file of files) {
+      await writeFile(join(f.directory, file.name), f.body, { flag: "wx" });
+    }
+    await f.saveReport();
+    const artwork = await retainDecoderCandidate(
+      id(9),
+      f.directory,
+      f.request,
+      f.acquisitions,
+      f.storage,
+      ARTWORK_RECIPE_VERSION,
+    );
+    assert.notEqual(artwork.value.prefix, hls.value.prefix);
+    const writes = f.writes();
+    const selector = {
+      manifestHash: String(f.report["manifestHash"]),
+      reportChecksum: artwork.value.reportChecksum,
+    };
+    assert.deepEqual(
+      await reuseDecoderCandidate(
+        id(9),
+        selector,
+        f.request,
+        f.acquisitions,
+        f.storage,
+        ARTWORK_RECIPE_VERSION,
+      ),
+      artwork.value,
+    );
+    assert.equal(f.writes(), writes);
+    assert.ok(f.objects.has(hls.value.prefix + "report.json"));
+    await assert.rejects(
+      reuseDecoderCandidate(id(9), selector, f.request, f.acquisitions, f.storage),
+    );
   });
 });
 test("cleans failed original handoff and never commits a report after partial upload", async () => {

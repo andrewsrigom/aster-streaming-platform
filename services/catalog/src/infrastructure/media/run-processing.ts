@@ -66,6 +66,7 @@ export async function runMediaProcessing(
         request,
         guarded,
         ports.storage,
+        attempt.recipeVersion,
       );
     } else {
       const ready = await prepareDecoder(
@@ -82,7 +83,13 @@ export async function runMediaProcessing(
         return ready;
       }
       ports.onReady();
-      const retained = await awaitDecoderCandidate(acquisitionId, request, guarded, ports.storage);
+      const retained = await awaitDecoderCandidate(
+        acquisitionId,
+        request,
+        guarded,
+        ports.storage,
+        attempt.recipeVersion,
+      );
       if (retained.status !== "completed") {
         await failed(
           retained.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",

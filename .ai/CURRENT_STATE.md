@@ -22,11 +22,13 @@ Durable processing now has one global slot, three checksum/recipe attempts, 30-m
 
 ## Not implemented
 
-Public playable VOD, trusted attestation, derived artwork, engagement/discovery and hosted release. The synthetic seed remains a technical fixture.
+Public playable VOD, trusted attestation/artwork approval, engagement/discovery and hosted release. The synthetic seed remains a technical fixture.
 
 ## Next outcome
 
-Continue P06-R01 with reviewed artwork, truthful modification attribution and the restricted attestation/public-origin/publication boundary. Reuse the private HLS candidate and original; no unchanged transcode, acquisition or Web benchmark. No hosted wait remains. Focus execution on remaining product requirements, not Windows/CPU diagnostics.
+The separate frame-jpeg-v1 recipe now retains two posters and three thumbnails (61598 bytes), visually inspected and durably replayed without another decoder/write. Attempt 7674df29-2a04-4055-bcc8-cef60449520f succeeds alongside the unchanged HLS attempt. Focused tests 48/48, real PostgreSQL and source gate 51/51 pass. [Artwork evidence](../evidence/phase-06/artwork.md).
+
+Continue P06-R01 with restricted technical attestation, artwork approval, truthful publication-specific attribution and public-origin/Catalog publication. Preserve immutable source approval history and both retained candidates. No hosted wait or CPU diagnostic is needed.
 
 ## Current risks
 

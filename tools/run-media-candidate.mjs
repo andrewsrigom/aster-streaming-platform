@@ -8,8 +8,13 @@ import { fileURLToPath, URL } from "node:url";
 
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL("../", import.meta.url));
-const [project, attemptId, reuse, manifestHash, reportChecksum] = process.argv.slice(2);
-assert.ok(process.argv.length === 4 || (process.argv.length === 7 && reuse === "--reuse"));
+const [project, attemptId, ...options] = process.argv.slice(2);
+const artwork = options[0] === "--artwork";
+if (artwork) {
+  options.shift();
+}
+const [reuse, manifestHash, reportChecksum] = options;
+assert.ok(options.length === 0 || (options.length === 3 && reuse === "--reuse"));
 if (reuse) {
   assert.match(manifestHash, /^[a-f0-9]{64}$/u);
   assert.match(reportChecksum, /^[a-f0-9]{64}$/u);
@@ -132,7 +137,9 @@ try {
     label + "=" + runId,
     "media-prepare",
     attemptId,
-    ...(reuse ? ["--reuse-decoder", manifestHash, reportChecksum] : ["--prepare-decoder"]),
+    ...(reuse
+      ? [artwork ? "--reuse-artwork" : "--reuse-decoder", manifestHash, reportChecksum]
+      : [artwork ? "--prepare-artwork" : "--prepare-decoder"]),
   ]);
   created.push(owner);
   process.stdout.write(
@@ -179,6 +186,7 @@ try {
       "--label",
       label + "=" + runId,
       "media-decoder",
+      ...(artwork ? ["--artwork"] : []),
     ]);
     created.push(decoder);
     const decoderInfo = await state(decoder);
