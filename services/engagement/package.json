@@ -31,6 +31,7 @@
     "@aster/postgres": "workspace:*",
     "@aster/runtime": "workspace:*",
     "@aster/telemetry": "workspace:*",
+    "dataloader": "2.2.3",
     "graphql": "16.14.2",
     "pg": "8.23.0"
   },

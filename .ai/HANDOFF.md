@@ -2,14 +2,15 @@
 
 ## Resume point
 
-P08-R07 / Phase 08 is IN_PROGRESS on local feat/p08-watchlist. P08-R06 is DONE: PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 pass; both review threads are resolved. The squash tree equals that reviewed tree. Full Phase 00–14 goal remains active.
+P08-R08 is IN_PROGRESS on feat/p08-engagement-fields. P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 local acceptance is complete; publish once and freeze WAITING_EXTERNAL before activating R09. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Watchlist local acceptance passes: 84 Engagement tests, nine composition tests, real PostgreSQL migration/replay/concurrency/256-entry limits and the complete federated Docker proof. The candidate gate passes 47/47 tasks (26 cached, 4m48.539s). Sources and raw evidence are linked in [watchlist checkpoint](../evidence/phase-08/watchlist.md). Browser reports/resume, R08 batching and R09 relay/deletion remain separate.
-2. Watchlist is committed and already rebased onto origin/main 0401ae3; do not repeat that rebase or restore any stash. Source checkpoint 238ae404b756d23c056848b6e67291d8ad57d936 preserves the original candidate tree; every executable source hash and composition against exact 0401ae3 pass. Use current HEAD for final publication metadata after memory-only closeout. History's exact main push 33191946442 passed. Publish feat/p08-watchlist, then require one initial/confirmation review, protected CI, squash merge and exact post-merge for watchlist.
-3. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups are recoverable. Runtime attempt one hit its five-minute build deadline; the one cache-assisted attempt passed and cleaned thirteen containers/eight trust volumes/two networks, retained runtime untouched. Do not repeat it for docs/type-only/identical-tree changes.
-4. After R07 is frozen WAITING_EXTERNAL and predecessor is DONE, activate R08 request-scoped Title/Profile batching; then R09 relay/deletion and R11 browser reports/resume. No CPU/WSL/media experiment or broad reset.
+1. R08 local acceptance passes: 98 Engagement tests, nine composition tests, real SQL, full isolated Docker and 67/67 candidate tasks. [Checkpoint](../evidence/phase-08/engagement-fields.md) and source hashes are authoritative. No repeat of unchanged heavy checks.
+2. R08 is committed and already rebased onto origin/main 9a7ab087034d69589a8388d62f5973cb9950b2da; do not repeat the rebase or restore any stash. Source checkpoint 35c1f8964831d5658f418533b8763569bd14b494 is tree-identical to the original 95f3725 candidate; every source hash and explicit schema baseline against 9a7ab08 pass. Use current HEAD after memory-only closeout. R07 exact main push 33195546036 is successful; publish R08 once. No R07 review or pipeline work remains.
+3. R08 needs its own initial/confirmation review, protected CI, squash and exact post-merge. Once frozen WAITING_EXTERNAL, activate R09 relay/deletion (also R10/R12), then R11 player reports/resume.
+4. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups remain recoverable.
+5. Docker attempt one stopped during build before assertions; one cache-assisted attempt passed, project 1cade285-e5b3-4ec1-aec5-6bcca92520be, and cleaned all thirteen containers/eight trust volumes/two networks. No CPU/WSL/media experiment or retained upgrade.
 
 ## Retained runtime
 

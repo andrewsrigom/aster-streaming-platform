@@ -1,6 +1,6 @@
 # Engagement progress and watchlist
 
-P08-R01–R07 and the atomic write portion of P08-R09 are implemented. The [write proof](../../evidence/phase-08/review-federated-runtime.txt) and [corrected read proof](../../evidence/phase-08/history-visibility.md) exercise real owners, PostgreSQL and Router. Watchlist focused tests and real SQL pass; its federated acceptance and protected release are tracked in the [watchlist checkpoint](../../evidence/phase-08/watchlist.md). Player reports/resume, general Title/Profile engagement extensions and event relay/consumers remain planned in Phase 08.
+P08-R01–R08 and the atomic write portion of P08-R09 are implemented. The [write proof](../../evidence/phase-08/review-federated-runtime.txt) and [corrected read proof](../../evidence/phase-08/history-visibility.md) exercise real owners, PostgreSQL and Router. Watchlist acceptance and protected release are tracked in the [watchlist checkpoint](../../evidence/phase-08/watchlist.md); request-scoped field acceptance is tracked [separately](../../evidence/phase-08/engagement-fields.md). Player reports/resume and event relay/consumers remain planned in Phase 08.
 
 ## Public contract
 
@@ -53,6 +53,14 @@ Membership has 256 reclaimable slots/profile, receipts 1024/profile for one hour
 
 Migration 0002 adds watchlist storage and deferred authority/membership/receipt/event invariants. Readiness requires both 0001 and 0002 with restricted grants. Rollback preserves retained data and restores compatible images; [0002 down](migrations/0002-watchlist.down.sql) refuses nonempty watchlist state. Do not drop data to satisfy readiness. Browser controls and deletion/event delivery remain separate Phase 08 items.
 
+## Federated engagement fields
+
+Title.progress(profileId) / inWatchlist(profileId) and Profile.progress(titleId) / inWatchlist(titleId) share one owned pair reader. Both fields are nullable. Missing progress is null; absent or currently hidden watchlist membership is false. Authorization/dependency failure returns null with a sanitized error instead of inventing empty state. The parent Profile or Title reference never authorizes a read.
+
+Each GraphQL request creates its own DataLoader: at most twenty canonical profile/title pairs, twenty representations per entity request and five distinct profiles, with at most two Identity checks in flight. One ordered SQL batch reads progress/membership under the owning account and deletion fence. Duplicate aliases and symmetric Title/Profile paths reuse the same pair. No process-global or cross-request cache exists; every cached disclosure rechecks freshness/cancellation.
+
+Only present membership triggers a separate request-scoped twenty-title Catalog visibility batch. Progress-only reads make no Catalog call; Catalog failure affects membership alone. A hidden title retains owned progress, which is history rather than playback permission. The existing 2.5-second application, one-second SQL and two-second owner deadlines remain. No new database schema, owner credential or retry policy. [ADR-0033](../../docs/adr/0033-request-scoped-engagement-fields.md).
+
 ## Runtime and recovery
 
 The normal full runtime profile builds Engagement and runs its finite initializer. To add personalization owners to an already running API checkpoint:
@@ -76,4 +84,4 @@ pnpm engagement:integration
 pnpm engagement:runtime
 ```
 
-The first command runs progress and watchlist real-SQL verifiers in separate disposable fixtures: atomicity, replay/conflict/concurrency, keyset pages/query plans, 256-entry capacity/reclaimed slots, privileges, deletion fences and empty-only rollback. The internal --watchlist selector accepts no target or connection override. The second builds a UUID-named disposable Docker project, tests current owner authorization, durable writes and federated reads/metadata/completion/retirement, reruns the initializer, stops optional owners and verifies anonymous Playback. It validates exact ownership before cleaning its own containers, trust volumes, networks and tmpfs database. No retained project, media download or CPU benchmark is involved. [Evidence and limitations](../../evidence/phase-08/README.md).
+The first command runs progress, watchlist and entity-field real-SQL verifiers in separate disposable fixtures: atomicity, replay/conflict/concurrency, keyset pages/query plans, capacity/reclaimed slots, privileges, deletion fences and a labelled sequential-versus-batched query count. Internal --watchlist and --fields selectors accept no target or connection override. The second builds a UUID-named disposable Docker project, tests current owner authorization, durable writes and federated reads/metadata/retirement, captures entity query plans through its explicit diagnostic overlay, reruns the initializer, stops optional owners and verifies anonymous Playback. Query-plan exposure remains disabled in the normal runtime. It validates exact ownership before cleaning its own containers, trust volumes, networks and tmpfs database. No retained project, media download or CPU benchmark is involved. [Evidence and limitations](../../evidence/phase-08/README.md).

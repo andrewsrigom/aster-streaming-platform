@@ -13,6 +13,7 @@ import {
 import { inspectEngagementOperation } from "../src/transport/graphql-operation.js";
 import type { ProgressInput, ProgressState } from "../src/domain/progress.js";
 import { watchlistFixture, watchlistInput } from "./watchlist-fixture.js";
+import { fieldsFixture } from "./engagement-fields-fixture.js";
 
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const input: ProgressInput = {
@@ -324,6 +325,7 @@ async function fixture(
   record: RecordProgress,
   queries?: EngagementSubgraphOptions["queries"],
   watchlist?: EngagementSubgraphOptions["watchlist"],
+  fields?: EngagementSubgraphOptions["fields"],
 ) {
   const key = randomBytes(32).toString("hex");
   const adapter = createExpressHttpAdapter({ bodyLimitBytes: 16384 });
@@ -333,6 +335,7 @@ async function fixture(
     recorder: { record },
     ...(queries ? { queries } : {}),
     ...(watchlist ? { watchlist } : {}),
+    ...(fields ? { fields } : {}),
   });
   adapter.mountGraphql(graph.middleware);
   server.listen(0, "127.0.0.1");
@@ -405,6 +408,82 @@ async function fixture(
     },
   };
 }
+
+test("HTTP entity fields use the request owner, batch SQL and keep Catalog failure nullable", async () => {
+  const fields = fieldsFixture();
+  fields.control.credential = "synthetic.viewer.signature";
+  const f = await fixture(
+    () => Promise.resolve({ status: "unavailable" }),
+    undefined,
+    undefined,
+    fields.queries,
+  );
+  const query = `query Fields($representations:[_Any!]!, $profileId:ID!) {
+    _entities(representations:$representations) { ... on Title {
+      progress(profileId:$profileId) { positionMs } inWatchlist(profileId:$profileId)
+    } }
+  }`;
+  const request = {
+    query,
+    variables: {
+      profileId: id(2),
+      representations: Array.from({ length: 20 }, (_, n) => ({
+        __typename: "Title",
+        id: id(n + 100),
+      })),
+    },
+  };
+  try {
+    const response = await f.send(request);
+    assert.equal(response.status, 200);
+    assert.equal(response.cache, "no-store");
+    assert.equal(response.cookie, undefined);
+    const result = JSON.parse(response.text) as {
+      errors?: unknown[];
+      data: { _entities: { progress: { positionMs: number }; inWatchlist: boolean }[] };
+    };
+    assert.equal(result.errors, undefined);
+    assert.equal(result.data._entities.length, 20);
+    assert.ok(
+      result.data._entities.every((row) => row.progress.positionMs === 1000 && row.inWatchlist),
+    );
+    assert.equal(fields.calls.sql.length, 1);
+    fields.control.catalogDown = true;
+    const partial = await f.send({
+      ...request,
+      variables: {
+        ...request.variables,
+        representations: request.variables.representations.slice(0, 1),
+      },
+    });
+    const payload = JSON.parse(partial.text) as {
+      errors?: { extensions: { code: string } }[];
+      data: { _entities: { progress: { positionMs: number }; inWatchlist: null }[] };
+    };
+    assert.equal(payload.data._entities[0]?.progress.positionMs, 1000);
+    assert.equal(payload.data._entities[0].inWatchlist, null);
+    assert.equal(payload.errors?.[0]?.extensions.code, "UNAVAILABLE");
+    assert.doesNotMatch(
+      partial.text,
+      /accountId|playbackSessionId|signature|credential|stacktrace/u,
+    );
+    assert.equal(
+      (
+        await f.send({
+          ...request,
+          variables: {
+            ...request.variables,
+            representations: [{ __typename: "Title", id: id(3), accountId: id(1) }],
+          },
+        })
+      ).status,
+      400,
+    );
+    assert.equal(fields.calls.sql.length, 2);
+  } finally {
+    await f.close();
+  }
+});
 
 test("HTTP progress exposes only committed result fields and rejects forged transport before dispatch", async () => {
   let calls = 0;

@@ -1,11 +1,15 @@
 import { buildSubgraphSchema } from "@apollo/subgraph";
-import { GraphQLError, parse } from "graphql";
+import { parse } from "graphql";
 import type { createProgressRecorder } from "../application/record-progress.js";
 import type { createProgressQueries } from "../application/read-progress.js";
-import type { ProgressState } from "../domain/progress.js";
+import { progressIdentifier, progressRecord, type ProgressState } from "../domain/progress.js";
 import type { ProgressListKind } from "../domain/progress-page.js";
 import type { createWatchlistWriter } from "../application/set-watchlist.js";
 import type { createWatchlistQueries } from "../application/read-watchlist.js";
+import type { createEngagementFieldQueries } from "../application/read-engagement-fields.js";
+import { createEngagementFieldLoaders } from "./engagement-field-loaders.js";
+import { EngagementGraphqlError } from "./engagement-error.js";
+export { EngagementGraphqlError } from "./engagement-error.js";
 
 const ENGAGEMENT_TYPE_DEFS = parse(`
   extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
@@ -23,7 +27,16 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
     positionMs: Int! durationMs: Int! status: ProgressStatus! occurredAt: Float! updatedAt: Float!
     title: Title
   }
-  type Title @key(fields: "id", resolvable: false) { id: ID! }
+  type Title @key(fields: "id") {
+    id: ID!
+    progress(profileId: ID!): Progress
+    inWatchlist(profileId: ID!): Boolean
+  }
+  type Profile @key(fields: "id") {
+    id: ID!
+    progress(titleId: ID!): Progress
+    inWatchlist(titleId: ID!): Boolean
+  }
   type ProgressEdge { cursor: String! node: Progress! }
   type ProgressPageInfo { endCursor: String hasNextPage: Boolean! }
   type ProgressConnection { edges: [ProgressEdge!]! pageInfo: ProgressPageInfo! }
@@ -56,11 +69,6 @@ export interface EngagementWatchlist {
   readonly writer: ReturnType<typeof createWatchlistWriter>;
   readonly queries: ReturnType<typeof createWatchlistQueries>;
 }
-export class EngagementGraphqlError extends GraphQLError {
-  constructor(code: string) {
-    super("Engagement operation rejected.", { extensions: { code } });
-  }
-}
 export interface EngagementGraphqlContext {
   readonly signal: AbortSignal;
   readonly credential: string | undefined;
@@ -69,6 +77,7 @@ export interface EngagementGraphqlContext {
   readonly recorder: ReturnType<typeof createProgressRecorder>;
   readonly queries?: ReturnType<typeof createProgressQueries>;
   readonly watchlist?: EngagementWatchlist;
+  readonly fields?: ReturnType<typeof createEngagementFieldLoaders>;
   readonly outcome: { code: string };
 }
 const OWNER = Symbol("engagement-request-owner");
@@ -95,6 +104,7 @@ export function createEngagementGraphqlContext(
   traceparent?: string,
   queries?: ReturnType<typeof createProgressQueries>,
   watchlist?: EngagementWatchlist,
+  fields?: ReturnType<typeof createEngagementFieldQueries>,
 ): EngagementGraphqlContext {
   const context: EngagementGraphqlContext = {
     recorder,
@@ -104,6 +114,16 @@ export function createEngagementGraphqlContext(
     ...(traceparent ? { traceparent } : {}),
     ...(queries ? { queries } : {}),
     ...(watchlist ? { watchlist } : {}),
+    ...(fields
+      ? {
+          fields: createEngagementFieldLoaders(fields, {
+            signal,
+            credential,
+            correlationId,
+            ...(traceparent ? { traceparent } : {}),
+          }),
+        }
+      : {}),
     outcome: { code: "COMPLETED" },
   };
   contexts.add(context);
@@ -162,10 +182,46 @@ function pageResolver(kind: ProgressListKind) {
     };
   };
 }
+function entityResolvers(kind: "Title" | "Profile") {
+  const reference = (value: unknown, raw: unknown) => {
+    owned(raw);
+    const key = progressRecord(value, ["__typename", "id"]);
+    if (!key || key["__typename"] !== kind || !progressIdentifier(key["id"])) {
+      throw new EngagementGraphqlError("INVALID_INPUT");
+    }
+    return { __typename: kind, id: key["id"] };
+  };
+  const resolve =
+    (name: "progress" | "inWatchlist") =>
+    async (parent: unknown, args: { profileId?: string; titleId?: string }, raw: unknown) => {
+      const context = owned(raw);
+      if (!context.fields) {
+        throw new EngagementGraphqlError("UNAVAILABLE");
+      }
+      const key = reference(parent, raw);
+      const pair =
+        kind === "Title"
+          ? { profileId: args.profileId ?? "", titleId: key.id }
+          : { profileId: key.id, titleId: args.titleId ?? "" };
+      if (name === "inWatchlist") {
+        return context.fields.inWatchlist(pair);
+      }
+      const value = await context.fields.progress(pair);
+      return value ? publicProgress(value) : null;
+    };
+  return {
+    __resolveReference: reference,
+    progress: resolve("progress"),
+    inWatchlist: resolve("inWatchlist"),
+  };
+}
+
 export function createEngagementSchema() {
   return buildSubgraphSchema({
     typeDefs: ENGAGEMENT_TYPE_DEFS,
     resolvers: {
+      Title: entityResolvers("Title"),
+      Profile: entityResolvers("Profile"),
       Query: {
         progressHistory: pageResolver("history"),
         continueWatching: pageResolver("continue"),

@@ -2,7 +2,9 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
-[ADR-0032](../docs/adr/0032-owned-watchlist-visibility.md) defines durable profile watchlist versions/membership, one-hour idempotency, atomic receipt/event and reclaimable 256-entry slots. Reuse ADR-0031's implemented Catalog visibility contract. Watchlist acceptance remains in progress.
+[ADR-0033](../docs/adr/0033-request-scoped-engagement-fields.md) defines nullable Title/Profile progress and membership, request-only DataLoader 2.2.3 caches, twenty pairs/five profiles, current ownership and lazy Catalog visibility. One owned SQL batch preserves order/missing data; Catalog failure does not gate progress. No migration or new trust transport.
+
+[ADR-0032](../docs/adr/0032-owned-watchlist-visibility.md) defines durable profile watchlist versions/membership, one-hour idempotency, atomic receipt/event and reclaimable 256-entry slots. Reuse ADR-0031's implemented Catalog visibility contract. Watchlist protected and exact post-merge acceptance pass.
 
 [ADR-0031](../docs/adr/0031-current-catalog-visibility.md) corrects ENG-R04 before history release: current Catalog visibility filters continue-watching before pagination, with a purpose-separated twenty-ID private batch, two-second snapshot, independent optional admission and at most thirteen serial calls. History stays durable/nullable; no migration, cache or media change.
 

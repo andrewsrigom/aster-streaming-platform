@@ -26,15 +26,22 @@ type Title @key(fields: "id") {
 }
 ```
 
-Planned Engagement contribution:
+Implemented Engagement contribution (P08-R08 local candidate; protected acceptance remains separate):
 
 ```graphql
-extend type Title @key(fields: "id") {
-  id: ID! @external
-  progress(profileId: ID!): PlaybackProgress
-  inWatchlist(profileId: ID!): Boolean!
+type Title @key(fields: "id") {
+  id: ID!
+  progress(profileId: ID!): Progress
+  inWatchlist(profileId: ID!): Boolean
+}
+type Profile @key(fields: "id") {
+  id: ID!
+  progress(titleId: ID!): Progress
+  inWatchlist(titleId: ID!): Boolean
 }
 ```
+
+Both contributions use one Engagement-owned pair read. Keys are references, never authority; Identity validates the requested profile. Request-local DataLoader batches and memoizes at most twenty pairs and five profiles, preserving order and missing values. Membership lazily checks current Catalog visibility, while progress remains readable without Catalog. Optional failure is null with a sanitized error, not false; hidden/absent membership is false. Cached disclosure still checks authorization/visibility expiry and cancellation. [ADR-0033](../adr/0033-request-scoped-engagement-fields.md) and [evidence](../../evidence/phase-08/engagement-fields.md).
 
 Planned Playback contribution; playback creation remains an explicit mutation:
 

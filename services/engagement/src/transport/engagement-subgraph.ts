@@ -21,6 +21,7 @@ import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
 import type { createProgressRecorder } from "../application/record-progress.js";
 import type { createProgressQueries } from "../application/read-progress.js";
+import type { createEngagementFieldQueries } from "../application/read-engagement-fields.js";
 import {
   ENGAGEMENT_GRAPHQL_LIMITS,
   inspectEngagementOperation,
@@ -65,6 +66,7 @@ export interface EngagementSubgraphOptions {
   readonly recorder: ReturnType<typeof createProgressRecorder>;
   readonly queries?: ReturnType<typeof createProgressQueries>;
   readonly watchlist?: EngagementWatchlist;
+  readonly fields?: ReturnType<typeof createEngagementFieldQueries>;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: EngagementOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
@@ -256,6 +258,7 @@ export async function createEngagementSubgraph(options: EngagementSubgraphOption
         : undefined,
       options.queries,
       options.watchlist,
+      options.fields,
     );
     contexts.set(request, context);
     const timer = setTimeout(() => {

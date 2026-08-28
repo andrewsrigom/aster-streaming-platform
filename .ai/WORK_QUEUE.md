@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R06 is DONE: PR 27 is merged as 0401ae3e850add27ad73fe7be12a1672d5a73414 with protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 successful. P08-R07 is the sole IN_PROGRESS item, already rebased onto that main; local acceptance and the 47-task gate pass. Publish watchlist, then activate R08 only after R07 is frozen WAITING_EXTERNAL. All recovery stashes are restored. Preserve retained demo/media.
+P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 is the sole IN_PROGRESS item, locally acceptance-tested on feat/p08-engagement-fields. Publish it once, then freeze it WAITING_EXTERNAL before starting R09. Preserve retained demo/media and all already-restored recovery stashes.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -48,8 +48,8 @@ P08-R06 is DONE: PR 27 is merged as 0401ae3e850add27ad73fe7be12a1672d5a73414 wit
 | 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | DONE |
 | 41 | Record durable owner-authorized monotonic playback progress | P08-R01 | DONE |
 | 42 | Read bounded owned history and continue-watching pages | P08-R06 | DONE |
-| 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | IN_PROGRESS |
-| 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | READY |
+| 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
+| 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | IN_PROGRESS |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | READY |
 | 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | READY |
 
@@ -59,7 +59,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 The next planned slices stay in services/engagement, existing owner subgraphs and apps/web. Watchlist needs durable membership/replay and current Catalog filtering before pagination; no new service or Redis authority. R08 owns request-scoped batching, R09 also covers R10/R12 event/deletion acceptance, and R11 owns browser save/resume. Activate them in order, not concurrently with the current dependent candidate.
 
-Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected/post-merge gates pass. P08-R06 has [protected closeout evidence](../evidence/phase-08/history-visibility.md). Watchlist is active under ADR-0032, reusing ADR-0031. Browser reports and relay follow. No repeated CPU or film experiment.
+Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected/post-merge gates pass. P08-R06 has [protected closeout evidence](../evidence/phase-08/history-visibility.md). Watchlist has [protected closeout evidence](../evidence/phase-08/watchlist.md) under ADR-0032. Entity fields, relay and browser reports follow. No repeated CPU or film experiment.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

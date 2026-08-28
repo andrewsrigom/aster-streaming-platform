@@ -26,6 +26,9 @@ const composeArgs = [
   "infra/compose/compose.yml",
   "--file",
   "infra/compose/engagement-proof.yml",
+  // Query plans are exposed only in this disposable, loopback-only proof.
+  "--file",
+  "infra/compose/router-diagnostics.yml",
   "--profile",
   "runtime",
 ];
@@ -178,6 +181,26 @@ try {
     );
   }
   emit("engagement_runtime_logs", { ownerCorrelation: true, credentialsExcluded: true });
+  const fieldWorker = await readFile(
+    new URL("../services/engagement/dist/test/integration/federated-fields.js", import.meta.url),
+    "utf8",
+  );
+  assert.ok(Buffer.byteLength(fieldWorker) < 32768);
+  process.stdout.write(
+    (await docker(
+      [
+        "exec",
+        "--env",
+        "ASTER_FIXTURE_ID=" + project,
+        engagement.Id,
+        "node",
+        "--input-type=module",
+        "--eval",
+        fieldWorker,
+      ],
+      45000,
+    )) + "\n",
+  );
   await compose(
     [
       "up",

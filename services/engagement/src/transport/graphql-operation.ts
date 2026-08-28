@@ -6,7 +6,7 @@ import {
   type FragmentDefinitionNode,
   type SelectionSetNode,
 } from "graphql";
-import { normalizeProgressInput } from "../domain/progress.js";
+import { normalizeProgressInput, progressIdentifier, progressRecord } from "../domain/progress.js";
 import { normalizeProgressPageInput } from "../domain/progress-page.js";
 import { normalizeWatchlistInput, normalizeWatchlistPageInput } from "../domain/watchlist.js";
 
@@ -43,9 +43,12 @@ type Scope =
   | "WatchlistConnection"
   | "WatchlistEdge"
   | "WatchlistEntry"
-  | "Title";
+  | "Title"
+  | "Profile"
+  | "Entities";
 const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = {
   Query: {
+    _entities: "Entities",
     _service: "Service",
     progressHistory: "PagePayload",
     continueWatching: "PagePayload",
@@ -79,7 +82,9 @@ const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = 
     updatedAt: null,
     title: "Title",
   },
-  Title: { id: null },
+  Title: { id: null, progress: "Progress", inWatchlist: null },
+  Profile: { id: null, progress: "Progress", inWatchlist: null },
+  Entities: {},
   PagePayload: { code: null, correlationId: null, connection: "Connection" },
   Connection: { edges: "Edge", pageInfo: "PageInfo" },
   Edge: { cursor: null, node: "Progress" },
@@ -96,6 +101,7 @@ function record(value: unknown): value is Record<string, unknown> {
 }
 function scalar(value: unknown): boolean {
   return (
+    representations(value) ||
     normalizeProgressInput(value) !== undefined ||
     normalizeWatchlistInput(value) !== undefined ||
     value === null ||
@@ -103,6 +109,54 @@ function scalar(value: unknown): boolean {
     (typeof value === "string" && value.length <= 128) ||
     (typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 20)
   );
+}
+
+function representations(
+  value: unknown,
+): value is readonly Readonly<{ __typename: "Title" | "Profile"; id: string }>[] {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.length <= 20 &&
+    value.every((raw: unknown) => {
+      const row = progressRecord(raw, ["__typename", "id"]);
+      return (
+        row &&
+        ["Title", "Profile"].includes(String(row["__typename"])) &&
+        progressIdentifier(row["id"])
+      );
+    })
+  );
+}
+
+const TYPE_NAMES: Readonly<Record<Scope, string>> = {
+  Query: "Query",
+  Mutation: "Mutation",
+  Payload: "ProgressPayload",
+  Progress: "Progress",
+  Service: "_Service",
+  PagePayload: "ProgressPagePayload",
+  Connection: "ProgressConnection",
+  Edge: "ProgressEdge",
+  PageInfo: "ProgressPageInfo",
+  WatchlistPayload: "WatchlistPayload",
+  WatchlistChange: "WatchlistChange",
+  WatchlistPage: "WatchlistPagePayload",
+  WatchlistConnection: "WatchlistConnection",
+  WatchlistEdge: "WatchlistEdge",
+  WatchlistEntry: "WatchlistEntry",
+  Title: "Title",
+  Profile: "Profile",
+  Entities: "_Entity",
+};
+function fragmentScope(scope: Scope, condition: string | undefined): Scope {
+  if (condition === undefined || TYPE_NAMES[scope] === condition) {
+    return scope;
+  }
+  if (scope === "Entities" && (condition === "Title" || condition === "Profile")) {
+    return condition;
+  }
+  throw new Rejected();
 }
 
 export function inspectEngagementOperation(body: unknown): Decision {
@@ -197,7 +251,7 @@ export function inspectEngagementOperation(body: unknown): Decision {
           }
           walk(
             fragment.selectionSet,
-            scope,
+            fragmentScope(scope, fragment.typeCondition?.name.value),
             depth,
             item.kind === Kind.FRAGMENT_SPREAD
               ? new Set([...ancestors, item.name.value])
@@ -210,6 +264,7 @@ export function inspectEngagementOperation(body: unknown): Decision {
         aliases += item.alias ? 1 : 0;
         cost += multiplicity;
         const name = item.name.value;
+        let childrenMultiplicity = multiplicity;
         const child = name === "__typename" ? null : FIELDS[scope][name];
         if (child === undefined) {
           throw new Rejected();
@@ -231,6 +286,20 @@ export function inspectEngagementOperation(body: unknown): Decision {
             ) {
               throw new Rejected();
             }
+          } else if (name === "_entities") {
+            const args = item.arguments ?? [];
+            const values: unknown = args[0]
+              ? valueFromASTUntyped(args[0].value, variables)
+              : undefined;
+            if (
+              args.length !== 1 ||
+              args[0]?.name.value !== "representations" ||
+              !representations(values)
+            ) {
+              throw new Rejected();
+            }
+            childrenMultiplicity = values.length;
+            cost += 32;
           } else if (name !== "_service") {
             const args = item.arguments ?? [];
             if (new Set(args.map((arg) => arg.name.value)).size !== args.length) {
@@ -260,6 +329,20 @@ export function inspectEngagementOperation(body: unknown): Decision {
           }
         }
         if (
+          (scope === "Title" || scope === "Profile") &&
+          ["progress", "inWatchlist"].includes(name)
+        ) {
+          const args = item.arguments ?? [];
+          if (
+            args.length !== 1 ||
+            args[0]?.name.value !== (scope === "Title" ? "profileId" : "titleId") ||
+            !progressIdentifier(valueFromASTUntyped(args[0].value, variables))
+          ) {
+            throw new Rejected();
+          }
+          cost += 2 * multiplicity;
+        }
+        if (
           fields > ENGAGEMENT_GRAPHQL_LIMITS.fields ||
           aliases > ENGAGEMENT_GRAPHQL_LIMITS.aliases ||
           cost > ENGAGEMENT_GRAPHQL_LIMITS.cost
@@ -277,7 +360,7 @@ export function inspectEngagementOperation(body: unknown): Decision {
             ancestors,
             (scope === "Connection" || scope === "WatchlistConnection") && name === "edges"
               ? multiplicity * pageSize
-              : multiplicity,
+              : childrenMultiplicity,
           );
         }
       }

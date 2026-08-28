@@ -193,13 +193,15 @@ type PlaybackSessionPayload @join__type(graph: PLAYBACK) {
   session: PlaybackSession
 }
 
-type Profile @join__type(graph: IDENTITY, key: "id") {
+type Profile @join__type(graph: ENGAGEMENT, key: "id") @join__type(graph: IDENTITY, key: "id") {
   id: ID!
-  displayName: String!
-  locale: String!
-  maturity: ProfileMaturity!
-  avatarRef: String
-  version: Int!
+  progress(titleId: ID!): Progress @join__field(graph: ENGAGEMENT)
+  inWatchlist(titleId: ID!): Boolean @join__field(graph: ENGAGEMENT)
+  displayName: String! @join__field(graph: IDENTITY)
+  locale: String! @join__field(graph: IDENTITY)
+  maturity: ProfileMaturity! @join__field(graph: IDENTITY)
+  avatarRef: String @join__field(graph: IDENTITY)
+  version: Int! @join__field(graph: IDENTITY)
 }
 
 enum ProfileMaturity @join__type(graph: IDENTITY) {
@@ -328,7 +330,7 @@ input SetWatchlistInput @join__type(graph: ENGAGEMENT) {
   present: Boolean!
 }
 
-type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: ENGAGEMENT, key: "id", resolvable: false) {
+type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: ENGAGEMENT, key: "id") {
   id: ID!
   localized(locale: String! = "en"): LocalizedTitle! @join__field(graph: CATALOG)
   releaseYear: Int @join__field(graph: CATALOG)
@@ -340,6 +342,8 @@ type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: ENGAGEMENT,
   credits: [CatalogCredit!]! @join__field(graph: CATALOG)
   artwork: CatalogArtwork @join__field(graph: CATALOG)
   attribution: CatalogAttribution! @join__field(graph: CATALOG)
+  progress(profileId: ID!): Progress @join__field(graph: ENGAGEMENT)
+  inWatchlist(profileId: ID!): Boolean @join__field(graph: ENGAGEMENT)
 }
 
 input UpdateProfileInput @join__type(graph: IDENTITY) {

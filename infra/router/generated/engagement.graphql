@@ -45,8 +45,16 @@ type Progress {
   title: Title
 }
 
-type Title @key(fields: "id", resolvable: false) {
+type Title @key(fields: "id") {
   id: ID!
+  progress(profileId: ID!): Progress
+  inWatchlist(profileId: ID!): Boolean
+}
+
+type Profile @key(fields: "id") {
+  id: ID!
+  progress(titleId: ID!): Progress
+  inWatchlist(titleId: ID!): Boolean
 }
 
 type ProgressEdge {

@@ -10,7 +10,14 @@ const compose = await readFile(new URL("../infra/compose/compose.yml", import.me
 
 test("Engagement SQL proof refuses extra selectors or targets before accessing Docker", () => {
   const script = fileURLToPath(new URL("./run-engagement-integration.mjs", import.meta.url));
-  for (const args of [["--target", "aster"], ["--watchlist", "aster"], ["--unknown"], ["5432"]]) {
+  for (const args of [
+    ["--target", "aster"],
+    ["--watchlist", "aster"],
+    ["--fields", "aster"],
+    ["--fields", "--watchlist"],
+    ["--unknown"],
+    ["5432"],
+  ]) {
     const result = spawnSync(process.execPath, [script, ...args], {
       env: { PATH: "" },
       encoding: "utf8",
@@ -19,7 +26,10 @@ test("Engagement SQL proof refuses extra selectors or targets before accessing D
     });
     assert.equal(result.error, undefined);
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /only an optional --watchlist selector, never a target/u);
+    assert.match(
+      result.stderr,
+      /only an optional --watchlist or --fields selector, never a target/u,
+    );
   }
 });
 

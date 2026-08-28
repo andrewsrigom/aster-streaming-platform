@@ -1,69 +1,69 @@
-# Work Item: Idempotent owned watchlist
+# Work Item: Request-scoped federated engagement fields
 
 - Status: IN_PROGRESS
 - Owner: Engagement
 - Phase: 08
-- Requirement IDs: P08-R07; supports ENG-R05, P08-R09, P08-R12
+- Requirement IDs: P08-R08; supports GQL-R03, ENG-R04, ENG-R05
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Authenticated profiles can set watchlist membership idempotently and read bounded pages hiding currently unavailable Catalog titles before pagination.
+Federated Title and Profile expose optional owned progress and current visible watchlist membership, batching repeated pairs without sharing state across requests.
 
 ## Current behavior
 
-P08-R06 is DONE: PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 pass; both review threads are resolved. The squash tree equals the reviewed tree. Watchlist is already rebased onto that main and may now publish from feat/p08-watchlist. Latest stash 416c574be8e3d14154943308efc1ed1f017683d3 and all older stashes were restored once; never reapply them.
+P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 local acceptance is complete: 98 Engagement tests, nine composition tests, real SQL and full federated Docker proof, plus 67/67 candidate tasks. This sole dependent uses feat/p08-engagement-fields and is ready for protected publication. Preserve all stashes/data.
 
 ## Proposed behavior
 
-Follow [ADR-0032](../docs/adr/0032-owned-watchlist-visibility.md): strict set-membership commands, profile-scoped replay/conflict, reclaimable finite membership and filtered live keyset pages. Reuse the implemented [ADR-0031](../docs/adr/0031-current-catalog-visibility.md) Catalog port, credential, operation, snapshot and admission. UI, general entity batching and relay/consumers remain later items.
+[ADR-0033](../docs/adr/0033-request-scoped-engagement-fields.md): nullable Title.progress(profileId)/inWatchlist(profileId) and Profile.progress(titleId)/inWatchlist(titleId). Request-owned DataLoader 2.2.3, already pinned in Identity/Catalog, batches at most twenty canonical profile/title pairs into one owned SQL read. A separate lazy request-owned Catalog batch checks only present memberships, so progress-only reads do not depend on Catalog.
 
 ## Boundaries
 
-Engagement owns PostgreSQL membership, receipts and events. Identity owns session/profile authority; Catalog owns visibility/metadata. No new dependency/service/cache, Playback authority reuse, foreign SQL or recursive Router calls. Affected paths: services/engagement domain/application/infrastructure/transport/tests/migrations and compatible Router artifacts/known operations.
+Engagement owns progress/membership PostgreSQL reads. Identity alone supplies account/profile authority; Catalog owns current visibility. Domain/application remain framework-free. Reuse existing purpose-separated owner clients and SQL adapter; no new service, credential, migration, Redis authority, cross-owner SQL or media work. Affected paths: Engagement application/infrastructure/transport/tests, package lock and compatible Router artifacts/known operations.
 
 ## Invariants
 
-Fresh ownership before reads/writes/replays. Same key/payload returns its original result after later opposite commands; changed title/action conflicts. Replay and removal do not depend on Catalog. Profile versions survive removals; slots are reclaimed. Membership/head/receipt/event commit atomically with the existing deletion fence. Hidden entries never affect page size/hasNextPage/cursors.
+Exact entity representations contain only typename/id; neither representations nor browser account data authorize access. Cache at most twenty pairs and five profiles per request, batch size twenty, Identity concurrency two. Return results in input order, distinguish missing from unavailable, recheck authority/visibility freshness and cancellation on cache hits and before disclosure. Current retirement hides membership, not retained progress. No cross-request cache.
 
 ## Failure behavior
 
-Malformed input fails before I/O. Identity/Catalog failures are unavailable, not empty success. One 2.5-second budget, one-second SQL and two-second owner ceilings; cancellation, no network within transactions or automatic retries. Capacity returns backpressure; unknown COMMIT is indeterminate. Optional watchlist failure must not block playback.
+Invalid/oversized inputs fail before I/O. Foreign/deleted/revoked profiles fail only their optional fields. Owner/SQL failures produce nullable errors, not false/empty success. Catalog failure affects membership only. One 2.5-second request budget, existing owner two-second and SQL one-second ceilings, no retries, queues or production rate exemptions. Keep sanitized correlated outcomes.
 
 ## Data and contracts
 
-Additive migration 0002: one head/profile, 256 active entries and 1024 one-hour receipts/profile; prune at most 64 expired receipts and share existing 1024 pending outbox slots. Deferred authority/receipt/event checks. Profile-bound live cursor, first 1–20, at most 256 candidates/thirteen serial Catalog batches before first-plus-one. Add setWatchlist/watchlist GraphQL and known operations; nullable Catalog Title metadata. No backfill; down migration refuses retained state. Deletion consumer remains P08-R12.
+Additive nullable fields and resolvable Title/Profile references; existing mutation/page shapes unchanged. Strict at-most-twenty representations, fragment type conditions and multiplied field cost under existing global bounds. One bounded parameterized SELECT joins only Engagement guard/progress/watchlist rows; read-only rollback. No state write, event or retention change.
 
 ## Security and privacy
 
-Exact UUID/boolean/cursor inputs; account from Identity only. Reuse purpose-separated local credentials; no browser credential to Catalog or events. Validate response identity/order/bounds/expiry. Structured outcome/correlation telemetry, no secrets or membership labels.
+Fresh credential-bound Identity checks; preserve deletion fences and owner-account joins. Bound keys, profiles, collections, dependencies and recursive selections. No account/session/media data in GraphQL, logs or cache labels. Per-request authorization and Catalog snapshots are never global.
 
 ## Implementation steps
 
-1. Restore preserved domain/application/SQL work and adapt its Catalog port to ADR-0031.
-2. Prove real SQL replay/conflict/concurrency/slots/atomicity/privileges/deletion/migration.
-3. Wire GraphQL/runtime, compatible composition and focused negative tests.
-4. Run affected acceptance/evidence; publish after history, then protected release.
+1. Implement owned batch reader and SQL adapter.
+2. Wire bounded request DataLoaders, resolvable entities and preflight.
+3. Add compatible known operations/composition and boundary tests.
+4. Measure real SQL batching and prove actual federated fields; publish only after R07 closeout.
 
 ## Tests
 
-Replay/opposite commands, conflicts, filtered gaps, concurrency, capacity/reclaimed slots, atomic receipt/event, roles, deletion, cancellation and migration recovery.
+Query counts/order/nulls/dedup, independent accounts/requests, five-profile/20-key bounds, fresh/expired/deleted/foreign authority, visibility expiry/cancellation, malformed representations/fragments/cost, real SQL guard joins and composed query plans. Compare a named synthetic sequential baseline with batching, not a claimed prior production defect. Browser resume belongs to R11.
 
 ## Evidence
 
-Iteration gate: focused node:test, strict affected types and ESLint. Candidate gate: affected workspace check and compatible composition. Acceptance: real PostgreSQL and isolated federated add/read/remove/retirement/authorization/failure checks. Raw artifacts under evidence/phase-08. Repeat heavy checks only for relevant query/migration/trust/admission/runtime/packaging changes; reuse unchanged media/browser/CPU evidence. One initial and one confirmation review; only requirement/security/data/availability/public-contract blockers extend it. Browser is P08-R11.
+Iteration gate: focused node:test, strict affected build and changed-file lint. Candidate gate: affected workspace quality and schema compatibility. Acceptance: real SQL query-count/plan and isolated real Router-owner flow. Store sources, commands, environment and raw outputs under evidence/phase-08. Repeat heavy checks only for changes to measured SQL/trust/admission/runtime behavior. Unchanged watchlist/media/browser/CPU evidence is supporting, not rerun. One initial and one confirmation review; only requirement/security/data/availability/public-contract blockers extend it.
 
 ## Rollback or recovery
 
-Stop additive watchlist runtime; retain schema/data and compatible prior images/artifacts. Empty-state-only down migration, no retained deletion. Preserve recovery stashes/backups and predecessor-first publication.
+Restore prior compatible Engagement/Router images/artifacts; retain all data. No migration or destructive cleanup. Keep R07's exact candidate and existing recovery stashes untouched. Rebase this unpublished dependent if predecessor changes.
 
 ## Documentation updates
 
-Record API, retention, degraded mode, evidence and exact head at candidate checkpoint. Keep relay/player planned. Current strict build, 84 tests, compatible known operations, real SQL and full federated watchlist proof pass. Candidate gate: 47/47. History's exact main push passes; protected watchlist publication/review remain.
+Update the GraphQL contract, Engagement README, evidence and memory at coherent checkpoints. Relay/deletion and browser integration remain planned.
 
 ## Completion checklist
 
-- [x] Requirements and focused/real boundary tests pass
-- [x] Evidence, documentation and memory current
-- [ ] Predecessor complete; protected review/CI/merge and exact post-merge pass
+- [x] Requirements and focused/real tests pass
+- [x] Evidence, contracts and memory current
+- [ ] Predecessor complete; protected CI/review/merge and exact post-merge pass

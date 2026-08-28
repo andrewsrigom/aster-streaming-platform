@@ -20,6 +20,8 @@ import { createProgressRecorder } from "./application/record-progress.js";
 import { createProgressQueries } from "./application/read-progress.js";
 import { createWatchlistQueries } from "./application/read-watchlist.js";
 import { createWatchlistWriter } from "./application/set-watchlist.js";
+import { createEngagementFieldQueries } from "./application/read-engagement-fields.js";
+import { createPostgresEngagementFields } from "./infrastructure/postgres-engagement-fields.js";
 import { createPostgresWatchlist } from "./infrastructure/postgres-watchlist.js";
 import { createPostgresProgressRead } from "./infrastructure/postgres-progress-read.js";
 import type { ProgressPorts, ProgressCatalog } from "./application/progress-ports.js";
@@ -90,6 +92,12 @@ export async function createEngagementService(
     };
     graph = await createEngagementSubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("engagement")),
+      fields: createEngagementFieldQueries({
+        identity: owners.identity,
+        catalog: owners.catalog,
+        store: createPostgresEngagementFields(database),
+        now: watchlistPorts.now,
+      }),
       watchlist: {
         writer: createWatchlistWriter(watchlistPorts),
         queries: createWatchlistQueries(watchlistPorts),

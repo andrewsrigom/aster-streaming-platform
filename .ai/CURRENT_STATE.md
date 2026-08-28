@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R07 on local feat/p08-watchlist. P08-R06 is DONE: PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 pass; both review threads are resolved. The squash tree equals that reviewed tree. Watchlist is already rebased and may publish. Phases 00–07 remain released locally; P08-R01 is DONE. Full Phase 00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R08 on local feat/p08-engagement-fields. P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 local acceptance is complete and ready for protected publication. Full Phase 00–14 goal stays active.
 
 ## Verified
 
@@ -22,13 +22,13 @@ P08-R01 now includes current private Identity/profile and Playback/session reads
 
 ## Not implemented
 
-Player reports/resume, general batched entity extensions, relay/consumers, Discovery and hosted release remain planned. Watchlist backend passes local acceptance; protected publication remains. Retained demo has not been upgraded to Phase 08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Player reports/resume, relay/consumers, Discovery and hosted release remain planned. Watchlist backend has completed protected release. Batched entity fields pass focused, real SQL, full federated Docker and candidate gates; protected publication remains. Retained demo has not been upgraded to Phase 08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-P08-R07 remains the active requirement.
+P08-R08 is the active requirement under ADR-0033.
 
-Watchlist local acceptance passes: 84 Engagement tests, nine composition tests, real PostgreSQL migration/replay/concurrency/256-entry limits and the complete federated Docker proof. The candidate gate passes 47/47 tasks (26 cached, 4m48.539s). Sources and raw evidence are linked in [watchlist checkpoint](../evidence/phase-08/watchlist.md). Browser reports/resume, R08 batching and R09 relay/deletion remain separate. Next: publish the already-rebased candidate, then activate R08 after freezing R07 WAITING_EXTERNAL. No host/CPU/media repeat.
+[Entity fields](../evidence/phase-08/engagement-fields.md) pass 98 Engagement tests, nine composition tests, strict build/lint, real SQL, full federated Docker and 67/67 candidate tasks (39 cached, 4m40.032s). Twenty pairs use one SELECT instead of the labelled baseline's twenty; zero read writes. Docker proves both query plans, missing/hidden state, ownership/revocation and public playback continuity. Exact fixture cleanup leaves zero resources; retained runtime unchanged. Publish R08 once, then freeze it WAITING_EXTERNAL and proceed to R09 relay/deletion. No host/CPU/media repeat.
 
 ## Runtime and recovery
 
