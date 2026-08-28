@@ -24,7 +24,7 @@ const key = {
   kind: "history" as const,
   input: { profileId: id(2), first: 20, after: null },
 };
-function fixture(answer: AsterPostgresRows = { rowCount: 1, rows: [{ state: row }] }) {
+function fixture(answer: AsterPostgresRows = { rowCount: 1, rows: [{ states: [row] }] }) {
   const queries: AsterPostgresQuery[] = [];
   const actions: string[] = [];
   const database: Pick<AsterPostgresAdapter, "transaction"> = {
@@ -76,20 +76,47 @@ test("continue query uses partial-index predicate and tuple cursor, without offs
 
 test("empty, foreign and inconsistent SQL results are distinguished", async () => {
   assert.deepEqual(
-    await fixture({ rowCount: 0, rows: [] }).store.page(key, new AbortController().signal),
+    await fixture({ rowCount: 1, rows: [{ states: [] }] }).store.page(
+      key,
+      new AbortController().signal,
+    ),
     { status: "completed", value: [] },
   );
   for (const answer of [
-    { rowCount: 2, rows: [{ state: row }] },
-    { rowCount: 1, rows: [{ state: { ...row, accountId: id(9) } }] },
-    { rowCount: 1, rows: [{ state: { ...row, updatedAt: "100" } }] },
-    { rowCount: 22, rows: Array.from({ length: 22 }, () => ({ state: row })) },
+    { rowCount: 0, rows: [] },
+    { rowCount: 2, rows: [{ states: [row] }] },
+    { rowCount: 1, rows: [{ states: null }] },
+    { rowCount: 1, rows: [{ states: [{ ...row, accountId: id(9) }] }] },
+    { rowCount: 1, rows: [{ states: [{ ...row, updatedAt: "100" }] }] },
+    { rowCount: 1, rows: [{ states: Array.from({ length: 22 }, () => row) }] },
   ]) {
     assert.equal(
       (await fixture(answer).store.page(key, new AbortController().signal)).status,
       "unavailable",
     );
   }
+});
+
+test("continue scan carries up to 256 validated entries in one adapter row without widening shared limits", async () => {
+  const states = Array.from({ length: 256 }, (_, n) => ({
+    ...row,
+    id: id(1000 - n),
+    titleId: id(2000 - n),
+  }));
+  const f = fixture({ rowCount: 1, rows: [{ states }] });
+  assert.deepEqual(await f.store.page({ ...key, kind: "continue" }, new AbortController().signal), {
+    status: "completed",
+    value: states,
+  });
+  assert.match(
+    f.queries[0]?.text ?? "",
+    /jsonb_agg\(candidate.state ORDER BY candidate.updated_at DESC, candidate.id DESC\)/u,
+  );
+  const overflow = fixture({ rowCount: 1, rows: [{ states: [...states, row] }] });
+  assert.equal(
+    (await overflow.store.page({ ...key, kind: "continue" }, new AbortController().signal)).status,
+    "unavailable",
+  );
 });
 
 test("invalid owner, bound and pre-cancellation avoid any SQL dispatch", async () => {

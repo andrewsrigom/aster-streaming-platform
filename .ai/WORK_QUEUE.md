@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R06 remains IN_PROGRESS: PR 27 CI passes, but confirmation requires current Catalog filtering before continue-watching pagination. R07 work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86; no dependent work continues until R06 is locally accepted/frozen again. Preserve media/private candidates.
+P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R06 remains IN_PROGRESS: current visibility correction d432bad is reviewed, but the SQL scan must respect the shared adapter's 64-row ceiling. Its bounded aggregate and real 65-row regression now pass; candidate gate/publication remain. R07 is preserved in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512; older stashes were already applied. Preserve media/private candidates.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

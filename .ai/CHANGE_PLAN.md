@@ -13,6 +13,8 @@ An authenticated profile can read recent history and resumable progress through 
 
 ### Confirmation blocker and remediation
 
+Second pre-merge finding: shared PostgreSQL transactions reject result sets above 64 rows; the 256-candidate continue scan must fit that adapter. Keep its existing result ceiling and use one bounded JSON aggregate, with explicit nested-array validation and real >64-candidate regression coverage. Only SQL result shape changes; repeat focused/SQL and affected gates, reuse unchanged owner/trust/Docker acceptance. Head d432bad received clean confirmation 5454854765, but this concrete availability/public-contract blocker must close before merge. Watchlist is preserved in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512; ced886f and all earlier stashes were already applied. Its API compiles/nine HTTP tests pass; real SQL found a separate capacity failure at slot 128 for scoped investigation after restoration. No CPU investigation.
+
 PR 27 confirmation 5052590545 / thread PRRT_kwDOUEkeis6dN9km found that nullable metadata alone does not satisfy ENG-R04: continue-watching must exclude retired/disputed titles before page size/hasNextPage. P08-R06 remains IN_PROGRESS at c512c9d; protected CI 33184567740 passed but does not waive this blocker. P08-R07 local work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86 on feat/p08-watchlist (74 Engagement tests passed; watchlist SQL compiled but real SQL not run). Do not reapply until this candidate is again locally accepted/frozen.
 
 Implement [ADR-0031](../docs/adr/0031-current-catalog-visibility.md): purpose-separated Catalog visibility batch, twenty IDs, current two-second bounded owner decision, no media URLs/Playback credentials. Continue-watching reads at most 256 retained candidates and filters current visibility in at most thirteen serial batches before first-plus-one. History retains nullable retired metadata. Add negative credential/admission/expiry and hidden-gap tests plus real federated retirement/dispute acceptance. Changed trust/runtime invalidates earlier read Docker evidence; run that affected proof once after stable remediation. Repeat a confirmation only because this correction changes a blocking trust/public-contract boundary.
@@ -77,9 +79,9 @@ Record pagination, retention/live-update semantics, metadata nullability and evi
 
 ## Completion checklist
 
-- [x] Remediated requirements and boundary tests pass
-- [x] Current candidate evidence and documentation captured
+- [x] Result-row-bound correction and real >64-row acceptance pass
+- [x] Corrected candidate evidence and documentation captured
 - [x] Predecessor protected and exact post-merge checks pass
 - [ ] Corrected candidate protected review/CI and exact post-merge pass
 
-[Remediation acceptance](../evidence/phase-08/history-visibility.md) passes current SQL/Docker and all applicable candidate tasks. The initial 45/46-task run's test-only lint failures are closed by full lint and focused/static checks; production source is unchanged after the heavy proofs. Publish one coherent correction, then freeze its exact head while awaiting protected confirmation/CI. No known local blocker remains.
+[Remediation acceptance](../evidence/phase-08/history-visibility.md) records both corrections. Current 67 tests, real 65-candidate SQL and 46/46 affected tasks pass without widening the adapter ceiling. Publish and request focused confirmation. Reuse earlier Docker evidence only for unchanged owner/trust/GraphQL/runtime behavior; fresh SQL covers the changed read. No known failing local behavior remains.

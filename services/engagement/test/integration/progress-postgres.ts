@@ -517,6 +517,72 @@ try {
     writesByRead: 0,
   });
 
+  const dense = fixture();
+  const denseRows: ProgressState[] = [];
+  for (let index = 0; index < 65; index++) {
+    const result = await dense.record(dense.input({ titleId: randomUUID(), positionMs: 1000 }));
+    assert.equal(result.status, "completed");
+    denseRows.push(result.value);
+  }
+  denseRows.sort((a, b) => b.updatedAt - a.updatedAt || (a.id < b.id ? 1 : -1));
+  const denseRead = await readStore.page(
+    {
+      accountId: dense.accountId,
+      kind: "continue",
+      input: { profileId: dense.profileId, first: 20, after: null },
+    },
+    signal(),
+  );
+  assert.equal(denseRead.status, "completed");
+  assert.deepEqual(denseRead.value, denseRows);
+  const visibleId = denseRows.at(-1)?.titleId;
+  assert.ok(visibleId);
+  let batches = 0;
+  const filtered = await createProgressQueries({
+    identity: dense.ports.identity,
+    catalog: {
+      visibility: (ids) => {
+        batches++;
+        return Promise.resolve({
+          status: "completed",
+          value: {
+            checkedAt: now(),
+            expiresAt: now() + 2,
+            titles: ids.map((titleId) => ({ titleId, visible: titleId === visibleId })),
+          },
+        });
+      },
+    },
+    store: readStore,
+    now,
+  }).page(
+    "continue",
+    { profileId: dense.profileId, first: 1, after: null },
+    { ...dense.request, signal: signal() },
+  );
+  assert.equal(filtered.status, "completed");
+  assert.deepEqual(
+    filtered.value.edges.map((edge) => edge.node.titleId),
+    [visibleId],
+  );
+  assert.equal(filtered.value.pageInfo.hasNextPage, false);
+  assert.equal(batches, 4);
+  assert.deepEqual(await counts(dense.profileId), { progress: 65, receipts: 65, outbox: 65 });
+  const unchangedLimit = await database.transaction(async (tx) => {
+    await tx.query({ text: "SELECT n FROM generate_series(1, 65) AS n" });
+    return { action: "rollback", value: null };
+  }, signal());
+  assert.equal(unchangedLimit.status, "failed");
+  output("engagement_continue_above_adapter_row_limit", {
+    candidates: 65,
+    hidden: 64,
+    visible: 1,
+    catalogBatches: batches,
+    sharedAdapterRowLimit: 64,
+    aggregateRows: 1,
+    readWrites: 0,
+  });
+
   const outboxFull = fixture();
   assert.equal((await outboxFull.record(outboxFull.input())).status, "completed");
   await admin.query(

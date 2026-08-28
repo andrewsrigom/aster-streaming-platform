@@ -26,7 +26,7 @@ Player reports/resume, relay/consumers, Discovery and hosted release remain plan
 
 ## Next outcome
 
-P08-R06: publish the locally accepted PR 27 correction, resolve PRRT_kwDOUEkeis6dN9km and request confirmation of the changed boundary. Earlier CI 33184567740 at c512c9d cannot substitute for corrected-head CI. Watchlist work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86 (74 tests passed; real watchlist SQL not run). Restore once after freezing the corrected predecessor; earlier stashes are already restored. No CPU/media repeat.
+P08-R06: complete the candidate gate and publish the 64-row adapter compatibility correction; 67 Engagement tests and real 65-candidate SQL regression pass. d432bad's clean review 5454854765 does not cover this later change. Watchlist is preserved in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512 (80 tests/nine HTTP tests, API wired; SQL capacity failure at slot 128 remains to investigate). All older stashes, including ced886f, were already applied. No CPU/media repeat.
 
 ## Runtime and recovery
 

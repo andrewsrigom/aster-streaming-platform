@@ -15,4 +15,12 @@ Both heavy proofs ran once for the changed query/trust/runtime boundary. Retaine
 
 ## Recovery and review
 
+### Pre-merge adapter-row correction
+
+d432bad received clean confirmation 5454854765. The next slice's capacity work then exposed a concrete mismatch: the shared SQL adapter permits 64 returned rows, but continue-watching can scan 256 candidates. The read now returns one ordered, bounded JSON aggregate, validates its array/ownership and retains the existing adapter ceiling. No schema, trust, runtime packaging or public shape changed.
+
+67 Engagement tests, strict build and changed-file lint pass, including 256 decoded candidates and rejected overflow/malformed results. [Real SQL regression](history-row-limit-postgres.jsonl) passes 65 durable resumable titles, 64 hidden titles, one visible result after four Catalog batches, unchanged 64-row adapter rejection and zero read writes. All original atomicity/ordering/25-row pagination cases pass. Exact PostgreSQL fixture aster-p08-read-sql-2ce0e9b7-fb93-45a7-8628-26ea32bb6e41 and network were ownership-checked and removed; exit 0, zero remaining resources. Same pinned environment/compiled command as above.
+
+[Row-correction source](history-row-limit-source.sha256) identifies this candidate. The [affected gate](history-row-limit-gate.txt) passes 46/46 tasks (27 cached, 1m54.071s), using the documented check:changed invocation with Turbo concurrency two. The earlier Docker proof remains supporting evidence for unchanged owner/trust/GraphQL/optional-playback behavior; the changed SQL path has fresh real SQL proof. No repeat of host/media/browser or unchanged Docker experiments. Require corrected-head CI and focused confirmation before merge.
+
 Restore compatible prior Catalog/Engagement/Router images/artifacts and disable optional reads if needed; retain all data. No down migration. Original c512c9d had initial review 5454416119 and CI 33184567740 passing, neither waiving the confirmation blocker. Require corrected-boundary confirmation, protected squash merge and exact post-merge check before watchlist publication.

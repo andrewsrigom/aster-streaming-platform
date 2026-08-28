@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Continue scan respects shared SQL row limits
+
+### Completed
+
+While advancing watchlist, found the 256-candidate history scan exceeded the shared adapter's 64-row ceiling. Preserved watchlist in b3b223868b9d5867c8faf0e0696fddbeb993b512 and corrected the predecessor to one bounded aggregate without widening shared limits.
+
+### Evidence
+
+67 Engagement tests, [real SQL](../evidence/phase-08/history-row-limit-postgres.jsonl) and 46/46 affected tasks pass, including 65 candidates/64 hidden, four Catalog batches and unchanged adapter rejection. Zero fixture resources remain. Unchanged owner/Docker/media evidence is reused only for unaffected behavior.
+
+### Next action
+
+Complete affected candidate gate, publish/confirm the row correction and finish PR 27 protected merge/post-merge. Restore the latest watchlist stash once; prior stashes are already applied. Watchlist has 80 tests/nine HTTP tests and API wiring, but real SQL capacity failure at slot 128 and analogous bounded aggregate remain to address.
+
 ## 2026-08-28 — Current visibility before continue-watching pagination
 
 ### Completed

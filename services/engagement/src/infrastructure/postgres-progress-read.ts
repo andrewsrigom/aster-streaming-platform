@@ -29,7 +29,9 @@ export function createPostgresProgressRead(
         const result = await database.transaction(
           async (tx) => {
             const rows = await tx.query({
-              text: `SELECT jsonb_build_object('id', p.id, 'accountId', p.account_id, 'profileId', p.profile_id,
+              // One bounded aggregate respects the adapter's 64-row result ceiling.
+              text: `SELECT COALESCE(jsonb_agg(candidate.state ORDER BY candidate.updated_at DESC, candidate.id DESC), '[]'::jsonb) AS states
+              FROM (SELECT p.updated_at, p.id, jsonb_build_object('id', p.id, 'accountId', p.account_id, 'profileId', p.profile_id,
               'titleId', p.title_id, 'playbackSessionId', p.playback_session_id, 'sequence', p.sequence,
               'version', p.version, 'positionMs', p.position_ms, 'durationMs', p.duration_ms,
               'status', p.status, 'occurredAt', p.occurred_at, 'updatedAt', p.updated_at) AS state
@@ -37,7 +39,7 @@ export function createPostgresProgressRead(
               WHERE p.account_id = $1::uuid AND p.profile_id = $2::uuid AND NOT g.deleted
               ${kind === "continue" ? "AND p.status = 'IN_PROGRESS'" : ""}
               ${input.after ? "AND (p.updated_at, p.id) < ($4::bigint, $5::uuid)" : ""}
-              ORDER BY p.updated_at DESC, p.id DESC LIMIT $3::integer`,
+              ORDER BY p.updated_at DESC, p.id DESC LIMIT $3::integer) AS candidate`,
               values: [
                 accountId,
                 input.profileId,
@@ -45,14 +47,18 @@ export function createPostgresProgressRead(
                 ...(input.after ? [input.after.updatedAt, input.after.id] : []),
               ],
             });
-            if (rows.rowCount !== rows.rows.length || rows.rows.length > maximum) {
+            if (rows.rowCount !== 1 || rows.rows.length !== 1) {
               throw new Error("Invalid progress read bound.");
             }
-            const page = rows.rows.map((raw) => {
-              const state: unknown =
-                typeof raw === "object" && raw !== null
-                  ? Object.getOwnPropertyDescriptor(raw, "state")?.value
-                  : undefined;
+            const raw = rows.rows[0];
+            const states: unknown =
+              typeof raw === "object" && raw !== null
+                ? Object.getOwnPropertyDescriptor(raw, "states")?.value
+                : undefined;
+            if (!Array.isArray(states) || states.length > maximum) {
+              throw new Error("Invalid progress collection bound.");
+            }
+            const page = Array.from(states, (state: unknown) => {
               const value = normalizeProgressState(state);
               if (!value || value.accountId !== accountId || value.profileId !== input.profileId) {
                 throw new Error("Invalid progress read identity.");
