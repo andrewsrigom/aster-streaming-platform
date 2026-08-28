@@ -2,6 +2,8 @@
 
 ## Resume point
 
+Latest checkpoint: implementation f28c442 is a [complete local Phase 06 acceptance candidate](../evidence/phase-06/acceptance.md). The earlier storage-prefix assessment is now resolved: keep immutable objects for verified replay; clean only disposable job orphans, with hosted lifecycle/fencing/budget explicitly P14-R11. Browser six-sample result and full source 51/51 pass. Current audit has zero high/critical and the known one moderate UUID advisory. Next: acceptance documentation gate, coherent commit/push/one PR, protected exact-head CI, confirmation, squash/post-merge; only then Phase 07. Historical paragraphs below describe earlier checkpoints, not additional unfinished storage/browser work.
+
 Branch feat/p06-media-pipeline; publication checkpoint 4bc9b3a. Phases 00–05 are released at main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865. P06-R01 remains IN_PROGRESS; full Phase 00–14 goal remains active.
 
 Current checkpoint: compatible `replace`/`rollback` commands and migration 0008 activation history are implemented. Focused checks 18/18 and full PostgreSQL pass, including both dispute races and recovery after outbox delivery. [Rollback evidence](../evidence/phase-06/rollback.md). Source gate 51/51 (158 Catalog tests) and documentation/security 10/10 pass. Migration 0008 is NOT applied to retained data; no serving image/container or film byte changed. After consolidation, continue orphan recovery and representative browser HLS playback, then full Phase 06 release.

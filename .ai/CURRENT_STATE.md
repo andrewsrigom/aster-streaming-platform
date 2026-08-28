@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 06 — Media Ingestion and Publication**
 
-Status: **IN_PROGRESS**, local-only on feat/p06-media-pipeline based on released main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865.
+Status: **IN_PROGRESS**, local acceptance candidate on feat/p06-media-pipeline, based on released main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865. Full Phase 00–14 goal remains active.
 
 ## Verified
 
@@ -14,32 +14,29 @@ Phases 00–05 are released. PR 22 squash f36f9aa passes protected CI 3313293718
 
 ## Current work
 
-P06-R01 is the sole active implementation item. Big Buck Bunny is now locally PUBLISHED through Catalog: title version 9 / rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. The immutable bundle contains 203 HLS objects, five JPEGs and attribution JSON (95496764 bytes). Original rights revision 2 and all private processing history remain. [Publication evidence](../evidence/phase-06/publication.md).
+[Phase 06 acceptance](../evidence/phase-06/acceptance.md), implementation head f28c442, maps all twelve requirements to code/tests and measured evidence: approved source, bounded acquisition, isolated full-film HLS/JPEG, durable leases/replay, restricted attestation, immutable publication, compatible rollback, disposable orphan cleanup and real browser playback.
 
-Durable requests, three-attempt recovery, current-rights watchdog, bounded HTTPS streaming and conditional verified S3 storage are implemented/tested locally. Real PostgreSQL, storage conflict and cross-process replay checks pass. Migration 0004/0005 and the first request are applied to aster-p04-development. The source download took 12.003 s; sampled Node RSS peaked at 97685504 bytes, not total container memory. The first attempt failed before GET because its network was internal-only; the finite job now has a separate egress bridge. [Exact gates and limitations](../evidence/phase-06/acquisition.md).
+Big Buck Bunny is locally PUBLISHED: title 00000000-0000-4000-8000-000000080001, version 9 / rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. The bundle contains 209 objects / 95496764 bytes. Original review 2 and all source/processing/audit history remain. [Publication](../evidence/phase-06/publication.md).
 
-Durable processing now has one global slot, three checksum/recipe attempts, 30-minute leases and current-rights reuse. Migration 0006 is applied; the existing candidate was independently verified and adopted as attempt 68e41f87-ca12-44ff-96d3-8a9e66d67795, then replayed without new encoding/writes. Focused tests 19/19, real PostgreSQL and affected source gate 61/61 pass. [Processing evidence](../evidence/phase-06/processing.md).
+Both real HLS renditions passed beginning/middle/end browser decode: six samples, no HLS/browser errors. Source gate passes 51/51 without cache. The temporary probe was removed and the exact Web restored, home HTTP 200. [Browser evidence](../evidence/phase-06/browser.md).
 
 ## Not implemented
 
-Completed product-player journey, storage-prefix orphan recovery, engagement/discovery and hosted release. Representative browser playback and disposable scratch recovery now pass locally. Phase 06 is not yet verified/released. Existing synthetic titles remain technical fixtures, distinct from the actual locally published first film.
+Completed product-player/Docker-only fresh-volume playable journey, automatic S3 garbage collection, engagement/discovery and hosted release. Phase 06 protected CI, confirmation and release remain pending. Synthetic browse titles are technical fixtures, not playable films.
 
 ## Next outcome
 
-The separate frame-jpeg-v1 recipe now retains two posters and three thumbnails (61598 bytes), visually inspected and durably replayed without another decoder/write. Attempt 7674df29-2a04-4055-bcc8-cef60449520f succeeds alongside the unchanged HLS attempt. Focused tests 48/48, real PostgreSQL and source gate 51/51 pass. [Artwork evidence](../evidence/phase-06/artwork.md).
+Finish P06-R01: publish one coherent Phase 06 candidate; require protected exact-head CI and confirmation, squash without bypass and verify exact post-merge CI. Then activate Phase 07 from clean released main. No repeated CPU diagnostic, source GET, encoding or unchanged Web benchmark.
 
-The publication foundation under ADR-0026 now verifies current-rights-checksum original reuse, exact local-only media URLs and a read-only S3 origin (CORS/Range/private/write denial). PostgreSQL verifies policy before pagination and rejects request-only checksum reuse. [Evidence and commands](../evidence/phase-06/publication-foundation.md). This did not change retained data or activate the origin.
+## Runtime and recovery
 
-Bundle/attribution, restricted attestation and actual editorial activation are now implemented. Migration 0007 is applied. The origin is healthy at 127.0.0.1:9001 on the existing edge bridge, with read-only storage and no private-network connection. Full PostgreSQL, synthetic S3 and source gates 51/51 pass; actual copy took 6.657 seconds without source GET/encoding. Only Catalog was upgraded; existing Web title/global attribution SSR returns 200. Compatible replacement/rollback and append-only activation history now pass focused and real PostgreSQL checks; migration 0008 remains unapplied to retained data. [Rollback evidence](../evidence/phase-06/rollback.md). Continue P06-R01: orphan recovery, representative browser playback and Phase 06 acceptance/release. Preserve the bundle/candidates; no CPU diagnostic or unchanged media experiment.
+Retained project aster-p04-development has schema 0007. Migration 0008 activation history and compatible replace/rollback pass real PostgreSQL tests but are not applied there yet; apply before invoking new commands. Existing serving Catalog is the verified publication image. [Rollback evidence](../evidence/phase-06/rollback.md).
+
+The read-only origin serves loopback 9001 on edge only, storage mounted read-only; private writer stays concurrency one on platform. Web/Router remain 3000/4000. Source, HLS/JPEG candidates, databases and audit are preserved.
 
 ## Current risks
 
-The [browser HLS probe](../evidence/phase-06/browser.md) passes six actual decoded-frame samples across both renditions at 0.5/298.5/594.5 seconds, with zero HLS/browser errors. Source gate passes 51/51 with no cache. It used the existing CORS origin and did not proxy media or repeat encoding. The temporary probe was removed and the exact Web container restored (home HTTP 200). Product player remains Phase 07. Continue with the storage-prefix orphan boundary and full Phase 06 acceptance/release.
-
-Run-UUID scratch names and local dry-run/apply cleanup now pass six focused checks and a real Docker fixture. Only stopped resources at least 31 minutes old may be removed; immutable originals/candidates/publications and Catalog audit are untouched. [Scratch evidence](../evidence/phase-06/scratch.md). Next P06-R01: explicitly resolve the storage-prefix orphan boundary, verify representative browser HLS playback, then Phase 06 acceptance/release.
-
-- Shared Windows/WSL timings are laboratory evidence, not arbitrary-load or field SLO guarantees; no further unchanged Web benchmark.
-- Official Blender downloads currently list ZIP archives; extraction must be bounded and validated, not shell interpolation.
-- Local VersityGW keeps one POSIX writer for conditional-write atomicity. ADR-0026 adds a separately verified read-only origin sharing the volume read-only; acquisition alone has egress. Hosted origin atomicity is a Phase 14 acceptance condition.
-- uuid advisory GHSA-w5hq-g745-h8pq is moderate and transitive through Apollo. Installed callers use v1/v4 without buffers, not affected v3/v5/v6; revisit supported remediation before hosted release. No alert dismissal or audit weakening.
-- Keep MIT/upstream notices; no paid resources, invented media rights or global Docker cleanup.
+- ADR-0026 resolves local retention: clean only exact stopped/expired disposable job scratch; retain immutable objects, including partial content-addressed copies, for checked recovery. Hosted lifecycle/fencing/storage budget is explicitly P14-R11, not implemented.
+- Shared-host timings are laboratory evidence, not field SLOs. No host/CPU investigation is required.
+- Current registry audit: zero high/critical and one known moderate UUID advisory. Inspected Apollo callers use v1/v4, not affected v3/v5/v6; revisit supported remediation before hosted release.
+- Preserve MIT and upstream notices. No paid resources, invented media rights or global Docker cleanup.

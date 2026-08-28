@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. Big Buck Bunny is locally published through restricted technical registration and the existing editorial commands, with immutable HLS/JPEG/attribution at loopback 9001. [Publication evidence](../evidence/phase-06/publication.md). Compatible rollback now passes focused/real PostgreSQL checks ([evidence](../evidence/phase-06/rollback.md)). Next: orphan recovery, representative browser playback and Phase 06 acceptance/release. Preserve the bundle and private candidates; no further source GET/encoding.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. Big Buck Bunny is locally published through restricted technical registration and the existing editorial commands, with immutable HLS/JPEG/attribution at loopback 9001. [Publication evidence](../evidence/phase-06/publication.md). Compatible rollback now passes focused/real PostgreSQL checks ([evidence](../evidence/phase-06/rollback.md)). Next: Phase 06 protected CI, confirmation and release. Preserve the bundle and private candidates; no further source GET/encoding.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -49,7 +49,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 ## Work-item rules
 
-Current checkpoints verify temporary scratch recovery ([evidence](../evidence/phase-06/scratch.md)) and real HLS in the browser ([evidence](../evidence/phase-06/browser.md)). Storage-prefix orphan retention/cleanup remains an explicit assessment; do not confuse it with deleting disposable Docker scratch. Full Phase 06 acceptance/release follows; no product-player work yet.
+All twelve local Phase 06 requirements now have an [acceptance row](../evidence/phase-06/acceptance.md). ADR-0026 resolves retention: dispose of orphan scratch, retain immutable objects for checked recovery; no automatic S3 garbage collection. Next: publish one coherent candidate, protected exact-head CI, confirmation, squash and post-merge; then start Phase 07. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

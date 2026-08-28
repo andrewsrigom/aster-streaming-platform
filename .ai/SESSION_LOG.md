@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Phase 06 acceptance candidate
+
+### Completed
+
+Consolidated browser verification in f28c442. Mapped all twelve requirements to source/failure/real-dependency/media evidence. Resolved retention in ADR-0026: orphan scratch is disposable; immutable objects remain intentionally retained for checked recovery, not automatically garbage-collected. Hosted lifecycle fencing/budget is explicitly P14-R11. No architecture invariant, permission, film byte or retained schema changed.
+
+### Evidence
+
+[Local acceptance matrix](../evidence/phase-06/acceptance.md), source 51/51 without cache, six real browser samples with zero errors, and current registry audit with zero high/critical and one previously triaged moderate advisory. Reuse the unchanged PostgreSQL/S3/full-film evidence; no new CPU experiment or encoding.
+
+### Next action
+
+Publish one coherent Phase 06 candidate, require protected exact-head CI and confirmation, squash without bypass and verify post-merge. Then begin Phase 07 from released main; keep the complete Phase 00–14 goal active.
+
 ## 2026-08-28 — Real browser HLS acceptance
 
 ### Completed

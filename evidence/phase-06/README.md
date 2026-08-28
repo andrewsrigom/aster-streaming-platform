@@ -1,10 +1,12 @@
 # Phase 06 evidence
 
+[Local acceptance candidate](acceptance.md) consolidates all twelve requirement rows and resolves the local retention boundary. Source, real dependency/media and browser evidence pass; protected exact-head CI, confirmation and phase release remain pending.
+
 [Representative browser playback](browser.md) verifies both real HLS renditions at beginning/middle/end: six decoded-frame samples, zero errors. This is a technical probe, not the Phase 07 player.
 
-[Abandoned scratch recovery](scratch.md) verifies run-specific Docker naming, dry-run/apply cleanup and a tiny real fixture. Storage-prefix lifecycle garbage collection remains an explicit assessment.
+[Abandoned scratch recovery](scratch.md) verifies run-specific Docker naming, dry-run/apply cleanup and a tiny real fixture. ADR-0026 resolves the retention boundary: immutable storage is deliberately retained; automatic lifecycle garbage collection is not claimed.
 
-The [first-film immutable publication](publication.md) records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. [Compatible replacement/rollback](rollback.md) passes focused and real PostgreSQL checks. Storage-prefix orphan recovery and phase release remain open.
+The [first-film immutable publication](publication.md) records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. [Compatible replacement/rollback](rollback.md) passes focused and real PostgreSQL checks. Local recovery acceptance passes; protected phase release remains open.
 
 Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired, processed, locally published and representatively played in the browser. Phase release remains unfinished. Phase 05 is [released](../phase-05/release.txt).
 

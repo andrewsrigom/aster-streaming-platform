@@ -35,6 +35,14 @@ Catalog's local operator may replace an active publication without an unpublish 
 
 Migration 0008 records each published event in append-only activation history inside the same transaction. Backfill only existing event references that join their recorded title/rights/publication; original audit and events are unchanged. An exact bounded existence query authorizes rollback even after a future outbox relay removes delivered events. Runtime can read history but cannot write or erase it directly; a fixed-search-path trigger copies the owning event. The migration extends audit command vocabulary and changes no editorial rows or media bytes. Down migration refuses any retained activation or new-command audit; after use, roll forward. Existing binaries remain compatible with the additive table/trigger.
 
+## Local retention boundary (Phase 06 closeout)
+
+P06-R10 cleanup removes abandoned **disposable processing scratch** under ADR-0023's exact ownership/age rules. Immutable originals, private content-addressed candidates (including incomplete uploads), publication versions and audit are deliberately retained in this local, explicitly operator-driven phase. They are not age-based deletion targets. This preserves the existing immutable-media invariant and verified retry/adoption/rollback paths; it does not claim implemented S3 garbage collection.
+
+An interrupted private upload has no trusted completion until the report and every object are verified. A partial public copy has no active Catalog pointer; children precede the master, and restricted registration/current-rights checks still precede activation. Replaying the exact content identity checks existing bytes without overwriting them. A conflicting/corrupt object fails closed. Recover storage failures by restoring availability/capacity and retrying the eligible attempt, never deleting audit to obtain retries or purging shared prefixes to unblock a writer.
+
+There is no automatic source ingestion or storage-wide lifecycle rule in this phase. Finite per-object/job/attempt bounds are not a total-volume quota. Before hosted ingestion, Phase 14 must choose and verify a durable retention/garbage-collection protocol with writer fencing, reference/rollback protection, grace periods, deletion audit and a storage budget. Until then the safe default is retain; do not delete immutable objects based solely on age or an absent active pointer. Rights takedown uses the existing Catalog retirement path; openly licensed immutable media URLs are not retroactively revoked by that metadata action.
+
 ## Sources
 
 - [Peach film licensing and credits](https://peach.blender.org/about/): film derivatives are covered; excluded logos and DVD artwork are not adopted.
