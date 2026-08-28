@@ -88,6 +88,22 @@ test("validates existing files and local heading fragments", async (context) => 
   assert.deepEqual(report.violations, []);
 });
 
+test("excludes generated Next output without exempting authored Web documentation", async (context) => {
+  const root = await mkdtemp(join(tmpdir(), "aster-docs-next-"));
+  context.after(async () => rm(root, { force: true, recursive: true }));
+  const web = join(root, "apps", "web");
+  const notices = join(web, ".next", "standalone", "THIRD_PARTY_LICENSES");
+  await mkdir(notices, { recursive: true });
+  await writeFile(join(notices, "LICENSE.md"), "Original upstream terms, not Aster prose.");
+  await writeFile(join(web, "README.md"), "Authored text still needs a title.");
+  const report = await scanDocumentation(root);
+  assert.equal(report.documents, 1);
+  assert.deepEqual(
+    report.violations.map(({ file, rule }) => ({ file, rule })),
+    [{ file: "apps/web/README.md", rule: "missing-title" }],
+  );
+});
+
 test("rejects missing files, missing fragments, and repository escape", async (context) => {
   const root = await mkdtemp(join(tmpdir(), "aster-docs-links-"));
   context.after(async () => rm(root, { force: true, recursive: true }));

@@ -33,7 +33,15 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 
 ### Docker runtime checkpoint
 
-From the repository root:
+For the browser demo, add the explicit Web/seed overlay:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120
+```
+
+Open <http://127.0.0.1:3000>. This requires no host Node/pnpm/FFmpeg and preserves existing data. The fixed technical seed reuses the checked-in generated-media report; no media bytes are bundled or playable. Web has a 512 MiB/1 CPU/64 PID ceiling and a 32 MiB disposable cache. Its liveness endpoint does not claim upstream readiness. [Docker Web boundaries and recovery](../../apps/web/README.md#docker-only-demo).
+
+For the API-only checkpoint, from the repository root:
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
@@ -41,7 +49,7 @@ docker compose --project-name aster --file infra/compose/compose.yml --profile r
 
 Use POST `http://127.0.0.1:4000/graphql`; GET intentionally has no landing page. `docker compose --project-name aster --file infra/compose/compose.yml ps --all` reports Router and owner health. No host Node/pnpm, manual schema initialization or hosted account is needed. Docker builds frozen production packages and waits for owner migrations and the finite trust initializer. Migration jobs hold admin credentials; each API uses its restricted owner/reader login. Successful migrations are not reapplied. Build/pulls precede the 120-second readiness wait; the first build needs registry access.
 
-Router, Identity and Catalog use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Only Router and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates two private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
+Router, Identity and Catalog use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Router, optional Web and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router and Web can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates two private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
 
 The seven-variable Identity configuration retains standalone health-only behavior. Normal Compose opts into local Identity with `ASTER_LOCAL_DEMO_ENABLED=true`, `ASTER_PUBLIC_ORIGIN=http://127.0.0.1:4000` and private Router trust; other environments cannot activate it. Owner readiness checks restricted database privileges and required schema. An unavailable dependency produces owner readiness 503 while liveness stays 200 and recovery remains monitored. Router health measures the Router process, not aggregate owner availability: nullable mixed queries can retain one healthy owner. The optional overlay enables metrics and Router traces through the private Collector.
 
@@ -56,7 +64,7 @@ It uses memory-only credentials and removes only its own synthetic profile. Insp
 Stop all profiles without deleting their named data volumes:
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --profile "*" down
 ```
 
 The earlier core-only command remains light and does not start Identity or create the edge network. Exact source `38801ce` passes the profile commands from a clean checkout with no host Node/pnpm in PATH and no local dependencies or Aster volumes. Full-profile build/start took 36.89 s with warm base/install caches and an uncached application build. Occupied 3100 failed clearly in 4.56 s without stopping its owner; removing only the synthetic conflict allowed the same runtime command to recover in 5.60 s. Normal all-profile stop preserved four data volumes, and the guarded reset removed them. Phase 01 is released through PR 18 with exact post-merge acceptance.

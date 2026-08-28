@@ -8,6 +8,14 @@
   },
   "globalDependencies": [".node-version", ".nvmrc"],
   "tasks": {
+    "@aster/web#build": {
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NEXT_TELEMETRY_DISABLED"]
+    },
+    "@aster/web#typecheck": {
+      "dependsOn": ["build"],
+      "outputs": []
+    },
     "@aster/router#test": {
       "dependsOn": ["build"],
       "cache": false,

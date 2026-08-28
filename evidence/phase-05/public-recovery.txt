@@ -1,0 +1,57 @@
+Phase 05 — Public query recovery checkpoint
+Date: 2026-08-27
+Source: feat/p05-web-ssr working candidate based on befb432; this record is committed with its implementation.
+Environment: Linux/WSL amd64, Node 24.19.0, pnpm 11.24.0, Next 16.3.3, React 19.2.8, Apollo Client 4.2.12 / streaming integration 0.14.5, Google Chrome 145.0.7632.159. Docker 26.0.0 / Compose 2.26.1; existing development Router/Catalog/Identity and Docker Web.
+Requirements: P05-R06/P05-R10, supporting R01/R02/R04/R09. Not complete Phase 05 or hosted release.
+
+IMPLEMENTATION AND BOUNDARIES
+The existing public query consumers use errorPolicy all on preload and consumer. Expected failures render sanitized HTML rather than a thrown client-only boundary. Public transport still rejects malformed, oversized, incomplete and partial-error responses; its catch now sanitizes parser errors as well. Failed data is not an empty collection or a missing-title success.
+Refresh is an explicit read with a React pending transition. Previously loaded details are labeled potentially stale only during the bounded refresh; a failure hides them. No Redux copy, durable cache, authorization fallback or background polling was added. Native reload links work without JavaScript. Malformed cursor syntax maps to 404; home locale now follows the same explicit input as browse.
+Apollo's pinned streaming implementation automatically forwards failed server preloads in the browser. The browser link now requires the current consumer's active explicit-request callback to open HTTP. This transient scheduling guard is not security authorization and carries no identity data. Initial hydration, including failed SSR, opens no browser GraphQL request. The callback is reset after completion and prevents overlapping clicks.
+
+FOCUSED CHECKS
+pnpm --filter @aster/web typecheck
+pnpm --filter @aster/web test
+pnpm exec eslint apps/web
+Result: typecheck and ESLint pass; 17/17 Web tests pass. The new Apollo test proves success, sanitized parser failure as an error result with no data, and recovery. Initial iteration failed one older assertion expecting the transport's previous rejection text; the assertion now expects the deliberate public sanitized message. Three unbound-method lint findings were corrected by returning an arrow callback.
+
+DOCKER BUILD
+docker compose -p aster-p04-development -f infra/compose/compose.yml -f infra/compose/observability.yml -f infra/compose/demo.yml --profile observability up --build --no-deps --wait --wait-timeout 60 web
+Image: sha256:08582f122e4d4b3b2e3ca1ceda66bb8dd36de99c1f95eac6c53c7dd530c8647f
+Result: healthy. agent-browser opened /browse, captured /tmp/aster-p05-recovery.png, inspected navigation/content/refresh controls and reported no browser errors. The screenshot is a local diagnostic, not a committed asset. No owner services or retained volumes were rebuilt or deleted.
+
+FAILURES AND CORRECTIONS
+First full browser attempt: 8 passed / 3 failed (45.2 s). All previous journeys passed; the new tests exposed one automatic browser request after failed SSR and two selectors matching Next's route-announcer alert. Scoped assertions to main. A preload-context marker alone did not stop every Apollo replay; focused confirmation still had 1 failed / 2 passed (30.5 s). Replaced that marker with the active-consumer request callback, without modifying vendor code or Router policy.
+ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web exec playwright test test/browser/recovery.spec.ts
+Result: 3 passed (25.8 s).
+
+FINAL BROWSER CONFIRMATION
+ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web test:browser
+Result: 11 passed (40.9 s), one worker, no retries and no competing build.
+{"event":"web_public_hydration","browserGraphqlOrPrefetch":0,"consoleErrorsOrWarnings":0,"ssrTitle":true,"routerBrowseOperations":1}
+{"event":"public_outage_recovery","noJsRoutes":4,"initialBrowserQueries":0,"explicitRetryQueries":1}
+The outage test verifies the exact local Router service labels before pausing it and always unpauses in finally. Home, attribution, title and Portuguese browse return useful unavailable HTML with JavaScript disabled. A hydrated failure issues no automatic browser query; one explicit retry recovers after Router resumes. The no-JavaScript reload preserves Portuguese. HTML excludes the private endpoint setting and known local password. No page errors occurred.
+The delayed client test holds one response, verifies visible stale details plus disabled duplicate submission, then supplies a partial-error response with a canary. The result hides old details, exposes no canary and is not labeled empty. One explicit real Router retry restores the title. Separate response injection proves the empty state without writing fake product records. Missing-title and invalid-input checks use real routes. Profile fixtures are removed only through Identity's existing test cleanup.
+Raw generated browser report: apps/web/test-results/browser-results.json (ignored). Failure traces are also ignored and not distributed.
+
+FINAL SOURCE GATE
+pnpm check:changed
+ Tasks:    58 successful, 58 total
+Cached:    43 cached, 58 total
+  Time:    42.333s
+Source confirmation followed the browser run. Later edits are evidence/memory prose only and receive scoped documentation/state/format checks.
+
+WINDOWS ACCESS
+PowerShell Invoke-WebRequest http://127.0.0.1:3000/browse -TimeoutSec 10
+{"status":200,"titlePresent":true}
+This proves access from the current Windows host to WSL's Docker Web, not a fresh native-Windows installation.
+
+REVIEW AND LIMITATIONS
+Local review checked public data ownership, request/cache isolation, bounded retry behavior and error serialization. Confirmation covers actual Docker rendering, failed SSR and explicit browser recovery. No additional blocking finding remains in this slice; hosted review still belongs to complete phase publication.
+Degraded HTML is HTTP 200 and must not be counted as successful Catalog availability solely from status code. The 22.1 s final outage-test duration covers five sequential timeout-bound navigations, not one request or a latency benchmark. The pending stale notice does not establish a long-lived freshness guarantee or authorize media delivery.
+Catalog seed, media provenance, owner trust and Docker isolation are unchanged from the Docker checkpoint; their heavyweight evidence remains supporting evidence. Artwork, full bundle/HTML secret scans, screen-reader review, performance/capacity measurements, clean-checkout phase acceptance and protected publication remain open.
+
+REFERENCES
+https://www.apollographql.com/docs/react/data/suspense (checked 2026-08-27): expected-error return policy and pending transitions.
+https://nextjs.org/docs/app/getting-started/error-handling (checked 2026-08-27): expected errors as rendered state.
+Installed @apollo/client-react-streaming 0.14.5 dist/index.browser.js: ReadFromReadableStreamLink and rerunSimulatedQuery behavior inspected against the actual pinned package; runtime tests, not assumed upstream behavior, prove the scheduling guard.

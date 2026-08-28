@@ -8,6 +8,8 @@ node_modules/
 .nyc_output/
 build/
 coverage/
+playwright-report/
+test-results/
 dist/
 out/
 *.tsbuildinfo

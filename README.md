@@ -6,9 +6,21 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–03 are released: local sessions/profiles, rights-aware Catalog, public queries and generated HLS technical checks. Phase 04 implements the local Apollo Router with private subgraphs, owner-validated sessions, bounded traffic and trace correlation; phase acceptance remains in progress. Browser UI and playable films remain planned. See [current state](.ai/CURRENT_STATE.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 03 release](evidence/phase-03/release.txt).
+Phases 00–04 are released: local sessions/profiles, rights-aware Catalog and the federated API. Phase 05 implements public Next.js browsing, title/attribution pages, Apollo hydration, local profile selection and a Docker demo with an explicit synthetic seed. Complete Phase 05 acceptance and video playback remain unfinished. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 04 release](evidence/phase-04/release.txt).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
+
+## Run the Docker Web demo
+
+From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120
+```
+
+Open [Aster](http://127.0.0.1:3000). Browse the generated title, change its language, inspect attribution, and open Profiles to start a local session and create/select a fictional profile. No host Node, pnpm, FFmpeg or hosted account is required. The first build needs registry access; ports 3000 and 4000 must be free. Use `127.0.0.1`, not `localhost`, to preserve the exact local cookie/origin policy.
+
+The overlay explicitly opts into the Catalog-owned technical seed after migrations. Repeating initialization preserves data and does not duplicate the seed. Modified or retired seed data fails closed instead of being overwritten. This is a browsing/profile demo, **not playable VOD**: the bundled measured report is reused, media URLs deliberately do not deliver video, and no third-party film is approved. [Web behavior, limits and recovery](apps/web/README.md).
 
 ## Run the Docker federated API checkpoint
 
@@ -18,7 +30,7 @@ From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog with restricted database logins. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. There is no browser UI or playable video yet; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
+The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog with restricted database logins. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. This command does not yet start the [Web checkpoint](apps/web/README.md) or playable video; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
 
 Exercise sign-in, create/select/list/delete a synthetic profile and sign-out (POSIX/WSL, Docker only):
 
@@ -39,7 +51,7 @@ Open [Prometheus](http://127.0.0.1:9090) and query `process_memory_usage_bytes`,
 Stop all enabled Aster profiles while retaining named local data:
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --profile "*" down
 ```
 
 Use the explicit reset below only to delete local data. [Runtime instructions and evidence](docs/operations/LOCAL_DEVELOPMENT.md#docker-runtime-checkpoint) cover limits and troubleshooting.
@@ -98,7 +110,7 @@ pnpm check
 pnpm audit --audit-level=high
 ```
 
-`pnpm check` is also the current runnable demonstration: it exercises the pinned toolchain, source policy, architecture boundaries, documentation, repository memory, community contract, secret scanning, CI policy, staged-file selection, commit policy, and their adverse tests. It intentionally does not pretend that the future video application exists.
+`pnpm check` exercises the pinned toolchain, source policy, architecture boundaries, documentation, repository memory, community contract, secret scanning, CI policy, staged-file selection, commit policy, and their adverse tests. It does not replace the separate Docker and browser acceptance commands.
 
 ### Clean generated foundation state
 

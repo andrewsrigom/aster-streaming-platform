@@ -28,10 +28,13 @@ fn guard(request) {
     for required in ["host", "origin", "x-aster-csrf", "content-type"] {
         if !(required in request.headers) { deny(403); }
     }
+    let origin = request.headers["origin"].to_string();
+    let web = origin == "http://127.0.0.1:3000";
+    let diagnostic = origin == "http://127.0.0.1:4000";
     if request.headers["host"] != "127.0.0.1:4000" ||
-       request.headers["origin"] != "http://127.0.0.1:4000" ||
-       request.headers["x-aster-csrf"] != "1" ||
-       ("sec-fetch-site" in request.headers && request.headers["sec-fetch-site"] != "same-origin") {
+       !(web || diagnostic) || request.headers["x-aster-csrf"] != "1" ||
+       (web && (!("sec-fetch-site" in request.headers) || request.headers["sec-fetch-site"] != "same-site")) ||
+       (diagnostic && "sec-fetch-site" in request.headers && request.headers["sec-fetch-site"] != "same-origin") {
         deny(403);
     }
     let content_type = request.headers["content-type"].to_lower();

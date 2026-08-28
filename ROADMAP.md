@@ -10,8 +10,8 @@ The phase order is also the engineering demonstration path. [`docs/00-start-here
 | 01 | Local platform and production-ready service skeleton | Released |
 | 02 | Identity, accounts, and viewer profiles | Released |
 | 03 | Catalog and rights-aware content model | Released |
-| 04 | Apollo Federation supergraph | Verified locally; protected release in progress |
-| 05 | Next.js shell, SSR, and hydration | Planned |
+| 04 | Apollo Federation supergraph | Released |
+| 05 | Next.js shell, SSR, and hydration | In progress |
 | 06 | Media ingest, transcode, package, and publish | Planned |
 | 07 | Playback sessions and accessible player | Planned |
 | 08 | Progress, history, watchlist, and continue-watching | Planned |

@@ -46,6 +46,7 @@ test("selects real integration for adapters, runtime, bootstrap and shared depen
     "tools/verify-router-observability.mjs",
     ".dockerignore",
     "tools/verify-runtime-image.mjs",
+    "tools/verify-docker-context.mjs",
     "tools/verify-optional-platform.mjs",
     "packages/runtime/src/index.ts",
     "packages/config/package.json",

@@ -2,6 +2,204 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Final Web confirmation
+
+### Completed
+
+Published e4708c4, resolved both initial review threads and completed the additional performance block when the existing host preconditions passed. No owner program or security control was stopped, no budget changed and no code changed between the two final blocks.
+
+### Evidence
+
+Both final three-visit blocks pass; the additional block records hydration 2727.6–2976.6 ms, LCP 1520–1560 ms, INP 88–120 ms and CLS zero in evidence/phase-05/performance-final-confirmation.json. Exact-head CI 33132459201 passes all six jobs. Confirmation review 5447217847 reports no major issues for e4708c4. Source/functional/reader/clean-start evidence and earlier failures remain linked in evidence/phase-05/pr22-remediation.md.
+
+### Next action
+
+Publish this evidence-only closeout, confirm protected CI, squash merge and verify post-merge before activating Phase 06. No further unchanged heavyweight experiment or code-review round is needed. Actual-film rights approval still precedes acquisition; the Phase 00–14 goal remains active.
+
+## 2026-08-28 — Bounded PR 22 performance remediation
+
+### Completed
+
+Removed unused runtime Tailwind conflict resolution using explicit Button alignment variants; preserved shadcn/Radix behavior. Corrected the documentation scanner's generated-output boundary without rewriting third-party licenses. Kept the existing budgets, Apollo hydration mark and all owner/security boundaries.
+
+### Evidence
+
+Initial performance confirmation failed all hydration visits. The import probe made no difference and was removed. Final image 25d5399 removes 8426 encoded initial JavaScript bytes; three visits pass unchanged budgets. Source gate passes 58/58 in 55.482 s. Final functional run passes 20/21, followed by a complete passing isolated artifact scan after its first GET reset. Runtime inspection verifies 205 notice hashes and all 14 traced packages. Full records and host limitations are in evidence/phase-05/pr22-remediation.md. Removed only the labeled no-mount diagnostic container; retained data is intact.
+
+### Next action
+
+Publish the candidate for protected CI and one confirmation review. Additional timing confirmation was deferred by measured shared-host load; do not repeat unchanged benchmarks to select success or stop owner programs. Finish closeout before Phase 06 rights/pipeline work. The full Phase 00–14 goal remains active.
+
+## 2026-08-28 — PR 22 review and dependency notices
+
+### Completed
+
+Published abf3a84 as PR 22. Batched the two complete initial review findings: omit absent title metadata and replace the premature session-refresh/preference-reload success with truthful guidance. ADR-0020 keeps MIT, adds 27 reviewed package-scoped license exceptions alongside the two existing tools, checks exact versions, and preserves upstream notices in the standalone image.
+
+### Evidence
+
+Initial CI 33129461576 passed source/integration/platform/security and failed only dependency licensing. Local focused tests pass 68/68; the real Docker context probe passes 18 included/16 excluded canaries. Both browser review regressions reproduce on the old image and pass on the new one; early metadata interception errors were corrected in the test harness. Full functional confirmation passes 21/21. Image f7e75c9 is healthy; 206 notice hashes cover 74 dependency entries and all 14 traced runtime packages. No dependency versions, owner state or live-region mechanics changed.
+
+### Next action
+
+Finish final performance/source evidence, publish the single remediation commit and obtain confirmation review/protected CI before squash merge and post-merge verification. Phase 06 starts with actual-film rights review. The complete Phase 00–14 goal remains active.
+
+## 2026-08-28 — Actual reader review and final Web assets
+
+### Completed
+
+Corrected profile announcements using persistent explicit polite/atomic live regions. Actual Orca 48/Firefox speech confirms saving, creation, selection, sign-out, labels, pressed state and native heading navigation. No reader patch, artificial delay or owner/SSR boundary change. Supplemented the real populated-dialog contrast incomplete with contrast and text-occlusion checks.
+
+### Evidence
+
+Web unit tests 22/22 and types pass. The initial functional candidate passed 18/19; the contrast confirmation passed in 8.1 s. Final-asset performance passed all three visits in 15.380 s with unchanged budgets and quiet-host preconditions. Raw speech, compressed audio excerpt, regressions and measurements are indexed in evidence/phase-05/reader-review.md. Removed only the labeled no-mount reader container and exact fictional profile through Identity; remaining profile baseline is zero and verification sessions are signed out. Retained databases are untouched. No remote publication occurred yet.
+
+### Next action
+
+Final confirmation passes 19/19 browser scenarios in 72.232 s and 58/58 source tasks in 60.518 s (28 cached); initial memory-label errors were corrected. Publish for review and protected CI, then begin Phase 06 with actual rights approval before acquisition. Keep the full Phase 00–14 goal active.
+
+## 2026-08-27 — Clean demo acceptance and refresh ownership
+
+### Completed
+
+Clean Docker startup/seed/isolation passed. A cold Express diagnostic exceeded its test-process allowance; the wrapper now reports subprocess errors and allows fifteen seconds without changing HTTP/drain deadlines. Source 56a1320 then passed all 58 tasks uncached in 132.078 s.
+
+### Evidence
+
+Browser acceptance found a genuine refresh failure: a previous consumer's callback survived Apollo's function-source comparison. A route-change regression reproduced zero requests where one was required. Source e130e8e adds a non-serialized consumer identity and passes 19/19 browser scenarios in 74.076 s, fourteen axe scans and 58/58 source tasks in 48.789 s. Before/after evidence is in evidence/phase-05/clean-acceptance.md and clean-browser.jsonl.
+
+Removed only the checked proof project's containers, networks and three disposable volumes. Restored healthy development Web/Router and confirmed the accepted application's filesystem layers. Retained databases are untouched. Final-image performance was deferred by measured host contention; actual screen-reader review and protected publication remain. No public remote mutation occurred.
+
+### Next action
+
+Confirm final-image performance when the host meets the recorded preconditions, complete actual screen-reader review, then publish through protected CI/review.
+
+## 2026-08-27 — Quiet-host baseline and Docker context correction
+
+### Completed
+
+Committed boundary checkpoint 970abeb. Confirmed the existing Web performance budgets in two predeclared independent three-visit blocks without retries, competing builds or application changes. Removed broad Docker directory exceptions after a real canary probe; retained the explicit verifier files, runtime isolation and data.
+
+### Evidence
+
+All six cold-browser visits pass: LCP 1620–1680 ms, INP 88–136 ms, hydration mark 2702.9–3257.1 ms and CLS 0. Raw resources, host conditions and limits are in evidence/phase-05/performance-confirmation.json and artwork-performance.md. Earlier misses remain recorded. The first static packaging test checked declarations only; its missing-file inference was contradicted by the actual successful clean build. The scratch probe then exposed ten unwanted included files and passed all fifteen included/fifteen excluded canaries after correction. Forty-seven focused tests pass. The preceding `pnpm check:changed` passed 58/58 tasks, 43 cached, in 43.806 s; final clean-source gates remain required. See evidence/phase-05/clean-acceptance.md.
+
+### Next action
+
+Prove a clean-checkout Docker build/start and functional browser acceptance. Actual screen-reader review remains open after the Windows control stop. No Phase 05 publication yet.
+
+## 2026-08-27 — Public artifacts and automated accessibility
+
+### Completed
+
+Added build/runtime/HTML scans and authenticated SSR isolation checks, dev-only axe under ADR-0019, and supplementary focus/contrast checks. Fixed busy-modal focus escape by focusing enabled Close before paint and announcing pending work. No public data, ownership, request deadline or general license policy changed.
+
+### Evidence
+
+All eighteen functional browser journeys pass in 90.389 s, including fourteen full axe scans with zero violations. Incomplete results retain complementary measured contrast and real keyboard checks; transient busy state uses rapid semantics/focus checks. Actual runtime assets pass, and test engines are absent from runtime resolution. Failed iterations and raw records are in evidence/phase-05/web-boundaries.md and JSON Lines. Source gate passes 58/58 tasks in 33.182 s after resume-ID and lint corrections. Only the disposable browser-created profile was removed through Identity; retained data remains.
+
+### Next action
+
+Continue comparable-host performance and clean-checkout acceptance. Native reader review remains open: Windows control stopped before Narrator launch because it could not confirm the browser URL. No installation or bypass occurred. No performance rerun under the earlier 7.19 load on six CPUs; prior misses remain recorded. No Phase 05 publication yet.
+
+## 2026-08-27 — Responsive artwork and measured Web budgets
+
+### Completed
+
+Added a source-owned static PNG, finite responsive image optimization, correct card/detail semantics, credits and fixed-ratio failure behavior. Added a local provider hydration mark and a dev-only web-vitals laboratory with explicit byte/timing/query budgets. Catalog seed and rights records are unchanged.
+
+### Evidence
+
+58/58 source tasks, 18 Web tests and all 14 functional browser journeys pass. Full-suite timing confirmation failed INP 256 ms; diagnostic runs also missed hydration/INP. Latest attribution-based three visits pass, but timing stability remains open. Raw measurements, image hashes/sizes, commands and failed experiments are retained in evidence/phase-05/artwork-performance.md and JSON. Docker Web remains healthy; Router was restored after its existing outage test. No retained data was removed.
+
+### Next action
+
+Continue bundle/HTML secret scans and accessibility; investigate timing using retained attribution and comparable host conditions, not repeated runs until green. Complete clean-checkout acceptance and protected Phase 05 publication remain required.
+
+## 2026-08-27 — Public failure and explicit recovery
+
+### Completed
+
+Committed Docker checkpoint befb432. Added useful unavailable SSR on all public routes, bounded stale presentation during refresh, explicit retry and native reload. Sanitized parser errors before hydration; prevented Apollo's automatic failed-preload browser request without changing Router trust. Home now respects locale and invalid cursor syntax returns 404.
+
+### Evidence
+
+17 Web tests, 11 Docker browser journeys (40.9 s) and 58/58 source tasks pass. Four real Router-outage routes remain useful without JavaScript; failed hydration opens zero browser queries and one explicit retry recovers. Windows access returns 200 with title content. Failed iterations and review are recorded in evidence/phase-05/public-recovery.txt. Router was restored; retained product data is intact.
+
+### Next action
+
+Continue P05-R01 with responsive rights-safe artwork, bundle/HTML scans and accessibility/performance. Complete clean-checkout acceptance and protected publication remain mandatory. No player or Phase 05 release claim.
+
+## 2026-08-27 — Docker Web and seed slice
+
+### Completed
+
+Added the explicit Docker Web/seed overlay, standalone non-root Web image and finite Catalog initializer. Corrected a real Docker-only SSR failure: Node Fetch discards Host, so server HTTP now preserves Router's exact public boundary. No trust policy was weakened. Seed remains idempotent and refuses conflicting/retired data.
+
+### Evidence
+
+Six initial browser failures were investigated; all eight Docker browser journeys then passed. Final source gate passes 58/58 tasks and sequential browser confirmation passes 8/8 in 12.4 s. Sixteen Web and 39 focused seed/platform/reset tests passed. Real seed repeat preserved one title/version 5, four audits, two rights revisions, one publication and one outbox event. Web SIGTERM took 423 ms; paused Router failed within 4094 ms while Web stayed live and recovered after unpause. See evidence/phase-05/docker-runtime.txt, including failed gate attempts and the timing-test fixture cleanup. Deleted only validated disposable proof data and owned test fixtures; retained data is intact.
+
+### Next action
+
+Continue P05-R01 artwork and public adverse-state/performance acceptance. Development now uses Docker Web on 3000 and its existing Router on 4000. No Phase 05 publication or player claim.
+
+## 2026-08-27 — Local profile and interaction slice
+
+### Completed
+
+Committed public SSR/seed checkpoint c0b7585 after 58/58 source tasks. Implemented the real local profile dialog, Redux shell and disposable private Apollo clients under ADR-0018. Exact Web-origin CORS/fetch metadata preserves private owner trust. Expiry requires explicit recheck; cross-tab logout clears visible private state.
+
+### Evidence
+
+Build/typecheck, 13 Web tests and eight browser journeys pass. Evidence/phase-05/profile-runtime.txt records commands, failures corrected, keyboard/cookie/expiry behavior and limits. Only test-created profiles were removed through Identity; retained data and audit history remain. No Phase 05 remote publication.
+
+### Next action
+
+Profile source gate passes 58/58 tasks, with frozen install and high-threshold audit passing. Next: artwork, public adverse states, performance and Docker-only Web acceptance. Phase 05 remains IN_PROGRESS; Phases 06–14 remain ahead.
+
+## 2026-08-27 — Public SSR and repeatable Catalog seed
+
+### Completed
+
+Implemented Next.js public/localized routes, full attribution, positive Apollo response projection and bounded normalized cache roots. The explicit fixed technical seed uses actual isolated HLS validation plus Catalog commands; real PostgreSQL repetition leaves one publication/event and four command audits. No retained data was removed.
+
+### Evidence
+
+Eight Web, 98 Catalog, nine composition and seven architecture tests pass; unused-code check passes. Four production-browser journeys pass after correcting the observed disabled-JavaScript Suspense failure. A refined first test proves one actual Router Browse and zero browser GraphQL/prefetch requests. See evidence/phase-05/public-runtime.txt.
+
+### Next action
+
+Source gate passes 58/58 tasks after correcting the session-log headings. Continue profile/dialog/Redux shell, artwork, failure/performance and Docker acceptance; Phase 05 is not complete.
+
+## 2026-08-27 — Phase 04 release and first Web build
+
+### Completed
+
+PR 21 merged without bypass at b6c99c4. Rebased the unpublished Phase 05 work with autostash, preserved its changes and fast-forwarded local main. No retained data was removed.
+
+### Evidence
+
+Exact-head protected run 33103379545 and post-merge run 33104100966 passed; evidence/phase-04/release.txt records the transition. Initial Next.js production build and five focused tests pass; corrected four lint findings.
+
+### Next action
+
+Real browser, seed, profiles and Docker acceptance remain next.
+
+## 2026-08-27 — Frozen Phase 04 candidate and dependent Web work
+
+### Completed
+
+Published final correction 66d8ee1 to PR 21. Both automated review findings are addressed and their threads resolved with evidence. P04-R02 is WAITING_EXTERNAL; created one unpublished dependent branch feat/p05-web-ssr and activated P05-R01 under the predecessor-first rule.
+
+### Evidence
+
+Final clean candidate: 55/55 tasks, 30 cached, 26.698 s; CI tests 26/26. Protected run 33103379545 is pending. Prior protected run 33102349933 passed. Runtime/media/Docker evidence is unchanged; no repeated heavy experiment or retained-data mutation.
+
+### Next action
+
+Implement the public SSR slice while completing the named CI/merge/post-merge transition. Rebase dependent work onto the squash before publication. Web behavior and browser acceptance remain unverified.
+
 ## 2026-08-27 — Phase 04 protected CI remediation
 
 ### Completed

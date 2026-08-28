@@ -1,0 +1,101 @@
+Phase 05 — Docker Web and explicit Catalog seed checkpoint
+Date: 2026-08-27
+Source: feat/p05-web-ssr working candidate based on 7857957; this record is committed with the implementation.
+Environment: Linux/WSL amd64, Docker 26.0.0 / Compose 2.26.1, 6 CPUs and 12543180800 bytes Docker memory; Node 24.19.0, Next 16.3.3, pnpm 11.24.0.
+Scope: implemented Docker browsing/profile slice, not complete Phase 05 verification, a clean-checkout release, hosted deployment or playable VOD.
+
+IMPLEMENTATION
+infra/compose/demo.yml opts into Web and the finite Catalog migration/seed initializer. Base API-only Compose remains unchanged. The initializer reuses generated-media.json; it does not rerun FFmpeg or claim acquired-film rights. Seed metadata, attestation and publication remain owned by Catalog and retain existing conflict/takedown refusal.
+Web uses standalone production output, the pinned Node base, non-root/read-only execution and only the Router edge network. The sole application environment field is ASTER_WEB_ROUTER_URL. No owner credential or database mount enters Web. Health is explicitly process liveness, not aggregate readiness.
+
+SOURCE AND ITERATION COMMANDS
+pnpm --filter @aster/web typecheck
+pnpm --filter @aster/web test
+Result: 16/16 Web tests, including actual Node HTTP Host preservation, header isolation, redirect/bad-body/oversize rejection, 16-request saturation and cancellation/recovery.
+pnpm exec turbo run build --filter=@aster/catalog
+node --test services/catalog/dist/test/ui-seed.test.js tools/verify-local-platform.test.mjs tools/reset-local-platform.test.mjs
+Result: 39/39 focused seed/platform/reset tests at the initial packaging checkpoint. Subsequent candidate gate covers final source.
+pnpm platform:check
+Result: local-platform status=ok, violations=0.
+
+FRESH PROJECT STARTUP
+Read-only Docker inventory proved no aster-p05-demo-proof container/network/volume existed. Stopped only the owned host Web session and development Router to free 3000/4000. Retained aster and aster-p04-development data were untouched.
+docker compose --project-name aster-p05-demo-proof --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120
+Result: 11 containers created; four finite initializers exited successfully; seven long-running services healthy; two networks and three fresh named volumes. The command itself uses Docker only; host Node/Chrome were used afterwards for verification. Registry access and warm base/dependency caches were available. This was not a clean Git checkout.
+catalog-init output:
+{"event":"aster.catalog.migration_completed","applied":[1,2,3]}
+{"event":"catalog_ui_seed","titleId":"00000000-0000-4000-8000-000005000001","state":"PUBLISHED","changed":true}
+
+FAILURE FOUND AND CORRECTED
+The initial visual page was usable after a browser refetch, but the first browser suite returned 2 passed / 6 failed. Raw Node Fetch in Web returned Router 403 despite an explicit Host header. A local echo server proved Fetch sent the destination host (127.0.0.1:36517), discarding requested Host 127.0.0.1:4000. The same issue had been invisible when host-run SSR addressed loopback directly.
+Added a narrow Node HTTP server transport, preserving the exact public Host/Origin with positive header selection, 16 shared request slots, bounded sockets/headers, cancellation and the existing four-second/256-KiB response boundary. No Router security policy was relaxed. Apollo caches remain request-scoped. Browser Fetch is unchanged.
+The profile keyboard test also pressed Tab before the asynchronous sign-in control existed; it now waits for that control before testing tab order. The outage alert assertion is scoped to the dialog, excluding Next's route announcer. No product behavior was weakened to pass these checks.
+docker compose -p aster-p05-demo-proof -f infra/compose/compose.yml -f infra/compose/demo.yml --profile runtime up --build --no-deps --wait --wait-timeout 60 web
+Final Web image: sha256:aec9b38b829245d86317240b0d74f8dc0df3f3401a04c7e1fd536686f1dd02b9
+Catalog initializer image: sha256:4dcc75de51d1fb2b71a35578f4a412ecdedfb6f7d71b355a344e5d455247d554
+Browser visual inspection used agent-browser and /tmp/aster-p05-docker.png (local diagnostic, not a committed screenshot). No browser errors reported after correction.
+
+BROWSER ACCEPTANCE ON DOCKER
+ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p05-demo-proof-router-1 pnpm --filter @aster/web test:browser
+Result: 8 passed (16.4s), no retries. Real sign-in/create/select/cross-tab sign-out; exact CORS and six rejected trust variants; profile outage/retry; expiry; SSR; disabled/delayed JavaScript; keyboard and attribution navigation.
+{"event":"web_public_hydration","browserGraphqlOrPrefetch":0,"consoleErrorsOrWarnings":0,"ssrTitle":true,"routerBrowseOperations":1}
+Raw generated browser report: apps/web/test-results/browser-results.json (ignored). Successful profile fixture was removed through Identity; credentials were not copied to evidence.
+
+SEED REPEAT AND OPT-IN
+docker compose --project-name aster-p05-demo-proof --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime run --rm --no-deps catalog-init
+{"event":"aster.catalog.migration_completed","applied":[]}
+{"event":"catalog_ui_seed","titleId":"00000000-0000-4000-8000-000005000001","state":"PUBLISHED","changed":false}
+Before and after, queried through psql in the proof PostgreSQL container:
+SELECT json_build_object('titles',(SELECT count(*) FROM catalog.titles),'version',(SELECT version FROM catalog.titles LIMIT 1),'audits',(SELECT count(*) FROM catalog.command_audit),'rights',(SELECT count(*) FROM catalog.rights_revisions),'publications',(SELECT count(*) FROM catalog.publications),'outbox',(SELECT count(*) FROM catalog.publication_outbox));
+{"titles":1,"version":5,"audits":4,"rights":2,"publications":1,"outbox":1}
+docker compose --project-name aster-p05-demo-proof --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime run --rm --no-deps --env ASTER_CATALOG_UI_SEED_ENABLED=false catalog-init
+Result: expected exit 1, INITIALIZATION_REJECTED; the same counts were unchanged. The temporary one-shot containers removed themselves.
+
+RUNTIME BOUNDARIES
+docker inspect aster-p05-demo-proof-web-1
+Inspected fields: user=1000:1000, ReadonlyRootfs=true, Memory=536870912, NanoCpus=1000000000, PidsLimit=64, CapDrop=[ALL], only edge attachment, no volume/bind mounts. HostConfig.Tmpfs contains only /app/apps/web/.next/cache with size=32m,uid=1000,gid=1000,mode=0700. Docker 26 reports this tmpfs in HostConfig, not .Mounts; reset accepts the observed empty mount inventory as well as explicit tmpfs inventory.
+docker stats --no-stream --format '{{.Name}} memory={{.MemUsage}} pids={{.PIDs}}' aster-p05-demo-proof-web-1
+aster-p05-demo-proof-web-1 memory=68.7MiB / 512MiB pids=11
+This is one idle observation after browser checks, not a capacity or leak benchmark. An in-container Node check proved uid=1000, onlyPublicConfiguration=true, root write rejected with EROFS and cache write accepted.
+
+LIFECYCLE AND DEPENDENCY LOSS
+Measured using performance.now around docker stop --time 10 plus Docker State inspection:
+{"event":"web_docker_sigterm","elapsedMs":423,"exitCode":143,"oomKilled":false}
+docker compose -p aster-p05-demo-proof -f infra/compose/compose.yml -f infra/compose/demo.yml --profile runtime up --no-deps --wait --wait-timeout 60 web
+Result: healthy; agent-browser browse navigation and title content passed after restart.
+Paused only aster-p05-demo-proof-router-1, fetched /browse with a 7-second caller deadline, inspected /health/live, and unpaused in finally. First diagnostic incorrectly expected client error-button text in raw HTTP-500 HTML; that assertion failed and Router was restored. This does not prove no-JavaScript error recovery; full public adverse-state acceptance remains open.
+The corrected boundary diagnostic measured:
+{"event":"web_router_timeout","status":500,"elapsedMs":4094,"liveness":200,"privateConfigurationAbsent":true}
+{"event":"web_router_recovery","status":200}
+The timeout HTML excluded database/test passwords and the server Router setting. Recovery fetched real Signal / 01 after unpause. This is direct reload recovery, not evidence that the current client Retry button handles every upstream outage.
+
+SOURCES
+https://nextjs.org/docs/app/api-reference/config/next-config-js/output (official 16.3.3 Markdown retrieved 2026-08-27): traced standalone output and separate static/public copying.
+https://docs.docker.com/compose/how-tos/profiles/ (checked 2026-08-27): explicit profile dependency activation.
+https://nodejs.org/docs/latest-v24.x/api/http.html (checked 2026-08-27): explicit HTTP headers, bounded Agent and cancellation; behavior tested on pinned 24.19.0.
+
+CLEANUP AND DEVELOPMENT
+Inspected exact project/service/environment labels, all mounts, network members and volume attachments. No foreign attachment existed. docker compose --project-name aster-p05-demo-proof --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime down --volumes removed only 11 owned containers, two networks and three disposable synthetic-data volumes. Postconditions: zero proof containers/networks/volumes; images retained. Synthetic records are not recoverable from those removed volumes, but the seed can recreate the fixture. Retained aster and aster-p04-development data were not removed.
+Restored development Router and added Docker Web using base + observability.yml + demo.yml, --profile observability, up --build --no-deps --wait --wait-timeout 60 web. The old host Web process remains stopped. Development browser smoke passed.
+
+REVIEW
+The initial local review found the Node-to-Web stream's default queue unit should be explicit bytes. Added a 65536-byte high-water mark and byte-length strategy; reran all 16 Web tests. Only the public transport changed, so repeat its Docker/browser checks, not media generation or Catalog initialization. Profile/seed/isolation evidence above remains supporting evidence; complete phase clean-checkout and protected gates are still required.
+
+FINAL SOURCE AND BROWSER CONFIRMATION
+Initial candidate source gate stopped at 47 successful tasks because Knip did not register initialize-web-demo.ts. Added that actual executable entry. The next attempt reached 57/58 with seven ESLint findings: ambiguous Request stringification, missing braces and regex spacing. Batched correction narrows URL/string input explicitly and fixes the style issues; focused ESLint passed.
+pnpm check:changed
+ Tasks:    58 successful, 58 total
+Cached:    43 cached, 58 total
+  Time:    48.663s
+The platform suite includes 42 tests. No unrelated canceled task is reported as an independent failure.
+An attempted browser selection (test:browser -- public.spec.ts) actually ran all eight tests while heavy source builds were active. Seven passed; the profile journey exceeded its 15-second deadline and its expired context prevented cleanup. Inspected trace before/after snapshots, verified the exact new synthetic profile 0ed0ed52-7393-475d-bb41-a2d41658fb91 and version 1, deleted only it through Identity and revoked that cleanup session. Other profiles were preserved. Do not run timing-sensitive browser acceptance concurrently with builds.
+docker compose -p aster-p04-development -f infra/compose/compose.yml -f infra/compose/observability.yml -f infra/compose/demo.yml --profile observability up --build --no-deps --wait --wait-timeout 60 web
+Final source image: sha256:f95a399404f8402aede2751d4b77f66479c5422a1dad9d5047adb9ec42671d60
+Result: healthy; agent-browser screenshot/snapshot showed the public page and navigation, with no reported browser errors. Screenshot /tmp/aster-p05-docker-final.png is a local diagnostic.
+ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web test:browser
+  8 passed (12.4s)
+{"event":"web_public_hydration","browserGraphqlOrPrefetch":0,"consoleErrorsOrWarnings":0,"ssrTitle":true,"routerBrowseOperations":1}
+This final run had no competing build and no retries. Owner-API test cleanup completed. The final byte-based stream bound and URL narrowing do not affect Catalog initialization, network/resource policy or generated-media provenance; earlier corresponding heavyweight evidence remains supporting evidence. Complete phase clean-checkout acceptance is still required.
+
+REMAINING
+Artwork, full public loading/stale/degraded/retry behavior, bundle/HTML scans, accessibility/performance budgets, clean-checkout complete phase acceptance and protected publication remain open. No hosted, media-delivery, actual-film approval or Phase 05 release claim.

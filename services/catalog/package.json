@@ -20,6 +20,8 @@
     "build": "tsc --build ./tsconfig.json",
     "start": "node ./dist/src/main.js",
     "operator": "node ./dist/src/operate-local.js",
+    "seed:local": "node ./dist/src/seed-local.js",
+    "demo:initialize": "node ./dist/src/initialize-web-demo.js",
     "migrate:local": "node ./dist/src/migrate-local.js",
     "test": "node --test ./dist/test/*.test.js",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"

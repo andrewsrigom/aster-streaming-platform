@@ -132,17 +132,42 @@ query Browse($first: Int! = 20, $after: String, $locale: String! = "en") {
     }
   }
 }
-query TitleDetail($id: ID!) {
+query TitleDetail($id: ID!, $locale: String! = "en") {
   title(id: $id) {
     id
-    localized {
+    localized(locale: $locale) {
       locale
       title
       synopsis
     }
+    runtimeSeconds
+    releaseYear
+    languages
+    genres
+    accessibility
+    editorialLabels
+    credits {
+      name
+      role
+    }
+    artwork {
+      url
+      altText
+      attribution {
+        creator
+        licenseUrl
+      }
+    }
     attribution {
+      workTitle
       creator
+      copyrightHolder
+      sourceUrl
+      licenseName
+      licenseVersion
       licenseUrl
+      attributionText
+      modificationNotice
     }
   }
 }

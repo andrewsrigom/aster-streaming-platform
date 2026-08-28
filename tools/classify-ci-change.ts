@@ -43,6 +43,7 @@ const PLATFORM_FILES = new Set([
   "tools/verify-local-platform.mjs",
   "tools/verify-local-platform.test.mjs",
   "tools/verify-runtime-image.mjs",
+  "tools/verify-docker-context.mjs",
   "tools/verify-catalog-runtime.mjs",
   "tools/verify-catalog-runtime.test.mjs",
   "tools/verify-router-runtime.mjs",

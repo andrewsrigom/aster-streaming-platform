@@ -1,0 +1,51 @@
+Aster Phase 05 — First public SSR/Catalog slice
+Recorded: 2026-08-27
+Source: feat/p05-web-ssr, based on released b6c99c432603218d0a33c833e0b9a28b1c90e43b, with the accompanying uncommitted Phase 05 changes. Final phase candidate acceptance is still required.
+Environment: Ubuntu 20.04 WSL, Linux amd64, Node 24.19.0, pnpm 11.24.0; existing isolated aster-p04-development Docker Router/Catalog/PostgreSQL; actual local Google Chrome selected through Playwright 1.62.1. No hosted service or real-film rights approval.
+
+Commands and observed results:
+NEXT_TELEMETRY_DISABLED=1 pnpm --filter @aster/web build
+Next 16.3.3 production/standalone build passed. Final SSR-boundary correction compiled in 664 ms, TypeScript 2.9 s. /, /browse, /title/[id] and /attribution are dynamic; /icon.svg is static. Initial next-start standalone warning was removed by using the generated standalone entry with copied static assets.
+
+pnpm --filter @aster/web test
+8/8 passed: versioned documents, input bounds/locale, isolated cache restoration, bounded cancellation-aware transport, malformed/excessive responses, positive public-field projection, 100 empty page/detail replacements and 25 populated pages with 20 titles plus one detail. After GC, 21 normalized title entities remain. This is not heap or application-capacity evidence.
+
+pnpm --filter @aster/catalog test
+98/98 passed, including four new seed scenarios: normal/repeated publication, interrupted attestation recovery, refusal of retired/modified/foreign data, malformed reports/authority/cancellation rejection. Initial seed draft was rejected because its evidence path was not an accepted rights-evidence location; corrected to the canonical versioned ADR URL, without relaxing validation.
+
+node ./tools/run-media-fixture.mjs
+generated-media.json is the actual report: repeatable six-second source, eight files, 1948485 bytes; image sha256:4d77d55d035c5bfe0fe96970b2eee00b240ab9f1a3c9aa78aea25f1875bb73fa; elapsed 7558 ms; corrupt/missing/symlink/cancelled-process checks; owned ephemeral output cleaned. No film downloaded.
+
+pnpm catalog:seed --project aster-p04-development --report evidence/phase-05/generated-media.json
+{"event":"catalog_ui_seed","titleId":"00000000-0000-4000-8000-000005000001","state":"PUBLISHED","changed":true}
+Repeated identical command:
+{"event":"catalog_ui_seed","titleId":"00000000-0000-4000-8000-000005000001","state":"PUBLISHED","changed":false}
+Read-only PostgreSQL confirmation for that exact title:
+{"state":"PUBLISHED","version":5,"audit":4,"rights":2,"publications":1,"outbox":1}
+Only the additive fixed synthetic seed was written to the development database. Retained aster was untouched; no volume deletion or broad Docker operation occurred.
+
+ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome pnpm --filter @aster/web test:browser
+First round: 3 passed / 1 failed (12.1 s). Disabled JavaScript showed only the Suspense fallback, despite title bytes existing in hidden streamed HTML. Removed Suspense boundaries around critical public data; no duplicate RSC data copy, private cache or hydration suppression was introduced.
+Confirmation: 4 passed (5.0 s): real SSR title and no browser GraphQL/prefetch, Portuguese browse/detail/attribution with JavaScript disabled and browser locale fr-FR, delayed scripts without mismatch, keyboard-only skip/title/attribution navigation.
+
+Refined the first test to additionally inspect actual Router logs; no runtime source changed:
+ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web test:browser --grep 'published public HTML'
+1 passed (1.8 s).
+{"event":"web_public_hydration","browserGraphqlOrPrefetch":0,"consoleErrorsOrWarnings":0,"ssrTitle":true,"routerBrowseOperations":1}
+An earlier anchored --grep selected zero tests; no acceptance was claimed for it. Remaining three passing browser results remain applicable because only the first test's log assertion changed afterward.
+
+node --test tools/verify-architecture.test.ts; node tools/verify-architecture.ts
+7/7 passed; zero violations. Workspace-root build/dependency directories are excluded, including Next standalone output; the regression retains detection of real Web source violations.
+pnpm --filter @aster/router schema:update; pnpm --filter @aster/router test
+9/9 passed, five deterministic artifacts; known TitleDetail expanded to full attribution and explicit locale without changing the owner schema. Manifest SHA256 5c7ac2b93ce816994513d3bd861d2acb66d6d78bc056025cc81d17fc460842d9.
+pnpm exec knip
+Passed; existing non-blocking configuration hints remain.
+
+Limitations: no profile UI, Redux shell, responsive artwork, complete failure/retry journey, complete browser secret scan, Web Vitals/bundle budget, clean Docker-only Web acceptance or Phase 05 protected release yet. Browser proof uses one local browser/build/platform, not cross-browser/device or hosted SLO evidence. Raw generated output and the SSR main sample accompany this record; test failures were not hidden by retries.
+Source checkpoint, 2026-08-27 (same accompanying source, base b6c99c4)
+  pnpm install --frozen-lockfile: passed, 468 ms.
+  pnpm audit --audit-level=high: exit 0; one previously recorded moderate UUID advisory.
+  First pnpm check:changed: stopped on missing session-log subsection headings.
+  Corrected those two prose entries; no runtime behavior changed.
+  Final pnpm check:changed: 58/58 successful tasks, 22 cached, 55.362 s.
+  This is a local source checkpoint, not complete Phase 05 acceptance or publication.

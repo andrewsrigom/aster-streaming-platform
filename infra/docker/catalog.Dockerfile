@@ -28,6 +28,7 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS=--max-old-space-size=192
 COPY --from=build --chown=node:node /out ./
 COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+COPY --chown=node:node evidence/phase-05/generated-media.json ./ui-seed-report.json
 USER node
 EXPOSE 3200
 STOPSIGNAL SIGTERM

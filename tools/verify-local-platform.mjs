@@ -430,7 +430,8 @@ export function validatePublicPlatformCommands(documents) {
   const violations = [];
   const requiredCommands = [
     "docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120",
-    'docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down',
+    'docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --profile "*" down',
+    "docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120",
     "docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile full up --build --wait --wait-timeout 120",
     "docker compose --project-name aster --file infra/compose/compose.yml up --wait --wait-timeout 120 platform-status",
     "docker compose --project-name aster --file infra/compose/compose.yml ps --all",

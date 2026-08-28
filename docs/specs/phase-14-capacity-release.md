@@ -34,6 +34,8 @@ Record hosted compute, PostgreSQL, Redis, broker, object-storage, CDN, telemetry
 ### P14-R02
 
 Deploy through reviewed CI/CD with environment protection, immutable artifacts, migrations, smoke tests, and rollback.
+
+Before distributing binary images, verify the exact artifact SBOM and third-party notices, corresponding-source access for LGPL/GPL components (including native bundle patches/build inputs), and replacement/relinking or installation instructions where required. Retain the source paths beside the published artifact and verify their availability; do not treat a historical URL or invented source offer as compliance evidence. [ADR-0020](../adr/0020-web-transitive-licenses.md) records the Web boundary.
 ### P14-R03
 
 Run representative operation-mix load tests with functional assertions, warmup, duration, and saturation telemetry.

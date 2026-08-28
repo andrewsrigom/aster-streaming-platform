@@ -81,7 +81,7 @@ interface State {
   audits: CatalogCommandAudit[];
   events: CatalogPublicationEvent[];
 }
-export function workflowFixture() {
+export function workflowFixture(actorId = id(3)) {
   let state: State = {
     titles: new Map(),
     rights: [],
@@ -97,7 +97,7 @@ export function workflowFixture() {
   let beforeFinish = (): void => undefined;
   const counts = { receipts: 0, outbox: 0 };
   const operator = createLocalCatalogOperator(
-    { environment: "local", operatorEnabled: true, actorId: id(3) },
+    { environment: "local", operatorEnabled: true, actorId },
     time,
   );
   const transactions: CatalogWorkflowUnitOfWork = {
@@ -238,6 +238,7 @@ export function workflowFixture() {
   };
   return {
     commands,
+    transactions,
     request,
     operator,
     counts,

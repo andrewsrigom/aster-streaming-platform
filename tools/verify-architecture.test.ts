@@ -87,3 +87,19 @@ test("scans only real source files below approved workspace packages", async (co
   assert.equal(violations.length, 1);
   assert.equal(violations[0]?.specifier, "pino");
 });
+
+test("ignores workspace build/dependency output but still checks application source", async (context) => {
+  const temporaryRoot = await mkdtemp(join(tmpdir(), "aster-web-architecture-"));
+  context.after(async () => rm(temporaryRoot, { force: true, recursive: true }));
+  const web = join(temporaryRoot, "apps", "web");
+  for (const directory of [".next", "node_modules", "dist", "test-results"]) {
+    await mkdir(join(web, directory), { recursive: true });
+    await writeFile(join(web, directory, "compiled.js"), "x".repeat(1_000_001));
+  }
+  const source = join(web, "src", "domain");
+  await mkdir(source, { recursive: true });
+  await writeFile(join(source, "invalid.ts"), 'import pg from "pg"; void pg;');
+  const violations = await scanRepository(temporaryRoot);
+  assert.equal(violations.length, 1);
+  assert.equal(violations[0]?.specifier, "pg");
+});

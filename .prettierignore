@@ -1,5 +1,6 @@
 .git/
 .turbo/
+.next/
 coverage/
 dist/
 docs/

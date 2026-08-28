@@ -1,0 +1,903 @@
+{
+  "source": {
+    "base": "cf2a391028e523e4e6c71f1047f60a71b0a1825a",
+    "scope": "Uncommitted live-region correction and focused test changes, committed with this evidence.",
+    "image": "sha256:b633c7f48f3c333292ea32ecd4a5cd019350b66fd5351971685aff9ecdb45a43",
+    "files": {
+      "apps/web/features/identity/dialog.tsx": "29feb287b3b758bc8ea4a25918b107607ecf8de4530e8056ef64a1918055b3c7",
+      "apps/web/test/browser/accessibility.spec.ts": "ab6536fdc19f2798afc7b0ada0003570205a4c10863d3147cf4cc9824d30d800",
+      "apps/web/test/browser/profiles.spec.ts": "a8e896917e3a171ede0cf689e7c1c46fa97d002045f42d000bc9c868954c359a"
+    }
+  },
+  "command": "ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web exec playwright test test/browser/performance.spec.ts",
+  "preflight": {
+    "time": "2026-08-28T00:08:58Z",
+    "load1": 0.95,
+    "cpuIdleSamples": [
+      88,
+      95
+    ],
+    "cpus": 6,
+    "competingBuildOrBrowser": false
+  },
+  "postflight": {
+    "time": "2026-08-28T00:09:35Z",
+    "load1": 0.75,
+    "cpuIdleSamples": [
+      89,
+      98
+    ]
+  },
+  "stats": {
+    "startTime": "2026-08-28T00:09:20.060Z",
+    "duration": 15380.227,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "lab": {
+    "browser": "145.0.7632.159",
+    "budgets": {
+      "initialJs": 256000,
+      "interactiveJs": 358400,
+      "image": 102400,
+      "initialImages": 204800,
+      "LCP": 2500,
+      "INP": 200,
+      "CLS": 0.1,
+      "hydration": 3500
+    },
+    "samples": [
+      {
+        "visit": 1,
+        "initialJsBytes": 240892,
+        "interactiveJsBytes": 259211,
+        "initialImageBytes": 10204,
+        "hydrationMs": 2538.5999999940395,
+        "vitals": {
+          "LCP": 1596,
+          "CLS": 0,
+          "INP": 64
+        },
+        "interaction": {
+          "inputDelay": 1,
+          "processingDuration": 54.099999994039536,
+          "presentationDelay": 8.900000005960464,
+          "target": "button.bg-background.border.border-border.disabled:opacity-50.disabled:pointer-events-none.focus-visible:outline-2.focus-visible:outline-offset-4.focus-visible:outline-ring.font-semibold.gap-2.hover:bg-card.inline-flex.items-center.justify-center.min-h-11.motion-reduce:transition-none.px-5.py-3.rounded-md.text-foreground.text-sm.transition-colors",
+          "scripts": [
+            {
+              "duration": 38,
+              "invoker": "#document.onclick",
+              "sourceURL": "http://127.0.0.1:3000/_next/static/chunks/18yroj4mk2n0o.js",
+              "sourceFunctionName": "fI"
+            }
+          ]
+        },
+        "initialResources": [
+          {
+            "path": "/_next/static/chunks/3h-n4wq5nss-z.css",
+            "bytes": 4193,
+            "decodedBytes": 16718,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/266x5l2yi36cb.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/20d2o5fmi463o.js",
+            "bytes": 12264,
+            "decodedBytes": 34076,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ejrthb_w51p6.js",
+            "bytes": 9177,
+            "decodedBytes": 28732,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1loo6ragk2uw1.js",
+            "bytes": 10569,
+            "decodedBytes": 30480,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          }
+        ],
+        "interactiveResources": [
+          {
+            "path": "/_next/static/chunks/3h-n4wq5nss-z.css",
+            "bytes": 4193,
+            "decodedBytes": 16718,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/266x5l2yi36cb.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/20d2o5fmi463o.js",
+            "bytes": 12264,
+            "decodedBytes": 34076,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ejrthb_w51p6.js",
+            "bytes": 9177,
+            "decodedBytes": 28732,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1loo6ragk2uw1.js",
+            "bytes": 10569,
+            "decodedBytes": 30480,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          },
+          {
+            "path": "/_next/static/chunks/0gb9auqnqjm9-.js",
+            "bytes": 699,
+            "decodedBytes": 699,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1tw86oa-fby2r.js",
+            "bytes": 17620,
+            "decodedBytes": 51910,
+            "type": "script"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          }
+        ],
+        "initialBrowserGraphqlOrPrefetch": 0
+      },
+      {
+        "visit": 2,
+        "initialJsBytes": 240892,
+        "interactiveJsBytes": 259211,
+        "initialImageBytes": 10204,
+        "hydrationMs": 2553.2000000178814,
+        "vitals": {
+          "LCP": 1600,
+          "CLS": 0,
+          "INP": 80
+        },
+        "interaction": {
+          "inputDelay": 2.9000000059604645,
+          "processingDuration": 62.30000001192093,
+          "presentationDelay": 14.799999982118607,
+          "target": "button.bg-background.border.border-border.disabled:opacity-50.disabled:pointer-events-none.focus-visible:outline-2.focus-visible:outline-offset-4.focus-visible:outline-ring.font-semibold.gap-2.hover:bg-card.inline-flex.items-center.justify-center.min-h-11.motion-reduce:transition-none.px-5.py-3.rounded-md.text-foreground.text-sm.transition-colors",
+          "scripts": [
+            {
+              "duration": 45,
+              "invoker": "#document.onclick",
+              "sourceURL": "http://127.0.0.1:3000/_next/static/chunks/18yroj4mk2n0o.js",
+              "sourceFunctionName": "fI"
+            }
+          ]
+        },
+        "initialResources": [
+          {
+            "path": "/_next/static/chunks/3h-n4wq5nss-z.css",
+            "bytes": 4193,
+            "decodedBytes": 16718,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/266x5l2yi36cb.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/20d2o5fmi463o.js",
+            "bytes": 12264,
+            "decodedBytes": 34076,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ejrthb_w51p6.js",
+            "bytes": 9177,
+            "decodedBytes": 28732,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1loo6ragk2uw1.js",
+            "bytes": 10569,
+            "decodedBytes": 30480,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          }
+        ],
+        "interactiveResources": [
+          {
+            "path": "/_next/static/chunks/3h-n4wq5nss-z.css",
+            "bytes": 4193,
+            "decodedBytes": 16718,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/266x5l2yi36cb.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/20d2o5fmi463o.js",
+            "bytes": 12264,
+            "decodedBytes": 34076,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ejrthb_w51p6.js",
+            "bytes": 9177,
+            "decodedBytes": 28732,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1loo6ragk2uw1.js",
+            "bytes": 10569,
+            "decodedBytes": 30480,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          },
+          {
+            "path": "/_next/static/chunks/0gb9auqnqjm9-.js",
+            "bytes": 699,
+            "decodedBytes": 699,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1tw86oa-fby2r.js",
+            "bytes": 17620,
+            "decodedBytes": 51910,
+            "type": "script"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          }
+        ],
+        "initialBrowserGraphqlOrPrefetch": 0
+      },
+      {
+        "visit": 3,
+        "initialJsBytes": 240892,
+        "interactiveJsBytes": 259211,
+        "initialImageBytes": 10204,
+        "hydrationMs": 2524,
+        "vitals": {
+          "LCP": 1608,
+          "CLS": 0,
+          "INP": 72
+        },
+        "interaction": {
+          "inputDelay": 0.800000011920929,
+          "processingDuration": 58.19999998807907,
+          "presentationDelay": 13,
+          "target": "button.bg-background.border.border-border.disabled:opacity-50.disabled:pointer-events-none.focus-visible:outline-2.focus-visible:outline-offset-4.focus-visible:outline-ring.font-semibold.gap-2.hover:bg-card.inline-flex.items-center.justify-center.min-h-11.motion-reduce:transition-none.px-5.py-3.rounded-md.text-foreground.text-sm.transition-colors",
+          "scripts": [
+            {
+              "duration": 35,
+              "invoker": "#document.onclick",
+              "sourceURL": "http://127.0.0.1:3000/_next/static/chunks/18yroj4mk2n0o.js",
+              "sourceFunctionName": "fI"
+            }
+          ]
+        },
+        "initialResources": [
+          {
+            "path": "/_next/static/chunks/3h-n4wq5nss-z.css",
+            "bytes": 4193,
+            "decodedBytes": 16718,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/266x5l2yi36cb.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/20d2o5fmi463o.js",
+            "bytes": 12264,
+            "decodedBytes": 34076,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ejrthb_w51p6.js",
+            "bytes": 9177,
+            "decodedBytes": 28732,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1loo6ragk2uw1.js",
+            "bytes": 10569,
+            "decodedBytes": 30480,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          }
+        ],
+        "interactiveResources": [
+          {
+            "path": "/_next/static/chunks/3h-n4wq5nss-z.css",
+            "bytes": 4193,
+            "decodedBytes": 16718,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/266x5l2yi36cb.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/20d2o5fmi463o.js",
+            "bytes": 12264,
+            "decodedBytes": 34076,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ejrthb_w51p6.js",
+            "bytes": 9177,
+            "decodedBytes": 28732,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1loo6ragk2uw1.js",
+            "bytes": 10569,
+            "decodedBytes": 30480,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          },
+          {
+            "path": "/_next/static/chunks/0gb9auqnqjm9-.js",
+            "bytes": 699,
+            "decodedBytes": 699,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1tw86oa-fby2r.js",
+            "bytes": 17620,
+            "decodedBytes": 51910,
+            "type": "script"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          }
+        ],
+        "initialBrowserGraphqlOrPrefetch": 0
+      }
+    ]
+  }
+}

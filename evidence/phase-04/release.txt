@@ -1,0 +1,20 @@
+Aster Phase 04 — Protected local release
+Recorded: 2026-08-27
+Requirements: P04-R01 through P04-R10; matrix and local acceptance in README.md.
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/21
+Candidate: 66d8ee1af158be8cca8006176514c788028952fa
+Protected CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33103379545
+Squash/main: b6c99c432603218d0a33c833e0b9a28b1c90e43b
+Merged at: 2026-08-27T18:33:54Z
+Post-merge CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33104100966
+
+Final exact-head PR and post-merge runs succeeded. All six PR jobs passed; on the main push, dependency review was correctly skipped and the five applicable jobs passed, including CI required at 2026-08-27T18:39:53Z. Initial failed candidates and their diagnostic/baseline corrections remain in clean-acceptance.txt; no failure was hidden or converted into a passing rerun.
+
+Commands: gh pr view 21 --repo andrewsrigom/aster-streaming-platform --json state,mergedAt,mergeCommit,url; gh run view 33104100966 --repo andrewsrigom/aster-streaming-platform --json status,conclusion,headSha,jobs,url.
+Observed PR state MERGED; run status completed, conclusion success, headSha b6c99c432603218d0a33c833e0b9a28b1c90e43b. Candidate/squash git tree diff is empty.
+
+Merge used --squash --match-head-commit with the exact candidate and no admin bypass. The existing strict CI required, PR/thread-resolution, squash and linear-history rules remained enabled. Both automated review findings were corrected, confirmed and resolved; no independent human approval is claimed.
+
+Phase 05 was started locally from the frozen candidate and rebased with autostash onto the verified squash without losing its working changes. Local main is fast-forwarded to that squash. No empty commit, duplicate PR, manual workflow rerun or retained-data cleanup was needed.
+
+This is a protected local implementation release, not hosted readiness or playable-video acceptance. Recovery retains durable owner data and restores the documented prior diagnostic topology; no database rollback or broad Docker reset is required.

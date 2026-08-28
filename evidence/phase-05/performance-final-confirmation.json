@@ -1,0 +1,847 @@
+{
+  "schema": "aster.web.final-performance-confirmation.v1",
+  "source": "e4708c4c32ef09d901dd040f9ed87e92426e9406",
+  "image": "sha256:25d53997edea8dca8afe246324bfa1eab06eb412131a4178b1308b8e60a5ef90",
+  "command": "ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web exec playwright test --grep 'initial laboratory budgets'",
+  "exitCode": 0,
+  "stats": {
+    "startTime": "2026-08-28T01:22:18.233Z",
+    "duration": 17837.547,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "preflight": "2026-08-28T01:21:59Z\n22:21:59 up 1 day, 21:16, 2 users, load average: 2.60, 3.45, 3.11\nvmstat live samples: user/system/idle 4/5/91%, 1/2/97%; no swap-in/out.\nMemory bytes total12543180800 used4107923456 free2989748224 available8435257344; swap used1861558272.\nWeb image sha256:25d53997edea8dca8afe246324bfa1eab06eb412131a4178b1308b8e60a5ef90 running healthy zero restarts OOM=false.",
+  "postflight": "2026-08-28T01:22:41Z\nWSL load average 1.73,3.12,3.02; live vmstat idle92%,82%; no swap-in/out.\nMemory bytes total12543180800 used4074078208 free2968842240 available8469102592; swap used1861197824.",
+  "laboratory": {
+    "browser": "145.0.7632.159",
+    "budgets": {
+      "initialJs": 256000,
+      "interactiveJs": 358400,
+      "image": 102400,
+      "initialImages": 204800,
+      "LCP": 2500,
+      "INP": 200,
+      "CLS": 0.1,
+      "hydration": 3500
+    },
+    "samples": [
+      {
+        "visit": 1,
+        "initialJsBytes": 232506,
+        "interactiveJsBytes": 250806,
+        "initialImageBytes": 10204,
+        "hydrationMs": 2949.699999988079,
+        "vitals": {
+          "LCP": 1560,
+          "CLS": 0,
+          "INP": 120
+        },
+        "interaction": {
+          "inputDelay": 4.199999988079071,
+          "processingDuration": 99.2000000178814,
+          "presentationDelay": 16.599999994039536,
+          "target": "button.bg-background.border.border-border.disabled:opacity-50.disabled:pointer-events-none.focus-visible:outline-2.focus-visible:outline-offset-4.focus-visible:outline-ring.font-semibold.gap-2.hover:bg-card.inline-flex.items-center.justify-center.min-h-11.motion-reduce:transition-none.px-5.py-3.rounded-md.text-foreground.text-sm.transition-colors",
+          "scripts": [
+            {
+              "duration": 59,
+              "invoker": "#document.onclick",
+              "sourceURL": "http://127.0.0.1:3000/_next/static/chunks/18yroj4mk2n0o.js",
+              "sourceFunctionName": "fI"
+            }
+          ]
+        },
+        "initialResources": [
+          {
+            "path": "/_next/static/chunks/06rs--oy6fdel.css",
+            "bytes": 4214,
+            "decodedBytes": 16789,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41g9-rmdd-7tm.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/14l7r796h7v2g.js",
+            "bytes": 13013,
+            "decodedBytes": 35946,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41b1jnh7ohc5f.js",
+            "bytes": 10611,
+            "decodedBytes": 30577,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          }
+        ],
+        "interactiveResources": [
+          {
+            "path": "/_next/static/chunks/06rs--oy6fdel.css",
+            "bytes": 4214,
+            "decodedBytes": 16789,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41g9-rmdd-7tm.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/14l7r796h7v2g.js",
+            "bytes": 13013,
+            "decodedBytes": 35946,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41b1jnh7ohc5f.js",
+            "bytes": 10611,
+            "decodedBytes": 30577,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          },
+          {
+            "path": "/_next/static/chunks/0gb9auqnqjm9-.js",
+            "bytes": 699,
+            "decodedBytes": 699,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ks2ysqdjrjsa.js",
+            "bytes": 17601,
+            "decodedBytes": 51863,
+            "type": "script"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          }
+        ],
+        "initialBrowserGraphqlOrPrefetch": 0
+      },
+      {
+        "visit": 2,
+        "initialJsBytes": 232506,
+        "interactiveJsBytes": 250806,
+        "initialImageBytes": 10204,
+        "hydrationMs": 2727.5999999940395,
+        "vitals": {
+          "LCP": 1528,
+          "CLS": 0,
+          "INP": 88
+        },
+        "interaction": {
+          "inputDelay": 4.0999999940395355,
+          "processingDuration": 70.59999999403954,
+          "presentationDelay": 13.300000011920929,
+          "target": "button.bg-background.border.border-border.disabled:opacity-50.disabled:pointer-events-none.focus-visible:outline-2.focus-visible:outline-offset-4.focus-visible:outline-ring.font-semibold.gap-2.hover:bg-card.inline-flex.items-center.justify-center.min-h-11.motion-reduce:transition-none.px-5.py-3.rounded-md.text-foreground.text-sm.transition-colors",
+          "scripts": [
+            {
+              "duration": 47,
+              "invoker": "#document.onclick",
+              "sourceURL": "http://127.0.0.1:3000/_next/static/chunks/18yroj4mk2n0o.js",
+              "sourceFunctionName": "fI"
+            }
+          ]
+        },
+        "initialResources": [
+          {
+            "path": "/_next/static/chunks/06rs--oy6fdel.css",
+            "bytes": 4214,
+            "decodedBytes": 16789,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41g9-rmdd-7tm.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/14l7r796h7v2g.js",
+            "bytes": 13013,
+            "decodedBytes": 35946,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41b1jnh7ohc5f.js",
+            "bytes": 10611,
+            "decodedBytes": 30577,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          }
+        ],
+        "interactiveResources": [
+          {
+            "path": "/_next/static/chunks/06rs--oy6fdel.css",
+            "bytes": 4214,
+            "decodedBytes": 16789,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41g9-rmdd-7tm.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/14l7r796h7v2g.js",
+            "bytes": 13013,
+            "decodedBytes": 35946,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41b1jnh7ohc5f.js",
+            "bytes": 10611,
+            "decodedBytes": 30577,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          },
+          {
+            "path": "/_next/static/chunks/0gb9auqnqjm9-.js",
+            "bytes": 699,
+            "decodedBytes": 699,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ks2ysqdjrjsa.js",
+            "bytes": 17601,
+            "decodedBytes": 51863,
+            "type": "script"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          }
+        ],
+        "initialBrowserGraphqlOrPrefetch": 0
+      },
+      {
+        "visit": 3,
+        "initialJsBytes": 232506,
+        "interactiveJsBytes": 250806,
+        "initialImageBytes": 10204,
+        "hydrationMs": 2976.5999999940395,
+        "vitals": {
+          "LCP": 1520,
+          "CLS": 0,
+          "INP": 104
+        },
+        "interaction": {
+          "inputDelay": 1.5,
+          "processingDuration": 92.19999998807907,
+          "presentationDelay": 10.300000011920929,
+          "target": "button.bg-background.border.border-border.disabled:opacity-50.disabled:pointer-events-none.focus-visible:outline-2.focus-visible:outline-offset-4.focus-visible:outline-ring.font-semibold.gap-2.hover:bg-card.inline-flex.items-center.justify-center.min-h-11.motion-reduce:transition-none.px-5.py-3.rounded-md.text-foreground.text-sm.transition-colors",
+          "scripts": [
+            {
+              "duration": 53,
+              "invoker": "#document.onclick",
+              "sourceURL": "http://127.0.0.1:3000/_next/static/chunks/18yroj4mk2n0o.js",
+              "sourceFunctionName": "fI"
+            }
+          ]
+        },
+        "initialResources": [
+          {
+            "path": "/_next/static/chunks/06rs--oy6fdel.css",
+            "bytes": 4214,
+            "decodedBytes": 16789,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41g9-rmdd-7tm.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/14l7r796h7v2g.js",
+            "bytes": 13013,
+            "decodedBytes": 35946,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41b1jnh7ohc5f.js",
+            "bytes": 10611,
+            "decodedBytes": 30577,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          }
+        ],
+        "interactiveResources": [
+          {
+            "path": "/_next/static/chunks/06rs--oy6fdel.css",
+            "bytes": 4214,
+            "decodedBytes": 16789,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/3y63l6tf5audv.js",
+            "bytes": 2027,
+            "decodedBytes": 5596,
+            "type": "link"
+          },
+          {
+            "path": "/_next/static/chunks/17k0-arfugwpl.js",
+            "bytes": 8946,
+            "decodedBytes": 33533,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/0c4f2kzb0k7rk.js",
+            "bytes": 43995,
+            "decodedBytes": 161256,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/18yroj4mk2n0o.js",
+            "bytes": 71573,
+            "decodedBytes": 228920,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41g9-rmdd-7tm.js",
+            "bytes": 3747,
+            "decodedBytes": 14507,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/turbopack-1gyp7nnd4m7pm.js",
+            "bytes": 4303,
+            "decodedBytes": 10945,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/14l7r796h7v2g.js",
+            "bytes": 13013,
+            "decodedBytes": 35946,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3n9ks3vlf69zp.js",
+            "bytes": 43275,
+            "decodedBytes": 144014,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/2vxc0--u0noun.js",
+            "bytes": 791,
+            "decodedBytes": 791,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3-wajw81k3ez_.js",
+            "bytes": 11453,
+            "decodedBytes": 30799,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/1kktohxvm-zep.js",
+            "bytes": 17230,
+            "decodedBytes": 60908,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/19s6_zaw2994g.js",
+            "bytes": 215,
+            "decodedBytes": 215,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/41b1jnh7ohc5f.js",
+            "bytes": 10611,
+            "decodedBytes": 30577,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/icon.svg",
+            "bytes": 201,
+            "decodedBytes": 201,
+            "type": "other"
+          },
+          {
+            "path": "/_next/static/chunks/37-fi3rbiz08t.js",
+            "bytes": 1327,
+            "decodedBytes": 2739,
+            "type": "script"
+          },
+          {
+            "path": "/_next/image",
+            "bytes": 5102,
+            "decodedBytes": 5102,
+            "type": "img"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          },
+          {
+            "path": "/_next/static/chunks/0gb9auqnqjm9-.js",
+            "bytes": 699,
+            "decodedBytes": 699,
+            "type": "script"
+          },
+          {
+            "path": "/_next/static/chunks/3ks2ysqdjrjsa.js",
+            "bytes": 17601,
+            "decodedBytes": 51863,
+            "type": "script"
+          },
+          {
+            "path": "/graphql",
+            "bytes": 0,
+            "decodedBytes": 0,
+            "type": "fetch"
+          }
+        ],
+        "initialBrowserGraphqlOrPrefetch": 0
+      }
+    ]
+  },
+  "interpretation": "Second independently invoked three-visit block passes every unchanged per-visit budget. No code changes, host-program stops, overlapping build/browser suites or test retries between the first passing final-image block and this confirmation. Deferred preflights do not count as measurement attempts.",
+  "limitations": "Shared Windows/WSL host; the Linux preflight does not prove an idle physical host. This is a small laboratory baseline, not field p75 or a guarantee under arbitrary host contention. Earlier failed blocks remain in pr22-remediation.json."
+}

@@ -1,108 +1,202 @@
-# Work Item: Private subgraphs behind the local Apollo Router
+# Work Item: Server-rendered Catalog and deterministic browser state
 
 - Status: IN_PROGRESS
-- Owner: Platform transport; Identity and Catalog retain their data
-- Phase: 04
-- Requirement IDs: P04-R02, P04-R03, P04-R05, P04-R06, P04-R07, P04-R09
+- Owner: Web presentation; Catalog and Identity retain product data
+- Phase: 05
+- Requirement IDs: P05-R01, P05-R02, P05-R03, P05-R04, P05-R05, P05-R06, P05-R07, P05-R08, P05-R09, P05-R10, P05-R11
 - Created: 2026-08-27
-- Updated: 2026-08-27
+- Updated: 2026-08-28
 
 ## Outcome
 
-The local GraphQL entry point will execute the composed Identity/Catalog schema through the real Apollo Router, preserve owner-validated sessions and demonstrate bounded partial failure without publishing subgraph ports.
+The local browser will render public Catalog/title/attribution content before JavaScript, hydrate Apollo without a duplicate initial request, and exercise profile selection with separate local interaction state.
 
 ## Current behavior
 
-All Phase 04 local requirements and author confirmation pass at source b5d7ab7. PR 21's first protected run 33100857323 exposed stale compatibility wiring: the Identity demo omitted --compose-router, and the standalone Catalog probe inherited private-only networking and an unused credential mount. The correction uses the documented internal Router route and explicit standalone diagnostic overlay without owner trust mounts. Cleanup permits only exact owned PostgreSQL data and unused disposable trust volumes, with labels and foreign attachments checked. CI regression tests 25/25, Catalog guards 3/3, the exact Identity command and fresh Catalog Docker proof pass. Normal runtime trust, topology, deadlines and permissions do not change. Publish one combined remediation after the candidate gate; protected release remains open.
-
-Remediation head 0a8299d passed clean candidate checks (55/55) and was published once. External review confirmed the fixed Identity defect and identified a second blocking contract issue: workflow_dispatch falls back to the candidate SHA for schema compatibility. Resolve absent event baselines against the merge base with origin/main, or the candidate's first parent when the candidate is itself that base. Keep explicit PR/push SHAs, reject self-comparison and missing history, and verify selection against real temporary Git histories before publication. No runtime or media repeat is justified by this CI-only correction.
+Phase 04 is released at b6c99c4 after exact-head protected CI and successful post-merge run 33104100966. This unpublished branch is rebased onto that squash. Public SSR routes, positive public-data projection, finite normalized cache retention and an opt-in Catalog-owned seed pass focused and browser checks. Default catalogs remain empty until explicit seeding; the development stack contains the single labeled technical fixture. Full phase acceptance remains open.
 
 ## Proposed behavior
 
-Use the pinned upstream Router with source-owned YAML/Rhai hooks, generated SDL and private subgraphs. Define the separate local Router credential and cookie boundary in ADR-0017 before wiring it. Keep standalone owner transports available only through an explicit diagnostic configuration. Do not add an aggregation server or a hosted dependency.
+Start with a real Next.js App Router browse/title slice through Apollo Router, deterministic public query preloading and narrow UI primitives. Add the explicit Catalog-owned synthetic seed, profile flow, responsive artwork, Docker packaging and complete browser acceptance before closing this phase. No video player or invented film approval.
 
 ## Boundaries
 
-- Owning context: Identity authorizes sessions/profiles; Catalog owns published reads.
-- Affected services/packages: apps/router, packages/http-express and config, services/identity and catalog, infra/router, infra/compose, tools and focused tests.
-- Authoritative data: existing owner PostgreSQL records, unchanged.
-- Read models/caches: unchanged; Router credentials are not product authority.
-- Trust boundaries: public loopback HTTP to Router; separate authenticated private owner transport; public cookies go only to Identity.
-- External dependencies: pinned unmodified Apollo Router image, local Docker and existing PostgreSQL/Redis. No GraphOS account, license key or paid service.
+- Owning context: Web owns presentation; Catalog owns publication, rights and public metadata; Identity owns sessions/profiles.
+- Affected paths: apps/web, first-party operation inventory, Catalog local seed, Compose/Docker packaging and affected tooling.
+- Authoritative data: PostgreSQL through existing owner use cases; no Web SQL, Redis or owner imports.
+- Read models/caches: per-request server Apollo cache; browser normalized remote cache; Redux contains only coordinated local interactions.
+- Trust boundaries: public browser, server-rendered serialized data and public Router API. No private owner credential enters Web.
+- External dependencies: exact Next 16.3.3, React 19.2.8, Apollo Client 4.2.12 and integration 0.14.5; compatible minimal UI/test dependencies, frozen lock and reviewed install scripts.
 
 ## Invariants
 
-- Only Router publishes GraphQL in the target topology; public identity/forwarding headers cannot confer authority.
-- Identity retains signature, durable session/revocation, ownership, Origin and CSRF checks.
-- No raw operations, variables, cookies, service keys or account/profile IDs in telemetry.
-- No schema, database migration, owner boundary or event change. No unsafe mutation retries.
+- Public catalog/title content remains useful without client JavaScript.
+- Public query results never contain cookies, operator data or server configuration.
+- RSC preloads client-owned query data without a second independent RSC-rendered copy.
+- Session/profile changes clear the relevant browser cache; no durable data in Redux.
+- Phase 04 release is the base; Phase 05 publication still requires complete acceptance.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Invalid public headers or private credential | Reject before owner execution | Bounded rejection outcome |
-| Missing/malformed service key or SDL | Fail startup closed | Sanitized initialization error |
-| One subgraph unavailable or timed out | Nullable mixed query retains healthy owner's data | Subgraph/duration/outcome and trace |
-| Body/concurrency limit | Bounded rejection, no queue growth | Rejection outcome |
-| Client cancellation/shutdown | Cancel fetches; bounded drain | Runtime outcome |
-| Telemetry sink unavailable | Product work remains bounded | Export failure, no credentials |
+| Router unavailable or late | Bounded accessible error with explicit retry | Sanitized outcome, no response payload |
+| Empty Catalog | Honest empty state and documented opt-in seed | No synthetic success |
+| Invalid locale, cursor or title ID | Reject or canonicalize before the query | No input values in labels |
+| Slow or absent JavaScript | Server-rendered public content and normal links work | Browser acceptance evidence |
+| Session expired or changed | Owner authorization and cache invalidation | No credentials in snapshots/logs |
+| Incomplete rights or invalid media report | Seed refuses publication | Bounded local diagnostic |
 
 ## Data and contracts
 
-- Schema/migration: none; use existing generated supergraph and twelve known operations.
-- GraphQL: preserve nullable ViewerAndTitle roots, sanitized public errors and session cookies.
-- Events/cache/retention: unchanged. Runtime trust material is disposable and purpose-separated.
-- Compatibility: old direct HTTP checks use an explicit diagnostic mode; the normal demo uses Router.
+- Schema/migration: no Web persistence; seed uses Catalog contracts and existing generated-media attestation.
+- GraphQL: versioned first-party documents, stable IDs, explicit locale and bounded keyset pages.
+- Events: existing owner outbox behavior only.
+- Cache: explicit entity/connection policies and finite page retention; no cross-request server singleton.
+- Compatibility: existing HTTP-only demo remains available.
+- Retention/deletion: seed is explicit and idempotent; no overwrite of unrelated titles or retained data.
 
 ## Security and privacy
 
-- Authorization: owners remain authoritative; per-owner local service credentials authenticate transport only.
-- Input limits: 32 KiB bodies, finite headers, bounded edge parsing, existing owner depth/alias limits, deadlines and concurrency. Do not configure GraphOS-key-gated native operation limits.
-- Sensitive data: read-only secret mounts; no credentials in source, commands, evidence or logs.
-- Abuse cases: forged headers, direct calls, cookie leakage, duplicate credentials, cross-account access, query saturation and unavailable subgraphs.
+- Authorization: Identity remains authoritative. Any browser-origin extension must be explicit, narrow and covered by real CSRF/CORS tests before profile use.
+- Input limits: bounded query inputs, response bytes and outbound deadlines/cancellation.
+- Sensitive data: server-only modules, public-field-only preload, escaped transport and client bundle/snapshot scans.
+- Abuse cases: forged browser headers, cache cross-contamination, malformed responses and unapproved artwork/media.
 
 ## Implementation steps
 
-1. Verify exact Router license/configuration support; record ADR and credential lifecycle.
-2. Implement/test owner trust adapters and Router hooks/configuration.
-3. Wire resource-bounded Docker topology and diagnostic compatibility.
-4. Exercise real sessions, negative boundaries, partial failure, limits, query plans and traces.
-5. Review one coherent candidate, capture evidence and complete protected release gates.
+1. Add the pinned Web package, minimal UI foundation and real public SSR queries.
+2. Verify safe Apollo hydration, locale and cache behavior with focused tests.
+3. Add repeatable Catalog-owned seed and real profile flow with narrow origin policy.
+4. Package the same Web app in Docker and exercise complete browser/error/keyboard journeys.
+5. Record bundle, image, hydration and laboratory performance budgets and measurements.
+6. Review one coherent candidate, verify clean startup and complete protected release.
 
 ## Tests
 
-- Domain/application: existing owner suites; no business behavior changes.
-- Integration: real Router, Identity, Catalog and PostgreSQL; sign-in/select/revoke, private access and partial timeout.
-- Contract: schema check; Router startup against pinned version; transport negative tests.
-- Acceptance-gate remediation: use Node test MockTimers for the broker late-connect/close ordering test; retain its pending/closing/closed and late-result assertions. Run the focused broker suite, then repeat clean-source full acceptance. This test-only change does not invalidate Router, SQL, media or real-broker runtime evidence.
-- The forced clean run also exposed the same clock race in the S3 capacity fixture and a 3-second child-process startup cutoff during cold AWS SDK loading. Freeze only that fixture's timers and give the diagnostic process a finite 10-second startup/execution envelope; its actual 100/150/500 ms connection/operation/close deadlines and outcome assertions remain unchanged. Repeat the S3 suite and the complete gate, retaining successful unchanged task evidence.
-- Browser: not applicable before the web phase; HTTP cookie journey here.
-- Performance/failure: bounded admission, cancellation, body limit and one owner failure; no throughput claim.
+- Domain/application: existing owner invariants; focused seed idempotency and client-state tests.
+- Integration: real Router/Catalog/Identity; no replacement data endpoint.
+- Contract: first-party operation/schema compatibility and public snapshot filtering.
+- Browser: SSR HTML, disabled/slow JavaScript, hydration, no duplicate request, locales, navigation, keyboard/dialog/profile flow and negative bundle scans.
+- Performance/failure: measured initial JS/image/operation and Web Vitals laboratory budgets; Router outage and retry.
 
 ## Evidence
 
-- Commands: focused package builds/tests, Router config/runtime probe, pnpm check:changed and pnpm check.
-- Raw artifact path: evidence/phase-04/.
-- Acceptance result: local runtime, author review, full clean-source and fresh Docker acceptance pass; evidence/phase-04/clean-acceptance.txt. Exact protected CI and release remain pending.
-- Iteration gate: changed transport tests and pinned Router config/startup probe.
-- Candidate gate: affected-scope checks plus the full phase runtime acceptance and schema compatibility.
-- Heavyweight repeat triggers: changes to trust, routing, Docker packaging, deadlines, cookie propagation or telemetry repeat affected runtime checks; prose-only changes do not repeat Docker/media work.
-- Review stopping rule: one initial and one confirmation review; repeat only for a changed blocking requirement/security/data/availability/public-contract boundary.
+- Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
+- Raw artifact path: evidence/phase-05/.
+- Acceptance result: clean startup/isolation and refresh-owner proof remain valid. Actual-reader and final-asset confirmation pass after the live-region correction; see evidence/phase-05/reader-review.md. The first final functional run passed 18/19; a populated-dialog axe incomplete required supplementary contrast/occlusion verification, and its focused confirmation passed. Final source/review/protected publication remains.
+- Iteration gate: cheapest changed adapter/cache/component checks and local production build.
+- Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
+- Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
+- Review stopping rule: one initial and one confirmation round; additional rounds only for requirement/security/data/availability/public-contract blockers.
 
 ## Rollback or recovery
 
-Stop only the owned verification stack. Revert this runtime slice to the verified schema commit, leaving owner PostgreSQL data intact. Recreate ephemeral Router credentials and restart their consumers together to rotate trust. No broad Docker cleanup or production migration.
+Stop only the owned Web/proof services and return to the released HTTP-only topology. Do not remove retained PostgreSQL data. Retire only the explicitly identified synthetic seed through Catalog if removal is needed. The branch is already based on the Phase 04 squash; no predecessor wait remains.
+
+## First-slice decisions
+
+Critical public content has no Suspense/loading boundary: actual disabled-JavaScript testing proved that streamed replacement otherwise hides it. Public HTML waits for the four-second-bounded query; profile/client-only loading can remain independent. The local seed uses only the fixed source-owned ADR-0016 technical fixture and synthetic non-delivery media references; it refuses existing edits/takedowns. The Web receives no initializer or private Router credentials. Detailed scope and commands are in apps/web/README.md.
+
+## Profile slice
+
+Public source checkpoint is c0b7585 (58/58 source tasks). Implement ADR-0018: exact Web-origin CORS/fetch metadata, separate interaction-only Apollo session cache with cancellation/replacement, Redux dialog coordination and the minimal accessible profile-selection/create flow. Identity remains authoritative; no owner transport or persistence changes. Verify keyboard/cookie/negative-origin behavior against the real Router before publication. Mutation retries are explicit only after owner-state refresh. Preserve all retained profiles and data.
 
 ## Documentation updates
 
-ADR-0017, Router usage, local topology/runbook, phase evidence and repository memory at meaningful checkpoints.
+Update actual Web/Docker commands, UI inventory, phase evidence and repository memory at meaningful checkpoints.
+
+## Docker slice
+
+Add `infra/compose/demo.yml` as an explicit overlay of the existing runtime profile. It adds the standalone Web on loopback 3000 and enables the fixed synthetic seed in the existing finite Catalog initializer after migrations. The API-only topology remains unchanged. Web joins only the Router edge network, receives only the public Router URL, and has no database or private trust mount. Use the already pinned Node image, a non-root/read-only runtime, finite CPU/memory/PIDs, a bounded disposable image cache and a process-liveness endpoint; upstream readiness and degraded browsing remain separate checks.
+
+Package the existing measured `evidence/phase-05/generated-media.json` report, not media bytes or FFmpeg. This reuses the reviewed local technical fixture; it is not a fresh media-generation run, playable delivery, or acquired-film approval. The initializer retains explicit local/operator/seed activation, deadlines, cancellation and the existing idempotent refusal to overwrite modified or retired data. No automatic seed is added to the normal Catalog server.
+
+Actual Docker acceptance found that pinned Node Fetch discards explicit Host. Server-only HTTP now supplies the fixed public Host/Origin, no forwarded private headers, a shared 16-request pool and existing bounded body/deadline behavior. Router policy and request-scoped Apollo ownership are unchanged. Six initial browser failures are recorded; the corrected Docker checkpoint befb432 passes all eight journeys and 16 Web tests. The subsequent public recovery slice below addresses raw error HTML and explicit retry separately from liveness.
+
+Iteration gate: Catalog seed tests, Web checks and Compose/source policy tests. Candidate evidence: one fresh project with the exact Docker-only command, repeat initialization without duplicate writes, SSR/profile browser checks, private-network/credential inspection, and bounded Web shutdown/recovery. Packaging, initialization, runtime configuration or generated-report changes invalidate these checks; prose alone does not. Preserve existing projects and volumes; stop only owned conflicting processes during loopback proof and restore them afterwards. The existing review stopping rule applies.
+
+## Public recovery slice
+
+Docker checkpoint befb432 is locally accepted. Implement P05-R06/P05-R10 in the existing public Catalog consumers: represent expected query failures with Apollo's `errorPolicy: all` and offer one user-triggered read refresh with a pending announcement. Keep the previous snapshot visible and explicitly stale only during that four-second-bounded refresh; remove it when the current query fails, rather than inventing a long-lived freshness guarantee. An initial failure must render useful sanitized HTML, never an empty Catalog or a missing-title success. Provide a normal reload link for disabled JavaScript. No private state, automatic retry, polling, new endpoint or persistence change.
+
+Both preload and consumer use the same error policy. Positive transport projection and complete-response validation remain in force; partial upstream errors cannot become successful public data. A transition keeps already rendered content visible during refresh, with no Suspense boundary around critical initial HTML. Cached metadata is informational only and never authorizes playback or confirms current rights. Unknown render errors retain the route boundary.
+
+Iteration gate: focused Web transport/cache tests and typecheck. Candidate gate: real Docker browser SSR outage/recovery, disabled-JavaScript failure HTML, delayed refresh, stale state, explicit retry, sanitized error, and existing no-duplicate hydration/profile journeys. Add deterministic empty/missing-title browser responses without writing fake Catalog product records. Repeat only Web build/browser evidence for this rendering change; Catalog seed/media and isolated network policy are unchanged. Keep one initial review and one confirmation; defer non-blocking speculative improvements.
+
+The pinned Apollo integration's automatic replay required an explicit-consumer callback guard in the browser link; a preload-context marker alone was insufficient. Confirmation passes 17 Web tests, 11 browser journeys and 58/58 source tasks. See evidence/phase-05/public-recovery.txt for failed iterations, actual commands and limits. Rollback returns to befb432 without data changes. Artwork/performance/clean-checkout acceptance and Phase 05 publication remain open.
+
+## Responsive artwork slice
+
+Implement P05-R07 and the image part of P05-R08 in Web only. Render a deterministic, source-owned abstract PNG at build time with the installed Next ImageResponse, then serve finite responsive variants through next/image. It is generic Aster illustration, not acquired film artwork or Catalog metadata. Keep the existing seed and rights records unchanged; actual title-poster generation and object-storage delivery remain Phase 06.
+
+Only the exact versioned local artwork path is optimizable: no remote hosts, arbitrary local routes, source queries, redirects, SVG or local-IP fetches. Limit widths, quality, upstream bytes and disk cache within the existing Docker resource bounds. Cards are decorative beside their title; the detail figure describes and credits the illustration. Missing images retain a fixed-ratio readable fallback, including without JavaScript. Loading policy is explicit and must not add GraphQL traffic.
+
+Iteration gate: focused policy tests, Web types and production build. Candidate gate: real optimized PNG/WebP responses, width/quality/path rejection, responsive selection at mobile/desktop sizes, image failure with and without JavaScript, accessible names and all existing browser journeys. Define a 100 KiB per-image response budget before measuring. Asset, layout or optimizer changes repeat this evidence; unchanged seed/media/network-isolation proof remains supporting evidence. One initial review and one confirmation; rollback removes the Web asset/component/config without touching data.
+
+## Web laboratory baseline
+
+Implement the remaining P05-R08 measurement contract with exact dev-only web-vitals 6.2.1 (Apache-2.0, no runtime dependencies or install/postinstall hook). The unmodified package stays outside application imports and production artifacts. Use three cold-browser visits to the real seeded Docker browse page, warm server/image cache, 390x844 viewport at DPR 2, Chrome CDP 4x CPU slowdown and 1.6 Mbit/s down / 750 kbit/s up / 150 ms latency. No concurrent builds or browser suites.
+
+Before measurement, set per-visit budgets: 250 KiB initial JavaScript encoded bytes, 350 KiB cumulative JavaScript after opening Profiles, 100 KiB per image / 200 KiB initial image bytes, LCP 2500 ms, INP 200 ms, CLS 0.1, public-provider hydration mark within 3500 ms of navigation start, and zero initial browser GraphQL/prefetch requests. The mark is one local Performance API entry after provider hydration, not a duration for every component. Exercise explicit refresh, profile dialog opening and Escape; measure with Google's library rather than approximate INP. Capture raw samples, environment, source/image identity and limits. This is a small instrumented laboratory baseline, not field p75 or a hosted SLO.
+
+Iteration: Web types and focused laboratory test. Candidate: all browser journeys after the same production build, affected source gate, reviewed raw measurements. Asset, application/dependency, layout or performance-protocol changes invalidate affected measurements. Accessibility/manual screen-reader, bundle secret scans and full phase clean-checkout acceptance remain separate obligations. Rollback removes the measurement mark and dev tool without product data changes.
+
+The actual three-visit attribution run passes, but prior complete and diagnostic runs missed INP/hydration, including after disabling trace recording. Keep those raw results and leave timing stability open. The laboratory now uses the attribution build, disables browser cache and tracing, and finalizes metrics through real document navigation because headless tab switching did not hide the page. No threshold was increased and no speculative application fix is claimed. Bundle secret scans and accessibility can progress within this same item while timing is investigated.
+
+## Public-artifact and accessibility acceptance
+
+Close P05-R09 with a bounded build-time scan of every emitted public JavaScript/CSS/JSON asset, rejecting source maps, private Aster configuration/owner endpoints and credential signatures. Missing or empty output fails. Reuse the redacting checks on actual SSR HTML and browser-loaded chunks, and verify signed-in HTML never serializes the session cookie or the disposable profile fixture. Negative fixtures must demonstrate detection; this is a regression check for named boundaries, not proof that arbitrary obfuscated secrets are impossible. No production credentials are read or added. The normal Web build runs the scan, including Docker and protected source CI.
+
+Complete automated accessibility coverage for public routes and signed-out, profile-list, create, busy and failure dialog states. Use the reviewed dev-only axe Playwright adapter under ADR-0019. The dependency-review action ignores package URL versions, so use two package-scoped license exceptions with separate exact-version/dev-only/lock checks; Aster remains MIT. Preserve keyboard/focus/reduced-motion checks and record screen-reader review separately from automated accessibility-tree inspection. No unused UI primitives or private data in evidence.
+
+Iteration gate: scanner negative fixtures, Web unit/types, focused browser scans. Candidate gate: rebuilt public artifacts, real Docker HTML/profile isolation and accessibility journeys, affected source checks. Rendering or runtime dependency changes repeat relevant browser/performance evidence; test-only additions do not invalidate previous media/seed/network-isolation experiments. Existing initial/confirmation review stopping rule applies. Rollback removes the checks/dev tool and its narrow CI exceptions without data changes. Timing stability and full clean-checkout acceptance remain open until independently proved.
+
+The current runtime checkpoint passes all eighteen functional journeys. It fixes an actual busy-state focus escape by focusing enabled Close before paint and announcing pending work. Full axe scans cover stable states; rapid semantic/focus checks cover the transient state within the real four-second deadline. Image-covered fallback contrast and modal focus incompletes retain explicit supplementary evidence. See evidence/phase-05/web-boundaries.md for failed iterations, actual scope and remaining screen-reader/performance checks. No product timeout or accessibility rule was relaxed.
+
+## Clean Docker acceptance
+
+The first preflight checked only explicit path declarations and incorrectly inferred that the verifier scripts were absent. The actual Docker build and prior runtime manifest contradicted that inference. Docker disregards trailing slashes, so the broad directory exceptions admit unlisted descendants. Add a real scratch-build canary probe using only synthetic fixtures, remove broad directory exceptions and retain the exact approved file patterns, including both verifier scripts. This affects P05-R09, build-context confidentiality and reproducible startup, not data ownership, UI behavior or runtime dependencies. The iteration gate is the real context probe plus focused packaging tests; the candidate gate is a fresh checkout, the documented Docker-only start and browser acceptance. Existing seed/rights data must remain untouched; only the disposable proof project and probe fixtures may be removed after ownership checks.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+## PR 22 licensing remediation
+
+The affected gate exposed generated Next standalone license files to the prose checker. Exclude the generated `.next` directory just as existing `dist`/`node_modules` outputs are excluded; retain all authored Web document checks and add a negative fixture proving that boundary. Do not modify upstream license wording to satisfy Aster prose style. This tooling-only correction does not invalidate browser/runtime evidence.
+
+Current rendered-asset confirmation passes 21/21 functional journeys but fails the unchanged 3500 ms hydration budget in all three visits (3662.7–3820.2 ms). Other laboratory budgets pass. Preserve that failed block. A diagnostic old/new-image ABBA comparison and CPU profile show variable module initialization plus a late Apollo streaming chunk; they are not acceptance reruns or proof that the two presentation fixes caused the slowdown. Investigate production import/module work with Next's installed bundle analyzer. Any optimization must preserve the official Apollo streaming integration, initial public HTML, the current hydration mark, request guards and every budget. Keep a change only with measured bundle/initialization improvement and repeat the affected functional/performance gates. No vendor patch, hard-coded chunk URL or earlier mark is permitted. The separate Windows DevTools trace includes antivirus-injected third-party requests; it is not comparable to the Linux acceptance environment, and host protection stays enabled.
+
+The import-optimization probe produces identical 504 client chunk parts / 966447 decoded bytes and is removed. The analyzer identifies 26934 decoded bytes of tailwind-merge used only by Button. Its only actual conflicting override is profile-button justification. Replace that override with a typed center/between CVA variant and use CVA's existing additive class composition; remove the now-unused merge helper and direct dependencies. This preserves both concrete layouts, native button behavior, Radix semantics and public/client boundaries, not arbitrary unused styling capabilities. Verify computed justification/alignment in the real profile flow, existing functional/accessibility journeys, final encoded bytes and the unchanged performance protocol. Rollback restores the helper/dependency and existing class override together; no durable state changes.
+
+The complete dependency-review result for abf3a84 (CI 33129461576) rejects 27 newly introduced transitive packages under the current allowlist; every other hosted job passed. The complete initial code review adds two P2 findings: omit absent title metadata and stop announcing a session refresh before owner-state recovery. Batch both findings with the license and standalone-notice corrections before publishing another candidate.
+
+Under the standing owner authorization, ADR-0020 will retain MIT and add only exact package-scoped exceptions, with separate locked-version/license checks. Sharp/libvips is an unmodified server-side image optimizer; Lightning CSS is a build tool and caniuse-lite is browser-compatibility data. Preserve their respective terms, attribution and source locations, including LGPL/GPL texts. No dependency upgrade, runtime feature, data owner, media right or trust boundary changes.
+
+Package upstream notices from the installed Web production dependency closure and actually traced standalone packages, including Next's nested vendor notices. Use bounded local filesystem traversal; no network access during notice generation, no source maps or private configuration, no runtime package execution. Record any package-level license supplied separately by its upstream. Fail if a required package, notice or reviewed version is absent. Add only exact build-context paths.
+
+Iteration gate: policy/lock/license and notice-collector negative tests, Web types and platform packaging checks. Candidate gate: affected source gate, real Docker context probe, one Web packaging build, actual runtime notice/hash inspection and optimized-image/SSR smoke. Reuse reader, full browser, performance and clean seed/isolation evidence only if application/dependency/configuration bytes are unchanged; otherwise repeat the affected measurement. No pipeline retry against unchanged source. Collect the pending code review and use one confirmation review after the coherent remediation.
+
+Current publication is source plus a Docker recipe, not a distributed Aster binary image. Phase 14 must verify corresponding source availability (including upstream native-library patches), complete artifact notices/SBOM and installation/relinking instructions before publishing binary images; do not invent a source offer. Rollback removes the package exceptions and generated notice packaging together, leaving the previous source candidate and all retained data intact.
+
+For the two review findings, format only present year/runtime/genre values, omit an empty metadata paragraph and replace the premature refresh success with neutral recovery guidance. Selection may announce the confirmed mutation but not an unconfirmed preferences reload. Add pure formatting tests and real-browser incomplete-detail/double-failure recovery checks; do not change requests, ownership, cancellation or live-region semantics. These small rendered-asset changes require the functional browser and final performance gates after the single packaging build. Existing clean seed/isolation and actual reader behavior remain supporting evidence because their mechanics and controls are unchanged. Apply the Next.js/React skill checks to these two components without adding unrelated refactors.
+
+Persistent status elements pass the regression but still lose rapid announcements in unmodified Orca 48/Firefox: its event manager filters status-bar events within 100 ms, while explicit live sections are exempt. Use the standard persistent `div aria-live="polite" aria-atomic="true"` pattern documented by MDN instead of the redundant status role. Preserve visible messages, non-interruption, atomicity, existing-node regression and real speech acceptance; do not add artificial delays, force alert urgency or patch the reader. This is a presentation compatibility correction inside P05-R05/P05-R06/P05-R11, with the same gates and rollback below.
+
+Actual Orca/Firefox review found a P05-R05/P05-R06/P05-R11 status-announcement gap: the profile flow mounts already-populated status elements, rather than updating pre-existing regions. W3C ARIA22 requires the container to precede the status message. Keep the two pending/notice regions mounted, preserve their polite semantics and current text, and add explicit atomicity. First add a browser regression proving the same nodes exist before and during the mutation. Confirm real speech on the unchanged owner APIs after rebuilding Web. No session, cache, SSR, data, timeout or primitive boundary changes. Iterate on this one dialog test plus Web unit/types; repeat the functional browser candidate and affected source checks. Existing clean platform/seed/isolation evidence remains valid. Recheck final asset budgets after the UI build; do not repeat unrelated media or owner experiments. The existing review stopping rule applies.
+
+For P05-R11, investigate actual Orca speech output in a disposable Linux container with a private Xvfb/D-Bus session. Windows UI control has twice stopped because it cannot establish the browser URL; do not bypass that policy or automate the user's Windows apps through another tool. This independent lab visits only the local public demo with a fresh browser profile, no host display/session, credentials, Docker socket or retained-data mounts. Reuse the pinned Node/Debian base; reviewed Debian Orca is unmodified LGPL-2.1-or-later tooling, separate from Aster artifacts and MIT source. No host package installation, new product service or CI dependency is introduced. Bound build/run time and container CPU/memory/PIDs, retain upstream notices, record actual package/image versions and speech, and remove only the named lab resources. An accessibility-tree dump alone cannot satisfy the reader gate. If actual reader output is unavailable, retain the gap instead of relabeling automated checks as manual review.
+
+Clean browser acceptance found a P05-R02/P05-R06 blocker: refresh can immediately render unavailable without opening HTTP. The trace disproves a four-second request timeout. The installed Apollo option comparator treats different same-source callbacks as equal, which can retain a previous consumer's closed request flag across hydration/remounts. First reproduce an explicit refresh after switching between consumers of the same query. Give each mounted consumer a stable, non-serialized context identity so Apollo updates its callback, preserving the explicit-request gate, no automatic queries, duplicate-click exclusion and four-second transport deadline. Iterate on the focused browser regression and Web checks; repeat affected public/recovery/browser and final-image performance evidence after rebuilding Web. Existing clean platform startup/seed/isolation evidence remains applicable because this changes no owner or Compose contract.
+
+The clean-source gate stopped in the Express compatibility subprocess after 5.24 seconds with a null exit status; the same diagnostic completes in 622 ms in isolation. The wrapper currently budgets five seconds for cold module loading, execution and shutdown together and hides subprocess errors. Give only this test process a bounded fifteen-second startup/execution allowance and assert its error before its exit code. Keep the diagnostic's two-second HTTP deadline, one-second drain grace and all response assertions unchanged. Verify the focused adapter tests and an uncached clean-source gate. This is test-harness remediation, not an application performance change; it does not invalidate the completed Docker build or browser image.
+
+Performance confirmation will use two separately invoked three-visit blocks against the unchanged production image and existing budgets, with no retries. Before each block, record source/image/browser identity, host load and CPU/memory samples; run no overlapping build or browser suite. Require one-minute WSL load below half of its six CPUs and at least 70% idle in the two live vmstat samples; otherwise defer measurement, not the functional work. Record post-run host samples and every result. A budget failure stops confirmation and requires attribution-based diagnosis rather than more runs to select success. This defines a small reproducible quiet-host baseline, not performance under arbitrary host contention or field SLOs.
+
+- [x] Requirements satisfied locally; protected review/release remains
+- [x] Current source gate passes 58/58; all 21 distinct browser scenarios and both separately invoked final three-visit laboratory blocks have passing evidence in evidence/phase-05/pr22-remediation.md
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded
+- [x] Additional confirmation completed at 01:22:18Z on unchanged e4708c4/image after the existing host preconditions passed; no further unchanged measurements
+- [ ] Protected CI/review and release remain

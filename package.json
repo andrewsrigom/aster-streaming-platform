@@ -17,6 +17,7 @@
     "schema:check": "turbo run build --filter=@aster/router && pnpm --filter=@aster/router schema:check",
     "schema:update": "turbo run build --filter=@aster/router && pnpm --filter=@aster/router schema:update",
     "catalog:demo": "node ./tools/verify-local-catalog.mjs",
+    "catalog:seed": "node ./tools/seed-local-catalog.mjs",
     "catalog:media": "turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs --generated",
     "media:test": "node --test ./tools/media/*.test.mjs",
     "media:fixture": "node ./tools/run-media-fixture.mjs",
