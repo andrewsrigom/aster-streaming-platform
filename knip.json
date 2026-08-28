@@ -35,6 +35,7 @@
         "test/integration/media-origin.ts",
         "src/seed-local.ts",
         "src/initialize-web-demo.ts",
+        "src/initialize-playable-demo.ts",
         "src/migrate-local.ts",
         "src/print-schema.ts"
       ],

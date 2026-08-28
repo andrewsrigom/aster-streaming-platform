@@ -51,6 +51,7 @@
 !apps/web/components/**/*.tsx
 !apps/web/features/**/*.ts
 !apps/web/features/**/*.tsx
+!apps/web/features/**/*.css
 !apps/web/lib/**/*.ts
 !apps/web/lib/**/*.tsx
 !apps/web/store/**/*.ts

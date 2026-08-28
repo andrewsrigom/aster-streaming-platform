@@ -1,112 +1,80 @@
-# Work Item: Owner-validated playback sessions
+# Work Item: Accessible HLS player and clean playable demo
 
 - Status: IN_PROGRESS
-- Owner: Playback owns sessions; Catalog owns publication eligibility and delivery references
+- Owner: Playback owns session authority; Web owns local player interaction
 - Phase: 07
-- Requirement IDs: P07-R01, P07-R02, P07-R03, P07-R09
+- Requirement IDs: P07-R04, P07-R05, P07-R06, P07-R07, P07-R08, P07-R10, P07-R11, P07-R12
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Create a short-lived anonymous playback session through the supergraph only after a bounded current Catalog check. Return a CDN-compatible reference without proxying media or depending on optional personalization.
+Deliver an accessible adaptive watch journey and one Docker-only clean-start playable demo, independent of optional profiles.
 
 ## Current behavior
 
-Phases 00–06 are released. PR 23 final head 37a9a398428f52fdc35942eeb690745d22812736 passed protected CI; squash 4083ea65edcf750bf4ba3e253654a529b72cd105 passed exact post-merge CI 33156505851. [Release evidence](../evidence/phase-06/release.md). This local branch is rebased on released main.
-
-The public Playback mutation, current private Catalog read, anonymous session rules, isolated PostgreSQL store and Docker runtime are implemented. Affected suite 248/248, source 54/54, exact-release schema compatibility, actual runtime-role/migrator checks and the disposable connected Router journey pass. [Evidence](../evidence/phase-07/README.md). Candidate governance/protected review/release remain; player/demo is the next slice. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) fixes trust and finite local persistence policy.
+Backend P07-R01 is released at main f2d99d254263baac532ef36edba0ab2c99d20dc3; PR 24 protected CI, one confirmation and post-merge pass. [Release](../evidence/phase-07/backend-release.md). This branch adds the actual player and generated playable demo. Browser/failure/accessibility, empty-volume startup and replay pass; candidate gates/protected publication remain. Retained film/HLS is unchanged. [Player evidence](../evidence/phase-07/player.md).
 
 ## Proposed behavior
 
-Continue from tested core 9ab840a: expose createPlaybackSession(titleId) with a nullable session and finite result code, generated correlation ID, manifest reference and expiry. Add Playback's bounded Apollo/Express transport, lifecycle/readiness, local migration runner and Docker image using the existing pinned packages. Compose the additive schema/known operation, wire independent Router-to-Playback and Playback-to-Catalog file credentials, and prove the connected path. No profile argument, media proxy, optional dependency or new framework. Backend-first integration remains separate from subsequent player/demo acceptance.
+Public watch route with preloaded metadata and an explicit client-only session/start action. Apollo owns session responses; Redux holds only local preferences. Use pinned HLS.js and selected Media Chrome controls after P07-R11 review. Fetch media directly from the browser. Expose finite errors and bounded local QoE measurements. Finish a project-scoped Docker command with real generated-media initialization, no hosted credentials/manual SQL.
 
-Initial PR 24 review 5050175412 identified a P07-R09 startup dependency: the base Router still waited for Identity, while the proof replaced that dependency. Remove Identity from the base prerequisite list and remove the proof's dependency override. CI 33162485356 passed source/platform but failed the Catalog fixture's obsolete three-volume cleanup ceiling after all runtime assertions passed; update it to the exact five allowed volumes with regression coverage. Repeat only the affected runtime proofs and candidate gates, then request one confirmation. Tested local player work is safely stashed at 2e85504b1739e3192484c37f5af63977b305eec1 for rebase/resume.
+PR 24 startup and fixture-cleanup corrections are released, with 64/64 candidate tasks and passing affected runtime proofs. Player stash 2e85504b1739e3192484c37f5af63977b305eec1 is already restored; do not reapply it or repeat unchanged backend experiments. [Correction evidence](../evidence/phase-07/backend-review.md).
 
 ## Boundaries
 
-- Owning context: Catalog authorizes current publication; Playback creates and expires its own session.
-- Affected services/packages: Catalog, new Playback owner, Router composition and local Compose.
-- Authoritative data: separate Catalog and Playback PostgreSQL schemas/roles.
-- Read models/caches: no cached projection can authorize a new session; no Redis dependency.
-- Trust boundaries: browser input, owner GraphQL response, media URL policy, request cancellation and local service credentials.
-- External dependencies: existing pinned Node/TypeScript/Express/Apollo/PostgreSQL; no paid or hosted resource.
+Catalog owns rights/publications; Playback owns sessions; Web owns local interaction. Paths: apps/web/features/playback, store/player, app/watch/[id], title link, focused/browser tests; then demo tooling/Compose. Trust boundaries: GraphQL payload, storage, manifests/segments/captions, user activation and lifecycle. Existing React/Next/Apollo/Redux pins remain; review HLS.js 1.7.1 and Media Chrome 4.19.2 package compatibility and notices before use.
 
 ## Invariants
 
-- No cross-owner SQL, shared domain imports, caller-provided manifest/approval/profile authority, or recursive request through the same public Router.
-- Only a current published, validated, rights-approved reference can create a session.
-- Session ID is audit identity, not an S3 credential or DRM token.
-- Media bytes bypass Node and GraphQL.
-- Anonymous sessions do not depend on Identity, Engagement or Discovery.
-- Phase 06 must release before this branch is published.
+No SSR session creation, remote state in Redux, stored session URL/ID/history, media proxy, optional Identity dependency, arbitrary URL input or automatic mutation retry. No private configuration in client assets. Do not invent captions for the approved film.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Telemetry |
-|---|---|---|
-| Missing/retired/disputed/expired Catalog title | No session | Bounded rejection code |
-| Catalog deadline, invalid response or cancellation | Fail closed, no session write | Unavailable/cancelled code |
-| Stale owner snapshot or rights expire before issuance | Reject or cap expiry to current authorization | Rejection code |
-| Session-store capacity/timeout | Reject, no automatic mutation retry | Bounded store result |
-| Optional personalization outage | Anonymous creation remains independent | Separate optional outcome |
+Finite session/expiry, manifest, network, decode, unsupported-media, caption and fatal messages. Unknown mutation outcome requires deliberate retry. HLS GET retry and recovery are bounded; unmount/expiry stops loads and destroys the adapter. Optional caption failure is visible without blocking video. Corrupt/blocked storage uses defaults. Native fallback exposes quality limitations.
 
 ## Data and contracts
 
-- Schema/migration: additive Playback-owned sessions with expiry, bounded retention/capacity and audit context; no Catalog write changes.
-- GraphQL: additive session mutation and minimal owner publication query; exact SDL/operation compatibility and request-scoped batching before publication.
-- Events: no relay or durable progress; Phase 08 owns those behaviors.
-- Cache: none needed to authorize; retain no cross-request rights authority.
-- Compatibility: public Catalog metadata response remains unchanged; private owner facts stay out of that projection.
-- Retention/deletion: 4096 total SQL slots; retain audit 24 hours after expiry, prune at most 64 eligible rows per admission, never evict active/recent sessions. Preserve media/Catalog audit.
+Reuse StartPlayback; no durable migration. Versioned preferences contain only volume, mute, rate, captions and quality, validated after hydration. QoE: finite in-memory events, monotonic durations, no user/title/session IDs or URLs, no remote collection. Phase 08 owns durable progress.
 
 ## Security and privacy
 
-- Authorization: current Catalog owner read; anonymous playback remains independent of Identity. Verified profile binding is deferred to the owning personalization requirement, never an arbitrary profile argument.
-- Input limits: exact identifier input, bounded batch/body/deadlines and finite admission.
-- Sensitive data: no credentials, IP address, cookie or full media URL in telemetry.
-- Abuse cases: stale projections, URL substitution/SSRF, spoofed owner credentials, alias/batch amplification, cancelled late writes and session-capacity exhaustion.
+Fixed Router origin, omitted cookies, bounded response/concurrency and 4s deadline/cancellation. Validate returned title/expiry/reference before attachment. Bound HLS buffers/timeouts/retries. Never render library error objects. Demo provenance must prove generated source rights; retain existing volumes.
 
 ## Implementation steps
 
-1. Project current Catalog publication independently of public metadata; test all existing eligibility gates and expiry.
-2. Model bounded session identity/expiry and fail-closed application ports with deterministic clocks/IDs.
-3. Record local owner-read trust/consistency ADR; implement the fixed GraphQL lookup and isolated Playback persistence.
-4. Compose the Playback subgraph, operation limits, telemetry and Docker runtime.
-5. Verify real owner checks/store/migrations/failure isolation and public contract; publish only after predecessor release.
-6. Continue player/control/telemetry and clean Docker-only playable demo as subsequent coherent slices.
+1. Record control decision; verify packages/licenses.
+2. Test session client, local state, errors/QoE and HLS lifecycle.
+3. Wire client-only watch UI, keyboard controls, captions/quality and attribution.
+4. Verify real browser/failure/accessibility/direct-media path and lazy bundle impact.
+5. Implement ADR-0029's fixed generated playable seed, immutable object publication and explicit Compose readiness. Verify empty-volume Docker demo and scoped diagnostics/cleanup; preserve the retained film and database. The original browse seed stays unchanged.
+6. Correct observed default-caption cue loss and immutable S3 replay failure, with focused adapter tests and real caption/replay confirmation. Keep the native caption selector; omit the redundant upstream toggle with invalid ARIA semantics. These are active acceptance boundaries, not speculative hardening.
+7. Consolidate evidence/review/protected release after the backend predecessor.
 
 ## Tests
 
-- Domain: publication binding, lifecycle/rights/artwork expiry, URL policy, session ID/expiry and bounded snapshot age.
-- Application: no write on unavailable/invalid/stale Catalog, cancellation, capacity and optional-service independence.
-- Integration: real PostgreSQL role/migration/session behavior and Catalog/Playback/Router requests.
-- Contract: additive composition, protected operation compatibility and N+1 batch counts.
-- Journey: actual Router/owner/session requests in the disposable fixture at this slice; browser/HLS/player acceptance in the next slice.
-- Performance/failure: bounded deadlines/concurrency and negative delivery references, not an unchanged host benchmark.
+Payload/URL/expiry/operation validation; cancellation/late response; storage corruption/bounds; telemetry redaction; adapter cleanup/native/quality/captions. Browser: actual HLS frame, seek/mute/rate/fullscreen, keyboard/focus/labels, preferences/reload, expiry/rejection/missing media/slow network and a labeled caption fixture. Verify Chromium first; record native/WebKit/Firefox evidence without claiming untested devices.
 
 ## Evidence
 
-- Commands: affected build/unit/type/lint during iteration; affected-scope gate at candidate.
-- Raw artifact path: evidence/phase-07/ when the first focused checks run.
-- Acceptance result: backend requirements locally verified by the linked source/SQL/connected-runtime checks; protected release and full Phase 07 acceptance remain pending.
-- Iteration gate: cheapest changed-owner domain/application tests and strict build.
-- Candidate gate: source, composition, changed real-dependency/runtime tests, docs/security and exact protected CI.
-- Heavyweight repeat triggers: schema, SQL, transport, packaging or player changes that invalidate their respective evidence; unchanged film/CPU work is not repeated.
-- Review stopping rule: collect one initial round and one confirmation; extend only for an explicit requirement/security/data/availability/public-contract blocker.
+Iteration: focused Web tests and affected TypeScript/ESLint. Candidate: changed-scope source/docs/security, schema, browser/accessibility/failures, notices/bundle and protected CI. Repeat browser proof only when its adapter/control/transport boundary changes; clean demo only when packaging/seed/Compose changes. No unchanged CPU/film/SQL experiment. One initial and one confirmation review, batch only requirement/security/data/availability/public-contract blockers. Raw results: evidence/phase-07.
 
 ## Rollback or recovery
 
-The predecessor is released. Before deployment, stop only the new Playback service and keep old Router/schema artifacts available; preserve Catalog/media. Migration 0001 is additive and normally retained on application rollback; destructive down applies only to disposable/explicitly approved recovery targets. Up/down/up and unrelated-data preservation pass in the isolated fixture. No retained schema was changed.
+Keep PR 24 frozen. Revert additive player/watch entry, retain browsing. Ignore/reset preference version without product-data loss. Demo cleanup verifies exact ownership; never reset retained development media.
+
+PR 24 is now squash-merged at f2d99d254263baac532ef36edba0ab2c99d20dc3 after protected CI 33163548411 and confirmation 5451448968. Exact post-merge run 33164139588 passes all applicable jobs. This player branch is rebased without changing the backend tree. For real browser acceptance, preserve the current Web/Router/Catalog images and a local Catalog-only database backup, apply tested additive Catalog 0008 and Playback 0001 with their normal initializers, then upgrade only those application services from verified images. Media, PostgreSQL/Redis containers, other processes and publication pointer remain unchanged. Roll back application images while retaining additive audit/schema; never run destructive down against this retained database.
 
 ## Documentation updates
 
-Update current state/queue/handoff at this dependent-start checkpoint, then consolidate evidence at meaningful tested candidates. Add the trust ADR before transport and a concise session runbook with the completed vertical slice.
+Player decision, browser limitations, failure/QoE definitions, one-command demo and acceptance at coherent checkpoints. Memory tracks dependency/rebase and next action.
 
 ## Completion checklist
 
-- [x] Current publication and session rules implemented
-- [x] Real owner read, persistence and Federation mutation verified
-- [x] Failure/abuse boundaries pass
-- [x] Evidence and documentation current
-- [ ] Predecessor released and this candidate passes protected gates
+- [x] Player strategy/package compatibility recorded
+- [x] Session/preferences/error/QoE/adapter tests pass
+- [x] Accessible watch journey and failures verified (Chromium; content/browser limitations recorded at checkpoint)
+- [x] Empty-state Docker playable demo verified locally
+- [x] Predecessor released
+- [x] Player/demo local candidate gate 64/64 and zero-high/critical dependency audit
+- [ ] Protected review/release complete

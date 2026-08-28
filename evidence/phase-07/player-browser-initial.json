@@ -1,0 +1,154 @@
+{
+  "reportType": "sanitized-summary; raw report retained outside Git because failed assertion includes host-injected script data",
+  "image": "sha256:d0772853490fbbe4da6475112aa5afe48e329d9dd552ea6f60938d8bd41ed141",
+  "browser": "Google Chrome 152.0.7977.64 / Windows",
+  "playwright": "1.62.1",
+  "sourceBase": "f2d99d254263baac532ef36edba0ab2c99d20dc3",
+  "stats": {
+    "startTime": "2026-08-28T10:55:55.408Z",
+    "duration": 21987.747000000003,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "title": "watch metadata is SSR-only until explicit session creation; real media bypasses GraphQL",
+      "status": "failed",
+      "durationMs": 1442,
+      "attachments": []
+    },
+    {
+      "title": "keyboard controls change playback, quality and fullscreen; preferences survive reload",
+      "status": "passed",
+      "durationMs": 10075,
+      "attachments": [
+        {
+          "name": "restored-local-preferences",
+          "data": {
+            "muted": true,
+            "rate": 1.25,
+            "quality": 240
+          }
+        }
+      ]
+    },
+    {
+      "title": "player controls have accessible names and no automated WCAG A/AA violations",
+      "status": "passed",
+      "durationMs": 1929,
+      "attachments": [
+        {
+          "name": "player-accessibility",
+          "data": {
+            "violations": [],
+            "incomplete": [
+              {
+                "id": "video-caption",
+                "impact": "critical",
+                "tags": [
+                  "cat.text-alternatives",
+                  "wcag2a",
+                  "wcag122",
+                  "section508",
+                  "section508.22.a",
+                  "TTv5",
+                  "TT17.a",
+                  "EN-301-549",
+                  "EN-9.1.2.2",
+                  "RGAAv4",
+                  "RGAA-4.3.1"
+                ],
+                "description": "Ensure <video> elements have captions",
+                "help": "<video> elements must have captions",
+                "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/video-caption?application=playwright",
+                "nodes": [
+                  {
+                    "any": [],
+                    "all": [],
+                    "none": [
+                      {
+                        "id": "caption",
+                        "data": null,
+                        "relatedNodes": [],
+                        "impact": "critical",
+                        "message": "Check that captions are available for the element"
+                      }
+                    ],
+                    "impact": "critical",
+                    "html": "<video slot=\"media\" playsinline=\"\" crossorigin=\"anonymous\" preload=\"metadata\" aria-label=\"Title video\" tabindex=\"-1\" src=\"blob:http://127.0.0.1:3000/d30d3be2-cbae-4046-b4d5-f42c8389e39a\"></video>",
+                    "target": [
+                      "video"
+                    ],
+                    "failureSummary": "Fix all of the following:\n  Check that captions are available for the element"
+                  }
+                ]
+              }
+            ],
+            "passes": [
+              "aria-allowed-attr",
+              "aria-command-name",
+              "aria-conditional-attr",
+              "aria-deprecated-role",
+              "aria-hidden-focus",
+              "aria-prohibited-attr",
+              "aria-required-attr",
+              "aria-roles",
+              "aria-valid-attr-value",
+              "aria-valid-attr",
+              "button-name",
+              "color-contrast",
+              "duplicate-id-aria",
+              "form-field-multiple-labels",
+              "label",
+              "nested-interactive",
+              "select-name"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "retired/unavailable session is a deliberate retry, never a successful stale player",
+      "status": "passed",
+      "durationMs": 1025,
+      "attachments": []
+    },
+    {
+      "title": "missing manifest reports one finite media failure and removes the source",
+      "status": "passed",
+      "durationMs": 1270,
+      "attachments": []
+    },
+    {
+      "title": "session expiry stops a real attached player without automatic renewal",
+      "status": "passed",
+      "durationMs": 1265,
+      "attachments": []
+    },
+    {
+      "title": "slow manifest has a bounded deadline and an explicit recovery action",
+      "status": "passed",
+      "durationMs": 961,
+      "attachments": []
+    },
+    {
+      "title": "actual HLS caption selection uses a labeled technical fixture, not invented film dialogue",
+      "status": "passed",
+      "durationMs": 1332,
+      "attachments": [
+        {
+          "name": "caption-fixture",
+          "data": {
+            "owner": "Aster contributors",
+            "purpose": "technical HLS/VTT selection only; not film dialogue",
+            "selected": true,
+            "disabledAgain": true
+          }
+        }
+      ]
+    }
+  ],
+  "failedAssertion": "Initial SSR test rejected the public poster URL. Public artwork is permitted metadata; correction rejects manifests/session authority instead. No application change was needed."
+}

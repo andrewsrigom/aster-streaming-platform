@@ -29,6 +29,7 @@ ENV NODE_OPTIONS=--max-old-space-size=192
 COPY --from=build --chown=node:node /out ./
 COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
 COPY --chown=node:node evidence/phase-05/generated-media.json ./ui-seed-report.json
+COPY --chown=node:node tools/media/generate-hls.mjs tools/media/hls-contract.mjs tools/media/fixture-export.mjs ./fixture-recipe/
 USER node
 EXPOSE 3200
 STOPSIGNAL SIGTERM

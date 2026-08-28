@@ -1,6 +1,6 @@
 # Phase 07 implementation evidence
 
-P07-R01's backend is implemented and locally verified: public Playback mutation, current private Catalog reads, isolated PostgreSQL sessions and the connected Docker/Router runtime. Local candidate gates pass; protected CI and review remain pending. Product player and the clean playable demo are unfinished; this is not full Phase 07 acceptance.
+P07-R01's backend is released: [PR 24, protected CI, confirmation, squash and post-merge](backend-release.md). The player and clean playable demo are implemented with [local acceptance and limitations](player.md); their candidate gates and protected release remain open. Historical backend evidence follows; this is not yet full Phase 07 release.
 
 The initial review and first hosted run found a startup dependency and an obsolete fixture cleanup ceiling. The [batched correction and fresh runtime evidence](backend-review.md) supersede the original startup topology below; session/SQL/media behavior is unchanged.
 
@@ -55,4 +55,4 @@ The later assertion cleanup, local variable rename (avoiding a false-positive se
 
 ## Remaining boundary
 
-Finish protected review/release for P07-R01. Then implement the accessible player, QoE/error behavior and empty-volume Docker-only playable journey. The connected proof is not a browser test, media decode, retained-runtime deployment, dashboard or field SLO. [Session runbook](../../services/playback/README.md).
+Finish the player/demo candidate gates and protected release, then activate Phase 08. The backend proof is not itself a browser test or field SLO; separate [player/demo evidence](player.md) records real decode and the local delivery journey. [Session runbook](../../services/playback/README.md), [playable demo runbook](../../apps/web/PLAYBACK.md).

@@ -219,9 +219,13 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
         </h2>
         <AttributionDetails title={title} />
       </section>
-      <p className="rounded-md border border-border p-4 text-sm text-muted-foreground">
-        This checkpoint supports browsing. Video playback is not available yet.
-      </p>
+      <Link
+        prefetch={false}
+        className={buttonVariants()}
+        href={`/watch/${title.id}?locale=${locale}`}
+      >
+        Watch title <span aria-hidden="true">→</span>
+      </Link>
       <QueryFeedback
         available
         pending={pending}

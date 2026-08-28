@@ -1,0 +1,169 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\andre\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/playwright.config.mjs",
+      "--grep",
+      "keyboard controls|heavy player"
+    ],
+    "configFile": "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\playwright.config.mjs",
+    "rootDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "playback.spec.ts"
+        ],
+        "timeout": 35000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./results/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "playback.spec.ts",
+      "file": "playback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "keyboard controls change playback, quality and fullscreen; preferences survive reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5613,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T11:05:42.579Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "restored-local-preferences",
+                      "contentType": "application/json",
+                      "body": "ewogICJtdXRlZCI6IHRydWUsCiAgInJhdGUiOiAxLjI1LAogICJxdWFsaXR5IjogMjQwCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-627f00be6ac376981610",
+          "file": "playback.spec.ts",
+          "line": 97,
+          "column": 5
+        },
+        {
+          "title": "heavy player code is absent from browsing and its watch payload is measured separately",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1218,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T11:05:48.519Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "lazy-player-payload",
+                      "contentType": "application/json",
+                      "body": "ewogICJzY29wZSI6ICJBc3RlciBzY3JpcHQgcmVzcG9uc2UtYm9keSBieXRlcyBpbiBvbmUgZnJlc2ggYnJvd3NlciBjb250ZXh0OyB3YXRjaCBhZGRzIHRoZXNlIGFzc2V0cyBhZnRlciBicm93c2luZy4gTm8gdGltaW5nL1NMTyBjbGFpbS4iLAogICJicm93c2VCeXRlcyI6IDIzMjcxMywKICAiYWRkZWRXYXRjaEJ5dGVzIjogMjMwMzY5LAogICJicm93c2UiOiBbCiAgICB7CiAgICAgICJhc3NldCI6ICIvX25leHQvc3RhdGljL2NodW5rcy8zeTYzbDZ0ZjVhdWR2LmpzIiwKICAgICAgImVuY29kZWRCeXRlcyI6IDIwNDQsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMTdrMC1hcmZ1Z3dwbC5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiA4OTY0LAogICAgICAiY29udGFpbnNQbGF5ZXIiOiBmYWxzZQogICAgfSwKICAgIHsKICAgICAgImFzc2V0IjogIi9fbmV4dC9zdGF0aWMvY2h1bmtzLzE4eXJvajRtazJuMG8uanMiLAogICAgICAiZW5jb2RlZEJ5dGVzIjogNzE2MzMsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMnJiMzFtX2t2OXR5ZS5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiAzNzYwLAogICAgICAiY29udGFpbnNQbGF5ZXIiOiBmYWxzZQogICAgfSwKICAgIHsKICAgICAgImFzc2V0IjogIi9fbmV4dC9zdGF0aWMvY2h1bmtzL3R1cmJvcGFjay0xZ3lwN25uZDRtN3BtLmpzIiwKICAgICAgImVuY29kZWRCeXRlcyI6IDQzMjEsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMjNnM2djM2EwZG45ZC5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiAxNDY2NCwKICAgICAgImNvbnRhaW5zUGxheWVyIjogZmFsc2UKICAgIH0sCiAgICB7CiAgICAgICJhc3NldCI6ICIvX25leHQvc3RhdGljL2NodW5rcy80MGdnLXN2ZHN2bHZ3LmpzIiwKICAgICAgImVuY29kZWRCeXRlcyI6IDE3Mjc2LAogICAgICAiY29udGFpbnNQbGF5ZXIiOiBmYWxzZQogICAgfSwKICAgIHsKICAgICAgImFzc2V0IjogIi9fbmV4dC9zdGF0aWMvY2h1bmtzLzBjNGYya3piMGs3cmsuanMiLAogICAgICAiZW5jb2RlZEJ5dGVzIjogNDQwMzcsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMnZ4YzAtLXUwbm91bi5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiA3OTEsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMmF3aml6MXQtNmg4di5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiA5NjA2LAogICAgICAiY29udGFpbnNQbGF5ZXIiOiBmYWxzZQogICAgfSwKICAgIHsKICAgICAgImFzc2V0IjogIi9fbmV4dC9zdGF0aWMvY2h1bmtzLzMyaHB1bHlsemY4eDYuanMiLAogICAgICAiZW5jb2RlZEJ5dGVzIjogNDMzNjUsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMTlzNl96YXcyOTk0Zy5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiAyMTUsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMWl0bjAweDdzOWMzOC5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiAxMDY5MywKICAgICAgImNvbnRhaW5zUGxheWVyIjogZmFsc2UKICAgIH0sCiAgICB7CiAgICAgICJhc3NldCI6ICIvX25leHQvc3RhdGljL2NodW5rcy8zNy1maTNyYml6MDh0LmpzIiwKICAgICAgImVuY29kZWRCeXRlcyI6IDEzNDQsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9CiAgXSwKICAiYWRkZWQiOiBbCiAgICB7CiAgICAgICJhc3NldCI6ICIvX25leHQvc3RhdGljL2NodW5rcy8wdWw3Y2czeHZ0anhnLmpzIiwKICAgICAgImVuY29kZWRCeXRlcyI6IDM3MTQsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMXhybnBkb2VtYm9nOC5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiAyNDEsCiAgICAgICJjb250YWluc1BsYXllciI6IGZhbHNlCiAgICB9LAogICAgewogICAgICAiYXNzZXQiOiAiL19uZXh0L3N0YXRpYy9jaHVua3MvMm1sams5NXZlX29ody5qcyIsCiAgICAgICJlbmNvZGVkQnl0ZXMiOiAyMjY0MTQsCiAgICAgICJjb250YWluc1BsYXllciI6IHRydWUKICAgIH0KICBdCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-2f798c3573b4f1a3082e",
+          "file": "playback.spec.ts",
+          "line": 368,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-28T11:05:41.841Z",
+    "duration": 8263.011999999999,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

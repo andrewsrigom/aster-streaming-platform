@@ -1,0 +1,128 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\andre\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/playwright.config.mjs",
+      "demo.spec.ts"
+    ],
+    "configFile": "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\playwright.config.mjs",
+    "rootDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "*.spec.ts"
+        ],
+        "timeout": 35000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./results/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "demo.spec.ts",
+      "file": "demo.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Docker-only generated demo plays real HLS with captions, direct delivery and bounded diagnostics",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3901,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T11:41:44.421Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "playable-demo",
+                      "contentType": "application/json",
+                      "body": "ewogICJicm93c2VyIjogIjE1Mi4wLjc5NzcuNjQiLAogICJtZWRpYSI6IFsKICAgIHsKICAgICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgICAia2luZCI6ICJtM3U4IgogICAgfSwKICAgIHsKICAgICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgICAia2luZCI6ICJtM3U4IgogICAgfSwKICAgIHsKICAgICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgICAia2luZCI6ICJtM3U4IgogICAgfSwKICAgIHsKICAgICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgICAia2luZCI6ICJ0cyIKICAgIH0sCiAgICB7CiAgICAgICJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo5MDAxIiwKICAgICAgImtpbmQiOiAidnR0IgogICAgfSwKICAgIHsKICAgICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgICAia2luZCI6ICJ0cyIKICAgIH0sCiAgICB7CiAgICAgICJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo5MDAxIiwKICAgICAgImtpbmQiOiAidHMiCiAgICB9CiAgXSwKICAibWVhc3VyZW1lbnRzIjogWwogICAgewogICAgICAiZXZlbnQiOiAic2Vzc2lvbl9zdWNjZXNzIiwKICAgICAgImF0TXMiOiA3MSwKICAgICAgImR1cmF0aW9uTXMiOiA3MQogICAgfSwKICAgIHsKICAgICAgImV2ZW50IjogIm1hbmlmZXN0X2xvYWRlZCIsCiAgICAgICJhdE1zIjogMTY1LAogICAgICAiZHVyYXRpb25NcyI6IDQ2CiAgICB9LAogICAgewogICAgICAiZXZlbnQiOiAiZmlyc3RfZnJhbWUiLAogICAgICAiYXRNcyI6IDU3MCwKICAgICAgImR1cmF0aW9uTXMiOiA0NTEKICAgIH0sCiAgICB7CiAgICAgICJldmVudCI6ICJyZW5kaXRpb25fc3dpdGNoIiwKICAgICAgImF0TXMiOiA1NzYsCiAgICAgICJoZWlnaHQiOiAxODAKICAgIH0KICBdLAogICJheGUiOiB7CiAgICAidmlvbGF0aW9ucyI6IDAsCiAgICAiaW5jb21wbGV0ZSI6IFsKICAgICAgImNvbG9yLWNvbnRyYXN0IiwKICAgICAgInZpZGVvLWNhcHRpb24iCiAgICBdCiAgfSwKICAib3JpZ2luYWxBbmRSZXBvcnROb3RQdWJsaWMiOiB0cnVlLAogICJsaXN0aW5nQW5kT3RoZXJQcmVmaXhEZW5pZWQiOiB0cnVlCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "05384557491ebd602dd7-81f5cb17c5b18d48a9bc",
+          "file": "demo.spec.ts",
+          "line": 8,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-28T11:41:43.768Z",
+    "duration": 5288.831,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

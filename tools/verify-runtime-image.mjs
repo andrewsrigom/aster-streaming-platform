@@ -68,6 +68,7 @@ const allowedContext = [
   "!apps/web/components/**/*.tsx",
   "!apps/web/features/**/*.ts",
   "!apps/web/features/**/*.tsx",
+  "!apps/web/features/**/*.css",
   "!apps/web/lib/**/*.ts",
   "!apps/web/lib/**/*.tsx",
   "!apps/web/store/**/*.ts",
@@ -108,6 +109,7 @@ export async function readRuntimeImageSources(root) {
     "infra/docker/playback.Dockerfile",
     "infra/docker/web.Dockerfile",
     "infra/compose/demo.yml",
+    "infra/compose/playable.yml",
     "infra/docker/collector.Dockerfile",
     "infra/docker/prometheus.Dockerfile",
     ".dockerignore",
@@ -229,6 +231,35 @@ export function validateRuntimeImage(sources) {
     reject("Web demo must preserve bounded public-only Web and explicit Catalog initialization");
   }
   const patterns = (sources[".dockerignore"] ?? "").replace(/\r\n/g, "\n").trim().split("\n");
+  const playable = sources["infra/compose/playable.yml"] ?? "";
+  for (const required of [
+    "      file: demo.yml\n      service: web\n",
+    "      file: media.yml\n      service: media-origin\n",
+    "      file: media.yml\n      service: media-origin-init\n",
+    "      playable-seed:\n        condition: service_completed_successfully\n",
+    "      playable-generate:\n        condition: service_completed_successfully\n",
+    '      ASTER_PLAYABLE_FIXTURE_EXPORT: "true"\n',
+    '      ASTER_CATALOG_PLAYABLE_SEED_ENABLED: "true"\n',
+    '    network_mode: none\n    volumes: ["playable-fixture:/output"]\n',
+    '    volumes: ["playable-fixture:/fixture:ro"]\n',
+    '    command: ["./dist/src/initialize-playable-demo.js"]\n',
+    '    tmpfs: ["/work:size=32m,uid=1000,gid=1000,mode=0700"]\n',
+    "    mem_limit: 384m\n    pids_limit: 64\n",
+    "    mem_limit: 256m\n    pids_limit: 64\n",
+  ]) {
+    if (!playable.includes(required)) {
+      reject("Playable demo boundary missing: " + required.trim());
+    }
+  }
+  if (
+    ["privileged:", "cap_add:", "env_file:", "${", "docker.sock", "read_only: false"].some(
+      (value) => playable.includes(value),
+    ) ||
+    playable.split("    read_only: true\n").length !== 3 ||
+    playable.split("    cap_drop: [ALL]\n    security_opt: [no-new-privileges:true]\n").length !== 3
+  ) {
+    reject("Playable demo must preserve isolated bounded initialization");
+  }
   if (patterns.join("\n") !== allowedContext.join("\n")) {
     reject("Docker context must preserve the reviewed source-only allowlist and final exclusions");
   }

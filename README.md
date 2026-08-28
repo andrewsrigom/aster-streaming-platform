@@ -6,11 +6,25 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–06 are released: local identity/profiles, rights-aware Catalog, Federation, public SSR/hydration and the approved first-film HLS pipeline. Phase 07 adds locally implemented [short-lived Playback sessions](services/playback/README.md); the product player and clean-start playable demo remain unfinished. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 06 release](evidence/phase-06/release.md).
+Phases 00–06 and Phase 07's [short-lived Playback sessions](services/playback/README.md) are released. The accessible HLS player and Docker-only playable demo are implemented; their candidate acceptance and protected release remain in progress. See [current state](.ai/CURRENT_STATE.md), [playback guide](apps/web/PLAYBACK.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 06 release](evidence/phase-06/release.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
+## Run the playable Docker demo
+
+With Git and Docker Engine 26.0.0+/Compose 2.26.1+, run from the repository root:
+
+```bash
+docker compose --project-name aster-demo --file infra/compose/compose.yml --file infra/compose/playable.yml --profile runtime up --build --wait --wait-timeout 180 web
+```
+
+Open [Aster](http://127.0.0.1:3000), choose **Signal / 02**, then **Watch title** and **Start playback**. This generates and publishes a six-second, captioned technical video through the real Catalog, Playback, Router and object-storage path. No host Node, pnpm, FFmpeg, manual SQL or account is required. First build needs registry access; ports 3000, 4000 and 9001 must be free. Use `127.0.0.1`, not `localhost`.
+
+The explicit `web` target leaves optional profiles, Redis, broker and observability out. This generated sample is not a third-party film. Repeated startup verifies and reuses existing bytes and records. [Controls, limits, diagnostics and project-scoped stop/cleanup](apps/web/PLAYBACK.md).
+
 ## Run the Docker Web demo
+
+This earlier checkpoint demonstrates browsing and optional local profiles, without playable media. Use the playable command above for the streaming journey; do not run both projects on the same ports.
 
 From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 

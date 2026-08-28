@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Player and Docker-only playable demo
+
+### Completed
+
+Implemented client-only HLS/Media Chrome controls, validated local preferences, bounded failures/QoE and explicit session activation. Added a generated captioned demo with exact local authority, immutable S3 publication and one Docker command. Fixed observed default-caption cue loss, an upstream redundant toggle's invalid ARIA, and conditional-PUT cancellation masking safe replay. Retained film/data are unchanged.
+
+### Evidence
+
+[Player/demo evidence](../evidence/phase-07/player.md): 45 Web unit tests, real Chromium controls/failure/direct-media/lazy-load checks, empty-volume initialization, captioned demo and successful no-change replay. Ownership-checked cleanup removed only the disposable proof's 13 containers, seven volumes and two networks; zero remained. The retained app is restored with the final player. One scoped container resource snapshot; no host diagnosis.
+
+### Next action
+
+Close candidate gates, publish one coherent PR, require initial/confirmation review and exact-head protected CI, then squash/post-merge and Phase 08. Full Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Playback startup and fixture review correction
 
 ### Completed

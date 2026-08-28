@@ -14,8 +14,10 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { join } from "node:path";
+import { URL } from "node:url";
 import { promisify } from "node:util";
 import { setTimeout, clearTimeout } from "node:timers";
+import { existingFixture, exportFixture, fixtureDigest } from "./fixture-export.mjs";
 import {
   CAPTIONS,
   CAPTION_PLAYLIST,
@@ -289,30 +291,51 @@ async function generate(directory) {
 try {
   assert.equal(process.env["ASTER_MEDIA_FIXTURE"], "local");
   assert.equal(process.argv.length, 2);
-  const directory = await mkdtemp("/work/aster-hls-");
-  const first = await generate(join(directory, "first"));
-  const second = await generate(join(directory, "second"));
-  assert.deepEqual(second, first);
-  const sample = join(directory, "second", "segment-000.ts");
-  await writeFile(sample, Buffer.alloc(188));
-  await assert.rejects(probe("segment-000.ts", join(directory, "second")));
-  await unlink(sample);
-  await assert.rejects(probe("segment-000.ts", join(directory, "second")));
-  await symlink(join(directory, "first", "segment-000.ts"), sample);
-  await assert.rejects(probe("segment-000.ts", join(directory, "second")));
-  await unlink(sample);
-  await copyFile(join(directory, "first", "segment-000.ts"), sample);
-  await assert.rejects(run("ffprobe", ["-version"], directory, globalThis.AbortSignal.abort()), {
-    name: "AbortError",
-  });
-  const ffmpeg = (await run("ffmpeg", ["-version"], directory)).split("\n")[0];
-  const packages = await run(
-    "dpkg-query",
-    ["-W", "-f=\u0024{Package}=\u0024{Version}\n", "ffmpeg", "libavcodec59", "libx264-164"],
-    directory,
+  const exportEnabled = process.env["ASTER_PLAYABLE_FIXTURE_EXPORT"] === "true";
+  const generatorChecksum = fixtureDigest(
+    Buffer.concat(
+      await Promise.all(
+        ["generate-hls.mjs", "hls-contract.mjs", "fixture-export.mjs"].map((name) =>
+          readFile(new URL(name, import.meta.url)),
+        ),
+      ),
+    ),
   );
-  process.stdout.write(
-    JSON.stringify({
+  const existing = exportEnabled
+    ? await existingFixture("/output/fixture", generatorChecksum, controller.signal)
+    : undefined;
+  if (existing) {
+    process.stdout.write(
+      JSON.stringify({
+        event: "generated_hls_reused",
+        sourceChecksum: existing.sourceChecksum,
+        totalBytes: existing.totalBytes,
+      }) + "\n",
+    );
+  } else {
+    const directory = await mkdtemp("/work/aster-hls-");
+    const first = await generate(join(directory, "first"));
+    const second = await generate(join(directory, "second"));
+    assert.deepEqual(second, first);
+    const sample = join(directory, "second", "segment-000.ts");
+    await writeFile(sample, Buffer.alloc(188));
+    await assert.rejects(probe("segment-000.ts", join(directory, "second")));
+    await unlink(sample);
+    await assert.rejects(probe("segment-000.ts", join(directory, "second")));
+    await symlink(join(directory, "first", "segment-000.ts"), sample);
+    await assert.rejects(probe("segment-000.ts", join(directory, "second")));
+    await unlink(sample);
+    await copyFile(join(directory, "first", "segment-000.ts"), sample);
+    await assert.rejects(run("ffprobe", ["-version"], directory, globalThis.AbortSignal.abort()), {
+      name: "AbortError",
+    });
+    const ffmpeg = (await run("ffmpeg", ["-version"], directory)).split("\n")[0];
+    const packages = await run(
+      "dpkg-query",
+      ["-W", "-f=\u0024{Package}=\u0024{Version}\n", "ffmpeg", "libavcodec59", "libx264-164"],
+      directory,
+    );
+    const report = {
       event: "generated_hls_verified",
       repeatable: true,
       adverseChecks: ["corrupt-segment", "missing-segment", "symlink", "cancelled-process"],
@@ -321,8 +344,17 @@ try {
       architecture: process.arch,
       packages: packages.trim().split("\n"),
       ...first,
-    }) + "\n",
-  );
+    };
+    if (exportEnabled) {
+      await exportFixture(
+        join(directory, "first"),
+        "/output/fixture",
+        { ...report, publicationAuthority: false, generatorChecksum },
+        controller.signal,
+      );
+    }
+    process.stdout.write(JSON.stringify(report) + "\n");
+  }
 } catch (error) {
   process.stderr.write(
     JSON.stringify({

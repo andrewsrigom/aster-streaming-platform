@@ -66,7 +66,10 @@ export function uiSeedRights(sourceChecksum: string) {
   };
 }
 
-export function validateUiSeedReport(value: unknown): string {
+export function validateUiSeedReport(
+  value: unknown,
+  mode: "evidence" | "playable" = "evidence",
+): string {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new Error("Invalid generated media report.");
   }
@@ -82,8 +85,10 @@ export function validateUiSeedReport(value: unknown): string {
     report["fps"] !== 24 ||
     report["captionLanguage"] !== "en" ||
     !catalogChecksum(report["sourceChecksum"]) ||
-    typeof report["image"] !== "string" ||
-    !/^sha256:[a-f0-9]{64}$/u.test(report["image"]) ||
+    (mode === "evidence"
+      ? typeof report["image"] !== "string" || !/^sha256:[a-f0-9]{64}$/u.test(report["image"])
+      : report["publicationAuthority"] !== false ||
+        !catalogChecksum(report["generatorChecksum"])) ||
     !Array.isArray(report["files"]) ||
     report["files"].length !== 8
   ) {

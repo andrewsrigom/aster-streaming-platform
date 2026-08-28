@@ -25,6 +25,24 @@ test("rejects movable action tags", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "action-pin"));
 });
 
+test("playable acceptance cannot omit its browser, replay or scoped cleanup", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const original of [
+    "pnpm --filter @aster/web exec playwright test demo.spec.ts",
+    "trap cleanup_playable EXIT",
+    "playable_compose up --build --wait --wait-timeout 180 web",
+    "playable_compose down --volumes --timeout 10",
+    "playable_compose logs --no-color --tail 1 playable-seed | grep '\"changed\":false'",
+  ]) {
+    assert.ok(source.includes(original));
+    assert.ok(
+      validateWorkflowPolicy(source.replace(original, "true")).some(({ detail }) =>
+        detail.includes("playable"),
+      ),
+    );
+  }
+});
+
 test("schema compatibility cannot compare only against the candidate or a shallow checkout", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [

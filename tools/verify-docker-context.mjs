@@ -19,6 +19,7 @@ const included = [
   "apps/web/package.json",
   "apps/web/app/nested/page.tsx",
   "apps/web/components/ui/button.tsx",
+  "apps/web/features/playback/player.module.css",
   "apps/web/scripts/public-artifacts.ts",
   "apps/web/scripts/verify-public-build.ts",
   "apps/web/scripts/package-notices.ts",
