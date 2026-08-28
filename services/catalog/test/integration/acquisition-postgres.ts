@@ -50,7 +50,7 @@ export async function verifyAcquisitions(
   const acquisitions = (transactions: AcquisitionUnitOfWork = store) =>
     createCatalogAcquisitions({ ...common, transactions });
   const original = { sha256: "a".repeat(64), bytes: 1000, key: originalKey("a".repeat(64)) };
-  async function prepare() {
+  async function prepare(checksumApproved = false) {
     const titleId = nextId();
     assert.equal(
       (
@@ -61,7 +61,7 @@ export async function verifyAcquisitions(
             expectedVersion: 0,
             mutationId: nextId(),
             metadata: metadataFixture(),
-            rights: rightsFacts(),
+            rights: rightsFacts({ sourceChecksum: checksumApproved ? original.sha256 : null }),
           },
           request,
         )
@@ -127,9 +127,11 @@ export async function verifyAcquisitions(
     assert.ok(attempt);
     assert.equal(attempt.status, "completed");
     assert.equal(attempt.value.number, 1);
-    const second = await prepare();
+    const second = await prepare(true);
     assert.equal((await acquisitions().claim(second.requestId, request)).status, "backpressure");
-    assert.equal((await acquisitions().check(attempt.value.id, request)).status, "completed");
+    const unknownChecksum = await acquisitions().check(attempt.value.id, request);
+    assert.equal(unknownChecksum.status, "completed");
+    assert.equal(unknownChecksum.value.reuseApproved, false);
     assert.equal(
       (await acquisitions().original(attempt.value.id, request)).status,
       "invalid_transition",
@@ -182,6 +184,13 @@ export async function verifyAcquisitions(
 
     let active = await acquisitions().claim(second.requestId, request);
     assert.equal(active.status, "completed");
+    const approvedChecksum = await acquisitions().check(active.value.id, request);
+    assert.equal(approvedChecksum.status, "completed");
+    assert.equal(approvedChecksum.value.reuseApproved, true);
+    output("catalog_acquisition_reuse_authority", {
+      requestChecksumAloneRefused: true,
+      approvedChecksumPermitsReuse: true,
+    });
     const stale = active.value.id;
     time += ACQUISITION_LEASE_SECONDS;
     assert.equal((await acquisitions().complete(stale, original, request)).status, "conflict");

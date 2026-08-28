@@ -16,4 +16,6 @@ Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and 
 
 - [Derived artwork](artwork.md): five validated/reviewed JPEGs, independent recipe, durable replay and unchanged HLS.
 
+- [Publication foundation](publication-foundation.md): current-approved-checksum original reuse, exact local media URLs, read-only origin and real PostgreSQL/S3 boundary tests. No retained film activation yet.
+
 Rights, request admission, acquisition, decoding, private retention, durable processing/reuse and artwork generation/inspection pass locally. Restricted attestation, artwork approval, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.

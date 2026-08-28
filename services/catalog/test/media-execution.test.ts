@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { access } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -10,7 +11,7 @@ import { downloadMediaSource } from "../src/infrastructure/media/download-source
 import { runMediaAcquisition } from "../src/infrastructure/media/run-acquisition.js";
 import { catalogTestId as id, catalogTestTime as now } from "./rights-fixture.js";
 
-function fixture() {
+function fixture(knownChecksum = false, reuseApproved = knownChecksum) {
   const bytes = Buffer.from([0x50, 0x4b, 3, 4, 20, 0, 0, 0, 1, 2, 3, 4]);
   const media = normalizeMediaRequest({
     input: {
@@ -23,7 +24,7 @@ function fixture() {
         url: "https://download.blender.org/peach/bigbuckbunny_movies/fixture.zip",
         bytes: bytes.length,
         etag: '"fixture"',
-        sha256: null,
+        sha256: knownChecksum ? createHash("sha256").update(bytes).digest("hex") : null,
         container: "zip",
       },
     },
@@ -57,7 +58,9 @@ function fixture() {
     check: () => {
       checks++;
       return Promise.resolve(
-        revoked ? { status: "rights_not_approved" } : { status: "completed", value: media },
+        revoked
+          ? { status: "rights_not_approved" }
+          : { status: "completed", value: { media, reuseApproved } },
       );
     },
     complete: () => {
@@ -198,4 +201,157 @@ test("periodic rights revocation cancels a pending download and retains failure 
   assert.equal(cancelled, true);
   assert.equal(f.failure(), "RIGHTS_REVOKED");
   assert.equal(f.completed(), 0);
+});
+
+test("current approved checksum reuses original without download, upload or temporary file", async () => {
+  const f = fixture(true);
+  const result = await runMediaAcquisition(id(8), f.request, {
+    acquisitions: f.acquisitions,
+    prepareStorage: () => Promise.resolve(),
+    download: () => {
+      throw new Error("Reuse must not download");
+    },
+    storage: {
+      write: () => {
+        throw new Error("Reuse must not write");
+      },
+      async read(input, signal) {
+        assert.equal(
+          input.key,
+          "originals/sha256/" + createHash("sha256").update(f.bytes).digest("hex"),
+        );
+        await pipeline(
+          Readable.from([f.bytes.subarray(0, 3), f.bytes.subarray(3)]),
+          input.destination,
+          { signal },
+        );
+        return { status: "completed" };
+      },
+    },
+  });
+  assert.equal(result.status, "completed");
+  assert.ok("evidence" in result);
+  assert.deepEqual(result.evidence, { reused: true });
+  assert.equal(f.completed(), 1);
+  assert.equal(f.checks(), 3);
+  assert.equal(f.path(), undefined);
+});
+
+test("reuse detects rights revoked during the read and never completes", async () => {
+  const f = fixture(true);
+  const result = await runMediaAcquisition(id(8), f.request, {
+    acquisitions: f.acquisitions,
+    prepareStorage: () => Promise.resolve(),
+    download: () => {
+      throw new Error("Must not download");
+    },
+    storage: {
+      write: () => {
+        throw new Error("Must not write");
+      },
+      async read(input) {
+        await pipeline(Readable.from([f.bytes]), input.destination);
+        f.revoke();
+        return { status: "completed" };
+      },
+    },
+  });
+  assert.equal(result.status, "failed");
+  assert.equal(f.failure(), "RIGHTS_REVOKED");
+  assert.equal(f.completed(), 0);
+});
+
+test("missing checksum-addressed original follows the normal verified download path", async () => {
+  const f = fixture(true);
+  let reads = 0;
+  let writes = 0;
+  const result = await runMediaAcquisition(id(8), f.request, {
+    acquisitions: f.acquisitions,
+    prepareStorage: () => Promise.resolve(),
+    download: f.download,
+    storage: {
+      async write(input) {
+        writes++;
+        for await (const chunk of input.source) {
+          assert.ok(Buffer.isBuffer(chunk));
+        }
+        return { status: "completed" };
+      },
+      async read(input) {
+        if (reads++ === 0) {
+          return { status: "not_found" };
+        }
+        await pipeline(Readable.from([f.bytes]), input.destination);
+        return { status: "completed" };
+      },
+    },
+  });
+  assert.equal(result.status, "completed");
+  assert.ok("evidence" in result);
+  assert.equal(result.evidence.reused, false);
+  assert.equal(writes, 1);
+  assert.equal(reads, 2);
+  const path = f.path();
+  assert.ok(path);
+  await assert.rejects(access(path));
+});
+
+test("corrupt reuse is audited without fallback download or overwrite", async () => {
+  const f = fixture(true);
+  const result = await runMediaAcquisition(id(8), f.request, {
+    acquisitions: f.acquisitions,
+    prepareStorage: () => Promise.resolve(),
+    download: () => {
+      throw new Error("Must not download");
+    },
+    storage: {
+      write: () => {
+        throw new Error("Must not overwrite");
+      },
+      async read(input) {
+        await pipeline(Readable.from([Buffer.alloc(f.bytes.length)]), input.destination);
+        return { status: "completed" };
+      },
+    },
+  });
+  assert.equal(result.status, "failed");
+  assert.equal(f.failure(), "STORAGE_FAILURE");
+  assert.equal(f.completed(), 0);
+});
+
+test("request checksum alone cannot authorize reuse of a different retained source", async () => {
+  const f = fixture(true, false);
+  let downloaded = false;
+  let reads = 0;
+  const result = await runMediaAcquisition(id(8), f.request, {
+    acquisitions: f.acquisitions,
+    prepareStorage: () => Promise.resolve(),
+    async download(source, signal, options) {
+      downloaded = true;
+      return f.download(source, signal, options);
+    },
+    storage: {
+      async write(input) {
+        assert.equal(downloaded, true);
+        for await (const chunk of input.source) {
+          assert.ok(Buffer.isBuffer(chunk));
+        }
+        return { status: "completed" };
+      },
+      async read(input) {
+        assert.equal(
+          downloaded,
+          true,
+          "Unapproved checksum must not look up storage before source GET",
+        );
+        reads++;
+        await pipeline(Readable.from([f.bytes]), input.destination);
+        return { status: "completed" };
+      },
+    },
+  });
+  assert.equal(result.status, "completed");
+  assert.equal(reads, 1);
+  assert.ok("evidence" in result);
+  assert.equal(result.evidence.reused, false);
 });

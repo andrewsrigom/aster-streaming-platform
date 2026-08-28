@@ -2,6 +2,7 @@ import { currentApprovedRights, type RightsUsePolicy } from "./rights.js";
 import {
   catalogChecksum,
   catalogIdentifier,
+  catalogMediaUrl,
   catalogRecord,
   catalogTimestamp,
   catalogUrl,
@@ -54,7 +55,7 @@ export function normalizePublication(
     !catalogIdentifier(input["titleId"]) ||
     !catalogVersion(input["rightsRevision"]) ||
     !catalogChecksum(input["sourceChecksum"]) ||
-    !catalogUrl(input["manifestUrl"]) ||
+    !catalogMediaUrl(input["manifestUrl"], "manifest") ||
     !catalogIdentifier(input["validationReportId"]) ||
     !catalogTimestamp(input["validatedAt"]) ||
     input["validatedAt"] > now
@@ -129,6 +130,7 @@ function eligibleMedia(
   const ready = normalizePublication(media, now);
   if (
     !ready ||
+    (!catalogUrl(ready.manifestUrl) && policy.allowLocalMedia !== true) ||
     ready.titleId !== title.id ||
     ready.rightsRevision !== approved.revision ||
     (approved.sourceChecksum !== null && approved.sourceChecksum !== ready.sourceChecksum) ||

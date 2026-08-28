@@ -58,7 +58,7 @@ export async function createCatalogService(
       ...(config.routerTrust ? { routerTrust: await loadLocalRouterTrust("catalog") } : {}),
       queries: createCatalogPublicQueries({
         transactions: createPostgresCatalogPublic(database),
-        policy: { commercial: true },
+        policy: { commercial: true, allowLocalMedia: true },
         now: () => Math.floor(Date.now() / 1000),
       }),
       onOperation: (trace) => {

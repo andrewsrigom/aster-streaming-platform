@@ -10,7 +10,11 @@ import {
 } from "../domain/media-acquisition.js";
 import { mediaRequestEligible, type CatalogMediaRequest } from "../domain/media-request.js";
 import { catalogIdentifier, catalogTimestamp } from "../domain/values.js";
-import type { AcquisitionPorts, AcquisitionTransaction } from "./acquisition-ports.js";
+import type {
+  AcquisitionApproval,
+  AcquisitionPorts,
+  AcquisitionTransaction,
+} from "./acquisition-ports.js";
 import type { CatalogCommandRequest } from "./operator-ports.js";
 import type { CatalogStoreResult } from "./rights-ports.js";
 
@@ -47,7 +51,7 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
   async function rightsGuard(tx: AcquisitionTransaction, media: CatalogMediaRequest) {
     const title = await tx.lockTitle(media.input.titleId);
     const rights = title && (await tx.findRights(title.id, null));
-    return () =>
+    const eligible = () =>
       !!title &&
       mediaRequestEligible(
         media.input,
@@ -57,6 +61,13 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
         ports.now(),
         ports.policy,
       );
+    return {
+      eligible,
+      reuseApproved:
+        rights !== undefined &&
+        rights.record.sourceChecksum !== null &&
+        rights.record.sourceChecksum === media.input.source.sha256,
+    };
   }
   async function existing<T>(
     id: unknown,
@@ -90,7 +101,7 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
       CatalogStoreResult<Readonly<{ media: CatalogMediaRequest; original: AcquiredOriginal }>>
     > {
       return existing(id, request, async (tx, attempt, media) => {
-        const eligible = await rightsGuard(tx, media);
+        const { eligible } = await rightsGuard(tx, media);
         if (!eligible()) {
           return { status: "rights_not_approved" };
         }
@@ -115,7 +126,7 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
         if (media.actorId !== actorId) {
           return { status: "unauthorized" };
         }
-        const eligible = await rightsGuard(tx, media);
+        const { eligible } = await rightsGuard(tx, media);
         if (!eligible()) {
           return { status: "rights_not_approved" };
         }
@@ -174,14 +185,14 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
     check(
       id: unknown,
       request: CatalogCommandRequest,
-    ): Promise<CatalogStoreResult<CatalogMediaRequest>> {
+    ): Promise<CatalogStoreResult<AcquisitionApproval>> {
       return existing(id, request, async (tx, attempt, media) => {
-        const eligible = await rightsGuard(tx, media);
+        const { eligible, reuseApproved } = await rightsGuard(tx, media);
         if (attempt.status !== "RUNNING" || ports.now() >= attempt.expiresAt) {
           return { status: "conflict" };
         }
         return eligible()
-          ? { status: "completed", value: media }
+          ? { status: "completed", value: { media, reuseApproved } }
           : { status: "rights_not_approved" };
       });
     },
@@ -195,7 +206,7 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
         return Promise.resolve({ status: "invalid_input" });
       }
       return existing(id, request, async (tx, attempt, media) => {
-        const eligible = await rightsGuard(tx, media);
+        const { eligible } = await rightsGuard(tx, media);
         if (!eligible()) {
           return { status: "rights_not_approved" };
         }

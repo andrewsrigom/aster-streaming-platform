@@ -79,7 +79,7 @@ try {
   const commands = createCatalogCommands({
     authority: operator.authority,
     transactions: createPostgresCatalogWorkflow(database),
-    policy: { commercial: true },
+    policy: { commercial: true, allowLocalMedia: true },
     now,
     nextId: randomUUID,
     digest: (text) => createHash("sha256").update(text).digest("hex"),
@@ -90,7 +90,7 @@ try {
       ? await createCatalogMediaRequests({
           authority: operator.authority,
           transactions: createPostgresCatalogMedia(database),
-          policy: { commercial: true },
+          policy: { commercial: true, allowLocalMedia: true },
           now,
           digest: (text) => createHash("sha256").update(text).digest("hex"),
         }).request(command.input, request)

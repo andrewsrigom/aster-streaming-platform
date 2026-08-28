@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0026](../docs/adr/0026-local-media-publication.md) preserves editorial review history, permits reuse only for a current rights-approved checksum, and separates one private POSIX writer from a read-only local origin. Exact loopback media URLs require explicit local policy; hosted defaults remain HTTPS-only. Original reuse/URL/origin boundaries are verified; bundle assembly and restricted attestation remain the next acceptance work.
+
 [ADR-0025](../docs/adr/0025-derived-artwork.md) adds frame-jpeg-v1 to the same isolated worker and durable Catalog processing owner. It derives bounded no-upscale posters/thumbnails, reuses current-rights/lease guards and keeps the HLS key unchanged. No schema or publication permission changes; image generation/inspection does not itself approve artwork rights.
 
 [ADR-0024](../docs/adr/0024-durable-media-processing.md) adds Catalog-owned processing leases, three attempts per checksum/recipe, current-rights reuse and explicit private-candidate recovery. Additive migration 0006 grants no publication access. The retained real candidate is adopted and replayed without another encode.

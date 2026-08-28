@@ -1,4 +1,81 @@
 services:
+  media-origin-init:
+    profiles: [media]
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-publication
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    entrypoint: ["node", "./dist/src/prepare-publication-local.js"]
+    command: []
+    depends_on:
+      storage:
+        condition: service_healthy
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_MEDIA_PUBLICATION_ENABLED: "true"
+    networks: [platform]
+    user: "1000:1000"
+    init: true
+    read_only: true
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 32
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck: { disable: true }
+    restart: "no"
+  media-origin:
+    profiles: [media]
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-publication
+    image: docker.io/versity/versitygw:v1.7.0@sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad
+    entrypoint: ["/usr/local/bin/versitygw"]
+    command:
+      [
+        "--port",
+        ":9001",
+        "--health",
+        "/health",
+        "--quiet",
+        "--readonly",
+        "--max-connections",
+        "64",
+        "--max-requests",
+        "16",
+        "posix",
+        "--concurrency",
+        "8",
+        "/data",
+      ]
+    depends_on:
+      media-origin-init:
+        condition: service_completed_successfully
+    environment:
+      ROOT_ACCESS_KEY: aster-test-access
+      ROOT_SECRET_KEY: aster-test-only
+    ports: ["127.0.0.1:9001:9001"]
+    networks: [platform]
+    volumes: ["storage-data:/data:ro"]
+    read_only: true
+    tmpfs: ["/tmp:size=16m,mode=1777"]
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9001/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
+    logging:
+      options: { max-size: "5m", max-file: "2" }
   media-prepare:
     profiles: [media]
     build:

@@ -1,0 +1,2 @@
+{"event":"media_origin_verified","anonymousRead":true,"privateAndListingDenied":true,"anonymousWritesDenied":true,"signedWritesDenied":true,"cors":true,"range":true,"immutableHeaders":true,"originalReuse":true,"unexpectedPolicyRefused":true}
+{"event":"media_origin_fixture_cleaned","remaining":0}

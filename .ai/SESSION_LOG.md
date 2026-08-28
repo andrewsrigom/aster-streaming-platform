@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Verified publication foundation
+
+### Completed
+
+Implemented current-approved-checksum original reuse without source GET, narrow local-media URLs/default-hosted rejection, and a separate read-only S3 origin/initializer under ADR-0026. Added a Docker-only synthetic origin test runner and Compose/endpoint guards. Initial review found request-only checksum reuse insufficient; owner-derived approval and confirmation tests close it.
+
+### Evidence
+
+Evidence: [publication foundation](../evidence/phase-06/publication-foundation.md), 13 focused confirmation tests, full Catalog PostgreSQL integration and real anonymous/private/write/CORS/Range checks. Initial runner noexec/heap limits and strict-null lint were corrected locally; no CPU testing, host changes, retained-data edits, re-encoding or downloads. Repository source/closeout outputs are linked in the evidence. Fixtures were removed; only build caches remain.
+
+### Next action
+
+Next: immutable publication bundle, truthful approved modifications/artwork, restricted attestation and Catalog activation; P06-R01 and the complete Phase 00–14 goal remain active.
+
 ## 2026-08-28 — Independent derived artwork
 
 ### Completed

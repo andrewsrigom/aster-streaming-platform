@@ -28,12 +28,14 @@ Public playable VOD, trusted attestation/artwork approval, engagement/discovery 
 
 The separate frame-jpeg-v1 recipe now retains two posters and three thumbnails (61598 bytes), visually inspected and durably replayed without another decoder/write. Attempt 7674df29-2a04-4055-bcc8-cef60449520f succeeds alongside the unchanged HLS attempt. Focused tests 48/48, real PostgreSQL and source gate 51/51 pass. [Artwork evidence](../evidence/phase-06/artwork.md).
 
-Continue P06-R01 with restricted technical attestation, artwork approval, truthful publication-specific attribution and public-origin/Catalog publication. Preserve immutable source approval history and both retained candidates. No hosted wait or CPU diagnostic is needed.
+The publication foundation under ADR-0026 now verifies current-rights-checksum original reuse, exact local-only media URLs and a read-only S3 origin (CORS/Range/private/write denial). PostgreSQL verifies policy before pagination and rejects request-only checksum reuse. [Evidence and commands](../evidence/phase-06/publication-foundation.md). This did not change retained data or activate the origin.
+
+Continue P06-R01: immutable bundle/attribution, restricted attestation, actual artwork approval and Catalog activation. Preserve immutable source approval history and both retained candidates. No hosted wait or CPU diagnostic is needed.
 
 ## Current risks
 
 - Shared Windows/WSL timings are laboratory evidence, not arbitrary-load or field SLO guarantees; no further unchanged Web benchmark.
 - Official Blender downloads currently list ZIP archives; extraction must be bounded and validated, not shell interpolation.
-- Local VersityGW requires one POSIX action at a time for conditional-write atomicity; keep platform internal and acquisition-only egress. Hosted origin atomicity is a Phase 14 acceptance condition.
+- Local VersityGW keeps one POSIX writer for conditional-write atomicity. ADR-0026 adds a separately verified read-only origin sharing the volume read-only; acquisition alone has egress. Hosted origin atomicity is a Phase 14 acceptance condition.
 - uuid advisory GHSA-w5hq-g745-h8pq is moderate and transitive through Apollo. Installed callers use v1/v4 without buffers, not affected v3/v5/v6; revisit supported remediation before hosted release. No alert dismissal or audit weakening.
 - Keep MIT/upstream notices; no paid resources, invented media rights or global Docker cleanup.

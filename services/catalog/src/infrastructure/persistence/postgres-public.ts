@@ -24,21 +24,28 @@ function compatible(record: string): string {
     AND ${record}->>'modificationAllowed' = 'true'
     AND ${record}->>'commercialUseAllowed' IN ('true', 'false')
     AND (NOT $2::boolean OR ${record}->>'commercialUseAllowed' = 'true')
+    AND ($3::boolean OR ${record}->>'assetSourceUrl' LIKE 'https://%')
     AND ${record}->>'shareAlikeRequired' = 'false'
     AND ${record}->>'technicalRestrictions' = 'NONE'
     AND (${record}->>'reviewedAt')::bigint <= $1
     AND (${record}->>'validUntil' IS NULL OR (${record}->>'validUntil')::bigint > $1))`;
 }
 const eligible = `${compatible("rights")}
+  AND ($3::boolean OR publication->>'manifestUrl' LIKE 'https://%')
   AND (publication->>'validatedAt')::bigint <= $1
   AND (publication->>'validatedAt')::bigint >= (rights->>'reviewedAt')::bigint
   AND (rights->>'sourceChecksum' IS NULL OR rights->>'sourceChecksum' = publication->>'sourceChecksum')
   AND (metadata->'artwork' = 'null'::jsonb OR ${compatible("(metadata->'artwork'->'rights')")})`;
-function scopeValues(scope: CatalogReadScope): readonly [number, boolean] {
-  if (!catalogTimestamp(scope.now) || typeof scope.policy.commercial !== "boolean") {
+function scopeValues(scope: CatalogReadScope): readonly [number, boolean, boolean] {
+  if (
+    !catalogTimestamp(scope.now) ||
+    typeof scope.policy.commercial !== "boolean" ||
+    (scope.policy.allowLocalMedia !== undefined &&
+      typeof scope.policy.allowLocalMedia !== "boolean")
+  ) {
     throw new InvalidCatalogInput();
   }
-  return [scope.now, scope.policy.commercial];
+  return [scope.now, scope.policy.commercial, scope.policy.allowLocalMedia === true];
 }
 function candidate(value: unknown): PublicCatalogCandidate {
   const data = row(value);
@@ -77,7 +84,7 @@ function publicRepositories(tx: AsterPostgresTransaction): CatalogPublicReposito
         throw new InvalidCatalogInput();
       }
       return query(
-        `SELECT ${columns} FROM catalog.public_candidates WHERE ${eligible} ${afterId === null ? "" : "AND id > $4::uuid"} ORDER BY id LIMIT $3`,
+        `SELECT ${columns} FROM catalog.public_candidates WHERE ${eligible} ${afterId === null ? "" : "AND id > $5::uuid"} ORDER BY id LIMIT $4`,
         [...scopeValues(scope), limit, ...(afterId === null ? [] : [afterId])],
         limit,
       );
@@ -87,7 +94,7 @@ function publicRepositories(tx: AsterPostgresTransaction): CatalogPublicReposito
         throw new InvalidCatalogInput();
       }
       ids.forEach(requireId);
-      const placeholders = ids.map((_, index) => "$" + String(index + 3) + "::uuid").join(", ");
+      const placeholders = ids.map((_, index) => "$" + String(index + 4) + "::uuid").join(", ");
       return query(
         `SELECT ${columns} FROM catalog.public_candidates WHERE ${eligible} AND id IN (${placeholders}) ORDER BY id`,
         [...scopeValues(scope), ...ids],

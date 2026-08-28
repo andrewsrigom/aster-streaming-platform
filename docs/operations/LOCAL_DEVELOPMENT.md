@@ -348,13 +348,9 @@ Phase 02 defines a deterministic local identity method that uses synthetic accou
 
 ## Local media
 
-Phase 06 provides:
+Phase 06 is in progress. `pnpm media:candidate PROJECT ACQUISITION_ATTEMPT_ID` prepares/reuses an approved HLS candidate; append `--artwork` for the independent JPEG recipe. These commands retain private candidates, not public titles. Reuse for a renewed request requires a checksum in its current approved rights record.
 
-- a command to review candidate source status;
-- a command to process an approved title;
-- a small technical fixture for fast tests;
-- an optional full-film processing command;
-- disk estimates and cleanup.
+`pnpm media:origin:test` (or `node tools/run-media-origin-integration.mjs`) builds a scoped test image and verifies read-only S3 delivery, private/write denial, CORS and Range with synthetic bytes. It removes only its exact labelled fixture containers/tmpfs volume, leaving a reusable build cache. The origin overlay in `infra/compose/media.yml` is opt-in: `media-origin-init` prepares the exact public bucket policy and `media-origin` serves read-only on `127.0.0.1:9001`. It must not replace the private writer or expose originals. It does not publish a film; first-film attestation/activation is still pending. [Current evidence and limitations](../../evidence/phase-06/publication-foundation.md).
 
 Do not commit full source films or generated HLS packages to the source repository.
 

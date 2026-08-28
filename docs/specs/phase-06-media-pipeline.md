@@ -89,6 +89,8 @@ Capture processing duration, queue time, bytes, output ratio, resource use, and 
 8. Exercise failures and cleanup.
 9. Add a second title only after the first path is verified.
 
+[ADR-0026](../adr/0026-local-media-publication.md) defines the local publication boundary. Original reuse, exact local-media URL policy and read-only origin are [verified with synthetic integration data](../../evidence/phase-06/publication-foundation.md); immutable first-film bundle/attestation/activation remain in progress.
+
 ## Required tests
 
 - Oversized source rejection.

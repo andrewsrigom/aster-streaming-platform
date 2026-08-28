@@ -1,0 +1,26 @@
+services/catalog/src/application/acquire-media.ts 183ms
+services/catalog/src/application/acquisition-ports.ts 13ms (unchanged)
+services/catalog/src/infrastructure/media/run-acquisition.ts 38ms
+services/catalog/test/media-execution.test.ts 74ms
+services/catalog/test/integration/acquisition-postgres.ts 83ms
+✔ executor verifies retained conflict bytes before completion and cleans its file (19.584311ms)
+✔ executor rejects mismatching retained bytes without completing or deleting originals (7.453176ms)
+✔ periodic rights revocation cancels a pending download and retains failure audit (2.309924ms)
+✔ current approved checksum reuses original without download, upload or temporary file (2.807776ms)
+✔ reuse detects rights revoked during the read and never completes (2.790852ms)
+✔ missing checksum-addressed original follows the normal verified download path (10.279158ms)
+✔ corrupt reuse is audited without fallback download or overwrite (1.823175ms)
+✔ request checksum alone cannot authorize reuse of a different retained source (5.787351ms)
+✔ local media syntax is confined to exact immutable URLs and content kinds (1.555598ms)
+✔ default policies cannot approve or publish local HTTP even when a record normalizes (4.918333ms)
+✔ original reuse accepts exact ZIP and MP4 streams and only explicit absence (9.489662ms)
+✔ short, long, changed, malformed and interrupted originals fail closed (6.594401ms)
+✔ reuse propagates cancellation to a stalled storage read and rejects unsafe identity (2.250893ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 323.245693

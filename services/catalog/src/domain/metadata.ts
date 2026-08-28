@@ -4,7 +4,7 @@ import {
   type RightsRecord,
   type RightsUsePolicy,
 } from "./rights.js";
-import { catalogRecord, catalogText, catalogUrl } from "./values.js";
+import { catalogMediaUrl, catalogRecord, catalogText } from "./values.js";
 
 export interface TitleLocalization {
   readonly locale: string;
@@ -166,7 +166,12 @@ export function normalizeTitleMetadata(value: unknown): TitleMetadata | undefine
     if (input["artwork"] !== null) {
       const item = catalogRecord(input["artwork"], ["url", "altText", "rights"]);
       const rights = item ? normalizeRightsRecord(item["rights"]) : undefined;
-      if (!item || !rights || !catalogUrl(item["url"]) || !catalogText(item["altText"], 256)) {
+      if (
+        !item ||
+        !rights ||
+        !catalogMediaUrl(item["url"], "artwork") ||
+        !catalogText(item["altText"], 256)
+      ) {
         return undefined;
       }
       artwork = Object.freeze({ url: item["url"], altText: item["altText"], rights });

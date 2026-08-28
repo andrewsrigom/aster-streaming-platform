@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. One approved source has a validated private HLS candidate, inspected JPEG artwork and recipe-specific durable replay; [latest evidence](../evidence/phase-06/artwork.md). Next implement restricted attestation, artwork approval, modification attribution and public-origin/publication. No public HLS publication yet; reuse both retained candidates.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. One approved source has private HLS/JPEG candidates and durable replay. [Publication foundation](../evidence/phase-06/publication-foundation.md) verifies original reuse, local-only URLs and read-only origin behavior. Next implement immutable bundle/attribution, restricted attestation, artwork approval and Catalog activation. No public HLS publication yet; reuse both retained candidates.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
