@@ -12,7 +12,13 @@
       "entry": ["src/main.ts", "test/integration/encode.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
-    ".": { "entry": ["tools/media/generate-hls.mjs", "infra/router/init-trust.mjs"] },
+    ".": {
+      "entry": [
+        "tools/media/generate-hls.mjs",
+        "tools/media/probe-client.ts",
+        "infra/router/init-trust.mjs"
+      ]
+    },
     "apps/router": {
       "entry": ["src/main.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]

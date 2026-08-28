@@ -22,7 +22,7 @@ Durable processing now has one global slot, three checksum/recipe attempts, 30-m
 
 ## Not implemented
 
-Completed player journey, orphan recovery, engagement/discovery and hosted release. Phase 06 is not yet verified/released. Existing synthetic titles remain technical fixtures, distinct from the actual locally published first film.
+Completed product-player journey, storage-prefix orphan recovery, engagement/discovery and hosted release. Representative browser playback and disposable scratch recovery now pass locally. Phase 06 is not yet verified/released. Existing synthetic titles remain technical fixtures, distinct from the actual locally published first film.
 
 ## Next outcome
 
@@ -33,6 +33,8 @@ The publication foundation under ADR-0026 now verifies current-rights-checksum o
 Bundle/attribution, restricted attestation and actual editorial activation are now implemented. Migration 0007 is applied. The origin is healthy at 127.0.0.1:9001 on the existing edge bridge, with read-only storage and no private-network connection. Full PostgreSQL, synthetic S3 and source gates 51/51 pass; actual copy took 6.657 seconds without source GET/encoding. Only Catalog was upgraded; existing Web title/global attribution SSR returns 200. Compatible replacement/rollback and append-only activation history now pass focused and real PostgreSQL checks; migration 0008 remains unapplied to retained data. [Rollback evidence](../evidence/phase-06/rollback.md). Continue P06-R01: orphan recovery, representative browser playback and Phase 06 acceptance/release. Preserve the bundle/candidates; no CPU diagnostic or unchanged media experiment.
 
 ## Current risks
+
+The [browser HLS probe](../evidence/phase-06/browser.md) passes six actual decoded-frame samples across both renditions at 0.5/298.5/594.5 seconds, with zero HLS/browser errors. Source gate passes 51/51 with no cache. It used the existing CORS origin and did not proxy media or repeat encoding. The temporary probe was removed and the exact Web container restored (home HTTP 200). Product player remains Phase 07. Continue with the storage-prefix orphan boundary and full Phase 06 acceptance/release.
 
 Run-UUID scratch names and local dry-run/apply cleanup now pass six focused checks and a real Docker fixture. Only stopped resources at least 31 minutes old may be removed; immutable originals/candidates/publications and Catalog audit are untouched. [Scratch evidence](../evidence/phase-06/scratch.md). Next P06-R01: explicitly resolve the storage-prefix orphan boundary, verify representative browser HLS playback, then Phase 06 acceptance/release.
 

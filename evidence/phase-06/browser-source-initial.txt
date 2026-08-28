@@ -1,0 +1,61 @@
+$ turbo run build test toolchain:check toolchain:test typecheck lint:workspace format:check unused:check architecture:check architecture:test platform:check platform:test staged:test commit:test
+• turbo 2.10.12
+
+   • Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/http-express, @aster/identity, @aster/media, @aster/object-storage-s3, @aster/postgres, @aster/redis, @aster/router, @aster/runtime, @aster/telemetry, @aster/web
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, staged:test, commit:test in 14 packages
+   • Remote caching disabled
+
+//:toolchain:check: cache bypass, force executing 7d3941587c40efe3
+@aster/telemetry:typecheck: cache miss, executing 535ca5ac01479fea
+//:toolchain:test: cache bypass, force executing f06e72c5f10b4333
+//:typecheck: cache miss, executing 21f880f7f85743b4
+//:format:check: cache miss, executing 9aaacb2676324a2f
+@aster/http-express:typecheck: cache miss, executing 0131f28008ad1b75
+@aster/telemetry:build: cache miss, executing d5908142caecbd52
+@aster/config:build: cache miss, executing df57375db44290e0
+@aster/config:typecheck: cache miss, executing 0875a1dfc18406f3
+@aster/web:build: cache miss, executing 3d1df1745b6d1599
+//:format:check: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+@aster/telemetry:typecheck: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+//:typecheck: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+@aster/http-express:typecheck: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+//:toolchain:check: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+@aster/web:build: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+@aster/config:typecheck: Warning: Failed to load CA certificates off thread: resource temporarily unavailable
+//:toolchain:check: $ node ./tools/verify-toolchain.mjs
+//:toolchain:check: [ELIFECYCLE] Command failed with exit code -11.
+//:typecheck: $ tsc --project ./tsconfig.json --noEmit
+//:typecheck: [ELIFECYCLE] Command failed with exit code -11.
+//:format:check: $ prettier --check .
+@aster/config:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/web:build: $ next build && node ./scripts/verify-public-build.ts && node ./scripts/package-notices.ts
+//:staged:test: cache miss, executing 63d21d4e1175ec5b
+//:unused:check: cache miss, executing fc312126bf80e359
+//:commit:test: cache miss, executing a76c78d0d6d4311a
+@aster/web:build: node[173]: pthread_create: Resource temporarily unavailable
+@aster/telemetry:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/telemetry:typecheck: /home/andrews/personal/portfolio-2026/aster-streaming-platform/packages/telemetry/node_modules/.bin/tsc: 14: Cannot fork
+//:format:check: node[161]: pthread_create: Resource temporarily unavailable
+@aster/media:build: cache miss, executing c00ccba7ee519e55
+@aster/media:typecheck: cache miss, executing ad208208b752ec5e
+@aster/runtime:typecheck: cache miss, executing 66ca5bdef7a5d4ed
+@aster/http-express:build: cache miss, executing 9f3b71a16c1d1f12
+@aster/runtime:build: cache miss, executing 37eadb3dba9c78ec
+//:architecture:check: cache miss, executing cdd0b6ef6a533455
+//:architecture:test: cache miss, executing 169cf02676990ce4
+//:platform:test: cache miss, executing ad04e1fb35dac6ad
+//:platform:check: cache miss, executing 00a33d1312decddf
+//:format:check: [ELIFECYCLE] Command failed.
+@aster/config:typecheck: [ELIFECYCLE] Command failed.
+@aster/telemetry:typecheck: [ELIFECYCLE] Command failed.
+@aster/web:build: [ELIFECYCLE] Command failed.
+//#toolchain:check:  ERROR  command (/home/andrews/personal/portfolio-2026/aster-streaming-platform/) /usr/local/bin/pnpm run toolchain:check exited (245)
+//#typecheck:  ERROR  command (/home/andrews/personal/portfolio-2026/aster-streaming-platform/) /usr/local/bin/pnpm run typecheck exited (245)
+
+ Tasks:    0 successful, 22 total
+Cached:    0 cached, 22 total
+  Time:    4.825s
+Failed:    //#toolchain:check, //#typecheck
+
+ ERROR  run failed: command  exited (245)
+[ELIFECYCLE] Command failed with exit code 245.

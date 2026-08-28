@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Real browser HLS acceptance
+
+### Completed
+
+Added a bounded loopback technical probe with strict TypeScript and pinned HLS.js 1.7.1. One real run decoded both approved renditions at beginning/middle/end: six samples and zero errors. Existing CORS, retained media and product UI are unchanged. The probe container was removed and the exact Web restored, home HTTP 200. No CPU diagnostic, source GET or encoding.
+
+### Evidence
+
+[Browser evidence](../evidence/phase-06/browser.md) includes raw frame/time/dimension counts, upstream notices and reproducible command. Focused guards and full source gate pass 51/51 without cache (1m49.398s). Initial missing upstream type dependencies were fixed narrowly. An initial default-concurrency gate exhausted its container PID bound; concurrency two completed without host investigation.
+
+### Next action
+
+Resolve the storage-prefix orphan retention/cleanup boundary and finish full Phase 06 acceptance/release. Product player stays Phase 07; complete Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Abandoned media scratch recovery
 
 ### Completed

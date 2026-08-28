@@ -1,10 +1,12 @@
 # Phase 06 evidence
 
-[Abandoned scratch recovery](scratch.md) verifies run-specific Docker naming, dry-run/apply cleanup and a tiny real fixture. This does not claim storage-prefix lifecycle garbage collection; that assessment and representative browser playback remain open.
+[Representative browser playback](browser.md) verifies both real HLS renditions at beginning/middle/end: six decoded-frame samples, zero errors. This is a technical probe, not the Phase 07 player.
 
-The [first-film immutable publication](publication.md) now records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. [Compatible replacement/rollback](rollback.md) now passes focused and real PostgreSQL checks. Orphan recovery/browser/phase release remain open.
+[Abandoned scratch recovery](scratch.md) verifies run-specific Docker naming, dry-run/apply cleanup and a tiny real fixture. Storage-prefix lifecycle garbage collection remains an explicit assessment.
 
-Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired, processed and locally published with HLS/JPEG/attribution. Browser playback and phase release remain unfinished. Phase 05 is [released](../phase-05/release.txt).
+The [first-film immutable publication](publication.md) records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. [Compatible replacement/rollback](rollback.md) passes focused and real PostgreSQL checks. Storage-prefix orphan recovery and phase release remain open.
+
+Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired, processed, locally published and representatively played in the browser. Phase release remains unfinished. Phase 05 is [released](../phase-05/release.txt).
 
 - [Source/rights review](rights-review.md): current official evidence, exact archive and permitted use, exclusions and publication conditions.
 - [Preflight](source-preflight.json): HTTP status/metadata/page hashes and isolated FFmpeg version.

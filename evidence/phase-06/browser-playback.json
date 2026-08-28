@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "hlsVersion": "1.7.1",
+  "durationSeconds": 596.583332,
+  "samples": [
+    {
+      "level": 0,
+      "targetSeconds": 0,
+      "mediaSeconds": 0.5,
+      "width": 426,
+      "height": 240,
+      "presentedFrames": 12,
+      "decodedFrames": 18
+    },
+    {
+      "level": 0,
+      "targetSeconds": 298,
+      "mediaSeconds": 298.5,
+      "width": 426,
+      "height": 240,
+      "presentedFrames": 25,
+      "decodedFrames": 128
+    },
+    {
+      "level": 0,
+      "targetSeconds": 594,
+      "mediaSeconds": 594.5,
+      "width": 426,
+      "height": 240,
+      "presentedFrames": 38,
+      "decodedFrames": 286
+    },
+    {
+      "level": 1,
+      "targetSeconds": 0,
+      "mediaSeconds": 0.5,
+      "width": 638,
+      "height": 358,
+      "presentedFrames": 49,
+      "decodedFrames": 300
+    },
+    {
+      "level": 1,
+      "targetSeconds": 298,
+      "mediaSeconds": 298.5,
+      "width": 638,
+      "height": 358,
+      "presentedFrames": 62,
+      "decodedFrames": 410
+    },
+    {
+      "level": 1,
+      "targetSeconds": 594,
+      "mediaSeconds": 594.5,
+      "width": 638,
+      "height": 358,
+      "presentedFrames": 75,
+      "decodedFrames": 568
+    }
+  ],
+  "errors": []
+}

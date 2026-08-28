@@ -1,0 +1,142 @@
+• turbo 2.10.12
+
+   • Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/http-express, @aster/identity, @aster/media, @aster/object-storage-s3, @aster/postgres, @aster/redis, @aster/router, @aster/runtime, @aster/telemetry, @aster/web
+   • Running docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test in 14 packages
+   • Remote caching disabled
+
+//:community:check: cache miss, executing 135c0b56cf7e8e17
+//:ci:test: cache miss, executing 792493bbc69d5aeb
+//:ci:test: $ node --test ./tools/classify-ci-change.test.ts ./tools/resolve-schema-baseline.test.ts ./tools/verify-ci-policy.test.ts
+//:community:check: $ node ./tools/verify-community-files.ts
+//:community:check: {"check":"community","files":6,"status":"ok","violations":0}
+//:community:test: cache miss, executing b4963ee808f2d9c2
+//:ci:test: ✔ classifies Markdown, evidence, skills, and repository memory as documentation only (1.661263ms)
+//:ci:test: ✔ requires full quality for unrelated source and environment templates (0.241105ms)
+//:ci:test: ✔ selects real integration for adapters, runtime, bootstrap and shared dependency changes (0.363442ms)
+//:ci:test: ✔ fails safe to full quality for an empty diff (0.161422ms)
+//:ci:test: ✔ selects the isolated local-platform smoke path (0.203732ms)
+//:ci:test: ✔ deduplicates changed paths before classification (0.106522ms)
+//:ci:test: ✔ rejects unsafe or unbounded changed paths (1.58242ms)
+//:ci:test: ✔ parses bounded NUL-delimited Git diff output (0.222444ms)
+//:ci:test: ✔ includes deleted paths in the Git change set (0.197614ms)
+//:ci:test: ✔ manual feature/main histories select an earlier contract; event baselines stay explicit (405.746881ms)
+//:community:test: $ node --test ./tools/verify-community-files.test.ts
+//:ci:test: ✔ the checked-in CI and Dependabot policy passes (10.09968ms)
+//:ci:test: ✔ rejects movable action tags (1.992704ms)
+//:ci:test: ✔ schema compatibility cannot compare only against the candidate or a shallow checkout (2.951565ms)
+//:ci:test: ✔ rejects removal, suppression or unbounded real integration (2.29704ms)
+//:ci:test: ✔ rejects write permissions and secret context (1.564715ms)
+//:ci:test: ✔ Docker context probe cannot be omitted, skipped or left unbounded (2.299766ms)
+//:ci:test: ✔ rejects duplicate feature pushes and missing cancellation (1.543225ms)
+//:ci:test: ✔ rejects a weakened or missing aggregate decision (2.739105ms)
+//:ci:test: ✔ rejects a missing local-platform decision path (1.507347ms)
+//:ci:test: ✔ rejects weakened local-platform execution or broad Docker cleanup (1.260913ms)
+//:ci:test: ✔ rejects a missing public contribution check (1.213796ms)
+//:ci:test: ✔ rejects missing or unbounded Docker-only build and metric verification (3.014163ms)
+//:ci:test: ✔ rejects a missing repository-memory check (35.248414ms)
+//:ci:test: ✔ the packaged product journey cannot use container loopback or bypass Router (1.638455ms)
+//:ci:test: ✔ rejects removal of the reviewed MITNFA license (1.605947ms)
+//:ci:test: ✔ rejects removal or expansion of the owner-approved Federation license set (1.99017ms)
+//:ci:test: ✔ Web tooling cannot broaden the package-specific license exceptions (3.100077ms)
+//:ci:test: ✔ requires both bounded weekly dependency ecosystems (0.367165ms)
+//:ci:test: ℹ tests 28
+//:ci:test: ℹ suites 0
+//:ci:test: ℹ pass 28
+//:ci:test: ℹ fail 0
+//:ci:test: ℹ cancelled 0
+//:ci:test: ℹ skipped 0
+//:ci:test: ℹ todo 0
+//:ci:test: ℹ duration_ms 869.631319
+//:security:check: cache bypass, force executing 123bc8c3d560f3b1
+//:community:test: ✔ the checked-in community contract passes (28.550077ms)
+//:community:test: ✔ rejects missing and unexpected community files (9.037136ms)
+//:community:test: ✔ rejects malformed or drifted issue front matter (2.614797ms)
+//:community:test: ✔ rejects missing pull-request topics and enabled blank issues (2.338664ms)
+//:community:test: ✔ rejects weakened licensing and public security guidance (2.051675ms)
+//:community:test: ✔ rejects a missing verified private vulnerability channel (3.443435ms)
+//:community:test: ✔ rejects oversized community content (2.585661ms)
+//:community:test: ✔ rejects malformed UTF-8 and duplicate templates (10.978048ms)
+//:community:test: ✔ rejects symbolic community files when the host permits the fixture (11.546069ms)
+//:community:test: ✔ rejects a symbolic alternate pull-request template location (9.819799ms)
+//:community:test: ℹ tests 10
+//:community:test: ℹ suites 0
+//:community:test: ℹ pass 10
+//:community:test: ℹ fail 0
+//:community:test: ℹ cancelled 0
+//:community:test: ℹ skipped 0
+//:community:test: ℹ todo 0
+//:community:test: ℹ duration_ms 230.923485
+//:security:test: cache miss, executing bcfe887dd9f794b3
+//:security:check: $ node ./tools/scan-secrets.ts --all
+//:security:test: $ node --test ./tools/scan-secrets.test.ts
+//:security:test: ✔ detects high-confidence provider credentials without returning matched values (2.221066ms)
+//:security:test: ✔ detects private keys, credential URLs, and generic assignments (0.80327ms)
+//:security:test: ✔ accepts explicit non-secret placeholders (0.252736ms)
+//:security:test: ✔ reports line numbers without including assigned values (0.189641ms)
+//:security:test: ✔ parses bounded NUL-delimited Git paths (0.530865ms)
+//:security:test: ✔ reads staged index bytes and detects a safe synthetic fixture (22.712453ms)
+//:security:test: ℹ tests 6
+//:security:test: ℹ suites 0
+//:security:test: ℹ pass 6
+//:security:test: ℹ fail 0
+//:security:test: ℹ cancelled 0
+//:security:test: ℹ skipped 0
+//:security:test: ℹ todo 0
+//:security:test: ℹ duration_ms 140.600187
+//:ai:test: cache miss, executing b8ba29c5675fde14
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:ci:check: cache miss, executing 5326f2daeec3359b
+//:ai:test: $ node --test ./tools/verify-ai-state.test.ts
+//:ai:test: ✔ the checked-in repository memory passes (20.147368ms)
+//:ai:test: ✔ accepts canonical active and idle repository memory (1.35929ms)
+//:ai:test: ✔ accepts one external wait before one dependent active item (7.01531ms)
+//:ai:test: ✔ rejects an active item that skips actionable work after an external wait (0.459696ms)
+//:ai:test: ✔ rejects missing and oversized repository memory (1.128844ms)
+//:ai:test: ✔ rejects unknown, duplicate, and multiple active queue states (0.257007ms)
+//:ai:test: ✔ rejects completed, missing, and forward blocker references (0.269806ms)
+//:ai:test: ✔ rejects a mismatched or incomplete active change plan (0.282658ms)
+//:ai:test: ✔ rejects stale current-state and handoff resume targets (0.388099ms)
+//:ai:test: ✔ rejects session regression and missing entry evidence (0.675736ms)
+//:ai:test: ✔ rejects malformed UTF-8 repository memory files (15.753905ms)
+//:ci:check: $ node ./tools/verify-ci-policy.ts
+//:ai:test: ✔ rejects symbolic repository memory files when the host permits the fixture (49.154006ms)
+//:ai:test: ✔ emits deterministic sorted diagnostics (0.942137ms)
+//:ai:test: ℹ tests 13
+//:ai:test: ℹ suites 0
+//:ai:test: ℹ pass 13
+//:ai:test: ℹ fail 0
+//:ai:test: ℹ cancelled 0
+//:ai:test: ℹ skipped 0
+//:ai:test: ℹ todo 0
+//:ai:test: ℹ duration_ms 223.936919
+//:docs:test: cache miss, executing 18c44e73b28249d7
+//:ci:check: {"check":"ci-policy","status":"ok","violations":0}
+//:docs:check: cache miss, executing a95c8f672712923c
+//:docs:test: $ node --test ./tools/verify-documentation.test.ts
+//:docs:check: $ node ./tools/verify-documentation.ts
+//:docs:test: ✔ accepts canonical prose and ignores terminology inside code (3.880111ms)
+//:docs:test: ✔ rejects missing titles, mismatched fences, merge markers, and terminology drift (1.840857ms)
+//:docs:test: ✔ accepts closed issue-template front matter without weakening title checks (0.470811ms)
+//:docs:test: ✔ rejects unqualified absolute maturity claims (0.145539ms)
+//:docs:test: ✔ rejects undefined reference links (0.180189ms)
+//:docs:test: ✔ validates existing files and local heading fragments (55.694488ms)
+//:docs:test: ✔ excludes generated Next output without exempting authored Web documentation (7.786467ms)
+//:docs:test: ✔ rejects missing files, missing fragments, and repository escape (8.132626ms)
+//:docs:test: ✔ requires checked-in support for explicit current-status maturity claims (10.824559ms)
+//:docs:test: ✔ rejects malformed UTF-8 rather than scanning replacement characters (3.723492ms)
+//:docs:test: ℹ tests 10
+//:docs:test: ℹ suites 0
+//:docs:test: ℹ pass 10
+//:docs:test: ℹ fail 0
+//:docs:test: ℹ cancelled 0
+//:docs:test: ℹ skipped 0
+//:docs:test: ℹ todo 0
+//:docs:test: ℹ duration_ms 236.532383
+//:ai:check: cache miss, executing 24eafb299befa20d
+//:docs:check: {"check":"documentation","status":"ok","documents":184,"headings":2512,"links":903,"statusClaims":4,"violations":0}
+//:ai:check: $ node ./tools/verify-ai-state.ts
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":38,"sessionEntries":100,"activeRequirement":"P06-R01","targetRequirement":"P06-R01","violations":[]}
+
+ Tasks:    10 successful, 10 total
+Cached:    0 cached, 10 total
+  Time:    7.48s
