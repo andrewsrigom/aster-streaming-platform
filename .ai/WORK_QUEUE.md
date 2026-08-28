@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R07/R08 and R09/R10/R12 are DONE at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc; exact main push33212852513 passed. R11 is the sole IN_PROGRESS unpublished item at checkpoint533368d plus browser corrections. Real personalized save/resume/library/failure/focus/accessibility, disposable startup/replay/cleanup and the refreshed70-task candidate gate pass. Next: protected review/publication and phase closeout. All historical checkpoints are restored; never reapply them. Retained Phase07 demo was restored intact.
+P08-R11 is IN_PROGRESS again: PR31 merged after green protected CI/two clean reviews, but exact main33218775702 failed in the browser response-body/navigation observer. Correct it on fix/p08-browser-ack. P09-R01 is READY, with its unpublished21-test domain checkpoint preserved at c9cb96d on feat/p09-discovery-search; rebase after predecessor repair. Never reapply prior stashes. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -52,6 +52,9 @@ P08-R07/R08 and R09/R10/R12 are DONE at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f6
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
 | 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | IN_PROGRESS |
+| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | READY |
+| 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
+| 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

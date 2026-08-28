@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R11 on feat/p08-player-progress, checkpoint533368d5b163d32f6ba008ad410c19c17110c350 plus accepted browser corrections, unpublished; base main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. PR30 and R09/R10/R12 are DONE through protected/confirmation/exact main push33212852513. All historical checkpoints were restored once and must never be reapplied. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R11 on fix/p08-browser-ack from main e20a7de. PR31 passed protected CI33217783905 and two clean reviews, but exact main33218775702 failed in the personalized browser response-body/navigation observer. This failed test is not WAITING_EXTERNAL. P09-R01 is READY with its21-test domain checkpoint preserved, unpublished, at c9cb96d on feat/p09-discovery-search. Rebase it after predecessor correction; do not reapply historical stashes. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-R11's [real personalized demo](../evidence/phase-08/player-demo.md) passes save/resume exactly2seconds, history/completion, watchlist, keyboard focus, profile isolation, optional-save failure with continuing media, sign-out and accessibility. Anonymous media/caption/direct-origin proof also passes. Final supervisor exits0, confirms initializer/topic replay and removes only its21-container/13-volume/two-network fixture. Original Web/Router/origin restored; retained health200. Corrections preserve pending pause/seek priority and trim unused library selections within the unchanged page/cost limits.26 affected player tests,11 owner-cost tests,nine library tests and22 CI policy tests pass. Earlier70/70 source evidence remains supporting; refreshed coherent gate and own protected review/publication remain.
+R11's [local browser proof](../evidence/phase-08/player-demo.md) and PR31 protected browser run passed actual2-second resume, history/completion, watchlist/focus, isolation, optional-save failure, sign-out and accessibility. Exact main later exposed the observer race. The test-only correction selects requests synchronously and consumes one checked body before navigation; five regressions,26 player tests, Web types/lint and the14/14 affected gate pass. [Correction evidence](../evidence/phase-08/player-browser-ack.txt) retains the failure and limitations. Fresh protected browser acceptance/reviews and exact main remain required. Production code and retained demo are unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -24,11 +24,11 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase08 protected player release/phase closeout, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Phase08 exact post-merge closeout, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-The refreshed P08-R11 [candidate gate](../evidence/phase-08/player-demo-candidate.txt) passes70/70 with exact-main composition and31 matching source hashes. Publish one coherent candidate, obtain initial/confirmation review and protected CI, squash and confirm exact main push. Then audit Phase08 requirements and Phase09 prerequisites. Carry forward accepted local browser/media/SQL/Kafka evidence unless changed inputs invalidate it; no repeated host experiment.
+Complete P08-R11 browser acknowledgement correction under CHANGE_PLAN, then require protected real-browser acceptance, reviews and exact main success. Five deterministic observer regressions,26 player/reporting tests, scoped lint and Web types pass. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased. Resume preserved Phase09 after repair. No repeated host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 

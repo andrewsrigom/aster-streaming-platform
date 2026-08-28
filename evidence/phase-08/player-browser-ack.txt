@@ -1,0 +1,70 @@
+P08-R11 browser acknowledgement correction — 2026-08-28
+Base: e20a7ded16d4867a4a7d29e9b4913ce2b6ea8ee2; branch fix/p08-browser-ack.
+Predecessor: PR31 green protected33217783905 and two clean reviews.
+Failed exact main:33218775702; source job99008227199.
+Scope: test-only observer; production Web/owners/SQL/Compose remain unchanged.
+Cause supported by code: asynchronous response predicates read every progress
+body concurrently, including unrelated/older-document responses. The observed
+failure is a discarded CDP body; the full private trace is not published.
+Correction: synchronous endpoint/operation/title/position selection, then read
+and validate exactly one acknowledgement before navigation. Same12-second
+response wait, zero browser retries, retained assertions plus returned-title check.
+Completion uses actual near-end media position; no invented save result.
+
+Official API references inspected:
+https://playwright.dev/docs/api/class-page#page-wait-for-response
+https://playwright.dev/docs/api/class-response#response-json
+
+Environment: Ubuntu-20.04 WSL, Node24.19.0/pnpm11.24.0.
+Commands:
+node --test apps/web/test/browser-progress-observer.test.ts
+pnpm exec eslint apps/web/test/support/saved-progress.ts apps/web/test/browser-progress-observer.test.ts apps/web/test/browser/engagement.spec.ts
+pnpm --filter @aster/web typecheck
+node --test apps/web/test/progress-reporter.test.ts apps/web/test/media-progress.test.ts apps/web/test/player-engagement.test.ts
+Results:5/5 observer regressions(656.997667ms),26/26 runtime-adapter tests
+(1746.372108ms); scoped ESLint and Web type generation/strict TypeScript pass.
+The first lint attempt caught async-without-await test fakes; fixed with explicit
+resolved/rejected promises, without rule changes. Initial memory check required
+the explicit P08-R11 next-action identifier; corrected. No runtime/host test loop.
+
+Regression cases: synchronous unrelated-body exclusion; pending-body barrier
+prevents resolution/navigation; HTTP/body failure propagates; malformed/failed/
+wrong-title/position/status acknowledgements reject; completion remains owner
+acknowledged. These are deterministic harness tests, not a fresh browser run.
+The next protected CI must prove actual save/resume/history/library/isolation and
+save-outage-with-continuing-media. Prior real SQL/Kafka/local-browser proof stays
+supporting evidence because only the observer changes.
+
+Selected raw main failure:
+2026-08-28T23:12:47.5745944Z     Error: page.waitForResponse: response.json: Protocol error (Network.getResponseBody): No data found for resource with given identifier
+2026-08-28T23:12:47.5747569Z     Response body is not available for a response that was navigated away from. Read response.body() before triggering any navigation.
+2026-08-28T23:12:47.5748073Z
+2026-08-28T23:12:47.5748170Z       22 | }
+2026-08-28T23:12:47.5748630Z       23 | function savedResponse(page: Page, position?: number, status?: string) {
+2026-08-28T23:12:47.5749096Z     > 24 |   return page.waitForResponse(
+2026-08-28T23:12:47.5749390Z          |               ^
+2026-08-28T23:12:47.5749672Z       25 |     async (response) => {
+2026-08-28T23:12:47.5749947Z       26 |       if (
+2026-08-28T23:12:47.5750256Z       27 |         response.url() !== endpoint ||
+2026-08-28T23:12:47.5751001Z         at savedResponse (/home/runner/work/aster-streaming-platform/aster-streaming-platform/apps/web/test/browser/engagement.spec.ts:24:15)
+2026-08-28T23:12:47.5752148Z         at /home/runner/work/aster-streaming-platform/aster-streaming-platform/apps/web/test/browser/engagement.spec.ts:142:22
+2026-08-28T23:12:47.5752641Z
+
+Canonical candidate gate (runQualityGate --changed; concurrency2, original task
+inventory/deadline/cancellation retained; no heavyweight local fixture):
+$ node ./tools/verify-ai-state.ts
+{"check":"ai-state","status":"ok","files":10,"queueItems":49,"sessionEntries":124,"activeRequirement":"P08-R11","targetRequirement":"P08-R11","violations":[]}
+$ node ./tools/verify-documentation.ts
+{"check":"documentation","status":"ok","documents":218,"headings":2756,"links":1322,"statusClaims":4,"violations":0}
+
+   • Packages in scope: //, @aster/web
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 2 packages
+   • Remote caching disabled
+
+
+ Tasks:    14 successful, 14 total
+Cached:    1 cached, 14 total
+  Time:    2m23.67s
+Exit:0.14/14 affected tasks pass; one cached;2m23.67s.
+Later edits only consolidate this evidence and repository memory; repeat their
+cheap checks and commit hooks, not unchanged runtime experiments.

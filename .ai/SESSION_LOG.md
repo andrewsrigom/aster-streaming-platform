@@ -6,7 +6,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
-Current handoff: R11 now passes the real browser save/resume/library/watchlist/profile/failure/accessibility journey and Docker replay/cleanup. Fixed lost pause/seek flush priority, trimmed over-budget library selections without lowering page size and restored keyboard focus. Added the journey to the existing CI lane and documented opt-in startup/cleanup. Only three retained port owners were temporarily stopped and restored; all disposable resources were removed, retained health200. PR30/R09/R10/R12 remain DONE at squash7fe10ed; no historical checkpoint may be reapplied.
+Current handoff: PR31 passed protected CI33217783905, initial5458553590 and confirmation5458594360, then squash-merged as e20a7de. Exact main33218775702 failed only in the personalized browser response-body/navigation observer. P08-R11 is IN_PROGRESS again on fix/p08-browser-ack. Preserved P09 domain/ADR-0035/21 passing tests as sole unpublished c9cb96d on feat/p09-discovery-search; it is READY pending predecessor repair/rebase. No lost work, retained-demo change or repeated host experiment.
 
 Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
 
@@ -16,7 +16,7 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 ### Evidence
 
-Current R11 checkpoint: [browser/demo evidence](../evidence/phase-08/player-demo.md) records anonymous1/1 in5124ms and personalized1/1 in23559ms, actual resume2seconds, zero axe violations and final supervisor exit0.26 affected player tests,11 owner-cost tests,nine library tests and22 CI policy tests pass; Web image771f9cb and [exact sources](../evidence/phase-08/player-demo-source.sha256) identify the accepted runtime. Initial cost/flush failures and recovered seed upload rejection remain recorded, not relabelled. Earlier70/70 gate is supporting evidence; refreshed candidate gate remains. No unchanged CPU, retained-film or Kafka experiment.
+Current R11 correction: five observer regressions,26 player tests, scoped lint/Web types and canonical affected gate14/14 pass in2m23.67s. [Failure/correction evidence](../evidence/phase-08/player-browser-ack.txt) distinguishes deterministic test proof from required fresh protected browser acceptance. Earlier [local browser evidence](../evidence/phase-08/player-demo.md) and PR31 protected acceptance remain supporting. No application, SQL, Compose, retained-film or host change.
 
 Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
 
@@ -24,7 +24,7 @@ R08 protected/main gates pass. Native pinned tooling and its executable pnpm shi
 
 ### Next action
 
-Current: P08-R11 [refreshed source gate](../evidence/phase-08/player-demo-candidate.txt) passes70/70,45 cached,1m54.807s with exact-main composition and31 source hashes. Next: protected review/CI/publication, then Phase08 closeout and Phase09 eligibility. Local browser/demo acceptance is complete; do not repeat it without an invalidating change. The following prior checkpoint remains historical:
+Current: correct the acknowledgement observer, run deterministic regression and affected gate, then require protected real-browser acceptance/reviews and exact main success before closing P08-R11. [Prior protected evidence](../evidence/phase-08/player-release.txt) remains valid supporting evidence, not a successful main claim. Resume preserved Phase09 after repair/rebase. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 

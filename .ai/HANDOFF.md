@@ -2,17 +2,15 @@
 
 ## Resume point
 
-P08-R11 IN_PROGRESS, unpublished on feat/p08-player-progress, checkpoint533368d5b163d32f6ba008ad410c19c17110c350 plus uncommitted browser fixes/CI/docs/evidence, base7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. Real personalized browser/demo acceptance passes. Refreshed source gate and own publication remain. PR30/R09/R10/R12 are DONE through exact main push33212852513. Full Phase00–14 goal remains active.
-
-All historical stashes/checkpoints, including4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c,1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1,fec057f and8212, were restored. Never reapply them. Git diff proved the frozen c48 and squash trees identical before moving the unpublished branch without changing its index/worktree.
+P08-R11 IN_PROGRESS on fix/p08-browser-ack from main e20a7de. PR31 passed protected CI and clean initial/confirmation reviews, but exact main33218775702 failed in the browser progress response-body/navigation observer. Not WAITING_EXTERNAL. P09-R01 is READY with its21-test domain checkpoint preserved, unpublished, as c9cb96d on feat/p09-discovery-search. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish the corrected candidate: its [refreshed gate](../evidence/phase-08/player-demo-candidate.txt) passes70/70,45 cached,1m54.807s, exact-base composition and31 matching source hashes. Focused26 player/media/lifecycle,11 owner-cost,nine library and22 CI policy tests pass; current Web Docker build passes. The former local main4082c3a selected a conservative affected superset; fetched origin/main remains7fe10ed.
-2. [Real browser/demo acceptance](../evidence/phase-08/player-demo.md) passes: anonymous1/1; personalized1/1,23559ms, resume seek2seconds, history/completion/watchlist, keyboard focus, profile isolation, save failure with continuing media, sign-out and zero axe violations. Corrected source hashes, JSON observations, screenshot and final supervisor output are recorded. Do not repeat unchanged local browser/media/Kafka/CPU experiments.
-3. Corrections retain pause/seek flush priority across an active save/identical retry, trim unused library fields without reducing20-title pages or relaxing budget384, and restore watchlist focus. Playwright output is explicitly confined. CI adds personalization to the existing demo lane, waits for exact topic-initializer success and cleans with the full three-file model. Review the coherent diff, not another unrelated work item.
-4. Fresh fixture aster-p08-demo-20260828 was fully removed after final startup/replay/cleanup passed. All21 containers,13 named volumes and two networks are gone. Retained Web/Router/origin restored; health200. Do not rerun the private Resume helper or old profile-cleanup script against another project. One earlier seed replay returned upload unavailable; later finite diagnostic/readback and normal startup/replay passed without storage-code change. If fresh protected CI reproduces it, diagnose that boundary rather than loop or weaken acceptance.
-5. Publish one coherent R11 candidate after its source gate. Require initial/confirmation review, protected CI, expected-head squash and exact main push. PR30 is already done; do not poll it again. Then Phase08 requirement-by-requirement closeout and Phase09 prerequisite check. No retained migration or film re-encode.
+1. Complete the synchronous request selection/awaited-body correction under CHANGE_PLAN. Preserve failed main evidence; run focused regression and affected candidate gate. Require fresh protected actual-browser acceptance, clean initial/confirmation review, expected-head squash and exact main success.
+2. Then close Phase08, switch to feat/p09-discovery-search and rebase its sole local c9cb96d commit. ADR-0035 and phase09 readiness/core evidence live on that branch. Continue Catalog snapshots/export, owned SQL/rebuild/consumer and bounded search; rails/Web are later slices. Reinstall the frozen workspace after branch structure changes; do not bypass dependency verification.
+3. Phase08 audit/release artifacts accompany the correction; no documentation-only pipeline. No production runtime source changes are needed for the observer race. Existing local real-browser/SQL/Kafka proof remains supporting; fresh protected browser acceptance covers the test change.
+4. PR31 initial review was automatic on ready/open; do not request a duplicate initial review on later PRs while that review is running. Its explicit confirmation is complete. No third round without a concrete blocker.
+5. Preserve all historical restored stashes/checkpoints; never reapply them. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
 
 ## Evidence boundaries
 

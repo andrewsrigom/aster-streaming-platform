@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { waitForSavedProgress } from "../support/saved-progress.ts";
 
 test.skip(
   process.env["ASTER_ENGAGEMENT_DEMO"] !== "true",
@@ -20,37 +21,6 @@ async function createProfile(page: Page, name: string) {
   );
   await dialog.getByRole("button", { name: "Close profiles" }).click();
 }
-function savedResponse(page: Page, position?: number, status?: string) {
-  return page.waitForResponse(
-    async (response) => {
-      if (
-        response.url() !== endpoint ||
-        response.request().method() !== "POST" ||
-        (response.request().postDataJSON() as { operationName?: string }).operationName !==
-          "RecordProgress"
-      ) {
-        return false;
-      }
-      const result = (await response.json()) as {
-        data?: {
-          recordProgress?: {
-            code: string;
-            progress?: { positionMs: number; status: string };
-          };
-        };
-      };
-      const value = result.data?.recordProgress;
-      return (
-        value?.code === "COMPLETED" &&
-        !!value.progress &&
-        (position === undefined || Math.abs(value.progress.positionMs - position) < 150) &&
-        (status === undefined || value.progress.status === status)
-      );
-    },
-    { timeout: 12000 },
-  );
-}
-
 test("real profile progress, resume, library, watchlist and optional-save failure", async ({
   page,
   context,
@@ -89,7 +59,11 @@ test("real profile progress, resume, library, watchlist and optional-save failur
   await expect
     .poll(() => video.evaluate((element) => (element as HTMLVideoElement).readyState))
     .toBeGreaterThan(1);
-  const saved = savedResponse(page, 2000, "IN_PROGRESS");
+  const saved = waitForSavedProgress(page, endpoint, {
+    titleId,
+    positionMs: 2000,
+    status: "IN_PROGRESS",
+  });
   await video.evaluate((element) => {
     const media = element as HTMLVideoElement;
     media.pause();
@@ -139,7 +113,14 @@ test("real profile progress, resume, library, watchlist and optional-save failur
     .toBeCloseTo(2, 1);
   const resumeSeekSeconds = Number(await video.getAttribute("data-resume-seek-seconds"));
   await page.screenshot({ path: info.outputPath("resumed-player.png"), fullPage: true });
-  const completion = savedResponse(page, undefined, "COMPLETED");
+  const completionPosition = await video.evaluate((element) =>
+    Math.round(((element as HTMLVideoElement).duration - 0.1) * 1000),
+  );
+  const completion = waitForSavedProgress(page, endpoint, {
+    titleId,
+    positionMs: completionPosition,
+    status: "COMPLETED",
+  });
   await video.evaluate(async (element) => {
     const media = element as HTMLVideoElement;
     media.currentTime = media.duration - 0.1;
