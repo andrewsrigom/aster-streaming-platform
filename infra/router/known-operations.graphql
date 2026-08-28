@@ -1,3 +1,39 @@
+query TitlesWithEngagement($profileId: ID!, $first: Int! = 20) {
+  titles(first: $first) {
+    edges {
+      node {
+        id
+        localized {
+          title
+        }
+        progress(profileId: $profileId) {
+          positionMs
+          durationMs
+          status
+          updatedAt
+        }
+        inWatchlist(profileId: $profileId)
+      }
+    }
+    pageInfo {
+      hasNextPage
+    }
+  }
+}
+
+query ProfileWithEngagement($profileId: ID!, $titleId: ID!) {
+  profile(id: $profileId) {
+    id
+    progress(titleId: $titleId) {
+      positionMs
+      durationMs
+      status
+      updatedAt
+    }
+    inWatchlist(titleId: $titleId)
+  }
+}
+
 query Viewer {
   me {
     accountId

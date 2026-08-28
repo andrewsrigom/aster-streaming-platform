@@ -371,6 +371,9 @@ importers:
       '@aster/telemetry':
         specifier: workspace:*
         version: link:../../packages/telemetry
+      dataloader:
+        specifier: 2.2.3
+        version: 2.2.3
       graphql:
         specifier: 16.14.2
         version: 16.14.2

@@ -1,0 +1,61 @@
+P08-R08 hosted watchdog remediation — 2026-08-28
+
+Candidate before correction: 74c3976aa74f10076ce3a01e8f966b7649303448.
+Corrected services/identity/test/service-composition.test.ts SHA-256: 0bae4d37090df49701ab9706e0697e27f2f9c39928037230b2ee465bdb75dfcd.
+CI run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33196837907
+Failed job: 98936071132, Install and source quality.
+Only failing assertion: Identity diagnostic child was killed by the parent's five-second execFile watchdog. No Engagement assertion failed. Cause beyond exceeding that watchdog is not established; no host/CPU claim.
+
+The child independently permits startup 5s, three readiness transitions 2s each, eight HTTP requests 1s each and normal lifecycle shutdown. The old whole-process 5s watchdog could end this scenario before its own bounded operations. Give only this diagnostic a 30s outer safety watchdog. Keep every production deadline and the other subprocess tests at their existing values.
+
+Hosted raw excerpt:
+2026-08-28T17:57:21.5772628Z ✖ failing tests:
+2026-08-28T17:57:21.5772856Z 
+2026-08-28T17:57:21.5773170Z test at dist/test/service-composition.test.js:259:1
+2026-08-28T17:57:21.5774451Z ✖ diagnostic runs real loopback health transitions and exits naturally (5098.404906ms)
+2026-08-28T17:57:21.5775489Z   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+2026-08-28T17:57:21.5776171Z   
+2026-08-28T17:57:21.5776512Z   true !== false
+2026-08-28T17:57:21.5776878Z   
+2026-08-28T17:57:21.5778507Z       at TestContext.<anonymous> (file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/services/identity/dist/test/service-composition.test.js:261:12)
+2026-08-28T17:57:21.5780196Z       at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+2026-08-28T17:57:21.5781176Z       at async Test.run (node:internal/test_runner/test:1389:7)
+2026-08-28T17:57:21.5782129Z       at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+2026-08-28T17:57:21.5782948Z     generatedMessage: true,
+2026-08-28T17:57:21.5783430Z     code: 'ERR_ASSERTION',
+2026-08-28T17:57:21.5783864Z     actual: true,
+2026-08-28T17:57:21.5784289Z     expected: false,
+2026-08-28T17:57:21.5784731Z     operator: 'strictEqual',
+2026-08-28T17:57:21.5785190Z     diff: 'simple'
+2026-08-28T17:57:21.5785589Z   }
+2026-08-28T17:57:21.5786170Z [ELIFECYCLE] Test failed. See above for more details.
+2026-08-28T17:57:21.7849979Z ##[group]@aster/web:typecheck
+2026-08-28T17:57:21.7850705Z cache miss, executing 6820ed91b924daad
+2026-08-28T17:57:21.7851179Z $ next typegen && tsc --noEmit
+2026-08-28T17:57:21.7851563Z Generating route types...
+2026-08-28T17:57:21.7852236Z ✓ Types generated successfully
+2026-08-28T17:57:21.7852557Z [ELIFECYCLE] Command failed.
+2026-08-28T17:57:21.7853038Z ##[endgroup]
+2026-08-28T17:57:21.8382610Z ##[group]//:lint:workspace
+2026-08-28T17:57:21.8420158Z ##[error]command (/home/runner/work/aster-streaming-platform/aster-streaming-platform/services/identity) /opt/hostedtoolcache/node/24.19.0/x64/bin/pnpm run test exited (1)
+2026-08-28T17:57:21.8435724Z @aster/identity#test:  ERROR  command (/home/runner/work/aster-streaming-platform/aster-streaming-platform/services/identity) /opt/hostedtoolcache/node/24.19.0/x64/bin/pnpm run test exited (1)
+2026-08-28T17:57:21.8436872Z cache miss, executing 0d1a449c82ca3f47
+2026-08-28T17:57:21.8437256Z $ eslint .
+2026-08-28T17:57:21.8437926Z [ELIFECYCLE] Command failed.
+2026-08-28T17:57:21.8438557Z ##[endgroup]
+
+Focused local command, Node24.19.0 Linux tooling, 2CPU/2GiB, pids256:
+pnpm exec tsc --build services/identity/tsconfig.json packages/event-delivery/tsconfig.json
+node --test services/identity/dist/test/service-composition.test.js packages/event-delivery/dist/test/*.test.js
+pnpm exec eslint packages/event-delivery/src packages/event-delivery/test services/identity/test/service-composition.test.ts
+
+Terminal excerpt:
+✔ diagnostic runs real loopback health transitions and exits naturally (991.431628ms)
+ℹ tests 21
+ℹ pass 21
+ℹ fail 0
+ℹ duration_ms 8688.686585
+
+Ten Identity composition tests and eleven independent event-core tests passed. The first lint reported only new event-core formatting/narrowing issues; after mechanical braces and a cancellation getter, scoped lint and all eleven event-core tests passed. The Identity harness file needed no further edit. This check ran on the unpublished R09 workspace before parking it; Identity runtime and all shared executable dependencies match R08. The only R08 executable-source change is the test harness above. R09 core/manifest edits are not part of this correction.
+
+Existing R08 SQL/Docker/67-task evidence remains supporting: no production source, schema, transport, dependency version or behavior changed. Require fresh protected CI and exact-head confirmation for the corrected candidate. No repeated unchanged heavyweight experiment.

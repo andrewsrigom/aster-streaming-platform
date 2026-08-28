@@ -2,6 +2,34 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Diagnostic watchdog correction
+
+### Completed
+
+PR 29 initial review 5455963295 is clean, but CI 33196837907 killed the old Identity diagnostic child at its five-second parent watchdog. Only that diagnostic now has a 30-second outer budget; production deadlines are unchanged.
+
+### Evidence
+
+All ten composition tests pass. Raw failure/command/limitations are in fields-ci-harness.txt. R09 core is parked in stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf (not yet restored), with eleven tests/build/lint passing.
+
+### Next action
+
+Publish the correction, require fresh CI/final-head confirmation, then rebase/restore R09 once. No CPU investigation or repeated media/SQL/Docker experiment.
+
+## 2026-08-28 — Watchlist publication and entity batching
+
+### Completed
+
+Completed watchlist PR 28 as 9a7ab08 after protected CI 33193355470, clean initial/confirmation reviews 5455665142/5455734225 and successful exact main push 33195546036. Implemented sole unpublished dependent P08-R08 under ADR-0033: nullable Title/Profile fields, bounded request-only DataLoader, fresh owner/deletion checks and lazy current membership visibility.
+
+### Evidence
+
+[Entity checkpoint](../evidence/phase-08/engagement-fields.md): 98 Engagement tests, nine composition tests, real SQL/full federated Docker and 67/67 candidate tasks pass. Twenty-to-one query batching, actual query plans, missing order, current ownership/visibility, deletion/revocation and public playback continuity pass. All source hashes match. First Docker attempt stopped during build; one cache-assisted attempt passed and cleaned its exact fixture completely. No CPU or retained media experiment.
+
+### Next action
+
+R08 is committed and already rebased onto tree-identical 9a7ab08; source checkpoint 35c1f89 preserves the original 95f3725 tree, source hashes and exact-baseline composition pass. R07 exact main push passed; publish R08 once. Require R08 protected review/CI/release, advancing R09 locally only after R08 is frozen WAITING_EXTERNAL. No repeated unchanged acceptance, rebase, stashes, CPU or media job.
+
 ## 2026-08-28 — History protected closeout
 
 ### Completed

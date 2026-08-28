@@ -2,14 +2,17 @@
 
 ## Resume point
 
-P08-R07 / Phase 08 is IN_PROGRESS on local feat/p08-watchlist. P08-R06 is DONE: PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 pass; both review threads are resolved. The squash tree equals that reviewed tree. Full Phase 00–14 goal remains active.
+P08-R08 PR 29 is IN_PROGRESS on feat/p08-engagement-fields for the test-only CI watchdog correction below. P08-R07 is DONE after protected reviews/CI and exact main push 33195546036. R09 is parked, not lost; the new stash below has not been restored. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Watchlist local acceptance passes: 84 Engagement tests, nine composition tests, real PostgreSQL migration/replay/concurrency/256-entry limits and the complete federated Docker proof. The candidate gate passes 47/47 tasks (26 cached, 4m48.539s). Sources and raw evidence are linked in [watchlist checkpoint](../evidence/phase-08/watchlist.md). Browser reports/resume, R08 batching and R09 relay/deletion remain separate.
-2. Watchlist is committed and already rebased onto origin/main 0401ae3; do not repeat that rebase or restore any stash. Source checkpoint 238ae404b756d23c056848b6e67291d8ad57d936 preserves the original candidate tree; every executable source hash and composition against exact 0401ae3 pass. Use current HEAD for final publication metadata after memory-only closeout. History's exact main push 33191946442 passed. Publish feat/p08-watchlist, then require one initial/confirmation review, protected CI, squash merge and exact post-merge for watchlist.
-3. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups are recoverable. Runtime attempt one hit its five-minute build deadline; the one cache-assisted attempt passed and cleaned thirteen containers/eight trust volumes/two networks, retained runtime untouched. Do not repeat it for docs/type-only/identical-tree changes.
-4. After R07 is frozen WAITING_EXTERNAL and predecessor is DONE, activate R08 request-scoped Title/Profile batching; then R09 relay/deletion and R11 browser reports/resume. No CPU/WSL/media experiment or broad reset.
+PR 29 is active for a test-only CI correction: the old Identity diagnostic execFile watchdog killed its child at five seconds. The diagnostic-only 30-second outer budget passes all ten composition tests; production deadlines and R08 behavior are unchanged. Publish this coherent correction once, require fresh protected CI and final-head confirmation, then rebase feat/p08-event-delivery and restore its new stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf exactly once. That stash is NOT restored yet and contains eleven-test-passing event core, ADR-0034 and the active R09 plan. Older stashes remain already restored. Never reinstall or repeat unchanged SQL/Docker solely for this test edit.
+
+1. R08 local acceptance passes: 98 Engagement tests, nine composition tests, real SQL, full isolated Docker and 67/67 candidate tasks. [Checkpoint](../evidence/phase-08/engagement-fields.md) and source hashes are authoritative. No repeat of unchanged heavy checks.
+2. R08 is based on main 9a7ab087034d69589a8388d62f5973cb9950b2da; do not repeat its old rebase. Existing production source hashes and composition remain valid. Publish only the watchdog correction, then collect its exact protected CI/final confirmation. No R07 work remains.
+3. Once the corrected R08 is frozen WAITING_EXTERNAL, rebase feat/p08-event-delivery onto it and restore new stash 8212c15 exactly once. Reconcile its memory with the current PR head; continue R09 locally without publishing before R08 merge/post-merge. R11 player reports/resume follows.
+4. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups remain recoverable.
+5. Docker attempt one stopped during build before assertions; one cache-assisted attempt passed, project 1cade285-e5b3-4ec1-aec5-6bcca92520be, and cleaned all thirteen containers/eight trust volumes/two networks. No CPU/WSL/media experiment or retained upgrade.
 
 ## Retained runtime
 

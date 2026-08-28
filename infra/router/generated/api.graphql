@@ -116,8 +116,10 @@ type Profile {
   avatarRef: String
   displayName: String!
   id: ID!
+  inWatchlist(titleId: ID!): Boolean
   locale: String!
   maturity: ProfileMaturity!
+  progress(titleId: ID!): Progress
   version: Int!
 }
 
@@ -251,8 +253,10 @@ type Title {
   editorialLabels: [String!]!
   genres: [String!]!
   id: ID!
+  inWatchlist(profileId: ID!): Boolean
   languages: [String!]!
   localized(locale: String! = "en"): LocalizedTitle!
+  progress(profileId: ID!): Progress
   releaseYear: Int
   runtimeSeconds: Int
 }

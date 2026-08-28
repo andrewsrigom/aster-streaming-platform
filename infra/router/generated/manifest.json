@@ -3,12 +3,12 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "be441457500a5457df7cc84b9efbd5da4de2fcfefc7f84a2e997eeb6243af5ca",
-    "supergraph.graphql": "e294742e80d0839aec899adaf0a9b05d5ab7158b8e4360e0d10e5f8f61603034",
+    "api.graphql": "61572c85baa41f999f05e0b73a6ed728799df8c7939aae64069ca199c890ec96",
+    "supergraph.graphql": "e8911e98812694e05de4da75f16499c43413af47c56164c1cd34bf096a840da7",
     "catalog.graphql": "326def21b66271c21da64ace0c8c440e2e5d41a179ba601d8b591e3f7bcf39a8",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
     "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
-    "engagement.graphql": "9bf9ff4d79268cf5b1d35ba2c80ef1be301e3c91d9f3722ad23eaef87eae2057"
+    "engagement.graphql": "90bf40b4430a3951b21ee2cabddba70e58f6400393f80d3c800d6c39c21b7f74"
   },
   "subgraphs": [
     {
@@ -394,6 +394,18 @@
           "keys": []
         },
         {
+          "type": "Profile",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "id",
+            "inWatchlist",
+            "progress"
+          ],
+          "keys": [
+            "id"
+          ]
+        },
+        {
           "type": "Progress",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -510,7 +522,9 @@
           "type": "Title",
           "kind": "ObjectTypeDefinition",
           "fields": [
-            "id"
+            "id",
+            "inWatchlist",
+            "progress"
           ],
           "keys": [
             "id"
@@ -618,6 +632,10 @@
       "sha256": "7d8e9b19c20793c860a61d94e382c59259180db2478fa0bed1bbf66a77952058"
     },
     {
+      "name": "ProfileWithEngagement",
+      "sha256": "2e52401b7aa404f9e242c461599bdb9e82fe8b6f2a32891b1a4d60459556d0a3"
+    },
+    {
       "name": "ProgressHistory",
       "sha256": "57326ca2a19640fa4d4851c92a824db8de315c735b08f36fc1c486710b139155"
     },
@@ -644,6 +662,10 @@
     {
       "name": "TitleDetail",
       "sha256": "974e84504826eda76b8429acd3cee2f3ade902b32aea7cdb2cbb87e4de57fd18"
+    },
+    {
+      "name": "TitlesWithEngagement",
+      "sha256": "890dcbcdb34fe8d8fd91b1f1a5e629925e4e7f4607fd6cbef6dd3f82c292d800"
     },
     {
       "name": "UpdateProfile",

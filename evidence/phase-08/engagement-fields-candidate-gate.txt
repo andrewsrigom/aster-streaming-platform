@@ -1,0 +1,1353 @@
+
+   • Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/engagement, @aster/http-express, @aster/identity, @aster/media, @aster/object-storage-s3, @aster/playback, @aster/postgres, @aster/redis, @aster/router, @aster/runtime, @aster/telemetry, @aster/web
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 16 packages
+   • Remote caching disabled
+
+//:toolchain:check: cache bypass, force executing 27ed9c1cb94dccec
+@aster/media:build: cache hit, replaying logs c00ccba7ee519e55
+@aster/media:build: $ tsc --build ./tsconfig.json
+@aster/media:typecheck: cache hit, replaying logs ad208208b752ec5e
+@aster/media:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:toolchain:test: cache bypass, force executing 94bc436dbc8c9f00
+//:toolchain:check: $ node ./tools/verify-toolchain.mjs
+//:toolchain:test: $ node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs ./tools/run-quality-gate.test.ts
+//:toolchain:check: {"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+//:typecheck: cache miss, executing 324e6dd85732626d
+//:toolchain:test: ✔ removes only allowlisted generated foundation paths (37.06698ms)
+//:toolchain:test: ✔ is idempotent when generated paths are absent (11.392001ms)
+//:toolchain:test: ✔ rejects path arguments at the command boundary (1.290377ms)
+//:toolchain:test: ✔ rejects an unmarked root before deleting anything (11.682333ms)
+//:toolchain:test: ✔ unlinks a generated-path symlink without traversing its target (10.280833ms)
+//:toolchain:test: ✔ builds full and changed invocations from one canonical task list (3.802807ms)
+//:toolchain:test: ✔ rejects unknown or repeated narrowing arguments (0.695189ms)
+//:toolchain:test: ✔ propagates the selected command status and sanitizes execution failure (3.008117ms)
+//:toolchain:test: ✔ terminates the isolated process tree on timeout (27.988026ms)
+//:toolchain:test: ✔ requests graceful process-tree termination before the force fallback (2.364214ms)
+//:toolchain:test: ✔ terminates the isolated process tree when the wrapper receives a signal (3.821337ms)
+//:toolchain:test: ✔ force-kills an interrupted gate only after its graceful window (4.636256ms)
+//:toolchain:test: ✔ keeps manifest commands and task-level affected inputs aligned (6.907314ms)
+//:toolchain:test: ✔ normalizes stable Node.js and pnpm versions (2.644455ms)
+//:toolchain:test: ✔ rejects prerelease, coerced, and unbounded version input (3.326832ms)
+//:toolchain:test: ✔ reads pnpm only from a bounded pnpm user-agent entry (0.947917ms)
+//:toolchain:test: ✔ accepts the canonical duplicated pins (2.343192ms)
+//:toolchain:test: ✔ reports every pin drift instead of stopping at the first mismatch (0.668528ms)
+//:toolchain:test: ✔ rejects unsupported active versions (0.917281ms)
+//:toolchain:test: ✔ the checked-in repository pins agree (0.864625ms)
+//:toolchain:test: ℹ tests 20
+//:toolchain:test: ℹ suites 0
+//:toolchain:test: ℹ pass 20
+//:toolchain:test: ℹ fail 0
+//:toolchain:test: ℹ cancelled 0
+//:toolchain:test: ℹ skipped 0
+//:toolchain:test: ℹ todo 0
+//:toolchain:test: ℹ duration_ms 951.739813
+@aster/telemetry:build: cache hit, replaying logs d5908142caecbd52
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+//:format:check: cache miss, executing 39a6e21d672ccbe7
+//:typecheck: $ tsc --project ./tsconfig.json --noEmit
+//:format:check: $ prettier --check .
+//:format:check: Checking formatting...
+//:unused:check: cache miss, executing fa3e67d78e503ffc
+//:unused:check: $ knip --no-config-hints
+//:architecture:check: cache miss, executing 6605412b0d40d3b5
+//:architecture:check: $ node ./tools/verify-architecture.ts
+//:architecture:check: {"check":"architecture","status":"ok","violations":0}
+//:architecture:test: cache miss, executing 3ee19a1416d2ff81
+//:architecture:test: $ node --test ./tools/verify-architecture.test.ts
+//:architecture:test: ✔ accepts inward domain imports and ignores package names in comments and strings (28.532599ms)
+//:architecture:test: ✔ rejects framework and infrastructure clients in domain code (6.676551ms)
+//:architecture:test: ✔ rejects outward layer dependencies (1.588758ms)
+//:architecture:test: ✔ rejects relative imports that escape the workspace package (3.65103ms)
+//:architecture:test: ✔ rejects malformed source instead of analyzing a partial tree (3.987926ms)
+//:architecture:test: ✔ scans only real source files below approved workspace packages (175.404256ms)
+//:architecture:test: ✔ ignores workspace build/dependency output but still checks application source (59.908219ms)
+//:architecture:test: ℹ tests 7
+//:architecture:test: ℹ suites 0
+//:architecture:test: ℹ pass 7
+//:architecture:test: ℹ fail 0
+//:architecture:test: ℹ cancelled 0
+//:architecture:test: ℹ skipped 0
+//:architecture:test: ℹ todo 0
+//:architecture:test: ℹ duration_ms 1439.460496
+//:platform:check: cache miss, executing 732678528f752e9a
+//:format:check: All matched files use Prettier code style!
+//:platform:test: cache miss, executing 00620dd0fa90d6e6
+//:platform:check: $ node ./tools/verify-local-platform.mjs
+//:platform:check: {"check":"local-platform","status":"ok","violations":0}
+//:docs:check: cache miss, executing 6588e73b28226aaa
+//:platform:test: $ node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs
+//:platform:test: ✔ local publication origin is read-only, loopback-only and cannot gain writer mounts (27.970759ms)
+//:docs:check: $ node ./tools/verify-documentation.ts
+//:platform:test: ✔ origin fixture refuses arguments and endpoint overrides before starting Docker (640.559631ms)
+//:platform:test: ✔ verified export completes last and reuses only identical complete bytes (114.721203ms)
+//:platform:test: ✔ partial export resumes matching children but never overwrites a conflict or symlink (42.826349ms)
+//:platform:test: ✔ generated HLS accepts exactly the complete finite local package (14.335321ms)
+//:platform:test: ✔ generated HLS refuses remote/traversing/missing/extra/encrypted/unbounded references and non-VOD output (64.112349ms)
+//:platform:test: ✔ technical probe rejects codec, dimensions, frame rate, audio and duration drift (5.476381ms)
+//:docs:check: {"check":"documentation","status":"ok","documents":214,"headings":2728,"links":1254,"statusClaims":4,"violations":0}
+//:docs:test: cache miss, executing 29e2a38a60ef2394
+//:platform:test: (node:385) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+//:platform:test: (Use `node --trace-warnings ...` to show where the warning was created)
+//:platform:test: ✔ local probe serves only bounded scripts/notices and never proxies media (282.007707ms)
+//:platform:test: ✔ scratch cleanup only plans expired run-specific disposable resources (33.440129ms)
+//:platform:test: ✔ cleanup dry run is read-only; apply removes containers before only their volumes and replays empty (3.695347ms)
+//:platform:test: ✔ changed ownership/activity and cancellation fail closed; partial cleanup can resume (9.797569ms)
+//:docs:test: $ node --test ./tools/verify-documentation.test.ts
+//:platform:test: ✔ cleanup CLI rejects unsafe targets and remote overrides before Docker (1081.826047ms)
+//:platform:test: ✔ candidate Compose names use the run UUID without changing the source/decoder mount paths (6.948868ms)
+//:platform:test: ✔ refuses missing local intent or an incorrect confirmation before Docker (84.314172ms)
+//:platform:test: ✔ refuses extra targets, hosted URLs, CI, and Docker overrides before Docker (41.953245ms)
+//:platform:test: ✔ refuses a remote active Docker endpoint before Compose (25.334836ms)
+//:docs:test: ✔ accepts canonical prose and ignores terminology inside code (12.315843ms)
+//:docs:test: ✔ rejects missing titles, mismatched fences, merge markers, and terminology drift (1.459139ms)
+//:docs:test: ✔ accepts closed issue-template front matter without weakening title checks (3.259885ms)
+//:docs:test: ✔ rejects unqualified absolute maturity claims (0.284516ms)
+//:docs:test: ✔ rejects undefined reference links (0.365049ms)
+//:docs:test: ✔ validates existing files and local heading fragments (63.240684ms)
+//:docs:test: ✔ excludes generated Next output without exempting authored Web documentation (13.240178ms)
+//:docs:test: ✔ rejects missing files, missing fragments, and repository escape (10.137061ms)
+//:docs:test: ✔ requires checked-in support for explicit current-status maturity claims (17.778835ms)
+//:docs:test: ✔ rejects malformed UTF-8 rather than scanning replacement characters (8.144781ms)
+//:docs:test: ℹ tests 10
+//:docs:test: ℹ suites 0
+//:docs:test: ℹ pass 10
+//:docs:test: ℹ fail 0
+//:docs:test: ℹ cancelled 0
+//:docs:test: ℹ skipped 0
+//:docs:test: ℹ todo 0
+//:docs:test: ℹ duration_ms 475.895511
+//:platform:test: ✔ refuses unexpected resource labels without teardown (268.096094ms)
+//:ai:check: cache miss, executing 0c1de71f7eb59dfb
+//:platform:test: ✔ removes only the fixed populated Aster project and proves postconditions (571.32204ms)
+//:platform:test: ✔ is idempotent when Aster has no local resources (73.151239ms)
+//:platform:test: ✔ accepts all twelve reviewed volumes but refuses a thirteenth before teardown (1327.571883ms)
+//:ai:check: $ node ./tools/verify-ai-state.ts
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":46,"sessionEntries":123,"activeRequirement":"P08-R08","targetRequirement":"P08-R08","violations":[]}
+//:ai:test: cache miss, executing 260e860f78fa1717
+//:platform:test: ✔ recognizes the reviewed Web demo without accepting private or foreign mounts (717.688721ms)
+//:platform:test: ✔ reports Compose failure without a broad fallback (211.996803ms)
+//:platform:test: ✔ fails when any project resource remains after teardown (191.273035ms)
+//:platform:test: ✔ accepts a partial runtime profile and tears down all reviewed profiles (341.575268ms)
+//:platform:test: ✔ removes only validated legacy helper anonymous volumes and verifies their absence (625.91975ms)
+//:ai:test: $ node --test ./tools/verify-ai-state.test.ts
+//:ai:test: ✔ the checked-in repository memory passes (66.563638ms)
+//:ai:test: ✔ accepts canonical active and idle repository memory (4.67033ms)
+//:ai:test: ✔ accepts one external wait before one dependent active item (25.140673ms)
+//:ai:test: ✔ rejects an active item that skips actionable work after an external wait (1.345049ms)
+//:ai:test: ✔ rejects missing and oversized repository memory (7.746884ms)
+//:ai:test: ✔ rejects unknown, duplicate, and multiple active queue states (1.013673ms)
+//:ai:test: ✔ rejects completed, missing, and forward blocker references (1.109015ms)
+//:ai:test: ✔ rejects a mismatched or incomplete active change plan (0.759468ms)
+//:ai:test: ✔ rejects stale current-state and handoff resume targets (1.488078ms)
+//:ai:test: ✔ rejects session regression and missing entry evidence (1.857783ms)
+//:ai:test: ✔ rejects malformed UTF-8 repository memory files (55.24866ms)
+//:ai:test: ✔ rejects symbolic repository memory files when the host permits the fixture (11.328269ms)
+//:ai:test: ✔ emits deterministic sorted diagnostics (2.03643ms)
+//:ai:test: ℹ tests 13
+//:ai:test: ℹ suites 0
+//:ai:test: ℹ pass 13
+//:ai:test: ℹ fail 0
+//:ai:test: ℹ cancelled 0
+//:ai:test: ℹ skipped 0
+//:ai:test: ℹ todo 0
+//:ai:test: ℹ duration_ms 633.569961
+//:community:check: cache miss, executing d8b81d618327a808
+//:platform:test: ✔ refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion (1530.387205ms)
+//:community:check: $ node ./tools/verify-community-files.ts
+//:community:check: {"check":"community","files":6,"status":"ok","violations":0}
+//:community:test: cache miss, executing 850ba3effdfc36da
+//:platform:test: ✔ accepts exact optional service mounts and ordered Compose provenance (4038.167951ms)
+//:community:test: $ node --test ./tools/verify-community-files.test.ts
+//:community:test: ✔ the checked-in community contract passes (44.371692ms)
+//:community:test: ✔ rejects missing and unexpected community files (32.389387ms)
+//:community:test: ✔ rejects malformed or drifted issue front matter (18.289833ms)
+//:community:test: ✔ rejects missing pull-request topics and enabled blank issues (4.780614ms)
+//:community:test: ✔ rejects weakened licensing and public security guidance (3.800535ms)
+//:community:test: ✔ rejects a missing verified private vulnerability channel (4.925197ms)
+//:community:test: ✔ rejects oversized community content (2.536184ms)
+//:community:test: ✔ rejects malformed UTF-8 and duplicate templates (12.441183ms)
+//:community:test: ✔ rejects symbolic community files when the host permits the fixture (18.106216ms)
+//:community:test: ✔ rejects a symbolic alternate pull-request template location (12.405412ms)
+//:community:test: ℹ tests 10
+//:community:test: ℹ suites 0
+//:community:test: ℹ pass 10
+//:community:test: ℹ fail 0
+//:community:test: ℹ cancelled 0
+//:community:test: ℹ skipped 0
+//:community:test: ℹ todo 0
+//:community:test: ℹ duration_ms 418.29941
+//:security:check: cache bypass, force executing cae892fd5645721d
+//:security:check: $ node ./tools/scan-secrets.ts --all
+//:platform:test: ✔ Router trust reset accepts only owned disposable volumes and exact per-owner mounts (2943.098329ms)
+//:platform:test: ✔ bounded image preparation precedes the processing deadline and owner startup (11.638019ms)
+//:platform:test: ✔ media candidate runner refuses wrong targets and remote overrides before Docker (1847.105577ms)
+//:platform:test: ✔ Catalog Compose enforces reader credentials, isolation, bounds and finite migrations (48.897095ms)
+//:platform:test: ✔ standalone owner probes use diagnostics without private Router credential mounts (56.581814ms)
+//:platform:test: ✔ Catalog proof cleanup allows only owned data and unused trust volumes (2.959752ms)
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:security:test: cache miss, executing edc78a63f3d2e275
+//:platform:test: ✔ Engagement SQL proof refuses extra selectors or targets before accessing Docker (1222.530323ms)
+//:platform:test: ✔ Engagement Compose isolates runtime credentials, dependencies and finite migration (17.958022ms)
+//:platform:test: ✔ Web demo rejects private credentials, mounts, public ports and unbounded runtime (19.683586ms)
+//:platform:test: ✔ runtime image preserves the pinned non-root production packaging contract (2.442289ms)
+//:platform:test: ✔ playable demo preserves isolated generation, immutable read-only handoff and successful initialization (9.46699ms)
+//:platform:test: ✔ Web Docker context includes both exact public-build verifier files (3.60448ms)
+//:platform:test: ✔ media Docker context allows only reviewed worker source, tests and packaging (3.055479ms)
+//:platform:test: ✔ player feature styles remain in the source-only Docker context (0.862878ms)
+//:platform:test: ✔ runtime image rejects weakened pin, install, user, entrypoint, health and license policy (12.304359ms)
+//:platform:test: ✔ runtime image refuses broader Docker context and source/test publication (4.960004ms)
+//:platform:test: ✔ the checked-in local platform policy passes (6.937237ms)
+//:platform:test: ✔ rejects weakened reset confirmation and hosted-target controls (8.956563ms)
+//:platform:test: ✔ rejects a redirectable or broad reset (5.282975ms)
+//:platform:test: ✔ rejects public commands vulnerable to a project-name environment override (1.085712ms)
+//:platform:test: ✔ rejects floating or environment-substituted images (4.595811ms)
+//:platform:test: ✔ rejects host exposure and elevated containers (31.125938ms)
+//:platform:test: ✔ rejects incorrect PostgreSQL persistence and durable Redis claims (4.343607ms)
+//:platform:test: ✔ rejects weakened readiness and one-shot ordering (10.200414ms)
+//:platform:test: ✔ rejects missing resource and lifecycle bounds (4.970836ms)
+//:platform:test: ✔ rejects unsafe or unbounded Compose text (1.62894ms)
+//:platform:test: ✔ runtime profile rejects broad ports, entrypoint overrides and weakened isolation (42.23598ms)
+//:platform:test: ✔ local Identity initialization stays finite, isolated and separate from the runtime login (12.835733ms)
+//:platform:test: ✔ optional telemetry retains bounded collection without becoming an Identity dependency (4.406742ms)
+//:platform:test: ✔ optional broker and storage must stay private, pinned and resource-bounded (17.963044ms)
+//:platform:test: ✔ telemetry images refuse mutable tags and added runtime instructions (4.502855ms)
+//:platform:test: ✔ Playback Compose isolates runtime credentials, dependencies and finite migration (9.837602ms)
+//:platform:test: ✔ Router topology and source pin private bounded runtime without a GraphOS account (4.692345ms)
+//:platform:test: ✔ anonymous Router startup uses the base dependency graph without optional Identity (13.717527ms)
+//:platform:test: ✔ Router and initializer reject weakened trust, network and lifecycle boundaries (3.12634ms)
+//:platform:test: ✔ Router packaging and config reject unsafe limits, notices and propagation (3.822129ms)
+//:platform:test: ℹ tests 63
+//:platform:test: ℹ suites 0
+//:platform:test: ℹ pass 63
+//:platform:test: ℹ fail 0
+//:platform:test: ℹ cancelled 0
+//:platform:test: ℹ skipped 0
+//:platform:test: ℹ todo 0
+//:platform:test: ℹ duration_ms 22519.950395
+//:ci:check: cache miss, executing f3e4e39a886b75bb
+//:security:test: $ node --test ./tools/scan-secrets.test.ts
+//:security:test: ✔ detects high-confidence provider credentials without returning matched values (8.542326ms)
+//:security:test: ✔ detects private keys, credential URLs, and generic assignments (2.646148ms)
+//:security:test: ✔ accepts explicit non-secret placeholders (0.653509ms)
+//:security:test: ✔ reports line numbers without including assigned values (0.707114ms)
+//:security:test: ✔ parses bounded NUL-delimited Git paths (2.110502ms)
+//:security:test: ✔ reads staged index bytes and detects a safe synthetic fixture (155.308681ms)
+//:security:test: ℹ tests 6
+//:security:test: ℹ suites 0
+//:security:test: ℹ pass 6
+//:security:test: ℹ fail 0
+//:security:test: ℹ cancelled 0
+//:security:test: ℹ skipped 0
+//:security:test: ℹ todo 0
+//:security:test: ℹ duration_ms 851.404364
+//:ci:test: cache miss, executing bd7f71a109908aa3
+//:ci:check: $ node ./tools/verify-ci-policy.ts
+//:ci:check: {"check":"ci-policy","status":"ok","violations":0}
+//:staged:test: cache miss, executing 98f618e68e588ed8
+//:ci:test: $ node --test ./tools/classify-ci-change.test.ts ./tools/resolve-schema-baseline.test.ts ./tools/verify-ci-policy.test.ts
+//:ci:test: ✔ classifies Markdown, evidence, skills, and repository memory as documentation only (9.494857ms)
+//:ci:test: ✔ requires full quality for unrelated source and environment templates (1.907061ms)
+//:ci:test: ✔ selects real integration for adapters, runtime, bootstrap and shared dependency changes (1.386253ms)
+//:ci:test: ✔ fails safe to full quality for an empty diff (0.407764ms)
+//:ci:test: ✔ selects the isolated local-platform smoke path (0.366375ms)
+//:ci:test: ✔ deduplicates changed paths before classification (0.156412ms)
+//:ci:test: ✔ rejects unsafe or unbounded changed paths (7.169726ms)
+//:ci:test: ✔ parses bounded NUL-delimited Git diff output (0.538728ms)
+//:ci:test: ✔ includes deleted paths in the Git change set (0.405444ms)
+//:staged:test: $ node --test ./tools/check-staged-files.test.ts
+//:staged:test: ✔ parses bounded NUL-delimited Git output (4.559683ms)
+//:staged:test: ✔ selects only staged source and configuration files (1.399894ms)
+//:staged:test: ✔ returns no command for documentation-only staged changes (0.439846ms)
+//:staged:test: ✔ deduplicates paths without widening the selected scope (0.533128ms)
+//:staged:test: ✔ rejects traversal, absolute, Windows-separated, and oversized paths (4.167256ms)
+//:staged:test: ✔ rejects an unbounded staged file set (1.199086ms)
+//:staged:test: ℹ tests 6
+//:staged:test: ℹ suites 0
+//:staged:test: ℹ pass 6
+//:staged:test: ℹ fail 0
+//:staged:test: ℹ cancelled 0
+//:staged:test: ℹ skipped 0
+//:staged:test: ℹ todo 0
+//:staged:test: ℹ duration_ms 574.2976
+//:commit:test: cache miss, executing 3e5fa470b7d213b9
+//:ci:test: ✔ manual feature/main histories select an earlier contract; event baselines stay explicit (1925.070309ms)
+//:ci:test: ✔ the checked-in CI and Dependabot policy passes (80.416335ms)
+//:ci:test: ✔ rejects movable action tags (17.76649ms)
+//:ci:test: ✔ playable acceptance cannot omit its browser, replay or scoped cleanup (15.524014ms)
+//:ci:test: ✔ schema compatibility cannot compare only against the candidate or a shallow checkout (18.06356ms)
+//:ci:test: ✔ rejects removal, suppression or unbounded real integration (20.337168ms)
+//:ci:test: ✔ rejects write permissions and secret context (26.16285ms)
+//:ci:test: ✔ Playback persistence and federated runtime checks cannot be omitted or suppressed (8.080247ms)
+//:ci:test: ✔ Engagement persistence and private-owner runtime checks cannot be suppressed (9.337139ms)
+//:ci:test: ✔ Docker context probe cannot be omitted, skipped or left unbounded (8.746035ms)
+//:ci:test: ✔ rejects duplicate feature pushes and missing cancellation (6.172569ms)
+//:ci:test: ✔ rejects a weakened or missing aggregate decision (9.49027ms)
+//:ci:test: ✔ rejects a missing local-platform decision path (2.92084ms)
+//:ci:test: ✔ rejects weakened local-platform execution or broad Docker cleanup (3.377599ms)
+//:ci:test: ✔ rejects a missing public contribution check (5.298687ms)
+//:ci:test: ✔ rejects missing or unbounded Docker-only build and metric verification (21.985306ms)
+//:ci:test: ✔ rejects a missing repository-memory check (3.325461ms)
+//:ci:test: ✔ the packaged product journey cannot use container loopback or bypass Router (13.093407ms)
+//:ci:test: ✔ rejects removal of the reviewed MITNFA license (4.230477ms)
+//:ci:test: ✔ rejects removal or expansion of the owner-approved Federation license set (10.065526ms)
+//:ci:test: ✔ Web tooling cannot broaden the package-specific license exceptions (10.170691ms)
+//:ci:test: ✔ requires both bounded weekly dependency ecosystems (1.937144ms)
+//:ci:test: ℹ tests 31
+//:ci:test: ℹ suites 0
+//:ci:test: ℹ pass 31
+//:ci:test: ℹ fail 0
+//:ci:test: ℹ cancelled 0
+//:ci:test: ℹ skipped 0
+//:ci:test: ℹ todo 0
+//:ci:test: ℹ duration_ms 3796.661255
+@aster/http-express:build: cache hit, replaying logs d848968815886a1c
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 37eadb3dba9c78ec
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/http-express:typecheck: cache hit, replaying logs 933c198fe430b5e5
+@aster/http-express:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/runtime:typecheck: cache hit, replaying logs 66ca5bdef7a5d4ed
+@aster/runtime:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/telemetry:typecheck: cache hit, replaying logs 535ca5ac01479fea
+@aster/telemetry:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/web:build: cache hit, replaying logs d661109ac400076c
+@aster/web:build: $ next build && node ./scripts/verify-public-build.ts && node ./scripts/package-notices.ts
+@aster/web:build: ▲ Next.js 16.3.3 (Turbopack)
+@aster/web:build: ✓ Running next.config.ts took 28ms
+@aster/web:build:
+@aster/web:build:   Creating an optimized production build ...
+@aster/web:build: ✓ Compiled successfully in 6.8s
+@aster/web:build:   Running TypeScript ...
+@aster/web:build:   Finished TypeScript in 4.8s ...
+@aster/web:build:   Collecting page data using 5 workers ...
+@aster/web:build:   Generating static pages using 5 workers (0/5) ...
+@aster/web:build:   Generating static pages using 5 workers (1/5)
+@aster/web:build:   Generating static pages using 5 workers (2/5)
+@aster/web:build:   Generating static pages using 5 workers (3/5)
+@aster/web:build: ✓ Generating static pages using 5 workers (5/5) in 709ms
+@aster/web:build:   Finalizing page optimization ...
+@aster/web:build:
+@aster/web:build: Route (app)
+@aster/web:build: ┌ ƒ /
+@aster/web:build: ├ ○ /_not-found
+@aster/web:build: ├ ○ /artwork/aster-v1.png
+@aster/web:build: ├ ƒ /attribution
+@aster/web:build: ├ ƒ /browse
+@aster/web:build: ├ ƒ /health/live
+@aster/web:build: ├ ○ /icon.svg
+@aster/web:build: ├ ○ /profiles
+@aster/web:build: ├ ƒ /title/[id]
+@aster/web:build: └ ƒ /watch/[id]
+@aster/web:build:
+@aster/web:build:
+@aster/web:build: ○  (Static)   prerendered as static content
+@aster/web:build: ƒ  (Dynamic)  server-rendered on demand
+@aster/web:build:
+@aster/web:build: {"check":"web-public-build","entries":30,"totalBytes":1750089,"javascriptFiles":24,"assets":[{"path":"75VVa0NXlBxSspPskrkeU/_buildManifest.js","bytes":219,"sha256":"9476e0afd3f9da68a64e6ec58631191fd3eaca62c9f5a377e7517fe9a89e59ea"},{"path":"75VVa0NXlBxSspPskrkeU/_clientMiddlewareManifest.js","bytes":96,"sha256":"5483e3295dc35dfe29ea932efc85341c916f10ff78ff5b0e965e003710893a4a"},{"path":"75VVa0NXlBxSspPskrkeU/_ssgManifest.js","bytes":80,"sha256":"678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"},{"path":"chunks/0c4f2kzb0k7rk.js","bytes":161256,"sha256":"9a459946f1d6adb590a09948c8d5ccc6d0acb8debecc54fe58da1b6abb712fbc"},{"path":"chunks/0cz1d0mv5g_q7.js","bytes":112594,"sha256":"0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"},{"path":"chunks/112wzqp9r9q3c.js","bytes":31138,"sha256":"98e5e45cb01e643337fc0590c11b3c74ddad55237463ccb210bcbeec741b4b89"},{"path":"chunks/176xs1xr-so-k.js","bytes":9630,"sha256":"57a76871e664730f3c24dd0f4e161e84b1e588174c839e541891220a5a3c1299"},{"path":"chunks/17k0-arfugwpl.js","bytes":33533,"sha256":"e61de9ef947bf6a54a34e72030e628cd66c3b275ffd5bd49e21e12a57e2bf608"},{"path":"chunks/18nmstebcebvs.css","bytes":18071,"sha256":"192d9d155ef2498e8769d7f207f3c92f9439c16d945aee2d40b55f430428fb12"},{"path":"chunks/18yroj4mk2n0o.js","bytes":228920,"sha256":"33de6891b5015912a9d15e91fe45f5630ec6844f95314b2d332992fe46649906"},{"path":"chunks/19s6_zaw2994g.js","bytes":215,"sha256":"852a28dff02a1e68f7ad3ab6103b9162c48b5ccc5febe69b8d0fd29501477ba8"},{"path":"chunks/1xrnpdoembog8.js","bytes":241,"sha256":"46abb5caa17b38d799e438aad220a59c005dca73acd22bb457ac26b96f944742"},{"path":"chunks/23g3gc3a0dn9d.js","bytes":41508,"sha256":"5542ec11df2fafd3ee38cd14efe651971c344d6efe790a3a25ce7ed464633774"},{"path":"chunks/27a-r3mom_9iz.js","bytes":779024,"sha256":"7536acfd671ea76939c5b664620811e31c39d7a4c3f12070fbe2209cdd30901d"},{"path":"chunks/2awjiz1t-6h8v.js","bytes":25416,"sha256":"6579c059a1881139b7ad80a4975df90e96eba75587bed8eadabe0a24a3d227cc"},{"path":"chunks/2h639wnoutpw4.js","bytes":826,"sha256":"68b526f746b8b1cd451e3c79102fdbea26162a93c627f98e695626c0a5b74558"},{"path":"chunks/2hdl3uxku65zm.js","bytes":51811,"sha256":"fe86d7c0980f8c5d3fb355ee17e1b76e0055fe8a02aeabafbcc9e186d6a538e7"},{"path":"chunks/2rb31m_kv9tye.js","bytes":14507,"sha256":"c0a62132bd3530b42f6fef96105ecb0b50edf3b99a61eda0a90a164f7b4422ba"},{"path":"chunks/2v7o0tg0zotp4.js","bytes":14373,"sha256":"ac694b60073dfd9e6170aa24a11e2a23f46603cb1195de816f1dd9c2b9a65dc3"},{"path":"chunks/2vxc0--u0noun.js","bytes":791,"sha256":"7ba5cecefccd301d0f2e48355ee0ccbc4657a9f454a294aae44411d4fc3ae0a0"},{"path":"chunks/32hpulylzf8x6.js","bytes":144199,"sha256":"8562c2cd1a433a60b3784af3f00c8341550fd31bac496eea6b104584692453f2"},{"path":"chunks/37-fi3rbiz08t.js","bytes":2739,"sha256":"c188a258108c9e04fe9789b120cedd3471635fad6dd9d6abccecc02dbd3b4d1d"},{"path":"chunks/3olwdklsosw8d.css","bytes":1129,"sha256":"8bc3b386f912169530ad4eb312cb47ae9e07bcd7c7ed1ad157850af25460e0be"},{"path":"chunks/3y63l6tf5audv.js","bytes":5596,"sha256":"7410c8aff53559fe6f461342d9c7c37b63173b649baff7fd7f99355e7154a8e2"},{"path":"chunks/40gg-svdsvlvw.js","bytes":61031,"sha256":"8e280067a12a64b47522757da3912c36491f8979c955633a08df14a374da7576"},{"path":"chunks/turbopack-1gyp7nnd4m7pm.js","bytes":10945,"sha256":"f78a53bffb3fd26f69f1ac0c0418e1ec8efb5e247fb09d4d796af7a32828ea45"}],"findings":0}
+@aster/web:build: {"check":"web-third-party-notices","packages":76,"artifacts":208,"bytes":485196,"output":"apps/web/.next/standalone/THIRD_PARTY_LICENSES"}
+@aster/config:build: cache hit, replaying logs 61520db625724f56
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/config:typecheck: cache hit, replaying logs ef92768fb6b7d91c
+@aster/config:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/media:test: cache hit, replaying logs 473d2de2e266d9bd
+@aster/media:test: $ node --test ./dist/test/*.test.js
+@aster/media:test: ✔ artwork preserves odd source dimensions, caps size and uses bounded deterministic timestamps (1.71934ms)
+@aster/media:test: ✔ artwork refuses unsupported sizes/timelines and incorrectly decoded images (0.955001ms)
+@aster/media:test: ✔ extracts one MP4 with size, CRC and separate SHA-256; method 0 (45.658273ms)
+@aster/media:test: ✔ extracts one MP4 with size, CRC and separate SHA-256; method 8 (12.52128ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 0 without retained output (4.048514ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 1 without retained output (2.613353ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 2 without retained output (2.650408ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 3 without retained output (2.650104ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 4 without retained output (2.512395ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 5 without retained output (2.83578ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 6 without retained output (3.529881ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 7 without retained output (3.435572ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 8 without retained output (3.295295ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 9 without retained output (3.320887ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 10 without retained output (4.744363ms)
+@aster/media:test: ✔ rejects unsafe/archive payload 11 without retained output (2.261943ms)
+@aster/media:test: ✔ rejects ambiguous or excessive archive count 0 (3.068943ms)
+@aster/media:test: ✔ rejects ambiguous or excessive archive count 2 (3.532061ms)
+@aster/media:test: ✔ rejects ambiguous or excessive archive count 33 (29.711581ms)
+@aster/media:test: ✔ rejects checksum mismatch, symlink, cancellation and overwrite; supports direct MP4 (10.490362ms)
+@aster/media:test: ✔ selects conservative no-upscale renditions and validates source identity (1.806522ms)
+@aster/media:test: ✔ rejects unexpected tracks, codecs, rotation, dimensions, timestamps and durations (1.186558ms)
+@aster/media:test: ✔ HLS reference grammar rejects paths, external URLs, extra directives and missing timeline (0.581249ms)
+@aster/media:test: ✔ process runner bounds output, time and cancellation and never interpolates arguments (226.014776ms)
+@aster/media:test: ✔ deadline kills the owned process group including a spawned child (2009.262811ms)
+@aster/media:test: ℹ tests 25
+@aster/media:test: ℹ suites 0
+@aster/media:test: ℹ pass 25
+@aster/media:test: ℹ fail 0
+@aster/media:test: ℹ cancelled 0
+@aster/media:test: ℹ skipped 0
+@aster/media:test: ℹ todo 0
+@aster/media:test: ℹ duration_ms 2673.994108
+@aster/redis:build: cache hit, replaying logs 2cf8abd8e3320758
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/telemetry:test: cache hit, replaying logs 781bf9975788d5ef
+@aster/telemetry:test: $ node --test ./dist/test/*.test.js
+@aster/telemetry:test: ✔ rejects accessors and unknown configuration without invoking them (3.19588ms)
+@aster/telemetry:test: ✔ freezes the public finite vocabularies (0.342683ms)
+@aster/telemetry:test: ✔ records bounded HTTP, dependency, process, and runtime metrics (20.555334ms)
+@aster/telemetry:test: ✔ bounds hostile dimensions and active observation capacity (4.017075ms)
+@aster/telemetry:test: ✔ aggregates finite series beyond the configured cardinality ceiling (34.843178ms)
+@aster/telemetry:test: ✔ uses an explicit monotonic duration rule (0.331784ms)
+@aster/telemetry:test: ✔ bounds a stalled OTLP exporter and records export health (160.822583ms)
+@aster/telemetry:test: ✔ exports successfully and shares concurrent bounded shutdown (43.321461ms)
+@aster/telemetry:test: ✔ keeps the generated public declaration free of infrastructure types (2.929066ms)
+@aster/telemetry:test: ℹ tests 9
+@aster/telemetry:test: ℹ suites 0
+@aster/telemetry:test: ℹ pass 9
+@aster/telemetry:test: ℹ fail 0
+@aster/telemetry:test: ℹ cancelled 0
+@aster/telemetry:test: ℹ skipped 0
+@aster/telemetry:test: ℹ todo 0
+@aster/telemetry:test: ℹ duration_ms 666.442632
+//:lint:workspace: cache miss, executing 607af0db640ac145
+//:commit:test: $ node --test ./tools/validate-commit-message.test.ts
+//:commit:test: ✔ accepts documented conventional subjects (6.341787ms)
+//:commit:test: ✔ accepts Git autosquash subjects without weakening the underlying shape (0.513814ms)
+//:commit:test: ✔ rejects unsupported types and malformed descriptions (0.624762ms)
+//:commit:test: ✔ rejects subjects beyond the bounded conventional subject length (0.350175ms)
+//:commit:test: ✔ extracts the first non-comment non-empty subject (1.096399ms)
+//:commit:test: ✔ rejects empty, null-containing, and oversized messages (0.732764ms)
+//:commit:test: ℹ tests 6
+//:commit:test: ℹ suites 0
+//:commit:test: ℹ pass 6
+//:commit:test: ℹ fail 0
+//:commit:test: ℹ cancelled 0
+//:commit:test: ℹ skipped 0
+//:commit:test: ℹ todo 0
+//:commit:test: ℹ duration_ms 634.973664
+//:lint:workspace: $ eslint .
+@aster/broker-kafka:build: cache hit, replaying logs e8540e895db1053b
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache hit, replaying logs 49e91479aa9b8201
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 22554aca5dd9a769
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/http-express:test: cache hit, replaying logs a611f7620effbedf
+@aster/http-express:test: $ node --test ./dist/test/*.test.js
+@aster/http-express:test: ✔ validates bounded options, mount state, and request context without invoking accessors (17.810171ms)
+@aster/http-express:test: ✔ serves stable non-cacheable health snapshots before GraphQL mount (155.769873ms)
+@aster/http-express:test: ✔ sanitizes throwing and malformed health snapshot providers (53.064676ms)
+@aster/http-express:test: ✔ enforces parser-before-handler ordering and hides framework headers (92.275161ms)
+@aster/http-express:test: ✔ rejects malformed and oversized JSON before GraphQL middleware (94.002767ms)
+@aster/http-express:test: ✔ sanitizes rejected Express 5 async middleware (21.070137ms)
+@aster/http-express:test: ✔ aborts request-local work when the client disconnects (18.206445ms)
+@aster/http-express:test: ✔ executes Apollo Server and drains an in-flight operation before closing HTTP (189.934789ms)
+@aster/http-express:test: ✔ runs the Apollo compatibility diagnostic without framework disclosure (917.132732ms)
+@aster/http-express:test: ✔ keeps Apollo and Fastify out of generated public declarations (10.661783ms)
+@aster/http-express:test: ✔ Engagement private credentials are purpose-bound and carry only validated correlation (11.132043ms)
+@aster/http-express:test: ✔ separate Router transport authenticates only its owner and correlates trusted traces (2.100011ms)
+@aster/http-express:test: ✔ trust rejects forgery, duplicates, malformed trace and request/header bounds (1.803801ms)
+@aster/http-express:test: ✔ Playback owner read uses separate credentials, origin and header without Router or viewer authority (0.867193ms)
+@aster/http-express:test: ✔ owner-read file is separate, bounded and private with sanitized startup failure (45.900217ms)
+@aster/http-express:test: ✔ Engagement owner credential files are separate and private (7.94336ms)
+@aster/http-express:test: ✔ startup reads only a bounded private regular credential file and sanitizes failures (10.242248ms)
+@aster/http-express:test: ℹ tests 17
+@aster/http-express:test: ℹ suites 0
+@aster/http-express:test: ℹ pass 17
+@aster/http-express:test: ℹ fail 0
+@aster/http-express:test: ℹ cancelled 0
+@aster/http-express:test: ℹ skipped 0
+@aster/http-express:test: ℹ todo 0
+@aster/http-express:test: ℹ duration_ms 2804.123565
+@aster/runtime:test: cache hit, replaying logs e2d1d478ab458dc4
+@aster/runtime:test: $ node --test ./dist/test/*.test.js
+@aster/runtime:test: ✔ system clock returns a fresh current instant (0.875979ms)
+@aster/runtime:test: ✔ fixed clock is deterministic and does not expose mutable shared dates (0.2915ms)
+@aster/runtime:test: ✔ fixed clock rejects invalid epoch values with one cause-free issue (1.181444ms)
+@aster/runtime:test: ✔ UUID generator emits distinct RFC 4122 version 4 identifiers (0.664081ms)
+@aster/runtime:test: ✔ deterministic identifier generator copies its finite sequence (0.434642ms)
+@aster/runtime:test: ✔ deterministic identifier configuration is bounded and never invokes accessors (0.487677ms)
+@aster/runtime:test: ✔ clock and identifier declarations contain only repository-owned contracts (7.612354ms)
+@aster/runtime:test: ✔ expires at one finite monotonic budget and cancels its timer (1.632566ms)
+@aster/runtime:test: ✔ remaining budget never increases when a scheduler clock regresses (0.298193ms)
+@aster/runtime:test: ✔ propagates parent cancellation without copying its reason (0.427952ms)
+@aster/runtime:test: ✔ an already-aborted parent creates no timer (0.265246ms)
+@aster/runtime:test: ✔ uses built-in AbortSignal operations instead of caller-owned accessors (0.268047ms)
+@aster/runtime:test: ✔ disposal is idempotent, clears resources, and does not abort completed work (0.246018ms)
+@aster/runtime:test: ✔ rejects missing, non-finite, fractional, and out-of-range timeouts (1.173261ms)
+@aster/runtime:test: ✔ rejects hostile option shapes without invoking accessors or reflecting values (0.479993ms)
+@aster/runtime:test: ✔ accepts only a real optional AbortSignal (0.369869ms)
+@aster/runtime:test: ✔ fails closed with a cause-free runtime issue when scheduling fails (0.310015ms)
+@aster/runtime:test: ✔ cleans a timer even when an injected scheduler expires synchronously (0.239123ms)
+@aster/runtime:test: ✔ rejects an invalid scheduler cancellation without reflecting it (0.222426ms)
+@aster/runtime:test: ✔ a runtime clock failure after creation aborts and returns zero remaining budget (3.873837ms)
+@aster/runtime:test: ✔ the default scheduler expires a real deadline (11.409218ms)
+@aster/runtime:test: ✔ the default deadline timer does not keep a process alive (87.467539ms)
+@aster/runtime:test: ✔ deadline declarations contain only repository-owned and Node.js platform contracts (2.045937ms)
+@aster/runtime:test: ✔ rejects a server without data-backed close operations (1.928965ms)
+@aster/runtime:test: ✔ force close always starts server close first and each operation once (0.360663ms)
+@aster/runtime:test: ✔ an in-flight HTTP request finishes while new connections are refused (48.114453ms)
+@aster/runtime:test: ✔ the deadline force-closes a stuck HTTP connection (104.727879ms)
+@aster/runtime:test: ✔ a real SIGTERM drains the process and preserves the conventional exit code (85.437398ms)
+@aster/runtime:test: ✔ a real SIGTERM hard-exits when force close throws with a live handle (89.847761ms)
+@aster/runtime:test: ✔ the first process signal starts shutdown and disposes both handlers (2.902664ms)
+@aster/runtime:test: ✔ a repeated process signal forces one active graceful shutdown (0.545665ms)
+@aster/runtime:test: ✔ a failed force close hard-terminates with the first signal status (0.689158ms)
+@aster/runtime:test: ✔ one target cannot have competing signal owners and disposal releases it (0.852918ms)
+@aster/runtime:test: ✔ rejects unbounded, accessor-backed, sparse, and malformed monitor options (2.795957ms)
+@aster/runtime:test: ✔ runs one sequential jittered cycle and publishes only stable outcomes (5.42689ms)
+@aster/runtime:test: ✔ never overlaps cycles and invokes each declared probe at most once per cycle (1.526491ms)
+@aster/runtime:test: ✔ times out a cycle, fails remaining gates closed, and ignores late completion (2.095468ms)
+@aster/runtime:test: ✔ stop aborts an active cycle, waits for monitor ownership, and prevents late recovery (0.848269ms)
+@aster/runtime:test: ✔ scheduler and random failures stop the monitor and fail readiness closed (1.390183ms)
+@aster/runtime:test: ✔ maps thrown and malformed probe outcomes to unavailable without skipping later probes (1.530044ms)
+@aster/runtime:test: ✔ the default monitor timer does not keep a process alive (97.845321ms)
+@aster/runtime:test: ✔ monitor declarations contain only repository-owned runtime contracts (1.583019ms)
+@aster/runtime:test: ✔ rejects missing, unknown, accessor-backed, and excessive readiness options (2.343394ms)
+@aster/runtime:test: ✔ requires lifecycle operations as own data properties without invoking accessors (0.380598ms)
+@aster/runtime:test: ✔ keeps lifecycle and dependency readiness separate through failure and recovery (0.568228ms)
+@aster/runtime:test: ✔ unavailable dominates pending without exposing dependency identity (0.301827ms)
+@aster/runtime:test: ✔ returns stable transition outcomes for invalid, repeated, and terminal updates (0.691867ms)
+@aster/runtime:test: ✔ delegates work leases only while lifecycle and every critical gate are ready (0.47277ms)
+@aster/runtime:test: ✔ fails closed for malformed or throwing lifecycle providers (0.329806ms)
+@aster/runtime:test: ✔ captures lifecycle operations at construction and sanitizes invalid work leases (0.241399ms)
+@aster/runtime:test: ✔ readiness declarations contain only repository-owned runtime contracts (10.254428ms)
+@aster/runtime:test: ✔ emits one bounded JSON line with stable service context (6.339118ms)
+@aster/runtime:test: ✔ filters disabled levels before reading caller-controlled entries (0.753802ms)
+@aster/runtime:test: ✔ reads valid OpenTelemetry-compatible context across an async boundary (1.198388ms)
+@aster/runtime:test: ✔ omits forged or throwing trace context without failing the event (2.386849ms)
+@aster/runtime:test: ✔ redacts representative sensitive properties before serialization (0.767792ms)
+@aster/runtime:test: ✔ ignores caller fields that collide with logger-owned top-level context (0.77816ms)
+@aster/runtime:test: ✔ serializes a bounded sanitized error chain without messages or stacks (1.046068ms)
+@aster/runtime:test: ✔ does not invoke error name or cause accessors while sanitizing (1.428387ms)
+@aster/runtime:test: ✔ replaces hostile and excessive records with one safe invalid-record event (1.316516ms)
+@aster/runtime:test: ✔ does not invoke accessor-backed property entries (0.884813ms)
+@aster/runtime:test: ✔ returns failed instead of propagating a synchronous destination failure (2.730725ms)
+@aster/runtime:test: ✔ fails logger initialization with cause-free bounded diagnostics (0.75804ms)
+@aster/runtime:test: ✔ runs the process diagnostic with correlation and no secret canary (106.922112ms)
+@aster/runtime:test: ✔ keeps Pino out of the generated public declaration contract (10.842199ms)
+@aster/runtime:test: ✔ rejects missing, unknown, accessor, and unbounded lifecycle options (2.628052ms)
+@aster/runtime:test: ✔ publishes frozen health snapshots and enforces monotonic startup transitions (0.833969ms)
+@aster/runtime:test: ✔ accepts work only while ready and completes each lease once (0.390903ms)
+@aster/runtime:test: ✔ fails readiness, stops traffic, drains work, and closes hooks in fixed order (34.479019ms)
+@aster/runtime:test: ✔ forces immediately after stop_traffic rejects without starting later stages (0.788152ms)
+@aster/runtime:test: ✔ forces immediately after stop_consumers rejects without starting later stages (0.490686ms)
+@aster/runtime:test: ✔ forces immediately after close_dependencies rejects without starting later stages (0.515132ms)
+@aster/runtime:test: ✔ keeps an isolated telemetry flush rejection degraded while dependencies close (0.456624ms)
+@aster/runtime:test: ✔ forces a hung shutdown at the bounded deadline with one abort signal (0.474476ms)
+@aster/runtime:test: ✔ a repeated signal forces the shared shutdown promise exactly once (0.340055ms)
+@aster/runtime:test: ✔ a throwing force-close path remains bounded and cause-free (0.250495ms)
+@aster/runtime:test: ✔ a promise-returning force-close path fails closed without an unhandled rejection (0.41802ms)
+@aster/runtime:test: ✔ emits stable lifecycle events without reflecting hook errors (0.308421ms)
+@aster/runtime:test: ✔ a throwing lifecycle logger cannot change shutdown behavior (0.312463ms)
+@aster/runtime:test: ✔ keeps framework and infrastructure clients out of lifecycle declarations (4.961429ms)
+@aster/runtime:test: ℹ tests 80
+@aster/runtime:test: ℹ suites 0
+@aster/runtime:test: ℹ pass 80
+@aster/runtime:test: ℹ fail 0
+@aster/runtime:test: ℹ cancelled 0
+@aster/runtime:test: ℹ skipped 0
+@aster/runtime:test: ℹ todo 0
+@aster/runtime:test: ℹ duration_ms 1756.268288
+@aster/broker-kafka:typecheck: cache hit, replaying logs 7eecbb21864b1175
+@aster/broker-kafka:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/object-storage-s3:typecheck: cache hit, replaying logs 15ab8dce20dc8b30
+@aster/object-storage-s3:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/redis:typecheck: cache hit, replaying logs b57407aa8395ce1e
+@aster/redis:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/postgres:typecheck: cache hit, replaying logs efabe91ca5f21869
+@aster/postgres:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/web:typecheck: cache hit, replaying logs 6820ed91b924daad
+@aster/web:typecheck: $ next typegen && tsc --noEmit
+@aster/web:typecheck: Generating route types...
+@aster/web:typecheck: ✓ Types generated successfully
+@aster/web:test: cache hit, replaying logs c08dc1753f7c129c
+@aster/web:test: $ node --test test/*.test.ts
+@aster/web:test: ✔ image optimization accepts one public source and finite work, not a proxy (2.110296ms)
+@aster/web:test: ✔ Identity Web documents match the versioned first-party inventory (6.454527ms)
+@aster/web:test: ✔ Redux stores are isolated and contain only bounded local interaction state (4.644071ms)
+@aster/web:test: ✔ Identity transport is fixed-origin, credentialed and positively projects private browser data (76.722993ms)
+@aster/web:test: ✔ discarding an Identity generation cancels and prevents late cache writes (4.788673ms)
+@aster/web:test: ✔ Identity errors never reflect upstream details or become cached success (2.373878ms)
+@aster/web:test: ✔ notice packaging retains original nested licenses and reproducible hashes without code (76.664999ms)
+@aster/web:test: ✔ missing, empty and oversized notices fail instead of silently producing an incomplete image (30.365912ms)
+@aster/web:test: ✔ missing required dependencies and path traversal fail; absent optional platforms do not (35.404497ms)
+@aster/web:test: ✔ notice output cannot replace a symlink outside the generated directory (9.982359ms)
+@aster/web:test: ✔ native bundle notices require both GPL and LGPL texts (41.469649ms)
+@aster/web:test: ✔ initial caption preference hides HLS cues without dropping a default track (5.155267ms)
+@aster/web:test: ✔ every HLS request class has finite deadlines/retry and bounded buffers (0.280507ms)
+@aster/web:test: ✔ adaptive media reports actual frame, switches, captions and completion without URLs (2.644337ms)
+@aster/web:test: ✔ expiry before attachment and after a throttled timer fails closed (0.977196ms)
+@aster/web:test: ✔ expiry timer destroys loads and does not allow late callbacks (1.124064ms)
+@aster/web:test: ✔ native fallback exposes automatic quality and unsupported media stops (0.660034ms)
+@aster/web:test: ✔ caption errors are visible but finite fatal errors tear down once (0.915511ms)
+@aster/web:test: ✔ an unresponsive origin has a finite startup deadline (0.649606ms)
+@aster/web:test: ✔ non-delivery Catalog label suppresses playback without hiding real or playable-fixture titles (1.266695ms)
+@aster/web:test: ✔ player operation matches the first-party inventory without private authority (6.723716ms)
+@aster/web:test: ✔ playback response validates fresh title-bound sessions and strips unknown authority (1.769599ms)
+@aster/web:test: ✔ player client uses one fixed anonymous operation, bounded cancellation and no persistent cache (84.576735ms)
+@aster/web:test: ✔ disposal cancels a pending creation and excludes a late response; no implicit retry (4.312038ms)
+@aster/web:test: ✔ untrusted GraphQL error text is not exposed to player consumers (3.046121ms)
+@aster/web:test: ✔ player preferences use deterministic defaults and a bounded privacy allowlist (2.999038ms)
+@aster/web:test: ✔ QoE keeps measured finite samples, deduplicates milestones, caps memory and excludes identifiers (0.945694ms)
+@aster/web:test: ✔ artifact scan distinguishes public operations from private configuration and credentials (7.43815ms)
+@aster/web:test: ✔ build scan covers lazy chunks and CSS, records hashes, and cannot pass missing or empty output (26.588602ms)
+@aster/web:test: ✔ build scan refuses maps, external links, invalid UTF-8 and oversized artifacts (19.778486ms)
+@aster/web:test: ✔ title metadata omits absent fields and their separators (1.175532ms)
+@aster/web:test: ✔ public Web operations match the versioned Router inventory (13.549673ms)
+@aster/web:test: ✔ locale, page and title inputs are deterministic and bounded (2.097493ms)
+@aster/web:test: ✔ Apollo restores a deterministic public page without sharing server caches (46.800824ms)
+@aster/web:test: ✔ GraphQL transport removes upstream headers/extensions and propagates cancellation (32.913324ms)
+@aster/web:test: ✔ bad, excessive and failed GraphQL responses do not hydrate as successful data (3.543664ms)
+@aster/web:test: ✔ public snapshot rejects incomplete or unbounded data and strips unselected fields (0.331693ms)
+@aster/web:test: ✔ expected errors are sanitized return values, never successful empty data or leaked parser input (14.312244ms)
+@aster/web:test: ✔ cache retains only the current page and detail, never a different cursor as a hit (68.659042ms)
+@aster/web:test: ✔ orphan collection bounds normalized entities across populated page and detail changes (118.916391ms)
+@aster/web:test: ✔ server transport preserves exact Host over real HTTP and strips private headers (58.260152ms)
+@aster/web:test: ✔ server transport rejects destinations, redirects and malformed or oversized bodies (8.94939ms)
+@aster/web:test: ✔ server cancellation releases a saturated bounded transport (28.223756ms)
+@aster/web:test: ✔ every package-specific exception rejects missing or additional unreviewed lock versions (31.769718ms)
+@aster/web:test: ✔ installed exception packages retain the reviewed version and license metadata (10.07008ms)
+@aster/web:test: ✔ ADR-0019 exceptions remain exact, unmodified dev-only tools without install hooks (6.600739ms)
+@aster/web:test: ℹ tests 46
+@aster/web:test: ℹ suites 0
+@aster/web:test: ℹ pass 46
+@aster/web:test: ℹ fail 0
+@aster/web:test: ℹ cancelled 0
+@aster/web:test: ℹ skipped 0
+@aster/web:test: ℹ todo 0
+@aster/web:test: ℹ duration_ms 4670.96595
+@aster/config:test: cache hit, replaying logs b640e8f01d0700fe
+@aster/config:test: $ node --test ./dist/test/*.test.js
+@aster/config:test: ✔ process-start diagnostic exits zero and redacts configured secrets (302.752116ms)
+@aster/config:test: ✔ process-start diagnostic exits one with bounded safe issues (175.577519ms)
+@aster/config:test: ✔ process diagnostic classifies the optional password without emitting it (344.735034ms)
+@aster/config:test: ✔ process diagnostic accepts optional export without exposing the endpoint (148.08524ms)
+@aster/config:test: ✔ loads and freezes a valid typed runtime configuration (4.342686ms)
+@aster/config:test: ✔ local product mode requires explicit opt-in, local environment and a canonical loopback origin (4.509233ms)
+@aster/config:test: ✔ Router trust requires the local product and the exact public Router origin (0.826068ms)
+@aster/config:test: ✔ Engagement profile reads require explicit local Identity and Router activation (0.567578ms)
+@aster/config:test: ✔ reports non-secret values and only configured status for secrets (0.400314ms)
+@aster/config:test: ✔ combines an optional separate password without changing legacy URI callers (0.991493ms)
+@aster/config:test: ✔ rejects conflicting password sources and missing explicit database user (0.556422ms)
+@aster/config:test: ✔ bounds optional passwords including the encoded effective connection URL (0.88182ms)
+@aster/config:test: ✔ optional metrics endpoint remains absent by default and redacted when configured (0.842528ms)
+@aster/config:test: ✔ rejects unsafe metrics endpoints without returning credentials or topology (2.141595ms)
+@aster/config:test: ✔ fails closed for every missing variable with classified bounded issues (0.344081ms)
+@aster/config:test: ✔ rejects unsafe listener and startup budget values (1.493026ms)
+@aster/config:test: ✔ classifies empty and malformed values without returning their contents (0.41371ms)
+@aster/config:test: ✔ rejects malformed values after preflight without exposing secret canaries (0.346754ms)
+@aster/config:test: ✔ rejects ambiguous non-secret values and URL whitespace (12.759249ms)
+@aster/config:test: ✔ rejects URL control characters before the platform parser can normalize them (0.542668ms)
+@aster/config:test: ✔ rejects owned-prefix typos while ignoring unrelated host variables (0.503132ms)
+@aster/config:test: ✔ bounds oversized values and excessive owned variables before schema parsing (0.439448ms)
+@aster/config:test: ✔ sanitizes unexpected source failures without preserving their cause (0.390249ms)
+@aster/config:test: ℹ tests 23
+@aster/config:test: ℹ suites 0
+@aster/config:test: ℹ pass 23
+@aster/config:test: ℹ fail 0
+@aster/config:test: ℹ cancelled 0
+@aster/config:test: ℹ skipped 0
+@aster/config:test: ℹ todo 0
+@aster/config:test: ℹ duration_ms 1278.226806
+@aster/redis:test: cache hit, replaying logs cf5c141f254c87f3
+@aster/redis:test: $ node --test ./dist/test/*.test.js
+@aster/redis:test: ✔ the default vendor factory connects using an isolated mutable configuration copy (75.934205ms)
+@aster/redis:test: ✔ validates bounded own-data options without invoking accessors or leaking secrets (1.020572ms)
+@aster/redis:test: ✔ passes a finite no-offline-queue and reconnect policy to the client (1.118464ms)
+@aster/redis:test: ✔ connect and probe expose ready state and finite telemetry (0.915565ms)
+@aster/redis:test: ✔ shares one bounded connect while caller cancellation remains local (0.492891ms)
+@aster/redis:test: ✔ a timed-out connect destroys its generation and a later connect creates a new one (21.523188ms)
+@aster/redis:test: ✔ a late connect completion cannot revive an adapter that is closing (21.730287ms)
+@aster/redis:test: ✔ rejects excess in-flight probes without extending the vendor queue (1.529834ms)
+@aster/redis:test: ✔ caller abort destroys an ambiguous command generation and permits explicit recovery (1.402863ms)
+@aster/redis:test: ✔ a stalled probe times out, destroys its client, and returns within the deadline (20.968413ms)
+@aster/redis:test: ✔ reconnect events expose only bounded availability state (0.910555ms)
+@aster/redis:test: ✔ close aborts active work once, supports local waiter cancellation, and is idempotent (0.900808ms)
+@aster/redis:test: ✔ an already-aborted close is side-effect free and lifecycle failure is cause-free (100.985928ms)
+@aster/redis:test: ✔ lifecycle close reports a cause-free failure when vendor destruction throws (0.785205ms)
+@aster/redis:test: ✔ runs an unavailable-endpoint diagnostic and keeps the Redis client private (417.833706ms)
+@aster/redis:test: ℹ tests 15
+@aster/redis:test: ℹ suites 0
+@aster/redis:test: ℹ pass 15
+@aster/redis:test: ℹ fail 0
+@aster/redis:test: ℹ cancelled 0
+@aster/redis:test: ℹ skipped 0
+@aster/redis:test: ℹ todo 0
+@aster/redis:test: ℹ duration_ms 899.798987
+@aster/broker-kafka:test: cache hit, replaying logs 5776ad64f3be8787
+@aster/broker-kafka:test: $ node --test ./dist/test/*.test.js
+@aster/broker-kafka:test: ✔ validates bounded own-data configuration without invoking accessors or exposing input (2.649631ms)
+@aster/broker-kafka:test: ✔ constructs one finite idempotent no-log client policy (2.014131ms)
+@aster/broker-kafka:test: ✔ connect, metadata, and publish emit only finite telemetry and copied bytes (1.290556ms)
+@aster/broker-kafka:test: ✔ rejects invalid operations before vendor work and requires an explicit connection (0.411397ms)
+@aster/broker-kafka:test: ✔ rejects excess publishes before extending producer work (5.583432ms)
+@aster/broker-kafka:test: ✔ an accepted publish abort is delivery-ambiguous and allows explicit recovery (4.583246ms)
+@aster/broker-kafka:test: ✔ an accepted publish timeout is delivery-ambiguous (21.286133ms)
+@aster/broker-kafka:test: ✔ a timed-out connect retires its generation and remains recoverable (20.916701ms)
+@aster/broker-kafka:test: ✔ a late connect completion cannot reopen a closing broker adapter (2.601883ms)
+@aster/broker-kafka:test: ✔ consumer handles one bounded copied record with an adapter-owned signal (2.097621ms)
+@aster/broker-kafka:test: ✔ a stalled consumer start times out and retires the partial consumer (21.549276ms)
+@aster/broker-kafka:test: ✔ consumer failure remains uncommitted, degrades, and retires the consumer (3.401825ms)
+@aster/broker-kafka:test: ✔ rejects a second consumer and retires malformed broker records (1.525655ms)
+@aster/broker-kafka:test: ✔ a client crash signal degrades and retires the active consumer (0.951848ms)
+@aster/broker-kafka:test: ✔ consumer stop is shared while caller cancellation remains local (0.617807ms)
+@aster/broker-kafka:test: ✔ close is concurrent, caller-local, idempotent, and finite on later vendor drain (21.759851ms)
+@aster/broker-kafka:test: ✔ close accounts for a late publish without reviving broker readiness (25.101394ms)
+@aster/broker-kafka:test: ✔ a late consumer start cannot revive consumer state after close (21.902918ms)
+@aster/broker-kafka:test: ✔ close remains finite while a consumer handler ignores cancellation (21.676921ms)
+@aster/broker-kafka:test: ✔ pre-aborted close is side-effect free and lifecycle failure is cause-free (0.913463ms)
+@aster/broker-kafka:test: ✔ runs an unavailable-endpoint diagnostic and keeps KafkaJS types private (247.846686ms)
+@aster/broker-kafka:test: ℹ tests 21
+@aster/broker-kafka:test: ℹ suites 0
+@aster/broker-kafka:test: ℹ pass 21
+@aster/broker-kafka:test: ℹ fail 0
+@aster/broker-kafka:test: ℹ cancelled 0
+@aster/broker-kafka:test: ℹ skipped 0
+@aster/broker-kafka:test: ℹ todo 0
+@aster/broker-kafka:test: ℹ duration_ms 615.609491
+@aster/object-storage-s3:test: cache hit, replaying logs e34d63c36ea8dc99
+@aster/object-storage-s3:test: $ node --test ./dist/test/*.test.js
+@aster/object-storage-s3:test: ✔ immutable publication cache headers require a conditional write and pass to the client (34.13944ms)
+@aster/object-storage-s3:test: ✔ validates bounded own-data configuration without invoking accessors or leaking secrets (1.635588ms)
+@aster/object-storage-s3:test: ✔ constructs one finite path-style no-retry client configuration (62.330954ms)
+@aster/object-storage-s3:test: ✔ a missing bucket degrades readiness while a missing object remains a normal result (8.190996ms)
+@aster/object-storage-s3:test: ✔ writes through a bounded multipart policy and owns an accepted source (13.986951ms)
+@aster/object-storage-s3:test: ✔ conditional writes require a full checksum and classify early conflicts without stalling the source (4.093771ms)
+@aster/object-storage-s3:test: ✔ conditional rejection after the SDK detaches its stream reader never emits an unhandled error (101.733428ms)
+@aster/object-storage-s3:test: ✔ an authoritative conditional conflict survives secondary SDK feed cancellation (2.692267ms)
+@aster/object-storage-s3:test: ✔ an early ordinary storage rejection also releases the accepted pipeline (4.485134ms)
+@aster/object-storage-s3:test: ✔ rejects invalid or oversized writes before taking source ownership (0.860404ms)
+@aster/object-storage-s3:test: ✔ rejects an accepted source whose observed bytes differ from its declaration (4.52433ms)
+@aster/object-storage-s3:test: ✔ streams a bounded object into the caller destination (54.157484ms)
+@aster/object-storage-s3:test: ✔ rejects declared and observed oversized reads while destroying owned streams (8.248928ms)
+@aster/object-storage-s3:test: ✔ rejects excess operations before extending the client work queue (2.980372ms)
+@aster/object-storage-s3:test: ✔ caller abort retires the active client generation and allows clean recovery (51.970566ms)
+@aster/object-storage-s3:test: ✔ a stalled operation times out, destroys its generation, and remains closeable (90.19954ms)
+@aster/object-storage-s3:test: ✔ deletion accepts only one exact non-root key under the fixture prefix (44.072771ms)
+@aster/object-storage-s3:test: ✔ close aborts active work once, is caller-local, and is idempotent (10.129344ms)
+@aster/object-storage-s3:test: ✔ close remains finite when retired vendor work ignores cancellation (28.291728ms)
+@aster/object-storage-s3:test: ✔ pre-aborted close is side-effect free and vendor destroy failure is cause-free (61.90379ms)
+@aster/object-storage-s3:test: ✔ runs an unavailable-endpoint diagnostic and keeps AWS SDK types private (2127.340851ms)
+@aster/object-storage-s3:test: ℹ tests 21
+@aster/object-storage-s3:test: ℹ suites 0
+@aster/object-storage-s3:test: ℹ pass 21
+@aster/object-storage-s3:test: ℹ fail 0
+@aster/object-storage-s3:test: ℹ cancelled 0
+@aster/object-storage-s3:test: ℹ skipped 0
+@aster/object-storage-s3:test: ℹ todo 0
+@aster/object-storage-s3:test: ℹ duration_ms 3902.632525
+@aster/postgres:test: cache hit, replaying logs dcf1ec13d0ae6c56
+@aster/postgres:test: $ node --test ./dist/test/*.test.js
+@aster/postgres:test: ✔ real pool owns background errors without exposing vendor error details (2.494097ms)
+@aster/postgres:test: ✔ validates bounded options before constructing a pool without leaking input (1.820519ms)
+@aster/postgres:test: ✔ passes finite connection and server timeout policy to pg (0.984964ms)
+@aster/postgres:test: ✔ connect and probe reserve one slot, release healthy clients, and emit finite telemetry (2.957021ms)
+@aster/postgres:test: ✔ keeps an abandoned acquisition inside the finite capacity until it is destroyed (5.921365ms)
+@aster/postgres:test: ✔ times out a stalled probe, destroys its connection, and remains closeable (22.111168ms)
+@aster/postgres:test: ✔ caller abort during a query destroys the connection and records cancellation (1.262729ms)
+@aster/postgres:test: ✔ concurrent close destroys in-flight work while an aborted waiter remains local (0.854666ms)
+@aster/postgres:test: ✔ an already-aborted close is side-effect free (0.373473ms)
+@aster/postgres:test: ✔ close returns within its deadline while the underlying drain can finish later (21.518993ms)
+@aster/postgres:test: ✔ lifecycle close converts vendor failure to one cause-free repository error (1.030425ms)
+@aster/postgres:test: ✔ runs an unavailable-endpoint diagnostic and keeps pg out of public declarations (225.664853ms)
+@aster/postgres:test: ✔ one lease commits parameterized work or acknowledges a requested rollback (5.044425ms)
+@aster/postgres:test: ✔ failed queries poison the transaction even when application code catches them (1.287054ms)
+@aster/postgres:test: ✔ callback failure retires its connection and never commits partial work (4.671284ms)
+@aster/postgres:test: ▶ query count, inputs, parallel work and escaped leases fail closed
+@aster/postgres:test:   ✔ count (1.462844ms)
+@aster/postgres:test:   ✔ control (0.31142ms)
+@aster/postgres:test:   ✔ value (0.324585ms)
+@aster/postgres:test:   ✔ rows (1.148595ms)
+@aster/postgres:test:   ✔ parallel (0.435989ms)
+@aster/postgres:test:   ✔ escaped (0.396136ms)
+@aster/postgres:test: ✔ query count, inputs, parallel work and escaped leases fail closed (5.336645ms)
+@aster/postgres:test: ✔ one total deadline bounds the callback; late work cannot use a retired lease (51.996231ms)
+@aster/postgres:test: ✔ abort before admission is side-effect free; abort during a query retires the lease (1.009177ms)
+@aster/postgres:test: ✔ lost COMMIT acknowledgment is indeterminate and never retried (0.862001ms)
+@aster/postgres:test: ▶ cancellation and timeout during COMMIT never claim rollback
+@aster/postgres:test:   ✔ abort (0.511982ms)
+@aster/postgres:test:   ✔ timeout (20.866095ms)
+@aster/postgres:test: ✔ cancellation and timeout during COMMIT never claim rollback (22.055932ms)
+@aster/postgres:test: ✔ shutdown closes admission and prevents queries after lease retirement (0.740981ms)
+@aster/postgres:test: ℹ tests 29
+@aster/postgres:test: ℹ suites 0
+@aster/postgres:test: ℹ pass 29
+@aster/postgres:test: ℹ fail 0
+@aster/postgres:test: ℹ cancelled 0
+@aster/postgres:test: ℹ skipped 0
+@aster/postgres:test: ℹ todo 0
+@aster/postgres:test: ℹ duration_ms 660.635474
+@aster/catalog:build: cache hit, replaying logs 1440123e3eaccccd
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+@aster/playback:build: cache hit, replaying logs db1c44e8ffdbe30b
+@aster/playback:build: $ tsc --build ./tsconfig.json
+@aster/identity:build: cache hit, replaying logs 2aa481603bcea59b
+@aster/identity:build: $ tsc --build ./tsconfig.json
+@aster/engagement:build: cache miss, executing ee219fdb3eca5503
+@aster/engagement:build: $ tsc --build ./tsconfig.json
+@aster/engagement:typecheck: cache miss, executing 99c6d6fd2fdba175
+@aster/engagement:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/catalog:typecheck: cache hit, replaying logs 3d8feb0eace79b02
+@aster/catalog:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/playback:typecheck: cache hit, replaying logs cc386842f4f9d7b4
+@aster/playback:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/identity:typecheck: cache hit, replaying logs 2f031873fee6732d
+@aster/identity:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/catalog:test: cache hit, replaying logs 2a427b92b209cb46
+@aster/catalog:test: $ node --test ./dist/test/*.test.js
+@aster/catalog:test: ✔ artwork reports preserve source identity and cannot be consumed as HLS (2.974881ms)
+@aster/catalog:test: ✔ artwork reports reject omitted, oversized, duplicate or foreign frames and malformed geometry (1.583563ms)
+@aster/catalog:test: ✔ complete reviewed rights approve without acquiring media and derive exact attribution (3.966725ms)
+@aster/catalog:test: ▶ every required reviewed field and explicit permission must be resolved
+@aster/catalog:test:   ✔ workTitle (0.999868ms)
+@aster/catalog:test:   ✔ creator (0.230791ms)
+@aster/catalog:test:   ✔ copyrightHolder (0.223143ms)
+@aster/catalog:test:   ✔ canonicalSourceUrl (0.263678ms)
+@aster/catalog:test:   ✔ assetSourceUrl (0.206276ms)
+@aster/catalog:test:   ✔ licenseName (0.219469ms)
+@aster/catalog:test:   ✔ licenseVersion (0.248149ms)
+@aster/catalog:test:   ✔ licenseUrl (0.279194ms)
+@aster/catalog:test:   ✔ attributionText (0.294373ms)
+@aster/catalog:test:   ✔ modificationNotice (0.204734ms)
+@aster/catalog:test:   ✔ thirdPartyMaterialNotes (0.266575ms)
+@aster/catalog:test:   ✔ trademarkNotes (0.392894ms)
+@aster/catalog:test:   ✔ redistributionAllowed (0.247693ms)
+@aster/catalog:test:   ✔ commercialUseAllowed (0.21056ms)
+@aster/catalog:test:   ✔ modificationAllowed (0.192181ms)
+@aster/catalog:test:   ✔ shareAlikeRequired (0.495603ms)
+@aster/catalog:test:   ✔ technicalRestrictions (0.340903ms)
+@aster/catalog:test:   ✔ reviewedAt (0.372757ms)
+@aster/catalog:test:   ✔ reviewedBy (0.182812ms)
+@aster/catalog:test: ✔ every required reviewed field and explicit permission must be resolved (9.852256ms)
+@aster/catalog:test: ✔ contradictory use, unreviewed state, expiry and invalid clocks fail closed (1.414312ms)
+@aster/catalog:test: ✔ unknown fields, hostile accessors, invalid identifiers, URLs and oversized evidence are rejected (0.976791ms)
+@aster/catalog:test: ▶ the full 25-pair lifecycle table rejects every skipped or repeated transition
+@aster/catalog:test:   ✔ DRAFT -> DRAFT (0.373816ms)
+@aster/catalog:test:   ✔ DRAFT -> RIGHTS_REVIEWED (0.28605ms)
+@aster/catalog:test:   ✔ DRAFT -> MEDIA_READY (0.096927ms)
+@aster/catalog:test:   ✔ DRAFT -> PUBLISHED (0.077005ms)
+@aster/catalog:test:   ✔ DRAFT -> RETIRED (0.077229ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> DRAFT (0.070985ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> RIGHTS_REVIEWED (30.288894ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> MEDIA_READY (0.912778ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> PUBLISHED (0.21947ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> RETIRED (0.492527ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> DRAFT (0.173715ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> RIGHTS_REVIEWED (0.139125ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> MEDIA_READY (0.175338ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> PUBLISHED (0.92423ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> RETIRED (0.149801ms)
+@aster/catalog:test:   ✔ PUBLISHED -> DRAFT (0.11965ms)
+@aster/catalog:test:   ✔ PUBLISHED -> RIGHTS_REVIEWED (0.114234ms)
+@aster/catalog:test:   ✔ PUBLISHED -> MEDIA_READY (0.104324ms)
+@aster/catalog:test:   ✔ PUBLISHED -> PUBLISHED (0.163376ms)
+@aster/catalog:test:   ✔ PUBLISHED -> RETIRED (0.106945ms)
+@aster/catalog:test:   ✔ RETIRED -> DRAFT (0.123224ms)
+@aster/catalog:test:   ✔ RETIRED -> RIGHTS_REVIEWED (0.096323ms)
+@aster/catalog:test:   ✔ RETIRED -> MEDIA_READY (0.092681ms)
+@aster/catalog:test:   ✔ RETIRED -> PUBLISHED (0.176702ms)
+@aster/catalog:test:   ✔ RETIRED -> RETIRED (0.124556ms)
+@aster/catalog:test: ✔ the full 25-pair lifecycle table rejects every skipped or repeated transition (39.837229ms)
+@aster/catalog:test: ✔ rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication (5.011062ms)
+@aster/catalog:test: ✔ retirement survives disputed rights; reopening requires a newer review and new media linkage (0.594766ms)
+@aster/catalog:test: ✔ public visibility rechecks current rights; malformed lifecycle and overflowing versions cannot advance (2.636548ms)
+@aster/catalog:test: ✔ Catalog composes with the released Identity schema without breaking its API or representative operations (270.138457ms)
+@aster/catalog:test: ✔ realistic browse, detail and twenty Title references pass bounded preflight (3.790134ms)
+@aster/catalog:test: ✔ public GraphQL rejects mutation, introspection, invalid entity references, body extensions and ambiguous documents (1.610499ms)
+@aster/catalog:test: ✔ page, source, tokens, aliases, fields, list expansion and literal/default input budgets reject before execution (2.826039ms)
+@aster/catalog:test: ✔ pre-extension command receipts replay without rewriting audit or ignoring newly supplied metadata (11.778935ms)
+@aster/catalog:test: ✔ public metadata extends legacy snapshots without inventing facts and enforces every collection bound (1.441513ms)
+@aster/catalog:test: ✔ public projection derives attribution and excludes operator facts and all delivery credentials (4.748306ms)
+@aster/catalog:test: ✔ public browse uses exact positive keysets, lookahead and deterministic locale fallback (6.21352ms)
+@aster/catalog:test: ✔ invalid pages and entity inputs reject before SQL; batches preserve duplicate order and explicit nulls (3.697952ms)
+@aster/catalog:test: ✔ public reads reject corrupt owner rows, excessive pages, wrong order and dependency faults (9.152275ms)
+@aster/catalog:test: ✔ anonymous real HTTP browse/detail use owner attribution, safe metadata and finite correlated telemetry (225.953157ms)
+@aster/catalog:test: ✔ entity resolution batches repeated IDs once, preserves order/nulls and never retains a cross-request hit (66.967098ms)
+@aster/catalog:test: ✔ invalid operations and oversized/simple bodies are rejected without application access (163.118492ms)
+@aster/catalog:test: ✔ private dependency failures and unknown fields become sanitized correlated errors (22.354682ms)
+@aster/catalog:test: ✔ three-second deadline cancels owner work; global rate and concurrency bounds are enforced (3446.360744ms)
+@aster/catalog:test: ✔ client disconnect cancels its owner request (54.805707ms)
+@aster/catalog:test: ✔ request cache is bounded and schema rejects an unowned execution context (16.775508ms)
+@aster/catalog:test: ✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events (20.043548ms)
+@aster/catalog:test: ✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed (2.054766ms)
+@aster/catalog:test: ✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time (0.76599ms)
+@aster/catalog:test: ✔ exact replay preserves response and audit; changed input, actor, version or command conflicts (3.28794ms)
+@aster/catalog:test: ✔ unresolved review, expired rights and foreign/unattested media never publish (4.16585ms)
+@aster/catalog:test: ✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures (9.131823ms)
+@aster/catalog:test: ✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields (1.201518ms)
+@aster/catalog:test: ✔ artwork receives its own operator review and cannot silently substitute a different source (1.220468ms)
+@aster/catalog:test: ✔ prepares verified original and retains an immutable private candidate with report last (57.507447ms)
+@aster/catalog:test: ✔ refuses revoked authority before filesystem/storage side effects (5.565739ms)
+@aster/catalog:test: ✔ retains and reuses a separate complete artwork candidate without overwriting HLS (33.30178ms)
+@aster/catalog:test: ✔ cleans failed original handoff and never commits a report after partial upload (9.996353ms)
+@aster/catalog:test: ✔ rejects tampered candidate processingKey (12.133872ms)
+@aster/catalog:test: ✔ rejects tampered candidate manifestHash (31.094923ms)
+@aster/catalog:test: ✔ rejects tampered candidate identity (6.450614ms)
+@aster/catalog:test: ✔ rejects tampered candidate files (5.5639ms)
+@aster/catalog:test: ✔ rejects tampered candidate publicationAuthority (5.872662ms)
+@aster/catalog:test: ✔ refuses symlinked candidate payload (9.396299ms)
+@aster/catalog:test: ✔ adopts an existing candidate and replays without encoding, uploads or filesystem preparation (13.763314ms)
+@aster/catalog:test: ✔ processing cancellation retains a classified failure with a separate bounded audit signal (11.965259ms)
+@aster/catalog:test: ✔ refuses retained candidate reuse: missing (42.719785ms)
+@aster/catalog:test: ✔ refuses retained candidate reuse: changed (16.47906ms)
+@aster/catalog:test: ✔ refuses retained candidate reuse: oversized-report (22.657071ms)
+@aster/catalog:test: ✔ refuses retained candidate reuse: revoked (9.858579ms)
+@aster/catalog:test: ✔ refuses retained candidate reuse: selector (14.456101ms)
+@aster/catalog:test: ✔ private visibility preserves order/hidden results and current retirement/dispute/expiry without media fields (239.940683ms)
+@aster/catalog:test: ✔ exact visibility operation, caller purpose and resolver authorization reject substitution before SQL (92.149434ms)
+@aster/catalog:test: ✔ pending private visibility occupies only one lane; public Catalog remains available and shutdown cancels it (63.33137ms)
+@aster/catalog:test: ✔ private visibility rate credit cannot exhaust public Catalog credit (485.129435ms)
+@aster/catalog:test: ✔ source destinations reject credentials, redirects and private/reserved addresses (2.475909ms)
+@aster/catalog:test: ✔ download streams into a private owned file, hashes exact bytes and cleans idempotently (16.822423ms)
+@aster/catalog:test: ✔ changed, redirected, encoded, oversized and corrupted sources retain no file (16.140048ms)
+@aster/catalog:test: ✔ stalls and cancellation destroy streams and release only owned temporary files (34.419454ms)
+@aster/catalog:test: ✔ executor verifies retained conflict bytes before completion and cleans its file (18.735377ms)
+@aster/catalog:test: ✔ executor rejects mismatching retained bytes without completing or deleting originals (7.07735ms)
+@aster/catalog:test: ✔ periodic rights revocation cancels a pending download and retains failure audit (2.704055ms)
+@aster/catalog:test: ✔ current approved checksum reuses original without download, upload or temporary file (3.495662ms)
+@aster/catalog:test: ✔ reuse detects rights revoked during the read and never completes (2.716354ms)
+@aster/catalog:test: ✔ missing checksum-addressed original follows the normal verified download path (8.628325ms)
+@aster/catalog:test: ✔ corrupt reuse is audited without fallback download or overwrite (1.775597ms)
+@aster/catalog:test: ✔ request checksum alone cannot authorize reuse of a different retained source (5.513192ms)
+@aster/catalog:test: ✔ processing records retain bounded identity, queue time and private candidate (3.391291ms)
+@aster/catalog:test: ✔ only transient processing outcomes permit bounded retry (0.181944ms)
+@aster/catalog:test: ✔ candidate references cannot grant authority, escape the prefix or exceed bounds (0.286873ms)
+@aster/catalog:test: ✔ media request schema rejects unstable identity, unbounded input and injected controls (4.561513ms)
+@aster/catalog:test: ✔ authorized request retains exact audit and replays without advancing editorial state (15.846334ms)
+@aster/catalog:test: ✔ unauthorized, cancelled and malformed requests do not enter a transaction (3.366561ms)
+@aster/catalog:test: ✔ request refuses stale, unapproved, foreign and changed source facts (8.559938ms)
+@aster/catalog:test: ✔ null rights checksum may be acquired later but never skips current approval (2.702338ms)
+@aster/catalog:test: ✔ changed replay, duplicate identity and bounded capacity cannot create duplicate jobs (14.79798ms)
+@aster/catalog:test: ✔ expiry, revocation, cancellation and failure after insertion roll back intent (5.836496ms)
+@aster/catalog:test: ✔ local media syntax is confined to exact immutable URLs and content kinds (1.710432ms)
+@aster/catalog:test: ✔ default policies cannot approve or publish local HTTP even when a record normalizes (5.024671ms)
+@aster/catalog:test: ✔ documented draft example is executable but cannot approve unresolved rights (37.580816ms)
+@aster/catalog:test: ✔ clarification, rejection and expiry have explicit transitions without silent approval (6.06792ms)
+@aster/catalog:test: ✔ CLI reads exactly one bounded UTF-8 command and rejects malformed/extra/oversized input (19.016534ms)
+@aster/catalog:test: ✔ CLI database guard separates administrator/runtime and excludes hosted or cross-context endpoints (3.781357ms)
+@aster/catalog:test: ✔ operator inspection is authorized and read-only; publication rechecks expiry before commit (22.437195ms)
+@aster/catalog:test: ✔ playable file verification checks every immutable byte, cancellation and finite inventory (52.841684ms)
+@aster/catalog:test: ✔ matching checksums do not authorize remote, traversing, encrypted or extra playlist references (68.016637ms)
+@aster/catalog:test: ✔ non-delivery sample remains browsable but never supplies session authority or poisons another title (14.502836ms)
+@aster/catalog:test: ✔ owner publication reads are batched, ordered, bounded and never cached across requests (26.066069ms)
+@aster/catalog:test: ✔ owner dependency errors, corrupt rows and late cancellation expose no publication (2.506225ms)
+@aster/catalog:test: ✔ current playback projection binds the active immutable publication without changing public metadata (1.846218ms)
+@aster/catalog:test: ✔ unpublished, retired, disputed, expired or mismatched publications never yield a playback reference (5.601259ms)
+@aster/catalog:test: ✔ the snapshot expires at the earliest approved film or artwork expiry (13.469743ms)
+@aster/catalog:test: ✔ HTTP delivery remains an explicit exact local policy, not an input privilege (3.2335ms)
+@aster/catalog:test: ✔ private Catalog HTTP read batches current publications, ordered nulls and fresh rights without public metadata changes (194.127755ms)
+@aster/catalog:test: ✔ private read rejects forged identity, wrong caller and arbitrary operations before owner access (114.337226ms)
+@aster/catalog:test: ✔ directive is not authorization: public preflight and resolver both deny the private field (14.872022ms)
+@aster/catalog:test: ✔ append atomically advances title, inserts facts and provenance with bounded parameters (5.005063ms)
+@aster/catalog:test: ✔ stale append returns false without facts or provenance inserts (0.859766ms)
+@aster/catalog:test: ✔ invalid rights, versions and provenance reject before SQL (1.671276ms)
+@aster/catalog:test: ✔ large Unicode records preserve surrogate pairs within the shared parameter limit (1.527526ms)
+@aster/catalog:test: ✔ aggregate rights payload has a byte bound even if each field is individually valid (3.846241ms)
+@aster/catalog:test: ✔ draft creation, missing title and existing title use explicit results (0.820108ms)
+@aster/catalog:test: ✔ title and revision reads validate owner, linkage, timestamps and persisted domain fields (5.734926ms)
+@aster/catalog:test: ✔ history keysets are bounded, descending, owner-filtered and immutable (2.605624ms)
+@aster/catalog:test: ✔ caller rejection rolls back and adapter outcomes never become success (1.406203ms)
+@aster/catalog:test: ▶ ambiguous lock creation requires recovery, while definite contention and pre-abort do not
+@aster/catalog:test:   ✔ lost-response (11.51263ms)
+@aster/catalog:test:   ✔ cancelled (1.251848ms)
+@aster/catalog:test:   ✔ contended (1.019988ms)
+@aster/catalog:test:   ✔ pre-aborted (31.021496ms)
+@aster/catalog:test: ✔ ambiguous lock creation requires recovery, while definite contention and pre-abort do not (47.348858ms)
+@aster/catalog:test: ✔ confirmation runs inside the barrier and returns the registered identity (10.57038ms)
+@aster/catalog:test: ▶ rights, expiry, registration and cancellation rejection restore only a newly added grant
+@aster/catalog:test:   ✔ rights: (37.387132ms)
+@aster/catalog:test:   ✔ expiry: (3.810457ms)
+@aster/catalog:test:   ✔ registration: (1.786738ms)
+@aster/catalog:test:   ✔ cancelled: (1.999222ms)
+@aster/catalog:test:   ✔ rights:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (1.828221ms)
+@aster/catalog:test:   ✔ expiry:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (1.011837ms)
+@aster/catalog:test:   ✔ registration:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (0.855387ms)
+@aster/catalog:test:   ✔ cancelled:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (1.981211ms)
+@aster/catalog:test:   ✔ rights:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (0.980303ms)
+@aster/catalog:test:   ✔ expiry:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (0.840504ms)
+@aster/catalog:test:   ✔ registration:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (1.390901ms)
+@aster/catalog:test:   ✔ cancelled:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (1.199639ms)
+@aster/catalog:test: ✔ rights, expiry, registration and cancellation rejection restore only a newly added grant (59.439822ms)
+@aster/catalog:test: ▶ failed compensation or its readback retains the barrier and reports required recovery
+@aster/catalog:test:   ✔ write (1.088571ms)
+@aster/catalog:test:   ✔ readback (2.753956ms)
+@aster/catalog:test: ✔ failed compensation or its readback retains the barrier and reports required recovery (4.421225ms)
+@aster/catalog:test: ✔ publication policy accepts only bounded exact GET prefixes, never ignored condition fields (2.117538ms)
+@aster/catalog:test: ✔ an uncertain policy write/readback retains the recovery barrier, with no implicit retry (2.998749ms)
+@aster/catalog:test: ✔ public READ waits for complete integrity verification and retries an interrupted grant (121.529777ms)
+@aster/catalog:test: ✔ missing, corrupt, cancelled or revoked bundles gain no public access (372.887391ms)
+@aster/catalog:test: ✔ bundle is stable through review, but binds source, reports and both modification notices (3.926907ms)
+@aster/catalog:test: ✔ playlist verification rejects external URIs, encryption, missing and unreferenced objects (2.02274ms)
+@aster/catalog:test: ✔ copy verifies children before master, preserves attribution, and repeats without new writes (96.432329ms)
+@aster/catalog:test: ✔ missing, corrupted and failed reads never copy master and clean only the owned temporary output (59.95463ms)
+@aster/catalog:test: ✔ revocation and cancellation stop before further upload; partial prefix replays without overwrites (57.767035ms)
+@aster/catalog:test: ✔ existing public bytes are never trusted or overwritten on an immutable-key conflict (10.309364ms)
+@aster/catalog:test: ✔ publication replacement and rollback preserve approval and immutable activation history (33.644238ms)
+@aster/catalog:test: ✔ rollback refuses an unactivated candidate, current pointer and retired or disputed titles (14.570141ms)
+@aster/catalog:test: ✔ replacement rejects foreign, stale, corrupt, future and disallowed local references (18.815661ms)
+@aster/catalog:test: ✔ replacement commands keep strict CLI input, authority, optimistic version and takedown reserve (6.698766ms)
+@aster/catalog:test: ✔ replacement and rollback undo pointer, audit, event and activation when final checks fail (21.057442ms)
+@aster/catalog:test: ✔ original reuse accepts exact ZIP and MP4 streams and only explicit absence (9.019067ms)
+@aster/catalog:test: ✔ short, long, changed, malformed and interrupted originals fail closed (6.758734ms)
+@aster/catalog:test: ✔ reuse propagates cancellation to a stalled storage read and rejects unsafe identity (3.289785ms)
+@aster/catalog:test: ✔ reviewed official source is a valid draft, not a self-approved publication (11.353915ms)
+@aster/catalog:test: ✔ Catalog runtime configuration rejects hosted, privileged and malformed local settings (3.774623ms)
+@aster/catalog:test: ✔ Catalog serves guarded GraphQL, fails readiness on dependency/authority loss, recovers and closes (274.749842ms)
+@aster/catalog:test: ✔ Catalog starts degraded without data and can stop before startup without binding a listener (402.287772ms)
+@aster/catalog:test: ✔ playable seed is a separate fixed title; replay rechecks media without new editorial writes (29.331396ms)
+@aster/catalog:test: ✔ playable reports cannot authorize arbitrary recipes, names, bytes or publication authority (1.480325ms)
+@aster/catalog:test: ✔ local seed report input is bounded, UTF-8 validated and cancelled (8.464305ms)
+@aster/catalog:test: ✔ local seed rejects non-local or missing opt-in before opening a database (3.779014ms)
+@aster/catalog:test: ✔ UI seed uses rights/media/publication commands and repeated execution is a no-op (6.326775ms)
+@aster/catalog:test: ✔ UI seed resumes after a failed attestation without repeating rights review (30.453812ms)
+@aster/catalog:test: ✔ UI seed refuses retired, modified or foreign data without overwriting it (15.798379ms)
+@aster/catalog:test: ✔ invalid reports, missing authority and cancellation cannot create seed data (2.027068ms)
+@aster/catalog:test: ℹ tests 202
+@aster/catalog:test: ℹ suites 0
+@aster/catalog:test: ℹ pass 202
+@aster/catalog:test: ℹ fail 0
+@aster/catalog:test: ℹ cancelled 0
+@aster/catalog:test: ℹ skipped 0
+@aster/catalog:test: ℹ todo 0
+@aster/catalog:test: ℹ duration_ms 15444.930058
+@aster/playback:test: cache hit, replaying logs 4d0ae870699c6eba
+@aster/playback:test: $ node --test ./dist/test/*.test.js
+@aster/playback:test: ✔ owner HTTP client sends the fixed bounded operation and separate credential, preserving null or publication (114.303827ms)
+@aster/playback:test: ✔ owner client fails closed on HTTP errors, redirects, oversized/compressed bodies and malformed envelopes without retry (111.458569ms)
+@aster/playback:test: ✔ owner client bounds live requests, cancels sockets and does not send invalid or pre-cancelled reads (26.625156ms)
+@aster/playback:test: ✔ owner client's own deadline closes an unresponsive dependency and resets admission (1514.221173ms)
+@aster/playback:test: ✔ session creation reads current Catalog once before one acknowledged owner write (13.863952ms)
+@aster/playback:test: ✔ invalid input, missing/stale/invalid Catalog and dependency failure never write sessions (3.595092ms)
+@aster/playback:test: ✔ cancelled reads settle even for an uncooperative adapter; late success cannot start a write (1.608374ms)
+@aster/playback:test: ✔ the two-second application deadline settles an owner that never responds (2006.960536ms)
+@aster/playback:test: ✔ capacity and uncertain write outcomes are not retried or reported as success (7.04011ms)
+@aster/playback:test: ✔ expiry during an acknowledged store operation is not returned as a usable session (0.793313ms)
+@aster/playback:test: ✔ session inspection returns only current title-bound authority, never a media URL (6.047905ms)
+@aster/playback:test: ✔ expired, substituted and hostile stored contexts fail closed without getters (2.821644ms)
+@aster/playback:test: ✔ PostgreSQL read is bounded, title-scoped, media-free and never commits (2.170545ms)
+@aster/playback:test: ✔ Playback composes additively, preserves existing operations and does not expose stored audit or caller authority (472.671501ms)
+@aster/playback:test: ✔ bounded realistic mutation, Router naming, typename and finite fragments pass (3.067266ms)
+@aster/playback:test: ✔ malformed, amplified, introspective and caller-authority operations reject before any mutation (7.443248ms)
+@aster/playback:test: ✔ a forged GraphQL context cannot supply a session application or authority (42.015883ms)
+@aster/playback:test: ✔ Engagement session HTTP read is title-bound, exact, read-only and absent for Router callers (288.566832ms)
+@aster/playback:test: ✔ private transport returns an auditable anonymous session, propagates trusted trace and redacts internal state (83.837668ms)
+@aster/playback:test: ✔ private session inspection has its own bounded admission and rate bucket, preserving public creations (206.273105ms)
+@aster/playback:test: ✔ transport rejects foreign authority, amplified mutations and oversized bodies before owner work (29.821671ms)
+@aster/playback:test: ✔ current-owner rejection and uncertain persistence remain typed non-success, with no raw engine errors (86.240987ms)
+@aster/playback:test: ✔ four admitted creations bound concurrency; the fifth fails and later requests recover (62.091229ms)
+@aster/playback:test: ✔ application deadline cancels slow owner work; shutdown cancels admitted requests (2030.582185ms)
+@aster/playback:test: ✔ finite per-process rate credits reject excess requests and replenish without unbounded queueing (201.307036ms)
+@aster/playback:test: ✔ Playback persistence owns four bounded sequential statements and only acknowledges commit (2.984102ms)
+@aster/playback:test: ✔ capacity and expired-at-insert outcomes roll back rather than acknowledge a session (3.965889ms)
+@aster/playback:test: ✔ cancelled and uncertain stores are never retried, and malformed rows fail closed (3.156958ms)
+@aster/playback:test: ✔ Playback runtime requires explicit local activation, fixed owner credentials and protected listener (3.977806ms)
+@aster/playback:test: ✔ migration rejects unauthorized or pre-cancelled activation before network work (1.892068ms)
+@aster/playback:test: ✔ store readiness rejects authority, schema, admission and connectivity loss (1.868859ms)
+@aster/playback:test: ✔ runtime probes only Catalog and its store, denies untrusted GraphQL, recovers readiness and shuts down (373.748958ms)
+@aster/playback:test: ✔ runtime starts degraded without dependencies and can stop before listening (47.10641ms)
+@aster/playback:test: ✔ anonymous sessions bind owner publication and audit identity with a fifteen-minute expiry (4.38682ms)
+@aster/playback:test: ✔ stale, future, expired, mismatched or malformed owner snapshots cannot create sessions (9.975111ms)
+@aster/playback:test: ✔ media delivery rejects credentials and arbitrary HTTP without adding a token to open media (0.968072ms)
+@aster/playback:test: ℹ tests 36
+@aster/playback:test: ℹ suites 0
+@aster/playback:test: ℹ pass 36
+@aster/playback:test: ℹ fail 0
+@aster/playback:test: ℹ cancelled 0
+@aster/playback:test: ℹ skipped 0
+@aster/playback:test: ℹ todo 0
+@aster/playback:test: ℹ duration_ms 11321.678941
+@aster/identity:test: cache hit, replaying logs 61dfa15bec2d0438
+@aster/identity:test: $ node --test ./dist/test/*.test.js
+@aster/identity:test: ✔ integration refuses remote Docker before creating or removing resources (7.429765ms)
+@aster/identity:test: ✔ integration refuses a name collision without touching existing resources (20.912529ms)
+@aster/identity:test: ✔ fixture cleanup removes only exact owned IDs and is idempotent (9.275312ms)
+@aster/identity:test: ✔ fixture cleanup refuses changed ownership before the first removal (6.907004ms)
+@aster/identity:test: ✔ fixture fault injection refuses changed container ownership (4.683599ms)
+@aster/identity:test: ✔ fixture cleanup refuses foreign mounts and network attachments (22.508457ms)
+@aster/identity:test: ✔ storage cleanup owns only its fixed service and volume, not the core profile (5.83081ms)
+@aster/identity:test: ✔ broker cleanup removes its exact named volume and rejects an anonymous image volume (4.580264ms)
+@aster/identity:test: ✔ telemetry fixture allows only exact read-only config mounts and its two volumes (14.998075ms)
+@aster/identity:test: ✔ Docker Desktop bind translation requires exact distro and file identity, not a path prefix (7.342212ms)
+@aster/identity:test: ✔ combined matrix owns only six fixed services and four labelled volumes (9.043895ms)
+@aster/identity:test: ✔ Identity composes as Federation v2 with an owned Profile entity and no credential fields (491.209871ms)
+@aster/identity:test: ✔ bounded named queries, variables, inline fragments and one-field mutations pass preflight (3.712163ms)
+@aster/identity:test: ✔ reject batching, APQ, ambiguous operations, subscriptions and introspection (2.087799ms)
+@aster/identity:test: ✔ source, parser, expanded aliases/fields, weighted list cost and fragment fanout are bounded (70.193353ms)
+@aster/identity:test: ✔ variables, default values and literal representations share finite input budgets (2.788393ms)
+@aster/identity:test: ✔ fixture HTTP probe bounds response bytes and refuses redirects (131.824686ms)
+@aster/identity:test: ✔ fixture HTTP deadline covers a stalled response body, not only headers (1007.529989ms)
+@aster/identity:test: ✔ a startup deadline after binding cannot close the live health listener (119.644931ms)
+@aster/identity:test: ✔ cancels a pending bind and tolerates cleanup before any listener exists (11.336843ms)
+@aster/identity:test: ✔ private profile HTTP read requires its purpose credential, exact operation and current owner (347.226927ms)
+@aster/identity:test: ✔ real Apollo HTTP sets a host-only cookie after acknowledgement and never exposes the credential/session (115.303113ms)
+@aster/identity:test: ✔ entity resolution preserves order/misses, ignores injected fields and batches only within one owner request (140.40356ms)
+@aster/identity:test: ✔ malformed or non-entity representations return validation errors before owner calls (85.179857ms)
+@aster/identity:test: ✔ profile mutations forward retry/version inputs, credential, cancellation and generated event context (155.400656ms)
+@aster/identity:test: ✔ typed failures remain stable; unknown errors, invalid variables and client text are sanitized (202.336152ms)
+@aster/identity:test: ✔ local origin, CSRF and forged identity are rejected before application execution (89.734477ms)
+@aster/identity:test: ✔ local token bucket rejects excess operations and refills without a queue (831.494564ms)
+@aster/identity:test: ✔ deadline aborts owner signals; non-cooperative work retains all eight admission slots and cannot issue late cookies (3063.42416ms)
+@aster/identity:test: ✔ client disconnect and explicit stop abort the original signal, with idempotent stop (44.446824ms)
+@aster/identity:test: ✔ local issuer fixes identity claims and expires at the exact absolute boundary (25.646712ms)
+@aster/identity:test: ▶ local activation rejects hosted environments, missing opt-in and noncanonical origins
+@aster/identity:test:   ✔ 0 (21.567916ms)
+@aster/identity:test:   ✔ 1 (0.387883ms)
+@aster/identity:test:   ✔ 2 (0.305428ms)
+@aster/identity:test:   ✔ 3 (0.350056ms)
+@aster/identity:test:   ✔ 4 (0.269557ms)
+@aster/identity:test:   ✔ 5 (0.290597ms)
+@aster/identity:test:   ✔ 6 (0.292286ms)
+@aster/identity:test:   ✔ 7 (0.623636ms)
+@aster/identity:test:   ✔ 8 (4.194213ms)
+@aster/identity:test:   ✔ 9 (0.36436ms)
+@aster/identity:test:   ✔ 10 (0.229814ms)
+@aster/identity:test:   ✔ 11 (0.286731ms)
+@aster/identity:test:   ✔ 12 (0.20592ms)
+@aster/identity:test:   ✔ 13 (0.126323ms)
+@aster/identity:test:   ✔ 14 (0.162178ms)
+@aster/identity:test:   ✔ 15 (0.183622ms)
+@aster/identity:test:   ✔ 16 (0.158506ms)
+@aster/identity:test:   ✔ 17 (0.671115ms)
+@aster/identity:test:   ✔ 18 (0.211741ms)
+@aster/identity:test:   ✔ 19 (0.172061ms)
+@aster/identity:test:   ✔ 20 (0.246458ms)
+@aster/identity:test:   ✔ 21 (1.31124ms)
+@aster/identity:test: ✔ local activation rejects hosted environments, missing opt-in and noncanonical origins (37.115924ms)
+@aster/identity:test: ▶ real signatures fail closed for every required claim and token purpose
+@aster/identity:test:   ✔ issuer (2.157227ms)
+@aster/identity:test:   ✔ audience (2.636949ms)
+@aster/identity:test:   ✔ audience array (3.327637ms)
+@aster/identity:test:   ✔ subject (2.663258ms)
+@aster/identity:test:   ✔ empty subject (3.708906ms)
+@aster/identity:test:   ✔ session identifier (2.116555ms)
+@aster/identity:test:   ✔ expired (2.333605ms)
+@aster/identity:test:   ✔ future issue (1.624702ms)
+@aster/identity:test:   ✔ negative issue (2.539546ms)
+@aster/identity:test:   ✔ fractional issue (4.438325ms)
+@aster/identity:test:   ✔ fractional expiry (3.73202ms)
+@aster/identity:test:   ✔ excess lifetime (2.849219ms)
+@aster/identity:test:   ✔ not before (23.03351ms)
+@aster/identity:test:   ✔ purpose (5.130338ms)
+@aster/identity:test:   ✔ key URL (9.447236ms)
+@aster/identity:test:   ✔ unselected key id (6.078217ms)
+@aster/identity:test:   ✔ missing iss (2.187025ms)
+@aster/identity:test:   ✔ missing aud (9.927218ms)
+@aster/identity:test:   ✔ missing sub (2.202534ms)
+@aster/identity:test:   ✔ missing jti (2.57583ms)
+@aster/identity:test:   ✔ missing iat (1.56077ms)
+@aster/identity:test:   ✔ missing exp (1.377197ms)
+@aster/identity:test: ✔ real signatures fail closed for every required claim and token purpose (138.441507ms)
+@aster/identity:test: ✔ malformed and oversized tokens are rejected without coercing caller objects (1.647983ms)
+@aster/identity:test: ✔ signing and verification share eight slots, do not queue and release after cancellation (4.409689ms)
+@aster/identity:test: ✔ ephemeral signer restart invalidates earlier assertions (3.52242ms)
+@aster/identity:test: ✔ invalid or failed clocks cannot produce an authenticated result (3.967848ms)
+@aster/identity:test: ✔ cookie policy is guarded by the same local-only activation contract (3.422905ms)
+@aster/identity:test: ✔ cookies stay HttpOnly/host-only, fit the envelope and retain absolute expiry (2.012533ms)
+@aster/identity:test: ✔ real HTTP protects even anonymous issuance, parses one credential and emits no credential body (103.044393ms)
+@aster/identity:test: ▶ real HTTP rejects origin/host/CSRF/forwarding and non-POST requests before issuance
+@aster/identity:test:   ✔ Origin:absent (6.135874ms)
+@aster/identity:test:   ✔ Origin:null (5.963367ms)
+@aster/identity:test:   ✔ Origin:http://attacker.invalid (6.346144ms)
+@aster/identity:test:   ✔ Origin:http://127.0.0.1:3100/ (24.438366ms)
+@aster/identity:test:   ✔ Host:attacker.invalid (7.030503ms)
+@aster/identity:test:   ✔ X-Aster-CSRF:absent (4.82632ms)
+@aster/identity:test:   ✔ X-Aster-CSRF:0 (3.799733ms)
+@aster/identity:test:   ✔ X-Aster-CSRF:1, 1 (3.558043ms)
+@aster/identity:test:   ✔ Sec-Fetch-Site:same-site (2.587143ms)
+@aster/identity:test:   ✔ Sec-Fetch-Site:cross-site (3.653623ms)
+@aster/identity:test:   ✔ Authorization:Bearer untrusted (2.363967ms)
+@aster/identity:test:   ✔ Forwarded:host=attacker.invalid (3.327749ms)
+@aster/identity:test:   ✔ X-Forwarded-Host:127.0.0.1:3100 (4.24013ms)
+@aster/identity:test:   ✔ X-Aster-Account-Id:untrusted (2.392561ms)
+@aster/identity:test: ✔ real HTTP rejects origin/host/CSRF/forwarding and non-POST requests before issuance (98.821674ms)
+@aster/identity:test: ✔ real HTTP rejects ambiguity, cookie abuse and simple bodies without executing application (62.768182ms)
+@aster/identity:test: ✔ private Identity transport retains CSRF and cookie validation after Router authentication (24.609405ms)
+@aster/identity:test: ✔ profile preferences normalize Unicode and locale with bounded configuration (16.79118ms)
+@aster/identity:test: ✔ private profile authority binds current session, owner and expiry without preferences (19.051943ms)
+@aster/identity:test: ✔ hostile profile inputs are rejected without invoking getters or coercion (1.069169ms)
+@aster/identity:test: ✔ create/list/get/select require a live owner and store minimal event facts (6.442277ms)
+@aster/identity:test: ✔ canonical duplicate create and unknown commit replay without duplicate state/events (36.494004ms)
+@aster/identity:test: ✔ versioned update, no-op and deletion are atomic and replayable (9.332425ms)
+@aster/identity:test: ✔ a supplied foreign profile or account cannot authorize reads, writes or selection (3.426571ms)
+@aster/identity:test: ▶ malformed, revoked, expired and substituted sessions fail closed
+@aster/identity:test:   ✔ missing (0.849421ms)
+@aster/identity:test:   ✔ expiry (0.72113ms)
+@aster/identity:test:   ✔ digest (0.628499ms)
+@aster/identity:test:   ✔ signer (0.468906ms)
+@aster/identity:test:   ✔ subject (0.74101ms)
+@aster/identity:test:   ✔ account (0.574479ms)
+@aster/identity:test: ✔ malformed, revoked, expired and substituted sessions fail closed (6.113623ms)
+@aster/identity:test: ✔ pre-cancellation and expiry during a mutation never authorize durable intent (1.57643ms)
+@aster/identity:test: ▶ audit, outbox or receipt failure rolls back application intent and sanitizes errors
+@aster/identity:test:   ✔ audit (2.982301ms)
+@aster/identity:test:   ✔ outbox (2.042795ms)
+@aster/identity:test:   ✔ receipt (0.939787ms)
+@aster/identity:test: ✔ audit, outbox or receipt failure rolls back application intent and sanitizes errors (7.943168ms)
+@aster/identity:test: ✔ profile and journal capacities reject writes without discarding pending facts (3.861698ms)
+@aster/identity:test: ✔ event envelope rejects invalid IDs, versions, clocks and trace context (0.687704ms)
+@aster/identity:test: ✔ starts once under one propagated deadline and drains work before ordered closure (15.505712ms)
+@aster/identity:test: ✔ remains live on unavailable startup and recovers without lifecycle rollback (2.653746ms)
+@aster/identity:test: ✔ bounds a startup dependency that ignores cancellation and ignores late completion (12.430915ms)
+@aster/identity:test: ✔ shutdown cancels startup and prevents a late ready transition or monitor start (2.17505ms)
+@aster/identity:test: ✔ listener failure closes the constructed owners and returns no raw cause (9.951773ms)
+@aster/identity:test: ✔ attempts every closure and reaches explicit force ownership on failure (2.010852ms)
+@aster/identity:test: ✔ fails readiness closed when the recovery monitor cannot start (0.989628ms)
+@aster/identity:test: ✔ binds one process signal owner and removes it after manual shutdown (0.889497ms)
+@aster/identity:test: ✔ keeps framework and vendor types out of the reference runtime declarations (5.084803ms)
+@aster/identity:test: ✔ composes real health HTTP, controlled recovery, local metrics, clock/IDs and ordered resource closure (283.35237ms)
+@aster/identity:test: ✔ rejects invalid environment before constructing resources (2.716635ms)
+@aster/identity:test: ✔ configured OTLP export stays optional for readiness and reports failed flush truthfully (1125.454778ms)
+@aster/identity:test: ✔ cleans already-created owners on partial factory failure without reflecting its cause (5.17369ms)
+@aster/identity:test: ✔ listener bind failure closes both dependency owners and telemetry (67.074301ms)
+@aster/identity:test: ✔ diagnostic runs real loopback health transitions and exits naturally (1854.800931ms)
+@aster/identity:test: ✔ real PostgreSQL and Redis adapters fail readiness safely and release their handles (1345.862173ms)
+@aster/identity:test: ✔ executable rejects missing configuration with a bounded, cause-free diagnostic (1300.363915ms)
+@aster/identity:test: ✔ SIGTERM drains accepted work, disposes owners, and exits naturally with 143 (2165.925157ms)
+@aster/identity:test: ✔ unclosable dependency invokes bounded terminal fallback for signal and manual shutdown (3019.636912ms)
+@aster/identity:test: ✔ sign-in resolves a verified account, stores only a digest, restores and revokes (20.670195ms)
+@aster/identity:test: ✔ a valid signature with no durable session never authenticates (3.921819ms)
+@aster/identity:test: ✔ account, digest, signer and stored lifetime substitution fail closed (9.054338ms)
+@aster/identity:test: ✔ application admission caps sessions and reclaims expired or old-signer slots (14.66563ms)
+@aster/identity:test: ✔ invalid credentials and pre-cancellation do not reach persistence (1.651822ms)
+@aster/identity:test: ✔ failed persistence returns no credential and an unknown commit is never retried (12.310962ms)
+@aster/identity:test: ℹ tests 147
+@aster/identity:test: ℹ suites 0
+@aster/identity:test: ℹ pass 147
+@aster/identity:test: ℹ fail 0
+@aster/identity:test: ℹ cancelled 0
+@aster/identity:test: ℹ skipped 0
+@aster/identity:test: ℹ todo 0
+@aster/identity:test: ℹ duration_ms 24914.239069
+@aster/engagement:test: cache miss, executing ca0bb4bdc7f26a70
+@aster/engagement:test: $ node --test ./dist/test/*.test.js
+@aster/engagement:test: ✔ twenty federated titles batch progress and membership into one owned SQL read and one visibility batch (237.287652ms)
+@aster/engagement:test: ✔ Title/Profile references and aliases share canonical pairs but never cache between requests or credentials (299.707679ms)
+@aster/engagement:test: ✔ missing progress and absent/hidden membership are distinct from optional Catalog failure (44.802675ms)
+@aster/engagement:test: ✔ foreign/deleted profiles fail only their optional fields; owned profiles still use one query (11.296086ms)
+@aster/engagement:test: ✔ cache hits recheck authority, visibility and cancellation rather than refreshing stale data (19.166645ms)
+@aster/engagement:test: ✔ expired authority after SQL and malformed/reordered results fail closed (40.914478ms)
+@aster/engagement:test: ✔ twenty pair and five profile cache caps reject overflow before it joins a dispatch (51.63594ms)
+@aster/engagement:test: ✔ cancelled pending Identity reads settle without later SQL and do not exceed two owner calls (69.838845ms)
+@aster/engagement:test: ✔ invalid input/context/representations and abusive recursive or multiplied queries fail before I/O (204.734746ms)
+@aster/engagement:test: ✔ watchlist preflight validates commands, page shape, cursor scope and multiplied list cost (505.061473ms)
+@aster/engagement:test: ✔ HTTP watchlist uses owned applications, sanitizes membership and preserves opposite-command replay (375.538764ms)
+@aster/engagement:test: ✔ watchlist HTTP non-success and uncertain commits never fabricate acknowledged membership (190.180186ms)
+@aster/engagement:test: ✔ read preflight bounds pages, canonical cursors, list cost and root fan-out (4.411835ms)
+@aster/engagement:test: ✔ HTTP history forwards profile authority and emits bounded public state with a Catalog reference (294.415047ms)
+@aster/engagement:test: ✔ progress preflight bounds input, mutation fan-out and schema exposure (119.098747ms)
+@aster/engagement:test: ✔ HTTP entity fields use the request owner, batch SQL and keep Catalog failure nullable (581.995314ms)
+@aster/engagement:test: ✔ HTTP progress exposes only committed result fields and rejects forged transport before dispatch (301.624085ms)
+@aster/engagement:test: ✔ non-success, ambiguous commit and exceptions never fabricate progress (499.550719ms)
+@aster/engagement:test: ✔ four admitted progress requests are bounded and shutdown cancels their owner signals (312.775424ms)
+@aster/engagement:test: ✔ owner clients send separate fixed operations; only Identity receives the browser credential (187.24559ms)
+@aster/engagement:test: ✔ Catalog visibility uses its own fixed credential and ordered bounded response without browser/media data (47.099074ms)
+@aster/engagement:test: ✔ Catalog response substitutions, incomplete batches and excessive snapshot windows fail closed (219.798183ms)
+@aster/engagement:test: ✔ owner client rejects redirects, compression, cookies, overflow and malformed envelopes without retry (172.055069ms)
+@aster/engagement:test: ✔ owner failures are typed and invalid inputs or pre-cancellation never dispatch (14.926378ms)
+@aster/engagement:test: ✔ owner concurrency has no queue; cancellation and deadline release capacity (2057.60386ms)
+@aster/engagement:test: ✔ one ordered parameterized SQL batch preserves missing pairs and joins only owner data/deletion guards (7.580251ms)
+@aster/engagement:test: ✔ malformed, reordered, missing, deleted-with-data and foreign SQL rows fail closed (10.893258ms)
+@aster/engagement:test: ✔ an owned tombstone remains distinguishable from an empty aggregate (2.833027ms)
+@aster/engagement:test: ✔ invalid or excessive pairs, cross-account batches and cancellation do not dispatch SQL (1.203743ms)
+@aster/engagement:test: ✔ one bounded owner-filtered SQL read uses existing keyset order and rolls back its SELECT-only transaction (22.297688ms)
+@aster/engagement:test: ✔ continue query uses partial-index predicate and tuple cursor, without offset or write (2.775021ms)
+@aster/engagement:test: ✔ empty, foreign and inconsistent SQL results are distinguished (2.599564ms)
+@aster/engagement:test: ✔ continue scan carries up to 256 validated entries in one adapter row without widening shared limits (17.211357ms)
+@aster/engagement:test: ✔ invalid owner, bound and pre-cancellation avoid any SQL dispatch (1.607142ms)
+@aster/engagement:test: ✔ existing profile locks stay local and cannot switch owners or aggregates (28.301805ms)
+@aster/engagement:test: ✔ missing profile admission rolls back at its finite guard ceiling (2.950983ms)
+@aster/engagement:test: ✔ guard mismatch and deletion hide progress without reading it (1.579711ms)
+@aster/engagement:test: ✔ full progress slots roll back without inserting a new title (3.34523ms)
+@aster/engagement:test: ✔ malformed receipts are not coerced and pre-cancellation avoids dispatch (1.571128ms)
+@aster/engagement:test: ✔ unknown commit and throwing adapters never retry or acknowledge writes (2.094828ms)
+@aster/engagement:test: ✔ six-second demo has precise opening and completion edges (253.706597ms)
+@aster/engagement:test: ✔ long-title thresholds cap opening and remaining tail, not total watched percentage (27.894908ms)
+@aster/engagement:test: ✔ clamps impossible positions while retaining raw payload identity (0.838892ms)
+@aster/engagement:test: ✔ sequence is per profile/title across sessions and rejects every stale delivery (9.187503ms)
+@aster/engagement:test: ✔ newer intentional seek or replay may make a completed title resumable again (2.919773ms)
+@aster/engagement:test: ✔ profile, title, account and aggregate substitutions cannot reuse another state (2.587037ms)
+@aster/engagement:test: ✔ new reports enforce exact clock-skew and delivery-age bounds (2.961036ms)
+@aster/engagement:test: ✔ rejects malformed bounds, unknown keys, accessors and hostile records without invoking getters (2.398405ms)
+@aster/engagement:test: ✔ policy is validated configuration, not client input or an unbounded threshold (10.594617ms)
+@aster/engagement:test: ✔ corrupt or exhausted durable state cannot overflow its version (2.038036ms)
+@aster/engagement:test: ✔ canonical request payload ignores object key order, never loses submitted fields (7.347439ms)
+@aster/engagement:test: ✔ durable-state validation does not invoke accessors or coerce a forged status (4.315259ms)
+@aster/engagement:test: ✔ cursor is canonical, bounded and tied to profile/list; hostile input does not invoke getters (15.775073ms)
+@aster/engagement:test: ✔ history is a descending tied-key page with one-row lookahead and completed retention (11.215715ms)
+@aster/engagement:test: ✔ empty page succeeds, but dependency failure is never represented as empty success (35.024891ms)
+@aster/engagement:test: ✔ continue-watching filters retired/disputed gaps before page size and lookahead (14.043258ms)
+@aster/engagement:test: ✔ fully hidden continue list has no hidden cursor and is bounded to thirteen batches (57.251537ms)
+@aster/engagement:test: ✔ continue fails closed on stale, missing or unavailable Catalog visibility; history remains readable (40.39611ms)
+@aster/engagement:test: ✔ continue stops Catalog work at visible lookahead and cancellation releases a pending read (16.494718ms)
+@aster/engagement:test: ✔ input and missing authority stop before SQL; each page freshly checks ownership (0.846889ms)
+@aster/engagement:test: ✔ foreign, expired, future and malformed Identity snapshots disclose nothing (7.748113ms)
+@aster/engagement:test: ✔ authorization is rechecked after SQL and cancelled reads cannot disclose late rows (62.576681ms)
+@aster/engagement:test: ✔ invalid order, duplicate title, oversize, foreign and future SQL rows fail closed (16.514316ms)
+@aster/engagement:test: ✔ live traversal rejects rows at/ahead of its cursor; a fresh traversal can see moved titles (1.145699ms)
+@aster/engagement:test: ✔ authorized update intends state, receipt and v1 event in one transaction; owner reads stay outside (152.139585ms)
+@aster/engagement:test: ✔ exact replay survives playback expiry and returns the original result even after newer progress (24.981659ms)
+@aster/engagement:test: ✔ same key with changed raw payload conflicts even when positions clamp to the same value (21.885789ms)
+@aster/engagement:test: ✔ a key belongs to the profile request, so changing title conflicts before Playback or SQL writes (34.283593ms)
+@aster/engagement:test: ✔ new key with stale sequence cannot change state or create receipt/event (20.660024ms)
+@aster/engagement:test: ✔ missing credentials, wrong owner and malformed request stop before receipt disclosure (7.373551ms)
+@aster/engagement:test: ✔ malformed or expired owner snapshots and substituted playback IDs fail closed (65.003687ms)
+@aster/engagement:test: ✔ a deleted-profile tombstone and receipt/outbox capacity roll back the whole attempt (22.045417ms)
+@aster/engagement:test: ✔ expiry or exception after outbox append cannot leave partial acknowledged effects (66.436908ms)
+@aster/engagement:test: ✔ ambiguous commit can be retried with the same key without duplicating effects (18.559129ms)
+@aster/engagement:test: ✔ cancelled owner lookup consumes a late result without starting persistence (2.14937ms)
+@aster/engagement:test: ✔ foreign receipt cannot be replayed under a different authorized account (2.171453ms)
+@aster/engagement:test: ✔ racing receipt replay rechecks Identity after the locked receipt read (2.757163ms)
+@aster/engagement:test: ✔ owner reads and outbox carry validated correlation and trace without browser authority claims (1.634378ms)
+@aster/engagement:test: ✔ retention limits and terminal timestamps cannot create an overflowing receipt (13.625037ms)
+@aster/engagement:test: ✔ Engagement runtime requires explicit local activation, fixed owner credentials and protected listener (4.604542ms)
+@aster/engagement:test: ✔ migration rejects unauthorized or pre-cancelled activation before network work (2.323762ms)
+@aster/engagement:test: ✔ store readiness rejects authority, schema, admission and connectivity loss (2.387232ms)
+@aster/engagement:test: ✔ runtime probes only its store without calling optional owners, denies untrusted GraphQL, recovers readiness and shuts down (1090.893427ms)
+@aster/engagement:test: ✔ runtime starts degraded without dependencies and can stop before listening (182.931393ms)
+@aster/engagement:test: ✔ watchlist input/cursor are exact, canonical, bounded and profile-bound without invoking getters (6.61508ms)
+@aster/engagement:test: ✔ profile watchlist version preserves identity across opposite commands and rejects corrupt history (3.35266ms)
+@aster/engagement:test: ✔ same-key replay survives a later removal and Catalog outage without another effect (19.537756ms)
+@aster/engagement:test: ✔ profile-scoped key conflicts across title and action before Catalog access (5.053854ms)
+@aster/engagement:test: ✔ repeated new-key add preserves entry order; remove is allowed for hidden titles without Catalog (6.799245ms)
+@aster/engagement:test: ✔ invalid input, missing/revoked/wrong/expired owner and pre-cancellation avoid writes (4.327435ms)
+@aster/engagement:test: ✔ expired authority, deletion fences, retained capacity and cancellation roll back (5.850835ms)
+@aster/engagement:test: ✔ unknown COMMIT can be resolved only by same-key replay; no duplicate event (3.224652ms)
+@aster/engagement:test: ✔ watchlist hides gaps before pagination and hasNextPage, using bounded batches and one SQL read (3.656357ms)
+@aster/engagement:test: ✔ all hidden memberships produce an empty page without hidden cursors; maximum scan is thirteen batches (17.409804ms)
+@aster/engagement:test: ✔ visible lookahead stops subsequent Catalog work; empty membership needs no Catalog call (5.432982ms)
+@aster/engagement:test: ✔ pages reject wrong owner, duplicates, overflow, order, future time and rows ahead of cursor (7.038441ms)
+@aster/engagement:test: ✔ missing/stale/reordered Catalog results and late authorization never become empty success (2.373169ms)
+@aster/engagement:test: ✔ cancellation while Catalog is pending returns promptly without disclosing membership (0.934001ms)
+@aster/engagement:test: ℹ tests 98
+@aster/engagement:test: ℹ suites 0
+@aster/engagement:test: ℹ pass 98
+@aster/engagement:test: ℹ fail 0
+@aster/engagement:test: ℹ cancelled 0
+@aster/engagement:test: ℹ skipped 0
+@aster/engagement:test: ℹ todo 0
+@aster/engagement:test: ℹ duration_ms 19658.486561
+@aster/router:build: cache miss, executing 655e069905f461c4
+@aster/router:build: $ tsc --build ./tsconfig.json
+@aster/router:typecheck: cache miss, executing b42a2325900469e3
+@aster/router:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/router:test: cache bypass, force executing b02e8eda872fc9ee
+@aster/router:test: $ node --test ./dist/test/*.test.js && node ./dist/src/main.js --check
+@aster/router:test: ✔ four owner schemas compose deterministically, retain entity ownership and validate all known operations (2112.239795ms)
+@aster/router:test: ✔ an ownership collision or mismatched type fails composition (292.667828ms)
+@aster/router:test: ✔ unknown fields, argument changes, unnamed or duplicate operations fail compatibility (1108.443289ms)
+@aster/router:test: ✔ a breaking field removal cannot be hidden by removing the corresponding operation (867.262417ms)
+@aster/router:test: ✔ malformed, empty and excessive source/operation inputs fail before acceptance (1021.162973ms)
+@aster/router:test: ✔ baseline operations remain protected even when current fixtures are rewritten (153.536424ms)
+@aster/router:test: ✔ Git baseline is explicit and the predecessor without supergraph artifacts is a valid bootstrap (57.424312ms)
+@aster/router:test: ✔ Git baseline reads the committed API and operations, not modified working files (866.193115ms)
+@aster/router:test: ✔ artifact checks are read-only, detect missing/stale output and regeneration refuses symlinks (561.283787ms)
+@aster/router:test: ℹ tests 9
+@aster/router:test: ℹ suites 0
+@aster/router:test: ℹ pass 9
+@aster/router:test: ℹ fail 0
+@aster/router:test: ℹ cancelled 0
+@aster/router:test: ℹ skipped 0
+@aster/router:test: ℹ todo 0
+@aster/router:test: ℹ duration_ms 8875.288696
+@aster/router:test: {"check":"supergraph","status":"ok","mode":"--check","subgraphs":4,"compatibilityBase":"4082c3a463b50ba4397f080e1b81bc15e03bf140","artifactCount":7,"manifestSha256":"8897e3a8378f6673698ca039b0dca6ac49380e235365f2ed09dbd098cec5563c"}
+
+ Tasks:    67 successful, 67 total
+Cached:    39 cached, 67 total
+  Time:    4m40.032s
