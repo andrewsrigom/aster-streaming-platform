@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
-import { createServer } from "node:http";
+import { createServer, request as httpRequest } from "node:http";
 import { createExpressHttpAdapter } from "@aster/http-express";
 import type { CatalogPublicQueries } from "../src/application/public-queries.js";
 import {
   createCatalogSubgraph,
   type CatalogOperationTrace,
+  type CatalogSubgraphOptions,
 } from "../src/transport/catalog-subgraph.js";
 
 interface CatalogHttpResponse {
@@ -21,6 +22,7 @@ interface CatalogHttpResponse {
 export async function catalogHttpFixture(
   queries: CatalogPublicQueries,
   monotonicNow?: () => number,
+  ownerReads?: Pick<CatalogSubgraphOptions, "routerTrust" | "playback">,
 ) {
   const adapter = createExpressHttpAdapter({ bodyLimitBytes: 32768 });
   const http = createServer({ maxHeaderSize: 16384 }, adapter.requestListener);
@@ -33,6 +35,7 @@ export async function catalogHttpFixture(
   const diagnostics: string[] = [];
   const graph = await createCatalogSubgraph({
     queries,
+    ...ownerReads,
     ...(monotonicNow ? { monotonicNow } : {}),
     onOperation: (trace) => {
       traces.push(trace);
@@ -48,12 +51,53 @@ export async function catalogHttpFixture(
     traces,
     diagnostics,
     async send(body: unknown, headers: Record<string, string> = {}): Promise<CatalogHttpResponse> {
-      const response = await fetch(origin + "/graphql", {
-        method: "POST",
-        headers: { "content-type": "application/json", connection: "close", ...headers },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(5000),
-      });
+      const requestHeaders = {
+        "content-type": "application/json",
+        connection: "close",
+        ...headers,
+      };
+      // Fetch derives Host from its URL; native HTTP preserves the private transport Host in this loopback fixture.
+      const response = ownerReads
+        ? await new Promise<Response>((resolve, reject) => {
+            const outgoing = httpRequest(
+              origin + "/graphql",
+              {
+                method: "POST",
+                headers: requestHeaders,
+                signal: AbortSignal.timeout(5000),
+              },
+              (incoming) => {
+                const chunks: Buffer[] = [];
+                incoming.on("data", (chunk: Buffer) => {
+                  chunks.push(chunk);
+                });
+                incoming.once("error", reject);
+                incoming.once("end", () => {
+                  const responseHeaders = new Headers();
+                  for (let index = 0; index < incoming.rawHeaders.length; index += 2) {
+                    responseHeaders.append(
+                      incoming.rawHeaders[index] ?? "",
+                      incoming.rawHeaders[index + 1] ?? "",
+                    );
+                  }
+                  resolve(
+                    new Response(Buffer.concat(chunks), {
+                      status: incoming.statusCode ?? 500,
+                      headers: responseHeaders,
+                    }),
+                  );
+                });
+              },
+            );
+            outgoing.once("error", reject);
+            outgoing.end(JSON.stringify(body));
+          })
+        : await fetch(origin + "/graphql", {
+            method: "POST",
+            headers: requestHeaders,
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(5000),
+          });
       const text = await response.text();
       const json = JSON.parse(text) as {
         data?: Record<string, unknown>;

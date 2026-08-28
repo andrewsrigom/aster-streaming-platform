@@ -2,8 +2,13 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { composeServices } from "@apollo/composition";
-import { printSubgraphSchema } from "@apollo/subgraph";
-import { findBreakingChanges, parse, print, validate } from "graphql";
+import {
+  findBreakingChanges,
+  lexicographicSortSchema,
+  parse,
+  printSchema,
+  validate,
+} from "graphql";
 import { CATALOG_TYPE_DEFS, createCatalogSchema } from "../src/transport/catalog-schema.js";
 import { inspectCatalogOperation } from "../src/transport/graphql-operation.js";
 import { catalogTestId as id } from "./rights-fixture.js";
@@ -21,7 +26,6 @@ test("Catalog composes with the released Identity schema without breaking its AP
     new URL("../../../../evidence/phase-03/catalog-schema.graphql", import.meta.url),
     "utf8",
   );
-  assert.equal(print(parse(recorded)), print(parse(printSubgraphSchema(schema))));
   // Identity's own contract test checks that this released artifact equals its live source schema.
   const identity = {
     name: "identity",
@@ -33,7 +37,10 @@ test("Catalog composes with the released Identity schema without breaking its AP
       ),
     ),
   };
-  const before = composeServices([identity]);
+  const before = composeServices([
+    identity,
+    { name: "catalog", typeDefs: parse(recorded), url: "http://catalog:3200/graphql" },
+  ]);
   const after = composeServices([
     identity,
     { name: "catalog", typeDefs: CATALOG_TYPE_DEFS, url: "http://catalog:3200/graphql" },
@@ -43,6 +50,13 @@ test("Catalog composes with the released Identity schema without breaking its AP
   const baseline = before.schema.toAPISchema().toGraphQLJSSchema();
   const api = after.schema.toAPISchema().toGraphQLJSSchema();
   assert.deepEqual(findBreakingChanges(baseline, api), []);
+  assert.equal(
+    printSchema(lexicographicSortSchema(api)),
+    printSchema(lexicographicSortSchema(baseline)),
+  );
+  assert.equal(api.getType("CurrentPlaybackPublication"), undefined);
+  assert.equal(api.getQueryType()?.getFields()["_playbackPublications"], undefined);
+  assert.ok(schema.getQueryType()?.getFields()["_playbackPublications"]);
   assert.ok(after.supergraphSdl.includes('@join__type(graph: CATALOG, key: "id")'));
   for (const query of [
     browse,
@@ -53,7 +67,7 @@ test("Catalog composes with the released Identity schema without breaking its AP
     assert.deepEqual(validate(api, parse(query)), []);
   }
   assert.equal(schema.getMutationType(), undefined);
-  for (const type of Object.values(schema.getTypeMap())) {
+  for (const type of Object.values(api.getTypeMap())) {
     if ("getFields" in type) {
       for (const field of Object.keys(type.getFields())) {
         assert.doesNotMatch(

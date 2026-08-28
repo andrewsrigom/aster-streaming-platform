@@ -1,5 +1,5 @@
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
-import { loadLocalRouterTrust } from "@aster/http-express";
+import { loadLocalRouterTrust, loadLocalCatalogPlaybackTrust } from "@aster/http-express";
 import {
   bindAsterProcessSignals,
   createAsterDeadline,
@@ -12,6 +12,7 @@ import {
 } from "@aster/runtime";
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createCatalogPublicQueries } from "./application/public-queries.js";
+import { createCatalogPlaybackQueries } from "./application/playback-queries.js";
 import { catalogRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { createPostgresCatalogPublic } from "./infrastructure/persistence/postgres-public.js";
 import { probeCatalogReader } from "./infrastructure/persistence/reader-readiness.js";
@@ -56,6 +57,18 @@ export async function createCatalogService(
   try {
     graph = await createCatalogSubgraph({
       ...(config.routerTrust ? { routerTrust: await loadLocalRouterTrust("catalog") } : {}),
+      ...(config.playbackRead
+        ? {
+            playback: {
+              trust: await loadLocalCatalogPlaybackTrust(),
+              queries: createCatalogPlaybackQueries({
+                transactions: createPostgresCatalogPublic(database),
+                policy: { commercial: true, allowLocalMedia: true },
+                now: () => Math.floor(Date.now() / 1000),
+              }),
+            },
+          }
+        : {}),
       queries: createCatalogPublicQueries({
         transactions: createPostgresCatalogPublic(database),
         policy: { commercial: true, allowLocalMedia: true },

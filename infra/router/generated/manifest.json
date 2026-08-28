@@ -4,8 +4,8 @@
   "graphqlVersion": "16.14.2",
   "files": {
     "api.graphql": "38e1f37f7fc26234e9d2a9ec2ab23481935003177ded0d78dc77c82c9e1d6f4d",
-    "supergraph.graphql": "aab8dade63ea878f77cfa0106562cff3ece047c61f6dd3831207d302e1029fea",
-    "catalog.graphql": "8080e330dfb9a3422b8757e93643e1ca00dc0ca7b68bafb46490de11111d73b4",
+    "supergraph.graphql": "6c81cba421bb782b253b996ff836ccddab01afc7d761c740ff72362206acea06",
+    "catalog.graphql": "6f6cac428556c841c9e41aaf576087547ef57b3b5b3d1afd10d04d77e33adb08",
     "identity.graphql": "0bf47aa04eddff6f02a4d486a1c2b663f952e52148cacf72aa11f7cf89d84324"
   },
   "subgraphs": [
@@ -82,6 +82,19 @@
           "keys": []
         },
         {
+          "type": "CurrentPlaybackPublication",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "checkedAt",
+            "manifestUrl",
+            "publicationId",
+            "titleId",
+            "titleVersion",
+            "validUntil"
+          ],
+          "keys": []
+        },
+        {
           "type": "LocalizedTitle",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -95,6 +108,7 @@
           "type": "Query",
           "kind": "ObjectTypeDefinition",
           "fields": [
+            "_playbackPublications",
             "title",
             "titles"
           ],

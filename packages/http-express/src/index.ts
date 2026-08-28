@@ -15,5 +15,11 @@ export type {
   AsterExpressHttpAdapterOptions,
   AsterExpressGraphqlMiddleware,
 } from "./express-http-adapter.js";
-export { createLocalRouterTrust, loadLocalRouterTrust } from "./local-router-trust.js";
+export {
+  createLocalRouterTrust,
+  loadLocalRouterTrust,
+  createLocalCatalogPlaybackTrust,
+  loadLocalCatalogPlaybackTrust,
+  loadLocalCatalogPlaybackCredential,
+} from "./local-router-trust.js";
 export type { AsterLocalRouterTrust } from "./local-router-trust.js";

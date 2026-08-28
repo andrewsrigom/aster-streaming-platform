@@ -1,115 +1,110 @@
-# Work Item: One rights-approved immutable media publication
+# Work Item: Owner-validated playback sessions
 
 - Status: IN_PROGRESS
-- Owner: Catalog owns rights, processing requests and publication; isolated media work owns computation only
-- Phase: 06
-- Requirement IDs: P06-R01, P06-R02, P06-R03, P06-R04, P06-R05, P06-R06, P06-R07, P06-R08, P06-R09, P06-R10, P06-R11, P06-R12
+- Owner: Playback owns sessions; Catalog owns publication eligibility and delivery references
+- Phase: 07
+- Requirement IDs: P07-R01, P07-R02, P07-R03, P07-R09
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Turn one individually approved film into validated immutable HLS, preserving source history, credits and attribution, with bounded processing and recoverable Catalog publication.
+Create a short-lived anonymous playback session through the supergraph only after a bounded current Catalog check. Return a CDN-compatible reference without proxying media or depending on optional personalization.
 
 ## Current behavior
 
-Phases 00–05 are released at main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865. Big Buck Bunny is locally PUBLISHED at version 9 / rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. Its source, HLS/JPEG, durable attempts, restricted attestation, compatible rollback, scratch cleanup and six browser samples are verified. [Acceptance matrix](../evidence/phase-06/acceptance.md).
+Phases 00–06 are released. PR 23 final head 37a9a398428f52fdc35942eeb690745d22812736 passed protected CI; squash 4083ea65edcf750bf4ba3e253654a529b72cd105 passed exact post-merge CI 33156505851. [Release evidence](../evidence/phase-06/release.md). This local branch is rebased on released main.
 
-Initial PR 23 head 459607b407d1b6f0fd63b5416d06a9fc34b4b36d exposed partial children through broad storage policy; review made the PR draft. CI 33151304060 passed source/governance/dependencies/platform/real Catalog media but failed the standalone probe's old migration expectation. Both corrections are implemented locally; corrected protected release is still required.
+Catalog's current-publication projection/private GraphQL read, bounded HTTP consumer, anonymous Playback rules and PostgreSQL persistence are implemented. Affected suite 233/233 and real PostgreSQL expiry/concurrency/retention/role/migration checks pass, with strict builds, lint, architecture, unused-code and exact-main schema compatibility. [Evidence](../evidence/phase-07/README.md). Playback's public mutation, runtime, Compose and player remain planned. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) fixes trust and finite local persistence policy.
 
 ## Proposed behavior
 
-Finish the existing phase, not a new work item. Copies remain private until every object/current approval passes, then one serialized policy update reveals the exact complete prefix. Preserve prior verified prefixes and URLs. The attempted object ACL was rejected by the pinned POSIX backend (501); its evaluator also lacks tag conditions. Use supported exact resource policy, bounded to 100 prefixes / 20 KB, and a private conditional-create non-expiring recovery barrier. [ADR-0026](../docs/adr/0026-local-media-publication.md).
-
-The known retained bundle has already been checksum-verified and restricted: 209 objects / 95496764 bytes, unchanged title, no media/editorial writes. All anonymous HEADs and changed delivery boundaries pass. Correct the standalone probe to migrations 1–8 while retaining the repeated empty migration check.
+First implement Catalog's minimal current-publication projection and Playback's session rules with deterministic tests. Then connect the bounded owner read, Playback-owned PostgreSQL session persistence and the additive Federation mutation. Use the existing transport/runtime/telemetry packages, not another framework. Record the local service-read trust decision in an ADR before wiring credentials or transport.
 
 ## Boundaries
 
-- Owning context: Catalog. Workers cannot edit titles or approve rights.
-- Affected code: publication-storage/access, publisher composition, access/copy/integration tests, standalone Catalog verification.
-- Authoritative data: Catalog PostgreSQL; immutable media in existing object storage.
-- Read models/caches: unchanged; no new Redis authority, context or service.
-- Trust boundaries: current operator rights, untrusted media/report/object bytes, storage policy and network responses.
-- External dependencies: existing pinned Node, PostgreSQL, VersityGW and isolated FFmpeg. No new dependency in this correction.
+- Owning context: Catalog authorizes current publication; Playback creates and expires its own session.
+- Affected services/packages: Catalog, new Playback owner, Router composition and local Compose.
+- Authoritative data: separate Catalog and Playback PostgreSQL schemas/roles.
+- Read models/caches: no cached projection can authorize a new session; no Redis dependency.
+- Trust boundaries: browser input, owner GraphQL response, media URL policy, request cancellation and local service credentials.
+- External dependencies: existing pinned Node/TypeScript/Express/Apollo/PostgreSQL; no paid or hosted resource.
 
 ## Invariants
 
-- Rights before acquisition/processing and current checks before registration/activation.
-- No partial media becomes anonymously readable or active.
-- No source GET, encode or browser/CPU benchmark repeated for unchanged bytes.
-- No application media-byte proxy, DRM, invented rights or new public mutation.
-- No immutable media/audit overwrite/deletion or unrelated Windows/Docker change.
+- No cross-owner SQL, shared domain imports, caller-provided manifest/approval/profile authority, or recursive request through the same public Router.
+- Only a current published, validated, rights-approved reference can create a session.
+- Session ID is audit identity, not an S3 credential or DRM token.
+- Media bytes bypass Node and GraphQL.
+- Anonymous sessions do not depend on Identity, Engagement or Discovery.
+- Phase 06 must release before this branch is published.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Evidence |
+| Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Missing/corrupt object or stale rights | No new access grant or Catalog activation | Focused and real storage/SQL tests |
-| Competing policy writer | Conditional-create barrier refuses; previous grants preserved | Real storage fixture |
-| Crash/uncertain policy write/readback | Barrier retained; no automatic lease takeover; existing reads continue | Focused failure tests and recovery runbook |
-| Partial copy | Private immutable partial retained for checked replay | Real storage fixture |
-| Unknown/broad policy or policy capacity | Fail closed, no silent replacement | Policy tests |
-| Catalog registration/dispute race | Title lock, current rights, idempotent audited registration | Existing real PostgreSQL evidence |
+| Missing/retired/disputed/expired Catalog title | No session | Bounded rejection code |
+| Catalog deadline, invalid response or cancellation | Fail closed, no session write | Unavailable/cancelled code |
+| Stale owner snapshot or rights expire before issuance | Reject or cap expiry to current authorization | Rejection code |
+| Session-store capacity/timeout | Reject, no automatic mutation retry | Bounded store result |
+| Optional personalization outage | Anonymous creation remains independent | Separate optional outcome |
 
 ## Data and contracts
 
-- Schema/migration: additive 0004–0008 verified; retained runtime still 0007. Apply 0008 before replace/rollback, never erase populated history.
-- GraphQL, events, cache: unchanged; broker relay remains Phase 08.
-- Compatibility: preserve URLs and prior completed grants; the explicit known-legacy restriction was recorded separately.
-- Retention/deletion: immutable originals/candidates/publications/audit retained; only owned disposable scratch and completed control locks removed.
-- ADRs 0021–0025 still own requests, acquisition, isolated decoding, durable processing and artwork. ADR-0026 owns publication/recovery.
+- Schema/migration: additive Playback-owned sessions with expiry, bounded retention/capacity and audit context; no Catalog write changes.
+- GraphQL: additive session mutation and minimal owner publication query; exact SDL/operation compatibility and request-scoped batching before publication.
+- Events: no relay or durable progress; Phase 08 owns those behaviors.
+- Cache: none needed to authorize; retain no cross-request rights authority.
+- Compatibility: public Catalog metadata response remains unchanged; private owner facts stay out of that projection.
+- Retention/deletion: 4096 total SQL slots; retain audit 24 hours after expiry, prune at most 64 eligible rows per admission, never evict active/recent sessions. Preserve media/Catalog audit.
 
 ## Security and privacy
 
-Existing local trusted Catalog/S3 authority only. Strict policy shape/prefix/count, per-object/job/network bounds, propagated cancellation and single private POSIX writer remain required. Storage grant is separate from editorial activation. No private credentials or real viewer data in evidence; local fixture credentials remain visibly synthetic.
+- Authorization: current Catalog owner read; verified Identity may bind a profile in the later player slice, never an arbitrary profile argument.
+- Input limits: exact identifier input, bounded batch/body/deadlines and finite admission.
+- Sensitive data: no credentials, IP address, cookie or full media URL in telemetry.
+- Abuse cases: stale projections, URL substitution/SSRF, spoofed owner credentials, alias/batch amplification, cancelled late writes and session-capacity exhaustion.
 
 ## Implementation steps
 
-The final external confirmation of d885647 reported one remaining diagnostic gap: ambiguous conditional lock creation could report recovery false. Classify uncertain creation as recovery-required, but preserve exact 412 contention and pre-aborted no-write results. Test accepted-write/lost-response, cancellation, definite contention and pre-abort. No policy mutation, SQL, grant/restore, media or retry behavior changes; strict affected build/lint/tests and the earlier full source gate support the candidate, with full exact-head source acceptance again enforced by protected CI. No storage/browser/encode experiment is invalidated. Confirm this narrow correction locally against the complete external round; no speculative additional review cycle.
-
-Confirmation review of head 9723032 (protected run 33153640859 passed) identified a new P06-R09 security blocker: rights can change during the exact-prefix grant, after the precheck. Keep the policy barrier through post-grant current-rights validation and restricted SQL registration. If confirmation rejects, restore only this attempt's newly added grant to the exact previous policy and verify before unlocking; preserve pre-existing grants. Cleanup uses its own bounded signal after cancellation. Ambiguous writes/readbacks or failed compensation retain the barrier and explicitly require fenced recovery, never an unsafe retry. Persist the prior-prefix snapshot under the held barrier before mutation for crash recovery. Cover rights/expiry, registration rejection, cancellation, older grants, empty-policy deletion and failed rollback with focused and real-storage tests. No database/schema, retained-media, encode or CPU experiment changes. Correct the acquisition guide's implemented state/current migrations in the same batch.
-
-Initial external review (5048873748, head 459607b) also identified P06-R04/R06 blockers: image preparation consumes the decoder/owner window, and the attestation reader incorrectly requires reused successful processing to originate from the newly selected title. Batch one correction: finish bounded image builds before starting the owner and its 30-minute supervisor deadline; explicit retained reuse skips decoder build. Align the reader with the existing SQL registration policy: immutable successful checksum/recipe reports are reusable across titles, but the selected title's own current rights/metadata/source checksum still authorize publication. No historical request reassignment or SQL migration/privilege relaxation. Test build/deadline ordering and real two-title reuse plus independently rejected new-title rights/checksum; repeat affected source/SQL, not film encoding or unchanged storage/browser work. Existing access confirmation covered only the prior access correction; external findings must close before release.
-
-1. Complete rights, bounded original acquisition, isolated HLS/JPEG, durable replay and restricted first-film activation — done.
-2. Verify compatible rollback, disposable scratch and representative browser playback — done.
-3. Batch initial review/CI corrections; verify real access boundary and restrict retained known bundle — done.
-4. Complete candidate gates and one confirmation review; publish correction to existing PR 23.
-5. Require protected exact-head CI, squash without bypass and exact post-merge CI; then activate Phase 07.
+1. Project current Catalog publication independently of public metadata; test all existing eligibility gates and expiry.
+2. Model bounded session identity/expiry and fail-closed application ports with deterministic clocks/IDs.
+3. Record local owner-read trust/consistency ADR; implement the fixed GraphQL lookup and isolated Playback persistence.
+4. Compose the Playback subgraph, operation limits, telemetry and Docker runtime.
+5. Verify real owner checks/store/migrations/failure isolation and public contract; publish only after predecessor release.
+6. Continue player/control/telemetry and clean Docker-only playable demo as subsequent coherent slices.
 
 ## Tests
 
-- Domain/application: current rights/source, immutable copy, complete integrity before access, cancellation/revocation.
-- Integration: real S3 partial/grant/replay/lock/origin negatives; existing real PostgreSQL attempts/privileges/rights races/rollback.
-- Contract: bounded exact policy including rejection of ignored condition fields; standalone full migration list plus idempotent empty repeat.
-- Browser: previous six actual decode/seek samples retained; access-only change rechecks every referenced HTTP object.
-- Performance/failure: previous bounded source/FFmpeg/resource evidence retained; no unchanged host experiment.
+- Domain: publication binding, lifecycle/rights/artwork expiry, URL policy, session ID/expiry and bounded snapshot age.
+- Application: no write on unavailable/invalid/stale Catalog, cancellation, capacity and optional-service independence.
+- Integration: real PostgreSQL role/migration/session behavior and Catalog/Playback/Router requests.
+- Contract: additive composition, protected operation compatibility and N+1 batch counts.
+- Browser: session API journey at this slice; actual HLS/player acceptance in the next slice.
+- Performance/failure: bounded deadlines/concurrency and negative delivery references, not an unchanged host benchmark.
 
 ## Evidence
 
-- Current access/bundle tests: 10/10; standalone runtime contracts: 3/3.
-- Source candidate: 51/51, 37 cached, 54.186s, pnpm check:source --concurrency=2; [raw output](../evidence/phase-06/access-source.txt).
-- [Access fixture, retained migration, HTTP and limitations](../evidence/phase-06/publication-access.md).
-- Iteration gate: focused affected build/tests/lint.
-- Candidate gate: full source plus docs/security, real changed access behavior, complete phase acceptance matrix and exact protected head.
-- Heavyweight repeat triggers: repeat only affected source/recipe/SQL/storage/packaging changes. Current access correction repeats S3/HTTP, not unchanged encode or browser rendering.
-- Review stopping rule: one initial review and one confirmation. Extra round only for a requirement/security/data/availability/public-contract blocker; speculative future hardening does not extend this phase.
+- Commands: affected build/unit/type/lint during iteration; affected-scope gate at candidate.
+- Raw artifact path: evidence/phase-07/ when the first focused checks run.
+- Acceptance result: planned; no Phase 07 acceptance claimed yet.
+- Iteration gate: cheapest changed-owner domain/application tests and strict build.
+- Candidate gate: source, composition, changed real-dependency/runtime tests, docs/security and exact protected CI.
+- Heavyweight repeat triggers: schema, SQL, transport, packaging or player changes that invalidate their respective evidence; unchanged film/CPU work is not repeated.
+- Review stopping rule: collect one initial round and one confirmation; extend only for an explicit requirement/security/data/availability/public-contract blocker.
 
 ## Rollback or recovery
 
-Cancel before activation and retain immutable bytes. Use owner-compatible prior activation or retire afterward. Interrupted access grant requires fencing all publishers and restarting only the private writer before inspecting/removing its exact control barrier; no lease expiry takeover. Never restore broad partial-access policy as rollback. Keep compatible code for retained audit and roll forward after used migrations.
+The predecessor is released. Before deployment, stop only the new Playback service and keep old Router/schema artifacts available; preserve Catalog/media. Migration 0001 is additive and normally retained on application rollback; destructive down applies only to disposable/explicitly approved recovery targets. Up/down/up and unrelated-data preservation pass in the isolated fixture. No retained schema was changed.
 
 ## Documentation updates
 
-Record actual access policy, bounded barrier recovery, retention, measured migration/HTTP evidence and current release state. Update repository memory at this coherent checkpoint, not every experiment.
+Update current state/queue/handoff at this dependent-start checkpoint, then consolidate evidence at meaningful tested candidates. Add the trust ADR before transport and a concise session runbook with the completed vertical slice.
 
 ## Completion checklist
 
-- [x] Local requirements mapped and changed access boundary verified
-- [x] Focused and source tests pass
-- [x] Raw evidence captured; failed attempts retained honestly
-- [x] Retained media, history and existing Web preserved
-- [x] Current rights/access correction documentation/security and local confirmation closed
-- [x] External confirmation collected; its final diagnostic finding corrected and locally confirmed
-- [ ] Exact protected and post-merge CI pass
-- [ ] Phase release and next-phase activation recorded
+- [x] Current publication and session rules implemented
+- [ ] Real owner read, persistence and Federation mutation verified
+- [ ] Failure/abuse boundaries pass
+- [ ] Evidence and documentation current
+- [ ] Predecessor released and this candidate passes protected gates

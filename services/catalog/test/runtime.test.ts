@@ -85,10 +85,20 @@ test("Catalog runtime configuration rejects hosted, privileged and malformed loc
     { ASTER_CATALOG_HTTP_PORT: "80" },
     { ASTER_CATALOG_HTTP_PORT: "65536" },
     { ASTER_CATALOG_HTTP_PORT: "3200.0" },
+    { ASTER_CATALOG_PLAYBACK_READ_ENABLED: "true" },
+    { ASTER_CATALOG_PLAYBACK_READ_ENABLED: "invalid" },
     { ASTER_CATALOG_READER_DATABASE_PASSWORD: "" },
   ]) {
     assert.throws(() => catalogRuntimeConfiguration({ ...environment, ...change }));
   }
+  assert.equal(
+    catalogRuntimeConfiguration({
+      ...environment,
+      ASTER_ROUTER_TRUST_ENABLED: "true",
+      ASTER_CATALOG_PLAYBACK_READ_ENABLED: "true",
+    }).playbackRead,
+    true,
+  );
 });
 
 test("Catalog serves guarded GraphQL, fails readiness on dependency/authority loss, recovers and closes", async () => {
