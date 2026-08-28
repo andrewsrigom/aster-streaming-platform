@@ -17,6 +17,42 @@ export interface CandidateSelector {
   readonly manifestHash: string;
   readonly reportChecksum: string;
 }
+export async function readCandidateReport(
+  storage: Pick<AsterObjectStorageAdapter, "read">,
+  prefix: string,
+  checksum: string,
+  signal: AbortSignal,
+): Promise<Buffer> {
+  if (!/^candidates\/[a-f0-9]{64}\/[a-f0-9]{64}\/$/u.test(prefix) || !catalogChecksum(checksum)) {
+    throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate selector");
+  }
+  const chunks: Buffer[] = [];
+  let size = 0;
+  const sink = new Writable({
+    write(chunk: Buffer, _encoding, callback) {
+      size += chunk.length;
+      if (size > 512 * 1024) {
+        callback(new MediaProcessingError("INVALID_OUTPUT", "Candidate report too large"));
+        return;
+      }
+      chunks.push(chunk);
+      callback();
+    },
+  });
+  try {
+    const stored = await storage.read({ key: prefix + "report.json", destination: sink }, signal);
+    if (stored.status !== "completed") {
+      throw new MediaProcessingError("STORAGE_FAILURE", "Candidate report unavailable");
+    }
+  } finally {
+    sink.destroy();
+  }
+  const bytes = Buffer.concat(chunks);
+  if (createHash("sha256").update(bytes).digest("hex") !== checksum) {
+    throw new MediaProcessingError("INVALID_OUTPUT", "Candidate report checksum mismatch");
+  }
+  return bytes;
+}
 export async function reuseDecoderCandidate(
   acquisitionId: string,
   selector: CandidateSelector,
@@ -44,34 +80,7 @@ export async function reuseDecoderCandidate(
     .update(processingKeyInput(original.original.sha256, recipe))
     .digest("hex");
   const prefix = "candidates/" + processingKey + "/" + selector.manifestHash + "/";
-  const chunks: Buffer[] = [];
-  let size = 0;
-  const sink = new Writable({
-    write(chunk: Buffer, _encoding, callback) {
-      size += chunk.length;
-      if (size > 512 * 1024) {
-        callback(new MediaProcessingError("INVALID_OUTPUT", "Candidate report too large"));
-        return;
-      }
-      chunks.push(chunk);
-      callback();
-    },
-  });
-  try {
-    const stored = await storage.read(
-      { key: prefix + "report.json", destination: sink },
-      request.signal,
-    );
-    if (stored.status !== "completed") {
-      throw new MediaProcessingError("STORAGE_FAILURE", "Candidate report unavailable");
-    }
-  } finally {
-    sink.destroy();
-  }
-  const bytes = Buffer.concat(chunks);
-  if (createHash("sha256").update(bytes).digest("hex") !== selector.reportChecksum) {
-    throw new MediaProcessingError("INVALID_OUTPUT", "Candidate report checksum mismatch");
-  }
+  const bytes = await readCandidateReport(storage, prefix, selector.reportChecksum, request.signal);
   const report = parseCandidateReport(
     bytes,
     {

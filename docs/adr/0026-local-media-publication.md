@@ -7,7 +7,7 @@
 
 ## Context
 
-The first film and derived frames are independently validated and privately retained. Technical processing is not editorial approval or publication authority. The Docker-only evaluator journey also needs a browser-reachable origin without installing local certificate authorities.
+The first film and derived frames are independently validated and privately retained. Technical processing is not editorial approval or publication authority. The Docker-only local demo also needs a browser-reachable origin without installing local certificate authorities.
 
 ## Decision
 
@@ -15,13 +15,15 @@ Catalog remains the only editorial owner. Use its existing retire/reopen/edit/re
 
 Publication will copy verified HLS and artwork into an immutable bundle under `aster-media-published/publications/<sha256>/`. The bundle identity binds both candidate reports and stable attribution facts. Write and verify children before the master playlist. A partial upload never changes Catalog's active pointer. Include attribution with the bundle and in the existing title/global attribution projections; preserve full film credits. No token or DRM restriction is added to Creative Commons media.
 
-Use the existing pinned VersityGW implementation for a separate read-only origin on loopback port 9001, sharing the storage volume read-only. The private writer remains internal and retains concurrency one. This refines ADR-0022's single-instance constraint to one **writer**; the origin cannot mutate POSIX storage. Anonymous policy permits only object GET/HEAD in the publication prefix, never listing, writes or private originals/candidates. Configure bounded concurrency, browser CORS and byte ranges. Verify the pinned binary's behavior before enabling the origin on retained data.
+Use the existing pinned VersityGW implementation for a separate read-only origin on loopback port 9001, sharing the storage volume read-only. It joins only the existing `edge` bridge, not the private `platform` network: the local Docker engine does not activate published ports on an internal-only network. The origin requires no database or private-writer connectivity. The private writer remains internal and retains concurrency one. This refines ADR-0022's single-instance constraint to one **writer**; the origin cannot mutate POSIX storage. Anonymous policy permits only object GET/HEAD in the publication prefix, never listing, writes or private originals/candidates. Configure bounded concurrency, browser CORS and byte ranges. Verify the pinned binary's behavior before enabling the origin on retained data.
 
 Catalog will admit normalized HTTPS media URLs as before. Only its explicitly local composition may approve and expose the exact HTTP loopback publication namespace above; generic source/license URLs remain HTTPS-only. Hosted/default policies reject local HTTP media. The exception is a local delivery policy, not an input-selected privilege or arbitrary HTTP URL.
 
 An isolated Catalog technical-attester credential will register independently checked publication references, without editorial writes or active-pointer authority. Registration must lock the title and recheck version/current rights, source and expiry, serialize against disputes, and be idempotent for the same immutable bundle. The normal operator then performs `media-ready` and `publish` with audit/outbox in its existing transaction. A worker report or caller `approved` flag is never sufficient. Detailed SQL permissions and rollback behavior are verified before this credential is activated.
 
 ## Verification and recovery
+
+A read-only preview derives final bundle URLs from proposed editorial facts, excluding review-generated IDs/timestamps and the derived URLs themselves. It cannot write or register. Attestation uses only current approved facts and exact successful processing records for that checksum, including historically retained computation; it does not reopen acquisition or encoding. A narrowly granted SECURITY DEFINER function takes the title lock and checks current version, rights/expiry, source and processing references before inserting an immutable attestation. The attester has no direct INSERT/UPDATE/DELETE rights or editorial role membership. Network verification occurs outside that short transaction. Public copies use one bounded temporary object at a time; this avoids concurrent read/write requests to the single-writer POSIX backend.
 
 Focused tests cover exact checksum reuse, missing/corrupt/stalled objects, cancellation and revoked rights. Publication acceptance additionally covers anonymous negative permissions, CORS/ranges, complete-object verification, stale approval, concurrent dispute, retry, atomic activation and prior-version rollback. Reuse existing original/HLS/JPEG evidence when source and recipe are unchanged. No full-film download or encode is needed for metadata or delivery work.
 

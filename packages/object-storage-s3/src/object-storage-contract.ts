@@ -65,6 +65,7 @@ export interface AsterObjectWriteInput {
   readonly source: Readable;
   readonly contentLength: number;
   readonly contentType?: string;
+  readonly cacheControl?: "public, max-age=31536000, immutable";
   readonly ifAbsent?: true;
   readonly checksumSha256?: string;
 }

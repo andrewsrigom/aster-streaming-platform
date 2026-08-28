@@ -160,6 +160,53 @@ function nextTurn(): Promise<void> {
   return new Promise((resolve) => setImmediate(resolve));
 }
 
+test("immutable publication cache headers require a conditional write and pass to the client", async () => {
+  const telemetry = new RecordingTelemetry();
+  const client = new FakeS3Client();
+  let observed: unknown;
+  client.writeHandler = async (input) => {
+    observed = input.cacheControl;
+    for await (const chunk of input.source) {
+      assert.ok(Buffer.isBuffer(chunk));
+    }
+  };
+  const adapter = createAsterObjectStorageAdapterWithClientFactory(
+    options(telemetry),
+    () => client,
+  );
+  try {
+    const source = Readable.from([Buffer.from("test")]);
+    assert.equal(
+      (
+        await adapter.write({
+          key: "publication",
+          source,
+          contentLength: 4,
+          cacheControl: "public, max-age=31536000, immutable",
+        })
+      ).status,
+      "rejected",
+    );
+    source.destroy();
+    assert.equal(
+      (
+        await adapter.write({
+          key: "publication",
+          source: Readable.from([Buffer.from("test")]),
+          contentLength: 4,
+          ifAbsent: true,
+          checksumSha256: "a".repeat(64),
+          cacheControl: "public, max-age=31536000, immutable",
+        })
+      ).status,
+      "completed",
+    );
+    assert.equal(observed, "public, max-age=31536000, immutable");
+  } finally {
+    await adapter.close();
+  }
+});
+
 test("validates bounded own-data configuration without invoking accessors or leaking secrets", () => {
   const telemetry = new RecordingTelemetry();
   let factoryCalls = 0;

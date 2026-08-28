@@ -144,6 +144,7 @@ export interface AsterS3Client {
       source: Readable;
       contentLength: number;
       contentType: string | undefined;
+      cacheControl?: "public, max-age=31536000, immutable";
       queueSize: number;
       partSizeBytes: number;
       ifAbsent?: true;
@@ -624,6 +625,7 @@ function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteI
       "source",
       "contentLength",
       "contentType",
+      "cacheControl",
       "ifAbsent",
       "checksumSha256",
     ])
@@ -634,6 +636,7 @@ function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteI
   const source = ownDataValue(input, "source");
   const contentLength = ownDataValue(input, "contentLength");
   const contentType = ownDataValue(input, "contentType");
+  const cacheControl = ownDataValue(input, "cacheControl");
   const ifAbsent = ownDataValue(input, "ifAbsent");
   const checksumSha256 = ownDataValue(input, "checksumSha256");
   if (
@@ -644,6 +647,8 @@ function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteI
     contentLength < 0 ||
     contentLength > maximumBytes ||
     !validContentType(contentType) ||
+    (cacheControl !== undefined &&
+      (cacheControl !== "public, max-age=31536000, immutable" || ifAbsent !== true)) ||
     (ifAbsent !== undefined && ifAbsent !== true) ||
     (ifAbsent === true
       ? typeof checksumSha256 !== "string" || !/^[a-f0-9]{64}$/u.test(checksumSha256)
@@ -656,6 +661,7 @@ function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteI
     source: source,
     contentLength,
     ...(contentType === undefined ? {} : { contentType }),
+    ...(cacheControl === undefined ? {} : { cacheControl }),
     ...(ifAbsent === true ? { ifAbsent, checksumSha256: checksumSha256 as string } : {}),
   };
 }
@@ -759,6 +765,7 @@ function defaultClientFactory(configuration: AsterS3ClientConfiguration): AsterS
             Body: input.source,
             ContentLength: input.contentLength,
             ...(input.contentType ? { ContentType: input.contentType } : {}),
+            ...(input.cacheControl ? { CacheControl: input.cacheControl } : {}),
             IfNoneMatch: "*",
             ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
             ChecksumSHA256: Buffer.from(input.checksumSha256 as string, "hex").toString("base64"),
@@ -1057,6 +1064,7 @@ export function createAsterObjectStorageAdapterWithClientFactory(
                     source: validator,
                     contentLength: validated.contentLength,
                     contentType: validated.contentType,
+                    ...(validated.cacheControl ? { cacheControl: validated.cacheControl } : {}),
                     queueSize: options.uploadQueueSize,
                     partSizeBytes: options.uploadPartSizeBytes,
                     ...(validated.ifAbsent

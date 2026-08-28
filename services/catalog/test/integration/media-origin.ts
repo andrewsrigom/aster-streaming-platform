@@ -14,6 +14,8 @@ import {
 import { createAsterObjectStorageAdapter } from "@aster/object-storage-s3";
 import { createAsterTelemetry } from "@aster/telemetry";
 import { reuseOriginal } from "../../src/infrastructure/media/reuse-original.js";
+import { publicationBundleFixture } from "../publication-fixture.js";
+import { copyPublication } from "../../src/infrastructure/media/copy-publication.js";
 
 const ports = process.argv.slice(2).map(Number);
 assert.equal(ports.length, 2);
@@ -32,6 +34,12 @@ const telemetry = createAsterTelemetry({
 const storage = createAsterObjectStorageAdapter({
   ...localPublicationStorage,
   bucket: "aster-media-originals",
+  endpoint,
+  telemetry,
+  maxInFlightOperations: 1,
+});
+const published = createAsterObjectStorageAdapter({
+  ...localPublicationStorage,
   endpoint,
   telemetry,
   maxInFlightOperations: 1,
@@ -143,6 +151,51 @@ try {
     );
   }
   assert.equal(await (await get(path)).text(), content);
+  const bundleFixture = publicationBundleFixture();
+  for (const [key, bytes] of bundleFixture.objects) {
+    await client.send(
+      new PutObjectCommand({ Bucket: "aster-media-originals", Key: key, Body: bytes }),
+      { abortSignal: signal },
+    );
+  }
+  const first = await copyPublication(
+    bundleFixture.bundle,
+    storage,
+    published,
+    () => Promise.resolve(),
+    signal,
+  );
+  assert.deepEqual(
+    await copyPublication(
+      bundleFixture.bundle,
+      storage,
+      published,
+      () => Promise.resolve(),
+      signal,
+    ),
+    first,
+  );
+  for (const [name, mime] of [
+    ["master.m3u8", "application/vnd.apple.mpegurl"],
+    ["v240-0000.ts", "video/mp2t"],
+    ["poster-640.jpg", "image/jpeg"],
+    ["attribution.json", "application/json"],
+  ] as const) {
+    const response = await get("/aster-media-published/" + bundleFixture.bundle.prefix + name);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("content-type"), mime);
+    assert.equal(response.headers.get("cache-control"), "public, max-age=31536000, immutable");
+    await response.arrayBuffer();
+  }
+  process.stdout.write(
+    JSON.stringify({
+      event: "media_bundle_storage_verified",
+      ...first,
+      immutableReplay: true,
+      allObjectTypes: true,
+      currentCopyImplementation: true,
+    }) + "\n",
+  );
   // Unexpected retained policy is a blocker, never silently widened or replaced.
   await client.send(
     new PutBucketPolicyCommand({
@@ -183,5 +236,6 @@ try {
   client.destroy();
   readonly.destroy();
   await storage.close();
+  await published.close();
   await telemetry.shutdown();
 }

@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — First-film immutable publication
+
+### Completed
+
+Built the bundle from retained HLS/JPEG reports and stable attribution, added bounded master-last copies and restricted attestation migration 0007. Preserved original review history while approving actual modifications/artwork. First film is version 9 / rights revision 4 / PUBLISHED, with 209 verified objects on loopback 9001. Read-only origin uses the existing edge bridge because Docker internal-only networks do not activate published ports; no private-network connectivity or writer changes.
+
+### Evidence
+
+[Publication](../evidence/phase-06/publication.md): 25 focused tests, full PostgreSQL authority/activation/dispute checks and real S3 replay/MIME/cache. Actual copy: 6.657 s, 95496764 bytes, process RSS peak 101466112 bytes. Source 51/51 (31 cached, 1m12.92s), Catalog 153 tests. Existing title/global attribution SSR returns 200 after upgrading only Catalog; Web/Router/database unchanged. Initial fixture-clock and Compose profile/network/startup checks were corrected. No CPU testing, download, encode, host restart or public remote mutation. Two unused temporary volumes were removed; retained data preserved. Documentation/security closeout passes 10/10 in 5.08 s.
+
+### Next action
+
+Implement prior-publication rollback/orphan handling and representative browser playback before Phase 06 release. Keep P06-R01 and the full Phase 00–14 goal active.
+
 ## 2026-08-28 — Verified publication foundation
 
 ### Completed

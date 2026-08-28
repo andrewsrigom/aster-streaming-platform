@@ -1,5 +1,7 @@
 # Phase 06 evidence
 
+The [first-film immutable publication](publication.md) now records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. Previous-version rollback/browser/phase release remain open.
+
 Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and converted to a verified private HLS candidate. Public playback/publication is not yet implemented. Phase 05 is [released](../phase-05/release.txt).
 
 - [Source/rights review](rights-review.md): current official evidence, exact archive and permitted use, exclusions and publication conditions.

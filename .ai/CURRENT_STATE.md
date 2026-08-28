@@ -14,7 +14,7 @@ Phases 00–05 are released. PR 22 squash f36f9aa passes protected CI 3313293718
 
 ## Current work
 
-P06-R01 is the sole active implementation item. The approved Big Buck Bunny original now has a fully decoded HLS candidate: 426×240 and 638×358, AAC stereo, 596.5 seconds and 203 media objects (95430911 bytes). Catalog retained every object and report privately after checksum readback/current-rights checks. Title remains rights revision 2 / version 3 / RIGHTS_REVIEWED, no publication. [Decoder evidence and exact candidate key](../evidence/phase-06/decoder.md).
+P06-R01 is the sole active implementation item. Big Buck Bunny is now locally PUBLISHED through Catalog: title version 9 / rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. The immutable bundle contains 203 HLS objects, five JPEGs and attribution JSON (95496764 bytes). Original rights revision 2 and all private processing history remain. [Publication evidence](../evidence/phase-06/publication.md).
 
 Durable requests, three-attempt recovery, current-rights watchdog, bounded HTTPS streaming and conditional verified S3 storage are implemented/tested locally. Real PostgreSQL, storage conflict and cross-process replay checks pass. Migration 0004/0005 and the first request are applied to aster-p04-development. The source download took 12.003 s; sampled Node RSS peaked at 97685504 bytes, not total container memory. The first attempt failed before GET because its network was internal-only; the finite job now has a separate egress bridge. [Exact gates and limitations](../evidence/phase-06/acquisition.md).
 
@@ -22,7 +22,7 @@ Durable processing now has one global slot, three checksum/recipe attempts, 30-m
 
 ## Not implemented
 
-Public playable VOD, trusted attestation/artwork approval, engagement/discovery and hosted release. The synthetic seed remains a technical fixture.
+Completed player journey, prior-version rollback, engagement/discovery and hosted release. Phase 06 is not yet verified/released. Existing synthetic titles remain technical fixtures, distinct from the actual locally published first film.
 
 ## Next outcome
 
@@ -30,7 +30,7 @@ The separate frame-jpeg-v1 recipe now retains two posters and three thumbnails (
 
 The publication foundation under ADR-0026 now verifies current-rights-checksum original reuse, exact local-only media URLs and a read-only S3 origin (CORS/Range/private/write denial). PostgreSQL verifies policy before pagination and rejects request-only checksum reuse. [Evidence and commands](../evidence/phase-06/publication-foundation.md). This did not change retained data or activate the origin.
 
-Continue P06-R01: immutable bundle/attribution, restricted attestation, actual artwork approval and Catalog activation. Preserve immutable source approval history and both retained candidates. No hosted wait or CPU diagnostic is needed.
+Bundle/attribution, restricted attestation and actual editorial activation are now implemented. Migration 0007 is applied. The origin is healthy at 127.0.0.1:9001 on the existing edge bridge, with read-only storage and no private-network connection. Full PostgreSQL, synthetic S3 and source gates 51/51 pass; actual copy took 6.657 seconds without source GET/encoding. Only Catalog was upgraded; existing Web title/global attribution SSR returns 200. Continue P06-R01: prior-publication rollback/orphan handling, representative browser playback and Phase 06 acceptance/release. Preserve the bundle/candidates; no CPU diagnostic or unchanged media experiment.
 
 ## Current risks
 

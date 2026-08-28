@@ -17,7 +17,7 @@ test("local publication origin is read-only, loopback-only and cannot gain write
     '"--readonly"',
     '    ports: ["127.0.0.1:9001:9001"]\n',
     '    volumes: ["storage-data:/data:ro"]\n',
-    "    networks: [platform]\n",
+    "    networks: [edge]\n",
     "    read_only: true\n",
     "    cap_drop: [ALL]\n",
     "    security_opt: [no-new-privileges:true]\n",

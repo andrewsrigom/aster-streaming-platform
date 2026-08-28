@@ -14,6 +14,7 @@ import { verifySourceCandidates } from "./generated-publication.js";
 import { verifyMediaRequests } from "./media-postgres.js";
 import { verifyAcquisitions } from "./acquisition-postgres.js";
 import { verifyProcessing } from "./processing-postgres.js";
+import { verifyAttestation } from "./attestation-postgres.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -418,6 +419,7 @@ async function verify() {
   await verifyMediaRequests(admin, makeDatabase());
   await verifyAcquisitions(admin, makeDatabase());
   await verifyProcessing(admin, makeDatabase());
+  await verifyAttestation(admin, makeDatabase(), makeDatabase("aster_catalog_attester_local"));
 }
 try {
   await verify();
@@ -430,7 +432,7 @@ try {
         ? error.stack
             ?.split("\n")
             .filter((line) =>
-              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres|processing-postgres)\.js/u.test(
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres|processing-postgres|attestation-postgres)\.js/u.test(
                 line,
               ),
             )

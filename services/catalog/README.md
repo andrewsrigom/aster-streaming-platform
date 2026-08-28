@@ -135,6 +135,8 @@ See [migration and recovery](migrations/README.md). No public remote or retained
 
 Phase 06 provides a separate finite acquisition job, not an HTTP upload API. See [local acquisition commands, bounds and recovery](MEDIA_ACQUISITION.md). Its private source original is not a playable publication.
 
+The separate [immutable publication workflow](MEDIA_PUBLICATION.md) now verifies retained HLS/JPEG candidates, registers through a restricted technical role, and activates via the existing editorial commands. The first film is locally published; player, rollback and full phase release gates remain open.
+
 ~~~sh
 pnpm exec turbo run build --filter=@aster/catalog
 pnpm --filter @aster/catalog test

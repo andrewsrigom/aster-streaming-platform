@@ -15,9 +15,9 @@ Turn one individually approved film into a validated immutable HLS publication t
 
 Phases 00–05 are released. PR 22 squash f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 passes protected candidate CI 33132937180 and exact post-merge CI 33133330003. This branch is rebased onto that clean release; no predecessor wait remains. [Release evidence](../evidence/phase-05/release.txt).
 
-Catalog has durable rights/history, operator commands, publication transactions and generated-fixture attestations. Big Buck Bunny's selected official archive has approved rights revision 2 / title version 3 and a verified private original; it remains unpublished. The isolated decoder now produces a complete, privately retained HLS candidate. [Decoder evidence](../evidence/phase-06/decoder.md). Historical unresolved source reviews remain unchanged.
+Catalog has durable rights/history, operator commands and publication transactions. Big Buck Bunny is now locally published at title version 9 / rights revision 4, preserving original review 2 and all immutable source/processing history. Its 209-object HLS/JPEG/attribution bundle is independently verified. [Publication evidence](../evidence/phase-06/publication.md). Historical unresolved source reviews remain unchanged.
 
-The owner-side request, acquisition and durable-processing slices are locally verified: additive migrations 0004/0005/0006, fenced attempts, bounded streaming, current rights and private immutable originals/candidates. Both the full-film HLS and five derived JPEGs are privately retained and replayable. Artwork approval, attestation and publication remain unfinished. Existing Web/acquisition evidence remains applicable.
+The request, acquisition, processing and publication slices are locally verified: additive migrations 0004–0007, fenced attempts, bounded streaming, current rights, immutable source/candidates and restricted attestation. Artwork and actual modifications are approved; normal Catalog commands activated the first bundle. Existing acquisition/decoder evidence remains applicable. Prior-version rollback, orphan handling, browser playback and phase release remain open.
 
 ## Proposed behavior
 
@@ -25,7 +25,7 @@ Request admission and the finite owner acquisition coordinator under [ADR-0022](
 
 Decoder checkpoint is committed at `5d4e0e9`; durable processing at `155cefc`. Full-film media evidence remains valid. [ADR-0024](../docs/adr/0024-durable-media-processing.md) implements verified Catalog processing leases, checksum/recipe reuse and private candidate recovery. The existing candidate was independently verified, adopted and replayed without another download or encode. [Evidence](../evidence/phase-06/processing.md). This records durable technical work, not publication authority.
 
-Artwork is complete at `c2a90f3` under [ADR-0025](../docs/adr/0025-derived-artwork.md). Current slice: [ADR-0026](../docs/adr/0026-local-media-publication.md) connects current editorial approval to immutable delivery and restricted attestation. Original reuse for a current rights-approved checksum, the exact local-media URL policy and read-only origin are implemented and verified with focused/PostgreSQL/S3 tests. Next assemble the immutable bundle, approve truthful artwork/modifications, register attestation and activate through Catalog. Reuse all validated film/artwork bytes; do not repeat acquisition or encoding merely to amend metadata. The first title remains unpublished.
+Artwork is complete at `c2a90f3` under [ADR-0025](../docs/adr/0025-derived-artwork.md). [ADR-0026](../docs/adr/0026-local-media-publication.md) now connects current editorial approval to immutable delivery and restricted attestation. Local-only URL policy, bounded verified copies, exact replay, SQL authority/dispute checks and actual first-film activation pass. Consolidate this source checkpoint, then finish rollback/orphan/browser acceptance. Reuse all validated film/artwork bytes; no new source GET or encoding.
 
 ## Boundaries
 
@@ -71,6 +71,8 @@ Use the existing local Catalog operator, never viewer credentials or input-selec
 
 ## Implementation steps
 
+Publication checkpoint: bind the two durable successful candidate reports to the approved original checksum and stable film/artwork attribution facts. A read-only preview computes final URLs before the existing editorial review; preview never authorizes copying. The restricted attester then rechecks current version/rights, verifies every copied object and registers through a title-locking SECURITY DEFINER function with no editorial grants. Historical successful computation may be reused across rights revisions only for the exact newly approved source checksum. No new source GET or decoder job is needed. Copy sequentially via a bounded per-object temporary file to avoid deadlocking the single-writer storage service; master is last. Prove SQL authority/races and interrupted immutable replay with disposable fixtures before using retained data.
+
 1. Complete one current source/rights review and verify available FFmpeg/storage.
 2. Record processing/attestation authority and recipe/job contracts, then implement the smallest durable attempt.
 3. Acquire with stream backpressure/checksum, validate the source and retain it immutably.
@@ -91,7 +93,7 @@ Use the existing local Catalog operator, never viewer credentials or input-selec
 
 - Commands: focused Catalog/media tests during iteration; affected source gate at candidate.
 - Raw artifact path: evidence/phase-06/.
-- Acceptance result: rights, requests, acquisition, private full-length HLS, derived artwork/inspection and independent durable replay pass locally. Source gates 51/51 and documentation/security 10/10 pass for the artwork checkpoint. The complete phase/publication/release gate remains pending.
+- Acceptance result: rights, acquisition, private full-length HLS/JPEG, durable replay, immutable publication and Catalog activation pass locally. Bundle/S3 focused tests 25/25, real PostgreSQL/S3 and source gates 51/51 pass. Existing Web title/global attribution SSR is verified over the updated Catalog. Documentation/security closeout passes 10/10; full phase rollback/browser/release gate remains pending.
 - Iteration gate: focused acquisition-reuse, media-URL, publication/coordinator tests and affected builds. Verify changed privileges against disposable PostgreSQL and changed origin behavior with synthetic S3 objects, then reuse the retained first-film candidates for publication. Existing download/HLS/JPEG evidence remains valid because source and recipes are unchanged. Do not repeat source GET, full-film encoding or Web benchmarks.
 - Candidate gate: complete first-film pipeline, real persistence/storage, adverse cases and affected source checks.
 - Heavyweight repeat triggers: source, recipe, worker, storage, publication or packaging changes repeat their affected experiment; prose does not repeat transcoding/browser/clean startup.

@@ -25,6 +25,7 @@
         "src/operate-local.ts",
         "src/acquire-local.ts",
         "src/prepare-publication-local.ts",
+        "src/publish-media-local.ts",
         "test/integration/media-origin.ts",
         "src/seed-local.ts",
         "src/initialize-web-demo.ts",

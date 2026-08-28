@@ -77,7 +77,7 @@ Capture processing duration, queue time, bytes, output ratio, resource use, and 
 
 [ADR-0021](../adr/0021-catalog-media-requests.md) defines the implemented owner-side request boundary. [ADR-0022](../adr/0022-local-media-execution.md) implements finite acquisition and private immutable originals.
 
-[ADR-0023](../adr/0023-isolated-media-decoder.md) implements isolated extraction/decoding and Catalog-owned private candidate retention. The first full-film HLS result is [verified locally](../../evidence/phase-06/decoder.md). [ADR-0024](../adr/0024-durable-media-processing.md) adds verified durable processing/deduplication and retained-candidate recovery. [ADR-0025](../adr/0025-derived-artwork.md) adds independently versioned, generated/inspected JPEG artwork with verified replay. Artwork approval, restricted attestation and public publication remain required.
+[ADR-0023](../adr/0023-isolated-media-decoder.md) implements isolated extraction/decoding and Catalog-owned private candidate retention. The first full-film HLS result is [verified locally](../../evidence/phase-06/decoder.md). [ADR-0024](../adr/0024-durable-media-processing.md) adds verified durable processing/deduplication and retained-candidate recovery. [ADR-0025](../adr/0025-derived-artwork.md) adds independently versioned, generated/inspected JPEG artwork with verified replay. Artwork approval, restricted attestation and local first-film publication now pass; rollback, representative browser playback and phase release remain required.
 
 1. Complete and preserve one rights review.
 2. Define processing contracts and recipe schema.
@@ -89,7 +89,7 @@ Capture processing duration, queue time, bytes, output ratio, resource use, and 
 8. Exercise failures and cleanup.
 9. Add a second title only after the first path is verified.
 
-[ADR-0026](../adr/0026-local-media-publication.md) defines the local publication boundary. Original reuse, exact local-media URL policy and read-only origin are [verified with synthetic integration data](../../evidence/phase-06/publication-foundation.md); immutable first-film bundle/attestation/activation remain in progress.
+[ADR-0026](../adr/0026-local-media-publication.md) defines the local publication boundary. Original reuse, exact local-media URL policy and read-only origin are [verified with synthetic integration data](../../evidence/phase-06/publication-foundation.md); the [immutable first-film bundle, attestation and activation](../../evidence/phase-06/publication.md) now pass locally.
 
 ## Required tests
 
