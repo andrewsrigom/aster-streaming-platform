@@ -25,6 +25,7 @@ export function createPostgresProgressRead(
         if (!validated || !progressIdentifier(accountId)) {
           return { status: "invalid_input" };
         }
+        const maximum = kind === "continue" ? 256 : input.first + 1;
         const result = await database.transaction(
           async (tx) => {
             const rows = await tx.query({
@@ -40,11 +41,11 @@ export function createPostgresProgressRead(
               values: [
                 accountId,
                 input.profileId,
-                input.first + 1,
+                maximum,
                 ...(input.after ? [input.after.updatedAt, input.after.id] : []),
               ],
             });
-            if (rows.rowCount !== rows.rows.length || rows.rows.length > input.first + 1) {
+            if (rows.rowCount !== rows.rows.length || rows.rows.length > maximum) {
               throw new Error("Invalid progress read bound.");
             }
             const page = rows.rows.map((raw) => {

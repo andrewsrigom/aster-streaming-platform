@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Current visibility before continue-watching pagination
+
+### Completed
+
+Corrected PR 27's ENG-R04 confirmation blocker with a purpose-separated Catalog batch and bounded pre-pagination visibility filtering. History retains nullable metadata. Watchlist work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86, not active; all older stashes are already applied.
+
+### Evidence
+
+[Correction checkpoint](../evidence/phase-08/history-visibility.md): 26 focused, 66 Engagement, 202 Catalog and 17 shared HTTP tests pass; affected real SQL and full federated Docker proofs pass once with zero resources left. Candidate 45/46 tasks plus successful final lint/focused/static checks close the two test-style failures without a heavy repeat. Retained demo/media and host processes were untouched. Corrected protected confirmation/CI remain.
+
+### Next action
+
+Publish the coherent correction after the candidate gate, resolve the addressed thread and complete protected confirmation/CI/merge/post-merge. Restore watchlist once on the corrected predecessor, reusing its Catalog contract and renumbering the preserved watchlist ADR to 0032.
+
 ## 2026-08-28 — Progress merged and history candidate complete
 
 ### Completed

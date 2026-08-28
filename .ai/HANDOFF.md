@@ -6,11 +6,11 @@ P08-R06 / Phase 08 is IN_PROGRESS on local feat/p08-history based on main 4082c3
 
 ## Exact next actions
 
-1. Publish the coherent history candidate. Predecessor PR CI 33181780482 and main push 33182876541 for 4082c3a463b50ba4397f080e1b81bc15e03bf140 pass; no PR 26 rerun/review or extra commit is needed.
-2. History/continue-watching is locally complete: 60 Engagement tests, 25-row SQL/query plans, real federated pages/metadata/completion/retirement/authorization and final 40/40 affected tasks against main. The predecessor's post-merge condition is satisfied. Then initial/confirmation review and protected merge/post-merge, batching only blockers.
-3. No production source changed during the test-only predecessor correction or identical-tree squash rebase. Reuse real SQL/Docker evidence; generated manifest and source hashes remain identical. Do not rerun unchanged media/browser/host experiments.
-4. Autostash a281042, d4320f6 and all older recovery stashes are already applied. Never reapply them. Candidate tooling is 4 GiB / 2 GiB Node heap, Turbo concurrency two.
-5. Once history is frozen and WAITING_EXTERNAL, activate only P08-R07 on its dependent local branch. Planned next: P08-R07 durable idempotent watchlist, current Catalog visibility and finite owned pagination; P08-R08 batched fields; P08-R09 relay/consumers/deletion; P08-R11 browser reporting/resume. Keep existing private owner credentials purpose-separated; no Playback-session workaround for watchlist.
+1. Publish PR 27's locally accepted ENG-R04 correction on feat/p08-history. Original c512c9d has successful CI 33184567740 but blocking confirmation 5052590545 / thread PRRT_kwDOUEkeis6dN9km. ADR-0031's focused/SQL/Docker and applicable candidate gates now pass: [checkpoint](../evidence/phase-08/history-visibility.md). One coherent correction commit/push; no local blocker remains.
+2. Resolve the addressed thread and request confirmation of this changed blocking boundary. Preserve protected CI/merge and exact post-merge requirements. No predecessor PR 26 rerun/review is needed; its main push 33182876541 passes.
+3. Current trust/runtime/read behavior changed, so use the new history-visibility evidence. Unchanged media/browser/host experiments remain unnecessary. Retained demo data is untouched.
+4. Watchlist source is preserved in UNAPPLIED stash ced886f6094d1b07b53e52400ef188d3d5ac5c86 on feat/p08-watchlist. Restore it once only after R06 is locally accepted/frozen; preserve newer memory, renumber its watchlist ADR to 0032 and reuse ADR-0031's Catalog port. Its 74 tests passed and real SQL verifier compiles, but that verifier has not run. Generated watchlist dist is recoverably held in node_modules/.aster-watchlist-build-Nf4hxEOV/engagement-dist. All older stashes/autostashes are already applied; never reapply those.
+5. Only one later dependent may be IN_PROGRESS after history is frozen and WAITING_EXTERNAL. Rebase onto the corrected predecessor before publication; do not publish watchlist before history's protected merge/post-merge. Candidate tooling is 4 GiB / 2 GiB Node heap, Turbo concurrency two. Then R08 batching, R09 events/deletion and R11 player reporting/resume.
 
 ## Retained runtime
 

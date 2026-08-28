@@ -22,11 +22,11 @@ P08-R01 now includes current private Identity/profile and Playback/session reads
 
 ## Not implemented
 
-Player reports/resume, watchlist, relay/consumers, Discovery and hosted release remain planned. History/continue-watching reads are implemented locally with 60 focused tests, real SQL and full federated acceptance; protected release remains pending. Engagement's mutation backend is Docker-tested, not released. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Player reports/resume, relay/consumers, Discovery and hosted release remain planned. Watchlist has preserved partial local implementation, not acceptance. History/continue-watching's [current-visibility correction](../evidence/phase-08/history-visibility.md) passes 66 Engagement / 202 Catalog tests, real SQL, full Docker and applicable candidate gates. Corrected protected confirmation/CI/merge remain. Engagement's mutation backend is Docker-tested, not released. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-P08-R06: local acceptance is complete, including 60 Engagement tests, real SQL/federated reads and 40/40 affected tasks against current main. Predecessor main push 33182876541 passed; publish this coherent history candidate and start the next ready item only under the frozen-candidate rule. All stashes are restored. No CPU/media repeat.
+P08-R06: publish the locally accepted PR 27 correction, resolve PRRT_kwDOUEkeis6dN9km and request confirmation of the changed boundary. Earlier CI 33184567740 at c512c9d cannot substitute for corrected-head CI. Watchlist work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86 (74 tests passed; real watchlist SQL not run). Restore once after freezing the corrected predecessor; earlier stashes are already restored. No CPU/media repeat.
 
 ## Runtime and recovery
 

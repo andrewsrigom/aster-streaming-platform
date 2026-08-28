@@ -127,6 +127,8 @@ The shared Express adapter uses a separate login granted only aster_catalog_read
 
 ## Atomicity and limits
 
+The optional Engagement visibility read is separate from public metadata and Playback publication reads. It accepts only the exact `_engagementTitles` batch, up to twenty UUIDs, with its own fixed host/origin and credential; browser cookies and purpose substitution are denied. It returns ordered visibility booleans with a two-second validity window, never editorial/private media fields. One active request and independent burst-32/refill-four credits isolate this optional lane from public admission. [ADR-0031](../../docs/adr/0031-current-catalog-visibility.md) defines expiry, cancellation, bounds and recovery. The reader SQL scope is unchanged.
+
 Per-title PostgreSQL locking serializes publication/dispute with optimistic versions. A stale contender must inspect and explicitly resubmit; it cannot silently overwrite the winning change. Title, rights/provenance, metadata audit, receipt and publish/retire outbox commit together. Cancellation, denied authority, expiry during publication and failures roll everything back.
 
 Receipts have 64 slots/title; pending outbox has 128. Normal commands stop at 63/127, reserving the last slot of each resource for retirement/dispute/expiry. Pending events and audit are never evicted. A full outbox requires the Phase 08 relay; do not delete events to bypass backpressure. Successful commands prune only expired receipts for their title. Rights and metadata source JSON are limited to 30000 UTF-8 bytes each; stored JSONB to 32768.

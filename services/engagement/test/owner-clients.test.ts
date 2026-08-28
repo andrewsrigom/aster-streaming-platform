@@ -5,7 +5,11 @@ import test from "node:test";
 import { createProgressOwnerClients } from "../src/infrastructure/owner-clients.js";
 
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
-const credentials = { identityCredential: "a".repeat(64), playbackCredential: "b".repeat(64) };
+const credentials = {
+  identityCredential: "a".repeat(64),
+  playbackCredential: "b".repeat(64),
+  catalogCredential: "e".repeat(64),
+};
 const token = "synthetic.viewer.signature";
 const context = (signal = new AbortController().signal) => ({
   signal,
@@ -27,6 +31,15 @@ const playback = {
   createdAt: 90,
   expiresAt: 1000,
 };
+const catalog = {
+  code: "COMPLETED",
+  checkedAt: 100,
+  expiresAt: 102,
+  titles: [
+    { titleId: id(5), visible: true },
+    { titleId: id(6), visible: false },
+  ],
+};
 async function fixture(respond: (incoming: IncomingMessage, response: ServerResponse) => void) {
   const server = createServer(respond);
   server.listen(0, "127.0.0.1");
@@ -38,8 +51,15 @@ async function fixture(respond: (incoming: IncomingMessage, response: ServerResp
     ...credentials,
     request: (options, callback) => {
       requests++;
-      assert.ok(options.hostname === "identity" || options.hostname === "playback");
-      assert.equal(options.port, options.hostname === "identity" ? 3100 : 3300);
+      assert.ok(
+        options.hostname === "identity" ||
+          options.hostname === "playback" ||
+          options.hostname === "catalog",
+      );
+      assert.equal(
+        options.port,
+        options.hostname === "identity" ? 3100 : options.hostname === "catalog" ? 3200 : 3300,
+      );
       return request({ ...options, hostname: "127.0.0.1", port: address.port }, callback);
     },
   });
@@ -116,6 +136,67 @@ test("owner clients send separate fixed operations; only Identity receives the b
     assert.equal(f.requests(), 2);
   } finally {
     await f.close();
+  }
+});
+
+test("Catalog visibility uses its own fixed credential and ordered bounded response without browser/media data", async () => {
+  const f = await fixture((incoming, response) => {
+    assert.equal(incoming.headers["host"], "catalog:3200");
+    assert.equal(incoming.headers["x-aster-engagement-credential"], credentials.catalogCredential);
+    assert.equal(incoming.headers["cookie"], undefined);
+    assert.equal(incoming.headers["x-aster-playback-credential"], undefined);
+    const chunks: Buffer[] = [];
+    incoming.on("data", (chunk: Buffer) => {
+      chunks.push(chunk);
+    });
+    incoming.once("end", () => {
+      const body = JSON.parse(Buffer.concat(chunks).toString("utf8")) as Record<string, unknown>;
+      assert.equal(body["operationName"], "EngagementTitles");
+      assert.deepEqual(body["variables"], { ids: [id(5), id(6)] });
+      assert.doesNotMatch(String(body["query"]), /manifestUrl|publicationId|cookie/u);
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ data: { _engagementTitles: catalog } }));
+    });
+  });
+  try {
+    assert.deepEqual(await f.clients.catalog.visibility([id(5), id(6)], context()), {
+      status: "completed",
+      value: { checkedAt: 100, expiresAt: 102, titles: catalog.titles },
+    });
+    for (const ids of [[], ["bad"], Array.from({ length: 21 }, () => id(5))]) {
+      assert.equal((await f.clients.catalog.visibility(ids, context())).status, "invalid_input");
+    }
+    assert.equal(f.requests(), 1);
+    assert.throws(() =>
+      createProgressOwnerClients({
+        ...credentials,
+        catalogCredential: credentials.playbackCredential,
+      }),
+    );
+  } finally {
+    await f.close();
+  }
+});
+
+test("Catalog response substitutions, incomplete batches and excessive snapshot windows fail closed", async () => {
+  for (const data of [
+    { ...catalog, expiresAt: 900 },
+    { ...catalog, titles: [] },
+    { ...catalog, titles: [...catalog.titles].reverse() },
+    { ...catalog, titles: [{ titleId: id(5), visible: "true" }, catalog.titles[1]] },
+  ]) {
+    const f = await fixture((_incoming, response) => {
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ data: { _engagementTitles: data } }));
+    });
+    try {
+      assert.equal(
+        (await f.clients.catalog.visibility([id(5), id(6)], context())).status,
+        "unavailable",
+      );
+    } finally {
+      await f.close();
+    }
   }
 });
 

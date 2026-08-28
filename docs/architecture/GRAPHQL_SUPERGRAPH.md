@@ -145,6 +145,8 @@ Hosted environments enforce:
 
 ## Schema evolution
 
+Engagement's history/continue-watching connections resolve nullable Title metadata through Catalog. Continue-watching additionally uses a private, purpose-separated current visibility batch before pagination; @inaccessible hides that owner contract but does not authorize it. [ADR-0031](../adr/0031-current-catalog-visibility.md) bounds the scan, validity window and failure behavior. No recursive Router request or cross-owner SQL is used.
+
 1. add the new shape;
 2. deploy owners and consumers compatibly;
 3. migrate client operations;

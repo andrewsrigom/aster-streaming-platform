@@ -1,0 +1,21 @@
+services/catalog/test/engagement-visibility.test.ts 229ms
+$ tsc --build ./tsconfig.json
+✔ private visibility preserves order/hidden results and current retirement/dispute/expiry without media fields (211.152809ms)
+✔ exact visibility operation, caller purpose and resolver authorization reject substitution before SQL (76.196992ms)
+✔ pending private visibility occupies only one lane; public Catalog remains available and shutdown cancels it (33.469891ms)
+✔ private visibility rate credit cannot exhaust public Catalog credit (199.381143ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1051.484481
+$ eslint .
+$ node ./tools/verify-documentation.ts
+{"check":"documentation","status":"ok","documents":210,"headings":2690,"links":1203,"statusClaims":4,"violations":0}
+$ node ./tools/verify-ai-state.ts
+{"check":"ai-state","status":"ok","files":10,"queueItems":46,"sessionEntries":118,"activeRequirement":"P08-R06","targetRequirement":"P08-R06","violations":[]}
+Checking formatting...
+All matched files use Prettier code style!

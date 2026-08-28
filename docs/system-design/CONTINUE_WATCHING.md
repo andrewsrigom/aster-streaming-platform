@@ -86,7 +86,7 @@ Report:
 
 Browser unload delivery is not guaranteed. Frequent interval updates limit loss.
 
-The client sequence is monotonic per playback session. The server's accepted sequence logic accounts for new sessions through an explicit session epoch or compound ordering design.
+The implemented client sequence is monotonic per profile/title across playback sessions; the current accepted sequence is the resume baseline. [ADR-0030](../adr/0030-local-engagement-progress.md) defines replay and conflict behavior. Browser reporting remains planned until P08-R11.
 
 ## Query
 
@@ -100,10 +100,10 @@ Continue-watching sorts by recent accepted activity and excludes:
 Use keyset pagination:
 
 ```text
-(last_activity_at DESC, title_id DESC)
+(updated_at DESC, progress_id DESC)
 ```
 
-Federation contributes current title metadata in batches.
+Federation contributes current title metadata in batches. [ADR-0031](../adr/0031-current-catalog-visibility.md) adds separately authorized current Catalog visibility before page sizing/lookahead: at most 256 retained candidates, thirteen serial batches of twenty, one application deadline and no cache. The two-second decision window bounds concurrent owner changes. History retains nullable metadata, while invisible titles are excluded from continue-watching.
 
 ## Cache
 
@@ -139,10 +139,10 @@ The initial synchronous durable mutation is simpler and provides clear acknowled
 ## Failure behavior
 
 - Engagement unavailable: player continues; save fails visibly or retries within bounds.
-- Duplicate: return accepted current state.
-- Stale: return current state and do not overwrite.
+- Exact duplicate: return the original accepted receipt while current Identity authority remains valid.
+- Stale: return a non-success outcome and do not overwrite.
 - Broker unavailable: progress commits and outbox grows within capacity.
-- Catalog stale: continue-watching may temporarily include metadata that current Catalog filters during composition.
+- Catalog unavailable or visibility snapshot expired: continue-watching fails closed, not with an empty successful page. Metadata can independently become null after a valid visibility snapshot; this is not a cross-owner transaction.
 - Redis unavailable: read/write correctness remains.
 
 ## Capacity

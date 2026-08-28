@@ -152,7 +152,7 @@ export function validateLocalPlatform(source) {
     source = source.replace(volumeBlock(owner + "-router-trust", "disposable-local"), "");
   }
   source = source.replace(volumeBlock("playback-catalog-trust", "disposable-local"), "");
-  for (const owner of ["identity", "playback"]) {
+  for (const owner of ["identity", "playback", "catalog"]) {
     source = source.replace(volumeBlock("engagement-" + owner + "-trust", "disposable-local"), "");
   }
   for (const name of ["broker", "storage"]) {

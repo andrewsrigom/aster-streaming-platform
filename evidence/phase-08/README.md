@@ -46,6 +46,8 @@ The corrected production candidate received clean confirmation 5453879542. [Cata
 
 ## History and continue-watching
 
+The [current visibility correction](history-visibility.md) supersedes the initial read acceptance for continue-watching. Retired/disputed titles are now filtered through current Catalog before lookahead; history retains nullable metadata. Fresh SQL and complete Docker acceptance pass. PR 27 corrected protected review/CI and merge remain pending.
+
 [Read-side checkpoint](history-checkpoint.md) records 60 passing Engagement tests, bounded keyset SQL against 25 aggregates, normal query plans and [real federated reads](history-federated-runtime.jsonl). Pages freshly authorize Identity, retain completed history, filter continue-watching, resolve Catalog metadata and keep retired metadata nullable. Invalid pages/cursors, foreign/deleted profiles and revoked sessions disclose no state. Reads perform one bounded SELECT and no writes. Retained data/media and host processes remain untouched.
 
 History is rebased onto squash main 4082c3a463b50ba4397f080e1b81bc15e03bf140; all recovery stashes are already restored. The predecessor changed only a Catalog test and its squash tree is identical, so read-side SQL/Docker evidence remains applicable. The current-main gate passes 40/40 tasks; predecessor-first protected release remains required. Browser reports, watchlist, relay and general batched Title/Profile engagement extensions remain planned.

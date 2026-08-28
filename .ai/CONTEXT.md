@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR 26 is merged as 4082c3a463b50ba4397f080e1b81bc15e03bf140; P08-R01 is DONE with main push 33182876541 successful. P08-R06 is locally complete and active on feat/p08-history, with 60 tests, SQL/federated reads and current-main candidate checks passing. Publish and review the coherent history candidate next. No unchanged Web/CPU experiment is required.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR 26 is merged as 4082c3a463b50ba4397f080e1b81bc15e03bf140; P08-R01 is DONE with main push 33182876541 successful. P08-R06 is active on feat/p08-history: ADR-0031 corrects current Catalog filtering before continue-watching pagination, with focused/SQL/Docker/candidate gates passing. Publish the correction and obtain corrected protected confirmation/CI. P08-R07 code is preserved, not concurrently active. No unchanged Web/CPU experiment is required.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

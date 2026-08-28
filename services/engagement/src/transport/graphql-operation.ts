@@ -223,7 +223,8 @@ export function inspectEngagementOperation(body: unknown): Decision {
               throw new Rejected();
             }
             pageSize = input.first;
-            cost += 32;
+            // Continue-watching can inspect thirteen owner batches even for a small visible page.
+            cost += name === "continueWatching" ? 128 : 32;
           }
         }
         if (

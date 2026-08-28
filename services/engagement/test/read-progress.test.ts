@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createProgressQueries, type ProgressReadStore } from "../src/application/read-progress.js";
-import type { ProgressPorts, ProgressRequest } from "../src/application/progress-ports.js";
+import type {
+  ProgressPorts,
+  ProgressRequest,
+  ProgressCatalog,
+} from "../src/application/progress-ports.js";
 import { normalizeProgressPageInput, progressCursor } from "../src/domain/progress-page.js";
 import type { ProgressState } from "../src/domain/progress.js";
 
@@ -50,8 +54,20 @@ function fixture(rows: readonly ProgressState[] = []) {
       return Promise.resolve({ status: "completed", value: rows });
     },
   };
+  const catalog: ProgressCatalog = {
+    visibility: (ids) =>
+      Promise.resolve({
+        status: "completed",
+        value: {
+          checkedAt: now,
+          expiresAt: now + 2,
+          titles: ids.map((titleId) => ({ titleId, visible: true })),
+        },
+      }),
+  };
   return {
-    queries: createProgressQueries({ identity, store, now: () => now }),
+    queries: createProgressQueries({ identity, store, catalog, now: () => now }),
+    catalog,
     identity,
     store,
     calls,
@@ -146,6 +162,118 @@ test("empty page succeeds, but dependency failure is never represented as empty 
   });
   f.store.page = () => Promise.resolve({ status: "unavailable" });
   assert.deepEqual(await f.queries.page("continue", input, f.request), { status: "unavailable" });
+});
+
+test("continue-watching filters retired/disputed gaps before page size and lookahead", async () => {
+  const rows = Array.from({ length: 45 }, (_, index) => row(100 - index));
+  const f = fixture(rows);
+  const hidden = new Set(rows.slice(0, 40).map((entry) => entry.titleId));
+  const batches: number[] = [];
+  f.catalog.visibility = (ids) => {
+    batches.push(ids.length);
+    return Promise.resolve({
+      status: "completed",
+      value: {
+        checkedAt: 100,
+        expiresAt: 102,
+        titles: ids.map((titleId) => ({ titleId, visible: !hidden.has(titleId) })),
+      },
+    });
+  };
+  const result = await f.queries.page("continue", input, f.request);
+  assert.equal(result.status, "completed");
+  assert.deepEqual(
+    result.value.edges.map((edge) => edge.node.id),
+    [id(60), id(59)],
+  );
+  assert.equal(result.value.pageInfo.hasNextPage, true);
+  assert.equal(result.value.pageInfo.endCursor, progressCursor(id(2), "continue", row(59)));
+  assert.deepEqual(batches, [20, 20, 5]);
+  assert.equal(f.calls.store, 1);
+});
+
+test("fully hidden continue list has no hidden cursor and is bounded to thirteen batches", async () => {
+  const f = fixture(Array.from({ length: 256 }, (_, index) => row(500 - index)));
+  let batches = 0;
+  f.catalog.visibility = (ids) => {
+    batches++;
+    assert.ok(ids.length <= 20);
+    return Promise.resolve({
+      status: "completed",
+      value: {
+        checkedAt: 100,
+        expiresAt: 102,
+        titles: ids.map((titleId) => ({ titleId, visible: false })),
+      },
+    });
+  };
+  assert.deepEqual(await f.queries.page("continue", input, f.request), {
+    status: "completed",
+    value: { edges: [], pageInfo: { endCursor: null, hasNextPage: false } },
+  });
+  assert.equal(batches, 13);
+});
+
+test("continue fails closed on stale, missing or unavailable Catalog visibility; history remains readable", async () => {
+  for (const mode of [
+    "unavailable",
+    "missing",
+    "substitution",
+    "expired",
+    "future",
+    "unbounded",
+    "late",
+  ] as const) {
+    const f = fixture([row(10)]);
+    f.catalog.visibility = (ids) => {
+      if (mode === "unavailable") {
+        return Promise.resolve({ status: "unavailable" });
+      }
+      if (mode === "late") {
+        f.setTime(102);
+      }
+      return Promise.resolve({
+        status: "completed",
+        value: {
+          checkedAt: mode === "future" ? 101 : 100,
+          expiresAt: mode === "expired" ? 100 : mode === "unbounded" ? 1000 : 102,
+          titles:
+            mode === "missing"
+              ? []
+              : ids.map((titleId) => ({
+                  titleId: mode === "substitution" ? id(999) : titleId,
+                  visible: true,
+                })),
+        },
+      });
+    };
+    assert.equal((await f.queries.page("continue", input, f.request)).status, "unavailable", mode);
+    f.setTime(100);
+    assert.equal((await f.queries.page("history", input, f.request)).status, "completed");
+  }
+});
+
+test("continue stops Catalog work at visible lookahead and cancellation releases a pending read", async () => {
+  const f = fixture(Array.from({ length: 40 }, (_, index) => row(100 - index)));
+  let calls = 0;
+  f.catalog.visibility = (ids) => {
+    calls++;
+    return Promise.resolve({
+      status: "completed",
+      value: {
+        checkedAt: 100,
+        expiresAt: 102,
+        titles: ids.map((titleId) => ({ titleId, visible: true })),
+      },
+    });
+  };
+  assert.equal((await f.queries.page("continue", input, f.request)).status, "completed");
+  assert.equal(calls, 1);
+  f.catalog.visibility = () => {
+    f.controller.abort();
+    return new Promise(() => undefined);
+  };
+  assert.equal((await f.queries.page("continue", input, f.request)).status, "cancelled");
 });
 
 test("input and missing authority stop before SQL; each page freshly checks ownership", async () => {

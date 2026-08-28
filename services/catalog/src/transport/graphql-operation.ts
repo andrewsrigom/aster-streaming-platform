@@ -187,7 +187,11 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
         if (item.name.value === "__typename") {
           continue;
         }
-        if (item.name.value.startsWith("__") || item.name.value === "_playbackPublications") {
+        if (
+          item.name.value.startsWith("__") ||
+          item.name.value === "_playbackPublications" ||
+          item.name.value === "_engagementTitles"
+        ) {
           throw new OperationRejected("INVALID_INPUT");
         }
         const field =

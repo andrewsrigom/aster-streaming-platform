@@ -434,6 +434,17 @@ try {
   });
   const queries = createProgressQueries({
     identity: history.ports.identity,
+    catalog: {
+      visibility: (ids) =>
+        Promise.resolve({
+          status: "completed",
+          value: {
+            checkedAt: now(),
+            expiresAt: now() + 2,
+            titles: ids.map((titleId) => ({ titleId, visible: true })),
+          },
+        }),
+    },
     store: readStore,
     now,
   });

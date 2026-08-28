@@ -30,6 +30,7 @@ const paths = [
   "/run/aster-playback-catalog/catalog.key",
   "/run/aster-engagement-identity/identity.key",
   "/run/aster-engagement-playback/playback.key",
+  "/run/aster-engagement-catalog/catalog.key",
 ];
 for (const path of paths) {
   let file;
@@ -48,4 +49,4 @@ for (const path of paths) {
     await file.close();
   }
 }
-process.stdout.write('{"event":"aster.router.trust_initialized","owners":4,"ownerReads":3}\n');
+process.stdout.write('{"event":"aster.router.trust_initialized","owners":4,"ownerReads":4}\n');

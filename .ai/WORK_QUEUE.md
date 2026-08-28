@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140: PR 26 and exact post-merge 33182876541 pass. P08-R06 is the sole IN_PROGRESS item, locally complete on feat/p08-history and ready for publication/review. [Merge checkpoint and rollback](../evidence/phase-08/progress-candidate.md). Preserve media/private candidates.
+P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R06 remains IN_PROGRESS: PR 27 CI passes, but confirmation requires current Catalog filtering before continue-watching pagination. R07 work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86; no dependent work continues until R06 is locally accepted/frozen again. Preserve media/private candidates.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -59,7 +59,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 The next planned slices stay in services/engagement, existing owner subgraphs and apps/web. Watchlist needs durable membership/replay and current Catalog filtering before pagination; no new service or Redis authority. R08 owns request-scoped batching, R09 also covers R10/R12 event/deletion acceptance, and R11 owns browser save/resume. Activate them in order, not concurrently with the current dependent candidate.
 
-Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; local quality and real federated acceptance pass. Its protected and post-merge gates pass. P08-R06 adds paginated reads with local acceptance complete; its own protected publication/review/CI/merge remain. Browser reports, watchlist and relay follow. No repeated CPU or film experiment.
+Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected and post-merge gates pass. P08-R06 is correcting PR 27's current-visibility blocker under ADR-0031; earlier green checks do not waive it. Watchlist work is preserved, not active. Browser reports and relay follow. No repeated CPU or film experiment.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

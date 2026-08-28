@@ -24,6 +24,7 @@ const HOSTS = {
   "catalog-playback": "catalog:3200",
   "identity-engagement": "identity:3100",
   "playback-engagement": "playback:3300",
+  "catalog-engagement": "catalog:3200",
 } as const;
 
 /** Transport authentication only; no account, profile or operator authority. */
@@ -43,7 +44,7 @@ export function createLocalCatalogPlaybackTrust(credential: string): AsterLocalR
 }
 
 export function createLocalEngagementReadTrust(
-  owner: "identity" | "playback",
+  owner: "identity" | "playback" | "catalog",
   credential: string,
 ): AsterLocalRouterTrust {
   return createTransportTrust(`${owner}-engagement`, credential);
@@ -57,7 +58,10 @@ function createTransportTrust(
     throw new Error("Invalid local Router trust configuration.");
   }
   const expected = Buffer.from(credential, "ascii");
-  const engagement = owner === "identity-engagement" || owner === "playback-engagement";
+  const engagement =
+    owner === "identity-engagement" ||
+    owner === "playback-engagement" ||
+    owner === "catalog-engagement";
   const credentialHeader = engagement
     ? "x-aster-engagement-credential"
     : owner === "catalog-playback"
@@ -170,10 +174,10 @@ export async function loadLocalCatalogPlaybackTrust(
 }
 
 export async function loadLocalEngagementReadCredential(
-  owner: "identity" | "playback",
+  owner: "identity" | "playback" | "catalog",
   directory = `/run/aster-engagement-${owner}`,
 ): Promise<string> {
-  if (!new Set<string>(["identity", "playback"]).has(owner)) {
+  if (!new Set<string>(["identity", "playback", "catalog"]).has(owner)) {
     throw new Error("Invalid Engagement read owner.");
   }
   return readCredential(join(directory, `${owner}.key`));

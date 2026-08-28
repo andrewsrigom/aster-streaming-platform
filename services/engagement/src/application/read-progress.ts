@@ -12,7 +12,7 @@ import {
   type ProgressListKind,
   type ProgressPageInput,
 } from "../domain/progress-page.js";
-import type { ProgressPorts, ProgressRequest } from "./progress-ports.js";
+import type { ProgressPorts, ProgressRequest, ProgressCatalog } from "./progress-ports.js";
 
 export type ProgressReadResult<T> =
   | Readonly<{ status: "completed"; value: T }>
@@ -61,6 +61,7 @@ async function guarded<T>(operation: () => Promise<T>, signal: AbortSignal): Pro
 export function createProgressQueries(
   ports: Readonly<{
     identity: ProgressPorts["identity"];
+    catalog?: ProgressCatalog;
     store: ProgressReadStore;
     now: () => number;
   }>,
@@ -146,7 +147,10 @@ export function createProgressQueries(
         if (result.status !== "completed") {
           return { status: result.status === "not_found" ? "not_found" : "unavailable" };
         }
-        if (!Array.isArray(result.value) || result.value.length > input.first + 1) {
+        if (
+          !Array.isArray(result.value) ||
+          result.value.length > (kind === "continue" ? 256 : input.first + 1)
+        ) {
           return { status: "unavailable" };
         }
         const ids = new Set<string>();
@@ -171,8 +175,72 @@ export function createProgressQueries(
           previous = row;
           return row;
         });
+        let selected = rows;
+        let visibilityExpiry = Infinity;
+        if (kind === "continue" && rows.length > 0) {
+          const catalog = ports.catalog;
+          if (!catalog) {
+            return { status: "unavailable" };
+          }
+          selected = [];
+          for (
+            let offset = 0;
+            offset < rows.length && selected.length <= input.first;
+            offset += 20
+          ) {
+            const batch = rows.slice(offset, offset + 20);
+            const visibility = await guarded(
+              () =>
+                catalog.visibility(
+                  batch.map((row) => row.titleId),
+                  {
+                    signal,
+                    correlationId: request.correlationId,
+                    ...(request.traceparent === undefined
+                      ? {}
+                      : { traceparent: request.traceparent }),
+                  },
+                ),
+              signal,
+            );
+            signal.throwIfAborted();
+            if (visibility.status !== "completed") {
+              return { status: "unavailable" };
+            }
+            const snapshot = visibility.value;
+            const snapshotTitles = snapshot.titles;
+            const now = ports.now();
+            if (
+              !progressTimestamp(snapshot.checkedAt) ||
+              !progressTimestamp(snapshot.expiresAt) ||
+              snapshot.checkedAt > now ||
+              snapshot.expiresAt > snapshot.checkedAt + 2 ||
+              snapshot.expiresAt <= now ||
+              !Array.isArray(snapshot.titles) ||
+              snapshot.titles.length !== batch.length
+            ) {
+              return { status: "unavailable" };
+            }
+            visibilityExpiry = Math.min(visibilityExpiry, snapshot.expiresAt);
+            for (const [index, row] of batch.entries()) {
+              const title = snapshotTitles[index];
+              if (title?.titleId !== row.titleId || typeof title.visible !== "boolean") {
+                return { status: "unavailable" };
+              }
+              if (title.visible) {
+                selected.push(row);
+              }
+            }
+            if (!authorized() || ports.now() >= visibilityExpiry) {
+              return { status: "unavailable" };
+            }
+          }
+        }
+        if (!authorized() || ports.now() >= visibilityExpiry) {
+          return { status: "unavailable" };
+        }
         const edges = Object.freeze(
-          rows.slice(0, input.first).map((node) =>
+          selected.slice(0, input.first).map((node) =>
             Object.freeze({
               cursor: progressCursor(input.profileId, kind, node),
               node,
@@ -185,7 +253,7 @@ export function createProgressQueries(
             edges,
             pageInfo: Object.freeze({
               endCursor: edges.at(-1)?.cursor ?? null,
-              hasNextPage: rows.length > input.first,
+              hasNextPage: selected.length > input.first,
             }),
           }),
         };

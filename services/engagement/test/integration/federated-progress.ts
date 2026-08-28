@@ -504,6 +504,24 @@ try {
     assert.equal(rejected.body.data?.["continueWatching"]?.connection, undefined);
   }
   assert.deepEqual(await counts(), beforeReads);
+  const hiddenTitle = nodes[0]?.titleId;
+  const remainingTitle = nodes[1]?.titleId;
+  assert.ok(hiddenTitle && remainingTitle);
+  await admin.query(
+    "UPDATE catalog.titles SET state = 'RETIRED', version = version + 1 WHERE id = $1",
+    [hiddenTitle],
+  );
+  const sparse = payload(await page("continue", { profileId, first: 1 }), "continueWatching");
+  assert.equal(sparse.code, "COMPLETED");
+  assert.deepEqual(
+    sparse.connection?.edges.map((edge) => edge.node.titleId),
+    [remainingTitle],
+  );
+  assert.equal(sparse.connection.pageInfo.hasNextPage, false);
+  await admin.query(
+    "UPDATE catalog.titles SET state = 'PUBLISHED', version = version + 1 WHERE id = $1",
+    [hiddenTitle],
+  );
   assert.equal(
     payload(
       await record({ ...secondTitle, sequence: 2, positionMs: 6000, idempotencyKey: randomUUID() }),
@@ -516,9 +534,39 @@ try {
     continuing.connection?.edges.map((edge) => edge.node.titleId),
     [id(1)],
   );
-  await admin.query("UPDATE catalog.titles SET state = 'RETIRED', version = 6 WHERE id = $1", [
-    id(1),
-  ]);
+  const rightsClient = await admin.connect();
+  try {
+    await rightsClient.query("BEGIN");
+    const review = { id: randomUUID(), revision: 2, status: "DISPUTED" };
+    await rightsClient.query(
+      "INSERT INTO catalog.rights_revisions(id, title_id, revision, status, record) SELECT $2, title_id, 2, 'DISPUTED', record || $3::jsonb FROM catalog.rights_revisions WHERE title_id = $1 AND revision = 1",
+      [id(1), review.id, JSON.stringify(review)],
+    );
+    await rightsClient.query(
+      "INSERT INTO catalog.rights_audit SELECT id, 2, version + 1, $2, $3, $4 FROM catalog.titles WHERE id = $1",
+      [id(1), id(999), Math.floor(Date.now() / 1000), randomUUID()],
+    );
+    await rightsClient.query(
+      "UPDATE catalog.titles SET latest_rights_revision = 2, version = version + 1 WHERE id = $1",
+      [id(1)],
+    );
+    await rightsClient.query("COMMIT");
+  } catch (error) {
+    await rightsClient.query("ROLLBACK");
+    throw error;
+  } finally {
+    rightsClient.release();
+  }
+  const disputed = payload(await page("continue", { profileId }), "continueWatching");
+  assert.equal(disputed.code, "COMPLETED");
+  assert.deepEqual(disputed.connection, {
+    edges: [],
+    pageInfo: { endCursor: null, hasNextPage: false },
+  });
+  await admin.query(
+    "UPDATE catalog.titles SET state = 'RETIRED', version = version + 1 WHERE id = $1",
+    [id(1)],
+  );
   const retired = payload(await page("history", { profileId }), "progressHistory");
   assert.equal(retired.code, "COMPLETED");
   assert.equal(retired.connection?.edges.length, 2);
@@ -529,6 +577,12 @@ try {
   const completed = retired.connection.edges.find((edge) => edge.node.titleId === id(2))?.node;
   assert.equal(completed?.status, "COMPLETED");
   assert.equal(completed.title?.id, id(2));
+  const hiddenContinue = payload(await page("continue", { profileId }), "continueWatching");
+  assert.equal(hiddenContinue.code, "COMPLETED");
+  assert.deepEqual(hiddenContinue.connection, {
+    edges: [],
+    pageInfo: { endCursor: null, hasNextPage: false },
+  });
   assert.deepEqual(await counts(), { progress: 2, receipts: 5, outbox: 5 });
   emit("engagement_federated_pages", {
     pages: [1, 1],
@@ -536,6 +590,9 @@ try {
     catalogMetadata: "federated_owner",
     completed: "history_only",
     retiredMetadata: null,
+    retiredContinue: "excluded_before_pagination",
+    hiddenGapLookahead: "passed",
+    disputedRights: "excluded_before_pagination",
     foreignAndAnonymous: "denied",
     oversizedAndWrongKindCursor: "rejected",
     readWrites: 0,

@@ -19,7 +19,7 @@ export function validateEngagementRuntime(source) {
             '      ASTER_ENGAGEMENT_LOCAL_ENABLED: "true"\n      ASTER_ENGAGEMENT_HTTP_HOST: 0.0.0.0\n      ASTER_ENGAGEMENT_HTTP_PORT: "3400"\n',
             "      ASTER_ENGAGEMENT_DATABASE_URL: postgresql://aster_engagement_local@postgres:5432/aster\n      ASTER_ENGAGEMENT_DATABASE_PASSWORD: aster-test-only\n",
             '      ASTER_ROUTER_TRUST_ENABLED: "true"\n',
-            "    volumes:\n      - engagement-router-trust:/run/aster-router:ro\n      - engagement-identity-trust:/run/aster-engagement-identity:ro\n      - engagement-playback-trust:/run/aster-engagement-playback:ro\n",
+            "    volumes:\n      - engagement-router-trust:/run/aster-router:ro\n      - engagement-identity-trust:/run/aster-engagement-identity:ro\n      - engagement-playback-trust:/run/aster-engagement-playback:ro\n      - engagement-catalog-trust:/run/aster-engagement-catalog:ro\n",
             '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
           ]
         : [
@@ -52,7 +52,7 @@ export function validateEngagementRuntime(source) {
     if (
       required.some((value) => !block.includes(value)) ||
       forbidden.some((value) => block.includes(value)) ||
-      (runtime && block.match(/^ {6}- /gm)?.length !== 3)
+      (runtime && block.match(/^ {6}- /gm)?.length !== 4)
     ) {
       violations.push({
         rule: "engagement-runtime",
@@ -64,6 +64,7 @@ export function validateEngagementRuntime(source) {
     "engagement-router-trust",
     "engagement-identity-trust",
     "engagement-playback-trust",
+    "engagement-catalog-trust",
   ]) {
     if (!source.includes(volumeBlock(name, "disposable-local"))) {
       violations.push({

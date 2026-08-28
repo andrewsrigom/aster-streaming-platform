@@ -67,6 +67,7 @@ services:
       - playback-catalog-trust:/run/aster-playback-catalog
       - engagement-identity-trust:/run/aster-engagement-identity
       - engagement-playback-trust:/run/aster-engagement-playback
+      - engagement-catalog-trust:/run/aster-engagement-catalog
     network_mode: none
     user: "1000:1000"
     read_only: true
@@ -104,9 +105,11 @@ services:
       ASTER_CATALOG_READER_DATABASE_PASSWORD: aster-test-only
       ASTER_ROUTER_TRUST_ENABLED: "true"
       ASTER_CATALOG_PLAYBACK_READ_ENABLED: "true"
+      ASTER_CATALOG_ENGAGEMENT_READ_ENABLED: "true"
     volumes:
       - catalog-router-trust:/run/aster-router:ro
       - playback-catalog-trust:/run/aster-playback-catalog:ro
+      - engagement-catalog-trust:/run/aster-engagement-catalog:ro
     networks: [platform]
     user: "1000:1000"
     read_only: true
@@ -258,6 +261,7 @@ services:
       - engagement-router-trust:/run/aster-router:ro
       - engagement-identity-trust:/run/aster-engagement-identity:ro
       - engagement-playback-trust:/run/aster-engagement-playback:ro
+      - engagement-catalog-trust:/run/aster-engagement-catalog:ro
     networks: [platform]
     user: "1000:1000"
     read_only: true
@@ -715,6 +719,11 @@ volumes:
       com.aster.environment: local
       com.aster.owner: platform
   engagement-playback-trust:
+    labels:
+      com.aster.authority: disposable-local
+      com.aster.environment: local
+      com.aster.owner: platform
+  engagement-catalog-trust:
     labels:
       com.aster.authority: disposable-local
       com.aster.environment: local

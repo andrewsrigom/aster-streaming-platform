@@ -39,10 +39,15 @@ function request(owner: "identity" | "catalog", extra: string[] = []) {
 
 test("Engagement private credentials are purpose-bound and carry only validated correlation", () => {
   const correlationId = "00000000-0000-4000-8000-000000000001";
-  for (const owner of ["identity", "playback"] as const) {
+  for (const owner of ["identity", "playback", "catalog"] as const) {
     const reader = createLocalEngagementReadTrust(owner, key);
     const value = request("identity");
-    value.rawHeaders[1] = owner === "identity" ? "identity:3100" : "playback:3300";
+    value.rawHeaders[1] =
+      owner === "identity"
+        ? "identity:3100"
+        : owner === "catalog"
+          ? "catalog:3200"
+          : "playback:3300";
     value.rawHeaders[value.rawHeaders.indexOf("origin") + 1] = "http://engagement:3400";
     value.rawHeaders[value.rawHeaders.indexOf("x-aster-router-credential")] =
       "x-aster-engagement-credential";

@@ -77,4 +77,17 @@ type Query {
   titles(first: Int!, after: String): CatalogTitleConnection!
   title(id: ID!): Title
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
+  _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible
+}
+
+type EngagementVisibleTitle @inaccessible {
+  titleId: ID!
+  visible: Boolean!
+}
+
+type EngagementTitleVisibility @inaccessible {
+  code: String!
+  checkedAt: Float!
+  expiresAt: Float!
+  titles: [EngagementVisibleTitle!]!
 }

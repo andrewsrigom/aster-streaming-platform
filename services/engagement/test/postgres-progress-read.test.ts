@@ -71,7 +71,7 @@ test("continue query uses partial-index predicate and tuple cursor, without offs
   );
   assert.match(f.queries[0]?.text ?? "", /p.status = 'IN_PROGRESS'/u);
   assert.match(f.queries[0]?.text ?? "", /\(p.updated_at, p.id\) < \(\$4::bigint, \$5::uuid\)/u);
-  assert.deepEqual(f.queries[0]?.values, [id(1), id(2), 21, 101, id(11)]);
+  assert.deepEqual(f.queries[0]?.values, [id(1), id(2), 256, 101, id(11)]);
 });
 
 test("empty, foreign and inconsistent SQL results are distinguished", async () => {
