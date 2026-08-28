@@ -58,7 +58,7 @@ pnpm router:demo --project aster
 
 For query-plan/trace inspection, add `--file infra/compose/router-diagnostics.yml` to the base plus observability files and recreate Router. Then run `pnpm router:observability aster`; it prints the actual plan, finite operation event and sanitized Collector trace. Remove that diagnostic overlay and recreate Router afterward. Default responses never expose query plans, even when the client asks. `subgraph-diagnostics.yml` is a separate opt-in standalone transport with loopback 3100/3200, private trust disabled and Identity Origin 3100; it is not a federated topology. Restore the normal containers before invoking the guarded reset, which rejects unreviewed Compose provenance.
 
-Router health on internal 8088 means the process is running; it does not promise all subgraphs are available. Internal metrics use 9091. Owners retain their independent health/readiness and database authority. Normal startup waits for all three owners; subsequent partial failure does not force unrelated data to fail. The disposable Playback proof deliberately starts without Identity to verify anonymous request independence.
+Router health on internal 8088 means the process is running; it does not promise all subgraphs are available. Internal metrics use 9091. Owners retain independent health/readiness and database authority. Router startup requires Catalog, Playback and trust initialization, not optional Identity. Starting the entire runtime/full profile also starts Identity; targeting Router alone supports anonymous playback without it. The disposable proof uses this unchanged base dependency graph. Identity queries fail independently while that owner is absent.
 
 ## Evidence and recovery
 

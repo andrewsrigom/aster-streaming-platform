@@ -23,7 +23,7 @@ export function validateRouterRuntime(source) {
       ...(runtime
         ? [
             '      ASTER_ROUTER_OTLP_ENABLED: "false"\n      APOLLO_EXPOSE_QUERY_PLAN: "false"\n',
-            "    depends_on:\n      router-trust-init:\n        condition: service_completed_successfully\n      identity:\n        condition: service_healthy\n      catalog:\n        condition: service_healthy\n      playback:\n        condition: service_healthy\n",
+            "    depends_on:\n      router-trust-init:\n        condition: service_completed_successfully\n      catalog:\n        condition: service_healthy\n      playback:\n        condition: service_healthy\n",
             '    ports:\n      - "127.0.0.1:4000:4000"\n',
             "    volumes:\n      - identity-router-trust:/run/aster-router/identity:ro\n      - catalog-router-trust:/run/aster-router/catalog:ro\n      - playback-router-trust:/run/aster-router/playback:ro\n    networks: [platform, edge]\n",
             "    stop_grace_period: 10s\n",

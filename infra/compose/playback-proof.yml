@@ -6,10 +6,3 @@ services:
       - /var/lib/postgresql:rw,size=256m
   router:
     ports: !override ["127.0.0.1::4000"]
-    depends_on: !override
-      router-trust-init:
-        condition: service_completed_successfully
-      catalog:
-        condition: service_healthy
-      playback:
-        condition: service_healthy

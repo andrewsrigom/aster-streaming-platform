@@ -202,7 +202,7 @@ try {
     );
   }
   const volumes = await list("volume");
-  assert.ok(volumes.length <= 3);
+  assert.ok(volumes.length <= 5);
   for (const name of volumes) {
     const [volume] = JSON.parse(await docker(["volume", "inspect", name]));
     const attachedIds = (

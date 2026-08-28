@@ -16,6 +16,8 @@ Phase 06 includes current rights approval, bounded acquisition, isolated full-fi
 
 ## Current work
 
+PR 24 initial review found a P07-R09 startup blocker; base Router now starts without Identity and the proof no longer replaces its graph. First CI 33162485356 also found an obsolete Catalog fixture cleanup ceiling after its runtime assertions passed; exact five-volume cleanup is corrected. Both affected real runtime proofs pass and leave zero resources. [Correction evidence](../evidence/phase-07/backend-review.md). Player session/preferences/QoE work has seven passing tests and is saved in stash 2e85504b1739e3192484c37f5af63977b305eec1 until backend correction/rebase.
+
 P07-R01's public Playback mutation, current private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are locally verified. Affected suite passes 248/248, source 54/54 and final changed-scope/governance gate 64/64; real PostgreSQL covers admission, expiry, retention, restricted runtime credentials and migrations. A disposable real Router/Catalog/Playback journey proves persisted sessions, rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Protected review/release remain pending; the retained app has not been upgraded.
 
 [ADR-0027](../docs/adr/0027-local-playback-sessions.md) defines a distinct credential for the bounded private Catalog GraphQL read, separate Router credentials, current rights/URL validation, two-second deadline and fifteen-minute expiry capped by rights. No cross-owner SQL, media proxy or optional personalization dependency. [Active plan](CHANGE_PLAN.md).

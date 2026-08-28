@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Playback startup and fixture review correction
+
+### Completed
+
+Published backend PR 24. Initial review identified optional Identity coupling at startup; removed it from the base graph and removed the proof override. CI independently found the obsolete Catalog fixture volume ceiling; corrected it with exact-ownership checks retained. Saved seven-test player session/preferences/QoE progress in stash 2e85504b before returning to the backend.
+
+### Evidence
+
+[Batched correction](../evidence/phase-07/backend-review.md): seven focused policy tests, real base-topology session proof and standalone Catalog lifecycle/cleanup. Both fixtures leave zero resources; retained media/Windows processes untouched. No CPU or film experiment repeated.
+
+### Next action
+
+Publish the corrected candidate, require exact-head CI and one confirmation, then squash/post-merge. Rebase/resume the saved player work. Full Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Playback connected backend candidate
 
 ### Completed

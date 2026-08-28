@@ -21,6 +21,8 @@ The public Playback mutation, current private Catalog read, anonymous session ru
 
 Continue from tested core 9ab840a: expose createPlaybackSession(titleId) with a nullable session and finite result code, generated correlation ID, manifest reference and expiry. Add Playback's bounded Apollo/Express transport, lifecycle/readiness, local migration runner and Docker image using the existing pinned packages. Compose the additive schema/known operation, wire independent Router-to-Playback and Playback-to-Catalog file credentials, and prove the connected path. No profile argument, media proxy, optional dependency or new framework. Backend-first integration remains separate from subsequent player/demo acceptance.
 
+Initial PR 24 review 5050175412 identified a P07-R09 startup dependency: the base Router still waited for Identity, while the proof replaced that dependency. Remove Identity from the base prerequisite list and remove the proof's dependency override. CI 33162485356 passed source/platform but failed the Catalog fixture's obsolete three-volume cleanup ceiling after all runtime assertions passed; update it to the exact five allowed volumes with regression coverage. Repeat only the affected runtime proofs and candidate gates, then request one confirmation. Tested local player work is safely stashed at 2e85504b1739e3192484c37f5af63977b305eec1 for rebase/resume.
+
 ## Boundaries
 
 - Owning context: Catalog authorizes current publication; Playback creates and expires its own session.

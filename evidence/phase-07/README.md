@@ -2,6 +2,8 @@
 
 P07-R01's backend is implemented and locally verified: public Playback mutation, current private Catalog reads, isolated PostgreSQL sessions and the connected Docker/Router runtime. Local candidate gates pass; protected CI and review remain pending. Product player and the clean playable demo are unfinished; this is not full Phase 07 acceptance.
 
+The initial review and first hosted run found a startup dependency and an obsolete fixture cleanup ceiling. The [batched correction and fresh runtime evidence](backend-review.md) supersede the original startup topology below; session/SQL/media behavior is unchanged.
+
 The core uses current Catalog approval, no cross-request authorization cache, a two-second application deadline, fifteen-minute rights-capped sessions, explicit uncertain-write results and no optional Identity/Redis/Engagement/Discovery dependency. [ADR-0027](../../docs/adr/0027-local-playback-sessions.md) records independent credentials, SQL-enforced capacity and retention.
 
 ## Source and environment

@@ -18,6 +18,21 @@ test("Router topology and source pin private bounded runtime without a GraphOS a
   assert.deepEqual(validateRouterSources(sources), []);
 });
 
+test("anonymous Router startup uses the base dependency graph without optional Identity", async () => {
+  const block = serviceBlock(compose, "router");
+  assert.ok(!block.includes("      identity:\n"));
+  const coupled = compose.replace(
+    block,
+    block.replace(
+      "    depends_on:\n",
+      "    depends_on:\n      identity:\n        condition: service_healthy\n",
+    ),
+  );
+  assert.ok(validateRouterRuntime(coupled).length);
+  const proof = await readFile(resolve(root, "infra/compose/playback-proof.yml"), "utf8");
+  assert.ok(!proof.includes("depends_on:"), "The proof cannot replace the base startup graph.");
+});
+
 test("Router and initializer reject weakened trust, network and lifecycle boundaries", () => {
   for (const name of ["router", "router-trust-init"]) {
     const block = serviceBlock(compose, name);
