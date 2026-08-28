@@ -97,7 +97,11 @@ test("real local session creates/selects a profile with keyboard focus and priva
     await page.keyboard.press("Tab");
     await expect(page.getByRole("button", { name: "Save profile" })).toBeFocused();
     await page.keyboard.press("Enter");
-    await expect(page.getByRole("status").filter({ hasText: "Profile created" })).toBeVisible();
+    await expect(
+      page
+        .locator('[aria-live="polite"][aria-atomic="true"]')
+        .filter({ hasText: "Profile created" }),
+    ).toBeVisible();
     const added = (await profileSnapshot(context.request)).filter(
       (profile) => !before.has(profile.id) && profile.displayName === "Browser fixture",
     );

@@ -5,7 +5,7 @@
 - Phase: 05
 - Requirement IDs: P05-R01, P05-R02, P05-R03, P05-R04, P05-R05, P05-R06, P05-R07, P05-R08, P05-R09, P05-R10, P05-R11
 - Created: 2026-08-27
-- Updated: 2026-08-27
+- Updated: 2026-08-28
 
 ## Outcome
 
@@ -84,7 +84,7 @@ Start with a real Next.js App Router browse/title slice through Apollo Router, d
 
 - Commands: focused Web tests/types/build during iteration; pnpm check:changed for a coherent candidate.
 - Raw artifact path: evidence/phase-05/.
-- Acceptance result: clean startup/isolation and refresh fix e130e8e pass 19 browser journeys, fourteen axe scans and 58/58 source tasks; an earlier uncached gate also passed 58/58. See evidence/phase-05/clean-acceptance.md. The prior image passed six quiet-host visits. Final-image performance, actual screen-reader review and protected publication remain open.
+- Acceptance result: clean startup/isolation and refresh-owner proof remain valid. Actual-reader and final-asset confirmation pass after the live-region correction; see evidence/phase-05/reader-review.md. The first final functional run passed 18/19; a populated-dialog axe incomplete required supplementary contrast/occlusion verification, and its focused confirmation passed. Final source/review/protected publication remains.
 - Iteration gate: cheapest changed adapter/cache/component checks and local production build.
 - Candidate gate: affected source gates, real browser journeys and required security/accessibility checks.
 - Heavyweight repeat triggers: rendering, hydration, transport, seed, packaging or asset changes repeat the affected browser/Docker measurements; prose does not.
@@ -160,15 +160,21 @@ The first preflight checked only explicit path declarations and incorrectly infe
 
 ## Completion checklist
 
+Persistent status elements pass the regression but still lose rapid announcements in unmodified Orca 48/Firefox: its event manager filters status-bar events within 100 ms, while explicit live sections are exempt. Use the standard persistent `div aria-live="polite" aria-atomic="true"` pattern documented by MDN instead of the redundant status role. Preserve visible messages, non-interruption, atomicity, existing-node regression and real speech acceptance; do not add artificial delays, force alert urgency or patch the reader. This is a presentation compatibility correction inside P05-R05/P05-R06/P05-R11, with the same gates and rollback below.
+
+Actual Orca/Firefox review found a P05-R05/P05-R06/P05-R11 status-announcement gap: the profile flow mounts already-populated status elements, rather than updating pre-existing regions. W3C ARIA22 requires the container to precede the status message. Keep the two pending/notice regions mounted, preserve their polite semantics and current text, and add explicit atomicity. First add a browser regression proving the same nodes exist before and during the mutation. Confirm real speech on the unchanged owner APIs after rebuilding Web. No session, cache, SSR, data, timeout or primitive boundary changes. Iterate on this one dialog test plus Web unit/types; repeat the functional browser candidate and affected source checks. Existing clean platform/seed/isolation evidence remains valid. Recheck final asset budgets after the UI build; do not repeat unrelated media or owner experiments. The existing review stopping rule applies.
+
+For P05-R11, investigate actual Orca speech output in a disposable Linux container with a private Xvfb/D-Bus session. Windows UI control has twice stopped because it cannot establish the browser URL; do not bypass that policy or automate the user's Windows apps through another tool. This independent lab visits only the local public demo with a fresh browser profile, no host display/session, credentials, Docker socket or retained-data mounts. Reuse the pinned Node/Debian base; reviewed Debian Orca is unmodified LGPL-2.1-or-later tooling, separate from Aster artifacts and MIT source. No host package installation, new product service or CI dependency is introduced. Bound build/run time and container CPU/memory/PIDs, retain upstream notices, record actual package/image versions and speech, and remove only the named lab resources. An accessibility-tree dump alone cannot satisfy the reader gate. If actual reader output is unavailable, retain the gap instead of relabeling automated checks as manual review.
+
 Clean browser acceptance found a P05-R02/P05-R06 blocker: refresh can immediately render unavailable without opening HTTP. The trace disproves a four-second request timeout. The installed Apollo option comparator treats different same-source callbacks as equal, which can retain a previous consumer's closed request flag across hydration/remounts. First reproduce an explicit refresh after switching between consumers of the same query. Give each mounted consumer a stable, non-serialized context identity so Apollo updates its callback, preserving the explicit-request gate, no automatic queries, duplicate-click exclusion and four-second transport deadline. Iterate on the focused browser regression and Web checks; repeat affected public/recovery/browser and final-image performance evidence after rebuilding Web. Existing clean platform startup/seed/isolation evidence remains applicable because this changes no owner or Compose contract.
 
 The clean-source gate stopped in the Express compatibility subprocess after 5.24 seconds with a null exit status; the same diagnostic completes in 622 ms in isolation. The wrapper currently budgets five seconds for cold module loading, execution and shutdown together and hides subprocess errors. Give only this test process a bounded fifteen-second startup/execution allowance and assert its error before its exit code. Keep the diagnostic's two-second HTTP deadline, one-second drain grace and all response assertions unchanged. Verify the focused adapter tests and an uncached clean-source gate. This is test-harness remediation, not an application performance change; it does not invalidate the completed Docker build or browser image.
 
 Performance confirmation will use two separately invoked three-visit blocks against the unchanged production image and existing budgets, with no retries. Before each block, record source/image/browser identity, host load and CPU/memory samples; run no overlapping build or browser suite. Require one-minute WSL load below half of its six CPUs and at least 70% idle in the two live vmstat samples; otherwise defer measurement, not the functional work. Record post-run host samples and every result. A budget failure stops confirmation and requires attribution-based diagnosis rather than more runs to select success. This defines a small reproducible quiet-host baseline, not performance under arbitrary host contention or field SLOs.
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Requirements satisfied locally; protected review/release remains
+- [x] Tests pass: final 19/19 browser and 58/58 source confirmation
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

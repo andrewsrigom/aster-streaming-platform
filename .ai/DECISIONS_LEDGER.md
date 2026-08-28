@@ -79,7 +79,6 @@ Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterize
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
 | Additional observability backends | 12 | A concrete dashboard/trace requirement, bounded resources and verified operation before adding Grafana/Tempo/Loki | Phase 01 finite profiles and Collector/Prometheus are released; no product dashboard or capacity guarantee is claimed | Phase 12 observability |
-| Web UI primitive strategy | 05 | Current Next.js and React compatibility, accessibility, bundle impact, maintenance, customization ownership, license, and used-component inventory | Use semantic HTML and minimal local primitives; shadcn/ui is the preferred candidate | Phase 05 verification |
 | Player-control component strategy | 07 | HLS.js and React compatibility, SSR boundary, captions, quality, keyboard and screen-reader behavior, browser coverage, bundle impact, maintenance, customization ownership, and license | Native media controls remain the early technical fallback; Media Chrome is the preferred candidate | Phase 07 verification |
 | Hosted compute and deployment controller | 14 | Capacity, operational fit, cost, rollback, and artifact requirements | Local and integration environments only | Hosted release |
 | Hosted PostgreSQL provider | 14 | Version support, backup/restore, connection limits, observability, migration, and cost | PostgreSQL-compatible ports and local containers | Hosted release |
@@ -96,6 +95,8 @@ Pending decisions are resolved only by their owning phase. A work item stops whe
 The Phase 01 preflight records the archived MinIO upstream, active VersityGW and SeaweedFS alternatives, client metadata and Kafka shutdown risk in `evidence/phase-01/runtime-runway-preflight.txt`. P01-R06 resolves the process-local OpenTelemetry packages in `evidence/phase-01/runtime-telemetry.txt`; P01-R09 resolves the local Kafka, S3 and Collector/Prometheus images in `evidence/phase-01/real-integration.txt`. P01-R10 records finite profile resources and measured local samples in `evidence/phase-01/docker-demo.txt`; these are not capacity guarantees. Later-phase decisions above remain deferred to their owners.
 
 ## Repository governance decisions
+
+- Phase 05 UI selection is resolved: adapted shadcn Button and Radix Dialog only, with native controls, lazy modal loading and explicit persistent polite/atomic announcements. [Selection](../evidence/phase-05/ui-foundation.md) and [actual reader/bundle evidence](../evidence/phase-05/reader-review.md) cover the decision; player controls remain Phase 07. ADR-0019 also covers unmodified external Orca/Firefox verification without changing MIT or adding a product service.
 
 - [ADR-0019](../docs/adr/0019-accessibility-test-tooling.md): accept unmodified axe Playwright/core 4.13.0 as dev-only MPL-2.0 tooling. Two package-specific CI exceptions plus separate exact-version/lock/dev checks preserve the general license policy and MIT source. No production inclusion or broader MPL exception is authorized by this decision.
 

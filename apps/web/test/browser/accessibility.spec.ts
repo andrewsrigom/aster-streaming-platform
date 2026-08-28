@@ -52,13 +52,21 @@ async function audit(page: Page, info: TestInfo, state: string) {
           throw new Error("Unexpected contrast target.");
         }
         const targetElement = page.locator(selector);
-        const artwork = await targetElement.evaluate((element) =>
-          element.parentElement?.hasAttribute("data-artwork"),
-        );
-        expect(artwork).toBe(true);
-        await expect(targetElement).toHaveText("Cover unavailable");
-        // The opaque illustration covers this fallback. Retain the original
-        // incomplete result and measure its actual flat foreground/background.
+        const kind = await targetElement.evaluate((element) => {
+          if (element.parentElement?.hasAttribute("data-artwork")) {
+            return "artwork";
+          }
+          const dialog = element.closest('[role="dialog"]');
+          return dialog?.getAttribute("aria-describedby") === element.id
+            ? "dialog-description"
+            : null;
+        });
+        expect(kind).not.toBeNull();
+        if (kind === "artwork") {
+          await expect(targetElement).toHaveText("Cover unavailable");
+        }
+        // Retain the incomplete result and independently measure these two
+        // flat surfaces; unexpected targets and actual overlaps still fail.
         const measurement = await targetElement.evaluate((element) => {
           const luminance = (color: string) => {
             const channels = /^rgb\((\d+), (\d+), (\d+)\)$/u.exec(color);
@@ -75,9 +83,27 @@ async function audit(page: Page, info: TestInfo, state: string) {
               return total + linear * weight;
             }, 0);
           };
-          const surface = element.parentElement;
+          const dialog = element.closest('[role="dialog"]');
+          const description = dialog?.getAttribute("aria-describedby") === element.id;
+          const surface = description ? dialog : element.parentElement;
           if (!surface) {
-            throw new Error("Missing artwork background.");
+            throw new Error("Missing contrast background.");
+          }
+          if (description) {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            const lines = [...range.getClientRects()].filter((rect) => rect.width && rect.height);
+            if (!lines.length) {
+              throw new Error("Missing visible dialog description.");
+            }
+            for (const line of lines) {
+              for (const x of [line.left + 1, (line.left + line.right) / 2, line.right - 1]) {
+                const top = document.elementFromPoint(x, (line.top + line.bottom) / 2);
+                if (!top || !element.contains(top)) {
+                  throw new Error("Dialog description is obscured.");
+                }
+              }
+            }
           }
           const foreground = getComputedStyle(element).color;
           const background = getComputedStyle(surface).backgroundColor;
@@ -92,7 +118,7 @@ async function audit(page: Page, info: TestInfo, state: string) {
         expect(measurement.ratio).toBeGreaterThanOrEqual(4.5);
         measurements.push(measurement);
       }
-      await info.attach(`fallback-contrast-${state}`, {
+      await info.attach(`incomplete-contrast-${state}`, {
         body: JSON.stringify({ measurements }),
         contentType: "application/json",
       });
@@ -165,6 +191,13 @@ test("profile dialog exposes labelled signed-out, busy, list, create and failure
     const dialog = page.getByRole("dialog", { name: "Your profiles" });
     await expect(dialog).toHaveAccessibleDescription(/Local demo only/u);
     await expect(page.getByRole("button", { name: "Start local session" })).toBeVisible();
+    const liveRegions = dialog.locator('[aria-live="polite"][aria-atomic="true"]');
+    const statusRegions = await liveRegions.elementHandles();
+    expect(statusRegions).toHaveLength(2);
+    const [pendingRegion, noticeRegion] = statusRegions;
+    if (!pendingRegion || !noticeRegion) {
+      throw new Error("Expected pre-existing pending and notice regions.");
+    }
     await audit(page, info, "profiles-signed-out");
     const held = new Promise<void>((resolve) => {
       release = resolve;
@@ -176,9 +209,13 @@ test("profile dialog exposes labelled signed-out, busy, list, create and failure
     await page.getByRole("button", { name: "Start local session" }).click();
     await expect(page.getByRole("button", { name: "Starting session…" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Close profiles" })).toBeFocused();
-    await expect(
-      dialog.getByRole("status").filter({ hasText: "Saving with Identity…" }),
-    ).toBeVisible();
+    await expect(liveRegions.filter({ hasText: "Saving with Identity…" })).toBeVisible();
+    expect(
+      await pendingRegion.evaluate((element) => ({
+        connected: element.isConnected,
+        text: element.textContent,
+      })),
+    ).toEqual({ connected: true, text: "Saving with Identity…" });
     try {
       // Inspect the real transient state within the unmodified four-second deadline.
       // A full axe scan plus tab traversal can outlive it on a busy host.
@@ -202,6 +239,12 @@ test("profile dialog exposes labelled signed-out, busy, list, create and failure
       release();
     }
     await expect(page.getByRole("button", { name: "Create profile", exact: true })).toBeVisible();
+    expect(
+      await noticeRegion.evaluate((element) => ({
+        connected: element.isConnected,
+        text: element.textContent,
+      })),
+    ).toEqual({ connected: true, text: "Local session started." });
     await page.unrouteAll({ behavior: "wait" });
     await audit(page, info, "profiles-list");
     await page.getByRole("button", { name: "Create profile", exact: true }).click();

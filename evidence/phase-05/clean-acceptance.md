@@ -1,6 +1,6 @@
 # Phase 05 — Clean-checkout acceptance
 
-Status: IN_PROGRESS. Native screen-reader review remains separate and incomplete.
+Status: IN_PROGRESS. Clean-runtime acceptance and [actual screen-reader/final-asset confirmation](reader-review.md) are recorded; protected publication remains separate.
 
 ## Build-context correction
 
@@ -55,6 +55,14 @@ Label/mount checks confirmed that the three proof volumes belonged exclusively t
 
 Development Web/Router were restored with the base/observability/demo overlays and `--profile observability up --build --no-deps --wait --wait-timeout 60 web router`. Both are healthy and real browser navigation succeeds. Development Web image `sha256:1a1a10c44282573f33538b9e4c297e964f3450a7203d2e6845c8b6b54ef400f8` reuses all eleven filesystem layers of the accepted proof image; the cached build changed no application assets. Router remains `sha256:76b37d0452e418ffe2c5f05d4e58dda9986bc2b84d0fadf55ae731c043604561`.
 
+## Final-image performance
+
+At 23:06:46 UTC, the preflight met the existing quiet-host conditions: one-minute load 1.12 on six WSL CPUs, 93%/92% idle in the live samples, and no competing build or headless-browser process. From the clean e130e8e checkout, the existing three-visit workload passed against the restored development image with identical accepted filesystem layers. Post-run load was 2.84 with 95%/91% idle. Earlier deferred preflights and timing misses remain recorded; no unrelated process was stopped.
+
+Command: `ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 pnpm --filter @aster/web exec playwright test test/browser/performance.spec.ts`. Result: one test passed in 16.557 seconds, three fresh contexts, no retries or skipped visits. The protocol and budgets did not change. The prior two-block confirmation established the quiet-host baseline; this final-asset check repeats the phase's three-visit workload after the refresh fix, not the earlier contention investigation.
+
+All visits passed: LCP 1604–1652 ms, INP 64–136 ms, CLS 0, provider hydration 2616.3–2937.2 ms, initial JavaScript 240892 bytes, cumulative interaction JavaScript 259179 bytes and initial images 10204 bytes. There were zero automatic initial browser GraphQL/prefetch requests. [Full samples, resources, environment and pre/post checks](performance-final.json). This is laboratory evidence, not field p75 or an arbitrary-contention SLO.
+
 ## Remaining
 
-Confirm final-image laboratory budgets under the predeclared quiet-host conditions and complete actual screen-reader review before protected publication. Other workspace builds/browser runs occupied the host. The 19:55 preflight found one-minute load 4.67 on six CPUs and active headless browsers, so no timing run started; no unrelated process was stopped. Preserve the prior accepted-image baseline and all timing misses. These source/platform/browser results do not claim reader acceptance, final-image performance or Phase 05 release.
+Complete the final source gate, candidate review and protected publication. The [reader correction and final-asset results](reader-review.md) supersede the earlier reader/performance gaps without claiming Phase 05 release.

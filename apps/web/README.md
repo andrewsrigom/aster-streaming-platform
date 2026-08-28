@@ -1,6 +1,6 @@
 # Public Web checkpoint
 
-Status: public browsing, local profiles, Docker packaging, public recovery, responsive artwork and public-artifact/automated accessibility checks implemented; Phase 05 remains IN_PROGRESS. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. Screen-reader/performance acceptance and the player remain unfinished.
+Status: public browsing, local profiles, Docker packaging, public recovery, responsive artwork and accessibility checks implemented; Phase 05 remains IN_PROGRESS pending final source/review/protected publication. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. [Actual-reader and final performance evidence](../../evidence/phase-05/reader-review.md) is recorded. The player remains unimplemented.
 
 ## Docker-only demo
 
@@ -52,7 +52,7 @@ The Web builds a source-owned generic PNG illustration at `/artwork/aster-v1.png
 
 `test/browser/performance.spec.ts` defines the initial budgets and exercises the real Docker browse/refresh/profile flow in three fresh mobile contexts with reduced CPU/network capacity. It uses dev-only web-vitals, disables trace recording for the measurement, and captures actual encoded bytes plus a local `aster.web.hydrated` Performance mark. The mark times the public-provider hydration effect from navigation start; it sends nothing externally.
 
-Budgets: initial JavaScript 250 KiB, cumulative dialog JavaScript 350 KiB, each image 100 KiB / initial images 200 KiB, LCP 2500 ms, INP 200 ms, CLS 0.1, provider hydration 3500 ms, zero automatic initial browser GraphQL/prefetch. These are initial laboratory targets, not a hosted SLO. Latest focused samples meet them, but earlier runs missed INP/hydration and stability remains open. See [raw evidence and protocol](../../evidence/phase-05/artwork-performance.md); do not select passing samples and discard failures.
+Budgets: initial JavaScript 250 KiB, cumulative dialog JavaScript 350 KiB, each image 100 KiB / initial images 200 KiB, LCP 2500 ms, INP 200 ms, CLS 0.1, provider hydration 3500 ms, zero automatic initial browser GraphQL/prefetch. These are initial laboratory targets, not a hosted SLO. The quiet-host baseline and [final-asset confirmation](../../evidence/phase-05/performance-live-regions.json) pass. Earlier INP/hydration misses and exact load/idle preconditions remain in [the protocol](../../evidence/phase-05/artwork-performance.md); do not select passing samples or generalize this to arbitrary host contention.
 
 ## Public-artifact and accessibility checks
 
@@ -64,7 +64,7 @@ Default axe scans cover public routes at mobile/desktop widths and stable dialog
 
 Open Profiles in the header or `/profiles`, then start the local demonstration session. Create a fictional profile, choose language/maturity preferences and select it. This does not create a hosted account or implement password/email flows. Browser cookies are HTTP-only and SameSite Strict; Identity still validates the durable session for every operation.
 
-While a mutation disables its initiating action, focus moves to the still-enabled Close control and a status announces pending work. This prevents the focus trap from retaining a disabled target. Closing cancels the client request but cannot undo an already committed owner mutation.
+While a mutation disables its initiating action, focus moves to the still-enabled Close control. Two persistent, explicit polite/atomic live regions announce pending work and results without relying on initially populated status elements. This also avoids rapid status-bar event suppression observed in Orca. The [reader review](../../evidence/phase-05/reader-review.md) records actual speech and the supported scope. Closing cancels the client request but cannot undo an already committed owner mutation.
 
 The dialog loads on demand. Its separate Apollo client holds remote profiles, while a per-render-tree Redux store coordinates only the dialog, local step, busy state and finite notices. Input drafts stay in component state. Closing, session/profile changes, cross-tab invalidation and expiry cancel requests and discard the private cache. Expiry requires explicit recheck rather than an automatic refresh loop; a skewed browser clock cannot authorize a session. No Identity data is serialized into public SSR or persisted in browser storage.
 

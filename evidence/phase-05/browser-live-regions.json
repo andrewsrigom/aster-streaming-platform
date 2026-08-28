@@ -1,0 +1,2300 @@
+{
+  "source": {
+    "base": "cf2a391028e523e4e6c71f1047f60a71b0a1825a",
+    "scope": "Uncommitted live-region correction and focused test changes, committed with this evidence.",
+    "image": "sha256:b633c7f48f3c333292ea32ecd4a5cd019350b66fd5351971685aff9ecdb45a43",
+    "files": {
+      "apps/web/features/identity/dialog.tsx": "29feb287b3b758bc8ea4a25918b107607ecf8de4530e8056ef64a1918055b3c7",
+      "apps/web/test/browser/accessibility.spec.ts": "ab6536fdc19f2798afc7b0ada0003570205a4c10863d3147cf4cc9824d30d800",
+      "apps/web/test/browser/profiles.spec.ts": "a8e896917e3a171ede0cf689e7c1c46fa97d002045f42d000bc9c868954c359a"
+    }
+  },
+  "originalRegression": "\nRunning 1 test using 1 worker\n\n  ✘  1 test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states (1.7s)\n\n\n  1) test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states \n\n    Error: expect(received).toHaveLength(expected)\n\n    Expected length: 2\n    Received length: 0\n    Received array:  []\n\n      167 |     await expect(page.getByRole(\"button\", { name: \"Start local session\" })).toBeVisible();\n      168 |     const statusRegions = await dialog.getByRole(\"status\").elementHandles();\n    > 169 |     expect(statusRegions).toHaveLength(2);\n          |                           ^\n      170 |     const [pendingRegion, noticeRegion] = statusRegions;\n      171 |     if (!pendingRegion || !noticeRegion) {\n      172 |       throw new Error(\"Expected pre-existing pending and notice regions.\");\n        at <repository>/apps/web/test/browser/accessibility.spec.ts:169:27\n\n    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/error-context.md\n\n    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  1 failed\n    test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states \nundefined\n<repository>/apps/web:\n[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test test/browser/accessibility.spec.ts --grep 'profile dialog exposes'\n",
+  "persistentStatusRegression": "\nRunning 1 test using 1 worker\n\n{\"event\":\"web_accessibility\",\"state\":\"profiles-signed-out\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-list\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-create\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-unavailable\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n  ✓  1 test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states (9.0s)\n\n  1 passed (10.7s)\n",
+  "functionalCandidate": "\nRunning 19 tests using 1 worker\n\n{\"event\":\"web_accessibility\",\"state\":\"390--\",\"violations\":[],\"incomplete\":[\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"390--browse\",\"violations\":[],\"incomplete\":[\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"390--title-00000000-0000-4000-8000-000005000001\",\"violations\":[],\"incomplete\":[\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"390--attribution\",\"violations\":[],\"incomplete\":[]}\n{\"event\":\"web_accessibility\",\"state\":\"390--profiles\",\"violations\":[],\"incomplete\":[]}\n  ✓   1 test/browser/accessibility.spec.ts:131:3 › public routes and Portuguese metadata pass automated accessibility at 390px (6.9s)\n{\"event\":\"web_accessibility\",\"state\":\"1280--\",\"violations\":[],\"incomplete\":[\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"1280--browse\",\"violations\":[],\"incomplete\":[\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"1280--title-00000000-0000-4000-8000-000005000001\",\"violations\":[],\"incomplete\":[\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"1280--attribution\",\"violations\":[],\"incomplete\":[]}\n{\"event\":\"web_accessibility\",\"state\":\"1280--profiles\",\"violations\":[],\"incomplete\":[]}\n  ✓   2 test/browser/accessibility.spec.ts:131:3 › public routes and Portuguese metadata pass automated accessibility at 1280px (6.4s)\n{\"event\":\"web_accessibility\",\"state\":\"profiles-signed-out\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-list\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\",\"color-contrast\"]}\n  ✘   3 test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states (3.6s)\n{\"event\":\"web_artwork_variants\",\"original\":{\"bytes\":60282,\"sha256\":\"109beda62b9c4ff2a608a948409394f2fdb54852da39d229383af9b2f370b8a6\"},\"variants\":[{\"width\":160,\"bytes\":852,\"format\":\"webp\"},{\"width\":320,\"bytes\":1890,\"format\":\"webp\"},{\"width\":480,\"bytes\":3024,\"format\":\"webp\"},{\"width\":768,\"bytes\":5102,\"format\":\"webp\"},{\"width\":1280,\"bytes\":9660,\"format\":\"webp\"}],\"invalidRequestsRejected\":8}\n  ✓   4 test/browser/artwork.spec.ts:9:1 › static original and bounded optimized variants work without remote image access (369ms)\n  ✓   5 test/browser/artwork.spec.ts:67:1 › cards select responsive resources and detail credits the source-owned illustration (2.5s)\n  ✓   6 test/browser/artwork.spec.ts:126:1 › unavailable artwork keeps layout and navigation with and without JavaScript (2.2s)\n{\"event\":\"web_authenticated_ssr_isolation\",\"routes\":5,\"privateValues\":3,\"findings\":0}\n  ✓   7 test/browser/profiles.spec.ts:48:1 › real local session creates/selects a profile with keyboard focus and private cache reset (3.2s)\n  ✓   8 test/browser/profiles.spec.ts:186:1 › Router accepts exact Web preflight but rejects forged origin and fetch metadata (115ms)\n  ✓   9 test/browser/profiles.spec.ts:217:1 › profile outage exposes retry and keeps public browsing available (1.0s)\n  ✓  10 test/browser/profiles.spec.ts:238:1 › expiry removes private controls without a refetch loop and reduced-motion dialog traps focus (1.7s)\n{\"event\":\"web_served_artifact_scan\",\"htmlRoutes\":6,\"loadedAssets\":18,\"findings\":0}\n  ✓  11 test/browser/public-artifacts.spec.ts:5:1 › served HTML and browser-loaded public/lazy assets contain no private server artifacts (1.9s)\n{\"event\":\"web_public_hydration\",\"browserGraphqlOrPrefetch\":0,\"consoleErrorsOrWarnings\":0,\"ssrTitle\":true,\"routerBrowseOperations\":1}\n  ✓  12 test/browser/public.spec.ts:7:1 › published public HTML hydrates without browser GraphQL or automatic route prefetch (1.0s)\n  ✓  13 test/browser/public.spec.ts:63:1 › Portuguese public browsing and title attribution work with JavaScript disabled (632ms)\n  ✓  14 test/browser/public.spec.ts:83:1 › delayed scripts do not hide public content or create hydration mismatches (1.2s)\n  ✓  15 test/browser/public.spec.ts:106:1 › keyboard-only skip, title navigation and attribution navigation (1.1s)\n{\"event\":\"public_outage_recovery\",\"noJsRoutes\":4,\"initialBrowserQueries\":0,\"explicitRetryQueries\":1}\n  ✓  16 test/browser/recovery.spec.ts:14:1 › Router outage renders useful SSR without JavaScript and explicit retry recovers (22.0s)\n  ✓  17 test/browser/recovery.spec.ts:78:1 › refresh announces stale data only while pending, rejects partial errors, and retries once (658ms)\n  ✓  18 test/browser/recovery.spec.ts:127:1 › explicit refresh follows the current consumer after shared-query route changes (1.3s)\n  ✓  19 test/browser/recovery.spec.ts:157:1 › empty, missing and invalid inputs differ from unavailable data; home locale is respected (1.0s)\n\n\n  1) test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states \n\n    Error: expect(received).toBe(expected) // Object.is equality\n\n    Expected: true\n    Received: false\n\n      56 |           element.parentElement?.hasAttribute(\"data-artwork\"),\n      57 |         );\n    > 58 |         expect(artwork).toBe(true);\n         |                         ^\n      59 |         await expect(targetElement).toHaveText(\"Cover unavailable\");\n      60 |         // The opaque illustration covers this fallback. Retain the original\n      61 |         // incomplete result and measure its actual flat foreground/background.\n        at audit (<repository>/apps/web/test/browser/accessibility.spec.ts:58:25)\n        at <repository>/apps/web/test/browser/accessibility.spec.ts:223:5\n\n    attachment #6: screenshot (image/png) ──────────────────────────────────────────────────────────\n    test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/test-failed-1.png\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n    Error Context: test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/error-context.md\n\n    attachment #8: trace (application/zip) ─────────────────────────────────────────────────────────\n    test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/trace.zip\n    Usage:\n\n        pnpm exec playwright show-trace test-results/accessibility-profile-dial-831c4-t-create-and-failure-states/trace.zip\n\n    ────────────────────────────────────────────────────────────────────────────────────────────────\n\n  1 failed\n    test/browser/accessibility.spec.ts:154:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states \n  18 passed (1.0m)\nundefined\n<repository>/apps/web:\n[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: playwright test --grep-invert laboratory\n",
+  "populatedContrastConfirmation": "\nRunning 1 test using 1 worker\n\n{\"event\":\"web_accessibility\",\"state\":\"profiles-signed-out\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-list\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\",\"color-contrast\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-create\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n{\"event\":\"web_accessibility\",\"state\":\"profiles-unavailable\",\"violations\":[],\"incomplete\":[\"aria-hidden-focus\"]}\n  ✓  1 test/browser/accessibility.spec.ts:180:1 › profile dialog exposes labelled signed-out, busy, list, create and failure states (6.9s)\n\n  1 passed (8.1s)\n",
+  "functionalConfirmation": {
+    "stats": {
+      "startTime": "2026-08-28T00:11:51.999Z",
+      "duration": 72231.618,
+      "expected": 19,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "tests": [
+      {
+        "title": "public routes and Portuguese metadata pass automated accessibility at 390px",
+        "status": "passed",
+        "durationMs": 6301,
+        "attachments": [
+          {
+            "name": "accessibility-390--",
+            "report": {
+              "state": "390--",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 390,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "color-contrast",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      ".absolute.inset-0[aria-hidden=\"true\"]"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "color-contrast",
+                      "message": "Element's background color could not be determined because it is overlapped by another element",
+                      "relatedTargets": []
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "image-alt",
+                "image-redundant-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "list",
+                "listitem",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "presentation-role-conflict",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "incomplete-contrast-390--",
+            "report": {
+              "measurements": [
+                {
+                  "foreground": "rgb(173, 183, 173)",
+                  "background": "rgb(25, 32, 28)",
+                  "ratio": 8.028471714747855
+                }
+              ]
+            }
+          },
+          {
+            "name": "accessibility-390--browse",
+            "report": {
+              "state": "390--browse",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 390,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "color-contrast",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      ".absolute.inset-0[aria-hidden=\"true\"]"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "color-contrast",
+                      "message": "Element's background color could not be determined because it is overlapped by another element",
+                      "relatedTargets": []
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "image-alt",
+                "image-redundant-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "list",
+                "listitem",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "presentation-role-conflict",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "incomplete-contrast-390--browse",
+            "report": {
+              "measurements": [
+                {
+                  "foreground": "rgb(173, 183, 173)",
+                  "background": "rgb(25, 32, 28)",
+                  "ratio": 8.028471714747855
+                }
+              ]
+            }
+          },
+          {
+            "name": "accessibility-390--title-00000000-0000-4000-8000-000005000001",
+            "report": {
+              "state": "390--title-00000000-0000-4000-8000-000005000001",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 390,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "color-contrast",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      ".absolute.inset-0[aria-hidden=\"true\"]"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "color-contrast",
+                      "message": "Element's background color could not be determined because it is overlapped by another element",
+                      "relatedTargets": []
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "definition-list",
+                "dlitem",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "image-alt",
+                "image-redundant-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-in-text-block",
+                "link-name",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "incomplete-contrast-390--title-00000000-0000-4000-8000-000005000001",
+            "report": {
+              "measurements": [
+                {
+                  "foreground": "rgb(173, 183, 173)",
+                  "background": "rgb(25, 32, 28)",
+                  "ratio": 8.028471714747855
+                }
+              ]
+            }
+          },
+          {
+            "name": "accessibility-390--attribution",
+            "report": {
+              "state": "390--attribution",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 390,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "definition-list",
+                "dlitem",
+                "document-title",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "duplicate-id-aria",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "accessibility-390--profiles",
+            "report": {
+              "state": "390--profiles",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 390,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "skip-link",
+                "tabindex"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "duplicate-id-aria",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "valid-lang",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "public routes and Portuguese metadata pass automated accessibility at 1280px",
+        "status": "passed",
+        "durationMs": 8427,
+        "attachments": [
+          {
+            "name": "accessibility-1280--",
+            "report": {
+              "state": "1280--",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "color-contrast",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      ".absolute.inset-0[aria-hidden=\"true\"]"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "color-contrast",
+                      "message": "Element's background color could not be determined because it is overlapped by another element",
+                      "relatedTargets": []
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "image-alt",
+                "image-redundant-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "list",
+                "listitem",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "presentation-role-conflict",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "incomplete-contrast-1280--",
+            "report": {
+              "measurements": [
+                {
+                  "foreground": "rgb(173, 183, 173)",
+                  "background": "rgb(25, 32, 28)",
+                  "ratio": 8.028471714747855
+                }
+              ]
+            }
+          },
+          {
+            "name": "accessibility-1280--browse",
+            "report": {
+              "state": "1280--browse",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "color-contrast",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      ".absolute.inset-0[aria-hidden=\"true\"]"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "color-contrast",
+                      "message": "Element's background color could not be determined because it is overlapped by another element",
+                      "relatedTargets": []
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "image-alt",
+                "image-redundant-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "list",
+                "listitem",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "presentation-role-conflict",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "incomplete-contrast-1280--browse",
+            "report": {
+              "measurements": [
+                {
+                  "foreground": "rgb(173, 183, 173)",
+                  "background": "rgb(25, 32, 28)",
+                  "ratio": 8.028471714747855
+                }
+              ]
+            }
+          },
+          {
+            "name": "accessibility-1280--title-00000000-0000-4000-8000-000005000001",
+            "report": {
+              "state": "1280--title-00000000-0000-4000-8000-000005000001",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "color-contrast",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      ".absolute.inset-0[aria-hidden=\"true\"]"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "color-contrast",
+                      "message": "Element's background color could not be determined because it is overlapped by another element",
+                      "relatedTargets": []
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "definition-list",
+                "dlitem",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "image-alt",
+                "image-redundant-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-in-text-block",
+                "link-name",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "incomplete-contrast-1280--title-00000000-0000-4000-8000-000005000001",
+            "report": {
+              "measurements": [
+                {
+                  "foreground": "rgb(173, 183, 173)",
+                  "background": "rgb(25, 32, 28)",
+                  "ratio": 8.028471714747855
+                }
+              ]
+            }
+          },
+          {
+            "name": "accessibility-1280--attribution",
+            "report": {
+              "state": "1280--attribution",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "definition-list",
+                "dlitem",
+                "document-title",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "skip-link",
+                "tabindex",
+                "valid-lang"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "duplicate-id-aria",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "accessibility-1280--profiles",
+            "report": {
+              "state": "1280--profiles",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 844,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 844
+              },
+              "violations": [],
+              "incomplete": [],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-one-main",
+                "landmark-unique",
+                "link-name",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "skip-link",
+                "tabindex"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-dialog-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "duplicate-id-aria",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "link-in-text-block",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "valid-lang",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "title": "profile dialog exposes labelled signed-out, busy, list, create and failure states",
+        "status": "passed",
+        "durationMs": 12258,
+        "attachments": [
+          {
+            "name": "accessibility-profiles-signed-out",
+            "report": {
+              "state": "profiles-signed-out",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 800,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 800
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "aria-hidden-focus",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                    ],
+                    [
+                      ".skip-link"
+                    ],
+                    [
+                      "header"
+                    ],
+                    [
+                      "#main"
+                    ],
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".skip-link"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".tracking-tight"
+                        ],
+                        [
+                          "a[href$=\"browse\"]"
+                        ],
+                        [
+                          "a[href$=\"attribution\"]"
+                        ],
+                        [
+                          ".gap-6 > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "section > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-dialog-name",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-one-main",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "tabindex"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-unique",
+                "link-in-text-block",
+                "link-name",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "skip-link",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "valid-lang",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "focus-containment-profiles-signed-out",
+            "report": {
+              "outsideFocusRecovered": true,
+              "forwardTabs": 12,
+              "backwardTabs": 12,
+              "backgroundMainExposed": false
+            }
+          },
+          {
+            "name": "busy-semantics",
+            "report": {
+              "state": "profiles-busy",
+              "outsideFocusRecovered": true,
+              "forwardAndBackwardTrap": true,
+              "snapshot": "- dialog \"Your profiles\":\n  - heading \"Your profiles\" [level=2]\n  - paragraph: Local demo only. Use fictional names; accounts and profiles remain on this machine.\n  - button \"Close profiles\": Close\n  - text: Saving with Identity…\n  - paragraph: You are signed out. Start the fixed local demo session; no password or external account is needed.\n  - button \"Starting session…\" [disabled]"
+            }
+          },
+          {
+            "name": "accessibility-profiles-list",
+            "report": {
+              "state": "profiles-list",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 800,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 800
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "aria-hidden-focus",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                    ],
+                    [
+                      ".skip-link"
+                    ],
+                    [
+                      "header"
+                    ],
+                    [
+                      "#main"
+                    ],
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".skip-link"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".tracking-tight"
+                        ],
+                        [
+                          "a[href$=\"browse\"]"
+                        ],
+                        [
+                          "a[href$=\"attribution\"]"
+                        ],
+                        [
+                          ".gap-6 > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "section > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-dialog-name",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-one-main",
+                "list",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "tabindex"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-unique",
+                "link-in-text-block",
+                "link-name",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "skip-link",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "valid-lang",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "focus-containment-profiles-list",
+            "report": {
+              "outsideFocusRecovered": true,
+              "forwardTabs": 12,
+              "backwardTabs": 12,
+              "backgroundMainExposed": false
+            }
+          },
+          {
+            "name": "accessibility-profiles-create",
+            "report": {
+              "state": "profiles-create",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 800,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 800
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "aria-hidden-focus",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                    ],
+                    [
+                      ".skip-link"
+                    ],
+                    [
+                      "header"
+                    ],
+                    [
+                      "#main"
+                    ],
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".skip-link"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".tracking-tight"
+                        ],
+                        [
+                          "a[href$=\"browse\"]"
+                        ],
+                        [
+                          "a[href$=\"attribution\"]"
+                        ],
+                        [
+                          ".gap-6 > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "section > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-dialog-name",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "autocomplete-valid",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "form-field-multiple-labels",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "label-title-only",
+                "label",
+                "landmark-one-main",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "select-name",
+                "tabindex"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-unique",
+                "link-in-text-block",
+                "link-name",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "server-side-image-map",
+                "skip-link",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "valid-lang",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "focus-containment-profiles-create",
+            "report": {
+              "outsideFocusRecovered": true,
+              "forwardTabs": 12,
+              "backwardTabs": 12,
+              "backgroundMainExposed": false
+            }
+          },
+          {
+            "name": "accessibility-profiles-unavailable",
+            "report": {
+              "state": "profiles-unavailable",
+              "engine": {
+                "name": "axe-core",
+                "version": "4.13.0"
+              },
+              "environment": {
+                "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/145.0.0.0 Safari/537.36",
+                "windowWidth": 1280,
+                "windowHeight": 800,
+                "orientationAngle": 0,
+                "orientationType": "landscape-primary"
+              },
+              "viewport": {
+                "width": 1280,
+                "height": 800
+              },
+              "violations": [],
+              "incomplete": [
+                {
+                  "id": "aria-hidden-focus",
+                  "impact": "serious",
+                  "targets": [
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                    ],
+                    [
+                      ".skip-link"
+                    ],
+                    [
+                      "header"
+                    ],
+                    [
+                      "#main"
+                    ],
+                    [
+                      "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                    ]
+                  ],
+                  "checks": [
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(1)"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".skip-link"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          ".tracking-tight"
+                        ],
+                        [
+                          "a[href$=\"browse\"]"
+                        ],
+                        [
+                          "a[href$=\"attribution\"]"
+                        ],
+                        [
+                          ".gap-6 > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "section > .text-foreground.hover\\:bg-card[aria-haspopup=\"dialog\"]"
+                        ]
+                      ]
+                    },
+                    {
+                      "id": "focusable-modal-open",
+                      "message": "Check that focusable elements are not tabbable in the current state",
+                      "relatedTargets": [
+                        [
+                          "span[data-radix-focus-guard=\"\"]:nth-child(13)"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "passedRules": [
+                "aria-allowed-attr",
+                "aria-allowed-role",
+                "aria-conditional-attr",
+                "aria-deprecated-role",
+                "aria-dialog-name",
+                "aria-hidden-body",
+                "aria-hidden-focus",
+                "aria-prohibited-attr",
+                "aria-required-attr",
+                "aria-roles",
+                "aria-valid-attr-value",
+                "aria-valid-attr",
+                "avoid-inline-spacing",
+                "button-name",
+                "bypass",
+                "color-contrast",
+                "document-title",
+                "duplicate-id-aria",
+                "empty-heading",
+                "heading-order",
+                "html-has-lang",
+                "html-lang-valid",
+                "landmark-one-main",
+                "meta-viewport-large",
+                "meta-viewport",
+                "nested-interactive",
+                "page-has-heading-one",
+                "region",
+                "tabindex"
+              ],
+              "inapplicableRules": [
+                "accesskeys",
+                "area-alt",
+                "aria-braille-equivalent",
+                "aria-command-name",
+                "aria-input-field-name",
+                "aria-meter-name",
+                "aria-progressbar-name",
+                "aria-required-children",
+                "aria-required-parent",
+                "aria-tab-name",
+                "aria-text",
+                "aria-toggle-field-name",
+                "aria-tooltip-name",
+                "aria-treeitem-name",
+                "autocomplete-valid",
+                "blink",
+                "definition-list",
+                "dlitem",
+                "empty-table-header",
+                "form-field-multiple-labels",
+                "frame-focusable-content",
+                "frame-tested",
+                "frame-title-unique",
+                "frame-title",
+                "html-xml-lang-mismatch",
+                "image-alt",
+                "image-redundant-alt",
+                "input-button-name",
+                "input-image-alt",
+                "label-title-only",
+                "label",
+                "landmark-banner-is-top-level",
+                "landmark-contentinfo-is-top-level",
+                "landmark-main-is-top-level",
+                "landmark-no-duplicate-banner",
+                "landmark-no-duplicate-contentinfo",
+                "landmark-no-duplicate-main",
+                "landmark-unique",
+                "link-in-text-block",
+                "link-name",
+                "list",
+                "listitem",
+                "marquee",
+                "meta-refresh",
+                "object-alt",
+                "presentation-role-conflict",
+                "role-img-alt",
+                "scope-attr-valid",
+                "scrollable-region-focusable",
+                "select-name",
+                "server-side-image-map",
+                "skip-link",
+                "summary-name",
+                "svg-img-alt",
+                "table-duplicate-name",
+                "td-headers-attr",
+                "th-has-data-cells",
+                "valid-lang",
+                "video-caption",
+                "no-autoplay-audio"
+              ]
+            }
+          },
+          {
+            "name": "focus-containment-profiles-unavailable",
+            "report": {
+              "outsideFocusRecovered": true,
+              "forwardTabs": 12,
+              "backwardTabs": 12,
+              "backgroundMainExposed": false
+            }
+          }
+        ]
+      },
+      {
+        "title": "static original and bounded optimized variants work without remote image access",
+        "status": "passed",
+        "durationMs": 125,
+        "attachments": []
+      },
+      {
+        "title": "cards select responsive resources and detail credits the source-owned illustration",
+        "status": "passed",
+        "durationMs": 2979,
+        "attachments": []
+      },
+      {
+        "title": "unavailable artwork keeps layout and navigation with and without JavaScript",
+        "status": "passed",
+        "durationMs": 2819,
+        "attachments": []
+      },
+      {
+        "title": "real local session creates/selects a profile with keyboard focus and private cache reset",
+        "status": "passed",
+        "durationMs": 2948,
+        "attachments": []
+      },
+      {
+        "title": "Router accepts exact Web preflight but rejects forged origin and fetch metadata",
+        "status": "passed",
+        "durationMs": 45,
+        "attachments": []
+      },
+      {
+        "title": "profile outage exposes retry and keeps public browsing available",
+        "status": "passed",
+        "durationMs": 1096,
+        "attachments": []
+      },
+      {
+        "title": "expiry removes private controls without a refetch loop and reduced-motion dialog traps focus",
+        "status": "passed",
+        "durationMs": 1718,
+        "attachments": []
+      },
+      {
+        "title": "served HTML and browser-loaded public/lazy assets contain no private server artifacts",
+        "status": "passed",
+        "durationMs": 2012,
+        "attachments": []
+      },
+      {
+        "title": "published public HTML hydrates without browser GraphQL or automatic route prefetch",
+        "status": "passed",
+        "durationMs": 1359,
+        "attachments": []
+      },
+      {
+        "title": "Portuguese public browsing and title attribution work with JavaScript disabled",
+        "status": "passed",
+        "durationMs": 952,
+        "attachments": []
+      },
+      {
+        "title": "delayed scripts do not hide public content or create hydration mismatches",
+        "status": "passed",
+        "durationMs": 1144,
+        "attachments": []
+      },
+      {
+        "title": "keyboard-only skip, title navigation and attribution navigation",
+        "status": "passed",
+        "durationMs": 1401,
+        "attachments": []
+      },
+      {
+        "title": "Router outage renders useful SSR without JavaScript and explicit retry recovers",
+        "status": "passed",
+        "durationMs": 22249,
+        "attachments": []
+      },
+      {
+        "title": "refresh announces stale data only while pending, rejects partial errors, and retries once",
+        "status": "passed",
+        "durationMs": 798,
+        "attachments": []
+      },
+      {
+        "title": "explicit refresh follows the current consumer after shared-query route changes",
+        "status": "passed",
+        "durationMs": 1376,
+        "attachments": []
+      },
+      {
+        "title": "empty, missing and invalid inputs differ from unavailable data; home locale is respected",
+        "status": "passed",
+        "durationMs": 834,
+        "attachments": []
+      }
+    ]
+  }
+}

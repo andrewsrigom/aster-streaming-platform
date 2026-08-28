@@ -96,16 +96,17 @@ export default function ProfileDialog({
   };
   return (
     <Dialog busy={busy} close={close} restoreFocus={restoreFocus}>
-      {busy ? (
-        <p role="status" className="mt-5 text-sm">
-          Saving with Identity…
-        </p>
-      ) : null}
-      {notice && (
-        <p role="status" className="mt-5 rounded-md border border-border p-3 text-sm">
-          {notices[notice]}
-        </p>
-      )}
+      {/* Persistent explicit live regions also avoid Orca's status-bar event filtering. */}
+      <div aria-live="polite" aria-atomic="true" className={busy ? "mt-5 text-sm" : "text-sm"}>
+        {busy ? "Saving with Identity…" : ""}
+      </div>
+      <div
+        aria-live="polite"
+        aria-atomic="true"
+        className={notice ? "mt-5 rounded-md border border-border p-3 text-sm" : "text-sm"}
+      >
+        {notice ? notices[notice] : ""}
+      </div>
       {runtime ? (
         <ApolloProvider client={runtime.client} key={runtime.generation}>
           <ProfileFlow

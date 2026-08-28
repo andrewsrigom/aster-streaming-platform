@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Actual reader review and final Web assets
+
+### Completed
+
+Corrected profile announcements using persistent explicit polite/atomic live regions. Actual Orca 48/Firefox speech confirms saving, creation, selection, sign-out, labels, pressed state and native heading navigation. No reader patch, artificial delay or owner/SSR boundary change. Supplemented the real populated-dialog contrast incomplete with contrast and text-occlusion checks.
+
+### Evidence
+
+Web unit tests 22/22 and types pass. The initial functional candidate passed 18/19; the contrast confirmation passed in 8.1 s. Final-asset performance passed all three visits in 15.380 s with unchanged budgets and quiet-host preconditions. Raw speech, compressed audio excerpt, regressions and measurements are indexed in evidence/phase-05/reader-review.md. Removed only the labeled no-mount reader container and exact fictional profile through Identity; remaining profile baseline is zero and verification sessions are signed out. Retained databases are untouched. No remote publication occurred yet.
+
+### Next action
+
+Final confirmation passes 19/19 browser scenarios in 72.232 s and 58/58 source tasks in 60.518 s (28 cached); initial memory-label errors were corrected. Publish for review and protected CI, then begin Phase 06 with actual rights approval before acquisition. Keep the full Phase 00–14 goal active.
+
 ## 2026-08-27 — Clean demo acceptance and refresh ownership
 
 ### Completed

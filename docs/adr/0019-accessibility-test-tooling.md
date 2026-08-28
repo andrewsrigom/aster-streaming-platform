@@ -15,6 +15,8 @@ Automated results complement keyboard, focus, reduced-motion and screen-reader r
 
 ## Validation and rollback
 
+For the separate actual-reader review, use unmodified Debian Orca 48.1 (LGPL-2.1-or-later) and Firefox ESR 140.14 (MPL-2.0 and its retained bundled notices) in a disposable, resource-limited private X11/D-Bus container. These are external verification programs, not linked/copied Aster code or production dependencies. Keep upstream notices and source access, retain Aster's MIT license and do not broaden the npm allowlist. [Debian's exact Orca copyright record](https://metadata.ftp-master.debian.org/changelogs/main/o/orca/orca_48.1-1%2Bdeb13u2_copyright) and Mozilla's terms below support this narrow use. The agent-browser helper used in preliminary trials is Apache-2.0, not MIT. No patched reader or weakened application semantics may be used to manufacture acceptance. The [actual review](../../evidence/phase-05/reader-review.md) records speech, adverse trials, isolation and cleanup.
+
 Run scans against the actual Docker Web routes and dialog states. Inspect incomplete results, not only violations. Confirm test engines are absent from production assets/runtime. Remove the dev dependency, tests and the two exceptions together to roll back; no product data or UI migration is involved.
 
 ## Sources and terms

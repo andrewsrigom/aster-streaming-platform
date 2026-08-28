@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item, based on released main b6c99c4. Clean startup, isolation and consumer-refresh fix e130e8e pass [19 browser journeys and 58/58 source tasks](../evidence/phase-05/clean-acceptance.md). The prior [quiet-host baseline](../evidence/phase-05/artwork-performance.md) passes six visits. Final-image performance confirmation, actual screen-reader review and publication remain.
+Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item, based on released main b6c99c4. Clean startup/isolation and refresh ownership pass [acceptance](../evidence/phase-05/clean-acceptance.md). [Actual reader speech and final-asset performance](../evidence/phase-05/reader-review.md) now pass. Final source/review/protected publication remains. Phase 06 will first complete an actual-film rights review; no source acquisition is authorized by the synthetic seed.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
