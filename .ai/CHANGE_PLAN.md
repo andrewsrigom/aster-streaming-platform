@@ -13,7 +13,7 @@ Save progress for an owned profile and valid title-bound playback context, with 
 
 ## Current behavior
 
-Identity profiles and Playback sessions exist. Engagement domain/application pass 25 focused tests; persistence/transport are not implemented. Phase 07 is released: PR 25 head c7f9f7c0e5ad14134fe260284fe7c1f8f2921efe passed protected CI/confirmation, squash 854592e5ff1213a306b45d61a547ad4f2a2d9395 passed exact post-merge 33171284170. This branch is already rebased on that identical tree. [Player release/rollback](../evidence/phase-07/release.md), [progress checkpoint](../evidence/phase-08/README.md).
+Identity profiles and Playback sessions exist. Engagement domain/application/PostgreSQL pass 32 focused tests and ten real SQL scenarios; private owner transport is not implemented. Phase 07 is released: PR 25 head c7f9f7c0e5ad14134fe260284fe7c1f8f2921efe passed protected CI/confirmation, squash 854592e5ff1213a306b45d61a547ad4f2a2d9395 passed exact post-merge 33171284170. This branch is already rebased on that identical tree. [Player release/rollback](../evidence/phase-07/release.md), [progress checkpoint](../evidence/phase-08/README.md).
 
 ## Proposed behavior
 
@@ -43,7 +43,7 @@ Validate exact keys, UUIDs, integer sequence/position/duration/time and bounded 
 
 1. Pure progress input/state/threshold policy with deterministic tests.
 2. Application authorization, replay, transaction intent and finite failure tests.
-3. Owner-read ADR, retention and real PostgreSQL isolation/concurrency/atomicity.
+3. [ADR-0030](../docs/adr/0030-local-engagement-progress.md) defines private owner reads, one-hour receipts, retained progress and SQL capacity/lock order. Migration 0001 and the PostgreSQL adapter pass real isolation/concurrency/atomicity and safe rollback tests.
 4. Bounded GraphQL/runtime, explicit degraded behavior and protected operations.
 5. Evidence/review/release after PR 25, then remaining Phase 08 work.
 
@@ -66,7 +66,7 @@ Record implemented versus planned behavior, threshold/receipt/retention contract
 ## Completion checklist
 
 - [x] Domain/application acceptance (pure/application fakes; real persistence/transport still pending)
-- [ ] Durable isolation/concurrency/atomicity
+- [x] Durable isolation/concurrency/atomicity (disposable PostgreSQL; owner network still pending)
 - [ ] Owner transport and public contract
 - [ ] Evidence and memory current
 - [ ] Predecessor and protected release complete

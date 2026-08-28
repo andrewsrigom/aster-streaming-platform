@@ -367,6 +367,28 @@ test("foreign receipt cannot be replayed under a different authorized account", 
   assert.equal(f.calls.transaction, 1);
 });
 
+test("racing receipt replay rechecks Identity after the locked receipt read", async () => {
+  const f = fixture();
+  await f.recorder.record(input(), f.request);
+  f.ports.receipts.read = () => Promise.resolve({ status: "completed", value: null });
+  const run = f.ports.transactions.run.bind(f.ports.transactions);
+  f.ports.transactions.run = (work, signal) =>
+    run(
+      (tx) =>
+        work({
+          ...tx,
+          findReceipt: async (key, receiptId) => {
+            const receipt = await tx.findReceipt(key, receiptId);
+            f.setTime(start + 3);
+            return receipt;
+          },
+        }),
+      signal,
+    );
+  assert.equal((await f.recorder.record(input(), f.request)).status, "not_found");
+  assert.equal(f.state().events.length, 1);
+});
+
 test("owner reads and outbox carry validated correlation and trace without browser authority claims", async () => {
   const f = fixture();
   const traceparent = "00-" + "a".repeat(32) + "-" + "b".repeat(16) + "-01";

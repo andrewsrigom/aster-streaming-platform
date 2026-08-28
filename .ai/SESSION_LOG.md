@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Durable progress persistence
+
+### Completed
+
+ADR-0030, isolated Engagement migration/adapter, per-profile serialization, atomic state/receipt/event, bounded slots and immutable deletion fence. Recheck Identity freshness during racing replay. No owner transport or save UI is claimed.
+
+### Evidence
+
+[Checkpoint](../evidence/phase-08/README.md): 32 focused tests and ten real PostgreSQL 18.6 scenarios; strict types, scoped lint, architecture, unused-code and memory checks. Empty rollback preserves unrelated state; retained data refuses downgrade. Disposable SQL fixtures/network removed; retained demo/media and Windows processes untouched.
+
+### Next action
+
+P08-R01 private owner reads and protected runtime. Full Phase 00–14 goal remains active; no CPU/film loop or Phase 07 polling.
+
 ## 2026-08-28 — Phase 07 release and Engagement core
 
 ### Completed

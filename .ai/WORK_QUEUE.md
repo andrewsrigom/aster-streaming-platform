@@ -52,7 +52,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 ## Work-item rules
 
-Phase 07's twelve requirements have an [acceptance row and protected release](../evidence/phase-07/release.md). P08-R01 includes P08-R02–R05 and atomic outbox intent from P08-R09; domain/application tests pass, while real persistence and owner transport remain. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
+Phase 07's twelve requirements have an [acceptance row and protected release](../evidence/phase-07/release.md). P08-R01 includes P08-R02–R05 and atomic outbox intent from P08-R09; 32 focused tests and ten real PostgreSQL scenarios pass; private owner transport and runtime remain. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

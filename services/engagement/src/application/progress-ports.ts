@@ -27,13 +27,16 @@ export interface ProgressReceipt extends ProgressKey {
   readonly result: ProgressState;
   readonly expiresAt: number;
 }
-interface ProgressTransaction {
+export interface ProgressTransaction {
   // Serialize this aggregate and its profile-deletion tombstone before inspecting receipts/state.
   lock(key: ProgressKey): Promise<Readonly<{ deleted: boolean; current: ProgressState | null }>>;
   pruneReceipts(key: ProgressKey, now: number, maximum: number): Promise<void>;
   findReceipt(key: ProgressKey, idempotencyKey: string): Promise<ProgressReceipt | null>;
   retainedCounts(key: ProgressKey): Promise<Readonly<{ receipts: number; outbox: number }>>;
-  save(progress: ProgressState): Promise<void>;
+  save(
+    progress: ProgressState,
+    authority: Readonly<{ checkedAt: number; expiresAt: number }>,
+  ): Promise<void>;
   writeReceipt(receipt: ProgressReceipt): Promise<void>;
   appendOutbox(event: ProgressRecordedEvent): Promise<void>;
 }

@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–07 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR and the accessible HLS player run in Docker. The one-command generated playable demo includes captioned media, initialization, readiness and safe replay. The old browse seed is non-delivery. Phase 08 starts with tested progress domain/application rules, not yet durable storage or player save. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–07 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR and the accessible HLS player run in Docker. The one-command generated playable demo includes captioned media, initialization, readiness and safe replay. The old browse seed is non-delivery. Phase 08 has tested progress domain/application and real PostgreSQL persistence; owner transport and player save remain planned. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 

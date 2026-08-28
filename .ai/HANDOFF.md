@@ -6,8 +6,8 @@ P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 
 
 ## Exact next actions
 
-1. Continue P08-R01 with the owner-read ADR and bounded retention, then isolated PostgreSQL migration/repository and real synchronized concurrency/rollback. [Core checkpoint](../evidence/phase-08/README.md): 25 domain/application tests, types, lint and architecture pass. Do not claim real persistence, live owner authentication or a save UI yet.
-2. Phase 07 and PR 25 are closed, including post-merge 33171284170. Do not poll/request another review/rerun its CI. Continue the active Phase 08 item; its first checkpoint has no running service, actual SQL or save UI yet.
+1. Continue P08-R01 with the ADR-0030 private Identity/profile and Playback/session reads, then runtime/subgraph. [SQL checkpoint](../evidence/phase-08/README.md): 32 focused tests and ten real PostgreSQL scenarios pass. Migration 0001, atomic state/receipt/outbox, bounds and replay are implemented; live owner authentication/save UI remain planned.
+2. Phase 07 and PR 25 are closed, including post-merge 33171284170. Do not poll/request another review/rerun its CI. Continue the active Phase 08 item; its SQL checkpoint has no running Engagement service or save UI yet.
 3. Main/origin/main and this branch base are 854592e. Recovery stash 0a477fb62adef5b74dbf4084cf47b3e491bd6e3b was already restored after rebase; never apply it again. Earlier player stashes are also restored. Whole-workspace candidate gates use 2 GiB Node heap, 4 GiB tooling memory and Turbo concurrency two. No CPU/film loop.
 
 P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
@@ -24,8 +24,8 @@ Uncertain publication grants retain their recovery barrier. Read the publication
 
 ## Execution environment
 
-Windows Codex, repository through WSL UNC. WSL launch is unreliable; do not restart or diagnose it. aster-p06-tooling:git supports the canonical mount, UID 1002 and bounded resources. Set CI=true for pnpm commands to match the completed installation's virtual-store setting; do not reinstall repeatedly or disable dependency verification. pnpm install used the existing WSL store/cache with normal registry policy checks. Native Docker/Windows Node run built-in supervisors. Native Git credentials push; Docker Git commits with normal hooks. Do not overlap Git writes.
+Windows Codex, repository through WSL UNC. WSL launch is unreliable; do not restart or diagnose it. aster-p06-tooling:git supports the canonical mount, UID 1002 and bounded resources. Set CI=true for pnpm commands to match the completed installation's virtual-store setting; do not reinstall repeatedly or disable dependency verification. pnpm install used the existing WSL store/cache with normal registry policy checks. Native Docker/Windows Node run built-in supervisors; workspace dependency imports need Linux tooling (native Windows cannot resolve these pnpm links). Native Git credentials push; Docker Git commits with normal hooks. Do not overlap Git writes.
 
 ## Do not do yet
 
-Do not claim Phase 08 persistence/transport before its real acceptance. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
+Do not claim Phase 08 transport/player or phase completion before their real acceptance. SQL fixtures were exact-ownership checked and removed. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.

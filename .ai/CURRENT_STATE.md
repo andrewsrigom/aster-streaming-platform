@@ -16,7 +16,7 @@ Phase 06 includes current rights approval, bounded acquisition, isolated full-fi
 
 ## Current work
 
-P08-R01 domain/application are implemented: exact/conflicting replay, global per-profile/title sequence, configured opening/completion, clamped positions, bounded clocks, owner-validation ports, transaction/outbox intent and cancellation. [25 focused tests](../evidence/phase-08/README.md), strict TypeScript, scoped lint and architecture pass. This is not a running Engagement service or proven durable save; real PostgreSQL and owner adapters are next.
+P08-R01 domain/application are implemented: exact/conflicting replay, global per-profile/title sequence, configured opening/completion, clamped positions, bounded clocks, owner-validation ports, transaction/outbox intent and cancellation. [32 focused tests and ten real SQL scenarios](../evidence/phase-08/README.md), strict TypeScript, scoped lint and architecture pass. PostgreSQL migration/adapter now prove durable atomic progress/receipt/outbox, replay, ordering, bounds and safe rollback. Owner adapters and running save UI remain next.
 
 P07-R01's public Playback mutation, private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are released. Real PostgreSQL covers admission, expiry, retention, restricted credentials and migrations. The connected Router/Catalog/Playback proof covers rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Player/demo acceptance and local application upgrade are also complete.
 
@@ -26,11 +26,11 @@ Saved P07 work is restored and rebased on released main. Stash 2b0341cbb5604f007
 
 ## Not implemented
 
-Engagement persistence/private transport/subgraph, durable player save, watchlist, projections/relay, Discovery and hosted release remain unimplemented. Signal / 01 is a non-delivery browse fixture; Signal / 02 is a playable generated technical sample, not a third-party film.
+Engagement private transport/subgraph, durable player save, watchlist, projections/relay, Discovery and hosted release remain unimplemented. Signal / 01 is a non-delivery browse fixture; Signal / 02 is a playable generated technical sample, not a third-party film.
 
 ## Next outcome
 
-Implement P08-R01's owner-read decision, retention and isolated PostgreSQL adapter; prove real concurrency/atomicity before wiring transport. PR 25 and post-merge are complete; this branch is rebased. No duplicate review/pipeline or unchanged CPU/film test.
+Continue P08-R01 with private owner reads and runtime under ADR-0030. SQL/concurrency/rollback are proven; the fixture and its private network are removed. PR 25 and post-merge are complete; this branch is rebased. No duplicate review/pipeline or unchanged CPU/film test.
 
 ## Runtime and recovery
 

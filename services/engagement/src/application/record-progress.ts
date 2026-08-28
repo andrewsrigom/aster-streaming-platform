@@ -222,7 +222,7 @@ export function createProgressRecorder(ports: ProgressPorts) {
                 timestamp,
               );
               if (repeated) {
-                return repeated;
+                return authorized() ? repeated : { status: "not_found" };
               }
               if (!validContext()) {
                 return { status: "not_playable" };
@@ -253,7 +253,10 @@ export function createProgressRecorder(ports: ProgressPorts) {
                 return { status: "backpressure" };
               }
               const event = createProgressEvent(ports.nextId(), changed.value, eventContext);
-              await tx.save(changed.value);
+              await tx.save(changed.value, {
+                checkedAt: Math.min(owner.value.checkedAt, playback.value.checkedAt),
+                expiresAt: Math.min(owner.value.expiresAt, playback.value.expiresAt),
+              });
               await tx.writeReceipt({
                 ...key,
                 idempotencyKey: input.idempotencyKey,
