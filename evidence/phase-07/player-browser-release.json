@@ -1,0 +1,210 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\andre\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/playwright.config.mjs",
+      "playback.spec.ts",
+      "--grep",
+      "keyboard controls|accessible names|actual HLS caption"
+    ],
+    "configFile": "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\playwright.config.mjs",
+    "rootDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "*.spec.ts"
+        ],
+        "timeout": 35000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./results/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "playback.spec.ts",
+      "file": "playback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "keyboard controls change playback, quality and fullscreen; preferences survive reload",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5327,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T11:43:37.376Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "restored-local-preferences",
+                      "contentType": "application/json",
+                      "body": "ewogICJtdXRlZCI6IHRydWUsCiAgInJhdGUiOiAxLjI1LAogICJxdWFsaXR5IjogMjQwCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-627f00be6ac376981610",
+          "file": "playback.spec.ts",
+          "line": 97,
+          "column": 5
+        },
+        {
+          "title": "player controls have accessible names and no automated WCAG A/AA violations",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2032,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T11:43:42.997Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "player-accessibility",
+                      "contentType": "application/json",
+                      "body": "ewogICJ2aW9sYXRpb25zIjogW10sCiAgImluY29tcGxldGUiOiBbCiAgICB7CiAgICAgICJpZCI6ICJ2aWRlby1jYXB0aW9uIiwKICAgICAgImltcGFjdCI6ICJjcml0aWNhbCIsCiAgICAgICJ0YWdzIjogWwogICAgICAgICJjYXQudGV4dC1hbHRlcm5hdGl2ZXMiLAogICAgICAgICJ3Y2FnMmEiLAogICAgICAgICJ3Y2FnMTIyIiwKICAgICAgICAic2VjdGlvbjUwOCIsCiAgICAgICAgInNlY3Rpb241MDguMjIuYSIsCiAgICAgICAgIlRUdjUiLAogICAgICAgICJUVDE3LmEiLAogICAgICAgICJFTi0zMDEtNTQ5IiwKICAgICAgICAiRU4tOS4xLjIuMiIsCiAgICAgICAgIlJHQUF2NCIsCiAgICAgICAgIlJHQUEtNC4zLjEiCiAgICAgIF0sCiAgICAgICJkZXNjcmlwdGlvbiI6ICJFbnN1cmUgPHZpZGVvPiBlbGVtZW50cyBoYXZlIGNhcHRpb25zIiwKICAgICAgImhlbHAiOiAiPHZpZGVvPiBlbGVtZW50cyBtdXN0IGhhdmUgY2FwdGlvbnMiLAogICAgICAiaGVscFVybCI6ICJodHRwczovL2RlcXVldW5pdmVyc2l0eS5jb20vcnVsZXMvYXhlLzQuMTMvdmlkZW8tY2FwdGlvbj9hcHBsaWNhdGlvbj1wbGF5d3JpZ2h0IiwKICAgICAgIm5vZGVzIjogWwogICAgICAgIHsKICAgICAgICAgICJhbnkiOiBbXSwKICAgICAgICAgICJhbGwiOiBbXSwKICAgICAgICAgICJub25lIjogWwogICAgICAgICAgICB7CiAgICAgICAgICAgICAgImlkIjogImNhcHRpb24iLAogICAgICAgICAgICAgICJkYXRhIjogbnVsbCwKICAgICAgICAgICAgICAicmVsYXRlZE5vZGVzIjogW10sCiAgICAgICAgICAgICAgImltcGFjdCI6ICJjcml0aWNhbCIsCiAgICAgICAgICAgICAgIm1lc3NhZ2UiOiAiQ2hlY2sgdGhhdCBjYXB0aW9ucyBhcmUgYXZhaWxhYmxlIGZvciB0aGUgZWxlbWVudCIKICAgICAgICAgICAgfQogICAgICAgICAgXSwKICAgICAgICAgICJpbXBhY3QiOiAiY3JpdGljYWwiLAogICAgICAgICAgImh0bWwiOiAiPHZpZGVvIHNsb3Q9XCJtZWRpYVwiIHBsYXlzaW5saW5lPVwiXCIgY3Jvc3NvcmlnaW49XCJhbm9ueW1vdXNcIiBwcmVsb2FkPVwibWV0YWRhdGFcIiBhcmlhLWxhYmVsPVwiVGl0bGUgdmlkZW9cIiB0YWJpbmRleD1cIi0xXCIgc3JjPVwiYmxvYjpodHRwOi8vMTI3LjAuMC4xOjMwMDAvYzNlYWFkMmUtZDIxMC00ODA2LWFlMDItNTU2MWExYWQxODYzXCI+PC92aWRlbz4iLAogICAgICAgICAgInRhcmdldCI6IFsKICAgICAgICAgICAgInZpZGVvIgogICAgICAgICAgXSwKICAgICAgICAgICJmYWlsdXJlU3VtbWFyeSI6ICJGaXggYWxsIG9mIHRoZSBmb2xsb3dpbmc6XG4gIENoZWNrIHRoYXQgY2FwdGlvbnMgYXJlIGF2YWlsYWJsZSBmb3IgdGhlIGVsZW1lbnQiCiAgICAgICAgfQogICAgICBdCiAgICB9CiAgXSwKICAicGFzc2VzIjogWwogICAgImFyaWEtYWxsb3dlZC1hdHRyIiwKICAgICJhcmlhLWNvbW1hbmQtbmFtZSIsCiAgICAiYXJpYS1jb25kaXRpb25hbC1hdHRyIiwKICAgICJhcmlhLWRlcHJlY2F0ZWQtcm9sZSIsCiAgICAiYXJpYS1oaWRkZW4tZm9jdXMiLAogICAgImFyaWEtcHJvaGliaXRlZC1hdHRyIiwKICAgICJhcmlhLXJlcXVpcmVkLWF0dHIiLAogICAgImFyaWEtcm9sZXMiLAogICAgImFyaWEtdmFsaWQtYXR0ci12YWx1ZSIsCiAgICAiYXJpYS12YWxpZC1hdHRyIiwKICAgICJidXR0b24tbmFtZSIsCiAgICAiY29sb3ItY29udHJhc3QiLAogICAgImR1cGxpY2F0ZS1pZC1hcmlhIiwKICAgICJmb3JtLWZpZWxkLW11bHRpcGxlLWxhYmVscyIsCiAgICAibGFiZWwiLAogICAgIm5lc3RlZC1pbnRlcmFjdGl2ZSIsCiAgICAic2VsZWN0LW5hbWUiCiAgXQp9"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-b21a1968455866fb93ae",
+          "file": "playback.spec.ts",
+          "line": 132,
+          "column": 5
+        },
+        {
+          "title": "actual HLS caption selection uses a labeled technical fixture, not invented film dialogue",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1982,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T11:43:45.043Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "caption-fixture",
+                      "contentType": "application/json",
+                      "body": "ewogICJvd25lciI6ICJBc3RlciBjb250cmlidXRvcnMiLAogICJwdXJwb3NlIjogInRlY2huaWNhbCBITFMvVlRUIHNlbGVjdGlvbiBvbmx5OyBub3QgZmlsbSBkaWFsb2d1ZSIsCiAgInNlbGVjdGVkIjogdHJ1ZSwKICAiZGlzYWJsZWRBZ2FpbiI6IHRydWUKfQ=="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-e3c8042afdcbdfba32e6",
+          "file": "playback.spec.ts",
+          "line": 252,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-28T11:43:36.761Z",
+    "duration": 10670.346,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

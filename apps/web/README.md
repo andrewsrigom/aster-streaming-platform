@@ -1,6 +1,6 @@
 # Public Web checkpoint
 
-Status: public browsing, local profiles, Docker packaging, public recovery, responsive artwork and accessibility checks implemented; Phase 05 remains IN_PROGRESS pending final source/review/protected publication. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. [Actual-reader and final performance evidence](../../evidence/phase-05/reader-review.md) is recorded. The player remains unimplemented.
+Status: Phase 05 public browsing, local profiles, Docker packaging, public recovery, responsive artwork and accessibility checks are released. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. [Actual-reader and final performance evidence](../../evidence/phase-05/reader-review.md) is recorded. Phase 07's HLS player and clean playable demo are implemented, with candidate acceptance/release in progress; use the separate [playback guide](PLAYBACK.md).
 
 ## Docker-only demo
 

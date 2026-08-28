@@ -1,0 +1,202 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\andre\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/playwright.config.mjs",
+      "--grep",
+      "watch metadata|navigation cancels|missing media segment"
+    ],
+    "configFile": "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\playwright.config.mjs",
+    "rootDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "playback.spec.ts"
+        ],
+        "timeout": 35000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./results/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "playback.spec.ts",
+      "file": "playback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "watch metadata is SSR-only until explicit session creation; real media bypasses GraphQL",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1934,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T10:58:25.810Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "direct-media-waterfall",
+                      "contentType": "application/json",
+                      "body": "WwogIHsKICAgICJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo5MDAxIiwKICAgICJraW5kIjogInBsYXlsaXN0IiwKICAgICJzdGFydE1zIjogMTc4NzkxNDcwNzE0MC43MjMsCiAgICAicmVzcG9uc2VFbmRNcyI6IDExLjUzMwogIH0sCiAgewogICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgImtpbmQiOiAicGxheWxpc3QiLAogICAgInN0YXJ0TXMiOiAxNzg3OTE0NzA3MTgwLjM2MiwKICAgICJyZXNwb25zZUVuZE1zIjogMTIuNjkyCiAgfSwKICB7CiAgICAib3JpZ2luIjogImh0dHA6Ly8xMjcuMC4wLjE6OTAwMSIsCiAgICAia2luZCI6ICJzZWdtZW50IiwKICAgICJzdGFydE1zIjogMTc4NzkxNDcwNzIwNC4wODIsCiAgICAicmVzcG9uc2VFbmRNcyI6IDM2LjAxOQogIH0sCiAgewogICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgImtpbmQiOiAicGxheWxpc3QiLAogICAgInN0YXJ0TXMiOiAxNzg3OTE0NzA3Mjc3Ljc0NDEsCiAgICAicmVzcG9uc2VFbmRNcyI6IDEyLjQzMgogIH0sCiAgewogICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgImtpbmQiOiAic2VnbWVudCIsCiAgICAic3RhcnRNcyI6IDE3ODc5MTQ3MDcyOTEuNzk5LAogICAgInJlc3BvbnNlRW5kTXMiOiAyMS42MTYKICB9LAogIHsKICAgICJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo5MDAxIiwKICAgICJraW5kIjogInNlZ21lbnQiLAogICAgInN0YXJ0TXMiOiAxNzg3OTE0NzA3MzI4LjY2NCwKICAgICJyZXNwb25zZUVuZE1zIjogMTkuNTEzCiAgfSwKICB7CiAgICAib3JpZ2luIjogImh0dHA6Ly8xMjcuMC4wLjE6OTAwMSIsCiAgICAia2luZCI6ICJzZWdtZW50IiwKICAgICJzdGFydE1zIjogMTc4NzkxNDcwNzM2Mi45MjYsCiAgICAicmVzcG9uc2VFbmRNcyI6IDIzLjM5CiAgfSwKICB7CiAgICAib3JpZ2luIjogImh0dHA6Ly8xMjcuMC4wLjE6OTAwMSIsCiAgICAia2luZCI6ICJzZWdtZW50IiwKICAgICJzdGFydE1zIjogMTc4NzkxNDcwNzQxNC4yODQsCiAgICAicmVzcG9uc2VFbmRNcyI6IDI4LjU0MgogIH0KXQ=="
+                    },
+                    {
+                      "name": "playback-experience",
+                      "contentType": "application/json",
+                      "body": "WwogIHsKICAgICJldmVudCI6ICJzZXNzaW9uX3N1Y2Nlc3MiLAogICAgImF0TXMiOiA2MiwKICAgICJkdXJhdGlvbk1zIjogNjIKICB9LAogIHsKICAgICJldmVudCI6ICJtYW5pZmVzdF9sb2FkZWQiLAogICAgImF0TXMiOiAxNzEsCiAgICAiZHVyYXRpb25NcyI6IDQxCiAgfSwKICB7CiAgICAiZXZlbnQiOiAiZmlyc3RfZnJhbWUiLAogICAgImF0TXMiOiA0NzMsCiAgICAiZHVyYXRpb25NcyI6IDM0MwogIH0sCiAgewogICAgImV2ZW50IjogInJlbmRpdGlvbl9zd2l0Y2giLAogICAgImF0TXMiOiA0NzgsCiAgICAiaGVpZ2h0IjogMjQwCiAgfQpd"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-95b0c6705c7255e2bdf9",
+          "file": "playback.spec.ts",
+          "line": 44,
+          "column": 5
+        },
+        {
+          "title": "navigation cancels a pending session and never attaches a late response",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1226,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T10:58:28.049Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-077b4921f25de64a24c8",
+          "file": "playback.spec.ts",
+          "line": 305,
+          "column": 5
+        },
+        {
+          "title": "a missing media segment stops with a recoverable network classification",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1029,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T10:58:29.289Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-7a9ec8c48a524829d5ae",
+          "file": "playback.spec.ts",
+          "line": 348,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-28T10:58:25.015Z",
+    "duration": 5654.384,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

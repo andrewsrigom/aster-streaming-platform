@@ -1,0 +1,53 @@
+.controller {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  --media-primary-color: #f1f2e9;
+  --media-secondary-color: #101513;
+  --media-control-background: #101513;
+  --media-range-track-background: #adb7ad;
+  --media-range-bar-color: #d5ed89;
+  --media-control-hover-background: #354036;
+  --media-focus-ring: 2px solid #d5ed89;
+}
+.controller video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.controller media-control-bar {
+  width: 100%;
+}
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: #101513;
+  font-size: 0.75rem;
+}
+.choices label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.select {
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  background: var(--color-card);
+  color: var(--color-foreground);
+}
+.select:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+@media (max-width: 480px) {
+  .controller {
+    --media-control-padding: 8px;
+    --media-icon-size: 20px;
+    --media-font-size: 12px;
+  }
+}

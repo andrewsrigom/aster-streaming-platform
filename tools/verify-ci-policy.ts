@@ -263,6 +263,27 @@ export function validateWorkflowPolicy(
       /- name: Prove Playback persistence and federated runtime\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 10\s+run: \|\s+pnpm playback:integration\s+pnpm playback:runtime/u,
       "Playback changes require bounded real persistence and federated runtime acceptance",
     ],
+    [
+      /- name: Prove Docker-only playable demo\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15/u,
+      "playable demo requires a bounded affected-scope acceptance gate",
+    ],
+    [
+      /playable_compose up --build --wait --wait-timeout 180 web/u,
+      "playable demo must start from its Docker build",
+    ],
+    [
+      /pnpm --filter @aster\/web exec playwright test demo\.spec\.ts/u,
+      "playable demo requires the real browser journey",
+    ],
+    [/trap cleanup_playable EXIT/u, "playable demo must clean its unique CI project on exit"],
+    [
+      /playable_compose down --volumes --timeout 10/u,
+      "playable demo cleanup must be bounded and project-scoped",
+    ],
+    [
+      /playable_compose logs --no-color --tail 1 playable-seed \| grep '"changed":false'/u,
+      "playable seed replay must be idempotent",
+    ],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],
     [/^\s{4}name:\s*Local platform\s*$/mu, "local-platform job is required"],
     [

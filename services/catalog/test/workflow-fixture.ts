@@ -82,7 +82,7 @@ interface State {
   events: CatalogPublicationEvent[];
   activations: CatalogPublicationEvent[];
 }
-export function workflowFixture(actorId = id(3)) {
+export function workflowFixture(actorId = id(3), allowLocalMedia = false) {
   let state: State = {
     titles: new Map(),
     rights: [],
@@ -239,7 +239,7 @@ export function workflowFixture(actorId = id(3)) {
   const commands = createCatalogCommands({
     authority: operator.authority,
     transactions,
-    policy: { commercial: true },
+    policy: { commercial: true, allowLocalMedia },
     now: () => time,
     nextId: () => id(sequence++),
     digest: hash,

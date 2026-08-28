@@ -6,7 +6,9 @@ import { createCatalogCommands } from "../../application/commands.js";
 import { createLocalCatalogOperator } from "../identity/local-operator.js";
 import { localCatalogDatabase } from "../identity/local-configuration.js";
 import { createPostgresCatalogWorkflow } from "../persistence/postgres-workflow.js";
-import { UI_SEED_ACTOR_ID, validateUiSeedReport } from "./generated-ui-fixture.js";
+import { validateUiSeedReport } from "./generated-ui-fixture.js";
+import { generatedSeed } from "./generated-seed.js";
+import { createPlayableSeedPublisher } from "./playable-publisher.js";
 import { seedGeneratedCatalog } from "./seed-catalog.js";
 import { attestUiSeed } from "./seed-attestation.js";
 
@@ -33,12 +35,18 @@ export async function seedLocalCatalog(
   report: unknown,
   signal: AbortSignal,
 ) {
-  if (environment["ASTER_CATALOG_UI_SEED_ENABLED"] !== "true") {
+  const playable = environment["ASTER_CATALOG_PLAYABLE_SEED_ENABLED"] === "true";
+  if (
+    playable
+      ? environment["ASTER_CATALOG_UI_SEED_ENABLED"] === "true"
+      : environment["ASTER_CATALOG_UI_SEED_ENABLED"] !== "true"
+  ) {
     throw new Error("UI seed requires explicit local activation.");
   }
   const operatorUrl = localCatalogDatabase(environment, "operator");
   const adminUrl = localCatalogDatabase(environment, "migration");
-  validateUiSeedReport(report);
+  const mode = playable ? "playable" : "evidence";
+  const seed = generatedSeed(report, mode);
   signal.throwIfAborted();
   const now = () => Math.floor(Date.now() / 1000);
   const telemetry = createAsterTelemetry({
@@ -49,6 +57,7 @@ export async function seedLocalCatalog(
   });
   const databases: AsterPostgresAdapter[] = [];
   let revoke: (() => void) | undefined;
+  let publisher: ReturnType<typeof createPlayableSeedPublisher> | undefined;
   try {
     const connect = (connectionString: string) => {
       const database = createAsterPostgresAdapter({
@@ -65,29 +74,37 @@ export async function seedLocalCatalog(
     const database = connect(operatorUrl);
     const admin = connect(adminUrl);
     const operator = createLocalCatalogOperator(
-      { environment: "local", operatorEnabled: true, actorId: UI_SEED_ACTOR_ID },
+      { environment: "local", operatorEnabled: true, actorId: seed.actorId },
       now(),
     );
     revoke = operator.revoke;
+    if (playable) {
+      publisher = createPlayableSeedPublisher(report, "/fixture/fixture", admin, telemetry);
+    }
     const transactions = createPostgresCatalogWorkflow(database);
     const commands = createCatalogCommands({
       authority: operator.authority,
       transactions,
-      policy: { commercial: true },
+      policy: { commercial: true, allowLocalMedia: playable },
       now,
       nextId: randomUUID,
       digest: (text) => createHash("sha256").update(text).digest("hex"),
     });
     return await seedGeneratedCatalog({
       report,
+      mode,
       commands,
       transactions,
       now,
       request: { credential: operator.credential, correlationId: randomUUID(), signal },
-      attest: (publication, requestSignal) => attestUiSeed(admin, publication, requestSignal),
+      attest: (publication, requestSignal) =>
+        publisher
+          ? publisher.ensure(publication, requestSignal)
+          : attestUiSeed(admin, publication, requestSignal),
     });
   } finally {
     revoke?.();
+    await publisher?.close();
     await Promise.all(databases.map((database) => database.close()));
     await telemetry.shutdown();
   }

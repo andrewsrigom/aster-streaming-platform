@@ -61,6 +61,25 @@ test("runtime image preserves the pinned non-root production packaging contract"
   assert.deepEqual(validateRuntimeImage(runtimeImage), []);
 });
 
+test("playable demo preserves isolated generation, immutable read-only handoff and successful initialization", () => {
+  const file = "infra/compose/playable.yml";
+  for (const [before, after] of [
+    ["network_mode: none", "network_mode: host"],
+    ["playable-fixture:/fixture:ro", "playable-fixture:/fixture"],
+    ["service_completed_successfully", "service_started"],
+    ["ASTER_CATALOG_PLAYABLE_SEED_ENABLED", "ASTER_CATALOG_UI_SEED_ENABLED"],
+    ["read_only: true", "read_only: false"],
+    ["mem_limit: 384m", "mem_limit: 0"],
+    ["file: media.yml", "file: unknown.yml"],
+  ]) {
+    assert.ok(runtimeImage[file].includes(before));
+    assert.ok(
+      validateRuntimeImage({ ...runtimeImage, [file]: runtimeImage[file].replace(before, after) })
+        .length > 0,
+    );
+  }
+});
+
 test("Web Docker context includes both exact public-build verifier files", () => {
   for (const file of ["public-artifacts.ts", "verify-public-build.ts", "package-notices.ts"]) {
     const required = `!apps/web/scripts/${file}`;
@@ -89,6 +108,17 @@ test("media Docker context allows only reviewed worker source, tests and packagi
       }).length > 0,
     );
   }
+});
+
+test("player feature styles remain in the source-only Docker context", () => {
+  const required = "!apps/web/features/**/*.css";
+  assert.ok(runtimeImage[".dockerignore"].split("\n").includes(required));
+  assert.ok(
+    validateRuntimeImage({
+      ...runtimeImage,
+      ".dockerignore": runtimeImage[".dockerignore"].replace(required + "\n", ""),
+    }).length > 0,
+  );
 });
 
 test("runtime image rejects weakened pin, install, user, entrypoint, health and license policy", () => {

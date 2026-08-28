@@ -1084,10 +1084,22 @@ export function createAsterObjectStorageAdapterWithClientFactory(
                         ? error
                         : new Error("Object write failed.");
                   // Early server rejection must unblock the source pipeline, not wait for its deadline.
+                  // The SDK may finish/detach its reader before rejecting a conditional PUT.
+                  // Its failure is returned by this promise, including after the feed has settled.
+                  validator.once("error", () => {});
                   validator.destroy(failure);
                   throw failure;
                 }),
             ]);
+            const upload = settlements[1];
+            if (
+              upload.status === "rejected" &&
+              upload.reason instanceof AsterObjectAlreadyExistsError
+            ) {
+              // SDK cancellation can reject the feed with a secondary AbortError.
+              // Preserve the authoritative 412 outcome; callers still verify existing bytes.
+              throw upload.reason;
+            }
             const failure = settlements.find(
               (settlement): settlement is PromiseRejectedResult => settlement.status === "rejected",
             );

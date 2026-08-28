@@ -1,0 +1,119 @@
+[
+  {
+    "service": "web",
+    "image": "sha256:ff2946007f16d961765b32133bc3c2a9a9ba53f216a5151a6ed0ab231a0149d3",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 536870912,
+    "nanoCpus": 1000000000,
+    "pids": 64
+  },
+  {
+    "service": "router",
+    "image": "sha256:9fa69a33305a9bf052e9a7d0b31d9a5b23b24fbd72418df7faeada616184bab0",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 402653184,
+    "nanoCpus": 1000000000,
+    "pids": 64
+  },
+  {
+    "service": "playback",
+    "image": "sha256:1375be2eb0f6ed5555d70655e30a813177bfd0d80642a2d4c80a4bd51d18b15f",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 402653184,
+    "nanoCpus": 1000000000,
+    "pids": 64
+  },
+  {
+    "service": "catalog",
+    "image": "sha256:2a122c0b91da73669ad1b3a4da9caeed952613e77461be296ba8ce98737f70a5",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 402653184,
+    "nanoCpus": 1000000000,
+    "pids": 64
+  },
+  {
+    "service": "playable-seed",
+    "image": "sha256:21f4d5d538928b419aa413d9b2a25cebaa29139fd5d7956bf417a6f0891e50bc",
+    "status": "exited",
+    "health": null,
+    "memoryBytes": 268435456,
+    "nanoCpus": 1000000000,
+    "pids": 64
+  },
+  {
+    "service": "media-origin",
+    "image": "sha256:975a7a21693eb9fad7c0c1998a9e505964e3ed67adb0bbdd000efc17d6cc80dc",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 134217728,
+    "nanoCpus": 500000000,
+    "pids": 64
+  },
+  {
+    "service": "catalog-init",
+    "image": "sha256:9de0bdfbbc3d96803095d674f986b54107271b85d51fbaae6f082bbb0e7058f8",
+    "status": "exited",
+    "health": null,
+    "memoryBytes": 134217728,
+    "nanoCpus": 250000000,
+    "pids": 32
+  },
+  {
+    "service": "playback-init",
+    "image": "sha256:fe6dacc30bd82f185d4833ff40685f0cb0b098d010c7874d975164080e18f5a5",
+    "status": "exited",
+    "health": null,
+    "memoryBytes": 134217728,
+    "nanoCpus": 250000000,
+    "pids": 32
+  },
+  {
+    "service": "media-origin-init",
+    "image": "sha256:c5190e876737e720c20810933600d37beeccf2ae608bc4502162c4a9edd6e335",
+    "status": "exited",
+    "health": null,
+    "memoryBytes": 134217728,
+    "nanoCpus": 500000000,
+    "pids": 32
+  },
+  {
+    "service": "postgres",
+    "image": "sha256:d2c2da7ea137ccb8cf7b9e585c58af5527e8302e9e43ed856621183c04ab6149",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 805306368,
+    "nanoCpus": 1000000000,
+    "pids": 128
+  },
+  {
+    "service": "playable-generate",
+    "image": "sha256:b053ad9ef040dbd0501246e73e6cfb359cb6ee66ed6ae2dc8ad73392019dd2cc",
+    "status": "exited",
+    "health": null,
+    "memoryBytes": 402653184,
+    "nanoCpus": 1000000000,
+    "pids": 64
+  },
+  {
+    "service": "router-trust-init",
+    "image": "sha256:8a9469ffbb3e093186e7e47adb88251fe1c4db6985ec3fcd1c24e8482ed8cd96",
+    "status": "exited",
+    "health": null,
+    "memoryBytes": 67108864,
+    "nanoCpus": 250000000,
+    "pids": 32
+  },
+  {
+    "service": "storage",
+    "image": "sha256:975a7a21693eb9fad7c0c1998a9e505964e3ed67adb0bbdd000efc17d6cc80dc",
+    "status": "running",
+    "health": "healthy",
+    "memoryBytes": 402653184,
+    "nanoCpus": 1000000000,
+    "pids": 96
+  }
+]

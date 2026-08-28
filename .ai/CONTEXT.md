@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–06 are released through protected and exact post-merge CI. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker. Phase 06 adds rights-approved media, HLS/JPEG, durable replay, restricted publication, compatible rollback, scratch recovery and real browser playback (ADRs 0021–0026). Immutable storage is retained for verified recovery. Phase 07's session API and connected owner-isolated runtime pass local acceptance; protected backend release and product player remain unfinished. The opt-in synthetic seed is not playable media. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–06 and Phase 07's session backend are released through protected and exact post-merge CI. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker. Phase 06 adds rights-approved HLS/JPEG and recoverable immutable publication. Phase 07 adds the implemented HLS player and Docker-only generated playable demo; local browser/startup/replay acceptance passes, protected player release remains. The old browse seed is non-delivery; the new Signal / 02 sample is source-owned generated media. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 07 — Playback Sessions and Player**, on feat/p07-playback based on released main 4083ea65edcf750bf4ba3e253654a529b72cd105. Phase 06 closed with PR 23 and exact post-merge CI 33156505851. ADR-0027 governs the current Catalog owner read and isolated session persistence. Shared-host timing limits remain explicit; no unchanged Web/CPU benchmark is required.
+Active phase: **Phase 07 — Playback Sessions and Player**, on feat/p07-player based on released main f2d99d254263baac532ef36edba0ab2c99d20dc3. Backend PR 24 and exact post-merge CI 33164139588 pass. ADRs 0027–0029 govern session authority, controls and the fixed generated demo. Shared-host timing limits remain explicit; no unchanged Web/CPU benchmark is required.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

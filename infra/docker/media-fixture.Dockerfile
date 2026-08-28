@@ -5,6 +5,7 @@ RUN apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=15 update \
 WORKDIR /app
 COPY tools/media/ ./
 COPY LICENSE ./LICENSE
+RUN mkdir /output && chown node:node /output
 USER node
 ENV NODE_OPTIONS=--max-old-space-size=128
 STOPSIGNAL SIGTERM

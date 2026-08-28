@@ -1,0 +1,9 @@
+ Container aster-p07-playable-proof-playable-seed-1  Recreate
+ Container aster-p07-playable-proof-playable-seed-1  Recreated
+Attaching to playable-seed-1
+playable-seed-1  | An error was encountered in a non-retryable streaming request.
+playable-seed-1  | {"event":"catalog_playable_seed_failed","code":"INITIALIZATION_REJECTED"}
+[2K[2Kplayable-seed-1 exited with code 1
+Aborting on container exit...
+ Container aster-p07-playable-proof-playable-seed-1  Stopping
+ Container aster-p07-playable-proof-playable-seed-1  Stopped

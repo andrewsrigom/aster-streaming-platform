@@ -2,15 +2,13 @@
 
 ## Resume point
 
-P07-R01 / Phase 07 is IN_PROGRESS on feat/p07-playback, based on released main 4083ea65edcf750bf4ba3e253654a529b72cd105. Phases 00–06 are released; [PR 23 and exact protected/post-merge evidence](../evidence/phase-06/release.md). No further Phase 06 review/pipeline request. Full Phase 00–14 goal remains active.
+P07-R04 / Phase 07 is IN_PROGRESS on feat/p07-player, rebased on released main f2d99d254263baac532ef36edba0ab2c99d20dc3. P07-R01 is DONE: PR 24 protected CI, confirmation, squash and exact post-merge pass. [Release](../evidence/phase-07/backend-release.md). Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-Priority correction: initial review and first CI found base Router Identity coupling and the Catalog fixture's obsolete three-volume ceiling. Both are fixed locally; base-graph Playback and standalone Catalog proofs pass with zero remaining resources. Finish corrected candidate/protected CI and request one confirmation, then rebase/resume the tested player stash 2e85504b1739e3192484c37f5af63977b305eec1 on feat/p07-player. [Current correction](../evidence/phase-07/backend-review.md). The numbered initial candidate description below is historical.
-
-1. Core commit 9ab840abd236c49eca6195f1b8c36627609891ad has a coherent uncommitted API/runtime/Compose successor. Affected suite 248/248, full source 54/54, actual restricted-role PostgreSQL/migration checks and the disposable federated Docker journey pass. [Evidence](../evidence/phase-07/README.md). Do not reimplement this completed local boundary.
-2. Finish candidate governance/changed-scope checks, source hashes and a coherent commit, then one PR with protected CI and initial/confirmation review. No Phase 07 push/PR yet at this checkpoint. Local main ref is stale f36f9aa; explicit schema compatibility against released 4083ea65 already passed. Generated manifest d4b22c951a4ec16709271439036fcac27a00198f7e1f8d6a6ee1587052161ddd.
-3. Start the accessible HLS player/demo after backend acceptance or the explicit frozen WAITING_EXTERNAL checkpoint. Migration 0001, 4096 SQL slots, 24-hour post-expiry audit and bounded cleanup are verified. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) and the [session runbook](../services/playback/README.md) define separate Router and private Catalog credentials. Do not repeat unchanged PostgreSQL/film/runtime experiments for prose changes.
+1. Publish one PR 25 correction commit after initial head 7d49e8bd33704ec326ab324a1ff35325128f93f2; resolve review threads PRRT_kwDOUEkeis6dKNW_ and PRRT_kwDOUEkeis6dKNXH, request one exact-head confirmation and require protected CI before squash/post-merge. [Correction evidence](../evidence/phase-07/player-review.md): non-delivery eligibility, Web CI classification and deterministic attestation fixture; Web 46/46, real SQL, browser 2/2 and candidate 64/64 pass. Do not rerun old failed CI 33169091270. Whole-workspace gate needs a 2 GiB Node heap in the 4 GiB tooling container and Turbo concurrency two, not host diagnosis. No CPU/film benchmark loop.
+2. Backend PR 24 and its exact post-merge CI passed; no pending backend review/rebase. Initial player stash 2e85504b is already restored, not pending. Main and origin/main point to f2d99d2.
+3. Backend has 248 owner tests, source 54/54, corrected candidate 64/64, real SQL and connected runtime acceptance. Both affected startup/cleanup proofs pass with zero resources. [Correction evidence](../evidence/phase-07/backend-review.md). Do not repeat unchanged SQL/film/runtime for prose. Exact released-base schema compatibility passed.
 
 P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
 
@@ -20,7 +18,7 @@ Project aster-p04-development: Big Buck Bunny is PUBLISHED, title 00000000-0000-
 
 Bundle 3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d: 209 objects / 95496764 bytes. Exact-prefix policy, anonymous HEADs, CORS, Range, private/listing/other-prefix rejection and Web 200 pass. [Publication](../evidence/phase-06/publication.md), [browser evidence](../evidence/phase-06/browser.md). Do not re-download or re-encode unchanged media.
 
-Retained schema is 0007. Additive 0008 is tested but must be applied before replace/rollback. Serving Catalog remains image sha256:25d7222f4118115d8bb034bd573401714b9ac7078a5621ff7d6b98bd8e80f860. Media origin is loopback 9001, edge-only, storage read-only; private writer remains concurrency one. Web/Router remain 3000/4000.
+Retained schema is Catalog 0008 / Playback 0001. Backup: C:/Users/andre/AppData/Local/Temp/aster-p07-runtime-f3750a5a-e6dc-41db-a003-c3492d35874b/catalog-before.dump. Prior images: aster-p07-rollback:{web,router,catalog}. Web now runs review image f29a1ebe; Catalog runs 4429f8e0. Playback/Router remain the released backend. Both updated owners are healthy; affected browser proof passes. Database/media containers and immutable film data were not recreated. Disposable aster-p07-playable-proof cleanup checked 13 containers, seven volumes and two networks and left zero resources; the separate review PostgreSQL fixture also left zero resources.
 
 Uncertain publication grants retain their recovery barrier. Read the publication recovery procedure and fence publishers/private writer before changing it. No automatic S3 lifecycle deletion or hosted multi-writer claim.
 
@@ -30,4 +28,4 @@ Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do 
 
 ## Do not do yet
 
-Do not claim player/phase completion from the backend runtime proof or claim the retained app was upgraded. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
+Do not claim protected player/phase release before CI/review/merge. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.

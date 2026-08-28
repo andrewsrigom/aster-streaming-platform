@@ -408,6 +408,71 @@ test("conditional writes require a full checksum and classify early conflicts wi
   assert.equal((await adapter.close()).status, "completed");
 });
 
+test("conditional rejection after the SDK detaches its stream reader never emits an unhandled error", async () => {
+  const client = new FakeS3Client();
+  const adapter = createAsterObjectStorageAdapterWithClientFactory(
+    options(new RecordingTelemetry()),
+    () => client,
+  );
+  client.writeHandler = async (input) => {
+    await new Promise<void>((resolve) => {
+      input.source.once("data", () => {
+        input.source.pause();
+        resolve();
+      });
+    });
+    await nextTurn();
+    input.source.removeAllListeners("error");
+    throw Object.assign(new Error("Synthetic detached-reader conditional conflict"), {
+      $metadata: { httpStatusCode: 412 },
+    });
+  };
+  try {
+    const result = await adapter.write({
+      key: "originals/hash",
+      source: Readable.from([Buffer.alloc(64)]),
+      contentLength: 64,
+      ifAbsent: true,
+      checksumSha256: "a".repeat(64),
+    });
+    assert.deepEqual(result, { status: "already_exists" });
+    await nextTurn();
+    assert.equal(adapter.snapshot().inFlightOperations, 0);
+  } finally {
+    await adapter.close();
+  }
+});
+
+test("an authoritative conditional conflict survives secondary SDK feed cancellation", async () => {
+  const client = new FakeS3Client();
+  const adapter = createAsterObjectStorageAdapterWithClientFactory(
+    options(new RecordingTelemetry()),
+    () => client,
+  );
+  client.writeHandler = (input) => {
+    input.source.destroy(new Error("Synthetic SDK reader cancellation"));
+    return Promise.reject(
+      Object.assign(new Error("Synthetic precondition failed"), {
+        $metadata: { httpStatusCode: 412 },
+      }),
+    );
+  };
+  try {
+    assert.deepEqual(
+      await adapter.write({
+        key: "originals/hash",
+        source: new Readable({ read() {} }),
+        contentLength: 64,
+        ifAbsent: true,
+        checksumSha256: "a".repeat(64),
+      }),
+      { status: "already_exists" },
+    );
+  } finally {
+    await adapter.close();
+  }
+});
+
 test("an early ordinary storage rejection also releases the accepted pipeline", async () => {
   const client = new FakeS3Client();
   const adapter = createAsterObjectStorageAdapterWithClientFactory(

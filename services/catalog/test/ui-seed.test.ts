@@ -9,6 +9,7 @@ import {
   validateUiSeedReport,
 } from "../src/infrastructure/fixtures/generated-ui-fixture.js";
 import { seedGeneratedCatalog } from "../src/infrastructure/fixtures/seed-catalog.js";
+import { generatedSeed } from "../src/infrastructure/fixtures/generated-seed.js";
 import {
   readUiSeedReport,
   seedLocalCatalog,
@@ -53,6 +54,80 @@ function fixture() {
   };
   return { ...fixture, input };
 }
+
+test("playable seed is a separate fixed title; replay rechecks media without new editorial writes", async () => {
+  const reportValue = {
+    ...report(),
+    publicationAuthority: false,
+    generatorChecksum: "c".repeat(64),
+  };
+  const seed = generatedSeed(reportValue, "playable");
+  assert.notEqual(seed.titleId, UI_SEED_TITLE_ID);
+  assert.match(
+    seed.manifest,
+    /^http:\/\/127\.0\.0\.1:9001\/aster-media-published\/publications\/[a-f0-9]{64}\/master\.m3u8$/u,
+  );
+  const f = workflowFixture(seed.actorId, true);
+  let verified = 0;
+  const input: Parameters<typeof seedGeneratedCatalog>[0] = {
+    ...f,
+    mode: "playable",
+    report: reportValue,
+    now: () => catalogTestTime,
+    attest: (publication) => {
+      verified++;
+      f.state().publications.set(publication.id, publication);
+      return Promise.resolve();
+    },
+  };
+  assert.equal((await seedGeneratedCatalog(input)).changed, true);
+  const first = structuredClone(f.state());
+  assert.equal((await seedGeneratedCatalog(input)).changed, false);
+  assert.equal(verified, 2);
+  assert.deepEqual(f.state(), first);
+  assert.equal(
+    (
+      await f.commands.execute(
+        "retire",
+        {
+          titleId: seed.titleId,
+          expectedVersion: 5,
+          mutationId: "00000000-0000-4000-8000-000007000099",
+          reason: "Local demo takedown",
+        },
+        f.request,
+      )
+    ).status,
+    "completed",
+  );
+  const retired = structuredClone(f.state());
+  await assert.rejects(seedGeneratedCatalog(input));
+  assert.equal(verified, 2);
+  assert.deepEqual(f.state(), retired);
+});
+
+test("playable reports cannot authorize arbitrary recipes, names, bytes or publication authority", () => {
+  const value = { ...report(), publicationAuthority: false, generatorChecksum: "c".repeat(64) };
+  for (const patch of [
+    { publicationAuthority: true },
+    { generatorChecksum: undefined },
+    { recipe: "film" },
+    { files: value.files.map((file) => ({ ...file, name: "../source" })) },
+    { totalBytes: 0 },
+  ]) {
+    assert.throws(() => generatedSeed({ ...value, ...patch }, "playable"));
+  }
+  const changed = {
+    ...value,
+    files: value.files.map((file) =>
+      file.name === "captions.vtt" ? { ...file, sha256: "d".repeat(64) } : file,
+    ),
+  };
+  assert.notEqual(
+    generatedSeed(changed, "playable").manifest,
+    generatedSeed(value, "playable").manifest,
+  );
+});
 
 test("local seed report input is bounded, UTF-8 validated and cancelled", async () => {
   const signal = new AbortController().signal;
