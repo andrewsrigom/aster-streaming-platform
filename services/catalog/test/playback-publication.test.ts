@@ -9,6 +9,45 @@ import { metadataFixture } from "./workflow-fixture.js";
 
 const policy = { commercial: true };
 
+test("non-delivery sample remains browsable but never supplies session authority or poisons another title", async () => {
+  const fixture = publicFixture();
+  const browsingOnly = {
+    ...publicCandidate(1),
+    metadata: { ...metadataFixture(), editorialLabels: ["synthetic-fixture", "ui-seed-v1"] },
+  };
+  assert.ok(projectPublicTitle(browsingOnly, now, policy));
+  assert.equal(projectPlaybackPublication(browsingOnly, now, policy), undefined);
+  fixture.state.candidates = [browsingOnly, publicCandidate(2)];
+  const queries = createCatalogPlaybackQueries({
+    transactions: fixture.transactions,
+    policy,
+    now: () => now,
+  });
+  const result = await queries.byIds([id(1), id(2)], AbortSignal.timeout(1000));
+  assert.equal(result.status, "completed");
+  assert.deepEqual(
+    result.value.map((value) => value?.titleId ?? null),
+    [null, id(2)],
+  );
+  fixture.state.candidates = [browsingOnly, browsingOnly];
+  assert.deepEqual(await queries.byIds([id(1), id(2)], AbortSignal.timeout(1000)), {
+    status: "unavailable",
+  });
+  assert.ok(
+    projectPlaybackPublication(
+      {
+        ...browsingOnly,
+        metadata: {
+          ...metadataFixture(),
+          editorialLabels: ["synthetic-fixture", "playable-seed-v1"],
+        },
+      },
+      now,
+      policy,
+    ),
+  );
+});
+
 test("owner publication reads are batched, ordered, bounded and never cached across requests", async () => {
   const fixture = publicFixture();
   const queries = createCatalogPlaybackQueries({

@@ -41,6 +41,52 @@ async function jsonEvidence(info: TestInfo, name: string, value: unknown) {
   });
 }
 
+test("non-delivery sample stays browsable without a Watch action, player or session authority", async ({
+  page,
+  request,
+}, info) => {
+  const sampleId = "00000000-0000-4000-8000-000005000001";
+  const media: string[] = [];
+  page.on("request", (entry) => {
+    if (/\.(?:m3u8|ts|vtt)(?:\?|$)/u.test(entry.url())) {
+      media.push(entry.url());
+    }
+  });
+  await page.goto(`/title/${sampleId}?locale=en`);
+  await expect(page.getByRole("heading", { name: "Signal / 01", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Watch title/u })).toHaveCount(0);
+  await expect(
+    page.getByText("This browsing sample has no playable video.", { exact: true }),
+  ).toBeVisible();
+  await page.goto(`/watch/${sampleId}?locale=en`);
+  await expect(
+    page.getByText("This browsing sample has no playable video.", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start playback", exact: true })).toHaveCount(0);
+  await expect(page.locator("video")).toHaveCount(0);
+  const response = await request.post("http://127.0.0.1:4000/graphql", {
+    headers: {
+      origin: "http://127.0.0.1:3000",
+      "sec-fetch-site": "same-site",
+      "x-aster-csrf": "1",
+    },
+    data: {
+      operationName: "StartPlayback",
+      query:
+        "mutation StartPlayback($titleId: ID!) { createPlaybackSession(titleId: $titleId) { code correlationId session { id titleId manifestUrl expiresAt } } }",
+      variables: { titleId: sampleId },
+    },
+  });
+  expect(response.status()).toBe(200);
+  const result = (await response.json()) as {
+    data: { createPlaybackSession: { code: string; session: unknown } };
+  };
+  expect(result.data.createPlaybackSession.code).toBe("NOT_PLAYABLE");
+  expect(result.data.createPlaybackSession.session).toBeNull();
+  expect(media).toEqual([]);
+  await jsonEvidence(info, "non-delivery-guard", { code: "NOT_PLAYABLE", mediaRequests: 0 });
+});
+
 test("watch metadata is SSR-only until explicit session creation; real media bypasses GraphQL", async ({
   page,
 }, info) => {

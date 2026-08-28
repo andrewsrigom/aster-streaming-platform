@@ -6,6 +6,7 @@ import {
 } from "../domain/playback-publication.js";
 import type { RightsUsePolicy } from "../domain/rights.js";
 import { catalogIdentifier, catalogTimestamp } from "../domain/values.js";
+import { projectPublicTitle } from "../domain/public-title.js";
 
 export type CatalogPlaybackQueries = ReturnType<typeof createCatalogPlaybackQueries>;
 
@@ -50,7 +51,16 @@ export function createCatalogPlaybackQueries(
             throw new Error("Playback publication batch exceeds its bound.");
           }
           const publications = new Map<string, CurrentPlaybackPublication>();
+          const seen = new Set<string>();
           for (const candidate of candidates) {
+            const title = projectPublicTitle(candidate, now, ports.policy);
+            if (!title || !unique.includes(title.id) || seen.has(title.id)) {
+              throw new Error("Invalid current playback publication.");
+            }
+            seen.add(title.id);
+            if (title.editorialLabels.includes("ui-seed-v1")) {
+              continue;
+            }
             const publication = projectPlaybackPublication(candidate, now, ports.policy);
             if (
               !publication ||

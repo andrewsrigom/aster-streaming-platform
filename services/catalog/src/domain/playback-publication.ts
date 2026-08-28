@@ -25,7 +25,13 @@ export function projectPlaybackPublication(
   const publication = normalizePublication(candidate.publication, now);
   const rights = currentApprovedRights(candidate.rights, now, policy);
   const metadata = normalizeTitleMetadata(candidate.metadata);
-  if (!title || !publication || !rights || !metadata) {
+  if (
+    !title ||
+    !publication ||
+    !rights ||
+    !metadata ||
+    metadata.editorialLabels.includes("ui-seed-v1")
+  ) {
     return undefined;
   }
   const expiries = [rights.validUntil, metadata.artwork?.rights.validUntil ?? null].filter(

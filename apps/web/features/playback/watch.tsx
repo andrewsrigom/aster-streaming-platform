@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TITLE_DETAIL } from "../../lib/apollo/operations";
 import { usePublicQuery } from "../catalog/use-public-query";
 import { QueryFeedback } from "../catalog/query-feedback";
+import { titleOffersPlayback } from "../catalog/metadata";
 
 const Player = dynamic(() => import("./player"), {
   ssr: false,
@@ -34,7 +35,11 @@ export function Watch({ id, locale }: { id: string; locale: string }) {
       </header>
       {title ? (
         <>
-          <Player key={title.id} titleId={title.id} />
+          {titleOffersPlayback(title) ? (
+            <Player key={title.id} titleId={title.id} />
+          ) : (
+            <p>This browsing sample has no playable video.</p>
+          )}
           <section
             aria-label="Video attribution"
             className="space-y-3 border-t border-border pt-6 text-sm text-muted-foreground"

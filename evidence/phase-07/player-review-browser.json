@@ -1,0 +1,175 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\andre\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/playwright.config.mjs",
+      "playback.spec.ts",
+      "--grep",
+      "non-delivery sample|watch metadata"
+    ],
+    "configFile": "C:\\Users\\andre\\AppData\\Local\\Temp\\aster-p07-browser-c14b6d12\\playwright.config.mjs",
+    "rootDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/andre/AppData/Local/Temp/aster-p07-browser-c14b6d12/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "*.spec.ts"
+        ],
+        "timeout": 35000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "./results/report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "playback.spec.ts",
+      "file": "playback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "non-delivery sample stays browsable without a Watch action, player or session authority",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1120,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T12:13:51.056Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "non-delivery-guard",
+                      "contentType": "application/json",
+                      "body": "ewogICJjb2RlIjogIk5PVF9QTEFZQUJMRSIsCiAgIm1lZGlhUmVxdWVzdHMiOiAwCn0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-adfe1e6a299db7c9e520",
+          "file": "playback.spec.ts",
+          "line": 44,
+          "column": 5
+        },
+        {
+          "title": "watch metadata is SSR-only until explicit session creation; real media bypasses GraphQL",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 35000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1737,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-08-28T12:13:52.532Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "direct-media-waterfall",
+                      "contentType": "application/json",
+                      "body": "WwogIHsKICAgICJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo5MDAxIiwKICAgICJraW5kIjogInBsYXlsaXN0IiwKICAgICJzdGFydE1zIjogMTc4NzkxOTIzMzU0Ni40NDksCiAgICAicmVzcG9uc2VFbmRNcyI6IDExLjc0MwogIH0sCiAgewogICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgImtpbmQiOiAicGxheWxpc3QiLAogICAgInN0YXJ0TXMiOiAxNzg3OTE5MjMzNTg1LjQ0NTgsCiAgICAicmVzcG9uc2VFbmRNcyI6IDEyLjM1CiAgfSwKICB7CiAgICAib3JpZ2luIjogImh0dHA6Ly8xMjcuMC4wLjE6OTAwMSIsCiAgICAia2luZCI6ICJzZWdtZW50IiwKICAgICJzdGFydE1zIjogMTc4NzkxOTIzMzYwOS4wMDUsCiAgICAicmVzcG9uc2VFbmRNcyI6IDE2LjQ3OQogIH0sCiAgewogICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgImtpbmQiOiAicGxheWxpc3QiLAogICAgInN0YXJ0TXMiOiAxNzg3OTE5MjMzNjY5LjA5NiwKICAgICJyZXNwb25zZUVuZE1zIjogMTEuMDMzCiAgfSwKICB7CiAgICAib3JpZ2luIjogImh0dHA6Ly8xMjcuMC4wLjE6OTAwMSIsCiAgICAia2luZCI6ICJzZWdtZW50IiwKICAgICJzdGFydE1zIjogMTc4NzkxOTIzMzY4Mi43MjQ5LAogICAgInJlc3BvbnNlRW5kTXMiOiAxOC43NTYKICB9LAogIHsKICAgICJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo5MDAxIiwKICAgICJraW5kIjogInNlZ21lbnQiLAogICAgInN0YXJ0TXMiOiAxNzg3OTE5MjMzNzEwLjMwNCwKICAgICJyZXNwb25zZUVuZE1zIjogMjEuOTg3CiAgfSwKICB7CiAgICAib3JpZ2luIjogImh0dHA6Ly8xMjcuMC4wLjE6OTAwMSIsCiAgICAia2luZCI6ICJzZWdtZW50IiwKICAgICJzdGFydE1zIjogMTc4NzkxOTIzMzc0NS40MTcsCiAgICAicmVzcG9uc2VFbmRNcyI6IDMzLjY1OQogIH0sCiAgewogICAgIm9yaWdpbiI6ICJodHRwOi8vMTI3LjAuMC4xOjkwMDEiLAogICAgImtpbmQiOiAic2VnbWVudCIsCiAgICAic3RhcnRNcyI6IDE3ODc5MTkyMzM4MDAuMTA4MiwKICAgICJyZXNwb25zZUVuZE1zIjogMjEuOTY3CiAgfQpd"
+                    },
+                    {
+                      "name": "playback-experience",
+                      "contentType": "application/json",
+                      "body": "WwogIHsKICAgICJldmVudCI6ICJzZXNzaW9uX3N1Y2Nlc3MiLAogICAgImF0TXMiOiAxMDYsCiAgICAiZHVyYXRpb25NcyI6IDEwNgogIH0sCiAgewogICAgImV2ZW50IjogIm1hbmlmZXN0X2xvYWRlZCIsCiAgICAiYXRNcyI6IDE5MiwKICAgICJkdXJhdGlvbk1zIjogNDIKICB9LAogIHsKICAgICJldmVudCI6ICJyZW5kaXRpb25fc3dpdGNoIiwKICAgICJhdE1zIjogNDk5LAogICAgImhlaWdodCI6IDI0MAogIH0sCiAgewogICAgImV2ZW50IjogImZpcnN0X2ZyYW1lIiwKICAgICJhdE1zIjogNTA3LAogICAgImR1cmF0aW9uTXMiOiAzNTYKICB9Cl0="
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "e08d7e80e63c73ccc1e9-95b0c6705c7255e2bdf9",
+          "file": "playback.spec.ts",
+          "line": 90,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-08-28T12:13:50.263Z",
+    "duration": 4351.837,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

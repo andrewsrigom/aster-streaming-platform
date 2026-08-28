@@ -11,6 +11,7 @@ const GIT_OBJECT = /^[a-f\d]{40}$/u;
 const ZERO_OBJECT = /^0{40}$/u;
 const DOCUMENTATION_PREFIXES = [".ai/", "docs/", "evidence/", "skills/"] as const;
 const PLATFORM_PREFIXES = [
+  "apps/web/",
   "infra/compose/",
   "infra/docker/",
   "infra/router/",

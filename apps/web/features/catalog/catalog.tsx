@@ -11,7 +11,7 @@ import { buttonVariants } from "../../components/ui/button";
 import { usePublicQuery } from "./use-public-query";
 import { QueryFeedback } from "./query-feedback";
 import { CollectionArtwork } from "./collection-artwork";
-import { titleMetadata } from "./metadata";
+import { titleMetadata, titleOffersPlayback } from "./metadata";
 
 function pageQuery(variables: BrowseVariables): string {
   return `?locale=${variables.locale}${variables.after ? `&after=${encodeURIComponent(variables.after)}` : ""}`;
@@ -219,13 +219,17 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
         </h2>
         <AttributionDetails title={title} />
       </section>
-      <Link
-        prefetch={false}
-        className={buttonVariants()}
-        href={`/watch/${title.id}?locale=${locale}`}
-      >
-        Watch title <span aria-hidden="true">→</span>
-      </Link>
+      {titleOffersPlayback(title) ? (
+        <Link
+          prefetch={false}
+          className={buttonVariants()}
+          href={`/watch/${title.id}?locale=${locale}`}
+        >
+          Watch title <span aria-hidden="true">→</span>
+        </Link>
+      ) : (
+        <p>This browsing sample has no playable video.</p>
+      )}
       <QueryFeedback
         available
         pending={pending}

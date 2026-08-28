@@ -51,7 +51,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 ## Work-item rules
 
-All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md) and passed the documented protected release. P07-R01's owner transport, isolated persistence and Federation are released. P07-R04 also covers P07-R05 through P07-R08 and P07-R10 through P07-R12: player/demo implementation and browser/replay evidence pass; candidate gates/protected publication remain. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
+All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md) and passed the documented protected release. P07-R01's owner transport, isolated persistence and Federation are released. P07-R04 also covers P07-R05 through P07-R08 and P07-R10 through P07-R12: player/demo, browser/replay and corrected 64/64 candidate pass. [PR 25 correction](../evidence/phase-07/player-review.md) awaits protected confirmation/publication. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

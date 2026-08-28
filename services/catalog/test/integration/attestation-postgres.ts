@@ -43,7 +43,8 @@ export async function verifyAttestation(
   const common = {
     authority: operator.authority,
     policy: { commercial: true, allowLocalMedia: true },
-    now: () => Math.floor(Date.now() / 1000),
+    // Approval and validation must share a clock even across a wall-clock second boundary.
+    now: () => now,
     nextId,
     digest: hash,
   };
@@ -222,7 +223,15 @@ export async function verifyAttestation(
       artworkAttemptId: attempts[1] as string,
     };
     const source = await attester.read(selection, request.signal);
+    assert.equal(source.rights.reviewedAt, now);
     requirePublicationApproval(source, f.bundle, now);
+    assert.throws(() => {
+      requirePublicationApproval(
+        { ...source, rights: { ...source.rights, reviewedAt: now + 1 } },
+        f.bundle,
+        now,
+      );
+    });
     assert.throws(() => {
       requirePublicationApproval({ ...source, rightsRevision: 1 }, f.bundle, now);
     });

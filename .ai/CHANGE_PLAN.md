@@ -43,6 +43,10 @@ Fixed Router origin, omitted cookies, bounded response/concurrency and 4s deadli
 
 ## Implementation steps
 
+Initial PR 25 review of 7d49e8bd33704ec326ab324a1ff35325128f93f2 is complete (2026-08-28): two P2 blockers. Batch the existing non-delivery `ui-seed-v1` label into Catalog playback eligibility and both Web entry points, preserving public browsing and the separate playable seed. Include Web source paths in the existing demo CI classification. No schema/migration or new permission is needed. Focused owner/Web/policy tests and affected browser proof precede one correction commit and one confirmation review. Preserve unchanged generation/SQL/media evidence; protected CI still runs the complete fresh demo.
+
+Initial protected run 33169091270 also exposed an attestation fixture clock race: commands used advancing wall time while approval validation used the earlier captured second. Share the fixture clock and assert that genuinely future-dated approval still fails. Production rights checks and deadlines remain unchanged. Repeat the affected real-PostgreSQL fixture without re-encoding media; the corrected protected run retains the complete generated-publication gate.
+
 1. Record control decision; verify packages/licenses.
 2. Test session client, local state, errors/QoE and HLS lifecycle.
 3. Wire client-only watch UI, keyboard controls, captions/quality and attribution.

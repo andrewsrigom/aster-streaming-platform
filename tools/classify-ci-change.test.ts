@@ -73,7 +73,17 @@ test("selects real integration for adapters, runtime, bootstrap and shared depen
   ]) {
     assert.equal(classifyChangedPaths([path]).platform, true, path);
   }
-  assert.equal(classifyChangedPaths(["apps/web/src/page.tsx"]).platform, false);
+  for (const path of [
+    "apps/web/features/playback/adapter.ts",
+    "apps/web/features/playback/player.tsx",
+    "apps/web/features/playback/player.module.css",
+    "apps/web/app/watch/[id]/page.tsx",
+    "apps/web/lib/apollo/operations.ts",
+    "apps/web/test/browser/demo.spec.ts",
+  ]) {
+    assert.equal(classifyChangedPaths([path]).platform, true, path);
+  }
+  assert.equal(classifyChangedPaths(["apps/web/PLAYBACK.md"]).platform, false);
 });
 
 test("fails safe to full quality for an empty diff", () => {

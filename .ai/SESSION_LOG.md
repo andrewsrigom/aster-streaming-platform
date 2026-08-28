@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Batched player/demo review correction
+
+### Completed
+
+PR 25 initial review identified non-delivery sample playback and missing Web-only demo CI coverage. Both are fixed, with owner-side eligibility and existing-lane classification. Initial CI's attestation fixture used inconsistent clocks; the deterministic correction preserves future-approval rejection and all production rights checks.
+
+### Evidence
+
+[Correction](../evidence/phase-07/player-review.md): real SQL, Web 46/46, browser 2/2 and candidate 64/64 pass. Only retained Web/Catalog were upgraded; temporary SQL data was ownership-checked and removed. No CPU diagnosis or film encode.
+
+### Next action
+
+One correction push, one confirmation, protected squash/post-merge, then Phase 08; full goal remains active.
+
 ## 2026-08-28 — Player and Docker-only playable demo
 
 ### Completed

@@ -16,7 +16,7 @@ Phase 06 includes current rights approval, bounded acquisition, isolated full-fi
 
 ## Current work
 
-P07-R04 is the sole active item on feat/p07-player, based on released backend f2d99d254263baac532ef36edba0ab2c99d20dc3. Player, bounded preferences/QoE and the Docker-only generated playable demo are implemented. Web has 45 passing unit tests; actual Chromium journeys cover controls, failures, captions, adaptive playback and lazy loading. Empty-volume startup, real captioned HLS, direct origin/private denial and immutable replay pass. Candidate gates and protected review/release remain. [Player evidence](../evidence/phase-07/player.md).
+P07-R04 is the sole active item on feat/p07-player, based on released backend f2d99d254263baac532ef36edba0ab2c99d20dc3. PR 25's initial player/demo candidate is 7d49e8bd33704ec326ab324a1ff35325128f93f2. Both review blockers are corrected together: non-delivery seed eligibility and Web-only demo CI coverage. Initial CI also exposed a test-clock race, corrected without changing production rights checks. Web 46/46, real PostgreSQL, two affected browser journeys and corrected candidate 64/64 pass. [Batched correction](../evidence/phase-07/player-review.md). Empty-volume startup, captioned HLS, direct origin/private denial and immutable replay remain supporting evidence. Protected confirmation/release remain.
 
 P07-R01's public Playback mutation, current private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are locally verified. Affected suite passes 248/248, source 54/54 and final changed-scope/governance gate 64/64; real PostgreSQL covers admission, expiry, retention, restricted runtime credentials and migrations. A disposable real Router/Catalog/Playback journey proves persisted sessions, rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Protected review/squash/post-merge and local application upgrade are complete; player acceptance remains open.
 
@@ -30,7 +30,7 @@ Automatic S3 garbage collection, engagement/discovery and hosted release. Phase 
 
 ## Next outcome
 
-Publish P07-R04's coherent player/demo candidate: local gate passes 64/64 and dependency audit has zero high/critical. Require one initial review and one confirmation, protected squash and post-merge. Then close Phase 07 and activate Phase 08. Preserve unchanged SQL/film evidence; no CPU diagnostic or full-film encode.
+Publish P07-R04 / PR 25's one correction commit, resolve the two addressed threads and request one confirmation on its exact SHA. Require protected CI, squash and exact post-merge; then activate Phase 08. Do not rerun the old failed pipeline. Preserve unchanged film/demo evidence; no CPU diagnostic or full-film encode.
 
 ## Runtime and recovery
 
