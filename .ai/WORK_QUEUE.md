@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R07/R08 are DONE at d7fa03a. R09/R10/R12 is IN_PROGRESS in PR30: Catalog correction passes hosted CI; correct the stale Engagement fields expectation exposed by CI33210330287. Eight regressions and one real fields SQL proof pass; production behavior unchanged. Initial review5457715810 is clean. R11's28-test reporter/client/media checkpoint is preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c; rebase and selectively restore once after correction acceptance. Earlier1643 checkpoint is already restored; never reapply it. Require protected CI/confirmation before predecessor release. Retained demo/media untouched.
+P08-R07/R08 and R09/R10/R12 are DONE at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc; exact main push33212852513 passed. R11 is the sole IN_PROGRESS unpublished item at checkpoint533368d plus browser corrections. Real personalized save/resume/library/failure/focus/accessibility, disposable startup/replay/cleanup and the refreshed70-task candidate gate pass. Next: protected review/publication and phase closeout. All historical checkpoints are restored; never reapply them. Retained Phase07 demo was restored intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -50,8 +50,8 @@ P08-R07/R08 are DONE at d7fa03a. R09/R10/R12 is IN_PROGRESS in PR30: Catalog cor
 | 42 | Read bounded owned history and continue-watching pages | P08-R06 | DONE |
 | 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
-| 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | IN_PROGRESS |
-| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | READY |
+| 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | IN_PROGRESS |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

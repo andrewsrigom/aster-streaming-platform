@@ -281,12 +281,28 @@ export function validateWorkflowPolicy(
     ],
     [/trap cleanup_playable EXIT/u, "playable demo must clean its unique CI project on exit"],
     [
-      /playable_compose down --volumes --timeout 10/u,
-      "playable demo cleanup must be bounded and project-scoped",
+      /personalized_compose down --volumes --timeout 10/u,
+      "playable demo cleanup must include the personalized model and stay project-scoped",
     ],
     [
       /playable_compose logs --no-color --tail 1 playable-seed \| grep '"changed":false'/u,
       "playable seed replay must be idempotent",
+    ],
+    [
+      /ASTER_PLAYABLE_DEMO: "true"\s+ASTER_ENGAGEMENT_DEMO: "true"/u,
+      "playable browser journeys must be enabled, not silently skipped",
+    ],
+    [
+      /personalized_compose\(\) \{\s+docker compose --project-name "\$aster_playable_project" --file infra\/compose\/compose\.yml --file infra\/compose\/playable\.yml --file infra\/compose\/events\.yml --profile runtime "\$@"\s+\}/u,
+      "personalized playable startup and cleanup must use the same exact project and overlays",
+    ],
+    [
+      /wait_playable_topics\(\) \{\s+aster_topic_init="\$\(personalized_compose ps --all --quiet broker-init\)"\s+test -n "\$aster_topic_init"\s+test "\$\(timeout 120s docker wait "\$aster_topic_init"\)" = 0\s+\}/u,
+      "playable topic initialization must finish successfully within its deadline",
+    ],
+    [
+      /personalized_compose up --build --wait --wait-timeout 180 web identity engagement broker-init\s+wait_playable_topics\s+pnpm --filter @aster\/web exec playwright test engagement\.spec\.ts\s+personalized_compose up --no-build --wait --wait-timeout 90 web identity engagement broker-init\s+wait_playable_topics\s+personalized_compose logs --no-color --tail 1 playable-seed \| grep '"changed":false'\s+personalized_compose logs --no-color --tail 1 playable-generate \| grep 'generated_hls_reused'/u,
+      "personalized playable acceptance requires actual browser save/resume, initialization and replay",
     ],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],
     [/^\s{4}name:\s*Local platform\s*$/mu, "local-platform job is required"],

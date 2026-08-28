@@ -1,0 +1,68 @@
+P08-R11 local reporter/client/media checkpoint — 2026-08-28
+Base: PR30 head85513ef53b2361ae50f6590726c246c5bb300fd0, feat/p08-player-progress.
+Environment: Ubuntu-20.04/WSL, pinned Node24.19.0/pnpm11.24.0.
+No container, retained migration, real browser, film processing or host diagnostic.
+
+Implemented locally: finite reporter, private profile-scoped Apollo transport,
+strict owned response/acknowledgement validation, one terminal keepalive attempt,
+media event sampling/resume/disposal. Tests use synthetic clocks/data/media targets.
+Not implemented yet: profile-generation UI orchestration, actual Controls wiring,
+library, optional full-demo activation and real browser acceptance. No live save
+or complete Phase08 claim. Existing anonymous demo remains Phase07.
+
+Exact commands:
+pnpm exec prettier --write apps/web/features/engagement/media-progress.ts apps/web/test/media-progress.test.ts
+node --test --test-concurrency=1 apps/web/test/media-progress.test.ts apps/web/test/engagement-client.test.ts apps/web/test/progress-reporter.test.ts
+pnpm exec eslint apps/web/features/engagement apps/web/test/media-progress.test.ts apps/web/test/engagement-client.test.ts apps/web/test/progress-reporter.test.ts
+pnpm --filter @aster/web typecheck
+
+Exit0,28 tests passed. Earlier new-client lint found one unnecessary optional chain;
+removed it and reran scoped checks. No rule exemption or repeated heavyweight test.
+PlayerProgress is added to the public known-operation inventory; RecordProgress
+matches its existing document. Exact-base schema:update and schema:check pass:
+base85513ef53b2361ae50f6590726c246c5bb300fd0,4subgraphs,7artifacts, manifest
+ef575f1289fee862dbe68da519fba5807579726f32a56836c37b21a0b14efaa2.
+This generated manifest is local dependent work, not published before PR30 release.
+
+Raw focused output:
+apps/web/features/engagement/media-progress.ts 111ms
+apps/web/test/media-progress.test.ts 49ms
+✔ player engagement documents match the first-party inventory (12.40214ms)
+✔ progress input is bounded and cannot change the selected profile (2.653898ms)
+✔ fresh progress projection rejects substitution and distinguishes absence from failure (0.743792ms)
+✔ only a matching durable acknowledgement can report a successful save (0.594304ms)
+✔ private transport sends only the fixed credentialed operation and strips unselected data (75.592142ms)
+✔ private cache replaces the current title and never reports another title's absence (53.055132ms)
+✔ partial GraphQL failure is not empty progress and upstream details stay private (4.275848ms)
+✔ profile disposal cancels old work and prevents a late response from repopulating private cache (2.721157ms)
+✔ expiry during a read rejects the response and discards the private generation (2.148021ms)
+✔ terminal progress is one bounded keepalive attempt, not an Apollo save (1.394081ms)
+✔ admission bounds saves and refuses terminal or foreign-profile work during active requests (5.916819ms)
+✔ resume waits for metadata and uses server status without recalculating thresholds (3.094168ms)
+✔ resume clamps to actual metadata duration rather than the historical observation (0.289793ms)
+✔ late progress offers explicit resume without overriding playback already underway (0.361739ms)
+✔ periodic sampling follows playing time; pause, seek and end flush the final observation (0.486164ms)
+✔ invalid metadata and intermediate seek positions cannot become reports (0.273869ms)
+✔ navigation captures the last valid sample once before media teardown; profile invalidation does not flush (1.842115ms)
+✔ periodic reporting coalesces samples and only a matching acknowledgement is saved (2.722149ms)
+✔ one active save and one latest sample remain bounded; backward seeking is new intent (0.593877ms)
+✔ uncertain acknowledgement retries the identical immutable key and payload only once (0.634544ms)
+✔ rapid flushes are rate bounded and identical acknowledged samples need no new write (2.139682ms)
+✔ stale, conflicting, denied and mismatched acknowledgements cannot claim saved or loop (1.207665ms)
+✔ profile teardown cancels old work and ignores late success without a second terminal request (1.800206ms)
+✔ terminal flush sends at most one best-effort command and never calls it saved (0.309625ms)
+✔ terminal retry preserves uncertain intent rather than replacing it with a newer sample (0.264359ms)
+✔ invalid samples and exhausted sequences never reach the transport (0.993462ms)
+✔ returning to the acknowledged position cancels a superseded unsent sample (0.560076ms)
+✔ a successful retry releases the attempt budget for a distinct terminal intent (0.438077ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 954.419781
+$ next typegen && tsc --noEmit
+Generating route types...
+✓ Types generated successfully

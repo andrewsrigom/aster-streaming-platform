@@ -3,6 +3,7 @@ import { defineConfig } from "@playwright/test";
 const executablePath = process.env["ASTER_BROWSER_EXECUTABLE_PATH"];
 export default defineConfig({
   testDir: "./test/browser",
+  outputDir: "./test-results",
   fullyParallel: false,
   workers: 1,
   retries: 0,

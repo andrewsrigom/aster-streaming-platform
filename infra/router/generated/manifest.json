@@ -609,7 +609,7 @@
     },
     {
       "name": "ContinueWatching",
-      "sha256": "9fb7977de784907eaee52742645bf386cddec9e59780945bf7de5b52d0b6ffe1"
+      "sha256": "f125a9ad8b199a8f44367a5c38a964c27f002404ce98ea21ee2e20c9421010f2"
     },
     {
       "name": "CreateProfile",
@@ -622,6 +622,10 @@
     {
       "name": "DemoSignIn",
       "sha256": "f03c4f69957fe92779ca8ea19650e3e9547004560e3e4d0050aa4601b87c095e"
+    },
+    {
+      "name": "PlayerProgress",
+      "sha256": "f0a9f9ed6fe281e0424eb0e165226ced11f511659c4b08f63988045df3d5b442"
     },
     {
       "name": "Profile",
@@ -637,7 +641,7 @@
     },
     {
       "name": "ProgressHistory",
-      "sha256": "57326ca2a19640fa4d4851c92a824db8de315c735b08f36fc1c486710b139155"
+      "sha256": "336697b95da88d7096b86e87258dd4aa46c160e74bb19057c846b9bb0224305f"
     },
     {
       "name": "RecordProgress",
@@ -682,6 +686,10 @@
     {
       "name": "Watchlist",
       "sha256": "6703e54d9225f93e7321d4dd1d0b05ec5d3c9b9f90e6074e9700d3d37cb513d3"
+    },
+    {
+      "name": "WatchlistMembership",
+      "sha256": "70484f3d9b384e4700706e4434e7881a5e43084f1842a7f8671bd1a22309dbc0"
     }
   ]
 }

@@ -153,18 +153,31 @@ jobs:
         timeout-minutes: 15
         env:
           ASTER_PLAYABLE_DEMO: "true"
+          ASTER_ENGAGEMENT_DEMO: "true"
         run: |
           aster_playable_project="aster-playable-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           [[ "$aster_playable_project" =~ ^aster-playable-ci-[0-9]+-[0-9]+$ ]]
           test -z "$(docker ps --all --quiet --filter "label=com.docker.compose.project=$aster_playable_project")"
           test -z "$(docker volume ls --quiet --filter "label=com.docker.compose.project=$aster_playable_project")"
+          test -z "$(docker network ls --quiet --filter "label=com.docker.compose.project=$aster_playable_project")"
           playable_compose() {
             docker compose --project-name "$aster_playable_project" --file infra/compose/compose.yml --file infra/compose/playable.yml --profile runtime "$@"
           }
+          personalized_compose() {
+            docker compose --project-name "$aster_playable_project" --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime "$@"
+          }
+          wait_playable_topics() {
+            aster_topic_init="$(personalized_compose ps --all --quiet broker-init)"
+            test -n "$aster_topic_init"
+            test "$(timeout 120s docker wait "$aster_topic_init")" = 0
+          }
           cleanup_playable() {
             aster_playable_status=$?
-            playable_compose logs --no-color --tail 15 playable-generate playable-seed
-            playable_compose down --volumes --timeout 10 || aster_playable_status=1
+            personalized_compose logs --no-color --tail 15 playable-generate playable-seed broker-init || aster_playable_status=1
+            personalized_compose down --volumes --timeout 10 || aster_playable_status=1
+            test -z "$(docker ps --all --quiet --filter "label=com.docker.compose.project=$aster_playable_project")" || aster_playable_status=1
+            test -z "$(docker volume ls --quiet --filter "label=com.docker.compose.project=$aster_playable_project")" || aster_playable_status=1
+            test -z "$(docker network ls --quiet --filter "label=com.docker.compose.project=$aster_playable_project")" || aster_playable_status=1
             exit "$aster_playable_status"
           }
           trap cleanup_playable EXIT
@@ -174,6 +187,13 @@ jobs:
           playable_compose up --no-build --wait --wait-timeout 90 web
           playable_compose logs --no-color --tail 1 playable-seed | grep '"changed":false'
           playable_compose logs --no-color --tail 1 playable-generate | grep 'generated_hls_reused'
+          personalized_compose up --build --wait --wait-timeout 180 web identity engagement broker-init
+          wait_playable_topics
+          pnpm --filter @aster/web exec playwright test engagement.spec.ts
+          personalized_compose up --no-build --wait --wait-timeout 90 web identity engagement broker-init
+          wait_playable_topics
+          personalized_compose logs --no-color --tail 1 playable-seed | grep '"changed":false'
+          personalized_compose logs --no-color --tail 1 playable-generate | grep 'generated_hls_reused'
       - name: Audit known dependency vulnerabilities
         run: pnpm audit --audit-level=high
 

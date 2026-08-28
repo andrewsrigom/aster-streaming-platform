@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–07 are released locally, including the accessible player and Docker-only playable demo. Phase 08's [owner-authorized progress API](services/engagement/README.md) is implemented and passes disposable Docker acceptance; protected release and browser saving remain pending. See [current state](.ai/CURRENT_STATE.md), [playback guide](apps/web/PLAYBACK.md), [Router](apps/router/README.md) and [Phase 07 release](evidence/phase-07/release.md).
+Phases 00–07 are released locally, including the accessible player and Docker-only playable demo. Phase 08's [owner-authorized engagement APIs and event delivery](services/engagement/README.md) have passed protected release. Player saving, resume and library integration pass local browser/Docker acceptance; their protected release remains pending. See [current state](.ai/CURRENT_STATE.md), [playback guide](apps/web/PLAYBACK.md), [Router](apps/router/README.md) and [Phase 08 evidence](evidence/phase-08/README.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -21,6 +21,14 @@ docker compose --project-name aster-demo --file infra/compose/compose.yml --file
 Open [Aster](http://127.0.0.1:3000), choose **Signal / 02**, then **Watch title** and **Start playback**. This generates and publishes a six-second, captioned technical video through the real Catalog, Playback, Router and object-storage path. No host Node, pnpm, FFmpeg, manual SQL or account is required. First build needs registry access; ports 3000, 4000 and 9001 must be free. Use `127.0.0.1`, not `localhost`.
 
 The explicit `web` target leaves optional profiles, Redis, broker and observability out. This generated sample is not a third-party film. Repeated startup verifies and reuses existing bytes and records. [Controls, limits, diagnostics and project-scoped stop/cleanup](apps/web/PLAYBACK.md).
+
+To also enable local profiles, progress, history and watchlist on this disposable demo:
+
+```bash
+docker compose --project-name aster-demo --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime up --build --wait --wait-timeout 180 web identity engagement broker-init
+```
+
+Use **Profiles → Start local session**, create/select a fictional profile, then watch the sample. Pause around two seconds and open **Your library** to resume it or inspect history/watchlist. This opt-in uses the existing PostgreSQL owners and broker; anonymous playback remains independent. [Personalized behavior and cleanup](apps/web/PLAYBACK.md#personalized-demo). Do not apply this fresh-demo command to an existing development database without its owner migration/backup procedure.
 
 ## Run the Docker Web demo
 

@@ -1,6 +1,6 @@
 # Playable local demo
 
-Status: implemented; candidate acceptance and protected release are tracked in [Phase 07 evidence](../../evidence/phase-07/README.md). No hosted deployment or cross-device certification is implied.
+The anonymous playable demo is released locally through [Phase 07 acceptance](../../evidence/phase-07/release.md). Personalized player/library integration passes [local browser/Docker acceptance](../../evidence/phase-08/player-demo.md); protected release remains pending. No hosted deployment or cross-device certification is implied.
 
 ## Start
 
@@ -28,7 +28,35 @@ Redux stores only bounded local preferences: volume, mute, speed, caption visibi
 
 HLS loads use bounded timeouts, retries, buffers and a stall deadline. Expiry, navigation and fatal failure cancel and dispose the player. A caption failure is reported without stopping otherwise playable video. No automatic fatal-recovery loop is used.
 
-**Show local playback measurements** exposes at most 64 in-memory events. `atMs` is relative to explicit start; first-frame `durationMs` starts when the media adapter attaches. The first decoded frame is measured where supported, with a documented media-event fallback. The report has no title/session identifiers, media URLs, cookies or tokens and is not sent remotely. These local observations are not a production SLO or a host benchmark. Durable progress belongs to Phase 08.
+**Show local playback measurements** exposes at most 64 in-memory events. `atMs` is relative to explicit start; first-frame `durationMs` starts when the media adapter attaches. The first decoded frame is measured where supported, with a documented media-event fallback. The report has no title/session identifiers, media URLs, cookies or tokens and is not sent remotely. These local observations are not a production SLO or a host benchmark. Durable progress is separate and requires the opt-in below.
+
+## Personalized demo
+
+Use the same fresh `aster-demo` project, adding the existing event overlay and optional owners:
+
+```bash
+docker compose --project-name aster-demo --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime up --build --wait --wait-timeout 180 web identity engagement broker-init
+```
+
+Open **Profiles**, **Start local session**, then create and select a fictional profile. Start Signal / 02 and pause around two seconds. Wait for **Progress saved**, then open **Your library**. Continue-watching offers resume; Viewing history retains completed entries. On the title page, **Manage watchlist** adds/removes membership; the library also supports removal. Another profile has separate state. This local assertion is not hosted authentication or an operator credential.
+
+The player reports every fifteen seconds while playing and requests an earlier save on pause, completed seek or end. One request and one coalesced unsent sample are allowed, with at least two seconds between attempts. A pause during an active request preserves the final sample's flush priority. Only a matching `COMPLETED` response displays saved. An uncertain request permits at most two attempts with the identical key/payload; conflicts require fresh state rather than overwriting another tab.
+
+Navigation/pagehide may attempt one bounded keepalive save. Browser termination can lose it; it is never presented as an acknowledgement. In-progress state resumes after metadata, clamped to actual duration. A late response offers an explicit resume control instead of jumping over already-started playback. Completed or unavailable state does not auto-resume. Optional read/save failure leaves media usable and displays an honest status.
+
+Private Apollo state is scoped to profile/session lifetime, absent from public SSR and cleared on profile change, sign-out or expiry. Each library view replaces pages of at most twenty entries. Redux/localStorage still hold only local player preferences, never history or profile authority. Library requests select only displayed fields to stay within the unchanged owner cost budget. Watchlist retry is explicit and retains its exact intent; no offline queue exists.
+
+The finite `broker-init` job exits zero after creating the three bounded topics. Delivery can lag during initialization/outage while accepted progress remains durable in PostgreSQL/outbox. This overlay does not add an external service account, paid resource or remote deployment. It is intended for a fresh demo, not an unreviewed upgrade of retained owner databases.
+
+Inspect and stop **with all three files**, preserving named data:
+
+```bash
+docker compose --project-name aster-demo --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime ps --all
+docker compose --project-name aster-demo --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime logs --tail 20 broker-init identity engagement
+docker compose --project-name aster-demo --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime down
+```
+
+To intentionally discard only this inspected disposable project, append `--volumes` to that exact `down` command. This irreversibly deletes its profiles, progress, audit/event state, keys and media. Never substitute the retained project's name or use a global prune. The older reset script is not a reset for this overlay.
 
 ## Inspect and stop
 
@@ -57,3 +85,11 @@ ASTER_PLAYABLE_DEMO=true pnpm --filter @aster/web exec playwright test demo.spec
 ```
 
 Playwright/Chromium are development/CI requirements, not requirements for someone running the Docker demo. The test checks a real decoded HLS frame, captions enabled after starting with them off, accessible controls, redacted measurements, direct segment/caption delivery and denial of originals, private reports, listing and unapproved publication prefixes. The CI demo also repeats initialization to verify reuse. See the evidence index for actual results, image identities and limits.
+
+Against a fresh personalized fixture, with no pre-existing profile collection:
+
+```bash
+ASTER_ENGAGEMENT_DEMO=true pnpm --filter @aster/web exec playwright test engagement.spec.ts
+```
+
+This journey creates only fictional profiles and verifies save/resume, completion/history, watchlist, keyboard focus, automated accessibility, profile isolation, save-transport failure with continuing media and sign-out. It refuses a retained profile collection. CI runs both modes in one existing affected-scope lane, waits for successful topic initialization, proves replay and cleans only its unique project. Local results and limitations belong to the Phase 08 evidence, not this command's presence.

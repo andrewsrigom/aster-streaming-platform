@@ -1,0 +1,28 @@
+P08-R11 refreshed candidate gate — 2026-08-28
+Base/checkpoint: main 7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc / 533368d5b163d32f6ba008ad410c19c17110c350 plus player-demo-source.sha256 corrections.
+Environment: Ubuntu-20.04 WSL, Node 24.19.0, pnpm 11.24.0; CI=true; NODE_OPTIONS=--max-old-space-size=1536.
+Source identity: all 31 entries in player-demo-source.sha256 checked OK after this gate.
+Composition: ASTER_SCHEMA_BASE=7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc pnpm --filter @aster/router schema:check.
+Candidate: runQualityGate(['--changed'], limited), using the documented spawn adapter appending --concurrency=2 --continue=always --output-logs=errors-only.
+The local main ref was 4082c3a463b50ba4397f080e1b81bc15e03bf140, selecting a conservative superset of affected tasks; composition separately checks the actual current remote main above.
+Result: exit 0; 70/70 tasks; 45 cached; 1m54.807s. Not a cold-install or throughput benchmark.
+No unchanged browser/media/SQL/Kafka experiment was repeated. Evidence/memory-only closeout edits receive their cheap documentation, state and staged-secret checks.
+Raw output follows.
+
+apps/web/features/engagement/library-operations.ts 198ms (unchanged)
+apps/web/features/engagement/watchlist-panel.tsx 37ms (unchanged)
+apps/web/playwright.config.ts 12ms (unchanged)
+apps/web/test/browser/engagement.spec.ts 98ms (unchanged)
+apps/web/test/library-client.test.ts 88ms (unchanged)
+services/engagement/test/engagement-graphql.test.ts 137ms (unchanged)
+$ node ./dist/src/main.js --check
+{"check":"supergraph","status":"ok","mode":"--check","subgraphs":4,"compatibilityBase":"7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc","artifactCount":7,"manifestSha256":"de18f996387009a22c3bae6ca1e6416df0615f5a942a7045c15b598598563983"}
+
+   • Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/engagement, @aster/event-delivery, @aster/http-express, @aster/identity, @aster/media, @aster/object-storage-s3, @aster/playback, @aster/postgres, @aster/redis, @aster/router, @aster/runtime, @aster/telemetry, @aster/web
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 17 packages
+   • Remote caching disabled
+
+
+ Tasks:    70 successful, 70 total
+Cached:    45 cached, 70 total
+  Time:    1m54.807s

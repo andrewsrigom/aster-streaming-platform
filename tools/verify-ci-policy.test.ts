@@ -31,7 +31,7 @@ test("playable acceptance cannot omit its browser, replay or scoped cleanup", as
     "pnpm --filter @aster/web exec playwright test demo.spec.ts",
     "trap cleanup_playable EXIT",
     "playable_compose up --build --wait --wait-timeout 180 web",
-    "playable_compose down --volumes --timeout 10",
+    "personalized_compose down --volumes --timeout 10",
     "playable_compose logs --no-color --tail 1 playable-seed | grep '\"changed\":false'",
   ]) {
     assert.ok(source.includes(original));
@@ -39,6 +39,29 @@ test("playable acceptance cannot omit its browser, replay or scoped cleanup", as
       validateWorkflowPolicy(source.replace(original, "true")).some(({ detail }) =>
         detail.includes("playable"),
       ),
+    );
+  }
+});
+
+test("personalized playable acceptance cannot skip its story or leave initialization unproved", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const original of [
+    'ASTER_ENGAGEMENT_DEMO: "true"',
+    "pnpm --filter @aster/web exec playwright test engagement.spec.ts",
+    "personalized_compose up --build --wait --wait-timeout 180 web identity engagement broker-init",
+    "personalized_compose up --no-build --wait --wait-timeout 90 web identity engagement broker-init",
+    'test "$(timeout 120s docker wait "$aster_topic_init")" = 0',
+    'test -n "$aster_topic_init"',
+    "--file infra/compose/events.yml",
+    "personalized_compose logs --no-color --tail 1 playable-seed | grep '\"changed\":false'",
+    "personalized_compose logs --no-color --tail 1 playable-generate | grep 'generated_hls_reused'",
+  ]) {
+    assert.ok(source.includes(original), original);
+    assert.ok(
+      validateWorkflowPolicy(source.replace(original, "true")).some(({ detail }) =>
+        detail.includes("playable"),
+      ),
+      original,
     );
   }
 });

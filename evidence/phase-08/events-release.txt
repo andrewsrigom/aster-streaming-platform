@@ -1,0 +1,44 @@
+P08-R09/R10/R12 protected merge checkpoint — 2026-08-28
+
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/30
+Reviewed head: c48e6d16b14c63c09b64d309a29a1688b8cb5a53
+Initial clean review: issuecomment-5457715810 at85513ef
+Final clean confirmation: issuecomment-5457863408 atc48e6d16b1
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33211565625
+All six jobs, including CI required, concluded success.
+Source/runtime log: job98985786382, fetched and inspected through the GitHub connector.
+Expected-head squash merge succeeded:
+{"merged":true,"sha":"7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc"}
+Exact main push33212852513 passed. GitHub runs API returned:
+{"id":33212852513,"head_sha":"7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc","event":"push","status":"completed","conclusion":"success"}
+P08-R09/R10/R12 is DONE. Retained demo activation and full Phase08 release are not claimed.
+
+The full corrected supervisor now passes protected CI, including real PostgreSQL,
+owner authorization, broker outage/recovery, quarantine/replay, signed deletion and
+bounded shutdown. Its earlier local nonzero result remains historical.
+Generated playable Docker/browser proof also passed, one test.
+No retained runtime migration, event activation, media encoding or host restart occurred.
+The unpublished R11 branch moved to the merge only after git diff --quiet proved the
+c48 and squash trees identical and the index was empty. Working changes stayed intact.
+
+Selected raw event/supervisor output from protected CI:
+2026-08-28T21:21:34.8533587Z {"event":"event_migrations","emptyRoundtrip":"passed","versions":{"identity":3,"catalog":9,"engagement":4}}
+2026-08-28T21:21:34.8535685Z {"event":"event_sql_failure","login":"aster_identity_relay_local","status":"unavailable","statements":1,"statement":"SELECT identity.claim_outbox($1::uuid) AS result"}
+2026-08-28T21:21:34.8540665Z {"event":"event_sql_failure","login":"aster_catalog_relay_local","status":"unavailable","statements":1,"statement":"SELECT catalog.claim_outbox($1::uuid) AS result"}
+2026-08-28T21:21:34.8544012Z {"event":"event_sql_failure","login":"aster_engagement_relay_local","status":"unavailable","statements":1,"statement":"SELECT engagement.claim_outbox($1::uuid) AS result"}
+2026-08-28T21:21:34.8554236Z {"event":"quarantine_replay","capacity":128,"maximumValueBytes":8192,"maximumHeaderBytes":4096,"duplicatePosition":"one-record","invalidReplay":"retained","exactValidReplay":"applied-then-removed","overflow":"uncommitted"}
+2026-08-28T21:23:17.4587307Z {"event":"event_backlog_prepared","committedBeforeActivation":true,"realProfileMutation":true}
+2026-08-28T21:24:00.6131701Z {"event":"event_runtime_ready","federatedIdentity":"available","ownerReplacement":"completed"}
+2026-08-28T21:24:01.6492921Z {"event":"event_owner_backlogs","owners":3,"pending":0,"signedDeletion":"applied","progressAndWatchlist":"removed"}
+2026-08-28T21:24:01.6494158Z {"event":"event_consumer_redelivery","deliveries":2,"durableEffects":1,"sameOffsetAndBytes":true}
+2026-08-28T21:24:01.6495367Z {"event":"event_retained_topics","owners":3,"contractAndPartitionKey":"valid"}
+2026-08-28T21:24:01.6496397Z {"event":"event_poison_quarantine","signature":"rejected","activeProgress":"unchanged","durableBeforeAck":true}
+2026-08-28T21:24:02.4250205Z {"event":"event_replay_cli","exactValidRecord":"duplicate-completed","invalidRecord":"retained"}
+2026-08-28T21:24:06.8178536Z {"event":"event_consumer_offsets","durableQuarantine":true,"committedThroughEnd":true,"lag":0}
+2026-08-28T21:24:08.3906234Z {"event":"event_broker_outage","committedProgress":true,"anonymousPlayback":"available","pendingFact":"retained"}
+2026-08-28T21:24:21.5009317Z {"event":"event_broker_recovered","pending":0,"durableProgress":"unchanged","backgroundRetry":"completed","signedDeletionConsumer":"recovered"}
+2026-08-28T21:24:21.8829003Z {"event":"event_owner_shutdown","owner":"identity","running":false,"oomKilled":false,"exitCode":143}
+2026-08-28T21:24:21.8982468Z {"event":"event_owner_shutdown","owner":"catalog","running":false,"oomKilled":false,"exitCode":143}
+2026-08-28T21:24:21.9139567Z {"event":"event_owner_shutdown","owner":"engagement","running":false,"oomKilled":false,"exitCode":143}
+2026-08-28T21:24:22.0753188Z {"event":"event_runtime_shutdown","ownerBackgroundStopped":true,"sanitizedLogs":true}
+2026-08-28T21:24:24.0934411Z {"event":"engagement_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}

@@ -1,0 +1,485 @@
+ASTER ACCEPTANCE: inspect the previously created fixture and retained port owners
+ASTER ACCEPTANCE: pause retained port owners without deleting data
+e058b6486a8d
+79abf62707ef
+d5758563ec16
+ASTER ACCEPTANCE: opt-in personalized Docker startup
+ Container aster-p08-demo-20260828-redis-1  Created
+ Container aster-p08-demo-20260828-router-trust-init-1  Created
+ Container aster-p08-demo-20260828-storage-1  Created
+ Container aster-p08-demo-20260828-media-origin-init-1  Created
+ Container aster-p08-demo-20260828-media-origin-1  Created
+ Container aster-p08-demo-20260828-broker-1  Created
+ Container aster-p08-demo-20260828-broker-init-1  Created
+ Container aster-p08-demo-20260828-postgres-1  Created
+ Container aster-p08-demo-20260828-platform-init-1  Created
+ Container aster-p08-demo-20260828-identity-init-1  Created
+ Container aster-p08-demo-20260828-identity-1  Created
+ Container aster-p08-demo-20260828-playable-generate-1  Created
+ Container aster-p08-demo-20260828-engagement-init-1  Created
+ Container aster-p08-demo-20260828-engagement-1  Created
+ Container aster-p08-demo-20260828-catalog-init-1  Created
+ Container aster-p08-demo-20260828-playable-seed-1  Created
+ Container aster-p08-demo-20260828-catalog-1  Created
+ Container aster-p08-demo-20260828-playback-init-1  Created
+ Container aster-p08-demo-20260828-playback-1  Created
+ Container aster-p08-demo-20260828-router-1  Created
+ Container aster-p08-demo-20260828-storage-1  Starting
+ Container aster-p08-demo-20260828-broker-1  Starting
+ Container aster-p08-demo-20260828-playable-generate-1  Starting
+ Container aster-p08-demo-20260828-router-trust-init-1  Starting
+ Container aster-p08-demo-20260828-redis-1  Starting
+ Container aster-p08-demo-20260828-postgres-1  Starting
+ Container aster-p08-demo-20260828-router-trust-init-1  Started
+ Container aster-p08-demo-20260828-postgres-1  Started
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-playable-generate-1  Started
+ Container aster-p08-demo-20260828-storage-1  Started
+ Container aster-p08-demo-20260828-storage-1  Waiting
+ Container aster-p08-demo-20260828-broker-1  Started
+ Container aster-p08-demo-20260828-broker-1  Waiting
+ Container aster-p08-demo-20260828-redis-1  Started
+ Container aster-p08-demo-20260828-redis-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-catalog-init-1  Starting
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-engagement-init-1  Starting
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-playback-init-1  Starting
+ Container aster-p08-demo-20260828-storage-1  Healthy
+ Container aster-p08-demo-20260828-media-origin-init-1  Starting
+ Container aster-p08-demo-20260828-redis-1  Healthy
+ Container aster-p08-demo-20260828-platform-init-1  Starting
+ Container aster-p08-demo-20260828-playback-init-1  Started
+ Container aster-p08-demo-20260828-engagement-init-1  Started
+ Container aster-p08-demo-20260828-engagement-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Started
+ Container aster-p08-demo-20260828-platform-init-1  Started
+ Container aster-p08-demo-20260828-platform-init-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Started
+ Container aster-p08-demo-20260828-media-origin-init-1  Waiting
+ Container aster-p08-demo-20260828-playable-generate-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-platform-init-1  Exited
+ Container aster-p08-demo-20260828-identity-init-1  Starting
+ Container aster-p08-demo-20260828-playable-generate-1  Exited
+ Container aster-p08-demo-20260828-catalog-init-1  Exited
+ Container aster-p08-demo-20260828-identity-init-1  Started
+ Container aster-p08-demo-20260828-identity-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Exited
+ Container aster-p08-demo-20260828-playable-seed-1  Starting
+ Container aster-p08-demo-20260828-media-origin-init-1  Exited
+ Container aster-p08-demo-20260828-media-origin-1  Starting
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-playable-seed-1  Started
+ Container aster-p08-demo-20260828-catalog-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-playable-seed-1  Waiting
+ Container aster-p08-demo-20260828-engagement-init-1  Exited
+ Container aster-p08-demo-20260828-engagement-1  Starting
+ Container aster-p08-demo-20260828-media-origin-1  Started
+ Container aster-p08-demo-20260828-engagement-1  Started
+ Container aster-p08-demo-20260828-catalog-init-1  Exited
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-identity-init-1  Exited
+ Container aster-p08-demo-20260828-identity-1  Starting
+ Container aster-p08-demo-20260828-identity-1  Started
+ Container aster-p08-demo-20260828-playable-seed-1  Exited
+ Container aster-p08-demo-20260828-catalog-1  Starting
+ Container aster-p08-demo-20260828-catalog-1  Started
+ Container aster-p08-demo-20260828-catalog-1  Waiting
+ Container aster-p08-demo-20260828-playback-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-playback-init-1  Exited
+ Container aster-p08-demo-20260828-catalog-1  Healthy
+ Container aster-p08-demo-20260828-playback-1  Starting
+ Container aster-p08-demo-20260828-playback-1  Started
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-1  Waiting
+ Container aster-p08-demo-20260828-playback-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-catalog-1  Healthy
+ Container aster-p08-demo-20260828-playback-1  Healthy
+ Container aster-p08-demo-20260828-router-1  Starting
+ Container aster-p08-demo-20260828-router-1  Started
+ Container aster-p08-demo-20260828-media-origin-1  Waiting
+ Container aster-p08-demo-20260828-router-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-1  Healthy
+ Container aster-p08-demo-20260828-router-1  Healthy
+ Container aster-p08-demo-20260828-web-1  Starting
+ Container aster-p08-demo-20260828-web-1  Started
+ Container aster-p08-demo-20260828-broker-1  Healthy
+ Container aster-p08-demo-20260828-broker-init-1  Starting
+ Container aster-p08-demo-20260828-broker-init-1  Started
+ Container aster-p08-demo-20260828-engagement-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-1  Waiting
+ Container aster-p08-demo-20260828-web-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-playable-seed-1  Waiting
+ Container aster-p08-demo-20260828-identity-init-1  Waiting
+ Container aster-p08-demo-20260828-playable-generate-1  Waiting
+ Container aster-p08-demo-20260828-engagement-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-redis-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Waiting
+ Container aster-p08-demo-20260828-identity-1  Waiting
+ Container aster-p08-demo-20260828-broker-init-1  Waiting
+ Container aster-p08-demo-20260828-broker-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-1  Waiting
+ Container aster-p08-demo-20260828-platform-init-1  Waiting
+ Container aster-p08-demo-20260828-playback-1  Waiting
+ Container aster-p08-demo-20260828-router-1  Waiting
+ Container aster-p08-demo-20260828-storage-1  Waiting
+ Container aster-p08-demo-20260828-playback-init-1  Waiting
+ Container aster-p08-demo-20260828-identity-1  Healthy
+ Container aster-p08-demo-20260828-web-1  Healthy
+ Container aster-p08-demo-20260828-storage-1  Healthy
+ Container aster-p08-demo-20260828-engagement-init-1  Exited
+ Container aster-p08-demo-20260828-identity-init-1  Exited
+ Container aster-p08-demo-20260828-playback-init-1  Exited
+ Container aster-p08-demo-20260828-catalog-init-1  Exited
+ Container aster-p08-demo-20260828-playable-seed-1  Exited
+ Container aster-p08-demo-20260828-playable-generate-1  Exited
+ Container aster-p08-demo-20260828-media-origin-init-1  Exited
+ Container aster-p08-demo-20260828-broker-1  Healthy
+ Container aster-p08-demo-20260828-catalog-1  Healthy
+ Container aster-p08-demo-20260828-platform-init-1  Exited
+ Container aster-p08-demo-20260828-redis-1  Healthy
+ Container aster-p08-demo-20260828-engagement-1  Healthy
+ Container aster-p08-demo-20260828-playback-1  Healthy
+ Container aster-p08-demo-20260828-broker-init-1  Healthy
+ Container aster-p08-demo-20260828-media-origin-1  Healthy
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-router-1  Healthy
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ASTER ACCEPTANCE: wait for exact topic initializer completion
+Removed only the exact profile created by the failed acceptance; owner audit/deletion preserved.
+ASTER ACCEPTANCE: owned save/resume/library/watchlist and failure
+
+Running 1 test using 1 worker
+
+  ok 1 test\browser\engagement.spec.ts:54:5 › real profile progress, resume, library, watchlist and optional-save failure (23.6s)
+
+  1 passed (26.8s)
+ASTER ACCEPTANCE: idempotent personalized restart
+ Container aster-p08-demo-20260828-postgres-1  Running
+ Container aster-p08-demo-20260828-broker-1  Running
+ Container aster-p08-demo-20260828-storage-1  Running
+ Container aster-p08-demo-20260828-redis-1  Running
+ Container aster-p08-demo-20260828-router-trust-init-1  Created
+ Container aster-p08-demo-20260828-media-origin-init-1  Created
+ Container aster-p08-demo-20260828-catalog-init-1  Created
+ Container aster-p08-demo-20260828-engagement-init-1  Created
+ Container aster-p08-demo-20260828-playback-init-1  Created
+ Container aster-p08-demo-20260828-media-origin-1  Running
+ Container aster-p08-demo-20260828-platform-init-1  Created
+ Container aster-p08-demo-20260828-engagement-1  Running
+ Container aster-p08-demo-20260828-playable-generate-1  Created
+ Container aster-p08-demo-20260828-broker-init-1  Created
+ Container aster-p08-demo-20260828-identity-init-1  Created
+ Container aster-p08-demo-20260828-playable-seed-1  Created
+ Container aster-p08-demo-20260828-identity-1  Running
+ Container aster-p08-demo-20260828-catalog-1  Running
+ Container aster-p08-demo-20260828-playback-1  Running
+ Container aster-p08-demo-20260828-router-1  Running
+ Container aster-p08-demo-20260828-web-1  Running
+ Container aster-p08-demo-20260828-storage-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Starting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-redis-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-broker-1  Waiting
+ Container aster-p08-demo-20260828-playable-generate-1  Starting
+ Container aster-p08-demo-20260828-router-trust-init-1  Started
+ Container aster-p08-demo-20260828-playable-generate-1  Started
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-catalog-init-1  Starting
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-playback-init-1  Starting
+ Container aster-p08-demo-20260828-storage-1  Healthy
+ Container aster-p08-demo-20260828-media-origin-init-1  Starting
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-engagement-init-1  Starting
+ Container aster-p08-demo-20260828-broker-1  Healthy
+ Container aster-p08-demo-20260828-broker-init-1  Starting
+ Container aster-p08-demo-20260828-redis-1  Healthy
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-platform-init-1  Starting
+ Container aster-p08-demo-20260828-catalog-init-1  Started
+ Container aster-p08-demo-20260828-engagement-init-1  Started
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-engagement-init-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Started
+ Container aster-p08-demo-20260828-playable-generate-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Waiting
+ Container aster-p08-demo-20260828-playback-init-1  Started
+ Container aster-p08-demo-20260828-platform-init-1  Started
+ Container aster-p08-demo-20260828-platform-init-1  Waiting
+ Container aster-p08-demo-20260828-broker-init-1  Started
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-playable-generate-1  Exited
+ Container aster-p08-demo-20260828-platform-init-1  Exited
+ Container aster-p08-demo-20260828-identity-init-1  Starting
+ Container aster-p08-demo-20260828-identity-init-1  Started
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-identity-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Exited
+ Container aster-p08-demo-20260828-media-origin-init-1  Exited
+ Container aster-p08-demo-20260828-playable-seed-1  Starting
+ Container aster-p08-demo-20260828-media-origin-init-1  Exited
+ Container aster-p08-demo-20260828-playable-seed-1  Started
+ Container aster-p08-demo-20260828-playable-seed-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-catalog-init-1  Exited
+ Container aster-p08-demo-20260828-engagement-init-1  Exited
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-identity-init-1  Exited
+ Container aster-p08-demo-20260828-playable-seed-1  Exited
+ Container aster-p08-demo-20260828-playback-init-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-playback-init-1  Exited
+ Container aster-p08-demo-20260828-catalog-1  Healthy
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-1  Waiting
+ Container aster-p08-demo-20260828-playback-1  Waiting
+ Container aster-p08-demo-20260828-playback-1  Healthy
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-catalog-1  Healthy
+ Container aster-p08-demo-20260828-router-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-1  Waiting
+ Container aster-p08-demo-20260828-router-1  Healthy
+ Container aster-p08-demo-20260828-media-origin-1  Healthy
+ Container aster-p08-demo-20260828-platform-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-1  Waiting
+ Container aster-p08-demo-20260828-broker-1  Waiting
+ Container aster-p08-demo-20260828-router-trust-init-1  Waiting
+ Container aster-p08-demo-20260828-router-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-init-1  Waiting
+ Container aster-p08-demo-20260828-identity-1  Waiting
+ Container aster-p08-demo-20260828-identity-init-1  Waiting
+ Container aster-p08-demo-20260828-catalog-init-1  Waiting
+ Container aster-p08-demo-20260828-playable-seed-1  Waiting
+ Container aster-p08-demo-20260828-postgres-1  Waiting
+ Container aster-p08-demo-20260828-broker-init-1  Waiting
+ Container aster-p08-demo-20260828-engagement-1  Waiting
+ Container aster-p08-demo-20260828-playback-init-1  Waiting
+ Container aster-p08-demo-20260828-redis-1  Waiting
+ Container aster-p08-demo-20260828-engagement-init-1  Waiting
+ Container aster-p08-demo-20260828-playback-1  Waiting
+ Container aster-p08-demo-20260828-storage-1  Waiting
+ Container aster-p08-demo-20260828-playable-generate-1  Waiting
+ Container aster-p08-demo-20260828-web-1  Waiting
+ Container aster-p08-demo-20260828-media-origin-1  Healthy
+ Container aster-p08-demo-20260828-playable-generate-1  Exited
+ Container aster-p08-demo-20260828-engagement-1  Healthy
+ Container aster-p08-demo-20260828-router-trust-init-1  Exited
+ Container aster-p08-demo-20260828-web-1  Healthy
+ Container aster-p08-demo-20260828-catalog-1  Healthy
+ Container aster-p08-demo-20260828-platform-init-1  Exited
+ Container aster-p08-demo-20260828-engagement-init-1  Exited
+ Container aster-p08-demo-20260828-router-1  Healthy
+ Container aster-p08-demo-20260828-playable-seed-1  Exited
+ Container aster-p08-demo-20260828-media-origin-init-1  Exited
+ Container aster-p08-demo-20260828-postgres-1  Healthy
+ Container aster-p08-demo-20260828-identity-1  Healthy
+ Container aster-p08-demo-20260828-catalog-init-1  Exited
+ Container aster-p08-demo-20260828-broker-init-1  Healthy
+ Container aster-p08-demo-20260828-playback-1  Healthy
+ Container aster-p08-demo-20260828-broker-1  Healthy
+ Container aster-p08-demo-20260828-playback-init-1  Exited
+ Container aster-p08-demo-20260828-storage-1  Healthy
+ Container aster-p08-demo-20260828-identity-init-1  Exited
+ Container aster-p08-demo-20260828-redis-1  Healthy
+ASTER ACCEPTANCE: topic replay completes successfully
+ASTER ACCEPTANCE: generated media and seed reused
+playable-seed-1  | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
+playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+NAME                                          IMAGE                                                                                                                COMMAND                  SERVICE             CREATED          STATUS                        PORTS
+aster-p08-demo-20260828-broker-1              docker.io/apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837                 "/__cacert_entrypoin…"   broker              22 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-broker-init-1         docker.io/apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837                 "/bin/sh -ec 'for to…"   broker-init         22 minutes ago   Exited (0) 2 seconds ago      
+aster-p08-demo-20260828-catalog-1             aster-p08-demo-20260828-catalog                                                                                      "node ./dist/src/mai…"   catalog             22 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-catalog-init-1        aster-p08-demo-20260828-catalog-init                                                                                 "node ./dist/src/mig…"   catalog-init        23 minutes ago   Exited (0) 35 seconds ago     
+aster-p08-demo-20260828-engagement-1          aster-p08-demo-20260828-engagement                                                                                   "node ./dist/src/mai…"   engagement          22 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-engagement-init-1     aster-p08-demo-20260828-engagement-init                                                                              "node ./dist/src/mig…"   engagement-init     22 minutes ago   Exited (0) 35 seconds ago     
+aster-p08-demo-20260828-identity-1            aster-p08-demo-20260828-identity                                                                                     "node ./dist/src/mai…"   identity            22 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-identity-init-1       aster-p08-demo-20260828-identity-init                                                                                "node ./dist/src/mig…"   identity-init       22 minutes ago   Exited (0) 34 seconds ago     
+aster-p08-demo-20260828-media-origin-1        docker.io/versity/versitygw:v1.7.0@sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad           "/usr/local/bin/vers…"   media-origin        23 minutes ago   Up 2 minutes (healthy)        127.0.0.1:9001->9001/tcp
+aster-p08-demo-20260828-media-origin-init-1   aster-p08-demo-20260828-media-origin-init                                                                            "node ./dist/src/pre…"   media-origin-init   23 minutes ago   Exited (0) 35 seconds ago     
+aster-p08-demo-20260828-platform-init-1       docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f   "/bin/sh -ec 'psql -…"   platform-init       22 minutes ago   Exited (0) 36 seconds ago     
+aster-p08-demo-20260828-playable-generate-1   aster-p08-demo-20260828-playable-generate                                                                            "node /app/generate-…"   playable-generate   23 minutes ago   Exited (0) 37 seconds ago     
+aster-p08-demo-20260828-playable-seed-1       aster-p08-demo-20260828-playable-seed                                                                                "node ./dist/src/ini…"   playable-seed       23 minutes ago   Exited (0) 33 seconds ago     
+aster-p08-demo-20260828-playback-1            aster-p08-demo-20260828-playback                                                                                     "node ./dist/src/mai…"   playback            22 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-playback-init-1       aster-p08-demo-20260828-playback-init                                                                                "node ./dist/src/mig…"   playback-init       23 minutes ago   Exited (0) 35 seconds ago     
+aster-p08-demo-20260828-postgres-1            docker.io/library/postgres:18.6-alpine3.23@sha256:697c180dbf244d3ce4a8f4cbc0156cde840af055c1bf8b76aebe422a4822086f   "docker-entrypoint.s…"   postgres            23 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-redis-1               docker.io/library/redis:8.10.0-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241        "docker-entrypoint.s…"   redis               22 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-router-1              aster-p08-demo-20260828-router                                                                                       "/dist/router_wrappe…"   router              22 minutes ago   Up About a minute (healthy)   127.0.0.1:4000->4000/tcp
+aster-p08-demo-20260828-router-trust-init-1   aster-p08-demo-20260828-router-trust-init                                                                            "node /app/init-trus…"   router-trust-init   22 minutes ago   Exited (0) 37 seconds ago     
+aster-p08-demo-20260828-storage-1             docker.io/versity/versitygw:v1.7.0@sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad           "/usr/local/bin/vers…"   storage             23 minutes ago   Up 2 minutes (healthy)        
+aster-p08-demo-20260828-web-1                 aster-p08-demo-20260828-web                                                                                          "node ./apps/web/ser…"   web                 6 minutes ago    Up About a minute (healthy)   127.0.0.1:3000->3000/tcp
+ASTER ACCEPTANCE: finite initializer diagnostics
+broker-init-1  | aster event topics initialized
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | aster event topics initialized
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | WARNING: Due to limitations in metric names, topics with a period ('.') or underscore ('_') could collide. To avoid issues it is best to use either, but not both.
+broker-init-1  | aster event topics initialized
+playable-generate-1  | {"event":"generated_hls_verified","repeatable":true,"adverseChecks":["corrupt-segment","missing-segment","symlink","cancelled-process"],"independentSegments":true,"ffmpeg":"ffmpeg version 5.1.9-0+deb12u1 Copyright (c) 2000-2026 the FFmpeg developers","architecture":"x64","packages":["ffmpeg=7:5.1.9-0+deb12u1","libavcodec59=7:5.1.9-0+deb12u1","libx264-164=2:0.164.3095+gitbaee400-3"],"recipe":"aster-generated-hls-v1","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","durationSeconds":6,"width":320,"height":180,"fps":24,"captionLanguage":"en","totalBytes":1948485,"original":{"duration":6,"video":"ffv1","audio":"pcm_s16le","width":320,"height":180,"fps":24},"technical":[{"duration":2.021333,"video":"h264","audio":"aac","width":320,"height":180,"fps":24},{"duration":2,"video":"h264","audio":"aac","width":320,"height":180,"fps":24},{"duration":2,"video":"h264","audio":"aac","width":320,"height":180,"fps":24}],"files":[{"name":"captions.m3u8","bytes":144,"sha256":"5f6d23c464f18e4e61aaea8e5b7d8045fae669c773bdf80e17c642f0146ad8a3"},{"name":"captions.vtt","bytes":129,"sha256":"cf1d45d19ba08e1a5cac3182322b97ebc9bc9dd4cad73bef817e62193175078b"},{"name":"master.m3u8","bytes":281,"sha256":"6b5ffceec06af83a6c48a4dd5957670d71b5751b7559e69c28eaca00794b0f8b"},{"name":"segment-000.ts","bytes":132352,"sha256":"68123da127e8ca9dbff512780d17e0cefca64589d709a5cd106a4c0f7ccadb4b"},{"name":"segment-001.ts","bytes":146076,"sha256":"0a7ecb075f70c373679fdb2fa3fe8862701d2c581eb26a05ff52d9ce8d8e489a"},{"name":"segment-002.ts","bytes":140812,"sha256":"a97d3c203c4a529e8f3cf9fe031a10d14e7f786bcdd1967b59b19b33737886b5"},{"name":"source.mkv","bytes":1528451,"sha256":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae"},{"name":"video.m3u8","bytes":240,"sha256":"07c1889a51d06aea7422a6670245635cf045fc2b8a23167d400c5e83b07862ba"}]}
+playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | An error was encountered in a non-retryable streaming request.
+playable-seed-1      | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
+ASTER ACCEPTANCE: verify disposable volume ownership before cleanup
+ASTER ACCEPTANCE: remove only the disposable acceptance project
+ Container aster-p08-demo-20260828-identity-1  Stopping
+ Container aster-p08-demo-20260828-web-1  Stopping
+ Container aster-p08-demo-20260828-engagement-1  Stopping
+ Container aster-p08-demo-20260828-broker-init-1  Stopping
+ Container aster-p08-demo-20260828-broker-init-1  Stopped
+ Container aster-p08-demo-20260828-broker-init-1  Removing
+ Container aster-p08-demo-20260828-broker-init-1  Removed
+ Container aster-p08-demo-20260828-broker-1  Stopping
+ Container aster-p08-demo-20260828-identity-1  Stopped
+ Container aster-p08-demo-20260828-identity-1  Removing
+ Container aster-p08-demo-20260828-identity-1  Removed
+ Container aster-p08-demo-20260828-identity-init-1  Stopping
+ Container aster-p08-demo-20260828-identity-init-1  Stopped
+ Container aster-p08-demo-20260828-identity-init-1  Removing
+ Container aster-p08-demo-20260828-identity-init-1  Removed
+ Container aster-p08-demo-20260828-platform-init-1  Stopping
+ Container aster-p08-demo-20260828-web-1  Stopped
+ Container aster-p08-demo-20260828-web-1  Removing
+ Container aster-p08-demo-20260828-engagement-1  Stopped
+ Container aster-p08-demo-20260828-engagement-1  Removing
+ Container aster-p08-demo-20260828-platform-init-1  Stopped
+ Container aster-p08-demo-20260828-platform-init-1  Removing
+ Container aster-p08-demo-20260828-platform-init-1  Removed
+ Container aster-p08-demo-20260828-engagement-1  Removed
+ Container aster-p08-demo-20260828-engagement-init-1  Stopping
+ Container aster-p08-demo-20260828-redis-1  Stopping
+ Container aster-p08-demo-20260828-web-1  Removed
+ Container aster-p08-demo-20260828-media-origin-1  Stopping
+ Container aster-p08-demo-20260828-router-1  Stopping
+ Container aster-p08-demo-20260828-engagement-init-1  Stopped
+ Container aster-p08-demo-20260828-engagement-init-1  Removing
+ Container aster-p08-demo-20260828-engagement-init-1  Removed
+ Container aster-p08-demo-20260828-media-origin-1  Stopped
+ Container aster-p08-demo-20260828-media-origin-1  Removing
+ Container aster-p08-demo-20260828-media-origin-1  Removed
+ Container aster-p08-demo-20260828-redis-1  Stopped
+ Container aster-p08-demo-20260828-redis-1  Removing
+ Container aster-p08-demo-20260828-redis-1  Removed
+ Container aster-p08-demo-20260828-router-1  Stopped
+ Container aster-p08-demo-20260828-router-1  Removing
+ Container aster-p08-demo-20260828-router-1  Removed
+ Container aster-p08-demo-20260828-playback-1  Stopping
+ Container aster-p08-demo-20260828-broker-1  Stopped
+ Container aster-p08-demo-20260828-broker-1  Removing
+ Container aster-p08-demo-20260828-broker-1  Removed
+ Container aster-p08-demo-20260828-playback-1  Stopped
+ Container aster-p08-demo-20260828-playback-1  Removing
+ Container aster-p08-demo-20260828-playback-1  Removed
+ Container aster-p08-demo-20260828-playback-init-1  Stopping
+ Container aster-p08-demo-20260828-catalog-1  Stopping
+ Container aster-p08-demo-20260828-playback-init-1  Stopped
+ Container aster-p08-demo-20260828-playback-init-1  Removing
+ Container aster-p08-demo-20260828-playback-init-1  Removed
+ Container aster-p08-demo-20260828-catalog-1  Stopped
+ Container aster-p08-demo-20260828-catalog-1  Removing
+ Container aster-p08-demo-20260828-catalog-1  Removed
+ Container aster-p08-demo-20260828-router-trust-init-1  Stopping
+ Container aster-p08-demo-20260828-playable-seed-1  Stopping
+ Container aster-p08-demo-20260828-playable-seed-1  Stopped
+ Container aster-p08-demo-20260828-playable-seed-1  Removing
+ Container aster-p08-demo-20260828-router-trust-init-1  Stopped
+ Container aster-p08-demo-20260828-router-trust-init-1  Removing
+ Container aster-p08-demo-20260828-router-trust-init-1  Removed
+ Container aster-p08-demo-20260828-playable-seed-1  Removed
+ Container aster-p08-demo-20260828-catalog-init-1  Stopping
+ Container aster-p08-demo-20260828-playable-generate-1  Stopping
+ Container aster-p08-demo-20260828-media-origin-init-1  Stopping
+ Container aster-p08-demo-20260828-media-origin-init-1  Stopped
+ Container aster-p08-demo-20260828-media-origin-init-1  Removing
+ Container aster-p08-demo-20260828-playable-generate-1  Stopped
+ Container aster-p08-demo-20260828-playable-generate-1  Removing
+ Container aster-p08-demo-20260828-catalog-init-1  Stopped
+ Container aster-p08-demo-20260828-catalog-init-1  Removing
+ Container aster-p08-demo-20260828-media-origin-init-1  Removed
+ Container aster-p08-demo-20260828-storage-1  Stopping
+ Container aster-p08-demo-20260828-playable-generate-1  Removed
+ Container aster-p08-demo-20260828-catalog-init-1  Removed
+ Container aster-p08-demo-20260828-postgres-1  Stopping
+ Container aster-p08-demo-20260828-storage-1  Stopped
+ Container aster-p08-demo-20260828-storage-1  Removing
+ Container aster-p08-demo-20260828-storage-1  Removed
+ Container aster-p08-demo-20260828-postgres-1  Stopped
+ Container aster-p08-demo-20260828-postgres-1  Removing
+ Container aster-p08-demo-20260828-postgres-1  Removed
+ Volume aster-p08-demo-20260828_playback-catalog-trust  Removing
+ Volume aster-p08-demo-20260828_engagement-playback-trust  Removing
+ Volume aster-p08-demo-20260828_engagement-identity-trust  Removing
+ Volume aster-p08-demo-20260828_catalog-router-trust  Removing
+ Volume aster-p08-demo-20260828_engagement-router-trust  Removing
+ Volume aster-p08-demo-20260828_engagement-catalog-trust  Removing
+ Volume aster-p08-demo-20260828_postgres-data  Removing
+ Volume aster-p08-demo-20260828_playable-fixture  Removing
+ Volume aster-p08-demo-20260828_storage-data  Removing
+ Volume aster-p08-demo-20260828_playback-router-trust  Removing
+ Volume aster-p08-demo-20260828_identity-router-trust  Removing
+ Volume aster-p08-demo-20260828_identity-event-trust  Removing
+ Volume aster-p08-demo-20260828_broker-data  Removing
+ Volume aster-p08-demo-20260828_engagement-playback-trust  Removed
+ Volume aster-p08-demo-20260828_catalog-router-trust  Removed
+ Volume aster-p08-demo-20260828_engagement-identity-trust  Removed
+ Volume aster-p08-demo-20260828_engagement-router-trust  Removed
+ Volume aster-p08-demo-20260828_engagement-catalog-trust  Removed
+ Network aster-p08-demo-20260828_edge  Removing
+ Network aster-p08-demo-20260828_platform  Removing
+ Volume aster-p08-demo-20260828_postgres-data  Removed
+ Volume aster-p08-demo-20260828_playable-fixture  Removed
+ Volume aster-p08-demo-20260828_storage-data  Removed
+ Volume aster-p08-demo-20260828_identity-router-trust  Removed
+ Volume aster-p08-demo-20260828_playback-router-trust  Removed
+ Volume aster-p08-demo-20260828_identity-event-trust  Removed
+ Volume aster-p08-demo-20260828_playback-catalog-trust  Removed
+ Volume aster-p08-demo-20260828_broker-data  Removed
+ Network aster-p08-demo-20260828_edge  Removed
+ Network aster-p08-demo-20260828_platform  Removed
+ASTER ACCEPTANCE: no disposable resources remain
+ASTER ACCEPTANCE: restore the same retained containers
+d5758563ec16
+79abf62707ef
+e058b6486a8d
