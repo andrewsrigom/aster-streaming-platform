@@ -24,6 +24,11 @@
 !services/playback/src/**/*.ts
 !services/playback/test/**/*.ts
 !services/playback/migrations/*.sql
+!services/engagement/package.json
+!services/engagement/tsconfig.json
+!services/engagement/src/**/*.ts
+!services/engagement/test/**/*.ts
+!services/engagement/migrations/*.sql
 !workers/media/package.json
 !workers/media/tsconfig.json
 !workers/media/src/**/*.ts
@@ -60,6 +65,7 @@
 !infra/docker/identity.Dockerfile
 !infra/docker/catalog.Dockerfile
 !infra/docker/playback.Dockerfile
+!infra/docker/engagement.Dockerfile
 !infra/docker/web.Dockerfile
 !infra/docker/media-fixture.Dockerfile
 !infra/docker/collector.Dockerfile

@@ -1,7 +1,80 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createLocalEngagementReadTrust } from "@aster/http-express";
+import { createPlaybackSessionInspector } from "../src/application/inspect-session.js";
+import { PLAYBACK_ENGAGEMENT_OPERATION } from "../src/transport/engagement-operation.js";
 import type { PublicationLookup } from "../src/application/session-ports.js";
 import { playbackHttpFixture, playbackBody, testTitleId } from "./playback-http-fixture.js";
+
+test("Engagement session HTTP read is title-bound, exact, read-only and absent for Router callers", async () => {
+  const key = "c".repeat(64);
+  const correlationId = "00000000-0000-4000-8000-000000000002";
+  let reads = 0;
+  const f = await playbackHttpFixture(undefined, {
+    trust: createLocalEngagementReadTrust("playback", key),
+    inspector: createPlaybackSessionInspector(
+      {
+        read: (sessionId, titleId) => {
+          reads++;
+          return Promise.resolve({
+            status: "completed",
+            value:
+              sessionId === correlationId && titleId === testTitleId
+                ? { sessionId, titleId, createdAt: 100, expiresAt: 1000 }
+                : null,
+          });
+        },
+      },
+      () => 101,
+    ),
+  });
+  const body = {
+    query: PLAYBACK_ENGAGEMENT_OPERATION,
+    operationName: "EngagementSession",
+    variables: { sessionId: correlationId, titleId: testTitleId },
+  };
+  const headers = {
+    host: "playback:3300",
+    origin: "http://engagement:3400",
+    "x-aster-csrf": "1",
+    "x-aster-engagement-credential": key,
+    "x-aster-correlation-id": correlationId,
+  };
+  try {
+    const result = await f.send(body, headers);
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.json.data?._engagementSession, {
+      code: "COMPLETED",
+      sessionId: correlationId,
+      titleId: testTitleId,
+      createdAt: 100,
+      expiresAt: 1000,
+      checkedAt: 101,
+    });
+    assert.equal(result.headers["x-request-id"], correlationId);
+    assert.doesNotMatch(result.text, /manifestUrl|publication|credential/u);
+    assert.equal((await f.send(body)).status, 400);
+    assert.equal((await f.send(playbackBody, headers)).status, 400);
+    assert.equal((await f.send({ ...body, query: body.query + " " }, headers)).status, 400);
+    assert.equal(
+      (await f.send(body, { ...headers, cookie: "aster_local_session=a.b.c" })).status,
+      403,
+    );
+    assert.equal(
+      (await f.send(body, { ...headers, "x-aster-engagement-credential": f.key })).status,
+      403,
+    );
+    const other = await f.send(
+      { ...body, variables: { ...body.variables, titleId: correlationId } },
+      headers,
+    );
+    assert.equal(other.json.data?._engagementSession?.["code"], "NOT_PLAYABLE");
+    assert.equal(reads, 2);
+    assert.equal(f.state.writes.length, 0);
+  } finally {
+    await f.close();
+  }
+});
 
 test("private transport returns an auditable anonymous session, propagates trusted trace and redacts internal state", async () => {
   const f = await playbackHttpFixture();
@@ -34,6 +107,80 @@ test("private transport returns an auditable anonymous session, propagates trust
     await f.close();
   }
 });
+
+test(
+  "private session inspection has its own bounded admission and rate bucket, preserving public creations",
+  { timeout: 5000 },
+  async () => {
+    const key = "c".repeat(64);
+    const sessionId = "00000000-0000-4000-8000-000000000002";
+    const privateEntered = Promise.withResolvers<undefined>();
+    const privateReleased = Promise.withResolvers<undefined>();
+    const publicEntered = Promise.withResolvers<undefined>();
+    const publicReleased = Promise.withResolvers<PublicationLookup>();
+    const f = await playbackHttpFixture(undefined, {
+      trust: createLocalEngagementReadTrust("playback", key),
+      inspector: createPlaybackSessionInspector(
+        {
+          read: async () => {
+            privateEntered.resolve(undefined);
+            await privateReleased.promise;
+            return {
+              status: "completed",
+              value: { sessionId, titleId: testTitleId, createdAt: 100, expiresAt: 1000 },
+            };
+          },
+        },
+        () => 101,
+      ),
+    });
+    const body = {
+      query: PLAYBACK_ENGAGEMENT_OPERATION,
+      operationName: "EngagementSession",
+      variables: { sessionId, titleId: testTitleId },
+    };
+    const headers = {
+      host: "playback:3300",
+      origin: "http://engagement:3400",
+      "x-aster-csrf": "1",
+      "x-aster-engagement-credential": key,
+      "x-aster-correlation-id": sessionId,
+    };
+    let publicReads = 0;
+    f.state.lookup = () => {
+      if (++publicReads === 4) {
+        publicEntered.resolve(undefined);
+      }
+      return publicReleased.promise;
+    };
+    const privatePending = f.send(body, headers);
+    const publicPending: Promise<Awaited<ReturnType<typeof f.send>>>[] = [];
+    try {
+      await privateEntered.promise;
+      assert.equal((await f.send(body, headers)).status, 503);
+      publicPending.push(...Array.from({ length: 4 }, () => f.send()));
+      await publicEntered.promise;
+      publicReleased.resolve({ status: "completed", value: f.publication });
+      assert.ok(
+        (await Promise.all(publicPending)).every(
+          (result) => result.json.data?.createPlaybackSession?.code === "COMPLETED",
+        ),
+      );
+      privateReleased.resolve(undefined);
+      assert.equal((await privatePending).json.data?._engagementSession?.["code"], "COMPLETED");
+      for (let index = 1; index < 32; index++) {
+        assert.equal((await f.send(body, headers)).status, 200);
+      }
+      assert.equal((await f.send(body, headers)).status, 429);
+      assert.equal((await f.send()).json.data?.createPlaybackSession?.code, "COMPLETED");
+    } finally {
+      privateReleased.resolve(undefined);
+      publicReleased.resolve({ status: "cancelled" });
+      await Promise.allSettled([privatePending, ...publicPending]);
+      await f.close();
+    }
+  },
+);
 
 test("transport rejects foreign authority, amplified mutations and oversized bodies before owner work", async () => {
   const f = await playbackHttpFixture();

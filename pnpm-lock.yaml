@@ -46,6 +46,9 @@ importers:
       '@aster/catalog':
         specifier: workspace:*
         version: link:../../services/catalog
+      '@aster/engagement':
+        specifier: workspace:*
+        version: link:../../services/engagement
       '@aster/identity':
         specifier: workspace:*
         version: link:../../services/identity
@@ -335,6 +338,46 @@ importers:
       '@apollo/composition':
         specifier: 2.14.4
         version: 2.14.4(graphql@16.14.2)
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      '@types/pg':
+        specifier: 8.23.1
+        version: 8.23.1
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
+  services/engagement:
+    dependencies:
+      '@apollo/server':
+        specifier: 5.5.1
+        version: 5.5.1(graphql@16.14.2)(supports-color@7.2.0)
+      '@apollo/subgraph':
+        specifier: 2.14.4
+        version: 2.14.4(graphql@16.14.2)
+      '@as-integrations/express5':
+        specifier: 1.1.2
+        version: 1.1.2(@apollo/server@5.5.1(graphql@16.14.2)(supports-color@7.2.0))(express@5.2.1(supports-color@7.2.0))
+      '@aster/http-express':
+        specifier: workspace:*
+        version: link:../../packages/http-express
+      '@aster/postgres':
+        specifier: workspace:*
+        version: link:../../packages/postgres
+      '@aster/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@aster/telemetry':
+        specifier: workspace:*
+        version: link:../../packages/telemetry
+      graphql:
+        specifier: 16.14.2
+        version: 16.14.2
+      pg:
+        specifier: 8.23.0
+        version: 8.23.0
+    devDependencies:
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3

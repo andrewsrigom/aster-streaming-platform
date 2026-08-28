@@ -16,16 +16,18 @@ const sources = {
   catalog: readFileSync(new URL("evidence/phase-03/catalog-schema.graphql", root), "utf8"),
   identity: readFileSync(new URL("evidence/phase-02/identity-schema.graphql", root), "utf8"),
   playback: readFileSync(new URL("infra/router/generated/playback.graphql", root), "utf8"),
+  engagement: readFileSync(new URL("infra/router/generated/engagement.graphql", root), "utf8"),
 };
 const operations = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
 
-test("three owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
+test("four owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
   const first = composeLocalSupergraph(sources, operations);
   assert.deepEqual(composeLocalSupergraph(sources, operations), first);
-  assert.equal(Object.keys(first).length, 6);
+  assert.equal(Object.keys(first).length, 7);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/identity:3100\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/catalog:3200\/graphql/u);
   assert.match(first["supergraph.graphql"] ?? "", /http:\/\/playback:3300\/graphql/u);
+  assert.match(first["supergraph.graphql"] ?? "", /http:\/\/engagement:3400\/graphql/u);
   assert.match(first["manifest.json"] ?? "", /"type": "Title"/u);
   assert.match(first["manifest.json"] ?? "", /"type": "Profile"/u);
   assert.match(first["manifest.json"] ?? "", /"name": "ViewerAndTitle"/u);

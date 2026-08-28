@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
-import { createServer } from "node:http";
+import { createServer, request as httpRequest } from "node:http";
 import test from "node:test";
 import { setTimeout as delay } from "node:timers/promises";
 
-import { createExpressHttpAdapter } from "@aster/http-express";
+import { createExpressHttpAdapter, createLocalEngagementReadTrust } from "@aster/http-express";
+import { IDENTITY_ENGAGEMENT_OPERATION } from "../src/transport/engagement-operation.js";
 
 import type { ProfileRequest } from "../src/application/profile-ports.js";
 import type { ViewerProfile } from "../src/domain/profile.js";
@@ -52,6 +53,7 @@ function applications() {
       signOut: () => Promise.resolve({ status: "completed", value: undefined }),
     },
     profiles: {
+      authorize: unavailable,
       list: (request) => {
         calls.push({ operation: "list", request });
         const account =
@@ -91,7 +93,7 @@ function applications() {
   return { app, calls };
 }
 
-async function fixture(monotonicNow?: () => number) {
+async function fixture(monotonicNow?: () => number, engagementKey?: string) {
   const adapter = createExpressHttpAdapter();
   const http = createServer({ maxHeaderSize: 16_384 }, adapter.requestListener);
   http.listen(0, "127.0.0.1");
@@ -106,6 +108,9 @@ async function fixture(monotonicNow?: () => number) {
   const graph = await createIdentitySubgraph({
     configuration: { environment: "local", localDemoEnabled: true, publicOrigin: origin },
     applications: controlled.app,
+    ...(engagementKey
+      ? { engagementTrust: createLocalEngagementReadTrust("identity", engagementKey) }
+      : {}),
     nowSeconds: () => NOW,
     ...(monotonicNow ? { monotonicNow } : {}),
     onOperation: (trace) => {
@@ -136,9 +141,10 @@ async function fixture(monotonicNow?: () => number) {
         credential?: string;
         signal?: AbortSignal;
         headers?: Record<string, string>;
+        operationName?: string;
       } = {},
     ) {
-      const response = await fetch(origin + "/graphql", {
+      const init = {
         method: "POST",
         headers: {
           origin,
@@ -150,10 +156,39 @@ async function fixture(monotonicNow?: () => number) {
         },
         body: JSON.stringify({
           query,
+          ...(options.operationName ? { operationName: options.operationName } : {}),
           ...(options.variables ? { variables: options.variables } : {}),
         }),
         signal: options.signal ?? AbortSignal.timeout(5_000),
-      });
+      };
+      // Node fetch owns Host; the private service-name boundary needs a real HTTP request.
+      const response = options.headers?.["host"]
+        ? await new Promise<Response>((resolve, reject) => {
+            const outgoing = httpRequest(origin + "/graphql", init, (incoming) => {
+              const chunks: Buffer[] = [];
+              incoming.on("data", (chunk: Buffer) => {
+                chunks.push(chunk);
+              });
+              incoming.once("error", reject);
+              incoming.once("end", () => {
+                const headers = new Headers();
+                for (const [name, value] of Object.entries(incoming.headers)) {
+                  if (value !== undefined) {
+                    headers.set(name, Array.isArray(value) ? value.join(", ") : value);
+                  }
+                }
+                resolve(
+                  new Response(Buffer.concat(chunks).toString("utf8"), {
+                    status: incoming.statusCode ?? 500,
+                    headers,
+                  }),
+                );
+              });
+            });
+            outgoing.once("error", reject);
+            outgoing.end(init.body);
+          })
+        : await fetch(origin + "/graphql", init);
       const body = await response.text();
       const json = JSON.parse(body) as {
         data?: Record<string, unknown>;
@@ -176,6 +211,89 @@ async function fixture(monotonicNow?: () => number) {
     },
   };
 }
+
+test("private profile HTTP read requires its purpose credential, exact operation and current owner", async () => {
+  const key = "a".repeat(64);
+  const fx = await fixture(undefined, key);
+  let reads = 0;
+  fx.app.profiles.authorize = (request, profileId) => {
+    reads++;
+    assert.equal(request.context.correlationId, id(90));
+    assert.ok(request.signal instanceof AbortSignal);
+    return Promise.resolve(
+      request.credential === TOKEN_A && profileId === id(10)
+        ? {
+            status: "completed",
+            value: { accountId: id(1), profileId: id(10), checkedAt: NOW, expiresAt: NOW + 1800 },
+          }
+        : { status: "not_found" },
+    );
+  };
+  const options = {
+    variables: { profileId: id(10) },
+    operationName: "EngagementProfile",
+    credential: TOKEN_A,
+    headers: {
+      host: "identity:3100",
+      origin: "http://engagement:3400",
+      "x-aster-engagement-credential": key,
+      "x-aster-correlation-id": id(90),
+    },
+  };
+  try {
+    const result = await fx.send(IDENTITY_ENGAGEMENT_OPERATION, options);
+    assert.equal(result.status, 200);
+    assert.deepEqual(result.json.data?.["_engagementProfile"], {
+      code: "COMPLETED",
+      accountId: id(1),
+      profileId: id(10),
+      checkedAt: NOW,
+      expiresAt: NOW + 1800,
+    });
+    assert.equal(result.headers.get("x-request-id"), id(90));
+    assert.equal(result.headers.get("set-cookie"), null);
+    assert.doesNotMatch(result.body, /displayName|maturity|credential|signature/u);
+    const other = await fx.send(IDENTITY_ENGAGEMENT_OPERATION, { ...options, credential: TOKEN_B });
+    assert.deepEqual(other.json.data?.["_engagementProfile"], {
+      code: "NOT_FOUND",
+      accountId: null,
+      profileId: null,
+      checkedAt: null,
+      expiresAt: null,
+    });
+    assert.equal(reads, 2);
+    assert.equal(
+      (
+        await fx.send(IDENTITY_ENGAGEMENT_OPERATION, {
+          variables: options.variables,
+          operationName: options.operationName,
+          credential: TOKEN_A,
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await fx.send(IDENTITY_ENGAGEMENT_OPERATION, {
+          ...options,
+          headers: { ...options.headers, "x-aster-engagement-credential": "b".repeat(64) },
+        })
+      ).status,
+      403,
+    );
+    for (const query of [
+      "mutation SignIn { demoSignIn { code } }",
+      "query All { profiles { profiles { id } } }",
+      IDENTITY_ENGAGEMENT_OPERATION + " ",
+    ]) {
+      assert.equal((await fx.send(query, options)).status, 400);
+    }
+    assert.equal(reads, 2);
+    assert.doesNotMatch(JSON.stringify(fx.traces), /signature|displayName/u);
+  } finally {
+    await fx.close();
+  }
+});
 
 test("real Apollo HTTP sets a host-only cookie after acknowledgement and never exposes the credential/session", async () => {
   const fx = await fixture();

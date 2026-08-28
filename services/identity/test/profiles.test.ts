@@ -287,6 +287,23 @@ test("profile preferences normalize Unicode and locale with bounded configuratio
   }
 });
 
+test("private profile authority binds current session, owner and expiry without preferences", async () => {
+  const f = fixture();
+  const created = await f.app.create(f.request(), input(10));
+  assert.equal(created.status, "completed");
+  const profileId = created.value.profileId;
+  assert.deepEqual(await f.app.authorize(f.request(), profileId), {
+    status: "completed",
+    value: { accountId: id(1), profileId, checkedAt: NOW, expiresAt: NOW + 1800 },
+  });
+  assert.equal((await f.app.authorize(f.request("assertion-b"), profileId)).status, "not_found");
+  assert.equal((await f.app.authorize(f.request("invalid"), profileId)).status, "unauthenticated");
+  assert.equal((await f.app.authorize(f.request(), "invalid")).status, "invalid_input");
+  f.clock.now = NOW + 1800;
+  assert.equal((await f.app.authorize(f.request(), profileId)).status, "unauthenticated");
+  assert.equal(f.store.outbox.length, 1);
+});
+
 test("hostile profile inputs are rejected without invoking getters or coercion", () => {
   const policy = createProfilePolicy();
   let reads = 0;

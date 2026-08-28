@@ -1,8 +1,8 @@
 # Work Queue
 
-Only one item may be `IN_PROGRESS`.
+Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-Phases 00–06 and P07-R01's backend slice are released. [Backend release](../evidence/phase-07/backend-release.md), main f2d99d254263baac532ef36edba0ab2c99d20dc3. P07-R04 is the sole active item on feat/p07-player. Preserve the published film and private candidates; no source GET/encoding.
+P08-R01 is the sole active item on feat/p08-progress. Phases 00–07 are released through main 854592e5ff1213a306b45d61a547ad4f2a2d9395, including exact post-merge 33171284170. [Phase 07 release](../evidence/phase-07/release.md), [progress checkpoint](../evidence/phase-08/README.md). Preserve the published film/private candidates; no source GET/encoding.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -45,13 +45,15 @@ Phases 00–06 and P07-R01's backend slice are released. [Backend release](../ev
 | 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | DONE |
 | 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | DONE |
 | 39 | Create owner-validated short-lived playback sessions through Federation | P07-R01 | DONE |
-| 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | IN_PROGRESS |
+| 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | DONE |
+| 41 | Record durable owner-authorized monotonic playback progress | P08-R01 | IN_PROGRESS |
+| 42 | Resume preserved owned history and continue-watching after P08-R01 | P08-R06 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
 
-All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md) and passed the documented protected release. P07-R01's owner transport, isolated persistence and Federation are released. P07-R04 also covers P07-R05 through P07-R08 and P07-R10 through P07-R12: player/demo, browser/replay and corrected 64/64 candidate pass. [PR 25 correction](../evidence/phase-07/player-review.md) awaits protected confirmation/publication. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
+Phase 07's twelve requirements have an [acceptance row and protected release](../evidence/phase-07/release.md). P08-R01 includes P08-R02–R05 and atomic outbox intent from P08-R09. Core/SQL and actual private-owner federated Docker acceptance pass. The coherent backend candidate awaits quality/review/protected release; browser reports and remaining Phase 08 requirements follow. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

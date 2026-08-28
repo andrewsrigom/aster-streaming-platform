@@ -18,9 +18,9 @@ test("Playback composes additively, preserves existing operations and does not e
   const previous = readFileSync(new URL("infra/router/generated/api.graphql", root), "utf8");
   const known = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
   const result = composeServices([
-    ...["identity", "catalog"].map((name) => ({
+    ...["identity", "catalog", "engagement"].map((name) => ({
       name,
-      url: `http://${name}:${name === "identity" ? 3100 : 3200}/graphql`,
+      url: `http://${name}:${name === "identity" ? 3100 : name === "engagement" ? 3400 : 3200}/graphql`,
       typeDefs: parse(
         readFileSync(new URL(`infra/router/generated/${name}.graphql`, root), "utf8"),
       ),
@@ -34,6 +34,8 @@ test("Playback composes additively, preserves existing operations and does not e
   assert.deepEqual(validate(api, parse(START_PLAYBACK)), []);
   assert.equal(api.getType("CurrentPlaybackPublication"), undefined);
   assert.equal(api.getQueryType()?.getFields()["_playbackPublications"], undefined);
+  assert.equal(api.getQueryType()?.getFields()["_engagementSession"], undefined);
+  assert.equal(api.getType("EngagementSessionAuthority"), undefined);
   assert.match(result.supergraphSdl, /http:\/\/playback:3300\/graphql/u);
   const mutation = api.getMutationType()?.getFields()["createPlaybackSession"];
   assert.deepEqual(

@@ -1,84 +1,82 @@
-# Work Item: Accessible HLS player and clean playable demo
+# Work Item: Durable owner-authorized playback progress
 
 - Status: IN_PROGRESS
-- Owner: Playback owns session authority; Web owns local player interaction
-- Phase: 07
-- Requirement IDs: P07-R04, P07-R05, P07-R06, P07-R07, P07-R08, P07-R10, P07-R11, P07-R12
+- Owner: Engagement
+- Phase: 08
+- Requirement IDs: P08-R01, P08-R02, P08-R03, P08-R04, P08-R05, P08-R09
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Deliver an accessible adaptive watch journey and one Docker-only clean-start playable demo, independent of optional profiles.
+Save progress for an owned profile and valid title-bound playback context, with durable acknowledgement, exact replay and monotonic ordering.
 
 ## Current behavior
 
-Backend P07-R01 is released at main f2d99d254263baac532ef36edba0ab2c99d20dc3; PR 24 protected CI, one confirmation and post-merge pass. [Release](../evidence/phase-07/backend-release.md). This branch adds the actual player and generated playable demo. Browser/failure/accessibility, empty-volume startup and replay pass; candidate gates/protected publication remain. Retained film/HLS is unchanged. [Player evidence](../evidence/phase-07/player.md).
+Engagement domain/application and isolated PostgreSQL pass focused and real SQL tests. The protected fourth subgraph now saves through current private Identity/Playback checks in Docker. Replay, ordering, cross-account rejection, lock recovery, session expiry, revocation and anonymous-media independence pass. The full candidate gate and protected release remain pending. Phase 07 is released at main 854592e5ff1213a306b45d61a547ad4f2a2d9395. [Evidence](../evidence/phase-08/README.md).
 
 ## Proposed behavior
 
-Public watch route with preloaded metadata and an explicit client-only session/start action. Apollo owns session responses; Redux holds only local preferences. Use pinned HLS.js and selected Media Chrome controls after P07-R11 review. Fetch media directly from the browser. Expose finite errors and bounded local QoE measurements. Finish a project-scoped Docker command with real generated-media initialization, no hosted credentials/manual SQL.
+PR 26 CI 33180440040 failed in the unchanged Catalog attestation fixture: its fixed command clock can precede PostgreSQL's later validated_at, causing media_not_ready on reused publication. Correct only the test clock: start before a deliberate second boundary, advance from each actual registered publication timestamp, preserve future-publication rejection and all production checks. Iteration: Catalog build/lint and real SQL regression. Candidate: affected gate. Existing Engagement/Playback Docker acceptance remains valid because no production source changes; do not repeat it. Review only this test correction and any already-requested blocking-boundary confirmation.
 
-PR 24 startup and fixture-cleanup corrections are released, with 64/64 candidate tasks and passing affected runtime proofs. Player stash 2e85504b1739e3192484c37f5af63977b305eec1 is already restored; do not reapply it or repeat unchanged backend experiments. [Correction evidence](../evidence/phase-07/backend-review.md).
+P08-R06 is preserved, not active, in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history. Its 60 tests, rebased SQL and full federated reads passed with zero fixture resources; final candidate/release remain. Restore that stash once after rebasing; older stashes were already restored.
+
+Implement progress domain/application first, then isolated PostgreSQL and owner-validated GraphQL. Only committed progress/receipt/outbox receives acknowledgement. Pure tests do not claim a running service or save UI. Watchlist, projections, relay and player integration follow within Phase 08.
 
 ## Boundaries
 
-Catalog owns rights/publications; Playback owns sessions; Web owns local interaction. Paths: apps/web/features/playback, store/player, app/watch/[id], title link, focused/browser tests; then demo tooling/Compose. Trust boundaries: GraphQL payload, storage, manifests/segments/captions, user activation and lifecycle. Existing React/Next/Apollo/Redux pins remain; review HLS.js 1.7.1 and Media Chrome 4.19.2 package compatibility and notices before use.
+Engagement owns progress, receipts and outbox under services/engagement. Identity owns profile/session authorization; Playback owns session validity. No foreign SQL, Redis authority, browser-supplied account identity, media proxy or mandatory Engagement dependency for anonymous playback. Record private owner-read trust/expiry in an ADR before wiring network adapters.
 
 ## Invariants
 
-No SSR session creation, remote state in Redux, stored session URL/ID/history, media proxy, optional Identity dependency, arbitrary URL input or automatic mutation retry. No private configuration in client assets. Do not invent captions for the approved film.
+Aggregate key is (profile, title); sequence is global to that key, not reset per session. Exact replay returns its accepted result; changed payload conflicts. Only a newer sequence may deliberately seek backward. Default configured opening threshold is min(30 seconds, 5% duration), completion max(95% duration, duration minus 30 seconds). Strictly exceed opening; reaching completion removes resumability. Integer millisecond position clamps to [0, observed duration]; positive duration is capped at twelve hours. This is reported progress, not proof of viewing or rights authority.
 
 ## Failure behavior
 
-Finite session/expiry, manifest, network, decode, unsupported-media, caption and fatal messages. Unknown mutation outcome requires deliberate retry. HLS GET retry and recovery are bounded; unmount/expiry stops loads and destroys the adapter. Optional caption failure is visible without blocking video. Corrupt/blocked storage uses defaults. Native fallback exposes quality limitations.
+Malformed input, wrong owner, expired context and stale sequence do not write. Networks stay outside SQL transactions; deadlines/cancellation prevent later stages. Unknown COMMIT returns indeterminate; retry the same key. Bounded receipt/outbox capacity returns backpressure without deleting live history. Optional save failure never stops media.
 
 ## Data and contracts
 
-Reuse StartPlayback; no durable migration. Versioned preferences contain only volume, mute, rate, captions and quality, validated after hydration. QoE: finite in-memory events, monotonic durations, no user/title/session IDs or URLs, no remote collection. Phase 08 owns durable progress.
+Add only Engagement-owned tables/credentials/migration. Atomic state, receipt and engagement.progress-recorded v1 event. Digest the original canonical payload, not only its clamped position. Define retention, capacity, deletion tombstones and migration compatibility before persistence. Replay requires current profile authorization but must survive original playback expiry. Supergraph stays the public API; internal reads cannot recurse through a saturated Router. No unused dependencies.
 
 ## Security and privacy
 
-Fixed Router origin, omitted cookies, bounded response/concurrency and 4s deadline/cancellation. Validate returned title/expiry/reference before attachment. Bound HLS buffers/timeouts/retries. Never render library error objects. Demo provenance must prove generated source rights; retain existing volumes.
+Validate exact keys, UUIDs, integer sequence/position/duration/time and bounded collections. Profile/session IDs are references, never authority. Current Identity verification precedes disclosure; Playback binds session to title. No cookies/media URLs in events or logs. New reports allow at most 30 seconds future skew and 120 seconds delivery age; exact accepted replay is distinct from a late new update.
 
 ## Implementation steps
 
-Initial PR 25 review of 7d49e8bd33704ec326ab324a1ff35325128f93f2 is complete (2026-08-28): two P2 blockers. Batch the existing non-delivery `ui-seed-v1` label into Catalog playback eligibility and both Web entry points, preserving public browsing and the separate playable seed. Include Web source paths in the existing demo CI classification. No schema/migration or new permission is needed. Focused owner/Web/policy tests and affected browser proof precede one correction commit and one confirmation review. Preserve unchanged generation/SQL/media evidence; protected CI still runs the complete fresh demo.
+1. Pure progress input/state/threshold policy with deterministic tests.
+2. Application authorization, replay, transaction intent and finite failure tests.
+3. [ADR-0030](../docs/adr/0030-local-engagement-progress.md) defines private owner reads, one-hour receipts, retained progress and SQL capacity/lock order. Migration 0001 and the PostgreSQL adapter pass real isolation/concurrency/atomicity and safe rollback tests.
+4. Bounded GraphQL/runtime, explicit degraded behavior and protected operations.
+5. Evidence/review/release after PR 25, then remaining Phase 08 work.
 
-Initial protected run 33169091270 also exposed an attestation fixture clock race: commands used advancing wall time while approval validation used the earlier captured second. Share the fixture clock and assert that genuinely future-dated approval still fails. Production rights checks and deadlines remain unchanged. Repeat the affected real-PostgreSQL fixture without re-encoding media; the corrected protected run retains the complete generated-publication gate.
+### PR 26 confirmation remediation
 
-1. Record control decision; verify packages/licenses.
-2. Test session client, local state, errors/QoE and HLS lifecycle.
-3. Wire client-only watch UI, keyboard controls, captions/quality and attribution.
-4. Verify real browser/failure/accessibility/direct-media path and lazy bundle impact.
-5. Implement ADR-0029's fixed generated playable seed, immutable object publication and explicit Compose readiness. Verify empty-volume Docker demo and scoped diagnostics/cleanup; preserve the retained film and database. The original browse seed stays unchanged.
-6. Correct observed default-caption cue loss and immutable S3 replay failure, with focused adapter tests and real caption/replay confirmation. Keep the native caption selector; omit the redundant upstream toggle with invalid ARIA semantics. These are active acceptance boundaries, not speculative hardening.
-7. Consolidate evidence/review/protected release after the backend predecessor.
+Initial review 5453534315 and protected CI 33178308691 pass at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. Confirmation 5051921328 found two blocking contract/availability defects: receipt keys were scoped per title, and private Engagement reads shared Playback admission/rate capacity. P08-R01 is IN_PROGRESS again. Batch a profile-scoped receipt key/lookup and one-request private Playback bulkhead with its own rate bucket. Add synchronized cross-title replay and public-during-private-saturation tests; repeat affected SQL/federated evidence because these boundaries change.
+
+P08-R06 work is preserved, not active or publishable: local feat/p08-history and exact stash 678ccde78146453011ed7e9941d29afdad26111d. Its pagination/SQL/GraphQL checkpoint passed focused tests and real 25-row SQL pages; full candidate acceptance remains. After this predecessor is fixed, rebase that branch, restore this stash once and reconcile memory before continuing. No CPU/media loop.
 
 ## Tests
 
-Payload/URL/expiry/operation validation; cancellation/late response; storage corruption/bounds; telemetry redaction; adapter cleanup/native/quality/captions. Browser: actual HLS frame, seek/mute/rate/fullscreen, keyboard/focus/labels, preferences/reload, expiry/rejection/missing media/slow network and a labeled caption fixture. Verify Chromium first; record native/WebKit/Firefox evidence without claiming untested devices.
+Domain: threshold edges, tiny/long titles, deliberate seek, stale ordering, malformed/hostile input and clock bounds. Application: wrong owner/session/title, exact/conflicting replay, expiry, cancellation, capacity and ambiguous commit. Integration: synchronized real SQL, rollback, privilege isolation and actual owner transport. Contract: composition/operations/events. Browser resume follows player integration, not a fabricated current result.
 
 ## Evidence
 
-Iteration: focused Web tests and affected TypeScript/ESLint. Candidate: changed-scope source/docs/security, schema, browser/accessibility/failures, notices/bundle and protected CI. Repeat browser proof only when its adapter/control/transport boundary changes; clean demo only when packaging/seed/Compose changes. No unchanged CPU/film/SQL experiment. One initial and one confirmation review, batch only requirement/security/data/availability/public-contract blockers. Raw results: evidence/phase-07.
+Iteration: focused node:test, strict types and ESLint. Candidate: affected workspace gate plus changed SQL/owner transport. Artifacts: evidence/phase-08. Repeat heavy proofs only when transaction, trust, transport, packaging or player boundaries change. One initial and one confirmation review; only requirement/security/data/availability/public-contract blockers extend the item. No unchanged CPU/film/demo experiment.
 
 ## Rollback or recovery
 
-Keep PR 24 frozen. Revert additive player/watch entry, retain browsing. Ignore/reset preference version without product-data loss. Demo cleanup verifies exact ownership; never reset retained development media.
-
-PR 24 is now squash-merged at f2d99d254263baac532ef36edba0ab2c99d20dc3 after protected CI 33163548411 and confirmation 5451448968. Exact post-merge run 33164139588 passes all applicable jobs. This player branch is rebased without changing the backend tree. For real browser acceptance, preserve the current Web/Router/Catalog images and a local Catalog-only database backup, apply tested additive Catalog 0008 and Playback 0001 with their normal initializers, then upgrade only those application services from verified images. Media, PostgreSQL/Redis containers, other processes and publication pointer remain unchanged. Roll back application images while retaining additive audit/schema; never run destructive down against this retained database.
+Stop additive Engagement and restore the prior compatible Router artifacts. Preserve all owner schemas/data/media. Disable new owner-read flags when rolling back Identity/Playback, whose old runtime rejects unknown configuration; keep trust volumes unless explicitly rotating exact verified disposable keys. Down migration refuses retained data. The guarded reset recognizes the new exact services/volumes and is tested with fake Docker only; it is not used against retained data.
 
 ## Documentation updates
 
-Player decision, browser limitations, failure/QoE definitions, one-command demo and acceptance at coherent checkpoints. Memory tracks dependency/rebase and next action.
+Record implemented versus planned behavior, threshold/receipt/retention contracts, owner-read ADR and recovery at coherent checkpoints. Keep queue/current state/handoff consistent with the sole dependent item.
 
 ## Completion checklist
 
-- [x] Player strategy/package compatibility recorded
-- [x] Session/preferences/error/QoE/adapter tests pass
-- [x] Accessible watch journey and failures verified (Chromium; content/browser limitations recorded at checkpoint)
-- [x] Empty-state Docker playable demo verified locally
-- [x] Predecessor released
-- [x] Player/demo local candidate gate 64/64 and zero-high/critical dependency audit
-- [ ] Protected review/release complete
+- [x] Domain/application acceptance
+- [x] Durable isolation/concurrency/atomicity (disposable PostgreSQL)
+- [x] Owner transport and public contract
+- [x] Evidence and memory current
+- [ ] Protected candidate review/CI, merge and exact post-merge complete

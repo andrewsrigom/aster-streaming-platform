@@ -25,12 +25,12 @@ export function validateRouterRuntime(source) {
             '      ASTER_ROUTER_OTLP_ENABLED: "false"\n      APOLLO_EXPOSE_QUERY_PLAN: "false"\n',
             "    depends_on:\n      router-trust-init:\n        condition: service_completed_successfully\n      catalog:\n        condition: service_healthy\n      playback:\n        condition: service_healthy\n",
             '    ports:\n      - "127.0.0.1:4000:4000"\n',
-            "    volumes:\n      - identity-router-trust:/run/aster-router/identity:ro\n      - catalog-router-trust:/run/aster-router/catalog:ro\n      - playback-router-trust:/run/aster-router/playback:ro\n    networks: [platform, edge]\n",
+            "    volumes:\n      - identity-router-trust:/run/aster-router/identity:ro\n      - catalog-router-trust:/run/aster-router/catalog:ro\n      - playback-router-trust:/run/aster-router/playback:ro\n      - engagement-router-trust:/run/aster-router/engagement:ro\n    networks: [platform, edge]\n",
             "    stop_grace_period: 10s\n",
             '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
           ]
         : [
-            "    volumes:\n      - identity-router-trust:/run/aster-router/identity\n      - catalog-router-trust:/run/aster-router/catalog\n      - playback-router-trust:/run/aster-router/playback\n      - playback-catalog-trust:/run/aster-playback-catalog\n    network_mode: none\n",
+            "    volumes:\n      - identity-router-trust:/run/aster-router/identity\n      - catalog-router-trust:/run/aster-router/catalog\n      - playback-router-trust:/run/aster-router/playback\n      - engagement-router-trust:/run/aster-router/engagement\n      - playback-catalog-trust:/run/aster-playback-catalog\n      - engagement-identity-trust:/run/aster-engagement-identity\n      - engagement-playback-trust:/run/aster-engagement-playback\n    network_mode: none\n",
             "    stop_grace_period: 5s\n",
             '          cpus: "0.25"\n          memory: 64M\n          pids: 32\n',
           ]),
@@ -51,7 +51,7 @@ export function validateRouterRuntime(source) {
     if (
       required.some((value) => !block.includes(value)) ||
       forbidden.some((value) => block.includes(value)) ||
-      block.match(/^ {6}- /gm)?.length !== 4
+      block.match(/^ {6}- /gm)?.length !== (runtime ? 5 : 7)
     ) {
       violations.push({
         rule: "router-runtime",
@@ -59,7 +59,7 @@ export function validateRouterRuntime(source) {
       });
     }
   }
-  for (const owner of ["identity", "catalog", "playback"]) {
+  for (const owner of ["identity", "catalog", "playback", "engagement"]) {
     if (!source.includes(volumeBlock(owner + "-router-trust", "disposable-local"))) {
       violations.push({
         rule: "router-runtime",
@@ -99,7 +99,7 @@ export function validateRouterSources(sources) {
     ],
     "infra/docker/router-trust.Dockerfile": [
       "FROM " + nodeImage + "\n",
-      "RUN install -d -m 0700 -o node -g node /run/aster-router/identity /run/aster-router/catalog /run/aster-router/playback /run/aster-playback-catalog\n",
+      "RUN install -d -m 0700 -o node -g node /run/aster-router/identity /run/aster-router/catalog /run/aster-router/playback /run/aster-router/engagement /run/aster-playback-catalog /run/aster-engagement-identity /run/aster-engagement-playback\n",
       "COPY infra/router/init-trust.mjs /app/init-trust.mjs\n",
       "COPY LICENSE /app/LICENSE\nUSER node\n",
       'ENTRYPOINT ["node", "/app/init-trust.mjs"]',
@@ -125,6 +125,8 @@ export function validateRouterSources(sources) {
       "              value: ${file./run/aster-router/identity/identity.key}\n",
       "              value: ${file./run/aster-router/catalog/catalog.key}\n",
       "              value: ${file./run/aster-router/playback/playback.key}\n",
+      "              value: ${file./run/aster-router/engagement/engagement.key}\n",
+      "    engagement:\n      timeout: 2700ms\n",
       "  subgraphs:\n    playback:\n      timeout: 2700ms\n",
       "  experimental.expose_query_plan: false\n",
       "      default_attribute_requirement_level: none\n",
@@ -160,8 +162,8 @@ export function validateRouterSources(sources) {
   const config = sources["infra/router/router.yaml"] ?? "";
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
-    config.match(/named: cookie/g)?.length !== 1 ||
-    /catalog:[\s\S]*named: cookie/.test(config)
+    config.match(/named: cookie/g)?.length !== 2 ||
+    /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
   ) {
     violations.push({
       rule: "router-source",

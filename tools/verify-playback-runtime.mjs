@@ -18,8 +18,8 @@ export function validatePlaybackRuntime(source) {
             "    depends_on:\n      playback-init:\n        condition: service_completed_successfully\n      router-trust-init:\n        condition: service_completed_successfully\n      catalog:\n        condition: service_healthy\n",
             '      ASTER_PLAYBACK_LOCAL_ENABLED: "true"\n      ASTER_PLAYBACK_HTTP_HOST: 0.0.0.0\n      ASTER_PLAYBACK_HTTP_PORT: "3300"\n',
             "      ASTER_PLAYBACK_DATABASE_URL: postgresql://aster_playback_local@postgres:5432/aster\n      ASTER_PLAYBACK_DATABASE_PASSWORD: aster-test-only\n",
-            '      ASTER_ROUTER_TRUST_ENABLED: "true"\n',
-            "    volumes:\n      - playback-router-trust:/run/aster-router:ro\n      - playback-catalog-trust:/run/aster-playback-catalog:ro\n",
+            '      ASTER_ROUTER_TRUST_ENABLED: "true"\n      ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED: "true"\n',
+            "    volumes:\n      - playback-router-trust:/run/aster-router:ro\n      - playback-catalog-trust:/run/aster-playback-catalog:ro\n      - engagement-playback-trust:/run/aster-engagement-playback:ro\n",
             '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
           ]
         : [
@@ -41,7 +41,7 @@ export function validatePlaybackRuntime(source) {
       "${",
       "redis",
       "identity",
-      "engagement",
+      "      engagement:\n",
       "discovery",
       ...(runtime
         ? ["command:", "healthcheck:", "ASTER_PLAYBACK_ADMIN", "ASTER_PLAYBACK_MIGRATION"]
@@ -50,7 +50,7 @@ export function validatePlaybackRuntime(source) {
     if (
       required.some((value) => !block.includes(value)) ||
       forbidden.some((value) => block.includes(value)) ||
-      (runtime && block.match(/^ {6}- /gm)?.length !== 2)
+      (runtime && block.match(/^ {6}- /gm)?.length !== 3)
     ) {
       violations.push({
         rule: "playback-runtime",

@@ -2,15 +2,15 @@
 
 ## Resume point
 
-P07-R04 / Phase 07 is IN_PROGRESS on feat/p07-player, rebased on released main f2d99d254263baac532ef36edba0ab2c99d20dc3. P07-R01 is DONE: PR 24 protected CI, confirmation, squash and exact post-merge pass. [Release](../evidence/phase-07/backend-release.md). Full Phase 00–14 goal remains active.
+P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 854592e5ff1213a306b45d61a547ad4f2a2d9395. P07-R04 is DONE: protected CI 33170527302, confirmation 5452439397, squash and post-merge 33171284170 pass. [Release](../evidence/phase-07/release.md). Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish one PR 25 correction commit after initial head 7d49e8bd33704ec326ab324a1ff35325128f93f2; resolve review threads PRRT_kwDOUEkeis6dKNW_ and PRRT_kwDOUEkeis6dKNXH, request one exact-head confirmation and require protected CI before squash/post-merge. [Correction evidence](../evidence/phase-07/player-review.md): non-delivery eligibility, Web CI classification and deterministic attestation fixture; Web 46/46, real SQL, browser 2/2 and candidate 64/64 pass. Do not rerun old failed CI 33169091270. Whole-workspace gate needs a 2 GiB Node heap in the 4 GiB tooling container and Turbo concurrency two, not host diagnosis. No CPU/film benchmark loop.
-2. Backend PR 24 and its exact post-merge CI passed; no pending backend review/rebase. Initial player stash 2e85504b is already restored, not pending. Main and origin/main point to f2d99d2.
-3. Backend has 248 owner tests, source 54/54, corrected candidate 64/64, real SQL and connected runtime acceptance. Both affected startup/cleanup proofs pass with zero resources. [Correction evidence](../evidence/phase-07/backend-review.md). Do not repeat unchanged SQL/film/runtime for prose. Exact released-base schema compatibility passed.
+Priority: PR 26 confirmation 5453879542 passes corrected 736bcdac. CI 33180440040 failed an unchanged Catalog attestation test: fixed command time precedes SQL registration across a second boundary. Correct only the controlled fixture clock, prove real SQL and the affected candidate gate, then publish once and finish protected merge/post-merge. Production source and rights checks remain unchanged. P08-R06 code, 60-test result, rebased SQL and passing full federated read proof are preserved in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history. Rebase and restore that stash once after predecessor; all older stashes were already restored. Generated history output was moved recoverably to node_modules/.aster-history-build-ab8d4499-900a-44fd-8571-325e28bad87c to exclude stale tests from this predecessor gate.
 
-P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
+1. Finish P08-R01 candidate quality, evidence and protected review/release. Domain/SQL/private owner reads/Engagement GraphQL/Docker are implemented. [Federated runtime proof](../evidence/phase-08/federated-runtime.txt) passed all scenarios and removed its exact project; no retained state changed.
+2. The current backend provides recordProgress, not player save/resume, watchlist, paginated reads or broker relay. Keep those as the next explicit Phase 08 items.
+3. Main/origin/main remains 854592e; current PR head is 736bcdac. Only d4320f6 is unrestored; never reapply an older stash. Candidate gates use 2 GiB Node heap, 4 GiB tooling and Turbo concurrency two. No CPU/film loop or closed PR 25 polling.
 
 ## Retained runtime
 
@@ -24,8 +24,8 @@ Uncertain publication grants retain their recovery barrier. Read the publication
 
 ## Execution environment
 
-Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do not restart or diagnose host/CPU. Existing aster-p06-tooling:git Docker image supports canonical repo mount, UID 1002 and bounded resources. Full source gate uses pnpm check:source --concurrency=2 and pids-limit 256. Native Docker/Windows Node handle built-in-only supervisors. Native Git credentials can push; local commits use Docker Git and normal hooks. Do not overlap Git writes.
+Windows Codex, repository through WSL UNC. WSL launch is unreliable; do not restart or diagnose it. aster-p06-tooling:git supports the canonical mount, UID 1002 and bounded resources. Set CI=true for pnpm commands to match the completed installation's virtual-store setting; do not reinstall repeatedly or disable dependency verification. pnpm install used the existing WSL store/cache with normal registry policy checks. Native Docker/Windows Node run built-in supervisors; workspace dependency imports need Linux tooling (native Windows cannot resolve these pnpm links). Native Git credentials push; Docker Git commits with normal hooks. Do not overlap Git writes.
 
 ## Do not do yet
 
-Do not claim protected player/phase release before CI/review/merge. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
+Do not claim Phase 08 completion or browser saving. The federated proof cleaned all its containers, trust volumes and networks. Preserve retained demo/media and user processes. No broad Docker reset or media encode. Docker Git is authoritative for Linux modes; never use a codex/ branch.

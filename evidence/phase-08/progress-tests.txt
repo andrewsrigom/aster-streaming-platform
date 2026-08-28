@@ -1,0 +1,40 @@
+✔ existing profile locks stay local and cannot switch owners or aggregates (3.562778ms)
+✔ missing profile admission rolls back at its finite guard ceiling (0.389359ms)
+✔ guard mismatch and deletion hide progress without reading it (0.376554ms)
+✔ full progress slots roll back without inserting a new title (0.714413ms)
+✔ malformed receipts are not coerced and pre-cancellation avoids dispatch (0.603228ms)
+✔ unknown commit and throwing adapters never retry or acknowledge writes (0.433162ms)
+✔ six-second demo has precise opening and completion edges (2.231899ms)
+✔ long-title thresholds cap opening and remaining tail, not total watched percentage (0.341226ms)
+✔ clamps impossible positions while retaining raw payload identity (0.267082ms)
+✔ sequence is per profile/title across sessions and rejects every stale delivery (2.567752ms)
+✔ newer intentional seek or replay may make a completed title resumable again (0.232277ms)
+✔ profile, title, account and aggregate substitutions cannot reuse another state (0.242732ms)
+✔ new reports enforce exact clock-skew and delivery-age bounds (0.377196ms)
+✔ rejects malformed bounds, unknown keys, accessors and hostile records without invoking getters (0.768514ms)
+✔ policy is validated configuration, not client input or an unbounded threshold (0.499374ms)
+✔ corrupt or exhausted durable state cannot overflow its version (0.568805ms)
+✔ canonical request payload ignores object key order, never loses submitted fields (0.337857ms)
+✔ durable-state validation does not invoke accessors or coerce a forged status (0.243158ms)
+✔ authorized update intends state, receipt and v1 event in one transaction; owner reads stay outside (5.571742ms)
+✔ exact replay survives playback expiry and returns the original result even after newer progress (1.479787ms)
+✔ same key with changed raw payload conflicts even when positions clamp to the same value (0.733905ms)
+✔ new key with stale sequence cannot change state or create receipt/event (1.279841ms)
+✔ missing credentials, wrong owner and malformed request stop before receipt disclosure (0.563435ms)
+✔ malformed or expired owner snapshots and substituted playback IDs fail closed (1.237083ms)
+✔ a deleted-profile tombstone and receipt/outbox capacity roll back the whole attempt (0.93778ms)
+✔ expiry or exception after outbox append cannot leave partial acknowledged effects (0.994312ms)
+✔ ambiguous commit can be retried with the same key without duplicating effects (0.715231ms)
+✔ cancelled owner lookup consumes a late result without starting persistence (0.626353ms)
+✔ foreign receipt cannot be replayed under a different authorized account (0.635705ms)
+✔ racing receipt replay rechecks Identity after the locked receipt read (0.588637ms)
+✔ owner reads and outbox carry validated correlation and trace without browser authority claims (0.481063ms)
+✔ retention limits and terminal timestamps cannot create an overflowing receipt (0.724238ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 193.809079

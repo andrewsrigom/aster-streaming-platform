@@ -83,6 +83,23 @@ input DeleteProfileInput @join__type(graph: IDENTITY) {
   expectedVersion: Int!
 }
 
+type EngagementProfileAuthority @join__type(graph: IDENTITY) @inaccessible {
+  code: IdentityOutcome!
+  accountId: ID
+  profileId: ID
+  checkedAt: Float
+  expiresAt: Float
+}
+
+type EngagementSessionAuthority @join__type(graph: PLAYBACK) @inaccessible {
+  code: PlaybackSessionCode!
+  sessionId: ID
+  titleId: ID
+  checkedAt: Float
+  createdAt: Float
+  expiresAt: Float
+}
+
 enum IdentityOutcome @join__type(graph: IDENTITY) {
   COMPLETED @join__enumValue(graph: IDENTITY)
   UNAUTHENTICATED @join__enumValue(graph: IDENTITY)
@@ -100,6 +117,7 @@ scalar join__FieldSet
 
 enum join__Graph {
   CATALOG @join__graph(name: "catalog", url: "http://catalog:3200/graphql")
+  ENGAGEMENT @join__graph(name: "engagement", url: "http://engagement:3400/graphql")
   IDENTITY @join__graph(name: "identity", url: "http://identity:3100/graphql")
   PLAYBACK @join__graph(name: "playback", url: "http://playback:3300/graphql")
 }
@@ -123,7 +141,8 @@ type LocalizedTitle @join__type(graph: CATALOG) {
   synopsis: String!
 }
 
-type Mutation @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
+type Mutation @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
+  recordProgress(input: RecordProgressInput!): ProgressPayload! @join__field(graph: ENGAGEMENT)
   demoSignIn: SessionPayload! @join__field(graph: IDENTITY)
   signOut: SessionPayload! @join__field(graph: IDENTITY)
   createProfile(input: CreateProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY)
@@ -195,14 +214,66 @@ type ProfileSelectionPayload @join__type(graph: IDENTITY) {
   profile: Profile
 }
 
-type Query @join__type(graph: CATALOG) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
+type Progress @join__type(graph: ENGAGEMENT) {
+  id: ID!
+  profileId: ID!
+  titleId: ID!
+  sequence: Int!
+  version: Int!
+  positionMs: Int!
+  durationMs: Int!
+  status: ProgressStatus!
+  occurredAt: Float!
+  updatedAt: Float!
+}
+
+enum ProgressCode @join__type(graph: ENGAGEMENT) {
+  COMPLETED @join__enumValue(graph: ENGAGEMENT)
+  INVALID_INPUT @join__enumValue(graph: ENGAGEMENT)
+  UNAUTHENTICATED @join__enumValue(graph: ENGAGEMENT)
+  NOT_FOUND @join__enumValue(graph: ENGAGEMENT)
+  NOT_PLAYABLE @join__enumValue(graph: ENGAGEMENT)
+  STALE @join__enumValue(graph: ENGAGEMENT)
+  CONFLICT @join__enumValue(graph: ENGAGEMENT)
+  BACKPRESSURE @join__enumValue(graph: ENGAGEMENT)
+  UNAVAILABLE @join__enumValue(graph: ENGAGEMENT)
+  CANCELLED @join__enumValue(graph: ENGAGEMENT)
+  INDETERMINATE @join__enumValue(graph: ENGAGEMENT)
+}
+
+type ProgressPayload @join__type(graph: ENGAGEMENT) {
+  code: ProgressCode!
+  correlationId: ID!
+  progress: Progress
+}
+
+enum ProgressStatus @join__type(graph: ENGAGEMENT) {
+  NOT_STARTED @join__enumValue(graph: ENGAGEMENT)
+  IN_PROGRESS @join__enumValue(graph: ENGAGEMENT)
+  COMPLETED @join__enumValue(graph: ENGAGEMENT)
+}
+
+type Query @join__type(graph: CATALOG) @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
   titles(first: Int!, after: String): CatalogTitleConnection! @join__field(graph: CATALOG)
   title(id: ID!): Title @join__field(graph: CATALOG)
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible @join__field(graph: CATALOG)
+  _engagementProfile(profileId: ID!): EngagementProfileAuthority! @inaccessible @join__field(graph: IDENTITY)
   me: Viewer @join__field(graph: IDENTITY)
   profiles: OwnedProfiles! @join__field(graph: IDENTITY)
   profile(id: ID!): Profile @join__field(graph: IDENTITY)
   activeProfile(id: ID!): Profile @join__field(graph: IDENTITY)
+  _engagementSession(sessionId: ID!, titleId: ID!): EngagementSessionAuthority! @inaccessible @join__field(graph: PLAYBACK)
+}
+
+input RecordProgressInput @join__type(graph: ENGAGEMENT) {
+  profileId: ID!
+  titleId: ID!
+  playbackSessionId: ID!
+  idempotencyKey: ID!
+  sequence: Int!
+  positionMs: Int!
+  durationMs: Int!
+  occurredAt: Float!
 }
 
 type SessionPayload @join__type(graph: IDENTITY) {

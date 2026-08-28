@@ -53,6 +53,10 @@ export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
   ASTER_LOCAL_DEMO_ENABLED: Object.freeze({ classification: "non-secret", optional: true }),
   ASTER_PUBLIC_ORIGIN: Object.freeze({ classification: "non-secret", optional: true }),
   ASTER_ROUTER_TRUST_ENABLED: Object.freeze({ classification: "non-secret", optional: true }),
+  ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: Object.freeze({
+    classification: "non-secret",
+    optional: true,
+  }),
 } satisfies Record<string, RuntimeVariableDefinition>);
 
 const KNOWN_VARIABLES = Object.freeze(
@@ -93,6 +97,7 @@ const runtimeConfigSchema = z.strictObject({
   ASTER_LOCAL_DEMO_ENABLED: z.enum(["true", "false"]).optional(),
   ASTER_PUBLIC_ORIGIN: z.string().max(128).refine(isLocalPublicOrigin).optional(),
   ASTER_ROUTER_TRUST_ENABLED: z.enum(["true", "false"]).optional(),
+  ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: z.enum(["true", "false"]).optional(),
 });
 
 export interface ReferenceRuntimeConfig {
@@ -105,7 +110,11 @@ export interface ReferenceRuntimeConfig {
   readonly databasePasswordConfigured: boolean;
   readonly redisUrl: string;
   readonly otlpMetricsEndpoint?: string;
-  readonly localDemo?: Readonly<{ publicOrigin: string; routerTrust?: true }>;
+  readonly localDemo?: Readonly<{
+    publicOrigin: string;
+    routerTrust?: true;
+    engagementRead?: true;
+  }>;
 }
 
 export interface ReferenceRuntimeConfigIssue {
@@ -123,6 +132,7 @@ export interface ConfiguredNonSecretVariable {
     | "ASTER_STARTUP_DEADLINE_MS"
     | "ASTER_LOCAL_DEMO_ENABLED"
     | "ASTER_ROUTER_TRUST_ENABLED"
+    | "ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED"
     | "ASTER_PUBLIC_ORIGIN";
   readonly classification: "non-secret";
   readonly status: "configured";
@@ -306,6 +316,7 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
     ASTER_LOCAL_DEMO_ENABLED: undefined,
     ASTER_PUBLIC_ORIGIN: undefined,
     ASTER_ROUTER_TRUST_ENABLED: undefined,
+    ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: undefined,
   };
   const seenKnownVariables = new Set<ReferenceRuntimeConfigVariable>();
   let ownedVariableCount = 0;
@@ -449,6 +460,12 @@ function parseReferenceRuntimeConfig(
   if (routerTrust && (!localDemoEnabled || publicOrigin !== "http://127.0.0.1:4000")) {
     throw new ReferenceRuntimeConfigError([knownIssue("ASTER_ROUTER_TRUST_ENABLED", "invalid")]);
   }
+  const engagementRead = result.data.ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED === "true";
+  if (engagementRead && (!routerTrust || result.data.ASTER_SERVICE_NAME !== "identity")) {
+    throw new ReferenceRuntimeConfigError([
+      knownIssue("ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED", "invalid"),
+    ]);
+  }
 
   let databaseUrl = result.data.DATABASE_URL;
   const databasePassword = result.data.ASTER_DATABASE_PASSWORD;
@@ -483,6 +500,7 @@ function parseReferenceRuntimeConfig(
           localDemo: Object.freeze({
             publicOrigin,
             ...(routerTrust ? { routerTrust: true as const } : {}),
+            ...(engagementRead ? { engagementRead: true as const } : {}),
           }),
         }
       : {}),
@@ -578,6 +596,16 @@ export function createReferenceRuntimeConfigDiagnostic(
               value: config.localDemo.publicOrigin,
             }),
           ]),
+      ...(config.localDemo?.engagementRead
+        ? [
+            Object.freeze({
+              name: "ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED" as const,
+              classification: "non-secret" as const,
+              status: "configured" as const,
+              value: "true",
+            }),
+          ]
+        : []),
       ...(config.localDemo?.routerTrust
         ? [
             Object.freeze({

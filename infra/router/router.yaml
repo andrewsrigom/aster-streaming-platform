@@ -53,6 +53,8 @@ traffic_shaping:
   subgraphs:
     playback:
       timeout: 2700ms
+    engagement:
+      timeout: 2700ms
 include_subgraph_errors:
   all: false
 headers:
@@ -86,6 +88,14 @@ headers:
           - insert:
               name: x-aster-router-credential
               value: ${file./run/aster-router/playback/playback.key}
+    engagement:
+      request:
+        operations:
+          - propagate:
+              named: cookie
+          - insert:
+              name: x-aster-router-credential
+              value: ${file./run/aster-router/engagement/engagement.key}
 rhai:
   scripts: /dist/rhai
   main: main.rhai

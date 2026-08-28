@@ -1,0 +1,8 @@
+# Disposable progress-contract proof. No retained accounts, database or media is used.
+services:
+  postgres:
+    volumes: !reset []
+    tmpfs:
+      - /var/lib/postgresql:rw,size=256m
+  router:
+    ports: !override ["127.0.0.1::4000"]

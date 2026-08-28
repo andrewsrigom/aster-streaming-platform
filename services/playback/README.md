@@ -1,6 +1,6 @@
 # Playback sessions
 
-P07-R01 is implemented locally: a bounded Federation mutation, current Catalog authorization and Playback-owned PostgreSQL sessions. [Evidence](../../evidence/phase-07/README.md). The player, client preferences, experience telemetry and clean-start playable film demo remain separate unfinished Phase 07 work. No media bytes pass through this service.
+Phase 07 is released locally: owner-authorized sessions, player, preferences, experience telemetry and the Docker-only generated playable demo. [Release evidence](../../evidence/phase-07/release.md). No media bytes pass through this service.
 
 ## Public contract
 
@@ -22,13 +22,15 @@ Sessions are anonymous, have a maximum fifteen-minute lifetime and expire no lat
 
 ## Runtime
 
-The normal [Docker API checkpoint](../../README.md#run-the-docker-federated-api-checkpoint) builds Playback, applies additive migration 0001 and starts its private listener on 3300. An empty Catalog can be healthy but returns no playable session. That command does not acquire a film or provide the planned player/demo.
+The normal [Docker API checkpoint](../../README.md#run-the-docker-federated-api-checkpoint) builds Playback, applies additive migration 0001 and starts its private listener on 3300. An empty Catalog can be healthy but returns no playable session. That API command does not acquire a film or start Web; use the root playable-demo command for the released player.
 
 Two independent 256-bit credentials are required: Router-to-Playback at `/run/aster-router/playback.key`, and Playback-to-Catalog at `/run/aster-playback-catalog/catalog.key`. Only the latter is shared with Catalog; Router never mounts it. The finite initializer creates private files, and consumers reject missing/insecure files. Never print credentials. Rotate only their exact disposable volumes after stopping all affected consumers; retain PostgreSQL and media.
 
-Deadlines nest as follows: private Catalog HTTP 1500 ms; session application 2000 ms; Playback GraphQL 2500 ms; Router Playback fetch 2700 ms; public Router 3000 ms. Other owner fetches retain 2000 ms. The [Router's per-subgraph configuration](https://www.apollographql.com/docs/graphos/routing/performance/traffic-shaping) permits this bounded override. No network or mutation retry is enabled.
+Deadlines nest as follows: private Catalog HTTP 1500 ms; session application 2000 ms; Playback GraphQL 2500 ms; Router Playback fetch 2700 ms; public Router 3000 ms. Engagement's separate progress fetch also uses 2700 ms; other owner fetches retain 2000 ms. The [Router's per-subgraph configuration](https://www.apollographql.com/docs/graphos/routing/performance/traffic-shaping) permits this bounded override. No network or mutation retry is enabled.
 
 Playback admits at most four concurrent GraphQL operations, with 32 burst credits refilling at four/second. Bodies are limited to 16 KiB, GraphQL source to 4 KiB, one mutation root, 16 fields, depth three, four aliases and cost 80. PostgreSQL has four connections and a one-second operation budget. `/health/ready` requires the restricted store and current Catalog read; `/health/live` remains independent of dependency availability. Shutdown drains/cancels work within ten seconds; Compose allows fifteen seconds.
+
+Phase 08 adds one private, read-only session/title inspection for Engagement. Compose enables ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED with a distinct /run/aster-engagement-playback/playback.key. It returns bounded timing/context, never a media URL, and cannot issue a session or act as Router. Its one-request/no-queue admission and independent rate bucket cannot consume public session permits/rate credits or all four SQL connections. Playback readiness and anonymous session creation do not depend on Engagement. [Progress trust](../../docs/adr/0030-local-engagement-progress.md).
 
 ## Verification and recovery
 

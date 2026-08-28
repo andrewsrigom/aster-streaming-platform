@@ -4,6 +4,7 @@ const RUNTIME_FIELDS = new Set([
   "ASTER_PLAYBACK_HTTP_PORT",
   "ASTER_PLAYBACK_DATABASE_URL",
   "ASTER_PLAYBACK_DATABASE_PASSWORD",
+  "ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED",
 ]);
 
 export function localPlaybackDatabase(
@@ -69,7 +70,8 @@ export function playbackRuntimeConfiguration(
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
     Number(port) < 1024 ||
     Number(port) > 65535 ||
-    environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true"
+    environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true" ||
+    ![undefined, "false", "true"].includes(environment["ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED"])
   ) {
     throw new Error("Invalid protected Playback listener configuration.");
   }
@@ -77,5 +79,6 @@ export function playbackRuntimeConfiguration(
     host,
     port: Number(port),
     connectionString: localPlaybackDatabase(environment, "runtime"),
+    engagementRead: environment["ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED"] === "true",
   });
 }

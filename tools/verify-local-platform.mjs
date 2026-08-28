@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL, URL } from "node:url";
 import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
 import { validateCatalogRuntime } from "./verify-catalog-runtime.mjs";
 import { validatePlaybackRuntime } from "./verify-playback-runtime.mjs";
+import { validateEngagementRuntime } from "./verify-engagement-runtime.mjs";
 import {
   readRouterSources,
   validateRouterRuntime,
@@ -53,11 +54,11 @@ function validateRuntimeService(source) {
     ],
     [
       "configuration",
-      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster_identity_local@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n      ASTER_LOCAL_DEMO_ENABLED: "true"\n      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:4000\n      ASTER_ROUTER_TRUST_ENABLED: "true"\n',
+      '      ASTER_ENV: local\n      ASTER_HTTP_HOST: 0.0.0.0\n      ASTER_HTTP_PORT: "3100"\n      ASTER_SERVICE_NAME: identity\n      ASTER_STARTUP_DEADLINE_MS: "15000"\n      DATABASE_URL: postgresql://aster_identity_local@postgres:5432/aster\n      ASTER_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n      ASTER_LOCAL_DEMO_ENABLED: "true"\n      ASTER_PUBLIC_ORIGIN: http://127.0.0.1:4000\n      ASTER_ROUTER_TRUST_ENABLED: "true"\n      ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: "true"\n',
     ],
     [
       "network",
-      "    volumes:\n      - identity-router-trust:/run/aster-router:ro\n    networks:\n      - platform\n",
+      "    volumes:\n      - identity-router-trust:/run/aster-router:ro\n      - engagement-identity-trust:/run/aster-engagement-identity:ro\n    networks:\n      - platform\n",
     ],
     ["readiness", "      router-trust-init:\n        condition: service_completed_successfully\n"],
     [
@@ -94,11 +95,11 @@ function validateRuntimeService(source) {
       });
     }
   }
-  if (source.match(/^ {6}- /gm)?.length !== 3) {
+  if (source.match(/^ {6}- /gm)?.length !== 4) {
     violations.push({
       rule: "security",
       detail:
-        "Identity permits only its own read-only trust mount, private network and no-new-privileges",
+        "Identity permits only its read-only Router/Engagement trust mounts, private network and no-new-privileges",
     });
   }
   return violations;
@@ -133,21 +134,27 @@ export function validateLocalPlatform(source) {
   violations.push(...validateIntegrationServices(source));
   violations.push(...validateCatalogRuntime(source));
   violations.push(...validatePlaybackRuntime(source));
+  violations.push(...validateEngagementRuntime(source));
   violations.push(...validateRouterRuntime(source));
   for (const name of [
     "catalog",
     "catalog-init",
     "playback",
     "playback-init",
+    "engagement",
+    "engagement-init",
     "router",
     "router-trust-init",
   ]) {
     source = source.replace(serviceBlock(source, name), "");
   }
-  for (const owner of ["identity", "catalog", "playback"]) {
+  for (const owner of ["identity", "catalog", "playback", "engagement"]) {
     source = source.replace(volumeBlock(owner + "-router-trust", "disposable-local"), "");
   }
   source = source.replace(volumeBlock("playback-catalog-trust", "disposable-local"), "");
+  for (const owner of ["identity", "playback"]) {
+    source = source.replace(volumeBlock("engagement-" + owner + "-trust", "disposable-local"), "");
+  }
   for (const name of ["broker", "storage"]) {
     source = source
       .replace(serviceBlock(source, name), "")

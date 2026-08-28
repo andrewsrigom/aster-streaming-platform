@@ -7,6 +7,9 @@ export function validateCatalogProofVolume(project, volume, attachedIds, ownedId
     [project + "_catalog-router-trust", "disposable-local"],
     [project + "_playback-router-trust", "disposable-local"],
     [project + "_playback-catalog-trust", "disposable-local"],
+    [project + "_engagement-router-trust", "disposable-local"],
+    [project + "_engagement-identity-trust", "disposable-local"],
+    [project + "_engagement-playback-trust", "disposable-local"],
   ]);
   const authority = expected.get(volume.Name);
   return (

@@ -12,6 +12,7 @@ import type { PublicationLookup } from "../src/application/session-ports.js";
 import {
   createPlaybackSubgraph,
   type PlaybackOperationTrace,
+  type PlaybackSubgraphOptions,
 } from "../src/transport/playback-subgraph.js";
 
 export const testTitleId = "00000000-0000-4000-8000-000000000001";
@@ -28,6 +29,7 @@ export interface PlaybackHttpResult {
   readonly text: string;
   readonly json: {
     data?: {
+      _engagementSession?: Record<string, unknown>;
       createPlaybackSession?: {
         code: string;
         correlationId: string;
@@ -38,7 +40,10 @@ export interface PlaybackHttpResult {
   };
 }
 
-export async function playbackHttpFixture(override?: PlaybackSessions) {
+export async function playbackHttpFixture(
+  override?: PlaybackSessions,
+  engagement?: PlaybackSubgraphOptions["engagement"],
+) {
   const key = randomBytes(32).toString("hex");
   const adapter = createExpressHttpAdapter({ bodyLimitBytes: 16384 });
   const server = createServer({ maxHeaderSize: 16384 }, adapter.requestListener);
@@ -83,6 +88,7 @@ export async function playbackHttpFixture(override?: PlaybackSessions) {
   const traces: PlaybackOperationTrace[] = [];
   const graph = await createPlaybackSubgraph({
     sessions,
+    ...(engagement ? { engagement } : {}),
     routerTrust: createLocalRouterTrust("playback", key),
     monotonicNow: () => state.monotonic,
     onOperation: (value) => {

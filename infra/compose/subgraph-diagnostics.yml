@@ -4,6 +4,7 @@ services:
     volumes: !reset []
     environment:
       ASTER_ROUTER_TRUST_ENABLED: "false"
+      ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: "false"
       ASTER_PUBLIC_ORIGIN: http://127.0.0.1:3100
     ports:
       - "127.0.0.1:3100:3100"

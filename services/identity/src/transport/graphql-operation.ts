@@ -186,7 +186,7 @@ export function inspectIdentityOperation(body: unknown, schema: GraphQLSchema): 
         if (item.name.value === "__typename") {
           continue;
         }
-        if (item.name.value.startsWith("__")) {
+        if (item.name.value.startsWith("__") || item.name.value === "_engagementProfile") {
           throw new OperationRejected("INVALID_INPUT");
         }
         const field =

@@ -75,14 +75,14 @@ if [ "$1" = "compose" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init playback playback-init broker storage collector prometheus router router-trust-init web
+    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init playback playback-init engagement engagement-init broker storage collector prometheus router router-trust-init web
     if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
       printf '%s\\n' unreviewed
     fi
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--volumes" ]; then
-    printf '%s\\n' postgres-data broker-data storage-data prometheus-data identity-router-trust catalog-router-trust playback-router-trust playback-catalog-trust
+    printf '%s\\n' postgres-data broker-data storage-data prometheus-data identity-router-trust catalog-router-trust playback-router-trust playback-catalog-trust engagement-router-trust engagement-identity-trust engagement-playback-trust
     exit 0
   fi
   if [ "$1" = "down" ] && [ "$2" = "--volumes" ]; then
@@ -130,13 +130,14 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
         legacy-helper | foreign-legacy-volume) printf '%s\\n' 'volume|aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa|/var/lib/postgresql' ;;
         *)
           case "$FAKE_DOCKER_SERVICE" in
-            collector | identity-init | catalog-init | playback-init) ;;
+            collector | identity-init | catalog-init | playback-init | engagement-init) ;;
             web) ;;
-            identity) printf 'volume|aster_%s-router-trust|/run/aster-router\\n' "$FAKE_DOCKER_SERVICE" ;;
+            identity) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router' 'volume|aster_engagement-identity-trust|/run/aster-engagement-identity' ;;
+            engagement) printf '%s\\n' 'volume|aster_engagement-router-trust|/run/aster-router' 'volume|aster_engagement-identity-trust|/run/aster-engagement-identity' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' ;;
             catalog) printf '%s\\n' 'volume|aster_catalog-router-trust|/run/aster-router' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' ;;
-            playback) printf '%s\\n' 'volume|aster_playback-router-trust|/run/aster-router' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' ;;
-            router) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' ;;
-            router-trust-init) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' ;;
+            playback) printf '%s\\n' 'volume|aster_playback-router-trust|/run/aster-router' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' ;;
+            router) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_engagement-router-trust|/run/aster-router/engagement' ;;
+            router-trust-init) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' 'volume|aster_engagement-router-trust|/run/aster-router/engagement' 'volume|aster_engagement-identity-trust|/run/aster-engagement-identity' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' ;;
             broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
             storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
             prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
@@ -482,6 +483,8 @@ test("accepts exact optional service mounts and ordered Compose provenance", asy
     "catalog-init",
     "playback",
     "playback-init",
+    "engagement",
+    "engagement-init",
     "identity",
     "router",
     "router-trust-init",
@@ -493,7 +496,7 @@ test("accepts exact optional service mounts and ordered Compose provenance", asy
 });
 
 test("Router trust reset accepts only owned disposable volumes and exact per-owner mounts", async (t) => {
-  for (const owner of ["identity", "catalog", "playback"]) {
+  for (const owner of ["identity", "catalog", "playback", "engagement"]) {
     const result = await runReset(t, {
       service: owner,
       environment: {

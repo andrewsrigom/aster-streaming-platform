@@ -1,0 +1,35 @@
+✔ six-second demo has precise opening and completion edges (2.67905ms)
+✔ long-title thresholds cap opening and remaining tail, not total watched percentage (0.418547ms)
+✔ clamps impossible positions while retaining raw payload identity (0.352ms)
+✔ sequence is per profile/title across sessions and rejects every stale delivery (6.695761ms)
+✔ newer intentional seek or replay may make a completed title resumable again (0.328345ms)
+✔ profile, title, account and aggregate substitutions cannot reuse another state (0.284317ms)
+✔ new reports enforce exact clock-skew and delivery-age bounds (0.422319ms)
+✔ rejects malformed bounds, unknown keys, accessors and hostile records without invoking getters (0.617416ms)
+✔ policy is validated configuration, not client input or an unbounded threshold (0.410953ms)
+✔ corrupt or exhausted durable state cannot overflow its version (0.407123ms)
+✔ canonical request payload ignores object key order, never loses submitted fields (0.232342ms)
+✔ durable-state validation does not invoke accessors or coerce a forged status (0.159001ms)
+✔ authorized update intends state, receipt and v1 event in one transaction; owner reads stay outside (6.475844ms)
+✔ exact replay survives playback expiry and returns the original result even after newer progress (1.63454ms)
+✔ same key with changed raw payload conflicts even when positions clamp to the same value (4.573385ms)
+✔ new key with stale sequence cannot change state or create receipt/event (1.264859ms)
+✔ missing credentials, wrong owner and malformed request stop before receipt disclosure (0.636576ms)
+✔ malformed or expired owner snapshots and substituted playback IDs fail closed (1.330956ms)
+✔ a deleted-profile tombstone and receipt/outbox capacity roll back the whole attempt (1.242016ms)
+✔ expiry or exception after outbox append cannot leave partial acknowledged effects (1.295954ms)
+✔ ambiguous commit can be retried with the same key without duplicating effects (0.963422ms)
+✔ cancelled owner lookup consumes a late result without starting persistence (1.030012ms)
+✔ foreign receipt cannot be replayed under a different authorized account (0.650595ms)
+✔ owner reads and outbox carry validated correlation and trace without browser authority claims (0.622487ms)
+✔ retention limits and terminal timestamps cannot create an overflowing receipt (0.627429ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 163.924999
+$ node ./tools/verify-architecture.ts
+{"check":"architecture","status":"ok","violations":0}

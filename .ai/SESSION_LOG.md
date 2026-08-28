@@ -2,6 +2,76 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Federated reads preserved and Catalog CI clock corrected
+
+### Completed
+
+P08-R06 passed 60 tests, real 25-row SQL pagination and full federated reads, including Catalog metadata, completion, retirement and authorization. Preserved the complete dependent work in d4320f6f84043fc92c2ffc687a075f087e377753. Returned to P08-R01 because CI 33180440040 exposed an unchanged Catalog fixture clock mismatch; corrected only its controlled test clock.
+
+### Evidence
+
+[Catalog SQL regression](../evidence/phase-08/catalog-clock.md) passes with forced future-publication rejection and advancement from actual registration time; zero fixture resources remain. Corrected progress source 736bcdac received clean confirmation 5453879542. No runtime rights checks, retained data or CPU diagnostics changed.
+
+### Next action
+
+Publish this verified test correction after the affected gate, finish PR 26 protected CI/merge/post-merge, then rebase and restore d4320f6 once. Complete the history candidate gate and release. Older stashes are already restored.
+
+## 2026-08-28 — PR 26 confirmation remediation
+
+### Completed
+
+Published one coherent progress candidate. Initial review and protected CI 33178308691 pass. Confirmation 5051921328 identified cross-title receipt reuse and shared Playback admission; implemented a profile-scoped key/lookup and isolated one-request private lane/rate bucket in one batch.
+
+### Evidence
+
+34 focused tests and complete Engagement 46/Playback 36 tests pass. [Real SQL](../evidence/phase-08/review-postgres.jsonl) proves synchronized different-title attempts have one winner/one conflict and one state/receipt/event. [Repeated Docker acceptance](../evidence/phase-08/review-federated-runtime.txt) passes cross-title conflict, owner checks and optional-failure independence; zero fixture resources remain.
+
+### Next action
+
+Publish the verified correction batch, confirm only blocking boundaries, merge/prove post-merge. P08-R06 history implementation, GraphQL and 25-row keyset SQL evidence are preserved in exact stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history; rebase/restore once after predecessor. No CPU/media loop.
+
+## 2026-08-28 — Owner-authorized federated progress
+
+### Completed
+
+Implemented private Identity/profile and Playback/session reads, separate credentials, protected Engagement mutation/runtime and fourth-subgraph Docker/CI wiring.
+
+### Evidence
+
+[Real Docker proof](../evidence/phase-08/federated-runtime.txt) passes durable replay/ordering, foreign-owner rejection, expiry/revocation, blocked-owner recovery, trace correlation and anonymous playback after optional owners stop. [Candidate gate](../evidence/phase-08/candidate-gate.txt) passes 67/67 tasks. Exact disposable cleanup left zero resources; retained demo/media untouched. No CPU test.
+
+### Next action
+
+Full candidate gate and protected review/release; browser save and remaining Phase 08 are not claimed.
+
+## 2026-08-28 — Durable progress persistence
+
+### Completed
+
+ADR-0030, isolated Engagement migration/adapter, per-profile serialization, atomic state/receipt/event, bounded slots and immutable deletion fence. Recheck Identity freshness during racing replay. No owner transport or save UI is claimed.
+
+### Evidence
+
+[Checkpoint](../evidence/phase-08/README.md): 32 focused tests and ten real PostgreSQL 18.6 scenarios; strict types, scoped lint, architecture, unused-code and memory checks. Empty rollback preserves unrelated state; retained data refuses downgrade. Disposable SQL fixtures/network removed; retained demo/media and Windows processes untouched.
+
+### Next action
+
+P08-R01 private owner reads and protected runtime. Full Phase 00–14 goal remains active; no CPU/film loop or Phase 07 polling.
+
+## 2026-08-28 — Phase 07 release and Engagement core
+
+### Completed
+
+Closed PR 25 with one batched correction, protected CI 33170527302 and confirmation 5452439397. Squash 854592e5ff1213a306b45d61a547ad4f2a2d9395 passed post-merge 33171284170. Started the sole dependent Phase 08 branch while hosted checks ran, then rebased it onto the identical squash tree. Implemented progress domain/application with exact replay, sequence/threshold rules, owner-validation ports, bounded cancellation and atomic outbox intent.
+
+### Evidence
+
+[Phase 07 release](../evidence/phase-07/release.md); [Phase 08 checkpoint](../evidence/phase-08/README.md): 25 focused tests, strict types, scoped lint, architecture and unused-code checks. Tests use controlled transaction fakes, not proof of SQL durability. No new runtime dependency or repeated CPU/film experiment. Rebase stash 0a477fb62adef5b74dbf4084cf47b3e491bd6e3b is already restored.
+
+### Next action
+
+P08-R01: record owner-read trust/retention, implement isolated PostgreSQL and real concurrency/atomicity, then wire runtime/subgraph. Full Phase 00–14 goal remains active; no more Phase 07 polling is needed.
+
 ## 2026-08-28 — Batched player/demo review correction
 
 ### Completed

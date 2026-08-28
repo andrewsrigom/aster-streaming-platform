@@ -4,22 +4,26 @@ import { open } from "node:fs/promises";
 import type { IncomingMessage } from "node:http";
 import { join } from "node:path";
 
-export type AsterRouterOwner = "identity" | "catalog" | "playback";
+export type AsterRouterOwner = "identity" | "catalog" | "playback" | "engagement";
 interface AsterRouterContext {
   readonly traceId?: string;
+  readonly correlationId?: string;
 }
 export interface AsterLocalRouterTrust {
   accept(request: IncomingMessage): AsterRouterContext | undefined;
 }
 
 const CREDENTIAL = /^[a-f0-9]{64}$/u;
-const ROUTER_OWNERS = new Set<string>(["identity", "catalog", "playback"]);
+const ROUTER_OWNERS = new Set<string>(["identity", "catalog", "playback", "engagement"]);
 const TRACEPARENT = /^00-([a-f0-9]{32})-([a-f0-9]{16})-0[01]$/u;
 const HOSTS = {
   identity: "identity:3100",
   catalog: "catalog:3200",
   playback: "playback:3300",
+  engagement: "engagement:3400",
   "catalog-playback": "catalog:3200",
+  "identity-engagement": "identity:3100",
+  "playback-engagement": "playback:3300",
 } as const;
 
 /** Transport authentication only; no account, profile or operator authority. */
@@ -38,6 +42,13 @@ export function createLocalCatalogPlaybackTrust(credential: string): AsterLocalR
   return createTransportTrust("catalog-playback", credential);
 }
 
+export function createLocalEngagementReadTrust(
+  owner: "identity" | "playback",
+  credential: string,
+): AsterLocalRouterTrust {
+  return createTransportTrust(`${owner}-engagement`, credential);
+}
+
 function createTransportTrust(
   owner: keyof typeof HOSTS,
   credential: string,
@@ -46,9 +57,17 @@ function createTransportTrust(
     throw new Error("Invalid local Router trust configuration.");
   }
   const expected = Buffer.from(credential, "ascii");
-  const credentialHeader =
-    owner === "catalog-playback" ? "x-aster-playback-credential" : "x-aster-router-credential";
-  const origin = owner === "catalog-playback" ? "http://playback:3300" : "http://127.0.0.1:4000";
+  const engagement = owner === "identity-engagement" || owner === "playback-engagement";
+  const credentialHeader = engagement
+    ? "x-aster-engagement-credential"
+    : owner === "catalog-playback"
+      ? "x-aster-playback-credential"
+      : "x-aster-router-credential";
+  const origin = engagement
+    ? "http://engagement:3400"
+    : owner === "catalog-playback"
+      ? "http://playback:3300"
+      : "http://127.0.0.1:4000";
   return Object.freeze({
     accept(request: IncomingMessage): AsterRouterContext | undefined {
       if (
@@ -78,8 +97,14 @@ function createTransportTrust(
           // Empty W3C vendor state conveys no context; nonempty vendor state is not trusted.
           (name === "tracestate" && value !== "") ||
           name.startsWith("x-forwarded-") ||
-          (name.startsWith("x-aster-") && name !== "x-aster-csrf" && name !== credentialHeader) ||
-          (owner !== "identity" && name === "cookie")
+          (name.startsWith("x-aster-") &&
+            name !== "x-aster-csrf" &&
+            name !== credentialHeader &&
+            !(engagement && name === "x-aster-correlation-id")) ||
+          (owner !== "identity" &&
+            owner !== "identity-engagement" &&
+            owner !== "engagement" &&
+            name === "cookie")
         ) {
           return undefined;
         }
@@ -95,9 +120,20 @@ function createTransportTrust(
       ) {
         return undefined;
       }
+      const correlationId = engagement ? headers.get("x-aster-correlation-id") : undefined;
+      if (
+        engagement &&
+        (!correlationId ||
+          !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u.test(
+            correlationId,
+          ))
+      ) {
+        return undefined;
+      }
+      const context = correlationId ? { correlationId } : {};
       const traceparent = headers.get("traceparent");
       if (traceparent === undefined) {
-        return {};
+        return context;
       }
       const match = TRACEPARENT.exec(traceparent);
       return match &&
@@ -105,7 +141,7 @@ function createTransportTrust(
         match[2] &&
         match[1] !== "0".repeat(32) &&
         match[2] !== "0".repeat(16)
-        ? { traceId: match[1] }
+        ? { ...context, traceId: match[1] }
         : undefined;
     },
   });
@@ -131,6 +167,16 @@ export async function loadLocalCatalogPlaybackTrust(
   directory = "/run/aster-playback-catalog",
 ): Promise<AsterLocalRouterTrust> {
   return createLocalCatalogPlaybackTrust(await loadLocalCatalogPlaybackCredential(directory));
+}
+
+export async function loadLocalEngagementReadCredential(
+  owner: "identity" | "playback",
+  directory = `/run/aster-engagement-${owner}`,
+): Promise<string> {
+  if (!new Set<string>(["identity", "playback"]).has(owner)) {
+    throw new Error("Invalid Engagement read owner.");
+  }
+  return readCredential(join(directory, `${owner}.key`));
 }
 
 async function readCredential(path: string): Promise<string> {

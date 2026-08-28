@@ -26,7 +26,18 @@ export async function verifyAttestation(
   database: AsterPostgresAdapter,
   restricted: AsterPostgresAdapter,
 ): Promise<void> {
-  const now = Math.floor(Date.now() / 1000);
+  // Force the command clock to precede SQL registration without sleeping or racing a second.
+  let now = Math.floor(Date.now() / 1000) - 2;
+  const initialTime = now;
+  const advanceToPublication = async (publicationId: string) => {
+    const result = await admin.query<{ validated_at: number }>(
+      "SELECT validated_at::float8 AS validated_at FROM catalog.publications WHERE id = $1",
+      [publicationId],
+    );
+    const validatedAt = result.rows[0]?.validated_at;
+    assert.ok(Number.isSafeInteger(validatedAt) && validatedAt !== undefined && validatedAt >= now);
+    now = validatedAt;
+  };
   let sequence = 930000;
   const nextId = () => id(sequence++);
   const titleId = nextId();
@@ -43,7 +54,7 @@ export async function verifyAttestation(
   const common = {
     authority: operator.authority,
     policy: { commercial: true, allowLocalMedia: true },
-    // Approval and validation must share a clock even across a wall-clock second boundary.
+    // SQL owns registration time; advance this controlled clock before consuming its publication.
     now: () => now,
     nextId,
     digest: hash,
@@ -259,6 +270,12 @@ export async function verifyAttestation(
     assert.equal(stored.rows[0].state, "RIGHTS_REVIEWED");
     assert.equal(
       (await commands.execute("media-ready", { ...input(3), publicationId }, request)).status,
+      "media_not_ready",
+    );
+    await advanceToPublication(publicationId);
+    assert.ok(now > initialTime);
+    assert.equal(
+      (await commands.execute("media-ready", { ...input(3), publicationId }, request)).status,
       "completed",
     );
     assert.equal((await commands.execute("publish", input(4), request)).status, "completed");
@@ -270,6 +287,8 @@ export async function verifyAttestation(
       registrationDoesNotActivate: true,
       normalOperatorPublish: true,
       retainedAuditDowngradeRejected: true,
+      publicationClockAdvanced: true,
+      futurePublicationRejected: true,
     });
 
     const reusedTitleId = nextId();
@@ -404,6 +423,7 @@ export async function verifyAttestation(
     const reusedPublicationId = await registerReuse(3);
     assert.notEqual(reusedPublicationId, publicationId);
     assert.equal(await registerReuse(3), reusedPublicationId);
+    await advanceToPublication(reusedPublicationId);
     assert.equal(
       (
         await commands.execute(

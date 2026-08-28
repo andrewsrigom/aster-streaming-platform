@@ -1,0 +1,12 @@
+{"event":"engagement_migration_roundtrip","postgres":"18.6","upDownUp":"passed","unrelatedData":"preserved"}
+{"event":"engagement_durable_replay","exactAfterNewerAndPlaybackFailure":true,"conflict":"rejected","foreignOwner":"rejected","nonemptyDowngrade":"refused"}
+{"event":"engagement_runtime_isolation","crossOwnerDdlAndRetentionWrites":"rejected"}
+{"event":"engagement_synchronized_replay_ordering","duplicateWinners":1,"effects":1,"stale":"rejected","newerSeekBackward":"accepted"}
+{"event":"engagement_profile_scoped_idempotency","changedTitle":"conflict_before_playback","simultaneousTitles":"one_winner_one_conflict","progress":1,"receipts":1,"events":1}
+{"event":"engagement_atomic_guards","missingReceiptAndOutbox":"rolled_back","staleAuthority":"rolled_back"}
+{"event":"engagement_lock_deadline","timeoutAndCancellation":"bounded","independentProfile":"writable","recovery":"passed"}
+{"event":"engagement_deletion_fence","laterWritesAndReplay":"rejected","resurrection":"rejected","deletionConsumer":"planned"}
+{"event":"engagement_receipt_capacity_retention","ceiling":1024,"lastSlotWinners":1,"pruned":64,"expiredRemaining":1,"livePreserved":true}
+{"event":"engagement_outbox_backpressure","ceiling":1024,"acknowledgedProgress":"preserved","brokerRelay":"planned"}
+{"event":"engagement_sql_guard_and_title_bounds","guards":1024,"progressSlots":256,"overflow":"rejected","newProfileBackpressure":true}
+{"event":"p08_read_sql_cleanup","fixture":"aster-p08-read-sql-d155ac38-5a7d-4b62-baa0-3ecfeb463413","remaining":0,"exit":0}
