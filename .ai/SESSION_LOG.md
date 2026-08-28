@@ -2,6 +2,34 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Bounded PR 22 performance remediation
+
+### Completed
+
+Removed unused runtime Tailwind conflict resolution using explicit Button alignment variants; preserved shadcn/Radix behavior. Corrected the documentation scanner's generated-output boundary without rewriting third-party licenses. Kept the existing budgets, Apollo hydration mark and all owner/security boundaries.
+
+### Evidence
+
+Initial performance confirmation failed all hydration visits. The import probe made no difference and was removed. Final image 25d5399 removes 8426 encoded initial JavaScript bytes; three visits pass unchanged budgets. Source gate passes 58/58 in 55.482 s. Final functional run passes 20/21, followed by a complete passing isolated artifact scan after its first GET reset. Runtime inspection verifies 205 notice hashes and all 14 traced packages. Full records and host limitations are in evidence/phase-05/pr22-remediation.md. Removed only the labeled no-mount diagnostic container; retained data is intact.
+
+### Next action
+
+Publish the candidate for protected CI and one confirmation review. Additional timing confirmation was deferred by measured shared-host load; do not repeat unchanged benchmarks to select success or stop owner programs. Finish closeout before Phase 06 rights/pipeline work. The full Phase 00–14 goal remains active.
+
+## 2026-08-28 — PR 22 review and dependency notices
+
+### Completed
+
+Published abf3a84 as PR 22. Batched the two complete initial review findings: omit absent title metadata and replace the premature session-refresh/preference-reload success with truthful guidance. ADR-0020 keeps MIT, adds 27 reviewed package-scoped license exceptions alongside the two existing tools, checks exact versions, and preserves upstream notices in the standalone image.
+
+### Evidence
+
+Initial CI 33129461576 passed source/integration/platform/security and failed only dependency licensing. Local focused tests pass 68/68; the real Docker context probe passes 18 included/16 excluded canaries. Both browser review regressions reproduce on the old image and pass on the new one; early metadata interception errors were corrected in the test harness. Full functional confirmation passes 21/21. Image f7e75c9 is healthy; 206 notice hashes cover 74 dependency entries and all 14 traced runtime packages. No dependency versions, owner state or live-region mechanics changed.
+
+### Next action
+
+Finish final performance/source evidence, publish the single remediation commit and obtain confirmation review/protected CI before squash merge and post-merge verification. Phase 06 starts with actual-film rights review. The complete Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Actual reader review and final Web assets
 
 ### Completed

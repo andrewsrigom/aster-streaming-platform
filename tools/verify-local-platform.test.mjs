@@ -62,7 +62,7 @@ test("runtime image preserves the pinned non-root production packaging contract"
 });
 
 test("Web Docker context includes both exact public-build verifier files", () => {
-  for (const file of ["public-artifacts.ts", "verify-public-build.ts"]) {
+  for (const file of ["public-artifacts.ts", "verify-public-build.ts", "package-notices.ts"]) {
     const required = `!apps/web/scripts/${file}`;
     assert.ok(runtimeImage[".dockerignore"].split("\n").includes(required), required);
     const changed = {

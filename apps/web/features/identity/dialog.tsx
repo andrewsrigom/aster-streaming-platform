@@ -20,13 +20,12 @@ import {
 type Runtime = ReturnType<typeof createIdentityClient> & { generation: number };
 type Notice = Parameters<typeof shellActions.refreshed>[0];
 const notices = {
-  selected: "Profile selected. Current preferences were reloaded.",
+  selected: "Profile selected.",
   created: "Profile created. Choose it below.",
   "signed-in": "Local session started.",
   "signed-out": "Signed out. Private cached data was discarded.",
   expired: "The session window ended. Recheck the session before continuing.",
-  refresh:
-    "Session refreshed. If an operation was interrupted, check the current state before trying again.",
+  refresh: "Check the current session and profiles before trying an interrupted operation again.",
   rejected: "The operation was not completed. Review the current profiles before trying again.",
 };
 
@@ -260,7 +259,8 @@ function ProfileFlow({
             {snapshot?.profiles.map((profile) => (
               <li key={profile.id}>
                 <Button
-                  className="w-full justify-between text-left"
+                  className="w-full text-left"
+                  align="between"
                   variant="outline"
                   disabled={busy}
                   aria-pressed={profile.id === snapshot.activeProfileId}

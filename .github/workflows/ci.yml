@@ -155,8 +155,36 @@ jobs:
           fail-on-scopes: runtime, development, unknown
           license-check: true
           allow-licenses: 0BSD, Apache-2.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1.0.0, Elastic-2.0, ISC, MIT, MITNFA
-          # ADR-0019; the action ignores versions. Web tests enforce the two exact dev-only pins.
-          allow-dependencies-licenses: pkg:npm/%40axe-core/playwright, pkg:npm/axe-core
+          # ADR-0019/0020; Web tests enforce the exact pins omitted by the action.
+          allow-dependencies-licenses: >-
+            pkg:npm/%40axe-core/playwright, pkg:npm/axe-core,
+            pkg:npm/%40img/sharp-libvips-darwin-arm64,
+            pkg:npm/%40img/sharp-libvips-darwin-x64,
+            pkg:npm/%40img/sharp-libvips-linux-arm,
+            pkg:npm/%40img/sharp-libvips-linux-arm64,
+            pkg:npm/%40img/sharp-libvips-linux-ppc64,
+            pkg:npm/%40img/sharp-libvips-linux-riscv64,
+            pkg:npm/%40img/sharp-libvips-linux-s390x,
+            pkg:npm/%40img/sharp-libvips-linux-x64,
+            pkg:npm/%40img/sharp-libvips-linuxmusl-arm64,
+            pkg:npm/%40img/sharp-libvips-linuxmusl-x64,
+            pkg:npm/%40img/sharp-win32-arm64,
+            pkg:npm/%40img/sharp-win32-ia32,
+            pkg:npm/%40img/sharp-win32-x64,
+            pkg:npm/%40img/sharp-wasm32,
+            pkg:npm/caniuse-lite,
+            pkg:npm/lightningcss,
+            pkg:npm/lightningcss-android-arm64,
+            pkg:npm/lightningcss-darwin-arm64,
+            pkg:npm/lightningcss-darwin-x64,
+            pkg:npm/lightningcss-freebsd-x64,
+            pkg:npm/lightningcss-linux-arm-gnueabihf,
+            pkg:npm/lightningcss-linux-arm64-gnu,
+            pkg:npm/lightningcss-linux-arm64-musl,
+            pkg:npm/lightningcss-linux-x64-gnu,
+            pkg:npm/lightningcss-linux-x64-musl,
+            pkg:npm/lightningcss-win32-arm64-msvc,
+            pkg:npm/lightningcss-win32-x64-msvc
           vulnerability-check: true
           comment-summary-in-pr: never
 

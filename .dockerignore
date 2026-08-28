@@ -27,6 +27,13 @@
 !apps/web/THIRD_PARTY_NOTICES.md
 !apps/web/scripts/public-artifacts.ts
 !apps/web/scripts/verify-public-build.ts
+!apps/web/scripts/package-notices.ts
+!apps/web/licenses/GPL-3.0.txt
+!apps/web/licenses/LGPL-3.0.txt
+!apps/web/licenses/WRY-MIT.txt
+!apps/web/licenses/SCROLL-BAR-MIT.txt
+!apps/web/licenses/REACT-MIT.txt
+!apps/web/licenses/SOURCES.md
 !apps/web/app/**/*.ts
 !apps/web/app/**/*.tsx
 !apps/web/app/**/*.css

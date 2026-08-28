@@ -1,8 +1,49 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import test from "node:test";
+import { reviewedLicensePackages, verifyReviewedLockVersions } from "../scripts/license-policy.ts";
+
+test("every package-specific exception rejects missing or additional unreviewed lock versions", async () => {
+  const lock = await readFile(new URL("../../../pnpm-lock.yaml", import.meta.url), "utf8");
+  verifyReviewedLockVersions(lock);
+  assert.equal(reviewedLicensePackages.length, 29);
+  for (const { name } of reviewedLicensePackages) {
+    assert.throws(() => {
+      verifyReviewedLockVersions(lock + "\n  '" + name + "@99.0.0':\n");
+    });
+  }
+  assert.throws(() => {
+    verifyReviewedLockVersions("");
+  });
+});
+
+test("installed exception packages retain the reviewed version and license metadata", async () => {
+  const store = new URL("../../../node_modules/.pnpm/", import.meta.url);
+  const directories = await readdir(store);
+  const checked = new Set<string>();
+  for (const reviewed of reviewedLicensePackages) {
+    const prefix = reviewed.name.replace("/", "+") + "@" + reviewed.version;
+    for (const directory of directories.filter(
+      (name) => name === prefix || name.startsWith(prefix + "_"),
+    )) {
+      const manifest = JSON.parse(
+        await readFile(
+          new URL(directory + "/node_modules/" + reviewed.name + "/package.json", store),
+          "utf8",
+        ),
+      ) as Manifest;
+      assert.equal(manifest.name, reviewed.name);
+      assert.equal(manifest.version, reviewed.version);
+      assert.equal(manifest.license, reviewed.license);
+      checked.add(reviewed.name);
+    }
+  }
+  for (const name of ["@axe-core/playwright", "axe-core", "caniuse-lite", "lightningcss"]) {
+    assert.ok(checked.has(name), name);
+  }
+});
 
 interface Manifest {
   name: string;
@@ -21,6 +62,7 @@ test("ADR-0019 exceptions remain exact, unmodified dev-only tools without instal
     await readFile(new URL("../package.json", import.meta.url), "utf8"),
   ) as Manifest;
   assert.equal(own.devDependencies?.["@axe-core/playwright"], "4.13.0");
+  assert.ok(own.scripts?.["build"]?.includes("node ./scripts/package-notices.ts"));
   for (const [path, name] of [
     [join(dirname(adapterPath), "../package.json"), "@axe-core/playwright"],
     [enginePath, "axe-core"],

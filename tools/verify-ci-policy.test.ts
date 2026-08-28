@@ -195,7 +195,7 @@ test("rejects removal or expansion of the owner-approved Federation license set"
   }
 });
 
-test("accessibility tooling cannot broaden the package-specific license exceptions", async () => {
+test("Web tooling cannot broaden the package-specific license exceptions", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [
     source.replace("pkg:npm/%40axe-core/playwright, pkg:npm/axe-core", "pkg:npm/axe-core"),

@@ -71,9 +71,6 @@ importers:
       class-variance-authority:
         specifier: 0.7.1
         version: 0.7.1
-      clsx:
-        specifier: 2.1.1
-        version: 2.1.1
       graphql:
         specifier: 16.14.2
         version: 16.14.2
@@ -95,9 +92,6 @@ importers:
       server-only:
         specifier: 0.0.1
         version: 0.0.1
-      tailwind-merge:
-        specifier: 3.6.0
-        version: 3.6.0
     devDependencies:
       '@axe-core/playwright':
         specifier: 4.13.0
@@ -2945,9 +2939,6 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  tailwind-merge@3.6.0:
-    resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
-
   tailwindcss@4.3.3:
     resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
 
@@ -5657,8 +5648,6 @@ snapshots:
   supports-color@7.2.0:
     dependencies:
       has-flag: 4.0.0
-
-  tailwind-merge@3.6.0: {}
 
   tailwindcss@4.3.3: {}
 

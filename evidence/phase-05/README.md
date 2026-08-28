@@ -10,6 +10,7 @@ Phase status: IN_PROGRESS. Public/profile browsing has clean Docker, browser, ac
 - [Public artifacts and accessibility](web-boundaries.md): build/runtime/HTML scans, authenticated SSR isolation, fourteen axe scans and corrected busy-state focus, with raw results and explicit screen-reader limits.
 - [Clean acceptance](clean-acceptance.md): clean startup/isolation, uncached source gate and refresh-owner correction, with nineteen browser scenarios and [raw before/after records](clean-browser.jsonl).
 - [Reader and final Web acceptance](reader-review.md): actual Orca speech/audio, persistent announcements, populated-dialog contrast verification and final-asset performance, with failed iterations retained.
+- [PR 22 remediation](pr22-remediation.md): exact-package licensing and runtime notices, both review corrections, reduced JavaScript, current functional/source/laboratory evidence and shared-host limits.
 - [Generated HLS report](generated-media.json): actual isolated recipe execution backing the synthetic seed; no acquired film or reachable delivery reference.
 - [SSR HTML sample](ssr-html.txt): actual public main content from the production browser response.
 - [UI foundation selection](ui-foundation.md) and [upstream notices](../../apps/web/THIRD_PARTY_NOTICES.md).

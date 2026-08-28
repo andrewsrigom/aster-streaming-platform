@@ -1,6 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { reviewedLicensePurls } from "../apps/web/scripts/license-policy.ts";
 
 const MAX_WORKFLOW_BYTES = 200_000;
 const MAX_WORKFLOW_FILES = 20;
@@ -308,16 +309,24 @@ export function validateWorkflowPolicy(
       /^\s*allow-licenses: *0BSD, Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, Elastic-2\.0, ISC, MIT, MITNFA *$/mu,
       "dependency review must enforce the reviewed license set",
     ],
-    [
-      /^\s*allow-dependencies-licenses: *pkg:npm\/%40axe-core\/playwright, pkg:npm\/axe-core *$/mu,
-      "dependency review license exceptions must be limited to the two ADR-0019 test packages",
-    ],
   ] as const) {
     addRequirement(violations, file, source, "commands", pattern, detail);
   }
   if ((source.match(/^\s*allow-dependencies-licenses:/gmu) ?? []).length !== 1) {
     violations.push({
       detail: "dependency license exceptions must be declared exactly once",
+      file,
+      line: 1,
+      rule: "commands",
+    });
+  }
+  const exceptions = source
+    .match(/^ {10}allow-dependencies-licenses: >-\n((?: {12}[^\n]+\n)+)/mu)?.[1]
+    ?.split(",")
+    .map((entry) => entry.trim());
+  if (JSON.stringify(exceptions) !== JSON.stringify(reviewedLicensePurls)) {
+    violations.push({
+      detail: "dependency license exceptions must match the exact ADR-0019/0020 packages",
       file,
       line: 1,
       rule: "commands",

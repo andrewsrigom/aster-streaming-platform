@@ -11,6 +11,7 @@ import { buttonVariants } from "../../components/ui/button";
 import { usePublicQuery } from "./use-public-query";
 import { QueryFeedback } from "./query-feedback";
 import { CollectionArtwork } from "./collection-artwork";
+import { titleMetadata } from "./metadata";
 
 function pageQuery(variables: BrowseVariables): string {
   return `?locale=${variables.locale}${variables.after ? `&after=${encodeURIComponent(variables.after)}` : ""}`;
@@ -178,6 +179,7 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
     );
   }
   const title = data.title;
+  const metadata = titleMetadata(title);
   return (
     <article className="max-w-3xl space-y-8 py-16">
       <p className="eyebrow">
@@ -191,9 +193,7 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
       >
         {title.localized.title}
       </h1>
-      <p className="text-sm text-muted-foreground">
-        {title.releaseYear} · {title.runtimeSeconds} seconds · {title.genres.join(" / ")}
-      </p>
+      {metadata ? <p className="text-sm text-muted-foreground">{metadata}</p> : null}
       <figure className="space-y-3">
         <div className="overflow-hidden rounded-xl">
           <CollectionArtwork detail />

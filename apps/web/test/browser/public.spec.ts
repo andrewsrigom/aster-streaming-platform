@@ -1,8 +1,56 @@
 import { test, expect } from "@playwright/test";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { print } from "graphql";
+import { TITLE_DETAIL, type DetailData } from "../../lib/apollo/operations";
 
 const titleId = "00000000-0000-4000-8000-000005000001";
+
+test("valid title details omit absent optional metadata without empty separators", async ({
+  page,
+}) => {
+  await page.goto("/title/" + titleId);
+  await expect(page.getByRole("heading", { level: 1, name: "Signal / 01" })).toBeVisible();
+  const baselineResponse = await page.request.post("http://127.0.0.1:4000/graphql", {
+    headers: {
+      origin: "http://127.0.0.1:3000",
+      "sec-fetch-site": "same-site",
+      "x-aster-csrf": "1",
+    },
+    data: {
+      operationName: "TitleDetail",
+      query: print(TITLE_DETAIL),
+      variables: { id: titleId, locale: "en" },
+    },
+  });
+  expect(baselineResponse.ok()).toBe(true);
+  const baseline = (await baselineResponse.json()) as { data: DetailData };
+  expect(baseline.data.title).not.toBeNull();
+  await baselineResponse.dispose();
+  let genres: string[] = ["Short"];
+  await page.route("http://127.0.0.1:4000/graphql", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.continue();
+      return;
+    }
+    const body = {
+      data: { title: { ...baseline.data.title, releaseYear: null, runtimeSeconds: null, genres } },
+    };
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(body),
+    });
+  });
+  await page.getByRole("button", { name: "Refresh collection", exact: true }).click();
+  await expect(page.locator("article > p", { hasText: /^Short$/u })).toBeVisible();
+  await expect(page.locator("article > p.text-sm:not(.border)")).toHaveText("Short");
+  genres = [];
+  await page.getByRole("button", { name: "Refresh collection", exact: true }).click();
+  await expect(page.locator("article > p", { hasText: /^Short$/u })).toHaveCount(0);
+  await expect(page.locator("article > p.text-sm:not(.border)")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Attribution and rights" })).toBeVisible();
+});
 
 test("published public HTML hydrates without browser GraphQL or automatic route prefetch", async ({
   page,

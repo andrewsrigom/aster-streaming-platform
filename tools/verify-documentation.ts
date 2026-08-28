@@ -3,7 +3,14 @@ import { dirname, extname, isAbsolute, relative, resolve, sep } from "node:path"
 import { TextDecoder } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const IGNORED_DIRECTORIES = new Set([".git", ".turbo", "coverage", "dist", "node_modules"]);
+const IGNORED_DIRECTORIES = new Set([
+  ".git",
+  ".next",
+  ".turbo",
+  "coverage",
+  "dist",
+  "node_modules",
+]);
 const MAX_DIRECTORY_DEPTH = 20;
 const MAX_DOCUMENTS = 1_000;
 const MAX_DOCUMENT_BYTES = 1_000_000;

@@ -13,6 +13,21 @@ import {
 import { publicCachePolicies } from "../lib/apollo/policies.ts";
 import { boundedGraphqlFetch } from "../lib/apollo/transport.ts";
 import { projectPublicData } from "../lib/apollo/public-snapshot.ts";
+import { titleMetadata } from "../features/catalog/metadata.ts";
+
+test("title metadata omits absent fields and their separators", () => {
+  assert.equal(titleMetadata({ releaseYear: null, runtimeSeconds: null, genres: [] }), "");
+  assert.equal(titleMetadata({ releaseYear: 2026, runtimeSeconds: null, genres: [] }), "2026");
+  assert.equal(titleMetadata({ releaseYear: null, runtimeSeconds: 6, genres: [] }), "6 seconds");
+  assert.equal(
+    titleMetadata({ releaseYear: null, runtimeSeconds: null, genres: ["Short"] }),
+    "Short",
+  );
+  assert.equal(
+    titleMetadata({ releaseYear: 2026, runtimeSeconds: 6, genres: ["Short", "Animation"] }),
+    "2026 · 6 seconds · Short / Animation",
+  );
+});
 
 test("public Web operations match the versioned Router inventory", async () => {
   const source = parse(

@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0020](../docs/adr/0020-web-transitive-licenses.md) preserves MIT with exact package-scoped license exceptions, locked-version checks and offline Web notice packaging. It retains native-library source/notice obligations and leaves binary-distribution acceptance in Phase 14.
+
 [ADR-0018](../docs/adr/0018-local-web-session-boundary.md) allows only exact local Web/diagnostic origins, keeps owner session authorization unchanged, and separates public Apollo preloads from interaction-only private caches. Redux owns dialog flow only. Web's scoped upstream declaration-file compatibility exception does not disable strict source checks.
 
 [ADR-0017](../docs/adr/0017-local-router-trust.md) selects pinned Apollo Router 2.17.0 Core, per-owner local file credentials and private subgraph ports. Owners still authorize sessions/data. GraphOS-key-protected limits are not enabled; Collector removes native arbitrary operation/document attributes before trace export. Hosted identity and full operation protection remain later-phase decisions.

@@ -3,6 +3,55 @@ import { randomUUID } from "node:crypto";
 import { publicArtifactFindings } from "../../scripts/public-artifacts";
 
 const endpoint = "http://127.0.0.1:4000/graphql";
+
+test("failed mutation and failed owner recheck never announce a refreshed session", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/profiles");
+  await page.getByRole("button", { name: "Choose a profile" }).click();
+  await page.getByRole("button", { name: "Start local session" }).click();
+  await expect(page.getByRole("button", { name: "Sign out", exact: true })).toBeVisible();
+  try {
+    for (const failedRead of ["Viewer", "Profiles"]) {
+      await page.route(endpoint, async (route) => {
+        if (route.request().method() !== "POST") {
+          await route.continue();
+          return;
+        }
+        const request = route.request().postDataJSON() as { operationName?: string };
+        if (request.operationName === "SignOut" || request.operationName === failedRead) {
+          await route.fulfill({
+            status: 503,
+            contentType: "application/json",
+            body: JSON.stringify({ errors: [{ message: "private failure canary" }] }),
+          });
+        } else {
+          await route.continue();
+        }
+      });
+      await page.getByRole("button", { name: "Sign out", exact: true }).click();
+      const dialog = page.getByRole("dialog");
+      await expect(dialog.getByRole("alert")).toContainText("Profiles are temporarily unavailable");
+      await expect(dialog).not.toContainText("Session refreshed");
+      await expect(dialog).not.toContainText("private failure canary");
+      await expect(
+        dialog
+          .locator('[aria-live="polite"][aria-atomic="true"]')
+          .filter({ hasText: "Check the current session" }),
+      ).toBeVisible();
+      await page.unroute(endpoint);
+      await page.getByRole("button", { name: "Retry session" }).click();
+      await expect(page.getByRole("button", { name: "Sign out", exact: true })).toBeVisible();
+    }
+  } finally {
+    await page.unroute(endpoint);
+    await context.request.post(endpoint, {
+      headers,
+      data: { operationName: "SignOut", query: "mutation SignOut { signOut { code } }" },
+    });
+  }
+});
 const headers = {
   origin: "http://127.0.0.1:3000",
   "sec-fetch-site": "same-site",
@@ -64,6 +113,7 @@ test("real local session creates/selects a profile with keyboard focus and priva
     expect(html).toContain("Who is exploring?");
     expect(html).not.toContain("aster_local_session=");
     const launcher = page.getByRole("button", { name: "Choose a profile" });
+    await expect(launcher).toHaveCSS("justify-content", "center");
     await launcher.focus();
     await page.keyboard.press("Enter");
     const modal = page.getByRole("dialog", { name: "Your profiles" });
@@ -141,6 +191,8 @@ test("real local session creates/selects a profile with keyboard focus and priva
     );
     const choice = page.getByRole("button", { name: /Browser fixture/u });
     await expect(choice).toBeVisible();
+    await expect(choice).toHaveCSS("justify-content", "space-between");
+    await expect(choice).toHaveCSS("text-align", "left");
     await expect(choice).toContainText("pt-BR");
     await choice.focus();
     await page.keyboard.press("Enter");

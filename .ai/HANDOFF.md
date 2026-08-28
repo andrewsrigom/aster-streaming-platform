@@ -2,26 +2,26 @@
 
 ## Resume point
 
-P05-R01 is IN_PROGRESS on unpublished feat/p05-web-ssr, based on released main b6c99c4. Phases 00–04 are released. Finish the final source/browser candidate, review and protected publication.
+P05-R01 is IN_PROGRESS on feat/p05-web-ssr in PR 22. Phases 00–04 are released; main is b6c99c4. Initial head abf3a84 passed hosted functional gates but failed dependency licensing. The batched remediation is documented in evidence/phase-05/pr22-remediation.md and pr22-remediation.json.
 
-## Verified checkpoint
+## Current acceptance
 
-Clean Docker startup/seed/isolation and refresh-owner correction e130e8e remain valid; earlier source gates passed 58/58, including an uncached run. Current persistent explicit polite/atomic regions have actual Orca 48/Firefox speech, native navigation and profile-state evidence. Web unit tests pass 22/22 and types pass. See evidence/phase-05/reader-review.md.
+Final source gate: 58/58, 39 cached, 55.482 s. Final-image functional run: 20/21; the first artifact-scan GET had a socket reset. Its complete focused confirmation passes 1/1. Web shows zero restart/OOM/server error. All 21 distinct scenarios, including both review regressions and preserved button alignment, have passing current evidence.
 
-The first final functional run passed 18/19. Its sole failure was an axe contrast incomplete on the populated dialog description; supplementary contrast and text-occlusion checks pass in the populated focused test. Full confirmation passes 19/19 in 72.232 s and is exported in browser-live-regions.json. The final source gate passes 58/58 in 60.518 s, exported in source-live-regions.txt. Its initial memory-label failure was corrected without a policy change.
-
-Final-asset performance passes three fresh visits in 15.380 s: LCP 1596–1608 ms, INP 64–80 ms, CLS 0, hydration 2524–2553.2 ms. Budgets and quiet-host preconditions remain unchanged; evidence/phase-05/performance-live-regions.json preserves full results. Test/prose/formatting-only edits do not invalidate reader/performance or clean platform/media experiments.
+Three final mobile visits pass unchanged budgets: initial JavaScript 232506 bytes (8426 fewer), cumulative 250806, hydration 3019.2/3490.5/3058.5 ms, LCP 1532–1608, INP 112–184, CLS 0. Additional confirmation was deferred at 01:14:28Z: WSL load 4.52 and live idle 56/53%. The Windows host is shared with owner programs. Do not insist on 100% idle, stop their programs/security controls or select passing results through repeated runs.
 
 ## Runtime and retained data
 
-Development Web/Router run on 3000/4000. Web image is sha256:b633c7f48f3c333292ea32ecd4a5cd019350b66fd5351971685aff9ecdb45a43. Use Compose base plus observability.yml and demo.yml with --profile observability, project aster-p04-development. Browser tests use ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 and ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome. Do not run overlapping browser/traffic suites.
+Development Web/Router remain on 3000/4000 in project aster-p04-development. Web image: sha256:25d53997edea8dca8afe246324bfa1eab06eb412131a4178b1308b8e60a5ef90. All 14 traced runtime packages map to 73 notice entries/205 checked artifact hashes.
 
-The private reader container and exact fictional profile were removed; baseline profiles returned to zero and verification sessions were signed out. Retained aster and development databases remain untouched. No global cleanup. Full lab archives remain in /tmp/aster-p05-reader-cXKOkC; the clean detached checkout remains /tmp/aster-p05-clean-pDkoZQ. Windows control-policy stops were not bypassed.
+Compose uses compose.yml, observability.yml and demo.yml with --profile observability. Browser commands use ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 and ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome. No overlapping build/browser/performance suites.
 
-## Next action and constraints
+Only the labeled mount-free aster-p05-pr22-before diagnostic container was removed; image/raw records remain. Retained aster/development databases, earlier reader archives and clean checkout are preserved.
 
-Commit/publish the locally accepted candidate. Use one initial and one confirmation review, exact-head protected CI, squash merge without bypass and post-merge confirmation. Preserve the four-second transport deadline, request/consumer-identity guards and private Apollo cache ownership. Phase 05 is not yet released; a final prose-only update needs documentation/state/secret checks, not another browser/build experiment.
+## Next action
+
+Publish the coherent candidate once, update/reply to both PR findings and request one confirmation review. Complete remaining final confirmation when its existing preconditions allow, protected exact-head CI, squash merge without bypass and post-merge check. Do not mark WAITING_EXTERNAL while local acceptance remains. Reuse unchanged clean seed/isolation and actual-reader mechanisms; prose-only closeout needs documentation/state/secret checks, not another Docker/browser experiment.
 
 ## Do not do yet
 
-Phase 06 first requires a complete actual-film rights record and FFmpeg/object-storage availability checks. The synthetic seed is not acquired-film approval or playable delivery. No paid resources, invented rights, hidden credentials or destructive retained-data changes are authorized. Keep the full Phase 00–14 goal active.
+Phase 06 first requires actual-film rights approval before acquisition and current FFmpeg/object-storage checks. The synthetic seed is not film approval or playable delivery. Keep the full Phase 00–14 goal active.
