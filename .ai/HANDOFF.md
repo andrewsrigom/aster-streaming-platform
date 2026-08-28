@@ -2,13 +2,15 @@
 
 ## Resume point
 
-P08-R08 is IN_PROGRESS on feat/p08-engagement-fields. P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 local acceptance is complete; publish once and freeze WAITING_EXTERNAL before activating R09. Full Phase 00–14 goal remains active.
+P08-R08 PR 29 is IN_PROGRESS on feat/p08-engagement-fields for the test-only CI watchdog correction below. P08-R07 is DONE after protected reviews/CI and exact main push 33195546036. R09 is parked, not lost; the new stash below has not been restored. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
+PR 29 is active for a test-only CI correction: the old Identity diagnostic execFile watchdog killed its child at five seconds. The diagnostic-only 30-second outer budget passes all ten composition tests; production deadlines and R08 behavior are unchanged. Publish this coherent correction once, require fresh protected CI and final-head confirmation, then rebase feat/p08-event-delivery and restore its new stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf exactly once. That stash is NOT restored yet and contains eleven-test-passing event core, ADR-0034 and the active R09 plan. Older stashes remain already restored. Never reinstall or repeat unchanged SQL/Docker solely for this test edit.
+
 1. R08 local acceptance passes: 98 Engagement tests, nine composition tests, real SQL, full isolated Docker and 67/67 candidate tasks. [Checkpoint](../evidence/phase-08/engagement-fields.md) and source hashes are authoritative. No repeat of unchanged heavy checks.
-2. R08 is committed and already rebased onto origin/main 9a7ab087034d69589a8388d62f5973cb9950b2da; do not repeat the rebase or restore any stash. Source checkpoint 35c1f8964831d5658f418533b8763569bd14b494 is tree-identical to the original 95f3725 candidate; every source hash and explicit schema baseline against 9a7ab08 pass. Use current HEAD after memory-only closeout. R07 exact main push 33195546036 is successful; publish R08 once. No R07 review or pipeline work remains.
-3. R08 needs its own initial/confirmation review, protected CI, squash and exact post-merge. Once frozen WAITING_EXTERNAL, activate R09 relay/deletion (also R10/R12), then R11 player reports/resume.
+2. R08 is based on main 9a7ab087034d69589a8388d62f5973cb9950b2da; do not repeat its old rebase. Existing production source hashes and composition remain valid. Publish only the watchdog correction, then collect its exact protected CI/final confirmation. No R07 work remains.
+3. Once the corrected R08 is frozen WAITING_EXTERNAL, rebase feat/p08-event-delivery onto it and restore new stash 8212c15 exactly once. Reconcile its memory with the current PR head; continue R09 locally without publishing before R08 merge/post-merge. R11 player reports/resume follows.
 4. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups remain recoverable.
 5. Docker attempt one stopped during build before assertions; one cache-assisted attempt passed, project 1cade285-e5b3-4ec1-aec5-6bcca92520be, and cleaned all thirteen containers/eight trust volumes/two networks. No CPU/WSL/media experiment or retained upgrade.
 

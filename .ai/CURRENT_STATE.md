@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R08 on local feat/p08-engagement-fields. P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 local acceptance is complete and ready for protected publication. Full Phase 00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R08 in PR 29 on feat/p08-engagement-fields. R07 is DONE after exact main push 33195546036. R08 has clean initial review and complete local acceptance, but CI 33196837907 exposed an old Identity diagnostic watchdog. Its test-only correction passes all ten composition tests and awaits fresh protected CI/final-head confirmation. R09's eleven-test-passing core is safely parked in stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf, not yet restored. Full Phase 00–14 goal stays active.
 
 ## Verified
 

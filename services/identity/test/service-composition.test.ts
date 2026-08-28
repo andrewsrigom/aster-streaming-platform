@@ -22,7 +22,12 @@ import { createAsterIdentityRuntimeWithMonitor } from "../src/reference-runtime.
 import { createIdentityHttpServer, type IdentityHttpServer } from "../src/transport/http-server.js";
 import { configurationEntries, controlledDependency, silentLogger } from "./fixtures.js";
 
-function runProcess(path: string, arguments_: string[] = [], env: NodeJS.ProcessEnv = process.env) {
+function runProcess(
+  path: string,
+  arguments_: string[] = [],
+  env: NodeJS.ProcessEnv = process.env,
+  timeoutMs = 5_000,
+) {
   return new Promise<{
     code: number | string | undefined;
     killed: boolean;
@@ -33,7 +38,7 @@ function runProcess(path: string, arguments_: string[] = [], env: NodeJS.Process
       process.execPath,
       [fileURLToPath(new URL(path, import.meta.url)), ...arguments_],
       {
-        timeout: 5_000,
+        timeout: timeoutMs,
         killSignal: "SIGKILL",
         maxBuffer: 65_536,
         env,
@@ -301,7 +306,8 @@ test("listener bind failure closes both dependency owners and telemetry", async 
 });
 
 test("diagnostic runs real loopback health transitions and exits naturally", async () => {
-  const result = await runProcess("../src/check-identity.js");
+  // The child bounds startup, three transitions, eight HTTP reads and shutdown separately.
+  const result = await runProcess("../src/check-identity.js", [], process.env, 30_000);
   assert.equal(result.killed, false);
   assert.equal(result.code, 0, result.stderr);
   assert.deepEqual(JSON.parse(result.stdout), {

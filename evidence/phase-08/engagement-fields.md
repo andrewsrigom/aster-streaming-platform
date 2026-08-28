@@ -24,6 +24,8 @@ P08-R08 is implemented and locally acceptance-tested on feat/p08-engagement-fiel
 
 ## Remaining acceptance and recovery
 
+PR 29's initial head 74c3976aa74f10076ce3a01e8f966b7649303448 received clean initial review 5455963295. CI 33196837907 failed an existing Identity diagnostic parent watchdog at five seconds, not an Engagement assertion. The [raw failure and focused correction](fields-ci-harness.txt) record a diagnostic-only 30-second process watchdog, preserving its internal and all production deadlines. All ten Identity composition tests pass, including natural diagnostic exit; no host diagnosis or unchanged heavy rerun. Require a fresh protected run and exact-head confirmation after this test-only correction.
+
 The coherent candidate was committed as 95f3725a768b66d14ae7bb69c23ada1468e05626 and rebased as 35c1f8964831d5658f418533b8763569bd14b494 onto 9a7ab087034d69589a8388d62f5973cb9950b2da. The full trees compare equal. Every source hash passes, and `ASTER_SCHEMA_BASE=9a7ab087034d69589a8388d62f5973cb9950b2da node apps/router/dist/src/main.js --check` passes with the unchanged manifest. Later memory-only closeout does not require another heavy experiment.
 
 The [first Docker attempt](engagement-fields-runtime.jsonl), project d02bece4-be24-4f4b-bf47-96cc66479a61, stopped during image build before service startup or field assertions. The supervisor has a 300-second build ceiling; captured output ends in unfinished build/export work rather than an application assertion. Exact cleanup reports zero resources and retained runtime untouched. The single cache-assisted attempt above passed under unchanged limits; no host diagnosis or repeated CPU measurement.

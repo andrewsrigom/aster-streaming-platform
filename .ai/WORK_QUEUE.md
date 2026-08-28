@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 is the sole IN_PROGRESS item, locally acceptance-tested on feat/p08-engagement-fields. Publish it once, then freeze it WAITING_EXTERNAL before starting R09. Preserve retained demo/media and all already-restored recovery stashes.
+P08-R07 is DONE after exact main push 33195546036. P08-R08 PR 29 is the sole IN_PROGRESS item for its test-only Identity diagnostic watchdog correction after CI 33196837907; local composition checks pass. Publish the correction once, then freeze WAITING_EXTERNAL and resume R09. Its core is parked in new stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf, not yet restored. Preserve retained demo/media and all older already-restored stashes.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

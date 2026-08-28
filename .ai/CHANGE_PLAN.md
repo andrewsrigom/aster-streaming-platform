@@ -52,6 +52,8 @@ Query counts/order/nulls/dedup, independent accounts/requests, five-profile/20-k
 
 ## Evidence
 
+Hosted candidate 74c3976 failed CI 33196837907 only at the existing Identity diagnostic parent watchdog. [Focused remediation](../evidence/phase-08/fields-ci-harness.txt) changes that single test's outer process budget, not runtime deadlines. Ten Identity composition tests pass. Preserve prior R08 heavy evidence; publish the test-only correction once and require fresh CI/final-head confirmation. R09 is parked in recovery stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf until the predecessor is coherent again.
+
 Iteration gate: focused node:test, strict affected build and changed-file lint. Candidate gate: affected workspace quality and schema compatibility. Acceptance: real SQL query-count/plan and isolated real Router-owner flow. Store sources, commands, environment and raw outputs under evidence/phase-08. Repeat heavy checks only for changes to measured SQL/trust/admission/runtime behavior. Unchanged watchlist/media/browser/CPU evidence is supporting, not rerun. One initial and one confirmation review; only requirement/security/data/availability/public-contract blockers extend it.
 
 ## Rollback or recovery
