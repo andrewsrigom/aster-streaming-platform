@@ -307,6 +307,76 @@ test("writes through a bounded multipart policy and owns an accepted source", as
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
+test("conditional writes require a full checksum and classify early conflicts without stalling the source", async () => {
+  const telemetry = new RecordingTelemetry();
+  const client = new FakeS3Client();
+  const adapter = createAsterObjectStorageAdapterWithClientFactory(
+    options(telemetry),
+    () => client,
+  );
+  const checksumSha256 = "a".repeat(64);
+  client.writeHandler = (input) => {
+    assert.equal(input.ifAbsent, true);
+    assert.equal(input.checksumSha256, checksumSha256);
+    return Promise.reject(
+      Object.assign(new Error("Synthetic conditional conflict"), {
+        $metadata: { httpStatusCode: 412 },
+      }),
+    );
+  };
+  const source = new Readable({ read() {} });
+  assert.deepEqual(
+    await adapter.write({
+      key: "originals/hash",
+      source,
+      contentLength: 64,
+      ifAbsent: true,
+      checksumSha256,
+    }),
+    { status: "already_exists" },
+  );
+  assert.equal(source.destroyed, true);
+  assert.equal(adapter.snapshot().inFlightOperations, 0);
+  assert.equal(telemetry.attempts.at(-1)?.outcome, "success");
+  for (const patch of [
+    { ifAbsent: true },
+    { checksumSha256 },
+    { ifAbsent: false, checksumSha256 },
+    { ifAbsent: true, checksumSha256: "bad" },
+  ]) {
+    const unowned = Readable.from([Buffer.from("a")]);
+    assert.deepEqual(
+      await adapter.write({
+        key: "originals/hash",
+        source: unowned,
+        contentLength: 1,
+        ...patch,
+      } as AsterObjectWriteInput),
+      { status: "rejected", reason: "invalid_request" },
+    );
+    assert.equal(unowned.destroyed, false);
+    unowned.destroy();
+  }
+  assert.equal(client.writeCalls, 1);
+  assert.equal((await adapter.close()).status, "completed");
+});
+
+test("an early ordinary storage rejection also releases the accepted pipeline", async () => {
+  const client = new FakeS3Client();
+  const adapter = createAsterObjectStorageAdapterWithClientFactory(
+    options(new RecordingTelemetry()),
+    () => client,
+  );
+  client.writeHandler = () => Promise.reject(new Error("Synthetic upstream rejection"));
+  const source = new Readable({ read() {} });
+  assert.deepEqual(await adapter.write({ key: "originals/hash", source, contentLength: 64 }), {
+    status: "unavailable",
+  });
+  assert.equal(source.destroyed, true);
+  assert.equal(adapter.snapshot().inFlightOperations, 0);
+  assert.equal((await adapter.close()).status, "completed");
+});
+
 test("rejects invalid or oversized writes before taking source ownership", async () => {
   const telemetry = new RecordingTelemetry();
   let factoryCalls = 0;

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline, rebased onto main f36f9aa after protected/post-merge acceptance. One exact official source is approved and durable media request admission is implemented/tested locally; [Phase 06 evidence](../evidence/phase-06/README.md). Next implement attempt/executor authority and bounded acquisition; no film bytes acquired yet.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline, rebased onto main f36f9aa after protected/post-merge acceptance. One exact official source is approved and acquired immutably through durable requests/fenced attempts; [Phase 06 evidence](../evidence/phase-06/README.md). Next implement bounded extraction, isolated processing and verified-result/attestation authority; no HLS publication yet.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

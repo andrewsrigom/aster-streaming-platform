@@ -21,8 +21,9 @@ services:
       - --max-requests
       - "16"
       - posix
+      # Match the local gateway's create-only write protection (ADR-0022).
       - --concurrency
-      - "8"
+      - "1"
       - /data
     environment:
       ROOT_ACCESS_KEY: aster-test-access

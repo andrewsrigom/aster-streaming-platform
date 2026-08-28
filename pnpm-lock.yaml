@@ -293,6 +293,9 @@ importers:
       '@aster/http-express':
         specifier: workspace:*
         version: link:../../packages/http-express
+      '@aster/object-storage-s3':
+        specifier: workspace:*
+        version: link:../../packages/object-storage-s3
       '@aster/postgres':
         specifier: workspace:*
         version: link:../../packages/postgres
@@ -302,6 +305,9 @@ importers:
       '@aster/telemetry':
         specifier: workspace:*
         version: link:../../packages/telemetry
+      '@aws-sdk/client-s3':
+        specifier: 3.1118.0
+        version: 3.1118.0
       dataloader:
         specifier: 2.2.3
         version: 2.2.3

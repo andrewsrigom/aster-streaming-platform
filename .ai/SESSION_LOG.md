@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Fenced streaming acquisition and first immutable original
+
+### Completed
+
+Implemented ADR-0022 acquisition: bounded durable attempts, lease recovery and terminal fencing, rights watchdog, pinned-public-IP HTTPS streaming, checksums, private conditional S3 originals and a resource-limited local job. Applied additive 0004/0005 and the approved first-film request without editorial changes. Acquired 121284117 bytes in 12.003 s; stored/read back exact SHA-256 and replayed without another GET. Only stopped owned job containers were removed; original, audit, serving stack and other Windows programs remain. Web still returns HTTP 200.
+
+### Evidence
+
+See evidence/phase-06/acquisition.md and its final gate/source hashes. Catalog 115/115 tests, real PostgreSQL/CLI recovery/privilege checks and real S3 conflict/checksum/cleanup checks pass. Fixed a genuine pinned-gateway concurrency race using its local native action limit; kept the failed experiment. The first real attempt failed before GET on internal-only DNS; a coordinator-only egress bridge corrected it without exposing the platform. Review also corrected final expired-attempt retirement and watchdog overlap. Offline dependency metadata was unavailable; online install retained existing pinned versions. Initial build/static/test-ownership issues were corrected before successful real execution; no test budget was loosened. No unchanged Web or media benchmark was repeated.
+
+### Next action
+
+Continue P06-R01 with bounded extraction/probe, isolated FFmpeg and verified-result registration. Reuse the original; no HLS/publication or Phase 06 release is claimed. Full Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Durable media request admission
 
 ### Completed

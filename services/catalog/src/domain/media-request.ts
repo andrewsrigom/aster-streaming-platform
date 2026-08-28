@@ -36,7 +36,7 @@ export interface CatalogMediaRequest {
   readonly sourceFingerprint: string;
 }
 
-function normalizeMediaSource(value: unknown): MediaSourceIdentity | undefined {
+export function normalizeMediaSource(value: unknown): MediaSourceIdentity | undefined {
   const input = catalogRecord(value, ["url", "bytes", "etag", "sha256", "container"]);
   if (
     !input ||

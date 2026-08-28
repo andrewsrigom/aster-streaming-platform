@@ -474,8 +474,9 @@ services:
       - --max-requests
       - "16"
       - posix
+      # v1.7.0 checks PUT preconditions before writing; serialize to close that race.
       - --concurrency
-      - "8"
+      - "1"
       - /data
     environment:
       ROOT_ACCESS_KEY: aster-test-access

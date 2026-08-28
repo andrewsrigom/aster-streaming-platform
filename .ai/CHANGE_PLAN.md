@@ -15,13 +15,13 @@ Turn one individually approved film into a validated immutable HLS publication t
 
 Phases 00–05 are released. PR 22 squash f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 passes protected candidate CI 33132937180 and exact post-merge CI 33133330003. This branch is rebased onto that clean release; no predecessor wait remains. [Release evidence](../evidence/phase-05/release.txt).
 
-Catalog has durable rights/history, operator commands, publication transactions and generated-fixture attestations. Big Buck Bunny's selected official archive now has real approved rights revision 2 / title version 3 and derived attribution; it remains publicly invisible before processing. Existing FFmpeg and private S3 are available. No source was acquired and no general pipeline exists. The prior candidate records remain historical unresolved reviews.
+Catalog has durable rights/history, operator commands, publication transactions and generated-fixture attestations. Big Buck Bunny's selected official archive has approved rights revision 2 / title version 3, derived attribution and a verified private original; it remains unpublished. Existing FFmpeg is available, but no real-film decoder/HLS pipeline exists yet. The prior candidate records remain historical unresolved reviews.
 
-The owner-side request slice is locally implemented and tested: strict source identity, request-media CLI, migration 0004, immutable audit, replay/capacity, transaction rollback and real dispute/concurrency checks. [Evidence](../evidence/phase-06/media-requests.md). No retained-demo schema/request change or acquisition has occurred.
+The owner-side request slice is locally implemented and tested. [Request evidence](../evidence/phase-06/media-requests.md). Acquisition now also passes real execution: additive migrations 0004/0005, one global fenced attempt, bounded streaming, current-rights watchdog and a private verified original in the retained development environment. [Acquisition evidence](../evidence/phase-06/acquisition.md). No decoder or publication is implemented.
 
 ## Proposed behavior
 
-The rights checkpoint is complete. Implement the Catalog-owned durable request under [ADR-0021](../docs/adr/0021-catalog-media-requests.md): strict source identity, current approved rights, permanent replay key, immutable audit and bounded duplicate-safe admission through the existing operator. This slice does not download or grant attestation authority. Define the isolated executor/result boundary before implementing it.
+Request admission and the finite owner acquisition coordinator under [ADR-0022](../docs/adr/0022-local-media-execution.md) are implemented. Continue with bounded ZIP extraction/probe and a separate network-disabled decoder. Define verified-result registration before granting any technical attestation permission; acquisition never grants it.
 
 ## Boundaries
 
@@ -54,7 +54,7 @@ The rights checkpoint is complete. Implement the Catalog-owned durable request u
 
 ## Data and contracts
 
-- Schema/migration: additive 0004 media_requests, SELECT/INSERT-only runtime privileges, no backfill; empty-only down migration, otherwise roll forward. Attempt persistence and restricted attestation registration follow separately in this same work item.
+- Schema/migration: additive 0004 requests and 0005 acquisition attempts, bounded global running slot, three attempts/request and expiry fencing. No backfill; empty-only down migrations, otherwise roll forward. Restricted technical attestation registration remains separate from acquisition.
 - GraphQL: existing public API ownership; no public upload/admin feature.
 - Events: keep existing outbox semantics; broker relay remains Phase 08.
 - Cache: no cache needed for rights approval or source authority.
@@ -87,8 +87,8 @@ Use the existing local Catalog operator, never viewer credentials or input-selec
 
 - Commands: focused Catalog/media tests during iteration; affected source gate at candidate.
 - Raw artifact path: evidence/phase-06/.
-- Acceptance result: rights approval and durable request admission pass locally. Attempt execution, acquisition, processing and publication are not implemented; the full candidate/release gate remains pending.
-- Iteration gate: Catalog media request/input unit tests and build; real PostgreSQL request/CLI/role/rollback/race checks using the existing 1 CPU / 384 MiB disposable fixture. No Web benchmark or encoding for this metadata-only slice.
+- Acceptance result: rights approval, durable requests, attempts and acquisition pass locally. Processing and publication remain unfinished; the full media candidate/release gate is pending.
+- Iteration gate: focused extraction/probe/decoder tests and build; acquisition/S3/PostgreSQL evidence is retained unless an affected boundary changes. Do not repeat the successful source GET or unchanged Web benchmark for decoder-only changes.
 - Candidate gate: complete first-film pipeline, real persistence/storage, adverse cases and affected source checks.
 - Heavyweight repeat triggers: source, recipe, worker, storage, publication or packaging changes repeat their affected experiment; prose does not repeat transcoding/browser/clean startup.
 - Review stopping rule: one initial and one confirmation; extra rounds only for requirement, security/data, availability or public-contract blockers.

@@ -1,0 +1,49 @@
+services:
+  media-acquire:
+    profiles: [media]
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-acquisition
+    entrypoint: ["node", "./dist/src/acquire-local.js"]
+    command: []
+    depends_on:
+      catalog-init:
+        condition: service_completed_successfully
+      storage:
+        condition: service_healthy
+    environment:
+      NODE_OPTIONS: --max-old-space-size=128
+      ASTER_ENVIRONMENT: local
+      ASTER_CATALOG_OPERATOR_ENABLED: "true"
+      ASTER_MEDIA_ACQUISITION_ENABLED: "true"
+      ASTER_CATALOG_DATABASE_URL: postgresql://aster_catalog_local@postgres:5432/aster
+      ASTER_CATALOG_DATABASE_PASSWORD: aster-test-only
+    networks: [platform, media-egress]
+    user: "1000:1000"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=300m,mode=1777
+    cpus: 1
+    mem_limit: 512m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      disable: true
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  media-egress:
+    driver: bridge
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-acquisition

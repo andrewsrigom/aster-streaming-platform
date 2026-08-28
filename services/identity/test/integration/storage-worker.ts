@@ -66,7 +66,7 @@ function output(event: string, details: Record<string, unknown> = {}): void {
   process.stdout.write(`${JSON.stringify({ event, ...details })}\n`);
 }
 
-function syntheticSource(length: number, holdAfter = length): Readable {
+function syntheticSource(length: number, holdAfter = length, fill = 0x61): Readable {
   let sent = 0;
   return new Readable({
     highWaterMark: chunkBytes,
@@ -74,7 +74,7 @@ function syntheticSource(length: number, holdAfter = length): Readable {
       if (sent === length) {
         this.push(null);
       } else if (sent < holdAfter) {
-        const chunk = Buffer.alloc(Math.min(chunkBytes, length - sent, holdAfter - sent), 0x61);
+        const chunk = Buffer.alloc(Math.min(chunkBytes, length - sent, holdAfter - sent), fill);
         sent += chunk.length;
         this.push(chunk);
       }
@@ -82,9 +82,9 @@ function syntheticSource(length: number, holdAfter = length): Readable {
   });
 }
 
-function digest(length: number): Buffer {
+function digest(length: number, fill = 0x61): Buffer {
   const hash = createHash("sha256");
-  const chunk = Buffer.alloc(chunkBytes, 0x61);
+  const chunk = Buffer.alloc(chunkBytes, fill);
   for (let offset = 0; offset < length; offset += chunk.length) {
     hash.update(chunk.subarray(0, Math.min(chunk.length, length - offset)));
   }
@@ -178,6 +178,81 @@ async function multipartAbort(): Promise<void> {
   }
 }
 
+async function conditionalImmutable(): Promise<void> {
+  const length = 7 * mib + 17;
+  const key = `${prefix}immutable`;
+  const contender = createAsterObjectStorageAdapter(options);
+  try {
+    const first = syntheticSource(length);
+    const second = syntheticSource(length, length, 0x62);
+    const results = await Promise.all([
+      storage.write({
+        key,
+        source: first,
+        contentLength: length,
+        ifAbsent: true,
+        checksumSha256: digest(length).toString("hex"),
+      }),
+      contender.write({
+        key,
+        source: second,
+        contentLength: length,
+        ifAbsent: true,
+        checksumSha256: digest(length, 0x62).toString("hex"),
+      }),
+    ]);
+    assert.equal(results.filter((result) => result.status === "completed").length, 1);
+    assert.equal(results.filter((result) => result.status === "already_exists").length, 1);
+    assert.equal(first.destroyed && second.destroyed, true);
+    const expected = digest(length, results[0].status === "completed" ? 0x61 : 0x62);
+    const hash = createHash("sha256");
+    let received = 0;
+    const destination = new Writable({
+      write(chunk: Buffer, _encoding, callback) {
+        received += chunk.length;
+        hash.update(chunk);
+        callback();
+      },
+    });
+    assert.equal((await storage.read({ key, destination })).status, "completed");
+    assert.equal(received, length);
+    assert.deepEqual(hash.digest(), expected);
+    const head = await inspector.send(
+      new HeadObjectCommand({ Bucket: bucket, Key: key, ChecksumMode: ChecksumMode.ENABLED }),
+      request(),
+    );
+    assert.equal(head.ChecksumSHA256, expected.toString("base64"));
+    const invalidKey = `${prefix}wrong-checksum`;
+    assert.equal(
+      (
+        await storage.write({
+          key: invalidKey,
+          source: syntheticSource(64),
+          contentLength: 64,
+          ifAbsent: true,
+          checksumSha256: "0".repeat(64),
+        })
+      ).status,
+      "unavailable",
+    );
+    assert.equal((await storage.head({ key: invalidKey })).status, "not_found");
+    assert.equal((await activeUploads()).length, 0);
+    assert.equal((await storage.deleteFixture({ key })).status, "completed");
+    output("storage_conditional_immutable", {
+      bytes: length,
+      contenders: 2,
+      created: 1,
+      conflict: 1,
+      retainedBytesVerified: true,
+      fullObjectChecksum: true,
+      wrongChecksumRejected: true,
+      multipartUploads: 0,
+    });
+  } finally {
+    assert.equal((await contender.close()).status, "completed");
+  }
+}
+
 async function failuresAndRecovery(): Promise<void> {
   const key = `${prefix}survives-restart`;
   assert.equal(
@@ -260,6 +335,7 @@ async function main(): Promise<void> {
       await roundTrip(length);
     }
     await multipartAbort();
+    await conditionalImmutable();
     await failuresAndRecovery();
     assert.deepEqual(await storage.deleteFixture({ key: "outside-fixture" }), {
       status: "rejected",

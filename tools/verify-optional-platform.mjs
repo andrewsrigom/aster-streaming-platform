@@ -106,7 +106,7 @@ export function validateIntegrationServices(source) {
     [
       '      - --max-connections\n      - "64"\n',
       '      - --max-requests\n      - "16"\n',
-      '      - --concurrency\n      - "8"\n',
+      '      - --concurrency\n      - "1"\n',
       "http://127.0.0.1:9000/health",
     ],
     violations,

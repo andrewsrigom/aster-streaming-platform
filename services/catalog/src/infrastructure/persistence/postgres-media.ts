@@ -44,7 +44,7 @@ function readRequest(value: unknown): CatalogMediaRequest {
   }
   return result;
 }
-function repositories(tx: AsterPostgresTransaction): CatalogMediaTransaction {
+export function mediaRepositories(tx: AsterPostgresTransaction): CatalogMediaTransaction {
   return {
     ...rightsRepositories(tx),
     async findMediaRequest(requestId) {
@@ -129,5 +129,5 @@ function repositories(tx: AsterPostgresTransaction): CatalogMediaTransaction {
 export function createPostgresCatalogMedia(
   database: Pick<AsterPostgresAdapter, "transaction">,
 ): CatalogMediaUnitOfWork {
-  return catalogUnitOfWork(database, repositories);
+  return catalogUnitOfWork(database, mediaRepositories);
 }
