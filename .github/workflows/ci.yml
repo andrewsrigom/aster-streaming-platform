@@ -136,6 +136,12 @@ jobs:
         run: |
           pnpm catalog:media
           pnpm catalog:demo
+      - name: Prove Playback persistence and federated runtime
+        if: needs.classify.outputs.platform == 'true'
+        timeout-minutes: 10
+        run: |
+          pnpm playback:integration
+          pnpm playback:runtime
       - name: Audit known dependency vulnerabilities
         run: pnpm audit --audit-level=high
 

@@ -72,6 +72,22 @@ test("rejects write permissions and secret context", async () => {
   assert.ok(validateWorkflowPolicy(weakened).some(({ rule }) => rule === "permissions"));
 });
 
+test("Playback persistence and federated runtime checks cannot be omitted or suppressed", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace("pnpm playback:integration", "true"),
+    source.replace("pnpm playback:runtime", "true"),
+    source.replace(
+      "Prove Playback persistence and federated runtime\n        if: needs.classify.outputs.platform == 'true'",
+      "Prove Playback persistence and federated runtime\n        if: false",
+    ),
+    source.replaceAll("timeout-minutes: 10\n", "timeout-minutes: 90\n"),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(validateWorkflowPolicy(changed).some(({ detail }) => detail.startsWith("Playback")));
+  }
+});
+
 test("Docker context probe cannot be omitted, skipped or left unbounded", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [

@@ -12,6 +12,7 @@ const productionPackages = [
   "packages/redis",
   "services/identity",
   "services/catalog",
+  "services/playback",
 ];
 const allowedContext = [
   "**",
@@ -35,6 +36,11 @@ const allowedContext = [
   "!services/catalog/src/**/*.ts",
   "!services/catalog/test/**/*.ts",
   "!services/catalog/migrations/*.sql",
+  "!services/playback/package.json",
+  "!services/playback/tsconfig.json",
+  "!services/playback/src/**/*.ts",
+  "!services/playback/test/**/*.ts",
+  "!services/playback/migrations/*.sql",
   "!workers/media/package.json",
   "!workers/media/tsconfig.json",
   "!workers/media/src/**/*.ts",
@@ -69,6 +75,7 @@ const allowedContext = [
   "!evidence/phase-05/generated-media.json",
   "!infra/docker/identity.Dockerfile",
   "!infra/docker/catalog.Dockerfile",
+  "!infra/docker/playback.Dockerfile",
   "!infra/docker/web.Dockerfile",
   "!infra/docker/media-fixture.Dockerfile",
   "!infra/docker/collector.Dockerfile",
@@ -98,6 +105,7 @@ export async function readRuntimeImageSources(root) {
   const files = [
     "infra/docker/identity.Dockerfile",
     "infra/docker/catalog.Dockerfile",
+    "infra/docker/playback.Dockerfile",
     "infra/docker/web.Dockerfile",
     "infra/compose/demo.yml",
     "infra/docker/collector.Dockerfile",
@@ -128,7 +136,7 @@ export function validateRuntimeImage(sources) {
   ) {
     reject("telemetry images must retain reviewed base pins and baked public configuration only");
   }
-  for (const owner of ["identity", "catalog"]) {
+  for (const owner of ["identity", "catalog", "playback"]) {
     const dockerfile = sources[`infra/docker/${owner}.Dockerfile`] ?? "";
     const from = dockerfile.match(/^FROM .+$/gm) ?? [];
     if (

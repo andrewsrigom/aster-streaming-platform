@@ -16,6 +16,7 @@
     "@apollo/composition": "2.14.4",
     "@aster/catalog": "workspace:*",
     "@aster/identity": "workspace:*",
+    "@aster/playback": "workspace:*",
     "@types/node": "24.13.3",
     "graphql": "16.14.2",
     "typescript": "6.0.3"

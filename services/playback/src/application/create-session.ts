@@ -1,6 +1,8 @@
 import { createAnonymousPlaybackSession, playbackIdentifier } from "../domain/session.js";
 import type { PlaybackSessionPorts, PlaybackSessionResult } from "./session-ports.js";
 
+export type PlaybackSessions = ReturnType<typeof createPlaybackSessions>;
+
 function untilAborted<T>(work: () => Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const remove = () => {
@@ -37,7 +39,7 @@ export function createPlaybackSessions(ports: PlaybackSessionPorts) {
   return Object.freeze({
     async create(
       titleId: unknown,
-      context: Readonly<{ correlationId: string; signal: AbortSignal }>,
+      context: Readonly<{ correlationId: string; signal: AbortSignal; traceparent?: string }>,
     ): Promise<PlaybackSessionResult> {
       if (!playbackIdentifier(titleId) || !playbackIdentifier(context.correlationId)) {
         return { status: "invalid_input" };
@@ -46,7 +48,7 @@ export function createPlaybackSessions(ports: PlaybackSessionPorts) {
       let inserting = false;
       try {
         const current = await untilAborted(
-          () => ports.catalog.currentPublication(titleId, active),
+          () => ports.catalog.currentPublication(titleId, active, context.traceparent),
           active,
         );
         active.throwIfAborted();

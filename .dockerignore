@@ -19,6 +19,11 @@
 !services/catalog/src/**/*.ts
 !services/catalog/test/**/*.ts
 !services/catalog/migrations/*.sql
+!services/playback/package.json
+!services/playback/tsconfig.json
+!services/playback/src/**/*.ts
+!services/playback/test/**/*.ts
+!services/playback/migrations/*.sql
 !workers/media/package.json
 !workers/media/tsconfig.json
 !workers/media/src/**/*.ts
@@ -53,6 +58,7 @@
 !evidence/phase-05/generated-media.json
 !infra/docker/identity.Dockerfile
 !infra/docker/catalog.Dockerfile
+!infra/docker/playback.Dockerfile
 !infra/docker/web.Dockerfile
 !infra/docker/media-fixture.Dockerfile
 !infra/docker/collector.Dockerfile

@@ -259,6 +259,10 @@ export function validateWorkflowPolicy(
       /- name: Prove Catalog runtime and generated publication\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 10\s+run: \|\s+pnpm catalog:media\s+pnpm catalog:demo/u,
       "Catalog changes require bounded generated-media and real Docker acceptance",
     ],
+    [
+      /- name: Prove Playback persistence and federated runtime\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 10\s+run: \|\s+pnpm playback:integration\s+pnpm playback:runtime/u,
+      "Playback changes require bounded real persistence and federated runtime acceptance",
+    ],
     [/pnpm audit --audit-level=high/u, "high-severity registry audit is required"],
     [/^\s{4}name:\s*Local platform\s*$/mu, "local-platform job is required"],
     [

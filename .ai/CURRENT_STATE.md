@@ -16,7 +16,7 @@ Phase 06 includes current rights approval, bounded acquisition, isolated full-fi
 
 ## Current work
 
-P07-R01 now has current-publication projection, private Catalog GraphQL reads, a bounded HTTP consumer, anonymous session rules and Playback-owned PostgreSQL persistence. Affected owner/transport/composition suite passes 233/233; real PostgreSQL proves concurrent admission, expiry/freshness, retention, role isolation and migration up/down/up. Strict builds, affected lint, schema compatibility, architecture and unused-code checks pass. [Backend-core evidence](../evidence/phase-07/README.md). The Playback public mutation, service runtime and Compose wiring remain planned; this is not a running product session API.
+P07-R01's public Playback mutation, current private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are locally verified. Affected suite passes 248/248, source 54/54 and final changed-scope/governance gate 64/64; real PostgreSQL covers admission, expiry, retention, restricted runtime credentials and migrations. A disposable real Router/Catalog/Playback journey proves persisted sessions, rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Protected review/release remain pending; the retained app has not been upgraded.
 
 [ADR-0027](../docs/adr/0027-local-playback-sessions.md) defines a distinct credential for the bounded private Catalog GraphQL read, separate Router credentials, current rights/URL validation, two-second deadline and fifteen-minute expiry capped by rights. No cross-owner SQL, media proxy or optional personalization dependency. [Active plan](CHANGE_PLAN.md).
 
@@ -24,11 +24,11 @@ Saved P07 work is restored and rebased on released main. Stash 2b0341cbb5604f007
 
 ## Not implemented
 
-Running Playback subgraph and retained-runtime session database, product player, Docker-only fresh-volume playable journey, automatic S3 garbage collection, engagement/discovery and hosted release. New session persistence is tested only in a disposable database. Synthetic browse titles are technical fixtures, not playable films.
+Retained-runtime Playback deployment, product player, Docker-only fresh-volume playable journey, automatic S3 garbage collection, engagement/discovery and hosted release. New session persistence is verified in a disposable database. Synthetic browse titles are technical fixtures, not playable films.
 
 ## Next outcome
 
-Complete P07-R01: expose the additive Playback Federation mutation and service runtime, wire separate credentials/migrations in Compose, and prove the connected owner-read/session journey. Then player and clean Docker-only demo. Preserve current source/SQL evidence unless relevant changes invalidate it; no repeated CPU diagnostic, source download, encoding or unchanged Web benchmark.
+Close the coherent P07-R01 candidate: governance/changed-scope checks, commit, protected CI and one initial/confirmation review. Then player and clean Docker-only demo; a frozen WAITING_EXTERNAL backend permits one dependent local item. Preserve passing runtime/SQL/media evidence unless relevant changes invalidate it; no repeated CPU diagnostic, source download, encoding or unchanged Web benchmark.
 
 ## Runtime and recovery
 

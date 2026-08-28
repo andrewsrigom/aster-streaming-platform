@@ -3,10 +3,11 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "38e1f37f7fc26234e9d2a9ec2ab23481935003177ded0d78dc77c82c9e1d6f4d",
-    "supergraph.graphql": "6c81cba421bb782b253b996ff836ccddab01afc7d761c740ff72362206acea06",
+    "api.graphql": "ae3c14f8a9a7566715b5c25f267be73f55dde5fc752d04cff73a604b3ef67b84",
+    "supergraph.graphql": "edf36603bdd2eaa3272adbc67af464a029a305754b709e7e66fc7995c85d13b0",
     "catalog.graphql": "6f6cac428556c841c9e41aaf576087547ef57b3b5b3d1afd10d04d77e33adb08",
-    "identity.graphql": "0bf47aa04eddff6f02a4d486a1c2b663f952e52148cacf72aa11f7cf89d84324"
+    "identity.graphql": "0bf47aa04eddff6f02a4d486a1c2b663f952e52148cacf72aa11f7cf89d84324",
+    "playback.graphql": "aa6c86cb4aac6ca80f3843e43cc5ab48311872ea7fbb2e15acdd6e09f6e32918"
   },
   "subgraphs": [
     {
@@ -281,6 +282,47 @@
           "keys": []
         }
       ]
+    },
+    {
+      "name": "playback",
+      "routingUrl": "http://playback:3300/graphql",
+      "ownership": [
+        {
+          "type": "Mutation",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "createPlaybackSession"
+          ],
+          "keys": []
+        },
+        {
+          "type": "PlaybackSession",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "expiresAt",
+            "id",
+            "manifestUrl",
+            "titleId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "PlaybackSessionCode",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "PlaybackSessionPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "session"
+          ],
+          "keys": []
+        }
+      ]
     }
   ],
   "operations": [
@@ -315,6 +357,10 @@
     {
       "name": "SignOut",
       "sha256": "ce80f08dd4b79df2df945a6e1d01908cb679f4f51dc85cc848f8fe64374f0282"
+    },
+    {
+      "name": "StartPlayback",
+      "sha256": "64a5e1b561b8874fba7740d9706f5bb3ad0add800f234375b36685683b9bc5ef"
     },
     {
       "name": "TitleDetail",

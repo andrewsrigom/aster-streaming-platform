@@ -2,7 +2,7 @@
 
 ## Current status
 
-Phases 00–03 are released. Phase 04 adds an implemented local Apollo Router, private Identity/Catalog subgraphs, per-owner transport credentials and optional correlated traces. The core retains persistent PostgreSQL, disposable Redis and bounded resources. [Current state](../../.ai/CURRENT_STATE.md) records acceptance/release status. Browser UI and playable journeys remain planned.
+Phases 00–06 are released. The local stack includes Apollo Router, private Identity/Catalog subgraphs, per-owner transport credentials, public Web browsing and the first-film pipeline. Phase 07 adds locally implemented [Playback sessions](../../services/playback/README.md), a private owner listener and a separate current-Catalog credential. The core retains persistent PostgreSQL, disposable Redis and bounded resources. [Current state](../../.ai/CURRENT_STATE.md) records acceptance/release status. The product player and clean-start playable journey remain unfinished.
 
 ### Identity reference process
 
@@ -314,7 +314,7 @@ The configured GitHub governance job runs repository-memory, documentation, publ
 
 ## Local endpoints
 
-The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate only through the internal `platform` network. The optional runtime publishes Identity on `127.0.0.1:3100` and Catalog on `127.0.0.1:3200`, both with `/graphql`, `/health/live` and `/health/ready`. The observability overlay also publishes Prometheus on `127.0.0.1:9090`; PostgreSQL, Redis, broker, storage and Collector have no host ports. [Catalog runtime and scoped verification commands](../../services/catalog/README.md#docker-runtime-and-technical-media) explain its read-only credentials and generated-media tests.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate through the internal `platform` network. Normal runtime publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200 and Playback 3300 remain private, with `/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics overlay alone exposes Identity/Catalog on loopback and disables private trust; it is not the federated topology. The Web overlay publishes 3000 and observability publishes Prometheus 9090. PostgreSQL, Redis, broker, private storage and Collector have no host ports. [Playback operations](../../services/playback/README.md) and [Catalog verification](../../services/catalog/README.md#docker-runtime-and-technical-media) describe the scoped checks.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 

@@ -58,7 +58,7 @@ fn router_service(service) {
 
 fn operation(request) {
     let name = request.body.operation_name;
-    let known = ["Viewer", "Profiles", "Profile", "DemoSignIn", "SignOut", "CreateProfile", "UpdateProfile", "DeleteProfile", "SelectProfile", "Browse", "TitleDetail", "ViewerAndTitle"];
+    let known = ["Viewer", "Profiles", "Profile", "DemoSignIn", "SignOut", "CreateProfile", "UpdateProfile", "DeleteProfile", "SelectProfile", "Browse", "TitleDetail", "ViewerAndTitle", "StartPlayback"];
     request.context["aster.operation"] = if name in known { name } else { "other" };
     request.context["aster.started_ms"] = unix_ms_now();
 }

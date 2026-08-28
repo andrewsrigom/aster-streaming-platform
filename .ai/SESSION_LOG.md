@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Playback connected backend candidate
+
+### Completed
+
+Added the public Federation mutation, bounded Apollo/Express transport, restricted PostgreSQL runtime/migrator, readiness/shutdown and separate Router/private-Catalog credentials in Docker. No optional Identity dependency, media proxy or retained-runtime mutation. Corrected two disposable-fixture setup defects and one lint-only assertion before the recorded passes.
+
+### Evidence
+
+[Backend evidence](../evidence/phase-07/README.md): 248/248 owner tests, source 54/54, exact-release schema compatibility, real runtime-role SQL checks and Router-to-owner-to-store success/rejection/failure/recovery. Exact fixture cleanup leaves zero resources. No CPU check, source download or media encode repeated.
+
+### Next action
+
+Close candidate governance/hashes, publish one coherent backend PR and require protected CI/review. Then accessible player and fresh-volume demo. Full Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Phase 06 released; Playback core advances
 
 ### Completed

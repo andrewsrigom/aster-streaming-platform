@@ -5,6 +5,8 @@ import { Pool } from "pg";
 import { createAsterPostgresAdapter } from "@aster/postgres";
 import { createPostgresPlaybackSessions } from "../../src/infrastructure/postgres-sessions.js";
 import { createAnonymousPlaybackSession } from "../../src/domain/session.js";
+import { migrateLocalPlayback } from "../../src/infrastructure/local-migrations.js";
+import { probePlaybackStore } from "../../src/infrastructure/store-readiness.js";
 
 const port = Number(process.argv[2]);
 const host = process.argv[3] ?? "127.0.0.1";
@@ -41,6 +43,12 @@ const makeDatabase = () =>
       startDependencyOperation: () => ({ status: "rejected", reason: "telemetry_closed" }),
     },
   });
+const migrationEnvironment = {
+  ASTER_ENVIRONMENT: "local",
+  ASTER_PLAYBACK_MIGRATION_ENABLED: "true",
+  ASTER_PLAYBACK_ADMIN_DATABASE_URL: `postgresql://aster@${host}:${port}/aster`,
+  ASTER_PLAYBACK_ADMIN_DATABASE_PASSWORD: "aster-test-only",
+};
 let database = makeDatabase();
 let store = createPostgresPlaybackSessions(database);
 const count = async () =>
@@ -92,7 +100,8 @@ const seed = `INSERT INTO playback.sessions (id, slot, title_id, publication_id,
 try {
   const version = await admin.query<{ server_version: string }>("SHOW server_version");
   assert.match(version.rows[0]?.server_version ?? "", /^18\.6/u);
-  await migrate("up");
+  assert.deepEqual(await migrateLocalPlayback(migrationEnvironment, signal()), { applied: [1] });
+  assert.deepEqual(await migrateLocalPlayback(migrationEnvironment, signal()), { applied: [] });
   await admin.query(
     "CREATE ROLE aster_playback_fixture LOGIN PASSWORD 'aster-test-only' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS",
   );
@@ -258,6 +267,50 @@ try {
   assert.equal(await count(), 0);
   assert.deepEqual(await store.create(session(), signal()), { status: "completed" });
   output("playback_migration_roundtrip", { upDownUp: "passed", unrelatedData: "preserved" });
+  assert.deepEqual(await migrateLocalPlayback(migrationEnvironment, signal()), { applied: [] });
+  const runtimeEndpoint = new URL(endpoint);
+  runtimeEndpoint.username = "aster_playback_local";
+  const local = createAsterPostgresAdapter({
+    connectionString: runtimeEndpoint.toString(),
+    maxConnections: 1,
+    connectionTimeoutMs: 500,
+    operationTimeoutMs: 1200,
+    statementTimeoutMs: 900,
+    telemetry: {
+      startDependencyOperation: () => ({ status: "rejected", reason: "telemetry_closed" }),
+    },
+  });
+  try {
+    assert.equal(await probePlaybackStore(local, signal()), "ready");
+    for (const [grant, revoke] of [
+      [
+        "GRANT USAGE ON SCHEMA catalog TO aster_playback_local",
+        "REVOKE USAGE ON SCHEMA catalog FROM aster_playback_local",
+      ],
+      [
+        "GRANT UPDATE(manifest_url) ON playback.sessions TO aster_playback_local",
+        "REVOKE UPDATE(manifest_url) ON playback.sessions FROM aster_playback_local",
+      ],
+      [
+        "INSERT INTO playback.schema_migrations(version) VALUES (2)",
+        "DELETE FROM playback.schema_migrations WHERE version = 2",
+      ],
+    ]) {
+      assert.ok(grant && revoke);
+      await admin.query(grant);
+      assert.equal(await probePlaybackStore(local, signal()), "unavailable");
+      await admin.query(revoke);
+      assert.equal(await probePlaybackStore(local, signal()), "ready");
+    }
+    output("playback_local_runtime_readiness", {
+      initializerIdempotent: true,
+      crossOwnerAndColumnGrantRejected: true,
+      incompatibleSchemaRejected: true,
+      recovery: "passed",
+    });
+  } finally {
+    await local.close(signal());
+  }
 } finally {
   await database.close(signal());
   await Promise.all([admin.end(), runtime.end()]);

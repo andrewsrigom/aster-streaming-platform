@@ -15,6 +15,7 @@ import {
 const SUBGRAPHS = Object.freeze({
   catalog: "http://catalog:3200/graphql",
   identity: "http://identity:3100/graphql",
+  playback: "http://playback:3300/graphql",
 });
 export type SubgraphName = keyof typeof SUBGRAPHS;
 export type ArtifactSet = Readonly<Record<string, string>>;

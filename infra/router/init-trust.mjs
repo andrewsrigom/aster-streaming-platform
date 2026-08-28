@@ -23,8 +23,11 @@ async function verifyExisting(path) {
 }
 
 // A finite local initializer. Restart all consumers together after rotating these files.
-for (const owner of ["identity", "catalog"]) {
-  const path = `/run/aster-router/${owner}/${owner}.key`;
+const paths = [
+  ...["identity", "catalog", "playback"].map((owner) => `/run/aster-router/${owner}/${owner}.key`),
+  "/run/aster-playback-catalog/catalog.key",
+];
+for (const path of paths) {
   let file;
   try {
     file = await open(path, "wx", 0o400);
@@ -41,4 +44,4 @@ for (const owner of ["identity", "catalog"]) {
     await file.close();
   }
 }
-process.stdout.write('{"event":"aster.router.trust_initialized","owners":2}\n');
+process.stdout.write('{"event":"aster.router.trust_initialized","owners":3,"ownerReads":1}\n');

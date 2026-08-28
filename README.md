@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–06 are released: local identity/profiles, rights-aware Catalog, Federation, public SSR/hydration and the approved first-film HLS pipeline. Phase 07 is implementing short-lived playback sessions; the product player and clean-start playable demo remain unfinished. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 06 release](evidence/phase-06/release.md).
+Phases 00–06 are released: local identity/profiles, rights-aware Catalog, Federation, public SSR/hydration and the approved first-film HLS pipeline. Phase 07 adds locally implemented [short-lived Playback sessions](services/playback/README.md); the product player and clean-start playable demo remain unfinished. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 06 release](evidence/phase-06/release.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -30,7 +30,7 @@ From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 docker compose --project-name aster --file infra/compose/compose.yml --profile runtime up --build --wait --wait-timeout 120
 ```
 
-The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog with restricted database logins. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. This command does not yet start the [Web checkpoint](apps/web/README.md) or playable video; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
+The GraphQL endpoint is `http://127.0.0.1:4000/graphql` (POST only, no interactive landing page). Docker builds from the frozen lockfile, applies owner migrations, initializes private per-owner Router credentials and starts Identity/Catalog/Playback with restricted database logins. Playback has a separate current-publication read credential shared only with Catalog. Their health ports stay private; inspect Docker health with the status command below. No host Node, pnpm, GraphOS account or hosted credential is needed. The first build needs registry access. This command does not yet start the [Web checkpoint](apps/web/README.md) or playable video; the current runtime proof covers Linux/WSL amd64, not every host/CPU combination.
 
 Exercise sign-in, create/select/list/delete a synthetic profile and sign-out (POSIX/WSL, Docker only):
 

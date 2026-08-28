@@ -9,7 +9,11 @@ export type SessionWrite = Readonly<{
 }>;
 export interface PlaybackSessionPorts {
   readonly catalog: {
-    currentPublication(titleId: string, signal: AbortSignal): Promise<PublicationLookup>;
+    currentPublication(
+      titleId: string,
+      signal: AbortSignal,
+      traceparent?: string,
+    ): Promise<PublicationLookup>;
   };
   readonly sessions: {
     create(session: PlaybackSession, signal: AbortSignal): Promise<SessionWrite>;

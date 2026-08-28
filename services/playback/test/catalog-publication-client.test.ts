@@ -37,6 +37,7 @@ async function fixture(respond: (request: IncomingMessage, response: ServerRespo
 
 test("owner HTTP client sends the fixed bounded operation and separate credential, preserving null or publication", async () => {
   let calls = 0;
+  const traceparent = `00-${"a".repeat(32)}-${"b".repeat(16)}-01`;
   const publication = {
     titleId: id,
     publicationId: id,
@@ -54,6 +55,7 @@ test("owner HTTP client sends the fixed bounded operation and separate credentia
     assert.equal(incoming.headers["x-aster-playback-credential"], credential);
     assert.equal(incoming.headers["x-aster-router-credential"], undefined);
     assert.equal(incoming.headers["cookie"], undefined);
+    assert.equal(incoming.headers["traceparent"], calls === 1 ? traceparent : undefined);
     const chunks: Buffer[] = [];
     incoming.on("data", (chunk: Buffer) => {
       chunks.push(chunk);
@@ -72,10 +74,13 @@ test("owner HTTP client sends the fixed bounded operation and separate credentia
     });
   });
   try {
-    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2000)), {
-      status: "completed",
-      value: publication,
-    });
+    assert.deepEqual(
+      await f.client.currentPublication(id, AbortSignal.timeout(2000), traceparent),
+      {
+        status: "completed",
+        value: publication,
+      },
+    );
     assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2000)), {
       status: "completed",
       value: null,
@@ -160,6 +165,15 @@ test("owner client bounds live requests, cancels sockets and does not send inval
     assert.deepEqual(await f.client.currentPublication("bad", controller.signal), {
       status: "unavailable",
     });
+    for (const trace of [
+      "invalid",
+      `00-${"0".repeat(32)}-${"b".repeat(16)}-01`,
+      `00-${"a".repeat(32)}-${"0".repeat(16)}-01`,
+    ]) {
+      assert.deepEqual(await f.client.currentPublication(id, controller.signal, trace), {
+        status: "unavailable",
+      });
+    }
     assert.deepEqual(await f.client.currentPublication(id, AbortSignal.abort()), {
       status: "cancelled",
     });

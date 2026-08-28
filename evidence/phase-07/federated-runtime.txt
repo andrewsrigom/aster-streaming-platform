@@ -1,0 +1,7 @@
+{"event":"playback_runtime_build","project":"aster-playback-proof-a8e57a34-e314-4ae4-b2d8-707b35c60769","status":"started"}
+{"event":"playback_runtime_started","project":"aster-playback-proof-a8e57a34-e314-4ae4-b2d8-707b35c60769","optionalOwnersRunning":0,"images":{"catalog":"sha256:87734425af3f102fa63f0bb4d122a597713764e6e744ee268ab596d36ecc0e49","playback":"sha256:e34ec8371279778723c7dd7ea6a9691e51f9f08d64fda053a0b7695302a65f16","router":"sha256:b71b5cfe7d5d83fa34d2f7b5cba3416adaa7ef6a3751e7c92e5603dc47d74ab5"}}
+{"event":"playback_federated_creation","persistedAnonymous":true,"cappedRightsExpiry":true,"noOptionalIdentityDependency":true,"mediaFetches":0,"correlationId":"82d8b262-24c4-4472-aef6-dd0c856affaf"}
+{"event":"playback_federated_rejections","expiredDisputedMissingRetired":"rejected","freshOwnerCheck":true,"forgedTrustAndFanout":"rejected","persisted":2}
+{"event":"playback_federated_failures","blockedStoreAndCatalog":"bounded_no_session","recovery":"passed","sessionCount":4}
+{"event":"playback_runtime_logs","ownerCorrelation":true,"finiteOperationLabel":"StartPlayback","credentialsAndMediaUrlExcluded":true}
+{"event":"playback_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}

@@ -73,6 +73,7 @@ type LocalizedTitle {
 }
 
 type Mutation {
+  createPlaybackSession(titleId: ID!): PlaybackSessionPayload!
   createProfile(input: CreateProfileInput!): ProfileMutationPayload!
   deleteProfile(input: DeleteProfileInput!): ProfileMutationPayload!
   demoSignIn: SessionPayload!
@@ -84,6 +85,29 @@ type Mutation {
 type OwnedProfiles {
   activeProfileId: ID
   profiles: [Profile!]!
+}
+
+type PlaybackSession {
+  expiresAt: Float!
+  id: ID!
+  manifestUrl: String!
+  titleId: ID!
+}
+
+enum PlaybackSessionCode {
+  CANCELLED
+  COMPLETED
+  INDETERMINATE
+  INVALID_INPUT
+  LIMIT_EXCEEDED
+  NOT_PLAYABLE
+  UNAVAILABLE
+}
+
+type PlaybackSessionPayload {
+  code: PlaybackSessionCode!
+  correlationId: ID!
+  session: PlaybackSession
 }
 
 type Profile {

@@ -34,11 +34,23 @@ export function createCatalogPublicationClient(
   const send = options.request ?? request;
   let inFlight = 0;
   return Object.freeze({
-    async currentPublication(titleId: string, signal: AbortSignal): Promise<PublicationLookup> {
+    async currentPublication(
+      titleId: string,
+      signal: AbortSignal,
+      traceparent?: string,
+    ): Promise<PublicationLookup> {
       if (signal.aborted) {
         return { status: "cancelled" };
       }
       if (!playbackIdentifier(titleId) || inFlight >= 4) {
+        return { status: "unavailable" };
+      }
+      if (
+        traceparent !== undefined &&
+        (!/^00-[a-f0-9]{32}-[a-f0-9]{16}-0[01]$/u.test(traceparent) ||
+          traceparent.slice(3, 35) === "0".repeat(32) ||
+          traceparent.slice(36, 52) === "0".repeat(16))
+      ) {
         return { status: "unavailable" };
       }
       inFlight += 1;
@@ -86,6 +98,7 @@ export function createCatalogPublicationClient(
                 signal: active,
                 maxHeaderSize: 8192,
                 headers: {
+                  ...(traceparent ? { traceparent } : {}),
                   host: "catalog:3200",
                   origin: "http://playback:3300",
                   "x-aster-csrf": "1",

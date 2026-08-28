@@ -1,0 +1,28 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3")
+
+enum PlaybackSessionCode {
+  COMPLETED
+  INVALID_INPUT
+  NOT_PLAYABLE
+  UNAVAILABLE
+  CANCELLED
+  INDETERMINATE
+  LIMIT_EXCEEDED
+}
+
+type PlaybackSession {
+  id: ID!
+  titleId: ID!
+  manifestUrl: String!
+  expiresAt: Float!
+}
+
+type PlaybackSessionPayload {
+  code: PlaybackSessionCode!
+  correlationId: ID!
+  session: PlaybackSession
+}
+
+type Mutation {
+  createPlaybackSession(titleId: ID!): PlaybackSessionPayload!
+}

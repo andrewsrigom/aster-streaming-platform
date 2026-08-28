@@ -45,12 +45,13 @@ Phases 00–06 are released; [Phase 06 release evidence](../evidence/phase-06/re
 | 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | DONE |
 | 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | DONE |
 | 39 | Create owner-validated short-lived playback sessions through Federation | P07-R01 | IN_PROGRESS |
+| 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
 
-All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md) and passed the documented protected release. P07-R01 core rules pass [focused checks](../evidence/phase-07/README.md); complete real owner transport, isolated persistence and Federation before its candidate gate. Immutable media is retained, disposable scratch alone is cleaned. No repeated CPU test or unchanged film encode.
+All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md) and passed the documented protected release. P07-R01's real owner transport, isolated persistence and Federation pass [local acceptance](../evidence/phase-07/README.md); candidate governance/protected review/release remain. P07-R04 also covers P07-R05 through P07-R08 and P07-R10 through P07-R12. Immutable media is retained, disposable scratch alone is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

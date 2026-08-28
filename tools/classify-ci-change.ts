@@ -16,6 +16,7 @@ const PLATFORM_PREFIXES = [
   "infra/router/",
   "services/identity/",
   "services/catalog/",
+  "services/playback/",
   "tools/media/",
   "packages/runtime/",
   "packages/config/",
@@ -53,6 +54,10 @@ const PLATFORM_FILES = new Set([
   "tools/verify-router-observability.mjs",
   "tools/verify-local-catalog.mjs",
   "tools/run-catalog-integration.mjs",
+  "tools/run-playback-integration.mjs",
+  "tools/run-playback-runtime.mjs",
+  "tools/verify-playback-runtime.mjs",
+  "tools/verify-playback-runtime.test.mjs",
   "tools/run-media-fixture.mjs",
   "tools/verify-optional-platform.mjs",
 ]);

@@ -15,11 +15,11 @@ Create a short-lived anonymous playback session through the supergraph only afte
 
 Phases 00–06 are released. PR 23 final head 37a9a398428f52fdc35942eeb690745d22812736 passed protected CI; squash 4083ea65edcf750bf4ba3e253654a529b72cd105 passed exact post-merge CI 33156505851. [Release evidence](../evidence/phase-06/release.md). This local branch is rebased on released main.
 
-Catalog's current-publication projection/private GraphQL read, bounded HTTP consumer, anonymous Playback rules and PostgreSQL persistence are implemented. Affected suite 233/233 and real PostgreSQL expiry/concurrency/retention/role/migration checks pass, with strict builds, lint, architecture, unused-code and exact-main schema compatibility. [Evidence](../evidence/phase-07/README.md). Playback's public mutation, runtime, Compose and player remain planned. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) fixes trust and finite local persistence policy.
+The public Playback mutation, current private Catalog read, anonymous session rules, isolated PostgreSQL store and Docker runtime are implemented. Affected suite 248/248, source 54/54, exact-release schema compatibility, actual runtime-role/migrator checks and the disposable connected Router journey pass. [Evidence](../evidence/phase-07/README.md). Candidate governance/protected review/release remain; player/demo is the next slice. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) fixes trust and finite local persistence policy.
 
 ## Proposed behavior
 
-First implement Catalog's minimal current-publication projection and Playback's session rules with deterministic tests. Then connect the bounded owner read, Playback-owned PostgreSQL session persistence and the additive Federation mutation. Use the existing transport/runtime/telemetry packages, not another framework. Record the local service-read trust decision in an ADR before wiring credentials or transport.
+Continue from tested core 9ab840a: expose createPlaybackSession(titleId) with a nullable session and finite result code, generated correlation ID, manifest reference and expiry. Add Playback's bounded Apollo/Express transport, lifecycle/readiness, local migration runner and Docker image using the existing pinned packages. Compose the additive schema/known operation, wire independent Router-to-Playback and Playback-to-Catalog file credentials, and prove the connected path. No profile argument, media proxy, optional dependency or new framework. Backend-first integration remains separate from subsequent player/demo acceptance.
 
 ## Boundaries
 
@@ -60,7 +60,7 @@ First implement Catalog's minimal current-publication projection and Playback's 
 
 ## Security and privacy
 
-- Authorization: current Catalog owner read; verified Identity may bind a profile in the later player slice, never an arbitrary profile argument.
+- Authorization: current Catalog owner read; anonymous playback remains independent of Identity. Verified profile binding is deferred to the owning personalization requirement, never an arbitrary profile argument.
 - Input limits: exact identifier input, bounded batch/body/deadlines and finite admission.
 - Sensitive data: no credentials, IP address, cookie or full media URL in telemetry.
 - Abuse cases: stale projections, URL substitution/SSRF, spoofed owner credentials, alias/batch amplification, cancelled late writes and session-capacity exhaustion.
@@ -80,14 +80,14 @@ First implement Catalog's minimal current-publication projection and Playback's 
 - Application: no write on unavailable/invalid/stale Catalog, cancellation, capacity and optional-service independence.
 - Integration: real PostgreSQL role/migration/session behavior and Catalog/Playback/Router requests.
 - Contract: additive composition, protected operation compatibility and N+1 batch counts.
-- Browser: session API journey at this slice; actual HLS/player acceptance in the next slice.
+- Journey: actual Router/owner/session requests in the disposable fixture at this slice; browser/HLS/player acceptance in the next slice.
 - Performance/failure: bounded deadlines/concurrency and negative delivery references, not an unchanged host benchmark.
 
 ## Evidence
 
 - Commands: affected build/unit/type/lint during iteration; affected-scope gate at candidate.
 - Raw artifact path: evidence/phase-07/ when the first focused checks run.
-- Acceptance result: planned; no Phase 07 acceptance claimed yet.
+- Acceptance result: backend requirements locally verified by the linked source/SQL/connected-runtime checks; protected release and full Phase 07 acceptance remain pending.
 - Iteration gate: cheapest changed-owner domain/application tests and strict build.
 - Candidate gate: source, composition, changed real-dependency/runtime tests, docs/security and exact protected CI.
 - Heavyweight repeat triggers: schema, SQL, transport, packaging or player changes that invalidate their respective evidence; unchanged film/CPU work is not repeated.
@@ -104,7 +104,7 @@ Update current state/queue/handoff at this dependent-start checkpoint, then cons
 ## Completion checklist
 
 - [x] Current publication and session rules implemented
-- [ ] Real owner read, persistence and Federation mutation verified
-- [ ] Failure/abuse boundaries pass
-- [ ] Evidence and documentation current
+- [x] Real owner read, persistence and Federation mutation verified
+- [x] Failure/abuse boundaries pass
+- [x] Evidence and documentation current
 - [ ] Predecessor released and this candidate passes protected gates

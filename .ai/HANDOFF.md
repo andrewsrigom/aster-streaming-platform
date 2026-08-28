@@ -6,9 +6,9 @@ P07-R01 / Phase 07 is IN_PROGRESS on feat/p07-playback, based on released main 4
 
 ## Exact next actions
 
-1. Current Catalog projection, protected private GraphQL read, bounded consumer, anonymous session rules and PostgreSQL persistence are implemented. Affected suite 233/233, real PostgreSQL boundaries/migrations and strict/static/schema checks pass. [Evidence](../evidence/phase-07/README.md). No public Playback mutation or running service/Compose integration yet.
-2. Implement the Playback subgraph/runtime and connected owner/session journey. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) requires independent Router-to-Playback and Playback-to-Catalog credentials, never shared Router authority or recursive public calls. Existing helpers use /run/aster-playback-catalog/catalog.key; Compose initializer/mounts still need wiring.
-3. New sessions use isolated migration 0001, 4096 SQL slots, 24-hour post-expiry audit and at most 64 expired deletions per admission. SQL parameters are explicitly typed; tests verify exact capacity and recovery. Do not repeat unchanged PostgreSQL/film tests unless later work invalidates them. Player/demo follow the complete backend candidate.
+1. Core commit 9ab840abd236c49eca6195f1b8c36627609891ad has a coherent uncommitted API/runtime/Compose successor. Affected suite 248/248, full source 54/54, actual restricted-role PostgreSQL/migration checks and the disposable federated Docker journey pass. [Evidence](../evidence/phase-07/README.md). Do not reimplement this completed local boundary.
+2. Finish candidate governance/changed-scope checks, source hashes and a coherent commit, then one PR with protected CI and initial/confirmation review. No Phase 07 push/PR yet at this checkpoint. Local main ref is stale f36f9aa; explicit schema compatibility against released 4083ea65 already passed. Generated manifest d4b22c951a4ec16709271439036fcac27a00198f7e1f8d6a6ee1587052161ddd.
+3. Start the accessible HLS player/demo after backend acceptance or the explicit frozen WAITING_EXTERNAL checkpoint. Migration 0001, 4096 SQL slots, 24-hour post-expiry audit and bounded cleanup are verified. [ADR-0027](../docs/adr/0027-local-playback-sessions.md) and the [session runbook](../services/playback/README.md) define separate Router and private Catalog credentials. Do not repeat unchanged PostgreSQL/film/runtime experiments for prose changes.
 
 P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
 
@@ -28,4 +28,4 @@ Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do 
 
 ## Do not do yet
 
-Do not claim a running Playback API from in-memory tests or publish an incomplete backend slice. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
+Do not claim player/phase completion from the backend runtime proof or claim the retained app was upgraded. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
