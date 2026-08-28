@@ -14,6 +14,8 @@ Phases 00–05 are released. PR 22 squash f36f9aa passes protected CI 3313293718
 
 ## Current work
 
+Latest batch, after access commit 7150bb5: initial external review 5048873748 found two additional blockers. Cold builds now precede the processing deadline/owner; another independently approved title can attest checksum-scoped prior computation without rewriting provenance. Real two-title PostgreSQL publication/replay/dispute checks and source 51/51 pass. [Review remediation](../evidence/phase-06/review-remediation.md). Finish coherent closeout/commit, mark PR 23 ready once and require protected release. No host investigation/encode.
+
 PR 23 remains draft while the coherent correction closes. P06-R08 now keeps copies private until complete verification and a serialized exact-prefix policy grant; real storage failure/concurrency/replay tests pass. The retained 209-object bundle was restricted without media/editorial writes, and every anonymous object HEAD plus CORS/Range/private denials passes. [Access evidence](../evidence/phase-06/publication-access.md). Initial CI 33151304060 failed only the standalone Catalog probe's obsolete migration expectation; corrected to migrations 1–8 with focused coverage. Candidate gate, confirmation, corrected exact-head protected CI and release remain required. Do not treat initial head 459607b as release proof.
 
 [Phase 06 acceptance](../evidence/phase-06/acceptance.md), implementation head f28c442, maps all twelve requirements to code/tests and measured evidence: approved source, bounded acquisition, isolated full-film HLS/JPEG, durable leases/replay, restricted attestation, immutable publication, compatible rollback, disposable orphan cleanup and real browser playback.

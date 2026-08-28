@@ -263,6 +263,150 @@ export async function verifyAttestation(
       retainedAuditDowngradeRejected: true,
     });
 
+    const reusedTitleId = nextId();
+    const reusedFixture = publicationBundleFixture(reusedTitleId, now, f.identity.sha256);
+    const reusedInput = (expectedVersion: number) => ({
+      titleId: reusedTitleId,
+      expectedVersion,
+      mutationId: nextId(),
+    });
+    assert.equal(
+      (
+        await commands.execute(
+          "create",
+          {
+            ...reusedInput(0),
+            metadata: {
+              ...reusedFixture.metadata,
+              artwork: {
+                ...reusedFixture.metadata.artwork,
+                rights: rightsFacts(reusedFixture.metadata.artwork.rights),
+              },
+            },
+            rights: rightsFacts(reusedFixture.rights),
+          },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    const reusedSelection = { ...selection, titleId: reusedTitleId, expectedVersion: 2 };
+    const registerReuse = (version: number) =>
+      attester.register(
+        { ...reusedSelection, expectedVersion: version },
+        reusedFixture.bundle,
+        2,
+        { publicationId: nextId(), reportId: nextId(), actorId: id(6), correlationId: nextId() },
+        request.signal,
+      );
+    const unapproved = await attester.read(reusedSelection, request.signal);
+    assert.throws(() => {
+      requirePublicationApproval(unapproved, reusedFixture.bundle, now);
+    });
+    await assert.rejects(registerReuse(2));
+    assert.equal(
+      (
+        await commands.execute(
+          "review",
+          {
+            ...reusedInput(2),
+            decision: "approve",
+            reason: "Independent rights for reused computation",
+          },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    const reusedRequestId = nextId();
+    assert.equal(
+      (
+        await createCatalogMediaRequests({
+          ...common,
+          transactions: createPostgresCatalogMedia(database),
+        }).request(
+          {
+            requestId: reusedRequestId,
+            titleId: reusedTitleId,
+            expectedVersion: 3,
+            rightsRevision: 2,
+            recipeVersion: "hls-avc-aac-v1",
+            source: {
+              url: reusedFixture.rights.assetSourceUrl,
+              bytes: f.identity.bytes,
+              sha256: f.identity.sha256,
+              container: "mp4",
+              etag: '"synthetic-publication"',
+            },
+          },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    const reusedAcquisition = await acquisitions.claim(reusedRequestId, request);
+    assert.equal(reusedAcquisition.status, "completed");
+    assert.equal(
+      (
+        await acquisitions.complete(
+          reusedAcquisition.value.id,
+          {
+            sha256: f.identity.sha256,
+            bytes: f.identity.bytes,
+            key: "originals/sha256/" + f.identity.sha256,
+          },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    for (const [index, recipeVersion] of (["hls-avc-aac-v1", "frame-jpeg-v1"] as const).entries()) {
+      const reusedAttempt = await createCatalogProcessing({
+        ...common,
+        transactions: createPostgresCatalogProcessing(database),
+        recipeVersion,
+      }).claim(reusedAcquisition.value.id, request);
+      assert.equal(reusedAttempt.status, "completed");
+      assert.equal(reusedAttempt.value.id, attempts[index]);
+      assert.equal(reusedAttempt.value.acquisitionId, acquisition.value.id);
+      assert.equal(reusedAttempt.value.requestId, requestId);
+    }
+    const reusableSource = await attester.read(
+      { ...reusedSelection, expectedVersion: 3 },
+      request.signal,
+    );
+    requirePublicationApproval(reusableSource, reusedFixture.bundle, now);
+    assert.throws(() => {
+      requirePublicationApproval(
+        { ...reusableSource, rights: { ...reusableSource.rights, sourceChecksum: "f".repeat(64) } },
+        reusedFixture.bundle,
+        now,
+      );
+    });
+    await assert.rejects(
+      attester.register(
+        { ...reusedSelection, expectedVersion: 3 },
+        { ...reusedFixture.bundle, sourceChecksum: "f".repeat(64) },
+        2,
+        { publicationId: nextId(), reportId: nextId(), actorId: id(6), correlationId: nextId() },
+        request.signal,
+      ),
+    );
+    const reusedPublicationId = await registerReuse(3);
+    assert.notEqual(reusedPublicationId, publicationId);
+    assert.equal(await registerReuse(3), reusedPublicationId);
+    assert.equal(
+      (
+        await commands.execute(
+          "media-ready",
+          { ...reusedInput(3), publicationId: reusedPublicationId },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    assert.equal((await commands.execute("publish", reusedInput(4), request)).status, "completed");
+
     const blocker = await admin.connect();
     try {
       await blocker.query("BEGIN");
@@ -303,6 +447,32 @@ export async function verifyAttestation(
       serializedOnTitle: true,
       staleAndRevokedRegistrationRejected: true,
       retainedAttestations: 1,
+    });
+    // Disputing the original title does not revoke another title's independently approved rights.
+    requirePublicationApproval(
+      await attester.read({ ...reusedSelection, expectedVersion: 5 }, request.signal),
+      reusedFixture.bundle,
+      now,
+    );
+    assert.equal(
+      (
+        await commands.execute(
+          "dispute",
+          { ...reusedInput(5), reason: "New title's own rights dispute" },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    await assert.rejects(registerReuse(6));
+    output("catalog_cross_title_computation_reuse", {
+      sameProcessingIds: true,
+      originalRequestHistoryPreserved: true,
+      independentlyApprovedNewTitlePublished: true,
+      exactReplay: true,
+      unapprovedAndWrongChecksumRejected: true,
+      originalTitleDisputeIndependent: true,
+      newTitleDisputeRejected: true,
     });
   } finally {
     operator.revoke();

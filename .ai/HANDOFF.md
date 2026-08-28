@@ -4,6 +4,8 @@
 
 P06-R01 / Phase 06 remains IN_PROGRESS on feat/p06-media-pipeline; PR 23 is draft. Full Phase 00–14 goal remains active. Released main is f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 (Phases 00–05).
 
+Latest batch after 7150bb5 fixes initial external-review findings: build/deadline ordering and cross-title checksum reuse under independent current rights. [Review evidence](../evidence/phase-06/review-remediation.md) records real PostgreSQL publication/replay/dispute checks and source 51/51. Finish this batch's closeout/commit, then mark PR 23 ready. Access evidence remains valid, but 7150bb5 is not the final release head.
+
 Initial PR head 459607b407d1b6f0fd63b5416d06a9fc34b4b36d / CI 33151304060 is not release proof. Initial review found partial-object exposure; CI found the standalone probe's obsolete migrations 1–3 expectation. Both are corrected locally. [Access evidence](../evidence/phase-06/publication-access.md) records the real storage test and retained migration. Candidate source/confirmation/protected release still must close.
 
 ## Exact next actions

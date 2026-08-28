@@ -32,7 +32,7 @@ const controller = new globalThis.AbortController();
 const stop = () => controller.abort();
 process.once("SIGTERM", stop);
 process.once("SIGINT", stop);
-const deadline = setTimeout(stop, 1800000);
+let deadline;
 const docker = async (args, timeout = 15000, signal = controller.signal) => {
   const result = await execute("docker", args, {
     cwd: root,
@@ -101,7 +101,12 @@ try {
   }
   process.stdout.write(JSON.stringify({ event: "media_images_building", project, runId }) + "\n");
   await docker([...compose, "build", "media-prepare"], 360000);
+  if (!reuse) {
+    await docker([...compose, "build", "media-decoder"], 360000);
+  }
   process.stdout.write(JSON.stringify({ event: "media_images_ready", project, runId }) + "\n");
+  // Bounded image preparation must not spend the owner's processing lease or job deadline.
+  deadline = setTimeout(stop, 1800000);
   allocated = true;
   for (const [index, volume] of volumes.entries()) {
     const localName = index === 0 ? "media-decoder-input" : "media-decoder-output";
@@ -177,7 +182,7 @@ try {
     await delay(1000, undefined, { signal: controller.signal });
   }
   if (!reused) {
-    await docker([...compose, "build", "media-decoder"], 360000);
+    assert.ok(!reuse, "Explicit candidate reuse must not start a decoder.");
     process.stdout.write(
       JSON.stringify({ event: "media_candidate_started", project, attemptId, runId }) + "\n",
     );

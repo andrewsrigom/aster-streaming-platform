@@ -6,6 +6,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
+Second coherent batch addresses initial external review 5048873748: finish image builds before the owner/deadline; permit attestation of prior checksum/recipe computation for another independently approved title. Real two-title publication/replay/disputes and source 51/51 pass; old provenance and SQL grants remain unchanged. [Review evidence](../evidence/phase-06/review-remediation.md). No media/CPU experiment repeated.
+
 Initial PR 23 review found P06-R08 partial-object exposure; drafted the PR. CI 33151304060 independently caught the standalone probe's obsolete migration expectation after passing source, governance, dependency/platform and real Catalog media checks. Batched both corrections. An object-ACL experiment failed 501; replaced it with supported exact-prefix policy, whole-bundle verification and a non-expiring conditional-create recovery barrier. Ten focused access/bundle tests and the real nine-object storage fixture pass. Restricted the retained 209-object / 95496764-byte bundle after full checksum/current-rights/reference checks; all anonymous HEADs, Range/CORS/negative permissions and Web 200 pass. No source GET/encode, CPU test, media deletion or editorial writes. [Evidence](../evidence/phase-06/publication-access.md). Finish corrected candidate gates/confirmation and protected release, then Phase 07; full goal remains active.
 
 ### Evidence

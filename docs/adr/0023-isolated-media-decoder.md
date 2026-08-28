@@ -24,6 +24,8 @@ This finite workflow does not yet implement durable processing leases, cross-run
 
 ## Dependencies and recovery
 
+The supervisor finishes bounded image builds before starting the owner or its 30-minute processing deadline. Each build has its own six-minute limit. Explicit retained-candidate reuse builds only the owner. Cold image preparation no longer spends the processing lease/window; encoding speed on a shared host is not promised.
+
 Scratch volumes now include the non-reused run UUID in their Docker names, while Compose keeps stable input/output mount keys. Recovery takes an explicit project/run and defaults to inspection. It can remove only run-labelled, stopped containers and exact local tmpfs volumes at least 31 minutes old, after checking that no foreign container references them. Removal uses immutable container IDs and never force; run-specific volume names prevent a new attempt from inheriting a cleanup target. Unknown/legacy unscoped volumes are not automatically removed. This handles abandoned temporary output without deleting immutable originals/candidates, publication bundles or durable attempts. Content-addressed S3 partials remain recoverable through the existing verified replay; scratch cleanup is not a claim of implemented storage lifecycle garbage collection.
 
 Yauzl 3.4.0 declares Node >=12 and MIT; its runtime dependency is MIT pend 1.2.0. Preserve upstream notices and exact lockfile integrity. The library does not verify CRC-32, so the decoder does, using the pinned Node 24 runtime. FFmpeg binary distribution remains governed by ADR-0016; Aster source remains MIT.

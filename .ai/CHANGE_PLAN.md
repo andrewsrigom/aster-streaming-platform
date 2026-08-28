@@ -65,6 +65,8 @@ Existing local trusted Catalog/S3 authority only. Strict policy shape/prefix/cou
 
 ## Implementation steps
 
+Initial external review (5048873748, head 459607b) also identified P06-R04/R06 blockers: image preparation consumes the decoder/owner window, and the attestation reader incorrectly requires reused successful processing to originate from the newly selected title. Batch one correction: finish bounded image builds before starting the owner and its 30-minute supervisor deadline; explicit retained reuse skips decoder build. Align the reader with the existing SQL registration policy: immutable successful checksum/recipe reports are reusable across titles, but the selected title's own current rights/metadata/source checksum still authorize publication. No historical request reassignment or SQL migration/privilege relaxation. Test build/deadline ordering and real two-title reuse plus independently rejected new-title rights/checksum; repeat affected source/SQL, not film encoding or unchanged storage/browser work. Existing access confirmation covered only the prior access correction; external findings must close before release.
+
 1. Complete rights, bounded original acquisition, isolated HLS/JPEG, durable replay and restricted first-film activation — done.
 2. Verify compatible rollback, disposable scratch and representative browser playback — done.
 3. Batch initial review/CI corrections; verify real access boundary and restrict retained known bundle — done.

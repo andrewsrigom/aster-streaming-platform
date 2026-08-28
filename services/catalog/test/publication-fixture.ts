@@ -7,9 +7,13 @@ import { normalizeRightsRecord, type RightsRecord } from "../src/domain/rights.j
 import { metadataFixture, rightsFacts } from "./workflow-fixture.js";
 import { catalogTestId as id, catalogTestTime } from "./rights-fixture.js";
 
-export function publicationBundleFixture(titleId = id(1), now = catalogTestTime) {
+export function publicationBundleFixture(
+  titleId = id(1),
+  now = catalogTestTime,
+  sourceChecksum = mediaSha256("synthetic-publication-" + titleId),
+) {
   const identity = {
-    sha256: mediaSha256("synthetic-publication-" + titleId),
+    sha256: sourceChecksum,
     bytes: 1000,
     container: "mp4" as const,
   };
