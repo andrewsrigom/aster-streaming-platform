@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Phase 07 release and Engagement core
+
+### Completed
+
+Closed PR 25 with one batched correction, protected CI 33170527302 and confirmation 5452439397. Squash 854592e5ff1213a306b45d61a547ad4f2a2d9395 passed post-merge 33171284170. Started the sole dependent Phase 08 branch while hosted checks ran, then rebased it onto the identical squash tree. Implemented progress domain/application with exact replay, sequence/threshold rules, owner-validation ports, bounded cancellation and atomic outbox intent.
+
+### Evidence
+
+[Phase 07 release](../evidence/phase-07/release.md); [Phase 08 checkpoint](../evidence/phase-08/README.md): 25 focused tests, strict types, scoped lint, architecture and unused-code checks. Tests use controlled transaction fakes, not proof of SQL durability. No new runtime dependency or repeated CPU/film experiment. Rebase stash 0a477fb62adef5b74dbf4084cf47b3e491bd6e3b is already restored.
+
+### Next action
+
+P08-R01: record owner-read trust/retention, implement isolated PostgreSQL and real concurrency/atomicity, then wire runtime/subgraph. Full Phase 00–14 goal remains active; no more Phase 07 polling is needed.
+
 ## 2026-08-28 — Batched player/demo review correction
 
 ### Completed

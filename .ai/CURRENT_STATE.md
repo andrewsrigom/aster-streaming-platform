@@ -4,21 +4,21 @@ Last updated: 2026-08-28
 
 ## Active phase
 
-**Phase 07 — Playback Sessions and Player**
+**Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P07-R04 on feat/p07-player from released backend f2d99d254263baac532ef36edba0ab2c99d20dc3. P07-R01 is DONE: [protected release and local upgrade](../evidence/phase-07/backend-release.md). Full Phase 00–14 goal remains active.
+Status: **IN_PROGRESS**, P08-R01 on feat/p08-progress, rebased on main 854592e5ff1213a306b45d61a547ad4f2a2d9395. P07-R04 is DONE: protected CI 33170527302, confirmation 5452439397, squash and exact post-merge 33171284170 pass. [Phase 07 release](../evidence/phase-07/release.md). No external predecessor remains. Full Phase 00–14 goal remains active.
 
 ## Verified
 
-Phases 00–06 are released. PR 23 final head 37a9a398428f52fdc35942eeb690745d22812736 passed protected CI 33155980591; squash 4083ea65edcf750bf4ba3e253654a529b72cd105 passed exact post-merge CI 33156505851. All review findings are resolved. [Phase 06 release](../evidence/phase-06/release.md).
+Phases 00–07 are released locally, with protected review/CI and exact post-merge checks. [Phase 07 acceptance](../evidence/phase-07/release.md) covers all twelve requirements and explicit browser/content limitations. [Phase 06 release](../evidence/phase-06/release.md) retains the film/pipeline history. No hosted deployment is claimed.
 
 Phase 06 includes current rights approval, bounded acquisition, isolated full-film HLS/JPEG, durable replay, restricted attestation/publication, compatible rollback, disposable scratch recovery and representative browser playback. [Acceptance matrix](../evidence/phase-06/acceptance.md). No further Phase 06 review or pipeline is pending.
 
 ## Current work
 
-P07-R04 is the sole active item on feat/p07-player, based on released backend f2d99d254263baac532ef36edba0ab2c99d20dc3. PR 25's initial player/demo candidate is 7d49e8bd33704ec326ab324a1ff35325128f93f2. Both review blockers are corrected together: non-delivery seed eligibility and Web-only demo CI coverage. Initial CI also exposed a test-clock race, corrected without changing production rights checks. Web 46/46, real PostgreSQL, two affected browser journeys and corrected candidate 64/64 pass. [Batched correction](../evidence/phase-07/player-review.md). Empty-volume startup, captioned HLS, direct origin/private denial and immutable replay remain supporting evidence. Protected confirmation/release remain.
+P08-R01 domain/application are implemented: exact/conflicting replay, global per-profile/title sequence, configured opening/completion, clamped positions, bounded clocks, owner-validation ports, transaction/outbox intent and cancellation. [25 focused tests](../evidence/phase-08/README.md), strict TypeScript, scoped lint and architecture pass. This is not a running Engagement service or proven durable save; real PostgreSQL and owner adapters are next.
 
-P07-R01's public Playback mutation, current private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are locally verified. Affected suite passes 248/248, source 54/54 and final changed-scope/governance gate 64/64; real PostgreSQL covers admission, expiry, retention, restricted runtime credentials and migrations. A disposable real Router/Catalog/Playback journey proves persisted sessions, rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Protected review/squash/post-merge and local application upgrade are complete; player acceptance remains open.
+P07-R01's public Playback mutation, private Catalog read, isolated PostgreSQL sessions, lifecycle/readiness and Compose wiring are released. Real PostgreSQL covers admission, expiry, retention, restricted credentials and migrations. The connected Router/Catalog/Playback proof covers rights rejection, bounded failures/recovery and independence from Identity. [Backend evidence](../evidence/phase-07/README.md). Player/demo acceptance and local application upgrade are also complete.
 
 [ADR-0027](../docs/adr/0027-local-playback-sessions.md) defines a distinct credential for the bounded private Catalog GraphQL read, separate Router credentials, current rights/URL validation, two-second deadline and fifteen-minute expiry capped by rights. No cross-owner SQL, media proxy or optional personalization dependency. [Active plan](CHANGE_PLAN.md).
 
@@ -26,11 +26,11 @@ Saved P07 work is restored and rebased on released main. Stash 2b0341cbb5604f007
 
 ## Not implemented
 
-Automatic S3 garbage collection, engagement/discovery and hosted release. Phase 07 protected player/demo acceptance is pending. Signal / 01 remains a non-delivery browse fixture; Signal / 02 is a playable generated technical sample, not a third-party film.
+Engagement persistence/private transport/subgraph, durable player save, watchlist, projections/relay, Discovery and hosted release remain unimplemented. Signal / 01 is a non-delivery browse fixture; Signal / 02 is a playable generated technical sample, not a third-party film.
 
 ## Next outcome
 
-Publish P07-R04 / PR 25's one correction commit, resolve the two addressed threads and request one confirmation on its exact SHA. Require protected CI, squash and exact post-merge; then activate Phase 08. Do not rerun the old failed pipeline. Preserve unchanged film/demo evidence; no CPU diagnostic or full-film encode.
+Implement P08-R01's owner-read decision, retention and isolated PostgreSQL adapter; prove real concurrency/atomicity before wiring transport. PR 25 and post-merge are complete; this branch is rebased. No duplicate review/pipeline or unchanged CPU/film test.
 
 ## Runtime and recovery
 

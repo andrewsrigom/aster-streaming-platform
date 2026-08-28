@@ -2,13 +2,13 @@
 
 ## Resume point
 
-P07-R04 / Phase 07 is IN_PROGRESS on feat/p07-player, rebased on released main f2d99d254263baac532ef36edba0ab2c99d20dc3. P07-R01 is DONE: PR 24 protected CI, confirmation, squash and exact post-merge pass. [Release](../evidence/phase-07/backend-release.md). Full Phase 00–14 goal remains active.
+P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 854592e5ff1213a306b45d61a547ad4f2a2d9395. P07-R04 is DONE: protected CI 33170527302, confirmation 5452439397, squash and post-merge 33171284170 pass. [Release](../evidence/phase-07/release.md). Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish one PR 25 correction commit after initial head 7d49e8bd33704ec326ab324a1ff35325128f93f2; resolve review threads PRRT_kwDOUEkeis6dKNW_ and PRRT_kwDOUEkeis6dKNXH, request one exact-head confirmation and require protected CI before squash/post-merge. [Correction evidence](../evidence/phase-07/player-review.md): non-delivery eligibility, Web CI classification and deterministic attestation fixture; Web 46/46, real SQL, browser 2/2 and candidate 64/64 pass. Do not rerun old failed CI 33169091270. Whole-workspace gate needs a 2 GiB Node heap in the 4 GiB tooling container and Turbo concurrency two, not host diagnosis. No CPU/film benchmark loop.
-2. Backend PR 24 and its exact post-merge CI passed; no pending backend review/rebase. Initial player stash 2e85504b is already restored, not pending. Main and origin/main point to f2d99d2.
-3. Backend has 248 owner tests, source 54/54, corrected candidate 64/64, real SQL and connected runtime acceptance. Both affected startup/cleanup proofs pass with zero resources. [Correction evidence](../evidence/phase-07/backend-review.md). Do not repeat unchanged SQL/film/runtime for prose. Exact released-base schema compatibility passed.
+1. Continue P08-R01 with the owner-read ADR and bounded retention, then isolated PostgreSQL migration/repository and real synchronized concurrency/rollback. [Core checkpoint](../evidence/phase-08/README.md): 25 domain/application tests, types, lint and architecture pass. Do not claim real persistence, live owner authentication or a save UI yet.
+2. Phase 07 and PR 25 are closed, including post-merge 33171284170. Do not poll/request another review/rerun its CI. Continue the active Phase 08 item; its first checkpoint has no running service, actual SQL or save UI yet.
+3. Main/origin/main and this branch base are 854592e. Recovery stash 0a477fb62adef5b74dbf4084cf47b3e491bd6e3b was already restored after rebase; never apply it again. Earlier player stashes are also restored. Whole-workspace candidate gates use 2 GiB Node heap, 4 GiB tooling memory and Turbo concurrency two. No CPU/film loop.
 
 P07 work was restored and rebased successfully. Stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef is only an older recovery copy, not pending work to apply.
 
@@ -24,8 +24,8 @@ Uncertain publication grants retain their recovery barrier. Read the publication
 
 ## Execution environment
 
-Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do not restart or diagnose host/CPU. Existing aster-p06-tooling:git Docker image supports canonical repo mount, UID 1002 and bounded resources. Full source gate uses pnpm check:source --concurrency=2 and pids-limit 256. Native Docker/Windows Node handle built-in-only supervisors. Native Git credentials can push; local commits use Docker Git and normal hooks. Do not overlap Git writes.
+Windows Codex, repository through WSL UNC. WSL launch is unreliable; do not restart or diagnose it. aster-p06-tooling:git supports the canonical mount, UID 1002 and bounded resources. Set CI=true for pnpm commands to match the completed installation's virtual-store setting; do not reinstall repeatedly or disable dependency verification. pnpm install used the existing WSL store/cache with normal registry policy checks. Native Docker/Windows Node run built-in supervisors. Native Git credentials push; Docker Git commits with normal hooks. Do not overlap Git writes.
 
 ## Do not do yet
 
-Do not claim protected player/phase release before CI/review/merge. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.
+Do not claim Phase 08 persistence/transport before its real acceptance. Preserve retained volumes/media, Windows processes and existing app. No broad Docker prune/reset, new film encode or unchanged browser/CPU benchmark. Docker Git is authoritative for Linux executable modes. Never create/use a codex/ branch.

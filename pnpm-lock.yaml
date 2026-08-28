@@ -345,6 +345,15 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
+  services/engagement:
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
   services/identity:
     dependencies:
       '@apollo/server':

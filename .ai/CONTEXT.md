@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–06 and Phase 07's session backend are released through protected and exact post-merge CI. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker. Phase 06 adds rights-approved HLS/JPEG and recoverable immutable publication. Phase 07 adds the implemented HLS player and Docker-only generated playable demo; local browser/startup/replay acceptance passes, protected player release remains. The old browse seed is non-delivery; the new Signal / 02 sample is source-owned generated media. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–07 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR and the accessible HLS player run in Docker. The one-command generated playable demo includes captioned media, initialization, readiness and safe replay. The old browse seed is non-delivery. Phase 08 starts with tested progress domain/application rules, not yet durable storage or player save. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 07 — Playback Sessions and Player**, on feat/p07-player based on released main f2d99d254263baac532ef36edba0ab2c99d20dc3. Backend PR 24 and exact post-merge CI 33164139588 pass. ADRs 0027–0029 govern session authority, controls and the fixed generated demo. Shared-host timing limits remain explicit; no unchanged Web/CPU benchmark is required.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**, on feat/p08-progress from main 854592e5ff1213a306b45d61a547ad4f2a2d9395. Player/demo PR 25 and post-merge 33171284170 pass. Engagement domain/application pass 25 focused tests, not yet real persistence/transport. ADRs 0004/0007/0013/0027 preserve existing ownership/event/session boundaries. No unchanged Web/CPU benchmark is required.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
