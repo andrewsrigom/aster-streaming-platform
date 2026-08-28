@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — PR 26 confirmation remediation
+
+### Completed
+
+Published one coherent progress candidate. Initial review and protected CI 33178308691 pass. Confirmation 5051921328 identified cross-title receipt reuse and shared Playback admission; implemented a profile-scoped key/lookup and isolated one-request private lane/rate bucket in one batch.
+
+### Evidence
+
+34 focused tests and complete Engagement 46/Playback 36 tests pass. [Real SQL](../evidence/phase-08/review-postgres.jsonl) proves synchronized different-title attempts have one winner/one conflict and one state/receipt/event. [Repeated Docker acceptance](../evidence/phase-08/review-federated-runtime.txt) passes cross-title conflict, owner checks and optional-failure independence; zero fixture resources remain.
+
+### Next action
+
+Publish the verified correction batch, confirm only blocking boundaries, merge/prove post-merge. P08-R06 history implementation, GraphQL and 25-row keyset SQL evidence are preserved in exact stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history; rebase/restore once after predecessor. No CPU/media loop.
+
 ## 2026-08-28 — Owner-authorized federated progress
 
 ### Completed

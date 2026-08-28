@@ -6,6 +6,8 @@ P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 
 
 ## Exact next actions
 
+Priority: PR 26 confirmation 5051921328 found two blockers after initial clean review and CI 33178308691 success. Both are fixed locally: profile-scoped receipt uniqueness/lookup and separate private Playback admission/rate. Focused 34, Engagement 46/Playback 36, repeated SQL and full federated Docker acceptance pass; revised candidate gate, single publication and focused confirmation follow. P08-R06 read-side code/evidence is stashed at 678ccde78146453011ed7e9941d29afdad26111d on local feat/p08-history. Do not reapply now; finish predecessor, then rebase and restore once. Older recovery stashes stay restored. Generated prior read-side output was moved recoverably to node_modules/.aster-history-build-6606b9c2-a89d-4d03-8728-1602ec681b8a so stale compiled tests cannot enter this predecessor gate.
+
 1. Finish P08-R01 candidate quality, evidence and protected review/release. Domain/SQL/private owner reads/Engagement GraphQL/Docker are implemented. [Federated runtime proof](../evidence/phase-08/federated-runtime.txt) passed all scenarios and removed its exact project; no retained state changed.
 2. The current backend provides recordProgress, not player save/resume, watchlist, paginated reads or broker relay. Keep those as the next explicit Phase 08 items.
 3. Main/origin/main remains 854592e; P08 commits 39d1b76 and 82ff1cf precede the current owner/runtime candidate. All recovery stashes are already restored; never reapply them. Candidate gates use 2 GiB Node heap, 4 GiB tooling and Turbo concurrency two. No CPU/film loop or closed PR 25 polling.

@@ -47,6 +47,7 @@ P08-R01 is the sole active item on feat/p08-progress. Phases 00–07 are release
 | 39 | Create owner-validated short-lived playback sessions through Federation | P07-R01 | DONE |
 | 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | DONE |
 | 41 | Record durable owner-authorized monotonic playback progress | P08-R01 | IN_PROGRESS |
+| 42 | Resume preserved owned history and continue-watching after P08-R01 | P08-R06 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

@@ -73,7 +73,7 @@ function replay(
   if (
     receipt.accountId !== key.accountId ||
     receipt.profileId !== key.profileId ||
-    receipt.titleId !== key.titleId ||
+    !progressIdentifier(receipt.titleId) ||
     receipt.idempotencyKey !== input.idempotencyKey
   ) {
     return { status: "unavailable" };
@@ -84,6 +84,7 @@ function replay(
   const saved = normalizeProgressState(receipt.result);
   if (
     !saved ||
+    receipt.titleId !== key.titleId ||
     saved.accountId !== key.accountId ||
     saved.profileId !== key.profileId ||
     saved.titleId !== key.titleId ||

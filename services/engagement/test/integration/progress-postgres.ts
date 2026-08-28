@@ -189,6 +189,8 @@ try {
     foreignOwner: "rejected",
     nonemptyDowngrade: "refused",
   });
+  assert.equal((await f.record({ ...first, titleId: randomUUID() })).status, "conflict");
+  assert.deepEqual(await counts(f.profileId), { progress: 1, receipts: 2, outbox: 2 });
 
   for (const sql of [
     "SELECT * FROM identity.ownership_probe",
@@ -240,6 +242,32 @@ try {
     effects: 1,
     stale: "rejected",
     newerSeekBackward: "accepted",
+  });
+
+  const crossTitle = fixture();
+  const barrier = Promise.withResolvers<undefined>();
+  let attempts = 0;
+  crossTitle.ports.transactions.run = async (work, requestSignal) => {
+    if (++attempts === 2) {
+      barrier.resolve(undefined);
+    }
+    await barrier.promise;
+    return store.transactions.run(work, requestSignal);
+  };
+  const sharedKey = crossTitle.input();
+  const changedTitle = { ...sharedKey, titleId: randomUUID() };
+  const crossed = await Promise.all([
+    crossTitle.record(sharedKey),
+    crossTitle.record(changedTitle),
+  ]);
+  assert.deepEqual(crossed.map((result) => result.status).sort(), ["completed", "conflict"]);
+  assert.deepEqual(await counts(crossTitle.profileId), { progress: 1, receipts: 1, outbox: 1 });
+  output("engagement_profile_scoped_idempotency", {
+    changedTitle: "conflict_before_playback",
+    simultaneousTitles: "one_winner_one_conflict",
+    progress: 1,
+    receipts: 1,
+    events: 1,
   });
 
   for (const omitted of ["writeReceipt", "appendOutbox"] as const) {

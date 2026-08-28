@@ -70,11 +70,16 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
   const contexts = new WeakMap<IncomingMessage, PlaybackGraphqlContext>();
   const errorCorrelations = new WeakMap<object, string>();
   const now = options.monotonicNow ?? (() => performance.now());
-  let credit: number = PLAYBACK_GRAPHQL_LIMITS.rateBurst;
-  let refreshedAt = now();
+  const publicLane = {
+    credit: PLAYBACK_GRAPHQL_LIMITS.rateBurst as number,
+    refreshedAt: now(),
+    maximum: PLAYBACK_GRAPHQL_LIMITS.concurrent as number,
+    controllers: new Set<AbortController>(),
+  };
+  // Optional reads cannot consume public admission or all four shared SQL connections.
+  const privateLane = { ...publicLane, maximum: 1, controllers: new Set<AbortController>() };
   let closed = false;
   let stopping: Promise<void> | undefined;
-  const controllers = new Set<AbortController>();
   const pending = new Set<Promise<unknown>>();
 
   const diagnostic = (code: "graphql_engine_error" | "graphql_engine_warning"): void => {
@@ -208,24 +213,25 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
       record();
       return;
     }
-    if (closed || controllers.size >= PLAYBACK_GRAPHQL_LIMITS.concurrent) {
+    const lane = engagementContext ? privateLane : publicLane;
+    if (closed || lane.controllers.size >= lane.maximum) {
       reject(503, "UNAVAILABLE");
       record();
       return;
     }
-    credit = Math.min(
+    lane.credit = Math.min(
       PLAYBACK_GRAPHQL_LIMITS.rateBurst,
-      credit +
-        (Math.max(0, startedAt - refreshedAt) * PLAYBACK_GRAPHQL_LIMITS.ratePerSecond) / 1_000,
+      lane.credit +
+        (Math.max(0, startedAt - lane.refreshedAt) * PLAYBACK_GRAPHQL_LIMITS.ratePerSecond) / 1_000,
     );
-    refreshedAt = startedAt;
-    if (credit < 1) {
+    lane.refreshedAt = startedAt;
+    if (lane.credit < 1) {
       response.set("Retry-After", "1");
       reject(429, "LIMIT_EXCEEDED");
       record();
       return;
     }
-    credit -= 1;
+    lane.credit -= 1;
     const decision = engagementContext
       ? inspectPlaybackEngagementOperation(request.body as unknown)
       : inspectPlaybackOperation(request.body as unknown);
@@ -236,7 +242,7 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
     }
     operation = decision.operation;
     const controller = new AbortController();
-    controllers.add(controller);
+    lane.controllers.add(controller);
     const signal = AbortSignal.any([getExpressRequestAbortSignal(response), controller.signal]);
     const context = createPlaybackGraphqlContext(
       options.sessions,
@@ -263,7 +269,7 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
     } finally {
       clearTimeout(timer);
       contexts.delete(request);
-      controllers.delete(controller);
+      lane.controllers.delete(controller);
       pending.delete(execution);
       // Keep admission until work actually settles, including after a timeout response.
       record();
@@ -276,7 +282,7 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
     stop(): Promise<void> {
       if (!stopping) {
         closed = true;
-        for (const controller of controllers) {
+        for (const controller of [...publicLane.controllers, ...privateLane.controllers]) {
           controller.abort();
         }
         stopping = Promise.allSettled([...pending]).then(() => server.stop());

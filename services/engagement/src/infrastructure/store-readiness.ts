@@ -45,7 +45,10 @@ export async function probeEngagementStore(
       return { action: "rollback", value: false };
     }
     const constraint = await tx.query({
-      text: "SELECT tgname FROM pg_trigger WHERE tgrelid = 'engagement.progress'::regclass AND tgname = 'engagement_progress_commit' AND tgdeferrable AND tginitdeferred AND tgenabled = 'O'",
+      text: `SELECT tgname FROM pg_trigger WHERE tgrelid = 'engagement.progress'::regclass
+        AND tgname = 'engagement_progress_commit' AND tgdeferrable AND tginitdeferred AND tgenabled = 'O'
+        AND EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'engagement.progress_receipts'::regclass
+          AND contype = 'p' AND pg_get_constraintdef(oid) = 'PRIMARY KEY (profile_id, idempotency_key)')`,
     });
     if (constraint.rowCount !== 1) {
       return { action: "rollback", value: false };

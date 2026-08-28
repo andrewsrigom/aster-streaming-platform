@@ -47,6 +47,12 @@ Validate exact keys, UUIDs, integer sequence/position/duration/time and bounded 
 4. Bounded GraphQL/runtime, explicit degraded behavior and protected operations.
 5. Evidence/review/release after PR 25, then remaining Phase 08 work.
 
+### PR 26 confirmation remediation
+
+Initial review 5453534315 and protected CI 33178308691 pass at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. Confirmation 5051921328 found two blocking contract/availability defects: receipt keys were scoped per title, and private Engagement reads shared Playback admission/rate capacity. P08-R01 is IN_PROGRESS again. Batch a profile-scoped receipt key/lookup and one-request private Playback bulkhead with its own rate bucket. Add synchronized cross-title replay and public-during-private-saturation tests; repeat affected SQL/federated evidence because these boundaries change.
+
+P08-R06 work is preserved, not active or publishable: local feat/p08-history and exact stash 678ccde78146453011ed7e9941d29afdad26111d. Its pagination/SQL/GraphQL checkpoint passed focused tests and real 25-row SQL pages; full candidate acceptance remains. After this predecessor is fixed, rebase that branch, restore this stash once and reconcile memory before continuing. No CPU/media loop.
+
 ## Tests
 
 Domain: threshold edges, tiny/long titles, deliberate seek, stale ordering, malformed/hostile input and clock bounds. Application: wrong owner/session/title, exact/conflicting replay, expiry, cancellation, capacity and ambiguous commit. Integration: synchronized real SQL, rollback, privilege isolation and actual owner transport. Contract: composition/operations/events. Browser resume follows player integration, not a fabricated current result.

@@ -20,7 +20,7 @@ SQL proves atomic commit, synchronized replay, stale rejection/newer backward se
 
 Existing PostgreSQL adapter and pinned pg/types are reused, with supply-chain checks enabled. The standard runner is `pnpm engagement:integration`. Native Windows could not resolve this workspace's Linux pnpm links, cleaned its fixture, and the exact compiled verifier passed in Linux tooling instead. Both disposable databases and their private network were removed after ownership checks; retained demo/media were untouched.
 
-## Connected runtime candidate
+## Initial connected runtime candidate
 
 [Real Docker proof](federated-runtime.txt) uses Router → Engagement → private Identity/Playback → PostgreSQL. It proves durable progress/receipt/event, concurrent exact replay, conflicting/stale rejection, intentional backward seek, foreign-profile exclusion, title-bound/expired Playback rejection, bounded Identity row-lock failure/recovery, accepted replay after expiry, deleted-profile/revoked-session denial and shared trace/correlation. Stopping Identity and Engagement leaves anonymous Playback available. The initializer replay preserves data; exact cleanup leaves zero containers/volumes/networks.
 
@@ -32,4 +32,14 @@ The [final candidate gate](candidate-gate.txt) passes 67/67 tasks (44 cached, 1m
 
 After the Docker proof, only unused export visibility, formatting, safe-reset/diagnostics and gate/docs metadata changed; no owner authorization, transaction, schema, wire contract or runtime behavior changed. The passing Docker/SQL evidence therefore remains applicable; protected CI will independently exercise the fresh package. No retained application was upgraded.
 
-Next: one initial and one confirmation review, protected merge/post-merge. No complete Phase 08 or hosted release claim is made.
+That initial candidate is 319ce4e7f4c02ce5991c9637200421d02b8f13cc in PR 26. Initial review 5453534315 and protected CI 33178308691 pass. Confirmation 5051921328 identified two blockers, addressed below. No complete Phase 08 or hosted release claim is made.
+
+## Confirmation remediation
+
+Profile-scoped receipt uniqueness/lookup now rejects a changed title under the same key before Playback or writes. Synchronized SQL attempts for two titles produce one accepted result, one conflict and one aggregate/receipt/event. Private Playback inspections have their own one-active-request/no-queue admission and independent rate credits; four public creations succeed while that private lane is occupied, and exhausting private credits does not exhaust public credits.
+
+[Updated real SQL](review-postgres.jsonl), [repeated federated Docker proof](review-federated-runtime.txt) and [exact revised executable sources](review-source.sha256) supersede the initial evidence for these changed boundaries. The same compiled SQL verifier ran in the existing Linux tooling against a unique PostgreSQL 18.6 tmpfs fixture (two CPU/2 GiB tooling, one CPU/384 MiB database). All fixtures/networks were ownership-checked and removed. The Docker proof used the existing run-engagement-runtime command and recorded exact image IDs, cross-title conflict, fresh owner checks and available anonymous Playback after optional owners stop. Retained demo/media were untouched.
+
+Focused tests pass 34; complete Engagement/Playback tests pass 46/36. [Revised affected gate](review-candidate-gate.txt) passes 67/67 tasks (47 cached, 2m15.567s) with Turbo concurrency two. The profile-key correction updates only unreleased migration 0001: no retained Engagement store exists, and readiness rejects the older per-title key shape instead of certifying it. Rollback preserves data; never drop an old candidate store to force readiness.
+
+P08-R06 history and continue-watching implementation progressed locally while initial CI/review ran. Its code and 25-row paginated SQL evidence are preserved in exact local stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history. It is not active or published during predecessor remediation; rebase and restore once afterward. Browser reports, watchlist, relay and the remainder of Phase 08 remain planned.

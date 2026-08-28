@@ -26,7 +26,7 @@ Player progress reports/resume, watchlist/history reads, relay/consumers, Discov
 
 ## Next outcome
 
-Close the P08-R01 coherent candidate with full affected gate, one initial review and one confirmation, protected CI and exact post-merge. Then start the next Phase 08 work item. No repeated CPU, unchanged film or browser experiment.
+P08-R01: PR 26 initial CI/review pass; confirmation's two blockers are corrected together on feat/p08-progress. Revised 67-task gate, real SQL and full federated Docker acceptance pass; publish once, confirm the corrected boundaries and finish protected merge/post-merge. P08-R06 read-side work remains in exact stash 678ccde78146453011ed7e9941d29afdad26111d on local feat/p08-history, not active. Rebase/restore once after predecessor. No repeated CPU or film experiment.
 
 ## Runtime and recovery
 

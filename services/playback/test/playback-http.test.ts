@@ -108,6 +108,80 @@ test("private transport returns an auditable anonymous session, propagates trust
   }
 });
 
+test(
+  "private session inspection has its own bounded admission and rate bucket, preserving public creations",
+  { timeout: 5000 },
+  async () => {
+    const key = "c".repeat(64);
+    const sessionId = "00000000-0000-4000-8000-000000000002";
+    const privateEntered = Promise.withResolvers<undefined>();
+    const privateReleased = Promise.withResolvers<undefined>();
+    const publicEntered = Promise.withResolvers<undefined>();
+    const publicReleased = Promise.withResolvers<PublicationLookup>();
+    const f = await playbackHttpFixture(undefined, {
+      trust: createLocalEngagementReadTrust("playback", key),
+      inspector: createPlaybackSessionInspector(
+        {
+          read: async () => {
+            privateEntered.resolve(undefined);
+            await privateReleased.promise;
+            return {
+              status: "completed",
+              value: { sessionId, titleId: testTitleId, createdAt: 100, expiresAt: 1000 },
+            };
+          },
+        },
+        () => 101,
+      ),
+    });
+    const body = {
+      query: PLAYBACK_ENGAGEMENT_OPERATION,
+      operationName: "EngagementSession",
+      variables: { sessionId, titleId: testTitleId },
+    };
+    const headers = {
+      host: "playback:3300",
+      origin: "http://engagement:3400",
+      "x-aster-csrf": "1",
+      "x-aster-engagement-credential": key,
+      "x-aster-correlation-id": sessionId,
+    };
+    let publicReads = 0;
+    f.state.lookup = () => {
+      if (++publicReads === 4) {
+        publicEntered.resolve(undefined);
+      }
+      return publicReleased.promise;
+    };
+    const privatePending = f.send(body, headers);
+    const publicPending: Promise<Awaited<ReturnType<typeof f.send>>>[] = [];
+    try {
+      await privateEntered.promise;
+      assert.equal((await f.send(body, headers)).status, 503);
+      publicPending.push(...Array.from({ length: 4 }, () => f.send()));
+      await publicEntered.promise;
+      publicReleased.resolve({ status: "completed", value: f.publication });
+      assert.ok(
+        (await Promise.all(publicPending)).every(
+          (result) => result.json.data?.createPlaybackSession?.code === "COMPLETED",
+        ),
+      );
+      privateReleased.resolve(undefined);
+      assert.equal((await privatePending).json.data?._engagementSession?.["code"], "COMPLETED");
+      for (let index = 1; index < 32; index++) {
+        assert.equal((await f.send(body, headers)).status, 200);
+      }
+      assert.equal((await f.send(body, headers)).status, 429);
+      assert.equal((await f.send()).json.data?.createPlaybackSession?.code, "COMPLETED");
+    } finally {
+      privateReleased.resolve(undefined);
+      publicReleased.resolve({ status: "cancelled" });
+      await Promise.allSettled([privatePending, ...publicPending]);
+      await f.close();
+    }
+  },
+);
+
 test("transport rejects foreign authority, amplified mutations and oversized bodies before owner work", async () => {
   const f = await playbackHttpFixture();
   try {

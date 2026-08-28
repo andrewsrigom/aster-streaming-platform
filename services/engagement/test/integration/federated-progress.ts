@@ -309,10 +309,23 @@ try {
   );
   assert.deepEqual(await counts(), { progress: 1, receipts: 2, outbox: 2 });
   assert.deepEqual(payload(await record(input), "recordProgress").progress, saved.progress);
+  assert.equal(
+    payload(
+      await record({
+        ...input,
+        titleId: id(2),
+        playbackSessionId: otherSession.id,
+      }),
+      "recordProgress",
+    ).code,
+    "CONFLICT",
+  );
+  assert.deepEqual(await counts(), { progress: 1, receipts: 2, outbox: 2 });
   emit("engagement_federated_ordering", {
     exactConcurrentReplay: true,
     conflictAndStaleRejected: true,
     intentionalBackseek: true,
+    changedTitleSameKey: "conflict",
   });
 
   await admin.query(

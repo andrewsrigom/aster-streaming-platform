@@ -51,11 +51,11 @@ async function receipt(
     return invalid();
   }
   const found = await tx.query({
-    text: `SELECT r.request_digest AS digest, r.result, r.expires_at::float8 AS expiry
+    text: `SELECT r.request_digest AS digest, r.result, r.title_id::text AS title, r.expires_at::float8 AS expiry
       FROM engagement.progress_receipts r JOIN engagement.profile_guards g USING (profile_id, account_id)
-      WHERE r.account_id = $1::uuid AND r.profile_id = $2::uuid AND r.title_id = $3::uuid
-        AND r.idempotency_key = $4::uuid AND NOT g.deleted`,
-    values: [...keyValues(key), idempotencyKey],
+      WHERE r.account_id = $1::uuid AND r.profile_id = $2::uuid
+        AND r.idempotency_key = $3::uuid AND NOT g.deleted`,
+    values: [...keyValues(key).slice(0, 2), idempotencyKey],
   });
   if (found.rowCount === 0 && found.rows.length === 0) {
     return null;
@@ -67,7 +67,7 @@ async function receipt(
     !result ||
     result.accountId !== key.accountId ||
     result.profileId !== key.profileId ||
-    result.titleId !== key.titleId ||
+    result.titleId !== field(row, "title") ||
     typeof digest !== "string" ||
     !/^[a-f0-9]{64}$/u.test(digest)
   ) {
@@ -75,6 +75,7 @@ async function receipt(
   }
   return {
     ...key,
+    titleId: result.titleId,
     idempotencyKey,
     requestDigest: digest,
     result,

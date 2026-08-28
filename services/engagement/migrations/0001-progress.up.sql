@@ -51,7 +51,7 @@ CREATE TABLE engagement.progress_receipts (
   request_digest char(64) NOT NULL CHECK (request_digest ~ '^[a-f0-9]{64}$'),
   result jsonb NOT NULL CHECK (jsonb_typeof(result) = 'object' AND octet_length(result::text) <= 2048),
   expires_at bigint NOT NULL CHECK (expires_at BETWEEN 0 AND 253402300799),
-  PRIMARY KEY (profile_id, title_id, idempotency_key),
+  PRIMARY KEY (profile_id, idempotency_key),
   UNIQUE (profile_id, slot),
   FOREIGN KEY (profile_id, account_id) REFERENCES engagement.profile_guards(profile_id, account_id),
   CHECK ((result->>'profileId' = profile_id::text AND result->>'accountId' = account_id::text AND result->>'titleId' = title_id::text) IS TRUE)

@@ -30,7 +30,7 @@ Deadlines nest as follows: private Catalog HTTP 1500 ms; session application 200
 
 Playback admits at most four concurrent GraphQL operations, with 32 burst credits refilling at four/second. Bodies are limited to 16 KiB, GraphQL source to 4 KiB, one mutation root, 16 fields, depth three, four aliases and cost 80. PostgreSQL has four connections and a one-second operation budget. `/health/ready` requires the restricted store and current Catalog read; `/health/live` remains independent of dependency availability. Shutdown drains/cancels work within ten seconds; Compose allows fifteen seconds.
 
-Phase 08 adds one private, read-only session/title inspection for Engagement. Compose enables ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED with a distinct /run/aster-engagement-playback/playback.key. It returns bounded timing/context, never a media URL, and cannot issue a session or act as Router. Playback readiness and anonymous session creation do not depend on Engagement. [Progress trust](../../docs/adr/0030-local-engagement-progress.md).
+Phase 08 adds one private, read-only session/title inspection for Engagement. Compose enables ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED with a distinct /run/aster-engagement-playback/playback.key. It returns bounded timing/context, never a media URL, and cannot issue a session or act as Router. Its one-request/no-queue admission and independent rate bucket cannot consume public session permits/rate credits or all four SQL connections. Playback readiness and anonymous session creation do not depend on Engagement. [Progress trust](../../docs/adr/0030-local-engagement-progress.md).
 
 ## Verification and recovery
 

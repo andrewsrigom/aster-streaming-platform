@@ -217,6 +217,17 @@ test("same key with changed raw payload conflicts even when positions clamp to t
   assert.equal(f.calls.playback, 1);
 });
 
+test("a key belongs to the profile request, so changing title conflicts before Playback or SQL writes", async () => {
+  const f = fixture();
+  await f.recorder.record(input(), f.request);
+  const before = f.state();
+  const calls = { ...f.calls };
+  assert.equal((await f.recorder.record(input({ titleId: id(44) }), f.request)).status, "conflict");
+  assert.deepEqual(f.state(), before);
+  assert.equal(f.calls.playback, calls.playback);
+  assert.equal(f.calls.transaction, calls.transaction);
+});
+
 test("new key with stale sequence cannot change state or create receipt/event", async () => {
   const f = fixture();
   await f.recorder.record(input({ sequence: 10 }), f.request);
