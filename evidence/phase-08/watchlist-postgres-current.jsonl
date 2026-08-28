@@ -1,0 +1,25 @@
+{"event":"watchlist_migration","postgres":"18.6","upDownUp":"passed","replay":"no-op","unrelatedData":"preserved","readiness":"ready"}
+{"event":"watchlist_durable_replay","oppositeCommandReplay":"original-result","currentMembership":false,"crossTitleAndActionConflict":true,"noDuplicateEffect":true,"retainedDowngrade":"refused"}
+{"event":"watchlist_concurrency","synchronizedSameKey":"one-effect","synchronizedCrossTitle":"one-conflict","profileGuard":"shared"}
+{"event":"watchlist_atomic_commit","missingReceipt":"rollback","missingEvent":"rollback"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: active slot 128
++ actual - expected
+
++ 'unavailable'
+- 'completed'
+
+    at file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/services/engagement/dist/test/integration/watchlist-postgres.js:213:16
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'unavailable',
+  expected: 'completed',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

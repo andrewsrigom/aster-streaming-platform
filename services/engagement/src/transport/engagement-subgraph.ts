@@ -31,6 +31,7 @@ import {
   createEngagementSchema,
   EngagementGraphqlError,
   type EngagementGraphqlContext,
+  type EngagementWatchlist,
 } from "./engagement-schema.js";
 
 const OUTCOMES = new Set([
@@ -46,6 +47,7 @@ const OUTCOMES = new Set([
   "INVALID_INPUT",
   "FORBIDDEN",
   "NOT_PLAYABLE",
+  "NOT_VISIBLE",
   "INDETERMINATE",
 ]);
 
@@ -62,6 +64,7 @@ export interface EngagementSubgraphOptions {
   readonly routerTrust: AsterLocalRouterTrust;
   readonly recorder: ReturnType<typeof createProgressRecorder>;
   readonly queries?: ReturnType<typeof createProgressQueries>;
+  readonly watchlist?: EngagementWatchlist;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: EngagementOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
@@ -252,6 +255,7 @@ export async function createEngagementSubgraph(options: EngagementSubgraphOption
         ? request.headers["traceparent"]
         : undefined,
       options.queries,
+      options.watchlist,
     );
     contexts.set(request, context);
     const timer = setTimeout(() => {

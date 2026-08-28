@@ -1,11 +1,27 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { URL } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 import { serviceBlock } from "./verify-optional-platform.mjs";
 import { validateEngagementRuntime } from "./verify-engagement-runtime.mjs";
 
 const compose = await readFile(new URL("../infra/compose/compose.yml", import.meta.url), "utf8");
+
+test("Engagement SQL proof refuses extra selectors or targets before accessing Docker", () => {
+  const script = fileURLToPath(new URL("./run-engagement-integration.mjs", import.meta.url));
+  for (const args of [["--target", "aster"], ["--watchlist", "aster"], ["--unknown"], ["5432"]]) {
+    const result = spawnSync(process.execPath, [script, ...args], {
+      env: { PATH: "" },
+      encoding: "utf8",
+      timeout: 5000,
+      windowsHide: true,
+    });
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /only an optional --watchlist selector, never a target/u);
+  }
+});
 
 test("Engagement Compose isolates runtime credentials, dependencies and finite migration", () => {
   assert.deepEqual(validateEngagementRuntime(compose), []);

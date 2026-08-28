@@ -8,6 +8,7 @@ import {
 } from "graphql";
 import { normalizeProgressInput } from "../domain/progress.js";
 import { normalizeProgressPageInput } from "../domain/progress-page.js";
+import { normalizeWatchlistInput, normalizeWatchlistPageInput } from "../domain/watchlist.js";
 
 export const ENGAGEMENT_GRAPHQL_LIMITS = Object.freeze({
   bodyBytes: 16384,
@@ -36,10 +37,34 @@ type Scope =
   | "Connection"
   | "Edge"
   | "PageInfo"
+  | "WatchlistPayload"
+  | "WatchlistChange"
+  | "WatchlistPage"
+  | "WatchlistConnection"
+  | "WatchlistEdge"
+  | "WatchlistEntry"
   | "Title";
 const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = {
-  Query: { _service: "Service", progressHistory: "PagePayload", continueWatching: "PagePayload" },
-  Mutation: { recordProgress: "Payload" },
+  Query: {
+    _service: "Service",
+    progressHistory: "PagePayload",
+    continueWatching: "PagePayload",
+    watchlist: "WatchlistPage",
+  },
+  Mutation: { recordProgress: "Payload", setWatchlist: "WatchlistPayload" },
+  WatchlistPayload: { code: null, correlationId: null, change: "WatchlistChange" },
+  WatchlistChange: {
+    id: null,
+    profileId: null,
+    titleId: null,
+    present: null,
+    version: null,
+    updatedAt: null,
+  },
+  WatchlistPage: { code: null, correlationId: null, connection: "WatchlistConnection" },
+  WatchlistConnection: { edges: "WatchlistEdge", pageInfo: "PageInfo" },
+  WatchlistEdge: { cursor: null, node: "WatchlistEntry" },
+  WatchlistEntry: { id: null, profileId: null, titleId: null, addedAt: null, title: "Title" },
   Payload: { code: null, correlationId: null, progress: "Progress" },
   Progress: {
     id: null,
@@ -72,6 +97,7 @@ function record(value: unknown): value is Record<string, unknown> {
 function scalar(value: unknown): boolean {
   return (
     normalizeProgressInput(value) !== undefined ||
+    normalizeWatchlistInput(value) !== undefined ||
     value === null ||
     typeof value === "boolean" ||
     (typeof value === "string" && value.length <= 128) ||
@@ -199,7 +225,9 @@ export function inspectEngagementOperation(body: unknown): Decision {
             if (
               args.length !== 1 ||
               args[0]?.name.value !== "input" ||
-              !normalizeProgressInput(valueFromASTUntyped(args[0].value, variables))
+              !(name === "setWatchlist" ? normalizeWatchlistInput : normalizeProgressInput)(
+                valueFromASTUntyped(args[0].value, variables),
+              )
             ) {
               throw new Rejected();
             }
@@ -211,20 +239,24 @@ export function inspectEngagementOperation(body: unknown): Decision {
             const values: Record<string, unknown> = Object.fromEntries(
               args.map((arg) => [arg.name.value, valueFromASTUntyped(arg.value, variables)]),
             );
-            const input = normalizeProgressPageInput(
-              {
-                ...values,
-                first: values["first"] ?? 20,
-                after: values["after"] ?? null,
-              },
-              name === "progressHistory" ? "history" : "continue",
-            );
+            const page = {
+              ...values,
+              first: values["first"] ?? 20,
+              after: values["after"] ?? null,
+            };
+            const input =
+              name === "watchlist"
+                ? normalizeWatchlistPageInput(page)
+                : normalizeProgressPageInput(
+                    page,
+                    name === "progressHistory" ? "history" : "continue",
+                  );
             if (!input) {
               throw new Rejected();
             }
             pageSize = input.first;
             // Continue-watching can inspect thirteen owner batches even for a small visible page.
-            cost += name === "continueWatching" ? 128 : 32;
+            cost += name === "progressHistory" ? 32 : 128;
           }
         }
         if (
@@ -243,7 +275,9 @@ export function inspectEngagementOperation(body: unknown): Decision {
             child,
             depth + 1,
             ancestors,
-            scope === "Connection" && name === "edges" ? multiplicity * pageSize : multiplicity,
+            (scope === "Connection" || scope === "WatchlistConnection") && name === "edges"
+              ? multiplicity * pageSize
+              : multiplicity,
           );
         }
       }

@@ -155,6 +155,7 @@ type LocalizedTitle @join__type(graph: CATALOG) {
 
 type Mutation @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
   recordProgress(input: RecordProgressInput!): ProgressPayload! @join__field(graph: ENGAGEMENT)
+  setWatchlist(input: SetWatchlistInput!): WatchlistPayload! @join__field(graph: ENGAGEMENT)
   demoSignIn: SessionPayload! @join__field(graph: IDENTITY)
   signOut: SessionPayload! @join__field(graph: IDENTITY)
   createProfile(input: CreateProfileInput!): ProfileMutationPayload! @join__field(graph: IDENTITY)
@@ -294,6 +295,7 @@ type Query @join__type(graph: CATALOG) @join__type(graph: ENGAGEMENT) @join__typ
   _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible @join__field(graph: CATALOG)
   progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
+  watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @join__field(graph: ENGAGEMENT)
   _engagementProfile(profileId: ID!): EngagementProfileAuthority! @inaccessible @join__field(graph: IDENTITY)
   me: Viewer @join__field(graph: IDENTITY)
   profiles: OwnedProfiles! @join__field(graph: IDENTITY)
@@ -317,6 +319,13 @@ type SessionPayload @join__type(graph: IDENTITY) {
   code: IdentityOutcome!
   correlationId: ID!
   viewer: Viewer
+}
+
+input SetWatchlistInput @join__type(graph: ENGAGEMENT) {
+  profileId: ID!
+  titleId: ID!
+  idempotencyKey: ID!
+  present: Boolean!
 }
 
 type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: ENGAGEMENT, key: "id", resolvable: false) {
@@ -343,4 +352,56 @@ input UpdateProfileInput @join__type(graph: IDENTITY) {
 type Viewer @join__type(graph: IDENTITY) {
   accountId: ID!
   expiresAt: String!
+}
+
+type WatchlistChange @join__type(graph: ENGAGEMENT) {
+  id: ID!
+  profileId: ID!
+  titleId: ID!
+  present: Boolean!
+  version: Int!
+  updatedAt: Float!
+}
+
+enum WatchlistCode @join__type(graph: ENGAGEMENT) {
+  COMPLETED @join__enumValue(graph: ENGAGEMENT)
+  INVALID_INPUT @join__enumValue(graph: ENGAGEMENT)
+  UNAUTHENTICATED @join__enumValue(graph: ENGAGEMENT)
+  NOT_FOUND @join__enumValue(graph: ENGAGEMENT)
+  NOT_VISIBLE @join__enumValue(graph: ENGAGEMENT)
+  CONFLICT @join__enumValue(graph: ENGAGEMENT)
+  BACKPRESSURE @join__enumValue(graph: ENGAGEMENT)
+  UNAVAILABLE @join__enumValue(graph: ENGAGEMENT)
+  CANCELLED @join__enumValue(graph: ENGAGEMENT)
+  INDETERMINATE @join__enumValue(graph: ENGAGEMENT)
+}
+
+type WatchlistConnection @join__type(graph: ENGAGEMENT) {
+  edges: [WatchlistEdge!]!
+  pageInfo: ProgressPageInfo!
+}
+
+type WatchlistEdge @join__type(graph: ENGAGEMENT) {
+  cursor: String!
+  node: WatchlistEntry!
+}
+
+type WatchlistEntry @join__type(graph: ENGAGEMENT) {
+  id: ID!
+  profileId: ID!
+  titleId: ID!
+  addedAt: Float!
+  title: Title
+}
+
+type WatchlistPagePayload @join__type(graph: ENGAGEMENT) {
+  code: WatchlistCode!
+  correlationId: ID!
+  connection: WatchlistConnection
+}
+
+type WatchlistPayload @join__type(graph: ENGAGEMENT) {
+  code: WatchlistCode!
+  correlationId: ID!
+  change: WatchlistChange
 }

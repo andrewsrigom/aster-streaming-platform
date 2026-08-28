@@ -48,13 +48,27 @@ export async function migrateLocalEngagement(
       }
       await client.query(sql);
       applied.push(1);
-    } else {
-      const versions = await client.query<{ version: number }>(
-        "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 2",
+    }
+    const versions = await client.query<{ version: number }>(
+      "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 3",
+    );
+    if (
+      versions.rows.length < 1 ||
+      versions.rows.length > 2 ||
+      versions.rows.some((row, index) => row.version !== index + 1)
+    ) {
+      throw new Error("Unsupported Engagement schema.");
+    }
+    if (versions.rows.length === 1) {
+      const sql = await readFile(
+        new URL("../../../migrations/0002-watchlist.up.sql", import.meta.url),
+        { encoding: "utf8", signal },
       );
-      if (versions.rowCount !== 1 || versions.rows[0]?.version !== 1) {
-        throw new Error("Unsupported Engagement schema.");
+      if (Buffer.byteLength(sql) > 16384) {
+        throw new Error("Engagement migration exceeds its source bound.");
       }
+      await client.query(sql);
+      applied.push(2);
     }
     signal.throwIfAborted();
     await client.query(`DO $local$ BEGIN

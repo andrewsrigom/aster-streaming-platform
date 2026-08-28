@@ -1,0 +1,13 @@
+{"event":"engagement_runtime_build","project":"aster-engagement-proof-3eedf471-d00e-48ac-bd69-c9aff8cfaebc","status":"started"}
+{"event":"engagement_runtime_started","project":"aster-engagement-proof-3eedf471-d00e-48ac-bd69-c9aff8cfaebc","privateOwnersRunning":3,"images":{"catalog":"sha256:0235419e9e88113863e33dc2230e2e4023bc6edaa211c0c0b073bfe88f5495c5","engagement":"sha256:0713659b62d2dc1321ecc91fd45ae2f68b616371f555ed057b8041c3257d393f","identity":"sha256:873fce79ec477715caab67f47d06cc26c32d116a6be2c3f09c82f771ba16b030","playback":"sha256:d24ca5e6679f76343315ff7dd7d25a117fa924386b07373040100d5283750a08","router":"sha256:53f53af0ec3936bb15844595a6e820847d48378fbb762b038445a0861b6e744a"}}
+{"event":"engagement_federated_commit","currentIdentityAndPlayback":true,"durableProgressReceiptOutbox":true,"correlationId":"a2984f8e-c7cf-4c40-857f-36234c24a2c9","mediaFetches":0}
+{"event":"engagement_federated_ordering","exactConcurrentReplay":true,"conflictAndStaleRejected":true,"intentionalBackseek":true,"changedTitleSameKey":"conflict"}
+{"event":"engagement_federated_authorization","foreignAndMissingProfile":"denied","wrongAndMissingPlayback":"denied","privateFieldsHidden":true,"forgedTrust":"denied"}
+{"event":"engagement_federated_failures","ownerLock":"bounded_no_ack","recovery":true,"expiredSessionReplay":true,"expiredNewWrite":"denied"}
+{"event":"engagement_federated_pages","pages":[1,1],"strictKeysetOrder":true,"catalogMetadata":"federated_owner","completed":"history_only","retiredMetadata":null,"retiredContinue":"excluded_before_pagination","hiddenGapLookahead":"passed","disputedRights":"excluded_before_pagination","foreignAndAnonymous":"denied","oversizedAndWrongKindCursor":"rejected","readWrites":0}
+{"event":"engagement_federated_revocation","deletedProfileAndRevokedSession":"no_disclosure","cleanupConsumer":"planned"}
+{"event":"engagement_federated_watchlist","currentIdentityAndCatalog":true,"federatedMetadata":true,"concurrentReplay":"original_result","oppositeCommandReplay":"original_result","titleAndActionConflict":"rejected","pages":[1,1],"retired":"filtered_before_pagination","hiddenRemoval":"completed","foreignAndAnonymous":"denied","heads":1,"entries":0,"receipts":4,"outbox":4,"playbackWrites":0}
+{"event":"engagement_watchlist_revocation","deletedProfileAndRevokedSession":"no_disclosure","cleanupConsumer":"planned"}
+{"event":"engagement_runtime_logs","ownerCorrelation":true,"credentialsExcluded":true}
+{"event":"engagement_optional_failure","anonymousPlayback":"available","identityAndEngagement":"stopped"}
+{"event":"engagement_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}

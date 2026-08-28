@@ -1,6 +1,10 @@
 # Current Catalog visibility correction
 
-Status: implemented and locally acceptance-tested; corrected protected review/CI and merge pending. Supersedes the initial history proof for continue-watching visibility. PR 27 confirmation 5052590545 / PRRT_kwDOUEkeis6dN9km identified ENG-R04's failure: null metadata did not exclude hidden progress before pagination.
+Status: verified through protected squash merge and exact main push. Supersedes the initial history proof for continue-watching visibility. PR 27 confirmation 5052590545 / PRRT_kwDOUEkeis6dN9km identified ENG-R04's failure: null metadata did not exclude hidden progress before pagination.
+
+## Protected closeout
+
+[PR 27](https://github.com/andrewsrigom/aster-streaming-platform/pull/27) final head 8815f5c3c966361d3e8d36fe687410d0c506b1f3 passed protected [CI 33190917857](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33190917857) and clean confirmation 5455176079; both visibility/reset review threads are resolved. Squash main 0401ae3e850add27ad73fe7be12a1672d5a73414 is tree-identical and its exact [push 33191946442](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33191946442) passes. P08-R06 is DONE. Retained runtime and browser resume remain unchanged; no complete Phase 08 release is claimed. The review requirements below are the historical correction sequence, now satisfied.
 
 [ADR-0031](../../docs/adr/0031-current-catalog-visibility.md) defines the separate Catalog credential, exact private operation, two-second snapshot and bounded scan. Catalog retains rights decisions; Engagement retains profile ownership/order. No migration, media, cache or foreign SQL is added.
 

@@ -8,7 +8,11 @@ import { setTimeout as delay } from "node:timers/promises";
 import { promisify } from "node:util";
 
 const execute = promisify(execFile);
-assert.equal(process.argv.length, 2);
+assert.ok(
+  process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === "--watchlist"),
+  "Engagement integration accepts only an optional --watchlist selector, never a target.",
+);
+const verifier = process.argv[2] === "--watchlist" ? "watchlist" : "progress";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const compose = await readFile(new URL("../infra/compose/compose.yml", import.meta.url), "utf8");
 const image =
@@ -79,7 +83,7 @@ try {
   }
   const result = await execute(
     process.execPath,
-    ["services/engagement/dist/test/integration/progress-postgres.js", String(port)],
+    ["services/engagement/dist/test/integration/" + verifier + "-postgres.js", String(port)],
     {
       cwd: root,
       env: { ...process.env, ASTER_POSTGRES_DISPOSABLE_FIXTURE: "true" },
@@ -137,6 +141,7 @@ try {
   process.stdout.write(
     JSON.stringify({
       event: "engagement_fixture_cleaned",
+      verifier,
       remaining: 0,
       durationMs: Math.round(performance.now() - started),
     }) + "\n",

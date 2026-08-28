@@ -18,6 +18,9 @@ import {
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createProgressRecorder } from "./application/record-progress.js";
 import { createProgressQueries } from "./application/read-progress.js";
+import { createWatchlistQueries } from "./application/read-watchlist.js";
+import { createWatchlistWriter } from "./application/set-watchlist.js";
+import { createPostgresWatchlist } from "./infrastructure/postgres-watchlist.js";
 import { createPostgresProgressRead } from "./infrastructure/postgres-progress-read.js";
 import type { ProgressPorts, ProgressCatalog } from "./application/progress-ports.js";
 import { DEFAULT_PROGRESS_POLICY } from "./domain/progress.js";
@@ -77,8 +80,20 @@ export async function createEngagementService(
         playbackCredential: await loadLocalEngagementReadCredential("playback"),
         catalogCredential: await loadLocalEngagementReadCredential("catalog"),
       });
+    const watchlistPorts = {
+      identity: owners.identity,
+      catalog: owners.catalog,
+      store: createPostgresWatchlist(database),
+      now: () => Math.floor(Date.now() / 1000),
+      nextId: randomUUID,
+      digest: (value: string) => createHash("sha256").update(value).digest("hex"),
+    };
     graph = await createEngagementSubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("engagement")),
+      watchlist: {
+        writer: createWatchlistWriter(watchlistPorts),
+        queries: createWatchlistQueries(watchlistPorts),
+      },
       recorder: createProgressRecorder({
         ...owners,
         ...createPostgresProgress(database),

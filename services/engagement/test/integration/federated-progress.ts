@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { request } from "node:http";
+import { setTimeout as delay } from "node:timers/promises";
 import { Pool } from "pg";
 
 assert.match(process.env["ASTER_FIXTURE_ID"] ?? "", /^aster-engagement-proof-[a-f0-9-]{36}$/u);
@@ -12,6 +13,7 @@ interface GraphResult {
       session?: null | { id: string; titleId: string; manifestUrl: string; expiresAt: number };
       profileId?: string;
       progress?: null | Record<string, string | number>;
+      change?: null | Record<string, string | number | boolean>;
       connection?: null | {
         edges: {
           cursor: string;
@@ -621,6 +623,202 @@ try {
   );
   assert.deepEqual(await counts(), { progress: 2, receipts: 5, outbox: 5 });
   emit("engagement_federated_revocation", {
+    deletedProfileAndRevokedSession: "no_disclosure",
+    cleanupConsumer: "planned",
+  });
+
+  const signedAgain = await call("mutation DemoSignIn { demoSignIn { code } }");
+  assert.equal(payload(signedAgain, "demoSignIn").code, "COMPLETED");
+  const nextCookie = signedAgain.cookie?.[0]?.split(";")[0];
+  assert.ok(nextCookie);
+  cookie = nextCookie;
+  const watchProfile = payload(
+    await call(
+      "mutation CreateProfile($input:CreateProfileInput!) { createProfile(input:$input) { code profileId } }",
+      {
+        input: {
+          mutationId: randomUUID(),
+          profile: { displayName: "Watchlist synthetic", locale: "pt-BR", maturity: "GENERAL" },
+        },
+      },
+    ),
+    "createProfile",
+  );
+  assert.equal(watchProfile.code, "COMPLETED");
+  assert.ok(watchProfile.profileId);
+  const watchProfileId = watchProfile.profileId;
+  await seed(3);
+  const playbackBefore = (await admin.query("SELECT count(*)::int AS count FROM playback.sessions"))
+    .rows;
+  const watchMutation =
+    "mutation SetWatchlist($input:SetWatchlistInput!) { setWatchlist(input:$input) { code correlationId change { id profileId titleId present version updatedAt } } }";
+  const watchQuery =
+    "query Watchlist($profileId:ID!, $first:Int! = 20, $after:String) { watchlist(profileId:$profileId, first:$first, after:$after) { code correlationId connection { edges { cursor node { id titleId addedAt title { id localized { title } } } } pageInfo { endCursor hasNextPage } } } }";
+  // Pace this longer proof below the unchanged four-per-second production admission rate.
+  const watchCall = async (query: string, variables: object, credential = cookie) => {
+    await delay(260);
+    return call(query, variables, credential);
+  };
+  const setMember = (value: object, credential = cookie) =>
+    watchCall(watchMutation, { input: value }, credential);
+  const watchPage = (variables: object, credential = cookie) =>
+    watchCall(watchQuery, variables, credential);
+  const add = {
+    profileId: watchProfileId,
+    titleId: id(2),
+    idempotencyKey: randomUUID(),
+    present: true,
+  };
+  const addedResponse = await setMember(add);
+  const added = payload(addedResponse, "setWatchlist");
+  assert.equal(added.code, "COMPLETED");
+  assert.equal(added.change?.["version"], 1);
+  assert.equal(added.change["present"], true);
+  assert.equal(addedResponse.noStore, true);
+  assert.doesNotMatch(addedResponse.text, /accountId|manifestUrl|aster_local_session/u);
+  for (const replay of await Promise.all([setMember(add), setMember(add)])) {
+    assert.deepEqual(payload(replay, "setWatchlist").change, added.change);
+  }
+  assert.equal(
+    payload(await setMember({ ...add, titleId: id(3) }), "setWatchlist").code,
+    "CONFLICT",
+  );
+  assert.equal(
+    payload(await setMember({ ...add, present: false }), "setWatchlist").code,
+    "CONFLICT",
+  );
+  const otherAdd = { ...add, titleId: id(3), idempotencyKey: randomUUID() };
+  assert.equal(payload(await setMember(otherAdd), "setWatchlist").change?.["version"], 2);
+  const watchFirstResponse = await watchPage({ profileId: watchProfileId, first: 1 });
+  const watchFirst = payload(watchFirstResponse, "watchlist");
+  assert.equal(watchFirst.code, "COMPLETED");
+  assert.equal(watchFirstResponse.noStore, true);
+  assert.ok(watchFirst.connection);
+  assert.equal(watchFirst.connection.edges.length, 1);
+  assert.equal(watchFirst.connection.pageInfo.hasNextPage, true);
+  const watchCursor = watchFirst.connection.pageInfo.endCursor;
+  assert.ok(watchCursor);
+  const watchSecond = payload(
+    await watchPage({ profileId: watchProfileId, first: 1, after: watchCursor }),
+    "watchlist",
+  );
+  assert.equal(watchSecond.code, "COMPLETED");
+  assert.equal(watchSecond.connection?.edges.length, 1);
+  assert.equal(watchSecond.connection.pageInfo.hasNextPage, false);
+  const watchNodes = [...watchFirst.connection.edges, ...watchSecond.connection.edges].map(
+    (edge) => edge.node,
+  );
+  assert.deepEqual(new Set(watchNodes.map((node) => node.titleId)), new Set([id(2), id(3)]));
+  for (const node of watchNodes) {
+    assert.equal(node.title?.id, node.titleId);
+    assert.equal(node.title.localized.title, "Synthetic session contract fixture");
+  }
+  const retiredWatchTitle = watchNodes[0]?.titleId;
+  const visibleWatchTitle = watchNodes[1]?.titleId;
+  assert.ok(retiredWatchTitle && visibleWatchTitle);
+  await admin.query("UPDATE catalog.titles SET state='RETIRED', version=version+1 WHERE id=$1", [
+    retiredWatchTitle,
+  ]);
+  const filtered = payload(await watchPage({ profileId: watchProfileId, first: 1 }), "watchlist");
+  assert.equal(filtered.code, "COMPLETED");
+  assert.deepEqual(
+    filtered.connection?.edges.map((edge) => edge.node.titleId),
+    [visibleWatchTitle],
+  );
+  assert.equal(filtered.connection.pageInfo.hasNextPage, false);
+  assert.equal(
+    payload(
+      await setMember({ ...add, titleId: retiredWatchTitle, idempotencyKey: randomUUID() }),
+      "setWatchlist",
+    ).code,
+    "NOT_VISIBLE",
+  );
+  assert.deepEqual(payload(await setMember(add), "setWatchlist").change, added.change);
+  const removeHidden = {
+    ...add,
+    titleId: retiredWatchTitle,
+    present: false,
+    idempotencyKey: randomUUID(),
+  };
+  assert.equal(payload(await setMember(removeHidden), "setWatchlist").change?.["version"], 3);
+  assert.equal(
+    payload(
+      await setMember({
+        ...removeHidden,
+        titleId: visibleWatchTitle,
+        idempotencyKey: randomUUID(),
+      }),
+      "setWatchlist",
+    ).change?.["version"],
+    4,
+  );
+  assert.deepEqual(payload(await setMember(add), "setWatchlist").change, added.change);
+  assert.deepEqual(
+    payload(await watchPage({ profileId: watchProfileId }), "watchlist").connection,
+    { edges: [], pageInfo: { endCursor: null, hasNextPage: false } },
+  );
+  for (const [foreign, credential, expected] of [
+    [id(992), cookie, "NOT_FOUND"],
+    [watchProfileId, "", "UNAUTHENTICATED"],
+  ] as const) {
+    assert.equal(
+      payload(await watchPage({ profileId: foreign }, credential), "watchlist").code,
+      expected,
+    );
+    assert.equal(
+      payload(await setMember({ ...add, profileId: foreign }, credential), "setWatchlist").code,
+      expected,
+    );
+  }
+  const watchStored = (
+    await admin.query<{ heads: number; entries: number; receipts: number; outbox: number }>(
+      "SELECT (SELECT count(*)::int FROM engagement.watchlists WHERE profile_id=$1) AS heads, (SELECT count(*)::int FROM engagement.watchlist_entries WHERE profile_id=$1) AS entries, (SELECT count(*)::int FROM engagement.watchlist_receipts WHERE profile_id=$1) AS receipts, (SELECT count(*)::int FROM engagement.outbox WHERE profile_id=$1) AS outbox",
+      [watchProfileId],
+    )
+  ).rows[0];
+  assert.deepEqual(watchStored, { heads: 1, entries: 0, receipts: 4, outbox: 4 });
+  assert.deepEqual(await counts(), { progress: 2, receipts: 5, outbox: 9 });
+  assert.deepEqual(
+    (await admin.query("SELECT count(*)::int AS count FROM playback.sessions")).rows,
+    playbackBefore,
+  );
+  emit("engagement_federated_watchlist", {
+    currentIdentityAndCatalog: true,
+    federatedMetadata: true,
+    concurrentReplay: "original_result",
+    oppositeCommandReplay: "original_result",
+    titleAndActionConflict: "rejected",
+    pages: [1, 1],
+    retired: "filtered_before_pagination",
+    hiddenRemoval: "completed",
+    foreignAndAnonymous: "denied",
+    ...watchStored,
+    playbackWrites: 0,
+  });
+  await admin.query("UPDATE catalog.titles SET state='PUBLISHED', version=version+1 WHERE id=$1", [
+    retiredWatchTitle,
+  ]);
+  assert.equal(
+    payload(
+      await call(
+        "mutation DeleteProfile($input:DeleteProfileInput!) { deleteProfile(input:$input) { code } }",
+        { input: { mutationId: randomUUID(), profileId: watchProfileId, expectedVersion: 1 } },
+      ),
+      "deleteProfile",
+    ).code,
+    "COMPLETED",
+  );
+  assert.equal(payload(await setMember(add), "setWatchlist").code, "NOT_FOUND");
+  assert.equal(
+    payload(await watchPage({ profileId: watchProfileId }), "watchlist").code,
+    "NOT_FOUND",
+  );
+  assert.equal(
+    payload(await call("mutation SignOut { signOut { code } }"), "signOut").code,
+    "COMPLETED",
+  );
+  assert.equal(payload(await setMember(add), "setWatchlist").code, "UNAUTHENTICATED");
+  emit("engagement_watchlist_revocation", {
     deletedProfileAndRevokedSession: "no_disclosure",
     cleanupConsumer: "planned",
   });

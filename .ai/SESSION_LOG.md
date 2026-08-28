@@ -2,6 +2,34 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — History protected closeout
+
+### Completed
+
+P08-R06 is DONE: PR 27's reviewed tree is squash main 0401ae3. Watchlist is already rebased with unchanged executable hashes and compatible composition.
+
+### Evidence
+
+Exact push 33191946442 passed, including the playable demo. [Closeout](../evidence/phase-08/history-visibility.md). No additional host or media experiment.
+
+### Next action
+
+Publish the locally verified watchlist candidate and move to request-scoped entity batching after freezing it WAITING_EXTERNAL.
+
+## 2026-08-28 — Watchlist backend acceptance and history merge
+
+### Completed
+
+Implemented P08-R07 durable membership/replay, reclaimable slots, atomic receipt/events, filtered current Catalog pages and protected GraphQL/runtime/known operations. PR 27 merged as 0401ae3 after final protected CI and clean confirmation; its exact main push remains pending.
+
+### Evidence
+
+[Watchlist checkpoint](../evidence/phase-08/watchlist.md): 84 Engagement tests, nine composition tests, real PostgreSQL and complete isolated Docker flow pass. Candidate gate 47/47. First Docker build hit its deadline; one cache-assisted attempt passed with zero resources left. No host test, media job or retained upgrade. All stashes are already restored.
+
+### Next action
+
+Commit/rebase the coherent candidate onto the identical history squash tree. Publish after exact main push 33191946442 passes; complete protected watchlist review/release, then R08 batching.
+
 ## 2026-08-28 — Full-topology reset count regression
 
 ### Completed
