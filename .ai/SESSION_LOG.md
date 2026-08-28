@@ -2,6 +2,34 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Web released and first film rights approved
+
+### Completed
+
+Merged PR 22 without bypass as f36f9aa after protected CI; exact post-merge CI 33133330003 passes. Rebased the local Phase 06 branch onto that identical-tree squash. Created and approved the exact official Big Buck Bunny archive through Catalog's existing restricted operator; generated attribution from stored rights revision 2. Started only the existing private storage service and verified the isolated FFmpeg binary.
+
+### Evidence
+
+Phase 05 release is recorded in evidence/phase-05/release.txt. The focused reviewed-source test passes; real create/review/inspect returns RIGHTS_REVIEWED, version 3, no publication. Public query returns null with correct CSRF headers; an initial probe without that header was properly rejected. Source/approval/tool evidence is under evidence/phase-06/. No source acquired or media/publication result invented; unrelated retained data and Windows programs are intact.
+
+### Next action
+
+Implement the media request/attestation contract, bounded acquisition and isolated processing. No predecessor wait, repeated Web benchmark or new code-review round for unchanged Web code. Keep the full Phase 00–14 goal active.
+
+## 2026-08-28 — Dependent media preparation
+
+### Completed
+
+Froze Phase 05 at 944f64b with complete local acceptance and code confirmation; its sole remaining conditions are protected CI 33132937180 and merge/post-merge. Started one local dependent branch and P06-R01 under WAITING_EXTERNAL, preserving predecessor-first publication. Read rights/media/security and existing Catalog contracts before work.
+
+### Evidence
+
+Bounded HTTPS retrieval succeeded for official Blender rights/download/team pages and asset indexes; the research fetcher's 402 is not the origin response. Listed complete sources are ZIP archives; the old uncompressed URL returns 404. No source acquired or rights approved. The moderate uuid alert affects v3/v5/v6 output buffers; installed Apollo call sites use v1/v4 without buffers. No current affected call path observed, no alert dismissal or policy change.
+
+### Next action
+
+Complete one exact source review, verify FFmpeg/storage and proceed through the active plan. Merge PR 22 after its protected gate and rebase this local branch onto its squash. Do not repeat unaffected Web benchmarks or close owner Windows programs.
+
 ## 2026-08-28 — Final Web confirmation
 
 ### Completed

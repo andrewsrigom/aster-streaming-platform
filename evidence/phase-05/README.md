@@ -1,6 +1,6 @@
 # Phase 05 evidence
 
-Phase status: IN_PROGRESS. Public/profile browsing has complete local source, clean Docker, browser, actual-reader and laboratory evidence, including both final performance blocks. Review/protected publication remains; this is not a playable demo.
+Phase status: RELEASED through PR 22 squash f36f9aa after protected and exact post-merge CI. [Release evidence](release.txt). Public/profile browsing has complete local source, clean Docker, browser, actual-reader and laboratory evidence, including both final performance blocks. This is not a playable or hosted demo.
 
 - [Public runtime checkpoint](public-runtime.txt): build, focused tests, actual PostgreSQL seed, browser failure/correction and hydration request count.
 - [Profile runtime checkpoint](profile-runtime.txt): separate Apollo cache, Redux shell, actual browser cookies/profile flow, narrow CORS, keyboard, cross-tab invalidation and expiry.

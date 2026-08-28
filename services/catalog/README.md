@@ -18,7 +18,7 @@ The runtime uses `aster_catalog_reader_local`, with only the live Catalog public
 
 Structured operation/lifecycle logs contain correlation IDs, never query documents or database credentials. Shared local HTTP/dependency/runtime metrics are collected in process; remote Catalog metric export and exported distributed traces are not claimed. Stop only Catalog to roll back its runtime; retain rights, audit and outbox data. For unready service, inspect bounded logs and initializer exit status, restore database/schema/reader grants, then confirm `/health/ready` and a browse query. Do not grant administrator rights to make readiness pass.
 
-[Reviewed candidate records](examples/candidate-sources.json) are NEEDS_CLARIFICATION. [Source evidence](../../evidence/phase-03/candidate-sources.md) records retrieval limitations and missing asset-specific facts. Integration persists them, proves premature approval rejection and confirms public invisibility; the retained demo is not seeded with unapproved films.
+[Historical candidate records](examples/candidate-sources.json) remain NEEDS_CLARIFICATION; [Phase 03 evidence](../../evidence/phase-03/candidate-sources.md) preserves their original retrieval limitations. Phase 06 adds a separately reviewed [Big Buck Bunny draft](examples/big-buck-bunny.json) and [real local approval](../../evidence/phase-06/catalog-approval.json). Its exact archive is approved, but the title remains publicly invisible until processing and publication checks pass. No source film is automatically acquired by normal Catalog startup.
 
 ## Local operator
 

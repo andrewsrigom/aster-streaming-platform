@@ -1,0 +1,66 @@
+{
+  "schema": "aster.media.source-preflight.v1",
+  "reviewedAt": "2026-08-28T01:33:37Z",
+  "reviewer": "Aster source-review automation",
+  "titleId": "00000000-0000-4000-8000-000000080001",
+  "retrieval": {
+    "method": "curl HTTPS; max 2 redirects, 5s connect, 20s total, 256KiB maximum for project pages; no asset GET",
+    "researchFetcher": "402 for project pages; direct origin retrieval returned 200",
+    "sources": [
+      {
+        "url": "https://peach.blender.org/about/",
+        "status": 200,
+        "bytes": 14789,
+        "sha256": "bd9eb73ddec647bbb486c47316163042a9655a8483358c093121341d0dc080cf"
+      },
+      {
+        "url": "https://peach.blender.org/download/",
+        "status": 200,
+        "bytes": 9211,
+        "sha256": "11f67d0c475a3d10ab27458be67a4b34f6ae7991d71f7751e4c83fe61729c401"
+      },
+      {
+        "url": "https://peach.blender.org/the-team/",
+        "status": 200,
+        "bytes": 13424,
+        "sha256": "9d02aeee4aba148ac622943ee7609ec107a6584e0028b0d5138e89c109f9c2fc"
+      },
+      {
+        "url": "https://download.blender.org/peach/bigbuckbunny_movies/",
+        "status": 200,
+        "bytes": 2270,
+        "sha256": "8a68cbb86ec43241951f32731be40ba38cc717fe7bf7ce848f7ca107bf7918ee"
+      }
+    ]
+  },
+  "selectedAsset": {
+    "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+    "method": "HEAD",
+    "status": 200,
+    "contentType": "application/zip",
+    "contentLength": 121284117,
+    "lastModified": "Wed, 22 Jul 2026 17:36:28 GMT",
+    "etag": "\"6a60ff9c-73aa615\"",
+    "acceptRanges": "bytes",
+    "checksum": null
+  },
+  "rejectedLocator": {
+    "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v",
+    "method": "HEAD",
+    "status": 404
+  },
+  "scope": "Permission review of the exact official archive; not acquisition, technical validation, verified captions or a publication.",
+  "policy": {
+    "preserveEntireCreditRoll": true,
+    "drm": false,
+    "externalCaptionsApproved": false,
+    "externalPromotionalArtApproved": false,
+    "otherFilmsApproved": false
+  },
+  "ffmpeg": {
+    "image": "sha256:4d77d55d035c5bfe0fe96970b2eee00b240ab9f1a3c9aa78aea25f1875bb73fa",
+    "version": "5.1.9-0+deb12u1",
+    "gplEnabled": true,
+    "preflight": "Resource-limited read-only network-disabled ephemeral container, no mounts, exited zero."
+  }
+}

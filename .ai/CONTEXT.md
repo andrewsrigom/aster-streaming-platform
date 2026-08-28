@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–04 are released. Guarded local sessions/profiles, rights-aware Catalog and Apollo Router run in Docker with protected/post-merge acceptance. Generated HLS proves Catalog publication, not playback. Public Next.js SSR, opt-in synthetic seed and local profile/Redux flows pass focused and real browser checks; complete Web acceptance and playable journeys remain unfinished. ADR-0018 scopes the exact browser origin and disposable private Apollo cache. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–05 are released. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker with protected/post-merge acceptance. The opt-in synthetic seed is not playable media. Phase 06 has approved one exact official source through Catalog; acquisition/processing remain unfinished. ADR-0018 scopes the exact browser origin and disposable private Apollo cache. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 05 — Web Shell, SSR, and Hydration**, PR 22 based on released main b6c99c4. Code candidate e4708c4 has complete local source/browser/laboratory acceptance, including both final performance blocks. Evidence-only closeout and protected publication remain; shared-host timing limits are explicit.
+Active phase: **Phase 06 — Media Ingestion and Publication**, based on released main f36f9aa. Phase 05 protected/post-merge checks pass; there is no predecessor wait. Shared-host timing limits remain explicit; no further unchanged Web benchmark is required.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

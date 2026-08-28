@@ -4,31 +4,29 @@ Last updated: 2026-08-28
 
 ## Active phase
 
-**Phase 05 — Web Shell, SSR, and Hydration**
+**Phase 06 — Media Ingestion and Publication**
 
-Status: **IN_PROGRESS** on feat/p05-web-ssr, PR 22 based on released main b6c99c4.
+Status: **IN_PROGRESS**, local-only on feat/p06-media-pipeline based on released main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865.
 
 ## Verified
 
-Phases 00–04 are released. PR 21 squash b6c99c4 has successful exact-head protected CI 33103379545 and post-merge CI 33104100966. [Phase 04 release](../evidence/phase-04/release.txt).
+Phases 00–05 are released. PR 22 squash f36f9aa passes protected CI 33132937180 and exact post-merge CI 33133330003. [Phase 05 release](../evidence/phase-05/release.txt).
 
 ## Current work
 
-P05-R01 remains the sole active item. Code candidate e4708c4c32ef09d901dd040f9ed87e92426e9406 corrects both initial review findings, preserves exact-package license exceptions and standalone notices, and removes unused runtime Tailwind conflict resolution. Final source gate passes 58/58; all 21 distinct browser scenarios have passing final-image evidence (20/21 first run, then the interrupted artifact scan passes independently). Both separately invoked three-visit performance blocks pass unchanged budgets. [Current evidence](../evidence/phase-05/pr22-remediation.md).
-
-Final confirmation completed when the existing host preconditions passed, without closing owner programs. Protected CI 33132459201 passes all six jobs and the single confirmation review reports no major issues for e4708c4. Finish the evidence-only head's protected gate and publication; no further unchanged benchmark or extra code-review request is needed.
+P06-R01 is the sole active implementation item. Big Buck Bunny's exact official archive is approved through Catalog at rights revision 2 / title version 3. Attribution is derived from the stored record; the public API still returns null. FFmpeg and private S3 are available. [Current evidence](../evidence/phase-06/README.md). No film bytes acquired or processed yet.
 
 ## Not implemented
 
-Playable VOD, engagement/discovery and hosted release. No real-film approval exists. Current local Router limits are not complete hosted GraphQL protection. Phase 05 protected publication remains pending.
+Playable VOD, a real media pipeline, engagement/discovery and hosted release. The synthetic seed remains a technical fixture, not film approval.
 
 ## Next outcome
 
-Finish P05-R01: complete remaining confirmation and exact-head protected CI/review, then squash merge and verify post-merge. Reuse clean startup/seed/isolation and actual-reader evidence where mechanics are unchanged. Phase 06 first completes actual-film rights approval and checks FFmpeg/object-storage availability.
+Continue P06-R01: define the processing/attestation contract, implement the durable request and bounded acquisition, then isolated processing. No additional unchanged Web benchmark or hosted wait remains.
 
 ## Current risks
 
-- The second final hydration sample is 3490.5 ms against 3500 ms; no arbitrary-host-load or field SLO claim.
-- Keep MIT and upstream terms; Phase 14 gates binary distribution/SBOM/corresponding-source obligations.
-- No paid resources, invented media rights or global Docker cleanup.
-- Retained aster/development databases are untouched.
+- Shared Windows/WSL timings are laboratory evidence, not arbitrary-load or field SLO guarantees; no further unchanged Web benchmark.
+- Official Blender downloads currently list ZIP archives; extraction must be bounded and validated, not shell interpolation.
+- uuid advisory GHSA-w5hq-g745-h8pq is moderate and transitive through Apollo. Installed callers use v1/v4 without buffers, not affected v3/v5/v6; revisit supported remediation before hosted release. No alert dismissal or audit weakening.
+- Keep MIT/upstream notices; no paid resources, invented media rights or global Docker cleanup.

@@ -1,0 +1,69 @@
+{
+  "command": "create",
+  "input": {
+    "titleId": "00000000-0000-4000-8000-000000080001",
+    "mutationId": "00000000-0000-4000-8000-000006000001",
+    "expectedVersion": 0,
+    "metadata": {
+      "defaultLocale": "en",
+      "localizations": [
+        {
+          "locale": "en",
+          "title": "Big Buck Bunny",
+          "synopsis": "An animated short from the Blender Foundation's Peach open movie project."
+        },
+        {
+          "locale": "pt-BR",
+          "title": "Big Buck Bunny",
+          "synopsis": "Um curta de animação do projeto aberto Peach, da Blender Foundation."
+        }
+      ],
+      "genres": ["animation"],
+      "credits": [
+        {
+          "name": "Sacha Goedegebure",
+          "role": "Director"
+        },
+        {
+          "name": "Jan Morgenstern",
+          "role": "Music and sound design"
+        },
+        {
+          "name": "Ton Roosendaal",
+          "role": "Producer"
+        }
+      ],
+      "artwork": null,
+      "releaseYear": 2008,
+      "runtimeSeconds": null,
+      "languages": [],
+      "accessibility": [],
+      "editorialLabels": ["open-movie"]
+    },
+    "rights": {
+      "workTitle": "Big Buck Bunny",
+      "creator": "Blender Foundation / Peach open movie project; director Sacha Goedegebure; music and sound design Jan Morgenstern",
+      "copyrightHolder": "Blender Foundation",
+      "canonicalSourceUrl": "https://peach.blender.org/about/",
+      "assetSourceUrl": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+      "licenseName": "Creative Commons Attribution",
+      "licenseVersion": "3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "attributionText": "Big Buck Bunny. (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org. Directed by Sacha Goedegebure; music and sound design by Jan Morgenstern. Retain the complete film credits. Licensed under CC BY 3.0. No endorsement is implied.",
+      "modificationNotice": "No source acquired or modified yet. Approved planned use: extract the official movie archive, transcode the complete film to source-aware HLS, repackage its audio and derive credited stills/thumbnails. Preserve all credits; publication must describe actual modifications.",
+      "redistributionAllowed": true,
+      "commercialUseAllowed": true,
+      "modificationAllowed": true,
+      "shareAlikeRequired": false,
+      "technicalRestrictions": "NONE",
+      "thirdPartyMaterialNotes": "Review covers this official complete-movie archive and its embedded soundtrack, under the Peach project's published film terms. The official team credits Jan Morgenstern for music/sound. No separately downloaded music, captions, textures or promotional artwork is approved. Verify actual streams and retained credits after acquisition; do not publish unexpected content.",
+      "trademarkNotes": "Website logos, associated marks, DVD cover/inlay and disc print are excluded from the project license. Do not reuse them as Aster branding or imply endorsement. Keep required film credits; select non-logo frames for derived artwork.",
+      "sourceChecksum": null,
+      "validUntil": null,
+      "evidenceLocations": [
+        "evidence/phase-06/rights-review.md",
+        "evidence/phase-06/source-preflight.json"
+      ]
+    }
+  }
+}

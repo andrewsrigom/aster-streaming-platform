@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item in PR 22, based on released main b6c99c4. Code candidate e4708c4 passes 58 source tasks and both final three-visit laboratory blocks; all 21 distinct browser scenarios have passing evidence. [Current remediation and limits](../evidence/phase-05/pr22-remediation.md). CI 33132459201 passes and confirmation review reports no major issues. The evidence-only head's protected gate and publication remain; no further unchanged benchmark. Phase 06 starts with actual-film rights review; the synthetic seed authorizes no source acquisition.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline, rebased onto main f36f9aa after protected/post-merge acceptance. One exact official source is approved through Catalog; [Phase 06 evidence](../evidence/phase-06/README.md). Next implement the processing contract, durable request and bounded acquisition; no film bytes acquired yet.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -42,7 +42,8 @@ Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/re
 | 34 | Verify generated HLS publication, candidate-source reviews and the Catalog Docker runtime | P03-R04 | DONE |
 | 35 | Compose versioned Identity/Catalog schemas and protect known operations | P04-R01 | DONE |
 | 36 | Run Apollo Router with private subgraphs, trusted context, telemetry and partial-failure acceptance | P04-R02 | DONE |
-| 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | IN_PROGRESS |
+| 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | DONE |
+| 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | IN_PROGRESS |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; no actual-film approval exists.
 
