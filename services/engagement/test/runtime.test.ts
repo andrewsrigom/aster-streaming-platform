@@ -44,7 +44,7 @@ function fixtureDatabase() {
     allowed: true,
     available: true,
     closed: false,
-    version: 2,
+    version: 4,
     admission: true,
     constraint: true,
     watchlistConstraint: true,
@@ -64,7 +64,7 @@ function fixtureDatabase() {
           const rows = query.text.includes("FROM pg_roles")
             ? [{ allowed: state.allowed }]
             : query.text.includes("SELECT version")
-              ? [{ version: 1 }, { version: state.version }]
+              ? [{ version: 1 }, { version: 2 }, { version: 3 }, { version: state.version }]
               : query.text.includes("SELECT singleton") && state.admission
                 ? [{ singleton: true }]
                 : query.text.includes("SELECT tgname") &&
@@ -172,7 +172,7 @@ test("store readiness rejects authority, schema, admission and connectivity loss
   }
   state.version = 3;
   assert.equal(await probeEngagementStore(database, signal), "unavailable");
-  state.version = 2;
+  state.version = 4;
   assert.equal(await probeEngagementStore(database, AbortSignal.abort()), "unavailable");
 });
 

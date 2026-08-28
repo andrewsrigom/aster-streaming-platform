@@ -11,6 +11,7 @@ const migrations = [
   "0006-media-processing",
   "0007-media-attestations",
   "0008-publication-activations",
+  "0009-event-relay",
 ] as const;
 export async function migrateLocalCatalog(
   environment: Readonly<Record<string, string | undefined>>,
@@ -52,7 +53,7 @@ export async function migrateLocalCatalog(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 9",
+              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 10",
             )
           ).rows.map((row) => row.version);
     if (
@@ -105,6 +106,21 @@ export async function migrateLocalCatalog(
       throw new Error("Incompatible local Catalog attester role.");
     }
     await client.query("GRANT aster_catalog_attester TO aster_catalog_attester_local");
+    await client.query(`DO $local$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_catalog_relay_local') THEN
+        CREATE ROLE aster_catalog_relay_local LOGIN PASSWORD 'aster-test-only'
+          NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+      END IF;
+    END $local$`);
+    const relay = await client.query<{ allowed: boolean }>(`SELECT rolcanlogin
+      AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)
+      AND NOT EXISTS (SELECT 1 FROM pg_roles delegated WHERE delegated.rolname NOT IN ('aster_catalog_relay_local', 'aster_catalog_relay')
+        AND pg_has_role('aster_catalog_relay_local', delegated.oid, 'MEMBER')) AS allowed
+      FROM pg_roles WHERE rolname = 'aster_catalog_relay_local'`);
+    if (relay.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Catalog relay login.");
+    }
+    await client.query("GRANT aster_catalog_relay TO aster_catalog_relay_local");
     signal.throwIfAborted();
     return { applied: Object.freeze(applied) };
   } finally {

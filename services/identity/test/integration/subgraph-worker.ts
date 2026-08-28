@@ -144,11 +144,13 @@ try {
   });
   await admin.query("SELECT pg_advisory_unlock(42781, 2)");
   ownsSchema = true;
-  assert.deepEqual(await migrateLocalIdentity(adminConfiguration, signal()), { applied: [1, 2] });
+  assert.deepEqual(await migrateLocalIdentity(adminConfiguration, signal()), {
+    applied: [1, 2, 3],
+  });
   assert.deepEqual(await migrateLocalIdentity(adminConfiguration, signal()), { applied: [] });
-  await admin.query("INSERT INTO identity.schema_migrations(version) VALUES (3)");
+  await admin.query("INSERT INTO identity.schema_migrations(version) VALUES (4)");
   await assert.rejects(migrateLocalIdentity(adminConfiguration, signal()));
-  await admin.query("DELETE FROM identity.schema_migrations WHERE version = 3");
+  await admin.query("DELETE FROM identity.schema_migrations WHERE version = 4");
   output("identity_local_bootstrap", {
     emptyState: "passed",
     repeat: "no-op",

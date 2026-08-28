@@ -36,11 +36,18 @@ export async function probeEngagementStore(
       return { action: "rollback", value: false };
     }
     const versions = await tx.query({
-      text: "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 3",
+      text: "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 5",
     });
-    const version = versions.rows[0] as Record<string, unknown> | undefined;
-    const secondVersion = versions.rows[1] as Record<string, unknown> | undefined;
-    if (versions.rowCount !== 2 || version?.["version"] !== 1 || secondVersion?.["version"] !== 2) {
+    if (
+      versions.rowCount !== 4 ||
+      versions.rows.length !== 4 ||
+      versions.rows.some(
+        (row, index) =>
+          typeof row !== "object" ||
+          row === null ||
+          Object.getOwnPropertyDescriptor(row, "version")?.value !== index + 1,
+      )
+    ) {
       return { action: "rollback", value: false };
     }
     const admission = await tx.query({

@@ -1,0 +1,160 @@
+{
+  "project": "aster-engagement-proof-676662b4-5b5b-4d50-ab9a-248a502c46be",
+  "statuses": [
+    {
+      "event": "event_owner_shutdown",
+      "owner": "identity",
+      "running": false,
+      "oomKilled": false,
+      "exitCode": 143
+    },
+    {
+      "event": "event_owner_shutdown",
+      "owner": "catalog",
+      "running": false,
+      "oomKilled": false,
+      "exitCode": 143
+    },
+    {
+      "event": "event_owner_shutdown",
+      "owner": "engagement",
+      "running": false,
+      "oomKilled": false,
+      "exitCode": 143
+    }
+  ],
+  "records": [
+    {
+      "level": "info",
+      "time": "2026-08-28T20:12:27.292Z",
+      "service": "catalog",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.catalog.readiness_changed",
+      "outcome": "ok",
+      "attributes": {
+        "state": "ready"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:12:27.293Z",
+      "service": "catalog",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.ready",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "phase": "ready"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:13:11.248Z",
+      "service": "catalog",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.shutdown_started",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "trigger": "sigterm"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:13:11.261Z",
+      "service": "catalog",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.shutdown_completed",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "outcome": "completed",
+        "trigger": "sigterm"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:12:28.289Z",
+      "service": "identity",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.ready",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "phase": "ready"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:12:28.290Z",
+      "service": "identity",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.identity.readiness_changed",
+      "outcome": "ok",
+      "attributes": {
+        "readiness": "ready",
+        "reason": "ready"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:13:11.257Z",
+      "service": "identity",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.shutdown_started",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "trigger": "sigterm"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:13:11.267Z",
+      "service": "identity",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.shutdown_completed",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "outcome": "completed",
+        "trigger": "sigterm"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:13:11.248Z",
+      "service": "engagement",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.shutdown_started",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "trigger": "sigterm"
+      }
+    },
+    {
+      "level": "info",
+      "time": "2026-08-28T20:13:11.364Z",
+      "service": "engagement",
+      "environment": "local",
+      "version": "0.0.0",
+      "event": "aster.lifecycle.shutdown_completed",
+      "operation": "runtime.lifecycle",
+      "outcome": "ok",
+      "attributes": {
+        "outcome": "completed",
+        "trigger": "sigterm"
+      }
+    }
+  ]
+}

@@ -36,6 +36,7 @@
     "@apollo/subgraph": "2.14.4",
     "@as-integrations/express5": "1.1.2",
     "@aster/config": "workspace:*",
+    "@aster/event-delivery": "workspace:*",
     "@aster/http-express": "workspace:*",
     "@aster/postgres": "workspace:*",
     "@aster/redis": "workspace:*",

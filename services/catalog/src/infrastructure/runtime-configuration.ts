@@ -1,4 +1,5 @@
 import { localCatalogDatabase } from "./identity/local-configuration.js";
+import { localEventDeliveryEnabled } from "@aster/event-delivery";
 
 const fields = new Set([
   "ASTER_ENVIRONMENT",
@@ -41,6 +42,10 @@ export function catalogRuntimeConfiguration(
     host,
     port: Number(port),
     connectionString: localCatalogDatabase(environment, "reader"),
+    events: localEventDeliveryEnabled(
+      environment["ASTER_EVENTS_ENABLED"],
+      environment["ASTER_ENVIRONMENT"],
+    ),
     ...(routerTrust === "true" ? { routerTrust: true as const } : {}),
     ...(playbackRead === "true" ? { playbackRead: true as const } : {}),
     ...(engagementRead === "true" ? { engagementRead: true as const } : {}),

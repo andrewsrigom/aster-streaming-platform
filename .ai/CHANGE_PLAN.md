@@ -1,71 +1,74 @@
-# Work Item: Request-scoped federated engagement fields
+# Work Item: Owned outbox delivery and profile-deletion cleanup
 
 - Status: IN_PROGRESS
-- Owner: Engagement
+- Owner: Engagement; Identity and Catalog retain their outboxes
 - Phase: 08
-- Requirement IDs: P08-R08; supports GQL-R03, ENG-R04, ENG-R05
+- Requirement IDs: P08-R09, P08-R10, P08-R12
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Federated Title and Profile expose optional owned progress and current visible watchlist membership, batching repeated pairs without sharing state across requests.
+Publish committed owner facts at least once, consume authenticated Identity deletion without duplicated effects, and prove cleanup plus reconstruction of continue-watching from durable progress.
 
 ## Current behavior
 
-P08-R07 is DONE: PR 28 is squash-merged as 9a7ab087034d69589a8388d62f5973cb9950b2da, tree-identical to reviewed head 05fbead7c8d3345bbd44d4e0685f10e7581bda29. Protected CI 33193355470, clean initial review 5455665142, clean confirmation 5455734225 and exact main push 33195546036 pass. R08 local acceptance is complete: 98 Engagement tests, nine composition tests, real SQL and full federated Docker proof, plus 67/67 candidate tasks. This sole dependent uses feat/p08-engagement-fields and is ready for protected publication. Preserve all stashes/data.
+P08-R07/R08 are DONE at main d7fa03a; this R09 candidate is rebased there. Latest 54 focused, 24 CI/platform and six shutdown/platform tests pass, plus real SQL including maximum quarantine bytes. Real Kafka observations prove delivery, poison/replay/offsets and outage recovery. Corrected SIGTERM validation passes against captured exit143 and completed lifecycle logs. The [candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition after behavior-preserving static-check remediation. Protected execution of the complete corrected supervisor and review/release remain; no retained migration or host diagnostic loop.
 
 ## Proposed behavior
 
-[ADR-0033](../docs/adr/0033-request-scoped-engagement-fields.md): nullable Title.progress(profileId)/inWatchlist(profileId) and Profile.progress(titleId)/inWatchlist(titleId). Request-owned DataLoader 2.2.3, already pinned in Identity/Catalog, batches at most twenty canonical profile/title pairs into one owned SQL read. A separate lazy request-owned Catalog batch checks only present memberships, so progress-only reads do not depend on Catalog.
+[ADR-0034](../docs/adr/0034-owned-event-delivery.md): finite owner relays, short SQL claims and fenced acknowledgements, unchanged v1 envelopes, bounded broker headers and explicit initial-backlog consumption. Engagement validates signed Identity facts, atomically fences/deletes owned profile data and records completion; poison messages enter bounded private quarantine with exact replay.
 
 ## Boundaries
 
-Engagement owns progress/membership PostgreSQL reads. Identity alone supplies account/profile authority; Catalog owns current visibility. Domain/application remain framework-free. Reuse existing purpose-separated owner clients and SQL adapter; no new service, credential, migration, Redis authority, cross-owner SQL or media work. Affected paths: Engagement application/infrastructure/transport/tests, package lock and compatible Router artifacts/known operations.
+Identity, Catalog and Engagement own all their writes. Shared event-delivery mechanics have three concrete owner outboxes, no new service. Existing PostgreSQL/Kafka/runtime adapters remain. Separate narrow local relay/consumer credentials do not widen normal request roles. A dedicated Identity-event key authenticates destructive facts; it is not a Router, viewer or private-read credential. No cross-owner SQL, Redis authority, media or browser change.
 
 ## Invariants
 
-Exact entity representations contain only typename/id; neither representations nor browser account data authorize access. Cache at most twenty pairs and five profiles per request, batch size twenty, Identity concurrency two. Return results in input order, distinguish missing from unavailable, recheck authority/visibility freshness and cancellation on cache hits and before disclosure. Current retirement hides membership, not retained progress. No cross-request cache.
+Business transaction commits before broker I/O; failed/ambiguous publication or acknowledgement retains the pending fact. First deliveries follow aggregate version; late duplicate delivery never reverses a consumer. Deletion locks the same permanent guard as writers and cannot resurrect a profile. Offsets advance only after durable effect, duplicate recognition or durable quarantine. Continue-watching remains a read of authoritative progress, not a redundant event-built store.
 
 ## Failure behavior
 
-Invalid/oversized inputs fail before I/O. Foreign/deleted/revoked profiles fail only their optional fields. Owner/SQL failures produce nullable errors, not false/empty success. Catalog failure affects membership only. One 2.5-second request budget, existing owner two-second and SQL one-second ceilings, no retries, queues or production rate exemptions. Keep sanitized correlated outcomes.
+Broker/relay failure delays delivery and eventually reaches existing finite outbox backpressure; it never acknowledges a lost save or gates public media. SQL/lease uncertainty retries only the same safe event after expiry. Every operation has cancellation/deadline, one in-flight relay per owner and one handler, no waiting queue. Invalid signatures, keys, versions and envelopes cannot delete data. Full quarantine/tombstone capacity leaves the offset uncommitted. Emit finite correlated outcomes, no raw events or identifiers as metric labels.
 
 ## Data and contracts
 
-Additive nullable fields and resolvable Title/Profile references; existing mutation/page shapes unchanged. Strict at-most-twenty representations, fragment type conditions and multiplied field cost under existing global bounds. One bounded parameterized SELECT joins only Engagement guard/progress/watchlist rows; read-only rollback. No state write, event or retention change.
+Additive owner migrations introduce a fenced relay state and restricted claim/ack functions; Engagement adds deletion audit and finite quarantine. Keep existing envelope IDs/versions and partition by aggregate ID. Local topics are explicitly initialized, one partition, existing one-hour/16-MiB retention. Identity deletion may cancel pending Engagement facts with an auditable count, as ADR-0030 allows; already-brokered facts expire by retention. Permanent deletion fences are not evicted. No GraphQL contract change.
 
 ## Security and privacy
 
-Fresh credential-bound Identity checks; preserve deletion fences and owner-account joins. Bound keys, profiles, collections, dependencies and recursive selections. No account/session/media data in GraphQL, logs or cache labels. Per-request authorization and Catalog snapshots are never global.
+Broker input is untrusted. HMAC-SHA256 binds a dedicated local Identity-event key to topic, key and exact envelope bytes; only Identity and Engagement mount it. Bound header count/bytes and event size before JSON/crypto. SQL functions use fixed search paths and explicit grants. Quarantine is private, bounded and never logged. Hosted ACLs/TLS/rotation remain Phase 14, not implied by this local mechanism.
 
 ## Implementation steps
 
-1. Implement owned batch reader and SQL adapter.
-2. Wire bounded request DataLoaders, resolvable entities and preflight.
-3. Add compatible known operations/composition and boundary tests.
-4. Measure real SQL batching and prove actual federated fields; publish only after R07 closeout.
+1. Implement finite relay/wire contracts and signed-event tests.
+2. Add owner claim/ack migrations/adapters and real SQL fencing/replay proof.
+3. Add Engagement deletion/duplicate/quarantine/replay and source-rebuild checks.
+4. Wire optional background delivery into existing lifecycles and explicit broker setup. Use infra/compose/events.yml to keep base browsing/playback broker-independent. Verify overlay initialization, exact cleanup and durable event-key retention.
+5. Run real Kafka/SQL/Docker acceptance, consolidate evidence and publish after R08 closeout.
 
 ## Tests
 
-Query counts/order/nulls/dedup, independent accounts/requests, five-profile/20-key bounds, fresh/expired/deleted/foreign authority, visibility expiry/cancellation, malformed representations/fragments/cost, real SQL guard joins and composed query plans. Compare a named synthetic sequential baseline with batching, not a claimed prior production defect. Browser resume belongs to R11.
+Completed runtime corrections: bounded tmpfs masks for Kafka-init image volumes, Router refresh after owner replacement, supported broker recovery, bounded rebalance and independent relay. Real SQL/Kafka recovery evidence covers these changes. Candidate-only corrections are an erased type export, key-buffer rename, equivalent fixture URL construction and formatting; 14 focused regressions and the full canonical gate pass. No repeated retained demo or host diagnostic change.
+
+Unit: publication-before-ack, cancellation/ambiguity, admission, codec/signature substitution, duplicate/order handling and backoff. Integration: real owner roles/migrations, claim races/lease expiry, atomic cleanup/write race, poison/capacity/replay and source reconstruction. Contract: unchanged envelopes, broker headers/initial offsets, no foreign SQL or request-role privilege widening. Runtime: broker outage/recovery, backlog, graceful stop and public Playback continuity. Browser/media/CPU checks are not applicable to this backend slice.
 
 ## Evidence
 
-Hosted candidate 74c3976 failed CI 33196837907 only at the existing Identity diagnostic parent watchdog. [Focused remediation](../evidence/phase-08/fields-ci-harness.txt) changes that single test's outer process budget, not runtime deadlines. Ten Identity composition tests pass. Preserve prior R08 heavy evidence; publish the test-only correction once and require fresh CI/final-head confirmation. R09 is parked in recovery stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf until the predecessor is coherent again.
-
-Iteration gate: focused node:test, strict affected build and changed-file lint. Candidate gate: affected workspace quality and schema compatibility. Acceptance: real SQL query-count/plan and isolated real Router-owner flow. Store sources, commands, environment and raw outputs under evidence/phase-08. Repeat heavy checks only for changes to measured SQL/trust/admission/runtime behavior. Unchanged watchlist/media/browser/CPU evidence is supporting, not rerun. One initial and one confirmation review; only requirement/security/data/availability/public-contract blockers extend it.
+Iteration gate: focused node:test and strict affected build/lint. Candidate gate: check:changed with concurrency two plus composition compatibility. Acceptance: isolated real PostgreSQL/Kafka and owner runtime evidence under evidence/phase-08. Repeat heavy checks only after changes to measured SQL, transport trust, delivery ordering or runtime wiring. One initial and one confirmation review; additional rounds only for requirement/security/data/availability/public-contract blockers.
 
 ## Rollback or recovery
 
-Restore prior compatible Engagement/Router images/artifacts; retain all data. No migration or destructive cleanup. Keep R07's exact candidate and existing recovery stashes untouched. Rebase this unpublished dependent if predecessor changes.
+Stop background delivery; retain schemas, pending outboxes, quarantine and permanent deletion fences. Drain before migrating, then use compatible binaries or roll forward: old Engagement readiness and finite migrators can reject new versions. Down migrations are empty/idle-state only, never a way to undo deletion or discard uncertain claims. Retain the event signing key with signed backlog. R09 is already rebased onto R08's completed squash; never reapply restored stashes.
 
 ## Documentation updates
 
-Update the GraphQL contract, Engagement README, evidence and memory at coherent checkpoints. Relay/deletion and browser integration remain planned.
+Owner migration guides, data/event contract and one operational replay/cleanup runbook, evidence index and concise repository memory at candidate/closeout checkpoints.
 
 ## Completion checklist
 
-- [x] Requirements and focused/real tests pass
-- [x] Evidence, contracts and memory current
-- [ ] Predecessor complete; protected CI/review/merge and exact post-merge pass
+- [x] Relay and consumer behavior implemented
+- [x] Local 70-task candidate gate and exact-base composition pass
+- [ ] Focused, SQL, Kafka and runtime acceptance pass
+- [ ] Evidence, operations and memory current
+- [ ] R08 closed; own protected review/CI/merge and exact post-merge pass

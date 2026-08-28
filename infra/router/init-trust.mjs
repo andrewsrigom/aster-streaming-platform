@@ -22,7 +22,11 @@ async function verifyExisting(path) {
   }
 }
 
-// A finite local initializer. Restart all consumers together after rotating these files.
+const eventTrust = process.env.ASTER_IDENTITY_EVENTS_TRUST_ENABLED;
+if (eventTrust !== undefined && eventTrust !== "true" && eventTrust !== "false") {
+  throw new Error("Invalid Identity event trust activation.");
+}
+// A finite local initializer. Retained event signatures require retaining the original event key.
 const paths = [
   ...["identity", "catalog", "playback", "engagement"].map(
     (owner) => `/run/aster-router/${owner}/${owner}.key`,
@@ -31,6 +35,7 @@ const paths = [
   "/run/aster-engagement-identity/identity.key",
   "/run/aster-engagement-playback/playback.key",
   "/run/aster-engagement-catalog/catalog.key",
+  ...(eventTrust === "true" ? ["/run/aster-identity-events/identity.key"] : []),
 ];
 for (const path of paths) {
   let file;
@@ -49,4 +54,11 @@ for (const path of paths) {
     await file.close();
   }
 }
-process.stdout.write('{"event":"aster.router.trust_initialized","owners":4,"ownerReads":4}\n');
+process.stdout.write(
+  JSON.stringify({
+    event: "aster.router.trust_initialized",
+    owners: 4,
+    ownerReads: 4,
+    identityEvents: eventTrust === "true",
+  }) + "\n",
+);

@@ -11,10 +11,10 @@ The phase order is also the engineering demonstration path. [`docs/00-start-here
 | 02 | Identity, accounts, and viewer profiles | Released |
 | 03 | Catalog and rights-aware content model | Released |
 | 04 | Apollo Federation supergraph | Released |
-| 05 | Next.js shell, SSR, and hydration | In progress |
-| 06 | Media ingest, transcode, package, and publish | Planned |
-| 07 | Playback sessions and accessible player | Planned |
-| 08 | Progress, history, watchlist, and continue-watching | Planned |
+| 05 | Next.js shell, SSR, and hydration | Released |
+| 06 | Media ingest, transcode, package, and publish | Released |
+| 07 | Playback sessions and accessible player | Released |
+| 08 | Progress, history, watchlist, and continue-watching | In progress |
 | 09 | Home rails, search, and discovery | Planned |
 | 10 | Advanced Redis caching and concurrency controls | Planned |
 | 11 | Resilience policies and failure laboratory | Planned |
@@ -28,4 +28,4 @@ Optional extensions begin only after Phase 14:
 - scheduled live channels;
 - subscriptions and entitlements.
 
-Detailed requirements are under `docs/specs/`. [Phase 03 release](evidence/phase-03/release.txt), [Phase 04 acceptance](evidence/phase-04/README.md) and [current state](.ai/CURRENT_STATE.md) provide the evidence and exact next action.
+Detailed requirements are under `docs/specs/`. [Phase 05 release](evidence/phase-05/release.txt), [Phase 06 release](evidence/phase-06/release.md), [Phase 07 release](evidence/phase-07/release.md) and [current state](.ai/CURRENT_STATE.md) provide the local release evidence and exact next action. Hosted release remains Phase 14.

@@ -2,19 +2,27 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-28 — Diagnostic watchdog correction
+## 2026-08-28 — Owned events and recovery checkpoint
 
 ### Completed
 
-PR 29 initial review 5455963295 is clean, but CI 33196837907 killed the old Identity diagnostic child at its five-second parent watchdog. Only that diagnostic now has a 30-second outer budget; production deadlines are unchanged.
+Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; autostash fec057f applied. Added owner relay/deletion/quarantine SQL, consumer/persistence, bounded background lifecycle, opt-in event Compose overlay, dedicated-key initializer and exact-record replay CLI. Authored the real SQL proof. Earlier owner-authorized targeted Ubuntu recovery/eight-container restoration remains unchanged; no further restart, retained migration or unrelated-project action.
 
 ### Evidence
 
-All ten composition tests pass. Raw failure/command/limitations are in fields-ci-harness.txt. R09 core is parked in stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf (not yet restored), with eleven tests/build/lint passing.
+R08 protected/main gates pass. Native pinned tooling and its executable pnpm shim work without repository bind mounts. Latest 54 focused, 24 CI/platform and six shutdown/platform tests pass. [SQL proof](../evidence/phase-08/events-postgres.txt) includes exact maximum quarantine bytes. [Kafka proof observations](../evidence/phase-08/events-runtime.txt) cover backlog, signed deletion, redelivery, poison/replay/offsets and outage recovery. Fixed consumer rebalance budget/relay coupling, Router refresh and Kafka-init anonymous mounts. Last wrapper failed only its incorrect zero-exit expectation: all actual owners recorded completed shutdown and exit143; corrected validation passes against captured states/logs. [Candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition after memory, formatting, unused-type and scanner false-positive corrections; 14 focused tests pass. No behavior-changing heavy repeat or scanner exemption. All fixtures removed; retained data and host processes untouched. No CPU/memory loop.
 
 ### Next action
 
-Publish the correction, require fresh CI/final-head confirmation, then rebase/restore R09 once. No CPU investigation or repeated media/SQL/Docker experiment.
+Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
+
+Prior same-session checkpoint — event core and predecessor correction (superseded by the recovery/merge status above):
+
+P08-R07 exact main push passed. Published R08 as PR 29, then fixed its concrete CI watchdog blocker in a59f2b9: only the Identity diagnostic outer process budget changes, not production deadlines. R09 implements envelope/relay/signature core under ADR-0034, on sole unpublished feat/p08-event-delivery based on a59f2b99251e15df3abe38b15934fbc6eabfcda2.
+
+Ten Identity composition tests and the initial eleven event-core tests passed; strict build and scoped lint passed. Raw CI failure/focused correction is fields-ci-harness.txt. Original initial/confirmation reviews 5455963295/5456036824 are clean; final-head confirmation was requested in 5456066082. R09 stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf was restored once, memory conflicts reconciled; never reapply. Normal online workspace installation preserves all supply-chain checks and existing dependency versions.
+
+Continue owner SQL fencing, Kafka headers/backlog, deletion/quarantine/replay and existing lifecycle wiring; real acceptance is still pending. R08 must finish protected CI/confirmation/merge/exact post-merge before R09 publication. No CPU investigation or repeated media/SQL/Docker experiment.
 
 ## 2026-08-28 — Watchlist publication and entity batching
 

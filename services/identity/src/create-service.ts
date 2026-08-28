@@ -1,4 +1,5 @@
 import { performance } from "node:perf_hooks";
+import { createLocalEventDelivery } from "@aster/event-delivery";
 
 import { loadReferenceRuntimeConfig, type ReferenceRuntimeConfigSourceEntry } from "@aster/config";
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
@@ -192,6 +193,23 @@ export async function createIdentityServiceWithFactories(
     const redis = factories.redis({ url: configuration.redisUrl, telemetry });
     const redisOwner = ownClose((signal) => redis.close(signal));
     owners.push(redisOwner);
+    const events = configuration.localDemo?.eventDelivery
+      ? await createLocalEventDelivery({
+          owner: "identity",
+          connectionString: configuration.databaseUrl,
+          telemetry,
+          logger,
+        })
+      : undefined;
+    const eventOwner = events
+      ? ownClose(async (signal) => {
+          await events.close(signal);
+          return { status: "completed" };
+        })
+      : undefined;
+    if (eventOwner) {
+      owners.push(eventOwner);
+    }
     const enforceTerminalFallback = (result: AsterShutdownResult): AsterShutdownResult => {
       if (result.failedStages.includes("force_close")) {
         factories.terminate(
@@ -241,6 +259,17 @@ export async function createIdentityServiceWithFactories(
     });
     owners.push(httpOwner);
     const runtime = factories.runtime({
+      ...(events && eventOwner
+        ? {
+            events: {
+              start: () => {
+                events.start();
+              },
+              stop: () => events.stop(),
+              close: (signal: AbortSignal) => eventOwner.close(signal),
+            },
+          }
+        : {}),
       startupDeadlineMs: configuration.startupDeadlineMs,
       logger,
       postgresql: {
@@ -267,6 +296,7 @@ export async function createIdentityServiceWithFactories(
       forceClose(): void {
         http.forceClose();
         const remaining = [
+          ...(eventOwner ? [eventOwner] : []),
           ...(productOwner ? [productOwner] : []),
           postgresqlOwner,
           redisOwner,

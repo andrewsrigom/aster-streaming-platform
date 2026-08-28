@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
+import { createLocalEventDelivery, type EventDeliveryLifecycle } from "@aster/event-delivery";
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
 import {
   loadLocalRouterTrust,
@@ -30,6 +31,7 @@ import { createPostgresProgress } from "./infrastructure/postgres-progress.js";
 import { createProgressOwnerClients } from "./infrastructure/owner-clients.js";
 import { engagementRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { probeEngagementStore } from "./infrastructure/store-readiness.js";
+import { createIdentityEventHandler } from "./infrastructure/identity-event-handler.js";
 import { createEngagementSubgraph } from "./transport/engagement-subgraph.js";
 import { createEngagementHttpServer, type EngagementHttpServer } from "./transport/http-server.js";
 
@@ -41,6 +43,7 @@ interface RuntimeResources {
   readonly telemetry?: AsterTelemetry;
   readonly logger?: AsterLogger;
   readonly terminate?: (code: number) => void;
+  readonly eventDelivery?: EventDeliveryLifecycle;
 }
 export async function createEngagementService(
   environment: Readonly<Record<string, string | undefined>>,
@@ -74,7 +77,20 @@ export async function createEngagementService(
     throw error;
   }
   let graph: Awaited<ReturnType<typeof createEngagementSubgraph>>;
+  let events: EventDeliveryLifecycle | undefined;
   try {
+    if (config.events) {
+      events =
+        resources.eventDelivery ??
+        (await createLocalEventDelivery({
+          owner: "engagement",
+          connectionString: config.connectionString,
+          telemetry,
+          logger,
+          identityConsumer: (store, credential) =>
+            createIdentityEventHandler(store, credential, logger, telemetry),
+        }));
+    }
     const owners =
       resources.owners ??
       createProgressOwnerClients({
@@ -135,6 +151,7 @@ export async function createEngagementService(
     });
   } catch (error) {
     await Promise.allSettled([
+      events?.close(AbortSignal.timeout(2000)),
       database.close(AbortSignal.timeout(2000)),
       telemetry.shutdown(AbortSignal.timeout(2000)),
     ]);
@@ -151,11 +168,12 @@ export async function createEngagementService(
       await http?.stopTraffic(signal);
     },
     stopConsumers: async () => {
-      await monitor.stop();
+      await Promise.all([monitor.stop(), events?.stop()]);
       await graph.stop();
     },
     flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
     closeDependencies: async (signal) => {
+      await events?.close(signal);
       const results = await Promise.all([database.close(signal), telemetry.shutdown(signal)]);
       if (
         results.some(
@@ -239,6 +257,7 @@ export async function createEngagementService(
       }
       lifecycle.markReady();
       monitor.start();
+      events?.start();
       return status === "ready" ? "ready" : "degraded";
     } catch {
       if (startupController.signal.aborted) {

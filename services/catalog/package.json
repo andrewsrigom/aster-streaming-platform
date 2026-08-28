@@ -30,6 +30,7 @@
     "@apollo/server": "5.5.1",
     "@apollo/subgraph": "2.14.4",
     "@as-integrations/express5": "1.1.2",
+    "@aster/event-delivery": "workspace:*",
     "@aster/http-express": "workspace:*",
     "@aster/object-storage-s3": "workspace:*",
     "@aster/postgres": "workspace:*",

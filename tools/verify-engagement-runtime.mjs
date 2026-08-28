@@ -1,4 +1,111 @@
-import { serviceBlock, volumeBlock } from "./verify-optional-platform.mjs";
+import { BROKER_IMAGE, serviceBlock, volumeBlock } from "./verify-optional-platform.mjs";
+
+export function validateEventDeliveryOverlay(source) {
+  const violations = [];
+  const reject = (detail) => violations.push({ rule: "event-runtime", detail });
+  const services = source.split("\nvolumes:\n")[0] ?? "";
+  const names = [...services.matchAll(/^ {2}([a-z-]+):$/gmu)].map((match) => match[1]).sort();
+  if (
+    JSON.stringify(names) !==
+    JSON.stringify([
+      "broker",
+      "broker-init",
+      "catalog",
+      "engagement",
+      "identity",
+      "router-trust-init",
+    ])
+  ) {
+    reject("event activation must stay inside the reviewed owner/broker service set");
+  }
+  if (
+    ["ports:", "privileged:", "cap_add:", "network_mode:", "${"].some((value) =>
+      source.includes(value),
+    )
+  ) {
+    reject("event overlay must not expose ports, grant privileges or accept interpolated targets");
+  }
+  for (const owner of ["identity", "catalog", "engagement"]) {
+    const block = serviceBlock(source, owner);
+    if (!block.includes('      ASTER_EVENTS_ENABLED: "true"\n') || block.includes("depends_on:")) {
+      reject(owner + " event activation must remain optional for request readiness");
+    }
+    if (
+      owner === "catalog"
+        ? block.includes("volumes:")
+        : !block.includes("      - identity-event-trust:/run/aster-identity-events:ro\n")
+    ) {
+      reject(owner + " has invalid Identity event-key access");
+    }
+  }
+  const trust = serviceBlock(source, "router-trust-init");
+  if (
+    !trust.includes('      ASTER_IDENTITY_EVENTS_TRUST_ENABLED: "true"\n') ||
+    !trust.includes("      - identity-event-trust:/run/aster-identity-events\n") ||
+    source.match(/:\/run\/aster-identity-events/gu)?.length !== 3
+  ) {
+    reject("event key is created once and mounted only by its producer and consumer");
+  }
+  if (
+    !source.includes(
+      "      com.aster.authority: durable-local\n      com.aster.environment: local\n      com.aster.owner: identity\n",
+    )
+  ) {
+    reject("retained signed backlog requires durable Identity event-key ownership");
+  }
+  const initializer = serviceBlock(source, "broker-init");
+  for (const value of [
+    "    image: " + BROKER_IMAGE + "\n",
+    "    networks: [platform]\n",
+    '    user: "1000:1000"\n',
+    "    read_only: true\n",
+    "    cap_drop: [ALL]\n",
+    "    security_opt: [no-new-privileges:true]\n",
+    "    cpus: 0.5\n",
+    "    mem_limit: 160m\n",
+    "    pids_limit: 64\n",
+    "      - /etc/kafka/secrets:size=1m,uid=1000,gid=1000,mode=0750\n",
+    "      - /mnt/shared/config:size=1m,uid=1000,gid=1000,mode=0750\n",
+    "      - /var/lib/kafka/data:size=1m,uid=1000,gid=1000,mode=0750\n",
+    '    restart: "no"\n',
+    "for topic in aster.identity.profile.v1 aster.catalog.publication.v1 aster.engagement.v1; do",
+    "--create --if-not-exists",
+    "--partitions 1 --replication-factor 1",
+    "--config retention.ms=3600000 --config retention.bytes=16777216 --config max.message.bytes=16384",
+    "--describe --topic",
+    "grep -F 'PartitionCount: 1'",
+    "grep -F 'ReplicationFactor: 1'",
+  ]) {
+    if (!initializer.includes(value)) {
+      reject("topic initialization is missing its finite contract: " + value.trim());
+    }
+  }
+  return violations;
+}
+
+export function eventShutdownComplete(statuses, records) {
+  const owners = ["identity", "catalog", "engagement"];
+  return (
+    statuses.length === owners.length &&
+    owners.every((owner) => {
+      const matches = statuses.filter((status) => status.owner === owner);
+      return (
+        matches.length === 1 &&
+        matches[0].running === false &&
+        matches[0].oomKilled === false &&
+        matches[0].exitCode === 143 &&
+        records.some(
+          (record) =>
+            record.service === owner &&
+            record.event === "aster.lifecycle.shutdown_completed" &&
+            record.outcome === "ok" &&
+            record.attributes?.outcome === "completed" &&
+            record.attributes?.trigger === "sigterm",
+        )
+      );
+    })
+  );
+}
 
 export function validateEngagementRuntime(source) {
   const violations = [];

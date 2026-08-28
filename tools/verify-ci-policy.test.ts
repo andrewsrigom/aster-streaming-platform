@@ -112,6 +112,10 @@ test("Engagement persistence and private-owner runtime checks cannot be suppress
     source.replace("pnpm engagement:integration", "true"),
     source.replace("pnpm engagement:runtime", "true"),
     source.replace(
+      "timeout-minutes: 20\n        run: |\n          pnpm engagement:integration",
+      "timeout-minutes: 90\n        run: |\n          pnpm engagement:integration",
+    ),
+    source.replace(
       "Prove Engagement persistence and federated progress\n        if: needs.classify.outputs.platform == 'true'",
       "Prove Engagement persistence and federated progress\n        if: false",
     ),

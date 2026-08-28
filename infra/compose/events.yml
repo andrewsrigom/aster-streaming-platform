@@ -1,0 +1,74 @@
+# Explicit event delivery overlay. Base browsing/playback does not require the broker.
+services:
+  identity:
+    environment:
+      ASTER_EVENTS_ENABLED: "true"
+    volumes:
+      - identity-event-trust:/run/aster-identity-events:ro
+  catalog:
+    environment:
+      ASTER_EVENTS_ENABLED: "true"
+  engagement:
+    environment:
+      ASTER_EVENTS_ENABLED: "true"
+    volumes:
+      - identity-event-trust:/run/aster-identity-events:ro
+  router-trust-init:
+    environment:
+      ASTER_IDENTITY_EVENTS_TRUST_ENABLED: "true"
+    volumes:
+      - identity-event-trust:/run/aster-identity-events
+  broker:
+    profiles: !override [runtime, integration, observability, full]
+  broker-init:
+    profiles: [runtime, integration, observability, full]
+    image: docker.io/apache/kafka:4.3.1@sha256:77e3df9054047a88b520d0cc46e16696d3b22022e1d580aeccd2632df6532837
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      broker:
+        condition: service_healthy
+    environment:
+      KAFKA_HEAP_OPTS: -Xms16m -Xmx64m
+      KAFKA_JVM_PERFORMANCE_OPTS: -XX:ActiveProcessorCount=1 -XX:TieredStopAtLevel=1
+      LOG_DIR: /tmp/kafka-logs
+    entrypoint: [/bin/sh, -ec]
+    command:
+      - |
+        for topic in aster.identity.profile.v1 aster.catalog.publication.v1 aster.engagement.v1; do
+          /opt/kafka/bin/kafka-topics.sh --bootstrap-server broker:19092 --create --if-not-exists --topic "$$topic" --partitions 1 --replication-factor 1 --config retention.ms=3600000 --config retention.bytes=16777216 --config max.message.bytes=16384
+          description=$$(/opt/kafka/bin/kafka-topics.sh --bootstrap-server broker:19092 --describe --topic "$$topic")
+          printf '%s\n' "$$description" | grep -F 'PartitionCount: 1' >/dev/null
+          printf '%s\n' "$$description" | grep -F 'ReplicationFactor: 1' >/dev/null
+          for setting in retention.ms=3600000 retention.bytes=16777216 max.message.bytes=16384; do
+            printf '%s\n' "$$description" | grep -F "$$setting" >/dev/null
+          done
+        done
+        printf 'aster event topics initialized\n'
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      # Mask image-declared volumes: the topic CLI owns no durable broker data.
+      - /etc/kafka/secrets:size=1m,uid=1000,gid=1000,mode=0750
+      - /mnt/shared/config:size=1m,uid=1000,gid=1000,mode=0750
+      - /var/lib/kafka/data:size=1m,uid=1000,gid=1000,mode=0750
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 160m
+    pids_limit: 64
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "1"
+volumes:
+  identity-event-trust:
+    labels:
+      com.aster.authority: durable-local
+      com.aster.environment: local
+      com.aster.owner: identity

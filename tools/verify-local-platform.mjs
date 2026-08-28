@@ -5,7 +5,10 @@ import { fileURLToPath, pathToFileURL, URL } from "node:url";
 import { readRuntimeImageSources, validateRuntimeImage } from "./verify-runtime-image.mjs";
 import { validateCatalogRuntime } from "./verify-catalog-runtime.mjs";
 import { validatePlaybackRuntime } from "./verify-playback-runtime.mjs";
-import { validateEngagementRuntime } from "./verify-engagement-runtime.mjs";
+import {
+  validateEngagementRuntime,
+  validateEventDeliveryOverlay,
+} from "./verify-engagement-runtime.mjs";
 import {
   readRouterSources,
   validateRouterRuntime,
@@ -485,6 +488,9 @@ export async function runLocalPlatformCheck(path = composePath) {
         readRouterSources(repositoryRoot),
       ]);
     const violations = [
+      ...validateEventDeliveryOverlay(
+        await readFile(resolve(repositoryRoot, "infra/compose/events.yml"), "utf8"),
+      ),
       ...validateLocalPlatform(source),
       ...validateLocalReset(reset),
       ...validateRuntimeImage(runtimeImage),

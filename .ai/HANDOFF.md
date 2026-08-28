@@ -2,32 +2,36 @@
 
 ## Resume point
 
-P08-R08 PR 29 is IN_PROGRESS on feat/p08-engagement-fields for the test-only CI watchdog correction below. P08-R07 is DONE after protected reviews/CI and exact main push 33195546036. R09 is parked, not lost; the new stash below has not been restored. Full Phase 00–14 goal remains active.
+P08-R09/R10/R12 IN_PROGRESS: locally accepted candidate on feat/p08-event-delivery, based on d7fa03a363ab979f008500040b0afa62ddec2704. Publish this coherent candidate next. R08 PR29 is DONE: protected CI33198008084, exact-head confirmation5456085999, squash d7fa03a and exact main push33199190529 all pass. R09 already rebased; autostash fec057f applied. Never reapply it, 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf, or older restored stashes. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-PR 29 is active for a test-only CI correction: the old Identity diagnostic execFile watchdog killed its child at five seconds. The diagnostic-only 30-second outer budget passes all ten composition tests; production deadlines and R08 behavior are unchanged. Publish this coherent correction once, require fresh protected CI and final-head confirmation, then rebase feat/p08-event-delivery and restore its new stash 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf exactly once. That stash is NOT restored yet and contains eleven-test-passing event core, ADR-0034 and the active R09 plan. Older stashes remain already restored. Never reinstall or repeat unchanged SQL/Docker solely for this test edit.
-
-1. R08 local acceptance passes: 98 Engagement tests, nine composition tests, real SQL, full isolated Docker and 67/67 candidate tasks. [Checkpoint](../evidence/phase-08/engagement-fields.md) and source hashes are authoritative. No repeat of unchanged heavy checks.
-2. R08 is based on main 9a7ab087034d69589a8388d62f5973cb9950b2da; do not repeat its old rebase. Existing production source hashes and composition remain valid. Publish only the watchdog correction, then collect its exact protected CI/final confirmation. No R07 work remains.
-3. Once the corrected R08 is frozen WAITING_EXTERNAL, rebase feat/p08-event-delivery onto it and restore new stash 8212c15 exactly once. Reconcile its memory with the current PR head; continue R09 locally without publishing before R08 merge/post-merge. R11 player reports/resume follows.
-4. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups remain recoverable.
-5. Docker attempt one stopped during build before assertions; one cache-assisted attempt passed, project 1cade285-e5b3-4ec1-aec5-6bcca92520be, and cleaned all thirteen containers/eight trust volumes/two networks. No CPU/WSL/media experiment or retained upgrade.
-
-## Retained runtime
-
-Project aster-p04-development: Big Buck Bunny is PUBLISHED, title 00000000-0000-4000-8000-000000080001, version 9, rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. Original review 2 and all immutable source/processing/audit remain.
-
-Bundle 3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d: 209 objects / 95496764 bytes. Exact-prefix policy, anonymous HEADs, CORS, Range, private/listing/other-prefix rejection and Web 200 pass. [Publication](../evidence/phase-06/publication.md), [browser evidence](../evidence/phase-06/browser.md). Do not re-download or re-encode unchanged media.
-
-Retained schema is Catalog 0008 / Playback 0001. Backup: C:/Users/andre/AppData/Local/Temp/aster-p07-runtime-f3750a5a-e6dc-41db-a003-c3492d35874b/catalog-before.dump. Prior images: aster-p07-rollback:{web,router,catalog}. Web now runs review image f29a1ebe; Catalog runs 4429f8e0. Playback/Router remain the released backend. Both updated owners are healthy; affected browser proof passes. Database/media containers and immutable film data were not recreated. Disposable aster-p07-playable-proof cleanup checked 13 containers, seven volumes and two networks and left zero resources; the separate review PostgreSQL fixture also left zero resources.
-
-Uncertain publication grants retain their recovery barrier. Read the publication recovery procedure and fence publishers/private writer before changing it. No automatic S3 lifecycle deletion or hosted multi-writer claim.
+1. Latest strict broker/event/Engagement builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests PASS. [Real SQL](../evidence/phase-08/events-postgres.txt) passes the corrected maximum 8192-byte value/4096-byte header quarantine path, owner roles/leases/races and reconstruction. No unchanged SQL repeat.
+2. [Real Kafka observations](../evidence/phase-08/events-runtime.txt) prove all three backlogs, authenticated deletion, exact redelivery/one effect, poison/replay/offsets, outage saving, pending recovery and a newly consumed deletion. Corrected one-second rebalance wait and independent relay step; request deadlines unchanged. Router needs a local refresh after owner recreation. Kafka-init masks all image volumes with bounded tmpfs. Every fixture, including the earlier failed one, is cleaned; no retained changes.
+3. Last supervisor exit was 1 ONLY because the new test expected exit 0 on SIGTERM. All owners actually exited the existing specified 143 with completed lifecycle logs. The corrected eventShutdownComplete validator passes against actual captured states/logs in events-shutdown.json; six adverse/real-process tests pass. Later changes only preserve behavior: formatting, erased type visibility, key-buffer naming and equivalent fixture URLs. Do not report a successful local full-supervisor exit; require protected CI to execute the corrected wrapper. Do not repeat unchanged runtime behavior for those static corrections.
+4. [Candidate gate](../evidence/phase-08/events-candidate.txt) PASS: 70/70 tasks, 46 cached, 1m14.31s, concurrency two; exact d7fa03a composition passes. Four scanner false positives were corrected without scanner exemptions; 14 focused tests pass. Source hashes are events-source.sha256. Finish documentation-only checkpoint checks, commit/publish once, then require initial/confirmation review, protected CI, squash and exact main push. A frozen published candidate may become WAITING_EXTERNAL before one local R11 branch starts.
+5. R11 player save/resume is next, not concurrent unresolved work. Preserve permanent deletion guards, uncertain outboxes, quarantine and signing key. The general reset helper still refuses the event overlay until full-demo integration; do not weaken it.
 
 ## Execution environment
 
-Windows Codex, repository through WSL UNC. WSL launch is unreliable; do not restart or diagnose it. aster-p06-tooling:git supports the canonical mount, UID 1002 and bounded resources. Set CI=true for pnpm commands to match the completed installation's virtual-store setting; do not reinstall repeatedly or disable dependency verification. pnpm install used the existing WSL store/cache with normal registry policy checks. Native Docker/Windows Node run built-in supervisors; workspace dependency imports need Linux tooling (native Windows cannot resolve these pnpm links). Native Git credentials push; Docker Git commits with normal hooks. Do not overlap Git writes.
+WSL works; Docker's Ubuntu repo bind-mount integration last refused its distro-services socket. Do not retry unchanged mounts or restart WSL/Docker automatically. The owner subsequently reported memory decreased. Direct native WSL Docker worked for sequential disposable PostgreSQL proofs; no repo bind was used and every fixture was removed. No second host measurement was made.
+
+Working native runtime copied from existing trusted aster-p06-tooling:git (temporary extraction container removed after exact ownership verification):
+/mnt/c/Users/andre/.cache/aster-node-24.19.0
+
+Node binary SHA256 bc17c508ffeed0ec622934f9b7fa72f8e78da65350e63c3eceb56fa688aa5e12, version24.19.0. Cached pnpm is corepack/v1/pnpm/11.24.0/bin/pnpm.cjs; an executable pnpm shim now exists alongside Node, so adding this directory to PATH also supports child supervisors. Normal frozen install passed. Use native WSL Linux Git for authoritative modes; Windows Git credentials are available for remote work. No codex/ branches.
+
+Normal frozen install succeeded with unchanged external versions/policies. Offline metadata was incomplete; the normal online verification resolved it. Do not disable supply-chain checks or reinstall repeatedly. Default cheap checks can use NODE_OPTIONS=--max-old-space-size=384 and node --test --test-concurrency=1. Do not launch the full parallel/container gate under known host pressure.
+
+## Recovery and retained runtime
+
+One user-requested snapshot: host95.8% RAM (31.73GiB total,1.34GiB free), WSLworking-set~2.9GiB, all Aster containers~480MiB. No build/test was running at that snapshot. This is not a leak or root-cause diagnosis; do not repeat CPU/memory loops. Continue bounded source work and sequence gates with safe headroom.
+
+Earlier targeted Ubuntu stop/start and restart of eight existing Aster containers restored nine healthy services, running collector and homepageHTTP200. Other projects/data were untouched. Retained project aster-p04-development has Web3000/Router4000/origin9001, Catalog0008/Playback0001; no Phase08 retained upgrade.
+
+Big Buck Bunny title00000000-0000-4000-8000-000000080001 remains version9/rights4/publication c2929850-d3a3-4e30-945f-688d639d2c68. Bundle3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d,209objects/95496764bytes. No new encode/media verification.
+Backup C:/Users/andre/AppData/Local/Temp/aster-p07-runtime-f3750a5a-e6dc-41db-a003-c3492d35874b/catalog-before.dump. Rollback tags aster-p07-rollback:{web,router,catalog}. Web imagef29a1ebe/Catalog4429f8e0; Playback/Router released Phase07. [Upgrade](../evidence/phase-07/backend-release.md).
 
 ## Do not do yet
 
-Do not claim Phase 08 completion or browser saving. The federated proof cleaned all its containers, trust volumes and networks. Preserve retained demo/media and user processes. No broad Docker reset or media encode. Docker Git is authoritative for Linux modes; never use a codex/ branch.
+No broad Docker reset, host-load loop, paid resource or encode. Do not claim complete Phase08 or a successful local corrected-supervisor exit. Preserve all durable data, event keys, pending facts, deletion fences and already-applied stashes.

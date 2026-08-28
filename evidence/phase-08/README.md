@@ -1,6 +1,6 @@
 # Phase 08 progress implementation
 
-P08-R01 and P08-R06 are DONE through protected and exact post-merge gates. [Watchlist](watchlist.md) is WAITING_EXTERNAL in PR 28, while [request-scoped entity fields](engagement-fields.md) are the sole local P08-R08 dependent. Player integration and relay remain planned; no complete Phase 08 release is claimed.
+P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watchlist](watchlist.md) and [request-scoped entity fields](engagement-fields.md) are closed. P08-R09/R10/R12 is the sole active candidate: [real SQL](events-postgres.txt) and [Kafka/owner observations](events-runtime.txt) cover delivery and recovery. Corrected SIGTERM validation passes against [captured states/logs](events-shutdown.json); the [70-task candidate gate](events-candidate.txt) and exact-base composition pass. Protected execution of the complete corrected supervisor, review and release remain. [Source hashes](events-source.sha256). Player integration follows; no complete Phase 08 release is claimed.
 
 ## Implemented core
 

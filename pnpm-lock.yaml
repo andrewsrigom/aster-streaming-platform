@@ -167,6 +167,28 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
+  packages/event-delivery:
+    dependencies:
+      '@aster/broker-kafka':
+        specifier: workspace:*
+        version: link:../broker-kafka
+      '@aster/postgres':
+        specifier: workspace:*
+        version: link:../postgres
+      '@aster/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+      '@aster/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.3
+        version: 24.13.3
+      typescript:
+        specifier: 6.0.3
+        version: 6.0.3
+
   packages/http-express:
     dependencies:
       content-type:
@@ -307,6 +329,9 @@ importers:
       '@as-integrations/express5':
         specifier: 1.1.2
         version: 1.1.2(@apollo/server@5.5.1(graphql@16.14.2)(supports-color@7.2.0))(express@5.2.1(supports-color@7.2.0))
+      '@aster/event-delivery':
+        specifier: workspace:*
+        version: link:../../packages/event-delivery
       '@aster/http-express':
         specifier: workspace:*
         version: link:../../packages/http-express
@@ -359,6 +384,12 @@ importers:
       '@as-integrations/express5':
         specifier: 1.1.2
         version: 1.1.2(@apollo/server@5.5.1(graphql@16.14.2)(supports-color@7.2.0))(express@5.2.1(supports-color@7.2.0))
+      '@aster/broker-kafka':
+        specifier: workspace:*
+        version: link:../../packages/broker-kafka
+      '@aster/event-delivery':
+        specifier: workspace:*
+        version: link:../../packages/event-delivery
       '@aster/http-express':
         specifier: workspace:*
         version: link:../../packages/http-express
@@ -405,6 +436,9 @@ importers:
       '@aster/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@aster/event-delivery':
+        specifier: workspace:*
+        version: link:../../packages/event-delivery
       '@aster/http-express':
         specifier: workspace:*
         version: link:../../packages/http-express
