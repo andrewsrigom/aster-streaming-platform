@@ -2,15 +2,15 @@
 
 ## Resume point
 
-P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 854592e5ff1213a306b45d61a547ad4f2a2d9395. P07-R04 is DONE: protected CI 33170527302, confirmation 5452439397, squash and post-merge 33171284170 pass. [Release](../evidence/phase-07/release.md). Full Phase 00–14 goal remains active.
+P08-R06 / Phase 08 is IN_PROGRESS on local feat/p08-history based on main 4082c3a463b50ba4397f080e1b81bc15e03bf140. PR 26 is merged; P08-R01 is DONE with exact main push 33182876541 passing. [Merge checkpoint](../evidence/phase-08/progress-candidate.md). Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-Priority: PR 26 confirmation 5453879542 passes corrected 736bcdac. CI 33180440040 failed an unchanged Catalog attestation test: fixed command time precedes SQL registration across a second boundary. Correct only the controlled fixture clock, prove real SQL and the affected candidate gate, then publish once and finish protected merge/post-merge. Production source and rights checks remain unchanged. P08-R06 code, 60-test result, rebased SQL and passing full federated read proof are preserved in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history. Rebase and restore that stash once after predecessor; all older stashes were already restored. Generated history output was moved recoverably to node_modules/.aster-history-build-ab8d4499-900a-44fd-8571-325e28bad87c to exclude stale tests from this predecessor gate.
-
-1. Finish P08-R01 candidate quality, evidence and protected review/release. Domain/SQL/private owner reads/Engagement GraphQL/Docker are implemented. [Federated runtime proof](../evidence/phase-08/federated-runtime.txt) passed all scenarios and removed its exact project; no retained state changed.
-2. The current backend provides recordProgress, not player save/resume, watchlist, paginated reads or broker relay. Keep those as the next explicit Phase 08 items.
-3. Main/origin/main remains 854592e; current PR head is 736bcdac. Only d4320f6 is unrestored; never reapply an older stash. Candidate gates use 2 GiB Node heap, 4 GiB tooling and Turbo concurrency two. No CPU/film loop or closed PR 25 polling.
+1. Publish the coherent history candidate. Predecessor PR CI 33181780482 and main push 33182876541 for 4082c3a463b50ba4397f080e1b81bc15e03bf140 pass; no PR 26 rerun/review or extra commit is needed.
+2. History/continue-watching is locally complete: 60 Engagement tests, 25-row SQL/query plans, real federated pages/metadata/completion/retirement/authorization and final 40/40 affected tasks against main. The predecessor's post-merge condition is satisfied. Then initial/confirmation review and protected merge/post-merge, batching only blockers.
+3. No production source changed during the test-only predecessor correction or identical-tree squash rebase. Reuse real SQL/Docker evidence; generated manifest and source hashes remain identical. Do not rerun unchanged media/browser/host experiments.
+4. Autostash a281042, d4320f6 and all older recovery stashes are already applied. Never reapply them. Candidate tooling is 4 GiB / 2 GiB Node heap, Turbo concurrency two.
+5. Once history is frozen and WAITING_EXTERNAL, activate only P08-R07 on its dependent local branch. Planned next: P08-R07 durable idempotent watchlist, current Catalog visibility and finite owned pagination; P08-R08 batched fields; P08-R09 relay/consumers/deletion; P08-R11 browser reporting/resume. Keep existing private owner credentials purpose-separated; no Playback-session workaround for watchlist.
 
 ## Retained runtime
 

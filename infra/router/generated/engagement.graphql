@@ -1,4 +1,4 @@
-extend schema @link(url: "https://specs.apollo.dev/federation/v2.3")
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
 
 enum ProgressStatus {
   NOT_STARTED
@@ -42,6 +42,37 @@ type Progress {
   status: ProgressStatus!
   occurredAt: Float!
   updatedAt: Float!
+  title: Title
+}
+
+type Title @key(fields: "id", resolvable: false) {
+  id: ID!
+}
+
+type ProgressEdge {
+  cursor: String!
+  node: Progress!
+}
+
+type ProgressPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type ProgressConnection {
+  edges: [ProgressEdge!]!
+  pageInfo: ProgressPageInfo!
+}
+
+type ProgressPagePayload {
+  code: ProgressCode!
+  correlationId: ID!
+  connection: ProgressConnection
+}
+
+type Query {
+  progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
+  continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
 }
 
 type ProgressPayload {

@@ -1,6 +1,6 @@
 # Phase 08 progress implementation
 
-P08-R01 is IN_PROGRESS on feat/p08-progress. Domain/application, isolated PostgreSQL, private owner reads, public Engagement mutation and Docker runtime are implemented. Actual federated saves pass in a disposable stack. Protected release, player integration, relay and other Phase 08 features remain pending.
+P08-R06 is IN_PROGRESS on dependent local feat/p08-history. The [progress backend](progress-candidate.md) is merged and DONE, with protected and exact post-merge checks passing. Durable owner-authorized saves and bounded history/continue-watching reads are implemented and pass real SQL/federated Docker checks. Protected release, player integration, watchlist and relay remain pending.
 
 ## Implemented core
 
@@ -42,4 +42,10 @@ Profile-scoped receipt uniqueness/lookup now rejects a changed title under the s
 
 Focused tests pass 34; complete Engagement/Playback tests pass 46/36. [Revised affected gate](review-candidate-gate.txt) passes 67/67 tasks (47 cached, 2m15.567s) with Turbo concurrency two. The profile-key correction updates only unreleased migration 0001: no retained Engagement store exists, and readiness rejects the older per-title key shape instead of certifying it. Rollback preserves data; never drop an old candidate store to force readiness.
 
-P08-R06 history and continue-watching implementation progressed locally while initial CI/review ran. Its code and 25-row paginated SQL evidence are preserved in exact local stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history. It is not active or published during predecessor remediation; rebase and restore once afterward. Browser reports, watchlist, relay and the remainder of Phase 08 remain planned.
+The corrected production candidate received clean confirmation 5453879542. [Catalog fixture clock correction](catalog-clock.md) fixes the subsequent unrelated CI test failure without changing runtime source. Its real SQL and 67-task gate pass.
+
+## History and continue-watching
+
+[Read-side checkpoint](history-checkpoint.md) records 60 passing Engagement tests, bounded keyset SQL against 25 aggregates, normal query plans and [real federated reads](history-federated-runtime.jsonl). Pages freshly authorize Identity, retain completed history, filter continue-watching, resolve Catalog metadata and keep retired metadata nullable. Invalid pages/cursors, foreign/deleted profiles and revoked sessions disclose no state. Reads perform one bounded SELECT and no writes. Retained data/media and host processes remain untouched.
+
+History is rebased onto squash main 4082c3a463b50ba4397f080e1b81bc15e03bf140; all recovery stashes are already restored. The predecessor changed only a Catalog test and its squash tree is identical, so read-side SQL/Docker evidence remains applicable. The current-main gate passes 40/40 tasks; predecessor-first protected release remains required. Browser reports, watchlist, relay and general batched Title/Profile engagement extensions remain planned.

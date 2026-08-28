@@ -213,3 +213,67 @@ mutation RecordProgress($input: RecordProgressInput!) {
     }
   }
 }
+
+query ProgressHistory($profileId: ID!, $first: Int! = 20, $after: String) {
+  progressHistory(profileId: $profileId, first: $first, after: $after) {
+    code
+    correlationId
+    connection {
+      edges {
+        cursor
+        node {
+          id
+          titleId
+          sequence
+          version
+          positionMs
+          durationMs
+          status
+          updatedAt
+          title {
+            id
+            localized {
+              title
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+
+query ContinueWatching($profileId: ID!, $first: Int! = 20, $after: String) {
+  continueWatching(profileId: $profileId, first: $first, after: $after) {
+    code
+    correlationId
+    connection {
+      edges {
+        cursor
+        node {
+          id
+          titleId
+          sequence
+          version
+          positionMs
+          durationMs
+          status
+          updatedAt
+          title {
+            id
+            localized {
+              title
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

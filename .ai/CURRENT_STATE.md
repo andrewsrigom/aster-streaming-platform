@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R01 on feat/p08-progress, rebased on main 854592e5ff1213a306b45d61a547ad4f2a2d9395. P07-R04 is DONE: protected CI 33170527302, confirmation 5452439397, squash and exact post-merge 33171284170 pass. [Phase 07 release](../evidence/phase-07/release.md). No external predecessor remains. Full Phase 00–14 goal remains active.
+Status: **IN_PROGRESS**, P08-R06 on feat/p08-history from main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R01 is DONE: PR 26 and exact main push 33182876541 pass; [merge checkpoint](../evidence/phase-08/progress-candidate.md). Phases 00–07 remain released locally. Full Phase 00–14 goal stays active.
 
 ## Verified
 
@@ -18,15 +18,15 @@ Phase 06 includes current rights approval, bounded acquisition, isolated full-fi
 
 P08-R01 now includes current private Identity/profile and Playback/session reads, protected Engagement GraphQL, restricted runtime/migrator/readiness, fourth-subgraph composition and Docker/CI wiring. The [real federated proof](../evidence/phase-08/federated-runtime.txt) passes durable acknowledgement, concurrent replay, conflict/stale rejection, foreign ownership, expired context, lock failure/recovery, deletion/revocation denial and trace correlation. Anonymous Playback succeeds after Identity/Engagement stop. The disposable project left zero resources; retained demo/media are untouched.
 
-[Core/SQL evidence](../evidence/phase-08/README.md) remains supporting evidence for unchanged transaction/constraint behavior. Candidate quality passes 67/67 tasks; protected review/release remain pending. No browser save/resume is implemented.
+[Core/SQL evidence](../evidence/phase-08/README.md) remains supporting evidence for unchanged transaction/constraint behavior. Progress candidate quality, protected review/CI and exact post-merge pass. Retained runtime upgrade and remaining Phase 08 release are not claimed. No browser save/resume is implemented.
 
 ## Not implemented
 
-Player progress reports/resume, watchlist/history reads, relay/consumers, Discovery and hosted release remain planned. Engagement's backend is implemented and Docker-tested, not released. Signal / 01 is browse-only; Signal / 02 is the generated captioned playable sample.
+Player reports/resume, watchlist, relay/consumers, Discovery and hosted release remain planned. History/continue-watching reads are implemented locally with 60 focused tests, real SQL and full federated acceptance; protected release remains pending. Engagement's mutation backend is Docker-tested, not released. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-P08-R01: confirmation 5453879542 passes corrected 736bcdac. CI 33180440040 failed an unchanged Catalog attestation fixture because its fixed clock can precede the actual SQL publication timestamp. Fix that test clock, verify real SQL and candidate checks, then publish and finish protected merge/post-merge. No production check is relaxed. P08-R06 is preserved in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history with 60 tests and real SQL/federated reads passing; restore it once after rebase. Older stashes are already restored. No CPU/media loop.
+P08-R06: local acceptance is complete, including 60 Engagement tests, real SQL/federated reads and 40/40 affected tasks against current main. Predecessor main push 33182876541 passed; publish this coherent history candidate and start the next ready item only under the frozen-candidate rule. All stashes are restored. No CPU/media repeat.
 
 ## Runtime and recovery
 

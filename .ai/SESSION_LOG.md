@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Progress merged and history candidate complete
+
+### Completed
+
+PR 26 squash 4082c3a463b50ba4397f080e1b81bc15e03bf140 passed protected CI 33181780482 and review. Rebased history onto the identical main tree; all stashes are restored. P08-R06 implements owned bounded history and continue-watching with current Catalog metadata and retirement nullability.
+
+### Evidence
+
+[History checkpoint](../evidence/phase-08/history-checkpoint.md): 60 Engagement tests, real 25-row SQL/query plans, complete federated read/write/authorization proof, 67-task candidate and final current-main 40-task gate pass. Exact disposable resources were cleaned; retained data/media and CPU diagnostics were untouched.
+
+### Next action
+
+Observe exact predecessor main push 33182876541, then publish the coherent history candidate. Continue ordered Phase 08 tasks; do not repeat unchanged experiments or reapply recovery stashes.
+
 ## 2026-08-28 — Federated reads preserved and Catalog CI clock corrected
 
 ### Completed
@@ -29,6 +43,20 @@ Published one coherent progress candidate. Initial review and protected CI 33178
 ### Next action
 
 Publish the verified correction batch, confirm only blocking boundaries, merge/prove post-merge. P08-R06 history implementation, GraphQL and 25-row keyset SQL evidence are preserved in exact stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history; rebase/restore once after predecessor. No CPU/media loop.
+
+## 2026-08-28 — Frozen candidate and read-side continuation
+
+### Completed
+
+Published one coherent [PR 26](https://github.com/andrewsrigom/aster-streaming-platform/pull/26) at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. P08-R01 is WAITING_EXTERNAL; activated only dependent P08-R06 on feat/p08-history.
+
+### Evidence
+
+[Frozen candidate](../evidence/phase-08/progress-candidate.md) records 67 passing tasks, real federated proof, manifest, rollback and exact external conditions. Retained media/Windows processes unchanged.
+
+### Next action
+
+Implement bounded history/continue-watching while CI/review runs. Publish predecessor first; preserve/rebase dependent work if its source changes. No CPU loop.
 
 ## 2026-08-28 — Owner-authorized federated progress
 

@@ -43,6 +43,82 @@ const query =
 const body = { query, operationName: "RecordProgress", variables: { input } };
 type RecordProgress = EngagementSubgraphOptions["recorder"]["record"];
 
+const historyQuery =
+  "query ProgressHistory($profileId:ID!, $first:Int! = 20, $after:String) { progressHistory(profileId:$profileId, first:$first, after:$after) { code correlationId connection { edges { cursor node { id titleId sequence positionMs durationMs status updatedAt title { __typename id } } } pageInfo { endCursor hasNextPage } } } }";
+
+test("read preflight bounds pages, canonical cursors, list cost and root fan-out", () => {
+  const history = { query: historyQuery, variables: { profileId: input.profileId } };
+  assert.equal(inspectEngagementOperation(history).status, "accepted");
+  for (const value of [
+    { ...history, variables: { profileId: input.profileId, first: 21 } },
+    { ...history, variables: { profileId: input.profileId, first: 0 } },
+    { ...history, variables: { profileId: input.profileId, after: "e1.continue.invalid" } },
+    { ...history, query: historyQuery.replace("code correlationId", "code accountId") },
+    { ...history, query: historyQuery.replace("first:$first", "first:1, first:20") },
+    {
+      ...history,
+      query:
+        "query Two($profileId:ID!) { progressHistory(profileId:$profileId) { code } continueWatching(profileId:$profileId) { code } }",
+    },
+    {
+      ...history,
+      query: historyQuery.replace(
+        "id titleId sequence",
+        "id a:id b:id c:id d:id titleId profileId version occurredAt sequence",
+      ),
+    },
+  ]) {
+    assert.equal(inspectEngagementOperation(value).status, "rejected");
+  }
+});
+
+test("HTTP history forwards profile authority and emits bounded public state with a Catalog reference", async () => {
+  let reads = 0;
+  const f = await fixture(
+    () => {
+      throw new Error("read must not write");
+    },
+    {
+      page: (kind, value, request) => {
+        reads++;
+        assert.equal(kind, "history");
+        assert.deepEqual(value, { profileId: input.profileId, first: 20, after: null });
+        assert.equal(request.credential, "synthetic.viewer.signature");
+        return Promise.resolve({
+          status: "completed",
+          value: {
+            edges: [{ cursor: "synthetic-cursor", node: state }],
+            pageInfo: { endCursor: "synthetic-cursor", hasNextPage: false },
+          },
+        });
+      },
+    },
+  );
+  try {
+    const response = await f.send({
+      query: historyQuery,
+      variables: { profileId: input.profileId },
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.cache, "no-store");
+    assert.equal(response.cookie, undefined);
+    const body = JSON.parse(response.text) as {
+      data: {
+        progressHistory: {
+          code: string;
+          connection: { edges: { node: { title: { id: string } } }[] };
+        };
+      };
+    };
+    assert.equal(body.data.progressHistory.code, "COMPLETED");
+    assert.equal(body.data.progressHistory.connection.edges[0]?.node.title.id, state.titleId);
+    assert.doesNotMatch(response.text, /accountId|playbackSessionId|signature|credential/u);
+    assert.equal(reads, 1);
+  } finally {
+    await f.close();
+  }
+});
+
 test("progress preflight bounds input, mutation fan-out and schema exposure", async () => {
   assert.equal(inspectEngagementOperation(body).status, "accepted");
   assert.equal(
@@ -86,13 +162,14 @@ test("progress preflight bounds input, mutation fan-out and schema exposure", as
   assert.equal(result.errors?.[0]?.extensions["code"], "UNAVAILABLE");
 });
 
-async function fixture(record: RecordProgress) {
+async function fixture(record: RecordProgress, queries?: EngagementSubgraphOptions["queries"]) {
   const key = randomBytes(32).toString("hex");
   const adapter = createExpressHttpAdapter({ bodyLimitBytes: 16384 });
   const server = createServer({ maxHeaderSize: 16384 }, adapter.requestListener);
   const graph = await createEngagementSubgraph({
     routerTrust: createLocalRouterTrust("engagement", key),
     recorder: { record },
+    ...(queries ? { queries } : {}),
   });
   adapter.mountGraphql(graph.middleware);
   server.listen(0, "127.0.0.1");

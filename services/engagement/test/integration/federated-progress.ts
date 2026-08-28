@@ -12,6 +12,19 @@ interface GraphResult {
       session?: null | { id: string; titleId: string; manifestUrl: string; expiresAt: number };
       profileId?: string;
       progress?: null | Record<string, string | number>;
+      connection?: null | {
+        edges: {
+          cursor: string;
+          node: {
+            id: string;
+            titleId: string;
+            status: string;
+            updatedAt: number;
+            title: null | { id: string; localized: { title: string } };
+          };
+        }[];
+        pageInfo: { endCursor: string | null; hasNextPage: boolean };
+      };
     };
   };
   errors?: unknown[];
@@ -220,6 +233,26 @@ async function counts() {
 }
 const record = (input: object, credential = cookie) =>
   call(progressMutation, { input }, credential);
+const page = (
+  kind: "history" | "continue",
+  variables: { profileId: string; first?: number; after?: string | null },
+  credential = cookie,
+) => {
+  const operation = kind === "history" ? "ProgressHistory" : "ContinueWatching";
+  const field = kind === "history" ? "progressHistory" : "continueWatching";
+  return call(
+    `query ${operation}($profileId: ID!, $first: Int! = 20, $after: String) {
+      ${field}(profileId: $profileId, first: $first, after: $after) {
+        code correlationId connection {
+          edges { cursor node { id titleId status updatedAt title { id localized { title } } } }
+          pageInfo { endCursor hasNextPage }
+        }
+      }
+    }`,
+    variables,
+    credential,
+  );
+};
 const payload = (response: Awaited<ReturnType<typeof post>>, name: string) => {
   assert.equal(response.status, 200);
   assert.equal(response.body.errors, undefined);
@@ -409,6 +442,105 @@ try {
     expiredNewWrite: "denied",
   });
 
+  const secondTitle = {
+    ...input,
+    titleId: id(2),
+    playbackSessionId: otherSession.id,
+    idempotencyKey: randomUUID(),
+  };
+  assert.equal(payload(await record(secondTitle), "recordProgress").code, "COMPLETED");
+  const beforeReads = await counts();
+  const firstResponse = await page("history", { profileId, first: 1 });
+  const firstPage = payload(firstResponse, "progressHistory");
+  assert.equal(firstPage.code, "COMPLETED");
+  assert.equal(firstResponse.noStore, true);
+  assert.doesNotMatch(
+    firstResponse.text,
+    /accountId|playbackSessionId|manifestUrl|aster_local_session/u,
+  );
+  assert.ok(firstPage.connection);
+  assert.equal(firstPage.connection.edges.length, 1);
+  assert.equal(firstPage.connection.pageInfo.hasNextPage, true);
+  const cursor = firstPage.connection.pageInfo.endCursor;
+  assert.ok(cursor);
+  const secondPage = payload(
+    await page("history", { profileId, first: 1, after: cursor }),
+    "progressHistory",
+  );
+  assert.equal(secondPage.code, "COMPLETED");
+  assert.ok(secondPage.connection);
+  assert.equal(secondPage.connection.edges.length, 1);
+  assert.equal(secondPage.connection.pageInfo.hasNextPage, false);
+  const nodes = [...firstPage.connection.edges, ...secondPage.connection.edges].map(
+    (edge) => edge.node,
+  );
+  assert.deepEqual(new Set(nodes.map((node) => node.titleId)), new Set([id(1), id(2)]));
+  assert.deepEqual(
+    nodes,
+    [...nodes].sort((a, b) => b.updatedAt - a.updatedAt || b.id.localeCompare(a.id)),
+  );
+  for (const node of nodes) {
+    assert.equal(node.title?.id, node.titleId);
+    assert.equal(node.title.localized.title, "Synthetic session contract fixture");
+  }
+  assert.equal(
+    payload(await page("continue", { profileId }), "continueWatching").connection?.edges.length,
+    2,
+  );
+  assert.equal(
+    payload(await page("history", { profileId: id(992) }), "progressHistory").code,
+    "NOT_FOUND",
+  );
+  assert.equal(
+    payload(await page("history", { profileId }, ""), "progressHistory").code,
+    "UNAUTHENTICATED",
+  );
+  for (const rejected of [
+    await page("history", { profileId, first: 21 }),
+    await page("continue", { profileId, after: cursor }),
+  ]) {
+    assert.ok(rejected.body.errors?.length);
+    assert.equal(rejected.body.data?.["progressHistory"]?.connection, undefined);
+    assert.equal(rejected.body.data?.["continueWatching"]?.connection, undefined);
+  }
+  assert.deepEqual(await counts(), beforeReads);
+  assert.equal(
+    payload(
+      await record({ ...secondTitle, sequence: 2, positionMs: 6000, idempotencyKey: randomUUID() }),
+      "recordProgress",
+    ).code,
+    "COMPLETED",
+  );
+  const continuing = payload(await page("continue", { profileId }), "continueWatching");
+  assert.deepEqual(
+    continuing.connection?.edges.map((edge) => edge.node.titleId),
+    [id(1)],
+  );
+  await admin.query("UPDATE catalog.titles SET state = 'RETIRED', version = 6 WHERE id = $1", [
+    id(1),
+  ]);
+  const retired = payload(await page("history", { profileId }), "progressHistory");
+  assert.equal(retired.code, "COMPLETED");
+  assert.equal(retired.connection?.edges.length, 2);
+  assert.equal(
+    retired.connection.edges.find((edge) => edge.node.titleId === id(1))?.node.title,
+    null,
+  );
+  const completed = retired.connection.edges.find((edge) => edge.node.titleId === id(2))?.node;
+  assert.equal(completed?.status, "COMPLETED");
+  assert.equal(completed.title?.id, id(2));
+  assert.deepEqual(await counts(), { progress: 2, receipts: 5, outbox: 5 });
+  emit("engagement_federated_pages", {
+    pages: [1, 1],
+    strictKeysetOrder: true,
+    catalogMetadata: "federated_owner",
+    completed: "history_only",
+    retiredMetadata: null,
+    foreignAndAnonymous: "denied",
+    oversizedAndWrongKindCursor: "rejected",
+    readWrites: 0,
+  });
+
   assert.equal(
     payload(
       await call(
@@ -420,12 +552,17 @@ try {
     "COMPLETED",
   );
   assert.equal(payload(await record(input), "recordProgress").code, "NOT_FOUND");
+  assert.equal(payload(await page("history", { profileId }), "progressHistory").code, "NOT_FOUND");
   assert.equal(
     payload(await call("mutation SignOut { signOut { code } }"), "signOut").code,
     "COMPLETED",
   );
   assert.equal(payload(await record(input), "recordProgress").code, "UNAUTHENTICATED");
-  assert.deepEqual(await counts(), { progress: 1, receipts: 3, outbox: 3 });
+  assert.equal(
+    payload(await page("continue", { profileId }), "continueWatching").code,
+    "UNAUTHENTICATED",
+  );
+  assert.deepEqual(await counts(), { progress: 2, receipts: 5, outbox: 5 });
   emit("engagement_federated_revocation", {
     deletedProfileAndRevokedSession: "no_disclosure",
     cleanupConsumer: "planned",
