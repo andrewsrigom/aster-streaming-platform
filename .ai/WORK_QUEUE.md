@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R06 remains IN_PROGRESS: current visibility correction d432bad is reviewed, but the SQL scan must respect the shared adapter's 64-row ceiling. Its bounded aggregate and real 65-row regression now pass; candidate gate/publication remain. R07 is preserved in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512; older stashes were already applied. Preserve media/private candidates.
+P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R06 remains IN_PROGRESS: SQL correction 1ff4e91 passes local acceptance; confirmation found the old eleven-volume reset cap. Twelve reviewed volumes and overflow safety now pass simulated tests. Final-head protected publication/confirmation remain. R07 is preserved in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3; its 84 tests and real SQL pass, older stashes were already applied. Preserve media/private candidates.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

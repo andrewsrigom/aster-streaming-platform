@@ -26,7 +26,7 @@ Player reports/resume, relay/consumers, Discovery and hosted release remain plan
 
 ## Next outcome
 
-P08-R06: complete the candidate gate and publish the 64-row adapter compatibility correction; 67 Engagement tests and real 65-candidate SQL regression pass. d432bad's clean review 5454854765 does not cover this later change. Watchlist is preserved in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512 (80 tests/nine HTTP tests, API wired; SQL capacity failure at slot 128 remains to investigate). All older stashes, including ced886f, were already applied. No CPU/media repeat.
+P08-R06: publish the reset count correction from confirmation 5053033139 / inline 3882263770. All twelve reviewed volumes now pass, a thirteenth fails before teardown; 15 simulated reset tests and static checks pass. SQL correction 1ff4e91 already passed 67 tests, real 65-candidate SQL and 46/46 affected tasks. Reuse unchanged service acceptance; require final-head protected CI/review/merge/post-merge. Watchlist is preserved in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3 (84 tests and real SQL now pass; API wired, federation proof/known operations pending). All older stashes were applied. No real reset or CPU/media repeat.
 
 ## Runtime and recovery
 

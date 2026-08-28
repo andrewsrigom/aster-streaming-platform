@@ -2,14 +2,14 @@
 
 ## Resume point
 
-P08-R06 / Phase 08 is IN_PROGRESS on feat/p08-history at published d432bad849b376f8f27e961e922bc4225cc7678f plus the local adapter-row correction. PR 27 remains unmerged; d432bad's clean confirmation is 5454854765, but the new SQL correction needs its own affected gate/CI/confirmation. P08-R01 and exact main push 33182876541 are DONE. Full Phase 00–14 goal remains active.
+P08-R06 / Phase 08 is IN_PROGRESS on feat/p08-history at published 1ff4e91fd27a7a05dc24a4711de14a337579f0cd plus the local reset-count correction. PR 27 remains unmerged. Confirmation 5053033139 found only the twelve-volume reset cap; its regression now passes. P08-R01 and exact main push 33182876541 are DONE. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Complete the row-correction candidate gate. 67 Engagement tests, strict build/lint and real SQL with 65 resumable titles/64 hidden pass. One bounded JSON aggregate preserves the shared adapter's 64 returned-row ceiling. Exact fixture 2ce0e9b7-fb93-45a7-8628-26ea32bb6e41 cleaned completely. Earlier Docker evidence covers unchanged trust/owners/GraphQL/runtime; do not repeat unchanged media/CPU/browser work.
-2. Commit/push this correction to PR 27 and request focused confirmation of the changed SQL boundary. Require protected CI, review resolution, squash merge and exact main post-merge. No bypass.
-3. Watchlist source is in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512 on feat/p08-watchlist, based on d432bad. Restore once after predecessor acceptance; preserve newer memory during conflicts. ALL older stashes, including ced886f, are already applied. ADR-0032 is already renumbered and its Catalog port reuses ADR-0031.
-4. Watchlist compiles, 80 tests/nine HTTP tests pass and API/runtime are wired. Real SQL passes migration/replay/races/atomicity but stops at slot 128 with unavailable: investigate that scoped failure, not host CPU. Its candidate SELECT also needs the bounded aggregate correction. Router known operations, full federated proof and candidate gates remain. Preserve raw failed SQL evidence; COMMIT-stage constraint failure is deliberately indeterminate plus proven rollback.
+1. Publish the reset-count correction with its simulated full twelve-volume/overflow checks (15 reset tests pass). No actual reset is authorized for verification. Earlier 67 Engagement tests, real 65-candidate SQL and 46/46 affected tasks remain supporting evidence for unchanged services; no media/CPU/browser repeat.
+2. Resolve PRRT_kwDOUEkeis6dO9cL and request focused confirmation of reset safety. Require protected final-head CI, review resolution, squash merge and exact main post-merge. No bypass.
+3. Watchlist source is in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3 on feat/p08-watchlist, based on 1ff4e91. Restore once after predecessor acceptance; preserve newer memory during conflicts. ALL older stashes were applied. ADR-0032 reuses ADR-0031.
+4. Watchlist compiles, 84 tests and real SQL pass (including all 256 active entries and aggregate read). The previous slot-128 unavailable did not recur in the instrumented run; no unsupported CPU/root-cause claim. Preserve raw attempts. Router known operations, full federated proof and candidate gates remain. COMMIT-stage constraint failure is deliberately indeterminate plus proven rollback.
 5. Generated watchlist builds are recoverably held in node_modules/.aster-watchlist-api-build-T8izhouz/engagement-dist and older .aster-watchlist-build-Nf4hxEOV/engagement-dist; rebuild source normally. No watchlist publication before history's protected merge/post-merge. Tooling: 4 GiB / 2 GiB Node heap, Turbo concurrency two. Then R08 batching, R09 events/deletion, R11 player reports/resume.
 
 ## Retained runtime

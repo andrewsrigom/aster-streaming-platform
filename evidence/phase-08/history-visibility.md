@@ -15,6 +15,12 @@ Both heavy proofs ran once for the changed query/trust/runtime boundary. Retaine
 
 ## Recovery and review
 
+### Reset volume-count correction
+
+The complete [platform regression suite](history-reset-platform.txt) passes 62/62 tests after this correction, including unsafe-scope rejection. No running Docker target is used by these simulated reset tests.
+
+Confirmation 5053033139 / inline 3882263770 found the full reviewed topology has twelve volumes while reset still refused the twelfth. The count now permits exactly twelve; all exact project/label/authority/mount/attachment checks remain unchanged. A simulated full-volume test fails on the old bound and passes after the correction, and a thirteenth volume is refused before teardown. [Focused acceptance](history-reset-bound.txt): 15/15 reset tests, platform validation, changed-file lint and memory/documentation checks pass. No real reset, Docker cleanup, data change or host experiment was performed. Earlier 46/46 candidate, SQL and federated results remain supporting evidence for unchanged service behavior; require final-head protected CI and focused confirmation of reset safety.
+
 ### Pre-merge adapter-row correction
 
 d432bad received clean confirmation 5454854765. The next slice's capacity work then exposed a concrete mismatch: the shared SQL adapter permits 64 returned rows, but continue-watching can scan 256 candidates. The read now returns one ordered, bounded JSON aggregate, validates its array/ownership and retains the existing adapter ceiling. No schema, trust, runtime packaging or public shape changed.

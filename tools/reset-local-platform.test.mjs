@@ -35,6 +35,21 @@ const blockedEnvironmentNames = [
   "TF_BUILD",
 ];
 
+const reviewedVolumes = [
+  "postgres-data",
+  "broker-data",
+  "storage-data",
+  "prometheus-data",
+  "identity-router-trust",
+  "catalog-router-trust",
+  "playback-router-trust",
+  "playback-catalog-trust",
+  "engagement-router-trust",
+  "engagement-identity-trust",
+  "engagement-playback-trust",
+  "engagement-catalog-trust",
+];
+
 const fakeDockerSource = `#!/bin/sh
 set -eu
 
@@ -226,6 +241,15 @@ if [ "$1" = "network" ] && [ "$2" = "inspect" ]; then
 fi
 if [ "$1" = "volume" ] && [ "$2" = "ls" ]; then
   if [ "$resource_present" = true ]; then
+    if [ "$FAKE_DOCKER_SCENARIO" = "all-volumes" ] || [ "$FAKE_DOCKER_SCENARIO" = "too-many-volumes" ]; then
+      for name in ${reviewedVolumes.join(" ")}; do
+        printf 'aster_%s\\n' "$name"
+      done
+      if [ "$FAKE_DOCKER_SCENARIO" = "too-many-volumes" ]; then
+        printf '%s\\n' aster_unreviewed
+      fi
+      exit 0
+    fi
     if [ "$FAKE_DOCKER_SCENARIO" != "missing-project-label" ] || printf '%s' "$*" | grep -q 'name='; then
       printf '%s\\n' "aster_$FAKE_VOLUME_NAME"
     fi
@@ -247,7 +271,14 @@ if [ "$1" = "volume" ] && [ "$2" = "inspect" ]; then
       printf '%s\\n' aster
     fi
   else
-    printf 'aster|%s|%s|local|platform\\n' "$FAKE_VOLUME_NAME" "$FAKE_VOLUME_AUTHORITY"
+    if [ "$FAKE_DOCKER_SCENARIO" = "all-volumes" ] || [ "$FAKE_DOCKER_SCENARIO" = "too-many-volumes" ]; then
+      name=$(printf '%s' "$5" | cut -c 7-)
+      authority=disposable-local
+      case "$name" in postgres-data | broker-data | storage-data) authority=durable-local ;; esac
+      printf 'aster|%s|%s|local|platform\\n' "$name" "$authority"
+    else
+      printf 'aster|%s|%s|local|platform\\n' "$FAKE_VOLUME_NAME" "$FAKE_VOLUME_AUTHORITY"
+    fi
   fi
   exit 0
 fi
@@ -416,6 +447,20 @@ test("is idempotent when Aster has no local resources", async (t) => {
   assert.equal(result.code, 0);
   assert.match(result.stdout, /already reset/u);
   assert.doesNotMatch(result.log, / down --volumes/u);
+});
+
+test("accepts all twelve reviewed volumes but refuses a thirteenth before teardown", async (t) => {
+  assert.equal(reviewedVolumes.length, 12);
+  const complete = await runReset(t, { scenario: "all-volumes" });
+  assert.equal(complete.code, 0, complete.stderr);
+  assert.match(complete.stdout, /containers=1 networks=1 volumes=12/u);
+  for (const name of reviewedVolumes) {
+    assert.ok(complete.log.includes("volume=aster_" + name));
+  }
+  const overflow = await runReset(t, { scenario: "too-many-volumes" });
+  assert.equal(overflow.code, 1);
+  assert.match(overflow.stderr, /more than twelve Aster volumes/u);
+  assert.doesNotMatch(overflow.log, / down --volumes/u);
 });
 
 test("recognizes the reviewed Web demo without accepting private or foreign mounts", async (t) => {

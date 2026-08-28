@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Full-topology reset count regression
+
+### Completed
+
+Corrected PR 27 confirmation 3882263770: allow twelve reviewed volumes, retaining exact destructive-scope checks. Watchlist is preserved in unapplied 416c574be8e3d14154943308efc1ed1f017683d3; older stashes were applied.
+
+### Evidence
+
+Regression fails on eleven, then all 15 simulated reset tests and static checks pass. No actual reset. Prior service acceptance is unaffected. Watchlist reached 84 passing tests and successful real PostgreSQL acceptance before preservation.
+
+### Next action
+
+Publish and confirm this narrow correction; complete protected PR 27, then restore the latest watchlist stash once and finish its federated contract/proof.
+
 ## 2026-08-28 — Continue scan respects shared SQL row limits
 
 ### Completed

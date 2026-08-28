@@ -358,7 +358,7 @@ if ! volume_names=$(docker_local volume ls --quiet --filter "label=com.docker.co
 fi
 volume_count=0
 for volume_name in $volume_names; do
-  [ "$volume_count" -lt 11 ] || fail 'more than eleven Aster volumes are prohibited'
+  [ "$volume_count" -lt 12 ] || fail 'more than twelve Aster volumes are prohibited'
   if ! volume_labels=$(docker_local volume inspect --format '{{ index .Labels "com.docker.compose.project" }}|{{ index .Labels "com.docker.compose.volume" }}|{{ index .Labels "com.aster.authority" }}|{{ index .Labels "com.aster.environment" }}|{{ index .Labels "com.aster.owner" }}' "$volume_name" 2>/dev/null); then
     fail "volume $volume_name labels cannot be inspected"
   fi
