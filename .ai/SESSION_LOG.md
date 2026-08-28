@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Abandoned media scratch recovery
+
+### Completed
+
+Started from rollback checkpoint f3c5379. Candidate scratch names now contain the run UUID. Added local dry-run/apply recovery for an explicit expired project/run, with exact identity/type/options, stopped-state, foreign-consumer and deadline guards. No force or retained-object deletion. Interrupted cleanup can resume without touching a later run.
+
+### Evidence
+
+[Scratch recovery](../evidence/phase-06/scratch.md): six focused checks and a real disposable Docker fixture pass, including Compose naming, young-run refusal, controlled-clock expiry, foreign-consumer refusal, dry run, deletion and empty replay. Only the fixture's containers/two tmpfs volumes were removed. No film download/encode, CPU diagnostic, retained data or serving restart. Source gate 51/51 (38 cached, 44.208 s) and documentation/security 10/10 (7.001 s) pass.
+
+### Next action
+
+Consolidate scratch recovery, assess remaining storage-prefix orphan retention/cleanup explicitly, verify representative browser HLS playback, then complete Phase 06 acceptance/release. Keep the full Phase 00–14 goal active.
+
 ## 2026-08-28 — Compatible publication replacement and rollback
 
 ### Completed

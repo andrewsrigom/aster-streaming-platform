@@ -34,6 +34,8 @@ Bundle/attribution, restricted attestation and actual editorial activation are n
 
 ## Current risks
 
+Run-UUID scratch names and local dry-run/apply cleanup now pass six focused checks and a real Docker fixture. Only stopped resources at least 31 minutes old may be removed; immutable originals/candidates/publications and Catalog audit are untouched. [Scratch evidence](../evidence/phase-06/scratch.md). Next P06-R01: explicitly resolve the storage-prefix orphan boundary, verify representative browser HLS playback, then Phase 06 acceptance/release.
+
 - Shared Windows/WSL timings are laboratory evidence, not arbitrary-load or field SLO guarantees; no further unchanged Web benchmark.
 - Official Blender downloads currently list ZIP archives; extraction must be bounded and validated, not shell interpolation.
 - Local VersityGW keeps one POSIX writer for conditional-write atomicity. ADR-0026 adds a separately verified read-only origin sharing the volume read-only; acquisition alone has egress. Hosted origin atomicity is a Phase 14 acceptance condition.

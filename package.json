@@ -22,6 +22,8 @@
     "media:test": "node --test ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs",
     "media:fixture": "node ./tools/run-media-fixture.mjs",
     "media:candidate": "node ./tools/run-media-candidate.mjs",
+    "media:cleanup": "node ./tools/clean-media-scratch.mjs",
+    "media:cleanup:test": "node ./tools/verify-media-scratch.mjs",
     "media:origin:test": "node ./tools/run-media-origin-integration.mjs",
     "catalog:integration": "turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs",
     "ai:check": "node ./tools/verify-ai-state.ts",

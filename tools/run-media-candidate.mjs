@@ -20,6 +20,7 @@ if (reuse) {
   assert.match(reportChecksum, /^[a-f0-9]{64}$/u);
 }
 assert.match(project, /^aster(?:-[a-z0-9]+)*$/u);
+assert.ok(project.length <= 64);
 assert.match(attemptId, /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
 assert.ok(
   !["DOCKER_HOST", "DOCKER_CONTEXT", "CI"].some((key) => process.env[key]),
@@ -40,6 +41,7 @@ const docker = async (args, timeout = 15000, signal = controller.signal) => {
     maxBuffer: 2 * 1024 * 1024,
     killSignal: "SIGKILL",
     windowsHide: true,
+    env: { ...process.env, ASTER_MEDIA_RUN_SUFFIX: "-" + runId },
   });
   return (result.stdout + (args[0] === "logs" ? result.stderr : "")).trim();
 };
@@ -58,7 +60,10 @@ const compose = [
 ];
 const owner = project + "-media-owner";
 const decoder = project + "-media-decoder";
-const volumes = [project + "_media-decoder-input", project + "_media-decoder-output"];
+const volumes = [
+  project + "_media-decoder-input-" + runId,
+  project + "_media-decoder-output-" + runId,
+];
 const created = [];
 let allocated = false;
 async function state(name) {

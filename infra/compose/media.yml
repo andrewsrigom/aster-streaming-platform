@@ -214,12 +214,14 @@ networks:
 
 volumes:
   media-decoder-input:
+    name: ${COMPOSE_PROJECT_NAME}_media-decoder-input${ASTER_MEDIA_RUN_SUFFIX:-}
     driver: local
     driver_opts: { type: tmpfs, device: tmpfs, o: "size=300m,uid=1000,gid=1000,mode=0700" }
     labels:
       com.aster.owner: catalog-media
       com.aster.authority: disposable-local
   media-decoder-output:
+    name: ${COMPOSE_PROJECT_NAME}_media-decoder-output${ASTER_MEDIA_RUN_SUFFIX:-}
     driver: local
     driver_opts: { type: tmpfs, device: tmpfs, o: "size=520m,uid=1000,gid=1000,mode=0700" }
     labels:

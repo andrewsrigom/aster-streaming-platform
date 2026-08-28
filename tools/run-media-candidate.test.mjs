@@ -10,6 +10,7 @@ test("media candidate runner refuses wrong targets and remote overrides before D
   const valid = ["aster-test", "00000000-0000-4000-8000-000000000001"];
   for (const [args, extra] of [
     [["production", valid[1]], {}],
+    [["aster-" + "a".repeat(65), valid[1]], {}],
     [[valid[0], "../../escape"], {}],
     [[...valid, "--artwork", "unexpected"], {}],
     [[...valid, "--artwork", "--reuse", "invalid", "invalid"], {}],

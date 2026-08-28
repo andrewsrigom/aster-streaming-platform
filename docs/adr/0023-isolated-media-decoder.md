@@ -24,8 +24,12 @@ This finite workflow does not yet implement durable processing leases, cross-run
 
 ## Dependencies and recovery
 
+Scratch volumes now include the non-reused run UUID in their Docker names, while Compose keeps stable input/output mount keys. Recovery takes an explicit project/run and defaults to inspection. It can remove only run-labelled, stopped containers and exact local tmpfs volumes at least 31 minutes old, after checking that no foreign container references them. Removal uses immutable container IDs and never force; run-specific volume names prevent a new attempt from inheriting a cleanup target. Unknown/legacy unscoped volumes are not automatically removed. This handles abandoned temporary output without deleting immutable originals/candidates, publication bundles or durable attempts. Content-addressed S3 partials remain recoverable through the existing verified replay; scratch cleanup is not a claim of implemented storage lifecycle garbage collection.
+
 Yauzl 3.4.0 declares Node >=12 and MIT; its runtime dependency is MIT pend 1.2.0. Preserve upstream notices and exact lockfile integrity. The library does not verify CRC-32, so the decoder does, using the pinned Node 24 runtime. FFmpeg binary distribution remains governed by ADR-0016; Aster source remains MIT.
 
 Remove only an owned failed candidate after recording the failure. Retain the immutable original and Catalog audit. Existing HTTP services/images do not need FFmpeg and remain unaffected.
 
 Sources: [yauzl API and limits](https://github.com/thejoshwolfe/yauzl/blob/3.4.0/README.md), [yauzl MIT license](https://github.com/thejoshwolfe/yauzl/blob/3.4.0/LICENSE), [FFmpeg HLS muxer](https://ffmpeg.org/ffmpeg-formats.html#hls-2), [binary compliance decision](0016-isolated-generated-media-fixture.md).
+
+Scratch naming/removal: [Compose custom volume names](https://docs.docker.com/reference/compose-file/volumes/#name), [Docker volume removal](https://docs.docker.com/reference/cli/docker/volume/rm/). Docker also refuses a volume still referenced by a container; the CLI does not override that guard.

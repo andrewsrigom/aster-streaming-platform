@@ -8,6 +8,8 @@ Current checkpoint: compatible `replace`/`rollback` commands and migration 0008 
 
 ## Current work and exact retained state
 
+Latest slice (base f3c5379): run-UUID scratch volume names, `pnpm media:cleanup PROJECT RUN_UUID [--apply]`, and `pnpm media:cleanup:test`. Six focused checks and the real tiny Docker fixture pass; source 51/51 and documentation/security 10/10 pass. [Evidence](../evidence/phase-06/scratch.md). It cleans only stopped, 31-minute-old, exact run tmpfs resources. No retained-data or serving changes. Storage-prefix garbage collection remains an explicit assessment, not implemented by this command. Browser HLS and phase release follow.
+
 [First-film publication](../evidence/phase-06/publication.md) is locally implemented and activated. Title 00000000-0000-4000-8000-000000080001 is version 9 / current rights revision 4 / PUBLISHED. Original rights revision 2 remains immutable. Publication c2929850-d3a3-4e30-945f-688d639d2c68 points to bundle 3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d: 209 objects, 95496764 bytes (203 HLS + five JPEG + attribution). Manifest: http://127.0.0.1:9001/aster-media-published/publications/3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d/master.m3u8.
 
 The full film is 596.5 seconds HLS, AVC 426x240/638x358, AAC stereo. Source checksum 7118242b6728d40c871479c5b3c0f0fb27d748089df15d7f1b469f297c74a2d6; original ZIP 121284117 bytes. No captions/audio description/transcript. Exact approval input: services/catalog/examples/big-buck-bunny-publication.json.

@@ -49,6 +49,8 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 ## Work-item rules
 
+Current checkpoint adds verified temporary scratch recovery ([evidence](../evidence/phase-06/scratch.md)). Storage-prefix orphan retention/cleanup remains an explicit assessment; do not confuse it with deleting disposable Docker scratch. Browser HLS and the full Phase 06 release gate remain ahead.
+
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.
 - Record its plan in `.ai/CHANGE_PLAN.md`.
