@@ -20,6 +20,55 @@ import {
 const prefix = "publications/" + "a".repeat(64) + "/";
 const confirmed = () => Promise.resolve();
 
+test("ambiguous lock creation requires recovery, while definite contention and pre-abort do not", async (t) => {
+  for (const failure of ["lost-response", "cancelled", "contended", "pre-aborted"] as const) {
+    await t.test(failure, async (child) => {
+      const client = publicationStorageClient();
+      const controller = new AbortController();
+      let sends = 0;
+      let durableLock = false;
+      const contention = Object.assign(new Error("busy"), {
+        name: "PreconditionFailed",
+        $metadata: { httpStatusCode: 412 },
+      });
+      child.mock.method(client, "send", (command: unknown) => {
+        sends++;
+        assert.ok(command instanceof PutObjectCommand);
+        assert.equal(command.input.IfNoneMatch, "*");
+        if (failure === "contended") {
+          return Promise.reject(contention);
+        }
+        durableLock = true;
+        if (failure === "cancelled") {
+          controller.abort();
+        }
+        return Promise.reject(new Error("accepted write, response unavailable"));
+      });
+      try {
+        if (failure === "pre-aborted") {
+          controller.abort();
+        }
+        await assert.rejects(
+          createPublicationAccess(client).reveal(prefix, controller.signal, confirmed),
+          (error: unknown) => {
+            if (failure === "contended") {
+              return error === contention;
+            }
+            if (failure === "pre-aborted") {
+              return error === controller.signal.reason;
+            }
+            return error instanceof PublicationAccessRecoveryError;
+          },
+        );
+        assert.equal(sends, failure === "pre-aborted" ? 0 : 1);
+        assert.equal(durableLock, failure === "lost-response" || failure === "cancelled");
+      } finally {
+        client.destroy();
+      }
+    });
+  }
+});
+
 function accessFixture(t: TestContext, previous: readonly string[]) {
   const client = publicationStorageClient();
   const state = {

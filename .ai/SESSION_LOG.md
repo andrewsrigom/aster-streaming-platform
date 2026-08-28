@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Final lock-recovery diagnosis and saved Playback progress
+
+### Completed
+
+The d885647 candidate passed protected CI. Its complete confirmation reported one diagnostic gap: an accepted conditional lock with a lost response could report recovery false. Corrected uncertainty classification while preserving definite contention and pre-aborted no-write behavior. No grant/restore/SQL/media change. Local P07 current-publication projection and bounded batched queries passed 12 tests; preserved in named stash 2b0341c before returning to the predecessor correction.
+
+### Evidence
+
+[Focused recovery tests](../evidence/phase-06/lock-recovery-focused.txt), strict Catalog build and affected lint; [existing source/storage/confirmation evidence](../evidence/phase-06/rights-access-confirmation.md). No CPU or media experiment repeated.
+
+### Next action
+
+Push the narrow coherent correction, close the diagnosed review finding and require exact-head protected CI before squash/post-merge. Restore/rebase the saved P07 work; no dependent publication before predecessor release. Full goal remains active.
+
 ## 2026-08-28 — Phase 06 rights/access confirmation correction
 
 ### Completed

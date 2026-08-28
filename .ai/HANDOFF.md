@@ -2,6 +2,8 @@
 
 ## Resume point
 
+P06-R01 final diagnostic correction is local: external confirmation of d885647 found only ambiguous barrier creation reporting recovery false. Focused strict build/lint/tests pass; no policy/SQL/media behavior changed. Commit/push and resolve review thread PRRT_kwDOUEkeis6dG01W (comment 3879091432), then require exact-head protected CI. Do not request another broad review or repeat media evidence for this reporting-only correction. Preserve P07 local work in stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef; feat/p07-playback currently points to d885647. Its publication projection/queries passed 12 tests, but are not a running Playback service.
+
 P06-R01 / Phase 06 remains IN_PROGRESS on feat/p06-media-pipeline; PR 23 is ready. Full Phase 00–14 goal remains active. Released main is f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 (Phases 00–05).
 
 Head 9723032 passed full protected CI 33153640859. Confirmation found a new rights/access race and stale guide. Current correction holds the policy barrier through current approval/restricted SQL registration, restores only rejected new grants, preserves prior grants and records bounded uncertain-failure recovery. Focused 27/27, source 51/51 and real S3 race/rejection tests pass. [Current evidence](../evidence/phase-06/rights-access-confirmation.md). Finish final storage/docs closeout and one coherent commit/push; require new exact-head protected CI and confirmation, not another ready transition.
@@ -10,8 +12,8 @@ Initial PR head 459607b407d1b6f0fd63b5416d06a9fc34b4b36d / CI 33151304060 is not
 
 ## Exact next actions
 
-1. Current correction passes focused 27/27, full source 51/51, final real S3 fixture and documentation/security 10/10. Local confirmation is recorded in its evidence; no source/media change remains before publication.
-2. Commit with normal hooks, push the existing PR branch once and request confirmation of this blocking-boundary correction. Require exact-head protected CI, no rerun of the old head and no bypass.
+1. Final diagnostic correction passes focused 32/32, strict build and affected lint. Prior source 51/51 and real S3 remain supporting evidence; new exact-head source CI is required.
+2. Commit with normal hooks, push the existing PR branch once and resolve the diagnosed review finding. The complete external round and local remediation confirmation are recorded; no new broad review, old-head rerun or bypass.
 3. Squash only after checks/review pass, fetch clean main and verify the exact post-merge CI.
 4. Mark P06-R01 done and start Phase 07 (Playback owner, product player and fresh-volume Docker playable demo). No other active work item.
 

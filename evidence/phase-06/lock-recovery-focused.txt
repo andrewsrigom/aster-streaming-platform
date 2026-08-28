@@ -1,0 +1,43 @@
+▶ ambiguous lock creation requires recovery, while definite contention and pre-abort do not
+  ✔ lost-response (7.362603ms)
+  ✔ cancelled (1.554015ms)
+  ✔ contended (0.72764ms)
+  ✔ pre-aborted (0.751486ms)
+✔ ambiguous lock creation requires recovery, while definite contention and pre-abort do not (11.970874ms)
+✔ confirmation runs inside the barrier and returns the registered identity (2.760461ms)
+▶ rights, expiry, registration and cancellation rejection restore only a newly added grant
+  ✔ rights: (2.890692ms)
+  ✔ expiry: (0.937772ms)
+  ✔ registration: (0.724066ms)
+  ✔ cancelled: (1.069957ms)
+  ✔ rights:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (1.068818ms)
+  ✔ expiry:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (0.696524ms)
+  ✔ registration:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (0.743363ms)
+  ✔ cancelled:publications/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/ (0.810621ms)
+  ✔ rights:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (0.633517ms)
+  ✔ expiry:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (0.61556ms)
+  ✔ registration:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (0.55223ms)
+  ✔ cancelled:publications/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/ (0.596402ms)
+✔ rights, expiry, registration and cancellation rejection restore only a newly added grant (12.67077ms)
+▶ failed compensation or its readback retains the barrier and reports required recovery
+  ✔ write (0.846129ms)
+  ✔ readback (0.66907ms)
+✔ failed compensation or its readback retains the barrier and reports required recovery (2.087567ms)
+✔ publication policy accepts only bounded exact GET prefixes, never ignored condition fields (1.07719ms)
+✔ an uncertain policy write/readback retains the recovery barrier, with no implicit retry (1.328021ms)
+✔ public READ waits for complete integrity verification and retries an interrupted grant (47.121985ms)
+✔ missing, corrupt, cancelled or revoked bundles gain no public access (68.04176ms)
+✔ bundle is stable through review, but binds source, reports and both modification notices (2.265172ms)
+✔ playlist verification rejects external URIs, encryption, missing and unreferenced objects (0.787838ms)
+✔ copy verifies children before master, preserves attribution, and repeats without new writes (26.773545ms)
+✔ missing, corrupted and failed reads never copy master and clean only the owned temporary output (19.661983ms)
+✔ revocation and cancellation stop before further upload; partial prefix replays without overwrites (16.490913ms)
+✔ existing public bytes are never trusted or overwritten on an immutable-key conflict (5.462036ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 500.051387

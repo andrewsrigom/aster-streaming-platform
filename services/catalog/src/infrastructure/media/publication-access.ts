@@ -38,16 +38,30 @@ export function createPublicationAccess(client: S3Client): PublicationAccess {
       const owner = { owner: randomUUID(), prefix, createdAt: new Date().toISOString() };
       // No expiring lease: an ambiguous policy write must not race a replacement publisher.
       // Recovery fences all publishers/the writer before removing this exact control object.
-      await client.send(
-        new PutObjectCommand({
-          Bucket,
-          Key,
-          IfNoneMatch: "*",
-          ContentType: "application/json",
-          Body: JSON.stringify(owner),
-        }),
-        { abortSignal: active },
-      );
+      active.throwIfAborted();
+      try {
+        await client.send(
+          new PutObjectCommand({
+            Bucket,
+            Key,
+            IfNoneMatch: "*",
+            ContentType: "application/json",
+            Body: JSON.stringify(owner),
+          }),
+          { abortSignal: active },
+        );
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.name === "PreconditionFailed" &&
+          "$metadata" in error &&
+          (error.$metadata as { httpStatusCode?: number } | undefined)?.httpStatusCode === 412
+        ) {
+          throw error;
+        }
+        // A lost response may have left our barrier durable; retries must not hide recovery.
+        throw new PublicationAccessRecoveryError(error);
+      }
       let previous: string[];
       try {
         previous = await readPublicationPolicy(client, active);
