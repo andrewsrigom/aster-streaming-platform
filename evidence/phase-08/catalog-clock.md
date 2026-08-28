@@ -1,0 +1,11 @@
+# Catalog attestation fixture clock correction
+
+PR 26 CI [33180440040](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33180440040), source 736bcdac7f7aeccd3a37b475dde72f67fcd15ace, failed in unchanged Catalog SQL acceptance. Job 98880075844 recorded `media_not_ready` instead of `completed` at attestation-postgres.js:260, reused-title media-ready. Source quality and Local platform passed. No retry was issued for that unchanged source.
+
+Cause: command time was frozen at fixture creation, while the real PostgreSQL attestation function records clock_timestamp. A later registration can therefore be in the command clock's future. Production correctly refuses that publication. The earlier fixed approval clock solved one ordering problem but did not advance after registration.
+
+Test-only correction: start the controlled clock two seconds earlier to force this ordering without sleep; assert future-publication rejection, then advance from the actual stored validated_at before each publication transition. Original and reused publication, current rights, cross-title isolation and dispute races remain asserted. No production source, SQL function, deadline, rights policy or gate is weakened.
+
+[Real PostgreSQL output](catalog-clock-sql.jsonl): complete existing rights-postgres verifier, PostgreSQL 18.6 immutable repository pin; Linux Node 24.19.0 tooling, 2 CPU / 2 GiB worker, 1 CPU / 384 MiB tmpfs database, unique fixture a7d8192e-86cb-42db-b5be-ea5c52e14c75. Exit 0; all connections and exact disposable container/network closed. Command inside the fixture network namespace: `node services/catalog/dist/test/integration/rights-postgres.js 5432`. Strict Catalog build and changed-file ESLint pass. No generated-media or retained-data experiment was needed.
+
+The corrected Engagement/Playback production candidate retains confirmation 5453879542 at 736bcdac and its real SQL/Docker proof. Only this test changed afterward; those runtime proofs remain supporting evidence. [Final affected gate](catalog-clock-gate.txt) passes 67/67 tasks (50 cached, 1m8.188s); [test source digest](catalog-clock-source.sha256) identifies the regression source. Protected CI remains required before merge. Rollback is reverting the fixture-only correction; runtime/data are unchanged.

@@ -26,7 +26,7 @@ Player progress reports/resume, watchlist/history reads, relay/consumers, Discov
 
 ## Next outcome
 
-P08-R01: PR 26 initial CI/review pass; confirmation's two blockers are corrected together on feat/p08-progress. Revised 67-task gate, real SQL and full federated Docker acceptance pass; publish once, confirm the corrected boundaries and finish protected merge/post-merge. P08-R06 read-side work remains in exact stash 678ccde78146453011ed7e9941d29afdad26111d on local feat/p08-history, not active. Rebase/restore once after predecessor. No repeated CPU or film experiment.
+P08-R01: confirmation 5453879542 passes corrected 736bcdac. CI 33180440040 failed an unchanged Catalog attestation fixture because its fixed clock can precede the actual SQL publication timestamp. Fix that test clock, verify real SQL and candidate checks, then publish and finish protected merge/post-merge. No production check is relaxed. P08-R06 is preserved in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history with 60 tests and real SQL/federated reads passing; restore it once after rebase. Older stashes are already restored. No CPU/media loop.
 
 ## Runtime and recovery
 

@@ -17,6 +17,10 @@ Engagement domain/application and isolated PostgreSQL pass focused and real SQL 
 
 ## Proposed behavior
 
+PR 26 CI 33180440040 failed in the unchanged Catalog attestation fixture: its fixed command clock can precede PostgreSQL's later validated_at, causing media_not_ready on reused publication. Correct only the test clock: start before a deliberate second boundary, advance from each actual registered publication timestamp, preserve future-publication rejection and all production checks. Iteration: Catalog build/lint and real SQL regression. Candidate: affected gate. Existing Engagement/Playback Docker acceptance remains valid because no production source changes; do not repeat it. Review only this test correction and any already-requested blocking-boundary confirmation.
+
+P08-R06 is preserved, not active, in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history. Its 60 tests, rebased SQL and full federated reads passed with zero fixture resources; final candidate/release remain. Restore that stash once after rebasing; older stashes were already restored.
+
 Implement progress domain/application first, then isolated PostgreSQL and owner-validated GraphQL. Only committed progress/receipt/outbox receives acknowledgement. Pure tests do not claim a running service or save UI. Watchlist, projections, relay and player integration follow within Phase 08.
 
 ## Boundaries

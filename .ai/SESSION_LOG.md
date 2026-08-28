@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Federated reads preserved and Catalog CI clock corrected
+
+### Completed
+
+P08-R06 passed 60 tests, real 25-row SQL pagination and full federated reads, including Catalog metadata, completion, retirement and authorization. Preserved the complete dependent work in d4320f6f84043fc92c2ffc687a075f087e377753. Returned to P08-R01 because CI 33180440040 exposed an unchanged Catalog fixture clock mismatch; corrected only its controlled test clock.
+
+### Evidence
+
+[Catalog SQL regression](../evidence/phase-08/catalog-clock.md) passes with forced future-publication rejection and advancement from actual registration time; zero fixture resources remain. Corrected progress source 736bcdac received clean confirmation 5453879542. No runtime rights checks, retained data or CPU diagnostics changed.
+
+### Next action
+
+Publish this verified test correction after the affected gate, finish PR 26 protected CI/merge/post-merge, then rebase and restore d4320f6 once. Complete the history candidate gate and release. Older stashes are already restored.
+
 ## 2026-08-28 — PR 26 confirmation remediation
 
 ### Completed
