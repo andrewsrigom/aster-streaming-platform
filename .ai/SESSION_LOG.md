@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Phase 06 rights/access confirmation correction
+
+### Completed
+
+Protected CI passed for 9723032; confirmation found a post-grant rights race and stale acquisition guide. Keep the access barrier through current approval and restricted SQL registration; compensate only rejected new grants and preserve prior ones. Persist recovery snapshot, bound cancellation cleanup and report uncertain recovery. Correct implemented/migration claims. No retained-media/Windows/CPU changes.
+
+### Evidence
+
+[Current correction](../evidence/phase-06/rights-access-confirmation.md): focused 27/27, source 51/51, real S3 first-grant expiry and post-grant rights/registration rejection with prior reads preserved. Exact disposable fixture removed; unchanged film/browser/SQL evidence retained.
+
+### Next action
+
+Finish final storage/docs closeout, commit/push one coherent correction, require exact-head protected CI and confirmation, squash/post-merge, then activate Phase 07. Full Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Phase 06 initial-review and CI correction
 
 ### Completed

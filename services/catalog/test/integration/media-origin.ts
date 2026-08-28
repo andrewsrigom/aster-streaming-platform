@@ -21,6 +21,7 @@ import { copyPublication } from "../../src/infrastructure/media/copy-publication
 import {
   createPublicationAccess,
   grantPublicationAccess,
+  PublicationAccessRecoveryError,
 } from "../../src/infrastructure/media/publication-access.js";
 
 const ports = process.argv.slice(2).map(Number);
@@ -58,6 +59,7 @@ const denied = async (response: Response) => {
   await response.arrayBuffer();
   assert.ok(response.status === 403 || response.status === 405, String(response.status));
 };
+const confirmed = () => Promise.resolve();
 try {
   await preparePublicationStorage(client, signal);
   await preparePublicationStorage(client, signal);
@@ -75,7 +77,16 @@ try {
   await denied(await get("/" + localPublicationStorage.bucket + "/" + key));
   const initialPrefix = "publications/" + "a".repeat(64) + "/";
   assert.deepEqual(await readPublicationPolicy(client, signal), []);
-  await access.reveal(initialPrefix, signal);
+  await assert.rejects(
+    access.reveal(initialPrefix, signal, async () => {
+      assert.equal(await (await get("/aster-media-published/" + key)).text(), content);
+      throw new Error("fixture rights expired during first grant");
+    }),
+    /fixture rights expired/u,
+  );
+  assert.deepEqual(await readPublicationPolicy(client, signal), []);
+  await denied(await get("/aster-media-published/" + key));
+  await access.reveal(initialPrefix, signal, confirmed);
   assert.deepEqual(await readPublicationPolicy(client, signal), [initialPrefix]);
   await client.send(
     new PutObjectCommand({
@@ -217,7 +228,7 @@ try {
     { abortSignal: signal },
   );
   await assert.rejects(
-    access.reveal(bundleFixture.bundle.prefix, signal),
+    access.reveal(bundleFixture.bundle.prefix, signal, confirmed),
     (error: unknown) => error instanceof Error && error.name === "PreconditionFailed",
   );
   assert.deepEqual(await readPublicationPolicy(client, signal), [initialPrefix]);
@@ -225,14 +236,46 @@ try {
     new DeleteObjectCommand({ Bucket: localPublicationStorage.bucket, Key: lockKey }),
     { abortSignal: signal },
   );
+  // Change rights after the write/readback; no rejected new grant survives confirmation.
+  let newlyExposed = false;
+  await assert.rejects(
+    grantPublicationAccess(
+      bundleFixture.bundle,
+      published,
+      access,
+      async () => {
+        if ((await readPublicationPolicy(client, signal)).includes(bundleFixture.bundle.prefix)) {
+          newlyExposed = true;
+          throw new Error("fixture concurrent rights dispute");
+        }
+      },
+      signal,
+      confirmed,
+    ),
+    /fixture concurrent rights dispute/u,
+  );
+  assert.equal(newlyExposed, true);
+  assert.deepEqual(await readPublicationPolicy(client, signal), [initialPrefix]);
+  await denied(await get("/aster-media-published/" + bundleFixture.bundle.prefix + "master.m3u8"));
+  assert.equal(await (await get(path)).text(), content);
+  // A SQL rejection after the last read also compensates under the same barrier.
+  await assert.rejects(
+    grantPublicationAccess(bundleFixture.bundle, published, access, confirmed, signal, () =>
+      Promise.reject(new Error("fixture registration rejected")),
+    ),
+    /fixture registration rejected/u,
+  );
+  assert.deepEqual(await readPublicationPolicy(client, signal), [initialPrefix]);
+  await denied(await get("/aster-media-published/" + bundleFixture.bundle.prefix + "v240-0000.ts"));
   await grantPublicationAccess(
     bundleFixture.bundle,
     published,
     access,
     () => Promise.resolve(),
     signal,
+    confirmed,
   );
-  await access.reveal(bundleFixture.bundle.prefix, signal);
+  await access.reveal(bundleFixture.bundle.prefix, signal, confirmed);
   assert.deepEqual(
     await readPublicationPolicy(client, signal),
     [initialPrefix, bundleFixture.bundle.prefix].sort(),
@@ -272,6 +315,9 @@ try {
       completeCopyPrivateBeforeGrant: true,
       competingPolicyWriterDenied: true,
       previousGrantPreserved: true,
+      expiredFirstGrantRemoved: true,
+      concurrentRightsChangeCompensated: true,
+      registrationRejectionCompensated: true,
     }) + "\n",
   );
   // Unexpected retained policy is a blocker, never silently widened or replaced.
@@ -297,15 +343,15 @@ try {
     /Unexpected publication bucket policy/u,
   );
   await assert.rejects(
-    access.reveal(bundleFixture.bundle.prefix, signal),
-    /Unexpected publication bucket policy/u,
+    access.reveal(bundleFixture.bundle.prefix, signal, confirmed),
+    PublicationAccessRecoveryError,
   );
   await client.send(
     new HeadObjectCommand({ Bucket: localPublicationStorage.bucket, Key: lockKey }),
     { abortSignal: signal },
   );
   await assert.rejects(
-    access.reveal(bundleFixture.bundle.prefix, signal),
+    access.reveal(bundleFixture.bundle.prefix, signal, confirmed),
     (error: unknown) => error instanceof Error && error.name === "PreconditionFailed",
   );
   process.stdout.write(

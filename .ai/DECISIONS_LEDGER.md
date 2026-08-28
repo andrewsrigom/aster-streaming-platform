@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0026](../docs/adr/0026-local-media-publication.md) now keeps the access barrier through current-rights/SQL confirmation and compensates rejected new grants to the exact recorded prior policy. Prior grants survive failed replay. Uncertain writes or failed compensation require explicit origin containment and fenced recovery; this is bounded compensation, not distributed atomicity or retroactive CC revocation. No schema, data-owner or retained-media change.
+
 [ADR-0026](../docs/adr/0026-local-media-publication.md) now enforces private incomplete copies and one exact verified-prefix public grant. The pinned POSIX backend lacks object ACL/tag-condition support; use its supported bucket policy, bounded to 100 prefixes, with a conditional-create non-expiring recovery barrier to serialize updates. The known retained bundle was verified/restricted without media/editorial changes. Explicit fencing precedes stale-barrier cleanup; no automatic hosted lock/lifecycle claim.
 
 [ADR-0023](../docs/adr/0023-isolated-media-decoder.md) now gives scratch volumes non-reused run-UUID names and bounded, dry-run-first orphan recovery. Only stopped, expired, exact disposable resources without foreign consumers may be removed, never force. Immutable object-storage content/audit is preserved; storage-prefix garbage collection is not implied.

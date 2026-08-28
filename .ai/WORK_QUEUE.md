@@ -49,7 +49,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 ## Work-item rules
 
-All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md). Initial review/CI corrections are implemented: private incomplete copies, serialized complete-prefix grants and migrations 1–8 probe assertion. Real storage/retained migration passes. ADR-0026 retains immutable media for recovery and disposes only orphan scratch. Next: finish corrected candidate gates, publish one coherent correction to PR 23, protected exact-head CI/confirmation, squash/post-merge; then Phase 07. No repeated CPU test or unchanged film encode.
+All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md). Initial review/CI corrections passed full protected CI at 9723032, but confirmation found a rights/access race and stale guide. The [current correction](../evidence/phase-06/rights-access-confirmation.md) compensates rejected new grants while preserving prior ones. Finish its final gates, push one coherent correction to ready PR 23, require exact-head CI/confirmation and squash/post-merge; then Phase 07. Immutable media is retained, disposable scratch alone is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

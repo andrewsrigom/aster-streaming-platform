@@ -24,6 +24,7 @@ import { copyPublication } from "./infrastructure/media/copy-publication.js";
 import {
   createPublicationAccess,
   grantPublicationAccess,
+  PublicationAccessRecoveryError,
 } from "./infrastructure/media/publication-access.js";
 import { MediaProcessingError } from "./infrastructure/media/processing-error.js";
 
@@ -127,9 +128,9 @@ try {
       }) + "\n",
     );
   } else {
-    const currentApproval = async () => {
+    const currentApproval = async (signal = controller.signal) => {
       requirePublicationApproval(
-        await attester.read(selection, controller.signal),
+        await attester.read(selection, signal),
         bundle,
         Math.floor(Date.now() / 1000),
       );
@@ -157,29 +158,31 @@ try {
       controller.signal,
     );
     const accessClient = publicationStorageClient();
+    let publicationId: string;
     try {
-      await grantPublicationAccess(
+      publicationId = await grantPublicationAccess(
         bundle,
         published,
         createPublicationAccess(accessClient),
         currentApproval,
         controller.signal,
+        (signal) =>
+          attester.register(
+            selection,
+            bundle,
+            source.rights.revision,
+            {
+              publicationId: randomUUID(),
+              reportId: randomUUID(),
+              actorId: "00000000-0000-4000-8000-000000000006",
+              correlationId,
+            },
+            signal,
+          ),
       );
     } finally {
       accessClient.destroy();
     }
-    const publicationId = await attester.register(
-      selection,
-      bundle,
-      source.rights.revision,
-      {
-        publicationId: randomUUID(),
-        reportId: randomUUID(),
-        actorId: "00000000-0000-4000-8000-000000000006",
-        correlationId,
-      },
-      controller.signal,
-    );
     process.stdout.write(
       JSON.stringify({
         event: "media_publication_attested",
@@ -198,6 +201,7 @@ try {
   process.stdout.write(
     JSON.stringify({
       event: "media_publication_failed",
+      accessRecoveryRequired: error instanceof PublicationAccessRecoveryError,
       code: controller.signal.aborted
         ? "CANCELLED"
         : error instanceof MediaProcessingError

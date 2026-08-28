@@ -1,0 +1,24 @@
+# Phase 06 rights/access confirmation
+
+2026-08-28, feat/p06-media-pipeline, correction based on 97230328e09f1bcfd4efbc92d241bb73d5802b3f. Its full protected [run 33153640859](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33153640859) passed all six jobs. The confirmation review nevertheless found a P06-R09 access/rights race and stale acquisition-guide status. Both are corrected in one batch; that earlier green head is not the release candidate.
+
+## Correction
+
+The existing private S3 barrier now covers current-rights revalidation and restricted PostgreSQL registration after the grant. It records the exact prior policy before mutation. A rejected confirmation restores only the newly added prefix, reads back the prior policy, then unlocks. An empty prior policy uses DeleteBucketPolicy; prior granted prefixes survive failed replay. Cancellation cannot cancel the separate ten-second compensation budget. Uncertain writes or failed compensation retain the barrier and report required recovery. Registration still takes the existing short owner transaction; no network request holds its title lock and no SQL privilege/schema changes.
+
+The acquisition guide now describes implemented HLS/artwork/attestation/publication and initializer migrations 0001–0008. Recovery documentation distinguishes Catalog retirement from object access and records exact origin containment/fenced recovery. No media/rights/history rewrite, Windows process change, CPU diagnostic, film download or encode.
+
+## Evidence
+
+- Focused build and publication/access tests: 27/27, including twelve rights/expiry/registration/cancellation cases with absent, older and already-current grants; confirmation under the held barrier; failed compensation/readback retains it; uncertain grant is not retried. Strict TypeScript initially caught an SDK command-union overload; split the two typed calls. Lint caught test-only stringification/arrow bodies, fixed before the full gate.
+- [Full source gate](rights-access-source.txt): 51/51 tasks, 39 cached, 1m2.912s. Command: pnpm check:source --concurrency=2 in aster-p06-tooling:git, Node 24.19.0 / pnpm 11.24.0, UID 1002, two CPUs / 2 GiB / 256 PIDs. These bounds are test scheduling, not a host-capacity claim.
+- [Initial real S3 fixture](rights-access-origin.txt): node tools/run-media-origin-integration.mjs, pinned VersityGW 1.7.0 with private single writer/read-only origin and labelled disposable 16 MiB storage. Nine objects / 2351 bytes. Expired first grant restores absent policy; a post-grant rights dispute and registration rejection each remove the new grant while old reads survive; private partial copies, CORS/ranges, immutable replay and write/listing denials pass. Client image sha256:7f3fd8bb0682eb53ce26048af5216f241c20b921ae42935e9d898544bad952e6. All fixture containers/tmpfs removed, remaining zero.
+- Final source adds a uniform recovery-error classification for an invalid initial policy/snapshot. [Final real storage confirmation](rights-access-origin-final.txt) repeats the changed failure contract successfully against image sha256:065ed936fd18ea994ac10212b9654529434298ae4aa91b6e95c3b498c6f18a6e. All race/rejection and existing access checks pass; disposable resources remaining zero. Source hashes and documentation/security closeout accompany this candidate.
+
+## Interpretation and limits
+
+[Documentation/security closeout](rights-access-closeout.txt): 10/10 tasks, five cached, 5.905s; zero secret findings. [Source hashes](rights-access-source.sha256) identify the final affected files. Local confirmation checked callback/SQL ordering, prior-grant preservation, cancellation-independent restoration, no unsafe retry after an ambiguous write, the durable recovery snapshot and accurate operator guidance. No remaining local blocker found. The additional external confirmation is justified by the changed rights/access security boundary, not speculative hardening.
+
+This is bounded compensation, not a PostgreSQL/S3 atomic commit. A newly granted prefix may be readable before rejection; already cached/downloaded bytes cannot be recalled. A process crash or unavailable storage requires exact origin containment and fenced operator recovery from the durable prior-policy snapshot. The barrier alone blocks writers, not reads. [ADR-0026](../../docs/adr/0026-local-media-publication.md) records the boundary; no instant rights-revocation or hosted guarantee is claimed.
+
+Unchanged SQL rights/dispute/rollback tests, all film bytes/recipes/URLs, retained 209-object HTTP checks and six browser decoding samples remain supporting evidence. No full-film or browser repeat is warranted for this access-only correction. Changed access behavior is covered by the focused and disposable real-storage fixtures; protected exact-head CI and confirmation still gate squash and post-merge verification.

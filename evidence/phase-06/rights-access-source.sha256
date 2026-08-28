@@ -1,0 +1,5 @@
+2f57b4d8f6728ce2998e6577a2293ba6f84d55cc5900f71f6f56b651bb7ec5dc  services/catalog/src/infrastructure/media/publication-access.ts
+8ce62a9998d105e5e57021cd14b2050c0c33162bf44e02db8cf2083468a43079  services/catalog/src/publish-media-local.ts
+a492d92da3f64430f560bd82166e91edd7149cf5db7119d3ebad40de27ea11ff  services/catalog/test/publication-access.test.ts
+77c4901a7a3946d00c3311a6111977ce8e7fc0992737d9702a404cb009c43f1c  services/catalog/test/publication-bundle.test.ts
+ddeaf00c5b3e1de872387d07fb945e3468f3563c0dcd2478ee8111347540f286  services/catalog/test/integration/media-origin.ts

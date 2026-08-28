@@ -74,14 +74,18 @@ test("public READ waits for complete integrity verification and retries an inter
   const grants = new Set<string>();
   let interrupt = true;
   const access = {
-    reveal: (prefix: string) => {
+    reveal: <T>(
+      prefix: string,
+      signal: AbortSignal,
+      confirm: (signal: AbortSignal) => Promise<T>,
+    ) => {
       assert.ok(reads >= published.objects.size);
       assert.equal(prefix, f.bundle.prefix);
       if (interrupt) {
         return Promise.reject(new Error("interrupted grant"));
       }
       grants.add(prefix);
-      return Promise.resolve();
+      return confirm(signal);
     },
   };
   await assert.rejects(
@@ -91,6 +95,7 @@ test("public READ waits for complete integrity verification and retries an inter
       access,
       approved,
       AbortSignal.timeout(3000),
+      approved,
     ),
   );
   assert.equal(grants.size, 0);
@@ -102,6 +107,7 @@ test("public READ waits for complete integrity verification and retries an inter
     access,
     approved,
     AbortSignal.timeout(3000),
+    approved,
   );
   assert.equal(grants.size, 1);
   await grantPublicationAccess(
@@ -110,6 +116,7 @@ test("public READ waits for complete integrity verification and retries an inter
     access,
     approved,
     AbortSignal.timeout(3000),
+    approved,
   );
   assert.equal(grants.size, 1);
 });
@@ -135,9 +142,13 @@ test("missing, corrupt, cancelled or revoked bundles gain no public access", asy
     let grants = 0;
     let checks = 0;
     const access = {
-      reveal: () => {
+      reveal: <T>(
+        _prefix: string,
+        signal: AbortSignal,
+        confirm: (signal: AbortSignal) => Promise<T>,
+      ) => {
         grants++;
-        return Promise.resolve();
+        return confirm(signal);
       },
     };
     await assert.rejects(
@@ -152,6 +163,7 @@ test("missing, corrupt, cancelled or revoked bundles gain no public access", asy
           return approved();
         },
         failure === "cancelled" ? AbortSignal.abort() : AbortSignal.timeout(3000),
+        approved,
       ),
     );
     assert.equal(grants, 0, failure);

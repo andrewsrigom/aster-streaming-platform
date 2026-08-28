@@ -2,16 +2,16 @@
 
 ## Resume point
 
-P06-R01 / Phase 06 remains IN_PROGRESS on feat/p06-media-pipeline; PR 23 is draft. Full Phase 00–14 goal remains active. Released main is f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 (Phases 00–05).
+P06-R01 / Phase 06 remains IN_PROGRESS on feat/p06-media-pipeline; PR 23 is ready. Full Phase 00–14 goal remains active. Released main is f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 (Phases 00–05).
 
-Latest batch after 7150bb5 fixes initial external-review findings: build/deadline ordering and cross-title checksum reuse under independent current rights. [Review evidence](../evidence/phase-06/review-remediation.md) records real PostgreSQL publication/replay/dispute checks and source 51/51. Finish this batch's closeout/commit, then mark PR 23 ready. Access evidence remains valid, but 7150bb5 is not the final release head.
+Head 9723032 passed full protected CI 33153640859. Confirmation found a new rights/access race and stale guide. Current correction holds the policy barrier through current approval/restricted SQL registration, restores only rejected new grants, preserves prior grants and records bounded uncertain-failure recovery. Focused 27/27, source 51/51 and real S3 race/rejection tests pass. [Current evidence](../evidence/phase-06/rights-access-confirmation.md). Finish final storage/docs closeout and one coherent commit/push; require new exact-head protected CI and confirmation, not another ready transition.
 
 Initial PR head 459607b407d1b6f0fd63b5416d06a9fc34b4b36d / CI 33151304060 is not release proof. Initial review found partial-object exposure; CI found the standalone probe's obsolete migrations 1–3 expectation. Both are corrected locally. [Access evidence](../evidence/phase-06/publication-access.md) records the real storage test and retained migration. Candidate source/confirmation/protected release still must close.
 
 ## Exact next actions
 
-1. Corrected source 51/51, documentation/security 10/10 and confirmation pass; source hashes/results are in the access evidence. No local blocker remains.
-2. Commit the coherent correction with normal hooks, push the existing PR branch once, mark PR 23 ready. Require the exact-head protected CI, no rerun of the old head and no bypass.
+1. Current correction passes focused 27/27, full source 51/51, final real S3 fixture and documentation/security 10/10. Local confirmation is recorded in its evidence; no source/media change remains before publication.
+2. Commit with normal hooks, push the existing PR branch once and request confirmation of this blocking-boundary correction. Require exact-head protected CI, no rerun of the old head and no bypass.
 3. Squash only after checks/review pass, fetch clean main and verify the exact post-merge CI.
 4. Mark P06-R01 done and start Phase 07 (Playback owner, product player and fresh-volume Docker playable demo). No other active work item.
 
