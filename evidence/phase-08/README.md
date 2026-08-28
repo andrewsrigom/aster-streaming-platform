@@ -4,6 +4,8 @@ P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watc
 
 ## Implemented core
 
+[PR32 seed replay correction](player-seed-replay.txt) records the later bootstrap failure after both browser journeys passed, deterministic read-only reuse tests and real S3 proof. It does not claim protected release; [phase audit](release.md) tracks that remaining gate.
+
 Engagement owns the (profile, title) aggregate. Sequence does not reset with a new playback session. Exact receipt replay returns the original result, including after a newer update or the old session's expiry; current Identity authorization is still required. Conflicting payloads and stale sequences do not write. Newer deliberate seeking may move the saved position backward. Positions clamp without collapsing distinct request digests.
 
 Default policy: opening min(30 seconds, 5% observed duration), completion max(95% duration, duration minus 30 seconds). Reports use integer milliseconds, duration up to twelve hours, and bounded client clock skew/delivery age. These rules also make the six-second playable sample resumable. Progress is not viewing proof or access authority.

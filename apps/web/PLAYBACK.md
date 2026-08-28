@@ -18,6 +18,8 @@ The six-second 320×180 sample and English captions are generated from Aster's M
 
 Successful initializers exit with code zero; application containers become healthy. Repeating the command verifies and reuses the generated files, objects and Catalog records without encoding again. Changed, incomplete, retired or conflicting data is rejected rather than overwritten.
 
+Object replay checks presence and then streams the full retained bytes through size/SHA256 verification, without another upload. Only an explicit missing object permits one conditional creation; concurrent creation still requires matching readback. Unavailable storage, corruption or cancellation fails initialization without retries or replacement. Restore availability and inspect the exact seed logs; do not delete media to make initialization pass.
+
 ## Controls and boundaries
 
 The watch page renders public metadata and mounts the client-only controls without loading media. An explicit start creates a short-lived session through Apollo, then attaches the media source. Media goes directly to the CDN-compatible object origin, never through Web, Router or Playback. Session creation has a four-second deadline and no automatic retry; an uncertain outcome requires an explicit new attempt.

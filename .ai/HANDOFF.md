@@ -2,15 +2,15 @@
 
 ## Resume point
 
-P08-R11 IN_PROGRESS on fix/p08-browser-ack from main e20a7de. PR31 passed protected CI and clean initial/confirmation reviews, but exact main33218775702 failed in the browser progress response-body/navigation observer. Not WAITING_EXTERNAL. P09-R01 is READY with its21-test domain checkpoint preserved, unpublished, as c9cb96d on feat/p09-discovery-search. Full Phase00–14 goal remains active.
+P08-R11 IN_PROGRESS on fix/p08-browser-ack, PR32. Observer head77eda41 passed both real browser journeys and clean initial5458820383/confirmation5458880876 reviews. CI33220547568 failed later in immutable-seed replay (source job99013500210). Not WAITING_EXTERNAL. P09-R01 is READY, preserved unpublished at0e31767 on feat/p09-discovery-search plus stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Complete the synchronous request selection/awaited-body correction under CHANGE_PLAN. Preserve failed main evidence; run focused regression and affected candidate gate. Require fresh protected actual-browser acceptance, clean initial/confirmation review, expected-head squash and exact main success.
-2. Then close Phase08, switch to feat/p09-discovery-search and rebase its sole local c9cb96d commit. ADR-0035 and phase09 readiness/core evidence live on that branch. Continue Catalog snapshots/export, owned SQL/rebuild/consumer and bounded search; rails/Web are later slices. Reinstall the frozen workspace after branch structure changes; do not bypass dependency verification.
-3. Phase08 audit/release artifacts accompany the correction; no documentation-only pipeline. No production runtime source changes are needed for the observer race. Existing local real-browser/SQL/Kafka proof remains supporting; fresh protected browser acceptance covers the test change.
+1. Publish the read-only seed correction in PR32. Nine seed regressions/two file tests, scoped lint, real media-origin fixture and43/43 affected tasks pass. Refresh review for this new bootstrap boundary. Require protected full startup/browser/replay, expected-head squash and exact main success; no repeat of the unchanged local storage fixture.
+2. Then close Phase08, switch to feat/p09-discovery-search and rebase its sole local0e31767 commit. Apply stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32 once. It contains Catalog snapshots/export, migration0010/new restricted reader and SQL proof. Its strict build passed, but four no-unnecessary-condition lint findings remain in discovery-postgres.ts and real SQL has not run. Reconcile restored memory with actual predecessor closeout. Continue private owner transport/projection/search; rails/Web later. Reinstall frozen dependencies after workspace changes.
+3. Phase08 audit/release artifacts accompany this correction; no documentation-only pipeline. Existing browser/SQL/Kafka evidence remains supporting. Bootstrap changes require real storage and protected complete replay; no film encode or retained-runtime change.
 4. PR31 initial review was automatic on ready/open; do not request a duplicate initial review on later PRs while that review is running. Its explicit confirmation is complete. No third round without a concrete blocker.
-5. Preserve all historical restored stashes/checkpoints; never reapply them. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
+5. Only the exact new Phase09 stash above remains to apply. Preserve all older already-restored stashes without reapplying. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
 
 ## Evidence boundaries
 

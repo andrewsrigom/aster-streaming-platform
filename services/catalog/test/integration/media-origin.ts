@@ -18,6 +18,7 @@ import { createAsterTelemetry } from "@aster/telemetry";
 import { reuseOriginal } from "../../src/infrastructure/media/reuse-original.js";
 import { publicationBundleFixture } from "../publication-fixture.js";
 import { copyPublication } from "../../src/infrastructure/media/copy-publication.js";
+import { ensurePlayableObject } from "../../src/infrastructure/fixtures/playable-publisher.js";
 import {
   createPublicationAccess,
   grantPublicationAccess,
@@ -99,6 +100,48 @@ try {
   await client.send(new CreateBucketCommand({ Bucket: "aster-media-originals" }), {
     abortSignal: signal,
   });
+  const seedKey = initialPrefix + "seed-fixture.ts";
+  const seedBytes = Buffer.alloc(128 * 1024, 0x47);
+  let seedWrites = 0;
+  const seedStorage = {
+    head: (...args: Parameters<typeof published.head>) => published.head(...args),
+    read: (...args: Parameters<typeof published.read>) => published.read(...args),
+    write: (...args: Parameters<typeof published.write>) => {
+      seedWrites += 1;
+      return published.write(...args);
+    },
+  };
+  await ensurePlayableObject(seedStorage, seedKey, seedBytes, "video/mp2t", signal, true);
+  await ensurePlayableObject(seedStorage, seedKey, seedBytes, "video/mp2t", signal, true);
+  assert.equal(seedWrites, 1);
+  await assert.rejects(
+    ensurePlayableObject(
+      seedStorage,
+      seedKey,
+      Buffer.alloc(seedBytes.length),
+      "video/mp2t",
+      signal,
+      true,
+    ),
+    /readback mismatch/u,
+  );
+  await ensurePlayableObject(seedStorage, seedKey, seedBytes, "video/mp2t", signal, true);
+  assert.equal(seedWrites, 1);
+  const seedResponse = await get("/aster-media-published/" + seedKey);
+  assert.equal(seedResponse.status, 200);
+  assert.equal(seedResponse.headers.get("content-type"), "video/mp2t");
+  assert.equal(seedResponse.headers.get("cache-control"), "public, max-age=31536000, immutable");
+  assert.deepEqual(Buffer.from(await seedResponse.arrayBuffer()), seedBytes);
+  process.stdout.write(
+    JSON.stringify({
+      event: "playable_seed_replay_verified",
+      bytes: seedBytes.length,
+      writes: seedWrites,
+      replayWrites: 0,
+      conflictRejected: true,
+      immutableHeaders: true,
+    }) + "\n",
+  );
   const original = Buffer.from([0x50, 0x4b, 3, 4, 20, 0, 0, 0, 1, 2, 3, 4]);
   const sha256 = createHash("sha256").update(original).digest("hex");
   const originalKey = "originals/sha256/" + sha256;

@@ -1,6 +1,6 @@
 # Phase 08 acceptance
 
-Status: local requirements verified and PR31 merged after protected CI33217783905 and two clean reviews. Exact main33218775702 failed in the personalized browser response-body/navigation observer. A focused harness correction and successful protected/exact-main acceptance are required before the phase is released.
+Status: local requirements verified and PR31 merged after protected CI33217783905/two clean reviews. Exact main33218775702 failed in the browser observer. PR32's observer correction passed both actual journeys and reviews, but CI33220547568 failed later in seed replay. [Read-only replay correction](player-seed-replay.txt), green protected acceptance and exact main are required before release.
 
 ## Requirement audit
 
@@ -25,7 +25,7 @@ The evidence includes the prescribed concurrency/constraints, query plans, dupli
 
 No hosted deployment or retained-demo Phase08 upgrade is claimed. The retained Phase07 demo, film, database, keys and pending state remain intact. Local browser checks cover isolated Chrome, keyboard focus and automated accessibility, not complete screen-reader/cross-browser certification. Unload delivery is best effort. Private history never enters public SSR, Redux or durable browser storage.
 
-One immutable-seed transport attempt failed and later finite diagnosis/normal replay recovered. Its cause remains unproved; fresh protected acceptance must pass without weakening the gate. No unchanged host, film, SQL or Kafka experiment is required.
+Immutable-seed transport failure reproduced in PR32 CI after both browser journeys passed. Read-only replay removes the unnecessary conditional PUT while retaining full-byte verification; the original SDK/provider cause remains unproved. Fresh real storage/protected acceptance must pass. No unchanged host, film, SQL or Kafka experiment is required.
 
 Stop optional reporting/event activation or restore compatible Web/Router/owner artifacts while retaining databases, deletion guards, media and signing keys. Additive owner migrations require compatible drained runtimes; never use an empty-state down migration as a retained-data recovery path.
 

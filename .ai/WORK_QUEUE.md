@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R11 is IN_PROGRESS again: PR31 merged after green protected CI/two clean reviews, but exact main33218775702 failed in the browser response-body/navigation observer. Correct it on fix/p08-browser-ack. P09-R01 is READY, with its unpublished21-test domain checkpoint preserved at c9cb96d on feat/p09-discovery-search; rebase after predecessor repair. Never reapply prior stashes. Retained Phase07 demo remains intact.
+P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32: browser correction passed actual journeys/reviews, but CI33220547568 failed later in immutable-seed replay. Correct read-only reuse before publication. P09-R01 is READY, with unpublished21-test domain checkpoint0e31767 on feat/p09-discovery-search plus Catalog snapshot stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32. Rebase after predecessor repair; apply only that stash once, not historical stashes. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

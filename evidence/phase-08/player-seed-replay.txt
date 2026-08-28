@@ -1,0 +1,105 @@
+P08-R11 — Immutable generated-seed replay correction, 2026-08-28
+
+Base: PR32 77eda41dd59984d3c7c0ad3568926b2983b879ee on main e20a7de.
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/32
+Failed protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33220547568
+Source job: 99013500210. Both actual browser journeys passed, then final playable-seed replay failed.
+Initial review5458820383 and confirmation5458880876 are clean for the observer-only head.
+
+Selected raw protected output:
+2026-08-28T23:41:09.1324467Z   1 passed (3.9s)
+2026-08-28T23:42:26.4114533Z   1 passed (18.0s)
+2026-08-28T23:42:29.9260482Z service "playable-seed" didn't complete successfully: exit 1
+2026-08-28T23:42:30.2652147Z playable-seed-1 | An error was encountered in a non-retryable streaming request.
+2026-08-28T23:42:30.2652776Z playable-seed-1 | {"event":"catalog_playable_seed_failed","code":"INITIALIZATION_REJECTED"}
+
+Diagnosis boundary:
+The initializer always conditionally PUT existing immutable objects before readback.
+The failure occurs at that upload boundary; its exact SDK/provider error is not known.
+The correction uses bounded HEAD then full size/SHA256 readback for existing objects.
+Only explicit absence admits one If-None-Match PUT and verification; a concurrent
+creator cannot cause overwrite. Other outcomes reject without an implicit retry.
+No shared adapter, rights, publication barrier, object layout, dependency or SQL change.
+HEAD is not an integrity check. Corrupt/read-failed/deleted objects remain blockers.
+Source: https://docs.aws.amazon.com/AmazonS3/latest/userguide/conditional-writes.html
+The documented conditional write protects the creation race, not transport availability.
+
+Environment: native WSL Ubuntu-20.04, pinned Node24.19.0/pnpm11.24.0,
+CI=true, NODE_OPTIONS=--max-old-space-size=1536; retained Phase07 demo untouched.
+Commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/catalog build
+node --test services/catalog/dist/test/playable-publisher.test.js
+The old algorithm (only helper exported for tests) fails the new replay contract:
+✖ replay verifies all bytes without a conditional upload or stream rejection (3.471216ms)
+✖ missing object is created once with immutable metadata, read back and reused (10.992955ms)
+✖ private originals do not receive public cache metadata (2.670706ms)
+✖ existing mismatched, truncated and oversized bytes reject without replacement (2.989514ms)
+✔ a creator racing the missing lookup still cannot overwrite or skip readback (2.908298ms)
+✖ lookup failures never become absence or permit writes (2.923676ms)
+✖ unknown write results reject without retries or an assumed successful readback (0.991793ms)
+✖ an object disappearing or becoming unreadable after lookup is not repaired (0.730566ms)
+✖ cancellation before or during lookup prevents further work (2.972696ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 1
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 442.576575
+
+
+After read-before-create:
+node --test services/catalog/dist/test/playable-publisher.test.js services/catalog/dist/test/playable-files.test.js
+✔ playable file verification checks every immutable byte, cancellation and finite inventory (113.630419ms)
+✔ matching checksums do not authorize remote, traversing, encrypted or extra playlist references (53.907853ms)
+✔ replay verifies all bytes without a conditional upload or stream rejection (11.411038ms)
+✔ missing object is created once with immutable metadata, read back and reused (9.434713ms)
+✔ private originals do not receive public cache metadata (3.402824ms)
+✔ existing mismatched, truncated and oversized bytes reject without replacement (6.577966ms)
+✔ a creator racing the missing lookup still cannot overwrite or skip readback (7.634562ms)
+✔ lookup failures never become absence or permit writes (1.472007ms)
+✔ unknown write results reject without retries or an assumed successful readback (1.027671ms)
+✔ an object disappearing or becoming unreadable after lookup is not repaired (0.902921ms)
+✔ cancellation before or during lookup prevents further work (0.630407ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 455.795777
+
+Initial scoped lint found four missing braces and two unbound test wrapper methods.
+Fixed those without changing behavior or disabling rules.
+Scoped ESLint then passed. One real storage run passed:
+node tools/run-media-origin-integration.mjs
+Uses the existing digest-pinned VersityGW1.7.0 writer/read-only origin, 128MiB/1CPU
+each, shared16MiB tmpfs, bounded256MiB client and exact labelled cleanup.
+No host bind mounts, retained data, film download or FFmpeg execution.
+The synthetic128KiB object uses the actual seed helper and storage adapter/SDK.
+{"event":"playable_seed_replay_verified","bytes":131072,"writes":1,"replayWrites":0,"conflictRejected":true,"immutableHeaders":true}
+{"event":"media_bundle_storage_verified","files":9,"bytes":2351,"immutableReplay":true,"allObjectTypes":true,"currentCopyImplementation":true,"partialObjectsPrivate":true,"completeCopyPrivateBeforeGrant":true,"competingPolicyWriterDenied":true,"previousGrantPreserved":true,"expiredFirstGrantRemoved":true,"concurrentRightsChangeCompensated":true,"registrationRejectionCompensated":true}
+{"event":"media_origin_verified","anonymousRead":true,"privateAndListingDenied":true,"anonymousWritesDenied":true,"signedWritesDenied":true,"cors":true,"range":true,"immutableHeaders":true,"originalReuse":true,"unexpectedPolicyRefused":true,"failedGrantRetainsBarrier":true}
+{"event":"media_origin_fixture_cleaned","remaining":0}
+
+The real fixture proves byte-preserving no-PUT replay and all existing publication
+permissions/compensation behavior. It does not reproduce the exact historical SDK
+transport failure or substitute for fresh complete protected bootstrap acceptance.
+Changed executable source SHA256 (the subsequent gate compiles this exact source):
+fd624fdb7d9a6af42db7d8356d2942c06fb04e7804e17ff5295c114f24af4308  services/catalog/src/infrastructure/fixtures/playable-publisher.ts
+1580431f175def565097614b07c5d09dd96258648a4aa72ed22044f16e41772d  services/catalog/test/playable-publisher.test.ts
+8e396c8a2daa473ebd87e38e2dc878f25a0e6baf75ede033cde1e6a63b2fbf3a  services/catalog/test/integration/media-origin.ts
+
+Canonical affected candidate gate: runQualityGate(["--changed"], limited), with
+the existing task inventory/deadline/cancellation, adding Turbo concurrency2,
+continue=always and output-logs=errors-only. Node24 native tooling as above.
+Packages: //, @aster/catalog, @aster/router, @aster/web.
+ Tasks:    43 successful, 43 total
+Cached:    24 cached, 43 total
+  Time:    1m48.49s
+Exit0. Later edits only consolidate evidence/memory; cheap documentation/state
+checks and commit hooks cover them without repeating unchanged real storage.
+Fresh protected acceptance/review, squash and exact main remain pending.

@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR31 passed protected CI and two clean reviews, then merged as e20a7de; exact main33218775702 failed in the personalized browser response-body/navigation observer. P08-R11 owns this correction. Phase09 domain work is preserved locally at c9cb96d for rebasing after repair. Retained demo stays Phase07; no data migration or media work is implied.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR32 corrects the PR31 post-merge observer failure; both real browser journeys and reviews pass at77eda41. CI33220547568 failed later in immutable-seed replay, now owned by P08-R11. Phase09 work is preserved locally at0e31767 plus the exact stash in HANDOFF. Retained demo stays Phase07; no data migration or film processing is implied.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
