@@ -6,6 +6,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
+Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
+
 Latest checkpoint: published R09 e42a365 as PR30. Implemented a finite reporter on the sole dependent branch, then preserved it in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1 to correct PR30's stale Catalog migration assertion with cheap alignment coverage. No retained demo or host change.
 
 Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; autostash fec057f applied. Added owner relay/deletion/quarantine SQL, consumer/persistence, bounded background lifecycle, opt-in event Compose overlay, dedicated-key initializer and exact-record replay CLI. Authored the real SQL proof. Earlier owner-authorized targeted Ubuntu recovery/eight-container restoration remains unchanged; no further restart, retained migration or unrelated-project action.

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R07/R08 are DONE at d7fa03a. R09/R10/R12 is IN_PROGRESS in PR30: correct the stale Catalog migration assertion exposed by CI33209032494. Three regression tests and scoped checks pass; production behavior unchanged. R11 reporter work is preserved in exact stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1, pending predecessor correction and rebase. Restore it once, never older applied stashes. Require protected CI and initial/confirmation review before predecessor release. Retained demo/media untouched.
+P08-R07/R08 are DONE at d7fa03a. R09/R10/R12 is IN_PROGRESS in PR30: Catalog correction passes hosted CI; correct the stale Engagement fields expectation exposed by CI33210330287. Eight regressions and one real fields SQL proof pass; production behavior unchanged. Initial review5457715810 is clean. R11's28-test reporter/client/media checkpoint is preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c; rebase and selectively restore once after correction acceptance. Earlier1643 checkpoint is already restored; never reapply it. Require protected CI/confirmation before predecessor release. Retained demo/media untouched.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

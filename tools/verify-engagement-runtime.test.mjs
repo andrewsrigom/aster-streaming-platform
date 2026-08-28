@@ -12,6 +12,29 @@ import {
 
 const compose = await readFile(new URL("../infra/compose/compose.yml", import.meta.url), "utf8");
 
+test("full Engagement SQL fixtures track the current migrator instead of historical schema versions", async () => {
+  const migrator = await readFile(
+    new URL("../services/engagement/src/infrastructure/local-migrations.ts", import.meta.url),
+    "utf8",
+  );
+  const versions = [...migrator.matchAll(/"(\d{4})-[a-z-]+"/gu)].map((match) => Number(match[1]));
+  assert.deepEqual(versions, [1, 2, 3, 4]);
+  for (const name of ["engagement-fields", "watchlist", "events"]) {
+    const proof = await readFile(
+      new URL(`../services/engagement/test/integration/${name}-postgres.ts`, import.meta.url),
+      "utf8",
+    );
+    const firstApplied = proof.match(/\.applied,\s*(\[[\d,\s]*\])/u)?.[1];
+    assert.ok(firstApplied, name);
+    assert.deepEqual(JSON.parse(firstApplied), versions, name);
+    if (name === "engagement-fields") {
+      const reported = proof.match(/schemaVersions:\s*(\[[\d,\s]*\])/u)?.[1];
+      assert.ok(reported);
+      assert.deepEqual(JSON.parse(reported), versions);
+    }
+  }
+});
+
 test("event shutdown requires all completed lifecycles, not a signal exit code alone", () => {
   const owners = ["identity", "catalog", "engagement"];
   const statuses = owners.map((owner) => ({

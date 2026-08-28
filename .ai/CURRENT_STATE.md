@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R09 (also R10/R12) on feat/p08-event-delivery, PR30. Initial head e42a365 failed CI33209032494 on a stale Catalog proof assertion; narrow correction and regression pass locally. R08 remains DONE at main d7fa03a363ab979f008500040b0afa62ddec2704. The sole local R11 reporter checkpoint is preserved in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1; do not resume it until the predecessor is accepted again. Older restored stashes remain forbidden. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R09 (also R10/R12), feat/p08-event-delivery, PR30. Head85513ef initial review5457715810 is clean. CI33210330287 passes Catalog/Playback and stops at another stale migration assertion in Engagement fields. Correction passes eight focused tests and one real fields SQL proof on all four migrations; publish after the affected candidate gate. R11 reporter/client/media work with28 passing tests is preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c. Older1643 checkpoint was already selectively restored; never reapply it or historical stashes. R08 remains DONE at d7fa03a. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-The Catalog Docker proof now requires migrations 1–9; its cheap test checks alignment with the actual migrator. Three focused tests and scoped lint/format pass. [Hosted failure and correction](../evidence/phase-08/events-ci.txt). Initial review remains absent. No production behavior or retained runtime changed. R11's preserved pure reporter passed eleven tests, scoped lint/format and Web typecheck; private Apollo/player integration remains pending.
+Catalog proof is corrected and passes hosted CI. Engagement fields now expects/reports schema1–4, with cheap alignment coverage across all full-migrator fixtures. [Hosted failures and correction evidence](../evidence/phase-08/events-ci.txt). Real SQL passes20-to-1 batching, ownership/deletion/read-only boundaries and exact cleanup. No production behavior or retained runtime changed. Preserved R11 reporter/private Apollo client/media binding passed28 tests, lint and Web types; actual Controls/profile lifecycle/library integration is next.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 

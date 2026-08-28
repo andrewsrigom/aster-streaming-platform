@@ -43,19 +43,90 @@ a0ecc43f8ac7e7303f7231da4787bcdc027c94e8631c9684c21fce8615f6ef93  tools/verify-c
 All event production source hashes remain unchanged in events-source.sha256.
 
 Hosted raw failure:
+Second hosted correction — CI33210330287, head85513ef53b2361ae50f6590726c246c5bb300fd0.
+Initial review5457715810 completed with no major findings. Corrected Catalog Docker,
+Playback SQL/runtime, Engagement progress and watchlist SQL passed. The fields
+fixture then failed its old applied:[1,2] assertion; actual is [1,2,3,4].
+Events SQL/full federated supervisor and browser steps were not reached.
+
+Corrected fields first-run assertion and emitted schemaVersions to1–4. Added cheap
+alignment coverage for every full Engagement-migrator fixture (fields/watchlist/events).
+Inspected the other owner/migration proofs; no further full-migrator mismatch found.
+Earlier isolated migration-version tests intentionally test their historical schema.
+Production code, SQL, cleanup and deadlines unchanged.
+
+Focused: node --test --test-concurrency=1 tools/verify-catalog-runtime.test.mjs tools/verify-engagement-runtime.test.mjs
+Final local candidate:70/70 tasks,52cached,1m18.893s, exact d7fa03a composition passes.
+Same canonical changed gate, concurrency2/continue=always; output-logs=errors-only
+only suppresses successful task logs. An initial unsupported display flag exited
+before running tasks; corrected to the supported spelling. Trailing whitespace in
+copied hosted log lines was then removed and diff/documentation checks repeated;
+no source or heavyweight result changed. Hosted corrected event runtime remains pending.
+8/8 pass,640.768735ms; scoped lint/format and pnpm --filter @aster/engagement build pass.
+One affected real proof: node tools/run-engagement-integration.mjs --fields.
+Environment: same pinned WSL tooling, PostgreSQL18.6 disposable fixture,
+384MiB RAM/1CPU/256MiB tmpfs, exact owned cleanup. Exit0, remaining0.
+Repeat rationale: verify the fields fixture against the newly applied four-migration
+schema after the hosted assertion had prevented its real boundary checks.
+No retained runtime, media, CPU investigation or unchanged Kafka repeat.
+
+Raw SQL proof and correction source hashes:
+{"event":"engagement_fields_query_count","postgres":"18.6","workload":"20 title pairs, 18 progress rows, 20 memberships, 40 fields","baselineKind":"synthetic sequential per-pair SQL, not a previous production implementation","baseline":{"queries":20,"durationMs":88.615},"batched":{"queries":1,"durationMs":9.968,"ownerReads":1,"catalogReads":1},"limitations":"single small local fixture; timings are observations, not throughput or SLO claims"}
+{"event":"engagement_fields_query_plan","plan":[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":0.46,"Total Cost":25.21,"Plan Rows":20,"Plan Width":142,"Actual Startup Time":0.177,"Actual Total Time":0.814,"Actual Rows":20,"Actual Loops":1,"Disabled":false,"Shared Hit Blocks":120,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Left","Startup Cost":0.46,"Total Cost":124.2,"Plan Rows":100,"Plan Width":142,"Actual Startup Time":0.175,"Actual Total Time":0.81,"Actual Rows":20,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"((NOT g.deleted) AND (w.account_id = ((requested.key ->> 'accountId'::text))::uuid) AND (w.title_id = ((requested.key ->> 'titleId'::text))::uuid))","Rows Removed by Join Filter":190,"Shared Hit Blocks":120,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Left","Startup Cost":0.31,"Total Cost":92.22,"Plan Rows":100,"Plan Width":235,"Actual Startup Time":0.099,"Actual Total Time":0.358,"Actual Rows":20,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"((NOT g.deleted) AND (p.account_id = ((requested.key ->> 'accountId'::text))::uuid) AND (p.title_id = ((requested.key ->> 'titleId'::text))::uuid))","Rows Removed by Join Filter":189,"Shared Hit Blocks":80,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Left","Startup Cost":0.16,"Total Cost":66.75,"Plan Rows":100,"Plan Width":73,"Actual Startup Time":0.053,"Actual Total Time":0.09,"Actual Rows":20,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Shared Hit Blocks":40,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Function Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Function Name":"jsonb_array_elements","Alias":"requested","Startup Cost":0,"Total Cost":1,"Plan Rows":100,"Plan Width":40,"Actual Startup Time":0.02,"Actual Total Time":0.023,"Actual Rows":20,"Actual Loops":1,"Disabled":false,"Shared Hit Blocks":0,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"profile_guards_profile_id_account_id_key","Relation Name":"profile_guards","Alias":"g","Startup Cost":0.16,"Total Cost":0.66,"Plan Rows":1,"Plan Width":33,"Actual Startup Time":0.002,"Actual Total Time":0.002,"Actual Rows":1,"Actual Loops":20,"Disabled":false,"Index Cond":"(profile_id = ((requested.key ->> 'profileId'::text))::uuid)","Rows Removed by Index Recheck":0,"Index Searches":20,"Shared Hit Blocks":40,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"engagement_history_order","Relation Name":"progress","Alias":"p","Startup Cost":0.15,"Total Cost":0.22,"Plan Rows":1,"Plan Width":162,"Actual Startup Time":0.002,"Actual Total Time":0.004,"Actual Rows":10.35,"Actual Loops":20,"Disabled":false,"Index Cond":"(profile_id = g.profile_id)","Rows Removed by Index Recheck":0,"Filter":"(account_id = g.account_id)","Rows Removed by Filter":0,"Index Searches":20,"Shared Hit Blocks":40,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"engagement_watchlist_order","Relation Name":"watchlist_entries","Alias":"w","Startup Cost":0.15,"Total Cost":0.27,"Plan Rows":1,"Plan Width":64,"Actual Startup Time":0.002,"Actual Total Time":0.005,"Actual Rows":10.5,"Actual Loops":20,"Disabled":false,"Index Cond":"(profile_id = g.profile_id)","Rows Removed by Index Recheck":0,"Filter":"(account_id = g.account_id)","Rows Removed by Filter":0,"Index Searches":20,"Shared Hit Blocks":40,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]}]},"Planning":{"Shared Hit Blocks":207,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},"Planning Time":2.748,"Triggers":[],"Execution Time":0.96}]}]}
+{"event":"engagement_fields_sql_boundaries","ownerRole":"aster_engagement_local","missingPairs":"preserved","foreignOwner":"no_disclosure","deletionFence":"not_found","readWrites":0,"schemaVersions":[1,2,3,4]}
+{"event":"engagement_fixture_cleaned","verifier":"engagement-fields","remaining":0,"durationMs":6356}
+43c12867c52b06a39199adebca9061d730b5384117839a01ecfcf83287a03040  services/engagement/test/integration/engagement-fields-postgres.ts
+6674370c2a62f3d2b796df1dbdeb7ef5f780a49a2bf9446b05adda392621c78d  tools/verify-engagement-runtime.test.mjs
+
+The original events-source.sha256 remains the initial75-file checkpoint. Its
+tools/verify-engagement-runtime.test.mjs hash is superseded above, not a production
+source change. New fields proof hash is also above. Other original hashes remain valid.
+
+Raw second hosted failure:
+2026-08-28T21:04:45.4719106Z {"event":"watchlist_owner_and_deletion","foreignReads":"hidden","deletedWrites":"denied","deletedReads":"hidden","privilegeEscalation":"denied","readiness":"ready"}
+2026-08-28T21:04:45.6388887Z {"event":"engagement_fixture_cleaned","verifier":"watchlist","remaining":0,"durationMs":6783}
+2026-08-28T21:04:47.8357097Z node:internal/modules/run_main:107
+2026-08-28T21:04:47.8357963Z     triggerUncaughtException(
+2026-08-28T21:04:47.8358236Z     ^
+2026-08-28T21:04:47.8358350Z
+2026-08-28T21:04:47.8358668Z AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+2026-08-28T21:04:47.8359104Z + actual - expected
+2026-08-28T21:04:47.8359241Z
+2026-08-28T21:04:47.8359325Z   [
+2026-08-28T21:04:47.8359500Z     1,
+2026-08-28T21:04:47.8359679Z     2,
+2026-08-28T21:04:47.8359852Z +   3,
+2026-08-28T21:04:47.8360024Z +   4
+2026-08-28T21:04:47.8360205Z   ]
+2026-08-28T21:04:47.8360300Z
+2026-08-28T21:04:47.8361757Z     at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/services/engagement/dist/test/integration/engagement-fields-postgres.js:102:12
+2026-08-28T21:04:47.8362754Z     at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+2026-08-28T21:04:47.8363227Z   generatedMessage: true,
+2026-08-28T21:04:47.8363503Z   code: 'ERR_ASSERTION',
+2026-08-28T21:04:47.8363736Z   actual: [ 1, 2, 3, 4 ],
+2026-08-28T21:04:47.8363971Z   expected: [ 1, 2 ],
+2026-08-28T21:04:47.8364221Z   operator: 'deepStrictEqual',
+2026-08-28T21:04:47.8364466Z   diff: 'simple'
+2026-08-28T21:04:47.8364670Z }
+2026-08-28T21:04:47.8364767Z
+2026-08-28T21:04:47.8364857Z Node.js v24.19.0
+2026-08-28T21:04:48.0110885Z {"event":"engagement_fixture_cleaned","verifier":"engagement-fields","remaining":0,"durationMs":2333}
+2026-08-28T21:04:48.0121472Z file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/run-engagement-integration.mjs:160
+
+Original hosted failure:
 2026-08-28T20:44:19.0800594Z $ node ./tools/verify-local-catalog.mjs
 2026-08-28T20:45:16.1290734Z {"event":"catalog_docker_cleaned","remaining":0,"durationMs":57015}
 2026-08-28T20:45:16.1295538Z file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:233
 2026-08-28T20:45:16.1296635Z   throw new Error("Catalog Docker verification failed", { cause: failure });
 2026-08-28T20:45:16.1297138Z         ^
-2026-08-28T20:45:16.1297274Z 
+2026-08-28T20:45:16.1297274Z
 2026-08-28T20:45:16.1297478Z Error: Catalog Docker verification failed
 2026-08-28T20:45:16.1298268Z     at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:233:9
 2026-08-28T20:45:16.1299200Z     at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
 2026-08-28T20:45:16.1299956Z   [cause]: AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
-2026-08-28T20:45:16.1300401Z   
+2026-08-28T20:45:16.1300401Z
 2026-08-28T20:45:16.1300640Z     assert.ok(first.includes('"applied":[1,2,3,4,5,6,7,8]'))
-2026-08-28T20:45:16.1300889Z   
+2026-08-28T20:45:16.1300889Z
 2026-08-28T20:45:16.1301665Z       at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:74:10
 2026-08-28T20:45:16.1302277Z       at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
 2026-08-28T20:45:16.1302630Z     generatedMessage: true,
@@ -66,7 +137,7 @@ Hosted raw failure:
 2026-08-28T20:45:16.1303528Z     diff: 'simple'
 2026-08-28T20:45:16.1303692Z   }
 2026-08-28T20:45:16.1303840Z }
-2026-08-28T20:45:16.1303924Z 
+2026-08-28T20:45:16.1303924Z
 2026-08-28T20:45:16.1303994Z Node.js v24.19.0
 2026-08-28T20:45:16.1573929Z [ELIFECYCLE] Command failed with exit code 1.
 2026-08-28T20:45:16.3893493Z ##[error]Process completed with exit code 1.
