@@ -1,5 +1,7 @@
 # History read-side checkpoint
 
+PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857 and clean final-head confirmation 5455176079 pass for 8815f5c; both review threads are resolved. The squash tree equals that reviewed tree. P08-R06 remains WAITING_EXTERNAL only for exact main push 33191946442. Do not publish watchlist before that passes.
+
 Current correction: [visibility acceptance](history-visibility.md) supersedes the initial continue-watching proof below. PR 27 confirmation found that retired/disputed rows must be excluded before pagination. The corrected code, current owner trust, SQL and Docker acceptance pass; protected correction review/CI remain pending. Earlier entries below describe their historical checkpoints, not the current blocker state.
 
 P08-R06 is implemented locally, not released. Domain/application, SELECT-only SQL, GraphQL reads and composed Title references are present on dependent feat/p08-history, now rebased onto identical squash main 4082c3a463b50ba4397f080e1b81bc15e03bf140. All 60 Engagement tests, strict build and scoped ESLint pass. [Affected candidate gate](history-candidate-gate.txt) passes 67/67 tasks (48 cached, 1m6.25s). [Current-main gate](history-main-gate.txt) additionally passes 40/40 tasks (29 cached, 1m25.329s), with compatibility checked against 4082c3a463b50ba4397f080e1b81bc15e03bf140. [Exact read-side source hashes](history-source.sha256) identify the unchanged SQL/Docker proof source. Remaining: predecessor-first protected review/release.

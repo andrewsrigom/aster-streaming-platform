@@ -44,9 +44,10 @@ function fixtureDatabase() {
     allowed: true,
     available: true,
     closed: false,
-    version: 1,
+    version: 2,
     admission: true,
     constraint: true,
+    watchlistConstraint: true,
   };
   const database: AsterPostgresAdapter = {
     connect: () => Promise.resolve({ status: "completed" }),
@@ -63,12 +64,20 @@ function fixtureDatabase() {
           const rows = query.text.includes("FROM pg_roles")
             ? [{ allowed: state.allowed }]
             : query.text.includes("SELECT version")
-              ? [{ version: state.version }]
+              ? [{ version: 1 }, { version: state.version }]
               : query.text.includes("SELECT singleton") && state.admission
                 ? [{ singleton: true }]
-                : query.text.includes("SELECT tgname") && state.constraint
-                  ? [{ tgname: "engagement_progress_commit" }]
-                  : [];
+                : query.text.includes("SELECT tgname") &&
+                    query.text.includes("engagement.watchlists")
+                  ? state.watchlistConstraint
+                    ? [
+                        { tgname: "engagement_watchlist_commit" },
+                        { tgname: "engagement_watchlist_entry_commit" },
+                      ]
+                    : []
+                  : query.text.includes("SELECT tgname") && state.constraint
+                    ? [{ tgname: "engagement_progress_commit" }]
+                    : [];
           return Promise.resolve({ rowCount: rows.length, rows });
         },
       });
@@ -150,14 +159,20 @@ test("store readiness rejects authority, schema, admission and connectivity loss
   const { database, state } = fixtureDatabase();
   const signal = AbortSignal.timeout(2000);
   assert.equal(await probeEngagementStore(database, signal), "ready");
-  for (const field of ["allowed", "admission", "available", "constraint"] as const) {
+  for (const field of [
+    "allowed",
+    "admission",
+    "available",
+    "constraint",
+    "watchlistConstraint",
+  ] as const) {
     state[field] = false;
     assert.equal(await probeEngagementStore(database, signal), "unavailable", field);
     state[field] = true;
   }
-  state.version = 2;
+  state.version = 3;
   assert.equal(await probeEngagementStore(database, signal), "unavailable");
-  state.version = 1;
+  state.version = 2;
   assert.equal(await probeEngagementStore(database, AbortSignal.abort()), "unavailable");
 });
 

@@ -2,15 +2,14 @@
 
 ## Resume point
 
-P08-R06 / Phase 08 is IN_PROGRESS on feat/p08-history at published 1ff4e91fd27a7a05dc24a4711de14a337579f0cd plus the local reset-count correction. PR 27 remains unmerged. Confirmation 5053033139 found only the twelve-volume reset cap; its regression now passes. P08-R01 and exact main push 33182876541 are DONE. Full Phase 00–14 goal remains active.
+P08-R07 / Phase 08 is IN_PROGRESS on local feat/p08-watchlist. P08-R06 is DONE: PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 pass; both review threads are resolved. The squash tree equals that reviewed tree. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish the reset-count correction with its simulated full twelve-volume/overflow checks (15 reset tests pass). No actual reset is authorized for verification. Earlier 67 Engagement tests, real 65-candidate SQL and 46/46 affected tasks remain supporting evidence for unchanged services; no media/CPU/browser repeat.
-2. Resolve PRRT_kwDOUEkeis6dO9cL and request focused confirmation of reset safety. Require protected final-head CI, review resolution, squash merge and exact main post-merge. No bypass.
-3. Watchlist source is in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3 on feat/p08-watchlist, based on 1ff4e91. Restore once after predecessor acceptance; preserve newer memory during conflicts. ALL older stashes were applied. ADR-0032 reuses ADR-0031.
-4. Watchlist compiles, 84 tests and real SQL pass (including all 256 active entries and aggregate read). The previous slot-128 unavailable did not recur in the instrumented run; no unsupported CPU/root-cause claim. Preserve raw attempts. Router known operations, full federated proof and candidate gates remain. COMMIT-stage constraint failure is deliberately indeterminate plus proven rollback.
-5. Generated watchlist builds are recoverably held in node_modules/.aster-watchlist-api-build-T8izhouz/engagement-dist and older .aster-watchlist-build-Nf4hxEOV/engagement-dist; rebuild source normally. No watchlist publication before history's protected merge/post-merge. Tooling: 4 GiB / 2 GiB Node heap, Turbo concurrency two. Then R08 batching, R09 events/deletion, R11 player reports/resume.
+1. Watchlist local acceptance passes: 84 Engagement tests, nine composition tests, real PostgreSQL migration/replay/concurrency/256-entry limits and the complete federated Docker proof. The candidate gate passes 47/47 tasks (26 cached, 4m48.539s). Sources and raw evidence are linked in [watchlist checkpoint](../evidence/phase-08/watchlist.md). Browser reports/resume, R08 batching and R09 relay/deletion remain separate.
+2. Watchlist is committed and already rebased onto origin/main 0401ae3; do not repeat that rebase or restore any stash. Source checkpoint 238ae404b756d23c056848b6e67291d8ad57d936 preserves the original candidate tree; every executable source hash and composition against exact 0401ae3 pass. Use current HEAD for final publication metadata after memory-only closeout. History's exact main push 33191946442 passed. Publish feat/p08-watchlist, then require one initial/confirmation review, protected CI, squash merge and exact post-merge for watchlist.
+3. All recovery stashes are already restored, latest 416c574be8e3d14154943308efc1ed1f017683d3. Never reapply. Ignored build backups are recoverable. Runtime attempt one hit its five-minute build deadline; the one cache-assisted attempt passed and cleaned thirteen containers/eight trust volumes/two networks, retained runtime untouched. Do not repeat it for docs/type-only/identical-tree changes.
+4. After R07 is frozen WAITING_EXTERNAL and predecessor is DONE, activate R08 request-scoped Title/Profile batching; then R09 relay/deletion and R11 browser reports/resume. No CPU/WSL/media experiment or broad reset.
 
 ## Retained runtime
 

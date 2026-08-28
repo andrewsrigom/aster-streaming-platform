@@ -46,6 +46,8 @@ The corrected production candidate received clean confirmation 5453879542. [Cata
 
 ## History and continue-watching
 
+PR 27 is squash-merged as 0401ae3 after final protected CI 33190917857 and clean confirmation 5455176079; exact main push 33191946442 remains the closeout condition. The next [watchlist checkpoint](watchlist.md) now passes local SQL, federation and candidate acceptance. Browser reports, entity extensions and event delivery are still separate work.
+
 The [current visibility correction](history-visibility.md) supersedes the initial read acceptance for continue-watching. Retired/disputed titles are now filtered through current Catalog before lookahead; history retains nullable metadata. Fresh SQL and complete Docker acceptance pass. PR 27 corrected protected review/CI and merge remain pending.
 
 [Read-side checkpoint](history-checkpoint.md) records 60 passing Engagement tests, bounded keyset SQL against 25 aggregates, normal query plans and [real federated reads](history-federated-runtime.jsonl). Pages freshly authorize Identity, retain completed history, filter continue-watching, resolve Catalog metadata and keep retired metadata nullable. Invalid pages/cursors, foreign/deleted profiles and revoked sessions disclose no state. Reads perform one bounded SELECT and no writes. Retained data/media and host processes remain untouched.

@@ -1,6 +1,6 @@
-# Engagement progress
+# Engagement progress and watchlist
 
-P08-R01–R06 and the atomic write portion of P08-R09 are implemented. The [write proof](../../evidence/phase-08/review-federated-runtime.txt) and [read proof](../../evidence/phase-08/history-federated-runtime.jsonl) exercise real owners, PostgreSQL and Router. Protected release remains pending. Player reports/resume, watchlist, general Title/Profile engagement extensions and event relay/consumers are planned next in Phase 08.
+P08-R01–R07 and the atomic write portion of P08-R09 are implemented. The [write proof](../../evidence/phase-08/review-federated-runtime.txt) and [corrected read proof](../../evidence/phase-08/history-visibility.md) exercise real owners, PostgreSQL and Router. Watchlist focused tests and real SQL pass; its federated acceptance and protected release are tracked in the [watchlist checkpoint](../../evidence/phase-08/watchlist.md). Player reports/resume, general Title/Profile engagement extensions and event relay/consumers remain planned in Phase 08.
 
 ## Public contract
 
@@ -43,6 +43,16 @@ For the resumable list use operation `ContinueWatching` and field `continueWatch
 
 Catalog resolves title metadata through its existing request-scoped entity batch. Missing/retired metadata is nullable; history retains the owned progress row without copying editorial data. Continue-watching's private visibility snapshot expires within two seconds, including conservative rights-expiry filtering, and is rechecked before disclosure; concurrent owner changes are bounded, not distributed-transactional. COMPLETED returns a connection, including an empty successful page. Authorization/SQL/Catalog failures return a non-success code and null connection, never a fabricated empty success. History does not require that private Catalog call. Missing/deleted/foreign profiles and revoked sessions disclose no history. SQL reads create no receipt, event or projection write. Retention follows the existing 256-title-per-profile bound until profile deletion; cleanup delivery remains P08-R12.
 
+## Watchlist
+
+`setWatchlist(input: SetWatchlistInput!)` accepts exactly profileId, titleId and idempotencyKey UUIDs and present Boolean. Only COMPLETED acknowledges committed membership, the profile's monotonically versioned watchlist head, receipt and event. Same key/payload returns its original result for one hour, even after a later removal; changed title/action is CONFLICT. Fresh Identity ownership is required for commands, replay and pages. Additions require current Catalog visibility; NOT_VISIBLE does not add. Removal and replay do not require Catalog. An uncertain response is retried only with the same key and payload.
+
+`watchlist(profileId, first: 1–20, after)` uses the same payload/connection convention as history, with node fields id, profileId, titleId, addedAt and nullable Catalog title metadata. It filters unavailable titles before page size and hasNextPage, using ADR-0031's visibility window. The w1 cursor is profile-bound and opaque. Order is addedAt and entry ID descending; repeated add preserves order, removal/re-add creates a new entry. This is a live traversal, not a snapshot. Retirement hides membership without deleting it, so re-publication can reveal it again.
+
+Membership has 256 reclaimable slots/profile, receipts 1024/profile for one hour, pruning at most 64 expired receipts/command. Progress and watchlist share the deletion fence and 1024 pending-outbox budget; capacity returns BACKPRESSURE, never an unbounded queue. Reads fetch at most 256 entries as one bounded JSON aggregate, then check at most thirteen serial Catalog batches of twenty within the existing request deadline. Failed authorization/storage/visibility is a non-success payload with null connection, not an empty successful page. [ADR-0032](../../docs/adr/0032-owned-watchlist-visibility.md).
+
+Migration 0002 adds watchlist storage and deferred authority/membership/receipt/event invariants. Readiness requires both 0001 and 0002 with restricted grants. Rollback preserves retained data and restores compatible images; [0002 down](migrations/0002-watchlist.down.sql) refuses nonempty watchlist state. Do not drop data to satisfy readiness. Browser controls and deletion/event delivery remain separate Phase 08 items.
+
 ## Runtime and recovery
 
 The normal full runtime profile builds Engagement and runs its finite initializer. To add personalization owners to an already running API checkpoint:
@@ -66,4 +76,4 @@ pnpm engagement:integration
 pnpm engagement:runtime
 ```
 
-The first command tests real SQL atomicity, concurrent ordering, keyset pages/query plans, bounds, privileges and empty-only rollback. The second builds a UUID-named disposable Docker project, tests current owner authorization, durable writes and federated reads/metadata/completion/retirement, reruns the initializer, stops optional owners and verifies anonymous Playback. It validates exact ownership before cleaning its own containers, trust volumes, networks and tmpfs database. No retained project, media download or CPU benchmark is involved. [Evidence and limitations](../../evidence/phase-08/README.md).
+The first command runs progress and watchlist real-SQL verifiers in separate disposable fixtures: atomicity, replay/conflict/concurrency, keyset pages/query plans, 256-entry capacity/reclaimed slots, privileges, deletion fences and empty-only rollback. The internal --watchlist selector accepts no target or connection override. The second builds a UUID-named disposable Docker project, tests current owner authorization, durable writes and federated reads/metadata/completion/retirement, reruns the initializer, stops optional owners and verifies anonymous Playback. It validates exact ownership before cleaning its own containers, trust volumes, networks and tmpfs database. No retained project, media download or CPU benchmark is involved. [Evidence and limitations](../../evidence/phase-08/README.md).

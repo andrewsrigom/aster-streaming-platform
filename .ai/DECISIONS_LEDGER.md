@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0032](../docs/adr/0032-owned-watchlist-visibility.md) defines durable profile watchlist versions/membership, one-hour idempotency, atomic receipt/event and reclaimable 256-entry slots. Reuse ADR-0031's implemented Catalog visibility contract. Watchlist acceptance remains in progress.
+
 [ADR-0031](../docs/adr/0031-current-catalog-visibility.md) corrects ENG-R04 before history release: current Catalog visibility filters continue-watching before pagination, with a purpose-separated twenty-ID private batch, two-second snapshot, independent optional admission and at most thirteen serial calls. History stays durable/nullable; no migration, cache or media change.
 
 [ADR-0030](../docs/adr/0030-local-engagement-progress.md) defines independent current Identity/Playback reads, purpose-separated credentials, bounded snapshot authority and atomic Engagement progress/receipt/outbox. Four GraphQL admissions and a 2.5-second application budget nest under Router; optional saving never gates media. Real owner-connected Docker acceptance passes. Relay, deletion consumer and browser reporting remain later Phase 08 work.

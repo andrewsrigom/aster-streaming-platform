@@ -3,12 +3,12 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "461979e5373139d2b03a60a08a79394d3d2af1b2d95487939e340c9e196858f6",
-    "supergraph.graphql": "a362f75350378e58d1566a23cfed45aaafa223b864127f080b4217bc871ade9f",
+    "api.graphql": "be441457500a5457df7cc84b9efbd5da4de2fcfefc7f84a2e997eeb6243af5ca",
+    "supergraph.graphql": "e294742e80d0839aec899adaf0a9b05d5ab7158b8e4360e0d10e5f8f61603034",
     "catalog.graphql": "326def21b66271c21da64ace0c8c440e2e5d41a179ba601d8b591e3f7bcf39a8",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
     "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
-    "engagement.graphql": "f2d9933a970a262bfe969c6daa04a8a4175a97d02b639b7f6f4b0366360d8a2b"
+    "engagement.graphql": "9bf9ff4d79268cf5b1d35ba2c80ef1be301e3c91d9f3722ad23eaef87eae2057"
   },
   "subgraphs": [
     {
@@ -388,7 +388,8 @@
           "type": "Mutation",
           "kind": "ObjectTypeDefinition",
           "fields": [
-            "recordProgress"
+            "recordProgress",
+            "setWatchlist"
           ],
           "keys": []
         },
@@ -474,7 +475,8 @@
           "kind": "ObjectTypeDefinition",
           "fields": [
             "continueWatching",
-            "progressHistory"
+            "progressHistory",
+            "watchlist"
           ],
           "keys": []
         },
@@ -494,6 +496,17 @@
           "keys": []
         },
         {
+          "type": "SetWatchlistInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "idempotencyKey",
+            "present",
+            "profileId",
+            "titleId"
+          ],
+          "keys": []
+        },
+        {
           "type": "Title",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -502,6 +515,75 @@
           "keys": [
             "id"
           ]
+        },
+        {
+          "type": "WatchlistChange",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "id",
+            "present",
+            "profileId",
+            "titleId",
+            "updatedAt",
+            "version"
+          ],
+          "keys": []
+        },
+        {
+          "type": "WatchlistCode",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "WatchlistConnection",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "edges",
+            "pageInfo"
+          ],
+          "keys": []
+        },
+        {
+          "type": "WatchlistEdge",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "cursor",
+            "node"
+          ],
+          "keys": []
+        },
+        {
+          "type": "WatchlistEntry",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "addedAt",
+            "id",
+            "profileId",
+            "title",
+            "titleId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "WatchlistPagePayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "connection",
+            "correlationId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "WatchlistPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "change",
+            "code",
+            "correlationId"
+          ],
+          "keys": []
         }
       ]
     }
@@ -548,6 +630,10 @@
       "sha256": "c7caf2e116489e472740a1da3531da7bbdd6351a9fc238d44c68004d1ba28a0d"
     },
     {
+      "name": "SetWatchlist",
+      "sha256": "54f97094c9229466ddfd72f835ffad8cccb849769e7a57d698fb19f4a7c0f1ac"
+    },
+    {
       "name": "SignOut",
       "sha256": "ce80f08dd4b79df2df945a6e1d01908cb679f4f51dc85cc848f8fe64374f0282"
     },
@@ -570,6 +656,10 @@
     {
       "name": "ViewerAndTitle",
       "sha256": "8176ac34cbfd58058188ac87177475816afb768e2a0d7335f9d4841ab2164aed"
+    },
+    {
+      "name": "Watchlist",
+      "sha256": "6703e54d9225f93e7321d4dd1d0b05ec5d3c9b9f90e6074e9700d3d37cb513d3"
     }
   ]
 }

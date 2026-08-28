@@ -79,6 +79,7 @@ type Mutation {
   demoSignIn: SessionPayload!
   recordProgress(input: RecordProgressInput!): ProgressPayload!
   selectProfile(id: ID!): ProfileSelectionPayload!
+  setWatchlist(input: SetWatchlistInput!): WatchlistPayload!
   signOut: SessionPayload!
   updateProfile(input: UpdateProfileInput!): ProfileMutationPayload!
 }
@@ -215,6 +216,7 @@ type Query {
   progressHistory(after: String, first: Int! = 20, profileId: ID!): ProgressPagePayload!
   title(id: ID!): Title
   titles(after: String, first: Int!): CatalogTitleConnection!
+  watchlist(after: String, first: Int! = 20, profileId: ID!): WatchlistPagePayload!
 }
 
 input RecordProgressInput {
@@ -232,6 +234,13 @@ type SessionPayload {
   code: IdentityOutcome!
   correlationId: ID!
   viewer: Viewer
+}
+
+input SetWatchlistInput {
+  idempotencyKey: ID!
+  present: Boolean!
+  profileId: ID!
+  titleId: ID!
 }
 
 type Title {
@@ -258,4 +267,56 @@ input UpdateProfileInput {
 type Viewer {
   accountId: ID!
   expiresAt: String!
+}
+
+type WatchlistChange {
+  id: ID!
+  present: Boolean!
+  profileId: ID!
+  titleId: ID!
+  updatedAt: Float!
+  version: Int!
+}
+
+enum WatchlistCode {
+  BACKPRESSURE
+  CANCELLED
+  COMPLETED
+  CONFLICT
+  INDETERMINATE
+  INVALID_INPUT
+  NOT_FOUND
+  NOT_VISIBLE
+  UNAUTHENTICATED
+  UNAVAILABLE
+}
+
+type WatchlistConnection {
+  edges: [WatchlistEdge!]!
+  pageInfo: ProgressPageInfo!
+}
+
+type WatchlistEdge {
+  cursor: String!
+  node: WatchlistEntry!
+}
+
+type WatchlistEntry {
+  addedAt: Float!
+  id: ID!
+  profileId: ID!
+  title: Title
+  titleId: ID!
+}
+
+type WatchlistPagePayload {
+  code: WatchlistCode!
+  connection: WatchlistConnection
+  correlationId: ID!
+}
+
+type WatchlistPayload {
+  change: WatchlistChange
+  code: WatchlistCode!
+  correlationId: ID!
 }

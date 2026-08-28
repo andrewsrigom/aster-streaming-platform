@@ -277,3 +277,46 @@ query ContinueWatching($profileId: ID!, $first: Int! = 20, $after: String) {
     }
   }
 }
+
+mutation SetWatchlist($input: SetWatchlistInput!) {
+  setWatchlist(input: $input) {
+    code
+    correlationId
+    change {
+      id
+      profileId
+      titleId
+      present
+      version
+      updatedAt
+    }
+  }
+}
+
+query Watchlist($profileId: ID!, $first: Int! = 20, $after: String) {
+  watchlist(profileId: $profileId, first: $first, after: $after) {
+    code
+    correlationId
+    connection {
+      edges {
+        cursor
+        node {
+          id
+          profileId
+          titleId
+          addedAt
+          title {
+            id
+            localized {
+              title
+            }
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

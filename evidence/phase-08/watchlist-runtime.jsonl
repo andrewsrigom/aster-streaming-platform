@@ -1,0 +1,1935 @@
+{"event":"engagement_runtime_build","project":"aster-engagement-proof-54d1fc99-b95e-4354-a7f4-a5cb22fd41a0","status":"started"}
+#0 building with "default" instance using docker driver
+
+#1 [engagement-init internal] load build definition from engagement.Dockerfile
+#1 ...
+
+#2 [catalog-init internal] load build definition from catalog.Dockerfile
+#2 transferring dockerfile: 2.23kB 0.0s done
+#2 DONE 0.1s
+
+#3 [router-trust-init internal] load build definition from router-trust.Dockerfile
+#3 transferring dockerfile: 575B 0.0s done
+#3 DONE 0.2s
+
+#4 [playback-init internal] load build definition from playback.Dockerfile
+#4 transferring dockerfile: 2.02kB 0.0s done
+#4 DONE 0.1s
+
+#1 [engagement-init internal] load build definition from engagement.Dockerfile
+#1 transferring dockerfile: 2.04kB 0.0s done
+#1 DONE 0.1s
+
+#5 [identity-init internal] load build definition from identity.Dockerfile
+#5 transferring dockerfile: 2.02kB 0.0s done
+#5 DONE 0.1s
+
+#6 [identity-init internal] load metadata for docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#6 DONE 3.0s
+
+#7 [router-trust-init internal] load .dockerignore
+#7 transferring context: 2.57kB 0.0s done
+#7 DONE 0.1s
+
+#8 [playback-init internal] load .dockerignore
+#8 transferring context: 2.57kB 0.0s done
+#8 DONE 0.1s
+
+#9 [router-trust-init internal] load build context
+#9 DONE 0.0s
+
+#10 [playback-init 1/4] FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#10 DONE 0.0s
+
+#11 [catalog-init internal] load .dockerignore
+#11 transferring context: 2.57kB 0.0s done
+#11 DONE 0.1s
+
+#12 [identity-init internal] load .dockerignore
+#12 transferring context: 2.57kB 0.0s done
+#12 DONE 0.1s
+
+#13 [engagement-init internal] load .dockerignore
+#13 transferring context: 2.57kB 0.0s done
+#13 DONE 0.1s
+
+#10 [identity-init 1/4] FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#10 DONE 0.0s
+
+#9 [router-trust-init internal] load build context
+#9 transferring context: 1.76kB 0.1s done
+#9 DONE 0.1s
+
+#14 [identity-init internal] load build context
+#14 ...
+
+#15 [router-trust-init 2/4] RUN install -d -m 0700 -o node -g node /run/aster-router/identity /run/aster-router/catalog /run/aster-router/playback /run/aster-router/engagement /run/aster-playback-catalog /run/aster-engagement-identity /run/aster-engagement-playback /run/aster-engagement-catalog
+#15 CACHED
+
+#16 [router-trust-init 3/4] COPY infra/router/init-trust.mjs /app/init-trust.mjs
+#16 CACHED
+
+#17 [router-trust-init 4/4] COPY LICENSE /app/LICENSE
+#17 CACHED
+
+#18 [router-trust-init] exporting to image
+#18 exporting layers done
+#18 writing image sha256:7a4b9379a002f33955a8b6e423b138e8d99c8e202fce0ae437b108fc34feed17 0.0s done
+#18 naming to docker.io/library/aster-engagement-proof-54d1fc99-b95e-4354-a7f4-a5cb22fd41a0-router-trust-init 0.0s done
+#18 DONE 0.1s
+
+#14 [identity-init internal] load build context
+#14 ...
+
+#19 [playback-init internal] load build context
+#19 transferring context: 33.18kB 1.0s done
+#19 DONE 1.1s
+
+#20 [identity-init build  2/17] WORKDIR /workspace
+#20 CACHED
+
+#14 [identity-init internal] load build context
+#14 ...
+
+#20 [catalog-init build  2/17] WORKDIR /workspace
+#20 CACHED
+
+#21 [playback-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#21 DONE 0.1s
+
+#14 [identity-init internal] load build context
+#14 ...
+
+#22 [playback-init build  4/17] COPY packages/config/package.json ./packages/config/
+#22 DONE 0.1s
+
+#14 [identity-init internal] load build context
+#14 ...
+
+#23 [playback-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#23 DONE 0.1s
+
+#14 [identity-init internal] load build context
+#14 transferring context: 35.01kB 1.5s done
+#14 DONE 1.6s
+
+#21 [identity-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#21 DONE 0.1s
+
+#22 [identity-init build  4/17] COPY packages/config/package.json ./packages/config/
+#22 DONE 0.1s
+
+#23 [identity-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#23 DONE 0.1s
+
+#24 [identity-init build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#24 DONE 0.1s
+
+#25 [identity-init build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#25 DONE 0.1s
+
+#26 [engagement-init internal] load build context
+#26 transferring context: 397.01kB 1.7s done
+#26 DONE 1.7s
+
+#27 [identity-init build  8/17] COPY packages/postgres/package.json ./packages/postgres/
+#27 DONE 0.1s
+
+#21 [engagement-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#21 DONE 0.1s
+
+#22 [engagement-init build  4/17] COPY packages/config/package.json ./packages/config/
+#22 DONE 0.1s
+
+#23 [engagement-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#23 DONE 0.1s
+
+#24 [engagement-init build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#24 DONE 0.1s
+
+#25 [engagement-init build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#25 DONE 0.1s
+
+#28 [playback-init build  9/17] COPY packages/redis/package.json ./packages/redis/
+#28 DONE 0.1s
+
+#29 [catalog-init internal] load build context
+#29 transferring context: 806.57kB 2.0s done
+#29 DONE 2.0s
+
+#30 [identity-init build 10/17] COPY packages/broker-kafka/package.json ./packages/broker-kafka/
+#30 DONE 0.1s
+
+#21 [catalog-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#21 DONE 0.1s
+
+#22 [catalog-init build  4/17] COPY packages/config/package.json ./packages/config/
+#22 DONE 0.1s
+
+#23 [catalog-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#23 DONE 0.1s
+
+#24 [catalog-init build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#24 DONE 0.1s
+
+#25 [catalog-init build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#25 DONE 0.1s
+
+#27 [catalog-init build  8/17] COPY packages/postgres/package.json ./packages/postgres/
+#27 DONE 0.1s
+
+#28 [catalog-init build  9/17] COPY packages/redis/package.json ./packages/redis/
+#28 DONE 0.1s
+
+#31 [catalog-init build 11/17] COPY packages/object-storage-s3/package.json ./packages/object-storage-s3/
+#31 DONE 0.1s
+
+#32 [engagement-init build 10/17] COPY packages/broker-kafka/package.json ./packages/broker-kafka/
+#32 CACHED
+
+#33 [engagement-init build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#33 CACHED
+
+#34 [engagement-init build 11/17] COPY packages/object-storage-s3/package.json ./packages/object-storage-s3/
+#34 CACHED
+
+#35 [engagement-init build  8/17] COPY packages/postgres/package.json ./packages/postgres/
+#35 CACHED
+
+#36 [engagement-init build  4/17] COPY packages/config/package.json ./packages/config/
+#36 CACHED
+
+#37 [engagement-init build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#37 CACHED
+
+#38 [engagement-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#38 CACHED
+
+#39 [engagement-init build  9/17] COPY packages/redis/package.json ./packages/redis/
+#39 CACHED
+
+#40 [engagement-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#40 CACHED
+
+#41 [identity-init build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#41 CACHED
+
+#42 [identity-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#42 CACHED
+
+#43 [identity-init build  8/17] COPY packages/postgres/package.json ./packages/postgres/
+#43 CACHED
+
+#44 [identity-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#44 CACHED
+
+#45 [identity-init build 11/17] COPY packages/object-storage-s3/package.json ./packages/object-storage-s3/
+#45 CACHED
+
+#46 [identity-init build  4/17] COPY packages/config/package.json ./packages/config/
+#46 CACHED
+
+#47 [identity-init build  9/17] COPY packages/redis/package.json ./packages/redis/
+#47 CACHED
+
+#48 [identity-init build 10/17] COPY packages/broker-kafka/package.json ./packages/broker-kafka/
+#48 CACHED
+
+#49 [identity-init build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#49 CACHED
+
+#50 [catalog-init build  4/17] COPY packages/config/package.json ./packages/config/
+#50 CACHED
+
+#51 [catalog-init build  8/17] COPY packages/postgres/package.json ./packages/postgres/
+#51 CACHED
+
+#52 [catalog-init build  6/17] COPY packages/telemetry/package.json ./packages/telemetry/
+#52 CACHED
+
+#53 [catalog-init build 10/17] COPY packages/broker-kafka/package.json ./packages/broker-kafka/
+#53 CACHED
+
+#54 [catalog-init build 11/17] COPY packages/object-storage-s3/package.json ./packages/object-storage-s3/
+#54 CACHED
+
+#55 [catalog-init build  5/17] COPY packages/runtime/package.json ./packages/runtime/
+#55 CACHED
+
+#56 [catalog-init build  9/17] COPY packages/redis/package.json ./packages/redis/
+#56 CACHED
+
+#57 [catalog-init build  7/17] COPY packages/http-express/package.json ./packages/http-express/
+#57 CACHED
+
+#58 [catalog-init build  3/17] COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+#58 CACHED
+
+#59 [identity-init build 12/17] COPY services/identity/package.json ./services/identity/
+#59 DONE 0.1s
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 ...
+
+#61 [playback-init build 12/17] COPY services/playback/package.json ./services/playback/
+#61 DONE 0.2s
+
+#62 [engagement-init build 12/17] COPY services/engagement/package.json ./services/engagement/
+#62 DONE 0.2s
+
+#63 [catalog-init build 12/17] COPY services/catalog/package.json ./services/catalog/
+#63 DONE 0.2s
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 1.160 Adding pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000 to the cache...
+#64 6.011 Scope: all 10 workspace projects
+#64 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 1.214 Adding pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000 to the cache...
+#65 6.078 Scope: all 10 workspace projects
+#65 6.371 ? Verifying lockfile against supply-chain policies (579 entries)...
+#65 6.478 Lockfile is up to date, resolution step is skipped
+#65 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 6.466 ? Verifying lockfile against supply-chain policies (579 entries)...
+#64 6.540 Lockfile is up to date, resolution step is skipped
+#64 7.852 Progress: resolved 1, reused 0, downloaded 0, added 0
+#64 8.744 Packages: +379
+#64 8.744 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#64 8.933 Progress: resolved 379, reused 0, downloaded 0, added 0
+#64 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 1.192 Adding pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000 to the cache...
+#66 6.800 Scope: all 10 workspace projects
+#66 7.669 ? Verifying lockfile against supply-chain policies (579 entries)...
+#66 7.750 Lockfile is up to date, resolution step is skipped
+#66 9.276 Progress: resolved 1, reused 0, downloaded 0, added 0
+#66 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 7.429 Progress: resolved 1, reused 0, downloaded 0, added 0
+#65 8.049 Packages: +378
+#65 8.049 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#65 8.488 Progress: resolved 378, reused 0, downloaded 0, added 0
+#65 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 1.238 Adding pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000 to the cache...
+#60 6.271 Scope: all 10 workspace projects
+#60 6.766 ? Verifying lockfile against supply-chain policies (579 entries)...
+#60 6.814 Lockfile is up to date, resolution step is skipped
+#60 7.512 Progress: resolved 1, reused 0, downloaded 0, added 0
+#60 7.991 Packages: +380
+#60 7.991 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#60 8.581 Progress: resolved 380, reused 0, downloaded 0, added 0
+#60 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 10.98 Packages: +345
+#66 10.98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#66 11.11 Progress: resolved 345, reused 0, downloaded 0, added 0
+#66 15.08 [WARN] GET https://registry.npmjs.org/@alloc%2Fquick-lru error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.10 [WARN] GET https://registry.npmjs.org/@apollo%2Fcache-control-types error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.12 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient-integration-nextjs error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.12 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient-react-streaming error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.14 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.14 [WARN] GET https://registry.npmjs.org/@apollo%2Fcomposition error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.16 [WARN] GET https://registry.npmjs.org/@apollo%2Ffederation-internals error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.17 [WARN] GET https://registry.npmjs.org/@apollo%2Fprotobufjs error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.19 [WARN] GET https://registry.npmjs.org/@apollo%2Fquery-graphs error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.20 [WARN] GET https://registry.npmjs.org/@apollo%2Fserver-gateway-interface error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.20 [WARN] GET https://registry.npmjs.org/@apollo%2Fserver error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 15.23 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-sso error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 18.37 [WARN] Request took 10434ms: https://registry.npmjs.org/@apollo%2Futils.printwithreducedwhitespace
+#66 18.41 [WARN] Request took 10303ms: https://registry.npmjs.org/@as-integrations%2Fexpress5
+#66 18.49 Progress: resolved 345, reused 0, downloaded 1, added 0
+#66 20.02 Progress: resolved 345, reused 0, downloaded 5, added 0
+#66 20.02 [WARN] Request took 12109ms: https://registry.npmjs.org/@apollo%2Futils.fetcher
+#66 20.04 [WARN] Request took 12098ms: https://registry.npmjs.org/@apollo%2Futils.removealiases
+#66 20.04 [WARN] Request took 12125ms: https://registry.npmjs.org/@apollo%2Futils.isnodelike
+#66 20.05 [WARN] Request took 11975ms: https://registry.npmjs.org/@apollo%2Futils.sortast
+#66 20.08 [WARN] Request took 12143ms: https://registry.npmjs.org/@apollo%2Futils.logger
+#66 20.09 [WARN] Request took 11997ms: https://registry.npmjs.org/@apollo%2Futils.withrequired
+#66 20.16 Packages are hard linked from the content-addressable store to the virtual store.
+#66 20.16   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#66 20.16   Virtual store is at:             node_modules/.pnpm
+#66 20.84 [WARN] Request took 12745ms: https://registry.npmjs.org/@apollo%2Futils.usagereporting
+#66 21.01 [WARN] Request took 12940ms: https://registry.npmjs.org/@apollo%2Futils.stripsensitiveliterals
+#66 21.16 [WARN] Request took 13255ms: https://registry.npmjs.org/@apollo%2Futils.dropunuseddefinitions
+#66 21.25 [WARN] Request took 12563ms: https://registry.npmjs.org/@humanfs%2Fnode
+#66 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 11.25 Progress: resolved 380, reused 0, downloaded 1, added 0
+#60 11.96 Packages are hard linked from the content-addressable store to the virtual store.
+#60 11.96   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#60 11.96   Virtual store is at:             node_modules/.pnpm
+#60 12.57 Progress: resolved 380, reused 0, downloaded 3, added 1
+#60 13.78 Progress: resolved 380, reused 0, downloaded 9, added 3
+#60 15.13 Progress: resolved 380, reused 0, downloaded 17, added 4
+#60 16.36 Progress: resolved 380, reused 0, downloaded 29, added 5
+#60 17.49 [WARN] Request took 10198ms: https://registry.npmjs.org/@eslint-community%2Fregexpp
+#60 19.21 [WARN] Tarball download average speed 42 KiB/s (size 109 KiB) is below 50 KiB/s: https://registry.npmjs.org/yaml/-/yaml-2.9.0.tgz (GET)
+#60 19.45 Progress: resolved 380, reused 0, downloaded 36, added 7
+#60 20.58 [WARN] Tarball download average speed 1 KiB/s (size 7 KiB) is below 50 KiB/s: https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz (GET)
+#60 20.79 Progress: resolved 380, reused 0, downloaded 39, added 7
+#60 20.88 [WARN] Request took 14027ms: https://registry.npmjs.org/@apollo%2Fclient-react-streaming
+#60 21.19 [WARN] Request took 13993ms: https://registry.npmjs.org/@eslint-community%2Feslint-utils
+#60 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 12.37 Progress: resolved 379, reused 0, downloaded 1, added 0
+#64 12.54 Packages are hard linked from the content-addressable store to the virtual store.
+#64 12.54   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#64 12.54   Virtual store is at:             node_modules/.pnpm
+#64 13.39 Progress: resolved 379, reused 0, downloaded 5, added 5
+#64 14.56 [WARN] Tarball download average speed 1 KiB/s (size 2 KiB) is below 50 KiB/s: https://registry.npmjs.org/@types/express/-/express-5.0.6.tgz (GET)
+#64 14.75 Progress: resolved 379, reused 0, downloaded 16, added 5
+#64 15.23 [WARN] Tarball download average speed 8 KiB/s (size 21 KiB) is below 50 KiB/s: https://registry.npmjs.org/@opentelemetry/instrumentation-runtime-node/-/instrumentation-runtime-node-0.34.0.tgz (GET)
+#64 15.80 Progress: resolved 379, reused 0, downloaded 18, added 8
+#64 17.11 Progress: resolved 379, reused 0, downloaded 27, added 9
+#64 17.39 [WARN] Request took 10596ms: https://registry.npmjs.org/@apollo%2Fprotobufjs
+#64 19.29 [WARN] Tarball download average speed 9 KiB/s (size 23 KiB) is below 50 KiB/s: https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz (GET)
+#64 20.37 Progress: resolved 379, reused 0, downloaded 31, added 9
+#64 21.22 [WARN] Request took 14092ms: https://registry.npmjs.org/@eslint-community%2Fregexpp
+#64 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 21.95 Progress: resolved 380, reused 0, downloaded 45, added 8
+#60 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 11.55 Progress: resolved 378, reused 0, downloaded 1, added 0
+#65 11.69 Packages are hard linked from the content-addressable store to the virtual store.
+#65 11.69   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#65 11.69   Virtual store is at:             node_modules/.pnpm
+#65 12.59 Progress: resolved 378, reused 0, downloaded 6, added 1
+#65 14.08 Progress: resolved 378, reused 0, downloaded 12, added 7
+#65 14.64 [WARN] Tarball download average speed 38 KiB/s (size 69 KiB) is below 50 KiB/s: https://registry.npmjs.org/@opentelemetry/core/-/core-2.10.0.tgz (GET)
+#65 14.75 [WARN] Tarball download average speed 47 KiB/s (size 143 KiB) is below 50 KiB/s: https://registry.npmjs.org/kafkajs/-/kafkajs-2.2.4.tgz (GET)
+#65 15.57 Progress: resolved 378, reused 0, downloaded 22, added 11
+#65 18.32 Progress: resolved 378, reused 0, downloaded 27, added 11
+#65 19.15 [WARN] Request took 12628ms: https://registry.npmjs.org/@apollo%2Fclient-react-streaming
+#65 20.43 Progress: resolved 378, reused 0, downloaded 33, added 11
+#65 20.46 [WARN] Request took 13389ms: https://registry.npmjs.org/@eslint-community%2Feslint-utils
+#65 20.46 [WARN] Request took 13386ms: https://registry.npmjs.org/@eslint%2Fjs
+#65 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 21.97 Progress: resolved 379, reused 0, downloaded 40, added 11
+#64 23.13 [WARN] Request took 10510ms: https://registry.npmjs.org/@img%2Fsharp-libvips-darwin-x64
+#64 23.32 [WARN] Request took 10689ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-arm
+#64 23.37 [WARN] Request took 10424ms: https://registry.npmjs.org/@img%2Fsharp-linux-riscv64
+#64 24.03 Progress: resolved 379, reused 0, downloaded 41, added 12
+#64 24.04 [WARN] Request took 17315ms: https://registry.npmjs.org/@apollo%2Fclient-react-streaming
+#64 24.05 [WARN] Request took 11435ms: https://registry.npmjs.org/@img%2Fsharp-libvips-darwin-arm64
+#64 24.07 [WARN] Request took 11448ms: https://registry.npmjs.org/@img%2Fsharp-darwin-arm64
+#64 24.07 [WARN] Request took 11454ms: https://registry.npmjs.org/@img%2Fsharp-darwin-x64
+#64 24.08 [WARN] Request took 11374ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-s390x
+#64 24.12 [WARN] Request took 11176ms: https://registry.npmjs.org/@img%2Fsharp-linux-ppc64
+#64 24.35 [WARN] Request took 17245ms: https://registry.npmjs.org/@eslint-community%2Feslint-utils
+#64 24.44 [WARN] Request took 11682ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-arm64
+#64 24.45 [WARN] Request took 11531ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm
+#64 24.47 [WARN] Request took 11019ms: https://registry.npmjs.org/@img%2Fsharp-linux-x64
+#64 24.50 [WARN] Request took 10433ms: https://registry.npmjs.org/@img%2Fsharp-linuxmusl-arm64
+#64 25.14 [WARN] Request took 18038ms: https://registry.npmjs.org/@emnapi%2Fcore
+#64 25.26 [WARN] Request took 18160ms: https://registry.npmjs.org/@emnapi%2Fruntime
+#64 25.40 [WARN] Request took 12481ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-x64
+#64 26.88 Progress: resolved 379, reused 0, downloaded 51, added 12
+#64 27.32 [WARN] Request took 12524ms: https://registry.npmjs.org/@img%2Fsharp-wasm32
+#64 27.48 [WARN] Request took 11474ms: https://registry.npmjs.org/@img%2Fsharp-win32-ia32
+#64 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 24.24 Progress: resolved 378, reused 0, downloaded 41, added 11
+#65 24.27 [WARN] Request took 17210ms: https://registry.npmjs.org/@emnapi%2Fruntime
+#65 24.29 [WARN] Request took 17239ms: https://registry.npmjs.org/@emnapi%2Fcore
+#65 24.42 [WARN] Request took 11793ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-riscv64
+#65 24.49 [WARN] Request took 11849ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-s390x
+#65 24.52 [WARN] Request took 11893ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-ppc64
+#65 25.05 [WARN] Request took 12002ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm64
+#65 25.08 [WARN] Request took 12428ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-arm64
+#65 25.11 [WARN] Request took 10317ms: https://registry.npmjs.org/@img%2Fsharp-webcontainers-wasm32
+#65 25.11 [WARN] Request took 12426ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-x64
+#65 25.11 [WARN] Request took 12065ms: https://registry.npmjs.org/@img%2Fsharp-linux-x64
+#65 25.12 [WARN] Request took 12085ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm
+#65 25.65 Progress: resolved 378, reused 0, downloaded 47, added 11
+#65 25.66 [WARN] Request took 12619ms: https://registry.npmjs.org/@img%2Fsharp-linux-riscv64
+#65 25.67 [WARN] Request took 11591ms: https://registry.npmjs.org/@img%2Fsharp-linuxmusl-arm64
+#65 25.70 [WARN] Request took 11566ms: https://registry.npmjs.org/@img%2Fsharp-wasm32
+#65 25.70 [WARN] Request took 10836ms: https://registry.npmjs.org/@img%2Fsharp-win32-ia32
+#65 26.84 Progress: resolved 378, reused 0, downloaded 51, added 11
+#65 28.14 Progress: resolved 378, reused 0, downloaded 55, added 11
+#65 28.14 [WARN] Request took 15106ms: https://registry.npmjs.org/@img%2Fsharp-linux-ppc64
+#65 29.29 Progress: resolved 378, reused 0, downloaded 55, added 14
+#65 29.60 [WARN] Request took 22639ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-login
+#65 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 29.80 Progress: resolved 379, reused 0, downloaded 57, added 12
+#64 29.85 [WARN] Request took 17225ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-arm64
+#64 30.92 [WARN] Request took 23855ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-login
+#64 31.12 [WARN] Request took 24017ms: https://registry.npmjs.org/@eslint%2Fjs
+#64 31.23 [WARN] Request took 10746ms: https://registry.npmjs.org/@jridgewell%2Fgen-mapping
+#64 32.19 Progress: resolved 379, reused 0, downloaded 63, added 13
+#64 32.21 [WARN] Request took 19503ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-x64
+#64 32.69 [WARN] Request took 10317ms: https://registry.npmjs.org/@napi-rs%2Fwasm-runtime
+#64 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 23.40 Progress: resolved 380, reused 0, downloaded 51, added 8
+#60 23.44 [WARN] Request took 16245ms: https://registry.npmjs.org/@emnapi%2Fruntime
+#60 24.19 [WARN] Request took 10400ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-x64
+#60 24.39 [WARN] Request took 17209ms: https://registry.npmjs.org/@emnapi%2Fcore
+#60 24.42 [WARN] Request took 11819ms: https://registry.npmjs.org/@img%2Fsharp-darwin-arm64
+#60 24.52 [WARN] Request took 11045ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-arm
+#60 25.28 Progress: resolved 380, reused 0, downloaded 60, added 8
+#60 25.35 [WARN] Request took 18142ms: https://registry.npmjs.org/@eslint%2Fjs
+#60 25.37 [WARN] Request took 11544ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm
+#60 25.37 [WARN] Request took 11572ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-x64
+#60 26.42 [WARN] Request took 12611ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm64
+#60 29.08 Progress: resolved 380, reused 0, downloaded 69, added 11
+#60 29.14 [WARN] Request took 15731ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-ppc64
+#60 29.34 [WARN] Request took 22293ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-login
+#60 31.03 Progress: resolved 380, reused 0, downloaded 72, added 11
+#60 32.51 Progress: resolved 380, reused 0, downloaded 75, added 11
+#60 32.51 [WARN] Request took 17648ms: https://registry.npmjs.org/@img%2Fsharp-linux-x64
+#60 33.28 [WARN] Request took 11133ms: https://registry.npmjs.org/@opentelemetry%2Fapi-logs
+#60 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 31.61 Progress: resolved 378, reused 0, downloaded 56, added 15
+#65 32.06 [WARN] Request took 13643ms: https://registry.npmjs.org/@jridgewell%2Fgen-mapping
+#65 32.32 [WARN] Request took 11842ms: https://registry.npmjs.org/@napi-rs%2Fwasm-runtime
+#65 32.45 Progress: resolved 378, reused 0, downloaded 60, added 15
+#65 32.55 [WARN] Request took 12026ms: https://registry.npmjs.org/@jridgewell%2Ftrace-mapping
+#65 32.72 [WARN] Request took 21003ms: https://registry.npmjs.org/@img%2Fsharp-darwin-x64
+#65 32.73 [WARN] Request took 18605ms: https://registry.npmjs.org/@img%2Fsharp-linuxmusl-x64
+#65 33.47 Progress: resolved 378, reused 0, downloaded 65, added 15
+#65 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 23.58 Progress: resolved 345, reused 0, downloaded 10, added 4
+#66 23.61 [WARN] Request took 15675ms: https://registry.npmjs.org/@apollo%2Futils.keyvaluecache
+#66 23.67 [WARN] Request took 15772ms: https://registry.npmjs.org/@apollo%2Futils.createhash
+#66 25.28 Progress: resolved 345, reused 0, downloaded 13, added 5
+#66 25.31 [WARN] Request took 17189ms: https://registry.npmjs.org/@aws-sdk%2Fchecksums
+#66 25.38 [WARN] Request took 17486ms: https://registry.npmjs.org/@apollo%2Fusage-reporting-protobuf
+#66 25.46 [WARN] Request took 17117ms: https://registry.npmjs.org/@aws%2Flambda-invoke-store
+#66 25.48 [WARN] Request took 17053ms: https://registry.npmjs.org/@emnapi%2Fwasi-threads
+#66 27.02 [WARN] GET https://registry.npmjs.org/@eslint-community%2Feslint-utils error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 27.22 Progress: resolved 345, reused 0, downloaded 15, added 5
+#66 29.54 Progress: resolved 345, reused 0, downloaded 17, added 7
+#66 30.83 Progress: resolved 345, reused 0, downloaded 20, added 8
+#66 32.71 Progress: resolved 345, reused 0, downloaded 29, added 8
+#66 33.69 [WARN] Tarball download average speed 47 KiB/s (size 417 KiB) is below 50 KiB/s: https://registry.npmjs.org/jiti/-/jiti-2.7.0.tgz (GET)
+#66 33.92 Progress: resolved 345, reused 0, downloaded 33, added 8
+#66 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 34.14 Progress: resolved 379, reused 0, downloaded 72, added 14
+#64 34.21 [WARN] Request took 11845ms: https://registry.npmjs.org/@jridgewell%2Ftrace-mapping
+#64 35.17 Progress: resolved 379, reused 0, downloaded 86, added 14
+#64 35.53 [WARN] Request took 11115ms: https://registry.npmjs.org/@opentelemetry%2Fapi-logs
+#64 35.75 [WARN] Request took 10654ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-transformer
+#64 36.35 [WARN] Request took 11181ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-logs
+#64 36.36 [WARN] Request took 11155ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-metrics
+#64 36.42 Progress: resolved 379, reused 0, downloaded 97, added 16
+#64 36.44 [WARN] Request took 11917ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-exporter-base
+#64 36.59 [WARN] Request took 12106ms: https://registry.npmjs.org/@opentelemetry%2Fexporter-metrics-otlp-http
+#64 36.92 [WARN] Request took 12531ms: https://registry.npmjs.org/@opentelemetry%2Fapi
+#64 37.21 [WARN] Request took 11786ms: https://registry.npmjs.org/@opentelemetry%2Fsemantic-conventions
+#64 37.48 Progress: resolved 379, reused 0, downloaded 106, added 17
+#64 37.57 [WARN] Request took 10234ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-darwin-x64
+#64 38.58 [WARN] Request took 31766ms: https://registry.npmjs.org/@apollo%2Fserver
+#64 38.99 Progress: resolved 379, reused 0, downloaded 112, added 17
+#64 40.45 Progress: resolved 379, reused 0, downloaded 115, added 17
+#64 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 34.37 Progress: resolved 380, reused 0, downloaded 80, added 11
+#60 34.87 [WARN] Request took 12529ms: https://registry.npmjs.org/@opentelemetry%2Fexporter-metrics-otlp-http
+#60 34.90 [WARN] Request took 11281ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-transformer
+#60 35.47 Progress: resolved 380, reused 0, downloaded 91, added 11
+#60 35.50 [WARN] Request took 13356ms: https://registry.npmjs.org/@opentelemetry%2Fapi
+#60 36.05 [WARN] Request took 11648ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-logs
+#60 36.19 [WARN] Request took 11638ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-metrics
+#60 36.67 Progress: resolved 380, reused 0, downloaded 98, added 11
+#60 36.73 [WARN] Request took 10152ms: https://registry.npmjs.org/@jridgewell%2Fsourcemap-codec
+#60 36.95 [WARN] Request took 13357ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-exporter-base
+#60 37.87 Progress: resolved 380, reused 0, downloaded 106, added 12
+#60 38.00 [WARN] Request took 12650ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-darwin-x64
+#60 38.07 [WARN] Request took 12717ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-darwin-arm64
+#60 38.82 [WARN] Request took 12259ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-arm-gnueabihf
+#60 39.50 Progress: resolved 380, reused 0, downloaded 113, added 14
+#60 39.70 [WARN] Request took 13142ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-arm64-musl
+#60 39.88 [WARN] Request took 13268ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-arm64-gnu
+#60 40.73 Progress: resolved 380, reused 0, downloaded 119, added 14
+#60 41.72 [WARN] Request took 10633ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-x64-gnu
+#60 41.80 [WARN] Request took 17175ms: https://registry.npmjs.org/@opentelemetry%2Fsemantic-conventions
+#60 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 41.67 Progress: resolved 379, reused 0, downloaded 119, added 17
+#64 42.78 Progress: resolved 379, reused 0, downloaded 127, added 18
+#64 42.84 [WARN] Request took 35771ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-http
+#64 43.87 [WARN] Request took 36826ms: https://registry.npmjs.org/@aws-sdk%2Fcore
+#64 44.42 Progress: resolved 379, reused 0, downloaded 132, added 18
+#64 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 34.55 Progress: resolved 378, reused 0, downloaded 67, added 15
+#65 35.69 Progress: resolved 378, reused 0, downloaded 71, added 15
+#65 35.88 [WARN] Request took 10181ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-metrics
+#65 35.88 [WARN] Request took 10226ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-logs
+#65 36.65 [WARN] Request took 10913ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-android-arm64
+#65 37.25 Progress: resolved 378, reused 0, downloaded 82, added 15
+#65 37.34 [WARN] Request took 12265ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-exporter-base
+#65 37.48 [WARN] Request took 10456ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-arm-gnueabihf
+#65 37.98 [WARN] Request took 13051ms: https://registry.npmjs.org/@opentelemetry%2Fapi
+#65 38.80 Progress: resolved 378, reused 0, downloaded 91, added 15
+#65 40.73 Progress: resolved 378, reused 0, downloaded 99, added 15
+#65 40.98 [WARN] Request took 13918ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-darwin-x64
+#65 42.31 Progress: resolved 378, reused 0, downloaded 106, added 17
+#65 42.61 [WARN] Request took 12900ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-arm64-musl
+#65 42.82 [WARN] Request took 17888ms: https://registry.npmjs.org/@opentelemetry%2Fexporter-metrics-otlp-http
+#65 43.94 Progress: resolved 378, reused 0, downloaded 108, added 18
+#65 44.01 [WARN] Request took 14315ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-arm64-gnu
+#65 44.35 [WARN] Request took 19260ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-transformer
+#65 44.48 [WARN] Request took 19921ms: https://registry.npmjs.org/@opentelemetry%2Fapi-logs
+#65 44.48 [WARN] Request took 18735ms: https://registry.npmjs.org/@opentelemetry%2Fsemantic-conventions
+#65 44.99 [WARN] Request took 12266ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-x64-gnu
+#65 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 36.15 Progress: resolved 345, reused 0, downloaded 36, added 9
+#66 36.21 [WARN] Request took 15402ms: https://registry.npmjs.org/@img%2Fcolour
+#66 37.51 Progress: resolved 345, reused 0, downloaded 40, added 9
+#66 37.56 [WARN] Request took 28931ms: https://registry.npmjs.org/@eslint%2Fobject-schema
+#66 37.62 [WARN] Request took 17547ms: https://registry.npmjs.org/@humanwhocodes%2Fmodule-importer
+#66 37.64 [WARN] Request took 17603ms: https://registry.npmjs.org/@humanfs%2Ftypes
+#66 38.80 Progress: resolved 345, reused 0, downloaded 46, added 9
+#66 38.82 [WARN] Request took 18025ms: https://registry.npmjs.org/@humanwhocodes%2Fretry
+#66 38.83 [WARN] Request took 30176ms: https://registry.npmjs.org/@humanfs%2Fcore
+#66 39.67 [WARN] Request took 31044ms: https://registry.npmjs.org/@eslint%2Fconfig-helpers
+#66 39.71 [WARN] Request took 31942ms: https://registry.npmjs.org/@alloc%2Fquick-lru
+#66 41.53 Progress: resolved 345, reused 0, downloaded 57, added 10
+#66 41.63 [WARN] Request took 32993ms: https://registry.npmjs.org/@eslint%2Fcore
+#66 41.64 [WARN] Request took 33001ms: https://registry.npmjs.org/@eslint%2Fplugin-kit
+#66 41.67 [WARN] Request took 33062ms: https://registry.npmjs.org/@eslint%2Fconfig-array
+#66 41.69 [WARN] Request took 33937ms: https://registry.npmjs.org/@apollo%2Fcache-control-types
+#66 42.43 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient error (ETIMEDOUT). Will retry in 1 minute. 1 retries left.
+#66 42.44 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient-react-streaming error (ETIMEDOUT). Will retry in 1 minute. 1 retries left.
+#66 42.44 [WARN] GET https://registry.npmjs.org/@apollo%2Ffederation-internals error (ETIMEDOUT). Will retry in 1 minute. 1 retries left.
+#66 42.91 [WARN] Request took 22053ms: https://registry.npmjs.org/@img%2Fsharp-freebsd-wasm32
+#66 44.72 Progress: resolved 345, reused 0, downloaded 61, added 13
+#66 45.07 [WARN] Request took 36876ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-login
+#66 45.10 [WARN] Request took 36689ms: https://registry.npmjs.org/@emnapi%2Fcore
+#66 45.10 [WARN] Request took 36684ms: https://registry.npmjs.org/@emnapi%2Fruntime
+#66 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 45.61 Progress: resolved 378, reused 0, downloaded 116, added 19
+#65 46.64 [WARN] Request took 40072ms: https://registry.npmjs.org/@apollo%2Fserver
+#65 46.78 [WARN] Request took 19752ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-darwin-arm64
+#65 46.78 [WARN] Request took 13313ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-x64-musl
+#65 47.37 [WARN] Tarball download average speed 46 KiB/s (size 128 KiB) is below 50 KiB/s: https://registry.npmjs.org/uri-js/-/uri-js-4.4.1.tgz (GET)
+#65 46.08 Progress: resolved 378, reused 0, downloaded 120, added 19
+#65 46.78 [WARN] Request took 13261ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-win32-arm64-msvc
+#65 47.63 Progress: resolved 378, reused 0, downloaded 126, added 19
+#65 50.53 Progress: resolved 378, reused 0, downloaded 129, added 19
+#65 50.64 [WARN] Request took 13996ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-win32-x64-msvc
+#65 51.10 [WARN] Request took 44148ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-http
+#65 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 42.19 Progress: resolved 380, reused 0, downloaded 125, added 15
+#60 42.85 [WARN] Request took 35945ms: https://registry.npmjs.org/@apollo%2Fserver
+#60 44.29 [WARN] Tarball download average speed 47 KiB/s (size 128 KiB) is below 50 KiB/s: https://registry.npmjs.org/uri-js/-/uri-js-4.4.1.tgz (GET)
+#60 44.57 Progress: resolved 380, reused 0, downloaded 134, added 15
+#60 46.65 Progress: resolved 380, reused 0, downloaded 137, added 15
+#60 46.70 [WARN] Request took 12273ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-win32-arm64-msvc
+#60 48.22 Progress: resolved 380, reused 0, downloaded 149, added 15
+#60 48.43 [WARN] Request took 15825ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-x64-musl
+#60 50.85 Progress: resolved 380, reused 0, downloaded 151, added 16
+#60 50.93 [WARN] Request took 43880ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-http
+#60 51.04 [WARN] Request took 27433ms: https://registry.npmjs.org/@opentelemetry%2Finstrumentation
+#60 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 46.58 Progress: resolved 379, reused 0, downloaded 135, added 18
+#64 46.72 [WARN] Request took 10256ms: https://registry.npmjs.org/@oxc-resolver%2Fbinding-linux-arm64-musl
+#64 47.11 [WARN] Request took 21940ms: https://registry.npmjs.org/@opentelemetry%2Fresources
+#64 45.95 [WARN] Request took 40224ms: https://registry.npmjs.org/@aws-sdk%2Fxml-builder
+#64 46.72 Progress: resolved 379, reused 0, downloaded 142, added 19
+#64 46.90 [WARN] Request took 39753ms: https://registry.npmjs.org/@aws-sdk%2Fnested-clients
+#64 47.82 [WARN] Request took 41032ms: https://registry.npmjs.org/@apollo%2Ffederation-internals
+#64 47.89 [WARN] Request took 41096ms: https://registry.npmjs.org/@apollo%2Fcomposition
+#64 48.09 [WARN] Request took 41270ms: https://registry.npmjs.org/@apollo%2Fquery-graphs
+#64 50.27 Progress: resolved 379, reused 0, downloaded 149, added 20
+#64 51.45 Progress: resolved 379, reused 0, downloaded 153, added 20
+#64 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 51.71 [WARN] Request took 26637ms: https://registry.npmjs.org/@opentelemetry%2Finstrumentation
+#65 51.94 Progress: resolved 378, reused 0, downloaded 133, added 19
+#65 52.07 [WARN] Request took 45140ms: https://registry.npmjs.org/@aws-sdk%2Fcore
+#65 52.19 [WARN] Request took 45133ms: https://registry.npmjs.org/@aws-sdk%2Fxml-builder
+#65 53.11 Progress: resolved 378, reused 0, downloaded 138, added 19
+#65 53.74 [WARN] Request took 47214ms: https://registry.npmjs.org/@apollo%2Fcomposition
+#65 54.17 [WARN] Request took 47133ms: https://registry.npmjs.org/@aws-sdk%2Fnested-clients
+#65 54.79 Progress: resolved 378, reused 0, downloaded 141, added 19
+#65 55.11 [WARN] Request took 29987ms: https://registry.npmjs.org/@opentelemetry%2Fresources
+#65 55.23 [WARN] Request took 48692ms: https://registry.npmjs.org/@apollo%2Ffederation-internals
+#65 55.25 [WARN] Request took 48682ms: https://registry.npmjs.org/@apollo%2Fquery-graphs
+#65 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 46.85 Progress: resolved 345, reused 0, downloaded 66, added 13
+#66 46.93 [WARN] Request took 21602ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-riscv64
+#66 46.94 [WARN] Request took 39175ms: https://registry.npmjs.org/@apollo%2Fclient-integration-nextjs
+#66 47.77 Progress: resolved 345, reused 0, downloaded 71, added 13
+#66 47.81 [WARN] Request took 26785ms: https://registry.npmjs.org/@img%2Fsharp-libvips-darwin-arm64
+#66 47.82 [WARN] Request took 24228ms: https://registry.npmjs.org/@img%2Fsharp-libvips-darwin-x64
+#66 51.19 Progress: resolved 345, reused 0, downloaded 74, added 14
+#66 51.36 [WARN] Request took 27647ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-arm
+#66 51.38 [WARN] Request took 25993ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-s390x
+#66 51.43 [WARN] Request took 27742ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-ppc64
+#66 53.22 Progress: resolved 345, reused 0, downloaded 78, added 14
+#66 53.50 [WARN] Request took 45023ms: https://registry.npmjs.org/@eslint-community%2Fregexpp
+#66 53.52 [WARN] Request took 44870ms: https://registry.npmjs.org/@graphql-typed-document-node%2Fcore
+#66 54.98 Progress: resolved 345, reused 0, downloaded 80, added 17
+#66 55.20 [WARN] Request took 34346ms: https://registry.npmjs.org/@img%2Fsharp-darwin-x64
+#66 55.47 [WARN] Request took 34616ms: https://registry.npmjs.org/@img%2Fsharp-darwin-arm64
+#66 55.48 [WARN] Request took 31875ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-arm64
+#66 55.50 [WARN] Request took 12668ms: https://registry.npmjs.org/@img%2Fsharp-webcontainers-wasm32
+#66 55.91 [WARN] Request took 28573ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-x64
+#66 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 55.99 Progress: resolved 378, reused 0, downloaded 144, added 19
+#65 56.40 [WARN] Request took 49836ms: https://registry.npmjs.org/@apollo%2Fsubgraph
+#65 57.47 Progress: resolved 378, reused 0, downloaded 154, added 19
+#65 58.55 Progress: resolved 378, reused 0, downloaded 157, added 19
+#65 59.58 Progress: resolved 378, reused 0, downloaded 160, added 21
+#65 59.70 [WARN] Request took 52655ms: https://registry.npmjs.org/@aws-sdk%2Ftypes
+#65 60.72 Progress: resolved 378, reused 0, downloaded 163, added 23
+#65 61.33 [WARN] Request took 12790ms: https://registry.npmjs.org/@radix-ui%2Freact-focus-guards
+#65 61.86 Progress: resolved 378, reused 0, downloaded 168, added 23
+#65 61.89 [WARN] Request took 10982ms: https://registry.npmjs.org/@smithy%2Fcore
+#65 62.05 [WARN] Request took 11356ms: https://registry.npmjs.org/@radix-ui%2Freact-id
+#65 62.10 [WARN] Request took 37180ms: https://registry.npmjs.org/@opentelemetry%2Fcore
+#65 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 51.50 [WARN] Request took 11804ms: https://registry.npmjs.org/@oxc-resolver%2Fbinding-wasm32-wasi
+#60 51.92 [WARN] Tarball download average speed 34 KiB/s (size 156 KiB) is below 50 KiB/s: https://registry.npmjs.org/@apollo/query-graphs/-/query-graphs-2.14.4.tgz (GET)
+#60 51.95 Progress: resolved 380, reused 0, downloaded 157, added 16
+#60 52.05 [WARN] Request took 45044ms: https://registry.npmjs.org/@aws-sdk%2Fcore
+#60 52.78 [WARN] Request took 18336ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-win32-x64-msvc
+#60 53.53 Progress: resolved 380, reused 0, downloaded 161, added 16
+#60 53.62 [WARN] Request took 46499ms: https://registry.npmjs.org/@aws-sdk%2Fxml-builder
+#60 53.74 [WARN] Request took 29336ms: https://registry.npmjs.org/@opentelemetry%2Fresources
+#60 53.84 [WARN] Request took 31658ms: https://registry.npmjs.org/@opentelemetry%2Fcore
+#60 55.22 Progress: resolved 380, reused 0, downloaded 164, added 18
+#60 55.35 [WARN] Request took 48474ms: https://registry.npmjs.org/@apollo%2Fcomposition
+#60 55.89 [WARN] Request took 48787ms: https://registry.npmjs.org/@aws-sdk%2Fnested-clients
+#60 55.98 [WARN] Request took 49071ms: https://registry.npmjs.org/@apollo%2Fquery-graphs
+#60 56.19 [WARN] Request took 49315ms: https://registry.npmjs.org/@apollo%2Ffederation-internals
+#60 56.50 Progress: resolved 380, reused 0, downloaded 168, added 18
+#60 56.95 [WARN] Request took 50018ms: https://registry.npmjs.org/@apollo%2Fsubgraph
+#60 57.22 [WARN] Request took 13647ms: https://registry.npmjs.org/@radix-ui%2Freact-compose-refs
+#60 58.29 Progress: resolved 380, reused 0, downloaded 176, added 18
+#60 58.42 [WARN] Request took 11804ms: https://registry.npmjs.org/@smithy%2Fcredential-provider-imds
+#60 58.55 [WARN] Request took 14510ms: https://registry.npmjs.org/@radix-ui%2Freact-context
+#60 58.67 [WARN] Request took 10197ms: https://registry.npmjs.org/@smithy%2Ffetch-http-handler
+#60 58.86 [WARN] Request took 10163ms: https://registry.npmjs.org/@smithy%2Fsignature-v4
+#60 59.49 Progress: resolved 380, reused 0, downloaded 182, added 19
+#60 59.70 [WARN] Request took 13404ms: https://registry.npmjs.org/@radix-ui%2Freact-use-callback-ref
+#60 59.90 [WARN] Request took 11399ms: https://registry.npmjs.org/@smithy%2Fnode-http-handler
+#60 59.94 [WARN] Request took 13350ms: https://registry.npmjs.org/@radix-ui%2Freact-use-layout-effect
+#60 59.96 [WARN] Request took 14519ms: https://registry.npmjs.org/@radix-ui%2Freact-focus-guards
+#60 59.96 [WARN] Request took 13365ms: https://registry.npmjs.org/@smithy%2Fcore
+#60 60.09 [WARN] Request took 14430ms: https://registry.npmjs.org/@radix-ui%2Freact-id
+#60 60.17 [WARN] Request took 13882ms: https://registry.npmjs.org/@radix-ui%2Freact-use-controllable-state
+#60 60.36 [WARN] Request took 53244ms: https://registry.npmjs.org/@aws-sdk%2Ftypes
+#60 60.52 Progress: resolved 380, reused 0, downloaded 203, added 20
+#60 60.95 [WARN] Request took 14842ms: https://registry.npmjs.org/@radix-ui%2Freact-slot
+#60 62.37 Progress: resolved 380, reused 0, downloaded 213, added 20
+#60 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 56.19 Progress: resolved 345, reused 0, downloaded 88, added 18
+#66 56.43 [WARN] Request took 29190ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linux-x64
+#66 57.06 [WARN] Request took 29776ms: https://registry.npmjs.org/@img%2Fsharp-libvips-linuxmusl-arm64
+#66 58.03 Progress: resolved 345, reused 0, downloaded 99, added 18
+#66 59.70 [WARN] GET https://registry.npmjs.org/smol-toml/-/smol-toml-1.8.0.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 59.72 [WARN] GET https://registry.npmjs.org/@typescript-eslint/typescript-estree/-/typescript-estree-8.68.0.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 59.78 Progress: resolved 345, reused 0, downloaded 103, added 19
+#66 59.96 [WARN] Request took 21152ms: https://registry.npmjs.org/@img%2Fsharp-linux-ppc64
+#66 60.76 [WARN] GET https://registry.npmjs.org/@types/express-serve-static-core/-/express-serve-static-core-5.1.3.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 60.98 [WARN] Request took 52352ms: https://registry.npmjs.org/@eslint%2Fjs
+#66 61.02 [WARN] Request took 14122ms: https://registry.npmjs.org/@jridgewell%2Fsourcemap-codec
+#66 61.06 [WARN] Request took 22245ms: https://registry.npmjs.org/@img%2Fsharp-linux-riscv64
+#66 62.05 Progress: resolved 345, reused 0, downloaded 115, added 22
+#66 62.07 [WARN] GET https://registry.npmjs.org/@img%2Fsharp-win32-arm64 error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 62.09 [WARN] GET https://registry.npmjs.org/@img%2Fsharp-win32-ia32 error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 62.10 [WARN] GET https://registry.npmjs.org/@img%2Fsharp-win32-x64 error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 62.10 [WARN] GET https://registry.npmjs.org/@aws-sdk/checksums/-/checksums-3.1000.29.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 62.18 [WARN] Request took 20410ms: https://registry.npmjs.org/@img%2Fsharp-wasm32
+#66 62.20 [WARN] Request took 20535ms: https://registry.npmjs.org/@img%2Fsharp-linuxmusl-x64
+#66 62.24 [WARN] Request took 34885ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm64
+#66 62.40 [WARN] Request took 54515ms: https://registry.npmjs.org/@apollo%2Fserver-gateway-interface
+#66 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 51.88 [WARN] Request took 45059ms: https://registry.npmjs.org/@apollo%2Fsubgraph
+#64 54.01 Progress: resolved 379, reused 0, downloaded 160, added 20
+#64 54.61 [WARN] Request took 10267ms: https://registry.npmjs.org/@smithy%2Fcredential-provider-imds
+#64 54.62 [WARN] Request took 12283ms: https://registry.npmjs.org/@radix-ui%2Freact-compose-refs
+#64 54.70 [WARN] Request took 11665ms: https://registry.npmjs.org/@radix-ui%2Freact-use-callback-ref
+#64 54.78 [WARN] Request took 11468ms: https://registry.npmjs.org/@radix-ui%2Freact-use-layout-effect
+#64 55.28 [WARN] Request took 10834ms: https://registry.npmjs.org/@smithy%2Ffetch-http-handler
+#64 55.65 Progress: resolved 379, reused 0, downloaded 170, added 21
+#64 55.71 [WARN] Request took 13374ms: https://registry.npmjs.org/@radix-ui%2Freact-context
+#64 55.75 [WARN] Request took 13362ms: https://registry.npmjs.org/@radix-ui%2Freact-focus-guards
+#64 55.77 [WARN] Request took 11507ms: https://registry.npmjs.org/@smithy%2Fcore
+#64 55.78 [WARN] Request took 31259ms: https://registry.npmjs.org/@opentelemetry%2Finstrumentation
+#64 55.81 [WARN] Request took 48717ms: https://registry.npmjs.org/@aws-sdk%2Ftypes
+#64 56.19 [WARN] Request took 12964ms: https://registry.npmjs.org/@radix-ui%2Freact-use-controllable-state
+#64 56.77 [WARN] Request took 49674ms: https://registry.npmjs.org/@aws-sdk%2Fsignature-v4-multi-region
+#64 57.30 Progress: resolved 379, reused 0, downloaded 184, added 22
+#64 57.60 [WARN] Request took 14605ms: https://registry.npmjs.org/@radix-ui%2Freact-id
+#64 58.42 [WARN] Tarball download average speed 3 KiB/s (size 6 KiB) is below 50 KiB/s: https://registry.npmjs.org/retry/-/retry-0.13.1.tgz (GET)
+#64 58.64 Progress: resolved 379, reused 0, downloaded 190, added 22
+#64 59.47 [WARN] Request took 15211ms: https://registry.npmjs.org/@reduxjs%2Ftoolkit
+#64 59.61 [WARN] Request took 16583ms: https://registry.npmjs.org/@radix-ui%2Freact-presence
+#64 59.69 [WARN] Request took 35251ms: https://registry.npmjs.org/@opentelemetry%2Fcore
+#64 59.88 Progress: resolved 379, reused 0, downloaded 196, added 23
+#64 60.15 [WARN] Request took 53067ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-web-identity
+#64 61.04 Progress: resolved 379, reused 0, downloaded 201, added 24
+#64 62.65 Progress: resolved 379, reused 0, downloaded 203, added 24
+#64 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 62.62 [WARN] Request took 16019ms: https://registry.npmjs.org/@reduxjs%2Ftoolkit
+#60 63.11 [WARN] Request took 16027ms: https://registry.npmjs.org/@radix-ui%2Freact-presence
+#60 63.27 [WARN] Request took 56170ms: https://registry.npmjs.org/@aws-sdk%2Fsignature-v4-multi-region
+#60 63.56 Progress: resolved 380, reused 0, downloaded 219, added 22
+#60 64.57 [WARN] Request took 57502ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-web-identity
+#60 65.24 Progress: resolved 380, reused 0, downloaded 239, added 23
+#60 65.31 [WARN] Request took 18022ms: https://registry.npmjs.org/@radix-ui%2Freact-primitive
+#60 65.60 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.65 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fclient-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-env error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-sso error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Flib-storage error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fmiddleware-sdk-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.67 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Ftoken-providers error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.68 [WARN] GET https://registry.npmjs.org/@axe-core%2Fplaywright error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.70 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fmerge error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.70 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fschema error (23). Will retry in 10 seconds. 2 retries left.
+#60 65.70 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Futils error (23). Will retry in 10 seconds. 2 retries left.
+#60 66.29 [WARN] Request took 20589ms: https://registry.npmjs.org/@radix-ui%2Freact-focus-scope
+#60 66.65 Progress: resolved 380, reused 0, downloaded 249, added 24
+#60 66.73 [WARN] Request took 19978ms: https://registry.npmjs.org/@radix-ui%2Freact-portal
+#60 68.04 Progress: resolved 380, reused 0, downloaded 259, added 25
+#60 69.13 Progress: resolved 380, reused 0, downloaded 264, added 26
+#60 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 63.04 [WARN] GET https://registry.npmjs.org/@jridgewell%2Fgen-mapping error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.04 [WARN] GET https://registry.npmjs.org/@aws-sdk/core/-/core-3.977.9.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.05 [WARN] GET https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972.81.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.06 [WARN] GET https://registry.npmjs.org/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.996.46.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.07 [WARN] GET https://registry.npmjs.org/@aws-sdk/types/-/types-3.974.5.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.07 [WARN] GET https://registry.npmjs.org/@smithy/core/-/core-3.33.3.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.85 Progress: resolved 345, reused 0, downloaded 123, added 22
+#66 63.88 [WARN] GET https://registry.npmjs.org/@jridgewell%2Ftrace-mapping error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.89 [WARN] GET https://registry.npmjs.org/@smithy/fetch-http-handler/-/fetch-http-handler-5.7.2.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.89 [WARN] GET https://registry.npmjs.org/@smithy/types/-/types-4.17.2.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 63.91 [WARN] Request took 17026ms: https://registry.npmjs.org/@jridgewell%2Fresolve-uri
+#66 63.93 [WARN] Request took 25103ms: https://registry.npmjs.org/@img%2Fsharp-linux-s390x
+#66 63.98 [WARN] Request took 16073ms: https://registry.npmjs.org/@napi-rs%2Fwasm-runtime
+#66 64.27 [WARN] Request took 26650ms: https://registry.npmjs.org/@img%2Fsharp-linux-arm
+#66 64.75 [WARN] Request took 56952ms: https://registry.npmjs.org/@apollo%2Fprotobufjs
+#66 65.04 Progress: resolved 345, reused 0, downloaded 138, added 23
+#66 66.27 Progress: resolved 345, reused 0, downloaded 142, added 25
+#66 66.35 [WARN] GET https://registry.npmjs.org/@apollo%2Fsubgraph error (23). Will retry in 10 seconds. 2 retries left.
+#66 66.55 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fclient-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#66 66.72 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcore error (23). Will retry in 10 seconds. 2 retries left.
+#66 66.73 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-env error (23). Will retry in 10 seconds. 2 retries left.
+#66 66.73 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-http error (23). Will retry in 10 seconds. 2 retries left.
+#66 66.73 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini error (23). Will retry in 10 seconds. 2 retries left.
+#66 66.77 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.13 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.13 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-web-identity error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.13 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Flib-storage error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.20 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fmiddleware-sdk-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.20 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fnested-clients error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.20 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fsignature-v4-multi-region error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.20 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Ftoken-providers error (23). Will retry in 10 seconds. 2 retries left.
+#66 67.24 [WARN] Request took 58767ms: https://registry.npmjs.org/@eslint-community%2Feslint-utils
+#66 67.44 [WARN] Request took 27768ms: https://registry.npmjs.org/@img%2Fsharp-linux-x64
+#66 69.06 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Ftypes error (23). Will retry in 10 seconds. 2 retries left.
+#66 69.07 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fxml-builder error (23). Will retry in 10 seconds. 2 retries left.
+#66 69.08 [WARN] GET https://registry.npmjs.org/@axe-core%2Fplaywright error (23). Will retry in 10 seconds. 2 retries left.
+#66 69.08 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fmerge error (23). Will retry in 10 seconds. 2 retries left.
+#66 69.09 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fschema error (23). Will retry in 10 seconds. 2 retries left.
+#66 69.18 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Futils error (23). Will retry in 10 seconds. 2 retries left.
+#66 69.18 Progress: resolved 345, reused 0, downloaded 149, added 26
+#66 69.95 [WARN] Request took 14009ms: https://registry.npmjs.org/@opentelemetry%2Fexporter-metrics-otlp-http
+#66 70.21 [WARN] Request took 11712ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-exporter-base
+#66 70.27 [WARN] Request took 30590ms: https://registry.npmjs.org/@img%2Fsharp-linuxmusl-arm64
+#66 70.74 Progress: resolved 345, reused 0, downloaded 165, added 26
+#66 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 70.75 Progress: resolved 380, reused 0, downloaded 271, added 27
+#60 70.81 [WARN] Request took 25540ms: https://registry.npmjs.org/@radix-ui%2Freact-dismissable-layer
+#60 70.99 [WARN] Request took 10445ms: https://registry.npmjs.org/@types%2Freact-dom
+#60 71.77 Progress: resolved 380, reused 0, downloaded 287, added 27
+#60 72.89 Progress: resolved 380, reused 0, downloaded 318, added 33
+#60 73.44 [WARN] Request took 28201ms: https://registry.npmjs.org/@radix-ui%2Freact-dialog
+#60 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 63.05 Progress: resolved 378, reused 0, downloaded 175, added 23
+#65 63.17 [WARN] Request took 56126ms: https://registry.npmjs.org/@aws-sdk%2Fsignature-v4-multi-region
+#65 63.67 [WARN] Request took 12765ms: https://registry.npmjs.org/@reduxjs%2Ftoolkit
+#65 64.02 [WARN] Request took 13302ms: https://registry.npmjs.org/@radix-ui%2Freact-slot
+#65 64.08 Progress: resolved 378, reused 0, downloaded 193, added 23
+#65 65.52 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient error (23). Will retry in 10 seconds. 2 retries left.
+#65 65.72 [WARN] Request took 15006ms: https://registry.npmjs.org/@radix-ui%2Freact-presence
+#65 66.15 Progress: resolved 378, reused 0, downloaded 202, added 23
+#65 66.17 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fclient-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.17 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-env error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.23 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.32 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.35 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.35 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-sso error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.38 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-web-identity error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.39 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Flib-storage error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.41 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fmiddleware-sdk-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.42 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Ftoken-providers error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.42 [WARN] GET https://registry.npmjs.org/@axe-core%2Fplaywright error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.42 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fmerge error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.43 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fschema error (23). Will retry in 10 seconds. 2 retries left.
+#65 66.46 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Futils error (23). Will retry in 10 seconds. 2 retries left.
+#65 68.03 Progress: resolved 378, reused 0, downloaded 214, added 25
+#65 69.51 Progress: resolved 378, reused 0, downloaded 227, added 27
+#65 69.78 [WARN] Request took 19062ms: https://registry.npmjs.org/@radix-ui%2Freact-primitive
+#65 70.24 [WARN] Request took 21689ms: https://registry.npmjs.org/@radix-ui%2Freact-focus-scope
+#65 70.53 Progress: resolved 378, reused 0, downloaded 261, added 31
+#65 70.55 [WARN] Request took 19890ms: https://registry.npmjs.org/@radix-ui%2Freact-portal
+#65 70.82 [WARN] Request took 22371ms: https://registry.npmjs.org/@radix-ui%2Freact-dismissable-layer
+#65 71.96 Progress: resolved 378, reused 0, downloaded 290, added 42
+#65 72.34 [WARN] Request took 24037ms: https://registry.npmjs.org/@radix-ui%2Freact-dialog
+#65 73.05 Progress: resolved 378, reused 0, downloaded 313, added 51
+#65 73.38 [WARN] Request took 17701ms: https://registry.npmjs.org/@tailwindcss%2Foxide-wasm32-wasi
+#65 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 62.98 [WARN] Request took 19952ms: https://registry.npmjs.org/@radix-ui%2Freact-primitive
+#64 64.04 Progress: resolved 379, reused 0, downloaded 206, added 24
+#64 64.08 [WARN] Request took 57022ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-env
+#64 65.04 [WARN] GET https://registry.npmjs.org/@apollo%2Fclient error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.49 Progress: resolved 379, reused 0, downloaded 223, added 24
+#64 65.55 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fclient-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.57 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-sso error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Flib-storage error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fmiddleware-sdk-s3 error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Ftoken-providers error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@axe-core%2Fplaywright error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fmerge error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Fschema error (23). Will retry in 10 seconds. 2 retries left.
+#64 65.61 [WARN] GET https://registry.npmjs.org/@graphql-tools%2Futils error (23). Will retry in 10 seconds. 2 retries left.
+#64 66.00 [WARN] Request took 23200ms: https://registry.npmjs.org/@radix-ui%2Freact-focus-scope
+#64 66.13 [WARN] Request took 23105ms: https://registry.npmjs.org/@radix-ui%2Freact-portal
+#64 66.21 [WARN] Request took 10396ms: https://registry.npmjs.org/@types%2Fexpress-serve-static-core
+#64 66.30 [WARN] Request took 23270ms: https://registry.npmjs.org/@radix-ui%2Freact-slot
+#64 66.67 Progress: resolved 379, reused 0, downloaded 232, added 25
+#64 68.38 Progress: resolved 379, reused 0, downloaded 245, added 27
+#64 68.71 [WARN] Request took 12298ms: https://registry.npmjs.org/@types%2Freact-dom
+#64 68.87 [WARN] Request took 26482ms: https://registry.npmjs.org/@radix-ui%2Freact-dismissable-layer
+#64 69.78 Progress: resolved 379, reused 0, downloaded 269, added 28
+#64 70.78 [WARN] Request took 28393ms: https://registry.npmjs.org/@radix-ui%2Freact-dialog
+#64 71.24 Progress: resolved 379, reused 0, downloaded 305, added 32
+#64 72.22 [WARN] Request took 19433ms: https://registry.npmjs.org/@tailwindcss%2Foxide-wasm32-wasi
+#64 72.26 Progress: resolved 379, reused 0, downloaded 334, added 39
+#64 72.80 [WARN] Request took 25081ms: https://registry.npmjs.org/@tailwindcss%2Foxide-android-arm64
+#64 73.33 [WARN] Request took 26506ms: https://registry.npmjs.org/@tailwindcss%2Fnode
+#64 73.41 Progress: resolved 379, reused 0, downloaded 355, added 44
+#64 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 73.81 [WARN] Request took 17154ms: https://registry.npmjs.org/@tailwindcss%2Foxide-wasm32-wasi
+#60 73.98 Progress: resolved 380, reused 0, downloaded 365, added 41
+#60 74.21 [WARN] Request took 20219ms: https://registry.npmjs.org/@tailwindcss%2Foxide-android-arm64
+#60 74.51 [WARN] Request took 20570ms: https://registry.npmjs.org/@tailwindcss%2Fnode
+#60 75.40 Progress: resolved 380, reused 0, downloaded 380, added 60
+#60 74.89 [WARN] Request took 18187ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-arm64-msvc
+#60 75.33 Progress: resolved 380, reused 0, downloaded 380, added 90
+#60 76.11 [WARN] Request took 15557ms: https://registry.npmjs.org/@types%2Freact
+#60 76.42 [WARN] Request took 12307ms: https://registry.npmjs.org/@typescript-eslint%2Ftsconfig-utils
+#60 76.74 Progress: resolved 380, reused 0, downloaded 380, added 113
+#60 76.91 [WARN] Request took 13014ms: https://registry.npmjs.org/@typescript-eslint%2Fproject-service
+#60 77.05 [WARN] GET https://registry.npmjs.org/@next%2Fenv error (23). Will retry in 10 seconds. 2 retries left.
+#60 77.05 [WARN] GET https://registry.npmjs.org/@next%2Fswc-darwin-arm64 error (23). Will retry in 10 seconds. 2 retries left.
+#60 77.15 [WARN] Request took 18841ms: https://registry.npmjs.org/@tailwindcss%2Fpostcss
+#60 77.63 [WARN] GET https://registry.npmjs.org/@next%2Fswc-darwin-x64 error (23). Will retry in 10 seconds. 2 retries left.
+#60 77.74 Progress: resolved 380, reused 0, downloaded 380, added 142
+#60 78.26 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu error (23). Will retry in 10 seconds. 2 retries left.
+#60 78.33 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-arm64-musl error (23). Will retry in 10 seconds. 2 retries left.
+#60 78.34 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu error (23). Will retry in 10 seconds. 2 retries left.
+#60 78.43 [WARN] Request took 24420ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-x64
+#60 78.82 [WARN] Request took 22202ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-gnu
+#60 78.84 [WARN] Request took 24842ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-arm64
+#60 78.89 Progress: resolved 380, reused 0, downloaded 380, added 163
+#60 78.91 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-x64-musl error (23). Will retry in 10 seconds. 2 retries left.
+#60 78.91 [WARN] GET https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc error (23). Will retry in 10 seconds. 2 retries left.
+#60 78.91 [WARN] GET https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc error (23). Will retry in 10 seconds. 2 retries left.
+#60 78.99 [WARN] Request took 22357ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-musl
+#60 79.04 [WARN] Request took 23967ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm-gnueabihf
+#60 80.19 [WARN] Request took 23479ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-x64-msvc
+#60 80.26 [WARN] Request took 23998ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-gnu
+#60 80.34 Progress: resolved 380, reused 0, downloaded 380, added 188
+#60 80.45 [WARN] Request took 23839ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-musl
+#60 80.68 [WARN] Request took 25614ms: https://registry.npmjs.org/@tailwindcss%2Foxide-freebsd-x64
+#60 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 71.74 [WARN] Request took 10713ms: https://registry.npmjs.org/@opentelemetry%2Fotlp-transformer
+#66 71.92 Progress: resolved 345, reused 0, downloaded 174, added 27
+#66 71.96 [WARN] Request took 16063ms: https://registry.npmjs.org/@opentelemetry%2Fapi-logs
+#66 72.99 Progress: resolved 345, reused 0, downloaded 193, added 30
+#66 73.03 [WARN] Request took 10596ms: https://registry.npmjs.org/@opentelemetry%2Fsdk-logs
+#66 73.66 [WARN] Request took 30749ms: https://registry.npmjs.org/@img%2Fsharp-win32-ia32
+#66 73.68 [WARN] Request took 30853ms: https://registry.npmjs.org/@img%2Fsharp-win32-arm64
+#66 73.92 [WARN] Request took 30997ms: https://registry.npmjs.org/@img%2Fsharp-win32-x64
+#66 74.07 Progress: resolved 345, reused 0, downloaded 219, added 34
+#66 74.12 [WARN] Request took 28953ms: https://registry.npmjs.org/@jridgewell%2Fgen-mapping
+#66 74.36 [WARN] Request took 11118ms: https://registry.npmjs.org/@opentelemetry%2Fsemantic-conventions
+#66 74.96 Progress: resolved 345, reused 0, downloaded 232, added 34
+#66 76.15 Progress: resolved 345, reused 0, downloaded 244, added 35
+#66 77.37 Progress: resolved 345, reused 0, downloaded 252, added 38
+#66 77.45 [WARN] Request took 69572ms: https://registry.npmjs.org/@apollo%2Fserver
+#66 77.71 [WARN] Request took 30817ms: https://registry.npmjs.org/@jridgewell%2Ftrace-mapping
+#66 78.03 [WARN] GET https://registry.npmjs.org/@oxc-resolver%2Fbinding-android-arm-eabi error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 78.05 [WARN] GET https://registry.npmjs.org/@apollo/utils.printwithreducedwhitespace/-/utils.printwithreducedwhitespace-2.0.1.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 78.05 [WARN] GET https://registry.npmjs.org/split2/-/split2-4.2.0.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 78.14 [WARN] GET https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.2.0.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 78.16 [WARN] GET https://registry.npmjs.org/real-require/-/real-require-1.0.0.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 78.60 Progress: resolved 345, reused 0, downloaded 260, added 38
+#66 78.60 [WARN] GET https://registry.npmjs.org/punycode/-/punycode-2.3.1.tgz error (ETIMEDOUT). Will retry in 10 seconds. 2 retries left.
+#66 79.54 [WARN] Request took 23631ms: https://registry.npmjs.org/@opentelemetry%2Fapi
+#66 79.69 Progress: resolved 345, reused 0, downloaded 285, added 38
+#66 79.85 [WARN] Request took 17735ms: https://registry.npmjs.org/@opentelemetry%2Fresources
+#66 80.81 Progress: resolved 345, reused 0, downloaded 301, added 42
+#66 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 74.00 [WARN] Request took 21344ms: https://registry.npmjs.org/@tailwindcss%2Foxide-android-arm64
+#65 74.10 Progress: resolved 378, reused 0, downloaded 340, added 59
+#65 74.28 [WARN] Request took 18580ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-arm64-msvc
+#65 74.44 [WARN] Request took 21788ms: https://registry.npmjs.org/@tailwindcss%2Fnode
+#65 75.71 Progress: resolved 378, reused 0, downloaded 369, added 68
+#65 76.08 [WARN] Request took 11989ms: https://registry.npmjs.org/@typescript-eslint%2Ftsconfig-utils
+#65 74.95 [WARN] Request took 12696ms: https://registry.npmjs.org/@types%2Freact
+#65 75.08 [WARN] Request took 11033ms: https://registry.npmjs.org/@typescript-eslint%2Fproject-service
+#65 75.33 Progress: resolved 378, reused 0, downloaded 378, added 83
+#65 76.25 [WARN] Request took 19518ms: https://registry.npmjs.org/@tailwindcss%2Fpostcss
+#65 76.34 Progress: resolved 378, reused 0, downloaded 378, added 98
+#65 77.76 Progress: resolved 378, reused 0, downloaded 378, added 125
+#65 78.09 [WARN] GET https://registry.npmjs.org/@next%2Fenv error (23). Will retry in 10 seconds. 2 retries left.
+#65 78.49 [WARN] GET https://registry.npmjs.org/@next%2Fswc-darwin-arm64 error (23). Will retry in 10 seconds. 2 retries left.
+#65 78.50 [WARN] GET https://registry.npmjs.org/@next%2Fswc-darwin-x64 error (23). Will retry in 10 seconds. 2 retries left.
+#65 78.81 [WARN] Request took 24010ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-x64
+#65 78.91 Progress: resolved 378, reused 0, downloaded 378, added 149
+#65 79.01 [WARN] Request took 24192ms: https://registry.npmjs.org/@tailwindcss%2Foxide-freebsd-x64
+#65 79.23 [WARN] Request took 24426ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-arm64
+#65 79.46 [WARN] Request took 24256ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-gnu
+#65 79.75 [WARN] Request took 24934ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm-gnueabihf
+#65 79.86 [WARN] Request took 24338ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-gnu
+#65 80.12 [WARN] Request took 24850ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-musl
+#65 80.25 Progress: resolved 378, reused 0, downloaded 378, added 170
+#65 80.79 [WARN] Request took 25109ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-musl
+#65 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 81.26 [WARN] Request took 73180ms: https://registry.npmjs.org/@apollo%2Fcomposition
+#66 81.26 [WARN] Request took 73128ms: https://registry.npmjs.org/@apollo%2Fquery-graphs
+#66 82.49 Progress: resolved 345, reused 0, downloaded 315, added 42
+#66 83.12 [WARN] Request took 12362ms: https://registry.npmjs.org/@oxc-parser%2Fbinding-linux-x64-gnu
+#66 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 74.17 [WARN] Request took 20421ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-arm64-msvc
+#64 74.47 Progress: resolved 379, reused 0, downloaded 377, added 49
+#64 75.67 Progress: resolved 379, reused 0, downloaded 379, added 65
+#64 74.92 [WARN] Request took 18498ms: https://registry.npmjs.org/@types%2Freact
+#64 75.41 Progress: resolved 379, reused 0, downloaded 379, added 77
+#64 75.60 [WARN] Request took 15036ms: https://registry.npmjs.org/@typescript-eslint%2Ftsconfig-utils
+#64 75.95 [WARN] Request took 15500ms: https://registry.npmjs.org/@typescript-eslint%2Fproject-service
+#64 76.44 Progress: resolved 379, reused 0, downloaded 379, added 114
+#64 76.69 [WARN] Request took 21901ms: https://registry.npmjs.org/@tailwindcss%2Fpostcss
+#64 77.49 Progress: resolved 379, reused 0, downloaded 379, added 151
+#64 77.81 [WARN] Request took 26267ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-gnu
+#64 78.66 Progress: resolved 379, reused 0, downloaded 379, added 158
+#64 78.72 [WARN] Request took 30957ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-arm64
+#64 78.81 [WARN] Request took 28522ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-x64
+#64 78.85 [WARN] Request took 27306ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-gnu
+#64 79.01 [WARN] Request took 28710ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm-gnueabihf
+#64 79.22 [WARN] Request took 27680ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-musl
+#64 79.46 [WARN] Request took 27403ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-musl
+#64 79.66 [WARN] Request took 29375ms: https://registry.npmjs.org/@tailwindcss%2Foxide-freebsd-x64
+#64 79.96 Progress: resolved 379, reused 0, downloaded 379, added 174
+#64 80.02 [WARN] GET https://registry.npmjs.org/@next%2Fenv error (23). Will retry in 10 seconds. 2 retries left.
+#64 80.02 [WARN] GET https://registry.npmjs.org/@next%2Fswc-darwin-arm64 error (23). Will retry in 10 seconds. 2 retries left.
+#64 81.22 [WARN] Request took 27233ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-x64-msvc
+#64 81.92 [WARN] GET https://registry.npmjs.org/@next%2Fswc-darwin-x64 error (23). Will retry in 10 seconds. 2 retries left.
+#64 81.92 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu error (23). Will retry in 10 seconds. 2 retries left.
+#64 81.92 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-arm64-musl error (23). Will retry in 10 seconds. 2 retries left.
+#64 81.93 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu error (23). Will retry in 10 seconds. 2 retries left.
+#64 81.94 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-x64-musl error (23). Will retry in 10 seconds. 2 retries left.
+#64 82.06 [WARN] GET https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc error (23). Will retry in 10 seconds. 2 retries left.
+#64 82.09 [WARN] GET https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc error (23). Will retry in 10 seconds. 2 retries left.
+#64 82.09 Progress: resolved 379, reused 0, downloaded 379, added 220
+#64 83.21 Progress: resolved 379, reused 0, downloaded 379, added 228
+#64 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 82.11 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu error (23). Will retry in 10 seconds. 2 retries left.
+#65 82.11 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-arm64-musl error (23). Will retry in 10 seconds. 2 retries left.
+#65 82.18 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu error (23). Will retry in 10 seconds. 2 retries left.
+#65 82.18 [WARN] GET https://registry.npmjs.org/@next%2Fswc-linux-x64-musl error (23). Will retry in 10 seconds. 2 retries left.
+#65 82.20 [WARN] GET https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc error (23). Will retry in 10 seconds. 2 retries left.
+#65 82.29 [WARN] GET https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc error (23). Will retry in 10 seconds. 2 retries left.
+#65 82.32 Progress: resolved 378, reused 0, downloaded 378, added 187
+#65 83.40 Progress: resolved 378, reused 0, downloaded 378, added 199
+#65 83.43 [WARN] Request took 27194ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-x64-msvc
+#65 84.56 Progress: resolved 378, reused 0, downloaded 378, added 236
+#65 85.11 [WARN] Request took 10322ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-env
+#65 85.58 [WARN] Request took 10573ms: https://registry.npmjs.org/@aws-sdk%2Ftoken-providers
+#65 85.64 Progress: resolved 378, reused 0, downloaded 378, added 259
+#65 86.67 Progress: resolved 378, reused 0, downloaded 378, added 292
+#65 87.86 Progress: resolved 378, reused 0, downloaded 378, added 296
+#65 87.95 [WARN] Request took 12952ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-sso
+#65 88.10 [WARN] Request took 13074ms: https://registry.npmjs.org/@axe-core%2Fplaywright
+#65 88.76 [WARN] Request took 13748ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process
+#65 88.89 Progress: resolved 378, reused 0, downloaded 378, added 338
+#65 89.43 [WARN] Request took 14428ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node
+#65 89.53 [WARN] Request took 14524ms: https://registry.npmjs.org/@aws-sdk%2Fmiddleware-sdk-s3
+#65 89.03 Progress: resolved 378, reused 0, downloaded 378, added 378, done
+#65 89.96 [WARN] Request took 14954ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#65 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 83.50 Progress: resolved 345, reused 0, downloaded 338, added 45
+#66 83.98 [WARN] GET https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-sso error (23). Will retry in 10 seconds. 2 retries left.
+#66 84.67 Progress: resolved 345, reused 0, downloaded 340, added 69
+#66 85.07 [WARN] Request took 28014ms: https://registry.npmjs.org/@opentelemetry%2Finstrumentation
+#66 85.45 [WARN] Request took 10081ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-env
+#66 85.59 [WARN] Request took 10224ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process
+#66 85.68 Progress: resolved 345, reused 0, downloaded 340, added 102
+#66 85.70 [WARN] Request took 29776ms: https://registry.npmjs.org/@opentelemetry%2Fcore
+#66 86.80 Progress: resolved 345, reused 0, downloaded 340, added 139
+#66 87.87 [WARN] Request took 11725ms: https://registry.npmjs.org/@aws-sdk%2Ftoken-providers
+#66 87.98 Progress: resolved 345, reused 0, downloaded 340, added 171
+#66 89.06 [WARN] Request took 16227ms: https://registry.npmjs.org/@oxc-resolver%2Fbinding-android-arm-eabi
+#66 89.15 Progress: resolved 345, reused 0, downloaded 343, added 213
+#66 89.61 [WARN] Request took 14248ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini
+#66 89.63 [WARN] Request took 11459ms: https://registry.npmjs.org/@axe-core%2Fplaywright
+#66 89.46 Progress: resolved 345, reused 0, downloaded 345, added 243
+#66 89.55 [WARN] Request took 10303ms: https://registry.npmjs.org/@reduxjs%2Ftoolkit
+#66 89.72 [WARN] Request took 14358ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node
+#66 90.94 [WARN] Request took 12375ms: https://registry.npmjs.org/@radix-ui%2Freact-dismissable-layer
+#66 91.10 Progress: resolved 345, reused 0, downloaded 345, added 259
+#66 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 81.97 Progress: resolved 380, reused 0, downloaded 380, added 196
+#60 83.18 Progress: resolved 380, reused 0, downloaded 380, added 210
+#60 84.31 Progress: resolved 380, reused 0, downloaded 380, added 250
+#60 85.01 [WARN] Request took 17189ms: https://registry.npmjs.org/ajv
+#60 85.71 Progress: resolved 380, reused 0, downloaded 380, added 267
+#60 85.79 [WARN] Request took 10015ms: https://registry.npmjs.org/@axe-core%2Fplaywright
+#60 86.77 Progress: resolved 380, reused 0, downloaded 380, added 303
+#60 87.80 Progress: resolved 380, reused 0, downloaded 380, added 312
+#60 88.04 [WARN] Request took 12279ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node
+#60 88.50 [WARN] Request took 12728ms: https://registry.npmjs.org/@aws-sdk%2Ftoken-providers
+#60 88.56 [WARN] Request took 12791ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#60 88.84 Progress: resolved 380, reused 0, downloaded 380, added 370
+#60 89.10 Progress: resolved 380, reused 0, downloaded 380, added 380, done
+#60 90.78 [WARN] Request took 15121ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini
+#60 91.05 [WARN] Request took 33809ms: https://registry.npmjs.org/@tailwindcss%2Foxide
+#60 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 84.24 Progress: resolved 379, reused 0, downloaded 379, added 259
+#64 85.34 Progress: resolved 379, reused 0, downloaded 379, added 283
+#64 86.01 [WARN] Request took 10312ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-process
+#64 86.76 Progress: resolved 379, reused 0, downloaded 379, added 314
+#64 88.26 Progress: resolved 379, reused 0, downloaded 379, added 330
+#64 88.58 [WARN] Request took 12893ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-node
+#64 89.41 Progress: resolved 379, reused 0, downloaded 379, added 376
+#64 89.68 [WARN] Request took 13988ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#64 88.96 Progress: resolved 379, reused 0, downloaded 379, added 379, done
+#64 89.23 [WARN] Request took 10151ms: https://registry.npmjs.org/graphql
+#64 91.73 [WARN] Request took 20223ms: https://registry.npmjs.org/caniuse-lite
+#64 91.78 [WARN] Request took 16097ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini
+#64 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 92.07 [WARN] Request took 14584ms: https://registry.npmjs.org/eslint
+#60 92.11 [WARN] Request took 10034ms: https://registry.npmjs.org/immer
+#60 93.47 [WARN] Request took 19468ms: https://registry.npmjs.org/caniuse-lite
+#60 94.52 [WARN] Request took 34398ms: https://registry.npmjs.org/@types%2Fnode
+#60 95.45 [WARN] Request took 10003ms: https://registry.npmjs.org/knip
+#60 95.83 [WARN] Request took 20168ms: https://registry.npmjs.org/@apollo%2Fclient
+#60 96.05 [WARN] Request took 20388ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#60 97.44 [WARN] Request took 21669ms: https://registry.npmjs.org/@graphql-tools%2Futils
+#60 97.64 [WARN] Request took 21864ms: https://registry.npmjs.org/@graphql-tools%2Fmerge
+#60 97.88 [WARN] GET https://registry.npmjs.org/@playwright%2Ftest error (23). Will retry in 10 seconds. 2 retries left.
+#60 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 92.07 [WARN] Request took 16270ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#66 92.15 Progress: resolved 345, reused 0, downloaded 345, added 305
+#66 92.31 [WARN] Request took 13879ms: https://registry.npmjs.org/@radix-ui%2Freact-dialog
+#66 93.25 Progress: resolved 345, reused 0, downloaded 345, added 329
+#66 93.63 Progress: resolved 345, reused 0, downloaded 345, added 345, done
+#66 96.33 [WARN] Request took 12880ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-gnu
+#66 96.39 [WARN] Request took 12890ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-x64-musl
+#66 96.43 [WARN] Request took 13025ms: https://registry.npmjs.org/@tailwindcss%2Foxide-freebsd-x64
+#66 96.50 [WARN] Request took 13070ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm-gnueabihf
+#66 96.68 [WARN] Request took 13231ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-musl
+#66 96.90 [WARN] Request took 13574ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-x64
+#66 97.25 [WARN] Request took 13931ms: https://registry.npmjs.org/@tailwindcss%2Foxide-darwin-arm64
+#66 97.37 [WARN] Request took 13916ms: https://registry.npmjs.org/@tailwindcss%2Foxide-linux-arm64-gnu
+#66 97.54 [WARN] Request took 13297ms: https://registry.npmjs.org/@tailwindcss%2Fpostcss
+#66 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 99.09 [WARN] Request took 23316ms: https://registry.npmjs.org/@graphql-tools%2Fschema
+#60 99.85 [WARN] Request took 10764ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#60 100.1 [WARN] Request took 11682ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu
+#60 100.2 [WARN] Request took 11302ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-musl
+#60 100.4 [WARN] Request took 12697ms: https://registry.npmjs.org/@next%2Fswc-darwin-x64
+#60 100.6 [WARN] Request took 11672ms: https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc
+#60 101.0 [WARN] Request took 12053ms: https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc
+#60 101.3 [WARN] Request took 12992ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-musl
+#60 101.4 [WARN] Request took 37221ms: https://registry.npmjs.org/@typescript-eslint%2Futils
+#60 101.6 [WARN] Request took 14061ms: https://registry.npmjs.org/@next%2Fenv
+#60 101.8 [WARN] Request took 14307ms: https://registry.npmjs.org/@next%2Fswc-darwin-arm64
+#60 102.1 [WARN] Request took 13832ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu
+#60 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 92.16 [WARN] Request took 17782ms: https://registry.npmjs.org/caniuse-lite
+#65 92.34 [WARN] Request took 17510ms: https://registry.npmjs.org/@aws-sdk%2Fcredential-provider-ini
+#65 92.72 [WARN] Request took 36459ms: https://registry.npmjs.org/@tailwindcss%2Foxide
+#65 93.69 [WARN] Request took 15091ms: https://registry.npmjs.org/eslint
+#65 95.88 [WARN] Request took 11045ms: https://registry.npmjs.org/jose
+#65 96.95 [WARN] Request took 11738ms: https://registry.npmjs.org/kafkajs
+#65 97.33 [WARN] Request took 21607ms: https://registry.npmjs.org/@apollo%2Fclient
+#65 97.82 [WARN] Request took 37836ms: https://registry.npmjs.org/@types%2Fnode
+#65 99.06 [WARN] Request took 13623ms: https://registry.npmjs.org/knip
+#65 99.09 [WARN] Request took 12776ms: https://registry.npmjs.org/media-chrome
+#65 99.24 [WARN] Request took 12970ms: https://registry.npmjs.org/@aws-sdk%2Ftoken-providers
+#65 99.29 [WARN] Request took 24509ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#65 99.46 [WARN] Request took 24437ms: https://registry.npmjs.org/@graphql-tools%2Fmerge
+#65 99.88 [WARN] Request took 24842ms: https://registry.npmjs.org/@graphql-tools%2Futils
+#65 100.2 [WARN] Request took 25226ms: https://registry.npmjs.org/@graphql-tools%2Fschema
+#65 101.4 [WARN] GET https://registry.npmjs.org/@playwright%2Ftest error (23). Will retry in 10 seconds. 2 retries left.
+#65 101.8 [WARN] Request took 10085ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#65 101.9 [WARN] Request took 13384ms: https://registry.npmjs.org/@next%2Fswc-darwin-arm64
+#65 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 92.27 [WARN] Request took 15980ms: https://registry.npmjs.org/eslint
+#64 92.30 [WARN] Request took 38283ms: https://registry.npmjs.org/@tailwindcss%2Foxide
+#64 94.61 [WARN] GET https://registry.npmjs.org/@playwright%2Ftest error (23). Will retry in 10 seconds. 2 retries left.
+#64 95.12 [WARN] Request took 11819ms: https://registry.npmjs.org/knip
+#64 96.25 [WARN] Request took 12438ms: https://registry.npmjs.org/media-chrome
+#64 96.48 [WARN] Request took 40357ms: https://registry.npmjs.org/@types%2Fnode
+#64 96.87 [WARN] Request took 21779ms: https://registry.npmjs.org/@apollo%2Fclient
+#64 97.16 [WARN] Request took 12254ms: https://registry.npmjs.org/@aws-sdk%2Ftoken-providers
+#64 97.33 [WARN] Request took 21652ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#64 99.12 [WARN] Request took 23417ms: https://registry.npmjs.org/@graphql-tools%2Fmerge
+#64 99.34 [WARN] Request took 23641ms: https://registry.npmjs.org/@graphql-tools%2Fschema
+#64 100.2 [WARN] Request took 24493ms: https://registry.npmjs.org/@graphql-tools%2Futils
+#64 101.7 [WARN] Request took 12250ms: https://registry.npmjs.org/@next%2Fswc-darwin-arm64
+#64 101.9 [WARN] Request took 10360ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu
+#64 102.7 [WARN] Request took 11142ms: https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc
+#64 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 99.14 [WARN] Request took 14909ms: https://registry.npmjs.org/@tailwindcss%2Foxide-win32-x64-msvc
+#66 99.94 [WARN] Request took 92174ms: https://registry.npmjs.org/@apollo%2Fclient-react-streaming
+#66 101.2 [WARN] Request took 12633ms: https://registry.npmjs.org/@aws-sdk%2Ftoken-providers
+#66 101.2 [WARN] Request took 25848ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#66 101.9 [WARN] Request took 94147ms: https://registry.npmjs.org/@apollo%2Ffederation-internals
+#66 102.5 [WARN] Request took 11324ms: https://registry.npmjs.org/caniuse-lite
+#66 104.0 [WARN] Request took 25874ms: https://registry.npmjs.org/@graphql-tools%2Fmerge
+#66 104.2 [WARN] Request took 19999ms: https://registry.npmjs.org/@tailwindcss%2Foxide
+#66 104.6 [WARN] Request took 49133ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-musl
+#66 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 103.4 [WARN] Request took 11891ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-musl
+#65 103.5 [WARN] Request took 11961ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-musl
+#65 103.9 [WARN] Request took 12329ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu
+#65 103.9 [WARN] Request took 12386ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu
+#65 104.1 [WARN] Request took 12551ms: https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc
+#65 104.4 [WARN] Request took 16300ms: https://registry.npmjs.org/@next%2Fenv
+#65 104.5 [WARN] Request took 12996ms: https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc
+#65 104.7 [WARN] Request took 32061ms: https://registry.npmjs.org/axe-core
+#65 105.2 [WARN] Request took 41054ms: https://registry.npmjs.org/@typescript-eslint%2Ftype-utils
+#65 105.6 [WARN] Request took 17082ms: https://registry.npmjs.org/@next%2Fswc-darwin-x64
+#65 105.9 [WARN] Request took 39370ms: https://registry.npmjs.org/@typescript-eslint%2Futils
+#65 106.0 [WARN] Request took 13166ms: https://registry.npmjs.org/scheduler
+#65 106.2 [WARN] Request took 14323ms: https://registry.npmjs.org/react
+#65 107.1 [WARN] Request took 15312ms: https://registry.npmjs.org/react-dom
+#65 108.2 [WARN] Request took 41712ms: https://registry.npmjs.org/@typescript-eslint%2Ftypes
+#65 109.4 [WARN] Request took 42844ms: https://registry.npmjs.org/@typescript-eslint%2Fvisitor-keys
+#65 109.7 [WARN] Request took 45642ms: https://registry.npmjs.org/@typescript-eslint%2Fscope-manager
+#65 110.3 [WARN] Request took 10042ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#65 110.5 [WARN] Request took 16039ms: https://registry.npmjs.org/tailwindcss
+#65 111.1 [WARN] Request took 47071ms: https://registry.npmjs.org/@typescript-eslint%2Fparser
+#65 111.8 [WARN] Request took 45246ms: https://registry.npmjs.org/@typescript-eslint%2Ftypescript-estree
+#65 112.6 [WARN] Request took 48941ms: https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin
+#65 112.8 [WARN] Request took 17874ms: https://registry.npmjs.org/typescript
+#65 113.5 [WARN] Request took 23713ms: https://registry.npmjs.org/playwright
+#65 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 103.6 [WARN] Request took 39498ms: https://registry.npmjs.org/@typescript-eslint%2Ftype-utils
+#60 103.7 [WARN] Request took 14280ms: https://registry.npmjs.org/react
+#60 103.9 [WARN] Request took 31222ms: https://registry.npmjs.org/axe-core
+#60 104.0 [WARN] Request took 12285ms: https://registry.npmjs.org/scheduler
+#60 104.1 [WARN] Request took 14805ms: https://registry.npmjs.org/react-dom
+#60 104.6 [WARN] Request took 40399ms: https://registry.npmjs.org/@typescript-eslint%2Ftypes
+#60 105.3 [WARN] Request took 41003ms: https://registry.npmjs.org/@typescript-eslint%2Fvisitor-keys
+#60 107.4 [WARN] Request took 43441ms: https://registry.npmjs.org/@typescript-eslint%2Fscope-manager
+#60 108.3 [WARN] Request took 15331ms: https://registry.npmjs.org/tailwindcss
+#60 109.4 [WARN] Request took 45826ms: https://registry.npmjs.org/@typescript-eslint%2Fparser
+#60 110.0 [WARN] Request took 45770ms: https://registry.npmjs.org/@typescript-eslint%2Ftypescript-estree
+#60 110.9 [WARN] Request took 47317ms: https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin
+#60 111.9 [WARN] Request took 18691ms: https://registry.npmjs.org/typescript
+#60 112.4 [WARN] Request took 23382ms: https://registry.npmjs.org/playwright-core
+#60 112.8 [WARN] Request took 23789ms: https://registry.npmjs.org/playwright
+#60 113.3 [WARN] Request took 32499ms: https://registry.npmjs.org/hls.js
+#60 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 103.6 [WARN] Request took 11965ms: https://registry.npmjs.org/@next%2Fswc-darwin-x64
+#64 103.8 [WARN] Request took 34982ms: https://registry.npmjs.org/axe-core
+#64 103.9 [WARN] Request took 42910ms: https://registry.npmjs.org/@typescript-eslint%2Futils
+#64 104.5 [WARN] Request took 14776ms: https://registry.npmjs.org/react
+#64 104.6 [WARN] Request took 12961ms: https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc
+#64 104.6 [WARN] Request took 13017ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu
+#64 104.9 [WARN] Request took 44222ms: https://registry.npmjs.org/@typescript-eslint%2Ftype-utils
+#64 105.2 [WARN] Request took 15784ms: https://registry.npmjs.org/@next%2Fenv
+#64 105.4 [WARN] Request took 13634ms: https://registry.npmjs.org/scheduler
+#64 105.8 [WARN] Request took 16566ms: https://registry.npmjs.org/react-dom
+#64 107.1 [WARN] Request took 46399ms: https://registry.npmjs.org/@typescript-eslint%2Ftypes
+#64 108.6 [WARN] Request took 47586ms: https://registry.npmjs.org/@typescript-eslint%2Fvisitor-keys
+#64 109.4 [WARN] Request took 48817ms: https://registry.npmjs.org/@typescript-eslint%2Fscope-manager
+#64 110.4 [WARN] Request took 16988ms: https://registry.npmjs.org/tailwindcss
+#64 110.7 [WARN] Request took 12989ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#64 111.2 [WARN] Request took 51222ms: https://registry.npmjs.org/@typescript-eslint%2Fparser
+#64 111.8 [WARN] Request took 50823ms: https://registry.npmjs.org/@typescript-eslint%2Ftypescript-estree
+#64 112.7 [WARN] Request took 52715ms: https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin
+#64 113.2 [WARN] Request took 19612ms: https://registry.npmjs.org/typescript
+#64 113.6 [WARN] Request took 25272ms: https://registry.npmjs.org/playwright
+#64 114.1 [WARN] Request took 34254ms: https://registry.npmjs.org/hls.js
+#64 ...
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 114.1 [WARN] Request took 24311ms: https://registry.npmjs.org/playwright-core
+#65 115.3 [WARN] Request took 32029ms: https://registry.npmjs.org/hls.js
+#65 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 105.3 [WARN] Request took 53995ms: https://registry.npmjs.org/@next%2Fswc-darwin-arm64
+#66 105.8 [WARN] Request took 49891ms: https://registry.npmjs.org/@next%2Fswc-win32-x64-msvc
+#66 105.8 [WARN] GET https://registry.npmjs.org/@next%2Fenv error (23). Will retry in 10 seconds. 2 retries left.
+#66 106.0 [WARN] Request took 50825ms: https://registry.npmjs.org/@next%2Fswc-win32-arm64-msvc
+#66 107.3 [WARN] Request took 53746ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-gnu
+#66 108.1 [WARN] Request took 54564ms: https://registry.npmjs.org/@next%2Fswc-linux-arm64-musl
+#66 108.9 [WARN] Request took 55379ms: https://registry.npmjs.org/@next%2Fswc-linux-x64-gnu
+#66 109.1 [WARN] Request took 30950ms: https://registry.npmjs.org/@graphql-tools%2Futils
+#66 109.3 [WARN] Request took 57980ms: https://registry.npmjs.org/@next%2Fswc-darwin-x64
+#66 109.5 [WARN] Request took 31368ms: https://registry.npmjs.org/@graphql-tools%2Fschema
+#66 110.1 [WARN] Request took 24623ms: https://registry.npmjs.org/@types%2Fnode
+#66 110.4 [WARN] Request took 17214ms: https://registry.npmjs.org/@aws-sdk%2Flib-storage
+#66 110.8 [WARN] Request took 102981ms: https://registry.npmjs.org/@apollo%2Fclient
+#66 112.2 [WARN] Request took 23122ms: https://registry.npmjs.org/axe-core
+#66 112.6 [WARN] Request took 36795ms: https://registry.npmjs.org/@playwright%2Ftest
+#66 113.0 [WARN] Request took 26709ms: https://registry.npmjs.org/@typescript-eslint%2Ftype-utils
+#66 113.7 [WARN] Request took 26674ms: https://registry.npmjs.org/@typescript-eslint%2Futils
+#66 113.9 [WARN] Request took 10451ms: https://registry.npmjs.org/scheduler
+#66 114.1 [WARN] Request took 12074ms: https://registry.npmjs.org/react
+#66 115.0 [WARN] Request took 13240ms: https://registry.npmjs.org/react-dom
+#66 115.1 [WARN] Request took 13403ms: https://registry.npmjs.org/@aws-sdk%2Fclient-s3
+#66 115.5 [WARN] Request took 29143ms: https://registry.npmjs.org/@typescript-eslint%2Ftypes
+#66 116.2 [WARN] Request took 28819ms: https://registry.npmjs.org/@typescript-eslint%2Fvisitor-keys
+#66 116.4 [WARN] Request took 30277ms: https://registry.npmjs.org/@typescript-eslint%2Fscope-manager
+#66 116.8 [WARN] Request took 12464ms: https://registry.npmjs.org/tailwindcss
+#66 ...
+
+#60 [identity-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#60 117.2 [WARN] Request took 29612ms: https://registry.npmjs.org/next
+#60 118.4 ✓ Lockfile passes supply-chain policies (579 entries in 1m 51.5s)
+#60 118.1
+#60 118.1 devDependencies:
+#60 118.1 + @eslint/js 10.0.1
+#60 118.1 + @types/node 24.13.3
+#60 118.1 + eslint 10.9.1
+#60 118.1 + hls.js 1.7.1
+#60 118.1 + knip 6.32.2
+#60 118.1 + prettier 3.9.6
+#60 118.1 + turbo 2.10.12
+#60 118.1 + typescript 6.0.3
+#60 118.1 + typescript-eslint 8.68.0
+#60 118.1
+#60 118.5 Done in 1m 53.5s using pnpm v11.24.0
+#60 DONE 119.2s
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 117.4 [WARN] Request took 31256ms: https://registry.npmjs.org/@typescript-eslint%2Fparser
+#66 117.6 [WARN] Request took 31234ms: https://registry.npmjs.org/@typescript-eslint%2Ftypescript-estree
+#66 118.0 [WARN] Request took 31893ms: https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin
+#66 117.8 [WARN] Request took 13282ms: https://registry.npmjs.org/typescript
+#66 118.0 [WARN] Request took 16548ms: https://registry.npmjs.org/playwright
+#66 118.2 [WARN] Request took 16719ms: https://registry.npmjs.org/playwright-core
+#66 118.8 [WARN] Request took 22580ms: https://registry.npmjs.org/hls.js
+#66 ...
+
+#64 [catalog-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#64 115.3 [WARN] Request took 26984ms: https://registry.npmjs.org/playwright-core
+#64 116.9 [WARN] Request took 31923ms: https://registry.npmjs.org/next
+#64 117.7 ✓ Lockfile passes supply-chain policies (579 entries in 1m 51.1s)
+#64 118.2
+#64 118.2 devDependencies:
+#64 118.2 + @eslint/js 10.0.1
+#64 118.2 + @types/node 24.13.3
+#64 118.2 + eslint 10.9.1
+#64 118.2 + hls.js 1.7.1
+#64 118.2 + knip 6.32.2
+#64 118.2 + prettier 3.9.6
+#64 118.2 + turbo 2.10.12
+#64 118.2 + typescript 6.0.3
+#64 118.2 + typescript-eslint 8.68.0
+#64 118.2
+#64 118.2 Done in 1m 53.4s using pnpm v11.24.0
+#64 DONE 119.2s
+
+#67 [identity-init build 14/17] COPY tsconfig.base.json turbo.json LICENSE ./
+#67 DONE 0.2s
+
+#68 [catalog-init build 14/17] COPY tsconfig.base.json turbo.json LICENSE ./
+#68 DONE 0.2s
+
+#65 [playback-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#65 117.7 [WARN] Request took 29800ms: https://registry.npmjs.org/next
+#65 118.0 ✓ Lockfile passes supply-chain policies (579 entries in 1m 51.6s)
+#65 118.6
+#65 118.6 devDependencies:
+#65 118.6 + @eslint/js 10.0.1
+#65 118.6 + @types/node 24.13.3
+#65 118.6 + eslint 10.9.1
+#65 118.6 + hls.js 1.7.1
+#65 118.6 + knip 6.32.2
+#65 118.6 + prettier 3.9.6
+#65 118.6 + turbo 2.10.12
+#65 118.6 + typescript 6.0.3
+#65 118.6 + typescript-eslint 8.68.0
+#65 118.6
+#65 118.9 Done in 1m 54.1s using pnpm v11.24.0
+#65 DONE 119.5s
+
+#69 [catalog-init build 15/17] COPY packages ./packages
+#69 ...
+
+#70 [identity-init build 15/17] COPY packages ./packages
+#70 DONE 0.2s
+
+#71 [playback-init build 14/17] COPY tsconfig.base.json turbo.json LICENSE ./
+#71 DONE 0.1s
+
+#69 [catalog-init build 15/17] COPY packages ./packages
+#69 DONE 0.2s
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 119.8 [WARN] Request took 19865ms: https://registry.npmjs.org/next
+#66 ...
+
+#72 [identity-init build 16/17] COPY services/identity ./services/identity
+#72 DONE 0.3s
+
+#73 [playback-init build 15/17] COPY packages ./packages
+#73 DONE 0.3s
+
+#74 [catalog-init build 16/17] COPY services/catalog ./services/catalog
+#74 DONE 0.3s
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 120.2 ✓ Lockfile passes supply-chain policies (579 entries in 1m 52.4s)
+#66 ...
+
+#75 [playback-init build 16/17] COPY services/playback ./services/playback
+#75 DONE 0.2s
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 ...
+
+#66 [engagement-init build 13/17] RUN corepack enable && corepack install && pnpm install --frozen-lockfile
+#66 120.5
+#66 120.5 devDependencies:
+#66 120.5 + @eslint/js 10.0.1
+#66 120.5 + @types/node 24.13.3
+#66 120.5 + eslint 10.9.1
+#66 120.5 + hls.js 1.7.1
+#66 120.5 + knip 6.32.2
+#66 120.5 + prettier 3.9.6
+#66 120.5 + turbo 2.10.12
+#66 120.5 + typescript 6.0.3
+#66 120.5 + typescript-eslint 8.68.0
+#66 120.5
+#66 120.7 Done in 1m 55.8s using pnpm v11.24.0
+#66 DONE 121.2s
+
+#77 [engagement-init build 14/17] COPY tsconfig.base.json turbo.json LICENSE ./
+#77 DONE 0.2s
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 ...
+
+#79 [engagement-init build 15/17] COPY packages ./packages
+#79 DONE 0.2s
+
+#80 [engagement-init build 16/17] COPY services/engagement ./services/engagement
+#80 DONE 0.2s
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 2.278 • turbo 2.10.12
+#81 2.653
+#81 2.653    • Packages in scope: @aster/identity
+#81 2.653    • Running build in 1 packages
+#81 2.653    • Remote caching disabled
+#81 2.653
+#81 2.752 @aster/http-express:build: cache miss, executing 9dc4064965a1a18b
+#81 2.865 @aster/telemetry:build: cache miss, executing 43da67e761c6eb0a
+#81 2.874 @aster/config:build: cache miss, executing 72ed3b3d95f0b79e
+#81 3.349 @aster/runtime:build: cache miss, executing 9d537b4610201d16
+#81 6.009 @aster/http-express:build: $ tsc --build ./tsconfig.json
+#81 6.011 @aster/telemetry:build: $ tsc --build ./tsconfig.json
+#81 6.690 @aster/runtime:build: $ tsc --build ./tsconfig.json
+#81 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 2.010 • turbo 2.10.12
+#78 2.264
+#78 2.265    • Packages in scope: @aster/catalog
+#78 2.265    • Running build in 1 packages
+#78 2.265    • Remote caching disabled
+#78 2.265
+#78 2.309 @aster/http-express:build: cache miss, executing 9dc4064965a1a18b
+#78 2.309 @aster/runtime:build: cache miss, executing 9d537b4610201d16
+#78 2.337 @aster/telemetry:build: cache miss, executing 43da67e761c6eb0a
+#78 5.315 @aster/http-express:build: $ tsc --build ./tsconfig.json
+#78 5.563 @aster/telemetry:build: $ tsc --build ./tsconfig.json
+#78 6.455 @aster/runtime:build: $ tsc --build ./tsconfig.json
+#78 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 3.613 • turbo 2.10.12
+#82 4.528
+#82 4.528    • Packages in scope: @aster/engagement
+#82 4.528    • Running build in 1 packages
+#82 4.528    • Remote caching disabled
+#82 4.528
+#82 4.728 @aster/http-express:build: cache miss, executing 9dc4064965a1a18b
+#82 4.729 @aster/telemetry:build: cache miss, executing 43da67e761c6eb0a
+#82 4.794 @aster/runtime:build: cache miss, executing 9d537b4610201d16
+#82 7.002 @aster/http-express:build: $ tsc --build ./tsconfig.json
+#82 7.053 @aster/telemetry:build: $ tsc --build ./tsconfig.json
+#82 7.454 @aster/runtime:build: $ tsc --build ./tsconfig.json
+#82 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 1.961 • turbo 2.10.12
+#76 2.128
+#76 2.128    • Packages in scope: @aster/playback
+#76 2.128    • Running build in 1 packages
+#76 2.128    • Remote caching disabled
+#76 2.128
+#76 2.215 @aster/http-express:build: cache miss, executing 9dc4064965a1a18b
+#76 2.217 @aster/runtime:build: cache miss, executing 9d537b4610201d16
+#76 2.248 @aster/telemetry:build: cache miss, executing 43da67e761c6eb0a
+#76 3.720 @aster/runtime:build: $ tsc --build ./tsconfig.json
+#76 4.280 @aster/http-express:build: $ tsc --build ./tsconfig.json
+#76 4.638 @aster/telemetry:build: $ tsc --build ./tsconfig.json
+#76 ...
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 7.301 @aster/config:build: $ tsc --build ./tsconfig.json
+#81 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 33.72 @aster/postgres:build: cache miss, executing 4feba5cbe514775d
+#76 38.98 @aster/postgres:build: $ tsc --build ./tsconfig.json
+#76 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 35.93 @aster/object-storage-s3:build: cache miss, executing e4dad1971abed28b
+#78 36.00 @aster/postgres:build: cache miss, executing 4feba5cbe514775d
+#78 40.35 @aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+#78 40.48 @aster/postgres:build: $ tsc --build ./tsconfig.json
+#78 ...
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 43.46 @aster/object-storage-s3:build: cache miss, executing e4dad1971abed28b
+#81 43.47 @aster/broker-kafka:build: cache miss, executing e4fb4f3b25ca88b8
+#81 43.47 @aster/postgres:build: cache miss, executing 4feba5cbe514775d
+#81 43.47 @aster/redis:build: cache miss, executing ee763377b1db8241
+#81 47.25 @aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+#81 47.51 @aster/postgres:build: $ tsc --build ./tsconfig.json
+#81 48.58 @aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+#81 48.91 @aster/redis:build: $ tsc --build ./tsconfig.json
+#81 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 51.01 @aster/playback:build: cache miss, executing 7833f7fcc2d3bb43
+#76 53.31 @aster/playback:build: $ tsc --build ./tsconfig.json
+#76 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 42.01 @aster/postgres:build: cache miss, executing 4feba5cbe514775d
+#82 44.70 @aster/postgres:build: $ tsc --build ./tsconfig.json
+#82 55.25 @aster/engagement:build: cache miss, executing b9bf07e6b2750f92
+#82 58.06 @aster/engagement:build: $ tsc --build ./tsconfig.json
+#82 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 62.38 @aster/catalog:build: cache miss, executing b6a27969edf1c8d2
+#78 64.64 @aster/catalog:build: $ tsc --build ./tsconfig.json
+#78 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 79.18
+#76 79.18  Tasks:    5 successful, 5 total
+#76 79.18 Cached:    0 cached, 5 total
+#76 79.18   Time:    1m17.215s
+#76 79.18
+#76 83.24 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#76 83.58 Packages are copied from the content-addressable store to the virtual store.
+#76 83.58   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#76 83.58   Virtual store is at:             ../out/node_modules/.pnpm
+#76 83.60 ✓ Lockfile passes supply-chain policies (verified 1m ago)
+#76 83.94 Progress: resolved 1, reused 0, downloaded 0, added 0
+#76 83.69 Progress: resolved 28, reused 0, downloaded 0, added 0
+#76 84.71 Progress: resolved 29, reused 0, downloaded 0, added 0
+#76 87.29 Progress: resolved 30, reused 0, downloaded 0, added 0
+#76 88.29 Progress: resolved 36, reused 0, downloaded 0, added 0
+#76 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 86.74
+#82 86.74  Tasks:    5 successful, 5 total
+#82 86.74 Cached:    0 cached, 5 total
+#82 86.74   Time:    1m23.124s
+#82 86.74
+#82 89.77 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#82 90.00 Packages are copied from the content-addressable store to the virtual store.
+#82 90.00   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#82 90.00   Virtual store is at:             ../out/node_modules/.pnpm
+#82 90.03 ✓ Lockfile passes supply-chain policies (verified 1m ago)
+#82 90.28 Progress: resolved 1, reused 0, downloaded 0, added 0
+#82 91.42 Progress: resolved 28, reused 0, downloaded 0, added 0
+#82 94.16 Progress: resolved 29, reused 0, downloaded 0, added 0
+#82 95.94 Progress: resolved 30, reused 0, downloaded 0, added 0
+#82 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 91.36 Progress: resolved 37, reused 0, downloaded 0, added 0
+#76 92.36 Progress: resolved 141, reused 0, downloaded 0, added 0
+#76 93.38 Progress: resolved 171, reused 0, downloaded 0, added 0
+#76 94.72 Progress: resolved 172, reused 0, downloaded 0, added 0
+#76 95.72 Progress: resolved 173, reused 0, downloaded 0, added 0
+#76 96.98 Progress: resolved 175, reused 0, downloaded 0, added 0
+#76 98.27 Progress: resolved 218, reused 0, downloaded 0, added 0
+#76 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 97.08 Progress: resolved 34, reused 0, downloaded 0, added 0
+#82 ...
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 88.59 @aster/identity:build: cache miss, executing 6d2b52e289241772
+#81 90.19 @aster/identity:build: $ tsc --build ./tsconfig.json
+#81 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 99.33 Progress: resolved 254, reused 0, downloaded 0, added 0
+#76 100.4 Progress: resolved 281, reused 0, downloaded 0, added 0
+#76 101.5 Progress: resolved 283, reused 0, downloaded 0, added 0
+#76 102.5 Progress: resolved 307, reused 0, downloaded 0, added 0
+#76 103.5 Progress: resolved 312, reused 0, downloaded 0, added 0
+#76 104.5 Progress: resolved 314, reused 0, downloaded 0, added 0
+#76 106.1 Progress: resolved 315, reused 0, downloaded 0, added 0
+#76 107.3 Progress: resolved 316, reused 0, downloaded 0, added 0
+#76 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 108.7
+#78 108.7  Tasks:    6 successful, 6 total
+#78 108.7 Cached:    0 cached, 6 total
+#78 108.7   Time:    1m46.673s
+#78 108.7
+#78 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 98.71 Progress: resolved 36, reused 0, downloaded 0, added 0
+#82 99.91 Progress: resolved 140, reused 0, downloaded 0, added 0
+#82 101.0 Progress: resolved 163, reused 0, downloaded 0, added 0
+#82 102.4 Progress: resolved 164, reused 0, downloaded 0, added 0
+#82 104.5 Progress: resolved 165, reused 0, downloaded 0, added 0
+#82 105.5 Progress: resolved 170, reused 0, downloaded 0, added 0
+#82 107.0 Progress: resolved 171, reused 0, downloaded 0, added 0
+#82 108.0 Progress: resolved 172, reused 0, downloaded 0, added 0
+#82 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 108.6 Progress: resolved 317, reused 0, downloaded 0, added 0
+#76 109.7 Progress: resolved 324, reused 0, downloaded 0, added 0
+#76 110.7 Progress: resolved 381, reused 0, downloaded 0, added 0
+#76 111.7 Progress: resolved 428, reused 0, downloaded 0, added 0
+#76 112.5 [WARN] 1 deprecated subdependencies found: uuid@9.0.1
+#76 112.5 Progress: resolved 428, reused 0, downloaded 0, added 0, done
+#76 113.0 .                                        | +188 +++++++++++++++++++
+#76 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 111.8 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#78 112.1 Packages are copied from the content-addressable store to the virtual store.
+#78 112.1   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#78 112.1   Virtual store is at:             ../out/node_modules/.pnpm
+#78 112.1 ✓ Lockfile passes supply-chain policies (verified 1m ago)
+#78 112.6 Progress: resolved 1, reused 0, downloaded 0, added 0
+#78 112.4 Progress: resolved 30, reused 0, downloaded 0, added 0
+#78 113.4 Progress: resolved 31, reused 0, downloaded 0, added 0
+#78 116.7 Progress: resolved 32, reused 0, downloaded 0, added 0
+#78 117.7 Progress: resolved 33, reused 0, downloaded 0, added 0
+#78 118.8 Progress: resolved 36, reused 0, downloaded 0, added 0
+#78 119.8 Progress: resolved 38, reused 0, downloaded 0, added 0
+#78 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 109.6 Progress: resolved 176, reused 0, downloaded 0, added 0
+#82 110.9 Progress: resolved 269, reused 0, downloaded 0, added 0
+#82 110.6 Progress: resolved 278, reused 0, downloaded 0, added 0
+#82 112.1 Progress: resolved 280, reused 0, downloaded 0, added 0
+#82 113.2 Progress: resolved 301, reused 0, downloaded 0, added 0
+#82 114.2 Progress: resolved 308, reused 0, downloaded 0, added 0
+#82 115.2 Progress: resolved 310, reused 0, downloaded 0, added 0
+#82 117.2 Progress: resolved 312, reused 0, downloaded 0, added 0
+#82 119.0 Progress: resolved 314, reused 0, downloaded 0, added 0
+#82 ...
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 121.0
+#81 121.0  Tasks:    9 successful, 9 total
+#81 121.0 Cached:    0 cached, 9 total
+#81 121.0   Time:    1m58.719s
+#81 121.0
+#81 123.7 [WARN] Shared workspace lockfile detected but configuration forces legacy deploy implementation.
+#81 124.1 Packages are copied from the content-addressable store to the virtual store.
+#81 124.1   Content-addressable store is at: /root/.local/share/pnpm/store/v11
+#81 124.1   Virtual store is at:             ../out/node_modules/.pnpm
+#81 124.1 ✓ Lockfile passes supply-chain policies (verified 2m ago)
+#81 124.5 Progress: resolved 1, reused 0, downloaded 0, added 0
+#81 125.8 Progress: resolved 28, reused 0, downloaded 0, added 0
+#81 126.9 Progress: resolved 35, reused 0, downloaded 0, added 0
+#81 129.1 Progress: resolved 36, reused 0, downloaded 0, added 0
+#81 130.2 Progress: resolved 41, reused 0, downloaded 0, added 0
+#81 131.2 Progress: resolved 42, reused 0, downloaded 0, added 0
+#81 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 121.6 Progress: resolved 39, reused 0, downloaded 0, added 0
+#78 122.6 Progress: resolved 167, reused 0, downloaded 0, added 0
+#78 123.8 Progress: resolved 173, reused 0, downloaded 0, added 0
+#78 125.6 Progress: resolved 174, reused 0, downloaded 0, added 0
+#78 126.8 Progress: resolved 175, reused 0, downloaded 0, added 0
+#78 127.8 Progress: resolved 176, reused 0, downloaded 0, added 0
+#78 129.4 Progress: resolved 180, reused 0, downloaded 0, added 0
+#78 130.4 Progress: resolved 244, reused 0, downloaded 0, added 0
+#78 131.6 Progress: resolved 276, reused 0, downloaded 0, added 0
+#78 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 120.0 Progress: resolved 361, reused 0, downloaded 0, added 0
+#82 121.0 Progress: resolved 395, reused 0, downloaded 0, added 0
+#82 121.4 [WARN] 1 deprecated subdependencies found: uuid@9.0.1
+#82 121.4 Progress: resolved 395, reused 0, downloaded 0, added 0, done
+#82 121.9 .                                        | +188 +++++++++++++++++++
+#82 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 132.8 Progress: resolved 283, reused 0, downloaded 0, added 0
+#78 134.2 Progress: resolved 300, reused 0, downloaded 0, added 0
+#78 ...
+
+#76 [playback-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/playback     && pnpm --filter=@aster/playback --prod deploy --legacy /out
+#76 DONE 134.3s
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 133.5 Progress: resolved 43, reused 0, downloaded 0, added 0
+#81 134.7 Progress: resolved 143, reused 0, downloaded 0, added 0
+#81 136.0 Progress: resolved 171, reused 0, downloaded 0, added 0
+#81 137.8 Progress: resolved 172, reused 0, downloaded 0, added 0
+#81 139.1 Progress: resolved 174, reused 0, downloaded 0, added 0
+#81 140.7 Progress: resolved 175, reused 0, downloaded 0, added 0
+#81 141.7 Progress: resolved 178, reused 0, downloaded 0, added 0
+#81 142.2 Progress: resolved 179, reused 0, downloaded 0, added 0
+#81 ...
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 135.3 Progress: resolved 312, reused 0, downloaded 0, added 0
+#78 136.3 Progress: resolved 314, reused 0, downloaded 0, added 0
+#78 137.8 Progress: resolved 316, reused 0, downloaded 0, added 0
+#78 138.9 Progress: resolved 317, reused 0, downloaded 0, added 0
+#78 141.2 Progress: resolved 318, reused 0, downloaded 0, added 0
+#78 141.8 Progress: resolved 319, reused 0, downloaded 0, added 0
+#78 142.9 Progress: resolved 320, reused 0, downloaded 0, added 0
+#78 ...
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 143.9 Progress: resolved 180, reused 0, downloaded 0, added 0
+#81 144.9 Progress: resolved 181, reused 0, downloaded 0, added 0
+#81 145.9 Progress: resolved 184, reused 0, downloaded 0, added 0
+#81 147.0 Progress: resolved 252, reused 0, downloaded 0, added 0
+#81 148.0 Progress: resolved 264, reused 0, downloaded 0, added 0
+#81 149.0 Progress: resolved 290, reused 0, downloaded 0, added 0
+#81 150.1 Progress: resolved 300, reused 0, downloaded 0, added 0
+#81 151.1 Progress: resolved 305, reused 0, downloaded 0, added 0
+#81 152.2 Progress: resolved 316, reused 0, downloaded 0, added 0
+#81 ...
+
+#82 [engagement-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/engagement     && pnpm --filter=@aster/engagement --prod deploy --legacy /out
+#82 DONE 151.2s
+
+#78 [catalog-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/catalog     && pnpm --filter=@aster/catalog --prod deploy --legacy /out
+#78 143.9 Progress: resolved 379, reused 0, downloaded 0, added 0
+#78 145.0 Progress: resolved 384, reused 0, downloaded 0, added 0
+#78 146.0 Progress: resolved 430, reused 0, downloaded 0, added 0
+#78 147.0 [WARN] 1 deprecated subdependencies found: uuid@9.0.1
+#78 147.0 Progress: resolved 430, reused 0, downloaded 0, added 0, done
+#78 147.7 .                                        | +224 ++++++++++++++++++++++
+#78 ...
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 153.2 Progress: resolved 318, reused 0, downloaded 0, added 0
+#81 154.2 Progress: resolved 320, reused 0, downloaded 0, added 0
+#81 155.3 Progress: resolved 322, reused 0, downloaded 0, added 0
+#81 157.1 Progress: resolved 324, reused 0, downloaded 0, added 0
+#81 158.2 Progress: resolved 387, reused 0, downloaded 0, added 0
+#81 159.2 Progress: resolved 434, reused 0, downloaded 0, added 0
+#81 ...
+
+#83 [playback-init runtime 2/4] WORKDIR /app
+#83 CACHED
+
+#84 [playback-init runtime 3/4] COPY --from=build --chown=node:node /out ./
+#84 DONE 3.9s
+
+#85 [engagement-init runtime 3/4] COPY --from=build --chown=node:node /out ./
+#85 ...
+
+#86 [playback-init runtime 4/4] COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+#86 DONE 0.2s
+
+#87 [playback-init] exporting to image
+#87 exporting layers
+#87 exporting layers 2.1s done
+#87 writing image sha256:dc8e51dfeab022658c3b1e9301dcbce92c3c4ead8e2fe4d1b65d0b48fab4aec6 0.0s done
+#87 naming to docker.io/library/aster-engagement-proof-54d1fc99-b95e-4354-a7f4-a5cb22fd41a0-playback-init 0.1s done
+#87 DONE 2.3s
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 159.7 [WARN] 1 deprecated subdependencies found: uuid@9.0.1
+#81 159.7 Progress: resolved 434, reused 0, downloaded 0, added 0, done
+#81 159.8 .                                        | +195 ++++++++++++++++++++
+#81 ...
+
+#85 [engagement-init runtime 3/4] COPY --from=build --chown=node:node /out ./
+#85 DONE 3.6s
+
+#88 [engagement-init runtime 4/4] COPY --from=build --chown=node:node /workspace/LICENSE ./LICENSE
+#88 DONE 0.6s
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 ...
+
+#89 [engagement-init] exporting to image
+#89 exporting layers 3.1s done
+#89 writing image sha256:7ec190337f5c16c5dadd7197f0ac028d8fcf5cf76e6fba7eb83a5a963451aabf 0.0s done
+#89 naming to docker.io/library/aster-engagement-proof-54d1fc99-b95e-4354-a7f4-a5cb22fd41a0-engagement-init 0.0s done
+#89 DONE 3.2s
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 ...
+
+#90 [engagement internal] load build definition from engagement.Dockerfile
+#90 transferring dockerfile: 2.04kB 0.1s done
+#90 DONE 0.1s
+
+#6 [engagement internal] load metadata for docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#6 DONE 3.0s
+
+#81 [identity-init build 17/17] RUN TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/identity     && pnpm --filter=@aster/identity --prod deploy --legacy /out
+#81 ...
+
+#10 [engagement 1/4] FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
+#10 DONE 0.0s
+
+#83 [engagement runtime 2/4] WORKDIR /app
+#83 CACHED
+
+#91 [engagement internal] load .dockerignore
+#91 transferring context: 2.57kB 0.0s done
+#91 DONE 0.1s
+
+#20 [engagement build  2/17] WORKDIR /workspace
+#20 CACHED
+
+#92 [engagement internal] load build context
+2026/08/28 13:41:56 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+2026/08/28 13:41:56 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+2026/08/28 13:41:56 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+2026/08/28 13:41:56 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+2026/08/28 13:41:56 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+2026/08/28 13:41:56 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+2026/08/28 13:46:53 http2: server: error reading preface from client //./pipe/docker_engine: file has already been closed
+{"event":"engagement_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}
+file://wsl.localhost/Ubuntu-20.04/home/andrews/personal/portfolio-2026/aster-streaming-platform/tools/run-engagement-runtime.mjs:324
+  throw new Error("Engagement runtime proof failed; see the bounded command output above.");
+        ^
+
+Error: Engagement runtime proof failed; see the bounded command output above.
+    at file://wsl.localhost/Ubuntu-20.04/home/andrews/personal/portfolio-2026/aster-streaming-platform/tools/run-engagement-runtime.mjs:324:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v24.19.0

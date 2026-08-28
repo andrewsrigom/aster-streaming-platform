@@ -58,15 +58,17 @@ type Query {
   titles(first: Int!, after: String): CatalogTitleConnection!
   progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
+  watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
 }
 ```
 
-Implemented mutations are owner-specific; watchlist mutations remain P08-R07:
+Implemented mutations are owner-specific:
 
 ```graphql
 type Mutation {
   createProfile(input: CreateProfileInput!): ProfileMutationPayload!
   recordProgress(input: RecordProgressInput!): ProgressPayload!
+  setWatchlist(input: SetWatchlistInput!): WatchlistPayload!
   createPlaybackSession(titleId: ID!): PlaybackSessionPayload!
 }
 ```
@@ -97,6 +99,8 @@ Catalog implements ascending UUID keysets, first 1–20, first+1 lookahead and n
 Engagement history/continue-watching uses descending (updatedAt, progress ID), first 1–20 and first+1 lookahead. Profile/list-bound cursors do not grant authority. Each page freshly authorizes Identity and reads only that account/profile with its deletion guard. Completed rows stay in history; only IN_PROGRESS appears in continue-watching. Catalog metadata is nullable for missing/retired titles; progress is not deleted or copied into Catalog. Live updates can move a title ahead of a cursor; refresh restarts traversal. See [read semantics](../../services/engagement/README.md#history-and-continue-watching).
 
 Unbounded collections use keyset pagination.
+
+Watchlist uses descending (addedAt, entry ID), profile-bound w1 cursors and the same 1–20 page bound. Watchlist and continue-watching both validate current Catalog visibility before lookahead; hidden titles never affect page size or hasNextPage. Watchlist replay/removal do not require Catalog, but always require current Identity ownership. See [watchlist semantics](../../services/engagement/README.md#watchlist). General Title/Profile engagement extensions remain P08-R08, separate from these root operations.
 
 Rules:
 

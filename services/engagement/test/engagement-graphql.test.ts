@@ -12,6 +12,7 @@ import {
 } from "../src/transport/engagement-subgraph.js";
 import { inspectEngagementOperation } from "../src/transport/graphql-operation.js";
 import type { ProgressInput, ProgressState } from "../src/domain/progress.js";
+import { watchlistFixture, watchlistInput } from "./watchlist-fixture.js";
 
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 const input: ProgressInput = {
@@ -45,6 +46,163 @@ type RecordProgress = EngagementSubgraphOptions["recorder"]["record"];
 
 const historyQuery =
   "query ProgressHistory($profileId:ID!, $first:Int! = 20, $after:String) { progressHistory(profileId:$profileId, first:$first, after:$after) { code correlationId connection { edges { cursor node { id titleId sequence positionMs durationMs status updatedAt title { __typename id } } } pageInfo { endCursor hasNextPage } } } }";
+
+const watchlistMutation =
+  "mutation SetWatchlist($input: SetWatchlistInput!) { setWatchlist(input: $input) { code correlationId change { id profileId titleId present version updatedAt } } }";
+const watchlistPage =
+  "query Watchlist($profileId: ID!, $first: Int! = 20, $after: String) { watchlist(profileId: $profileId, first: $first, after: $after) { code correlationId connection { edges { cursor node { id profileId titleId addedAt title { __typename id } } } pageInfo { endCursor hasNextPage } } } }";
+
+test("watchlist preflight validates commands, page shape, cursor scope and multiplied list cost", async () => {
+  const mutation = { query: watchlistMutation, variables: { input: watchlistInput() } };
+  const page = { query: watchlistPage, variables: { profileId: id(2) } };
+  assert.equal(inspectEngagementOperation(mutation).status, "accepted");
+  assert.equal(inspectEngagementOperation(page).status, "accepted");
+  for (const value of [
+    { ...mutation, variables: { input: watchlistInput({ present: false }) } },
+    { ...page, variables: { profileId: id(2), first: 1 } },
+  ]) {
+    assert.equal(inspectEngagementOperation(value).status, "accepted");
+  }
+  for (const value of [
+    { ...mutation, variables: { input: { ...watchlistInput(), present: "true" } } },
+    { ...mutation, variables: { input: { ...watchlistInput(), accountId: id(9) } } },
+    { ...mutation, query: watchlistMutation.replace("change { id", "change { accountId") },
+    { ...page, variables: { profileId: id(2), first: 21 } },
+    { ...page, variables: { profileId: id(2), after: "e1.history.foreign" } },
+    { ...page, query: watchlistPage.replace("code correlationId", "code correlationId accountId") },
+    {
+      ...page,
+      query:
+        "query Two($profileId:ID!) { watchlist(profileId:$profileId) { code } progressHistory(profileId:$profileId) { code } }",
+    },
+    {
+      ...page,
+      query: watchlistPage.replace(
+        "id profileId titleId addedAt",
+        "id profileId titleId addedAt a:id b:id c:id d:id id id id id id id id id id id id id",
+      ),
+    },
+  ]) {
+    assert.equal(inspectEngagementOperation(value).status, "rejected");
+  }
+  const forged = await graphql({
+    schema: createEngagementSchema(),
+    source: watchlistMutation,
+    variableValues: mutation.variables,
+    contextValue: {
+      watchlist: {
+        writer: {
+          set: () => {
+            throw new Error("must not dispatch");
+          },
+        },
+      },
+    },
+  });
+  assert.equal(forged.errors?.[0]?.extensions["code"], "UNAVAILABLE");
+});
+
+test("HTTP watchlist uses owned applications, sanitizes membership and preserves opposite-command replay", async () => {
+  const w = watchlistFixture();
+  const f = await fixture(
+    () => {
+      throw new Error("watchlist must not record progress");
+    },
+    undefined,
+    { writer: w.writer, queries: w.queries },
+  );
+  const command = watchlistInput();
+  const set = (value: object) => f.send({ query: watchlistMutation, variables: { input: value } });
+  try {
+    const saved = await set(command);
+    assert.equal(saved.status, 200);
+    assert.equal(saved.cache, "no-store");
+    assert.equal(saved.cookie, undefined);
+    const decode = (text: string) =>
+      JSON.parse(text) as {
+        errors?: unknown[];
+        data: {
+          setWatchlist?: {
+            code: string;
+            change: { id: string; present: boolean; version: number } | null;
+          };
+          watchlist?: {
+            code: string;
+            connection: { edges: { node: { title: { id: string } } }[] };
+          };
+        };
+      };
+    const first = decode(saved.text);
+    assert.equal(first.errors, undefined);
+    assert.equal(first.data.setWatchlist?.code, "COMPLETED");
+    assert.equal(first.data.setWatchlist.change?.present, true);
+    assert.doesNotMatch(
+      saved.text,
+      /accountId|credential|signature|playbackSessionId|manifestUrl/u,
+    );
+    const page = await f.send({
+      query: watchlistPage,
+      variables: { profileId: command.profileId },
+    });
+    assert.equal(
+      decode(page.text).data.watchlist?.connection.edges[0]?.node.title.id,
+      command.titleId,
+    );
+    const removed = decode((await set({ ...command, idempotencyKey: id(8), present: false })).text);
+    assert.equal(removed.data.setWatchlist?.change?.version, 2);
+    w.ports.catalog.visibility = () => Promise.resolve({ status: "unavailable" });
+    assert.deepEqual(
+      decode((await set(command)).text).data.setWatchlist?.change,
+      first.data.setWatchlist.change,
+    );
+    const empty = await f.send({
+      query: watchlistPage,
+      variables: { profileId: command.profileId },
+    });
+    assert.deepEqual(decode(empty.text).data.watchlist?.connection.edges, []);
+    const before = w.calls.transaction;
+    const forged = await f.send(
+      { query: watchlistMutation, variables: { input: command } },
+      { ...f.headers, "x-aster-router-credential": "forged" },
+    );
+    assert.equal(forged.status, 403);
+    assert.equal(w.calls.transaction, before);
+  } finally {
+    await f.close();
+  }
+});
+
+test("watchlist HTTP non-success and uncertain commits never fabricate acknowledged membership", async () => {
+  const w = watchlistFixture();
+  let status: "not_visible" | "unavailable" | "indeterminate" = "not_visible";
+  const f = await fixture(
+    () => {
+      throw new Error("not progress");
+    },
+    undefined,
+    {
+      writer: { set: () => Promise.resolve({ status }) },
+      queries: w.queries,
+    },
+  );
+  try {
+    for (status of ["not_visible", "unavailable", "indeterminate"] as const) {
+      const response = await f.send({
+        query: watchlistMutation,
+        variables: { input: watchlistInput() },
+      });
+      const result = JSON.parse(response.text) as {
+        errors?: unknown[];
+        data: { setWatchlist: { code: string; change: unknown } };
+      };
+      assert.equal(result.errors, undefined);
+      assert.equal(result.data.setWatchlist.code, status.toUpperCase());
+      assert.equal(result.data.setWatchlist.change, null);
+    }
+  } finally {
+    await f.close();
+  }
+});
 
 test("read preflight bounds pages, canonical cursors, list cost and root fan-out", () => {
   const history = { query: historyQuery, variables: { profileId: input.profileId } };
@@ -162,7 +320,11 @@ test("progress preflight bounds input, mutation fan-out and schema exposure", as
   assert.equal(result.errors?.[0]?.extensions["code"], "UNAVAILABLE");
 });
 
-async function fixture(record: RecordProgress, queries?: EngagementSubgraphOptions["queries"]) {
+async function fixture(
+  record: RecordProgress,
+  queries?: EngagementSubgraphOptions["queries"],
+  watchlist?: EngagementSubgraphOptions["watchlist"],
+) {
   const key = randomBytes(32).toString("hex");
   const adapter = createExpressHttpAdapter({ bodyLimitBytes: 16384 });
   const server = createServer({ maxHeaderSize: 16384 }, adapter.requestListener);
@@ -170,6 +332,7 @@ async function fixture(record: RecordProgress, queries?: EngagementSubgraphOptio
     routerTrust: createLocalRouterTrust("engagement", key),
     recorder: { record },
     ...(queries ? { queries } : {}),
+    ...(watchlist ? { watchlist } : {}),
   });
   adapter.mountGraphql(graph.middleware);
   server.listen(0, "127.0.0.1");

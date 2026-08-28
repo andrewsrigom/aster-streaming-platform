@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R06 on feat/p08-history from main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R01 is DONE: PR 26 and exact main push 33182876541 pass; [merge checkpoint](../evidence/phase-08/progress-candidate.md). Phases 00–07 remain released locally. Full Phase 00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R07 on local feat/p08-watchlist. P08-R06 is DONE: PR 27 is squash-merged at main 0401ae3e850add27ad73fe7be12a1672d5a73414. Protected CI 33190917857, clean final-head confirmation 5455176079 and exact main push 33191946442 pass; both review threads are resolved. The squash tree equals that reviewed tree. Watchlist is already rebased and may publish. Phases 00–07 remain released locally; P08-R01 is DONE. Full Phase 00–14 goal stays active.
 
 ## Verified
 
@@ -22,11 +22,13 @@ P08-R01 now includes current private Identity/profile and Playback/session reads
 
 ## Not implemented
 
-Player reports/resume, relay/consumers, Discovery and hosted release remain planned. Watchlist has preserved partial local implementation, not acceptance. History/continue-watching's [current-visibility correction](../evidence/phase-08/history-visibility.md) passes 66 Engagement / 202 Catalog tests, real SQL, full Docker and applicable candidate gates. Corrected protected confirmation/CI/merge remain. Engagement's mutation backend is Docker-tested, not released. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Player reports/resume, general batched entity extensions, relay/consumers, Discovery and hosted release remain planned. Watchlist backend passes local acceptance; protected publication remains. Retained demo has not been upgraded to Phase 08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-P08-R06: publish the reset count correction from confirmation 5053033139 / inline 3882263770. All twelve reviewed volumes now pass, a thirteenth fails before teardown; 15 simulated reset tests and static checks pass. SQL correction 1ff4e91 already passed 67 tests, real 65-candidate SQL and 46/46 affected tasks. Reuse unchanged service acceptance; require final-head protected CI/review/merge/post-merge. Watchlist is preserved in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3 (84 tests and real SQL now pass; API wired, federation proof/known operations pending). All older stashes were applied. No real reset or CPU/media repeat.
+P08-R07 remains the active requirement.
+
+Watchlist local acceptance passes: 84 Engagement tests, nine composition tests, real PostgreSQL migration/replay/concurrency/256-entry limits and the complete federated Docker proof. The candidate gate passes 47/47 tasks (26 cached, 4m48.539s). Sources and raw evidence are linked in [watchlist checkpoint](../evidence/phase-08/watchlist.md). Browser reports/resume, R08 batching and R09 relay/deletion remain separate. Next: publish the already-rebased candidate, then activate R08 after freezing R07 WAITING_EXTERNAL. No host/CPU/media repeat.
 
 ## Runtime and recovery
 

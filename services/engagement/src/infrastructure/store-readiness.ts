@@ -14,7 +14,7 @@ export async function probeEngagementStore(
         AND pg_has_role(current_user, delegated.oid, 'MEMBER'))
       AND NOT EXISTS (SELECT 1 FROM pg_namespace namespace WHERE namespace.nspname IN ('identity', 'catalog', 'playback', 'discovery')
         AND has_schema_privilege(current_user, namespace.oid, 'USAGE'))
-      AND NOT EXISTS (SELECT 1 FROM unnest(ARRAY['progress','progress_receipts','outbox','profile_guards','profile_admission','schema_migrations']) name
+      AND NOT EXISTS (SELECT 1 FROM unnest(ARRAY['progress','progress_receipts','outbox','profile_guards','profile_admission','schema_migrations','watchlists','watchlist_entries','watchlist_receipts']) name
         WHERE has_table_privilege(current_user, 'engagement.' || name, 'TRUNCATE,REFERENCES,TRIGGER'))
       AND NOT EXISTS (SELECT 1 FROM unnest(ARRAY['account_id','slot','deleted']) name
         WHERE has_column_privilege(current_user, 'engagement.profile_guards', name, 'UPDATE'))
@@ -23,6 +23,10 @@ export async function probeEngagementStore(
         WHERE has_column_privilege(current_user, 'engagement.progress', name, 'UPDATE'))
       AND NOT has_table_privilege(current_user, 'engagement.progress', 'DELETE')
       AND NOT has_table_privilege(current_user, 'engagement.outbox', 'UPDATE,DELETE')
+      AND NOT has_table_privilege(current_user, 'engagement.watchlists', 'DELETE')
+      AND NOT EXISTS (SELECT 1 FROM unnest(ARRAY['id','account_id','profile_id','write_transaction']) name
+        WHERE has_column_privilege(current_user, 'engagement.watchlists', name, 'UPDATE'))
+      AND NOT has_table_privilege(current_user, 'engagement.watchlist_entries', 'UPDATE')
       AND NOT has_table_privilege(current_user, 'engagement.schema_migrations', 'INSERT,UPDATE,DELETE')
       AND NOT has_any_column_privilege(current_user, 'engagement.schema_migrations', 'UPDATE,REFERENCES')
       AS allowed FROM pg_roles WHERE rolname = current_user`,
@@ -32,10 +36,11 @@ export async function probeEngagementStore(
       return { action: "rollback", value: false };
     }
     const versions = await tx.query({
-      text: "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 2",
+      text: "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 3",
     });
     const version = versions.rows[0] as Record<string, unknown> | undefined;
-    if (versions.rowCount !== 1 || version?.["version"] !== 1) {
+    const secondVersion = versions.rows[1] as Record<string, unknown> | undefined;
+    if (versions.rowCount !== 2 || version?.["version"] !== 1 || secondVersion?.["version"] !== 2) {
       return { action: "rollback", value: false };
     }
     const admission = await tx.query({
@@ -51,6 +56,17 @@ export async function probeEngagementStore(
           AND contype = 'p' AND pg_get_constraintdef(oid) = 'PRIMARY KEY (profile_id, idempotency_key)')`,
     });
     if (constraint.rowCount !== 1) {
+      return { action: "rollback", value: false };
+    }
+    const watchlistConstraints = await tx.query({
+      text: `SELECT tgname FROM pg_trigger
+        WHERE ((tgrelid = 'engagement.watchlists'::regclass AND tgname = 'engagement_watchlist_commit')
+          OR (tgrelid = 'engagement.watchlist_entries'::regclass AND tgname = 'engagement_watchlist_entry_commit'))
+          AND tgdeferrable AND tginitdeferred AND tgenabled = 'O'
+          AND EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'engagement.watchlist_receipts'::regclass
+            AND contype = 'p' AND pg_get_constraintdef(oid) = 'PRIMARY KEY (profile_id, idempotency_key)')`,
+    });
+    if (watchlistConstraints.rowCount !== 2) {
       return { action: "rollback", value: false };
     }
     await tx.query({
