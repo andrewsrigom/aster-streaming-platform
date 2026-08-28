@@ -6,6 +6,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
+Current handoff: PR30 protected CI33211565625, confirmation5457863408 and exact main push33212852513 passed; R09/R10/R12 is DONE at squash7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. R11 moved onto its identical tree without stashing or losing changes. Player/profile lifecycle, resume/status and library/watchlist are wired. All historical checkpoints remain restored. No retained runtime or host change.
+
 Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
 
 Latest checkpoint: published R09 e42a365 as PR30. Implemented a finite reporter on the sole dependent branch, then preserved it in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1 to correct PR30's stale Catalog migration assertion with cheap alignment coverage. No retained demo or host change.
@@ -14,13 +16,15 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 ### Evidence
 
+Current R11 checkpoint:50 focused tests pass in2955.707698ms; [canonical gate](../evidence/phase-08/player-library-candidate.txt) passes70/70,55cached,1m20.587s, after module-private export and handoff-heading corrections. Exact-main composition passes; manifest db64ea697175ae84e0058af339c160fbbd85098d1965643cb92d5ee2631d881b. [Player/library evidence](../evidence/phase-08/player-library.txt); real browser journey authored and statically checked, not executed. Full-demo Compose model validated read-only,21 services/named volumes/no bind mounts. [R09 merge](../evidence/phase-08/events-release.txt) includes protected and post-merge success. Earlier local wrapper failure is not relabelled.
+
 Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
 
 R08 protected/main gates pass. Native pinned tooling and its executable pnpm shim work without repository bind mounts. Latest 54 focused, 24 CI/platform and six shutdown/platform tests pass. [SQL proof](../evidence/phase-08/events-postgres.txt) includes exact maximum quarantine bytes. [Kafka proof observations](../evidence/phase-08/events-runtime.txt) cover backlog, signed deletion, redelivery, poison/replay/offsets and outage recovery. Fixed consumer rebalance budget/relay coupling, Router refresh and Kafka-init anonymous mounts. Last wrapper failed only its incorrect zero-exit expectation: all actual owners recorded completed shutdown and exit143; corrected validation passes against captured states/logs. [Candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition after memory, formatting, unused-type and scanner false-positive corrections; 14 focused tests pass. No behavior-changing heavy repeat or scanner exemption. All fixtures removed; retained data and host processes untouched. No CPU/memory loop.
 
 ### Next action
 
-Current: candidate gate and one correction push, initial/confirmation review and protected CI. Rebase/resume the sole reporter checkpoint once after predecessor acceptance; no dependent publication before ordered release. The following prior checkpoint remains historical:
+Current: P08-R11 coherent source gate, fresh opt-in personalized Docker/browser journey and reviewed cleanup, then protected release and Phase08 closeout. PR30 exact main push passed. No repeated source restoration or host experiment. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 

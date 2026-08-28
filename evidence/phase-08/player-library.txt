@@ -1,0 +1,97 @@
+P08-R11 player and library integration checkpoint — 2026-08-28
+Base: 7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc; feat/p08-player-progress, unpublished.
+Environment: native Ubuntu-20.04/WSL, pinned Node24.19.0/pnpm11.24.0,
+NODE_OPTIONS=--max-old-space-size=1536. No dependency, retained runtime, media or host change.
+
+Commands:
+node --test --test-concurrency=1 apps/web/test/engagement-client.test.ts apps/web/test/library-client.test.ts apps/web/test/media-progress.test.ts apps/web/test/player-engagement.test.ts apps/web/test/private-profile.test.ts apps/web/test/progress-reporter.test.ts
+pnpm --filter @aster/web typecheck
+pnpm exec eslint apps/web/features/engagement apps/web/test/library-client.test.ts apps/web/test/private-profile.test.ts apps/web/features/playback/player.tsx apps/web/features/catalog/catalog.tsx apps/web/app/layout.tsx apps/web/app/library/page.tsx
+pnpm --filter @aster/router schema:update
+ASTER_SCHEMA_BASE=7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc pnpm --filter @aster/router schema:check
+pnpm exec eslint apps/web/test/browser/engagement.spec.ts
+pnpm --filter @aster/web typecheck
+
+Exit: 0 for the complete focused gate and separate browser-source static checks.
+Iteration corrected an inferred-union narrowing error and stale-flow lint narrowing.
+The canonical wire serializer excludes internal operation discriminators; regression asserts
+exact operationName/query/variables keys. No lint suppression or widened owner contract.
+
+Implemented source: actual player reporting/resume/status, profile/session invalidation,
+private library/history/continue/watchlist pages, explicit title watchlist panel and bounded
+same-key mutation retry. Private GraphQL state stays in Apollo; no SSR/private storage or Redux copy.
+Pages replace at most20 entries per view, not an accumulating cache. Client transport is bounded.
+50 deterministic tests use real Apollo with fake HTTP/media/clocks: not deployed persistence or
+browser acceptance. Browser journey authored and statically checked, not yet executed.
+Next: fresh opt-in personalized Docker demo, real browser/failure/accessibility journey and
+reviewed exact cleanup, then full candidate/release. Retained Phase07 demo is not upgraded.
+
+Raw focused gate output:
+apps/web/features/engagement/client.ts 199ms
+apps/web/features/engagement/watchlist-intent.ts 24ms (unchanged)
+apps/web/test/library-client.test.ts 91ms (unchanged)
+✔ player engagement documents match the first-party inventory (11.319427ms)
+✔ progress input is bounded and cannot change the selected profile (2.359162ms)
+✔ fresh progress projection rejects substitution and distinguishes absence from failure (0.655991ms)
+✔ only a matching durable acknowledgement can report a successful save (0.735888ms)
+✔ private transport sends only the fixed credentialed operation and strips unselected data (83.605573ms)
+✔ private cache replaces the current title and never reports another title's absence (53.473303ms)
+✔ partial GraphQL failure is not empty progress and upstream details stay private (4.090645ms)
+✔ profile disposal cancels old work and prevents a late response from repopulating private cache (2.886381ms)
+✔ expiry during a read rejects the response and discards the private generation (2.367087ms)
+✔ terminal progress is one bounded keepalive attempt, not an Apollo save (1.515255ms)
+✔ admission bounds saves and refuses terminal or foreign-profile work during active requests (5.322354ms)
+✔ library and watchlist documents exactly match the first-party inventory (16.966526ms)
+✔ library variables bound page sizes, scope and traversal bytes (2.122545ms)
+✔ library projection handles retained history and strips unselected private fields (1.183586ms)
+✔ unavailable, oversized, substituted and stalled pages never become empty success (0.752422ms)
+✔ real Apollo library requests replace pages, preserve bounded views and use canonical documents (215.28841ms)
+✔ membership null, partial failure and foreign profile never appear as false (3.280599ms)
+✔ watchlist commands and acknowledgements cannot substitute scope or action (0.833994ms)
+✔ watchlist intent coalesces clicks and retries at most twice with the identical immutable command (0.932879ms)
+✔ watchlist durable acknowledgement is required and disposal ignores late completion (0.766464ms)
+✔ resume waits for metadata and uses server status without recalculating thresholds (2.951888ms)
+✔ resume clamps to actual metadata duration rather than the historical observation (0.305772ms)
+✔ late progress offers explicit resume without overriding playback already underway (0.308435ms)
+✔ periodic sampling follows playing time; pause, seek and end flush the final observation (0.663627ms)
+✔ invalid metadata and intermediate seek positions cannot become reports (0.378566ms)
+✔ navigation captures the last valid sample once before media teardown; profile invalidation does not flush (0.498622ms)
+✔ selected profile loads fresh progress, resumes and reports with the persisted sequence (92.927552ms)
+✔ anonymous and malformed profile contexts never enable saves or block media (10.208553ms)
+✔ profile change discards the former generation and starts from the newly owned sequence (22.809343ms)
+✔ late old-profile reads cannot replace the new profile or attach an obsolete reporter (23.140366ms)
+✔ sign-out cancels an active save without a terminal retry or late saved announcement (14.083411ms)
+✔ expiry removes the reporter and private generation without interrupting media (18.66348ms)
+✔ pagehide attempts one terminal save and pageshow refreshes a fresh generation (20.493651ms)
+✔ hidden visibility flushes; becoming visible rechecks authority and saved position (19.042873ms)
+✔ private library establishes only a freshly selected profile and ignores arbitrary broadcasts (83.438104ms)
+✔ anonymous, missing selection and malformed ownership never create a private runtime (24.280008ms)
+✔ profile swap cancels an old read and prevents late private cache disclosure (25.352227ms)
+✔ private library invalidates on hidden/pagehide and rechecks on return (15.900165ms)
+✔ session expiry clears private data without an automatic sign-in or retry loop (7.170387ms)
+✔ periodic reporting coalesces samples and only a matching acknowledgement is saved (3.019124ms)
+✔ one active save and one latest sample remain bounded; backward seeking is new intent (0.729509ms)
+✔ uncertain acknowledgement retries the identical immutable key and payload only once (1.451538ms)
+✔ rapid flushes are rate bounded and identical acknowledged samples need no new write (2.28824ms)
+✔ stale, conflicting, denied and mismatched acknowledgements cannot claim saved or loop (1.124326ms)
+✔ profile teardown cancels old work and ignores late success without a second terminal request (1.441202ms)
+✔ terminal flush sends at most one best-effort command and never calls it saved (0.368754ms)
+✔ terminal retry preserves uncertain intent rather than replacing it with a newer sample (0.33571ms)
+✔ invalid samples and exhausted sequences never reach the transport (0.972536ms)
+✔ returning to the acknowledged position cancels a superseded unsent sample (0.547997ms)
+✔ a successful retry releases the attempt budget for a distinct terminal intent (0.579589ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 50
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2955.707698
+$ next typegen && tsc --noEmit
+Generating route types...
+✓ Types generated successfully
+$ node ./dist/src/main.js --write
+{"check":"supergraph","status":"ok","mode":"--write","subgraphs":4,"compatibilityBase":"4082c3a463b50ba4397f080e1b81bc15e03bf140","artifactCount":7,"manifestSha256":"db64ea697175ae84e0058af339c160fbbd85098d1965643cb92d5ee2631d881b"}
+$ node ./dist/src/main.js --check
+{"check":"supergraph","status":"ok","mode":"--check","subgraphs":4,"compatibilityBase":"7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc","artifactCount":7,"manifestSha256":"db64ea697175ae84e0058af339c160fbbd85098d1965643cb92d5ee2631d881b"}

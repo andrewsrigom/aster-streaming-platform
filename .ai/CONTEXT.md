@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. P08-R01/R06/R07/R08 are DONE; PR29 squash d7fa03a and exact main push33199190529 pass. R09/R10/R12 is the sole active item on feat/p08-event-delivery. Strict/focused/real SQL checks, Kafka outage/recovery observations, 70/70 candidate tasks and exact-base composition pass. Corrected SIGTERM validation passes against captured owner states/logs; protected execution of the complete supervisor and review/release remain. Browser reports/resume follow. No unchanged CPU/media/browser experiment is required.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR30 passed protected CI33211565625 and clean confirmation5457863408, then merged as7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. R09/R10/R12 is DONE after successful exact main push33212852513. R11 is the sole local dependent at that tree: player/profile lifecycle and library/watchlist are wired,50 focused tests and static/composition checks pass. Real personalized Docker/browser acceptance and publication remain. Retained demo stays Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

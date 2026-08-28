@@ -231,6 +231,24 @@ mutation StartPlayback($titleId: ID!) {
   }
 }
 
+query PlayerProgress($profileId: ID!, $titleId: ID!) {
+  profile(id: $profileId) {
+    id
+    progress(titleId: $titleId) {
+      id
+      profileId
+      titleId
+      sequence
+      version
+      positionMs
+      durationMs
+      status
+      occurredAt
+      updatedAt
+    }
+  }
+}
+
 mutation RecordProgress($input: RecordProgressInput!) {
   recordProgress(input: $input) {
     code
@@ -326,6 +344,13 @@ mutation SetWatchlist($input: SetWatchlistInput!) {
       version
       updatedAt
     }
+  }
+}
+
+query WatchlistMembership($profileId: ID!, $titleId: ID!) {
+  profile(id: $profileId) {
+    id
+    inWatchlist(titleId: $titleId)
   }
 }
 

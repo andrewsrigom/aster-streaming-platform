@@ -1,80 +1,80 @@
-# Work Item: Owned outbox delivery and profile-deletion cleanup
+# Work Item: Honest player progress, resume and owned library
 
 - Status: IN_PROGRESS
-- Owner: Engagement; Identity and Catalog retain their outboxes
+- Owner: Web interaction; Engagement owns durable progress and membership
 - Phase: 08
-- Requirement IDs: P08-R09, P08-R10, P08-R12
+- Requirement IDs: P08-R11; supports ENG-R01–ENG-R06 and Phase08 closeout
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Publish committed owner facts at least once, consume authenticated Identity deletion without duplicated effects, and prove cleanup plus reconstruction of continue-watching from durable progress.
+A viewer selects an owned profile, watches and resumes a title, sees truthful save status and bounded continue-watching/history/watchlist. Anonymous playback remains usable without personalization.
 
 ## Current behavior
 
-Latest CI33210330287 at85513ef passes the corrected Catalog proof and Playback, but stops at Engagement fields: the fixture still expects migrations1–2 instead of1–4. Its emitted schemaVersions is stale too. Initial review5457715810 is clean. Correct both assertions and add a cheap full-migrator alignment check across fields/watchlist/events fixtures. Inspection of the other owner/migration proofs found no further full-migrator expectation drift; historical isolated migration tests intentionally retain their older schemas. Production SQL/runtime remain unchanged. R11 now has28 focused tests plus strict client/media binding and composition; all local R11 work is preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c. The older1643 checkpoint was already selectively restored and must never be applied again.
-
-PR30 head e42a365 failed CI33209032494 at the standalone Catalog Docker proof: its first-run assertion still requires migrations 1–8, while the reviewed migrator now applies 1–9. Source quality, all real shared-platform scenarios, generated Catalog publication and the independent Local platform job passed. Correct this proof and add a cheap migration-list alignment regression; production SQL and runtime behavior do not change. The local R11 reporter checkpoint is safely preserved in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1 on feat/p08-player-progress. Restore that exact checkpoint once after predecessor correction/rebase; all older restored stashes remain forbidden. No review submission or comment exists yet.
-
-P08-R07/R08 are DONE at main d7fa03a; this R09 candidate is rebased there. Latest 54 focused, 24 CI/platform and six shutdown/platform tests pass, plus real SQL including maximum quarantine bytes. Real Kafka observations prove delivery, poison/replay/offsets and outage recovery. Corrected SIGTERM validation passes against captured exit143 and completed lifecycle logs. The [candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition after behavior-preserving static-check remediation. Protected execution of the complete corrected supervisor and review/release remain; no retained migration or host diagnostic loop.
+PR30 protected CI33211565625 and clean confirmation5457863408 passed; merged main is7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. Exact main push33212852513 passed; predecessor release is complete. R11's unpublished branch moved to the tree-identical merge without stashing or altering its changes. Actual player/profile lifecycle, resume/status, library/history/continue/watchlist and lazy title controls now exist;50 focused tests,70/70 canonical source checks and exact-main composition pass. The browser journey is authored and statically checked, not executed. Retained demo stays Phase07; no historical checkpoint may be reapplied.
 
 ## Proposed behavior
 
-[ADR-0034](../docs/adr/0034-owned-event-delivery.md): finite owner relays, short SQL claims and fenced acknowledgements, unchanged v1 envelopes, bounded broker headers and explicit initial-backlog consumption. Engagement validates signed Identity facts, atomically fences/deletes owned profile data and records completion; poison messages enter bounded private quarantine with exact replay.
+Use the existing public supergraph, Apollo clients, Identity profile selection and client-only HLS player. Add a finite reporter, private profile-scoped Apollo state and a small library view. Keep the current player widgets and Redux preferences. No new service, dependency, durable browser queue or account flow.
 
 ## Boundaries
 
-Identity, Catalog and Engagement own all their writes. Shared event-delivery mechanics have three concrete owner outboxes, no new service. Existing PostgreSQL/Kafka/runtime adapters remain. Separate narrow local relay/consumer credentials do not widen normal request roles. A dedicated Identity-event key authenticates destructive facts; it is not a Router, viewer or private-read credential. No cross-owner SQL, Redis authority, media or browser change.
+Engagement remains PostgreSQL authority for sequence, thresholds, history and membership; Identity authorizes ownership, Catalog owns visibility, Playback owns sessions. Web owns only pending user intent and UI coordination. Affected paths: apps/web/features/engagement, features/playback, private profile notification, app/library, components/navigation, focused/browser tests, known operations and reviewed demo/cleanup integration. Domain/application service contracts and media bytes are unchanged.
 
 ## Invariants
 
-Business transaction commits before broker I/O; failed/ambiguous publication or acknowledgement retains the pending fact. First deliveries follow aggregate version; late duplicate delivery never reverses a consumer. Deletion locks the same permanent guard as writers and cannot resurrect a profile. Offsets advance only after durable effect, duplicate recognition or durable quarantine. Continue-watching remains a read of authoritative progress, not a redundant event-built store.
+Only COMPLETED acknowledges a durable save. Seed sequence from a fresh owned read and increment across playback sessions, not from wall time. Uncertain requests retain their exact key/payload; never replace an uncertain intent with a new key. A profile change, sign-out, expiry or tab invalidation discards private caches and cancels old interactive work. Remote state stays in Apollo, not Redux. Optional save/read failure cannot block anonymous media.
 
 ## Failure behavior
 
-Broker/relay failure delays delivery and eventually reaches existing finite outbox backpressure; it never acknowledges a lost save or gates public media. SQL/lease uncertainty retries only the same safe event after expiry. Every operation has cancellation/deadline, one in-flight relay per owner and one handler, no waiting queue. Invalid signatures, keys, versions and envelopes cannot delete data. Full quarantine/tombstone capacity leaves the offset uncommitted. Emit finite correlated outcomes, no raw events or identifiers as metric labels.
+One report in flight and one coalesced unsent sample, never an offline queue. Report every fifteen seconds while playing, with bounded pause/ended/visibility flushes and at most two attempts for the identical transient/indeterminate command. Stale/conflicting/denied outcomes stop that intent and require fresh state or explicit recovery, not automatic overwriting of another tab.
+
+Use four-second transport deadlines, bounded request/response bytes, no redirects and known operation documents. Visibility-hidden/pagehide may send one bounded keepalive request, but navigation or browser termination can lose it. Keepalive is an attempt, not a save acknowledgement; periodic saving remains primary. Cancellation/failure reports an honest finite UI status. Resume only IN_PROGRESS state after media metadata, clamped to actual duration; absent/completed/failed reads do not seek or claim resume.
 
 ## Data and contracts
 
-Additive owner migrations introduce a fenced relay state and restricted claim/ack functions; Engagement adds deletion audit and finite quarantine. Keep existing envelope IDs/versions and partition by aggregate ID. Local topics are explicitly initialized, one partition, existing one-hour/16-MiB retention. Identity deletion may cancel pending Engagement facts with an auditable count, as ADR-0030 allows; already-brokered facts expire by retention. Permanent deletion fences are not evicted. No GraphQL contract change.
+No new durable schema, event or owner trust credential. Add bounded client documents to known operations and verify composition. Scope private Apollo cache to the current profile/session generation, bound list pages to twenty and replace pages rather than grow indefinitely. Re-read current server state after session changes and before continued writing. No progress, cookie, signed URL or profile history in localStorage or local QoE output.
 
 ## Security and privacy
 
-Broker input is untrusted. HMAC-SHA256 binds a dedicated local Identity-event key to topic, key and exact envelope bytes; only Identity and Engagement mount it. Bound header count/bytes and event size before JSON/crypto. SQL functions use fixed search paths and explicit grants. Quarantine is private, bounded and never logged. Hosted ACLs/TLS/rotation remain Phase 14, not implied by this local mechanism.
+Credentialed requests target only the fixed local Router with existing Origin/CSRF policy. Browser profile IDs never authorize a save; owner-side checks remain. Validate enums, identifiers, bounds, response ownership and finite numbers before UI use. Do not hydrate private state into public SSR snapshots. A profile/session broadcast is an invalidation hint, never authority. Requests from an old generation must not refill a new profile cache.
 
 ## Implementation steps
 
-1. Implement finite relay/wire contracts and signed-event tests.
-2. Add owner claim/ack migrations/adapters and real SQL fencing/replay proof.
-3. Add Engagement deletion/duplicate/quarantine/replay and source-rebuild checks.
-4. Wire optional background delivery into existing lifecycles and explicit broker setup. Use infra/compose/events.yml to keep base browsing/playback broker-independent. Verify overlay initialization, exact cleanup and durable event-key retention.
-5. Run real Kafka/SQL/Docker acceptance, consolidate evidence and publish after R08 closeout.
+1. Implement bounded typed operations/response validation and the pure reporter with deterministic adverse tests.
+2. Wire private Apollo/profile lifetime, HLS media events, resume and accessible save status.
+3. Add minimal continue-watching/history/watchlist controls and profile-aware navigation.
+4. Verify the optional demo by combining compose.yml, playable.yml and events.yml, targeting web identity engagement broker-init on a fresh explicitly named project. Inspect that merged model and exact cleanup first. Preserve the Phase07 web-only anonymous command and retained project; no new Compose abstraction is needed if the existing overlays satisfy the flow.
+5. Verify focused, browser, demo and failure acceptance; close Phase08 and check Phase09 prerequisites after ordered protected releases.
 
 ## Tests
 
-Completed runtime corrections: bounded tmpfs masks for Kafka-init image volumes, Router refresh after owner replacement, supported broker recovery, bounded rebalance and independent relay. Real SQL/Kafka recovery evidence covers these changes. Candidate-only corrections are an erased type export, key-buffer rename, equivalent fixture URL construction and formatting; 14 focused regressions and the full canonical gate pass. No repeated retained demo or host diagnostic change.
-
-Unit: publication-before-ack, cancellation/ambiguity, admission, codec/signature substitution, duplicate/order handling and backoff. Integration: real owner roles/migrations, claim races/lease expiry, atomic cleanup/write race, poison/capacity/replay and source reconstruction. Contract: unchanged envelopes, broker headers/initial offsets, no foreign SQL or request-role privilege widening. Runtime: broker outage/recovery, backlog, graceful stop and public Playback continuity. Browser/media/CPU checks are not applicable to this backend slice.
+Unit: frequency/coalescing, same-key replay, uncertain/stale outcomes, sequence exhaustion, intentional backward seek, maximum duration, cancellation, profile swap, late response, unavailable/empty distinction, completed/no-progress resume and unload attempt without false success. Contract: strict bounded client documents, current schema and private cache policies. Browser: real save/pause/reload/resume, continue-watching completion/history, watchlist add/remove, profile isolation/sign-out, save outage with ongoing media, navigation and accessible status. Reuse current published/generated media; do not re-encode the retained film or repeat CPU experiments.
 
 ## Evidence
 
-CI correction candidate passes70/70 tasks (58cached,1m4.525s) and exact d7fa03a composition. First69/70 round only hit the session-log heading limit; consolidated same-session prose without dropping history. Later changes only record these results. Initial/confirmation review and the corrected hosted runtime gate remain mandatory.
+Iteration gate: cheapest affected node:test, TypeScript and scoped lint. Candidate gate: pnpm check:changed and exact-base composition. Acceptance: one coherent real browser/owner demo run, clean Docker-only startup/replay and failure journey; fixtures must use bounded resources and exact ownership cleanup. Raw artifacts under evidence/phase-08 with command, source, environment and limitations.
 
-Iteration gate: focused node:test and strict affected build/lint. Candidate gate: check:changed with concurrency two plus composition compatibility. Acceptance: isolated real PostgreSQL/Kafka and owner runtime evidence under evidence/phase-08. Repeat heavy checks only after changes to measured SQL, transport trust, delivery ordering or runtime wiring. One initial and one confirmation review; additional rounds only for requirement/security/data/availability/public-contract blockers.
+Repeat heavyweight evidence only if later changes affect transport/lifetime/reporting, owner contracts, media wiring, packaging/bootstrap or cleanup. No unchanged Kafka/SQL/film/CPU repeat. One initial and one confirmation review; extend only for requirement, security/data, availability or public-contract blockers.
+
+Sources checked 2026-08-28: [keepalive](https://developer.mozilla.org/en-US/docs/Web/API/Request/keepalive), [visibility lifecycle](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event), [pagehide limitations](https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event). These do not promise delivery after browser termination. Follow repository frontend/GraphQL invariants over generic Next.js recommendations for direct DB access or server-action mutations.
 
 ## Rollback or recovery
 
-Stop background delivery; retain schemas, pending outboxes, quarantine and permanent deletion fences. Drain before migrating, then use compatible binaries or roll forward: old Engagement readiness and finite migrators can reject new versions. Down migrations are empty/idle-state only, never a way to undo deletion or discard uncertain claims. Retain the event signing key with signed backlog. R09 is already rebased onto R08's completed squash; never reapply restored stashes.
+Restore compatible prior Web/Router artifacts and stop optional reporting/event activation, retaining all database/media state, pending events and permanent deletion guards. Keep the existing anonymous demo command available. Before any retained owner migration: inspected exact backup, drain, compatible images and rollback/roll-forward verification. No automatic WSL/Docker restart, global cleanup or unrelated-process action.
+
+If PR30 changes, preserve this dependent work, rebase onto its reviewed replacement and repeat affected gates before publication. Never reapply historical restored stashes.
 
 ## Documentation updates
 
-Owner migration guides, data/event contract and one operational replay/cleanup runbook, evidence index and concise repository memory at candidate/closeout checkpoints.
+Player/library behavior, save/unload limitations, Docker-only demo and exact cleanup, Phase08 acceptance index and concise repository memory at candidate/closeout checkpoints.
 
 ## Completion checklist
 
-- [x] Relay and consumer behavior implemented
-- [x] Local 70-task candidate gate and exact-base composition pass
-- [ ] Focused, SQL, Kafka and runtime acceptance pass
-- [ ] Evidence, operations and memory current
-- [ ] R08 closed; own protected review/CI/merge and exact post-merge pass
+- [x] Reporter and private client tests pass
+- [ ] Real resume/library/failure/accessibility journey passes
+- [ ] Clean Docker-only demo and reviewed cleanup pass
+- [ ] Predecessor released; own protected review/CI/release passes
+- [ ] Phase08 acceptance and Phase09 prerequisites recorded

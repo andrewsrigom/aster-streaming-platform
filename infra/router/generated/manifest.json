@@ -624,6 +624,10 @@
       "sha256": "f03c4f69957fe92779ca8ea19650e3e9547004560e3e4d0050aa4601b87c095e"
     },
     {
+      "name": "PlayerProgress",
+      "sha256": "f0a9f9ed6fe281e0424eb0e165226ced11f511659c4b08f63988045df3d5b442"
+    },
+    {
       "name": "Profile",
       "sha256": "8d2a85baad76cfcf586e945d6f3caf9af768055fbea943bf03fefa98e8f75c10"
     },
@@ -682,6 +686,10 @@
     {
       "name": "Watchlist",
       "sha256": "6703e54d9225f93e7321d4dd1d0b05ec5d3c9b9f90e6074e9700d3d37cb513d3"
+    },
+    {
+      "name": "WatchlistMembership",
+      "sha256": "70484f3d9b384e4700706e4434e7881a5e43084f1842a7f8671bd1a22309dbc0"
     }
   ]
 }

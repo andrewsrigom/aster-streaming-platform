@@ -1,6 +1,6 @@
 # Phase 08 progress implementation
 
-P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watchlist](watchlist.md) and [request-scoped entity fields](engagement-fields.md) are closed. P08-R09/R10/R12 is the sole active candidate: [real SQL](events-postgres.txt) and [Kafka/owner observations](events-runtime.txt) cover delivery and recovery. Corrected SIGTERM validation passes against [captured states/logs](events-shutdown.json); the [70-task candidate gate](events-candidate.txt) and exact-base composition pass. Protected execution of the complete corrected supervisor, review and release remain. [Source hashes](events-source.sha256). Player integration follows; no complete Phase 08 release is claimed.
+P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watchlist](watchlist.md) and [request-scoped entity fields](engagement-fields.md) are closed. P08-R09/R10/R12 passed protected CI and clean confirmation, then merged as7fe10ed; [merge evidence](events-release.txt) records the complete corrected supervisor, SQL/Kafka recovery, shutdown and cleanup. Exact main push33212852513 passed; R09/R10/R12 is DONE. P08-R11 wires player/profile lifecycle and library/watchlist with [50 focused tests and static/composition checks](player-library.txt). Real personalized browser/demo acceptance and its release remain; no complete Phase08 release is claimed.
 
 ## Implemented core
 

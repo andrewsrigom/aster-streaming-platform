@@ -1,0 +1,40 @@
+P08-R11 coherent source candidate — 2026-08-28
+Branch: feat/p08-player-progress, unpublished.
+Base: 7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc.
+Source identity: player-library-source.sha256 (26 source/test/operation files).
+Environment: native Ubuntu-20.04/WSL, pinned Node24.19.0/pnpm11.24.0,
+CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm_config_verify_deps_before_run=error.
+
+Exact command:
+node --input-type=module <<'NODE'
+import {spawn} from 'node:child_process';
+import {runQualityGate} from './tools/run-quality-gate.ts';
+const limited=(executable,args,options)=>{
+ const child=spawn(executable,[...args,'--concurrency=2','--continue=always','--output-logs=errors-only'],options);
+ return {pid:child.pid,onClose:listener=>child.once('close',listener),onError:listener=>child.once('error',listener)};
+};
+process.exitCode=await runQualityGate(['--changed'],limited);
+NODE
+
+Initial complete round:67/70,53 cached,1m36.15s. Failures: unused:check and ai:check/ai:test.
+Corrections: keep three library documents and one entry type module-private; restore the
+required Do not do yet handoff heading. No suppressed check or functional boundary changed.
+Final complete round exit0:
+• Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/engagement, @aster/event-delivery, @aster/http-express, @aster/identity, @aster/media, @aster/object-storage-s3, @aster/playback, @aster/postgres, @aster/redis, @aster/router, @aster/runtime, @aster/telemetry, @aster/web
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 17 packages
+   • Remote caching disabled
+
+
+ Tasks:    70 successful, 70 total
+Cached:    55 cached, 70 total
+  Time:    1m20.587s
+All24 canonical tasks across17 workspaces pass;55 input-keyed results were reused.
+Includes current Web build, source checks and node tests; browser test source compiles but
+the personalized browser/demo journey is still unexecuted. Source acceptance is not Phase08 release.
+Focused50-test evidence and exact-main schema composition: player-library.txt.
+
+Read-only full-demo model inspection:
+docker compose --project-name aster-engagement-demo-candidate --file infra/compose/compose.yml --file infra/compose/playable.yml --file infra/compose/events.yml --profile runtime config --format json
+Walked dependencies from web,identity,engagement,broker-init and asserted owner event flags
+and broker inclusion. Exit0,21 required services,only named volume mounts,no top-level configs.
+This does not start the demo or prove health/browser behavior; no container/data/host mutation.

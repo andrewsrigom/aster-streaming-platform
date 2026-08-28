@@ -42,6 +42,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Link prefetch={false} href="/attribution">
                   Attribution
                 </Link>
+                <Link prefetch={false} href="/library">
+                  Your library
+                </Link>
                 <ProfileLauncher />
               </div>
             </nav>

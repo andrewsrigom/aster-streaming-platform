@@ -1,5 +1,7 @@
 "use client";
 
+import { WatchlistLauncher } from "../engagement/watchlist-launcher";
+
 import Link from "next/link";
 import {
   BROWSE,
@@ -230,6 +232,7 @@ export function TitleDetail({ id, locale }: { id: string; locale: string }) {
       ) : (
         <p>This browsing sample has no playable video.</p>
       )}
+      <WatchlistLauncher titleId={title.id} />
       <QueryFeedback
         available
         pending={pending}

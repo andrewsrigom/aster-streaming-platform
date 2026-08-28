@@ -19,6 +19,7 @@ import {
   MediaVolumeRange,
 } from "media-chrome/react";
 import { buttonVariants } from "../../components/ui/button";
+import { attachPlayerEngagement, type PlayerProgressView } from "../engagement/player-engagement";
 import {
   defaultPlayerPreferences,
   playerActions,
@@ -44,6 +45,21 @@ type PlayerState = ReturnType<PlayerStore["getState"]>;
 type PlayerClient = ReturnType<typeof createPlaybackClient>;
 const usePlayerStore = useStore.withTypes<PlayerStore>();
 
+const progressMessages = {
+  checking: "Checking saved progress. Playback remains available.",
+  anonymous: "Sign in and select a profile to save progress. Anonymous playback continues.",
+  unselected: "Select a profile to save progress.",
+  unavailable: "Saved progress is unavailable. Playback continues; recheck to try again.",
+  expired: "Session expired. Sign in again to save progress.",
+  suspended: "Progress reporting paused while leaving this page.",
+  idle: "Progress will be saved while you watch.",
+  pending: "Progress not saved yet.",
+  saving: "Saving progress…",
+  saved: "Progress saved.",
+  unconfirmed: "Save not confirmed. Recheck before continuing to save.",
+  conflict: "Progress changed elsewhere. Recheck before continuing to save.",
+} as const;
+
 function Controls({
   session,
   experience,
@@ -55,9 +71,11 @@ function Controls({
 }) {
   const video = useRef<HTMLVideoElement>(null);
   const adapter = useRef<PlaybackAdapter | null>(null);
+  const progress = useRef<ReturnType<typeof attachPlayerEngagement> | null>(null);
   const store = usePlayerStore();
   const preferences = useSelector((state: PlayerState) => state.player.preferences);
   const [mediaState, setMediaState] = useState<PlayerMediaState | null>(null);
+  const [progressState, setProgressState] = useState<PlayerProgressView>({ kind: "checking" });
   const focusPlay = useCallback((control: HTMLElement | null) => {
     control?.focus();
   }, []);
@@ -77,7 +95,26 @@ function Controls({
       },
     });
     adapter.current = attached;
+    let channel: BroadcastChannel | undefined;
+    let reporting: ReturnType<typeof attachPlayerEngagement> | undefined;
+    try {
+      channel = new BroadcastChannel("aster.local-session");
+      reporting = attachPlayerEngagement({
+        media: video.current,
+        session,
+        page: window,
+        visibility: document,
+        sessionChanges: channel,
+        onState: setProgressState,
+      });
+      progress.current = reporting;
+    } catch {
+      setProgressState({ kind: "unavailable" });
+    }
     return () => {
+      reporting?.dispose(true);
+      progress.current = null;
+      channel?.close();
       attached.dispose();
       adapter.current = null;
     };
@@ -162,6 +199,34 @@ function Controls({
           </label>
         </MediaControlBar>
       </MediaController>
+      <div className="space-y-2 rounded-lg border border-border p-3 text-sm">
+        <p aria-live="polite" aria-atomic="true">
+          {progressState.kind === "ready"
+            ? `${progressState.profileName}: ${progressMessages[progressState.status]}`
+            : progressMessages[progressState.kind]}
+        </p>
+        {progressState.kind === "ready" && progressState.resumeSeconds !== null ? (
+          <button
+            className={buttonVariants({ variant: "outline" })}
+            onClick={() => {
+              progress.current?.resume();
+            }}
+          >
+            Resume at {Math.floor(progressState.resumeSeconds / 60)}:
+            {String(Math.floor(progressState.resumeSeconds % 60)).padStart(2, "0")}
+          </button>
+        ) : null}
+        {progressState.kind !== "checking" ? (
+          <button
+            className={buttonVariants({ variant: "outline" })}
+            onClick={() => {
+              void progress.current?.refresh();
+            }}
+          >
+            Recheck saved progress
+          </button>
+        ) : null}
+      </div>
       {mediaState?.mode === "native" ? (
         <p className="text-sm text-muted-foreground">
           Native HLS: the browser selects video quality automatically.
@@ -275,8 +340,8 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
             Show local playback measurements
           </button>
           <p className="text-xs text-muted-foreground">
-            Up to 64 events in memory only. No viewing history, identifiers or media URLs are saved
-            or sent.
+            These playback measurements keep up to 64 events in memory only, without identifiers or
+            media URLs. Saved viewing progress is separate and requires a selected profile.
           </p>
           {report !== null ? (
             <pre

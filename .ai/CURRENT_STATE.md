@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R09 (also R10/R12), feat/p08-event-delivery, PR30. Head85513ef initial review5457715810 is clean. CI33210330287 passes Catalog/Playback and stops at another stale migration assertion in Engagement fields. Correction passes eight focused tests and one real fields SQL proof on all four migrations; publish after the affected candidate gate. R11 reporter/client/media work with28 passing tests is preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c. Older1643 checkpoint was already selectively restored; never reapply it or historical stashes. R08 remains DONE at d7fa03a. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R11 on feat/p08-player-progress at merged main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc, unpublished. PR30 protected CI33211565625 and confirmation5457863408 passed; squash merge completed. R09/R10/R12 is DONE: exact main push33212852513 passed. Tree identity was checked before moving the uncommitted dependent branch; no stash or source changes were lost. All historical checkpoints were restored once and must never be reapplied. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,19 +16,19 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Catalog proof is corrected and passes hosted CI. Engagement fields now expects/reports schema1–4, with cheap alignment coverage across all full-migrator fixtures. [Hosted failures and correction evidence](../evidence/phase-08/events-ci.txt). Real SQL passes20-to-1 batching, ownership/deletion/read-only boundaries and exact cleanup. No production behavior or retained runtime changed. Preserved R11 reporter/private Apollo client/media binding passed28 tests, lint and Web types; actual Controls/profile lifecycle/library integration is next.
+R11 now wires real Controls/profile lifecycle, save status and resume; adds bounded library/history/continue/watchlist, private title controls and exact-key manual watchlist retry. [Player/library checkpoint](../evidence/phase-08/player-library.txt):50 focused tests, scoped lint, Web types and exact-main composition pass. A real browser journey is authored and statically checked, not executed. The coherent source candidate passes70/70 checks; full Docker/browser/accessibility acceptance, review and publication remain. The running demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
-The last supervisor exited 1 because its assertion incorrectly expected exit 0 after SIGTERM. All three actual owners exited the specified 143 with completed lifecycle logs; replaying those captured states/logs through the corrected validator passes. [Candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition; it records the behavior-preserving static-check remediation and heavyweight carry-forward. The complete corrected supervisor still needs protected CI; do not claim its local exit was 0. No retained migration, event key or broker activation occurred.
+The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protected CI33211565625 now passes the complete corrected supervisor, real SQL/owner/Kafka recovery, shutdown and fixture cleanup; all owners exited143 as specified. The original local failure remains historical, not rewritten as success. [Candidate gate](../evidence/phase-08/events-candidate.txt) records the local70/70 and carry-forward. No retained migration, event key or broker activation occurred.
 
 ## Not implemented
 
-Candidate/protected release, player reports/resume, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase 08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Phase08 browser/demo verification and release, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-Publish the coherent P08-R09 proof correction after its candidate gate, request initial review, then require confirmation, protected CI, squash and exact main push. Resume the sole R11 checkpoint on the new frozen head, restoring its exact stash once. No unchanged SQL/media/CPU/runtime repeat; hosted CI must execute the corrected full supervisor.
+Finish P08-R11 with the opt-in personalized Docker demo and actual browser save/resume/library/failure/accessibility journey. PR30's exact main push is confirmed; only R11's own acceptance and publication remain. Carry the existing event/SQL proofs forward; no restored-stash replay, retained film encoding or CPU experiment.
 
 ## Runtime and recovery
 
