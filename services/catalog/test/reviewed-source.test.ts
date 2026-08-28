@@ -5,6 +5,7 @@ import test from "node:test";
 import { normalizeCatalogCommand } from "../src/application/command-input.js";
 import { approveRights, deriveAttribution } from "../src/domain/rights.js";
 import { transitionTitle } from "../src/domain/title.js";
+import { mediaRequestEligible, normalizeMediaRequestInput } from "../src/domain/media-request.js";
 
 test("reviewed official source is a valid draft, not a self-approved publication", async () => {
   const envelope: unknown = JSON.parse(
@@ -40,6 +41,34 @@ test("reviewed official source is a valid draft, not a self-approved publication
   assert.ok(attribution);
   assert.equal(attribution.licenseVersion, "3.0");
   assert.match(attribution.attributionText, /Retain the complete film credits/u);
+  const requestEnvelope: unknown = JSON.parse(
+    await readFile(
+      new URL("../../examples/big-buck-bunny-media-request.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  assert.ok(requestEnvelope && typeof requestEnvelope === "object" && "input" in requestEnvelope);
+  const processing = normalizeMediaRequestInput(requestEnvelope.input);
+  assert.ok(processing);
+  assert.equal(processing.source.url, command.rights.assetSourceUrl);
+  assert.equal(processing.source.sha256, null);
+  assert.equal(
+    mediaRequestEligible(
+      processing,
+      {
+        id: command.titleId,
+        version: 3,
+        state: "RIGHTS_REVIEWED",
+        rightsRevision: 2,
+        publicationId: null,
+      },
+      2,
+      { ...reviewed.record, revision: 2 },
+      now,
+      policy,
+    ),
+    true,
+  );
   assert.equal(
     transitionTitle(
       {

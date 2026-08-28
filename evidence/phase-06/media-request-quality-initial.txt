@@ -1,0 +1,320 @@
+$ node ./tools/run-quality-gate.ts --changed
+• turbo 2.10.12
+
+   • Packages in scope: //, @aster/catalog, @aster/router
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 3 packages
+   • Remote caching disabled
+
+//:toolchain:check: cache bypass, force executing 4540d3dd93a2d59f
+@aster/runtime:typecheck: cache hit, replaying logs d8da640818fbf7fa
+@aster/runtime:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/http-express:typecheck: cache hit, replaying logs cf87ab82a33d5f88
+@aster/http-express:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:ai:check: cache miss, executing 1bbdbe2d33a6c528
+@aster/config:build: cache hit, replaying logs ac62b05fa9bacd6e
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/config:typecheck: cache hit, replaying logs 2efea16e7362cea5
+@aster/config:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:ai:test: cache miss, executing 3ba6c54799270c42
+//:unused:check: cache miss, executing 784548f6f0bfabae
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+//:format:check: cache miss, executing 1b0a11b51ca3c791
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+//:docs:check: cache miss, executing e22be946a67de873
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+//:security:check: cache bypass, force executing cec43485c2566e9e
+//:architecture:check: cache miss, executing 576aefbca95a0c18
+//:platform:check: cache miss, executing d2cbde5dce40e402
+//:platform:test: cache miss, executing 735c07e590d79735
+//:docs:check: $ node ./tools/verify-documentation.ts
+//:format:check: $ prettier --check .
+//:ai:test: $ node --test ./tools/verify-ai-state.test.ts
+//:unused:check: $ knip --no-config-hints
+//:platform:check: $ node ./tools/verify-local-platform.mjs
+//:architecture:check: $ node ./tools/verify-architecture.ts
+//:platform:check: {"check":"local-platform","status":"ok","violations":0}
+//:format:check: Checking formatting...
+//:security:check: $ node ./tools/scan-secrets.ts --all
+//:ai:check: $ node ./tools/verify-ai-state.ts
+//:platform:test: $ node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs
+//:community:check: cache miss, executing 4f388f086ef1c810
+//:toolchain:check: $ node ./tools/verify-toolchain.mjs
+//:ai:test: ✔ the checked-in repository memory passes (60.973639ms)
+//:ai:test: ✔ accepts canonical active and idle repository memory (8.255917ms)
+//:ai:test: ✔ accepts one external wait before one dependent active item (31.786029ms)
+//:ai:test: ✔ rejects an active item that skips actionable work after an external wait (7.215264ms)
+//:ai:test: ✔ rejects missing and oversized repository memory (15.305143ms)
+//:ai:test: ✔ rejects unknown, duplicate, and multiple active queue states (0.788236ms)
+//:ai:test: ✔ rejects completed, missing, and forward blocker references (3.369988ms)
+//:ai:test: ✔ rejects a mismatched or incomplete active change plan (1.327576ms)
+//:toolchain:check: {"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+//:ai:test: ✔ rejects stale current-state and handoff resume targets (7.998495ms)
+//:ai:test: ✔ rejects session regression and missing entry evidence (24.562119ms)
+//:ai:test: ✔ rejects malformed UTF-8 repository memory files (125.262455ms)
+//:ai:test: ✔ rejects symbolic repository memory files when the host permits the fixture (20.620852ms)
+//:ai:test: ✔ emits deterministic sorted diagnostics (1.322352ms)
+//:ai:test: ℹ tests 13
+//:ai:test: ℹ suites 0
+//:ai:test: ℹ pass 13
+//:ai:test: ℹ fail 0
+//:ai:test: ℹ cancelled 0
+//:ai:test: ℹ skipped 0
+//:ai:test: ℹ todo 0
+//:ai:test: ℹ duration_ms 865.619634
+@aster/telemetry:typecheck: cache hit, replaying logs 25d87e5e207beef2
+@aster/telemetry:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/http-express:build: cache hit, replaying logs fc36c21fa276f980
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/broker-kafka:build: cache hit, replaying logs 19a1dfd0fab93176
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+//:lint:workspace: cache miss, executing 46689eb74cb9b3fc
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":38,"sessionEntries":91,"activeRequirement":"P06-R01","targetRequirement":"P06-R01","violations":[]}
+//:platform:test: ✔ generated HLS accepts exactly the complete finite local package (18.125789ms)
+//:platform:test: ✔ generated HLS refuses remote/traversing/missing/extra/encrypted/unbounded references and non-VOD output (119.547965ms)
+//:platform:test: ✔ technical probe rejects codec, dimensions, frame rate, audio and duration drift (4.446217ms)
+@aster/object-storage-s3:build: cache hit, replaying logs a1d6a3f265df8336
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/redis:build: cache hit, replaying logs 6882d0c4927f4de0
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/postgres:typecheck: cache hit, replaying logs a0bc99a3e2abbdaf
+@aster/postgres:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/broker-kafka:typecheck: cache hit, replaying logs def00b7ad612e25a
+@aster/broker-kafka:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/object-storage-s3:typecheck: cache hit, replaying logs f74bec9522d79438
+@aster/object-storage-s3:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/redis:typecheck: cache hit, replaying logs 9b4b1fd0d828c4dc
+@aster/redis:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/catalog:build: cache miss, executing 4461f6284106c886
+@aster/identity:build: cache hit, replaying logs 431823268bc886e7
+@aster/identity:build: $ tsc --build ./tsconfig.json
+@aster/catalog:typecheck: cache miss, executing 01680bcc7d79f627
+//:platform:test: ✔ refuses missing local intent or an incorrect confirmation before Docker (173.38175ms)
+//:platform:test: ✔ refuses extra targets, hosted URLs, CI, and Docker overrides before Docker (87.91527ms)
+//:platform:test: ✔ refuses a remote active Docker endpoint before Compose (62.417942ms)
+//:docs:check: {"check":"documentation","status":"ok","documents":167,"headings":2403,"links":733,"statusClaims":4,"violations":0}
+//:platform:test: ✔ refuses unexpected resource labels without teardown (345.211392ms)
+@aster/identity:typecheck: cache hit, replaying logs 7055f951652daa3e
+@aster/identity:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:platform:test: ✔ removes only the fixed populated Aster project and proves postconditions (889.867697ms)
+//:platform:test: ✔ is idempotent when Aster has no local resources (244.440177ms)
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:community:check: $ node ./tools/verify-community-files.ts
+//:architecture:check: {"check":"architecture","status":"ok","violations":0}
+//:lint:workspace: $ eslint .
+@aster/catalog:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:community:check: {"check":"community","files":6,"status":"ok","violations":0}
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+//:platform:test: ✔ recognizes the reviewed Web demo without accepting private or foreign mounts (1250.767305ms)
+@aster/router:build: cache miss, executing e6eacb14f6881eed
+@aster/catalog:test: cache miss, executing 5df9b421d17de3f8
+//:platform:test: ✔ reports Compose failure without a broad fallback (742.857007ms)
+//:platform:test: ✔ fails when any project resource remains after teardown (463.190338ms)
+//:platform:test: ✔ accepts a partial runtime profile and tears down all reviewed profiles (844.20555ms)
+//:platform:test: ✔ removes only validated legacy helper anonymous volumes and verifies their absence (468.15013ms)
+@aster/catalog:test: $ node --test ./dist/test/*.test.js
+@aster/router:build: $ tsc --build ./tsconfig.json
+@aster/catalog:test: ✔ complete reviewed rights approve without acquiring media and derive exact attribution (13.33156ms)
+@aster/catalog:test: ▶ every required reviewed field and explicit permission must be resolved
+@aster/catalog:test:   ✔ workTitle (1.206593ms)
+@aster/catalog:test:   ✔ creator (0.261206ms)
+@aster/catalog:test:   ✔ copyrightHolder (3.886209ms)
+@aster/catalog:test:   ✔ canonicalSourceUrl (0.467251ms)
+@aster/catalog:test:   ✔ assetSourceUrl (0.270863ms)
+@aster/catalog:test:   ✔ licenseName (0.204067ms)
+@aster/catalog:test:   ✔ licenseVersion (0.532503ms)
+@aster/catalog:test:   ✔ licenseUrl (1.073241ms)
+@aster/catalog:test:   ✔ attributionText (4.376458ms)
+@aster/catalog:test:   ✔ modificationNotice (0.35056ms)
+@aster/catalog:test:   ✔ thirdPartyMaterialNotes (1.372894ms)
+@aster/catalog:test:   ✔ trademarkNotes (0.168672ms)
+@aster/catalog:test:   ✔ redistributionAllowed (0.2335ms)
+@aster/catalog:test:   ✔ commercialUseAllowed (0.179623ms)
+@aster/catalog:test:   ✔ modificationAllowed (0.11675ms)
+@aster/catalog:test:   ✔ shareAlikeRequired (2.742686ms)
+@aster/catalog:test:   ✔ technicalRestrictions (1.061609ms)
+@aster/catalog:test:   ✔ reviewedAt (0.374321ms)
+@aster/catalog:test:   ✔ reviewedBy (0.267959ms)
+@aster/catalog:test: ✔ every required reviewed field and explicit permission must be resolved (30.691911ms)
+@aster/catalog:test: ✔ contradictory use, unreviewed state, expiry and invalid clocks fail closed (7.513834ms)
+@aster/catalog:test: ✔ unknown fields, hostile accessors, invalid identifiers, URLs and oversized evidence are rejected (1.64206ms)
+@aster/catalog:test: ▶ the full 25-pair lifecycle table rejects every skipped or repeated transition
+@aster/catalog:test:   ✔ DRAFT -> DRAFT (0.485108ms)
+@aster/catalog:test:   ✔ DRAFT -> RIGHTS_REVIEWED (0.209475ms)
+@aster/catalog:test:   ✔ DRAFT -> MEDIA_READY (0.096125ms)
+@aster/catalog:test:   ✔ DRAFT -> PUBLISHED (0.08503ms)
+@aster/catalog:test:   ✔ DRAFT -> RETIRED (0.086087ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> DRAFT (0.087919ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> RIGHTS_REVIEWED (0.083278ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> MEDIA_READY (8.480562ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> PUBLISHED (3.700468ms)
+@aster/catalog:test:   ✔ RIGHTS_REVIEWED -> RETIRED (0.341245ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> DRAFT (0.183823ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> RIGHTS_REVIEWED (0.168778ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> MEDIA_READY (2.101155ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> PUBLISHED (3.737043ms)
+@aster/catalog:test:   ✔ MEDIA_READY -> RETIRED (0.713685ms)
+@aster/catalog:test:   ✔ PUBLISHED -> DRAFT (0.166215ms)
+@aster/catalog:test:   ✔ PUBLISHED -> RIGHTS_REVIEWED (0.151163ms)
+@aster/catalog:test:   ✔ PUBLISHED -> MEDIA_READY (0.137077ms)
+@aster/catalog:test:   ✔ PUBLISHED -> PUBLISHED (0.129604ms)
+@aster/catalog:test:   ✔ PUBLISHED -> RETIRED (0.134199ms)
+@aster/catalog:test:   ✔ RETIRED -> DRAFT (0.272639ms)
+@aster/catalog:test:   ✔ RETIRED -> RIGHTS_REVIEWED (0.157894ms)
+@aster/catalog:test:   ✔ RETIRED -> MEDIA_READY (0.127457ms)
+@aster/catalog:test:   ✔ RETIRED -> PUBLISHED (5.758444ms)
+@aster/catalog:test:   ✔ RETIRED -> RETIRED (0.2385ms)
+@aster/catalog:test: ✔ the full 25-pair lifecycle table rejects every skipped or repeated transition (36.6283ms)
+@aster/catalog:test: ✔ rights and media gates reject wrong owners, stale revisions, missing evidence and changed publication (7.181745ms)
+@aster/catalog:test: ✔ retirement survives disputed rights; reopening requires a newer review and new media linkage (0.667672ms)
+@aster/catalog:test: ✔ public visibility rechecks current rights; malformed lifecycle and overflowing versions cannot advance (7.076479ms)
+//:unused:check: Unused exports (1)
+//:unused:check: normalizeMediaSource  function  services/catalog/src/domain/media-request.ts:39:17
+//:unused:check: Unused exported types (1)
+//:unused:check: MediaSourceIdentity  interface  services/catalog/src/domain/media-request.ts:16:18
+@aster/router:test: cache bypass, force executing 093fac4ff0eeacf2
+//:unused:check: [ELIFECYCLE] Command failed with exit code 1.
+//:platform:test: ✔ refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion (1964.531004ms)
+//:platform:test:
+//:platform:test: Interrupted while running:
+//:platform:test:
+//:platform:test: ⚠ tools/reset-local-platform.test.mjs (tools/reset-local-platform.test.mjs:1:1)
+//:platform:test: ⚠ tools/verify-catalog-runtime.test.mjs (tools/verify-catalog-runtime.test.mjs:1:1)
+//:platform:test: ⚠ tools/verify-local-platform.test.mjs (tools/verify-local-platform.test.mjs:1:1)
+//:platform:test: ⚠ tools/verify-router-runtime.test.mjs (tools/verify-router-runtime.test.mjs:1:1)
+//:platform:test: ✖ tools/reset-local-platform.test.mjs (8351.400958ms)
+//:platform:test: ✔ Catalog Compose enforces reader credentials, isolation, bounds and finite migrations (7.646241ms)
+//:platform:test: ✔ standalone owner probes use diagnostics without private Router credential mounts (66.871527ms)
+//:platform:test: ✔ Catalog proof cleanup allows only owned data and unused trust volumes (1.277571ms)
+//:platform:test: ✔ Web demo rejects private credentials, mounts, public ports and unbounded runtime (24.050837ms)
+//:platform:test: ✔ runtime image preserves the pinned non-root production packaging contract (5.831771ms)
+//:platform:test: ✔ Web Docker context includes both exact public-build verifier files (1.13086ms)
+//:platform:test: ✔ runtime image rejects weakened pin, install, user, entrypoint, health and license policy (7.206145ms)
+//:platform:test: ✔ runtime image refuses broader Docker context and source/test publication (19.505836ms)
+//:platform:test: ✔ the checked-in local platform policy passes (10.374382ms)
+//:platform:test: ✔ rejects weakened reset confirmation and hosted-target controls (1.08246ms)
+//:platform:test: ✔ rejects a redirectable or broad reset (1.032051ms)
+//:platform:test: ✔ rejects public commands vulnerable to a project-name environment override (2.594894ms)
+//:platform:test: ✔ rejects floating or environment-substituted images (3.400259ms)
+//:platform:test: ✔ rejects host exposure and elevated containers (5.424107ms)
+//:platform:test: ✔ rejects incorrect PostgreSQL persistence and durable Redis claims (2.780482ms)
+//:platform:test: ✔ rejects weakened readiness and one-shot ordering (3.682322ms)
+//:platform:test: ✔ rejects missing resource and lifecycle bounds (1.547198ms)
+//:platform:test: ✔ rejects unsafe or unbounded Compose text (2.483208ms)
+//:platform:test: ✔ runtime profile rejects broad ports, entrypoint overrides and weakened isolation (11.750321ms)
+//:platform:test: ✔ local Identity initialization stays finite, isolated and separate from the runtime login (3.394604ms)
+//:platform:test: ✔ optional telemetry retains bounded collection without becoming an Identity dependency (2.565639ms)
+//:platform:test: ✔ optional broker and storage must stay private, pinned and resource-bounded (4.738825ms)
+//:platform:test: ✔ telemetry images refuse mutable tags and added runtime instructions (1.542824ms)
+//:platform:test: ✔ Router topology and source pin private bounded runtime without a GraphOS account (6.040482ms)
+//:platform:test: ✔ Router and initializer reject weakened trust, network and lifecycle boundaries (12.934206ms)
+//:platform:test: ✔ Router packaging and config reject unsafe limits, notices and propagation (6.938452ms)
+//:platform:test: ℹ tests 42
+//:platform:test: ℹ suites 0
+//:platform:test: ℹ pass 41
+//:platform:test: ℹ fail 0
+//:platform:test: ℹ cancelled 1
+//:platform:test: ℹ skipped 0
+//:platform:test: ℹ todo 0
+//:platform:test: ℹ duration_ms 8445.078315
+@aster/catalog:test:
+@aster/catalog:test: Interrupted while running:
+@aster/catalog:test:
+@aster/catalog:test: ⚠ dist/test/catalog-graphql.test.js (dist/test/catalog-graphql.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/catalog-public.test.js (dist/test/catalog-public.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/catalog-subgraph.test.js (dist/test/catalog-subgraph.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/catalog-workflow.test.js (dist/test/catalog-workflow.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/media-request.test.js (dist/test/media-request.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/operator-input.test.js (dist/test/operator-input.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/postgres-rights.test.js (dist/test/postgres-rights.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/reviewed-source.test.js (dist/test/reviewed-source.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/runtime.test.js (dist/test/runtime.test.js:1:1)
+@aster/catalog:test: ⚠ dist/test/ui-seed.test.js (dist/test/ui-seed.test.js:1:1)
+@aster/catalog:test: ✖ dist/test/catalog-graphql.test.js (1693.236688ms)
+//:platform:test:
+//:platform:test: ✖ failing tests:
+//:platform:test:
+//:platform:test: test at tools/reset-local-platform.test.mjs:1:1
+//:platform:test: ✖ tools/reset-local-platform.test.mjs (8351.400958ms)
+//:platform:test:   'Promise resolution is still pending but the event loop has already resolved'
+@aster/catalog:test: ✔ pre-extension command receipts replay without rewriting audit or ignoring newly supplied metadata (26.556509ms)
+@aster/catalog:test: ✔ public metadata extends legacy snapshots without inventing facts and enforces every collection bound (2.384204ms)
+@aster/catalog:test: ✔ public projection derives attribution and excludes operator facts and all delivery credentials (13.718685ms)
+@aster/catalog:test: ✔ public browse uses exact positive keysets, lookahead and deterministic locale fallback (24.031954ms)
+@aster/catalog:test: ✔ invalid pages and entity inputs reject before SQL; batches preserve duplicate order and explicit nulls (9.312525ms)
+@aster/catalog:test: ✔ public reads reject corrupt owner rows, excessive pages, wrong order and dependency faults (15.341003ms)
+@aster/catalog:test: ✖ dist/test/catalog-subgraph.test.js (1683.633288ms)
+@aster/catalog:test: ✔ editorial journey writes immutable review, attributed metadata and versioned publication/retirement events (76.500015ms)
+@aster/catalog:test: ✔ missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed (2.018516ms)
+@aster/catalog:test: ✔ explicit local activation rejects hosted mode, missing opt-in and unbounded time (0.623016ms)
+@aster/catalog:test: ✔ exact replay preserves response and audit; changed input, actor, version or command conflicts (6.589291ms)
+@aster/catalog:test: ✔ unresolved review, expired rights and foreign/unattested media never publish (5.694742ms)
+@aster/catalog:test: ✔ receipt and outbox capacity reserve takedown, which is atomic with cancellation and failures (33.255619ms)
+@aster/catalog:test: ✔ metadata canonicalizes locale fallback, bounds collections and rejects forged approval fields (1.56091ms)
+@aster/catalog:test: ✔ artwork receives its own operator review and cannot silently substitute a different source (2.07668ms)
+@aster/catalog:test: ✔ media request schema rejects unstable identity, unbounded input and injected controls (3.743544ms)
+@aster/catalog:test: ✔ authorized request retains exact audit and replays without advancing editorial state (25.838095ms)
+@aster/catalog:test: ✔ unauthorized, cancelled and malformed requests do not enter a transaction (4.748846ms)
+@aster/catalog:test: ✔ request refuses stale, unapproved, foreign and changed source facts (15.185839ms)
+@aster/catalog:test: ✔ null rights checksum may be acquired later but never skips current approval (7.159562ms)
+@aster/catalog:test: ✔ changed replay, duplicate identity and bounded capacity cannot create duplicate jobs (21.09522ms)
+@aster/catalog:test: ✔ expiry, revocation, cancellation and failure after insertion roll back intent (23.212114ms)
+@aster/catalog:test: ✔ documented draft example is executable but cannot approve unresolved rights (28.933659ms)
+@aster/catalog:test: ✔ clarification, rejection and expiry have explicit transitions without silent approval (5.839448ms)
+@aster/catalog:test: ✔ CLI reads exactly one bounded UTF-8 command and rejects malformed/extra/oversized input (19.252936ms)
+@aster/catalog:test: ✔ CLI database guard separates administrator/runtime and excludes hosted or cross-context endpoints (4.800901ms)
+@aster/catalog:test: ✔ operator inspection is authorized and read-only; publication rechecks expiry before commit (22.130503ms)
+@aster/catalog:test: ✔ append atomically advances title, inserts facts and provenance with bounded parameters (11.876305ms)
+@aster/catalog:test: ✔ stale append returns false without facts or provenance inserts (0.892966ms)
+@aster/catalog:test: ✔ invalid rights, versions and provenance reject before SQL (7.153401ms)
+@aster/catalog:test: ✔ large Unicode records preserve surrogate pairs within the shared parameter limit (1.592772ms)
+@aster/catalog:test: ✔ aggregate rights payload has a byte bound even if each field is individually valid (3.391486ms)
+@aster/catalog:test: ✔ draft creation, missing title and existing title use explicit results (0.796208ms)
+@aster/catalog:test: ✔ title and revision reads validate owner, linkage, timestamps and persisted domain fields (12.846985ms)
+@aster/catalog:test: ✔ history keysets are bounded, descending, owner-filtered and immutable (8.297254ms)
+@aster/catalog:test: ✔ caller rejection rolls back and adapter outcomes never become success (0.86187ms)
+@aster/catalog:test: ✔ reviewed official source is a valid draft, not a self-approved publication (53.810407ms)
+@aster/catalog:test: ✖ dist/test/runtime.test.js (829.723298ms)
+@aster/catalog:test: ✖ dist/test/ui-seed.test.js (750.485373ms)
+@aster/catalog:test: ℹ tests 92
+@aster/catalog:test: ℹ suites 0
+@aster/catalog:test: ℹ pass 88
+@aster/catalog:test: ℹ fail 0
+@aster/catalog:test: ℹ cancelled 4
+@aster/catalog:test: ℹ skipped 0
+@aster/catalog:test: ℹ todo 0
+@aster/catalog:test: ℹ duration_ms 1751.869198
+@aster/catalog:test:
+@aster/catalog:test: ✖ failing tests:
+@aster/catalog:test:
+@aster/catalog:test: test at dist/test/catalog-graphql.test.js:1:1
+@aster/catalog:test: ✖ dist/test/catalog-graphql.test.js (1693.236688ms)
+@aster/catalog:test:   'Promise resolution is still pending but the event loop has already resolved'
+@aster/catalog:test:
+@aster/catalog:test: test at dist/test/catalog-subgraph.test.js:1:1
+@aster/catalog:test: ✖ dist/test/catalog-subgraph.test.js (1683.633288ms)
+@aster/catalog:test:   'Promise resolution is still pending but the event loop has already resolved'
+@aster/catalog:test:
+@aster/catalog:test: test at dist/test/runtime.test.js:1:1
+@aster/catalog:test: ✖ dist/test/runtime.test.js (829.723298ms)
+@aster/catalog:test:   'Promise resolution is still pending but the event loop has already resolved'
+@aster/catalog:test:
+@aster/catalog:test: test at dist/test/ui-seed.test.js:1:1
+@aster/catalog:test: ✖ dist/test/ui-seed.test.js (750.485373ms)
+@aster/catalog:test:   'Promise resolution is still pending but the event loop has already resolved'
+//:platform:test: [ELIFECYCLE] Command failed.
+@aster/catalog:typecheck: [ELIFECYCLE] Command failed.
+@aster/catalog:test: [ELIFECYCLE] Test failed. See above for more details.
+//:lint:workspace: [ELIFECYCLE] Command failed.
+//:format:check: [ELIFECYCLE] Command failed.
+//#unused:check:  ERROR  command (/home/andrews/personal/portfolio-2026/aster-streaming-platform/) /home/andrews/.local/bin/pnpm run unused:check exited (1)
+
+ Tasks:    28 successful, 35 total
+Cached:    18 cached, 35 total
+  Time:    20.929s
+Failed:    //#unused:check
+
+ ERROR  run failed: command  exited (1)
+[ELIFECYCLE] Command failed with exit code 1.

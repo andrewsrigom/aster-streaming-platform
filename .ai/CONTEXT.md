@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–05 are released. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker with protected/post-merge acceptance. The opt-in synthetic seed is not playable media. Phase 06 has approved one exact official source through Catalog; acquisition/processing remain unfinished. ADR-0018 scopes the exact browser origin and disposable private Apollo cache. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–05 are released. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker with protected/post-merge acceptance. The opt-in synthetic seed is not playable media. Phase 06 has approved one exact official source and implemented locally tested durable media requests through Catalog (ADR-0021); acquisition/processing remain unfinished. ADR-0018 scopes the exact browser origin and disposable private Apollo cache. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -54,4 +54,4 @@ Active phase: **Phase 06 — Media Ingestion and Publication**, based on release
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 21 squash `b6c99c4` and successful post-merge run `33104100966` close Phase 04. Initial CI/review findings and corrections remain recorded in its evidence. No actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.
+PR 21 squash `b6c99c4` and successful post-merge run `33104100966` close Phase 04. Initial CI/review findings and corrections remain recorded in its evidence. That historical phase did not approve a film; Phase 06 now has one approval, but no hosted release. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.

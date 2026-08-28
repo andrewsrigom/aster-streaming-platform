@@ -75,6 +75,8 @@ Capture processing duration, queue time, bytes, output ratio, resource use, and 
 
 ## Implementation sequence
 
+[ADR-0021](../adr/0021-catalog-media-requests.md) defines the implemented owner-side request boundary. Worker execution and validated-result registration remain separate unfinished boundaries of this phase.
+
 1. Complete and preserve one rights review.
 2. Define processing contracts and recipe schema.
 3. Implement bounded source acquisition.

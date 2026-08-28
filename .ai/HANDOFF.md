@@ -18,7 +18,9 @@ Development Web/Router remain at 3000/4000 in aster-p04-development. Compose use
 
 ## Next action
 
-Implement the processing/attestation contract and durable request under .ai/CHANGE_PLAN.md, then bounded acquisition and isolated processing. The exact source is ZIP; research found MIT yauzl 3.4.0 with one dependency and matching types, but it is not installed or selected yet. Preserve checksum as null until measured; recheck current owner approval before source GET. Do not let caller-provided flags register technical validation.
+Durable request admission is now implemented/tested under ADR-0021, including request-media CLI and migration 0004. Evidence/phase-06/media-requests.md links 108 passing Catalog tests, the real PostgreSQL/CLI run and exact source hashes. No new dependency or public endpoint. The database experiment was repeated once for the added privilege guard, not for timing. The retained demo has not received migration 0004 or the first-film request. Do not repeat these checks unless their boundary changes.
+
+Next define attempt/executor and attestation authority under .ai/CHANGE_PLAN.md, then implement bounded acquisition and isolated processing. The accepted request is intent, never a reusable approval token. The exact source is ZIP; research found MIT yauzl 3.4.0 with one dependency and matching types, but it is not installed or selected yet. Preserve checksum as null until measured; recheck current owner approval before source GET. Do not let caller-provided flags register technical validation. Use the existing private storage and separate finite FFmpeg job without exposing a Docker socket or credentials to the decoder.
 
 ## Do not do yet
 

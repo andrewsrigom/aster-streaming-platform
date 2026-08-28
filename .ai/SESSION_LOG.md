@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Durable media request admission
+
+### Completed
+
+Implemented P06-R01 request admission under ADR-0021: strict approved source identity, local CLI, additive migration 0004, immutable audit, duplicate-safe replay and 16-request bound. Kept editorial state, publication authority, retained demo data and owner Windows programs unchanged. No new dependency, source GET or processing claim.
+
+### Evidence
+
+Catalog build and 108/108 unit tests pass; final pnpm check:changed passes 36/36 tasks in 50.03 s after removing two unused exports. Real PostgreSQL/CLI integration passes: eight concurrent callers/one request, replay across processes, rollback/retry, privilege isolation, empty-only migration rollback, capacity-safe retirement and a synchronized dispute race. Raw logs/source hashes and exact commands are in evidence/phase-06/media-requests.md. Initial lint found five test-only issues, corrected; integration repeated once for the added CLI audit-privilege guard. Shared Windows CPU/RAM sample is diagnostic only, not an idle-host requirement or performance guarantee.
+
+### Next action
+
+Continue P06-R01 with attempt/executor and attestation authority, bounded streaming acquisition and isolated processing. Do not repeat unaffected Web/media experiments. The phase and complete Phase 00–14 goal remain active; hosted review/release waits for a complete media candidate.
+
 ## 2026-08-28 — Web released and first film rights approved
 
 ### Completed

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline, rebased onto main f36f9aa after protected/post-merge acceptance. One exact official source is approved through Catalog; [Phase 06 evidence](../evidence/phase-06/README.md). Next implement the processing contract, durable request and bounded acquisition; no film bytes acquired yet.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline, rebased onto main f36f9aa after protected/post-merge acceptance. One exact official source is approved and durable media request admission is implemented/tested locally; [Phase 06 evidence](../evidence/phase-06/README.md). Next implement attempt/executor authority and bounded acquisition; no film bytes acquired yet.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -45,7 +45,7 @@ Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/re
 | 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | DONE |
 | 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | IN_PROGRESS |
 
-P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; no actual-film approval exists.
+P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
 

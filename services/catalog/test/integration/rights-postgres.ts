@@ -11,6 +11,7 @@ import { verifyWorkflow } from "./workflow-postgres.js";
 import { verifyOperatorCli } from "./operator-cli.js";
 import { verifyPublicCatalog } from "./public-postgres.js";
 import { verifySourceCandidates } from "./generated-publication.js";
+import { verifyMediaRequests } from "./media-postgres.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -412,6 +413,7 @@ async function verify() {
     makeDatabase("aster_catalog_reader_local"),
     process.env["ASTER_GENERATED_HLS_REPORT"],
   );
+  await verifyMediaRequests(admin, makeDatabase());
 }
 try {
   await verify();
@@ -424,7 +426,7 @@ try {
         ? error.stack
             ?.split("\n")
             .filter((line) =>
-              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication)\.js/u.test(
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres)\.js/u.test(
                 line,
               ),
             )

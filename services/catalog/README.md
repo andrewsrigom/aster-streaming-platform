@@ -49,6 +49,7 @@ The [draft example](examples/create-draft.json) is executable but deliberately h
 | create | mutationId, expectedVersion: 0, metadata, rights | Create draft and first immutable facts; returns version 2 |
 | edit | mutationId, expectedVersion, metadata, rights | Replace draft metadata with a new unreviewed rights revision |
 | review | mutationId, expectedVersion, decision, reason | approve, clarify or reject; actor/time are supplied by the owning application |
+| request-media | requestId, expectedVersion, rightsRevision, recipeVersion, source | Retain bounded immutable processing intent for the current approved source; no download or publication |
 | media-ready | mutationId, expectedVersion, publicationId | Resolve an existing trusted title/revision-bound technical attestation |
 | publish | mutationId, expectedVersion | Recheck current rights, artwork and selected media; append publication event |
 | retire | mutationId, expectedVersion, reason | Retire any non-retired title and append retirement event |
@@ -63,6 +64,22 @@ Identifiers are lowercase UUIDv4. Reasons are 1–512 characters. inspect can re
 ~~~
 
 A missing or mismatched idempotency receipt returns a conflict for stale versions. An exact same-actor/key/input retry replays the prior result for 24 hours without another audit/event. The result describes that command, not necessarily the latest title state. Do not blindly retry indeterminate commits with a new key: retry the identical request or inspect first. After receipt expiry, stale versions still prevent duplicate effects. No implicit retry runs inside the application.
+
+## Durable media requests
+
+Phase 06 adds `request-media` under [ADR-0021](../../docs/adr/0021-catalog-media-requests.md), after migration 0004. `source` has exactly `url`, `bytes`, `etag`, `sha256`, and `container` (`zip` or `mp4`). Use the exact approved HTTPS asset URL, 1–268435456 bytes, a quoted strong ETag (1–126 printable ASCII characters inside quotes), and a lowercase SHA-256 or null before acquisition. The only recipe contract is `hls-avc-aac-v1`; it does not yet implement encoding.
+
+The [first-film request](examples/big-buck-bunny-media-request.json) matches the dated [source preflight](../../evidence/phase-06/source-preflight.json) and approved revision 2. After explicitly approving that title in the target database, submit it with the same operator environment:
+
+~~~sh
+pnpm --filter @aster/catalog operator < services/catalog/examples/big-buck-bunny-media-request.json
+~~~
+
+Do not silently change an accepted identity. If the origin representation has changed, review its new identity before issuing a different request. Acceptance is not permission to skip a fresh owner rights check before later acquisition. This checkpoint has tested the command in disposable databases, not submitted this example to the retained demo.
+
+Unlike editorial command receipts, the request ID is permanent. Same-actor, exact-input replay returns the stored audit only while the rights remain eligible. Changed input, actor or a second ID for identical work conflicts. Sixteen distinct requests/title are retained; retries reuse a request and capacity does not prevent retirement. The title version and active publication do not change. Requests survive CLI restart; cancellation or a failed final rights/authority check rolls back admission. Logs omit the source and credentials. The CLI refuses a role able to modify/delete this audit.
+
+Acquisition, attempt execution, isolated processing and technical attestation registration remain planned. No worker or viewer can use this command to supply validation flags or publish media. [Local request evidence](../../evidence/phase-06/media-requests.md).
 
 ## Rights, metadata and lifecycle
 

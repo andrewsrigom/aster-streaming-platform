@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0021](../docs/adr/0021-catalog-media-requests.md) retains media requests in Catalog through the existing local operator: exact current rights/source binding, permanent replay IDs, immutable audit and 16 distinct requests/title. No editorial version or publication changes; no new service, broker, worker credential or attestation permission. Attempt execution and checksum-based processing idempotency remain unfinished Phase 06 work.
+
 Phase 06's first actual source is Big Buck Bunny's official 640x360 movie archive. [Current rights review](../evidence/phase-06/rights-review.md) and [Catalog approval](../evidence/phase-06/catalog-approval.json) preserve CC BY 3.0, complete credits and independent caption/artwork conditions under ADR-0010. Approval authorizes exact-source acquisition, not unvalidated publication; Aster stays MIT.
 
 [ADR-0020](../docs/adr/0020-web-transitive-licenses.md) preserves MIT with exact package-scoped license exceptions, locked-version checks and offline Web notice packaging. It retains native-library source/notice obligations and leaves binary-distribution acceptance in Phase 14.
