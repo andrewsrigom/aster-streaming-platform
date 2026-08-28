@@ -35,7 +35,16 @@ test("standalone owner probes use diagnostics without private Router credential 
     "utf8",
   );
   const probe = await readFile(new URL("./verify-local-catalog.mjs", import.meta.url), "utf8");
-  assert.ok(probe.includes("first.includes('\"applied\":[1,2,3,4,5,6,7,8]')"));
+  const migrator = await readFile(
+    new URL(
+      "../services/catalog/src/infrastructure/persistence/local-migrations.ts",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+  const versions = [...migrator.matchAll(/"(\d{4})-[a-z-]+"/gu)].map((match) => Number(match[1]));
+  assert.deepEqual(versions, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  assert.ok(probe.includes(`first.includes('"applied":${JSON.stringify(versions)}')`));
   assert.ok(probe.includes("repeat.includes('\"applied\":[]')"));
   assert.ok(probe.includes('"infra/compose/subgraph-diagnostics.yml"'));
   for (const owner of ["identity", "catalog"]) {

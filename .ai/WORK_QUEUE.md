@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R07/R08 are DONE; PR29 squash d7fa03a363ab979f008500040b0afa62ddec2704 and exact main push33199190529 pass. R09/R10/R12 is the sole IN_PROGRESS candidate on feat/p08-event-delivery. Never reapply restored autostash fec057f or older stashes. Focused, real SQL/Kafka recovery, 70/70 candidate tasks and exact-base composition pass. Corrected supervisor SIGTERM expectations pass against captured owner states/logs; protected execution, review and release remain. Publish one coherent candidate before activating R11 under WAITING_EXTERNAL. All fixtures cleaned; retained demo/media untouched.
+P08-R07/R08 are DONE at d7fa03a. R09/R10/R12 is IN_PROGRESS in PR30: correct the stale Catalog migration assertion exposed by CI33209032494. Three regression tests and scoped checks pass; production behavior unchanged. R11 reporter work is preserved in exact stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1, pending predecessor correction and rebase. Restore it once, never older applied stashes. Require protected CI and initial/confirmation review before predecessor release. Retained demo/media untouched.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

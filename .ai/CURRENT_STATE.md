@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R09 (also R10/R12) is a locally accepted candidate on feat/p08-event-delivery, based on d7fa03a363ab979f008500040b0afa62ddec2704; publication is next. P08-R08 is DONE: [PR 29](https://github.com/andrewsrigom/aster-streaming-platform/pull/29), protected CI 33198008084, clean exact-head confirmation 5456085999 and exact main push 33199190529 all pass. R09 is already rebased; autostash fec057f was applied. Never reapply it or earlier restored stashes. Full Phase 00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R09 (also R10/R12) on feat/p08-event-delivery, PR30. Initial head e42a365 failed CI33209032494 on a stale Catalog proof assertion; narrow correction and regression pass locally. R08 remains DONE at main d7fa03a363ab979f008500040b0afa62ddec2704. The sole local R11 reporter checkpoint is preserved in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1; do not resume it until the predecessor is accepted again. Older restored stashes remain forbidden. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -15,6 +15,8 @@ Phases 00–07 are released locally through protected and exact post-merge CI. [
 P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence/phase-08/README.md) records durable progress, history, watchlist and request-scoped fields. [Federated proof](../evidence/phase-08/federated-runtime.txt) covers real owner authorization, replay/conflict, revocation and anonymous Playback continuity. [Entity fields](../evidence/phase-08/engagement-fields.md) retain 98 tests, nine composition tests, real SQL/Docker and 67-task candidate evidence. No unchanged CPU, media or browser repeat is required.
 
 ## Current work
+
+The Catalog Docker proof now requires migrations 1–9; its cheap test checks alignment with the actual migrator. Three focused tests and scoped lint/format pass. [Hosted failure and correction](../evidence/phase-08/events-ci.txt). Initial review remains absent. No production behavior or retained runtime changed. R11's preserved pure reporter passed eleven tests, scoped lint/format and Web typecheck; private Apollo/player integration remains pending.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -26,7 +28,7 @@ Candidate/protected release, player reports/resume, Discovery and hosted release
 
 ## Next outcome
 
-Publish the P08-R09 candidate, then require initial/confirmation review, protected CI, squash and exact main push. The full 70-task local gate and exact-base composition pass. Do not repeat unchanged SQL/media/CPU/runtime behavior; hosted CI will execute the corrected supervisor. R11 browser reporting remains next.
+Publish the coherent P08-R09 proof correction after its candidate gate, request initial review, then require confirmation, protected CI, squash and exact main push. Resume the sole R11 checkpoint on the new frozen head, restoring its exact stash once. No unchanged SQL/media/CPU/runtime repeat; hosted CI must execute the corrected full supervisor.
 
 ## Runtime and recovery
 

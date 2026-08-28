@@ -6,13 +6,19 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
+Latest checkpoint: published R09 e42a365 as PR30. Implemented a finite reporter on the sole dependent branch, then preserved it in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1 to correct PR30's stale Catalog migration assertion with cheap alignment coverage. No retained demo or host change.
+
 Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; autostash fec057f applied. Added owner relay/deletion/quarantine SQL, consumer/persistence, bounded background lifecycle, opt-in event Compose overlay, dedicated-key initializer and exact-record replay CLI. Authored the real SQL proof. Earlier owner-authorized targeted Ubuntu recovery/eight-container restoration remains unchanged; no further restart, retained migration or unrelated-project action.
 
 ### Evidence
 
+Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
+
 R08 protected/main gates pass. Native pinned tooling and its executable pnpm shim work without repository bind mounts. Latest 54 focused, 24 CI/platform and six shutdown/platform tests pass. [SQL proof](../evidence/phase-08/events-postgres.txt) includes exact maximum quarantine bytes. [Kafka proof observations](../evidence/phase-08/events-runtime.txt) cover backlog, signed deletion, redelivery, poison/replay/offsets and outage recovery. Fixed consumer rebalance budget/relay coupling, Router refresh and Kafka-init anonymous mounts. Last wrapper failed only its incorrect zero-exit expectation: all actual owners recorded completed shutdown and exit143; corrected validation passes against captured states/logs. [Candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition after memory, formatting, unused-type and scanner false-positive corrections; 14 focused tests pass. No behavior-changing heavy repeat or scanner exemption. All fixtures removed; retained data and host processes untouched. No CPU/memory loop.
 
 ### Next action
+
+Current: candidate gate and one correction push, initial/confirmation review and protected CI. Rebase/resume the sole reporter checkpoint once after predecessor acceptance; no dependent publication before ordered release. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 

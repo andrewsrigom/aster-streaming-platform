@@ -2,6 +2,8 @@
 
 ## Resume point
 
+Current checkpoint: PR30 initial CI33209032494 failed only the stale Catalog Docker proof expectation (eight migrations versus nine). Narrow proof correction and alignment regression pass three tests/scoped checks. Candidate gate and one coherent correction push are next; then initial/confirmation review and protected release. [Evidence](../evidence/phase-08/events-ci.txt). R11 reporter passed eleven tests, lint/format and Web types; it is preserved in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1 on feat/p08-player-progress. Rebase that branch onto the next accepted predecessor, then apply this exact stash once and reconcile memory. Do not apply historical already-restored stashes. The older details below retain implementation evidence, not an instruction to republish the original candidate.
+
 P08-R09/R10/R12 IN_PROGRESS: locally accepted candidate on feat/p08-event-delivery, based on d7fa03a363ab979f008500040b0afa62ddec2704. Publish this coherent candidate next. R08 PR29 is DONE: protected CI33198008084, exact-head confirmation5456085999, squash d7fa03a and exact main push33199190529 all pass. R09 already rebased; autostash fec057f applied. Never reapply it, 8212c15d42e15d77e7fa5725c651c9d6bc4adbaf, or older restored stashes. Full Phase00–14 goal remains active.
 
 ## Exact next actions

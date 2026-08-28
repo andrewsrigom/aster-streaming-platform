@@ -1,0 +1,72 @@
+P08-R09 Catalog proof correction — 2026-08-28
+PR30 initial head: e42a36569bc043b9b68f3fd17a6bb81abcfa8a8c.
+Hosted CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33209032494
+Failed job: 98977436074, Prove Catalog runtime and generated publication.
+
+Source quality, 11 real shared-platform scenarios, generated Catalog publication,
+Documentation/security, Dependency review and Local platform passed.
+The standalone catalog:demo assertion still expected eight migrations. The current
+Catalog migrator explicitly applies nine, including 0009-event-relay. Its fixture
+cleaned all owned resources (remaining0). Later Playback/Engagement/browser steps
+were skipped; no successful corrected full event supervisor is claimed.
+
+Correction: require the exact nine-version applied list. The cheap existing Catalog
+runtime test now derives that expected list from the migrator and checks the proof
+assertion against it, catching future drift locally. Empty replay remains required.
+Production code, migrations, privileges, cleanup, packaging and deadlines unchanged.
+Previously recorded SQL/Kafka/media behavior remains supporting evidence; no
+unchanged local heavyweight repeat. The new protected run must pass the real proof.
+
+Focused invocation, pinned Node24.19.0/pnpm11.24.0 on Ubuntu-20.04/WSL:
+pnpm exec prettier --write tools/verify-catalog-runtime.test.mjs
+node --test --test-concurrency=1 tools/verify-catalog-runtime.test.mjs
+pnpm exec eslint tools/verify-local-catalog.mjs tools/verify-catalog-runtime.test.mjs
+git diff --check
+
+Exit0; 3 tests passed, zero failures/cancellations/skips; duration189.26814ms.
+Scoped lint, formatting and diff checks passed.
+
+Candidate checkpoint: runQualityGate(['--changed'], limited) with the same canonical
+spawn adapter as events-candidate.txt (--concurrency=2 --continue=always), followed by
+ASTER_SCHEMA_BASE=d7fa03a363ab979f008500040b0afa62ddec2704 pnpm --filter @aster/router schema:check.
+Exit0. First round69/70 exposed the session log's500-heading ceiling; consolidated
+same-session prose without losing history or changing the validator. Final aggregate:
+ Tasks:    70 successful, 70 total
+Cached:    58 cached, 70 total
+  Time:    1m4.525s
+Exact-base composition: status ok, four subgraphs, seven artifacts, manifest
+8897e3a8378f6673698ca039b0dca6ac49380e235365f2ed09dbd098cec5563c.
+Cached timings are supporting results, not new measurements.
+Correction source SHA256:
+aa1f99d3cf5287cdaa3ab19dad0e0e1d04384750b66f3023585374912b153544  tools/verify-local-catalog.mjs
+a0ecc43f8ac7e7303f7231da4787bcdc027c94e8631c9684c21fce8615f6ef93  tools/verify-catalog-runtime.test.mjs
+All event production source hashes remain unchanged in events-source.sha256.
+
+Hosted raw failure:
+2026-08-28T20:44:19.0800594Z $ node ./tools/verify-local-catalog.mjs
+2026-08-28T20:45:16.1290734Z {"event":"catalog_docker_cleaned","remaining":0,"durationMs":57015}
+2026-08-28T20:45:16.1295538Z file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:233
+2026-08-28T20:45:16.1296635Z   throw new Error("Catalog Docker verification failed", { cause: failure });
+2026-08-28T20:45:16.1297138Z         ^
+2026-08-28T20:45:16.1297274Z 
+2026-08-28T20:45:16.1297478Z Error: Catalog Docker verification failed
+2026-08-28T20:45:16.1298268Z     at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:233:9
+2026-08-28T20:45:16.1299200Z     at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+2026-08-28T20:45:16.1299956Z   [cause]: AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+2026-08-28T20:45:16.1300401Z   
+2026-08-28T20:45:16.1300640Z     assert.ok(first.includes('"applied":[1,2,3,4,5,6,7,8]'))
+2026-08-28T20:45:16.1300889Z   
+2026-08-28T20:45:16.1301665Z       at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:74:10
+2026-08-28T20:45:16.1302277Z       at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+2026-08-28T20:45:16.1302630Z     generatedMessage: true,
+2026-08-28T20:45:16.1302836Z     code: 'ERR_ASSERTION',
+2026-08-28T20:45:16.1303029Z     actual: false,
+2026-08-28T20:45:16.1303200Z     expected: true,
+2026-08-28T20:45:16.1303368Z     operator: '==',
+2026-08-28T20:45:16.1303528Z     diff: 'simple'
+2026-08-28T20:45:16.1303692Z   }
+2026-08-28T20:45:16.1303840Z }
+2026-08-28T20:45:16.1303924Z 
+2026-08-28T20:45:16.1303994Z Node.js v24.19.0
+2026-08-28T20:45:16.1573929Z [ELIFECYCLE] Command failed with exit code 1.
+2026-08-28T20:45:16.3893493Z ##[error]Process completed with exit code 1.

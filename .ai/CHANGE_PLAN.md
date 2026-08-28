@@ -13,6 +13,8 @@ Publish committed owner facts at least once, consume authenticated Identity dele
 
 ## Current behavior
 
+PR30 head e42a365 failed CI33209032494 at the standalone Catalog Docker proof: its first-run assertion still requires migrations 1–8, while the reviewed migrator now applies 1–9. Source quality, all real shared-platform scenarios, generated Catalog publication and the independent Local platform job passed. Correct this proof and add a cheap migration-list alignment regression; production SQL and runtime behavior do not change. The local R11 reporter checkpoint is safely preserved in stash1643f0b7fa5b82d3f0ba3828414d4e3c92a107d1 on feat/p08-player-progress. Restore that exact checkpoint once after predecessor correction/rebase; all older restored stashes remain forbidden. No review submission or comment exists yet.
+
 P08-R07/R08 are DONE at main d7fa03a; this R09 candidate is rebased there. Latest 54 focused, 24 CI/platform and six shutdown/platform tests pass, plus real SQL including maximum quarantine bytes. Real Kafka observations prove delivery, poison/replay/offsets and outage recovery. Corrected SIGTERM validation passes against captured exit143 and completed lifecycle logs. The [candidate gate](../evidence/phase-08/events-candidate.txt) passes 70/70 tasks and exact-base composition after behavior-preserving static-check remediation. Protected execution of the complete corrected supervisor and review/release remain; no retained migration or host diagnostic loop.
 
 ## Proposed behavior
@@ -54,6 +56,8 @@ Completed runtime corrections: bounded tmpfs masks for Kafka-init image volumes,
 Unit: publication-before-ack, cancellation/ambiguity, admission, codec/signature substitution, duplicate/order handling and backoff. Integration: real owner roles/migrations, claim races/lease expiry, atomic cleanup/write race, poison/capacity/replay and source reconstruction. Contract: unchanged envelopes, broker headers/initial offsets, no foreign SQL or request-role privilege widening. Runtime: broker outage/recovery, backlog, graceful stop and public Playback continuity. Browser/media/CPU checks are not applicable to this backend slice.
 
 ## Evidence
+
+CI correction candidate passes70/70 tasks (58cached,1m4.525s) and exact d7fa03a composition. First69/70 round only hit the session-log heading limit; consolidated same-session prose without dropping history. Later changes only record these results. Initial/confirmation review and the corrected hosted runtime gate remain mandatory.
 
 Iteration gate: focused node:test and strict affected build/lint. Candidate gate: check:changed with concurrency two plus composition compatibility. Acceptance: isolated real PostgreSQL/Kafka and owner runtime evidence under evidence/phase-08. Repeat heavy checks only after changes to measured SQL, transport trust, delivery ordering or runtime wiring. One initial and one confirmation review; additional rounds only for requirement/security/data/availability/public-contract blockers.
 
