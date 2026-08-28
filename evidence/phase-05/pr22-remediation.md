@@ -25,7 +25,7 @@ The pre-reduction image failed all three hydration visits at 3662.7–3820.2 ms;
 
 Next's import-optimization probe produced identical output (504 client chunk parts, 966447 decoded bytes), so it was removed. The bundle analyzer identified 26934 decoded bytes of tailwind-merge, used by Button for one actual justification override. Explicit CVA alignment variants remove that dependency and the unused helper while preserving the two concrete layouts and existing shadcn/Radix semantics.
 
-Final-image three-visit block:
+Final-image first three-visit block:
 
 | Visit | Initial JS bytes | Hydration ms | LCP ms | INP ms | CLS |
 |---|---:|---:|---:|---:|---:|
@@ -41,10 +41,14 @@ Protocol: Chrome 145.0.7632.159, Node 24.19.0/pnpm 11.24.0, production Docker We
 
 The owner uses other Windows programs; WSL idle does not establish an idle physical host. A separate Windows DevTools trace included antivirus-injected requests and is excluded from Linux acceptance. No host program, security control or performance budget was disabled. An additional confirmation block was not started at 01:14:28Z because WSL load was 4.52 and live idle was 56/53%. Do not rerun unchanged measurements repeatedly to select success or treat this local baseline as a field SLO.
 
+The separately invoked final confirmation at 01:22:18Z passes all three visits on unchanged source e4708c4c32ef09d901dd040f9ed87e92426e9406 and the same image. Hydration is 2949.7/2727.6/2976.6 ms; LCP 1560/1528/1520 ms; INP 120/88/104 ms; CLS zero. JavaScript remains 232506 initial / 250806 cumulative bytes and initial GraphQL/prefetch remains zero. Preflight WSL load 2.60 and live idle 91/97% met the existing conditions; postflight load is 1.73 and idle 92/82%. No host program was stopped. Both predeclared final-image blocks now pass; no further unchanged benchmark is required. [Exact command, host samples and raw measurements](performance-final-confirmation.json).
+
 ## Reuse, cleanup and release
 
 Clean Docker startup/seed/isolation and actual Orca/Firefox reader evidence remain supporting checks: no owner, initialization, trust, focus/live-region or spoken-label mechanism changed. Final-image functional checks confirm the affected presentation. The final source/Docker builds both scan their actual emitted artifacts and preserve license notices. No new media job or clean database reset is needed.
 
 Only the labeled, mount-free aster-p05-pr22-before diagnostic container was removed; its image and raw records remain. All retained databases remain intact.
 
-Protected exact-head CI, confirmation review, remaining final confirmation and squash/post-merge checks are pending. No Phase 05 release or playable VOD is claimed. Phase 06 begins with actual rights approval before acquisition.
+All applicable local acceptance is complete. Code candidate e4708c4c32ef09d901dd040f9ed87e92426e9406 passed all six jobs in [protected CI 33132459201](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33132459201), including dependency review and the required aggregate, completed at 01:25:44Z. The [single confirmation review](https://github.com/andrewsrigom/aster-streaming-platform/pull/22#issuecomment-5447217847) reports no major issues for that exact code head. Both initial review threads are answered and resolved.
+
+Squash/post-merge checks and the final evidence-only head's protected gate remain pending; no Phase 05 release or playable VOD is claimed. Phase 06 begins with actual rights approval before acquisition. This final measurement and memory-only closeout does not change runtime, dependencies, packaging or test protocol, so it does not invalidate the measured image or require another Docker/browser/reader experiment or code-review round.

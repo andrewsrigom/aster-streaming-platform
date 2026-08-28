@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 05 — Web Shell, SSR, and Hydration**, PR 22 based on released main b6c99c4. Batched license/notice, presentation and lightweight-style corrections have current source/browser/laboratory evidence. Final confirmation and protected publication remain; shared-host timing limits are explicit.
+Active phase: **Phase 05 — Web Shell, SSR, and Hydration**, PR 22 based on released main b6c99c4. Code candidate e4708c4 has complete local source/browser/laboratory acceptance, including both final performance blocks. Evidence-only closeout and protected publication remain; shared-host timing limits are explicit.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

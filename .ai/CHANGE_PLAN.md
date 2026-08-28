@@ -193,9 +193,10 @@ The clean-source gate stopped in the Express compatibility subprocess after 5.24
 Performance confirmation will use two separately invoked three-visit blocks against the unchanged production image and existing budgets, with no retries. Before each block, record source/image/browser identity, host load and CPU/memory samples; run no overlapping build or browser suite. Require one-minute WSL load below half of its six CPUs and at least 70% idle in the two live vmstat samples; otherwise defer measurement, not the functional work. Record post-run host samples and every result. A budget failure stops confirmation and requires attribution-based diagnosis rather than more runs to select success. This defines a small reproducible quiet-host baseline, not performance under arbitrary host contention or field SLOs.
 
 - [x] Requirements satisfied locally; protected review/release remains
-- [x] Current source gate passes 58/58; all 21 distinct browser scenarios and three final laboratory visits have passing evidence in evidence/phase-05/pr22-remediation.md
+- [x] Current source gate passes 58/58; all 21 distinct browser scenarios and both separately invoked final three-visit laboratory blocks have passing evidence in evidence/phase-05/pr22-remediation.md
 - [x] Evidence captured
 - [x] Documentation current
 - [x] `.ai/` state updated
 - [x] Remaining risks recorded
-- [ ] Additional confirmation deferred by shared-host load; protected CI/review and release remain
+- [x] Additional confirmation completed at 01:22:18Z on unchanged e4708c4/image after the existing host preconditions passed; no further unchanged measurements
+- [ ] Protected CI/review and release remain

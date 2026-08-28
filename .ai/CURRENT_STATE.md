@@ -14,9 +14,9 @@ Phases 00–04 are released. PR 21 squash b6c99c4 has successful exact-head prot
 
 ## Current work
 
-P05-R01 remains the sole active item. PR 22 remediation corrects both initial review findings, preserves exact-package license exceptions and standalone notices, and removes unused runtime Tailwind conflict resolution. Final source gate passes 58/58; all 21 distinct browser scenarios have passing final-image evidence (20/21 first run, then the interrupted artifact scan passes independently). Three final performance visits pass unchanged budgets; timings remain sensitive to the shared Windows host. [Current evidence](../evidence/phase-05/pr22-remediation.md).
+P05-R01 remains the sole active item. Code candidate e4708c4c32ef09d901dd040f9ed87e92426e9406 corrects both initial review findings, preserves exact-package license exceptions and standalone notices, and removes unused runtime Tailwind conflict resolution. Final source gate passes 58/58; all 21 distinct browser scenarios have passing final-image evidence (20/21 first run, then the interrupted artifact scan passes independently). Both separately invoked three-visit performance blocks pass unchanged budgets. [Current evidence](../evidence/phase-05/pr22-remediation.md).
 
-Additional performance confirmation is deferred while host load/idle fails the recorded preconditions. Publish this coherent candidate for CI/review while that condition persists; do not mark WAITING_EXTERNAL while local confirmation remains or start another phase. No repeated unchanged benchmark/pipeline attempts.
+Final confirmation completed when the existing host preconditions passed, without closing owner programs. Protected CI 33132459201 passes all six jobs and the single confirmation review reports no major issues for e4708c4. Finish the evidence-only head's protected gate and publication; no further unchanged benchmark or extra code-review request is needed.
 
 ## Not implemented
 

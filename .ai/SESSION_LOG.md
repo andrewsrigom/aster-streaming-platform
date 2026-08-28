@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Final Web confirmation
+
+### Completed
+
+Published e4708c4, resolved both initial review threads and completed the additional performance block when the existing host preconditions passed. No owner program or security control was stopped, no budget changed and no code changed between the two final blocks.
+
+### Evidence
+
+Both final three-visit blocks pass; the additional block records hydration 2727.6–2976.6 ms, LCP 1520–1560 ms, INP 88–120 ms and CLS zero in evidence/phase-05/performance-final-confirmation.json. Exact-head CI 33132459201 passes all six jobs. Confirmation review 5447217847 reports no major issues for e4708c4. Source/functional/reader/clean-start evidence and earlier failures remain linked in evidence/phase-05/pr22-remediation.md.
+
+### Next action
+
+Publish this evidence-only closeout, confirm protected CI, squash merge and verify post-merge before activating Phase 06. No further unchanged heavyweight experiment or code-review round is needed. Actual-film rights approval still precedes acquisition; the Phase 00–14 goal remains active.
+
 ## 2026-08-28 — Bounded PR 22 performance remediation
 
 ### Completed

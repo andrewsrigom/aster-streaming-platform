@@ -2,13 +2,13 @@
 
 ## Resume point
 
-P05-R01 is IN_PROGRESS on feat/p05-web-ssr in PR 22. Phases 00–04 are released; main is b6c99c4. Initial head abf3a84 passed hosted functional gates but failed dependency licensing. The batched remediation is documented in evidence/phase-05/pr22-remediation.md and pr22-remediation.json.
+P05-R01 is IN_PROGRESS on feat/p05-web-ssr in PR 22. Phases 00–04 are released; main is b6c99c4. Code candidate e4708c4c32ef09d901dd040f9ed87e92426e9406 passes protected CI 33132459201 (all six jobs) and confirmation review 5447217847 reports no major issues. Initial review threads are resolved. The batched remediation is documented in evidence/phase-05/pr22-remediation.md and pr22-remediation.json.
 
 ## Current acceptance
 
 Final source gate: 58/58, 39 cached, 55.482 s. Final-image functional run: 20/21; the first artifact-scan GET had a socket reset. Its complete focused confirmation passes 1/1. Web shows zero restart/OOM/server error. All 21 distinct scenarios, including both review regressions and preserved button alignment, have passing current evidence.
 
-Three final mobile visits pass unchanged budgets: initial JavaScript 232506 bytes (8426 fewer), cumulative 250806, hydration 3019.2/3490.5/3058.5 ms, LCP 1532–1608, INP 112–184, CLS 0. Additional confirmation was deferred at 01:14:28Z: WSL load 4.52 and live idle 56/53%. The Windows host is shared with owner programs. Do not insist on 100% idle, stop their programs/security controls or select passing results through repeated runs.
+Both independently invoked final mobile blocks pass unchanged budgets: initial JavaScript 232506 bytes (8426 fewer), cumulative 250806; hydration 3019.2/3490.5/3058.5 then 2949.7/2727.6/2976.6 ms. Across six visits LCP is 1520–1608, INP 88–184 and CLS 0. Final confirmation at 01:22:18Z met the existing preconditions, after the earlier deferred preflight. Raw second-block evidence: evidence/phase-05/performance-final-confirmation.json. The shared Windows host was not modified. No additional unchanged benchmark is required.
 
 ## Runtime and retained data
 
@@ -20,7 +20,7 @@ Only the labeled mount-free aster-p05-pr22-before diagnostic container was remov
 
 ## Next action
 
-Publish the coherent candidate once, update/reply to both PR findings and request one confirmation review. Complete remaining final confirmation when its existing preconditions allow, protected exact-head CI, squash merge without bypass and post-merge check. Do not mark WAITING_EXTERNAL while local acceptance remains. Reuse unchanged clean seed/isolation and actual-reader mechanisms; prose-only closeout needs documentation/state/secret checks, not another Docker/browser experiment.
+Publish the evidence-only closeout, wait for its exact-head protected CI, squash merge without bypass and verify post-merge. The code confirmation is complete; do not request another review or repeat unchanged Docker/browser/reader experiments for prose-only evidence. Only start Phase 06 after ordered release, or on an explicitly frozen WAITING_EXTERNAL predecessor under the repository contract.
 
 ## Do not do yet
 

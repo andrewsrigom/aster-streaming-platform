@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item in PR 22, based on released main b6c99c4. The batched license/notice, presentation and lightweight-style corrections pass 58 source tasks and the current three-visit laboratory block; all 21 distinct browser scenarios have passing evidence. [Current remediation and limits](../evidence/phase-05/pr22-remediation.md). Additional timing confirmation is deferred by shared-host load; CI/review can progress without repeating benchmarks. Protected publication and final closeout remain. Phase 06 starts with actual-film rights review; the synthetic seed authorizes no source acquisition.
+Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item in PR 22, based on released main b6c99c4. Code candidate e4708c4 passes 58 source tasks and both final three-visit laboratory blocks; all 21 distinct browser scenarios have passing evidence. [Current remediation and limits](../evidence/phase-05/pr22-remediation.md). CI 33132459201 passes and confirmation review reports no major issues. The evidence-only head's protected gate and publication remain; no further unchanged benchmark. Phase 06 starts with actual-film rights review; the synthetic seed authorizes no source acquisition.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
