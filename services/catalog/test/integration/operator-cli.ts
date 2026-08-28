@@ -69,8 +69,14 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   assert.equal(initialized.code, 0, initialized.stderr);
   assert.deepEqual(JSON.parse(initialized.stdout), {
     event: "aster.catalog.migration_completed",
-    applied: [1, 2, 3, 4, 5],
+    applied: [1, 2, 3, 4, 5, 6],
   });
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0006-media-processing.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
   await admin.query(
     await readFile(
       new URL("../../../migrations/0005-media-acquisitions.down.sql", import.meta.url),
@@ -87,7 +93,7 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   assert.equal(upgraded.code, 0, upgraded.stderr);
   assert.deepEqual(JSON.parse(upgraded.stdout), {
     event: "aster.catalog.migration_completed",
-    applied: [4, 5],
+    applied: [4, 5, 6],
   });
   const repeated = await run("migrate-local", undefined);
   assert.equal(repeated.code, 0);

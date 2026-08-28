@@ -2,6 +2,22 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Durable processing and candidate replay
+
+### Completed
+
+Implemented ADR-0024, migration 0006, fenced 30-minute processing leases, three attempts/checksum-recipe, classified recovery and current-rights reuse. Integrated the finite coordinator, bounded private report/object verification and graceful job stop. Applied only migration 6 to retained development data; adopted the existing 203-object candidate as attempt 68e41f87-ca12-44ff-96d3-8a9e66d67795 and default-replayed the exact result. No source GET, encode, media write or editorial publication occurred.
+
+### Evidence
+
+Evidence: evidence/phase-06/processing.md, 19 focused tests, disposable PostgreSQL concurrency/recovery/rollback/privilege checks and actual adoption/replay/readback. Final affected gate: 61/61 successful, 44 cached, 136.578 seconds. One transient Windows-to-WSL piped read failed to connect; the bounded bash read succeeded without diagnostics or host changes. Review covered selector conflicts, cancellation audit and owned cleanup. Unchanged HLS/Web evidence was retained.
+
+Later WSL command launches returned Wsl/Service/0x8007274c while repository files remained accessible. Bundled Windows Node 24.19.0 ran documentation checks; a scoped Docker tooling image now supplies the pinned Node/pnpm and Git against the same checkout, with no network or privileged host access during repository operations. The configured author identity and normal hooks are preserved. No WSL/Docker restart, CPU baseline, global configuration change or hook bypass was attempted.
+
+### Next action
+
+Next: reviewed artwork, accurate transformation attribution, restricted technical attestation and public-origin/Catalog publication. P06-R01 and the complete Phase 00–14 goal remain active.
+
 ## 2026-08-28 — Isolated full-film HLS and private candidate retention
 
 ### Completed

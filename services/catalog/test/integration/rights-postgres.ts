@@ -13,6 +13,7 @@ import { verifyPublicCatalog } from "./public-postgres.js";
 import { verifySourceCandidates } from "./generated-publication.js";
 import { verifyMediaRequests } from "./media-postgres.js";
 import { verifyAcquisitions } from "./acquisition-postgres.js";
+import { verifyProcessing } from "./processing-postgres.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -416,6 +417,7 @@ async function verify() {
   );
   await verifyMediaRequests(admin, makeDatabase());
   await verifyAcquisitions(admin, makeDatabase());
+  await verifyProcessing(admin, makeDatabase());
 }
 try {
   await verify();
@@ -428,7 +430,7 @@ try {
         ? error.stack
             ?.split("\n")
             .filter((line) =>
-              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres)\.js/u.test(
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres|processing-postgres)\.js/u.test(
                 line,
               ),
             )

@@ -9,11 +9,13 @@ import type { createCatalogAcquisitions } from "../../application/acquire-media.
 import type { CatalogCommandRequest } from "../../application/operator-ports.js";
 import { catalogChecksum, catalogRecord } from "../../domain/values.js";
 import { MEDIA_RECIPE_VERSION } from "../../domain/media-request.js";
+import { processingKeyInput } from "../../domain/media-processing.js";
+import { MediaProcessingError } from "./processing-error.js";
 
 type CandidateObject = Readonly<{ name: string; bytes: number; sha256: string }>;
 function filesFromReport(value: unknown): readonly CandidateObject[] {
   if (!Array.isArray(value) || value.length < 3 || value.length > 2048) {
-    throw new Error("Invalid candidate object count");
+    throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate object count");
   }
   const names = new Set<string>();
   let bytes = 0;
@@ -30,11 +32,11 @@ function filesFromReport(value: unknown): readonly CandidateObject[] {
       file["bytes"] < 1 ||
       file["bytes"] > 16 * 1024 * 1024
     ) {
-      throw new Error("Invalid candidate object");
+      throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate object");
     }
     bytes += file["bytes"];
     if (bytes > 512 * 1024 * 1024) {
-      throw new Error("Candidate too large");
+      throw new MediaProcessingError("INVALID_OUTPUT", "Candidate too large");
     }
     names.add(file["name"]);
     return { name: file["name"], bytes: file["bytes"], sha256: file["sha256"] };
@@ -61,11 +63,20 @@ async function putVerified(
       signal,
     );
     if (written.status !== "completed" && written.status !== "already_exists") {
-      throw new Error("Candidate storage unavailable");
+      throw new MediaProcessingError("STORAGE_FAILURE", "Candidate storage unavailable");
     }
   } finally {
     source.destroy();
   }
+  await verifyCandidateObject(storage, key, expected, signal);
+}
+
+export async function verifyCandidateObject(
+  storage: Pick<AsterObjectStorageAdapter, "read">,
+  key: string,
+  expected: Readonly<{ bytes: number; sha256: string }>,
+  signal: AbortSignal,
+) {
   let bytes = 0;
   const digest = createHash("sha256");
   const destination = new Writable({
@@ -86,11 +97,50 @@ async function putVerified(
       bytes !== expected.bytes ||
       digest.digest("hex") !== expected.sha256
     ) {
-      throw new Error("Candidate readback mismatch");
+      throw new MediaProcessingError("STORAGE_FAILURE", "Candidate readback mismatch");
     }
   } finally {
     destination.destroy();
   }
+}
+
+export function parseCandidateReport(
+  reportBytes: Buffer,
+  expected: Readonly<{ sha256: string; bytes: number; container: "zip" | "mp4" }>,
+) {
+  let parsed: unknown;
+  try {
+    if (reportBytes.length < 1 || reportBytes.length > 512 * 1024) {
+      throw new Error();
+    }
+    parsed = JSON.parse(reportBytes.toString("utf8")) as unknown;
+  } catch {
+    throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate report");
+  }
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new MediaProcessingError("INVALID_OUTPUT", "Invalid candidate report");
+  }
+  const report = parsed as Record<string, unknown>;
+  const identity = catalogRecord(report["identity"], ["sha256", "bytes", "container"]);
+  const processingKey = createHash("sha256")
+    .update(processingKeyInput(expected.sha256))
+    .digest("hex");
+  const files = filesFromReport(report["files"]);
+  const manifestHash = createHash("sha256").update(JSON.stringify(files)).digest("hex");
+  if (
+    report["event"] !== "media_candidate_validated" ||
+    report["publicationAuthority"] !== false ||
+    report["recipe"] !== MEDIA_RECIPE_VERSION ||
+    report["processingKey"] !== processingKey ||
+    report["manifestHash"] !== manifestHash ||
+    identity?.["sha256"] !== expected.sha256 ||
+    identity["bytes"] !== expected.bytes ||
+    identity["container"] !== expected.container ||
+    !files.some((file) => file.name === "master.m3u8")
+  ) {
+    throw new MediaProcessingError("INVALID_OUTPUT", "Candidate source identity mismatch");
+  }
+  return { processingKey, manifestHash, files };
 }
 
 export async function retainDecoderCandidate(
@@ -103,7 +153,10 @@ export async function retainDecoderCandidate(
   async function current() {
     const result = await acquisitions.original(attemptId, request);
     if (result.status !== "completed") {
-      throw new Error("Candidate rights unavailable");
+      throw new MediaProcessingError(
+        result.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
+        "Candidate rights unavailable",
+      );
     }
     return result.value;
   }
@@ -131,30 +184,10 @@ export async function retainDecoderCandidate(
   } finally {
     await reportHandle.close();
   }
-  const parsed: unknown = JSON.parse(reportBytes.toString("utf8"));
-  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
-    throw new Error("Invalid candidate report");
-  }
-  const report = parsed as Record<string, unknown>;
-  const identity = catalogRecord(report["identity"], ["sha256", "bytes", "container"]);
-  const processingKey = createHash("sha256")
-    .update(original.original.sha256 + "\0" + MEDIA_RECIPE_VERSION)
-    .digest("hex");
-  const files = filesFromReport(report["files"]);
-  const manifestHash = createHash("sha256").update(JSON.stringify(files)).digest("hex");
-  if (
-    report["event"] !== "media_candidate_validated" ||
-    report["publicationAuthority"] !== false ||
-    report["recipe"] !== MEDIA_RECIPE_VERSION ||
-    report["processingKey"] !== processingKey ||
-    report["manifestHash"] !== manifestHash ||
-    identity?.["sha256"] !== original.original.sha256 ||
-    identity["bytes"] !== original.original.bytes ||
-    identity["container"] !== original.media.input.source.container ||
-    !files.some((file) => file.name === "master.m3u8")
-  ) {
-    throw new Error("Candidate source identity mismatch");
-  }
+  const { processingKey, manifestHash, files } = parseCandidateReport(reportBytes, {
+    ...original.original,
+    container: original.media.input.source.container,
+  });
   const expectedNames = [...files.map((file) => file.name), "report.json"].sort();
   const actualNames: string[] = [];
   for await (const entry of await opendir(directory)) {

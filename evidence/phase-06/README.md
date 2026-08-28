@@ -12,4 +12,6 @@ Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and 
 
 - [Isolated HLS decoder and private retention](decoder.md): complete first-film extraction, probe, two full-length renditions, object manifest, adverse tests and remaining publication boundaries.
 
-Rights, request admission, acquisition, decoding and private candidate retention pass locally. Durable processing/attestation, artwork, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.
+- [Durable processing and reuse](processing.md): fenced attempts, bounded retries, current-rights deduplication and actual retained-candidate adoption/default replay without another encode.
+
+Rights, request admission, acquisition, decoding, private retention and durable processing/reuse pass locally. Restricted attestation, artwork, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.

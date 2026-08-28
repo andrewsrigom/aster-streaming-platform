@@ -8,9 +8,13 @@ import { pipeline } from "node:stream/promises";
 import test from "node:test";
 import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
 import type { createCatalogAcquisitions } from "../src/application/acquire-media.js";
+import type { createCatalogProcessing } from "../src/application/process-media.js";
+import { normalizeProcessingAttempt } from "../src/domain/media-processing.js";
 import { normalizeMediaRequest } from "../src/domain/media-request.js";
 import { prepareDecoder } from "../src/infrastructure/media/prepare-decoder.js";
 import { retainDecoderCandidate } from "../src/infrastructure/media/retain-candidate.js";
+import { reuseDecoderCandidate } from "../src/infrastructure/media/reuse-candidate.js";
+import { runMediaProcessing } from "../src/infrastructure/media/run-processing.js";
 import { catalogTestId as id, catalogTestTime as now } from "./rights-fixture.js";
 
 const hash = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
@@ -129,6 +133,7 @@ async function setup() {
     root,
     directory,
     body,
+    media,
     objects,
     original,
     report,
@@ -230,3 +235,196 @@ test("refuses symlinked candidate payload", async () => {
     assert.equal(f.writes(), 0);
   });
 });
+
+test("adopts an existing candidate and replays without encoding, uploads or filesystem preparation", async () => {
+  await fixture(async (f) => {
+    const stored = await retainDecoderCandidate(
+      id(9),
+      f.directory,
+      f.request,
+      f.acquisitions,
+      f.storage,
+    );
+    const selector = {
+      manifestHash: stored.value.prefix.split("/")[2] ?? "",
+      reportChecksum: stored.value.reportChecksum,
+    };
+    const initial = normalizeProcessingAttempt({
+      id: id(10),
+      acquisitionId: id(9),
+      requestId: f.media.input.requestId,
+      actorId: id(3),
+      correlationId: id(4),
+      processingKey: f.report["processingKey"],
+      sourceChecksum: f.original.sha256,
+      recipeVersion: "hls-avc-aac-v1",
+      number: 1,
+      requestedAt: now,
+      startedAt: now,
+      expiresAt: now + 1800,
+      finishedAt: null,
+      status: "RUNNING",
+      failure: null,
+      candidate: null,
+    });
+    assert.ok(initial);
+    let attempt = initial;
+    let completions = 0;
+    const processing: ReturnType<typeof createCatalogProcessing> = {
+      claim: () => Promise.resolve({ status: "completed", value: attempt }),
+      check: () => f.acquisitions.original(id(9), f.request),
+      complete: (_id, value) => {
+        completions++;
+        const result = normalizeProcessingAttempt({
+          ...attempt,
+          status: "SUCCEEDED",
+          finishedAt: now + 1,
+          candidate: value,
+        });
+        assert.ok(result);
+        attempt = result;
+        return Promise.resolve({ status: "completed", value: attempt });
+      },
+      fail: () => {
+        throw new Error("Unexpected failure");
+      },
+    };
+    const writes = f.writes();
+    const ports = {
+      processing,
+      acquisitions: f.acquisitions,
+      storage: f.storage,
+      onReady: () => {
+        throw new Error("Must not start the decoder");
+      },
+    };
+    const adopted = await runMediaProcessing(id(9), f.request, { ...ports, selector });
+    assert.equal(adopted.status, "completed");
+    assert.equal(adopted.value.reused, true);
+    assert.deepEqual(adopted.value.attempt.candidate, stored.value);
+    const replay = await runMediaProcessing(id(9), f.request, ports);
+    assert.deepEqual(replay, adopted);
+    const conflict = await runMediaProcessing(id(9), f.request, {
+      ...ports,
+      selector: { ...selector, reportChecksum: "0".repeat(64) },
+    });
+    assert.equal(conflict.status, "unavailable");
+    assert.equal(completions, 1);
+    assert.equal(f.writes(), writes);
+    assert.deepEqual(await readdir(f.root), ["candidate"]);
+  });
+});
+test("processing cancellation retains a classified failure with a separate bounded audit signal", async () => {
+  await fixture(async (f) => {
+    const stored = await retainDecoderCandidate(
+      id(9),
+      f.directory,
+      f.request,
+      f.acquisitions,
+      f.storage,
+    );
+    const initial = normalizeProcessingAttempt({
+      id: id(10),
+      acquisitionId: id(9),
+      requestId: f.media.input.requestId,
+      actorId: id(3),
+      correlationId: id(4),
+      processingKey: f.report["processingKey"],
+      sourceChecksum: f.original.sha256,
+      recipeVersion: "hls-avc-aac-v1",
+      number: 1,
+      requestedAt: now,
+      startedAt: now,
+      expiresAt: now + 1800,
+      finishedAt: null,
+      status: "RUNNING",
+      failure: null,
+      candidate: null,
+    });
+    assert.ok(initial);
+    const controller = new AbortController();
+    let failures = 0;
+    const processing: ReturnType<typeof createCatalogProcessing> = {
+      claim: () => {
+        controller.abort();
+        return Promise.resolve({ status: "completed", value: initial });
+      },
+      check: () => {
+        throw new Error("No read after cancellation");
+      },
+      complete: () => {
+        throw new Error("No completion after cancellation");
+      },
+      fail: (attemptId, failure, request) => {
+        assert.equal(attemptId, initial.id);
+        assert.equal(failure, "CANCELLED");
+        assert.equal(request.signal.aborted, false);
+        failures++;
+        return Promise.resolve({
+          status: "completed",
+          value: {
+            ...initial,
+            status: "FAILED",
+            finishedAt: now,
+            failure: "CANCELLED",
+          },
+        });
+      },
+    };
+    const result = await runMediaProcessing(
+      id(9),
+      { ...f.request, signal: controller.signal },
+      {
+        processing,
+        acquisitions: f.acquisitions,
+        storage: f.storage,
+        selector: {
+          manifestHash: stored.value.prefix.split("/")[2] ?? "",
+          reportChecksum: stored.value.reportChecksum,
+        },
+        onReady: () => {
+          throw new Error("No decoder after cancellation");
+        },
+      },
+    );
+    assert.equal(result.status, "cancelled");
+    assert.equal(failures, 1);
+  });
+});
+for (const failure of ["missing", "changed", "oversized-report", "revoked", "selector"] as const) {
+  test("refuses retained candidate reuse: " + failure, async () => {
+    await fixture(async (f) => {
+      const stored = await retainDecoderCandidate(
+        id(9),
+        f.directory,
+        f.request,
+        f.acquisitions,
+        f.storage,
+      );
+      const selector = {
+        manifestHash: stored.value.prefix.split("/")[2] ?? "",
+        reportChecksum: stored.value.reportChecksum,
+      };
+      if (failure === "missing") {
+        f.objects.delete(stored.value.prefix + "v240-0000.ts");
+      }
+      if (failure === "changed") {
+        f.objects.set(stored.value.prefix + "v240-0000.ts", Buffer.alloc(f.body.length));
+      }
+      if (failure === "oversized-report") {
+        f.objects.set(stored.value.prefix + "report.json", Buffer.alloc(512 * 1024 + 1));
+      }
+      if (failure === "revoked") {
+        f.revoke();
+      }
+      if (failure === "selector") {
+        selector.manifestHash = "../escape";
+      }
+      const writes = f.writes();
+      await assert.rejects(
+        reuseDecoderCandidate(id(9), selector, f.request, f.acquisitions, f.storage),
+      );
+      assert.equal(f.writes(), writes);
+    });
+  });
+}

@@ -8,8 +8,12 @@ import { fileURLToPath, URL } from "node:url";
 
 const execute = promisify(execFile);
 const root = fileURLToPath(new URL("../", import.meta.url));
-const [project, attemptId] = process.argv.slice(2);
-assert.equal(process.argv.length, 4);
+const [project, attemptId, reuse, manifestHash, reportChecksum] = process.argv.slice(2);
+assert.ok(process.argv.length === 4 || (process.argv.length === 7 && reuse === "--reuse"));
+if (reuse) {
+  assert.match(manifestHash, /^[a-f0-9]{64}$/u);
+  assert.match(reportChecksum, /^[a-f0-9]{64}$/u);
+}
 assert.match(project, /^aster(?:-[a-z0-9]+)*$/u);
 assert.match(attemptId, /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u);
 assert.ok(
@@ -86,7 +90,7 @@ try {
     );
   }
   process.stdout.write(JSON.stringify({ event: "media_images_building", project, runId }) + "\n");
-  await docker([...compose, "build", "media-prepare", "media-decoder"], 360000);
+  await docker([...compose, "build", "media-prepare"], 360000);
   process.stdout.write(JSON.stringify({ event: "media_images_ready", project, runId }) + "\n");
   allocated = true;
   for (const [index, volume] of volumes.entries()) {
@@ -128,75 +132,98 @@ try {
     label + "=" + runId,
     "media-prepare",
     attemptId,
-    "--prepare-decoder",
+    ...(reuse ? ["--reuse-decoder", manifestHash, reportChecksum] : ["--prepare-decoder"]),
   ]);
   created.push(owner);
+  process.stdout.write(
+    JSON.stringify({
+      event: "media_owner_image",
+      ownerImage: (await state(owner)).Image,
+      runId,
+    }) + "\n",
+  );
+  let reused = false;
   for (;;) {
     const info = await state(owner);
     const logs = records(await docker(["logs", "--tail", "5", owner]));
+    const replay = logs.find((record) => record.event === "decoder_candidate_reused");
+    if (replay) {
+      assert.equal(replay.status, "completed");
+      if (!info.State.Running) {
+        assert.equal(info.State.ExitCode, 0);
+        process.stdout.write(JSON.stringify(replay) + "\n");
+        reused = true;
+        break;
+      }
+      await delay(1000, undefined, { signal: controller.signal });
+      continue;
+    }
     if (logs.some((record) => record.event === "decoder_input_ready")) {
       break;
     }
     assert.equal(info.State.Running, true, "Source handoff failed.");
     await delay(1000, undefined, { signal: controller.signal });
   }
-  process.stdout.write(
-    JSON.stringify({ event: "media_candidate_started", project, attemptId, runId }) + "\n",
-  );
-  await docker([
-    ...compose,
-    "run",
-    "-d",
-    "--no-deps",
-    "--name",
-    decoder,
-    "--label",
-    label + "=" + runId,
-    "media-decoder",
-  ]);
-  created.push(decoder);
-  const decoderInfo = await state(decoder);
-  const ownerInfo = await state(owner);
-  process.stdout.write(
-    JSON.stringify({
-      event: "media_candidate_images",
-      decoderImage: decoderInfo.Image,
-      ownerImage: ownerInfo.Image,
-    }) + "\n",
-  );
-  let last = "";
-  for (;;) {
-    const info = await state(decoder);
+  if (!reused) {
+    await docker([...compose, "build", "media-decoder"], 360000);
+    process.stdout.write(
+      JSON.stringify({ event: "media_candidate_started", project, attemptId, runId }) + "\n",
+    );
+    await docker([
+      ...compose,
+      "run",
+      "-d",
+      "--no-deps",
+      "--name",
+      decoder,
+      "--label",
+      label + "=" + runId,
+      "media-decoder",
+    ]);
+    created.push(decoder);
+    const decoderInfo = await state(decoder);
     const ownerInfo = await state(owner);
-    const output = await docker(["logs", "--tail", "5", decoder]);
-    if (output !== last) {
-      const items = records(output);
-      for (const item of items) {
-        if (!last.includes(JSON.stringify(item))) {
-          process.stdout.write(JSON.stringify(item) + "\n");
+    process.stdout.write(
+      JSON.stringify({
+        event: "media_candidate_images",
+        decoderImage: decoderInfo.Image,
+        ownerImage: ownerInfo.Image,
+      }) + "\n",
+    );
+    let last = "";
+    for (;;) {
+      const info = await state(decoder);
+      const ownerInfo = await state(owner);
+      const output = await docker(["logs", "--tail", "5", decoder]);
+      if (output !== last) {
+        const items = records(output);
+        for (const item of items) {
+          if (!last.includes(JSON.stringify(item))) {
+            process.stdout.write(JSON.stringify(item) + "\n");
+          }
         }
+        last = output;
       }
-      last = output;
+      if (!info.State.Running) {
+        assert.equal(info.State.ExitCode, 0, "Decoder failed; no publication was made.");
+        assert.equal(info.State.OOMKilled, false);
+        break;
+      }
+      assert.equal(ownerInfo.State.Running, true, "Owner rights check failed; stop the decoder.");
+      await delay(1000, undefined, { signal: controller.signal });
     }
-    if (!info.State.Running) {
-      assert.equal(info.State.ExitCode, 0, "Decoder failed; no publication was made.");
-      assert.equal(info.State.OOMKilled, false);
-      break;
+    for (;;) {
+      const info = await state(owner);
+      if (!info.State.Running) {
+        const logs = records(await docker(["logs", "--tail", "5", owner]));
+        const result = logs.find((record) => record.event === "decoder_candidate_retained");
+        assert.equal(info.State.ExitCode, 0);
+        assert.equal(result?.status, "completed", "Private candidate retention failed.");
+        process.stdout.write(JSON.stringify(result) + "\n");
+        break;
+      }
+      await delay(1000, undefined, { signal: controller.signal });
     }
-    assert.equal(ownerInfo.State.Running, true, "Owner rights check failed; stop the decoder.");
-    await delay(1000, undefined, { signal: controller.signal });
-  }
-  for (;;) {
-    const info = await state(owner);
-    if (!info.State.Running) {
-      const logs = records(await docker(["logs", "--tail", "5", owner]));
-      const result = logs.find((record) => record.event === "decoder_candidate_retained");
-      assert.equal(info.State.ExitCode, 0);
-      assert.equal(result?.status, "completed", "Private candidate retention failed.");
-      process.stdout.write(JSON.stringify(result) + "\n");
-      break;
-    }
-    await delay(1000, undefined, { signal: controller.signal });
   }
 } finally {
   clearTimeout(deadline);
@@ -205,6 +232,9 @@ try {
     const [info] = JSON.parse(await docker(["container", "inspect", name], 15000, null));
     assert.equal(info.Config.Labels[label], runId);
     assert.equal(info.Config.Labels["com.docker.compose.project"], project);
+    if (info.State.Running) {
+      await docker(["container", "stop", "--time", "5", info.Id], 10000, null);
+    }
     await docker(["container", "rm", "--force", info.Id], 15000, null);
   }
   if (allocated) {

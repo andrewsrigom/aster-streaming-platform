@@ -28,7 +28,7 @@ function readAttempt(value: unknown): AcquisitionAttempt {
     ? attempt
     : invalidRow();
 }
-function repositories(tx: AsterPostgresTransaction): AcquisitionTransaction {
+export function acquisitionRepositories(tx: AsterPostgresTransaction): AcquisitionTransaction {
   const columns = "id, request_id, number, status, record";
   return {
     ...mediaRepositories(tx),
@@ -105,5 +105,5 @@ function repositories(tx: AsterPostgresTransaction): AcquisitionTransaction {
 export function createPostgresCatalogAcquisitions(
   database: Pick<AsterPostgresAdapter, "transaction">,
 ): AcquisitionUnitOfWork {
-  return catalogUnitOfWork(database, repositories);
+  return catalogUnitOfWork(database, acquisitionRepositories);
 }

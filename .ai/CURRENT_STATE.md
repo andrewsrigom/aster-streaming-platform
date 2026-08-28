@@ -18,13 +18,15 @@ P06-R01 is the sole active implementation item. The approved Big Buck Bunny orig
 
 Durable requests, three-attempt recovery, current-rights watchdog, bounded HTTPS streaming and conditional verified S3 storage are implemented/tested locally. Real PostgreSQL, storage conflict and cross-process replay checks pass. Migration 0004/0005 and the first request are applied to aster-p04-development. The source download took 12.003 s; sampled Node RSS peaked at 97685504 bytes, not total container memory. The first attempt failed before GET because its network was internal-only; the finite job now has a separate egress bridge. [Exact gates and limitations](../evidence/phase-06/acquisition.md).
 
+Durable processing now has one global slot, three checksum/recipe attempts, 30-minute leases and current-rights reuse. Migration 0006 is applied; the existing candidate was independently verified and adopted as attempt 68e41f87-ca12-44ff-96d3-8a9e66d67795, then replayed without new encoding/writes. Focused tests 19/19, real PostgreSQL and affected source gate 61/61 pass. [Processing evidence](../evidence/phase-06/processing.md).
+
 ## Not implemented
 
-Public playable VOD, durable processing/attestation, derived artwork, engagement/discovery and hosted release. The acquisition/decoder/private-candidate path exists; it is not yet complete publication. The synthetic seed remains a technical fixture.
+Public playable VOD, trusted attestation, derived artwork, engagement/discovery and hosted release. The synthetic seed remains a technical fixture.
 
 ## Next outcome
 
-Continue P06-R01 with durable processing/deduplication, reviewed artwork and the verified-result/attestation/publication boundary. Reuse the private HLS candidate and original; no unchanged transcode, acquisition or Web benchmark. No hosted wait remains. Focus execution on remaining product requirements, not Windows/CPU diagnostics.
+Continue P06-R01 with reviewed artwork, truthful modification attribution and the restricted attestation/public-origin/publication boundary. Reuse the private HLS candidate and original; no unchanged transcode, acquisition or Web benchmark. No hosted wait remains. Focus execution on remaining product requirements, not Windows/CPU diagnostics.
 
 ## Current risks
 

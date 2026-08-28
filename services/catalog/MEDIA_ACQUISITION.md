@@ -1,6 +1,6 @@
 # Local media acquisition
 
-Catalog accepts an immutable request through `request-media`, then a finite local process acquires its exact approved source. Acquisition is implemented; archive extraction, probing, HLS generation and publication remain unfinished Phase 06 work. [ADR-0022](../../docs/adr/0022-local-media-execution.md) defines ownership, fencing and storage assumptions. [Evidence](../../evidence/phase-06/acquisition.md).
+Catalog accepts an immutable request through `request-media`, then a finite local process acquires its exact approved source. Acquisition, isolated HLS and durable private-candidate reuse are implemented; artwork, attestation and public publication remain unfinished Phase 06 work. [ADR-0022](../../docs/adr/0022-local-media-execution.md) defines acquisition ownership, fencing and storage assumptions. [Evidence](../../evidence/phase-06/acquisition.md).
 
 ## Commands
 
@@ -12,7 +12,7 @@ docker compose -p aster-p04-development -f infra/compose/compose.yml --profile i
 docker compose -p aster-p04-development -f infra/compose/compose.yml -f infra/compose/media.yml --profile integration --profile media run --rm --no-deps --entrypoint node -e ASTER_CATALOG_ADMIN_DATABASE_URL=postgresql://aster@postgres:5432/aster -e ASTER_CATALOG_ADMIN_DATABASE_PASSWORD=aster-test-only media-acquire ./dist/src/migrate-local.js
 ~~~
 
-The initializer applies additive migrations 0004/0005 without rewriting editorial data. Its credentials are disposable local defaults, not a hosted configuration. A separately reviewed current Catalog title is required; the request example cannot grant rights by itself. After approval:
+The initializer applies additive migrations through 0006 without rewriting editorial data. Its credentials are disposable local defaults, not a hosted configuration. A separately reviewed current Catalog title is required; the request example cannot grant rights by itself. After approval:
 
 ~~~sh
 docker compose -p aster-p04-development -f infra/compose/compose.yml -f infra/compose/media.yml --profile integration --profile media run --rm --no-deps --entrypoint node media-acquire ./dist/src/operate-local.js < services/catalog/examples/big-buck-bunny-media-request.json
@@ -36,3 +36,9 @@ Known transient failures consume the bounded retry budget; deterministic source/
 Cancellation removes only the owned temporary file/directory. An uncertain PUT may retain an immutable private orphan; it cannot activate a publication. Keep originals and audit. Disable the job to roll back acquisition code; do not run an old initializer that cannot recognize schema 0005 or force a nonempty down migration. Existing HTTP readers remain compatible with the additive schema.
 
 For the current first film, retain the complete archive and credits. The separate [decoder workflow](../../workers/media/README.md) now reuses this original and retains validated HLS privately. It uses the completed acquisition attempt ID, not the request ID. Decoding grants no technical attestation or public publication authority.
+
+## Processing and reuse
+
+With schema 0006 installed, run pnpm media:candidate PROJECT ACQUISITION_ATTEMPT_ID. Catalog claims a durable checksum/recipe key before preparing input, guards its 30-minute non-renewable lease and current rights throughout work, and records completion only after private retention. One processing attempt runs globally, with at most three/key. The coordinator has a shorter 29-minute deadline. Default replay independently checks retained objects and returns the same successful attempt without starting FFmpeg or rewriting media.
+
+If a previous run retained a complete candidate but stopped before recording success, recover its exact recorded manifest/report with pnpm media:candidate PROJECT ACQUISITION_ATTEMPT_ID --reuse MANIFEST_SHA256 REPORT_SHA256. These selectors are not authority: Catalog derives the private prefix from the approved original and verifies every referenced byte before adopting it. Missing/corrupt output cannot complete the attempt. Do not guess hashes, remove audit to regain attempts, or delete retained originals/candidates. [Actual first-film adoption/replay](../../evidence/phase-06/processing.md).

@@ -8,6 +8,7 @@ const migrations = [
   "0003-public-reads",
   "0004-media-requests",
   "0005-media-acquisitions",
+  "0006-media-processing",
 ] as const;
 export async function migrateLocalCatalog(
   environment: Readonly<Record<string, string | undefined>>,
@@ -49,7 +50,7 @@ export async function migrateLocalCatalog(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 6",
+              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 7",
             )
           ).rows.map((row) => row.version);
     if (

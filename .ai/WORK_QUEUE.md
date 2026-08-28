@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. One approved source now has a validated private full-film HLS candidate; [Phase 06 evidence](../evidence/phase-06/decoder.md). Next implement durable processing/deduplication, artwork and verified-result/attestation/publication. No public HLS publication yet; reuse the retained candidate.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. One approved source has a validated private full-film HLS candidate and verified durable processing/replay; [Phase 06 evidence](../evidence/phase-06/processing.md). Next implement artwork, modification attribution and restricted attestation/public-origin/publication. No public HLS publication yet; reuse the retained candidate.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

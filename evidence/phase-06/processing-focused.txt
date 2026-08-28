@@ -1,0 +1,27 @@
+✔ prepares verified original and retains an immutable private candidate with report last (80.766478ms)
+✔ refuses revoked authority before filesystem/storage side effects (7.10957ms)
+✔ cleans failed original handoff and never commits a report after partial upload (15.778063ms)
+✔ rejects tampered candidate processingKey (8.602873ms)
+✔ rejects tampered candidate manifestHash (10.308986ms)
+✔ rejects tampered candidate identity (8.131638ms)
+✔ rejects tampered candidate files (8.627061ms)
+✔ rejects tampered candidate publicationAuthority (7.329278ms)
+✔ refuses symlinked candidate payload (17.396497ms)
+✔ adopts an existing candidate and replays without encoding, uploads or filesystem preparation (41.051108ms)
+✔ processing cancellation retains a classified failure with a separate bounded audit signal (15.180035ms)
+✔ refuses retained candidate reuse: missing (34.165491ms)
+✔ refuses retained candidate reuse: changed (13.346082ms)
+✔ refuses retained candidate reuse: oversized-report (28.324588ms)
+✔ refuses retained candidate reuse: revoked (15.678369ms)
+✔ refuses retained candidate reuse: selector (40.63465ms)
+✔ processing records retain bounded identity, queue time and private candidate (5.101322ms)
+✔ only transient processing outcomes permit bounded retry (0.545093ms)
+✔ candidate references cannot grant authority, escape the prefix or exceed bounds (0.529297ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 541.743976
