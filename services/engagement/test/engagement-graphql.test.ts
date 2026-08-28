@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { once } from "node:events";
+import { readFileSync } from "node:fs";
 import { createServer, request } from "node:http";
 import test from "node:test";
-import { graphql } from "graphql";
+import { graphql, Kind, parse, print, visit } from "graphql";
 import { createExpressHttpAdapter, createLocalRouterTrust } from "@aster/http-express";
 import { createEngagementSchema } from "../src/transport/engagement-schema.js";
 import {
@@ -52,6 +53,43 @@ const watchlistMutation =
   "mutation SetWatchlist($input: SetWatchlistInput!) { setWatchlist(input: $input) { code correlationId change { id profileId titleId present version updatedAt } } }";
 const watchlistPage =
   "query Watchlist($profileId: ID!, $first: Int! = 20, $after: String) { watchlist(profileId: $profileId, first: $first, after: $after) { code correlationId connection { edges { cursor node { id profileId titleId addedAt title { __typename id } } } pageInfo { endCursor hasNextPage } } } }";
+
+test("first-party library owner selections fit the unchanged budget at twenty titles", () => {
+  const inventory = parse(
+    readFileSync(
+      new URL("../../../../infra/router/known-operations.graphql", import.meta.url),
+      "utf8",
+    ),
+  );
+  const reference = parse("fragment Reference on Title { __typename id }").definitions[0];
+  assert.ok(reference?.kind === Kind.FRAGMENT_DEFINITION);
+  for (const name of ["ProgressHistory", "ContinueWatching", "Watchlist"]) {
+    const document = inventory.definitions.find(
+      (item) => item.kind === Kind.OPERATION_DEFINITION && item.name?.value === name,
+    );
+    assert.ok(document);
+    // Catalog resolves localized metadata; Engagement supplies the federated Title key.
+    const owner = visit(document, {
+      Field(node) {
+        return node.name.value === "title" && node.selectionSet
+          ? { ...node, selectionSet: reference.selectionSet }
+          : undefined;
+      },
+    });
+    const query = print(owner);
+    const variables = { profileId: id(2), first: 20, after: null };
+    assert.equal(inspectEngagementOperation({ query, variables }).status, "accepted", name);
+    if (name === "ContinueWatching") {
+      assert.deepEqual(
+        inspectEngagementOperation({
+          query: query.replace("positionMs", "sequence version updatedAt positionMs"),
+          variables,
+        }),
+        { status: "rejected", code: "LIMIT_EXCEEDED" },
+      );
+    }
+  }
+});
 
 test("watchlist preflight validates commands, page shape, cursor scope and multiplied list cost", async () => {
   const mutation = { query: watchlistMutation, variables: { input: watchlistInput() } };

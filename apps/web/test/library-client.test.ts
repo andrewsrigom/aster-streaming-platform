@@ -47,12 +47,9 @@ function page(kind: LibraryKind, n = 2) {
             ...(kind === "watchlist"
               ? { profileId: id(1), addedAt: 1000 }
               : {
-                  sequence: 2,
-                  version: 2,
                   positionMs: 15000,
                   durationMs: 60000,
                   status: "IN_PROGRESS",
-                  updatedAt: 1000,
                 }),
           },
         },

@@ -278,12 +278,9 @@ query ProgressHistory($profileId: ID!, $first: Int! = 20, $after: String) {
         node {
           id
           titleId
-          sequence
-          version
           positionMs
           durationMs
           status
-          updatedAt
           title {
             id
             localized {
@@ -310,12 +307,9 @@ query ContinueWatching($profileId: ID!, $first: Int! = 20, $after: String) {
         node {
           id
           titleId
-          sequence
-          version
           positionMs
           durationMs
           status
-          updatedAt
           title {
             id
             localized {

@@ -1,0 +1,104 @@
+{
+  "anonymous": {
+    "stats": {
+      "startTime": "2026-08-28T22:06:43.813Z",
+      "duration": 7780.385,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "status": "passed",
+    "durationMs": 5124,
+    "retry": 0,
+    "observation": {
+      "browser": "152.0.7977.64",
+      "media": [
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "m3u8"
+        },
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "m3u8"
+        },
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "m3u8"
+        },
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "ts"
+        },
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "vtt"
+        },
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "ts"
+        },
+        {
+          "origin": "http://127.0.0.1:9001",
+          "kind": "ts"
+        }
+      ],
+      "measurements": [
+        {
+          "event": "session_success",
+          "atMs": 141,
+          "durationMs": 141
+        },
+        {
+          "event": "manifest_loaded",
+          "atMs": 265,
+          "durationMs": 60
+        },
+        {
+          "event": "first_frame",
+          "atMs": 702,
+          "durationMs": 497
+        },
+        {
+          "event": "rendition_switch",
+          "atMs": 704,
+          "height": 180
+        }
+      ],
+      "axe": {
+        "violations": 0,
+        "incomplete": [
+          "color-contrast",
+          "video-caption"
+        ]
+      },
+      "originalAndReportNotPublic": true,
+      "listingAndOtherPrefixDenied": true
+    }
+  },
+  "engagement": {
+    "stats": {
+      "startTime": "2026-08-28T22:28:24.671Z",
+      "duration": 26787.89,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "status": "passed",
+    "durationMs": 23559,
+    "retry": 0,
+    "observation": {
+      "savedAndResumed": true,
+      "resumeSeekSeconds": 2,
+      "completedInHistoryOnly": true,
+      "watchlistAddedAndRemoved": true,
+      "profileIsolation": true,
+      "saveTransportFailureDoesNotStopMedia": true,
+      "signedOutPrivateStateCleared": true,
+      "axeViolations": 0,
+      "browser": "152.0.7977.64",
+      "limitation": "fresh generated six-second demo; injected browser transport failure, not a host benchmark"
+    }
+  }
+}

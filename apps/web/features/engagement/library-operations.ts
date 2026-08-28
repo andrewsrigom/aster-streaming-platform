@@ -19,12 +19,9 @@ interface LibraryEntry {
   readonly title: { id: string; localized: { title: string } } | null;
   readonly profileId?: string;
   readonly addedAt?: number;
-  readonly sequence?: number;
-  readonly version?: number;
   readonly positionMs?: number;
   readonly durationMs?: number;
   readonly status?: SavedProgress["status"];
-  readonly updatedAt?: number;
 }
 export interface LibraryPage {
   readonly code: "COMPLETED";
@@ -50,12 +47,9 @@ const PROGRESS_HISTORY: TypedDocumentNode<LibraryData, LibraryVariables> = gql`
           node {
             id
             titleId
-            sequence
-            version
             positionMs
             durationMs
             status
-            updatedAt
             title {
               id
               localized {
@@ -83,12 +77,9 @@ const CONTINUE_WATCHING: TypedDocumentNode<LibraryData, LibraryVariables> = gql`
           node {
             id
             titleId
-            sequence
-            version
             positionMs
             durationMs
             status
-            updatedAt
             title {
               id
               localized {
@@ -269,9 +260,6 @@ export function readLibraryPage(
         status,
         durationMs,
         positionMs: integer(node["positionMs"], 0, durationMs),
-        sequence: integer(node["sequence"], 1),
-        version: integer(node["version"], 1),
-        updatedAt: integer(node["updatedAt"], 0, 253402300799),
       };
     }
     return { cursor: cursor(edge["cursor"]), node: entry };

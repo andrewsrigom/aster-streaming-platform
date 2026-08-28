@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R07/R08 are DONE. PR30 passed protected CI33211565625 and confirmation5457863408, then merged as7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. R09/R10/R12 is DONE after successful exact main push33212852513. R11 is the sole IN_PROGRESS unpublished item at that tree: actual player/profile lifecycle and library/watchlist wired,50 focused tests and70/70 canonical source checks pass. Next is real personalized Docker/browser acceptance. All historical checkpoints are restored; never reapply them. Retained demo remains Phase07.
+P08-R07/R08 and R09/R10/R12 are DONE at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc; exact main push33212852513 passed. R11 is the sole IN_PROGRESS unpublished item at checkpoint533368d plus browser corrections. Real personalized save/resume/library/failure/focus/accessibility, disposable startup/replay/cleanup and the refreshed70-task candidate gate pass. Next: protected review/publication and phase closeout. All historical checkpoints are restored; never reapply them. Retained Phase07 demo was restored intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

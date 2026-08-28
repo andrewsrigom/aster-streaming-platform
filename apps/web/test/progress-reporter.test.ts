@@ -112,10 +112,34 @@ test("one active save and one latest sample remain bounded; backward seeking is 
   assert.equal(f.timers.size, 0);
   await f.accept();
   assert.equal(f.statuses.at(-1), "pending");
-  await f.advance(15000);
+  await f.advance(1999);
+  assert.equal(f.calls.length, 1);
+  await f.advance(1);
   assert.equal(f.calls.length, 2);
   assert.equal(f.calls[1]?.input.positionMs, 20000);
   assert.equal(f.calls[1].input.sequence, 9);
+  await f.accept();
+  f.reporter.dispose();
+});
+
+test("a pause during an uncertain save keeps its flush intent across the identical retry", async () => {
+  const f = fixture();
+  f.reporter.observe(sample(1000));
+  f.reporter.flush();
+  await f.advance(0);
+  f.reporter.observe(sample(2000));
+  f.reporter.flush();
+  f.calls[0]?.reject();
+  await f.advance(0);
+  await f.advance(2000);
+  assert.strictEqual(f.calls[1]?.input, f.calls[0]?.input);
+  await f.accept();
+  await f.advance(1999);
+  assert.equal(f.calls.length, 2);
+  await f.advance(1);
+  assert.equal(f.calls.length, 3);
+  assert.equal(f.calls[2]?.input.positionMs, 2000);
+  assert.equal(f.calls[2].input.sequence, 9);
   await f.accept();
   f.reporter.dispose();
 });

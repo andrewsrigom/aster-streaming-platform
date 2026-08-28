@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useQuery } from "@apollo/client/react";
 import { Button } from "../../components/ui/button";
 import { PrivateProfile, type ReadyProfile } from "./private-profile";
@@ -12,18 +13,27 @@ export default function WatchlistPanel({ titleId }: { titleId: string }) {
   );
 }
 function Membership({ scope, titleId }: { scope: ReadyProfile; titleId: string }) {
+  const status = useRef<HTMLParagraphElement>(null);
+  const restoreFocus = useRef(false);
   const { data, loading, error, refetch } = useQuery(WATCHLIST_MEMBERSHIP, {
     client: scope.runtime.client,
     variables: { profileId: scope.profileId, titleId },
     fetchPolicy: "network-only",
     notifyOnNetworkStatusChange: true,
   });
+  useEffect(() => {
+    if (!loading && restoreFocus.current) {
+      restoreFocus.current = false;
+      status.current?.focus();
+    }
+  }, [loading]);
   const refresh = () => {
+    restoreFocus.current = true;
     void refetch().catch(() => undefined);
   };
   return (
     <div className="space-y-3">
-      <p aria-live="polite" aria-atomic="true">
+      <p ref={status} tabIndex={-1} aria-live="polite" aria-atomic="true">
         {loading
           ? "Checking watchlist…"
           : error || !data

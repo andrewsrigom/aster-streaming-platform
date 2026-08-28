@@ -81,6 +81,7 @@ export function createProgressReporter(options: {
   let acknowledged: ProgressSample | undefined;
   let attempts = 0;
   let active = false;
+  let flushRequested = false;
   let blocked = false;
   let disposed = false;
   let lastAttempt: number | undefined;
@@ -143,6 +144,7 @@ export function createProgressReporter(options: {
     if (!pending) {
       pending = command();
       latest = undefined;
+      flushRequested = false;
       attempts = 0;
     }
     if (!pending) {
@@ -175,8 +177,11 @@ export function createProgressReporter(options: {
       if (latest && sameSample(latest, input)) {
         latest = undefined;
       }
+      if (!latest) {
+        flushRequested = false;
+      }
       notify(latest ? "pending" : "saved");
-      arm(false);
+      arm(flushRequested);
       return;
     }
     const retryable = ["UNAVAILABLE", "INDETERMINATE", "BACKPRESSURE", "CANCELLED"].includes(
@@ -205,6 +210,7 @@ export function createProgressReporter(options: {
       }
       if (!pending && acknowledged && sameSample(sample, acknowledged)) {
         latest = undefined;
+        flushRequested = false;
         clearTimer();
         notify("saved");
         return;
@@ -216,6 +222,10 @@ export function createProgressReporter(options: {
       arm(false);
     },
     flush() {
+      // Preserve pause/seek intent while a prior command or its identical retry is in flight.
+      if (latest || pending) {
+        flushRequested = true;
+      }
       arm(true);
     },
     dispose(flush = false) {

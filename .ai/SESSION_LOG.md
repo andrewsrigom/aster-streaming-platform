@@ -6,7 +6,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
-Current handoff: PR30 protected CI33211565625, confirmation5457863408 and exact main push33212852513 passed; R09/R10/R12 is DONE at squash7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. R11 moved onto its identical tree without stashing or losing changes. Player/profile lifecycle, resume/status and library/watchlist are wired. All historical checkpoints remain restored. No retained runtime or host change.
+Current handoff: R11 now passes the real browser save/resume/library/watchlist/profile/failure/accessibility journey and Docker replay/cleanup. Fixed lost pause/seek flush priority, trimmed over-budget library selections without lowering page size and restored keyboard focus. Added the journey to the existing CI lane and documented opt-in startup/cleanup. Only three retained port owners were temporarily stopped and restored; all disposable resources were removed, retained health200. PR30/R09/R10/R12 remain DONE at squash7fe10ed; no historical checkpoint may be reapplied.
 
 Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
 
@@ -16,7 +16,7 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 ### Evidence
 
-Current R11 checkpoint:50 focused tests pass in2955.707698ms; [canonical gate](../evidence/phase-08/player-library-candidate.txt) passes70/70,55cached,1m20.587s, after module-private export and handoff-heading corrections. Exact-main composition passes; manifest db64ea697175ae84e0058af339c160fbbd85098d1965643cb92d5ee2631d881b. [Player/library evidence](../evidence/phase-08/player-library.txt); real browser journey authored and statically checked, not executed. Full-demo Compose model validated read-only,21 services/named volumes/no bind mounts. [R09 merge](../evidence/phase-08/events-release.txt) includes protected and post-merge success. Earlier local wrapper failure is not relabelled.
+Current R11 checkpoint: [browser/demo evidence](../evidence/phase-08/player-demo.md) records anonymous1/1 in5124ms and personalized1/1 in23559ms, actual resume2seconds, zero axe violations and final supervisor exit0.26 affected player tests,11 owner-cost tests,nine library tests and22 CI policy tests pass; Web image771f9cb and [exact sources](../evidence/phase-08/player-demo-source.sha256) identify the accepted runtime. Initial cost/flush failures and recovered seed upload rejection remain recorded, not relabelled. Earlier70/70 gate is supporting evidence; refreshed candidate gate remains. No unchanged CPU, retained-film or Kafka experiment.
 
 Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
 
@@ -24,7 +24,7 @@ R08 protected/main gates pass. Native pinned tooling and its executable pnpm shi
 
 ### Next action
 
-Current: P08-R11 coherent source gate, fresh opt-in personalized Docker/browser journey and reviewed cleanup, then protected release and Phase08 closeout. PR30 exact main push passed. No repeated source restoration or host experiment. The following prior checkpoint remains historical:
+Current: P08-R11 [refreshed source gate](../evidence/phase-08/player-demo-candidate.txt) passes70/70,45 cached,1m54.807s with exact-main composition and31 source hashes. Next: protected review/CI/publication, then Phase08 closeout and Phase09 eligibility. Local browser/demo acceptance is complete; do not repeat it without an invalidating change. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 

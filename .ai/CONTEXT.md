@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–07 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR and the accessible HLS player run in Docker. The one-command generated playable demo includes captioned media, initialization, readiness and safe replay. The old browse seed is non-delivery. Phase 08 has tested progress domain/application, PostgreSQL and real owner-authorized federated Docker saves. Backend release and player integration remain pending. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–07 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR and the accessible HLS player run in Docker. The one-command generated playable demo includes captioned media, initialization, readiness and safe replay. The old browse seed is non-delivery. Phase08 backend/event delivery is released; player saving/resume and owned library pass real isolated browser/Docker acceptance. Their protected release and phase closeout remain pending. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR30 passed protected CI33211565625 and clean confirmation5457863408, then merged as7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. R09/R10/R12 is DONE after successful exact main push33212852513. R11 is the sole local dependent at that tree: player/profile lifecycle and library/watchlist are wired,50 focused tests and static/composition checks pass. Real personalized Docker/browser acceptance and publication remain. Retained demo stays Phase07.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR30 and R09/R10/R12 are DONE at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc with successful exact main push33212852513. R11 remains the sole unpublished item at checkpoint533368d plus browser corrections. Real save/resume/library/failure/focus/accessibility, disposable startup/replay/cleanup and the refreshed70-task candidate gate pass. Protected release remains. Retained demo stays Phase07, restored after the test.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

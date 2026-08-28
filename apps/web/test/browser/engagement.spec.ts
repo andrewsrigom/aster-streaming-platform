@@ -1,7 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { print } from "graphql";
-import { PROFILES } from "../../features/identity/operations";
 
 test.skip(
   process.env["ASTER_ENGAGEMENT_DEMO"] !== "true",
@@ -67,17 +65,18 @@ test("real profile progress, resume, library, watchlist and optional-save failur
   const html = await initial?.text();
   expect(html).not.toMatch(/profileId|positionMs|aster_local_session=/u);
   await page.getByRole("button", { name: "Choose a profile", exact: true }).click();
+  const before = page.waitForResponse(
+    (response) =>
+      response.url() === endpoint &&
+      response.request().method() === "POST" &&
+      (response.request().postDataJSON() as { operationName?: string }).operationName ===
+        "Profiles",
+  );
   await page.getByRole("button", { name: "Start local session", exact: true }).click();
   await expect(page.getByRole("button", { name: "Create profile", exact: true })).toBeVisible();
-  const before = await context.request.post(endpoint, {
-    headers: {
-      origin: "http://127.0.0.1:3000",
-      "sec-fetch-site": "same-site",
-      "x-aster-csrf": "1",
-    },
-    data: { query: print(PROFILES), operationName: "Profiles" },
-  });
-  const baseline = (await before.json()) as { data?: { profiles: { profiles: unknown[] } } };
+  const baseline = (await (await before).json()) as {
+    data?: { profiles: { profiles: unknown[] } };
+  };
   expect(
     baseline.data?.profiles.profiles,
     "Refuse to modify a retained profile collection",
@@ -104,8 +103,9 @@ test("real profile progress, resume, library, watchlist and optional-save failur
   await expect(page.getByRole("link", { name: "Signal / 02", exact: true })).toBeVisible();
   await page.getByRole("link", { name: "Signal / 02", exact: true }).click();
   await page.getByRole("button", { name: "Manage watchlist", exact: true }).click();
-  await page.getByRole("button", { name: "Add to watchlist", exact: true }).click();
+  await page.getByRole("button", { name: "Add to watchlist", exact: true }).press("Enter");
   await expect(page.getByText("This title is in your watchlist.", { exact: true })).toBeVisible();
+  await expect(page.getByText("This title is in your watchlist.", { exact: true })).toBeFocused();
   await page.goto("/library");
   await page.getByRole("button", { name: "Watchlist", exact: true }).click();
   await expect(page.getByRole("link", { name: "Signal / 02", exact: true })).toBeVisible();
@@ -113,8 +113,20 @@ test("real profile progress, resume, library, watchlist and optional-save failur
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
   expect(axe.violations).toEqual([]);
-  await page.getByRole("button", { name: "Remove from watchlist", exact: true }).click();
+  await page.getByRole("button", { name: "Remove from watchlist", exact: true }).press("Enter");
   await expect(page.getByText("Nothing here yet.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Watchlist", exact: true })).toBeFocused();
+  await page.addInitScript(() => {
+    document.addEventListener(
+      "seeked",
+      (event) => {
+        if (event.target instanceof HTMLVideoElement) {
+          event.target.dataset["resumeSeekSeconds"] = String(event.target.currentTime);
+        }
+      },
+      true,
+    );
+  });
   await page.goto(watch);
   await page.getByRole("button", { name: "Start playback", exact: true }).click();
   await expect(page.getByText(/^Journey One: /u)).toBeVisible();
@@ -123,8 +135,10 @@ test("real profile progress, resume, library, watchlist and optional-save failur
     await resume.click();
   }
   await expect
-    .poll(() => video.evaluate((element) => (element as HTMLVideoElement).currentTime))
-    .toBeGreaterThanOrEqual(1.9);
+    .poll(async () => Number(await video.getAttribute("data-resume-seek-seconds")))
+    .toBeCloseTo(2, 1);
+  const resumeSeekSeconds = Number(await video.getAttribute("data-resume-seek-seconds"));
+  await page.screenshot({ path: info.outputPath("resumed-player.png"), fullPage: true });
   const completion = savedResponse(page, undefined, "COMPLETED");
   await video.evaluate(async (element) => {
     const media = element as HTMLVideoElement;
@@ -187,6 +201,7 @@ test("real profile progress, resume, library, watchlist and optional-save failur
     contentType: "application/json",
     body: JSON.stringify({
       savedAndResumed: true,
+      resumeSeekSeconds,
       completedInHistoryOnly: true,
       watchlistAddedAndRemoved: true,
       profileIsolation: true,

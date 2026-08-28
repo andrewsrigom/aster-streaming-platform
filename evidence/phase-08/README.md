@@ -1,6 +1,6 @@
 # Phase 08 progress implementation
 
-P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watchlist](watchlist.md) and [request-scoped entity fields](engagement-fields.md) are closed. P08-R09/R10/R12 passed protected CI and clean confirmation, then merged as7fe10ed; [merge evidence](events-release.txt) records the complete corrected supervisor, SQL/Kafka recovery, shutdown and cleanup. Exact main push33212852513 passed; R09/R10/R12 is DONE. P08-R11 wires player/profile lifecycle and library/watchlist with [50 focused tests and static/composition checks](player-library.txt). Real personalized browser/demo acceptance and its release remain; no complete Phase08 release is claimed.
+P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watchlist](watchlist.md) and [request-scoped entity fields](engagement-fields.md) are closed. P08-R09/R10/R12 are DONE at main7fe10ed with exact main push33212852513 successful; [merge evidence](events-release.txt) records corrected SQL/Kafka/recovery/shutdown acceptance. P08-R11 has [focused source evidence](player-library.txt), [actual personalized browser/demo acceptance](player-demo.md) and a [passing70-task candidate gate](player-demo-candidate.txt). Browser proof includes resume, library, optional failure, accessibility, replay and scoped cleanup. Protected release remains; no complete Phase08 release is claimed.
 
 ## Implemented core
 

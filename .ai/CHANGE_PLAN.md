@@ -13,7 +13,7 @@ A viewer selects an owned profile, watches and resumes a title, sees truthful sa
 
 ## Current behavior
 
-PR30 protected CI33211565625 and clean confirmation5457863408 passed; merged main is7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. Exact main push33212852513 passed; predecessor release is complete. R11's unpublished branch moved to the tree-identical merge without stashing or altering its changes. Actual player/profile lifecycle, resume/status, library/history/continue/watchlist and lazy title controls now exist;50 focused tests,70/70 canonical source checks and exact-main composition pass. The browser journey is authored and statically checked, not executed. Retained demo stays Phase07; no historical checkpoint may be reapplied.
+Predecessor PR30 is released at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc, exact push33212852513 successful. R11 checkpoint533368d plus browser corrections passes real personalized save/resume/library/failure/focus/accessibility and disposable startup/replay/cleanup. The refreshed candidate gate passes70/70 with exact-main composition and31 matching source hashes. Own protected release remains. Retained Phase07 demo restored intact; no historical checkpoint may be reapplied.
 
 ## Proposed behavior
 
@@ -49,6 +49,10 @@ Credentialed requests target only the fixed local Router with existing Origin/CS
 4. Verify the optional demo by combining compose.yml, playable.yml and events.yml, targeting web identity engagement broker-init on a fresh explicitly named project. Inspect that merged model and exact cleanup first. Preserve the Phase07 web-only anonymous command and retained project; no new Compose abstraction is needed if the existing overlays satisfy the flow.
 5. Verify focused, browser, demo and failure acceptance; close Phase08 and check Phase09 prerequisites after ordered protected releases.
 
+Local acceptance uses the fresh project `aster-p08-demo-20260828`: inspected model has only project-named volumes and no host binds; no pre-existing containers or volumes were found. Build serially while the retained demo stays available. For the standard fixed-origin browser contract, stop only the inspected retained Web, Router and media-origin containers, without removing them or their data; restore these same containers after the disposable project is stopped. Test cleanup may remove only resources labelled with the exact fresh project, after rechecking ownership. Never apply `down --volumes` to `aster-p04-development`. Reuse the existing pinned Windows Playwright tooling and a fresh browser context; do not use a personal browser profile.
+
+Acceptance corrections: retain pause/seek flush priority while the preceding save/retry is active; omit unused library fields rather than shrink pages or relax cost protection; restore keyboard focus after watchlist refetch; confine Playwright artifacts to its own output directory. [Actual results and prior failures](../evidence/phase-08/player-demo.md) include the recovered seed upload failure without claiming its root cause. The final supervisor exits0 and removes only the inspected disposable fixture. CI now carries the same two-mode journey in its existing affected lane, with explicit topic completion and complete-model cleanup.
+
 ## Tests
 
 Unit: frequency/coalescing, same-key replay, uncertain/stale outcomes, sequence exhaustion, intentional backward seek, maximum duration, cancellation, profile swap, late response, unavailable/empty distinction, completed/no-progress resume and unload attempt without false success. Contract: strict bounded client documents, current schema and private cache policies. Browser: real save/pause/reload/resume, continue-watching completion/history, watchlist add/remove, profile isolation/sign-out, save outage with ongoing media, navigation and accessible status. Reuse current published/generated media; do not re-encode the retained film or repeat CPU experiments.
@@ -74,7 +78,7 @@ Player/library behavior, save/unload limitations, Docker-only demo and exact cle
 ## Completion checklist
 
 - [x] Reporter and private client tests pass
-- [ ] Real resume/library/failure/accessibility journey passes
-- [ ] Clean Docker-only demo and reviewed cleanup pass
+- [x] Real resume/library/failure/accessibility journey passes
+- [x] Clean Docker-only demo and reviewed cleanup pass
 - [ ] Predecessor released; own protected review/CI/release passes
 - [ ] Phase08 acceptance and Phase09 prerequisites recorded
