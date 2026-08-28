@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. Big Buck Bunny is locally published through restricted technical registration and the existing editorial commands, with immutable HLS/JPEG/attribution at loopback 9001. [Publication evidence](../evidence/phase-06/publication.md). Next: previous-version rollback/orphan handling, representative browser playback and Phase 06 acceptance/release. Preserve the bundle and private candidates; no further source GET/encoding.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. Big Buck Bunny is locally published through restricted technical registration and the existing editorial commands, with immutable HLS/JPEG/attribution at loopback 9001. [Publication evidence](../evidence/phase-06/publication.md). Compatible rollback now passes focused/real PostgreSQL checks ([evidence](../evidence/phase-06/rollback.md)). Next: orphan recovery, representative browser playback and Phase 06 acceptance/release. Preserve the bundle and private candidates; no further source GET/encoding.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

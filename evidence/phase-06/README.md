@@ -1,8 +1,8 @@
 # Phase 06 evidence
 
-The [first-film immutable publication](publication.md) now records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. Previous-version rollback/browser/phase release remain open.
+The [first-film immutable publication](publication.md) now records actual HLS/JPEG/attribution delivery, restricted technical registration, renewed editorial approval and Catalog activation. [Compatible replacement/rollback](rollback.md) now passes focused and real PostgreSQL checks. Orphan recovery/browser/phase release remain open.
 
-Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and converted to a verified private HLS candidate. Public playback/publication is not yet implemented. Phase 05 is [released](../phase-05/release.txt).
+Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired, processed and locally published with HLS/JPEG/attribution. Browser playback and phase release remain unfinished. Phase 05 is [released](../phase-05/release.txt).
 
 - [Source/rights review](rights-review.md): current official evidence, exact archive and permitted use, exclusions and publication conditions.
 - [Preflight](source-preflight.json): HTTP status/metadata/page hashes and isolated FFmpeg version.
@@ -20,4 +20,4 @@ Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and 
 
 - [Publication foundation](publication-foundation.md): current-approved-checksum original reuse, exact local media URLs, read-only origin and real PostgreSQL/S3 boundary tests. No retained film activation yet.
 
-Rights, request admission, acquisition, decoding, private retention, durable processing/reuse and artwork generation/inspection pass locally. Restricted attestation, artwork approval, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.
+Rights, request admission, acquisition, decoding, private retention, durable processing/reuse, artwork, restricted attestation, attribution, publication and compatible rollback pass locally. The synthetic fixture and historical unapproved candidate reviews remain unchanged.

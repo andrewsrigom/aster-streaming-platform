@@ -17,7 +17,7 @@ Phases 00–05 are released. PR 22 squash f36f9aa7043dc1fe7b6394a0a800e4e842bf68
 
 Catalog has durable rights/history, operator commands and publication transactions. Big Buck Bunny is now locally published at title version 9 / rights revision 4, preserving original review 2 and all immutable source/processing history. Its 209-object HLS/JPEG/attribution bundle is independently verified. [Publication evidence](../evidence/phase-06/publication.md). Historical unresolved source reviews remain unchanged.
 
-The request, acquisition, processing and publication slices are locally verified: additive migrations 0004–0007, fenced attempts, bounded streaming, current rights, immutable source/candidates and restricted attestation. Artwork and actual modifications are approved; normal Catalog commands activated the first bundle. Existing acquisition/decoder evidence remains applicable. Prior-version rollback, orphan handling, browser playback and phase release remain open.
+The request, acquisition, processing and publication slices are locally verified: additive migrations 0004–0007, fenced attempts, bounded streaming, current rights, immutable source/candidates and restricted attestation. Artwork and actual modifications are approved; normal Catalog commands activated the first bundle. Existing acquisition/decoder evidence remains applicable. Compatible replacement/rollback now passes focused and real PostgreSQL checks. Orphan handling, browser playback and phase release remain open.
 
 ## Proposed behavior
 
@@ -25,7 +25,7 @@ Request admission and the finite owner acquisition coordinator under [ADR-0022](
 
 Decoder checkpoint is committed at `5d4e0e9`; durable processing at `155cefc`. Full-film media evidence remains valid. [ADR-0024](../docs/adr/0024-durable-media-processing.md) implements verified Catalog processing leases, checksum/recipe reuse and private candidate recovery. The existing candidate was independently verified, adopted and replayed without another download or encode. [Evidence](../evidence/phase-06/processing.md). This records durable technical work, not publication authority.
 
-Artwork is complete at `c2a90f3` under [ADR-0025](../docs/adr/0025-derived-artwork.md). [ADR-0026](../docs/adr/0026-local-media-publication.md) now connects current editorial approval to immutable delivery and restricted attestation. Local-only URL policy, bounded verified copies, exact replay, SQL authority/dispute checks and actual first-film activation pass. Consolidate this source checkpoint, then finish rollback/orphan/browser acceptance. Reuse all validated film/artwork bytes; no new source GET or encoding.
+Artwork is complete at `c2a90f3` under [ADR-0025](../docs/adr/0025-derived-artwork.md). [ADR-0026](../docs/adr/0026-local-media-publication.md) now connects current editorial approval to immutable delivery and restricted attestation. Local-only URL policy, bounded verified copies, exact replay, SQL authority/dispute checks and actual first-film activation pass. Publication is consolidated in `4bc9b3a`; compatible rollback is implemented/tested. Finish orphan/browser acceptance. Reuse all validated film/artwork bytes; no new source GET or encoding.
 
 ## Boundaries
 
@@ -71,6 +71,8 @@ Use the existing local Catalog operator, never viewer credentials or input-selec
 
 ## Implementation steps
 
+Rollback checkpoint (P06-R09/R10) starts from publication commit `4bc9b3a`. Add owner commands `replace` and `rollback` while keeping the title PUBLISHED. Both require a different registered publication for the same title/current approval/source checksum, unchanged approved artwork, optimistic version and final expiry check. Rollback additionally requires durable evidence that the target was previously active; it cannot activate an unused candidate. Migration 0008 adds append-only publication activation history, backfilled from retained published events, and a transaction-local trigger for future events. History survives future outbox relay; no new worker authority or public mutation. Existing title lock, receipts, audit, outbox and reserved takedown capacity apply. Test pure eligibility/replay/failure and real PostgreSQL migration/privileges/races; do not change retained first-film data or repeat media experiments for this slice.
+
 Publication checkpoint: bind the two durable successful candidate reports to the approved original checksum and stable film/artwork attribution facts. A read-only preview computes final URLs before the existing editorial review; preview never authorizes copying. The restricted attester then rechecks current version/rights, verifies every copied object and registers through a title-locking SECURITY DEFINER function with no editorial grants. Historical successful computation may be reused across rights revisions only for the exact newly approved source checksum. No new source GET or decoder job is needed. Copy sequentially via a bounded per-object temporary file to avoid deadlocking the single-writer storage service; master is last. Prove SQL authority/races and interrupted immutable replay with disposable fixtures before using retained data.
 
 1. Complete one current source/rights review and verify available FFmpeg/storage.
@@ -93,7 +95,7 @@ Publication checkpoint: bind the two durable successful candidate reports to the
 
 - Commands: focused Catalog/media tests during iteration; affected source gate at candidate.
 - Raw artifact path: evidence/phase-06/.
-- Acceptance result: rights, acquisition, private full-length HLS/JPEG, durable replay, immutable publication and Catalog activation pass locally. Bundle/S3 focused tests 25/25, real PostgreSQL/S3 and source gates 51/51 pass. Existing Web title/global attribution SSR is verified over the updated Catalog. Documentation/security closeout passes 10/10; full phase rollback/browser/release gate remains pending.
+- Acceptance result: rights, acquisition, private full-length HLS/JPEG, durable replay, immutable publication and Catalog activation pass locally. Bundle/S3 focused tests 25/25, real PostgreSQL/S3 and source gates 51/51 pass. Existing Web title/global attribution SSR is verified over the updated Catalog. Publication closeout passes 10/10. Compatible rollback passes 18 focused checks, full PostgreSQL, source 51/51 (158 Catalog tests) and documentation/security 10/10; orphan/browser/release acceptance remains pending.
 - Iteration gate: focused acquisition-reuse, media-URL, publication/coordinator tests and affected builds. Verify changed privileges against disposable PostgreSQL and changed origin behavior with synthetic S3 objects, then reuse the retained first-film candidates for publication. Existing download/HLS/JPEG evidence remains valid because source and recipes are unchanged. Do not repeat source GET, full-film encoding or Web benchmarks.
 - Candidate gate: complete first-film pipeline, real persistence/storage, adverse cases and affected source checks.
 - Heavyweight repeat triggers: source, recipe, worker, storage, publication or packaging changes repeat their affected experiment; prose does not repeat transcoding/browser/clean startup.

@@ -157,6 +157,18 @@ function repositories(tx: AsterPostgresTransaction): CatalogWorkflowTransaction 
       );
       return publication?.id === publicationId ? publication : invalidRow();
     },
+    async wasPublicationActive(titleId, publicationId, beforeVersion) {
+      requireId(titleId);
+      requireId(publicationId);
+      if (!catalogVersion(beforeVersion)) {
+        throw new InvalidCatalogInput();
+      }
+      const result = await tx.query({
+        text: "SELECT 1 FROM catalog.publication_activations WHERE title_id = $1 AND publication_id = $2 AND title_version < $3 LIMIT 1",
+        values: [titleId, publicationId, beforeVersion],
+      });
+      return result.rowCount === 1;
+    },
     async pruneReceipts(titleId, now) {
       requireId(titleId);
       if (!catalogTimestamp(now)) {
@@ -242,6 +254,8 @@ function repositories(tx: AsterPostgresTransaction): CatalogWorkflowTransaction 
           "review",
           "media-ready",
           "publish",
+          "replace",
+          "rollback",
           "retire",
           "dispute",
           "expire",

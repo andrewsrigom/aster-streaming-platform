@@ -232,3 +232,41 @@ export function isPublicTitle(
   const ready = eligibleMedia(title, rights, media, now, policy);
   return ready !== undefined && ready.id === title.publicationId;
 }
+
+export function replaceTitlePublication(
+  value: unknown,
+  facts: Readonly<{
+    rights: unknown;
+    currentPublication: unknown;
+    publication: unknown;
+    now: number;
+    policy: RightsUsePolicy;
+  }>,
+): ReturnType<typeof transitionTitle> {
+  const title = normalizeTitleLifecycle(value);
+  if (!title || !catalogTimestamp(facts.now) || title.version === 2_147_483_647) {
+    return { status: "rejected", code: "INVALID_INPUT" };
+  }
+  if (title.state !== "PUBLISHED") {
+    return { status: "rejected", code: "INVALID_TRANSITION" };
+  }
+  const rights = currentApprovedRights(facts.rights, facts.now, facts.policy);
+  if (!rights || rights.titleId !== title.id || rights.revision !== title.rightsRevision) {
+    return { status: "rejected", code: "RIGHTS_NOT_APPROVED" };
+  }
+  const current = eligibleMedia(title, rights, facts.currentPublication, facts.now, facts.policy);
+  const next = eligibleMedia(title, rights, facts.publication, facts.now, facts.policy);
+  if (
+    !current ||
+    current.id !== title.publicationId ||
+    !next ||
+    next.id === current.id ||
+    next.sourceChecksum !== current.sourceChecksum
+  ) {
+    return { status: "rejected", code: "MEDIA_NOT_READY" };
+  }
+  return {
+    status: "completed",
+    title: Object.freeze({ ...title, version: title.version + 1, publicationId: next.id }),
+  };
+}

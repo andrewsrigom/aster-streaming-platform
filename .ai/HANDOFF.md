@@ -2,7 +2,9 @@
 
 ## Resume point
 
-Branch feat/p06-media-pipeline; source base d4125a7. Phases 00–05 are released at main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865. P06-R01 remains IN_PROGRESS; full Phase 00–14 goal remains active.
+Branch feat/p06-media-pipeline; publication checkpoint 4bc9b3a. Phases 00–05 are released at main f36f9aa7043dc1fe7b6394a0a800e4e842bf6865. P06-R01 remains IN_PROGRESS; full Phase 00–14 goal remains active.
+
+Current checkpoint: compatible `replace`/`rollback` commands and migration 0008 activation history are implemented. Focused checks 18/18 and full PostgreSQL pass, including both dispute races and recovery after outbox delivery. [Rollback evidence](../evidence/phase-06/rollback.md). Source gate 51/51 (158 Catalog tests) and documentation/security 10/10 pass. Migration 0008 is NOT applied to retained data; no serving image/container or film byte changed. After consolidation, continue orphan recovery and representative browser HLS playback, then full Phase 06 release.
 
 ## Current work and exact retained state
 
@@ -24,7 +26,7 @@ Web/Router at 3000/4000 were preserved. Only Catalog was upgraded to the publish
 
 Focused bundle/S3 adapter tests 25/25 pass. Full PostgreSQL integration passes: restricted privileges, empty migration down/up, idempotent registration, existing operator activation, retained-audit downgrade rejection and dispute race. Real synthetic S3 copy/replay/MIME/cache and origin negative permissions pass. Actual film copy took 6657 ms, process RSS peak 101466112 bytes. CPU was not tested.
 
-Source checkpoint passes 51/51 tasks (31 cached, 1m12.92s), Catalog 153 tests and S3 19 tests. Documentation/security closeout passes 10/10. Next implement compatible previous-publication rollback and orphan handling, verify representative browser HLS playback, and complete Phase 06 release before activating Phase 07. Do not claim Phase 06 verified/released or a finished player yet. Existing Catalog retire is the supported immediate takedown; version rollback is not implemented yet. Preserve the published bundle and every original/candidate/audit.
+The publication checkpoint passes 51/51 tasks (31 cached, 1m12.92s), Catalog 153 tests and S3 19 tests, plus documentation/security 10/10. The newer compatible rollback checkpoint is described above; it preserves current approval and requires prior activation history. Ordinary retire remains the immediate takedown when no compatible reference exists. Do not claim Phase 06 verified/released or a finished player. Preserve the published bundle and every original/candidate/audit.
 
 Native Docker Compose startup must include integration + media profiles and --wait. It created two unused empty tmpfs decoder volumes while starting the origin; both were removed after exact name/creation-time/labels/tmpfs and zero-container-use checks. No global Docker cleanup or retained-data deletion.
 

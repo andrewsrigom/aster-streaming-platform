@@ -22,7 +22,7 @@ Durable processing now has one global slot, three checksum/recipe attempts, 30-m
 
 ## Not implemented
 
-Completed player journey, prior-version rollback, engagement/discovery and hosted release. Phase 06 is not yet verified/released. Existing synthetic titles remain technical fixtures, distinct from the actual locally published first film.
+Completed player journey, orphan recovery, engagement/discovery and hosted release. Phase 06 is not yet verified/released. Existing synthetic titles remain technical fixtures, distinct from the actual locally published first film.
 
 ## Next outcome
 
@@ -30,7 +30,7 @@ The separate frame-jpeg-v1 recipe now retains two posters and three thumbnails (
 
 The publication foundation under ADR-0026 now verifies current-rights-checksum original reuse, exact local-only media URLs and a read-only S3 origin (CORS/Range/private/write denial). PostgreSQL verifies policy before pagination and rejects request-only checksum reuse. [Evidence and commands](../evidence/phase-06/publication-foundation.md). This did not change retained data or activate the origin.
 
-Bundle/attribution, restricted attestation and actual editorial activation are now implemented. Migration 0007 is applied. The origin is healthy at 127.0.0.1:9001 on the existing edge bridge, with read-only storage and no private-network connection. Full PostgreSQL, synthetic S3 and source gates 51/51 pass; actual copy took 6.657 seconds without source GET/encoding. Only Catalog was upgraded; existing Web title/global attribution SSR returns 200. Continue P06-R01: prior-publication rollback/orphan handling, representative browser playback and Phase 06 acceptance/release. Preserve the bundle/candidates; no CPU diagnostic or unchanged media experiment.
+Bundle/attribution, restricted attestation and actual editorial activation are now implemented. Migration 0007 is applied. The origin is healthy at 127.0.0.1:9001 on the existing edge bridge, with read-only storage and no private-network connection. Full PostgreSQL, synthetic S3 and source gates 51/51 pass; actual copy took 6.657 seconds without source GET/encoding. Only Catalog was upgraded; existing Web title/global attribution SSR returns 200. Compatible replacement/rollback and append-only activation history now pass focused and real PostgreSQL checks; migration 0008 remains unapplied to retained data. [Rollback evidence](../evidence/phase-06/rollback.md). Continue P06-R01: orphan recovery, representative browser playback and Phase 06 acceptance/release. Preserve the bundle/candidates; no CPU diagnostic or unchanged media experiment.
 
 ## Current risks
 

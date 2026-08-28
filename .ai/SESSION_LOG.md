@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Compatible publication replacement and rollback
+
+### Completed
+
+Consolidated actual first-film publication in 4bc9b3a. Added owner replacement/rollback with current approval/source matching, unchanged metadata, optimistic version, reason/audit and atomic publication event. Migration 0008 adds append-only activation history independent of outbox delivery, with exact backfill and a restricted fixed-search-path trigger. Rollback cannot activate unused candidates or revive disputed/old rights.
+
+### Evidence
+
+[Rollback](../evidence/phase-06/rollback.md): 18 focused checks and full real PostgreSQL integration pass. Includes migration round-trip/backfill, history privilege denial, exact replay, post-trigger failure/cancellation, forged-event rejection and both dispute lock orders. Initial lint issues and a synthetic title leaking into the shared browse fixture were corrected together; production behavior was unchanged. Source gate 51/51 (39 cached, 47.578 s; 158 Catalog tests) and documentation/security 10/10 (4.673 s) pass. No CPU test, source GET, encode, real media rewrite, retained migration or serving restart. Only labelled disposable PostgreSQL fixtures were removed.
+
+### Next action
+
+Consolidate rollback, then finish orphan recovery, representative HLS browser playback and Phase 06 acceptance/release. Keep P06-R01 and the complete Phase 00–14 goal active.
+
 ## 2026-08-28 — First-film immutable publication
 
 ### Completed

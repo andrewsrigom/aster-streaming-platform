@@ -2,6 +2,7 @@ import { artworkPublishable, type TitleMetadata } from "../domain/metadata.js";
 import { approveRights, currentApprovedRights, type RightsRecord } from "../domain/rights.js";
 import {
   transitionTitle,
+  replaceTitlePublication,
   isPublicTitle,
   type CatalogTitleLifecycle,
   type TitleState,
@@ -32,6 +33,8 @@ type Change = Readonly<{
 type Outcome = CatalogStoreResult<CatalogCommandResult>;
 const retirement = (kind: CatalogCommandKind): boolean =>
   ["retire", "dispute", "expire"].includes(kind);
+const publishing = (kind: CatalogCommandKind): boolean =>
+  ["publish", "replace", "rollback"].includes(kind);
 const lifecycle = (title: StoredCatalogTitle): CatalogTitleLifecycle => ({
   id: title.id,
   version: title.version,
@@ -221,9 +224,35 @@ async function planChange(
   ) {
     return { status: "rights_not_approved" };
   }
-  const publicationId =
-    command.kind === "media-ready" ? command.publicationId : title.publicationId;
+  const publicationId = "publicationId" in command ? command.publicationId : title.publicationId;
   const publication = publicationId === null ? undefined : await tx.findPublication(publicationId);
+  if (command.kind === "replace" || command.kind === "rollback") {
+    const currentPublication =
+      title.publicationId === null ? undefined : await tx.findPublication(title.publicationId);
+    const result = replaceTitlePublication(title, {
+      rights: latest,
+      currentPublication,
+      publication,
+      now,
+      policy: ports.policy,
+    });
+    if (result.status === "rejected") {
+      const codes = {
+        INVALID_INPUT: "invalid_input",
+        INVALID_TRANSITION: "invalid_transition",
+        RIGHTS_NOT_APPROVED: "rights_not_approved",
+        MEDIA_NOT_READY: "media_not_ready",
+      } as const;
+      return { status: codes[result.code] };
+    }
+    if (
+      command.kind === "rollback" &&
+      !(await tx.wasPublicationActive(title.id, command.publicationId, title.version))
+    ) {
+      return { status: "media_not_ready" };
+    }
+    return { status: "completed", value: { title: result.title } };
+  }
   return transition(
     title,
     command.kind === "media-ready" ? "MEDIA_READY" : "PUBLISHED",
@@ -321,10 +350,10 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
       reason: "reason" in command ? command.reason : null,
       metadata: next.metadata ?? null,
     });
-    if (command.kind === "publish" || retirement(command.kind)) {
+    if (publishing(command.kind) || retirement(command.kind)) {
       await tx.appendPublicationEvent({
         eventId: ports.nextId(),
-        eventType: command.kind === "publish" ? "catalog.title-published" : "catalog.title-retired",
+        eventType: publishing(command.kind) ? "catalog.title-published" : "catalog.title-retired",
         schemaVersion: 1,
         occurredAt: new Date(now * 1000).toISOString(),
         producer: "catalog",
@@ -347,7 +376,7 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
       expiresAt: now + 86400,
       result: value,
     });
-    if (command.kind === "publish") {
+    if (publishing(command.kind)) {
       const rights = (await tx.findRights(title.id, null))?.record;
       const metadata = await tx.findMetadata(title.id);
       const publication =

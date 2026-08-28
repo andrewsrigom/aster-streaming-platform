@@ -1,6 +1,6 @@
 # Catalog
 
-Status: Phase 03 is [released](../../evidence/phase-03/release.txt): rights-aware editorial application, operator CLI, published-only queries and Federation v2. Phase 04 places the read-only Catalog runtime behind the local Router. A generated HLS technical fixture exists; real-film processing, media delivery and browser playback remain planned.
+Status: Phase 03 is [released](../../evidence/phase-03/release.txt): rights-aware editorial application, operator CLI, published-only queries and Federation v2. Phase 04 places the read-only Catalog runtime behind the local Router. Phase 06 has [one locally published film](../../evidence/phase-06/publication.md), distinct from generated technical fixtures. Browser playback and the Phase 06 release remain unfinished.
 
 ## Docker runtime and technical media
 
@@ -18,7 +18,7 @@ The runtime uses `aster_catalog_reader_local`, with only the live Catalog public
 
 Structured operation/lifecycle logs contain correlation IDs, never query documents or database credentials. Shared local HTTP/dependency/runtime metrics are collected in process; remote Catalog metric export and exported distributed traces are not claimed. Stop only Catalog to roll back its runtime; retain rights, audit and outbox data. For unready service, inspect bounded logs and initializer exit status, restore database/schema/reader grants, then confirm `/health/ready` and a browse query. Do not grant administrator rights to make readiness pass.
 
-[Historical candidate records](examples/candidate-sources.json) remain NEEDS_CLARIFICATION; [Phase 03 evidence](../../evidence/phase-03/candidate-sources.md) preserves their original retrieval limitations. Phase 06 adds a separately reviewed [Big Buck Bunny draft](examples/big-buck-bunny.json) and [real local approval](../../evidence/phase-06/catalog-approval.json). Its exact archive is approved, but the title remains publicly invisible until processing and publication checks pass. No source film is automatically acquired by normal Catalog startup.
+[Historical candidate records](examples/candidate-sources.json) remain NEEDS_CLARIFICATION; [Phase 03 evidence](../../evidence/phase-03/candidate-sources.md) preserves their original retrieval limitations. Phase 06 adds a separately reviewed [Big Buck Bunny draft](examples/big-buck-bunny.json) and [real local approval](../../evidence/phase-06/catalog-approval.json). Its exact archive was acquired and processed; the renewed rights/artwork approval and immutable bundle are now locally published. No source film is automatically acquired by normal Catalog startup.
 
 ## Local operator
 
@@ -52,6 +52,8 @@ The [draft example](examples/create-draft.json) is executable but deliberately h
 | request-media | requestId, expectedVersion, rightsRevision, recipeVersion, source | Retain bounded immutable processing intent for the current approved source; no download or publication |
 | media-ready | mutationId, expectedVersion, publicationId | Resolve an existing trusted title/revision-bound technical attestation |
 | publish | mutationId, expectedVersion | Recheck current rights, artwork and selected media; append publication event |
+| replace | mutationId, expectedVersion, publicationId, reason | Atomically replace the published pointer with a compatible registered version, keeping current rights/metadata |
+| rollback | mutationId, expectedVersion, publicationId, reason | Restore a compatible previously active version using durable activation history; never revive old approval |
 | retire | mutationId, expectedVersion, reason | Retire any non-retired title and append retirement event |
 | dispute | mutationId, expectedVersion, reason | Append disputed rights and retire atomically |
 | expire | mutationId, expectedVersion, reason | Reject unless validUntil has passed; append expired rights and retire |
@@ -67,7 +69,7 @@ A missing or mismatched idempotency receipt returns a conflict for stale version
 
 ## Durable media requests
 
-Phase 06 adds `request-media` under [ADR-0021](../../docs/adr/0021-catalog-media-requests.md), after migration 0004. `source` has exactly `url`, `bytes`, `etag`, `sha256`, and `container` (`zip` or `mp4`). Use the exact approved HTTPS asset URL, 1–268435456 bytes, a quoted strong ETag (1–126 printable ASCII characters inside quotes), and a lowercase SHA-256 or null before acquisition. The only recipe contract is `hls-avc-aac-v1`; it does not yet implement encoding.
+Phase 06 adds `request-media` under [ADR-0021](../../docs/adr/0021-catalog-media-requests.md), after migration 0004. `source` has exactly `url`, `bytes`, `etag`, `sha256`, and `container` (`zip` or `mp4`). Use the exact approved HTTPS asset URL, 1–268435456 bytes, a quoted strong ETag (1–126 printable ASCII characters inside quotes), and a lowercase SHA-256 or null before acquisition. The acquisition request selects `hls-avc-aac-v1`; the isolated worker now implements that HLS recipe and the independent `frame-jpeg-v1` artwork recipe.
 
 The [first-film request](examples/big-buck-bunny-media-request.json) matches the dated [source preflight](../../evidence/phase-06/source-preflight.json) and approved revision 2. After explicitly approving that title in the target database, submit it with the same operator environment:
 
@@ -75,11 +77,11 @@ The [first-film request](examples/big-buck-bunny-media-request.json) matches the
 pnpm --filter @aster/catalog operator < services/catalog/examples/big-buck-bunny-media-request.json
 ~~~
 
-Do not silently change an accepted identity. If the origin representation has changed, review its new identity before issuing a different request. Acceptance is not permission to skip a fresh owner rights check before later acquisition. This checkpoint has tested the command in disposable databases, not submitted this example to the retained demo.
+Do not silently change an accepted identity. If the origin representation has changed, review its new identity before issuing a different request. Acceptance is not permission to skip a fresh owner rights check before later acquisition. The dated example was submitted to the retained demo under its original approval; it is historical input, not a new request to replay against current rights.
 
 Unlike editorial command receipts, the request ID is permanent. Same-actor, exact-input replay returns the stored audit only while the rights remain eligible. Changed input, actor or a second ID for identical work conflicts. Sixteen distinct requests/title are retained; retries reuse a request and capacity does not prevent retirement. The title version and active publication do not change. Requests survive CLI restart; cancellation or a failed final rights/authority check rolls back admission. Logs omit the source and credentials. The CLI refuses a role able to modify/delete this audit.
 
-Acquisition, attempt execution, isolated processing and technical attestation registration remain planned. No worker or viewer can use this command to supply validation flags or publish media. [Local request evidence](../../evidence/phase-06/media-requests.md).
+Acquisition, durable attempts, isolated processing and restricted technical registration are implemented locally. No worker or viewer can use this command to supply validation flags or publish media. [Local request evidence](../../evidence/phase-06/media-requests.md).
 
 ## Rights, metadata and lifecycle
 
@@ -135,7 +137,7 @@ See [migration and recovery](migrations/README.md). No public remote or retained
 
 Phase 06 provides a separate finite acquisition job, not an HTTP upload API. See [local acquisition commands, bounds and recovery](MEDIA_ACQUISITION.md). Its private source original is not a playable publication.
 
-The separate [immutable publication workflow](MEDIA_PUBLICATION.md) now verifies retained HLS/JPEG candidates, registers through a restricted technical role, and activates via the existing editorial commands. The first film is locally published; player, rollback and full phase release gates remain open.
+The separate [immutable publication workflow](MEDIA_PUBLICATION.md) now verifies retained HLS/JPEG candidates, registers through a restricted technical role, and activates via the existing editorial commands. The first film is locally published; compatible rollback is implemented and tested. Orphan recovery, browser playback and full phase release remain open.
 
 ~~~sh
 pnpm exec turbo run build --filter=@aster/catalog

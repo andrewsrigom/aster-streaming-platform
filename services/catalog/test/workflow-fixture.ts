@@ -80,6 +80,7 @@ interface State {
   receipts: CatalogCommandReceipt[];
   audits: CatalogCommandAudit[];
   events: CatalogPublicationEvent[];
+  activations: CatalogPublicationEvent[];
 }
 export function workflowFixture(actorId = id(3)) {
   let state: State = {
@@ -90,6 +91,7 @@ export function workflowFixture(actorId = id(3)) {
     receipts: [],
     audits: [],
     events: [],
+    activations: [],
   };
   let time = now;
   let sequence = 1000;
@@ -174,6 +176,15 @@ export function workflowFixture(actorId = id(3)) {
           return Promise.resolve(true);
         },
         findPublication: (publicationId) => Promise.resolve(draft.publications.get(publicationId)),
+        wasPublicationActive: (titleId, publicationId, beforeVersion) =>
+          Promise.resolve(
+            draft.activations.some(
+              (event) =>
+                event.aggregate.id === titleId &&
+                event.payload.publicationId === publicationId &&
+                event.aggregate.version < beforeVersion,
+            ),
+          ),
         pruneReceipts(titleId, currentTime) {
           draft.receipts = draft.receipts.filter(
             (receipt) => receipt.titleId !== titleId || receipt.expiresAt > currentTime,
@@ -205,6 +216,9 @@ export function workflowFixture(actorId = id(3)) {
         },
         appendPublicationEvent(event) {
           draft.events.push(event);
+          if (event.eventType === "catalog.title-published") {
+            draft.activations.push(event);
+          }
           return Promise.resolve();
         },
       };

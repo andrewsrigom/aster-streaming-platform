@@ -30,6 +30,18 @@ Successful attestation returns a publication UUID, not editorial activation. Con
 - Existing keys are never overwritten. A lost registration response can be retried with the same selection/current version; the same title/rights/bundle yields the same publication ID. At most 64 registrations/title; audit is not evicted.
 - Disputes/version changes/expiry stop copying or final registration. Registration serializes on the same title lock as editorial commands; network work never holds that database lock.
 - The origin joins only `edge`, binds Windows/local loopback 9001 and mounts storage read-only. It cannot reach private databases/writer. Anonymous GET/HEAD is limited to publication objects; listing and every write are denied. Do not change it to an internal-only network or widen its host binding.
-- Before activation, retain private candidates and retry only a compatible transient failure. After activation, ordinary `retire` is the implemented takedown. Previous-version rollback/orphan reclamation are still Phase 06 work; do not manually overwrite/delete publication data. Populated migration 0007 requires roll-forward recovery.
+- Before activation, retain private candidates and retry only a compatible transient failure. After activation, ordinary `retire` is the immediate takedown. Use compatible replacement/rollback below; orphan reclamation remains Phase 06 work. Do not manually overwrite/delete publication data. Populated migrations 0007/0008 require roll-forward recovery.
+
+## Replace or roll back an active publication
+
+Apply migration 0008 with the current initializer before these commands. Use the normal local operator, not the attester. Inspect the title and select an existing registered publication ID; neither command accepts a URL or validation flags.
+
+```json
+{"command":"replace","input":{"titleId":"00000000-0000-4000-8000-000000000001","mutationId":"00000000-0000-4000-8000-000000000002","expectedVersion":5,"publicationId":"00000000-0000-4000-8000-000000000003","reason":"Activate a validated compatible version"}}
+```
+
+This is an input-shape example, not a command for the retained first film. For recovery, use `rollback` with the inspected current version, a new mutation ID and the previously active publication ID. The target must have been active before the current title version, belong to the same title/current rights revision and original checksum, and still satisfy validation/expiry policy. Artwork and editorial metadata stay unchanged. Both operations keep PUBLISHED state and atomically record the new pointer, incremented version, reason/audit, receipt, activation history and title-published event. Current streams may finish on their immutable old URL; no media bytes are rewritten.
+
+Activation history survives outbox delivery. Exact command retries use the same mutation/input within the existing 24-hour receipt window; returned receipts describe the historical command, not current authorization. Missing history, incompatible rights, dispute, cancellation or a stale version leaves the pointer unchanged. Never bypass a rejection with direct SQL. Retire when no compatible version exists. The current first film has only one registered/active bundle, so there is no real prior version to restore yet. [Synthetic rollback evidence](../../evidence/phase-06/rollback.md) does not claim a second film encode.
 
 `pnpm media:origin:test` verifies synthetic copies, replay, MIME/cache, CORS/Range and negative permissions. `pnpm catalog:integration` verifies real PostgreSQL registration/activation/dispute/privilege behavior. [Actual first-film evidence](../../evidence/phase-06/publication.md) is distinct from those synthetic tests.

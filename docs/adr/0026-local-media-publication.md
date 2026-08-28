@@ -29,7 +29,14 @@ Focused tests cover exact checksum reuse, missing/corrupt/stalled objects, cance
 
 Remove an unused origin without deleting volumes. Before publication, leave the title unexposed and preserve immutable candidates/audit. After publication, use an owner-authorized previously validated compatible publication or retire; never overwrite bundles or downgrade to code that cannot read retained audit data.
 
+## Compatible publication replacement and rollback
+
+Catalog's local operator may replace an active publication without an unpublish gap, or roll back to a previously active validated reference. Both operations preserve the current approved rights revision, original checksum, metadata/artwork and PUBLISHED state, increment the title version, require a reason, and write audit, receipt and the existing versioned title-published event atomically. A different source, foreign title, old rights revision, expired/disputed approval or unregistered candidate is ineligible. After a rights change, re-attestation/review is required; rollback cannot revive old permission. Without a compatible version, retire remains the safe mitigation.
+
+Migration 0008 records each published event in append-only activation history inside the same transaction. Backfill only existing event references that join their recorded title/rights/publication; original audit and events are unchanged. An exact bounded existence query authorizes rollback even after a future outbox relay removes delivered events. Runtime can read history but cannot write or erase it directly; a fixed-search-path trigger copies the owning event. The migration extends audit command vocabulary and changes no editorial rows or media bytes. Down migration refuses any retained activation or new-command audit; after use, roll forward. Existing binaries remain compatible with the additive table/trigger.
+
 ## Sources
 
 - [Peach film licensing and credits](https://peach.blender.org/about/): film derivatives are covered; excluded logos and DVD artwork are not adopted.
 - [VersityGW global options](https://github.com/versity/versitygw/wiki/Global-Options): the pinned 1.7.0 binary also exposes `--readonly`, concurrency bounds and CORS; runtime authorization checks remain required.
+- [PostgreSQL 18 triggers](https://www.postgresql.org/docs/18/sql-createtrigger.html) and [row locks](https://www.postgresql.org/docs/18/explicit-locking.html#LOCKING-ROWS): activation history shares the event transaction; title locks serialize recovery and disputes.

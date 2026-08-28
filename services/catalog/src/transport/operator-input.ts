@@ -36,6 +36,8 @@ export async function readOperatorInput(
       "review",
       "media-ready",
       "publish",
+      "replace",
+      "rollback",
       "retire",
       "dispute",
       "expire",
