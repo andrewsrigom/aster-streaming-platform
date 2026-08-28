@@ -1,0 +1,19 @@
+• turbo 2.10.12
+
+   • Packages in scope: //, @aster/broker-kafka, @aster/catalog, @aster/config, @aster/http-express, @aster/identity, @aster/media, @aster/object-storage-s3, @aster/postgres, @aster/redis, @aster/router, @aster/runtime, @aster/telemetry, @aster/web
+   • Running docs:check, ai:check, security:check in 14 packages
+   • Remote caching disabled
+
+//:security:check: cache bypass, force executing 3ed2fc6ba5deafbf
+//:ai:check: cache miss, executing 71401506504329f3
+//:ai:check: $ node ./tools/verify-ai-state.ts
+//:security:check: $ node ./tools/scan-secrets.ts --all
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":38,"sessionEntries":104,"activeRequirement":"P06-R01","targetRequirement":"P06-R01","violations":[]}
+//:docs:check: cache miss, executing 523ea5fa6a536499
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:docs:check: $ node ./tools/verify-documentation.ts
+//:docs:check: {"check":"documentation","status":"ok","documents":188,"headings":2546,"links":979,"statusClaims":4,"violations":0}
+
+ Tasks:    3 successful, 3 total
+Cached:    0 cached, 3 total
+  Time:    3.984s

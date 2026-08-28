@@ -1,0 +1,72 @@
+$ turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity integration:storage
+• turbo 2.10.12
+
+   • Packages in scope: @aster/identity
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/config:build: cache hit, replaying logs ac62b05fa9bacd6e
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/http-express:build: cache hit, replaying logs fc36c21fa276f980
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/broker-kafka:build: cache hit, replaying logs 19a1dfd0fab93176
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache miss, executing 7520d96ea9126c78
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/redis:build: cache hit, replaying logs 6882d0c4927f4de0
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/identity:build: cache miss, executing ee52b08e4d4bb506
+@aster/identity:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    9 successful, 9 total
+Cached:    7 cached, 9 total
+  Time:    5.069s
+
+$ node ./dist/test/integration/integration.js storage
+{"event":"fixture_start","project":"aster-integration-3fd70c4884fc472fbf464d8737115d98","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":5805}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"storage","cpu":"0.39%","memory":"7.07MiB / 384MiB","pids":"7","imageBytes":62775913,"architecture":"amd64","dataKiB":4}]}
+{"event":"scenario_start","mode":"storage"}
+{"event":"storage_round_trip","bytes":0,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":262144,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":7340049,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_multipart_abort","acknowledgedPartBytes":5242880,"remainingUploads":0}
+{"event":"storage_handles_closed","durationMs":1}
+{"event":"assertion_failed","message":"Expected values to be strictly equal:\n\n2 !== 1\n","stack":["    at conditionalImmutable (file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/services/identity/dist/test/integration/storage-worker.js:173:16)","    at async main (file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/services/identity/dist/test/integration/storage-worker.js:294:9)"]}
+{"event":"worker_failed","mode":"storage","code":1,"signal":null,"unhandledError":false,"outputExceeded":false}
+{"event":"fixture_cleanup","project":"aster-integration-3fd70c4884fc472fbf464d8737115d98","remaining":0,"durationMs":1170}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: storage worker failed; natural exit required
++ actual - expected
+
+  {
++   code: 1,
+-   code: 0,
+    signal: null
+  }
+
+    at worker (file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/services/identity/dist/test/integration/integration.js:145:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/services/identity/dist/test/integration/integration.js:177:9 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: { code: 1, signal: null },
+  expected: { code: 0, signal: null },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+/home/andrews/personal/portfolio-2026/aster-streaming-platform/services/identity:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @aster/identity@0.0.0 integration:storage: `node ./dist/test/integration/integration.js storage`
+Exit status 1
+[ELIFECYCLE] Command failed with exit code 1.

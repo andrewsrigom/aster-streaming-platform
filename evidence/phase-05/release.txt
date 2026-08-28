@@ -1,0 +1,26 @@
+Phase 05 protected local-demo release
+Recorded: 2026-08-28
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/22
+Final candidate: 944f64b1f1cf54a99fe365f19caceeb6004cd92e
+Code confirmation: e4708c4c32ef09d901dd040f9ed87e92426e9406
+Protected candidate CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33132937180
+Result: success, all six applicable jobs including CI required.
+Confirmation review: https://github.com/andrewsrigom/aster-streaming-platform/pull/22#issuecomment-5447217847
+Result: no major issues; both initial review threads resolved.
+Squash: f36f9aa7043dc1fe7b6394a0a800e4e842bf6865
+Merged at: 2026-08-28T01:35:35Z, without administrator bypass.
+Post-merge CI: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33133330003
+Exact head: f36f9aa7043dc1fe7b6394a0a800e4e842bf6865
+Result: completed/success, updated at 2026-08-28T01:41:49Z.
+Post-merge dependency-review is correctly skipped on push; every applicable job succeeds.
+
+Local acceptance: evidence/phase-05/pr22-remediation.md and its linked raw records.
+Source: 58/58; all 21 distinct final-image browser scenarios have passing evidence.
+Both final three-visit laboratory blocks pass unchanged budgets; no further unchanged benchmark.
+Clean Docker, seed/isolation and actual-reader mechanics remain supported by their recorded evidence.
+Final documentation/measurement-only commit does not alter the tested runtime image or code-review boundaries.
+
+Scope: released source and Docker-only public browsing/profile demo, not hosted production or playable VOD.
+No field SLO, idle physical host or blanket accessibility certification is claimed.
+Retained databases and owner Windows programs remain intact.
+Phase 06 is next: one actual source approval, bounded acquisition, isolated FFmpeg and immutable publication.

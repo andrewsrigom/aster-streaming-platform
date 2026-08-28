@@ -8,6 +8,12 @@ sharedWorkspaceLockfile: true
 linkWorkspacePackages: false
 saveWorkspaceProtocol: rolling
 strictPeerDependencies: true
+# hls.js 1.7.1 bundles these at runtime but its exported declarations still import them.
+packageExtensions:
+  hls.js@1.7.1:
+    dependencies:
+      "@svta/cml-cmcd": "2.4.0"
+      eventemitter3: "5.0.4"
 disallowWorkspaceCycles: true
 minimumReleaseAge: 1440
 minimumReleaseAgeStrict: true

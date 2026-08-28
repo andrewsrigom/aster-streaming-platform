@@ -1,0 +1,101 @@
+{
+  "command": "edit",
+  "input": {
+    "titleId": "00000000-0000-4000-8000-000000080001",
+    "mutationId": "00000000-0000-4000-8000-000006000010",
+    "expectedVersion": 5,
+    "metadata": {
+      "defaultLocale": "en",
+      "localizations": [
+        {
+          "locale": "en",
+          "title": "Big Buck Bunny",
+          "synopsis": "An animated short from the Blender Foundation's Peach open movie project."
+        },
+        {
+          "locale": "pt-BR",
+          "title": "Big Buck Bunny",
+          "synopsis": "Um curta de animação do projeto aberto Peach, da Blender Foundation."
+        }
+      ],
+      "genres": ["animation"],
+      "credits": [
+        {
+          "name": "Sacha Goedegebure",
+          "role": "Director"
+        },
+        {
+          "name": "Jan Morgenstern",
+          "role": "Music and sound design"
+        },
+        {
+          "name": "Ton Roosendaal",
+          "role": "Producer"
+        }
+      ],
+      "artwork": {
+        "url": "http://127.0.0.1:9001/aster-media-published/publications/3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d/poster-640.jpg",
+        "altText": "Three woodland animals in a forest clearing, from Big Buck Bunny.",
+        "rights": {
+          "workTitle": "Big Buck Bunny — derived frames",
+          "creator": "Blender Foundation / Peach open movie project; director Sacha Goedegebure; music and sound design Jan Morgenstern",
+          "copyrightHolder": "Blender Foundation",
+          "canonicalSourceUrl": "https://peach.blender.org/about/",
+          "assetSourceUrl": "http://127.0.0.1:9001/aster-media-published/publications/3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d/poster-640.jpg",
+          "licenseName": "Creative Commons Attribution",
+          "licenseVersion": "3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+          "attributionText": "Big Buck Bunny. (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org. Directed by Sacha Goedegebure; music and sound design by Jan Morgenstern. Retain the complete film credits. Licensed under CC BY 3.0. No endorsement is implied.",
+          "modificationNotice": "Derived JPEGs from the complete film: posters at 119.292 seconds, resized to 320x180 and 640x359; thumbnails at 59.646, 298.230 and 506.992 seconds, resized to 160x90. No crop or new illustration. Five frames were inspected. This artwork is a film derivative, not separately licensed promotional artwork. No endorsement or branding rights are claimed.",
+          "redistributionAllowed": true,
+          "commercialUseAllowed": true,
+          "modificationAllowed": true,
+          "shareAlikeRequired": false,
+          "technicalRestrictions": "NONE",
+          "thirdPartyMaterialNotes": "The verified official movie archive contains the full film and its embedded soundtrack. Film decoding and ending credits were retained. No separately downloaded music, captions, textures or promotional artwork is included. Derived JPEGs use this same film; its embedded credits remain unaltered.",
+          "trademarkNotes": "Website logos, associated marks, DVD cover/inlay and disc print are excluded from the project license. Do not reuse them as Aster branding or imply endorsement. Keep required film credits; select non-logo frames for derived artwork.",
+          "sourceChecksum": "0b313134114ddd94a0f7394ce151e235cc1aea9637fc9ab77321e038adf124fa",
+          "validUntil": null,
+          "evidenceLocations": [
+            "evidence/phase-06/rights-review.md",
+            "evidence/phase-06/decoder.md",
+            "evidence/phase-06/artwork.md",
+            "evidence/phase-06/publication.md"
+          ]
+        }
+      },
+      "releaseYear": 2008,
+      "runtimeSeconds": 597,
+      "languages": [],
+      "accessibility": [],
+      "editorialLabels": ["open-movie"]
+    },
+    "rights": {
+      "workTitle": "Big Buck Bunny",
+      "creator": "Blender Foundation / Peach open movie project; director Sacha Goedegebure; music and sound design Jan Morgenstern",
+      "copyrightHolder": "Blender Foundation",
+      "canonicalSourceUrl": "https://peach.blender.org/about/",
+      "assetSourceUrl": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+      "licenseName": "Creative Commons Attribution",
+      "licenseVersion": "3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "attributionText": "Big Buck Bunny. (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org. Directed by Sacha Goedegebure; music and sound design by Jan Morgenstern. Retain the complete film credits. Licensed under CC BY 3.0. No endorsement is implied.",
+      "modificationNotice": "Extracted the official complete-movie archive and transcoded the full film, including the ending credits, into AVC/H.264 HLS at 426x240 and 638x358 without upscaling. Re-encoded the embedded stereo soundtrack as AAC 48 kHz. HLS duration is 596.5 seconds. No captions, audio description, transcript or DRM were added. Credited JPEG posters and thumbnails were extracted separately.",
+      "redistributionAllowed": true,
+      "commercialUseAllowed": true,
+      "modificationAllowed": true,
+      "shareAlikeRequired": false,
+      "technicalRestrictions": "NONE",
+      "thirdPartyMaterialNotes": "The verified official movie archive contains the full film and its embedded soundtrack. Film decoding and ending credits were retained. No separately downloaded music, captions, textures or promotional artwork is included. Derived JPEGs use this same film; its embedded credits remain unaltered.",
+      "trademarkNotes": "Website logos, associated marks, DVD cover/inlay and disc print are excluded from the project license. Do not reuse them as Aster branding or imply endorsement. Keep required film credits; select non-logo frames for derived artwork.",
+      "sourceChecksum": "7118242b6728d40c871479c5b3c0f0fb27d748089df15d7f1b469f297c74a2d6",
+      "validUntil": null,
+      "evidenceLocations": [
+        "evidence/phase-06/rights-review.md",
+        "evidence/phase-06/decoder.md",
+        "evidence/phase-06/artwork.md",
+        "evidence/phase-06/publication.md"
+      ]
+    }
+  }
+}

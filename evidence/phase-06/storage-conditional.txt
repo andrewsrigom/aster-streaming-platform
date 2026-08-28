@@ -1,0 +1,52 @@
+$ turbo run build --filter=@aster/identity && pnpm --filter=@aster/identity integration:storage
+• turbo 2.10.12
+
+   • Packages in scope: @aster/identity
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/http-express:build: cache hit, replaying logs fc36c21fa276f980
+@aster/config:build: cache hit, replaying logs ac62b05fa9bacd6e
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/telemetry:build: cache hit, replaying logs 6aa7deeaa318a553
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/redis:build: cache hit, replaying logs 6882d0c4927f4de0
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/broker-kafka:build: cache hit, replaying logs 19a1dfd0fab93176
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache hit, replaying logs 7520d96ea9126c78
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 945005854d1abd00
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 3c0651d74bd89495
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/identity:build: cache hit, replaying logs ee52b08e4d4bb506
+@aster/identity:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    9 successful, 9 total
+Cached:    9 cached, 9 total
+  Time:    22ms >>> FULL TURBO
+
+$ node ./dist/test/integration/integration.js storage
+{"event":"fixture_start","project":"aster-integration-c315fd69373d4fe781b0d756271e90ba","node":"v24.19.0"}
+{"event":"fixture_ready","durationMs":4887}
+{"event":"fixture_resource_sample","stage":"before-workload","services":[{"service":"storage","cpu":"0.65%","memory":"12.86MiB / 384MiB","pids":"8","imageBytes":62775913,"architecture":"amd64","dataKiB":4}]}
+{"event":"scenario_start","mode":"storage"}
+{"event":"fixture_action","service":"storage","action":"stop","durationMs":779}
+{"event":"fixture_action","service":"storage","action":"start","durationMs":3583}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":531}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2636}
+{"event":"fixture_action","service":"storage","action":"pause","durationMs":291}
+{"event":"fixture_action","service":"storage","action":"unpause","durationMs":2509}
+{"event":"storage_round_trip","bytes":0,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":262144,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_round_trip","bytes":7340049,"checksum":"sha256","outcome":"passed"}
+{"event":"storage_multipart_abort","acknowledgedPartBytes":5242880,"remainingUploads":0}
+{"event":"storage_conditional_immutable","bytes":7340049,"contenders":2,"created":1,"conflict":1,"retainedBytesVerified":true,"fullObjectChecksum":true,"wrongChecksumRejected":true,"multipartUploads":0}
+{"event":"storage_fault_recovery","restart":"passed","timeout":"passed","cancellation":"passed"}
+{"event":"storage_fixture_empty","objects":0,"multipartUploads":0,"buckets":0}
+{"event":"storage_handles_closed","durationMs":1}
+{"event":"natural_exit","mode":"storage"}
+{"event":"storage_integration","outcome":"passed","scenarios":["storage"],"durationMs":20063}
+{"event":"fixture_cleanup","project":"aster-integration-c315fd69373d4fe781b0d756271e90ba","remaining":0,"durationMs":1227}

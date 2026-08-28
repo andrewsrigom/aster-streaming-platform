@@ -63,6 +63,8 @@ Run release game days for Redis loss, Discovery outage, broker outage, database 
 ### P14-R11
 
 Confirm SLOs, alerts, runbooks, on-call ownership, retention, and security controls.
+
+Before hosted media ingestion, replace Phase 06's intentional local immutable-object retention with an explicit storage budget and tested lifecycle policy. Any garbage collector must fence concurrent writers, protect current/recoverable publication and candidate references, honor a grace period and record deletion audit. Age or absence of an active Catalog pointer alone must never authorize deletion; see [ADR-0026](../adr/0026-local-media-publication.md#local-retention-boundary-phase-06-closeout).
 ### P14-R12
 
 Publish release notes that state verified capabilities, known limits, capacity assumptions, and deferred work accurately.

@@ -2,6 +2,26 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0026](../docs/adr/0026-local-media-publication.md) now keeps the access barrier through current-rights/SQL confirmation and compensates rejected new grants to the exact recorded prior policy. Prior grants survive failed replay. Uncertain writes or failed compensation require explicit origin containment and fenced recovery; this is bounded compensation, not distributed atomicity or retroactive CC revocation. No schema, data-owner or retained-media change.
+
+[ADR-0026](../docs/adr/0026-local-media-publication.md) now enforces private incomplete copies and one exact verified-prefix public grant. The pinned POSIX backend lacks object ACL/tag-condition support; use its supported bucket policy, bounded to 100 prefixes, with a conditional-create non-expiring recovery barrier to serialize updates. The known retained bundle was verified/restricted without media/editorial changes. Explicit fencing precedes stale-barrier cleanup; no automatic hosted lock/lifecycle claim.
+
+[ADR-0023](../docs/adr/0023-isolated-media-decoder.md) now gives scratch volumes non-reused run-UUID names and bounded, dry-run-first orphan recovery. Only stopped, expired, exact disposable resources without foreign consumers may be removed, never force. Immutable object-storage content/audit is preserved; storage-prefix garbage collection is not implied.
+
+[ADR-0026](../docs/adr/0026-local-media-publication.md) preserves editorial history and separates current approval, immutable bundle verification, restricted technical registration and normal Catalog activation. Migration 0007 grants only narrow definer-function registration, never editorial writes. The read-only origin joins the existing edge bridge only; internal-only Docker networking did not activate host bindings. Exact loopback URLs remain local-only. Migration 0008 adds transaction-local, append-only activation history and compatible owner replacement/rollback; no direct history-write grant. First-film publication and synthetic rollback pass locally; orphan/browser/release remain open.
+
+[ADR-0025](../docs/adr/0025-derived-artwork.md) adds frame-jpeg-v1 to the same isolated worker and durable Catalog processing owner. It derives bounded no-upscale posters/thumbnails, reuses current-rights/lease guards and keeps the HLS key unchanged. No schema or publication permission changes; image generation/inspection does not itself approve artwork rights.
+
+[ADR-0024](../docs/adr/0024-durable-media-processing.md) adds Catalog-owned processing leases, three attempts per checksum/recipe, current-rights reuse and explicit private-candidate recovery. Additive migration 0006 grants no publication access. The retained real candidate is adopted and replayed without another encode.
+
+[ADR-0023](../docs/adr/0023-isolated-media-decoder.md) defines the finite network-disabled TypeScript decoder, bounded ZIP/probe/HLS policy and Catalog-owned private candidate retention. The real source is 640×359, so the no-upscale ladder uses 240/358 heights. MIT yauzl 3.4.0 and pend 1.2.0 retain notices; separate FFmpeg compliance is unchanged. Private reports do not grant attestation/publication authority.
+
+[ADR-0022](../docs/adr/0022-local-media-execution.md) implements finite Catalog-owned acquisition, bounded streams, fenced durable attempts and private verified originals. One native POSIX action closes the pinned local gateway's conditional-write race. Only acquisition has an egress bridge; the platform remains internal and the decoder will be network-disabled. Technical attestation and hosted origin acceptance remain separate boundaries.
+
+[ADR-0021](../docs/adr/0021-catalog-media-requests.md) retains media requests in Catalog through the existing local operator: exact current rights/source binding, permanent replay IDs, immutable audit and 16 distinct requests/title. No editorial version or publication changes; no new service, broker, worker credential or attestation permission. Attempt execution and checksum-based processing idempotency remain unfinished Phase 06 work.
+
+Phase 06's first actual source is Big Buck Bunny's official 640x360 movie archive. [Current rights review](../evidence/phase-06/rights-review.md) and [Catalog approval](../evidence/phase-06/catalog-approval.json) preserve CC BY 3.0, complete credits and independent caption/artwork conditions under ADR-0010. Approval authorizes exact-source acquisition, not unvalidated publication; Aster stays MIT.
+
 [ADR-0020](../docs/adr/0020-web-transitive-licenses.md) preserves MIT with exact package-scoped license exceptions, locked-version checks and offline Web notice packaging. It retains native-library source/notice obligations and leaves binary-distribution acceptance in Phase 14.
 
 [ADR-0018](../docs/adr/0018-local-web-session-boundary.md) allows only exact local Web/diagnostic origins, keeps owner session authorization unchanged, and separates public Apollo preloads from interaction-only private caches. Redux owns dialog flow only. Web's scoped upstream declaration-file compatibility exception does not disable strict source checks.

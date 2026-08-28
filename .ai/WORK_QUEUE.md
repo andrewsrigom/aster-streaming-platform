@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`.
 
-Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/release.txt). P05-R01 is the sole active item in PR 22, based on released main b6c99c4. Code candidate e4708c4 passes 58 source tasks and both final three-visit laboratory blocks; all 21 distinct browser scenarios have passing evidence. [Current remediation and limits](../evidence/phase-05/pr22-remediation.md). CI 33132459201 passes and confirmation review reports no major issues. The evidence-only head's protected gate and publication remain; no further unchanged benchmark. Phase 06 starts with actual-film rights review; the synthetic seed authorizes no source acquisition.
+Phases 00–05 are released; [Phase 05 release evidence](../evidence/phase-05/release.txt). P06-R01 is the sole active item on feat/p06-media-pipeline. Big Buck Bunny is locally published through restricted technical registration and the existing editorial commands, with immutable HLS/JPEG/attribution at loopback 9001. [Publication evidence](../evidence/phase-06/publication.md). Compatible rollback now passes focused/real PostgreSQL checks ([evidence](../evidence/phase-06/rollback.md)). Next: Phase 06 protected CI, confirmation and release. Preserve the bundle and private candidates; no further source GET/encoding.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -42,11 +42,14 @@ Phases 00–04 are released; [Phase 04 release evidence](../evidence/phase-04/re
 | 34 | Verify generated HLS publication, candidate-source reviews and the Catalog Docker runtime | P03-R04 | DONE |
 | 35 | Compose versioned Identity/Catalog schemas and protect known operations | P04-R01 | DONE |
 | 36 | Run Apollo Router with private subgraphs, trusted context, telemetry and partial-failure acceptance | P04-R02 | DONE |
-| 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | IN_PROGRESS |
+| 37 | Implement public SSR, deterministic Apollo hydration, explicit seed and the accessible Web shell | P05-R01 | DONE |
+| 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | IN_PROGRESS |
 
-P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; no actual-film approval exists.
+P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
+
+All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md). Initial review/CI corrections passed full protected CI at 9723032, but confirmation found a rights/access race and stale guide. The [current correction](../evidence/phase-06/rights-access-confirmation.md) compensates rejected new grants while preserving prior ones. Finish its final gates, push one coherent correction to ready PR 23, require exact-head CI/confirmation and squash/post-merge; then Phase 07. Immutable media is retained, disposable scratch alone is cleaned. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

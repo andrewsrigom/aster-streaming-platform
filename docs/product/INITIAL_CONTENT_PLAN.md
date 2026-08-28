@@ -73,7 +73,7 @@ Initial candidates for review:
 
 | Candidate | Review state | Purpose |
 |---|---|---|
-| Big Buck Bunny | NEEDS_CLARIFICATION | Exact asset and current official evidence still required |
+| Big Buck Bunny | APPROVED | Exact official archive, Catalog rights revision 2; acquisition and technical publication remain pending |
 | Sintel | NEEDS_CLARIFICATION | Exact asset, credits and subtitle review still required |
 | Tears of Steel | NOT_REVIEWED | Mixed live action and visual effects |
 | Elephants Dream | NOT_REVIEWED | Older source and compatibility variation |
@@ -85,7 +85,7 @@ Initial candidates for review:
 
 `NOT_REVIEWED` means no permission claim has been made.
 
-The [two initial reviews](../../evidence/phase-03/candidate-sources.md) record indexed official license statements and direct-retrieval limitations. Neither record authorizes acquisition or publication.
+The [two initial reviews](../../evidence/phase-03/candidate-sources.md) remain historical records of unresolved evidence. A [fresh Big Buck Bunny review](../../evidence/phase-06/rights-review.md) and real Catalog approval now authorize acquisition of its exact selected archive, not publication before technical checks. Sintel remains unresolved.
 
 ## Asset categories
 

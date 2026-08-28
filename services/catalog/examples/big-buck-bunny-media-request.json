@@ -1,0 +1,17 @@
+{
+  "command": "request-media",
+  "input": {
+    "requestId": "00000000-0000-4000-8000-000006000003",
+    "titleId": "00000000-0000-4000-8000-000000080001",
+    "expectedVersion": 3,
+    "rightsRevision": 2,
+    "recipeVersion": "hls-avc-aac-v1",
+    "source": {
+      "url": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+      "bytes": 121284117,
+      "etag": "\"6a60ff9c-73aa615\"",
+      "sha256": null,
+      "container": "zip"
+    }
+  }
+}

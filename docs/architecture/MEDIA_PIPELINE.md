@@ -1,5 +1,11 @@
 # Media Pipeline
 
+## Current implementation
+
+Phase 06 now publishes one approved film locally through Catalog, with private immutable originals/candidates, isolated versioned HLS/JPEG computation, independent bounded publication copies and a restricted technical-attester function. The normal editorial commands activate the pointer only after current rights and attestation checks. The read-only origin serves 209 objects (HLS, JPEG and attribution) on loopback 9001 through the existing edge bridge; no application proxies media bytes. [Current evidence and limitations](../../evidence/phase-06/publication.md), [publication commands](../../services/catalog/MEDIA_PUBLICATION.md).
+
+The broader recipe, layout and CDN discussion below describes the target architecture where it differs from this implemented AVC/AAC MPEG-TS HLS and JPEG slice. Playback sessions, browser player, hosted CDN, additional codecs and caption authoring are not claimed implemented by publication.
+
 ## Responsibility split
 
 Catalog owns legal and editorial approval. The media worker owns technical processing. Playback owns session and delivery policy. Object storage owns bytes. The CDN handles high-bandwidth distribution.

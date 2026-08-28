@@ -19,6 +19,11 @@
 !services/catalog/src/**/*.ts
 !services/catalog/test/**/*.ts
 !services/catalog/migrations/*.sql
+!workers/media/package.json
+!workers/media/tsconfig.json
+!workers/media/src/**/*.ts
+!workers/media/test/**/*.ts
+!infra/docker/media-decoder.Dockerfile
 !apps/web/package.json
 !apps/web/tsconfig.json
 !apps/web/next-env.d.ts

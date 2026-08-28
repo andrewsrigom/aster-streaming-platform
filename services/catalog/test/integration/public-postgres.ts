@@ -295,6 +295,61 @@ export async function verifyPublicCatalog(
       internalsExcluded: true,
     });
 
+    await prepare(95);
+    await prepare(96);
+    const localPrefix =
+      "http://127.0.0.1:9001/aster-media-published/publications/" + "a".repeat(64) + "/";
+    await admin.query("UPDATE catalog.publications SET manifest_url = $2 WHERE title_id = $1", [
+      id(95),
+      localPrefix + "master.m3u8",
+    ]);
+    const artworkRevision = await admin.query<{ record: Record<string, unknown> }>(
+      "SELECT record FROM catalog.rights_revisions WHERE title_id = $1 AND revision = 2",
+      [id(96)],
+    );
+    assert.ok(artworkRevision.rows[0]);
+    const art = {
+      url: localPrefix + "poster-640.jpg",
+      altText: "Synthetic local art",
+      rights: { ...artworkRevision.rows[0].record, assetSourceUrl: localPrefix + "poster-640.jpg" },
+    };
+    await admin.query(
+      "UPDATE catalog.titles SET metadata = jsonb_set(metadata, '{artwork}', $2::jsonb) WHERE id = $1",
+      [id(96), JSON.stringify(art)],
+    );
+    const hostedPage = await queries.browse({ first: 1, after: null }, signal());
+    assert.equal(hostedPage.status, "completed");
+    assert.deepEqual(
+      hostedPage.value.edges.map((edge) => edge.node.id),
+      [id(100)],
+    );
+    assert.deepEqual(await queries.byIds([id(95), id(96)], signal()), {
+      status: "completed",
+      value: [null, null],
+    });
+    const localQueries = createCatalogPublicQueries({
+      policy: { commercial: true, allowLocalMedia: true },
+      now: () => clock,
+      transactions: createPostgresCatalogPublic(reader),
+    });
+    const localPage = await localQueries.browse({ first: 2, after: null }, signal());
+    assert.equal(localPage.status, "completed");
+    assert.deepEqual(
+      localPage.value.edges.map((edge) => edge.node.id),
+      [id(95), id(96)],
+    );
+    const localBatch = await localQueries.byIds([id(96), id(95)], signal());
+    assert.equal(localBatch.status, "completed");
+    assert.deepEqual(
+      localBatch.value.map((item) => item?.id),
+      [id(96), id(95)],
+    );
+    output("catalog_local_media_visibility", {
+      defaultExcludesBeforeLimit: true,
+      explicitLocalIncludesManifestAndArtwork: true,
+      batchPolicy: true,
+    });
+
     await admin.query(
       "INSERT INTO catalog.titles(id, version, state) SELECT ('10000000-0000-4000-8000-' || lpad(n::text, 12, '0'))::uuid, 1, 'DRAFT' FROM generate_series(1,2000) n",
     );

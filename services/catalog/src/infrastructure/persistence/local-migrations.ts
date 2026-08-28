@@ -2,7 +2,16 @@ import { readFile } from "node:fs/promises";
 import { Client } from "pg";
 import { localCatalogDatabase } from "../identity/local-configuration.js";
 
-const migrations = ["0001-rights-history", "0002-editorial-workflow", "0003-public-reads"] as const;
+const migrations = [
+  "0001-rights-history",
+  "0002-editorial-workflow",
+  "0003-public-reads",
+  "0004-media-requests",
+  "0005-media-acquisitions",
+  "0006-media-processing",
+  "0007-media-attestations",
+  "0008-publication-activations",
+] as const;
 export async function migrateLocalCatalog(
   environment: Readonly<Record<string, string | undefined>>,
   signal: AbortSignal,
@@ -43,7 +52,7 @@ export async function migrateLocalCatalog(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 4",
+              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 9",
             )
           ).rows.map((row) => row.version);
     if (
@@ -86,6 +95,16 @@ export async function migrateLocalCatalog(
       throw new Error("Incompatible local Catalog reader role.");
     }
     await client.query("GRANT aster_catalog_reader TO aster_catalog_reader_local");
+    await client.query(
+      "DO $local$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_catalog_attester_local') THEN CREATE ROLE aster_catalog_attester_local LOGIN PASSWORD 'aster-test-only' NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS; END IF; END $local$",
+    );
+    const attester = await client.query<{ allowed: boolean }>(
+      "SELECT rolcanlogin AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls) AND NOT pg_has_role('aster_catalog_attester_local', 'aster_catalog_runtime', 'MEMBER') AND NOT pg_has_role('aster_catalog_attester_local', 'aster_catalog_reader', 'MEMBER') AS allowed FROM pg_roles WHERE rolname = 'aster_catalog_attester_local'",
+    );
+    if (attester.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Catalog attester role.");
+    }
+    await client.query("GRANT aster_catalog_attester TO aster_catalog_attester_local");
     signal.throwIfAborted();
     return { applied: Object.freeze(applied) };
   } finally {

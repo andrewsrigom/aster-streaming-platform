@@ -1,0 +1,3 @@
+{"id":"68e41f87-ca12-44ff-96d3-8a9e66d67795","acquisition_id":"eca2fa7f-87ec-4056-9a61-2d95b6ee81d8","processing_key":"83ae3e060bd37546942997e8c6b569a6d0aa8fba08a891bdc2266ebbafe84f05","number":1,"status":"SUCCEEDED","candidate":{"bytes": 95430911, "files": 203, "prefix": "candidates/83ae3e060bd37546942997e8c6b569a6d0aa8fba08a891bdc2266ebbafe84f05/80f3b48f46729d8c84d6a5c4cc5c76c889090381c7b1acab17fbb45b1658d51c/", "reportChecksum": "23ba545346b3c19fda0a39a1d9816f3652f931ca039aefcac95587a0df4098f1", "publicationAuthority": false},"request_age_seconds":5204,"attempt_seconds":5}
+{"id":"00000000-0000-4000-8000-000000080001","version":3,"state":"RIGHTS_REVIEWED","rights_revision":2,"publication_id":null}
+[1, 2, 3, 4, 5, 6]

@@ -53,6 +53,24 @@ export function catalogChecksum(value: unknown): value is string {
   return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
 }
 
+export function catalogMediaUrl(value: unknown, kind: "manifest" | "artwork"): value is string {
+  if (catalogUrl(value)) {
+    return true;
+  }
+  if (!catalogText(value, 2048)) {
+    return false;
+  }
+  const prefix =
+    /^http:\/\/127\.0\.0\.1:9001\/aster-media-published\/publications\/[a-f0-9]{64}\//u;
+  if (!prefix.test(value)) {
+    return false;
+  }
+  const filename = value.replace(prefix, "");
+  return kind === "manifest"
+    ? filename === "master.m3u8"
+    : /^(?:poster-(?:[1-9][0-9]{0,2})|thumbnail-0[1-3])\.jpg$/u.test(filename);
+}
+
 export function catalogRecord(
   value: unknown,
   keys: readonly string[],

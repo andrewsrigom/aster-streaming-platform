@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–04 are released. Guarded local sessions/profiles, rights-aware Catalog and Apollo Router run in Docker with protected/post-merge acceptance. Generated HLS proves Catalog publication, not playback. Public Next.js SSR, opt-in synthetic seed and local profile/Redux flows pass focused and real browser checks; complete Web acceptance and playable journeys remain unfinished. ADR-0018 scopes the exact browser origin and disposable private Apollo cache. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–05 are released. Guarded local sessions/profiles, rights-aware Catalog, Apollo Router and public Next.js SSR run in Docker with protected/post-merge acceptance. Phase 06 has a rights-approved immutable original, fully decoded HLS, inspected JPEGs, durable replay and a locally published first-film bundle through restricted attestation (ADRs 0021–0026). Compatible rollback, disposable scratch recovery and representative browser playback pass locally. Immutable storage is intentionally retained for verified recovery under ADR-0026; protected phase release remains pending. The opt-in synthetic seed is not playable media. Compatible licensing decisions remain authorized. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,8 +50,8 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 05 — Web Shell, SSR, and Hydration**, PR 22 based on released main b6c99c4. Code candidate e4708c4 has complete local source/browser/laboratory acceptance, including both final performance blocks. Evidence-only closeout and protected publication remain; shared-host timing limits are explicit.
+Active phase: **Phase 06 — Media Ingestion and Publication**, based on released main f36f9aa. Phase 05 protected/post-merge checks pass; there is no predecessor wait. Shared-host timing limits remain explicit; no further unchanged Web benchmark is required.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
-PR 21 squash `b6c99c4` and successful post-merge run `33104100966` close Phase 04. Initial CI/review findings and corrections remain recorded in its evidence. No actual film approval or hosted release is claimed. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.
+PR 21 squash `b6c99c4` and successful post-merge run `33104100966` close Phase 04. Initial CI/review findings and corrections remain recorded in its evidence. That historical phase did not approve a film; Phase 06 now has one approval, but no hosted release. Keep owner-side authorization and prevent local viewer identity from becoming an operator or hosted trust shortcut.

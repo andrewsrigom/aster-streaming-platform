@@ -1,0 +1,40 @@
+2026-08-28T07:29:47.7976615Z {"event":"catalog_fixture_cleaned","remaining":0,"durationMs":21993}
+2026-08-28T07:29:48.2804216Z $ node ./tools/verify-local-catalog.mjs
+2026-08-28T07:30:35.4011245Z {"event":"catalog_docker_cleaned","remaining":0,"durationMs":47081}
+2026-08-28T07:30:35.4017144Z file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:233
+2026-08-28T07:30:35.4018253Z   throw new Error("Catalog Docker verification failed", { cause: failure });
+2026-08-28T07:30:35.4019013Z         ^
+2026-08-28T07:30:35.4019322Z
+2026-08-28T07:30:35.4019702Z Error: Catalog Docker verification failed
+2026-08-28T07:30:35.4021361Z     at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:233:9
+2026-08-28T07:30:35.4023131Z     at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+2026-08-28T07:30:35.4025058Z   [cause]: AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+2026-08-28T07:30:35.4025930Z
+2026-08-28T07:30:35.4026520Z     assert.ok(first.includes('"applied":[1,2,3]'))
+2026-08-28T07:30:35.4027130Z
+2026-08-28T07:30:35.4028250Z       at file:///home/runner/work/aster-streaming-platform/aster-streaming-platform/tools/verify-local-catalog.mjs:74:10
+2026-08-28T07:30:35.4029883Z       at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+2026-08-28T07:30:35.4031177Z     generatedMessage: true,
+2026-08-28T07:30:35.4031749Z     code: 'ERR_ASSERTION',
+2026-08-28T07:30:35.4032305Z     actual: false,
+2026-08-28T07:30:35.4032785Z     expected: true,
+2026-08-28T07:30:35.4033295Z     operator: '==',
+2026-08-28T07:30:35.4033823Z     diff: 'simple'
+2026-08-28T07:30:35.4034311Z   }
+2026-08-28T07:30:35.4034738Z }
+2026-08-28T07:30:35.4034983Z
+2026-08-28T07:30:35.4035213Z Node.js v24.19.0
+2026-08-28T07:30:35.4330408Z [ELIFECYCLE] Command failed with exit code 1.
+2026-08-28T07:30:35.4924800Z ##[error]Process completed with exit code 1.
+2026-08-28T07:30:35.5053302Z Post job cleanup.
+2026-08-28T07:30:35.5932316Z [command]/usr/bin/git version
+2026-08-28T07:30:35.5976164Z git version 2.55.0
+2026-08-28T07:30:35.6014154Z Temporarily overriding HOME='/home/runner/work/_temp/94991ca9-0e96-4e9b-a7a7-e18215600e7b' before making global git config changes
+2026-08-28T07:30:35.6015852Z Adding repository directory to the temporary git global config as a safe directory
+2026-08-28T07:30:35.6020597Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/aster-streaming-platform/aster-streaming-platform
+2026-08-28T07:30:35.6054242Z Removing SSH command configuration
+2026-08-28T07:30:35.6061129Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-08-28T07:30:35.6098635Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-08-28T07:30:35.6355067Z Removing HTTP extra header
+2026-08-28T07:30:35.6361771Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-08-28T07:30:35.6398566Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"

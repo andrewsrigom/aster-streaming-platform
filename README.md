@@ -6,7 +6,7 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–04 are released: local sessions/profiles, rights-aware Catalog and the federated API. Phase 05 implements public Next.js browsing, title/attribution pages, Apollo hydration, local profile selection and a Docker demo with an explicit synthetic seed. Complete Phase 05 acceptance and video playback remain unfinished. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 04 release](evidence/phase-04/release.txt).
+Phases 00–05 are released: local sessions/profiles, rights-aware Catalog, the federated API, public Next.js browsing, deterministic Apollo hydration and a Docker demo with an explicit synthetic seed. Phase 06 has begun with one approved source; video processing/playback remain unfinished. See [current state](.ai/CURRENT_STATE.md), [Web checkpoint](apps/web/README.md), [Router](apps/router/README.md), [Catalog](services/catalog/README.md) and [Phase 05 release](evidence/phase-05/release.txt).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 

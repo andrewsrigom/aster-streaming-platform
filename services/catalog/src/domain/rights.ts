@@ -1,6 +1,7 @@
 import {
   catalogChecksum,
   catalogIdentifier,
+  catalogMediaUrl,
   catalogRecord,
   catalogText,
   catalogTimestamp,
@@ -53,6 +54,7 @@ export interface RightsRecord extends Readonly<TextFields>, Readonly<PermissionF
 
 export interface RightsUsePolicy {
   readonly commercial: boolean;
+  readonly allowLocalMedia?: boolean;
 }
 
 const KEYS = [
@@ -137,9 +139,11 @@ export function normalizeRightsRecord(value: unknown): RightsRecord | undefined 
       const item = input[field];
       if (
         item !== null &&
-        !(URL_FIELDS.some((url) => url === field)
-          ? catalogUrl(item)
-          : catalogText(item, field === "licenseVersion" ? 32 : 1024))
+        !(field === "assetSourceUrl"
+          ? catalogMediaUrl(item, "artwork")
+          : URL_FIELDS.some((url) => url === field)
+            ? catalogUrl(item)
+            : catalogText(item, field === "licenseVersion" ? 32 : 1024))
       ) {
         return undefined;
       }
@@ -196,6 +200,7 @@ function completeAndCompatible(
   return (
     catalogTimestamp(now) &&
     typeof policy.commercial === "boolean" &&
+    (catalogUrl(record.assetSourceUrl) || policy.allowLocalMedia === true) &&
     [...TEXT_FIELDS, ...URL_FIELDS].every((field) => record[field] !== null) &&
     PERMISSION_FIELDS.every((field) => record[field] !== null) &&
     record.redistributionAllowed === true &&

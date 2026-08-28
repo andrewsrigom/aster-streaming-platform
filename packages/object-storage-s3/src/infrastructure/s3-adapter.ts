@@ -8,6 +8,7 @@ import {
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
+  PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -65,6 +66,7 @@ const KNOWN_OPTIONS = new Set([
 
 const COMPLETED = Object.freeze({ status: "completed" } as const);
 const NOT_FOUND = Object.freeze({ status: "not_found" } as const);
+const ALREADY_EXISTS = Object.freeze({ status: "already_exists" } as const);
 const TIMED_OUT = Object.freeze({ status: "timed_out" } as const);
 const ABORTED = Object.freeze({ status: "aborted" } as const);
 const UNAVAILABLE = Object.freeze({ status: "unavailable" } as const);
@@ -142,8 +144,11 @@ export interface AsterS3Client {
       source: Readable;
       contentLength: number;
       contentType: string | undefined;
+      cacheControl?: "public, max-age=31536000, immutable";
       queueSize: number;
       partSizeBytes: number;
+      ifAbsent?: true;
+      checksumSha256?: string;
     }>,
     signal: AbortSignal,
   ): Promise<void>;
@@ -180,6 +185,8 @@ class AsterObjectLengthError extends Error {
     this.name = "AsterObjectLengthError";
   }
 }
+
+class AsterObjectAlreadyExistsError extends Error {}
 
 function issue(
   option: AsterObjectStorageConfigurationIssue["option"],
@@ -544,6 +551,7 @@ function outcomeFor(result: AsterObjectStorageOperationResult): AsterObservation
     case "aborted":
       return "cancelled";
     case "not_found":
+    case "already_exists":
       return "success";
     case "unavailable":
       return "unavailable";
@@ -555,13 +563,17 @@ function outcomeFor(result: AsterObjectStorageOperationResult): AsterObservation
 }
 
 function isNotFound(error: unknown): boolean {
+  return httpStatus(error) === 404;
+}
+
+function httpStatus(error: unknown): unknown {
   try {
     if (typeof error !== "object" || error === null) {
       return false;
     }
     const metadata = Object.getOwnPropertyDescriptor(error, "$metadata")?.value as
       object | undefined;
-    return Object.getOwnPropertyDescriptor(metadata ?? {}, "httpStatusCode")?.value === 404;
+    return Object.getOwnPropertyDescriptor(metadata ?? {}, "httpStatusCode")?.value;
   } catch {
     return false;
   }
@@ -607,13 +619,26 @@ function keyFrom(input: unknown): string | undefined {
 }
 
 function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteInput | undefined {
-  if (!validPlainInput(input, ["key", "source", "contentLength", "contentType"])) {
+  if (
+    !validPlainInput(input, [
+      "key",
+      "source",
+      "contentLength",
+      "contentType",
+      "cacheControl",
+      "ifAbsent",
+      "checksumSha256",
+    ])
+  ) {
     return undefined;
   }
   const key = ownDataValue(input, "key");
   const source = ownDataValue(input, "source");
   const contentLength = ownDataValue(input, "contentLength");
   const contentType = ownDataValue(input, "contentType");
+  const cacheControl = ownDataValue(input, "cacheControl");
+  const ifAbsent = ownDataValue(input, "ifAbsent");
+  const checksumSha256 = ownDataValue(input, "checksumSha256");
   if (
     !validKey(key) ||
     !(source instanceof Readable) ||
@@ -621,7 +646,13 @@ function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteI
     !Number.isSafeInteger(contentLength) ||
     contentLength < 0 ||
     contentLength > maximumBytes ||
-    !validContentType(contentType)
+    !validContentType(contentType) ||
+    (cacheControl !== undefined &&
+      (cacheControl !== "public, max-age=31536000, immutable" || ifAbsent !== true)) ||
+    (ifAbsent !== undefined && ifAbsent !== true) ||
+    (ifAbsent === true
+      ? typeof checksumSha256 !== "string" || !/^[a-f0-9]{64}$/u.test(checksumSha256)
+      : checksumSha256 !== undefined)
   ) {
     return undefined;
   }
@@ -630,6 +661,8 @@ function writeInputFrom(input: unknown, maximumBytes: number): AsterObjectWriteI
     source: source,
     contentLength,
     ...(contentType === undefined ? {} : { contentType }),
+    ...(cacheControl === undefined ? {} : { cacheControl }),
+    ...(ifAbsent === true ? { ifAbsent, checksumSha256: checksumSha256 as string } : {}),
   };
 }
 
@@ -723,6 +756,24 @@ function defaultClientFactory(configuration: AsterS3ClientConfiguration): AsterS
       );
     },
     async write(input, signal): Promise<void> {
+      if (input.ifAbsent) {
+        // A conditional single PUT has no multipart upload to orphan after a 412 response.
+        await client.send(
+          new PutObjectCommand({
+            Bucket: input.bucket,
+            Key: input.key,
+            Body: input.source,
+            ContentLength: input.contentLength,
+            ...(input.contentType ? { ContentType: input.contentType } : {}),
+            ...(input.cacheControl ? { CacheControl: input.cacheControl } : {}),
+            IfNoneMatch: "*",
+            ChecksumAlgorithm: ChecksumAlgorithm.SHA256,
+            ChecksumSHA256: Buffer.from(input.checksumSha256 as string, "hex").toString("base64"),
+          }),
+          { abortSignal: signal },
+        );
+        return;
+      }
       const abortController = new AbortController();
       const onAbort = (): void => {
         abortController.abort();
@@ -932,6 +983,11 @@ export function createAsterObjectStorageAdapterWithClientFactory(
         finalResult = INVALID_REQUEST;
         return finalResult;
       }
+      if (result.error instanceof AsterObjectAlreadyExistsError) {
+        state = "open";
+        finalResult = ALREADY_EXISTS;
+        return finalResult;
+      }
       if (result.error instanceof AsterObjectProtocolError) {
         destroyClient(owned);
         finalResult = FAILED;
@@ -1000,18 +1056,37 @@ export function createAsterObjectStorageAdapterWithClientFactory(
           try {
             const settlements = await Promise.allSettled([
               feed,
-              owned.write(
-                {
-                  bucket: options.bucket,
-                  key: validated.key,
-                  source: validator,
-                  contentLength: validated.contentLength,
-                  contentType: validated.contentType,
-                  queueSize: options.uploadQueueSize,
-                  partSizeBytes: options.uploadPartSizeBytes,
-                },
-                operationSignal,
-              ),
+              owned
+                .write(
+                  {
+                    bucket: options.bucket,
+                    key: validated.key,
+                    source: validator,
+                    contentLength: validated.contentLength,
+                    contentType: validated.contentType,
+                    ...(validated.cacheControl ? { cacheControl: validated.cacheControl } : {}),
+                    queueSize: options.uploadQueueSize,
+                    partSizeBytes: options.uploadPartSizeBytes,
+                    ...(validated.ifAbsent
+                      ? {
+                          ifAbsent: true as const,
+                          checksumSha256: validated.checksumSha256 as string,
+                        }
+                      : {}),
+                  },
+                  operationSignal,
+                )
+                .catch((error: unknown) => {
+                  const failure =
+                    validated.ifAbsent && httpStatus(error) === 412
+                      ? new AsterObjectAlreadyExistsError("Immutable object already exists.")
+                      : error instanceof Error
+                        ? error
+                        : new Error("Object write failed.");
+                  // Early server rejection must unblock the source pipeline, not wait for its deadline.
+                  validator.destroy(failure);
+                  throw failure;
+                }),
             ]);
             const failure = settlements.find(
               (settlement): settlement is PromiseRejectedResult => settlement.status === "rejected",

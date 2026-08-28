@@ -11,6 +11,11 @@ import { verifyWorkflow } from "./workflow-postgres.js";
 import { verifyOperatorCli } from "./operator-cli.js";
 import { verifyPublicCatalog } from "./public-postgres.js";
 import { verifySourceCandidates } from "./generated-publication.js";
+import { verifyMediaRequests } from "./media-postgres.js";
+import { verifyAcquisitions } from "./acquisition-postgres.js";
+import { verifyProcessing } from "./processing-postgres.js";
+import { verifyAttestation } from "./attestation-postgres.js";
+import { verifyPublicationRollback } from "./rollback-postgres.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -405,6 +410,7 @@ async function verify() {
   await verifyWorkflow(admin, makeDatabase());
   await verifyOperatorCli(admin, port);
   await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
+  await verifyPublicationRollback(admin, makeDatabase());
   await verifyPublicCatalog(admin, makeDatabase(), makeDatabase("aster_catalog_reader_fixture"));
   await verifySourceCandidates(
     admin,
@@ -412,6 +418,10 @@ async function verify() {
     makeDatabase("aster_catalog_reader_local"),
     process.env["ASTER_GENERATED_HLS_REPORT"],
   );
+  await verifyMediaRequests(admin, makeDatabase());
+  await verifyAcquisitions(admin, makeDatabase());
+  await verifyProcessing(admin, makeDatabase());
+  await verifyAttestation(admin, makeDatabase(), makeDatabase("aster_catalog_attester_local"));
 }
 try {
   await verify();
@@ -424,7 +434,7 @@ try {
         ? error.stack
             ?.split("\n")
             .filter((line) =>
-              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication)\.js/u.test(
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres|processing-postgres|attestation-postgres|rollback-postgres)\.js/u.test(
                 line,
               ),
             )

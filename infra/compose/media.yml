@@ -1,0 +1,229 @@
+services:
+  media-publish:
+    profiles: [media]
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-publication
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    entrypoint: ["node", "./dist/src/publish-media-local.js"]
+    command: []
+    environment:
+      NODE_OPTIONS: --max-old-space-size=128
+      ASTER_ENVIRONMENT: local
+      ASTER_MEDIA_PUBLICATION_ENABLED: "true"
+      ASTER_CATALOG_ATTESTER_DATABASE_URL: postgresql://aster_catalog_attester_local@postgres:5432/aster
+      ASTER_CATALOG_ATTESTER_DATABASE_PASSWORD: aster-test-only
+    networks: [platform]
+    user: "1000:1000"
+    init: true
+    read_only: true
+    tmpfs: ["/tmp:size=32m,mode=1777"]
+    cpus: 1
+    mem_limit: 256m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck: { disable: true }
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options: { max-size: "5m", max-file: "2" }
+  media-origin-init:
+    profiles: [media]
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-publication
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    entrypoint: ["node", "./dist/src/prepare-publication-local.js"]
+    command: []
+    depends_on:
+      storage:
+        condition: service_healthy
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_MEDIA_PUBLICATION_ENABLED: "true"
+    networks: [platform]
+    user: "1000:1000"
+    init: true
+    read_only: true
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 32
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck: { disable: true }
+    restart: "no"
+  media-origin:
+    profiles: [media]
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-publication
+    image: docker.io/versity/versitygw:v1.7.0@sha256:c4cbd9d9cb8dedbb055ac788dbd02635651b9b1cebac95b095b3217231aa87ad
+    entrypoint: ["/usr/local/bin/versitygw"]
+    command:
+      [
+        "--port",
+        ":9001",
+        "--health",
+        "/health",
+        "--quiet",
+        "--readonly",
+        "--max-connections",
+        "64",
+        "--max-requests",
+        "16",
+        "posix",
+        "--concurrency",
+        "8",
+        "/data",
+      ]
+    depends_on:
+      media-origin-init:
+        condition: service_completed_successfully
+    environment:
+      ROOT_ACCESS_KEY: aster-test-access
+      ROOT_SECRET_KEY: aster-test-only
+    ports: ["127.0.0.1:9001:9001"]
+    networks: [edge]
+    volumes: ["storage-data:/data:ro"]
+    read_only: true
+    tmpfs: ["/tmp:size=16m,mode=1777"]
+    cpus: 0.5
+    mem_limit: 128m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9001/health"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
+    logging:
+      options: { max-size: "5m", max-file: "2" }
+  media-prepare:
+    profiles: [media]
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    entrypoint: ["node", "./dist/src/acquire-local.js"]
+    command: []
+    environment:
+      NODE_OPTIONS: --max-old-space-size=128
+      ASTER_ENVIRONMENT: local
+      ASTER_CATALOG_OPERATOR_ENABLED: "true"
+      ASTER_MEDIA_ACQUISITION_ENABLED: "true"
+      ASTER_MEDIA_PREPARE_DECODER_ENABLED: "true"
+      ASTER_CATALOG_DATABASE_URL: postgresql://aster_catalog_local@postgres:5432/aster
+      ASTER_CATALOG_DATABASE_PASSWORD: aster-test-only
+    networks: [platform]
+    volumes:
+      - media-decoder-input:/decoder-input
+      - media-decoder-output:/decoder-output:ro
+    user: "1000:1000"
+    init: true
+    read_only: true
+    cpus: 1
+    mem_limit: 512m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck: { disable: true }
+    restart: "no"
+  media-decoder:
+    profiles: [media]
+    build:
+      context: ../..
+      dockerfile: infra/docker/media-decoder.Dockerfile
+    environment:
+      ASTER_MEDIA_DECODER: local
+      NODE_OPTIONS: --max-old-space-size=128
+    network_mode: none
+    volumes:
+      - media-decoder-input:/input:ro
+      - media-decoder-output:/output
+    tmpfs:
+      - /work:size=768m,uid=1000,gid=1000,mode=0700
+      - /tmp:size=16m,mode=1777
+    user: "1000:1000"
+    init: true
+    read_only: true
+    cpus: 1
+    mem_limit: 1g
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options: { max-size: "5m", max-file: "2" }
+  media-acquire:
+    profiles: [media]
+    build:
+      context: ../..
+      dockerfile: infra/docker/catalog.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-acquisition
+    entrypoint: ["node", "./dist/src/acquire-local.js"]
+    command: []
+    depends_on:
+      catalog-init:
+        condition: service_completed_successfully
+      storage:
+        condition: service_healthy
+    environment:
+      NODE_OPTIONS: --max-old-space-size=128
+      ASTER_ENVIRONMENT: local
+      ASTER_CATALOG_OPERATOR_ENABLED: "true"
+      ASTER_MEDIA_ACQUISITION_ENABLED: "true"
+      ASTER_CATALOG_DATABASE_URL: postgresql://aster_catalog_local@postgres:5432/aster
+      ASTER_CATALOG_DATABASE_PASSWORD: aster-test-only
+    networks: [platform, media-egress]
+    user: "1000:1000"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=300m,mode=1777
+    cpus: 1
+    mem_limit: 512m
+    pids_limit: 64
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      disable: true
+    restart: "no"
+    stop_grace_period: 5s
+    logging:
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  media-egress:
+    driver: bridge
+    labels:
+      com.aster.environment: local
+      com.aster.scope: media-acquisition
+
+volumes:
+  media-decoder-input:
+    name: ${COMPOSE_PROJECT_NAME}_media-decoder-input${ASTER_MEDIA_RUN_SUFFIX:-}
+    driver: local
+    driver_opts: { type: tmpfs, device: tmpfs, o: "size=300m,uid=1000,gid=1000,mode=0700" }
+    labels:
+      com.aster.owner: catalog-media
+      com.aster.authority: disposable-local
+  media-decoder-output:
+    name: ${COMPOSE_PROJECT_NAME}_media-decoder-output${ASTER_MEDIA_RUN_SUFFIX:-}
+    driver: local
+    driver_opts: { type: tmpfs, device: tmpfs, o: "size=520m,uid=1000,gid=1000,mode=0700" }
+    labels:
+      com.aster.owner: catalog-media
+      com.aster.authority: disposable-local

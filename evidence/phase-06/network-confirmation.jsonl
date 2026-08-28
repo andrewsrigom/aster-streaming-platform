@@ -1,0 +1,3 @@
+{"stage":"dns","addresses":["104.20.41.146","172.66.172.236"]}
+{"stage":"lookup","options":{"family":4,"hints":0}}
+{"stage":"head","status":200,"bytes":"121284117","etag":"\"6a60ff9c-73aa615\""}

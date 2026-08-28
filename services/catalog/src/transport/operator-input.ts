@@ -5,7 +5,9 @@ import { catalogRecord } from "../domain/values.js";
 export async function readOperatorInput(
   source: Readable,
   signal: AbortSignal,
-): Promise<Readonly<{ command: CatalogCommandKind | "inspect"; input: unknown }>> {
+): Promise<
+  Readonly<{ command: CatalogCommandKind | "inspect" | "request-media"; input: unknown }>
+> {
   const parts: Buffer[] = [];
   let bytes = 0;
   addAbortSignal(signal, source);
@@ -28,11 +30,14 @@ export async function readOperatorInput(
     !input ||
     ![
       "inspect",
+      "request-media",
       "create",
       "edit",
       "review",
       "media-ready",
       "publish",
+      "replace",
+      "rollback",
       "retire",
       "dispute",
       "expire",
@@ -41,5 +46,8 @@ export async function readOperatorInput(
   ) {
     throw new Error("Invalid Catalog command.");
   }
-  return { command: input["command"] as CatalogCommandKind | "inspect", input: input["input"] };
+  return {
+    command: input["command"] as CatalogCommandKind | "inspect" | "request-media",
+    input: input["input"],
+  };
 }

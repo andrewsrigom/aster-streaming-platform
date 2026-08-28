@@ -2,26 +2,37 @@
 
 ## Resume point
 
-P05-R01 is IN_PROGRESS on feat/p05-web-ssr in PR 22. Phases 00–04 are released; main is b6c99c4. Code candidate e4708c4c32ef09d901dd040f9ed87e92426e9406 passes protected CI 33132459201 (all six jobs) and confirmation review 5447217847 reports no major issues. Initial review threads are resolved. The batched remediation is documented in evidence/phase-05/pr22-remediation.md and pr22-remediation.json.
+P06-R01 final diagnostic correction is local: external confirmation of d885647 found only ambiguous barrier creation reporting recovery false. Focused strict build/lint/tests pass; no policy/SQL/media behavior changed. Commit/push and resolve review thread PRRT_kwDOUEkeis6dG01W (comment 3879091432), then require exact-head protected CI. Do not request another broad review or repeat media evidence for this reporting-only correction. Preserve P07 local work in stash 2b0341cbb5604f007fc2206edaf8b37b9c9b1cef; feat/p07-playback currently points to d885647. Its publication projection/queries passed 12 tests, but are not a running Playback service.
 
-## Current acceptance
+P06-R01 / Phase 06 remains IN_PROGRESS on feat/p06-media-pipeline; PR 23 is ready. Full Phase 00–14 goal remains active. Released main is f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 (Phases 00–05).
 
-Final source gate: 58/58, 39 cached, 55.482 s. Final-image functional run: 20/21; the first artifact-scan GET had a socket reset. Its complete focused confirmation passes 1/1. Web shows zero restart/OOM/server error. All 21 distinct scenarios, including both review regressions and preserved button alignment, have passing current evidence.
+Head 9723032 passed full protected CI 33153640859. Confirmation found a new rights/access race and stale guide. Current correction holds the policy barrier through current approval/restricted SQL registration, restores only rejected new grants, preserves prior grants and records bounded uncertain-failure recovery. Focused 27/27, source 51/51 and real S3 race/rejection tests pass. [Current evidence](../evidence/phase-06/rights-access-confirmation.md). Finish final storage/docs closeout and one coherent commit/push; require new exact-head protected CI and confirmation, not another ready transition.
 
-Both independently invoked final mobile blocks pass unchanged budgets: initial JavaScript 232506 bytes (8426 fewer), cumulative 250806; hydration 3019.2/3490.5/3058.5 then 2949.7/2727.6/2976.6 ms. Across six visits LCP is 1520–1608, INP 88–184 and CLS 0. Final confirmation at 01:22:18Z met the existing preconditions, after the earlier deferred preflight. Raw second-block evidence: evidence/phase-05/performance-final-confirmation.json. The shared Windows host was not modified. No additional unchanged benchmark is required.
+Initial PR head 459607b407d1b6f0fd63b5416d06a9fc34b4b36d / CI 33151304060 is not release proof. Initial review found partial-object exposure; CI found the standalone probe's obsolete migrations 1–3 expectation. Both are corrected locally. [Access evidence](../evidence/phase-06/publication-access.md) records the real storage test and retained migration. Candidate source/confirmation/protected release still must close.
 
-## Runtime and retained data
+## Exact next actions
 
-Development Web/Router remain on 3000/4000 in project aster-p04-development. Web image: sha256:25d53997edea8dca8afe246324bfa1eab06eb412131a4178b1308b8e60a5ef90. All 14 traced runtime packages map to 73 notice entries/205 checked artifact hashes.
+1. Final diagnostic correction passes focused 32/32, strict build and affected lint. Prior source 51/51 and real S3 remain supporting evidence; new exact-head source CI is required.
+2. Commit with normal hooks, push the existing PR branch once and resolve the diagnosed review finding. The complete external round and local remediation confirmation are recorded; no new broad review, old-head rerun or bypass.
+3. Squash only after checks/review pass, fetch clean main and verify the exact post-merge CI.
+4. Mark P06-R01 done and start Phase 07 (Playback owner, product player and fresh-volume Docker playable demo). No other active work item.
 
-Compose uses compose.yml, observability.yml and demo.yml with --profile observability. Browser commands use ASTER_ROUTER_CONTAINER=aster-p04-development-router-1 and ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome. No overlapping build/browser/performance suites.
+The unsupported ACL experiment is not retained in code. Exact-prefix bucket policy is the supported path; a private conditional-create control lock serializes grants. Ambiguous failures keep the barrier until operator recovery fences publishers/private writer. Read the recovery section before deleting any control lock. No automatic S3 lifecycle deletion or hosted multi-writer claim.
 
-Only the labeled mount-free aster-p05-pr22-before diagnostic container was removed; image/raw records remain. Retained aster/development databases, earlier reader archives and clean checkout are preserved.
+## Retained runtime
 
-## Next action
+Project aster-p04-development: actual Big Buck Bunny is PUBLISHED, title 00000000-0000-4000-8000-000000080001, version 9, rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. Original review 2 and all immutable source/processing/audit remain.
 
-Publish the evidence-only closeout, wait for its exact-head protected CI, squash merge without bypass and verify post-merge. The code confirmation is complete; do not request another review or repeat unchanged Docker/browser/reader experiments for prose-only evidence. Only start Phase 06 after ordered release, or on an explicitly frozen WAITING_EXTERNAL predecessor under the repository contract.
+Bundle 3c61f68d54f5e9035ae9fca9416baf9b45fdd547faa074b6caf3a4b4e6e7792d: 209 objects / 95496764 bytes under aster-media-published/publications/HASH/. Policy now grants only that complete prefix. All 209 anonymous HEADs, CORS, Range, negative private/listing/other-prefix checks and Web 200 pass after restriction. No media or editorial bytes changed. The migration barrier was removed successfully.
+
+HLS attempt 68e41f87-ca12-44ff-96d3-8a9e66d67795; artwork attempt 7674df29-2a04-4055-bcc8-cef60449520f. Full checksums/manifests are in [publication evidence](../evidence/phase-06/publication.md) and [browser evidence](../evidence/phase-06/browser.md). Do not re-download or re-encode unchanged media.
+
+Retained schema is 0007. Additive 0008 is tested but must be applied before replace/rollback. Serving Catalog remains image sha256:25d7222f4118115d8bb034bd573401714b9ac7078a5621ff7d6b98bd8e80f860. Media origin is loopback 9001, edge-only, storage read-only; private writer remains concurrency one. Web/Router remain 3000/4000.
+
+## Execution environment
+
+Windows Codex, repository through WSL UNC. WSL command launch is unreliable; do not restart or diagnose host/CPU. Use the existing aster-p06-tooling:git Docker image with canonical repo mount, UID 1002, bounded resources. Full source gate uses pnpm check:source --concurrency=2 and pids-limit 256; this limits test scheduling, not a benchmark. Native Docker and Windows Node can run built-in-only supervisors. Native Windows Git credential helper can push; local commits use Docker Git and normal hooks.
 
 ## Do not do yet
 
-Phase 06 first requires actual-film rights approval before acquisition and current FFmpeg/object-storage checks. The synthetic seed is not film approval or playable delivery. Keep the full Phase 00–14 goal active.
+Do not merge before corrected exact-head CI/confirmation or start Phase 07 before the documented transition. Preserve all retained volumes/media, user Windows processes and existing app. No broad Docker prune/reset, no new film encode or unchanged browser/CPU benchmark. Native Git may show spurious UNC executable-mode changes; Docker Git is authoritative for Linux modes. Never create/use a codex/ branch.

@@ -65,6 +65,9 @@ export interface AsterObjectWriteInput {
   readonly source: Readable;
   readonly contentLength: number;
   readonly contentType?: string;
+  readonly cacheControl?: "public, max-age=31536000, immutable";
+  readonly ifAbsent?: true;
+  readonly checksumSha256?: string;
 }
 
 export interface AsterObjectReadInput {
@@ -75,6 +78,7 @@ export interface AsterObjectReadInput {
 export type AsterObjectStorageOperationResult =
   | Readonly<{ status: "completed" }>
   | Readonly<{ status: "not_found" }>
+  | Readonly<{ status: "already_exists" }>
   | Readonly<{ status: "timed_out" }>
   | Readonly<{ status: "aborted" }>
   | Readonly<{ status: "unavailable" }>

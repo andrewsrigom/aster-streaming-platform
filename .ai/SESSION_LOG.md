@@ -2,6 +2,234 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Final lock-recovery diagnosis and saved Playback progress
+
+### Completed
+
+The d885647 candidate passed protected CI. Its complete confirmation reported one diagnostic gap: an accepted conditional lock with a lost response could report recovery false. Corrected uncertainty classification while preserving definite contention and pre-aborted no-write behavior. No grant/restore/SQL/media change. Local P07 current-publication projection and bounded batched queries passed 12 tests; preserved in named stash 2b0341c before returning to the predecessor correction.
+
+### Evidence
+
+[Focused recovery tests](../evidence/phase-06/lock-recovery-focused.txt), strict Catalog build and affected lint; [existing source/storage/confirmation evidence](../evidence/phase-06/rights-access-confirmation.md). No CPU or media experiment repeated.
+
+### Next action
+
+Push the narrow coherent correction, close the diagnosed review finding and require exact-head protected CI before squash/post-merge. Restore/rebase the saved P07 work; no dependent publication before predecessor release. Full goal remains active.
+
+## 2026-08-28 — Phase 06 rights/access confirmation correction
+
+### Completed
+
+Protected CI passed for 9723032; confirmation found a post-grant rights race and stale acquisition guide. Keep the access barrier through current approval and restricted SQL registration; compensate only rejected new grants and preserve prior ones. Persist recovery snapshot, bound cancellation cleanup and report uncertain recovery. Correct implemented/migration claims. No retained-media/Windows/CPU changes.
+
+### Evidence
+
+[Current correction](../evidence/phase-06/rights-access-confirmation.md): focused 27/27, source 51/51, real S3 first-grant expiry and post-grant rights/registration rejection with prior reads preserved. Exact disposable fixture removed; unchanged film/browser/SQL evidence retained.
+
+### Next action
+
+Finish final storage/docs closeout, commit/push one coherent correction, require exact-head protected CI and confirmation, squash/post-merge, then activate Phase 07. Full Phase 00–14 goal remains active.
+
+## 2026-08-28 — Phase 06 initial-review and CI correction
+
+### Completed
+
+Second coherent batch addresses initial external review 5048873748: finish image builds before the owner/deadline; permit attestation of prior checksum/recipe computation for another independently approved title. Real two-title publication/replay/disputes and source 51/51 pass; old provenance and SQL grants remain unchanged. [Review evidence](../evidence/phase-06/review-remediation.md). No media/CPU experiment repeated.
+
+Initial PR 23 review found P06-R08 partial-object exposure; drafted the PR. CI 33151304060 independently caught the standalone probe's obsolete migration expectation after passing source, governance, dependency/platform and real Catalog media checks. Batched both corrections. An object-ACL experiment failed 501; replaced it with supported exact-prefix policy, whole-bundle verification and a non-expiring conditional-create recovery barrier. Ten focused access/bundle tests and the real nine-object storage fixture pass. Restricted the retained 209-object / 95496764-byte bundle after full checksum/current-rights/reference checks; all anonymous HEADs, Range/CORS/negative permissions and Web 200 pass. No source GET/encode, CPU test, media deletion or editorial writes. [Evidence](../evidence/phase-06/publication-access.md). Finish corrected candidate gates/confirmation and protected release, then Phase 07; full goal remains active.
+
+### Evidence
+
+[Access correction](../evidence/phase-06/publication-access.md), [source gate 51/51](../evidence/phase-06/access-source.txt), unchanged full-film/SQL/browser evidence in the acceptance matrix.
+
+### Next action
+
+Finish corrected documentation/confirmation, publish the coherent correction to PR 23 and require protected/post-merge release before Phase 07.
+
+## 2026-08-28 — Phase 06 acceptance candidate
+
+### Completed
+
+Consolidated browser verification in f28c442. Mapped all twelve requirements to source/failure/real-dependency/media evidence. Resolved retention in ADR-0026: orphan scratch is disposable; immutable objects remain intentionally retained for checked recovery, not automatically garbage-collected. Hosted lifecycle fencing/budget is explicitly P14-R11. No architecture invariant, permission, film byte or retained schema changed.
+
+### Evidence
+
+[Local acceptance matrix](../evidence/phase-06/acceptance.md), source 51/51 without cache, six real browser samples with zero errors, and current registry audit with zero high/critical and one previously triaged moderate advisory. Reuse the unchanged PostgreSQL/S3/full-film evidence; no new CPU experiment or encoding.
+
+### Next action
+
+Publish one coherent Phase 06 candidate, require protected exact-head CI and confirmation, squash without bypass and verify post-merge. Then begin Phase 07 from released main; keep the complete Phase 00–14 goal active.
+
+## 2026-08-28 — Real browser HLS acceptance
+
+### Completed
+
+Added a bounded loopback technical probe with strict TypeScript and pinned HLS.js 1.7.1. One real run decoded both approved renditions at beginning/middle/end: six samples and zero errors. Existing CORS, retained media and product UI are unchanged. The probe container was removed and the exact Web restored, home HTTP 200. No CPU diagnostic, source GET or encoding.
+
+### Evidence
+
+[Browser evidence](../evidence/phase-06/browser.md) includes raw frame/time/dimension counts, upstream notices and reproducible command. Focused guards and full source gate pass 51/51 without cache (1m49.398s). Initial missing upstream type dependencies were fixed narrowly. An initial default-concurrency gate exhausted its container PID bound; concurrency two completed without host investigation.
+
+### Next action
+
+Resolve the storage-prefix orphan retention/cleanup boundary and finish full Phase 06 acceptance/release. Product player stays Phase 07; complete Phase 00–14 goal remains active.
+
+## 2026-08-28 — Abandoned media scratch recovery
+
+### Completed
+
+Started from rollback checkpoint f3c5379. Candidate scratch names now contain the run UUID. Added local dry-run/apply recovery for an explicit expired project/run, with exact identity/type/options, stopped-state, foreign-consumer and deadline guards. No force or retained-object deletion. Interrupted cleanup can resume without touching a later run.
+
+### Evidence
+
+[Scratch recovery](../evidence/phase-06/scratch.md): six focused checks and a real disposable Docker fixture pass, including Compose naming, young-run refusal, controlled-clock expiry, foreign-consumer refusal, dry run, deletion and empty replay. Only the fixture's containers/two tmpfs volumes were removed. No film download/encode, CPU diagnostic, retained data or serving restart. Source gate 51/51 (38 cached, 44.208 s) and documentation/security 10/10 (7.001 s) pass.
+
+### Next action
+
+Consolidate scratch recovery, assess remaining storage-prefix orphan retention/cleanup explicitly, verify representative browser HLS playback, then complete Phase 06 acceptance/release. Keep the full Phase 00–14 goal active.
+
+## 2026-08-28 — Compatible publication replacement and rollback
+
+### Completed
+
+Consolidated actual first-film publication in 4bc9b3a. Added owner replacement/rollback with current approval/source matching, unchanged metadata, optimistic version, reason/audit and atomic publication event. Migration 0008 adds append-only activation history independent of outbox delivery, with exact backfill and a restricted fixed-search-path trigger. Rollback cannot activate unused candidates or revive disputed/old rights.
+
+### Evidence
+
+[Rollback](../evidence/phase-06/rollback.md): 18 focused checks and full real PostgreSQL integration pass. Includes migration round-trip/backfill, history privilege denial, exact replay, post-trigger failure/cancellation, forged-event rejection and both dispute lock orders. Initial lint issues and a synthetic title leaking into the shared browse fixture were corrected together; production behavior was unchanged. Source gate 51/51 (39 cached, 47.578 s; 158 Catalog tests) and documentation/security 10/10 (4.673 s) pass. No CPU test, source GET, encode, real media rewrite, retained migration or serving restart. Only labelled disposable PostgreSQL fixtures were removed.
+
+### Next action
+
+Consolidate rollback, then finish orphan recovery, representative HLS browser playback and Phase 06 acceptance/release. Keep P06-R01 and the complete Phase 00–14 goal active.
+
+## 2026-08-28 — First-film immutable publication
+
+### Completed
+
+Built the bundle from retained HLS/JPEG reports and stable attribution, added bounded master-last copies and restricted attestation migration 0007. Preserved original review history while approving actual modifications/artwork. First film is version 9 / rights revision 4 / PUBLISHED, with 209 verified objects on loopback 9001. Read-only origin uses the existing edge bridge because Docker internal-only networks do not activate published ports; no private-network connectivity or writer changes.
+
+### Evidence
+
+[Publication](../evidence/phase-06/publication.md): 25 focused tests, full PostgreSQL authority/activation/dispute checks and real S3 replay/MIME/cache. Actual copy: 6.657 s, 95496764 bytes, process RSS peak 101466112 bytes. Source 51/51 (31 cached, 1m12.92s), Catalog 153 tests. Existing title/global attribution SSR returns 200 after upgrading only Catalog; Web/Router/database unchanged. Initial fixture-clock and Compose profile/network/startup checks were corrected. No CPU testing, download, encode, host restart or public remote mutation. Two unused temporary volumes were removed; retained data preserved. Documentation/security closeout passes 10/10 in 5.08 s.
+
+### Next action
+
+Implement prior-publication rollback/orphan handling and representative browser playback before Phase 06 release. Keep P06-R01 and the full Phase 00–14 goal active.
+
+## 2026-08-28 — Verified publication foundation
+
+### Completed
+
+Implemented current-approved-checksum original reuse without source GET, narrow local-media URLs/default-hosted rejection, and a separate read-only S3 origin/initializer under ADR-0026. Added a Docker-only synthetic origin test runner and Compose/endpoint guards. Initial review found request-only checksum reuse insufficient; owner-derived approval and confirmation tests close it.
+
+### Evidence
+
+Evidence: [publication foundation](../evidence/phase-06/publication-foundation.md), 13 focused confirmation tests, full Catalog PostgreSQL integration and real anonymous/private/write/CORS/Range checks. Initial runner noexec/heap limits and strict-null lint were corrected locally; no CPU testing, host changes, retained-data edits, re-encoding or downloads. Repository source/closeout outputs are linked in the evidence. Fixtures were removed; only build caches remain.
+
+### Next action
+
+Next: immutable publication bundle, truthful approved modifications/artwork, restricted attestation and Catalog activation; P06-R01 and the complete Phase 00–14 goal remain active.
+
+## 2026-08-28 — Independent derived artwork
+
+### Completed
+
+Closed durable processing at 155cefc with normal hooks. Implemented frame-jpeg-v1 in the existing isolated worker and Catalog coordinator: source-aware posters/thumbnails, strict report grammar, separate recipe keys and unchanged HLS. Generated five real JPEGs, retained them privately, inspected every image and replayed the same durable attempt without another decoder/write. No migration, publication, new source GET or full-film encode.
+
+### Evidence
+
+Evidence/phase-06/artwork.md: 48 focused tests, deterministic synthetic FFmpeg output, PostgreSQL recipe/slot/rights isolation, actual retained result and independent SQL/hash readback. Source gate 51/51 passed (36 cached). Initial test expectation/lint issues were corrected; the Windows-native PostgreSQL harness could not resolve Linux symlinks, so the same suite passed in a scoped Docker client. Owner programs, retained data and normal Git hooks remain intact. No CPU benchmark.
+
+### Next action
+
+Restricted attestation, artwork approval, truthful public modification attribution and immutable origin/Catalog publication. Keep P06-R01 and the complete Phase 00–14 goal active. Do not repeat successful artwork/HLS experiments for prose-only closeout.
+
+## 2026-08-28 — Durable processing and candidate replay
+
+### Completed
+
+Implemented ADR-0024, migration 0006, fenced 30-minute processing leases, three attempts/checksum-recipe, classified recovery and current-rights reuse. Integrated the finite coordinator, bounded private report/object verification and graceful job stop. Applied only migration 6 to retained development data; adopted the existing 203-object candidate as attempt 68e41f87-ca12-44ff-96d3-8a9e66d67795 and default-replayed the exact result. No source GET, encode, media write or editorial publication occurred.
+
+### Evidence
+
+Evidence: evidence/phase-06/processing.md, 19 focused tests, disposable PostgreSQL concurrency/recovery/rollback/privilege checks and actual adoption/replay/readback. Final affected gate: 61/61 successful, 44 cached, 136.578 seconds. One transient Windows-to-WSL piped read failed to connect; the bounded bash read succeeded without diagnostics or host changes. Review covered selector conflicts, cancellation audit and owned cleanup. Unchanged HLS/Web evidence was retained.
+
+Later WSL command launches returned Wsl/Service/0x8007274c while repository files remained accessible. Bundled Windows Node 24.19.0 ran documentation checks; a scoped Docker tooling image now supplies the pinned Node/pnpm and Git against the same checkout, with no network or privileged host access during repository operations. The configured author identity and normal hooks are preserved. No WSL/Docker restart, CPU baseline, global configuration change or hook bypass was attempted.
+
+### Next action
+
+Next: reviewed artwork, accurate transformation attribution, restricted technical attestation and public-origin/Catalog publication. P06-R01 and the complete Phase 00–14 goal remain active.
+
+## 2026-08-28 — Isolated full-film HLS and private candidate retention
+
+### Completed
+
+Implemented the strict TypeScript decoder, bounded ZIP extraction/CRC/checksums, source/output probes, no-upscale HLS, full decode and process-group cancellation. Added Catalog-authorized original handoff, finite rights checking, independent file/S3 validation and report-last private retention. The real film produces 203 media objects in two qualities; no public pointer changes. Original, candidate, audit and serving services remain; owned job containers/tmpfs are cleaned.
+
+### Evidence
+
+See evidence/phase-06/decoder.md, decoder-candidate.json and decoder-postgres.jsonl. Worker tests pass 23/23; Catalog has nine new handoff tests and its existing suite. Real PostgreSQL confirms original access and revocation after acquisition. The initial film probe correctly rejected an assumed even input height: the source is 640×359. The adapted source-aware recipe passed full decoding. Review fixed missing-stderr diagnostics, atomic report visibility, bounded reports, local/run-owned cleanup and a test's expected version after its explicit rights dispute. Final affected gate: 61/61 successful, 31 cached, 91.477 seconds. Unchanged film processing was not repeated for prose/host-guard-only edits.
+
+### Next action
+
+Complete durable processing/attestation, reviewed artwork, accurate publication attribution, public-origin delivery and Catalog publication. Reuse the retained HLS candidate; Phase 06 and the complete Phase 00–14 goal remain active. No further Windows resource baseline is needed.
+
+## 2026-08-28 — Fenced streaming acquisition and first immutable original
+
+### Completed
+
+Implemented ADR-0022 acquisition: bounded durable attempts, lease recovery and terminal fencing, rights watchdog, pinned-public-IP HTTPS streaming, checksums, private conditional S3 originals and a resource-limited local job. Applied additive 0004/0005 and the approved first-film request without editorial changes. Acquired 121284117 bytes in 12.003 s; stored/read back exact SHA-256 and replayed without another GET. Only stopped owned job containers were removed; original, audit, serving stack and other Windows programs remain. Web still returns HTTP 200.
+
+### Evidence
+
+See evidence/phase-06/acquisition.md and its final gate/source hashes. Catalog 115/115 tests, real PostgreSQL/CLI recovery/privilege checks and real S3 conflict/checksum/cleanup checks pass. Fixed a genuine pinned-gateway concurrency race using its local native action limit; kept the failed experiment. The first real attempt failed before GET on internal-only DNS; a coordinator-only egress bridge corrected it without exposing the platform. Review also corrected final expired-attempt retirement and watchdog overlap. Offline dependency metadata was unavailable; online install retained existing pinned versions. Initial build/static/test-ownership issues were corrected before successful real execution; no test budget was loosened. No unchanged Web or media benchmark was repeated.
+
+### Next action
+
+Continue P06-R01 with bounded extraction/probe, isolated FFmpeg and verified-result registration. Reuse the original; no HLS/publication or Phase 06 release is claimed. Full Phase 00–14 goal remains active.
+
+## 2026-08-28 — Durable media request admission
+
+### Completed
+
+Implemented P06-R01 request admission under ADR-0021: strict approved source identity, local CLI, additive migration 0004, immutable audit, duplicate-safe replay and 16-request bound. Kept editorial state, publication authority, retained demo data and owner Windows programs unchanged. No new dependency, source GET or processing claim.
+
+### Evidence
+
+Catalog build and 108/108 unit tests pass; final pnpm check:changed passes 36/36 tasks in 50.03 s after removing two unused exports. Real PostgreSQL/CLI integration passes: eight concurrent callers/one request, replay across processes, rollback/retry, privilege isolation, empty-only migration rollback, capacity-safe retirement and a synchronized dispute race. Raw logs/source hashes and exact commands are in evidence/phase-06/media-requests.md. Initial lint found five test-only issues, corrected; integration repeated once for the added CLI audit-privilege guard. Shared Windows CPU/RAM sample is diagnostic only, not an idle-host requirement or performance guarantee.
+
+### Next action
+
+Continue P06-R01 with attempt/executor and attestation authority, bounded streaming acquisition and isolated processing. Do not repeat unaffected Web/media experiments. The phase and complete Phase 00–14 goal remain active; hosted review/release waits for a complete media candidate.
+
+## 2026-08-28 — Web released and first film rights approved
+
+### Completed
+
+Merged PR 22 without bypass as f36f9aa after protected CI; exact post-merge CI 33133330003 passes. Rebased the local Phase 06 branch onto that identical-tree squash. Created and approved the exact official Big Buck Bunny archive through Catalog's existing restricted operator; generated attribution from stored rights revision 2. Started only the existing private storage service and verified the isolated FFmpeg binary.
+
+### Evidence
+
+Phase 05 release is recorded in evidence/phase-05/release.txt. The focused reviewed-source test passes; real create/review/inspect returns RIGHTS_REVIEWED, version 3, no publication. Public query returns null with correct CSRF headers; an initial probe without that header was properly rejected. Source/approval/tool evidence is under evidence/phase-06/. No source acquired or media/publication result invented; unrelated retained data and Windows programs are intact.
+
+### Next action
+
+Implement the media request/attestation contract, bounded acquisition and isolated processing. No predecessor wait, repeated Web benchmark or new code-review round for unchanged Web code. Keep the full Phase 00–14 goal active.
+
+## 2026-08-28 — Dependent media preparation
+
+### Completed
+
+Froze Phase 05 at 944f64b with complete local acceptance and code confirmation; its sole remaining conditions are protected CI 33132937180 and merge/post-merge. Started one local dependent branch and P06-R01 under WAITING_EXTERNAL, preserving predecessor-first publication. Read rights/media/security and existing Catalog contracts before work.
+
+### Evidence
+
+Bounded HTTPS retrieval succeeded for official Blender rights/download/team pages and asset indexes; the research fetcher's 402 is not the origin response. Listed complete sources are ZIP archives; the old uncompressed URL returns 404. No source acquired or rights approved. The moderate uuid alert affects v3/v5/v6 output buffers; installed Apollo call sites use v1/v4 without buffers. No current affected call path observed, no alert dismissal or policy change.
+
+### Next action
+
+Complete one exact source review, verify FFmpeg/storage and proceed through the active plan. Merge PR 22 after its protected gate and rebase this local branch onto its squash. Do not repeat unaffected Web benchmarks or close owner Windows programs.
+
 ## 2026-08-28 — Final Web confirmation
 
 ### Completed

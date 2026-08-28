@@ -31,9 +31,11 @@
     "@apollo/subgraph": "2.14.4",
     "@as-integrations/express5": "1.1.2",
     "@aster/http-express": "workspace:*",
+    "@aster/object-storage-s3": "workspace:*",
     "@aster/postgres": "workspace:*",
     "@aster/runtime": "workspace:*",
     "@aster/telemetry": "workspace:*",
+    "@aws-sdk/client-s3": "3.1118.0",
     "pg": "8.23.0",
     "dataloader": "2.2.3",
     "graphql": "16.14.2"

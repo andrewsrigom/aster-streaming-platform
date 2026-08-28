@@ -9,6 +9,8 @@ export type CatalogCommandKind =
   | "review"
   | "media-ready"
   | "publish"
+  | "replace"
+  | "rollback"
   | "retire"
   | "dispute"
   | "expire"
@@ -76,6 +78,11 @@ export interface CatalogWorkflowTransaction extends CatalogRightsTransaction {
     metadata: TitleMetadata | undefined,
   ): Promise<boolean>;
   findPublication(publicationId: string): Promise<ValidatedPublicationReference | undefined>;
+  wasPublicationActive(
+    titleId: string,
+    publicationId: string,
+    beforeVersion: number,
+  ): Promise<boolean>;
   pruneReceipts(titleId: string, now: number): Promise<void>;
   findReceipt(titleId: string, mutationId: string): Promise<CatalogCommandReceipt | undefined>;
   pendingCounts(titleId: string): Promise<Readonly<{ receipts: number; outbox: number }>>;

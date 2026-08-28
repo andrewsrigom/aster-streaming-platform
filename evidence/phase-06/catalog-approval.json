@@ -1,0 +1,197 @@
+{
+  "schema": "aster.media.catalog-approval.v1",
+  "sourceBase": "944f64b1f1cf54a99fe365f19caceeb6004cd92e",
+  "catalogImage": "sha256:0f5da00a5a219c0debaf0505df3f7dc606b4fd2a2bb866ce297a6e3841eb1855",
+  "owningBoundary": "Existing local Catalog operator and restricted Catalog role; no raw SQL writes, viewer credentials or direct attestation registration.",
+  "commands": [
+    {
+      "name": "create",
+      "input": "services/catalog/examples/big-buck-bunny.json",
+      "exitCode": 0,
+      "output": [
+        {
+          "level": "info",
+          "time": "2026-08-28T01:36:40.533Z",
+          "service": "catalog-operator",
+          "environment": "local",
+          "version": "0.0.0",
+          "traceId": "e3238406a19a4e599820f79578154054",
+          "spanId": "1984aff91a864dda",
+          "traceFlags": 0,
+          "event": "aster.catalog.command_completed",
+          "operation": "create",
+          "outcome": "ok",
+          "requestId": "de7ddef3-18c0-4097-8dba-d491ce538c91",
+          "durationMs": 260.3927070000001,
+          "attributes": {
+            "code": "completed"
+          }
+        },
+        {
+          "status": "completed",
+          "value": {
+            "titleId": "00000000-0000-4000-8000-000000080001",
+            "version": 2,
+            "state": "DRAFT",
+            "rightsRevision": null,
+            "publicationId": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "review",
+      "input": {
+        "command": "review",
+        "input": {
+          "titleId": "00000000-0000-4000-8000-000000080001",
+          "mutationId": "00000000-0000-4000-8000-000006000002",
+          "expectedVersion": 2,
+          "decision": "approve",
+          "reason": "Fresh official Peach rights, download and team pages establish CC BY 3.0 for the exact complete-movie archive. Preserve credits; no separately acquired captions, music or promotional assets. Evidence: phase-06/rights-review.md and source-preflight.json."
+        }
+      },
+      "exitCode": 0,
+      "output": [
+        {
+          "level": "info",
+          "time": "2026-08-28T01:37:06.009Z",
+          "service": "catalog-operator",
+          "environment": "local",
+          "version": "0.0.0",
+          "traceId": "35501635264b466e808ead033a77849b",
+          "spanId": "d9ba565e3d064530",
+          "traceFlags": 0,
+          "event": "aster.catalog.command_completed",
+          "operation": "review",
+          "outcome": "ok",
+          "requestId": "7681a867-97f0-4f18-af50-9a44165063d2",
+          "durationMs": 228.79609099999993,
+          "attributes": {
+            "code": "completed"
+          }
+        },
+        {
+          "status": "completed",
+          "value": {
+            "titleId": "00000000-0000-4000-8000-000000080001",
+            "version": 3,
+            "state": "RIGHTS_REVIEWED",
+            "rightsRevision": 2,
+            "publicationId": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "inspect",
+      "exitCode": 0,
+      "output": [
+        {
+          "status": "completed",
+          "value": {
+            "id": "00000000-0000-4000-8000-000000080001",
+            "version": 3,
+            "state": "RIGHTS_REVIEWED",
+            "rightsRevision": 2,
+            "publicationId": null,
+            "latestRightsRevision": 2
+          }
+        },
+        {
+          "level": "info",
+          "time": "2026-08-28T01:37:07.916Z",
+          "service": "catalog-operator",
+          "environment": "local",
+          "version": "0.0.0",
+          "traceId": "920c4585f76447f69767baff9d64e366",
+          "spanId": "ef816143a2824471",
+          "traceFlags": 0,
+          "event": "aster.catalog.command_completed",
+          "operation": "inspect",
+          "outcome": "ok",
+          "requestId": "ad1daaae-fd11-44cc-b97c-5b94156f4014",
+          "durationMs": 127.32158000000004,
+          "attributes": {
+            "code": "completed"
+          }
+        }
+      ]
+    }
+  ],
+  "approvedRecordAndDerivedAttribution": {
+    "recordedAt": "2026-08-28T01:41:22.904Z",
+    "revision": {
+      "record": {
+        "workTitle": "Big Buck Bunny",
+        "creator": "Blender Foundation / Peach open movie project; director Sacha Goedegebure; music and sound design Jan Morgenstern",
+        "copyrightHolder": "Blender Foundation",
+        "licenseName": "Creative Commons Attribution",
+        "licenseVersion": "3.0",
+        "attributionText": "Big Buck Bunny. (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org. Directed by Sacha Goedegebure; music and sound design by Jan Morgenstern. Retain the complete film credits. Licensed under CC BY 3.0. No endorsement is implied.",
+        "modificationNotice": "No source acquired or modified yet. Approved planned use: extract the official movie archive, transcode the complete film to source-aware HLS, repackage its audio and derive credited stills/thumbnails. Preserve all credits; publication must describe actual modifications.",
+        "thirdPartyMaterialNotes": "Review covers this official complete-movie archive and its embedded soundtrack, under the Peach project's published film terms. The official team credits Jan Morgenstern for music/sound. No separately downloaded music, captions, textures or promotional artwork is approved. Verify actual streams and retained credits after acquisition; do not publish unexpected content.",
+        "trademarkNotes": "Website logos, associated marks, DVD cover/inlay and disc print are excluded from the project license. Do not reuse them as Aster branding or imply endorsement. Keep required film credits; select non-logo frames for derived artwork.",
+        "canonicalSourceUrl": "https://peach.blender.org/about/",
+        "assetSourceUrl": "https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v.zip",
+        "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+        "redistributionAllowed": true,
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "shareAlikeRequired": false,
+        "id": "af78613d-c320-48e1-884a-5d129443369b",
+        "titleId": "00000000-0000-4000-8000-000000080001",
+        "revision": 2,
+        "status": "APPROVED",
+        "technicalRestrictions": "NONE",
+        "sourceChecksum": null,
+        "reviewedAt": 1787881025,
+        "reviewedBy": "00000000-0000-4000-8000-000000000003",
+        "validUntil": null,
+        "evidenceLocations": [
+          "evidence/phase-06/rights-review.md",
+          "evidence/phase-06/source-preflight.json"
+        ]
+      },
+      "actorId": "00000000-0000-4000-8000-000000000003",
+      "recordedAt": 1787881025,
+      "correlationId": "7681a867-97f0-4f18-af50-9a44165063d2",
+      "titleVersion": 3
+    },
+    "attribution": {
+      "workTitle": "Big Buck Bunny",
+      "creator": "Blender Foundation / Peach open movie project; director Sacha Goedegebure; music and sound design Jan Morgenstern",
+      "copyrightHolder": "Blender Foundation",
+      "sourceUrl": "https://peach.blender.org/about/",
+      "licenseName": "Creative Commons Attribution",
+      "licenseVersion": "3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "attributionText": "Big Buck Bunny. (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org. Directed by Sacha Goedegebure; music and sound design by Jan Morgenstern. Retain the complete film credits. Licensed under CC BY 3.0. No endorsement is implied.",
+      "modificationNotice": "No source acquired or modified yet. Approved planned use: extract the official movie archive, transcode the complete film to source-aware HLS, repackage its audio and derive credited stills/thumbnails. Preserve all credits; publication must describe actual modifications."
+    }
+  },
+  "visibility": {
+    "firstProbe": {
+      "status": 403,
+      "reason": "Probe omitted Router's x-aster-csrf header; policy correctly rejected it."
+    },
+    "correctedProbe": {
+      "status": 200,
+      "body": {
+        "data": {
+          "title": null
+        }
+      }
+    },
+    "interpretation": "Approved but unprocessed title remains absent from the public API."
+  },
+  "storage": {
+    "image": "sha256:975a7a21693eb9fad7c0c1998a9e505964e3ed67adb0bbdd000efc17d6cc80dc",
+    "container": "aster-p04-development-storage-1",
+    "health": "healthy",
+    "cpuLimit": 1,
+    "memoryLimitBytes": 402653184,
+    "scope": "Existing private VersityGW service, started alone; no other retained service or data replaced."
+  },
+  "limits": "No source acquired, checksum measured, caption claim, rendition or active publication. Original technical seed and retained profiles remain intact."
+}

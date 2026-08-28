@@ -1,0 +1,23 @@
+$ node ./tools/run-media-candidate.mjs aster-p04-development 00000000-0000-4000-8000-000000000999
+{"event":"media_images_building","project":"aster-p04-development","runId":"6feef9a0-61aa-432c-9d13-9cb4a18b79c7"}
+{"event":"media_images_ready","project":"aster-p04-development","runId":"6feef9a0-61aa-432c-9d13-9cb4a18b79c7"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Source handoff failed.
+
+false !== true
+
+    at file:///home/andrews/personal/portfolio-2026/aster-streaming-platform/tools/run-media-candidate.mjs:119:12
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+[ELIFECYCLE] Command failed with exit code 1.

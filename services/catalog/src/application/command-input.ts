@@ -13,6 +13,7 @@ export type CatalogCommand = CommandBase &
     | Readonly<{ kind: "create" | "edit"; metadata: TitleMetadata; rights: RightsRecord }>
     | Readonly<{ kind: "review"; decision: "approve" | "clarify" | "reject"; reason: string }>
     | Readonly<{ kind: "media-ready"; publicationId: string }>
+    | Readonly<{ kind: "replace" | "rollback"; publicationId: string; reason: string }>
     | Readonly<{ kind: "publish" | "reopen" }>
     | Readonly<{ kind: "retire" | "dispute" | "expire"; reason: string }>
   );
@@ -22,6 +23,8 @@ const fields: Readonly<Record<CatalogCommandKind, readonly string[]>> = {
   review: ["decision", "reason"],
   "media-ready": ["publicationId"],
   publish: [],
+  replace: ["publicationId", "reason"],
+  rollback: ["publicationId", "reason"],
   reopen: [],
   retire: ["reason"],
   dispute: ["reason"],
@@ -90,6 +93,16 @@ export function normalizeCatalogCommand(
   }
   if (kind === "publish" || kind === "reopen") {
     return Object.freeze({ ...base, kind });
+  }
+  if (kind === "replace" || kind === "rollback") {
+    return catalogIdentifier(input["publicationId"]) && catalogText(input["reason"], 512)
+      ? Object.freeze({
+          ...base,
+          kind,
+          publicationId: input["publicationId"],
+          reason: input["reason"],
+        })
+      : undefined;
   }
   return catalogText(input["reason"], 512)
     ? Object.freeze({ ...base, kind, reason: input["reason"] })

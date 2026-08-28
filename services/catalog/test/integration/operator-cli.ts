@@ -22,15 +22,16 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
     ASTER_CATALOG_ADMIN_DATABASE_PASSWORD: "aster-test-only",
   };
   const run = (
-    file: "operate-local" | "migrate-local",
+    file: "operate-local" | "migrate-local" | "acquire-local",
     input: unknown,
     environment = base,
     holdInput = false,
+    args: readonly string[] = [],
   ) =>
     new Promise<{ code: number | null; stdout: string; stderr: string }>((resolve, reject) => {
       const child = spawn(
         process.execPath,
-        [fileURLToPath(new URL(`../../src/${file}.js`, import.meta.url))],
+        [fileURLToPath(new URL(`../../src/${file}.js`, import.meta.url)), ...args],
         { env: environment, stdio: ["pipe", "pipe", "pipe"], windowsHide: true },
       );
       let stdout = "";
@@ -68,7 +69,43 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   assert.equal(initialized.code, 0, initialized.stderr);
   assert.deepEqual(JSON.parse(initialized.stdout), {
     event: "aster.catalog.migration_completed",
-    applied: [1, 2, 3],
+    applied: [1, 2, 3, 4, 5, 6, 7, 8],
+  });
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0008-publication-activations.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0007-media-attestations.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0006-media-processing.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0005-media-acquisitions.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0004-media-requests.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
+  const upgraded = await run("migrate-local", undefined);
+  assert.equal(upgraded.code, 0, upgraded.stderr);
+  assert.deepEqual(JSON.parse(upgraded.stdout), {
+    event: "aster.catalog.migration_completed",
+    applied: [4, 5, 6, 7, 8],
   });
   const repeated = await run("migrate-local", undefined);
   assert.equal(repeated.code, 0);
@@ -76,6 +113,33 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
     event: "aster.catalog.migration_completed",
     applied: [],
   });
+  const acquisitionEnvironment = { ...base, ASTER_MEDIA_ACQUISITION_ENABLED: "true" };
+  const missingAcquisition = await run("acquire-local", undefined, acquisitionEnvironment, false, [
+    id(999999),
+  ]);
+  assert.equal(missingAcquisition.code, 1);
+  assert.equal((JSON.parse(missingAcquisition.stdout) as { status: string }).status, "not_found");
+  const disabled = await run("acquire-local", undefined, base, false, [id(999999)]);
+  assert.equal(disabled.code, 1);
+  assert.equal((JSON.parse(disabled.stdout) as { status: string }).status, "unavailable");
+  await admin.query("GRANT INSERT ON catalog.publications TO aster_catalog_local");
+  try {
+    const privileged = await run("acquire-local", undefined, acquisitionEnvironment, false, [
+      id(999999),
+    ]);
+    assert.equal(privileged.code, 1);
+    assert.equal((JSON.parse(privileged.stdout) as { status: string }).status, "unavailable");
+  } finally {
+    await admin.query("REVOKE INSERT ON catalog.publications FROM aster_catalog_local");
+  }
+  process.stdout.write(
+    JSON.stringify({
+      event: "catalog_acquisition_cli_guard",
+      missingRequestRefused: true,
+      defaultDisabled: true,
+      attestationWriterRefused: true,
+    }) + "\n",
+  );
   const create = {
     command: "create",
     input: {
@@ -114,6 +178,36 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
     },
   });
   assert.equal(reviewed.code, 0, reviewed.stderr);
+  const media = {
+    command: "request-media",
+    input: {
+      requestId: id(800),
+      titleId: id(1),
+      expectedVersion: 3,
+      rightsRevision: 2,
+      recipeVersion: "hls-avc-aac-v1",
+      source: {
+        url: "https://example.invalid/source.mp4",
+        bytes: 1000,
+        etag: '"fixture-v1"',
+        sha256: "a".repeat(64),
+        container: "mp4",
+      },
+    },
+  };
+  const requested = await run("operate-local", media);
+  assert.equal(requested.code, 0, requested.stderr);
+  assert.equal((JSON.parse(requested.stdout) as { status: string }).status, "completed");
+  assert.equal((await run("operate-local", media)).stdout, requested.stdout);
+  assert.doesNotMatch(requested.stderr, /aster-test-only|postgresql:|example\.invalid/u);
+  await admin.query("GRANT UPDATE ON catalog.media_requests TO aster_catalog_local");
+  try {
+    const unsafe = await run("operate-local", media);
+    assert.equal(unsafe.code, 1);
+    assert.deepEqual(JSON.parse(unsafe.stdout), { status: "unavailable" });
+  } finally {
+    await admin.query("REVOKE UPDATE ON catalog.media_requests FROM aster_catalog_local");
+  }
   const missing = await run("operate-local", {
     command: "media-ready",
     input: { titleId: id(1), mutationId: id(12), expectedVersion: 3, publicationId: id(99) },
@@ -130,6 +224,9 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
     },
   });
   assert.equal(retired.code, 0, retired.stderr);
+  const staleMedia = await run("operate-local", media);
+  assert.equal(staleMedia.code, 1);
+  assert.deepEqual(JSON.parse(staleMedia.stdout), { status: "rights_not_approved" });
   await admin.query("ALTER ROLE aster_catalog_local NOLOGIN");
   try {
     const unavailable = await run("operate-local", {
@@ -156,7 +253,11 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   process.stdout.write(
     JSON.stringify({
       event: "catalog_cli_verified",
-      freshMigrations: [1, 2, 3],
+      freshMigrations: [1, 2, 3, 4, 5, 6, 7, 8],
+      mediaMigrationDownUp: true,
+      durableMediaRequestReplay: true,
+      mutableMediaAuditRoleRejected: true,
+      retiredMediaRequestRejected: true,
       idempotentInit: true,
       createReviewRetire: true,
       inspect: true,
