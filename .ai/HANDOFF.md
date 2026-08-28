@@ -10,7 +10,7 @@ Phase 05 local acceptance is complete: source 58/58; all 21 distinct browser sce
 
 ## Current work
 
-Big Buck Bunny's official 640x360 archive is approved and acquired: title 00000000-0000-4000-8000-000000080001, rights revision 2, version 3 / RIGHTS_REVIEWED, no publication. The private original has 121284117 bytes and SHA-256 7118242b6728d40c871479c5b3c0f0fb27d748089df15d7f1b469f297c74a2d6. S3 bucket aster-media-originals, key originals/sha256/ plus that hash. No extraction, probe or HLS yet. Historical reviews remain unchanged; current Catalog rights, not an evidence snapshot, authorize later processing.
+Big Buck Bunny now has a fully decoded private HLS candidate: 426×240 and 638×358, AAC stereo, 596.5 seconds, 203 media objects / 95430911 bytes. Actual source is 640×359 and 596.461667 seconds. Title 00000000-0000-4000-8000-000000080001 remains rights revision 2, version 3 / RIGHTS_REVIEWED, no publication. The original and extracted checksums, exact images, complete object manifest and private candidate prefix are in evidence/phase-06/decoder.md and decoder-candidate.json. All object PUTs were checksum/readback-verified before retaining the report.
 
 ## Runtime and retained data
 
@@ -20,7 +20,9 @@ Development Web/Router remain at 3000/4000 in aster-p04-development; Web returne
 
 Durable request 00000000-0000-4000-8000-000006000003 has successful attempt eca2fa7f-87ec-4056-9a61-2d95b6ee81d8 (number 2). Attempt 1 failed before GET on internal-only DNS; the corrected job downloaded once in 12.003 s, verified stored bytes and replayed across processes without another GET. Sampled Node RSS was 97685504 bytes; this excludes tmpfs and is not an arbitrary-load promise. Evidence/phase-06/acquisition.md links real storage/PostgreSQL/CLI checks, 115 Catalog tests, exact source hashes and the final affected gate. No public endpoint or hosted pipeline was changed.
 
-Continue P06-R01 with bounded ZIP extraction/probe, isolated FFmpeg recipes and verified-result/attestation authority. Reuse the immutable original, not another source download. Research found MIT yauzl 3.4.0 with one dependency and matching types; it is not installed/selected yet. Validate actual archive members, signatures, expansion and streams before decoding. Keep decoder network-disabled with no DB/S3 credentials or Docker socket. Initial rights still contain the pre-acquisition modification notice: actual transformations, complete credits and any artwork/caption rights must be resolved before publication. Do not let caller-provided flags register technical validation. No unchanged acquisition/Web experiment is needed for decoder-only work.
+Continue P06-R01 with durable processing/deduplication and validated-result/attestation authority, then artwork and public-origin/Catalog publication. Reuse the private HLS prefix candidates/83ae3e060bd37546942997e8c6b569a6d0aa8fba08a891bdc2266ebbafe84f05/80f3b48f46729d8c84d6a5c4cc5c76c889090381c7b1acab17fbb45b1658d51c/ in aster-media-originals. Its report checksum is 23ba545346b3c19fda0a39a1d9816f3652f931ca039aefcac95587a0df4098f1. Do not repeat unchanged acquisition or full HLS processing for independent poster/attestation additions.
+
+The current worker is workers/media under ADR-0023, with MIT yauzl 3.4.0 and the existing FFmpeg. Host entry: pnpm media:candidate PROJECT ACQUISITION_ATTEMPT_ID. It is development tooling, not yet the final Docker-only demo bootstrap. Temporary input/output volumes exist only during the coordinated job; private S3 output persists after cleanup. Initial rights still contain a pre-acquisition modification notice: derive truthful publication modifications while preserving immutable approval history. The source has no captions; never invent subtitle or artwork approval. Avoid Windows/CPU diagnostics: the owner requested direct progress on product tasks.
 
 ## Do not do yet
 

@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0023](../docs/adr/0023-isolated-media-decoder.md) defines the finite network-disabled TypeScript decoder, bounded ZIP/probe/HLS policy and Catalog-owned private candidate retention. The real source is 640×359, so the no-upscale ladder uses 240/358 heights. MIT yauzl 3.4.0 and pend 1.2.0 retain notices; separate FFmpeg compliance is unchanged. Private reports do not grant attestation/publication authority.
+
 [ADR-0022](../docs/adr/0022-local-media-execution.md) implements finite Catalog-owned acquisition, bounded streams, fenced durable attempts and private verified originals. One native POSIX action closes the pinned local gateway's conditional-write race. Only acquisition has an egress bridge; the platform remains internal and the decoder will be network-disabled. Technical attestation and hosted origin acceptance remain separate boundaries.
 
 [ADR-0021](../docs/adr/0021-catalog-media-requests.md) retains media requests in Catalog through the existing local operator: exact current rights/source binding, permanent replay IDs, immutable audit and 16 distinct requests/title. No editorial version or publication changes; no new service, broker, worker credential or attestation permission. Attempt execution and checksum-based processing idempotency remain unfinished Phase 06 work.

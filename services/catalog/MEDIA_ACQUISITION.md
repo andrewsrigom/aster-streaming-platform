@@ -35,4 +35,4 @@ Known transient failures consume the bounded retry budget; deterministic source/
 
 Cancellation removes only the owned temporary file/directory. An uncertain PUT may retain an immutable private orphan; it cannot activate a publication. Keep originals and audit. Disable the job to roll back acquisition code; do not run an old initializer that cannot recognize schema 0005 or force a nonempty down migration. Existing HTTP readers remain compatible with the additive schema.
 
-For the current first film, retain the complete archive and credits. Inspect archive members, streams and actual modifications before future attestation/publication; current rights approval is not proof that media decoding or HLS works.
+For the current first film, retain the complete archive and credits. The separate [decoder workflow](../../workers/media/README.md) now reuses this original and retains validated HLS privately. It uses the completed acquisition attempt ID, not the request ID. Decoding grants no technical attestation or public publication authority.

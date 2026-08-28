@@ -52,6 +52,7 @@ function fixture() {
   let failure: unknown;
   let path: string | undefined;
   const acquisitions: ReturnType<typeof createCatalogAcquisitions> = {
+    original: () => Promise.resolve({ status: "not_found" }),
     claim: () => Promise.resolve({ status: "completed", value: attempt }),
     check: () => {
       checks++;

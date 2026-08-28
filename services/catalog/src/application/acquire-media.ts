@@ -5,6 +5,7 @@ import {
   normalizeAcquisitionAttempt,
   normalizeOriginal,
   retryableAcquisition,
+  type AcquiredOriginal,
   type AcquisitionAttempt,
 } from "../domain/media-acquisition.js";
 import { mediaRequestEligible, type CatalogMediaRequest } from "../domain/media-request.js";
@@ -82,6 +83,23 @@ export function createCatalogAcquisitions(ports: AcquisitionPorts) {
     });
   }
   return Object.freeze({
+    original(
+      id: unknown,
+      request: CatalogCommandRequest,
+    ): Promise<
+      CatalogStoreResult<Readonly<{ media: CatalogMediaRequest; original: AcquiredOriginal }>>
+    > {
+      return existing(id, request, async (tx, attempt, media) => {
+        const eligible = await rightsGuard(tx, media);
+        if (!eligible()) {
+          return { status: "rights_not_approved" };
+        }
+        if (attempt.status !== "SUCCEEDED" || !attempt.original) {
+          return { status: "invalid_transition" };
+        }
+        return { status: "completed", value: { media, original: attempt.original } };
+      });
+    },
     claim(
       id: unknown,
       request: CatalogCommandRequest,

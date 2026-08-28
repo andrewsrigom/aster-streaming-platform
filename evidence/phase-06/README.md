@@ -1,6 +1,6 @@
 # Phase 06 evidence
 
-Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved and acquired privately; no renditions or playback are claimed yet. Phase 05 is [released](../phase-05/release.txt).
+Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved, acquired and converted to a verified private HLS candidate. Public playback/publication is not yet implemented. Phase 05 is [released](../phase-05/release.txt).
 
 - [Source/rights review](rights-review.md): current official evidence, exact archive and permitted use, exclusions and publication conditions.
 - [Preflight](source-preflight.json): HTTP status/metadata/page hashes and isolated FFmpeg version.
@@ -10,4 +10,6 @@ Status: IN_PROGRESS. One exact Big Buck Bunny archive is approved and acquired p
 
 - [Finite acquisition](acquisition.md): fenced attempts, stream/checksum controls, conditional immutable storage, real source/replay and measured resource limits.
 
-Rights preparation, request admission and acquisition are verified locally. Decoder execution, HLS, technical attestation, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.
+- [Isolated HLS decoder and private retention](decoder.md): complete first-film extraction, probe, two full-length renditions, object manifest, adverse tests and remaining publication boundaries.
+
+Rights, request admission, acquisition, decoding and private candidate retention pass locally. Durable processing/attestation, artwork, publication and final attribution remain unfinished. The synthetic fixture and historical unapproved candidate reviews remain unchanged.

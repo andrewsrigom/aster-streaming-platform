@@ -1,0 +1,21 @@
+{
+  "name": "@aster/media",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Finite isolated media extraction, validation and HLS encoding.",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "test": "node --test ./dist/test/*.test.js",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
+  },
+  "dependencies": {
+    "yauzl": "3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/yauzl": "3.4.0",
+    "typescript": "6.0.3"
+  }
+}

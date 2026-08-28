@@ -131,6 +131,10 @@ export async function verifyAcquisitions(
     assert.equal((await acquisitions().claim(second.requestId, request)).status, "backpressure");
     assert.equal((await acquisitions().check(attempt.value.id, request)).status, "completed");
     assert.equal(
+      (await acquisitions().original(attempt.value.id, request)).status,
+      "invalid_transition",
+    );
+    assert.equal(
       (await acquisitions().complete(attempt.value.id, { ...original, bytes: 999 }, request))
         .status,
       "invalid_input",
@@ -138,14 +142,42 @@ export async function verifyAcquisitions(
     const completed = await acquisitions().complete(attempt.value.id, original, request);
     assert.equal(completed.status, "completed");
     assert.equal(completed.value.status, "SUCCEEDED");
+    const reusable = await acquisitions().original(attempt.value.id, request);
+    assert.equal(reusable.status, "completed");
+    assert.deepEqual(reusable.value.original, original);
+    assert.equal(
+      (await acquisitions().original(attempt.value.id, { ...request, credential: {} })).status,
+      "unauthorized",
+    );
     assert.deepEqual(await acquisitions().complete(attempt.value.id, original, request), completed);
     assert.deepEqual(await acquisitions().claim(first.requestId, request), completed);
+    assert.equal(
+      (
+        await commands.execute(
+          "dispute",
+          {
+            titleId: first.titleId,
+            expectedVersion: 3,
+            mutationId: nextId(),
+            reason: "Synthetic dispute after successful acquisition",
+          },
+          request,
+        )
+      ).status,
+      "completed",
+    );
+    assert.equal(
+      (await acquisitions().original(attempt.value.id, request)).status,
+      "rights_not_approved",
+    );
     output("catalog_acquisition_concurrency", {
       callers: 8,
       admitted: 1,
       globalSlot: true,
       invalidResultRefused: true,
       completedReplay: true,
+      originalReadAuthorized: true,
+      revokedOriginalRefused: true,
     });
 
     let active = await acquisitions().claim(second.requestId, request);
@@ -287,7 +319,8 @@ export async function verifyAcquisitions(
       "SELECT version, publication_id FROM catalog.titles WHERE id = $1",
       [first.titleId],
     );
-    assert.deepEqual(editorial.rows[0], { version: 3, publication_id: null });
+    // Only the explicit rights dispute above changed editorial version.
+    assert.deepEqual(editorial.rows[0], { version: 4, publication_id: null });
     output("catalog_acquisition_audit", {
       failedClaimRolledBack: true,
       readerPrivate: true,

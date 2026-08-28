@@ -14,17 +14,17 @@ Phases 00–05 are released. PR 22 squash f36f9aa passes protected CI 3313293718
 
 ## Current work
 
-P06-R01 is the sole active implementation item. Big Buck Bunny's exact official archive is approved through Catalog at rights revision 2 / title version 3 and now acquired privately: 121284117 bytes, SHA-256 7118242b6728d40c871479c5b3c0f0fb27d748089df15d7f1b469f297c74a2d6. Title remains RIGHTS_REVIEWED with no publication. No extraction or processing yet. [Acquisition evidence](../evidence/phase-06/acquisition.md).
+P06-R01 is the sole active implementation item. The approved Big Buck Bunny original now has a fully decoded HLS candidate: 426×240 and 638×358, AAC stereo, 596.5 seconds and 203 media objects (95430911 bytes). Catalog retained every object and report privately after checksum readback/current-rights checks. Title remains rights revision 2 / version 3 / RIGHTS_REVIEWED, no publication. [Decoder evidence and exact candidate key](../evidence/phase-06/decoder.md).
 
 Durable requests, three-attempt recovery, current-rights watchdog, bounded HTTPS streaming and conditional verified S3 storage are implemented/tested locally. Real PostgreSQL, storage conflict and cross-process replay checks pass. Migration 0004/0005 and the first request are applied to aster-p04-development. The source download took 12.003 s; sampled Node RSS peaked at 97685504 bytes, not total container memory. The first attempt failed before GET because its network was internal-only; the finite job now has a separate egress bridge. [Exact gates and limitations](../evidence/phase-06/acquisition.md).
 
 ## Not implemented
 
-Playable VOD, a real media pipeline, engagement/discovery and hosted release. The synthetic seed remains a technical fixture, not film approval.
+Public playable VOD, durable processing/attestation, derived artwork, engagement/discovery and hosted release. The acquisition/decoder/private-candidate path exists; it is not yet complete publication. The synthetic seed remains a technical fixture.
 
 ## Next outcome
 
-Continue P06-R01 with bounded archive extraction, probe, isolated FFmpeg and the verified-result/attestation authority. Reuse the acquired immutable original; do not redownload it or repeat unchanged Web/acquisition experiments. No hosted wait remains.
+Continue P06-R01 with durable processing/deduplication, reviewed artwork and the verified-result/attestation/publication boundary. Reuse the private HLS candidate and original; no unchanged transcode, acquisition or Web benchmark. No hosted wait remains. Focus execution on remaining product requirements, not Windows/CPU diagnostics.
 
 ## Current risks
 

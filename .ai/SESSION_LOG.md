@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Isolated full-film HLS and private candidate retention
+
+### Completed
+
+Implemented the strict TypeScript decoder, bounded ZIP extraction/CRC/checksums, source/output probes, no-upscale HLS, full decode and process-group cancellation. Added Catalog-authorized original handoff, finite rights checking, independent file/S3 validation and report-last private retention. The real film produces 203 media objects in two qualities; no public pointer changes. Original, candidate, audit and serving services remain; owned job containers/tmpfs are cleaned.
+
+### Evidence
+
+See evidence/phase-06/decoder.md, decoder-candidate.json and decoder-postgres.jsonl. Worker tests pass 23/23; Catalog has nine new handoff tests and its existing suite. Real PostgreSQL confirms original access and revocation after acquisition. The initial film probe correctly rejected an assumed even input height: the source is 640×359. The adapted source-aware recipe passed full decoding. Review fixed missing-stderr diagnostics, atomic report visibility, bounded reports, local/run-owned cleanup and a test's expected version after its explicit rights dispute. Final affected gate: 61/61 successful, 31 cached, 91.477 seconds. Unchanged film processing was not repeated for prose/host-guard-only edits.
+
+### Next action
+
+Complete durable processing/attestation, reviewed artwork, accurate publication attribution, public-origin delivery and Catalog publication. Reuse the retained HLS candidate; Phase 06 and the complete Phase 00–14 goal remain active. No further Windows resource baseline is needed.
+
 ## 2026-08-28 — Fenced streaming acquisition and first immutable original
 
 ### Completed

@@ -73,6 +73,24 @@ test("Web Docker context includes both exact public-build verifier files", () =>
   }
 });
 
+test("media Docker context allows only reviewed worker source, tests and packaging", () => {
+  for (const required of [
+    "!workers/media/package.json",
+    "!workers/media/tsconfig.json",
+    "!workers/media/src/**/*.ts",
+    "!workers/media/test/**/*.ts",
+    "!infra/docker/media-decoder.Dockerfile",
+  ]) {
+    assert.ok(runtimeImage[".dockerignore"].split("\n").includes(required));
+    assert.ok(
+      validateRuntimeImage({
+        ...runtimeImage,
+        ".dockerignore": runtimeImage[".dockerignore"].replace(required + "\n", ""),
+      }).length > 0,
+    );
+  }
+});
+
 test("runtime image rejects weakened pin, install, user, entrypoint, health and license policy", () => {
   const file = "infra/docker/identity.Dockerfile";
   for (const [before, after] of [

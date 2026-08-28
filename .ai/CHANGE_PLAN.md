@@ -15,13 +15,15 @@ Turn one individually approved film into a validated immutable HLS publication t
 
 Phases 00–05 are released. PR 22 squash f36f9aa7043dc1fe7b6394a0a800e4e842bf6865 passes protected candidate CI 33132937180 and exact post-merge CI 33133330003. This branch is rebased onto that clean release; no predecessor wait remains. [Release evidence](../evidence/phase-05/release.txt).
 
-Catalog has durable rights/history, operator commands, publication transactions and generated-fixture attestations. Big Buck Bunny's selected official archive has approved rights revision 2 / title version 3, derived attribution and a verified private original; it remains unpublished. Existing FFmpeg is available, but no real-film decoder/HLS pipeline exists yet. The prior candidate records remain historical unresolved reviews.
+Catalog has durable rights/history, operator commands, publication transactions and generated-fixture attestations. Big Buck Bunny's selected official archive has approved rights revision 2 / title version 3 and a verified private original; it remains unpublished. The isolated decoder now produces a complete, privately retained HLS candidate. [Decoder evidence](../evidence/phase-06/decoder.md). Historical unresolved source reviews remain unchanged.
 
-The owner-side request slice is locally implemented and tested. [Request evidence](../evidence/phase-06/media-requests.md). Acquisition now also passes real execution: additive migrations 0004/0005, one global fenced attempt, bounded streaming, current-rights watchdog and a private verified original in the retained development environment. [Acquisition evidence](../evidence/phase-06/acquisition.md). No decoder or publication is implemented.
+The owner-side request and acquisition slices are locally verified: additive migrations 0004/0005, fenced attempts, bounded streaming, current rights and private immutable originals. The decoder/retention path also passes the real film, while durable processing attempts, artwork, attestation and publication remain unfinished. Existing Web/acquisition evidence remains applicable.
 
 ## Proposed behavior
 
 Request admission and the finite owner acquisition coordinator under [ADR-0022](../docs/adr/0022-local-media-execution.md) are implemented. Continue with bounded ZIP extraction/probe and a separate network-disabled decoder. Define verified-result registration before granting any technical attestation permission; acquisition never grants it.
+
+Current implementation checkpoint: add the strict TypeScript finite decoder in `workers/media` under [ADR-0023](../docs/adr/0023-isolated-media-decoder.md). Verify archive SHA-256 before extraction; inspect a bounded central directory, reject unsafe/unsupported entries and verify streamed size/CRC/SHA-256. Probe through fixed arguments and allowlisted MP4 streams, then produce a complete no-upscale H.264/AAC ladder. Use the retained original, not another source GET. Decoder output is an untrusted technical candidate, never a Catalog attestation. Focused synthetic/adverse tests precede a single bounded real-source experiment; durable processing admission and attestation remain required before publication.
 
 ## Boundaries
 
@@ -87,7 +89,7 @@ Use the existing local Catalog operator, never viewer credentials or input-selec
 
 - Commands: focused Catalog/media tests during iteration; affected source gate at candidate.
 - Raw artifact path: evidence/phase-06/.
-- Acceptance result: rights approval, durable requests, attempts and acquisition pass locally. Processing and publication remain unfinished; the full media candidate/release gate is pending.
+- Acceptance result: rights, requests, acquisition and a private full-length HLS candidate pass locally. The complete phase/publication/release gate remains pending.
 - Iteration gate: focused extraction/probe/decoder tests and build; acquisition/S3/PostgreSQL evidence is retained unless an affected boundary changes. Do not repeat the successful source GET or unchanged Web benchmark for decoder-only changes.
 - Candidate gate: complete first-film pipeline, real persistence/storage, adverse cases and affected source checks.
 - Heavyweight repeat triggers: source, recipe, worker, storage, publication or packaging changes repeat their affected experiment; prose does not repeat transcoding/browser/clean startup.
