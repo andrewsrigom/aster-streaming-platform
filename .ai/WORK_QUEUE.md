@@ -49,7 +49,7 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 ## Work-item rules
 
-All twelve local Phase 06 requirements now have an [acceptance row](../evidence/phase-06/acceptance.md). ADR-0026 resolves retention: dispose of orphan scratch, retain immutable objects for checked recovery; no automatic S3 garbage collection. Next: publish one coherent candidate, protected exact-head CI, confirmation, squash and post-merge; then start Phase 07. No repeated CPU test or unchanged film encode.
+All twelve local Phase 06 requirements have an [acceptance row](../evidence/phase-06/acceptance.md). Initial review/CI corrections are implemented: private incomplete copies, serialized complete-prefix grants and migrations 1–8 probe assertion. Real storage/retained migration passes. ADR-0026 retains immutable media for recovery and disposes only orphan scratch. Next: finish corrected candidate gates, publish one coherent correction to PR 23, protected exact-head CI/confirmation, squash/post-merge; then Phase 07. No repeated CPU test or unchanged film encode.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

@@ -21,6 +21,10 @@ import {
 import { readCandidateReport } from "./infrastructure/media/reuse-candidate.js";
 import { createPublicationBundle } from "./infrastructure/media/publication-bundle.js";
 import { copyPublication } from "./infrastructure/media/copy-publication.js";
+import {
+  createPublicationAccess,
+  grantPublicationAccess,
+} from "./infrastructure/media/publication-access.js";
 import { MediaProcessingError } from "./infrastructure/media/processing-error.js";
 
 const controller = new AbortController();
@@ -152,6 +156,18 @@ try {
       currentApproval,
       controller.signal,
     );
+    const accessClient = publicationStorageClient();
+    try {
+      await grantPublicationAccess(
+        bundle,
+        published,
+        createPublicationAccess(accessClient),
+        currentApproval,
+        controller.signal,
+      );
+    } finally {
+      accessClient.destroy();
+    }
     const publicationId = await attester.register(
       selection,
       bundle,

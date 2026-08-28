@@ -10,6 +10,7 @@ import {
   validatePublicationPlaylists,
 } from "../src/infrastructure/media/publication-bundle.js";
 import { copyPublication } from "../src/infrastructure/media/copy-publication.js";
+import { grantPublicationAccess } from "../src/infrastructure/media/publication-access.js";
 import { publicationBundleFixture } from "./publication-fixture.js";
 
 function store(objects: Map<string, Buffer>) {
@@ -53,6 +54,109 @@ function store(objects: Map<string, Buffer>) {
   return { adapter, writes, objects };
 }
 const approved = () => Promise.resolve();
+
+test("public READ waits for complete integrity verification and retries an interrupted grant", async () => {
+  const f = publicationBundleFixture();
+  const published = store(new Map());
+  await copyPublication(
+    f.bundle,
+    store(f.objects).adapter,
+    published.adapter,
+    approved,
+    AbortSignal.timeout(3000),
+  );
+  let reads = 0;
+  const read = published.adapter.read;
+  published.adapter.read = (input, signal) => {
+    reads++;
+    return read(input, signal);
+  };
+  const grants = new Set<string>();
+  let interrupt = true;
+  const access = {
+    reveal: (prefix: string) => {
+      assert.ok(reads >= published.objects.size);
+      assert.equal(prefix, f.bundle.prefix);
+      if (interrupt) {
+        return Promise.reject(new Error("interrupted grant"));
+      }
+      grants.add(prefix);
+      return Promise.resolve();
+    },
+  };
+  await assert.rejects(
+    grantPublicationAccess(
+      f.bundle,
+      published.adapter,
+      access,
+      approved,
+      AbortSignal.timeout(3000),
+    ),
+  );
+  assert.equal(grants.size, 0);
+  interrupt = false;
+  reads = 0;
+  await grantPublicationAccess(
+    f.bundle,
+    published.adapter,
+    access,
+    approved,
+    AbortSignal.timeout(3000),
+  );
+  assert.equal(grants.size, 1);
+  await grantPublicationAccess(
+    f.bundle,
+    published.adapter,
+    access,
+    approved,
+    AbortSignal.timeout(3000),
+  );
+  assert.equal(grants.size, 1);
+});
+
+test("missing, corrupt, cancelled or revoked bundles gain no public access", async () => {
+  for (const failure of ["missing", "corrupt", "cancelled", "revoked"] as const) {
+    const f = publicationBundleFixture();
+    const published = store(new Map());
+    await copyPublication(
+      f.bundle,
+      store(f.objects).adapter,
+      published.adapter,
+      approved,
+      AbortSignal.timeout(3000),
+    );
+    const master = f.bundle.prefix + "master.m3u8";
+    if (failure === "missing") {
+      published.objects.delete(master);
+    }
+    if (failure === "corrupt") {
+      published.objects.set(master, Buffer.from("corrupt"));
+    }
+    let grants = 0;
+    let checks = 0;
+    const access = {
+      reveal: () => {
+        grants++;
+        return Promise.resolve();
+      },
+    };
+    await assert.rejects(
+      grantPublicationAccess(
+        f.bundle,
+        published.adapter,
+        access,
+        () => {
+          if (++checks > published.objects.size && failure === "revoked") {
+            return Promise.reject(new Error("revoked"));
+          }
+          return approved();
+        },
+        failure === "cancelled" ? AbortSignal.abort() : AbortSignal.timeout(3000),
+      ),
+    );
+    assert.equal(grants, 0, failure);
+  }
+});
 
 test("bundle is stable through review, but binds source, reports and both modification notices", () => {
   const f = publicationBundleFixture();

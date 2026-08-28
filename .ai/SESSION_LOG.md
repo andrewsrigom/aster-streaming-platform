@@ -2,6 +2,20 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Phase 06 initial-review and CI correction
+
+### Completed
+
+Initial PR 23 review found P06-R08 partial-object exposure; drafted the PR. CI 33151304060 independently caught the standalone probe's obsolete migration expectation after passing source, governance, dependency/platform and real Catalog media checks. Batched both corrections. An object-ACL experiment failed 501; replaced it with supported exact-prefix policy, whole-bundle verification and a non-expiring conditional-create recovery barrier. Ten focused access/bundle tests and the real nine-object storage fixture pass. Restricted the retained 209-object / 95496764-byte bundle after full checksum/current-rights/reference checks; all anonymous HEADs, Range/CORS/negative permissions and Web 200 pass. No source GET/encode, CPU test, media deletion or editorial writes. [Evidence](../evidence/phase-06/publication-access.md). Finish corrected candidate gates/confirmation and protected release, then Phase 07; full goal remains active.
+
+### Evidence
+
+[Access correction](../evidence/phase-06/publication-access.md), [source gate 51/51](../evidence/phase-06/access-source.txt), unchanged full-film/SQL/browser evidence in the acceptance matrix.
+
+### Next action
+
+Finish corrected documentation/confirmation, publish the coherent correction to PR 23 and require protected/post-merge release before Phase 07.
+
 ## 2026-08-28 — Phase 06 acceptance candidate
 
 ### Completed

@@ -13,7 +13,7 @@
 | P06-R05 | Source-aware 426×240/638×358 HLS, AAC stereo, two posters/three thumbnails; no upscaling | [Decoder](decoder.md), [artwork](artwork.md) |
 | P06-R06 | Versioned independent HLS/artwork recipes, durable three-attempt leases and checksum/recipe reuse | [Processing](processing.md), [artwork](artwork.md) |
 | P06-R07 | Strict manifests/object hashes, codec/stream/timeline checks, full offline decode plus representative browser decode/seeks | [Decoder](decoder.md), [browser six-sample result](browser.md) |
-| P06-R08 | Conditional immutable bundle copies, child-before-master ordering, complete readback and no partial active pointer | [Publication foundation](publication-foundation.md), [actual publication](publication.md) |
+| P06-R08 | Private immutable copies, complete readback/current rights before serialized exact-prefix public grant; no partial access or active pointer | [Access correction and real verification](publication-access.md), [actual publication](publication.md) |
 | P06-R09 | Separate restricted attester, title-locking current-rights checks, normal audited editorial activation | [Publication](publication.md), real `attestation-postgres.ts` |
 | P06-R10 | Bounded safe retry/terminal failure/cancellation, abandoned disposable scratch cleanup, compatible prior-version rollback | [Acquisition](acquisition.md), [processing](processing.md), [scratch](scratch.md), [rollback](rollback.md) |
 | P06-R11 | Title/global rights attribution and bundle attribution with material modifications; original credits preserved | [Rights review](rights-review.md), [publication](publication.md) |
@@ -29,7 +29,7 @@ The approved source has no captions, transcript or audio-description track. Capt
 
 ## Candidate gates / repeat policy
 
-[Acceptance documentation/security gate](acceptance-closeout.txt): 10/10 tasks, five cached, 4.525s. No blocking local requirement finding remains; exact-head protected CI/confirmation and release are still required.
+[Acceptance documentation/security gate](acceptance-closeout.txt): 10/10 tasks, five cached, 4.525s, for the initial candidate. Initial review subsequently found and corrected P06-R08 partial-object exposure; [current access evidence and confirmation](publication-access.md) supersede that initial claim. Corrected source gate passes 51/51 and documentation/security 10/10. No local blocking finding remains; corrected exact-head protected CI and post-merge release remain required.
 
 - Latest full source gate: [51/51 tasks without cache](browser-source.txt), `pnpm check:source --concurrency=2`, Node 24.19.0/pnpm 11.24.0, 1m49.398s.
 - [Documentation/security closeout](browser-closeout.txt): 10/10, no cache, 7.48s. Acceptance prose is checked again at its checkpoint.

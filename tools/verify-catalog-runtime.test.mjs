@@ -35,6 +35,8 @@ test("standalone owner probes use diagnostics without private Router credential 
     "utf8",
   );
   const probe = await readFile(new URL("./verify-local-catalog.mjs", import.meta.url), "utf8");
+  assert.ok(probe.includes("first.includes('\"applied\":[1,2,3,4,5,6,7,8]')"));
+  assert.ok(probe.includes("repeat.includes('\"applied\":[]')"));
   assert.ok(probe.includes('"infra/compose/subgraph-diagnostics.yml"'));
   for (const owner of ["identity", "catalog"]) {
     const block = serviceBlock(diagnostic, owner);

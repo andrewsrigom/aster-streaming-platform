@@ -14,6 +14,8 @@ Phases 00–05 are released. PR 22 squash f36f9aa passes protected CI 3313293718
 
 ## Current work
 
+PR 23 remains draft while the coherent correction closes. P06-R08 now keeps copies private until complete verification and a serialized exact-prefix policy grant; real storage failure/concurrency/replay tests pass. The retained 209-object bundle was restricted without media/editorial writes, and every anonymous object HEAD plus CORS/Range/private denials passes. [Access evidence](../evidence/phase-06/publication-access.md). Initial CI 33151304060 failed only the standalone Catalog probe's obsolete migration expectation; corrected to migrations 1–8 with focused coverage. Candidate gate, confirmation, corrected exact-head protected CI and release remain required. Do not treat initial head 459607b as release proof.
+
 [Phase 06 acceptance](../evidence/phase-06/acceptance.md), implementation head f28c442, maps all twelve requirements to code/tests and measured evidence: approved source, bounded acquisition, isolated full-film HLS/JPEG, durable leases/replay, restricted attestation, immutable publication, compatible rollback, disposable orphan cleanup and real browser playback.
 
 Big Buck Bunny is locally PUBLISHED: title 00000000-0000-4000-8000-000000080001, version 9 / rights revision 4, publication c2929850-d3a3-4e30-945f-688d639d2c68. The bundle contains 209 objects / 95496764 bytes. Original review 2 and all source/processing/audit history remain. [Publication](../evidence/phase-06/publication.md).

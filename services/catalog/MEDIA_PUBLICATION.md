@@ -25,12 +25,20 @@ Successful attestation returns a publication UUID, not editorial activation. Con
 ## Boundaries and recovery
 
 - The attester login has Catalog-only reads and EXECUTE on one fixed-search-path function. No direct INSERT/UPDATE/DELETE, editor membership, active-pointer write or cross-context access.
-- Each object is streamed into a fresh bounded temporary file, verified, conditionally written with correct MIME/immutable cache headers and fully read back. Children precede the master. Partial copies cannot become Catalog's active publication.
+- Each object is streamed into a fresh bounded temporary file, verified, conditionally written with correct MIME/immutable cache headers and fully read back. Children precede the master. The entire prefix stays private until complete verification and one exact-prefix policy grant; partial copies cannot be read anonymously or become Catalog's active publication.
 - One object at a time avoids overlapping read/write actions on the private single-writer POSIX gateway. Limits: 16 MiB/object, 512 MiB HLS candidate, five bounded JPEGs, 32 MiB tmpfs, five-minute job, 15-second storage operations.
 - Existing keys are never overwritten. A lost registration response can be retried with the same selection/current version; the same title/rights/bundle yields the same publication ID. At most 64 registrations/title; audit is not evicted.
 - Disputes/version changes/expiry stop copying or final registration. Registration serializes on the same title lock as editorial commands; network work never holds that database lock.
 - The origin joins only `edge`, binds Windows/local loopback 9001 and mounts storage read-only. It cannot reach private databases/writer. Anonymous GET/HEAD is limited to publication objects; listing and every write are denied. Do not change it to an internal-only network or widen its host binding.
 - Before activation, retain private candidates and retry only a compatible transient failure. After activation, ordinary `retire` is the immediate takedown. Use compatible replacement/rollback below; orphan reclamation remains Phase 06 work. Do not manually overwrite/delete publication data. Populated migrations 0007/0008 require roll-forward recovery.
+
+## Recover an interrupted access grant
+
+Publication policy is bounded to 100 verified prefixes. Its private `aster-media-published/control/publication-access.lock` serializes grants, preserving previous publications. Normal success reads back the complete policy and removes only that lock. A competing publisher fails immediately; a crash, cancellation or uncertain write deliberately retains the lock instead of admitting a potentially racing writer. Existing public reads continue.
+
+Do not expire/delete it based on age alone. Inspect the explicit project, stop every `media-publish` container/coordinator and prevent new admission, then restart only that project's private `storage` service to fence in-flight requests. Leave the read-only origin and all volumes intact. With the trusted local S3 client, read the exact control object and bucket policy; require the policy to contain only recognized immutable publication prefixes. Archive the lock/policy in the incident evidence, then delete **only** `control/publication-access.lock`. Retry the same authorized attestation: it rechecks every object/current approval and preserves an already-completed policy update. A malformed/unknown policy or uncertain publisher inventory requires investigation, not an unlock. This is operator recovery, not automatic lock takeover or media garbage collection.
+
+Legacy broad `publications/*` policy is rejected by the initializer. Restrict a known retained demo only after verifying every currently exposed registered bundle and its objects; preserve those exact prefixes. New empty projects need no migration. [Recorded Phase 06 migration](../../evidence/phase-06/publication-access.md).
 
 ## Replace or roll back an active publication
 

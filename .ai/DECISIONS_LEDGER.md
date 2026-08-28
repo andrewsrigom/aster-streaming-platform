@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0026](../docs/adr/0026-local-media-publication.md) now enforces private incomplete copies and one exact verified-prefix public grant. The pinned POSIX backend lacks object ACL/tag-condition support; use its supported bucket policy, bounded to 100 prefixes, with a conditional-create non-expiring recovery barrier to serialize updates. The known retained bundle was verified/restricted without media/editorial changes. Explicit fencing precedes stale-barrier cleanup; no automatic hosted lock/lifecycle claim.
+
 [ADR-0023](../docs/adr/0023-isolated-media-decoder.md) now gives scratch volumes non-reused run-UUID names and bounded, dry-run-first orphan recovery. Only stopped, expired, exact disposable resources without foreign consumers may be removed, never force. Immutable object-storage content/audit is preserved; storage-prefix garbage collection is not implied.
 
 [ADR-0026](../docs/adr/0026-local-media-publication.md) preserves editorial history and separates current approval, immutable bundle verification, restricted technical registration and normal Catalog activation. Migration 0007 grants only narrow definer-function registration, never editorial writes. The read-only origin joins the existing edge bridge only; internal-only Docker networking did not activate host bindings. Exact loopback URLs remain local-only. Migration 0008 adds transaction-local, append-only activation history and compatible owner replacement/rollback; no direct history-write grant. First-film publication and synthetic rollback pass locally; orphan/browser/release remain open.

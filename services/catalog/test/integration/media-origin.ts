@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
   CreateBucketCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
   PutObjectCommand,
   PutBucketPolicyCommand,
 } from "@aws-sdk/client-s3";
@@ -10,12 +11,17 @@ import {
   localPublicationStorage,
   preparePublicationStorage,
   publicationStorageClient,
+  readPublicationPolicy,
 } from "../../src/infrastructure/media/publication-storage.js";
 import { createAsterObjectStorageAdapter } from "@aster/object-storage-s3";
 import { createAsterTelemetry } from "@aster/telemetry";
 import { reuseOriginal } from "../../src/infrastructure/media/reuse-original.js";
 import { publicationBundleFixture } from "../publication-fixture.js";
 import { copyPublication } from "../../src/infrastructure/media/copy-publication.js";
+import {
+  createPublicationAccess,
+  grantPublicationAccess,
+} from "../../src/infrastructure/media/publication-access.js";
 
 const ports = process.argv.slice(2).map(Number);
 assert.equal(ports.length, 2);
@@ -65,6 +71,12 @@ try {
     }),
     { abortSignal: signal },
   );
+  const access = createPublicationAccess(client);
+  await denied(await get("/" + localPublicationStorage.bucket + "/" + key));
+  const initialPrefix = "publications/" + "a".repeat(64) + "/";
+  assert.deepEqual(await readPublicationPolicy(client, signal), []);
+  await access.reveal(initialPrefix, signal);
+  assert.deepEqual(await readPublicationPolicy(client, signal), [initialPrefix]);
   await client.send(
     new PutObjectCommand({
       Bucket: localPublicationStorage.bucket,
@@ -134,6 +146,7 @@ try {
     "/",
     "/aster-media-published?list-type=2",
     "/aster-media-published/private.txt",
+    "/aster-media-published/control/publication-access.lock",
     "/aster-media-originals/" + originalKey,
   ]) {
     await denied(await get(target));
@@ -150,6 +163,13 @@ try {
       (error: unknown) => error instanceof Error && error.name === "AccessDenied",
     );
   }
+  await assert.rejects(
+    readonly.send(
+      new PutBucketPolicyCommand({ Bucket: localPublicationStorage.bucket, Policy: "{}" }),
+      { abortSignal: signal },
+    ),
+    (error: unknown) => error instanceof Error && error.name === "AccessDenied",
+  );
   assert.equal(await (await get(path)).text(), content);
   const bundleFixture = publicationBundleFixture();
   for (const [key, bytes] of bundleFixture.objects) {
@@ -158,6 +178,24 @@ try {
       { abortSignal: signal },
     );
   }
+  let approvals = 0;
+  await assert.rejects(
+    copyPublication(
+      bundleFixture.bundle,
+      storage,
+      published,
+      () => {
+        if (++approvals === 5) {
+          return Promise.reject(new Error("fixture interrupted copy"));
+        }
+        return Promise.resolve();
+      },
+      signal,
+    ),
+  );
+  await denied(
+    await get("/aster-media-published/" + bundleFixture.bundle.prefix + "attribution.json"),
+  );
   const first = await copyPublication(
     bundleFixture.bundle,
     storage,
@@ -165,6 +203,42 @@ try {
     () => Promise.resolve(),
     signal,
   );
+  await denied(await get("/aster-media-published/" + bundleFixture.bundle.prefix + "master.m3u8"));
+  await denied(await get("/aster-media-published/" + bundleFixture.bundle.prefix + "v240-0000.ts"));
+  // A held publication barrier must reject another publisher without losing the existing grant.
+  const lockKey = "control/publication-access.lock";
+  await client.send(
+    new PutObjectCommand({
+      Bucket: localPublicationStorage.bucket,
+      Key: lockKey,
+      Body: "fixture barrier",
+      IfNoneMatch: "*",
+    }),
+    { abortSignal: signal },
+  );
+  await assert.rejects(
+    access.reveal(bundleFixture.bundle.prefix, signal),
+    (error: unknown) => error instanceof Error && error.name === "PreconditionFailed",
+  );
+  assert.deepEqual(await readPublicationPolicy(client, signal), [initialPrefix]);
+  await client.send(
+    new DeleteObjectCommand({ Bucket: localPublicationStorage.bucket, Key: lockKey }),
+    { abortSignal: signal },
+  );
+  await grantPublicationAccess(
+    bundleFixture.bundle,
+    published,
+    access,
+    () => Promise.resolve(),
+    signal,
+  );
+  await access.reveal(bundleFixture.bundle.prefix, signal);
+  assert.deepEqual(
+    await readPublicationPolicy(client, signal),
+    [initialPrefix, bundleFixture.bundle.prefix].sort(),
+  );
+  assert.equal(await (await get(path)).text(), content);
+  await preparePublicationStorage(client, signal);
   assert.deepEqual(
     await copyPublication(
       bundleFixture.bundle,
@@ -194,6 +268,10 @@ try {
       immutableReplay: true,
       allObjectTypes: true,
       currentCopyImplementation: true,
+      partialObjectsPrivate: true,
+      completeCopyPrivateBeforeGrant: true,
+      competingPolicyWriterDenied: true,
+      previousGrantPreserved: true,
     }) + "\n",
   );
   // Unexpected retained policy is a blocker, never silently widened or replaced.
@@ -218,6 +296,18 @@ try {
     preparePublicationStorage(client, signal),
     /Unexpected publication bucket policy/u,
   );
+  await assert.rejects(
+    access.reveal(bundleFixture.bundle.prefix, signal),
+    /Unexpected publication bucket policy/u,
+  );
+  await client.send(
+    new HeadObjectCommand({ Bucket: localPublicationStorage.bucket, Key: lockKey }),
+    { abortSignal: signal },
+  );
+  await assert.rejects(
+    access.reveal(bundleFixture.bundle.prefix, signal),
+    (error: unknown) => error instanceof Error && error.name === "PreconditionFailed",
+  );
   process.stdout.write(
     JSON.stringify({
       event: "media_origin_verified",
@@ -230,6 +320,7 @@ try {
       immutableHeaders: true,
       originalReuse: true,
       unexpectedPolicyRefused: true,
+      failedGrantRetainsBarrier: true,
     }) + "\n",
   );
 } finally {
