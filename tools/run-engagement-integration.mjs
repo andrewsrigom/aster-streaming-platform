@@ -10,15 +10,18 @@ import { promisify } from "node:util";
 const execute = promisify(execFile);
 assert.ok(
   process.argv.length === 2 ||
-    (process.argv.length === 3 && ["--watchlist", "--fields"].includes(process.argv[2])),
-  "Engagement integration accepts only an optional --watchlist or --fields selector, never a target.",
+    (process.argv.length === 3 &&
+      ["--watchlist", "--fields", "--events"].includes(process.argv[2])),
+  "Engagement integration accepts an optional --watchlist, --fields or --events selector, never a target.",
 );
 const verifier =
   process.argv[2] === "--watchlist"
     ? "watchlist"
     : process.argv[2] === "--fields"
       ? "engagement-fields"
-      : "progress";
+      : process.argv[2] === "--events"
+        ? "events"
+        : "progress";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const compose = await readFile(new URL("../infra/compose/compose.yml", import.meta.url), "utf8");
 const image =

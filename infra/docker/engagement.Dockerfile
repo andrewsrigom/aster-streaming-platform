@@ -10,6 +10,7 @@ COPY packages/http-express/package.json ./packages/http-express/
 COPY packages/postgres/package.json ./packages/postgres/
 COPY packages/redis/package.json ./packages/redis/
 COPY packages/broker-kafka/package.json ./packages/broker-kafka/
+COPY packages/event-delivery/package.json ./packages/event-delivery/
 COPY packages/object-storage-s3/package.json ./packages/object-storage-s3/
 COPY services/engagement/package.json ./services/engagement/
 RUN corepack enable && corepack install && pnpm install --frozen-lockfile

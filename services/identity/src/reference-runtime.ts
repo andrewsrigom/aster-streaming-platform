@@ -32,6 +32,11 @@ export interface AsterIdentityTelemetryPort {
 }
 
 export interface AsterIdentityRuntimeOptions {
+  readonly events?: Readonly<{
+    start(): void;
+    stop(): Promise<void>;
+    close(signal: AbortSignal): Promise<void>;
+  }>;
   readonly startupDeadlineMs: number;
   readonly shutdownDeadlineMs?: number;
   readonly postgresql: AsterIdentityDependencyPort;
@@ -141,10 +146,11 @@ export function createAsterIdentityRuntimeWithMonitor(
       await options.http.stopTraffic(signal);
     },
     stopConsumers: async (): Promise<void> => {
-      await monitor.stop();
+      await Promise.all([monitor.stop(), options.events?.stop()]);
     },
     flushTelemetry: (signal) => options.telemetry.flush(signal),
     closeDependencies: async (signal): Promise<void> => {
+      await options.events?.close(signal);
       const closed = await Promise.allSettled(
         dependencies.map(async (dependency) => dependency.close(signal)),
       );
@@ -254,6 +260,7 @@ export function createAsterIdentityRuntimeWithMonitor(
         });
       }
       reportReadiness();
+      options.events?.start();
       return Object.freeze({ status: "started", readiness: readiness.health().readiness });
     } finally {
       deadline.dispose();

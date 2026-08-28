@@ -78,5 +78,10 @@ export function engagementRuntimeConfiguration(
     host,
     port: Number(port),
     connectionString: localEngagementDatabase(environment, "runtime"),
+    events: localEventDeliveryEnabled(
+      environment["ASTER_EVENTS_ENABLED"],
+      environment["ASTER_ENVIRONMENT"],
+    ),
   });
 }
+import { localEventDeliveryEnabled } from "@aster/event-delivery";

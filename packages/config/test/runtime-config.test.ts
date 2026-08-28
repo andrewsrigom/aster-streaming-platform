@@ -189,6 +189,37 @@ test("Engagement profile reads require explicit local Identity and Router activa
   }
 });
 
+test("Identity event delivery requires explicit local owner and Router activation", () => {
+  const configured = {
+    ...validEnvironment(),
+    ASTER_SERVICE_NAME: "identity",
+    ASTER_LOCAL_DEMO_ENABLED: "true",
+    ASTER_PUBLIC_ORIGIN: "http://127.0.0.1:4000",
+    ASTER_ROUTER_TRUST_ENABLED: "true",
+    ASTER_EVENTS_ENABLED: "true",
+  };
+  const result = loadEnvironment(configured);
+  assert.equal(result.localDemo?.eventDelivery, true);
+  assert.ok(
+    createReferenceRuntimeConfigDiagnostic(result).variables.some(
+      (entry) => entry.name === "ASTER_EVENTS_ENABLED" && entry.value === "true",
+    ),
+  );
+  assert.equal(
+    loadEnvironment({ ...configured, ASTER_EVENTS_ENABLED: "false" }).localDemo?.eventDelivery,
+    undefined,
+  );
+  for (const change of [
+    { ASTER_ROUTER_TRUST_ENABLED: "false" },
+    { ASTER_ENV: "production" },
+    { ASTER_LOCAL_DEMO_ENABLED: "false" },
+    { ASTER_SERVICE_NAME: "other" },
+    { ASTER_EVENTS_ENABLED: "yes" },
+  ]) {
+    assert.throws(() => loadEnvironment({ ...configured, ...change }), ReferenceRuntimeConfigError);
+  }
+});
+
 test("reports non-secret values and only configured status for secrets", () => {
   const diagnostic = createReferenceRuntimeConfigDiagnostic(loadEnvironment(validEnvironment()));
   const serialized = JSON.stringify(diagnostic);

@@ -1,4 +1,5 @@
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
+import { createLocalEventDelivery, type EventDeliveryLifecycle } from "@aster/event-delivery";
 import {
   loadLocalRouterTrust,
   loadLocalCatalogPlaybackTrust,
@@ -30,6 +31,7 @@ interface RuntimeResources {
   readonly telemetry?: AsterTelemetry;
   readonly logger?: AsterLogger;
   readonly terminate?: (code: number) => void;
+  readonly eventDelivery?: EventDeliveryLifecycle;
 }
 
 export async function createCatalogService(
@@ -60,7 +62,18 @@ export async function createCatalogService(
     throw error;
   }
   let graph: Awaited<ReturnType<typeof createCatalogSubgraph>>;
+  let events: EventDeliveryLifecycle | undefined;
   try {
+    if (config.events) {
+      events =
+        resources.eventDelivery ??
+        (await createLocalEventDelivery({
+          owner: "catalog",
+          connectionString: config.connectionString,
+          telemetry,
+          logger,
+        }));
+    }
     graph = await createCatalogSubgraph({
       ...(config.routerTrust ? { routerTrust: await loadLocalRouterTrust("catalog") } : {}),
       ...(config.engagementRead
@@ -115,6 +128,7 @@ export async function createCatalogService(
     });
   } catch (error) {
     await Promise.allSettled([
+      events?.close(AbortSignal.timeout(2000)),
       database.close(AbortSignal.timeout(2000)),
       telemetry.shutdown(AbortSignal.timeout(2000)),
     ]);
@@ -131,11 +145,12 @@ export async function createCatalogService(
       await http?.stopTraffic(signal);
     },
     stopConsumers: async () => {
-      await monitor.stop();
+      await Promise.all([monitor.stop(), events?.stop()]);
       await graph.stop();
     },
     flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
     closeDependencies: async (signal) => {
+      await events?.close(signal);
       const results = await Promise.all([database.close(signal), telemetry.shutdown(signal)]);
       if (
         results.some(
@@ -224,6 +239,7 @@ export async function createCatalogService(
       }
       lifecycle.markReady();
       monitor.start();
+      events?.start();
       return status === "ready" ? "ready" : "degraded";
     } catch {
       if (startupController.signal.aborted) {

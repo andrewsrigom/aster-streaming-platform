@@ -20,6 +20,7 @@
     "build": "tsc --build ./tsconfig.json",
     "start": "node ./dist/src/main.js",
     "migrate:local": "node ./dist/src/migrate-local.js",
+    "events:replay": "node ./dist/src/replay-identity-event.js",
     "test": "node --test ./dist/test/*.test.js",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
@@ -27,6 +28,8 @@
     "@apollo/server": "5.5.1",
     "@apollo/subgraph": "2.14.4",
     "@as-integrations/express5": "1.1.2",
+    "@aster/broker-kafka": "workspace:*",
+    "@aster/event-delivery": "workspace:*",
     "@aster/http-express": "workspace:*",
     "@aster/postgres": "workspace:*",
     "@aster/runtime": "workspace:*",

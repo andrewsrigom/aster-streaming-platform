@@ -11,6 +11,7 @@ import {
   AsterKafkaBrokerLifecycleError,
   type AsterKafkaBrokerOptions,
   type AsterKafkaBrokerTelemetry,
+  type AsterKafkaPublishInput,
 } from "../src/index.js";
 import {
   createAsterKafkaBrokerAdapterWithClientFactory,
@@ -66,7 +67,7 @@ class FakeProducer implements AsterKafkaProducerClient {
   publishCalls = 0;
   disconnectCalls = 0;
   lastTopic: string | undefined;
-  lastPublish: Readonly<{ topic: string; key: Uint8Array; value: Uint8Array }> | undefined;
+  lastPublish: AsterKafkaPublishInput | undefined;
   connectHandler: () => Promise<void> = () => Promise.resolve();
   metadataHandler: (topic: string) => Promise<void> = () => Promise.resolve();
   publishHandler: AsterKafkaProducerClient["publish"] = () => Promise.resolve();
@@ -83,7 +84,7 @@ class FakeProducer implements AsterKafkaProducerClient {
     return this.metadataHandler(topic);
   }
 
-  publish(input: Readonly<{ topic: string; key: Uint8Array; value: Uint8Array }>): Promise<void> {
+  publish(input: AsterKafkaPublishInput): Promise<void> {
     this.publishCalls += 1;
     this.lastPublish = input;
     return this.publishHandler(input);
@@ -99,6 +100,7 @@ class FakeConsumer implements AsterKafkaConsumerClient {
   startCalls = 0;
   disconnectCalls = 0;
   topic: string | undefined;
+  fromBeginning: boolean | undefined;
   onMessage: ((record: AsterKafkaRawRecord) => Promise<void>) | undefined;
   onCrash: (() => void) | undefined;
   startHandler: () => Promise<void> = () => Promise.resolve();
@@ -108,9 +110,11 @@ class FakeConsumer implements AsterKafkaConsumerClient {
     topic: string,
     onMessage: (record: AsterKafkaRawRecord) => Promise<void>,
     onCrash: () => void,
+    fromBeginning: boolean,
   ): Promise<void> {
     this.startCalls += 1;
     this.topic = topic;
+    this.fromBeginning = fromBeginning;
     this.onMessage = onMessage;
     this.onCrash = onCrash;
     return this.startHandler();
@@ -169,6 +173,172 @@ function options(
 function nextTurn(): Promise<void> {
   return new Promise((resolve) => setImmediate(resolve));
 }
+
+test("explicit earliest backlog is forwarded without changing the existing consumer default", async () => {
+  for (const requested of [undefined, false, true]) {
+    const consumer = new FakeConsumer();
+    const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+      options(new RecordingTelemetry()),
+      () => new FakeBundle(new FakeProducer(), [consumer]),
+    );
+    assert.equal((await adapter.connect()).status, "completed");
+    assert.equal(
+      (
+        await adapter.startConsumer({
+          topic: "aster.events",
+          handle: () => Promise.resolve(),
+          ...(requested === undefined ? {} : { fromBeginning: requested }),
+        })
+      ).status,
+      "completed",
+    );
+    assert.equal(consumer.fromBeginning, requested === true);
+    assert.equal((await adapter.close()).status, "completed");
+  }
+});
+
+test("rejects non-Boolean backlog options before starting the consumer", async () => {
+  const bundle = new FakeBundle();
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(new RecordingTelemetry()),
+    () => bundle,
+  );
+  assert.equal((await adapter.connect()).status, "completed");
+  for (const fromBeginning of [null, 1, "true"]) {
+    const result = await adapter.startConsumer({
+      topic: "aster.events",
+      handle: () => Promise.resolve(),
+      fromBeginning,
+    } as never);
+    assert.deepEqual(result, { status: "rejected", reason: "invalid_request" });
+  }
+  assert.equal(bundle.createConsumerCalls, 0);
+  assert.equal((await adapter.close()).status, "completed");
+});
+
+test("copies bounded signature headers on publication and delivery", async () => {
+  const producer = new FakeProducer(),
+    consumer = new FakeConsumer();
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(new RecordingTelemetry(), { maxMessageBytes: 512 }),
+    () => new FakeBundle(producer, [consumer]),
+  );
+  assert.equal((await adapter.connect()).status, "completed");
+  const signature = Uint8Array.from([1, 2, 3]);
+  const pending = adapter.publish({
+    topic: "aster.events",
+    key: Uint8Array.of(1),
+    value: Uint8Array.of(2),
+    headers: { signature },
+  });
+  signature[0] = 9;
+  assert.equal((await pending).status, "completed");
+  assert.deepEqual(producer.lastPublish?.headers?.["signature"], Uint8Array.from([1, 2, 3]));
+  let received: Uint8Array | undefined;
+  assert.equal(
+    (
+      await adapter.startConsumer({
+        topic: "aster.events",
+        handle: (record) => {
+          received = record.headers?.["signature"];
+          return Promise.resolve();
+        },
+      })
+    ).status,
+    "completed",
+  );
+  await consumer.emit({
+    key: Uint8Array.of(1),
+    value: Uint8Array.of(2),
+    partition: 0,
+    offset: "0",
+    headers: { signature },
+  });
+  signature[1] = 8;
+  assert.deepEqual(received, Uint8Array.from([9, 2, 3]));
+  assert.equal((await adapter.close()).status, "completed");
+});
+
+test("header count, names, values, total bytes and combined message budget reject before send", async () => {
+  const producer = new FakeProducer();
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(new RecordingTelemetry(), { maxMessageBytes: 8192 }),
+    () => new FakeBundle(producer),
+  );
+  assert.equal((await adapter.connect()).status, "completed");
+  let getterReads = 0;
+  const accessor = Object.defineProperty({}, "signature", {
+    get() {
+      getterReads++;
+      return Uint8Array.of(1);
+    },
+  });
+  for (const headers of [
+    Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`h${i}`, Uint8Array.of(1)])),
+    { ["h".repeat(65)]: Uint8Array.of(1) },
+    { "bad name": Uint8Array.of(1) },
+    { signature: Uint8Array.from({ length: 1025 }, () => 0) },
+    Object.fromEntries(Array.from({ length: 4 }, (_, i) => [`h${i}`, new Uint8Array(1024)])),
+    { signature: [Uint8Array.of(1), Uint8Array.of(2)] },
+    accessor,
+  ]) {
+    assert.deepEqual(
+      await adapter.publish({
+        topic: "aster.events",
+        key: Uint8Array.of(1),
+        value: Uint8Array.of(2),
+        headers,
+      }),
+      { status: "rejected", reason: "invalid_request" },
+    );
+  }
+  assert.deepEqual(
+    await adapter.publish({
+      topic: "aster.events",
+      key: Uint8Array.of(1),
+      value: new Uint8Array(8190),
+      headers: { h: Uint8Array.of(1) },
+    }),
+    { status: "rejected", reason: "invalid_request" },
+  );
+  assert.equal(getterReads, 0);
+  assert.equal(producer.publishCalls, 0);
+  assert.equal((await adapter.close()).status, "completed");
+});
+
+test("duplicate broker headers reject delivery without invoking a destructive handler", async () => {
+  const consumer = new FakeConsumer();
+  const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+    options(new RecordingTelemetry(), { maxMessageBytes: 512 }),
+    () => new FakeBundle(new FakeProducer(), [consumer]),
+  );
+  assert.equal((await adapter.connect()).status, "completed");
+  let calls = 0;
+  assert.equal(
+    (
+      await adapter.startConsumer({
+        topic: "aster.events",
+        handle: () => {
+          calls++;
+          return Promise.resolve();
+        },
+      })
+    ).status,
+    "completed",
+  );
+  await assert.rejects(
+    consumer.emit({
+      key: Uint8Array.of(1),
+      value: Uint8Array.of(2),
+      partition: 0,
+      offset: "0",
+      headers: { signature: [Uint8Array.of(1), Uint8Array.of(2)] },
+    }),
+  );
+  assert.equal(calls, 0);
+  await nextTurn();
+  assert.equal((await adapter.close()).status, "completed");
+});
 
 test("validates bounded own-data configuration without invoking accessors or exposing input", () => {
   const telemetry = new RecordingTelemetry();
@@ -243,6 +413,8 @@ test("constructs one finite idempotent no-log client policy", async () => {
   assert.equal(configuration.idempotent, true);
   assert.equal(configuration.logLevel, "nothing");
   assert.equal(configuration.retryMaxAttempts, 2);
+  assert.equal(configuration.rebalanceTimeoutMs, 50);
+  assert.ok(configuration.rebalanceTimeoutMs < configuration.requestTimeoutMs);
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 

@@ -52,6 +52,7 @@ export interface AsterKafkaTopicInput {
 export interface AsterKafkaPublishInput extends AsterKafkaTopicInput {
   readonly key: Uint8Array;
   readonly value: Uint8Array;
+  readonly headers?: Readonly<Record<string, Uint8Array>>;
 }
 
 export type AsterKafkaConsumedRecord = Readonly<{
@@ -60,10 +61,12 @@ export type AsterKafkaConsumedRecord = Readonly<{
   partition: number;
   offset: string;
   signal: AbortSignal;
+  headers?: Readonly<Record<string, Uint8Array>>;
 }>;
 
 export interface AsterKafkaConsumerInput extends AsterKafkaTopicInput {
   readonly handle: (record: AsterKafkaConsumedRecord) => Promise<void>;
+  readonly fromBeginning?: boolean;
 }
 
 export type AsterKafkaBrokerOperationResult =

@@ -1,0 +1,55 @@
+P08-R09/R10/R12 candidate gate — 2026-08-28
+Base: d7fa03a363ab979f008500040b0afa62ddec2704; feat/p08-event-delivery.
+Source identity: events-source.sha256 (75 changed executable/configuration files).
+Environment: Ubuntu-20.04/WSL, Node 24.19.0, pnpm 11.24.0; NODE_OPTIONS=--max-old-space-size=1536.
+Workload: all 17 workspaces and the 24 canonical quality tasks; lockfile requires full graph.
+No Docker fixture, media processing, retained migration, CPU or memory experiment in this gate.
+
+Exact gate invocation (native pinned runtime on PATH):
+node --input-type=module <<'NODE'
+import { spawn } from 'node:child_process';
+import { runQualityGate } from './tools/run-quality-gate.ts';
+const limited = (executable,args,options) => {
+ const child=spawn(executable,[...args,'--concurrency=2','--continue=always'],options);
+ return {pid:child.pid,onClose:listener=>child.once('close',listener),onError:listener=>child.once('error',listener)};
+};
+process.exitCode=await runQualityGate([],limited);
+NODE
+ASTER_SCHEMA_BASE=d7fa03a363ab979f008500040b0afa62ddec2704 pnpm --filter @aster/router schema:check
+git diff --check --cached
+
+Exit: 0. Raw aggregate and exact-base composition output:
+ Tasks:    70 successful, 70 total
+Cached:    46 cached, 70 total
+  Time:    1m14.31s
+{"check":"supergraph","status":"ok","mode":"--check","subgraphs":4,"compatibilityBase":"d7fa03a363ab979f008500040b0afa62ddec2704","artifactCount":7,"manifestSha256":"8897e3a8378f6673698ca039b0dca6ac49380e235365f2ed09dbd098cec5563c"}
+
+Interpretation: all applicable local source, type, formatting, lint, architecture,
+documentation, memory, security, CI policy and unit/contract tasks passed.
+46 tasks reused input-keyed local results; cache replay timings are not new measurements.
+The wrapper retains the canonical task inventory, deadline and process-tree cancellation.
+--continue=always collects the whole round and still returns nonzero for any failed task.
+
+Candidate remediation, before the successful gate:
+- Required explicit P08-R09 in the memory resume target; fixed that text, not the verifier.
+- Formatted one Identity test assertion; removed two trailing evidence blank lines.
+- Kept an internal unused poison-reason type private; emitted runtime JS hash remained
+  d4a3dfa07b239c181129f12edb3a921c1499be73314cc12c8ef9620fd33ae50d.
+- Renamed a computed HMAC key buffer and constructed synthetic fixture URLs with URL,
+  using the existing explicit test-only password. No real credential or scanner exemption.
+- 14 focused signature/runtime/consumer tests passed (574.691515 ms), strict builds passed,
+  scanner returned zero findings, and the complete gate above then passed.
+Earlier fail-fast rounds stopped at memory, formatting or unused-export checks;
+one full round passed 69/70 and exposed the four source-scanner findings corrected above.
+Cancelled companion tests in fail-fast rounds are not independent acceptance failures;
+the isolated reset suite passed 15/15 and the successful complete round includes it.
+
+Heavyweight carry-forward:
+events-postgres.txt records the actual earlier verifier hash and SQL execution;
+events-runtime.txt and events-shutdown.json retain actual Kafka/owner observations.
+Later changes are formatting, erased type visibility, an alpha-renamed key buffer,
+equivalent test-only URL construction and corrected supervisor shutdown expectations.
+They change no SQL, topic, envelope/signature bytes, lease, authority, recovery or deadline.
+Focused tests plus this exact candidate gate support carrying those observations forward.
+The local full supervisor's exit was 1, not 0; protected CI must execute its corrected wrapper.
+No protected CI, review, merge, retained deployment, browser resume or Phase08 completion is claimed.

@@ -2,6 +2,13 @@ import { readFile } from "node:fs/promises";
 import { Client } from "pg";
 import { localEngagementDatabase } from "./runtime-configuration.js";
 
+const MIGRATIONS = [
+  "0001-progress",
+  "0002-watchlist",
+  "0003-event-relay",
+  "0004-identity-events",
+] as const;
+
 export async function migrateLocalEngagement(
   environment: Readonly<Record<string, string | undefined>>,
   signal: AbortSignal,
@@ -37,38 +44,33 @@ export async function migrateLocalEngagement(
     const relation = await client.query<{ relation: string | null }>(
       "SELECT to_regclass('engagement.schema_migrations')::text AS relation",
     );
-    const applied: number[] = [];
-    if (relation.rows[0]?.relation === null) {
-      const sql = await readFile(
-        new URL("../../../migrations/0001-progress.up.sql", import.meta.url),
-        { encoding: "utf8", signal },
-      );
-      if (Buffer.byteLength(sql) > 16384) {
-        throw new Error("Engagement migration exceeds its source bound.");
-      }
-      await client.query(sql);
-      applied.push(1);
-    }
-    const versions = await client.query<{ version: number }>(
-      "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 3",
-    );
+    const versions =
+      relation.rows[0]?.relation === null
+        ? []
+        : (
+            await client.query<{ version: number }>(
+              "SELECT version FROM engagement.schema_migrations ORDER BY version LIMIT 5",
+            )
+          ).rows.map((row) => row.version);
     if (
-      versions.rows.length < 1 ||
-      versions.rows.length > 2 ||
-      versions.rows.some((row, index) => row.version !== index + 1)
+      versions.length > MIGRATIONS.length ||
+      versions.some((version, index) => version !== index + 1) ||
+      (versions.length === 0 && relation.rows[0]?.relation !== null)
     ) {
       throw new Error("Unsupported Engagement schema.");
     }
-    if (versions.rows.length === 1) {
+    const applied: number[] = [];
+    for (let index = versions.length; index < MIGRATIONS.length; index++) {
+      signal.throwIfAborted();
       const sql = await readFile(
-        new URL("../../../migrations/0002-watchlist.up.sql", import.meta.url),
+        new URL(`../../../migrations/${MIGRATIONS[index]}.up.sql`, import.meta.url),
         { encoding: "utf8", signal },
       );
       if (Buffer.byteLength(sql) > 16384) {
         throw new Error("Engagement migration exceeds its source bound.");
       }
       await client.query(sql);
-      applied.push(2);
+      applied.push(index + 1);
     }
     signal.throwIfAborted();
     await client.query(`DO $local$ BEGIN
@@ -85,6 +87,36 @@ export async function migrateLocalEngagement(
       throw new Error("Incompatible local Engagement login.");
     }
     await client.query("GRANT aster_engagement_runtime TO aster_engagement_local");
+    await client.query(`DO $local$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_engagement_relay_local') THEN
+        CREATE ROLE aster_engagement_relay_local LOGIN PASSWORD 'aster-test-only'
+          NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+      END IF;
+    END $local$`);
+    const relay = await client.query<{ allowed: boolean }>(`SELECT rolcanlogin
+      AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)
+      AND NOT EXISTS (SELECT 1 FROM pg_roles delegated WHERE delegated.rolname NOT IN ('aster_engagement_relay_local', 'aster_engagement_relay')
+        AND pg_has_role('aster_engagement_relay_local', delegated.oid, 'MEMBER')) AS allowed
+      FROM pg_roles WHERE rolname = 'aster_engagement_relay_local'`);
+    if (relay.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Engagement relay login.");
+    }
+    await client.query("GRANT aster_engagement_relay TO aster_engagement_relay_local");
+    await client.query(`DO $local$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_engagement_consumer_local') THEN
+        CREATE ROLE aster_engagement_consumer_local LOGIN PASSWORD 'aster-test-only'
+          NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+      END IF;
+    END $local$`);
+    const consumer = await client.query<{ allowed: boolean }>(`SELECT rolcanlogin
+      AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)
+      AND NOT EXISTS (SELECT 1 FROM pg_roles delegated WHERE delegated.rolname NOT IN ('aster_engagement_consumer_local', 'aster_engagement_consumer')
+        AND pg_has_role('aster_engagement_consumer_local', delegated.oid, 'MEMBER')) AS allowed
+      FROM pg_roles WHERE rolname = 'aster_engagement_consumer_local'`);
+    if (consumer.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Engagement consumer login.");
+    }
+    await client.query("GRANT aster_engagement_consumer TO aster_engagement_consumer_local");
     signal.throwIfAborted();
     return { applied: Object.freeze(applied) };
   } catch {

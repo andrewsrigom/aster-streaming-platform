@@ -1,0 +1,67 @@
+P08-R09/R10/R12 Kafka and owner runtime checkpoint — 2026-08-28
+Base: d7fa03a363ab979f008500040b0afa62ddec2704; unpublished feat/p08-event-delivery WIP.
+Source identity: events-source.sha256. No retained application migration or activation.
+Environment: Ubuntu-20.04/WSL; native Node 24.19.0/pnpm 11.24.0; pinned Compose images.
+Command: NODE_OPTIONS=--max-old-space-size=384 node tools/run-engagement-runtime.mjs
+Workload: generated unique fixture; real PostgreSQL/Kafka/Router and owner services;
+synthetic profiles/publication facts, no media fetch or real-film rights assertion.
+
+Result: all product/outage/recovery and cleanup observations below passed.
+The supervisor exited 1 solely because its new shutdown assertion incorrectly expected 0.
+All three owners emitted completed/sigterm lifecycle logs and exited 143, the existing
+packages/runtime/src/process-signals.ts contract (also verified by real-process tests).
+events-shutdown.json records actual inspect states and contemporaneous bounded Docker logs.
+The corrected eventShutdownComplete validator was replayed against those exact observations;
+six shutdown/platform tests and scoped lint pass. Later behavior-preserving static corrections
+and current source hashes are recorded in events-candidate.txt and events-source.sha256.
+The complete corrected supervisor command still awaits protected CI; do not report its local exit as 0.
+Prior failed cold build / endpoint refresh / rebalance attempts are not passing end-to-end runs.
+
+Corrections already present in these tested images:
+- one-second consumer rebalance wait inside the unchanged two-second adapter deadline;
+- independent Engagement outbox delivery during inbound recovery, retaining bounded backoff;
+- exact maximum quarantine bytes within the shared SQL parameter ceiling.
+Harness/operations: explicit Kafka-init tmpfs masks; Router refresh after owner recreation;
+supported up/no-recreate broker restart; startup and shutdown assertions with exact cleanup.
+No broad prune, host restart, CPU measurement, media work, or unrelated-project action.
+
+Raw runtime JSON records:
+{"event":"engagement_runtime_build","project":"aster-engagement-proof-676662b4-5b5b-4d50-ab9a-248a502c46be","status":"started"}
+{"event":"engagement_runtime_build","project":"aster-engagement-proof-676662b4-5b5b-4d50-ab9a-248a502c46be","status":"completed"}
+{"event":"engagement_runtime_started","project":"aster-engagement-proof-676662b4-5b5b-4d50-ab9a-248a502c46be","privateOwnersRunning":3,"images":{"catalog":"sha256:4d2b2e5d79096a27b84193a49e2087e7d07a28897026f5c9dbeb4ea285779354","engagement":"sha256:65c02ce86a069feefb725e9a10b196577fddbd196daaaa0c52c66d1f8ff5f608","identity":"sha256:6b1f60decd8f55e14b042d247da5dc10ed036130e1063c90039491c2d72249e9","playback":"sha256:7818f85330dec4db5bbe2c2a953cc9d22fe74f913bb2b7e9ec3a33f4a3dd2c80","router":"sha256:853c4f16d7ba3fc61e4cb78890c0f4fb81153427cf3ce92131737c157914b471"}}
+{"event":"engagement_federated_commit","currentIdentityAndPlayback":true,"durableProgressReceiptOutbox":true,"correlationId":"9797529b-cfef-4fd6-9ecf-3c60d0cea71d","mediaFetches":0}
+{"event":"engagement_federated_ordering","exactConcurrentReplay":true,"conflictAndStaleRejected":true,"intentionalBackseek":true,"changedTitleSameKey":"conflict"}
+{"event":"engagement_federated_authorization","foreignAndMissingProfile":"denied","wrongAndMissingPlayback":"denied","privateFieldsHidden":true,"forgedTrust":"denied"}
+{"event":"engagement_federated_failures","ownerLock":"bounded_no_ack","recovery":true,"expiredSessionReplay":true,"expiredNewWrite":"denied"}
+{"event":"engagement_federated_pages","pages":[1,1],"strictKeysetOrder":true,"catalogMetadata":"federated_owner","completed":"history_only","retiredMetadata":null,"retiredContinue":"excluded_before_pagination","hiddenGapLookahead":"passed","disputedRights":"excluded_before_pagination","foreignAndAnonymous":"denied","oversizedAndWrongKindCursor":"rejected","readWrites":0}
+{"event":"engagement_federated_revocation","deletedProfileAndRevokedSession":"no_disclosure","cleanupConsumer":"planned"}
+{"event":"engagement_federated_watchlist","currentIdentityAndCatalog":true,"federatedMetadata":true,"concurrentReplay":"original_result","oppositeCommandReplay":"original_result","titleAndActionConflict":"rejected","pages":[1,1],"retired":"filtered_before_pagination","hiddenRemoval":"completed","foreignAndAnonymous":"denied","heads":1,"entries":0,"receipts":4,"outbox":4,"playbackWrites":0}
+{"event":"engagement_watchlist_revocation","deletedProfileAndRevokedSession":"no_disclosure","cleanupConsumer":"planned"}
+{"event":"engagement_runtime_logs","ownerCorrelation":true,"credentialsExcluded":true}
+{"event":"engagement_fields_federated_plans","titlePlan":{"object":{"kind":"QueryPlan","node":{"kind":"Sequence","nodes":[{"kind":"Fetch","serviceName":"catalog","variableUsages":["first"],"operation":"query TitlesWithEngagement__catalog__0($first: Int! = 20) { titles(first: $first) { edges { node { __typename id localized { title } } } pageInfo { hasNextPage } } }","operationName":"TitlesWithEngagement__catalog__0","operationKind":"query","id":null,"inputRewrites":null,"outputRewrites":null,"contextRewrites":null,"schemaAwareHash":"46a39da5d6c9a109f16dda0d2142bc53a7926a5e8c366df5377dff91a2a6a6a7","authorization":{"is_authenticated":false,"scopes":[],"policies":[]}},{"kind":"Flatten","path":["titles","edges","@","node"],"node":{"kind":"Fetch","serviceName":"engagement","requires":[{"kind":"InlineFragment","typeCondition":"Title","selections":[{"kind":"Field","name":"__typename"},{"kind":"Field","name":"id"}]}],"variableUsages":["profileId"],"operation":"query TitlesWithEngagement__engagement__1($representations: [_Any!]!, $profileId: ID!) { _entities(representations: $representations) { ... on Title { progress(profileId: $profileId) { positionMs durationMs status updatedAt } inWatchlist(profileId: $profileId) } } }","operationName":"TitlesWithEngagement__engagement__1","operationKind":"query","id":null,"inputRewrites":null,"outputRewrites":null,"contextRewrites":null,"schemaAwareHash":"572a7e02975c405df34526bdc5f47220a85a630c6e562f1990c0d146a4808a26","authorization":{"is_authenticated":false,"scopes":[],"policies":[]}}}]}},"text":"QueryPlan {\n  Sequence {\n    Fetch(service: \"catalog\") {\n      {\n        titles(first: $first) {\n          edges {\n            node {\n              __typename\n              id\n              localized {\n                title\n              }\n            }\n          }\n          pageInfo {\n            hasNextPage\n          }\n        }\n      }\n    },\n    Flatten(path: \"titles.edges.@.node\") {\n      Fetch(service: \"engagement\") {\n        {\n          ... on Title {\n            __typename\n            id\n          }\n        } =>\n        {\n          ... on Title {\n            progress(profileId: $profileId) {\n              positionMs\n              durationMs\n              status\n              updatedAt\n            }\n            inWatchlist(profileId: $profileId)\n          }\n        }\n      },\n    },\n  },\n}"},"profilePlan":{"object":{"kind":"QueryPlan","node":{"kind":"Sequence","nodes":[{"kind":"Fetch","serviceName":"identity","variableUsages":["profileId"],"operation":"query ProfileWithEngagement__identity__0($profileId: ID!) { profile(id: $profileId) { __typename id } }","operationName":"ProfileWithEngagement__identity__0","operationKind":"query","id":null,"inputRewrites":null,"outputRewrites":null,"contextRewrites":null,"schemaAwareHash":"db3bc4fe227b8039c1064ba93b8d032bf76d48b4d4031cf2a9c8120cf6261850","authorization":{"is_authenticated":false,"scopes":[],"policies":[]}},{"kind":"Flatten","path":["profile"],"node":{"kind":"Fetch","serviceName":"engagement","requires":[{"kind":"InlineFragment","typeCondition":"Profile","selections":[{"kind":"Field","name":"__typename"},{"kind":"Field","name":"id"}]}],"variableUsages":["titleId"],"operation":"query ProfileWithEngagement__engagement__1($representations: [_Any!]!, $titleId: ID!) { _entities(representations: $representations) { ... on Profile { progress(titleId: $titleId) { positionMs durationMs status updatedAt } inWatchlist(titleId: $titleId) } } }","operationName":"ProfileWithEngagement__engagement__1","operationKind":"query","id":null,"inputRewrites":null,"outputRewrites":null,"contextRewrites":null,"schemaAwareHash":"384f384c6de38cf12659a533c48b7fbde246e86c27e46af7d38968335fb1d20f","authorization":{"is_authenticated":false,"scopes":[],"policies":[]}}}]}},"text":"QueryPlan {\n  Sequence {\n    Fetch(service: \"identity\") {\n      {\n        profile(id: $profileId) {\n          __typename\n          id\n        }\n      }\n    },\n    Flatten(path: \"profile\") {\n      Fetch(service: \"engagement\") {\n        {\n          ... on Profile {\n            __typename\n            id\n          }\n        } =>\n        {\n          ... on Profile {\n            progress(titleId: $titleId) {\n              positionMs\n              durationMs\n              status\n              updatedAt\n            }\n            inWatchlist(titleId: $titleId)\n          }\n        }\n      },\n    },\n  },\n}"}}
+{"event":"engagement_fields_federated","titleAndProfile":"passed","ownership":"current Identity","anonymousCatalog":"available","optionalFields":"null_on_denial","currentRetirement":"membership_false_progress_retained","missingPair":"null_progress_false_membership","deletedAndRevoked":"no_disclosure","readWrites":0}
+{"event":"event_backlog_prepared","committedBeforeActivation":true,"realProfileMutation":true}
+{"event":"engagement_optional_failure","anonymousPlayback":"available","identityAndEngagement":"stopped"}
+{"event":"event_runtime_ready","federatedIdentity":"available","ownerReplacement":"completed"}
+{"event":"event_owner_backlogs","owners":3,"pending":0,"signedDeletion":"applied","progressAndWatchlist":"removed"}
+{"event":"event_consumer_redelivery","deliveries":2,"durableEffects":1,"sameOffsetAndBytes":true}
+{"event":"event_retained_topics","owners":3,"contractAndPartitionKey":"valid"}
+{"event":"event_poison_quarantine","signature":"rejected","activeProgress":"unchanged","durableBeforeAck":true}
+{"event":"event_replay_cli","exactValidRecord":"duplicate-completed","invalidRecord":"retained"}
+{"event":"event_consumer_offsets","durableQuarantine":true,"committedThroughEnd":true,"lag":0}
+{"event":"event_broker_outage","committedProgress":true,"anonymousPlayback":"available","pendingFact":"retained"}
+{"event":"event_broker_recovered","pending":0,"durableProgress":"unchanged","backgroundRetry":"completed","signedDeletionConsumer":"recovered"}
+{"event":"event_owner_shutdown","owner":"identity","running":false,"oomKilled":false,"exitCode":143}
+{"event":"event_owner_shutdown","owner":"catalog","running":false,"oomKilled":false,"exitCode":143}
+{"event":"event_owner_shutdown","owner":"engagement","running":false,"oomKilled":false,"exitCode":143}
+{"event":"engagement_runtime_failed","stage":"events-shutdown","code":"ERR_ASSERTION","killed":false}
+{"event":"engagement_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}
+
+Interpretation: three owner backlogs drain; dedicated signed deletion removes owned state;
+same Kafka offset/bytes redeliver twice with one effect; poison is durable before offset commit;
+exact valid replay succeeds, invalid replay stays quarantined; lag reaches zero.
+During broker outage, progress commits and anonymous Playback remains available.
+Recovery drains pending facts and applies a new signed deletion created during the outage.
+All owners stop, no OOM or live container remains; exact fixture cleanup reports zero.
+The synthetic Catalog retirement proves its relay contract, not a new real publication.
+Hosted multi-replica broker durability, ACL/TLS/rotation, and browser resume are not claimed.

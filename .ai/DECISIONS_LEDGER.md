@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0034](../docs/adr/0034-owned-event-delivery.md) defines owner-local fenced relays, unchanged v1 envelopes, dedicated Identity-event authentication and durable deletion/quarantine/replay. Real recovery required a one-second rebalance wait inside the existing broker deadline and an independent outbound step while inbound consumption recovers. Separate background credentials do not widen request roles; candidate/protected release remains.
+
 [ADR-0033](../docs/adr/0033-request-scoped-engagement-fields.md) defines nullable Title/Profile progress and membership, request-only DataLoader 2.2.3 caches, twenty pairs/five profiles, current ownership and lazy Catalog visibility. One owned SQL batch preserves order/missing data; Catalog failure does not gate progress. No migration or new trust transport.
 
 [ADR-0032](../docs/adr/0032-owned-watchlist-visibility.md) defines durable profile watchlist versions/membership, one-hour idempotency, atomic receipt/event and reclaimable 256-entry slots. Reuse ADR-0031's implemented Catalog visibility contract. Watchlist protected and exact post-merge acceptance pass.

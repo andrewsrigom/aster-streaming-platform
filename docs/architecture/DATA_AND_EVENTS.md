@@ -106,6 +106,8 @@ Events are facts in past tense. Commands are not published as domain events.
 
 ## Delivery semantics
 
+Phase 08's current [owned-delivery candidate](../../services/engagement/EVENT_DELIVERY.md) implements bounded Identity/Catalog/Engagement relays and authenticated Engagement deletion/quarantine/replay. Its real SQL acceptance passes; Kafka/owner runtime and protected release remain pending. Continue-watching is reconstructed directly from durable progress and current Catalog visibility, not a second event-built store. The Discovery projections below remain planned.
+
 The outbox plus broker provides at-least-once delivery.
 
 Therefore:

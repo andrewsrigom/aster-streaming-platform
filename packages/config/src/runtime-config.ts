@@ -57,6 +57,7 @@ export const REFERENCE_RUNTIME_CONFIG_VARIABLES = Object.freeze({
     classification: "non-secret",
     optional: true,
   }),
+  ASTER_EVENTS_ENABLED: Object.freeze({ classification: "non-secret", optional: true }),
 } satisfies Record<string, RuntimeVariableDefinition>);
 
 const KNOWN_VARIABLES = Object.freeze(
@@ -98,6 +99,7 @@ const runtimeConfigSchema = z.strictObject({
   ASTER_PUBLIC_ORIGIN: z.string().max(128).refine(isLocalPublicOrigin).optional(),
   ASTER_ROUTER_TRUST_ENABLED: z.enum(["true", "false"]).optional(),
   ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: z.enum(["true", "false"]).optional(),
+  ASTER_EVENTS_ENABLED: z.enum(["true", "false"]).optional(),
 });
 
 export interface ReferenceRuntimeConfig {
@@ -114,6 +116,7 @@ export interface ReferenceRuntimeConfig {
     publicOrigin: string;
     routerTrust?: true;
     engagementRead?: true;
+    eventDelivery?: true;
   }>;
 }
 
@@ -133,6 +136,7 @@ export interface ConfiguredNonSecretVariable {
     | "ASTER_LOCAL_DEMO_ENABLED"
     | "ASTER_ROUTER_TRUST_ENABLED"
     | "ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED"
+    | "ASTER_EVENTS_ENABLED"
     | "ASTER_PUBLIC_ORIGIN";
   readonly classification: "non-secret";
   readonly status: "configured";
@@ -317,6 +321,7 @@ function preflight(source: readonly ReferenceRuntimeConfigSourceEntry[]): Prefli
     ASTER_PUBLIC_ORIGIN: undefined,
     ASTER_ROUTER_TRUST_ENABLED: undefined,
     ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED: undefined,
+    ASTER_EVENTS_ENABLED: undefined,
   };
   const seenKnownVariables = new Set<ReferenceRuntimeConfigVariable>();
   let ownedVariableCount = 0;
@@ -461,6 +466,10 @@ function parseReferenceRuntimeConfig(
     throw new ReferenceRuntimeConfigError([knownIssue("ASTER_ROUTER_TRUST_ENABLED", "invalid")]);
   }
   const engagementRead = result.data.ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED === "true";
+  const eventDelivery = result.data.ASTER_EVENTS_ENABLED === "true";
+  if (eventDelivery && (!routerTrust || result.data.ASTER_SERVICE_NAME !== "identity")) {
+    throw new ReferenceRuntimeConfigError([knownIssue("ASTER_EVENTS_ENABLED", "invalid")]);
+  }
   if (engagementRead && (!routerTrust || result.data.ASTER_SERVICE_NAME !== "identity")) {
     throw new ReferenceRuntimeConfigError([
       knownIssue("ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED", "invalid"),
@@ -501,6 +510,7 @@ function parseReferenceRuntimeConfig(
             publicOrigin,
             ...(routerTrust ? { routerTrust: true as const } : {}),
             ...(engagementRead ? { engagementRead: true as const } : {}),
+            ...(eventDelivery ? { eventDelivery: true as const } : {}),
           }),
         }
       : {}),
@@ -600,6 +610,16 @@ export function createReferenceRuntimeConfigDiagnostic(
         ? [
             Object.freeze({
               name: "ASTER_IDENTITY_ENGAGEMENT_READ_ENABLED" as const,
+              classification: "non-secret" as const,
+              status: "configured" as const,
+              value: "true",
+            }),
+          ]
+        : []),
+      ...(config.localDemo?.eventDelivery
+        ? [
+            Object.freeze({
+              name: "ASTER_EVENTS_ENABLED" as const,
               classification: "non-secret" as const,
               status: "configured" as const,
               value: "true",

@@ -116,6 +116,7 @@ export type AsterKafkaClientConfiguration = Readonly<{
   groupId: string;
   connectionTimeoutMs: number;
   requestTimeoutMs: number;
+  rebalanceTimeoutMs: number;
   retryMaxAttempts: number;
   retryBaseDelayMs: number;
   maxMessageBytes: number;
@@ -130,12 +131,13 @@ export type AsterKafkaRawRecord = Readonly<{
   value: Uint8Array | null;
   partition: number;
   offset: string;
+  headers?: unknown;
 }>;
 
 export interface AsterKafkaProducerClient {
   connect(): Promise<void>;
   metadata(topic: string): Promise<void>;
-  publish(input: Readonly<{ topic: string; key: Uint8Array; value: Uint8Array }>): Promise<void>;
+  publish(input: AsterKafkaPublishInput): Promise<void>;
   disconnect(): Promise<void>;
 }
 
@@ -144,6 +146,7 @@ export interface AsterKafkaConsumerClient {
     topic: string,
     onMessage: (record: AsterKafkaRawRecord) => Promise<void>,
     onCrash: () => void,
+    fromBeginning: boolean,
   ): Promise<void>;
   disconnect(): Promise<void>;
 }
@@ -575,32 +578,95 @@ function byteViewFrom(value: unknown, minimum: number, maximum: number): Uint8Ar
   }
 }
 
+function headersFrom(
+  input: unknown,
+): Readonly<{ headers?: Readonly<Record<string, Uint8Array>>; bytes: number }> | undefined {
+  if (input === undefined) {
+    return { bytes: 0 };
+  }
+  try {
+    if (typeof input !== "object" || input === null || Array.isArray(input)) {
+      return undefined;
+    }
+    const keys = Reflect.ownKeys(input);
+    if (
+      keys.length > 8 ||
+      keys.some((key) => typeof key !== "string" || !/^[a-z0-9][a-z0-9-]{0,63}$/u.test(key)) ||
+      !validPlainInput(input, keys as string[])
+    ) {
+      return undefined;
+    }
+    const headers: Record<string, Uint8Array> = {};
+    let bytes = 0;
+    for (const name of keys as string[]) {
+      const value = byteViewFrom(ownDataValue(input, name), 0, 1024);
+      if (!value) {
+        return undefined;
+      }
+      bytes += name.length + value.byteLength;
+      if (bytes > 4096) {
+        return undefined;
+      }
+      headers[name] = value;
+    }
+    return keys.length === 0 ? { bytes: 0 } : { headers: Object.freeze(headers), bytes };
+  } catch {
+    return undefined;
+  }
+}
+
+function copyHeaders(
+  headers: Readonly<Record<string, Uint8Array>>,
+): Readonly<Record<string, Uint8Array>> {
+  return Object.freeze(
+    Object.fromEntries(
+      Object.entries(headers).map(([name, value]) => [name, Uint8Array.from(value)]),
+    ),
+  );
+}
+
 function publishInputFrom(
   input: unknown,
   maximumBytes: number,
-): Readonly<{ topic: string; key: Uint8Array; value: Uint8Array }> | undefined {
-  if (!validPlainInput(input, ["topic", "key", "value"])) {
+): AsterKafkaPublishInput | undefined {
+  if (!validPlainInput(input, ["topic", "key", "value", "headers"])) {
     return undefined;
   }
   const topic = ownDataValue(input, "topic");
   const key = byteViewFrom(ownDataValue(input, "key"), 1, MAXIMUM_KEY_BYTES);
   const value = byteViewFrom(ownDataValue(input, "value"), 1, maximumBytes);
-  if (!validTopic(topic) || !key || !value || key.byteLength + value.byteLength > maximumBytes) {
+  const headers = headersFrom(ownDataValue(input, "headers"));
+  if (
+    !validTopic(topic) ||
+    !key ||
+    !value ||
+    !headers ||
+    key.byteLength + value.byteLength + headers.bytes > maximumBytes
+  ) {
     return undefined;
   }
-  return Object.freeze({ topic, key, value });
+  return Object.freeze({
+    topic,
+    key,
+    value,
+    ...(headers.headers ? { headers: headers.headers } : {}),
+  });
 }
 
 function consumerInputFrom(
   input: unknown,
-): Readonly<{ topic: string; handle: AsterKafkaConsumerInput["handle"] }> | undefined {
-  if (!validPlainInput(input, ["topic", "handle"])) {
+):
+  | Readonly<{ topic: string; handle: AsterKafkaConsumerInput["handle"]; fromBeginning: boolean }>
+  | undefined {
+  if (!validPlainInput(input, ["topic", "handle", "fromBeginning"])) {
     return undefined;
   }
   const topic = ownDataValue(input, "topic");
   const handle = ownDataValue(input, "handle");
-  return validTopic(topic) && typeof handle === "function"
-    ? Object.freeze({ topic, handle: handle as AsterKafkaConsumerInput["handle"] })
+  const requestedBeginning = ownDataValue(input, "fromBeginning");
+  const fromBeginning = requestedBeginning === undefined ? false : requestedBeginning;
+  return validTopic(topic) && typeof handle === "function" && typeof fromBeginning === "boolean"
+    ? Object.freeze({ topic, handle: handle as AsterKafkaConsumerInput["handle"], fromBeginning })
     : undefined;
 }
 
@@ -610,7 +676,7 @@ function recordFrom(
   signal: AbortSignal,
 ): AsterKafkaConsumedRecord | undefined {
   try {
-    if (!validPlainInput(input, ["key", "value", "partition", "offset"])) {
+    if (!validPlainInput(input, ["key", "value", "partition", "offset", "headers"])) {
       return undefined;
     }
     const rawKey = ownDataValue(input, "key");
@@ -619,10 +685,12 @@ function recordFrom(
     const offset = ownDataValue(input, "offset");
     const keyView = rawKey === null ? null : byteViewFrom(rawKey, 0, MAXIMUM_KEY_BYTES);
     const valueView = rawValue === null ? undefined : byteViewFrom(rawValue, 1, maximumBytes);
+    const headers = headersFrom(ownDataValue(input, "headers"));
     if (
       (rawKey !== null && !keyView) ||
       !valueView ||
-      (keyView?.byteLength ?? 0) + valueView.byteLength > maximumBytes ||
+      !headers ||
+      (keyView?.byteLength ?? 0) + valueView.byteLength + headers.bytes > maximumBytes ||
       typeof partition !== "number" ||
       !Number.isSafeInteger(partition) ||
       partition < 0 ||
@@ -639,6 +707,7 @@ function recordFrom(
       partition,
       offset,
       signal,
+      ...(headers.headers ? { headers: copyHeaders(headers.headers) } : {}),
     });
   } catch {
     return undefined;
@@ -702,7 +771,22 @@ function defaultClientFactory(
         topic: input.topic,
         acks: -1,
         timeout: configuration.requestTimeoutMs,
-        messages: [{ key: Buffer.from(input.key), value: Buffer.from(input.value) }],
+        messages: [
+          {
+            key: Buffer.from(input.key),
+            value: Buffer.from(input.value),
+            ...(input.headers
+              ? {
+                  headers: Object.fromEntries(
+                    Object.entries(input.headers).map(([name, value]) => [
+                      name,
+                      Buffer.from(value),
+                    ]),
+                  ),
+                }
+              : {}),
+          },
+        ],
       });
     },
     async disconnect(): Promise<void> {
@@ -718,6 +802,8 @@ function defaultClientFactory(
     createConsumer(): AsterKafkaConsumerClient {
       const consumer: Consumer = kafka.consumer({
         groupId: configuration.groupId,
+        // KafkaJS's 60-second default outlives our startup deadline and causes repeated group joins.
+        rebalanceTimeout: configuration.rebalanceTimeoutMs,
         allowAutoTopicCreation: configuration.allowAutoTopicCreation,
         maxBytesPerPartition: configuration.maxMessageBytes,
         minBytes: 1,
@@ -731,12 +817,12 @@ function defaultClientFactory(
       });
       let removeCrashListener: (() => void) | undefined;
       return {
-        async start(topic, onMessage, onCrash): Promise<void> {
+        async start(topic, onMessage, onCrash, fromBeginning): Promise<void> {
           removeCrashListener = consumer.on(consumer.events.CRASH, () => {
             onCrash();
           });
           await consumer.connect();
-          await consumer.subscribe({ topics: [topic], fromBeginning: false });
+          await consumer.subscribe({ topics: [topic], fromBeginning });
           await consumer.run({
             autoCommit: false,
             partitionsConsumedConcurrently: 1,
@@ -746,6 +832,7 @@ function defaultClientFactory(
                 value: payload.message.value,
                 partition: payload.partition,
                 offset: payload.message.offset,
+                headers: payload.message.headers,
               });
               await consumer.commitOffsets([
                 {
@@ -778,6 +865,7 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
     groupId: options.groupId,
     connectionTimeoutMs: options.connectionTimeoutMs,
     requestTimeoutMs: options.operationTimeoutMs,
+    rebalanceTimeoutMs: Math.max(1, Math.floor(options.operationTimeoutMs / 2)),
     retryMaxAttempts: options.retryMaxAttempts,
     retryBaseDelayMs: options.retryBaseDelayMs,
     maxMessageBytes: options.maxMessageBytes,
@@ -1008,7 +1096,7 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
     if (!validated) {
       return Promise.resolve(INVALID_REQUEST);
     }
-    let accepted: Readonly<{ topic: string; key: Uint8Array; value: Uint8Array }> | undefined;
+    let accepted: AsterKafkaPublishInput | undefined;
     return runProducer(
       "publish",
       signal,
@@ -1024,6 +1112,7 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
           topic: validated.topic,
           key: Uint8Array.from(validated.key),
           value: Uint8Array.from(validated.value),
+          ...(validated.headers ? { headers: copyHeaders(validated.headers) } : {}),
         });
       },
     );
@@ -1145,6 +1234,7 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
         () => {
           markConsumerFailure(ownedSession);
         },
+        validated.fromBeginning,
       );
       const result = await waitFor(raw, signal, options.operationTimeoutMs);
       if (result.status === "completed") {

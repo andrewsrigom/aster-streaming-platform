@@ -1,0 +1,9 @@
+# Used only by the generated, ownership-checked Engagement proof project.
+volumes:
+  # Preserve the fixture broker log across stop/start; destroy only after exact ownership checks.
+  broker-data:
+    labels:
+      com.aster.authority: disposable-local
+  identity-event-trust:
+    labels:
+      com.aster.authority: disposable-local

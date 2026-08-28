@@ -142,14 +142,14 @@ async function counts(profileId: string) {
   assert.ok(result.rows[0]);
   return result.rows[0];
 }
-async function down() {
-  const sql = await readFile(
-    new URL("../../../migrations/0002-watchlist.down.sql", import.meta.url),
-    "utf8",
-  );
+async function down(names = ["0004-identity-events", "0003-event-relay", "0002-watchlist"]) {
   const client = await admin.connect();
   try {
-    await client.query(sql);
+    for (const name of names) {
+      await client.query(
+        await readFile(new URL(`../../../migrations/${name}.down.sql`, import.meta.url), "utf8"),
+      );
+    }
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -164,9 +164,9 @@ try {
   await admin.query(
     "CREATE SCHEMA catalog; REVOKE ALL ON SCHEMA catalog FROM PUBLIC; CREATE TABLE catalog.ownership_probe(id int); INSERT INTO catalog.ownership_probe VALUES (1)",
   );
-  assert.deepEqual((await migrateLocalEngagement(environment, signal())).applied, [1, 2]);
+  assert.deepEqual((await migrateLocalEngagement(environment, signal())).applied, [1, 2, 3, 4]);
   await down();
-  assert.deepEqual((await migrateLocalEngagement(environment, signal())).applied, [2]);
+  assert.deepEqual((await migrateLocalEngagement(environment, signal())).applied, [2, 3, 4]);
   assert.deepEqual((await migrateLocalEngagement(environment, signal())).applied, []);
   assert.equal(await probeEngagementStore(database, signal()), "ready");
   assert.equal(
@@ -210,7 +210,7 @@ try {
     assert.equal((await f.set({ ...first, ...patch })).status, "conflict");
   }
   assert.deepEqual(await counts(f.profileId), { heads: 1, entries: 0, receipts: 3, outbox: 3 });
-  await assert.rejects(down(), /Retained watchlist/u);
+  await assert.rejects(() => down(["0002-watchlist"]), /Retained watchlist/u);
   output("watchlist_durable_replay", {
     oppositeCommandReplay: "original-result",
     currentMembership: false,

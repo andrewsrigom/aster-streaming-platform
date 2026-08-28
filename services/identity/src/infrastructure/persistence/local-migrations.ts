@@ -5,7 +5,7 @@ import { Client } from "pg";
 
 import { validateLocalIdentityConfiguration } from "../identity/local-identity.js";
 
-const MIGRATIONS = ["0001-accounts-sessions", "0002-profiles-outbox"] as const;
+const MIGRATIONS = ["0001-accounts-sessions", "0002-profiles-outbox", "0003-event-relay"] as const;
 
 export async function migrateLocalIdentity(
   configuration: ReferenceRuntimeConfig,
@@ -51,7 +51,7 @@ export async function migrateLocalIdentity(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM identity.schema_migrations ORDER BY version LIMIT 3",
+              "SELECT version FROM identity.schema_migrations ORDER BY version LIMIT 4",
             )
           ).rows.map((row) => row.version);
     if (
@@ -90,6 +90,21 @@ export async function migrateLocalIdentity(
       throw new Error("Local Identity login has incompatible privileges.");
     }
     await client.query("GRANT aster_identity_runtime TO aster_identity_local");
+    await client.query(`DO $local$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_identity_relay_local') THEN
+        CREATE ROLE aster_identity_relay_local LOGIN PASSWORD 'aster-test-only'
+          NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+      END IF;
+    END $local$`);
+    const relay = await client.query<{ allowed: boolean }>(`SELECT rolcanlogin
+      AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)
+      AND NOT EXISTS (SELECT 1 FROM pg_roles delegated WHERE delegated.rolname NOT IN ('aster_identity_relay_local', 'aster_identity_relay')
+        AND pg_has_role('aster_identity_relay_local', delegated.oid, 'MEMBER')) AS allowed
+      FROM pg_roles WHERE rolname = 'aster_identity_relay_local'`);
+    if (relay.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Identity relay login.");
+    }
+    await client.query("GRANT aster_identity_relay TO aster_identity_relay_local");
     signal.throwIfAborted();
     return { applied: Object.freeze(applied) };
   } catch {

@@ -133,7 +133,7 @@ try {
         signal(),
       )
     ).applied,
-    [1, 2],
+    [1, 2, 3, 4],
   );
   const writer = createWatchlistWriter({ ...common, store: createPostgresWatchlist(database) });
   const recorder = createProgressRecorder({
@@ -269,7 +269,7 @@ try {
     foreignOwner: "no_disclosure",
     deletionFence: "not_found",
     readWrites: 0,
-    schemaVersions: [1, 2],
+    schemaVersions: [1, 2, 3, 4],
   });
 } finally {
   await database.close(AbortSignal.timeout(2000));

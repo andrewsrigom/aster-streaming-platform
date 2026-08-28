@@ -56,7 +56,13 @@
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "services/engagement": {
-      "entry": ["src/index.ts", "src/main.ts", "src/migrate-local.ts", "src/print-schema.ts"],
+      "entry": [
+        "src/index.ts",
+        "src/main.ts",
+        "src/migrate-local.ts",
+        "src/print-schema.ts",
+        "src/replay-identity-event.ts"
+      ],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "packages/http-express": {

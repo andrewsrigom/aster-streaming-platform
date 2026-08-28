@@ -144,7 +144,7 @@ jobs:
           pnpm playback:runtime
       - name: Prove Engagement persistence and federated progress
         if: needs.classify.outputs.platform == 'true'
-        timeout-minutes: 10
+        timeout-minutes: 20
         run: |
           pnpm engagement:integration
           pnpm engagement:runtime

@@ -1,0 +1,44 @@
+P08-R09/R10/R12 real PostgreSQL checkpoint — 2026-08-28
+Base: d7fa03a363ab979f008500040b0afa62ddec2704; unpublished feat/p08-event-delivery WIP.
+Verifier: services/engagement/test/integration/events-postgres.ts
+SHA256 after formatting: 802bdc825dc4f32c99c6051cd78a2f68db2673e898828623dd5067f481cfddc1
+Persistence adapter SHA256: c6395d98b823cc6eb9e2b11540d6ab092ddfcce99c732daf36343f82c5fcafd0
+Environment: Ubuntu-20.04/WSL, pinned Node 24.19.0, PostgreSQL 18.6 repository-pinned image.
+Node heap 384 MiB; fresh PostgreSQL tmpfs fixture, 384 MiB/1 CPU, loopback ephemeral port.
+Commands: node node_modules/typescript/bin/tsc --build services/engagement/tsconfig.json
+          node tools/run-engagement-integration.mjs --events
+Exit: 0. Repeated after the maximum-byte quarantine parameter correction; no SQL deadline change.
+Raw successful output:
+{"event":"event_migrations","emptyRoundtrip":"passed","versions":{"identity":3,"catalog":9,"engagement":4}}
+{"event":"event_sql_failure","login":"aster_identity_relay_local","status":"unavailable","statements":1,"statement":"SELECT identity.claim_outbox($1::uuid) AS result"}
+{"event":"owner_relay_fencing","owner":"identity","concurrentClaims":1,"firstVersion":2,"lateAck":"refused","uncertainPublish":"retained","unknownAck":"safe","pending":0}
+{"event":"event_sql_failure","login":"aster_catalog_relay_local","status":"unavailable","statements":1,"statement":"SELECT catalog.claim_outbox($1::uuid) AS result"}
+{"event":"owner_relay_fencing","owner":"catalog","concurrentClaims":1,"firstVersion":2,"lateAck":"refused","uncertainPublish":"retained","unknownAck":"safe","pending":0}
+{"event":"event_sql_failure","login":"aster_engagement_relay_local","status":"unavailable","statements":1,"statement":"SELECT engagement.claim_outbox($1::uuid) AS result"}
+{"event":"owner_relay_fencing","owner":"engagement","concurrentClaims":1,"firstVersion":1,"lateAck":"refused","uncertainPublish":"retained","unknownAck":"safe","pending":0}
+{"event":"continue_watching_reconstruction","restartAndRelay":"same-durable-result","duplicateProjection":"none","sourceRows":1}
+{"event":"deletion_atomicity","unknownCommit":"retry-then-duplicate","countsAudited":true,"oldFacts":"ignored","fence":"permanent","retainedDowngrade":"refused"}
+{"event":"deletion_writer_race","orders":2,"finalRows":0,"staleWriter":"denied"}
+{"event":"quarantine_replay","capacity":128,"maximumValueBytes":8192,"maximumHeaderBytes":4096,"duplicatePosition":"one-record","invalidReplay":"retained","exactValidReplay":"applied-then-removed","overflow":"uncommitted"}
+{"event":"consumer_authority_capacity","arbitraryWrites":"denied","requestEscalation":"denied","permanentGuards":1024,"overflow":"uncommitted"}
+{"event":"engagement_fixture_cleaned","verifier":"events","remaining":0,"durationMs":7319}
+
+Interpretation: concurrent NOWAIT claim losers are deliberately unavailable; exactly one owner wins.
+Unknown COMMIT is simulated after a real committed transaction; broker acknowledgements are fake here.
+No Kafka transport, actual owner background runtime or CLI acceptance is proved by this test.
+Identity/Catalog facts are synthetic; no film rights or publication is asserted.
+Initial attempt stopped at the first progress write with unavailable; no root cause established.
+Added bounded SQL diagnostics, then corrected a fixture-only integer/smallint parameter ambiguity.
+The complete corrected proof above passes. Every attempt removed only its validated disposable fixture.
+No retained data, media, migration, event activation or host restart occurred.
+
+Additional source gate: strict config build; 22 configuration/platform tests, 22 pass/0 fail,
+823.211239 ms; scoped lint passed. Command:
+node --test --test-concurrency=1 packages/config/dist/test/runtime-config.test.js tools/verify-engagement-runtime.test.mjs
+The added configuration test verifies Identity event opt-in, owner/Router/local guards and sanitized diagnostics.
+Existing 39 event/consumer/runtime tests and five strict builds remain supporting evidence for unchanged behavior.
+
+Latest focused gate: strict broker/event-delivery/Engagement builds, followed by
+node --test --test-concurrency=1 packages/broker-kafka/dist/test/kafka-adapter.test.js packages/event-delivery/dist/test/*.test.js services/engagement/dist/test/postgres-identity-events.test.js
+54 tests passed, zero failed; duration_ms 1893.491006. Includes bounded rebalance policy,
+independent outbox delivery during consumer recovery, and exact maximum quarantine-byte reassembly.
