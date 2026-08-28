@@ -176,6 +176,7 @@ test("runtime probes only its store without calling optional owners, denies untr
       database,
       telemetry,
       owners: {
+        catalog: { visibility: () => Promise.resolve({ status: "unavailable" }) },
         identity: {
           authorizeProfile: () => {
             ownerCalls++;
@@ -256,6 +257,7 @@ test("runtime starts degraded without dependencies and can stop before listening
       {
         database,
         owners: {
+          catalog: { visibility: () => Promise.resolve({ status: "unavailable" }) },
           identity: { authorizeProfile: () => Promise.resolve({ status: "unavailable" }) },
           playback: { inspect: () => Promise.resolve({ status: "unavailable" }) },
         },

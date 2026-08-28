@@ -1,12 +1,13 @@
 import { request, type ClientRequest, type IncomingMessage, type RequestOptions } from "node:http";
 import type {
   ProgressPorts,
+  ProgressCatalog,
   ProgressRequest,
   ProgressResult,
 } from "../application/progress-ports.js";
 import { progressIdentifier } from "../domain/progress.js";
 
-type Owner = "identity" | "playback";
+type Owner = "identity" | "playback" | "catalog";
 type OwnerRequest = Pick<ProgressRequest, "signal" | "correlationId" | "traceparent">;
 type Send = (
   options: RequestOptions,
@@ -28,6 +29,14 @@ const CONTRACTS = {
     query:
       "query EngagementSession($sessionId: ID!, $titleId: ID!) { _engagementSession(sessionId: $sessionId, titleId: $titleId) { code sessionId titleId checkedAt createdAt expiresAt } }",
     fields: ["code", "sessionId", "titleId", "checkedAt", "createdAt", "expiresAt"],
+  },
+  catalog: {
+    port: 3200,
+    operationName: "EngagementTitles",
+    field: "_engagementTitles",
+    query:
+      "query EngagementTitles($ids: [ID!]!) { _engagementTitles(ids: $ids) { code checkedAt expiresAt titles { titleId visible } } }",
+    fields: ["code", "checkedAt", "expiresAt", "titles"],
   },
 } as const;
 const MAX_RESPONSE = 4096;
@@ -65,31 +74,34 @@ function outcome(value: unknown): ProgressResult<never> {
   }
 }
 
-/** Two fixed owner reads; no endpoint, headers, redirects or retries from application input. */
+/** Fixed owner reads; no endpoint, headers, redirects or retries from application input. */
 export function createProgressOwnerClients(
   options: Readonly<{
     identityCredential: string;
     playbackCredential: string;
+    catalogCredential: string;
     request?: Send;
   }>,
-): Pick<ProgressPorts, "identity" | "playback"> {
+): Pick<ProgressPorts, "identity" | "playback"> & Readonly<{ catalog: ProgressCatalog }> {
   if (
-    ![options.identityCredential, options.playbackCredential].every((value) =>
-      /^[a-f0-9]{64}$/u.test(value),
+    ![options.identityCredential, options.playbackCredential, options.catalogCredential].every(
+      (value) => /^[a-f0-9]{64}$/u.test(value),
     ) ||
-    options.identityCredential === options.playbackCredential
+    new Set([options.identityCredential, options.playbackCredential, options.catalogCredential])
+      .size !== 3
   ) {
     throw new Error("Invalid Engagement owner credentials.");
   }
   const credentials = {
     identity: options.identityCredential,
     playback: options.playbackCredential,
+    catalog: options.catalogCredential,
   };
   const send = options.request ?? request;
-  const active: Record<Owner, number> = { identity: 0, playback: 0 };
+  const active: Record<Owner, number> = { identity: 0, playback: 0, catalog: 0 };
   async function read(
     owner: Owner,
-    variables: Record<string, string>,
+    variables: Record<string, string | readonly string[]>,
     context: OwnerRequest,
     credential?: string,
   ): Promise<ProgressResult<Record<string, unknown>>> {
@@ -98,7 +110,11 @@ export function createProgressOwnerClients(
     }
     if (
       !progressIdentifier(context.correlationId) ||
-      !Object.values(variables).every(progressIdentifier) ||
+      !Object.values(variables).every((value) =>
+        Array.isArray(value)
+          ? value.length >= 1 && value.length <= 20 && value.every(progressIdentifier)
+          : progressIdentifier(value),
+      ) ||
       (context.traceparent !== undefined &&
         (!/^00-[a-f0-9]{32}-[a-f0-9]{16}-0[01]$/u.test(context.traceparent) ||
           context.traceparent.slice(3, 35) === "0".repeat(32) ||
@@ -106,7 +122,7 @@ export function createProgressOwnerClients(
     ) {
       return { status: "invalid_input" };
     }
-    if (active[owner] >= 4) {
+    if (active[owner] >= (owner === "catalog" ? 1 : 4)) {
       return { status: "backpressure" };
     }
     active[owner]++;
@@ -236,6 +252,50 @@ export function createProgressOwnerClients(
     }
   }
   return {
+    catalog: {
+      async visibility(ids, context) {
+        if (
+          !Array.isArray(ids) ||
+          ids.length < 1 ||
+          ids.length > 20 ||
+          Array.from({ length: ids.length }, (_, index) =>
+            Object.getOwnPropertyDescriptor(ids, String(index)),
+          ).some((entry) => !entry || !("value" in entry) || !progressIdentifier(entry.value))
+        ) {
+          return { status: "invalid_input" };
+        }
+        const result = await read("catalog", { ids }, context);
+        if (result.status !== "completed") {
+          return result;
+        }
+        const { checkedAt, expiresAt, titles } = result.value;
+        if (
+          !validTime(checkedAt) ||
+          !validTime(expiresAt) ||
+          expiresAt !== checkedAt + 2 ||
+          !Array.isArray(titles) ||
+          titles.length !== ids.length
+        ) {
+          return { status: "unavailable" };
+        }
+        const entries: { titleId: string; visible: boolean }[] = [];
+        for (const [index, raw] of titles.entries()) {
+          if (
+            !exact(raw, ["titleId", "visible"]) ||
+            !progressIdentifier(raw["titleId"]) ||
+            raw["titleId"] !== ids[index] ||
+            typeof raw["visible"] !== "boolean"
+          ) {
+            return { status: "unavailable" };
+          }
+          entries.push(Object.freeze({ titleId: raw["titleId"], visible: raw["visible"] }));
+        }
+        return {
+          status: "completed",
+          value: Object.freeze({ checkedAt, expiresAt, titles: Object.freeze(entries) }),
+        };
+      },
+    },
     identity: {
       async authorizeProfile(credential, profileId, context) {
         if (

@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**, on feat/p08-progress from main 854592e5ff1213a306b45d61a547ad4f2a2d9395. Player/demo PR 25 and post-merge 33171284170 pass. Engagement's current owner transport, public mutation, persistence and isolated Docker acceptance pass; candidate release remains. ADRs 0004/0007/0013/0027 preserve existing ownership/event/session boundaries. No unchanged Web/CPU benchmark is required.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR 26 is merged as 4082c3a463b50ba4397f080e1b81bc15e03bf140; P08-R01 is DONE with main push 33182876541 successful. P08-R06 is active on feat/p08-history: ADR-0031 corrects current Catalog filtering before continue-watching pagination, with focused/SQL/Docker/candidate gates passing. Publish the correction and obtain corrected protected confirmation/CI. P08-R07 code is preserved, not concurrently active. No unchanged Web/CPU experiment is required.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

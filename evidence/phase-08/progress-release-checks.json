@@ -1,0 +1,36 @@
+{
+  "recordedAt": "2026-08-28T15:14:26.127Z",
+  "repository": "andrewsrigom/aster-streaming-platform",
+  "pr": 26,
+  "protected": {
+    "id": 33181780482,
+    "headSha": "dea0b5d4462557edaa67a7286ebc330f424708f9",
+    "event": "pull_request",
+    "branch": "feat/p08-progress",
+    "status": "completed",
+    "conclusion": "success",
+    "attempt": 1,
+    "url": "https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33181780482",
+    "updatedAt": "2026-08-28T14:57:43Z"
+  },
+  "postMerge": {
+    "id": 33182876541,
+    "headSha": "4082c3a463b50ba4397f080e1b81bc15e03bf140",
+    "event": "push",
+    "branch": "main",
+    "status": "completed",
+    "conclusion": "success",
+    "attempt": 1,
+    "url": "https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33182876541",
+    "updatedAt": "2026-08-28T15:10:45Z"
+  },
+  "initialReviewComment": 5453534315,
+  "blockingReview": 5051921328,
+  "correctedProductionConfirmation": 5453879542,
+  "resolvedThreads": [
+    "PRRT_kwDOUEkeis6dMfvK",
+    "PRRT_kwDOUEkeis6dMfvP"
+  ],
+  "testOnlyCorrection": "dea0b5d4462557edaa67a7286ebc330f424708f9",
+  "retainedRuntimeUpgraded": false
+}

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R01 is the sole active item on feat/p08-progress. Phases 00–07 are released through main 854592e5ff1213a306b45d61a547ad4f2a2d9395, including exact post-merge 33171284170. [Phase 07 release](../evidence/phase-07/release.md), [progress checkpoint](../evidence/phase-08/README.md). Preserve the published film/private candidates; no source GET/encoding.
+P08-R01 is DONE at main 4082c3a463b50ba4397f080e1b81bc15e03bf140. P08-R06 remains IN_PROGRESS: SQL correction 1ff4e91 passes local acceptance; confirmation found the old eleven-volume reset cap. Twelve reviewed volumes and overflow safety now pass simulated tests. Final-head protected publication/confirmation remain. R07 is preserved in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3; its 84 tests and real SQL pass, older stashes were already applied. Preserve media/private candidates.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -46,14 +46,20 @@ P08-R01 is the sole active item on feat/p08-progress. Phases 00–07 are release
 | 38 | Approve one source and deliver its bounded immutable media pipeline | P06-R01 | DONE |
 | 39 | Create owner-validated short-lived playback sessions through Federation | P07-R01 | DONE |
 | 40 | Deliver accessible HLS player, preferences, QoE/errors and clean playable demo | P07-R04 | DONE |
-| 41 | Record durable owner-authorized monotonic playback progress | P08-R01 | IN_PROGRESS |
-| 42 | Resume preserved owned history and continue-watching after P08-R01 | P08-R06 | READY |
+| 41 | Record durable owner-authorized monotonic playback progress | P08-R01 | DONE |
+| 42 | Read bounded owned history and continue-watching pages | P08-R06 | IN_PROGRESS |
+| 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | READY |
+| 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | READY |
+| 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | READY |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
 
-Phase 07's twelve requirements have an [acceptance row and protected release](../evidence/phase-07/release.md). P08-R01 includes P08-R02–R05 and atomic outbox intent from P08-R09. Core/SQL and actual private-owner federated Docker acceptance pass. The coherent backend candidate awaits quality/review/protected release; browser reports and remaining Phase 08 requirements follow. Immutable film media is retained; only ownership-checked disposable proof data is cleaned. No repeated CPU test or unchanged film encode.
+The next planned slices stay in services/engagement, existing owner subgraphs and apps/web. Watchlist needs durable membership/replay and current Catalog filtering before pagination; no new service or Redis authority. R08 owns request-scoped batching, R09 also covers R10/R12 event/deletion acceptance, and R11 owns browser save/resume. Activate them in order, not concurrently with the current dependent candidate.
+
+Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected and post-merge gates pass. P08-R06 is correcting PR 27's current-visibility blocker under ADR-0031; earlier green checks do not waive it. Watchlist work is preserved, not active. Browser reports and relay follow. No repeated CPU or film experiment.
 
 - Move one item to `IN_PROGRESS` before changing code.
 - `WAITING_EXTERNAL` requires a frozen evidenced candidate and permits only one later dependent local item under the predecessor-first release rule in `AGENTS.md`.

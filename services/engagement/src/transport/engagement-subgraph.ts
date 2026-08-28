@@ -20,6 +20,7 @@ import {
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
 import type { createProgressRecorder } from "../application/record-progress.js";
+import type { createProgressQueries } from "../application/read-progress.js";
 import {
   ENGAGEMENT_GRAPHQL_LIMITS,
   inspectEngagementOperation,
@@ -60,6 +61,7 @@ interface EngagementOperationTrace {
 export interface EngagementSubgraphOptions {
   readonly routerTrust: AsterLocalRouterTrust;
   readonly recorder: ReturnType<typeof createProgressRecorder>;
+  readonly queries?: ReturnType<typeof createProgressQueries>;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: EngagementOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
@@ -249,6 +251,7 @@ export async function createEngagementSubgraph(options: EngagementSubgraphOption
       typeof request.headers["traceparent"] === "string"
         ? request.headers["traceparent"]
         : undefined,
+      options.queries,
     );
     contexts.set(request, context);
     const timer = setTimeout(() => {

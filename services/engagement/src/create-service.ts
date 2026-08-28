@@ -17,7 +17,9 @@ import {
 } from "@aster/runtime";
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createProgressRecorder } from "./application/record-progress.js";
-import type { ProgressPorts } from "./application/progress-ports.js";
+import { createProgressQueries } from "./application/read-progress.js";
+import { createPostgresProgressRead } from "./infrastructure/postgres-progress-read.js";
+import type { ProgressPorts, ProgressCatalog } from "./application/progress-ports.js";
 import { DEFAULT_PROGRESS_POLICY } from "./domain/progress.js";
 import { createPostgresProgress } from "./infrastructure/postgres-progress.js";
 import { createProgressOwnerClients } from "./infrastructure/owner-clients.js";
@@ -28,7 +30,8 @@ import { createEngagementHttpServer, type EngagementHttpServer } from "./transpo
 
 interface RuntimeResources {
   readonly database?: AsterPostgresAdapter;
-  readonly owners?: Pick<ProgressPorts, "identity" | "playback">;
+  readonly owners?: Pick<ProgressPorts, "identity" | "playback"> &
+    Readonly<{ catalog: ProgressCatalog }>;
   readonly routerTrust?: AsterLocalRouterTrust;
   readonly telemetry?: AsterTelemetry;
   readonly logger?: AsterLogger;
@@ -72,6 +75,7 @@ export async function createEngagementService(
       createProgressOwnerClients({
         identityCredential: await loadLocalEngagementReadCredential("identity"),
         playbackCredential: await loadLocalEngagementReadCredential("playback"),
+        catalogCredential: await loadLocalEngagementReadCredential("catalog"),
       });
     graph = await createEngagementSubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("engagement")),
@@ -83,6 +87,12 @@ export async function createEngagementService(
         digest: (value) => createHash("sha256").update(value).digest("hex"),
         policy: DEFAULT_PROGRESS_POLICY,
         limits: { receiptSeconds: 3600, maximumReceipts: 1024, maximumOutbox: 1024 },
+      }),
+      queries: createProgressQueries({
+        identity: owners.identity,
+        catalog: owners.catalog,
+        store: createPostgresProgressRead(database),
+        now: () => Math.floor(Date.now() / 1000),
       }),
       onOperation: (trace) =>
         logger.info({

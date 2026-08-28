@@ -120,6 +120,7 @@ fi
 configured_volumes=$(printf '%s\n' "$configured_volumes" | LC_ALL=C sort | tr -d '\r')
 expected_volumes='broker-data
 catalog-router-trust
+engagement-catalog-trust
 engagement-identity-trust
 engagement-playback-trust
 engagement-router-trust
@@ -228,6 +229,10 @@ volume|aster_playback-router-trust|/run/aster-router') ;;
     'engagement|volume|aster_engagement-identity-trust|/run/aster-engagement-identity
 volume|aster_engagement-playback-trust|/run/aster-engagement-playback
 volume|aster_engagement-router-trust|/run/aster-router') ;;
+    'engagement|volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog
+volume|aster_engagement-identity-trust|/run/aster-engagement-identity
+volume|aster_engagement-playback-trust|/run/aster-engagement-playback
+volume|aster_engagement-router-trust|/run/aster-router') ;;
     'router|volume|aster_catalog-router-trust|/run/aster-router/catalog
 volume|aster_engagement-router-trust|/run/aster-router/engagement
 volume|aster_identity-router-trust|/run/aster-router/identity
@@ -241,6 +246,17 @@ volume|aster_playback-catalog-trust|/run/aster-playback-catalog
 volume|aster_playback-router-trust|/run/aster-router/playback') ;;
     'catalog|volume|aster_catalog-router-trust|/run/aster-router
 volume|aster_playback-catalog-trust|/run/aster-playback-catalog') ;;
+    'catalog|volume|aster_catalog-router-trust|/run/aster-router
+volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog
+volume|aster_playback-catalog-trust|/run/aster-playback-catalog') ;;
+    'router-trust-init|volume|aster_catalog-router-trust|/run/aster-router/catalog
+volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog
+volume|aster_engagement-identity-trust|/run/aster-engagement-identity
+volume|aster_engagement-playback-trust|/run/aster-engagement-playback
+volume|aster_engagement-router-trust|/run/aster-router/engagement
+volume|aster_identity-router-trust|/run/aster-router/identity
+volume|aster_playback-catalog-trust|/run/aster-playback-catalog
+volume|aster_playback-router-trust|/run/aster-router/playback') ;;
     'playback|volume|aster_playback-catalog-trust|/run/aster-playback-catalog
 volume|aster_playback-router-trust|/run/aster-router') ;;
     'router|volume|aster_catalog-router-trust|/run/aster-router/catalog
@@ -342,7 +358,7 @@ if ! volume_names=$(docker_local volume ls --quiet --filter "label=com.docker.co
 fi
 volume_count=0
 for volume_name in $volume_names; do
-  [ "$volume_count" -lt 11 ] || fail 'more than eleven Aster volumes are prohibited'
+  [ "$volume_count" -lt 12 ] || fail 'more than twelve Aster volumes are prohibited'
   if ! volume_labels=$(docker_local volume inspect --format '{{ index .Labels "com.docker.compose.project" }}|{{ index .Labels "com.docker.compose.volume" }}|{{ index .Labels "com.aster.authority" }}|{{ index .Labels "com.aster.environment" }}|{{ index .Labels "com.aster.owner" }}' "$volume_name" 2>/dev/null); then
     fail "volume $volume_name labels cannot be inspected"
   fi
@@ -357,6 +373,7 @@ for volume_name in $volume_names; do
     'aster_engagement-router-trust|aster|engagement-router-trust|disposable-local|local|platform' | \
     'aster_engagement-identity-trust|aster|engagement-identity-trust|disposable-local|local|platform' | \
     'aster_engagement-playback-trust|aster|engagement-playback-trust|disposable-local|local|platform' | \
+    'aster_engagement-catalog-trust|aster|engagement-catalog-trust|disposable-local|local|platform' | \
     'aster_prometheus-data|aster|prometheus-data|disposable-local|local|platform') ;;
     *) fail "volume $volume_name has unexpected project, volume, authority, environment, or owner labels" ;;
   esac

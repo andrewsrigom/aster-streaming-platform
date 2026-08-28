@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router will compose execution plans across five subgraphs. Identity and Catalog schemas now have [offline composition and known-operation checks](../../apps/router/README.md). Router runtime and the remaining subgraphs are planned; a composed artifact does not prove network trust or query execution.
+The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router currently composes Identity, Catalog, Playback and Engagement; Discovery remains planned. [Composition and known-operation checks](../../apps/router/README.md) validate schemas, while [Engagement Docker evidence](../../evidence/phase-08/history-federated-runtime.jsonl) proves the implemented owner-authorized write/read paths. Phase 08 protected release remains separate from local acceptance.
 
 ## Subgraphs
 
@@ -49,27 +49,25 @@ Discovery will return title references and ranking metadata rather than duplicat
 
 ## Query shape
 
-Target query surface below combines implemented Catalog/Identity with planned Discovery/Engagement. Catalog currently has no browse filter or search field.
+Implemented query surface excerpt; [generated API](../../infra/router/generated/api.graphql) is authoritative. Catalog currently has no browse filter or search field. Discovery home/search remain planned.
 
 ```graphql
 type Query {
   me: Viewer
   title(id: ID!): Title
   titles(first: Int!, after: String): CatalogTitleConnection!
-  home(profileId: ID): Home!
-  search(query: String!, first: Int!, after: String): TitleConnection!
-  continueWatching(profileId: ID!, first: Int!): ContinueWatchingConnection!
+  progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
+  continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
 }
 ```
 
-Mutations are owner-specific:
+Implemented mutations are owner-specific; watchlist mutations remain P08-R07:
 
 ```graphql
 type Mutation {
-  createProfile(input: CreateProfileInput!): CreateProfilePayload!
-  addToWatchlist(input: WatchlistInput!): WatchlistPayload!
-  recordPlaybackProgress(input: ProgressInput!): ProgressPayload!
-  createPlaybackSession(input: PlaybackSessionInput!): PlaybackSessionPayload!
+  createProfile(input: CreateProfileInput!): ProfileMutationPayload!
+  recordProgress(input: RecordProgressInput!): ProgressPayload!
+  createPlaybackSession(titleId: ID!): PlaybackSessionPayload!
 }
 ```
 
@@ -96,6 +94,8 @@ Suggested categories:
 
 Catalog implements ascending UUID keysets, first 1–20, first+1 lookahead and no total count. Public eligibility is checked before LIMIT and again by domain projection; retired/disputed/expired titles are absent. Each SQL statement uses a consistent snapshot; pages do not promise one shared snapshot. See [Catalog controls](../../services/catalog/README.md#public-graphql).
 
+Engagement history/continue-watching uses descending (updatedAt, progress ID), first 1–20 and first+1 lookahead. Profile/list-bound cursors do not grant authority. Each page freshly authorizes Identity and reads only that account/profile with its deletion guard. Completed rows stay in history; only IN_PROGRESS appears in continue-watching. Catalog metadata is nullable for missing/retired titles; progress is not deleted or copied into Catalog. Live updates can move a title ahead of a cursor; refresh restarts traversal. See [read semantics](../../services/engagement/README.md#history-and-continue-watching).
+
 Unbounded collections use keyset pagination.
 
 Rules:
@@ -109,9 +109,9 @@ Rules:
 
 ## Authorization
 
-Phase 04 will define and verify Router-to-subgraph identity trust. Owning applications enforce access policy; an unverified public header is never an identity source.
+Phase 04 defines and verifies Router-to-subgraph trust. Owning applications enforce access policy; an unverified public header is never an identity source.
 
-A `profileId` argument never proves access. Engagement and Playback verify that the active account owns the profile.
+A `profileId` argument never proves access. Engagement verifies current ownership through Identity; anonymous Playback sessions are title-bound contexts, not account authority. Private owner reads use purpose-separated credentials and are inaccessible in the public API, as specified in [ADR-0030](../adr/0030-local-engagement-progress.md).
 
 Catalog editorial operations currently use the explicit local process authority and audited CLI in ADR-0015, not public GraphQL mutations. Hosted operator identity remains Phase 14.
 
@@ -144,6 +144,8 @@ Hosted environments enforce:
 - controlled introspection.
 
 ## Schema evolution
+
+Engagement's history/continue-watching connections resolve nullable Title metadata through Catalog. Continue-watching additionally uses a private, purpose-separated current visibility batch before pagination; @inaccessible hides that owner contract but does not authorize it. [ADR-0031](../adr/0031-current-catalog-visibility.md) bounds the scan, validity window and failure behavior. No recursive Router request or cross-owner SQL is used.
 
 1. add the new shape;
 2. deploy owners and consumers compatibly;

@@ -2,11 +2,17 @@ import assert from "node:assert/strict";
 import { createHash, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
-import { createAsterPostgresAdapter } from "@aster/postgres";
+import { createAsterPostgresAdapter, type AsterPostgresQuery } from "@aster/postgres";
+import { createPostgresProgressRead } from "../../src/infrastructure/postgres-progress-read.js";
+import { createProgressQueries } from "../../src/application/read-progress.js";
 import { createPostgresProgress } from "../../src/infrastructure/postgres-progress.js";
 import { createProgressRecorder } from "../../src/application/record-progress.js";
 import type { ProgressPorts, ProgressRequest } from "../../src/application/progress-ports.js";
-import { DEFAULT_PROGRESS_POLICY, type ProgressInput } from "../../src/domain/progress.js";
+import {
+  DEFAULT_PROGRESS_POLICY,
+  type ProgressInput,
+  type ProgressState,
+} from "../../src/domain/progress.js";
 
 // This verifier mutates only an explicitly disposable database, never retained demo storage.
 assert.equal(process.env["ASTER_POSTGRES_DISPOSABLE_FIXTURE"], "true");
@@ -397,6 +403,184 @@ try {
     pruned: 64,
     expiredRemaining: 1,
     livePreserved: true,
+  });
+
+  const history = fixture();
+  const savedRows: ProgressState[] = [];
+  for (let index = 0; index < 25; index++) {
+    const result = await history.record(
+      history.input({
+        titleId: randomUUID(),
+        positionMs: index % 3 === 0 ? 0 : index % 3 === 1 ? 1000 : 6000,
+      }),
+    );
+    assert.equal(result.status, "completed");
+    savedRows.push(result.value);
+  }
+  savedRows.sort((a, b) => b.updatedAt - a.updatedAt || (a.id < b.id ? 1 : -1));
+  const readSql: AsterPostgresQuery[] = [];
+  const readStore = createPostgresProgressRead({
+    transaction: (work, signal) =>
+      database.transaction(
+        (tx) =>
+          work({
+            query: (query) => {
+              readSql.push(query);
+              return tx.query(query);
+            },
+          }),
+        signal,
+      ),
+  });
+  const queries = createProgressQueries({
+    identity: history.ports.identity,
+    catalog: {
+      visibility: (ids) =>
+        Promise.resolve({
+          status: "completed",
+          value: {
+            checkedAt: now(),
+            expiresAt: now() + 2,
+            titles: ids.map((titleId) => ({ titleId, visible: true })),
+          },
+        }),
+    },
+    store: readStore,
+    now,
+  });
+  const pageInput = { profileId: history.profileId, first: 20, after: null };
+  const readPage = (kind: "history" | "continue", after: string | null = null) =>
+    queries.page(kind, { ...pageInput, after }, { ...history.request, signal: signal() });
+  const firstPage = await readPage("history");
+  assert.equal(firstPage.status, "completed");
+  assert.deepEqual(
+    firstPage.value.edges.map((edge) => edge.node.id),
+    savedRows.slice(0, 20).map((row) => row.id),
+  );
+  assert.equal(firstPage.value.pageInfo.hasNextPage, true);
+  assert.equal(readSql.filter((query) => query.text.startsWith("SELECT")).length, 1);
+  const secondPage = await readPage("history", firstPage.value.pageInfo.endCursor);
+  assert.equal(secondPage.status, "completed");
+  assert.deepEqual(
+    secondPage.value.edges.map((edge) => edge.node.id),
+    savedRows.slice(20).map((row) => row.id),
+  );
+  assert.equal(secondPage.value.pageInfo.hasNextPage, false);
+  const resumable = await readPage("continue");
+  assert.equal(resumable.status, "completed");
+  assert.deepEqual(
+    resumable.value.edges.map((edge) => edge.node.id),
+    savedRows.filter((row) => row.status === "IN_PROGRESS").map((row) => row.id),
+  );
+  assert.deepEqual(await counts(history.profileId), { progress: 25, receipts: 25, outbox: 25 });
+  for (const kind of ["history", "continue"] as const) {
+    const query = readSql.find(
+      (query) =>
+        query.text.startsWith("SELECT") &&
+        query.text.includes("p.status = 'IN_PROGRESS'") === (kind === "continue"),
+    );
+    assert.ok(query);
+    const plan = await admin.query("EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) " + query.text, [
+      ...(query.values ?? []),
+    ]);
+    output("engagement_read_query_plan", {
+      kind,
+      plan: plan.rows,
+      workload: "25 progress aggregates; normal planner, no forced index",
+    });
+  }
+  assert.deepEqual(
+    await readStore.page(
+      {
+        accountId: randomUUID(),
+        kind: "history",
+        input: pageInput,
+      },
+      signal(),
+    ),
+    { status: "completed", value: [] },
+  );
+  await admin.query("UPDATE engagement.profile_guards SET deleted = true WHERE profile_id = $1", [
+    history.profileId,
+  ]);
+  assert.deepEqual(await readPage("history"), {
+    status: "completed",
+    value: { edges: [], pageInfo: { endCursor: null, hasNextPage: false } },
+  });
+  output("engagement_history_keyset", {
+    rows: 25,
+    pages: [20, 5],
+    selectsPerPage: 1,
+    completedRetained: true,
+    continueOnlyInProgress: true,
+    foreignAndDeletedRowsHidden: true,
+    writesByRead: 0,
+  });
+
+  const dense = fixture();
+  const denseRows: ProgressState[] = [];
+  for (let index = 0; index < 65; index++) {
+    const result = await dense.record(dense.input({ titleId: randomUUID(), positionMs: 1000 }));
+    assert.equal(result.status, "completed");
+    denseRows.push(result.value);
+  }
+  denseRows.sort((a, b) => b.updatedAt - a.updatedAt || (a.id < b.id ? 1 : -1));
+  const denseRead = await readStore.page(
+    {
+      accountId: dense.accountId,
+      kind: "continue",
+      input: { profileId: dense.profileId, first: 20, after: null },
+    },
+    signal(),
+  );
+  assert.equal(denseRead.status, "completed");
+  assert.deepEqual(denseRead.value, denseRows);
+  const visibleId = denseRows.at(-1)?.titleId;
+  assert.ok(visibleId);
+  let batches = 0;
+  const filtered = await createProgressQueries({
+    identity: dense.ports.identity,
+    catalog: {
+      visibility: (ids) => {
+        batches++;
+        return Promise.resolve({
+          status: "completed",
+          value: {
+            checkedAt: now(),
+            expiresAt: now() + 2,
+            titles: ids.map((titleId) => ({ titleId, visible: titleId === visibleId })),
+          },
+        });
+      },
+    },
+    store: readStore,
+    now,
+  }).page(
+    "continue",
+    { profileId: dense.profileId, first: 1, after: null },
+    { ...dense.request, signal: signal() },
+  );
+  assert.equal(filtered.status, "completed");
+  assert.deepEqual(
+    filtered.value.edges.map((edge) => edge.node.titleId),
+    [visibleId],
+  );
+  assert.equal(filtered.value.pageInfo.hasNextPage, false);
+  assert.equal(batches, 4);
+  assert.deepEqual(await counts(dense.profileId), { progress: 65, receipts: 65, outbox: 65 });
+  const unchangedLimit = await database.transaction(async (tx) => {
+    await tx.query({ text: "SELECT n FROM generate_series(1, 65) AS n" });
+    return { action: "rollback", value: null };
+  }, signal());
+  assert.equal(unchangedLimit.status, "failed");
+  output("engagement_continue_above_adapter_row_limit", {
+    candidates: 65,
+    hidden: 64,
+    visible: 1,
+    catalogBatches: batches,
+    sharedAdapterRowLimit: 64,
+    aggregateRows: 1,
+    readWrites: 0,
   });
 
   const outboxFull = fixture();

@@ -1,0 +1,77 @@
+$ node ./tools/verify-ai-state.ts
+{"check":"ai-state","status":"ok","files":10,"queueItems":46,"sessionEntries":120,"activeRequirement":"P08-R06","targetRequirement":"P08-R06","violations":[]}
+$ node ./tools/verify-documentation.ts
+{"check":"documentation","status":"ok","documents":210,"headings":2700,"links":1210,"statusClaims":4,"violations":0}
+$ node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs
+✔ local publication origin is read-only, loopback-only and cannot gain writer mounts (14.656927ms)
+✔ origin fixture refuses arguments and endpoint overrides before starting Docker (263.918635ms)
+✔ verified export completes last and reuses only identical complete bytes (41.146552ms)
+✔ partial export resumes matching children but never overwrites a conflict or symlink (25.188379ms)
+✔ generated HLS accepts exactly the complete finite local package (1.727892ms)
+✔ generated HLS refuses remote/traversing/missing/extra/encrypted/unbounded references and non-VOD output (16.028349ms)
+✔ technical probe rejects codec, dimensions, frame rate, audio and duration drift (1.199582ms)
+(node:166) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ local probe serves only bounded scripts/notices and never proxies media (118.298106ms)
+✔ scratch cleanup only plans expired run-specific disposable resources (15.871138ms)
+✔ cleanup dry run is read-only; apply removes containers before only their volumes and replays empty (1.971872ms)
+✔ changed ownership/activity and cancellation fail closed; partial cleanup can resume (3.036048ms)
+✔ cleanup CLI rejects unsafe targets and remote overrides before Docker (438.08516ms)
+✔ candidate Compose names use the run UUID without changing the source/decoder mount paths (3.591196ms)
+✔ refuses missing local intent or an incorrect confirmation before Docker (31.090619ms)
+✔ refuses extra targets, hosted URLs, CI, and Docker overrides before Docker (27.941306ms)
+✔ refuses a remote active Docker endpoint before Compose (13.356281ms)
+✔ refuses unexpected resource labels without teardown (74.878022ms)
+✔ removes only the fixed populated Aster project and proves postconditions (137.635696ms)
+✔ is idempotent when Aster has no local resources (27.619249ms)
+✔ accepts all twelve reviewed volumes but refuses a thirteenth before teardown (230.881392ms)
+✔ recognizes the reviewed Web demo without accepting private or foreign mounts (200.294259ms)
+✔ reports Compose failure without a broad fallback (62.358557ms)
+✔ fails when any project resource remains after teardown (72.963437ms)
+✔ accepts a partial runtime profile and tears down all reviewed profiles (80.793322ms)
+✔ removes only validated legacy helper anonymous volumes and verifies their absence (79.487459ms)
+✔ refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion (424.729302ms)
+✔ accepts exact optional service mounts and ordered Compose provenance (1011.901933ms)
+✔ Router trust reset accepts only owned disposable volumes and exact per-owner mounts (758.32876ms)
+✔ bounded image preparation precedes the processing deadline and owner startup (7.483774ms)
+✔ media candidate runner refuses wrong targets and remote overrides before Docker (614.705436ms)
+✔ Catalog Compose enforces reader credentials, isolation, bounds and finite migrations (3.740355ms)
+✔ standalone owner probes use diagnostics without private Router credential mounts (7.388294ms)
+✔ Catalog proof cleanup allows only owned data and unused trust volumes (1.905697ms)
+✔ Engagement Compose isolates runtime credentials, dependencies and finite migration (4.881953ms)
+✔ Web demo rejects private credentials, mounts, public ports and unbounded runtime (6.245655ms)
+✔ runtime image preserves the pinned non-root production packaging contract (1.417804ms)
+✔ playable demo preserves isolated generation, immutable read-only handoff and successful initialization (1.762909ms)
+✔ Web Docker context includes both exact public-build verifier files (0.806031ms)
+✔ media Docker context allows only reviewed worker source, tests and packaging (1.349903ms)
+✔ player feature styles remain in the source-only Docker context (0.538485ms)
+✔ runtime image rejects weakened pin, install, user, entrypoint, health and license policy (3.205387ms)
+✔ runtime image refuses broader Docker context and source/test publication (1.155199ms)
+✔ the checked-in local platform policy passes (4.871329ms)
+✔ rejects weakened reset confirmation and hosted-target controls (1.700377ms)
+✔ rejects a redirectable or broad reset (1.39503ms)
+✔ rejects public commands vulnerable to a project-name environment override (0.269272ms)
+✔ rejects floating or environment-substituted images (2.367793ms)
+✔ rejects host exposure and elevated containers (2.730263ms)
+✔ rejects incorrect PostgreSQL persistence and durable Redis claims (1.883563ms)
+✔ rejects weakened readiness and one-shot ordering (2.423232ms)
+✔ rejects missing resource and lifecycle bounds (2.13896ms)
+✔ rejects unsafe or unbounded Compose text (1.051011ms)
+✔ runtime profile rejects broad ports, entrypoint overrides and weakened isolation (8.407525ms)
+✔ local Identity initialization stays finite, isolated and separate from the runtime login (3.580754ms)
+✔ optional telemetry retains bounded collection without becoming an Identity dependency (1.847899ms)
+✔ optional broker and storage must stay private, pinned and resource-bounded (6.492668ms)
+✔ telemetry images refuse mutable tags and added runtime instructions (1.359987ms)
+✔ Playback Compose isolates runtime credentials, dependencies and finite migration (4.714946ms)
+✔ Router topology and source pin private bounded runtime without a GraphOS account (2.544562ms)
+✔ anonymous Router startup uses the base dependency graph without optional Identity (6.510434ms)
+✔ Router and initializer reject weakened trust, network and lifecycle boundaries (2.437095ms)
+✔ Router packaging and config reject unsafe limits, notices and propagation (1.974145ms)
+ℹ tests 62
+ℹ suites 0
+ℹ pass 62
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5897.454762

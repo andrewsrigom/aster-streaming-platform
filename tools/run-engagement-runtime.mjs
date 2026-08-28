@@ -53,6 +53,7 @@ const expectedVolumes = new Set([
   "engagement-router-trust",
   "engagement-identity-trust",
   "engagement-playback-trust",
+  "engagement-catalog-trust",
 ]);
 const emit = (event, facts) => process.stdout.write(JSON.stringify({ event, ...facts }) + "\n");
 let failure;
@@ -94,7 +95,7 @@ try {
   assert.equal(engagement.Config.User, "1000:1000");
   emit("engagement_runtime_started", {
     project,
-    privateOwnersRunning: 2,
+    privateOwnersRunning: 3,
     images: Object.fromEntries(
       containers
         .filter((container) =>

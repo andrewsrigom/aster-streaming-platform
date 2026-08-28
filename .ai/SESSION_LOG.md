@@ -2,6 +2,62 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-28 — Full-topology reset count regression
+
+### Completed
+
+Corrected PR 27 confirmation 3882263770: allow twelve reviewed volumes, retaining exact destructive-scope checks. Watchlist is preserved in unapplied 416c574be8e3d14154943308efc1ed1f017683d3; older stashes were applied.
+
+### Evidence
+
+Regression fails on eleven, then all 15 simulated reset tests and static checks pass. No actual reset. Prior service acceptance is unaffected. Watchlist reached 84 passing tests and successful real PostgreSQL acceptance before preservation.
+
+### Next action
+
+Publish and confirm this narrow correction; complete protected PR 27, then restore the latest watchlist stash once and finish its federated contract/proof.
+
+## 2026-08-28 — Continue scan respects shared SQL row limits
+
+### Completed
+
+While advancing watchlist, found the 256-candidate history scan exceeded the shared adapter's 64-row ceiling. Preserved watchlist in b3b223868b9d5867c8faf0e0696fddbeb993b512 and corrected the predecessor to one bounded aggregate without widening shared limits.
+
+### Evidence
+
+67 Engagement tests, [real SQL](../evidence/phase-08/history-row-limit-postgres.jsonl) and 46/46 affected tasks pass, including 65 candidates/64 hidden, four Catalog batches and unchanged adapter rejection. Zero fixture resources remain. Unchanged owner/Docker/media evidence is reused only for unaffected behavior.
+
+### Next action
+
+Complete affected candidate gate, publish/confirm the row correction and finish PR 27 protected merge/post-merge. Restore the latest watchlist stash once; prior stashes are already applied. Watchlist has 80 tests/nine HTTP tests and API wiring, but real SQL capacity failure at slot 128 and analogous bounded aggregate remain to address.
+
+## 2026-08-28 — Current visibility before continue-watching pagination
+
+### Completed
+
+Corrected PR 27's ENG-R04 confirmation blocker with a purpose-separated Catalog batch and bounded pre-pagination visibility filtering. History retains nullable metadata. Watchlist work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86, not active; all older stashes are already applied.
+
+### Evidence
+
+[Correction checkpoint](../evidence/phase-08/history-visibility.md): 26 focused, 66 Engagement, 202 Catalog and 17 shared HTTP tests pass; affected real SQL and full federated Docker proofs pass once with zero resources left. Candidate 45/46 tasks plus successful final lint/focused/static checks close the two test-style failures without a heavy repeat. Retained demo/media and host processes were untouched. Corrected protected confirmation/CI remain.
+
+### Next action
+
+Publish the coherent correction after the candidate gate, resolve the addressed thread and complete protected confirmation/CI/merge/post-merge. Restore watchlist once on the corrected predecessor, reusing its Catalog contract and renumbering the preserved watchlist ADR to 0032.
+
+## 2026-08-28 — Progress merged and history candidate complete
+
+### Completed
+
+PR 26 squash 4082c3a463b50ba4397f080e1b81bc15e03bf140 passed protected CI 33181780482 and review. Rebased history onto the identical main tree; all stashes are restored. P08-R06 implements owned bounded history and continue-watching with current Catalog metadata and retirement nullability.
+
+### Evidence
+
+[History checkpoint](../evidence/phase-08/history-checkpoint.md): 60 Engagement tests, real 25-row SQL/query plans, complete federated read/write/authorization proof, 67-task candidate and final current-main 40-task gate pass. Exact disposable resources were cleaned; retained data/media and CPU diagnostics were untouched.
+
+### Next action
+
+Observe exact predecessor main push 33182876541, then publish the coherent history candidate. Continue ordered Phase 08 tasks; do not repeat unchanged experiments or reapply recovery stashes.
+
 ## 2026-08-28 — Federated reads preserved and Catalog CI clock corrected
 
 ### Completed
@@ -29,6 +85,20 @@ Published one coherent progress candidate. Initial review and protected CI 33178
 ### Next action
 
 Publish the verified correction batch, confirm only blocking boundaries, merge/prove post-merge. P08-R06 history implementation, GraphQL and 25-row keyset SQL evidence are preserved in exact stash 678ccde78146453011ed7e9941d29afdad26111d on feat/p08-history; rebase/restore once after predecessor. No CPU/media loop.
+
+## 2026-08-28 — Frozen candidate and read-side continuation
+
+### Completed
+
+Published one coherent [PR 26](https://github.com/andrewsrigom/aster-streaming-platform/pull/26) at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. P08-R01 is WAITING_EXTERNAL; activated only dependent P08-R06 on feat/p08-history.
+
+### Evidence
+
+[Frozen candidate](../evidence/phase-08/progress-candidate.md) records 67 passing tasks, real federated proof, manifest, rollback and exact external conditions. Retained media/Windows processes unchanged.
+
+### Next action
+
+Implement bounded history/continue-watching while CI/review runs. Publish predecessor first; preserve/rebase dependent work if its source changes. No CPU loop.
 
 ## 2026-08-28 — Owner-authorized federated progress
 

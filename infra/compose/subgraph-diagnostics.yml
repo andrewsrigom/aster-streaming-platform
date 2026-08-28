@@ -14,6 +14,7 @@ services:
     environment:
       ASTER_ROUTER_TRUST_ENABLED: "false"
       ASTER_CATALOG_PLAYBACK_READ_ENABLED: "false"
+      ASTER_CATALOG_ENGAGEMENT_READ_ENABLED: "false"
     ports:
       - "127.0.0.1:3200:3200"
     networks: [platform, edge]

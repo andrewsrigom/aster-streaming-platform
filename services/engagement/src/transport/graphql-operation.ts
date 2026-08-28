@@ -7,15 +7,16 @@ import {
   type SelectionSetNode,
 } from "graphql";
 import { normalizeProgressInput } from "../domain/progress.js";
+import { normalizeProgressPageInput } from "../domain/progress-page.js";
 
 export const ENGAGEMENT_GRAPHQL_LIMITS = Object.freeze({
   bodyBytes: 16384,
   sourceBytes: 4096,
   tokens: 512,
-  fields: 24,
-  depth: 3,
+  fields: 40,
+  depth: 6,
   aliases: 4,
-  cost: 128,
+  cost: 384,
   concurrent: 4,
   deadlineMs: 2700,
   rateBurst: 32,
@@ -25,9 +26,19 @@ export type EngagementOperation = "mutation" | "query";
 type Decision =
   | Readonly<{ status: "accepted"; operation: EngagementOperation }>
   | Readonly<{ status: "rejected"; code: "INVALID_INPUT" | "LIMIT_EXCEEDED" }>;
-type Scope = "Query" | "Mutation" | "Payload" | "Progress" | "Service";
+type Scope =
+  | "Query"
+  | "Mutation"
+  | "Payload"
+  | "Progress"
+  | "Service"
+  | "PagePayload"
+  | "Connection"
+  | "Edge"
+  | "PageInfo"
+  | "Title";
 const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = {
-  Query: { _service: "Service" },
+  Query: { _service: "Service", progressHistory: "PagePayload", continueWatching: "PagePayload" },
   Mutation: { recordProgress: "Payload" },
   Payload: { code: null, correlationId: null, progress: "Progress" },
   Progress: {
@@ -41,7 +52,13 @@ const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = 
     status: null,
     occurredAt: null,
     updatedAt: null,
+    title: "Title",
   },
+  Title: { id: null },
+  PagePayload: { code: null, correlationId: null, connection: "Connection" },
+  Connection: { edges: "Edge", pageInfo: "PageInfo" },
+  Edge: { cursor: null, node: "Progress" },
+  PageInfo: { endCursor: null, hasNextPage: null },
   Service: { sdl: null },
 };
 class Rejected extends Error {
@@ -57,7 +74,8 @@ function scalar(value: unknown): boolean {
     normalizeProgressInput(value) !== undefined ||
     value === null ||
     typeof value === "boolean" ||
-    (typeof value === "string" && value.length <= 64)
+    (typeof value === "string" && value.length <= 128) ||
+    (typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 20)
   );
 }
 
@@ -127,12 +145,14 @@ export function inspectEngagementOperation(body: unknown): Decision {
       aliases = 0,
       cost = 0,
       expansions = 0,
-      roots = 0;
+      roots = 0,
+      pageSize = 1;
     const walk = (
       selection: SelectionSetNode,
       scope: Scope,
       depth: number,
       ancestors: ReadonlySet<string>,
+      multiplicity = 1,
     ): void => {
       if (++expansions > 16 || depth > ENGAGEMENT_GRAPHQL_LIMITS.depth) {
         throw new Rejected("LIMIT_EXCEEDED");
@@ -156,12 +176,13 @@ export function inspectEngagementOperation(body: unknown): Decision {
             item.kind === Kind.FRAGMENT_SPREAD
               ? new Set([...ancestors, item.name.value])
               : ancestors,
+            multiplicity,
           );
           continue;
         }
         fields++;
         aliases += item.alias ? 1 : 0;
-        cost++;
+        cost += multiplicity;
         const name = item.name.value;
         const child = name === "__typename" ? null : FIELDS[scope][name];
         if (child === undefined) {
@@ -182,6 +203,28 @@ export function inspectEngagementOperation(body: unknown): Decision {
             ) {
               throw new Rejected();
             }
+          } else if (name !== "_service") {
+            const args = item.arguments ?? [];
+            if (new Set(args.map((arg) => arg.name.value)).size !== args.length) {
+              throw new Rejected();
+            }
+            const values: Record<string, unknown> = Object.fromEntries(
+              args.map((arg) => [arg.name.value, valueFromASTUntyped(arg.value, variables)]),
+            );
+            const input = normalizeProgressPageInput(
+              {
+                ...values,
+                first: values["first"] ?? 20,
+                after: values["after"] ?? null,
+              },
+              name === "progressHistory" ? "history" : "continue",
+            );
+            if (!input) {
+              throw new Rejected();
+            }
+            pageSize = input.first;
+            // Continue-watching can inspect thirteen owner batches even for a small visible page.
+            cost += name === "continueWatching" ? 128 : 32;
           }
         }
         if (
@@ -195,7 +238,13 @@ export function inspectEngagementOperation(body: unknown): Decision {
           throw new Rejected();
         }
         if (child !== null && item.selectionSet) {
-          walk(item.selectionSet, child, depth + 1, ancestors);
+          walk(
+            item.selectionSet,
+            child,
+            depth + 1,
+            ancestors,
+            scope === "Connection" && name === "edges" ? multiplicity * pageSize : multiplicity,
+          );
         }
       }
     };

@@ -1,82 +1,89 @@
-# Work Item: Durable owner-authorized playback progress
+# Work Item: Owned history and continue-watching pages
 
 - Status: IN_PROGRESS
 - Owner: Engagement
 - Phase: 08
-- Requirement IDs: P08-R01, P08-R02, P08-R03, P08-R04, P08-R05, P08-R09
+- Requirement IDs: P08-R06; supports ENG-R02, ENG-R03, ENG-R04, ENG-R06
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-Save progress for an owned profile and valid title-bound playback context, with durable acknowledgement, exact replay and monotonic ordering.
+An authenticated profile can read recent history and resumable progress through bounded, ordered GraphQL pages, with Catalog metadata resolved by its federated owner.
+
+### Confirmation blocker and remediation
+
+Current confirmation 5053033139 / inline 3882263770 identifies a reset availability regression: the twelve allowlisted volumes are rejected by the old eleven-volume count. Correct only that bound, add simulated full-topology and overflow regression checks, then run focused reset/platform/static gates. Reuse prior SQL/Docker/media evidence because this change does not affect those behaviors; never execute a real reset for this test. Watchlist is preserved in unapplied stash 416c574be8e3d14154943308efc1ed1f017683d3; all earlier recovery stashes have already been applied. Its 84 tests and real PostgreSQL acceptance now pass. Restore only the new stash after this predecessor is locally accepted again. Request one focused confirmation because the changed boundary is destructive-tool safety.
+
+Second pre-merge finding: shared PostgreSQL transactions reject result sets above 64 rows; the 256-candidate continue scan must fit that adapter. Keep its existing result ceiling and use one bounded JSON aggregate, with explicit nested-array validation and real >64-candidate regression coverage. Only SQL result shape changes; repeat focused/SQL and affected gates, reuse unchanged owner/trust/Docker acceptance. Head d432bad received clean confirmation 5454854765, but this concrete availability/public-contract blocker must close before merge. Watchlist is preserved in UNAPPLIED stash b3b223868b9d5867c8faf0e0696fddbeb993b512; ced886f and all earlier stashes were already applied. Its API compiles/nine HTTP tests pass; real SQL found a separate capacity failure at slot 128 for scoped investigation after restoration. No CPU investigation.
+
+PR 27 confirmation 5052590545 / thread PRRT_kwDOUEkeis6dN9km found that nullable metadata alone does not satisfy ENG-R04: continue-watching must exclude retired/disputed titles before page size/hasNextPage. P08-R06 remains IN_PROGRESS at c512c9d; protected CI 33184567740 passed but does not waive this blocker. P08-R07 local work is preserved in unapplied stash ced886f6094d1b07b53e52400ef188d3d5ac5c86 on feat/p08-watchlist (74 Engagement tests passed; watchlist SQL compiled but real SQL not run). Do not reapply until this candidate is again locally accepted/frozen.
+
+Implement [ADR-0031](../docs/adr/0031-current-catalog-visibility.md): purpose-separated Catalog visibility batch, twenty IDs, current two-second bounded owner decision, no media URLs/Playback credentials. Continue-watching reads at most 256 retained candidates and filters current visibility in at most thirteen serial batches before first-plus-one. History retains nullable retired metadata. Add negative credential/admission/expiry and hidden-gap tests plus real federated retirement/dispute acceptance. Changed trust/runtime invalidates earlier read Docker evidence; run that affected proof once after stable remediation. Repeat a confirmation only because this correction changes a blocking trust/public-contract boundary.
 
 ## Current behavior
 
-Engagement domain/application and isolated PostgreSQL pass focused and real SQL tests. The protected fourth subgraph now saves through current private Identity/Playback checks in Docker. Replay, ordering, cross-account rejection, lock recovery, session expiry, revocation and anonymous-media independence pass. The full candidate gate and protected release remain pending. Phase 07 is released at main 854592e5ff1213a306b45d61a547ad4f2a2d9395. [Evidence](../evidence/phase-08/README.md).
+The [progress merge checkpoint](../evidence/phase-08/progress-candidate.md) is DONE with main push CI 33182876541 passing at 4082c3a463b50ba4397f080e1b81bc15e03bf140. PR 26 is merged with protected CI and review complete. P08-R06 is the sole dependent local item, rebased onto that identical tree; its publication condition is satisfied.
 
 ## Proposed behavior
 
-PR 26 CI 33180440040 failed in the unchanged Catalog attestation fixture: its fixed command clock can precede PostgreSQL's later validated_at, causing media_not_ready on reused publication. Correct only the test clock: start before a deliberate second boundary, advance from each actual registered publication timestamp, preserve future-publication rejection and all production checks. Iteration: Catalog build/lint and real SQL regression. Candidate: affected gate. Existing Engagement/Playback Docker acceptance remains valid because no production source changes; do not repeat it. Review only this test correction and any already-requested blocking-boundary confirmation.
+History includes the latest report per title, including completed and not-started reports; not an append-only session log. Continue-watching selects currently visible IN_PROGRESS titles. Order by server updatedAt and stable progress ID descending, with one-visible-row lookahead. Versioned cursors bind profile and list kind, never authority. Default/maximum page size 20 matches Catalog's existing entity-batch ceiling.
 
-P08-R06 is preserved, not active, in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history. Its 60 tests, rebased SQL and full federated reads passed with zero fixture resources; final candidate/release remain. Restore that stash once after rebasing; older stashes were already restored.
-
-Implement progress domain/application first, then isolated PostgreSQL and owner-validated GraphQL. Only committed progress/receipt/outbox receives acknowledgement. Pure tests do not claim a running service or save UI. Watchlist, projections, relay and player integration follow within Phase 08.
 
 ## Boundaries
 
-Engagement owns progress, receipts and outbox under services/engagement. Identity owns profile/session authorization; Playback owns session validity. No foreign SQL, Redis authority, browser-supplied account identity, media proxy or mandatory Engagement dependency for anonymous playback. Record private owner-read trust/expiry in an ADR before wiring network adapters.
+Engagement owns its PostgreSQL reads; Identity freshly authorizes every requested profile. No Redis cache, new projection store, foreign SQL or recursive Router call. Catalog owns the new separately credentialed visibility read and resolves Title metadata through Federation; missing/retired metadata remains nullable in history. Continue-watching filters current visibility before lookahead. Anonymous playback has no new dependency.
 
 ## Invariants
 
-Aggregate key is (profile, title); sequence is global to that key, not reset per session. Exact replay returns its accepted result; changed payload conflicts. Only a newer sequence may deliberately seek backward. Default configured opening threshold is min(30 seconds, 5% duration), completion max(95% duration, duration minus 30 seconds). Strictly exceed opening; reaching completion removes resumability. Integer millisecond position clamps to [0, observed duration]; positive duration is capped at twelve hours. This is reported progress, not proof of viewing or rights authority.
+Never disclose before ownership succeeds, after authorization expires, for a deleted guard or from an unexpected account/profile. Validate returned shape, bound and strict order. Completed titles remain in history, not continue-watching. Live keyset pages are not snapshots: a concurrently updated title can move ahead of the cursor; refresh restarts traversal. Retention remains until profile deletion with the existing 256-title ceiling.
 
 ## Failure behavior
 
-Malformed input, wrong owner, expired context and stale sequence do not write. Networks stay outside SQL transactions; deadlines/cancellation prevent later stages. Unknown COMMIT returns indeterminate; retry the same key. Bounded receipt/outbox capacity returns backpressure without deleting live history. Optional save failure never stops media.
+Malformed or wrong-context cursors fail before I/O. Identity/SQL failure is unavailable, not empty success. Pre-cancellation avoids dispatch; cancellation and the 2.5-second application budget prevent late disclosure. Read-only SQL uses the existing one-second ceiling. No retries or network calls inside transactions. Optional history failure never stops playback.
 
 ## Data and contracts
 
-Add only Engagement-owned tables/credentials/migration. Atomic state, receipt and engagement.progress-recorded v1 event. Digest the original canonical payload, not only its clamped position. Define retention, capacity, deletion tombstones and migration compatibility before persistence. Replay requires current profile authorization but must survive original playback expiry. Supergraph stays the public API; internal reads cannot recurse through a saturated Router. No unused dependencies.
+Reuse existing history and partial continue-order indexes; no migration/backfill. Add progressHistory and continueWatching connections and nullable Title references. Event delivery, general Title/Profile engagement extensions, watchlist and player integration remain later requirements. Continue-watching derives directly from authoritative state, so no separate rebuild is needed.
 
 ## Security and privacy
 
-Validate exact keys, UUIDs, integer sequence/position/duration/time and bounded collections. Profile/session IDs are references, never authority. Current Identity verification precedes disclosure; Playback binds session to title. No cookies/media URLs in events or logs. New reports allow at most 30 seconds future skew and 120 seconds delivery age; exact accepted replay is distinct from a late new update.
+Exact keys, UUID profile, first 1–20 and bounded canonical cursor. Browser account IDs are not accepted. Reuse private Identity reads and cancellation/correlation. Return only public progress fields. Account/profile filters and deletion guard protect every SQL read.
 
 ## Implementation steps
 
-1. Pure progress input/state/threshold policy with deterministic tests.
-2. Application authorization, replay, transaction intent and finite failure tests.
-3. [ADR-0030](../docs/adr/0030-local-engagement-progress.md) defines private owner reads, one-hour receipts, retained progress and SQL capacity/lock order. Migration 0001 and the PostgreSQL adapter pass real isolation/concurrency/atomicity and safe rollback tests.
-4. Bounded GraphQL/runtime, explicit degraded behavior and protected operations.
-5. Evidence/review/release after PR 25, then remaining Phase 08 work.
+1. Strict cursor/page policy and authorization-first application reads.
+2. Bounded read-only SQL, real PostgreSQL tests and query plans.
+3. Protected GraphQL, Title references, composition and known operations.
+4. Real federated read proof, evidence/review/release after PR 26.
 
-### PR 26 confirmation remediation
+### Predecessor correction and evidence reuse
 
-Initial review 5453534315 and protected CI 33178308691 pass at 319ce4e7f4c02ce5991c9637200421d02b8f13cc. Confirmation 5051921328 found two blocking contract/availability defects: receipt keys were scoped per title, and private Engagement reads shared Playback admission/rate capacity. P08-R01 is IN_PROGRESS again. Batch a profile-scoped receipt key/lookup and one-request private Playback bulkhead with its own rate bucket. Add synchronized cross-title replay and public-during-private-saturation tests; repeat affected SQL/federated evidence because these boundaries change.
+PR 26 merged as 4082c3a463b50ba4397f080e1b81bc15e03bf140; protected CI 33181780482 and production confirmation 5453879542 pass. The test-only Catalog clock correction is covered by real SQL and current CI. Post-merge 33182876541 also passes; the predecessor condition is satisfied.
 
-P08-R06 work is preserved, not active or publishable: local feat/p08-history and exact stash 678ccde78146453011ed7e9941d29afdad26111d. Its pagination/SQL/GraphQL checkpoint passed focused tests and real 25-row SQL pages; full candidate acceptance remains. After this predecessor is fixed, rebase that branch, restore this stash once and reconcile memory before continuing. No CPU/media loop.
+The initial history candidate passed 60 tests, real 25-row SQL and federated reads. Rebase onto the byte-identical squash tree used autostash a281042, already applied; d4320f6 and all older stashes were also restored once. PR 27's confirmation exposed missing current-visibility filtering despite those green checks. The remediation changes trust/runtime/read behavior, so fresh affected SQL/Docker evidence supersedes the original read proof. No CPU/media/browser repeat is relevant.
 
 ## Tests
 
-Domain: threshold edges, tiny/long titles, deliberate seek, stale ordering, malformed/hostile input and clock bounds. Application: wrong owner/session/title, exact/conflicting replay, expiry, cancellation, capacity and ambiguous commit. Integration: synchronized real SQL, rollback, privilege isolation and actual owner transport. Contract: composition/operations/events. Browser resume follows player integration, not a fabricated current result.
+Cursor ties/context/limits, malformed rows, fresh/expired/foreign authorization, cancellation, completion filter and live-update semantics. SQL keyset/limit/guards/empty profile/index plans/no writes. GraphQL limits, nullable metadata, cross-account denial, compatibility and bounded Catalog batches. Browser is not applicable until P08-R11.
 
 ## Evidence
 
-Iteration: focused node:test, strict types and ESLint. Candidate: affected workspace gate plus changed SQL/owner transport. Artifacts: evidence/phase-08. Repeat heavy proofs only when transaction, trust, transport, packaging or player boundaries change. One initial and one confirmation review; only requirement/security/data/availability/public-contract blockers extend the item. No unchanged CPU/film/demo experiment.
+Iteration gate: focused node:test, strict Engagement types and changed-file ESLint. Candidate gate: affected workspace check and composition. Acceptance: real SQL and federated Docker proof of the new read path. Raw output under evidence/phase-08. Repeat heavyweight checks only for changed query/trust/runtime/packaging behavior; reuse unchanged mutation/media evidence with source reasoning. One initial review and one confirmation; only requirement/security/data/availability/public-contract blockers extend the item.
 
 ## Rollback or recovery
 
-Stop additive Engagement and restore the prior compatible Router artifacts. Preserve all owner schemas/data/media. Disable new owner-read flags when rolling back Identity/Playback, whose old runtime rejects unknown configuration; keep trust volumes unless explicitly rotating exact verified disposable keys. Down migration refuses retained data. The guarded reset recognizes the new exact services/volumes and is tested with fake Docker only; it is not used against retained data.
+Restore prior Engagement/Router images and compatible artifacts. No migration, durable deletion or media change. Preserve predecessor rollback and all retained data.
 
 ## Documentation updates
 
-Record implemented versus planned behavior, threshold/receipt/retention contracts, owner-read ADR and recovery at coherent checkpoints. Keep queue/current state/handoff consistent with the sole dependent item.
+Record pagination, retention/live-update semantics, metadata nullability and evidence at the candidate checkpoint. Keep frozen predecessor and active dependent explicit.
 
 ## Completion checklist
 
-- [x] Domain/application acceptance
-- [x] Durable isolation/concurrency/atomicity (disposable PostgreSQL)
-- [x] Owner transport and public contract
-- [x] Evidence and memory current
-- [ ] Protected candidate review/CI, merge and exact post-merge complete
+- [x] Result-row-bound correction and real >64-row acceptance pass
+- [x] Corrected candidate evidence and documentation captured
+- [x] Predecessor protected and exact post-merge checks pass
+- [ ] Corrected candidate protected review/CI and exact post-merge pass
+
+[Remediation acceptance](../evidence/phase-08/history-visibility.md) records both corrections. Current 67 tests, real 65-candidate SQL and 46/46 affected tasks pass without widening the adapter ceiling. Publish and request focused confirmation. Reuse earlier Docker evidence only for unchanged owner/trust/GraphQL/runtime behavior; fresh SQL covers the changed read. No known failing local behavior remains.

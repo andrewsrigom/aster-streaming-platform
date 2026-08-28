@@ -2,15 +2,15 @@
 
 ## Resume point
 
-P08-R01 / Phase 08 is IN_PROGRESS on feat/p08-progress, already rebased on main 854592e5ff1213a306b45d61a547ad4f2a2d9395. P07-R04 is DONE: protected CI 33170527302, confirmation 5452439397, squash and post-merge 33171284170 pass. [Release](../evidence/phase-07/release.md). Full Phase 00–14 goal remains active.
+P08-R06 / Phase 08 is IN_PROGRESS on feat/p08-history at published 1ff4e91fd27a7a05dc24a4711de14a337579f0cd plus the local reset-count correction. PR 27 remains unmerged. Confirmation 5053033139 found only the twelve-volume reset cap; its regression now passes. P08-R01 and exact main push 33182876541 are DONE. Full Phase 00–14 goal remains active.
 
 ## Exact next actions
 
-Priority: PR 26 confirmation 5453879542 passes corrected 736bcdac. CI 33180440040 failed an unchanged Catalog attestation test: fixed command time precedes SQL registration across a second boundary. Correct only the controlled fixture clock, prove real SQL and the affected candidate gate, then publish once and finish protected merge/post-merge. Production source and rights checks remain unchanged. P08-R06 code, 60-test result, rebased SQL and passing full federated read proof are preserved in exact stash d4320f6f84043fc92c2ffc687a075f087e377753 on feat/p08-history. Rebase and restore that stash once after predecessor; all older stashes were already restored. Generated history output was moved recoverably to node_modules/.aster-history-build-ab8d4499-900a-44fd-8571-325e28bad87c to exclude stale tests from this predecessor gate.
-
-1. Finish P08-R01 candidate quality, evidence and protected review/release. Domain/SQL/private owner reads/Engagement GraphQL/Docker are implemented. [Federated runtime proof](../evidence/phase-08/federated-runtime.txt) passed all scenarios and removed its exact project; no retained state changed.
-2. The current backend provides recordProgress, not player save/resume, watchlist, paginated reads or broker relay. Keep those as the next explicit Phase 08 items.
-3. Main/origin/main remains 854592e; current PR head is 736bcdac. Only d4320f6 is unrestored; never reapply an older stash. Candidate gates use 2 GiB Node heap, 4 GiB tooling and Turbo concurrency two. No CPU/film loop or closed PR 25 polling.
+1. Publish the reset-count correction with its simulated full twelve-volume/overflow checks (15 reset tests pass). No actual reset is authorized for verification. Earlier 67 Engagement tests, real 65-candidate SQL and 46/46 affected tasks remain supporting evidence for unchanged services; no media/CPU/browser repeat.
+2. Resolve PRRT_kwDOUEkeis6dO9cL and request focused confirmation of reset safety. Require protected final-head CI, review resolution, squash merge and exact main post-merge. No bypass.
+3. Watchlist source is in UNAPPLIED stash 416c574be8e3d14154943308efc1ed1f017683d3 on feat/p08-watchlist, based on 1ff4e91. Restore once after predecessor acceptance; preserve newer memory during conflicts. ALL older stashes were applied. ADR-0032 reuses ADR-0031.
+4. Watchlist compiles, 84 tests and real SQL pass (including all 256 active entries and aggregate read). The previous slot-128 unavailable did not recur in the instrumented run; no unsupported CPU/root-cause claim. Preserve raw attempts. Router known operations, full federated proof and candidate gates remain. COMMIT-stage constraint failure is deliberately indeterminate plus proven rollback.
+5. Generated watchlist builds are recoverably held in node_modules/.aster-watchlist-api-build-T8izhouz/engagement-dist and older .aster-watchlist-build-Nf4hxEOV/engagement-dist; rebuild source normally. No watchlist publication before history's protected merge/post-merge. Tooling: 4 GiB / 2 GiB Node heap, Turbo concurrency two. Then R08 batching, R09 events/deletion, R11 player reports/resume.
 
 ## Retained runtime
 

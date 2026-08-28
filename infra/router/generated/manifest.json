@@ -3,12 +3,12 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "7897c9eb6b48e0cf6f0065e5f40113842627f97687341fe39d05223183c91540",
-    "supergraph.graphql": "18ef8e86b0ff92f3df04ae817ddabf19c3265ae0388e543d2467cbdf7f18c412",
-    "catalog.graphql": "6f6cac428556c841c9e41aaf576087547ef57b3b5b3d1afd10d04d77e33adb08",
+    "api.graphql": "461979e5373139d2b03a60a08a79394d3d2af1b2d95487939e340c9e196858f6",
+    "supergraph.graphql": "a362f75350378e58d1566a23cfed45aaafa223b864127f080b4217bc871ade9f",
+    "catalog.graphql": "326def21b66271c21da64ace0c8c440e2e5d41a179ba601d8b591e3f7bcf39a8",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
     "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
-    "engagement.graphql": "17f1e979466ffca06d3de480bcbda3a82303a192980982ae616608a4c0773d96"
+    "engagement.graphql": "f2d9933a970a262bfe969c6daa04a8a4175a97d02b639b7f6f4b0366360d8a2b"
   },
   "subgraphs": [
     {
@@ -97,6 +97,26 @@
           "keys": []
         },
         {
+          "type": "EngagementTitleVisibility",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "checkedAt",
+            "code",
+            "expiresAt",
+            "titles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "EngagementVisibleTitle",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "titleId",
+            "visible"
+          ],
+          "keys": []
+        },
+        {
           "type": "LocalizedTitle",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -110,6 +130,7 @@
           "type": "Query",
           "kind": "ObjectTypeDefinition",
           "fields": [
+            "_engagementTitles",
             "_playbackPublications",
             "title",
             "titles"
@@ -382,6 +403,7 @@
             "profileId",
             "sequence",
             "status",
+            "title",
             "titleId",
             "updatedAt",
             "version"
@@ -392,6 +414,43 @@
           "type": "ProgressCode",
           "kind": "EnumTypeDefinition",
           "fields": [],
+          "keys": []
+        },
+        {
+          "type": "ProgressConnection",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "edges",
+            "pageInfo"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProgressEdge",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "cursor",
+            "node"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProgressPageInfo",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "endCursor",
+            "hasNextPage"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProgressPagePayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "connection",
+            "correlationId"
+          ],
           "keys": []
         },
         {
@@ -411,6 +470,15 @@
           "keys": []
         },
         {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "continueWatching",
+            "progressHistory"
+          ],
+          "keys": []
+        },
+        {
           "type": "RecordProgressInput",
           "kind": "InputObjectTypeDefinition",
           "fields": [
@@ -424,6 +492,16 @@
             "titleId"
           ],
           "keys": []
+        },
+        {
+          "type": "Title",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "id"
+          ],
+          "keys": [
+            "id"
+          ]
         }
       ]
     }
@@ -432,6 +510,10 @@
     {
       "name": "Browse",
       "sha256": "c2fbe70d68ed4d94481fe73d22b24c612e21ceebc7cc8cfc9a61ecff327063ee"
+    },
+    {
+      "name": "ContinueWatching",
+      "sha256": "9fb7977de784907eaee52742645bf386cddec9e59780945bf7de5b52d0b6ffe1"
     },
     {
       "name": "CreateProfile",
@@ -452,6 +534,10 @@
     {
       "name": "Profiles",
       "sha256": "7d8e9b19c20793c860a61d94e382c59259180db2478fa0bed1bbf66a77952058"
+    },
+    {
+      "name": "ProgressHistory",
+      "sha256": "57326ca2a19640fa4d4851c92a824db8de315c735b08f36fc1c486710b139155"
     },
     {
       "name": "RecordProgress",

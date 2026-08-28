@@ -1,0 +1,11 @@
+{"event":"engagement_runtime_build","project":"aster-engagement-proof-5b81a6b0-6206-48e2-8396-411f78c48904","status":"started"}
+{"event":"engagement_runtime_started","project":"aster-engagement-proof-5b81a6b0-6206-48e2-8396-411f78c48904","privateOwnersRunning":3,"images":{"catalog":"sha256:2147ed9590ea9b2e295fc3958048603dab338f8a92c12039001ac3b0842ef551","engagement":"sha256:1bc64ae353bb8a470f95cb483be68039bca0aec1e3926846e0809ca62573f5a0","identity":"sha256:cee6ee10a625fefdf25c4f0878d702de7dc8071bde60bf08caf05e53ab2f365c","playback":"sha256:8d8b0bfe8215ab40d1ac6e7b44ea402cc92eaf6af6e63bf67cc2e8fc1f35e9de","router":"sha256:5a13783aec72c507661203a97ea328af0014bba491475be4c3a830e444c039a1"}}
+{"event":"engagement_federated_commit","currentIdentityAndPlayback":true,"durableProgressReceiptOutbox":true,"correlationId":"73c3e411-6073-486c-8d28-f179e2a01ad0","mediaFetches":0}
+{"event":"engagement_federated_ordering","exactConcurrentReplay":true,"conflictAndStaleRejected":true,"intentionalBackseek":true,"changedTitleSameKey":"conflict"}
+{"event":"engagement_federated_authorization","foreignAndMissingProfile":"denied","wrongAndMissingPlayback":"denied","privateFieldsHidden":true,"forgedTrust":"denied"}
+{"event":"engagement_federated_failures","ownerLock":"bounded_no_ack","recovery":true,"expiredSessionReplay":true,"expiredNewWrite":"denied"}
+{"event":"engagement_federated_pages","pages":[1,1],"strictKeysetOrder":true,"catalogMetadata":"federated_owner","completed":"history_only","retiredMetadata":null,"retiredContinue":"excluded_before_pagination","hiddenGapLookahead":"passed","disputedRights":"excluded_before_pagination","foreignAndAnonymous":"denied","oversizedAndWrongKindCursor":"rejected","readWrites":0}
+{"event":"engagement_federated_revocation","deletedProfileAndRevokedSession":"no_disclosure","cleanupConsumer":"planned"}
+{"event":"engagement_runtime_logs","ownerCorrelation":true,"credentialsExcluded":true}
+{"event":"engagement_optional_failure","anonymousPlayback":"available","identityAndEngagement":"stopped"}
+{"event":"engagement_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}

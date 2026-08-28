@@ -30,7 +30,7 @@ export function validateRouterRuntime(source) {
             '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
           ]
         : [
-            "    volumes:\n      - identity-router-trust:/run/aster-router/identity\n      - catalog-router-trust:/run/aster-router/catalog\n      - playback-router-trust:/run/aster-router/playback\n      - engagement-router-trust:/run/aster-router/engagement\n      - playback-catalog-trust:/run/aster-playback-catalog\n      - engagement-identity-trust:/run/aster-engagement-identity\n      - engagement-playback-trust:/run/aster-engagement-playback\n    network_mode: none\n",
+            "    volumes:\n      - identity-router-trust:/run/aster-router/identity\n      - catalog-router-trust:/run/aster-router/catalog\n      - playback-router-trust:/run/aster-router/playback\n      - engagement-router-trust:/run/aster-router/engagement\n      - playback-catalog-trust:/run/aster-playback-catalog\n      - engagement-identity-trust:/run/aster-engagement-identity\n      - engagement-playback-trust:/run/aster-engagement-playback\n      - engagement-catalog-trust:/run/aster-engagement-catalog\n    network_mode: none\n",
             "    stop_grace_period: 5s\n",
             '          cpus: "0.25"\n          memory: 64M\n          pids: 32\n',
           ]),
@@ -51,7 +51,7 @@ export function validateRouterRuntime(source) {
     if (
       required.some((value) => !block.includes(value)) ||
       forbidden.some((value) => block.includes(value)) ||
-      block.match(/^ {6}- /gm)?.length !== (runtime ? 5 : 7)
+      block.match(/^ {6}- /gm)?.length !== (runtime ? 5 : 8)
     ) {
       violations.push({
         rule: "router-runtime",
@@ -99,7 +99,7 @@ export function validateRouterSources(sources) {
     ],
     "infra/docker/router-trust.Dockerfile": [
       "FROM " + nodeImage + "\n",
-      "RUN install -d -m 0700 -o node -g node /run/aster-router/identity /run/aster-router/catalog /run/aster-router/playback /run/aster-router/engagement /run/aster-playback-catalog /run/aster-engagement-identity /run/aster-engagement-playback\n",
+      "RUN install -d -m 0700 -o node -g node /run/aster-router/identity /run/aster-router/catalog /run/aster-router/playback /run/aster-router/engagement /run/aster-playback-catalog /run/aster-engagement-identity /run/aster-engagement-playback /run/aster-engagement-catalog\n",
       "COPY infra/router/init-trust.mjs /app/init-trust.mjs\n",
       "COPY LICENSE /app/LICENSE\nUSER node\n",
       'ENTRYPOINT ["node", "/app/init-trust.mjs"]',

@@ -153,6 +153,7 @@ type Progress {
   profileId: ID!
   sequence: Int!
   status: ProgressStatus!
+  title: Title
   titleId: ID!
   updatedAt: Float!
   version: Int!
@@ -172,6 +173,27 @@ enum ProgressCode {
   UNAVAILABLE
 }
 
+type ProgressConnection {
+  edges: [ProgressEdge!]!
+  pageInfo: ProgressPageInfo!
+}
+
+type ProgressEdge {
+  cursor: String!
+  node: Progress!
+}
+
+type ProgressPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type ProgressPagePayload {
+  code: ProgressCode!
+  connection: ProgressConnection
+  correlationId: ID!
+}
+
 type ProgressPayload {
   code: ProgressCode!
   correlationId: ID!
@@ -186,9 +208,11 @@ enum ProgressStatus {
 
 type Query {
   activeProfile(id: ID!): Profile
+  continueWatching(after: String, first: Int! = 20, profileId: ID!): ProgressPagePayload!
   me: Viewer
   profile(id: ID!): Profile
   profiles: OwnedProfiles!
+  progressHistory(after: String, first: Int! = 20, profileId: ID!): ProgressPagePayload!
   title(id: ID!): Title
   titles(after: String, first: Int!): CatalogTitleConnection!
 }

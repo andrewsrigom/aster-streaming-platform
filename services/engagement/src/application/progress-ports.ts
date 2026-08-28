@@ -104,3 +104,18 @@ export interface ProgressRequest {
   readonly traceparent?: string;
   readonly signal: AbortSignal;
 }
+
+export interface ProgressCatalog {
+  visibility(
+    ids: readonly string[],
+    request: Pick<ProgressRequest, "signal" | "correlationId" | "traceparent">,
+  ): Promise<
+    ProgressResult<
+      Readonly<{
+        checkedAt: number;
+        expiresAt: number;
+        titles: readonly Readonly<{ titleId: string; visible: boolean }>[];
+      }>
+    >
+  >;
+}

@@ -1,0 +1,354 @@
+$ turbo run build --filter=@aster/router && pnpm --filter=@aster/router schema:update
+
+   • Packages in scope: @aster/router
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/http-express:build: cache hit, replaying logs bf7b8cd44ef637c7
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/config:build: cache hit, replaying logs 61520db625724f56
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/telemetry:build: cache hit, replaying logs d5908142caecbd52
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 22554aca5dd9a769
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/broker-kafka:build: cache hit, replaying logs e8540e895db1053b
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/redis:build: cache hit, replaying logs 2cf8abd8e3320758
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache hit, replaying logs 49e91479aa9b8201
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 37eadb3dba9c78ec
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/playback:build: cache hit, replaying logs 04837150541f4324
+@aster/playback:build: $ tsc --build ./tsconfig.json
+@aster/engagement:build: cache hit, replaying logs 621d2b3fb56a69f7
+@aster/engagement:build: $ tsc --build ./tsconfig.json
+@aster/identity:build: cache hit, replaying logs 149c0026279c47a8
+@aster/identity:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache hit, replaying logs 9b3bf7bf3283f995
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+@aster/router:build: cache hit, replaying logs 4f1bcf584254ccca
+@aster/router:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    13 successful, 13 total
+Cached:    13 cached, 13 total
+  Time:    237ms >>> FULL TURBO
+
+$ node ./dist/src/main.js --write
+{"check":"supergraph","status":"ok","mode":"--write","subgraphs":4,"compatibilityBase":"4082c3a463b50ba4397f080e1b81bc15e03bf140","artifactCount":7,"manifestSha256":"bcd8b187d2865fd4e3e73e6705c2bdc2ef6d520287a9a1530ef48d7a470c4cd5"}
+$ turbo run build --filter=@aster/router && pnpm --filter=@aster/router schema:check
+
+   • Packages in scope: @aster/router
+   • Running build in 1 packages
+   • Remote caching disabled
+
+@aster/http-express:build: cache hit, replaying logs bf7b8cd44ef637c7
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 37eadb3dba9c78ec
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/config:build: cache hit, replaying logs 61520db625724f56
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/telemetry:build: cache hit, replaying logs d5908142caecbd52
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+@aster/redis:build: cache hit, replaying logs 2cf8abd8e3320758
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache hit, replaying logs 49e91479aa9b8201
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/broker-kafka:build: cache hit, replaying logs e8540e895db1053b
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 22554aca5dd9a769
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/engagement:build: cache hit, replaying logs 621d2b3fb56a69f7
+@aster/engagement:build: $ tsc --build ./tsconfig.json
+@aster/playback:build: cache hit, replaying logs 04837150541f4324
+@aster/playback:build: $ tsc --build ./tsconfig.json
+@aster/identity:build: cache hit, replaying logs 149c0026279c47a8
+@aster/identity:build: $ tsc --build ./tsconfig.json
+@aster/catalog:build: cache hit, replaying logs 9b3bf7bf3283f995
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+@aster/router:build: cache hit, replaying logs 4f1bcf584254ccca
+@aster/router:build: $ tsc --build ./tsconfig.json
+
+ Tasks:    13 successful, 13 total
+Cached:    13 cached, 13 total
+  Time:    147ms >>> FULL TURBO
+
+$ node ./dist/src/main.js --check
+{"check":"supergraph","status":"ok","mode":"--check","subgraphs":4,"compatibilityBase":"4082c3a463b50ba4397f080e1b81bc15e03bf140","artifactCount":7,"manifestSha256":"bcd8b187d2865fd4e3e73e6705c2bdc2ef6d520287a9a1530ef48d7a470c4cd5"}
+
+   • Packages in scope: //, @aster/engagement, @aster/router
+   • Running build, test, toolchain:check, toolchain:test, typecheck, lint:workspace, format:check, unused:check, architecture:check, architecture:test, platform:check, platform:test, docs:check, docs:test, ai:check, ai:test, community:check, community:test, security:check, security:test, ci:check, ci:test, staged:test, commit:test in 3 packages
+   • Remote caching disabled
+
+//:security:check: cache bypass, force executing 1e297dad6f2f47ef
+@aster/telemetry:typecheck: cache hit, replaying logs 535ca5ac01479fea
+@aster/telemetry:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:toolchain:check: cache bypass, force executing 8d0c5ac91518ba1e
+//:toolchain:check: $ node ./tools/verify-toolchain.mjs
+//:security:check: $ node ./tools/scan-secrets.ts --all
+//:toolchain:check: {"check":"toolchain","status":"ok","node":"24.19.0","pnpm":"11.24.0"}
+@aster/telemetry:build: cache hit, replaying logs d5908142caecbd52
+@aster/telemetry:build: $ tsc --build ./tsconfig.json
+//:format:check: cache miss, executing c2771af73562cef4
+//:format:check: $ prettier --check .
+//:format:check: Checking formatting...
+//:security:check: {"check":"secrets","status":"ok","mode":"all","findings":0}
+//:unused:check: cache miss, executing a8389558606f6b9a
+//:unused:check: $ knip --no-config-hints
+//:architecture:check: cache miss, executing 5395101f5e9394c9
+//:architecture:check: $ node ./tools/verify-architecture.ts
+//:architecture:check: {"check":"architecture","status":"ok","violations":0}
+//:platform:check: cache hit, replaying logs b26808f935ebb20a
+//:platform:check: $ node ./tools/verify-local-platform.mjs
+//:platform:check: {"check":"local-platform","status":"ok","violations":0}
+//:platform:test: cache hit, replaying logs 635f77c0a03e1b2f
+//:platform:test: $ node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs
+//:platform:test: ✔ local publication origin is read-only, loopback-only and cannot gain writer mounts (7.065041ms)
+//:platform:test: ✔ origin fixture refuses arguments and endpoint overrides before starting Docker (241.402967ms)
+//:platform:test: ✔ verified export completes last and reuses only identical complete bytes (36.32165ms)
+//:platform:test: ✔ partial export resumes matching children but never overwrites a conflict or symlink (28.400458ms)
+//:platform:test: ✔ generated HLS accepts exactly the complete finite local package (2.305857ms)
+//:platform:test: ✔ generated HLS refuses remote/traversing/missing/extra/encrypted/unbounded references and non-VOD output (8.140511ms)
+//:platform:test: ✔ technical probe rejects codec, dimensions, frame rate, audio and duration drift (0.954958ms)
+//:platform:test: (node:390) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+//:platform:test: (Use `node --trace-warnings ...` to show where the warning was created)
+//:platform:test: ✔ local probe serves only bounded scripts/notices and never proxies media (219.546895ms)
+//:platform:test: ✔ scratch cleanup only plans expired run-specific disposable resources (12.311013ms)
+//:platform:test: ✔ cleanup dry run is read-only; apply removes containers before only their volumes and replays empty (1.573472ms)
+//:platform:test: ✔ changed ownership/activity and cancellation fail closed; partial cleanup can resume (2.099569ms)
+//:platform:test: ✔ cleanup CLI rejects unsafe targets and remote overrides before Docker (458.358522ms)
+//:platform:test: ✔ candidate Compose names use the run UUID without changing the source/decoder mount paths (3.204149ms)
+//:platform:test: ✔ refuses missing local intent or an incorrect confirmation before Docker (29.645982ms)
+//:platform:test: ✔ refuses extra targets, hosted URLs, CI, and Docker overrides before Docker (32.562416ms)
+//:platform:test: ✔ refuses a remote active Docker endpoint before Compose (13.916324ms)
+//:platform:test: ✔ refuses unexpected resource labels without teardown (97.834037ms)
+//:platform:test: ✔ removes only the fixed populated Aster project and proves postconditions (140.498567ms)
+//:platform:test: ✔ is idempotent when Aster has no local resources (21.585319ms)
+//:platform:test: ✔ recognizes the reviewed Web demo without accepting private or foreign mounts (185.917762ms)
+//:platform:test: ✔ reports Compose failure without a broad fallback (50.894389ms)
+//:platform:test: ✔ fails when any project resource remains after teardown (75.292472ms)
+//:platform:test: ✔ accepts a partial runtime profile and tears down all reviewed profiles (84.057601ms)
+//:platform:test: ✔ removes only validated legacy helper anonymous volumes and verifies their absence (69.093142ms)
+//:platform:test: ✔ refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion (399.334571ms)
+//:platform:test: ✔ accepts exact optional service mounts and ordered Compose provenance (933.963167ms)
+//:platform:test: ✔ Router trust reset accepts only owned disposable volumes and exact per-owner mounts (844.892519ms)
+//:platform:test: ✔ bounded image preparation precedes the processing deadline and owner startup (5.628389ms)
+//:platform:test: ✔ media candidate runner refuses wrong targets and remote overrides before Docker (666.439707ms)
+//:platform:test: ✔ Catalog Compose enforces reader credentials, isolation, bounds and finite migrations (2.745276ms)
+//:platform:test: ✔ standalone owner probes use diagnostics without private Router credential mounts (4.948218ms)
+//:platform:test: ✔ Catalog proof cleanup allows only owned data and unused trust volumes (1.30956ms)
+//:platform:test: ✔ Engagement Compose isolates runtime credentials, dependencies and finite migration (4.886126ms)
+//:platform:test: ✔ Web demo rejects private credentials, mounts, public ports and unbounded runtime (3.202553ms)
+//:platform:test: ✔ runtime image preserves the pinned non-root production packaging contract (0.915324ms)
+//:platform:test: ✔ playable demo preserves isolated generation, immutable read-only handoff and successful initialization (1.317654ms)
+//:platform:test: ✔ Web Docker context includes both exact public-build verifier files (0.680624ms)
+//:platform:test: ✔ media Docker context allows only reviewed worker source, tests and packaging (22.855814ms)
+//:platform:test: ✔ player feature styles remain in the source-only Docker context (0.613735ms)
+//:platform:test: ✔ runtime image rejects weakened pin, install, user, entrypoint, health and license policy (2.171573ms)
+//:platform:test: ✔ runtime image refuses broader Docker context and source/test publication (0.823028ms)
+//:platform:test: ✔ the checked-in local platform policy passes (2.912843ms)
+//:platform:test: ✔ rejects weakened reset confirmation and hosted-target controls (0.924358ms)
+//:platform:test: ✔ rejects a redirectable or broad reset (0.997952ms)
+//:platform:test: ✔ rejects public commands vulnerable to a project-name environment override (0.231336ms)
+//:platform:test: ✔ rejects floating or environment-substituted images (2.517674ms)
+//:platform:test: ✔ rejects host exposure and elevated containers (2.147096ms)
+//:platform:test: ✔ rejects incorrect PostgreSQL persistence and durable Redis claims (1.350384ms)
+//:platform:test: ✔ rejects weakened readiness and one-shot ordering (1.316033ms)
+//:platform:test: ✔ rejects missing resource and lifecycle bounds (1.543605ms)
+//:platform:test: ✔ rejects unsafe or unbounded Compose text (0.740656ms)
+//:platform:test: ✔ runtime profile rejects broad ports, entrypoint overrides and weakened isolation (5.985155ms)
+//:platform:test: ✔ local Identity initialization stays finite, isolated and separate from the runtime login (3.181381ms)
+//:platform:test: ✔ optional telemetry retains bounded collection without becoming an Identity dependency (2.290887ms)
+//:platform:test: ✔ optional broker and storage must stay private, pinned and resource-bounded (5.069452ms)
+//:platform:test: ✔ telemetry images refuse mutable tags and added runtime instructions (0.948414ms)
+//:platform:test: ✔ Playback Compose isolates runtime credentials, dependencies and finite migration (3.816241ms)
+//:platform:test: ✔ Router topology and source pin private bounded runtime without a GraphOS account (2.340373ms)
+//:platform:test: ✔ anonymous Router startup uses the base dependency graph without optional Identity (38.033756ms)
+//:platform:test: ✔ Router and initializer reject weakened trust, network and lifecycle boundaries (1.441142ms)
+//:platform:test: ✔ Router packaging and config reject unsafe limits, notices and propagation (1.255199ms)
+//:platform:test: ℹ tests 61
+//:platform:test: ℹ suites 0
+//:platform:test: ℹ pass 61
+//:platform:test: ℹ fail 0
+//:platform:test: ℹ cancelled 0
+//:platform:test: ℹ skipped 0
+//:platform:test: ℹ todo 0
+//:platform:test: ℹ duration_ms 5875.920852
+//:docs:check: cache miss, executing 7f15c96a8a5e380e
+//:docs:check: $ node ./tools/verify-documentation.ts
+//:docs:check: {"check":"documentation","status":"ok","documents":208,"headings":2675,"links":1180,"statusClaims":4,"violations":0}
+//:ai:check: cache miss, executing 3ff809a1458ed5b4
+//:ai:check: $ node ./tools/verify-ai-state.ts
+//:ai:check: {"check":"ai-state","status":"ok","files":10,"queueItems":46,"sessionEntries":116,"activeRequirement":"P08-R06","targetRequirement":"P08-R06","violations":[]}
+//:ai:test: cache miss, executing 79a18ff1cbc788eb
+//:ai:test: $ node --test ./tools/verify-ai-state.test.ts
+//:ai:test: ✔ the checked-in repository memory passes (28.840371ms)
+//:ai:test: ✔ accepts canonical active and idle repository memory (3.000581ms)
+//:ai:test: ✔ accepts one external wait before one dependent active item (21.278493ms)
+//:ai:test: ✔ rejects an active item that skips actionable work after an external wait (1.293326ms)
+//:ai:test: ✔ rejects missing and oversized repository memory (2.121126ms)
+//:ai:test: ✔ rejects unknown, duplicate, and multiple active queue states (0.634218ms)
+//:ai:test: ✔ rejects completed, missing, and forward blocker references (0.621479ms)
+//:ai:test: ✔ rejects a mismatched or incomplete active change plan (0.53733ms)
+//:ai:test: ✔ rejects stale current-state and handoff resume targets (0.760594ms)
+//:ai:test: ✔ rejects session regression and missing entry evidence (1.169111ms)
+//:ai:test: ✔ rejects malformed UTF-8 repository memory files (54.019114ms)
+//:ai:test: ✔ rejects symbolic repository memory files when the host permits the fixture (16.362809ms)
+//:ai:test: ✔ emits deterministic sorted diagnostics (1.449892ms)
+//:ai:test: ℹ tests 13
+//:ai:test: ℹ suites 0
+//:ai:test: ℹ pass 13
+//:ai:test: ℹ fail 0
+//:ai:test: ℹ cancelled 0
+//:ai:test: ℹ skipped 0
+//:ai:test: ℹ todo 0
+//:ai:test: ℹ duration_ms 401.665418
+//:community:check: cache miss, executing 5458d5ff0fd0022c
+//:community:check: $ node ./tools/verify-community-files.ts
+//:community:check: {"check":"community","files":6,"status":"ok","violations":0}
+@aster/http-express:build: cache hit, replaying logs bf7b8cd44ef637c7
+@aster/http-express:build: $ tsc --build ./tsconfig.json
+@aster/runtime:build: cache hit, replaying logs 37eadb3dba9c78ec
+@aster/runtime:build: $ tsc --build ./tsconfig.json
+@aster/runtime:typecheck: cache hit, replaying logs 66ca5bdef7a5d4ed
+@aster/runtime:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/config:build: cache hit, replaying logs 61520db625724f56
+@aster/config:build: $ tsc --build ./tsconfig.json
+@aster/http-express:typecheck: cache hit, replaying logs e691174ed6f9d3c9
+@aster/http-express:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/config:typecheck: cache hit, replaying logs ef92768fb6b7d91c
+@aster/config:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+//:lint:workspace: cache miss, executing 71c287e1fb162c2b
+//:format:check: All matched files use Prettier code style!
+@aster/postgres:typecheck: cache hit, replaying logs efabe91ca5f21869
+@aster/postgres:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/redis:build: cache hit, replaying logs 2cf8abd8e3320758
+@aster/redis:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:build: cache hit, replaying logs 49e91479aa9b8201
+@aster/object-storage-s3:build: $ tsc --build ./tsconfig.json
+@aster/object-storage-s3:typecheck: cache hit, replaying logs 15ab8dce20dc8b30
+@aster/object-storage-s3:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/broker-kafka:typecheck: cache hit, replaying logs 7eecbb21864b1175
+@aster/broker-kafka:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/redis:typecheck: cache hit, replaying logs b57407aa8395ce1e
+@aster/redis:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/broker-kafka:build: cache hit, replaying logs e8540e895db1053b
+@aster/broker-kafka:build: $ tsc --build ./tsconfig.json
+@aster/postgres:build: cache hit, replaying logs 22554aca5dd9a769
+@aster/postgres:build: $ tsc --build ./tsconfig.json
+@aster/catalog:typecheck: cache hit, replaying logs 10e5e4a9a7fb12db
+@aster/catalog:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/playback:build: cache hit, replaying logs 04837150541f4324
+@aster/playback:build: $ tsc --build ./tsconfig.json
+@aster/playback:typecheck: cache hit, replaying logs d97b10551f96113a
+@aster/playback:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/engagement:build: cache hit, replaying logs 621d2b3fb56a69f7
+@aster/engagement:build: $ tsc --build ./tsconfig.json
+@aster/engagement:typecheck: cache hit, replaying logs bde4a39451706e9f
+@aster/engagement:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/identity:build: cache hit, replaying logs 149c0026279c47a8
+@aster/identity:build: $ tsc --build ./tsconfig.json
+@aster/identity:typecheck: cache hit, replaying logs 5a658c7c19e7db2b
+@aster/identity:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/catalog:build: cache hit, replaying logs 9b3bf7bf3283f995
+@aster/catalog:build: $ tsc --build ./tsconfig.json
+@aster/engagement:test: cache hit, replaying logs a0a827d819b8bfc4
+@aster/engagement:test: $ node --test ./dist/test/*.test.js
+@aster/engagement:test: ✔ read preflight bounds pages, canonical cursors, list cost and root fan-out (4.171233ms)
+@aster/engagement:test: ✔ HTTP history forwards profile authority and emits bounded public state with a Catalog reference (184.344061ms)
+@aster/engagement:test: ✔ progress preflight bounds input, mutation fan-out and schema exposure (14.625012ms)
+@aster/engagement:test: ✔ HTTP progress exposes only committed result fields and rejects forged transport before dispatch (64.44026ms)
+@aster/engagement:test: ✔ non-success, ambiguous commit and exceptions never fabricate progress (164.569761ms)
+@aster/engagement:test: ✔ four admitted progress requests are bounded and shutdown cancels their owner signals (48.059803ms)
+@aster/engagement:test: ✔ owner clients send separate fixed operations; only Identity receives the browser credential (55.754621ms)
+@aster/engagement:test: ✔ owner client rejects redirects, compression, cookies, overflow and malformed envelopes without retry (28.816133ms)
+@aster/engagement:test: ✔ owner failures are typed and invalid inputs or pre-cancellation never dispatch (3.091765ms)
+@aster/engagement:test: ✔ owner concurrency has no queue; cancellation and deadline release capacity (2007.766977ms)
+@aster/engagement:test: ✔ one bounded owner-filtered SQL read uses existing keyset order and rolls back its SELECT-only transaction (5.549495ms)
+@aster/engagement:test: ✔ continue query uses partial-index predicate and tuple cursor, without offset or write (0.6659ms)
+@aster/engagement:test: ✔ empty, foreign and inconsistent SQL results are distinguished (0.894646ms)
+@aster/engagement:test: ✔ invalid owner, bound and pre-cancellation avoid any SQL dispatch (0.2623ms)
+@aster/engagement:test: ✔ existing profile locks stay local and cannot switch owners or aggregates (4.88025ms)
+@aster/engagement:test: ✔ missing profile admission rolls back at its finite guard ceiling (0.474068ms)
+@aster/engagement:test: ✔ guard mismatch and deletion hide progress without reading it (0.44996ms)
+@aster/engagement:test: ✔ full progress slots roll back without inserting a new title (0.902171ms)
+@aster/engagement:test: ✔ malformed receipts are not coerced and pre-cancellation avoids dispatch (0.660323ms)
+@aster/engagement:test: ✔ unknown commit and throwing adapters never retry or acknowledge writes (0.524876ms)
+@aster/engagement:test: ✔ six-second demo has precise opening and completion edges (3.580286ms)
+@aster/engagement:test: ✔ long-title thresholds cap opening and remaining tail, not total watched percentage (0.498283ms)
+@aster/engagement:test: ✔ clamps impossible positions while retaining raw payload identity (0.288803ms)
+@aster/engagement:test: ✔ sequence is per profile/title across sessions and rejects every stale delivery (6.827909ms)
+@aster/engagement:test: ✔ newer intentional seek or replay may make a completed title resumable again (0.308717ms)
+@aster/engagement:test: ✔ profile, title, account and aggregate substitutions cannot reuse another state (0.32465ms)
+@aster/engagement:test: ✔ new reports enforce exact clock-skew and delivery-age bounds (0.468784ms)
+@aster/engagement:test: ✔ rejects malformed bounds, unknown keys, accessors and hostile records without invoking getters (0.64336ms)
+@aster/engagement:test: ✔ policy is validated configuration, not client input or an unbounded threshold (0.43246ms)
+@aster/engagement:test: ✔ corrupt or exhausted durable state cannot overflow its version (0.39313ms)
+@aster/engagement:test: ✔ canonical request payload ignores object key order, never loses submitted fields (0.269712ms)
+@aster/engagement:test: ✔ durable-state validation does not invoke accessors or coerce a forged status (0.18644ms)
+@aster/engagement:test: ✔ cursor is canonical, bounded and tied to profile/list; hostile input does not invoke getters (2.277189ms)
+@aster/engagement:test: ✔ history is a descending tied-key page with one-row lookahead and completed retention (1.952323ms)
+@aster/engagement:test: ✔ empty page succeeds, but dependency failure is never represented as empty success (0.729843ms)
+@aster/engagement:test: ✔ input and missing authority stop before SQL; each page freshly checks ownership (0.803787ms)
+@aster/engagement:test: ✔ foreign, expired, future and malformed Identity snapshots disclose nothing (1.024819ms)
+@aster/engagement:test: ✔ authorization is rechecked after SQL and cancelled reads cannot disclose late rows (2.353366ms)
+@aster/engagement:test: ✔ invalid order, duplicate title, oversize, foreign and future SQL rows fail closed (1.473792ms)
+@aster/engagement:test: ✔ live traversal rejects rows at/ahead of its cursor; a fresh traversal can see moved titles (0.401125ms)
+@aster/engagement:test: ✔ authorized update intends state, receipt and v1 event in one transaction; owner reads stay outside (6.76851ms)
+@aster/engagement:test: ✔ exact replay survives playback expiry and returns the original result even after newer progress (1.895354ms)
+@aster/engagement:test: ✔ same key with changed raw payload conflicts even when positions clamp to the same value (0.828994ms)
+@aster/engagement:test: ✔ a key belongs to the profile request, so changing title conflicts before Playback or SQL writes (1.104663ms)
+@aster/engagement:test: ✔ new key with stale sequence cannot change state or create receipt/event (1.115567ms)
+@aster/engagement:test: ✔ missing credentials, wrong owner and malformed request stop before receipt disclosure (0.79995ms)
+@aster/engagement:test: ✔ malformed or expired owner snapshots and substituted playback IDs fail closed (5.842234ms)
+@aster/engagement:test: ✔ a deleted-profile tombstone and receipt/outbox capacity roll back the whole attempt (1.239091ms)
+@aster/engagement:test: ✔ expiry or exception after outbox append cannot leave partial acknowledged effects (1.336642ms)
+@aster/engagement:test: ✔ ambiguous commit can be retried with the same key without duplicating effects (0.941668ms)
+@aster/engagement:test: ✔ cancelled owner lookup consumes a late result without starting persistence (0.483904ms)
+@aster/engagement:test: ✔ foreign receipt cannot be replayed under a different authorized account (0.560134ms)
+@aster/engagement:test: ✔ racing receipt replay rechecks Identity after the locked receipt read (1.006506ms)
+@aster/engagement:test: ✔ owner reads and outbox carry validated correlation and trace without browser authority claims (0.658061ms)
+@aster/engagement:test: ✔ retention limits and terminal timestamps cannot create an overflowing receipt (1.847732ms)
+@aster/engagement:test: ✔ Engagement runtime requires explicit local activation, fixed owner credentials and protected listener (2.0282ms)
+@aster/engagement:test: ✔ migration rejects unauthorized or pre-cancelled activation before network work (0.932027ms)
+@aster/engagement:test: ✔ store readiness rejects authority, schema, admission and connectivity loss (0.80916ms)
+@aster/engagement:test: ✔ runtime probes only its store without calling optional owners, denies untrusted GraphQL, recovers readiness and shuts down (244.320282ms)
+@aster/engagement:test: ✔ runtime starts degraded without dependencies and can stop before listening (75.078362ms)
+@aster/engagement:test: ℹ tests 60
+@aster/engagement:test: ℹ suites 0
+@aster/engagement:test: ℹ pass 60
+@aster/engagement:test: ℹ fail 0
+@aster/engagement:test: ℹ cancelled 0
+@aster/engagement:test: ℹ skipped 0
+@aster/engagement:test: ℹ todo 0
+@aster/engagement:test: ℹ duration_ms 4717.373734
+@aster/router:typecheck: cache hit, replaying logs f1e447ce4280b133
+@aster/router:typecheck: $ tsc --project ./tsconfig.json --noEmit --composite false --incremental false
+@aster/router:build: cache hit, replaying logs 4f1bcf584254ccca
+@aster/router:build: $ tsc --build ./tsconfig.json
+@aster/router:test: cache bypass, force executing c7fdeed7d15783e8
+//:lint:workspace: $ eslint .
+@aster/router:test: $ node --test ./dist/test/*.test.js && node ./dist/src/main.js --check
+@aster/router:test: ✔ four owner schemas compose deterministically, retain entity ownership and validate all known operations (596.558181ms)
+@aster/router:test: ✔ an ownership collision or mismatched type fails composition (37.072605ms)
+@aster/router:test: ✔ unknown fields, argument changes, unnamed or duplicate operations fail compatibility (494.741655ms)
+@aster/router:test: ✔ a breaking field removal cannot be hidden by removing the corresponding operation (287.322439ms)
+@aster/router:test: ✔ malformed, empty and excessive source/operation inputs fail before acceptance (451.913315ms)
+@aster/router:test: ✔ baseline operations remain protected even when current fixtures are rewritten (113.649707ms)
+@aster/router:test: ✔ Git baseline is explicit and the predecessor without supergraph artifacts is a valid bootstrap (47.830024ms)
+@aster/router:test: ✔ Git baseline reads the committed API and operations, not modified working files (461.846955ms)
+@aster/router:test: ✔ artifact checks are read-only, detect missing/stale output and regeneration refuses symlinks (225.158766ms)
+@aster/router:test: ℹ tests 9
+@aster/router:test: ℹ suites 0
+@aster/router:test: ℹ pass 9
+@aster/router:test: ℹ fail 0
+@aster/router:test: ℹ cancelled 0
+@aster/router:test: ℹ skipped 0
+@aster/router:test: ℹ todo 0
+@aster/router:test: ℹ duration_ms 3304.963384
+@aster/router:test: {"check":"supergraph","status":"ok","mode":"--check","subgraphs":4,"compatibilityBase":"4082c3a463b50ba4397f080e1b81bc15e03bf140","artifactCount":7,"manifestSha256":"bcd8b187d2865fd4e3e73e6705c2bdc2ef6d520287a9a1530ef48d7a470c4cd5"}
+
+ Tasks:    40 successful, 40 total
+Cached:    29 cached, 40 total
+  Time:    1m25.329s

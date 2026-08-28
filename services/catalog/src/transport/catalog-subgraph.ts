@@ -20,6 +20,8 @@ import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
 import type { CatalogPublicQueries } from "../application/public-queries.js";
 import type { CatalogPlaybackQueries } from "../application/playback-queries.js";
+import type { CatalogEngagementQueries } from "../application/engagement-queries.js";
+import { inspectCatalogEngagementOperation } from "./engagement-operation.js";
 import { inspectCatalogPlaybackOperation } from "./playback-operation.js";
 import {
   CATALOG_GRAPHQL_LIMITS,
@@ -58,13 +60,17 @@ export interface CatalogSubgraphOptions {
     trust: AsterLocalRouterTrust;
     queries: CatalogPlaybackQueries;
   }>;
+  readonly engagement?: Readonly<{
+    trust: AsterLocalRouterTrust;
+    queries: CatalogEngagementQueries;
+  }>;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: CatalogOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
 }
 
 export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
-  if (options.playback && !options.routerTrust) {
+  if ((options.playback || options.engagement) && !options.routerTrust) {
     throw new Error("Catalog owner reads require protected transport.");
   }
   const schema = createCatalogSchema();
@@ -73,9 +79,12 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
   const now = options.monotonicNow ?? (() => performance.now());
   let credit: number = CATALOG_GRAPHQL_LIMITS.rateBurst;
   let refreshedAt = now();
+  let engagementCredit = 32;
+  let engagementRefreshedAt = now();
   let closed = false;
   let stopping: Promise<void> | undefined;
   const controllers = new Set<AbortController>();
+  const engagementControllers = new Set<AbortController>();
   const pending = new Set<Promise<unknown>>();
 
   const diagnostic = (code: "graphql_engine_error" | "graphql_engine_warning"): void => {
@@ -164,10 +173,14 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
   const middleware: AsterExpressGraphqlMiddleware = async (request, response, onError) => {
     const routerContext = options.routerTrust?.accept(request);
     const playbackContext = options.playback?.trust.accept(request);
+    const engagementContext = options.engagement?.trust.accept(request);
     const startedAt = now();
-    const correlationId = randomUUID();
+    const correlationId = engagementContext?.correlationId ?? randomUUID();
     const traceId =
-      routerContext?.traceId ?? playbackContext?.traceId ?? randomUUID().replaceAll("-", "");
+      routerContext?.traceId ??
+      playbackContext?.traceId ??
+      engagementContext?.traceId ??
+      randomUUID().replaceAll("-", "");
     const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
     let operation: CatalogOperation | "rejected" = "rejected";
     let code = "COMPLETED";
@@ -196,7 +209,7 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     };
     response.set("X-Request-Id", correlationId);
     response.set("Cache-Control", "no-store");
-    if (options.routerTrust && !routerContext && !playbackContext) {
+    if (options.routerTrust && !routerContext && !playbackContext && !engagementContext) {
       reject(403, "FORBIDDEN");
       record();
       return;
@@ -207,27 +220,42 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
       record();
       return;
     }
-    if (closed || controllers.size >= CATALOG_GRAPHQL_LIMITS.concurrent) {
+    const lane = engagementContext ? engagementControllers : controllers;
+    if (closed || lane.size >= (engagementContext ? 1 : CATALOG_GRAPHQL_LIMITS.concurrent)) {
       reject(503, "UNAVAILABLE");
       record();
       return;
     }
-    credit = Math.min(
-      CATALOG_GRAPHQL_LIMITS.rateBurst,
-      credit +
-        (Math.max(0, startedAt - refreshedAt) * CATALOG_GRAPHQL_LIMITS.ratePerSecond) / 1_000,
-    );
-    refreshedAt = startedAt;
-    if (credit < 1) {
+    if (engagementContext) {
+      engagementCredit = Math.min(
+        32,
+        engagementCredit + (Math.max(0, startedAt - engagementRefreshedAt) * 4) / 1000,
+      );
+      engagementRefreshedAt = startedAt;
+    } else {
+      credit = Math.min(
+        CATALOG_GRAPHQL_LIMITS.rateBurst,
+        credit +
+          (Math.max(0, startedAt - refreshedAt) * CATALOG_GRAPHQL_LIMITS.ratePerSecond) / 1_000,
+      );
+      refreshedAt = startedAt;
+    }
+    if ((engagementContext ? engagementCredit : credit) < 1) {
       response.set("Retry-After", "1");
       reject(429, "LIMIT_EXCEEDED");
       record();
       return;
     }
-    credit -= 1;
-    const decision = playbackContext
-      ? inspectCatalogPlaybackOperation(request.body as unknown)
-      : inspectCatalogOperation(request.body as unknown, schema);
+    if (engagementContext) {
+      engagementCredit -= 1;
+    } else {
+      credit -= 1;
+    }
+    const decision = engagementContext
+      ? inspectCatalogEngagementOperation(request.body as unknown)
+      : playbackContext
+        ? inspectCatalogPlaybackOperation(request.body as unknown)
+        : inspectCatalogOperation(request.body as unknown, schema);
     if (decision.status !== "accepted") {
       reject(400, decision.code);
       record();
@@ -235,19 +263,23 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     }
     operation = decision.operation;
     const controller = new AbortController();
-    controllers.add(controller);
+    lane.add(controller);
     const signal = AbortSignal.any([getExpressRequestAbortSignal(response), controller.signal]);
     const context = createCatalogGraphqlContext(
       options.queries,
       signal,
       correlationId,
       playbackContext ? options.playback?.queries : undefined,
+      engagementContext ? options.engagement?.queries : undefined,
     );
     contexts.set(request, context);
-    const timer = setTimeout(() => {
-      controller.abort();
-      reject(503, "CANCELLED");
-    }, CATALOG_GRAPHQL_LIMITS.deadlineMs);
+    const timer = setTimeout(
+      () => {
+        controller.abort();
+        reject(503, "CANCELLED");
+      },
+      engagementContext ? 2000 : CATALOG_GRAPHQL_LIMITS.deadlineMs,
+    );
     timer.unref();
     const execution = Promise.resolve().then(() => apollo(request, response, onError));
     pending.add(execution);
@@ -259,7 +291,7 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     } finally {
       clearTimeout(timer);
       contexts.delete(request);
-      controllers.delete(controller);
+      lane.delete(controller);
       pending.delete(execution);
       context.titles.clearAll();
       // Keep admission until work actually settles, including after a timeout response.
@@ -273,7 +305,7 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     stop(): Promise<void> {
       if (!stopping) {
         closed = true;
-        for (const controller of controllers) {
+        for (const controller of [...controllers, ...engagementControllers]) {
           controller.abort();
         }
         stopping = Promise.allSettled([...pending]).then(() => server.stop());

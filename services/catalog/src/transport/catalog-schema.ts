@@ -3,6 +3,7 @@ import DataLoader from "dataloader";
 import { GraphQLError, parse } from "graphql";
 import type { CatalogPublicQueries, CatalogReadResult } from "../application/public-queries.js";
 import type { CatalogPlaybackQueries } from "../application/playback-queries.js";
+import type { CatalogEngagementQueries } from "../application/engagement-queries.js";
 import type { PublicCatalogTitle } from "../domain/public-title.js";
 import { catalogIdentifier, catalogRecord } from "../domain/values.js";
 
@@ -51,6 +52,14 @@ export const CATALOG_TYPE_DEFS = parse(`
     titles(first: Int!, after: String): CatalogTitleConnection!
     title(id: ID!): Title
     _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
+    _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible
+  }
+  type EngagementVisibleTitle @inaccessible { titleId: ID! visible: Boolean! }
+  type EngagementTitleVisibility @inaccessible {
+    code: String!
+    checkedAt: Float!
+    expiresAt: Float!
+    titles: [EngagementVisibleTitle!]!
   }
 `);
 
@@ -68,6 +77,7 @@ export interface CatalogGraphqlContext {
   readonly titles: DataLoader<string, PublicCatalogTitle | null>;
   readonly outcome: { code: string };
   readonly playback?: CatalogPlaybackQueries;
+  readonly engagement?: CatalogEngagementQueries;
 }
 function owned(value: unknown): CatalogGraphqlContext {
   const owner: unknown =
@@ -98,6 +108,7 @@ export function createCatalogGraphqlContext(
   signal: AbortSignal,
   correlationId: string,
   playback?: CatalogPlaybackQueries,
+  engagement?: CatalogEngagementQueries,
 ): CatalogGraphqlContext {
   const cache = new Map<string, Promise<PublicCatalogTitle | null>>();
   const context: CatalogGraphqlContext = {
@@ -105,6 +116,7 @@ export function createCatalogGraphqlContext(
     signal,
     correlationId,
     ...(playback ? { playback } : {}),
+    ...(engagement ? { engagement } : {}),
     outcome: { code: "COMPLETED" },
     titles: new DataLoader(async (ids) => completed(await queries.byIds(ids, signal), context), {
       maxBatchSize: 20,
@@ -143,6 +155,16 @@ export function createCatalogSchema() {
     typeDefs: CATALOG_TYPE_DEFS,
     resolvers: {
       Query: {
+        _engagementTitles: async (_: unknown, args: { ids: readonly unknown[] }, raw: unknown) => {
+          const context = owned(raw);
+          if (!context.engagement) {
+            throw new CatalogGraphqlError("FORBIDDEN");
+          }
+          return {
+            code: "COMPLETED",
+            ...completed(await context.engagement.byIds(args.ids, context.signal), context),
+          };
+        },
         _playbackPublications: async (
           _: unknown,
           args: { ids: readonly unknown[] },

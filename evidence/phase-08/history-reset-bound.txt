@@ -1,0 +1,30 @@
+tools/reset-local-platform.test.mjs 150ms
+✔ refuses missing local intent or an incorrect confirmation before Docker (31.738356ms)
+✔ refuses extra targets, hosted URLs, CI, and Docker overrides before Docker (24.037932ms)
+✔ refuses a remote active Docker endpoint before Compose (13.890759ms)
+✔ refuses unexpected resource labels without teardown (89.059512ms)
+✔ removes only the fixed populated Aster project and proves postconditions (171.42109ms)
+✔ is idempotent when Aster has no local resources (82.650047ms)
+✔ accepts all twelve reviewed volumes but refuses a thirteenth before teardown (314.879803ms)
+✔ recognizes the reviewed Web demo without accepting private or foreign mounts (217.743845ms)
+✔ reports Compose failure without a broad fallback (62.116799ms)
+✔ fails when any project resource remains after teardown (75.997016ms)
+✔ accepts a partial runtime profile and tears down all reviewed profiles (110.595455ms)
+✔ removes only validated legacy helper anonymous volumes and verifies their absence (119.563699ms)
+✔ refuses unreviewed profiles, Identity ownership, mounts and shared resources before deletion (393.417718ms)
+✔ accepts exact optional service mounts and ordered Compose provenance (1097.94731ms)
+✔ Router trust reset accepts only owned disposable volumes and exact per-owner mounts (746.994524ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3638.615732
+$ node ./tools/verify-local-platform.mjs
+{"check":"local-platform","status":"ok","violations":0}
+$ node ./tools/verify-ai-state.ts
+{"check":"ai-state","status":"ok","files":10,"queueItems":46,"sessionEntries":119,"activeRequirement":"P08-R06","targetRequirement":"P08-R06","violations":[]}
+$ node ./tools/verify-documentation.ts
+{"check":"documentation","status":"ok","documents":210,"headings":2695,"links":1209,"statusClaims":4,"violations":0}
