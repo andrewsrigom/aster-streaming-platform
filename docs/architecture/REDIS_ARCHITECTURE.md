@@ -40,13 +40,15 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
 - Consistency: versioned positive keys expire; no scan-based invalidation
 - Failure: read PostgreSQL directly
 - Stampede: at most 128 process-local owners plus a two-second tokenized Redis
-  lease released by atomic compare-and-delete
+  lease released by atomic compare-and-delete; positive projection refreshes and
+  cold negative-key owner-fence reads both enter coordination before their
+  expensive source operation
 - Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
   coalescing and lease outcomes, bounded waiter bucket, duration and payload bytes
 
 The exact contract and safety trade-off are in
 [ADR-0037](../adr/0037-rights-safe-catalog-cache.md). This section describes the
-accepted Phase10 target until implementation evidence marks it verified.
+locally verified Phase10 candidate; protected release evidence is still pending.
 
 ## Discovery rails
 

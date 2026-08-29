@@ -14,6 +14,11 @@ at `2a9b86c221180f2df8caf74f66d9a2495c794888`. Catalog242/242, Redis17/17,
 affected73/73 and repeated real Redis/PostgreSQL fixtures pass. Publication
 update, final confirmation and protected acceptance remain. No Redis result may
 replace the PostgreSQL visibility/version fence or authorize a durable decision.
+Protected run33260411345 passed at b65688b, but final-confirmation
+discussion3886966492 found uncoordinated cold negative fence reads. Exact
+correction62afee1 coalesces and leases the negative key before PostgreSQL;
+Catalog243/243, affected73/73 and repeated real Redis/PostgreSQL fixtures pass.
+Corrected publication, confirmation and protected acceptance remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

@@ -53,11 +53,18 @@ corruption metric that could be dropped. Corrected exact
 `2a9b86c221180f2df8caf74f66d9a2495c794888` performs the size decision inside
 Redis before GET, coalesces shared hot titles across mixed batches while retaining
 one batch for newly owned titles, and records malformed outcomes without invalid
-size samples. Catalog242/242, Redis17/17 and affected73/73 pass. Exact real Redis
-proves the bounded oversized read,24-call cold coalescing, cross-instance lease,
+size samples. Protected run33260411345 passed at b65688b, but final-confirmation
+discussion3886966492 found that a cold absence check reached PostgreSQL before
+either coordination boundary. Exact correction
+`62afee15240ab1d197aac84b4d63e1a0e1dce382` coalesces each negative key in
+process and leases it across instances before the owner fence read. Catalog
+243/243 and affected73/73 pass. Exact real Redis proves bounded oversized reads,
+24-call cold positive/fence coalescing, one cross-instance negative fence read,
 expiry, outage fallback and cleanup0; real PostgreSQL again proves the four-field
-fence, exact source and stale-dispute rejection with cleanup0. Publication, final
-confirmation and protected acceptance remain pending.
+fence, exact source and stale-dispute rejection with cleanup0. Corrected
+publication, confirmation and protected acceptance remain pending. The local
+Discovery dependent checkpoint is preserved separately and cannot publish until
+this predecessor releases.
 
 ## Historical Phase 09 corrections
 
@@ -111,9 +118,9 @@ release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish and review the P10-R01 Catalog cache candidate, complete protected and
-exact-main acceptance, then deliver Discovery stale-while-revalidate and the
-limiter/outage closeout slices.
+Publish the P10-R01 final-confirmation correction, resolve its finding and
+complete corrected protected/exact-main acceptance. Then rebase the preserved
+Discovery stale-while-revalidate checkpoint and finish its remaining evidence.
 
 ## Runtime and recovery
 

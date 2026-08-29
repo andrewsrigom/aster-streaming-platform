@@ -45,6 +45,9 @@ keys need no global invalidation and expire naturally. Never scan keys.
 ## Refresh coordination
 
 Within one process, at most 128 distinct cold keys may own shared refresh work.
+This bound covers both exact positive-fence projections and negative-key owner
+fence lookups: concurrent cold or expired absence checks for the same ID share
+one PostgreSQL fence read before a negative marker is written.
 The first request creates work with its own finite deadline; later callers attach
 as waiters and retain independent cancellation. A cancelled caller stops waiting
 without aborting work still used by another caller. Settled work is removed. When
@@ -55,6 +58,8 @@ Across processes, acquire a two-second Redis lease with `SET NX PX` and a random
 128-bit token. A loser waits at most 25 milliseconds, checks the cache once, then
 loads the authoritative source if necessary. Release uses one atomic Lua
 compare-and-delete operation; a client never deletes another holder's lease.
+The same lease protocol surrounds a cold negative-key fence read, so an owner
+that confirms absence publishes the short marker before releasing its lease.
 Lease expiry, holder failure and duplicate refresh are safe because refresh only
 writes a disposable derivation. There is no retry loop and no lease authorizes a
 durable operation.

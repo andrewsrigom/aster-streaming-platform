@@ -7,6 +7,8 @@ Source and environment
 - Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888.
   Per-title process identities replace whole-batch identities, so this fixture
   was repeated at that exact commit.
+- Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382.
+  Cold negative keys now join before the owner-fence read.
 - WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
 - Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
 - One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
@@ -19,12 +21,14 @@ Measured result
 - Direct uncached full source reads: 24.
 - Direct uncached burst sample: 16.44 ms.
 - Coalesced cold full source reads: 1.
-- Current-fence reads during cold burst: 24.
-- Coalesced cold burst sample: 41.29 ms.
+- Current-fence reads during cold burst: 1.
+- Coalesced cold burst sample: 40.28 ms.
 - Warm full source reads: 0.
-- Warm sample: 2.88 ms.
+- Warm sample: 3.57 ms.
 - Cross-instance callers: 2.
 - Cross-instance full source reads: 1.
+- Cross-instance cold-negative callers: 2.
+- Cross-instance cold-negative fence reads: 1.
 - Lease contention observed: true.
 - Expired owner recovered: true.
 - Atomic compare-delete safe: true.
@@ -32,14 +36,15 @@ Measured result
 
 Workload
 The baseline invoked the full owner source directly for 24 concurrent callers.
-The cache path then invoked 24 callers for one cold key, preserving one compact
-PostgreSQL fence read per caller while process coalescing reduced full source
-loads to one. A warm call reused the exact positive entry. Two independent cache
-reader instances then contended on the same Redis lease and caused one full source
-load. Lease expiry/recovery and owner-token compare-delete completed the failure
-boundary.
+The cache path then invoked 24 callers for one cold key. Exact negative-key
+process coalescing reduced the owner-fence reads to one, and positive-fence
+coalescing reduced full source loads to one. A warm call reused the exact
+positive entry. Two independent cache reader instances contended on the same
+positive lease and caused one full source load; two instances checking a cold
+absent ID used one fence read and the resulting short marker. Lease
+expiry/recovery and owner-token compare-delete completed the failure boundary.
 
-The focused 242-test Catalog suite also synchronizes concurrent requests for
+The focused 243-test Catalog suite also synchronizes concurrent requests for
 `[hot,A]` and `[hot,B]`: the hot title appears in one source batch while the new
 `B` title is refreshed separately, proving per-title overlap without splitting a
 request's newly owned titles into one query each.
@@ -47,8 +52,9 @@ request's newly owned titles into one query each.
 Interpretation
 Bounded in-process sharing removes same-process cold-key source amplification;
 the short Redis lease also coordinates the tested two-instance overlap. Every
-caller still checks Catalog's current fence, so amplification reduction does not
-weaken rights or publication freshness.
+shared result derives from the same current Catalog fence response, while later
+requests still perform a new owner check; amplification reduction does not make
+Redis the visibility authority.
 
 Limitations
 - Wall times are shared-host laboratory samples. The direct baseline exercises

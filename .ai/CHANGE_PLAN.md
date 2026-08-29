@@ -35,6 +35,11 @@ its malformed metric. Corrected implementation
 `2a9b86c221180f2df8caf74f66d9a2495c794888` uses one bounded Redis-side read,
 per-title process identities with batched new-title refresh, and finite malformed
 observations. Protected CI, final confirmation and release remain pending.
+The first final confirmation then found that cold/expired absence checks reached
+PostgreSQL before either coalescing boundary. Correction
+`62afee15240ab1d197aac84b4d63e1a0e1dce382` gives each exact negative key the
+same bounded process sharing and tokenized Redis lease before the owner fence
+read; valid positive fence checks and Redis-outage fallback remain unchanged.
 
 ## Boundaries
 
@@ -123,10 +128,11 @@ observations. Protected CI, final confirmation and release remain pending.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: local candidate PASS: Catalog242/242, Redis17/17,
-  telemetry11/11, affected73/73, real PostgreSQL fence/source/dispute and real
-  Redis bounded read/expiry/concurrency/outage/cleanup. Hosted protected CI,
-  final confirmation and release remain pending.
+- Acceptance result: corrected local candidate PASS: Catalog243/243,
+  Redis17/17, telemetry11/11, affected73/73, real PostgreSQL
+  fence/source/dispute and real Redis bounded read/positive-plus-negative
+  concurrency/outage/cleanup. Protected CI, corrected confirmation and release
+  remain pending.
 - Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
 - Candidate gate: `pnpm check:changed`, real dependency fixture and audit.
 - Heavyweight repeat triggers: Redis wire contract, cache envelope/fence query,

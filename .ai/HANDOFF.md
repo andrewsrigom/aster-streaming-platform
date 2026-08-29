@@ -20,13 +20,23 @@ Redis17/17, affected73/73 and repeated real Redis/PostgreSQL fixtures pass.
 Candidate evidence is under `evidence/phase-10`. Full Phase00–14 goal remains
 active.
 
+Protected run33260411345 passed exact b65688b. Its final confirmation added
+discussion3886966492: cold/expired absence checks reached `findFences` before
+coalescing and leasing. Exact local correction
+`62afee15240ab1d197aac84b4d63e1a0e1dce382` coordinates the negative key before
+the owner read. Catalog243/243, affected73/73, real Redis positive/negative
+concurrency and the complete PostgreSQL fixture pass with cleanup0. The separate
+`feat/p10-discovery-swr` branch preserves implementation checkpoint8e88e80 on
+old predecessor b65688b; do not publish it before predecessor release.
+
 ## Exact next actions
 
-1. Commit this documentation-only remediation evidence and publish one PR37
-   update.
-2. Reply to and resolve comments3886917843/44/46, then obtain one final
-   confirmation and corrected protected CI before squash merge and exact-main
-   acceptance.
+1. Commit this documentation-only final-confirmation evidence and publish one
+   PR37 update.
+2. Reply to and resolve discussion3886966492, then obtain corrected confirmation
+   and protected CI before squash merge and exact-main acceptance.
+3. Rebase only dependent commits after b65688b onto released squash main, repeat
+   affected gates, and resume P10-R04.
 
 ## Evidence boundaries
 

@@ -7,6 +7,9 @@ Source and environment
 - Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888.
   Mixed-batch source coalescing changed, so the complete PostgreSQL fixture was
   repeated even though its query and fence contract did not change.
+- Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382.
+  Fence coordination changed without changing SQL or authority, so the complete
+  disposable PostgreSQL fixture was repeated.
 - WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
 - Docker Engine 26.0.0; disposable pinned PostgreSQL 18.6 fixture
 
@@ -23,7 +26,7 @@ Related public contract result
 
 Cleanup result
 {"event":"catalog_resources_closed","reservedSlots":0}
-{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":26134}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":24593}
 
 Workload
 - Ran the complete Catalog PostgreSQL integration fixture, including every prior

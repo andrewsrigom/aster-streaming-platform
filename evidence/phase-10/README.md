@@ -37,3 +37,11 @@ shares hot titles across mixed batches and preserves finite malformed telemetry.
 Catalog242/242, Redis17/17 and affected73/73 pass. Because Redis wire and
 coalescing behavior changed, both real Redis and PostgreSQL fixtures were
 repeated at that exact commit and pass with cleanup0.
+
+Protected run33260411345 passed at b65688b, but final-confirmation discussion
+3886966492 found that cold negative misses reached the owner fence before either
+coordination boundary. Corrected exact
+`62afee15240ab1d197aac84b4d63e1a0e1dce382` coalesces each negative key in process
+and leases it across instances before querying the owner. Catalog243/243,
+affected73/73 and repeated Redis/PostgreSQL fixtures pass; corrected protected CI
+and confirmation remain pending.

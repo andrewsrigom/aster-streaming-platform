@@ -64,6 +64,13 @@ Append new entries at the top. Keep entries factual and concise.
   coalescing, cross-instance contention, expiry, outage fallback and cleanup0.
   The exact PostgreSQL rerun proves compact fence fields4, exact rows2, stale
   dispute rows0, closed resources and cleanup0.
+- Protected PR37 run33260411345 passed at b65688b, but final-confirmation
+  discussion3886966492 found that cold absence checks reached PostgreSQL before
+  coordination. Preserved dependent Discovery checkpoint8e88e80 separately.
+- Exact correction62afee15240ab1d197aac84b4d63e1a0e1dce382 coalesces and leases
+  negative keys before the owner read. Catalog243/243, affected73/73 and repeated
+  real Redis/PostgreSQL fixtures pass with cleanup0; two independent negative
+  callers now cause one fence read.
 
 ### Evidence
 
@@ -96,12 +103,16 @@ Append new entries at the top. Keep entries factual and concise.
   build/artifact/notice scans and rebuilt browser acceptance8/8. Exact teardown
   again reports containers0, networks0 and volumes0.
 - Corrected affected candidate passes46/46,32 cached, in51.27s.
+- Final-confirmation correction evidence: [contract](../evidence/phase-10/catalog-cache-contract.txt),
+  [Redis runtime](../evidence/phase-10/catalog-cache-runtime.txt),
+  [concurrency](../evidence/phase-10/catalog-cache-concurrency.txt) and
+  [PostgreSQL](../evidence/phase-10/catalog-cache-postgres.txt).
 
 ### Next action
 
-Commit the documentation-only confirmation-remediation evidence, publish one
-PR37 update, resolve the three findings and obtain final confirmation plus
-corrected protected CI.
+Commit the final-confirmation evidence, publish one PR37 update, resolve
+discussion3886966492 and obtain corrected confirmation plus protected CI. Then
+squash/exact-main release and rebase the preserved Discovery checkpoint.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 

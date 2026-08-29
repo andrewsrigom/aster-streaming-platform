@@ -8,6 +8,7 @@ Source
 - Initial implementation: a54c324f7d2312851bd036f763362d84574bf826
 - Initial review correction: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88
 - Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888
+- Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -19,9 +20,10 @@ Environment
 Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
-- @aster/catalog tests: PASS, 242/242.
-- pnpm check:changed: PASS, 73 successful of 73 total, 52 cached,
-  58.996 seconds Turbo wall time on the confirmation correction.
+- @aster/catalog tests: PASS, 243/243.
+- pnpm check:changed: PASS, 73 successful of 73 total, 56 cached,
+  52.249 seconds Turbo wall time; 56.16 seconds elapsed and 1,726,116 KiB
+  maximum RSS on the final-confirmation correction.
 - git diff --check: PASS.
 - Documentation scan: PASS, 227 documents, 0 violations.
 - Repository-memory scan: PASS, 52 queue items, active P10-R01,
@@ -44,6 +46,9 @@ Workload and covered contract
   without an invalid size sample.
 - Concurrent mixed batches share each common hot title while newly owned titles
   retain one bounded batch source load.
+- Twenty-four concurrent cold absence checks share one in-process owner-fence
+  read; two independent readers share one owner-fence read through the negative
+  key lease before reusing the short absence marker.
 
 Interpretation
 The local candidate satisfies the written static and focused behavior contract.
@@ -68,6 +73,16 @@ uses exact per-title identities while batching only newly owned titles, and omit
 only invalid size samples. Catalog242/242, Redis17/17 and the repeated73/73 gate
 pass. Real Redis and PostgreSQL evidence was repeated because wire and source
 coalescing behavior changed.
+
+Final-confirmation review
+Protected run33260411345 passed at b65688b, but final-confirmation discussion
+3886966492 found that a cold or expired negative miss reached the PostgreSQL
+fence query before the positive-key coalescing and lease. The run is retained as
+historical evidence but cannot authorize merge. Correction62afee1 adds a
+separate exact negative-key in-process entry under the shared128-entry ceiling
+and acquires the same tokenized lease before the fence read. Catalog243/243,
+the affected73/73 gate and repeated real Redis/PostgreSQL fixtures pass. Corrected
+protected CI and confirmation remain pending.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis
