@@ -1,0 +1,50 @@
+P10 Catalog cache concurrency checkpoint
+Date: 2026-08-29
+Status: local candidate; hosted review, protected CI and release pending
+
+Source and environment
+- Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
+- Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
+- One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
+
+Command
+CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
+
+Measured result
+- Callers in each local burst: 24.
+- Direct uncached full source reads: 24.
+- Direct uncached burst sample: 16.72 ms.
+- Coalesced cold full source reads: 1.
+- Current-fence reads during cold burst: 24.
+- Coalesced cold burst sample: 58.31 ms.
+- Warm full source reads: 0.
+- Warm sample: 3.75 ms.
+- Cross-instance callers: 2.
+- Cross-instance full source reads: 1.
+- Lease contention observed: true.
+- Expired owner recovered: true.
+- Atomic compare-delete safe: true.
+- Remaining disposable containers: 0.
+
+Workload
+The baseline invoked the full owner source directly for 24 concurrent callers.
+The cache path then invoked 24 callers for one cold key, preserving one compact
+PostgreSQL fence read per caller while process coalescing reduced full source
+loads to one. A warm call reused the exact positive entry. Two independent cache
+reader instances then contended on the same Redis lease and caused one full source
+load. Lease expiry/recovery and owner-token compare-delete completed the failure
+boundary.
+
+Interpretation
+Bounded in-process sharing removes same-process cold-key source amplification;
+the short Redis lease also coordinates the tested two-instance overlap. Every
+caller still checks Catalog's current fence, so amplification reduction does not
+weaken rights or publication freshness.
+
+Limitations
+- Wall times are shared-host laboratory samples. The direct baseline exercises
+  the full source only, while the cache path deliberately adds fence, Redis and
+  coalescing work; their elapsed values are not a throughput comparison or SLO.
+- The experiment proves this finite 24-caller/two-instance workload, not arbitrary
+  cluster size. Admission remains capped by the application and GraphQL limits.

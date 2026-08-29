@@ -1,0 +1,50 @@
+P10 Catalog cache contract checkpoint
+Date: 2026-08-29
+Status: local candidate; hosted review, protected CI and release pending
+
+Source
+- Branch: feat/p10-catalog-cache
+- Base: ffe8e243a03b721d551742acd37db9dd645869eb
+- Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- Evidence checkpoint follows as documentation only. No implementation byte changed
+  after the candidate gates recorded here.
+
+Environment
+- WSL2 Ubuntu-20.04, Linux 6.18.33.2-microsoft-standard-WSL2 x86_64
+- 6 logical CPUs; 11,962 MiB memory; 8,192 MiB swap
+- Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
+
+Commands and raw results
+- @aster/redis tests: PASS, 17/17.
+- @aster/telemetry tests: PASS, 11/11.
+- @aster/catalog tests: PASS, 239/239.
+- pnpm check:changed: PASS, 73 successful of 73 total, 56 cached,
+  54.77 seconds Turbo wall time.
+- git diff --check: PASS.
+- Documentation scan: PASS, 227 documents, 0 violations.
+- Repository-memory scan: PASS, 52 queue items, active P10-R01,
+  0 violations.
+
+Workload and covered contract
+- Exact bounded Redis read, write-with-expiry, conditional write, delete and
+  atomic compare-and-delete operations.
+- UTF-8 key limit 256 bytes, value limit 16 KiB and maximum TTL 300 seconds.
+- Catalog schema-v1 positive and negative envelopes, exact fence equality,
+  deterministic TTL jitter and malformed-value rejection.
+- GraphQL entity ordering, duplicates, nulls and public projection remain
+  unchanged while the configured cache reader avoids the legacy transaction.
+- Finite cache telemetry labels and strict TypeScript, ESLint, Prettier, Knip,
+  architecture, security, CI-policy and repository-policy gates.
+
+Interpretation
+The local candidate satisfies the written static and focused behavior contract.
+Redis is an optional transport behind repository-owned ports; Catalog domain and
+application layers do not import a Redis client. The aggregate gate is supporting
+candidate evidence, not a release claim.
+
+Limitations
+- Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis
+  behavior is recorded separately with disposable fixtures.
+- No native Windows, macOS, arm64, hosted load, field SLO or production capacity
+  claim is made.
+- Protected CI and review still decide whether this candidate may merge.

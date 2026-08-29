@@ -12,15 +12,15 @@ clean main. The selected slice caches only public-title entity reads. PostgreSQL
 must confirm the current visibility/version fence before positive reuse. Redis is
 optional, bounded and non-authoritative. Implementation, focused suites, real
 PostgreSQL/Redis behavior and the complete affected gate pass locally. Exact
-implementation commit is the next checkpoint. Full Phase00–14 goal remains active.
+implementation commit is `a54c324f7d2312851bd036f763362d84574bf826`;
+candidate evidence is recorded under `evidence/phase-10`. Full Phase00–14 goal
+remains active.
 
 ## Exact next actions
 
-1. Create the coherent implementation checkpoint and record its exact hash in the
-   Phase10 evidence artifacts.
-2. Recheck documentation/repository memory, publish one branch update and open the
+1. Recheck documentation/repository memory, publish one branch update and open the
    candidate PR.
-3. Complete one initial review, batch only requirement blockers, then run one
+2. Complete one initial review, batch only requirement blockers, then run one
    confirmation and protected CI before squash merge and exact-main acceptance.
 
 ## Evidence boundaries

@@ -40,6 +40,11 @@ Append new entries at the top. Keep entries factual and concise.
   gate pass. Real PostgreSQL proves compact/exact fence reads. A disposable pinned
   Redis fixture compares24 uncached full-source reads with one coalesced refresh,
   observes cross-instance contention and cleans its only container.
+- Exact implementation `a54c324f7d2312851bd036f763362d84574bf826`
+  preserves the passing tree. Its exact-source PostgreSQL rerun reports compact
+  fence fields4, exact candidate rows2, stale rows0 and cleanup0; its exact-source
+  Redis rerun reports24 callers, one coalesced source load, one cross-instance
+  source load, safe expiry/compare-delete/outage fallback and cleanup0.
 
 ### Evidence
 
@@ -75,8 +80,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Create the exact implementation checkpoint, record Phase10 evidence and publish
-one coherent candidate for initial review and protected CI.
+Commit the documentation-only Phase10 evidence checkpoint, publish one coherent
+candidate and begin initial review plus protected CI.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 

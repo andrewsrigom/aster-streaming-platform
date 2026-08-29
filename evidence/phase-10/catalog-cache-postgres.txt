@@ -1,0 +1,44 @@
+P10 Catalog cache PostgreSQL fence checkpoint
+Date: 2026-08-29
+Status: local candidate; hosted review, protected CI and release pending
+
+Source and environment
+- Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
+- Docker Engine 26.0.0; disposable pinned PostgreSQL 18.6 fixture
+
+Command
+CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:integration
+
+Final result: PASS
+
+Raw cache-fence result
+{"event":"catalog_public_cache_fence","compactFenceFields":4,"exactCandidateRows":2,"staleFenceRowsAfterDispute":0}
+
+Related public contract result
+{"event":"catalog_public_http_postgres","anonymousEntities":{"_entities":[{"id":"00000000-0000-4000-8000-000000000128"},null,{"id":"00000000-0000-4000-8000-000000000110"},{"id":"00000000-0000-4000-8000-000000000128"}]},"sqlQueries":1,"retirementNextRequest":true,"correlated":true}
+
+Cleanup result
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":31009}
+
+Workload
+- Ran the complete Catalog PostgreSQL integration fixture, including every prior
+  rights, publication, rollback, acquisition, processing, public-read and
+  Discovery-export invariant.
+- Read the compact four-field fence `{id,titleVersion,rightsRevision,publicationId}`.
+- Loaded only the exact source candidate named by that fence.
+- Disputed the title and proved the stale fence returned zero public rows.
+- Exercised the HTTP federation entity path with ordered duplicate IDs and an
+  absent result.
+
+Interpretation
+PostgreSQL remains the visibility and rights authority. A positive Redis value is
+not reusable until this compact owner fence is current, and an exact source load
+cannot resurrect a disputed or retired publication. No migration was added.
+
+Limitations
+- This is a local SQL/protocol experiment, not a hosted capacity result or SLO.
+- The shortened anonymous-entity line above retains only the ordering and null
+  fields relevant to this checkpoint; the command output also verified the full
+  localized and attribution projection.

@@ -8,9 +8,10 @@ run33254719311. P10 Catalog cache-aside is the sole IN_PROGRESS item on
 `feat/p10-catalog-cache`. It owns the concrete cache design, rights-safe positive
 reuse, short valid-absence caching, TTL jitter, bounded local coalescing,
 tokenized Redis lease and finite measurements. The local implementation and real
-Redis/PostgreSQL proofs pass; exact candidate publication/review remains. No Redis
-result may replace the PostgreSQL visibility/version fence or authorize a durable
-decision.
+Redis/PostgreSQL proofs pass at exact implementation
+`a54c324f7d2312851bd036f763362d84574bf826`; candidate publication/review remains.
+No Redis result may replace the PostgreSQL visibility/version fence or authorize
+a durable decision.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

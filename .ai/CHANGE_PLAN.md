@@ -28,8 +28,9 @@ entity reads use a cache port and adapter while browse remains unchanged.
 PostgreSQL first returns a compact current-visibility fence; only an exact
 versioned cache entry for that fence is reusable. Misses load the source, populate
 a positive or valid-absence entry with deterministic TTL jitter, and use bounded
-process coalescing plus a tokenized Redis refresh lease. Release evidence remains
-pending.
+process coalescing plus a tokenized Redis refresh lease. Local candidate evidence
+passes at implementation commit `a54c324f7d2312851bd036f763362d84574bf826`;
+hosted review, protected CI and release remain pending.
 
 ## Boundaries
 
@@ -118,7 +119,10 @@ pending.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: pending.
+- Acceptance result: local candidate PASS: Catalog239/239, Redis17/17,
+  telemetry11/11, affected73/73, real PostgreSQL fence/source/dispute and real
+  Redis expiry/concurrency/outage/cleanup. Hosted review, protected CI and release
+  remain pending.
 - Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
 - Candidate gate: `pnpm check:changed`, real dependency fixture and audit.
 - Heavyweight repeat triggers: Redis wire contract, cache envelope/fence query,
@@ -141,8 +145,8 @@ evidence and repository memory.
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
 - [ ] Remaining risks recorded
