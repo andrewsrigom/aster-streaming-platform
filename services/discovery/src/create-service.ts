@@ -23,7 +23,7 @@ import type { CatalogSnapshotExportSource } from "./application/rebuild-ports.js
 import { createProjectionRebuilder } from "./application/rebuild-projection.js";
 import { createProjectionRebuildRunner } from "./application/run-projection-rebuild.js";
 import { createTitleSearch } from "./application/search-titles.js";
-import { projectionRefreshDue } from "./domain/rebuild-state.js";
+import { projectionRefreshDue, projectionServiceable } from "./domain/rebuild-state.js";
 import { createCatalogEventHandler } from "./infrastructure/catalog-event-handler.js";
 import { createCatalogEventRuntime } from "./infrastructure/catalog-event-runtime.js";
 import { createCatalogSnapshotClient } from "./infrastructure/catalog-snapshot-client.js";
@@ -241,8 +241,12 @@ export async function createDiscoveryService(
       ).catch(() => "unavailable" as const);
       const eventState = events.snapshot().state;
       const eventStatus = eventState === "idle" ? await events.check(signal) : eventState;
-      const projectionStatus =
-        rebuildRuntime.snapshot().state === "ready" ? "ready" : "unavailable";
+      const active = await rebuildStore.active(signal);
+      const serviceable =
+        active.status === "completed"
+          ? projectionServiceable(active.value, Math.floor(Date.now() / 1_000))
+          : undefined;
+      const projectionStatus = serviceable === true ? "ready" : "unavailable";
       readiness.setCriticalDependencyState(0, storeStatus);
       readiness.setCriticalDependencyState(1, eventStatus === "ready" ? "ready" : "unavailable");
       readiness.setCriticalDependencyState(2, projectionStatus);

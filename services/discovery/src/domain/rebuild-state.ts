@@ -2,6 +2,7 @@ import { discoveryIdentifier, discoveryRecord } from "./title-projection.js";
 
 export const DISCOVERY_BOOTSTRAP_GENERATION = "00000000-0000-4000-8000-000000090001";
 export const DISCOVERY_REFRESH_AFTER_SECONDS = 150;
+export const DISCOVERY_VISIBILITY_LEASE_SECONDS = 300;
 
 export type BrokerOffsets = Readonly<Record<string, string>>;
 export interface RebuildStart {
@@ -87,6 +88,27 @@ export function projectionRefreshDue(value: unknown, now: number): boolean | und
     return (
       active["generation"] === DISCOVERY_BOOTSTRAP_GENERATION ||
       now - active["startedAt"] >= DISCOVERY_REFRESH_AFTER_SECONDS
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+export function projectionServiceable(value: unknown, now: number): boolean | undefined {
+  try {
+    const active = discoveryRecord(value, ["generation", "startedAt"]);
+    if (
+      !active ||
+      !discoveryIdentifier(active["generation"]) ||
+      !timestamp(active["startedAt"]) ||
+      !timestamp(now) ||
+      active["startedAt"] > now
+    ) {
+      return undefined;
+    }
+    return (
+      active["generation"] !== DISCOVERY_BOOTSTRAP_GENERATION &&
+      now - active["startedAt"] < DISCOVERY_VISIBILITY_LEASE_SECONDS
     );
   } catch {
     return undefined;

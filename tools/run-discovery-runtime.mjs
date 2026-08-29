@@ -251,6 +251,66 @@ try {
     brokerLag: 0,
   });
 
+  stage = "replay";
+  const quarantineId = "00000000-0000-4000-8000-000000090099";
+  const replayTitleId = "00000000-0000-4000-8000-000005000001";
+  const replayEvent = JSON.stringify({
+    eventId: "00000000-0000-4000-8000-000000090101",
+    eventType: "catalog.title-published",
+    schemaVersion: 1,
+    occurredAt: "2026-08-29T00:00:00.000Z",
+    producer: "catalog",
+    aggregate: { type: "Title", id: replayTitleId, version: edge.sourceVersion },
+    correlationId: "00000000-0000-4000-8000-000000090102",
+    causationId: "00000000-0000-4000-8000-000000090103",
+    trace: {},
+    payload: { titleId: replayTitleId, publicationId: null, rightsRevision: null },
+  });
+  const quarantine = await compose([
+    "exec",
+    "-T",
+    "postgres",
+    "psql",
+    "--username=aster",
+    "--dbname=aster",
+    "--tuples-only",
+    "--no-align",
+    "--command",
+    `SELECT discovery.quarantine_catalog_record(
+      '${quarantineId}'::uuid,'aster.catalog.publication.v1',0,'999999',
+      '${Buffer.from(replayTitleId).toString("hex")}',
+      '${Buffer.from(replayEvent).toString("hex")}','{}'::jsonb,'source_conflict');`,
+  ]);
+  assert.equal(quarantine, "stored");
+  const replay = JSON.parse(
+    await compose([
+      "exec",
+      "-T",
+      "--env",
+      "ASTER_DISCOVERY_REPLAY_ENABLED=true",
+      "discovery",
+      "node",
+      "./dist/src/replay-catalog-event.js",
+      quarantineId,
+    ]),
+  );
+  assert.equal(replay.event, "aster.discovery.catalog_replay");
+  assert.ok(replay.status === "applied" || replay.status === "duplicate");
+  const remainingQuarantine = await compose([
+    "exec",
+    "-T",
+    "postgres",
+    "psql",
+    "--username=aster",
+    "--dbname=aster",
+    "--tuples-only",
+    "--no-align",
+    "--command",
+    `SELECT count(*) FROM discovery.event_quarantine WHERE id='${quarantineId}'::uuid;`,
+  ]);
+  assert.equal(remainingQuarantine, "0");
+  emit("discovery_quarantine_replay", { exactRecord: true, reclaimed: true });
+
   stage = "isolation";
   await compose(["stop", "--timeout", "15", "discovery"], 30_000);
   const browse = await executeGraphql(port, {

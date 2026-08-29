@@ -68,7 +68,13 @@
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "services/discovery": {
-      "entry": ["src/index.ts", "src/main.ts", "src/migrate-local.ts", "src/print-schema.ts"],
+      "entry": [
+        "src/index.ts",
+        "src/main.ts",
+        "src/migrate-local.ts",
+        "src/print-schema.ts",
+        "src/replay-catalog-event.ts"
+      ],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "packages/http-express": {

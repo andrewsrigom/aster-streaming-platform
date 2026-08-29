@@ -36,13 +36,21 @@ Catalog v1 publication events are bounded invalidation hints. For each accepted 
 
 The active projection stores source version, event provenance, indexed time and a five-minute visibility lease capped by Catalog rights expiry. Expired public rows produce `STALE`, not a fabricated empty success. Consumer progress is stored in the same Discovery transaction before broker acknowledgement. Invalid bounded records enter a finite quarantine; oversized records and full quarantine remain uncommitted.
 
-A rebuild captures one broker high-water barrier, scans current Catalog snapshots in bounded UUID-keyset pages, applies concurrent events to both active and building generations, waits for durable consumer catch-up and then atomically promotes the building generation. An absent checkpoint covers only broker position zero. The maintenance runtime starts a new generation when the active generation reaches half of its five-minute lease, renewing quiet catalogs before expiry. Failed or partial rebuilds never replace the active generation. Durable cursor, barrier and source-version fences allow restart without depending on broker retention. At most the active and one building generation are retained.
+A rebuild captures one broker high-water barrier, scans current Catalog snapshots in bounded UUID-keyset pages, applies concurrent events to both active and building generations, waits for durable consumer catch-up and then atomically promotes the building generation. An absent checkpoint covers only broker position zero. The maintenance runtime starts a new generation when the active generation reaches half of its five-minute lease. The prior active generation remains serviceable during maintenance until its lease expires; bootstrap and expired generations remain unavailable. Failed or partial rebuilds never replace the active generation. Durable cursor, barrier and source-version fences allow restart without depending on broker retention. At most the active and one building generation are retained.
 
 ## Runtime and failure boundaries
 
 Discovery listens privately on 3500. The API login can read only the active search view; the projector login owns projection/event/rebuild functions. Catalog snapshot access has its own private credential volume. Router has a separate Discovery credential and starts independently, so an unavailable optional Discovery cannot prevent Catalog or Playback traffic. No cross-owner SQL, Redis authority, raw query text, title text, credential or signed media URL enters telemetry.
 
 The subgraph accepts one named root operation, a 16 KiB body, bounded parser/depth/alias/field/cost limits, four active requests and no hidden queue. Application, owner-read, SQL and broker work receive finite deadlines and cancellation. Readiness requires the owned schema and an active projection; Catalog or broker failure makes projection maintenance unavailable without changing Catalog or Playback admission.
+
+Replay one exact retained local quarantine record only after correcting its underlying owner or projection condition:
+
+```sh
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime exec -T --env ASTER_DISCOVERY_REPLAY_ENABLED=true discovery node ./dist/src/replay-catalog-event.js "$QUARANTINE_ID"
+```
+
+The command requires one UUID, local event activation, the projector role and the purpose-separated Catalog credential. It revalidates the retained bytes through the same owner snapshot and projection path, removes the slot only after an applied or duplicate durable result, emits no record bytes, and has a five-second deadline. A missing, still-invalid or unavailable record fails without editing or deleting it.
 
 Rollback stops the optional Discovery overlay and restores compatible Router/Catalog artifacts. Keep the Discovery database, version fences, quarantine and previous active generation. Do not delete Catalog or retained local data to repair a failed rebuild.
 

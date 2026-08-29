@@ -5,12 +5,14 @@ import type { RebuildStore } from "../src/application/rebuild-ports.js";
 import {
   DISCOVERY_BOOTSTRAP_GENERATION,
   DISCOVERY_REFRESH_AFTER_SECONDS,
+  DISCOVERY_VISIBILITY_LEASE_SECONDS,
   normalizeBrokerOffsets,
   normalizeRebuildCheckpoint,
   normalizeRebuildHandledOffset,
   normalizeRebuildStart,
   offsetsCover,
   projectionRefreshDue,
+  projectionServiceable,
 } from "../src/domain/rebuild-state.js";
 
 const id = (value: number) => `00000000-0000-4000-8000-${String(value).padStart(12, "0")}`;
@@ -41,6 +43,28 @@ test("active projections refresh before their finite visibility leases expire", 
   );
   assert.equal(projectionRefreshDue({ generation: id(91), startedAt: now + 1 }, now), undefined);
   assert.equal(projectionRefreshDue({ generation: id(91), startedAt: now }, Number.NaN), undefined);
+});
+
+test("maintenance rebuilds keep a valid active projection serviceable", () => {
+  assert.equal(
+    projectionServiceable({ generation: DISCOVERY_BOOTSTRAP_GENERATION, startedAt: 0 }, now),
+    false,
+  );
+  assert.equal(
+    projectionServiceable(
+      { generation: id(91), startedAt: now - DISCOVERY_VISIBILITY_LEASE_SECONDS + 1 },
+      now,
+    ),
+    true,
+  );
+  assert.equal(
+    projectionServiceable(
+      { generation: id(91), startedAt: now - DISCOVERY_VISIBILITY_LEASE_SECONDS },
+      now,
+    ),
+    false,
+  );
+  assert.equal(projectionServiceable({ generation: id(91), startedAt: now + 1 }, now), undefined);
 });
 
 test("offset, checkpoint and generation bounds reject ambiguous state", () => {
