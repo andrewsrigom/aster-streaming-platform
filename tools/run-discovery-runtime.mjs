@@ -162,6 +162,8 @@ try {
     (container) => container.Config.Labels["com.docker.compose.service"] === "discovery",
   );
   assert.equal(discovery.State.Health.Status, "healthy");
+  assert.ok(discovery.Config.Env.includes("ASTER_DISCOVERY_CACHE_ENABLED=true"));
+  assert.ok(discovery.Config.Env.includes("REDIS_URL=redis://redis:6379/0"));
   assert.equal(discovery.Config.User, "1000:1000");
   assert.equal(discovery.HostConfig.ReadonlyRootfs, true);
   assert.deepEqual(discovery.HostConfig.CapDrop, ["ALL"]);
@@ -244,6 +246,11 @@ try {
     publicRails: 4,
     recentFallback: true,
     ownerPartialResponse: true,
+  });
+  emit("discovery_cache_outage_runtime", {
+    redisStarted: false,
+    discoveryHealthy: true,
+    publicHomeServed: true,
   });
 
   stage = "state";
@@ -386,6 +393,7 @@ try {
   for (const required of [
     '"event":"aster.discovery.rebuild_state","outcome":"ok"',
     '"event":"aster.discovery.readiness_changed","outcome":"ok"',
+    '"event":"aster.discovery.cache_readiness_changed","outcome":"degraded"',
     '"event":"aster.discovery.graphql_completed"',
     '"operation":"search_titles"',
     '"aster.operation":"SearchTitles"',
