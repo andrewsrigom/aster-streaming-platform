@@ -9,6 +9,7 @@ export interface SearchRow extends SearchPosition {
 
 export interface SearchRepository {
   activeGeneration(): Promise<string>;
+  projectionStale(generation: string, now: number): Promise<boolean>;
   find(input: SearchInput, now: number): Promise<readonly SearchRow[]>;
 }
 

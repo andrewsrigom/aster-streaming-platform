@@ -4,7 +4,7 @@ import { open } from "node:fs/promises";
 import type { IncomingMessage } from "node:http";
 import { join } from "node:path";
 
-export type AsterRouterOwner = "identity" | "catalog" | "playback" | "engagement";
+export type AsterRouterOwner = "identity" | "catalog" | "playback" | "engagement" | "discovery";
 interface AsterRouterContext {
   readonly traceId?: string;
   readonly correlationId?: string;
@@ -14,13 +14,20 @@ export interface AsterLocalRouterTrust {
 }
 
 const CREDENTIAL = /^[a-f0-9]{64}$/u;
-const ROUTER_OWNERS = new Set<string>(["identity", "catalog", "playback", "engagement"]);
+const ROUTER_OWNERS = new Set<string>([
+  "identity",
+  "catalog",
+  "playback",
+  "engagement",
+  "discovery",
+]);
 const TRACEPARENT = /^00-([a-f0-9]{32})-([a-f0-9]{16})-0[01]$/u;
 const HOSTS = {
   identity: "identity:3100",
   catalog: "catalog:3200",
   playback: "playback:3300",
   engagement: "engagement:3400",
+  discovery: "discovery:3500",
   "catalog-playback": "catalog:3200",
   "identity-engagement": "identity:3100",
   "playback-engagement": "playback:3300",

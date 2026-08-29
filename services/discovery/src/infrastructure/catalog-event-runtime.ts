@@ -124,6 +124,14 @@ export function createCatalogEventRuntime(
       }
     },
     stop,
+    async check(signal: AbortSignal): Promise<RuntimeState> {
+      if (signal.aborted || stopped()) {
+        return "stopped";
+      }
+      const result = await step(signal);
+      observe(result);
+      return result;
+    },
     async barrier(signal: AbortSignal): Promise<ProjectionStoreResult<BrokerOffsets>> {
       const cancelled = () => signal.aborted;
       if (cancelled()) {

@@ -6,6 +6,9 @@ settings:
 
 packageExtensionsChecksum: sha256-uA+1v2LxedN9U510LvZjlKbbZksSSqU9LQcp7ppYQMs=
 
+patchedDependencies:
+  kafkajs@2.2.4: 7a442daf50f3299a0f2041744dd035f7afe047ecc2fd4fc437e7f1347e25980f
+
 importers:
 
   .:
@@ -46,6 +49,9 @@ importers:
       '@aster/catalog':
         specifier: workspace:*
         version: link:../../services/catalog
+      '@aster/discovery':
+        specifier: workspace:*
+        version: link:../../services/discovery
       '@aster/engagement':
         specifier: workspace:*
         version: link:../../services/engagement
@@ -145,7 +151,7 @@ importers:
         version: link:../telemetry
       kafkajs:
         specifier: 2.2.4
-        version: 2.2.4
+        version: 2.2.4(patch_hash=7a442daf50f3299a0f2041744dd035f7afe047ecc2fd4fc437e7f1347e25980f)
     devDependencies:
       '@types/node':
         specifier: 24.13.3
@@ -375,12 +381,24 @@ importers:
 
   services/discovery:
     dependencies:
+      '@apollo/server':
+        specifier: 5.5.1
+        version: 5.5.1(graphql@16.14.2)(supports-color@7.2.0)
+      '@apollo/subgraph':
+        specifier: 2.14.4
+        version: 2.14.4(graphql@16.14.2)
+      '@as-integrations/express5':
+        specifier: 1.1.2
+        version: 1.1.2(@apollo/server@5.5.1(graphql@16.14.2)(supports-color@7.2.0))(express@5.2.1(supports-color@7.2.0))
       '@aster/broker-kafka':
         specifier: workspace:*
         version: link:../../packages/broker-kafka
       '@aster/event-delivery':
         specifier: workspace:*
         version: link:../../packages/event-delivery
+      '@aster/http-express':
+        specifier: workspace:*
+        version: link:../../packages/http-express
       '@aster/postgres':
         specifier: workspace:*
         version: link:../../packages/postgres
@@ -390,10 +408,16 @@ importers:
       '@aster/telemetry':
         specifier: workspace:*
         version: link:../../packages/telemetry
+      graphql:
+        specifier: 16.14.2
+        version: 16.14.2
       pg:
         specifier: 8.23.0
         version: 8.23.0
     devDependencies:
+      '@apollo/composition':
+        specifier: 2.14.4
+        version: 2.14.4(graphql@16.14.2)
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -524,7 +548,7 @@ importers:
         version: 8.23.1
       kafkajs:
         specifier: 2.2.4
-        version: 2.2.4
+        version: 2.2.4(patch_hash=7a442daf50f3299a0f2041744dd035f7afe047ecc2fd4fc437e7f1347e25980f)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -5267,7 +5291,7 @@ snapshots:
 
   json-stable-stringify-without-jsonify@1.0.1: {}
 
-  kafkajs@2.2.4: {}
+  kafkajs@2.2.4(patch_hash=7a442daf50f3299a0f2041744dd035f7afe047ecc2fd4fc437e7f1347e25980f): {}
 
   keyv@4.5.4:
     dependencies:

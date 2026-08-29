@@ -2,7 +2,7 @@
 
 ## Current status
 
-Phases 00–07 are released locally, including the accessible player and Docker-only playable journey. Phase 08 adds the implemented [owner-authorized progress backend](../../services/engagement/README.md); its disposable Docker proof passes, while protected release and browser save/resume remain pending. PostgreSQL is durable, Redis disposable, and private owner credentials/resource limits remain explicit. [Current state](../../.ai/CURRENT_STATE.md).
+Phases 00–08 are released locally, including the accessible player, browser save/resume and owner-authorized Engagement paths. The current Phase 09 candidate adds [bounded federated title search](../../services/discovery/README.md) through an explicit opt-in overlay; home rails and browser search remain planned. PostgreSQL is durable, Redis disposable, and private owner credentials/resource limits remain explicit. [Current state](../../.ai/CURRENT_STATE.md).
 
 ### Identity reference process
 
@@ -49,7 +49,7 @@ docker compose --project-name aster --file infra/compose/compose.yml --profile r
 
 Use POST `http://127.0.0.1:4000/graphql`; GET intentionally has no landing page. `docker compose --project-name aster --file infra/compose/compose.yml ps --all` reports Router and owner health. No host Node/pnpm, manual schema initialization or hosted account is needed. Docker builds frozen production packages and waits for owner migrations and the finite trust initializer. Migration jobs hold admin credentials; each API uses its restricted owner/reader login. Successful migrations are not reapplied. Build/pulls precede the 120-second readiness wait; the first build needs registry access.
 
-Router, Identity, Catalog, Playback and Engagement use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Router, optional Web and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router and Web can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates seven private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
+Router, Identity, Catalog, Playback, Engagement and optional Discovery use UID/GID 1000, read-only roots, no Linux capabilities and 384 MiB/1 CPU/64 PID ceilings each. Owner shutdown has a 15-second orchestrator grace; Router has ten seconds around its five-second connection shutdown. Router, optional Web and optional Prometheus join the `edge` bridge; databases and owners stay on the internal `platform` network. Router and Web can use outbound networking through `edge`; no egress firewall is claimed. PostgreSQL helpers override inherited data volumes with tmpfs. The trust initializer has no network, creates ten private named volumes, and reuses valid keys on restart. [Router trust and recovery](../../apps/router/README.md#runtime-and-diagnostics).
 
 The seven-variable Identity configuration retains standalone health-only behavior. Normal Compose opts into local Identity with `ASTER_LOCAL_DEMO_ENABLED=true`, `ASTER_PUBLIC_ORIGIN=http://127.0.0.1:4000` and private Router trust; other environments cannot activate it. Owner readiness checks restricted database privileges and required schema. An unavailable dependency produces owner readiness 503 while liveness stays 200 and recovery remains monitored. Router health measures the Router process, not aggregate owner availability: nullable mixed queries can retain one healthy owner. The optional overlay enables metrics and Router traces through the private Collector.
 
@@ -59,7 +59,7 @@ Run the Docker-only product check from POSIX/WSL:
 docker compose --project-name aster --file infra/compose/compose.yml exec -T identity node --input-type=module - --compose-router < tools/verify-local-identity.mjs
 ```
 
-It uses memory-only credentials and removes only its own synthetic profile. Inspect `identity-init` logs for failed or unknown-version migration state; do not delete retained data to repair startup. Application restart invalidates old local assertions but keeps accounts/profiles. Sign in again. The default account allows five profiles; outbox delivery/cleanup starts in Phase 08, so 128 pending events/account deliberately backpressure further writes. The script also needs free receipt/journal capacity.
+It uses memory-only credentials and removes only its own synthetic profile. Inspect `identity-init` logs for failed or unknown-version migration state; do not delete retained data to repair startup. Application restart invalidates old local assertions but keeps accounts/profiles. Sign in again. The default account allows five profiles; 128 pending events/account deliberately backpressure further writes. The script also needs free receipt/journal capacity.
 
 Stop all profiles without deleting their named data volumes:
 
@@ -82,6 +82,20 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | `integration` | Router, Identity, Catalog, Playback, Engagement, Kafka, S3 | 4000 |
 | `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus | 4000, 9090 |
 | `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus | 4000, 9090 |
+
+Discovery is intentionally absent from the base profiles. Start the implemented search candidate with the event and Discovery overlays:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime up --build --wait --wait-timeout 180 router discovery
+```
+
+This adds Kafka, the Catalog relay, Discovery migrations/runtime and the fifth Router subgraph. Discovery and Kafka remain private; only Router stays on `127.0.0.1:4000`. Preserve named data while stopping this topology with:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile "*" down
+```
+
+Use `pnpm discovery:runtime` for an isolated, automatically cleaned acceptance fixture. Do not add the proof overlay to a retained project because it replaces PostgreSQL storage with tmpfs and randomizes the Router port.
 
 These profiles run finite Identity/Catalog migration jobs and `router-trust-init` before admitting federated API traffic.
 
@@ -314,7 +328,7 @@ The configured GitHub governance job runs repository-memory, documentation, publ
 
 ## Local endpoints
 
-The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate through the internal `platform` network. Normal runtime publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200, Playback 3300 and Engagement 3400 remain private, with `/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics overlay alone exposes Identity/Catalog on loopback and disables private trust; it is not the federated topology. The Web overlay publishes 3000 and observability publishes Prometheus 9090. PostgreSQL, Redis, broker, private storage and Collector have no host ports. [Playback operations](../../services/playback/README.md) and [Catalog verification](../../services/catalog/README.md#docker-runtime-and-technical-media) describe the scoped checks.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate through the internal `platform` network. Normal runtime publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200, Playback 3300, Engagement 3400 and optional Discovery 3500 remain private, with `/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics overlay alone exposes Identity/Catalog on loopback and disables private trust; it is not the federated topology. The Web overlay publishes 3000 and observability publishes Prometheus 9090. PostgreSQL, Redis, broker, private storage and Collector have no host ports. [Discovery operations](../../services/discovery/README.md), [Playback operations](../../services/playback/README.md) and [Catalog verification](../../services/catalog/README.md#docker-runtime-and-technical-media) describe the scoped checks.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 

@@ -17,6 +17,7 @@
         "tools/media/generate-hls.mjs",
         "tools/media/probe-client.ts",
         "tools/run-discovery-integration.mjs",
+        "tools/run-discovery-runtime.mjs",
         "infra/router/init-trust.mjs"
       ]
     },
@@ -64,6 +65,10 @@
         "src/print-schema.ts",
         "src/replay-identity-event.ts"
       ],
+      "project": ["src/**/*.ts", "test/**/*.ts"]
+    },
+    "services/discovery": {
+      "entry": ["src/index.ts", "src/main.ts", "src/migrate-local.ts", "src/print-schema.ts"],
       "project": ["src/**/*.ts", "test/**/*.ts"]
     },
     "packages/http-express": {

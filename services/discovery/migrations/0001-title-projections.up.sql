@@ -120,7 +120,7 @@ CREATE TABLE discovery.search_documents (
 CREATE INDEX discovery_search_vector ON discovery.search_documents USING gin(search_vector);
 
 GRANT USAGE ON SCHEMA discovery TO aster_discovery_runtime, aster_discovery_projector;
-GRANT SELECT ON discovery.generation_control, discovery.generations,
+GRANT SELECT ON discovery.schema_migrations, discovery.generation_control, discovery.generations,
   discovery.generation_titles, discovery.search_documents TO aster_discovery_runtime;
 GRANT SELECT ON ALL TABLES IN SCHEMA discovery TO aster_discovery_projector;
 GRANT INSERT, UPDATE ON discovery.title_fences, discovery.generation_titles TO aster_discovery_projector;

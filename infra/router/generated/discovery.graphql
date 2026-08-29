@@ -1,0 +1,44 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
+
+enum DiscoverySearchCode {
+  COMPLETED
+  INVALID_INPUT
+  CURSOR_EXPIRED
+  STALE
+  UNAVAILABLE
+  CANCELLED
+  INDETERMINATE
+}
+
+type Title @key(fields: "id") {
+  id: ID!
+}
+
+type DiscoverySearchEdge {
+  cursor: String!
+  node: Title
+  sourceVersion: Int!
+  indexedAt: Float!
+  visibleUntil: Float!
+}
+
+type DiscoveryPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type DiscoverySearchConnection {
+  generation: ID!
+  edges: [DiscoverySearchEdge!]!
+  pageInfo: DiscoveryPageInfo!
+}
+
+type DiscoverySearchPayload {
+  code: DiscoverySearchCode!
+  correlationId: ID!
+  connection: DiscoverySearchConnection
+}
+
+type Query {
+  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
+}

@@ -48,6 +48,8 @@ const reviewedVolumes = [
   "engagement-identity-trust",
   "engagement-playback-trust",
   "engagement-catalog-trust",
+  "discovery-router-trust",
+  "discovery-catalog-trust",
 ];
 
 const fakeDockerSource = `#!/bin/sh
@@ -97,7 +99,7 @@ if [ "$1" = "compose" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--volumes" ]; then
-    printf '%s\\n' postgres-data broker-data storage-data prometheus-data identity-router-trust catalog-router-trust playback-router-trust playback-catalog-trust engagement-router-trust engagement-identity-trust engagement-playback-trust engagement-catalog-trust
+    printf '%s\\n' postgres-data broker-data storage-data prometheus-data identity-router-trust catalog-router-trust playback-router-trust playback-catalog-trust engagement-router-trust engagement-identity-trust engagement-playback-trust engagement-catalog-trust discovery-router-trust discovery-catalog-trust
     exit 0
   fi
   if [ "$1" = "down" ] && [ "$2" = "--volumes" ]; then
@@ -151,8 +153,8 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
             engagement) printf '%s\\n' 'volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog' 'volume|aster_engagement-router-trust|/run/aster-router' 'volume|aster_engagement-identity-trust|/run/aster-engagement-identity' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' ;;
             catalog) printf '%s\\n' 'volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog' 'volume|aster_catalog-router-trust|/run/aster-router' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' ;;
             playback) printf '%s\\n' 'volume|aster_playback-router-trust|/run/aster-router' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' ;;
-            router) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_engagement-router-trust|/run/aster-router/engagement' ;;
-            router-trust-init) printf '%s\\n' 'volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' 'volume|aster_engagement-router-trust|/run/aster-router/engagement' 'volume|aster_engagement-identity-trust|/run/aster-engagement-identity' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' ;;
+            router) printf '%s\\n' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_engagement-router-trust|/run/aster-router/engagement' 'volume|aster_discovery-router-trust|/run/aster-router/discovery' ;;
+            router-trust-init) printf '%s\\n' 'volume|aster_engagement-catalog-trust|/run/aster-engagement-catalog' 'volume|aster_identity-router-trust|/run/aster-router/identity' 'volume|aster_catalog-router-trust|/run/aster-router/catalog' 'volume|aster_playback-router-trust|/run/aster-router/playback' 'volume|aster_playback-catalog-trust|/run/aster-playback-catalog' 'volume|aster_engagement-router-trust|/run/aster-router/engagement' 'volume|aster_engagement-identity-trust|/run/aster-engagement-identity' 'volume|aster_engagement-playback-trust|/run/aster-engagement-playback' 'volume|aster_discovery-router-trust|/run/aster-router/discovery' 'volume|aster_discovery-catalog-trust|/run/aster-discovery-catalog' ;;
             broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
             storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
             prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
@@ -449,17 +451,17 @@ test("is idempotent when Aster has no local resources", async (t) => {
   assert.doesNotMatch(result.log, / down --volumes/u);
 });
 
-test("accepts all twelve reviewed volumes but refuses a thirteenth before teardown", async (t) => {
-  assert.equal(reviewedVolumes.length, 12);
+test("accepts all fourteen reviewed volumes but refuses a fifteenth before teardown", async (t) => {
+  assert.equal(reviewedVolumes.length, 14);
   const complete = await runReset(t, { scenario: "all-volumes" });
   assert.equal(complete.code, 0, complete.stderr);
-  assert.match(complete.stdout, /containers=1 networks=1 volumes=12/u);
+  assert.match(complete.stdout, /containers=1 networks=1 volumes=14/u);
   for (const name of reviewedVolumes) {
     assert.ok(complete.log.includes("volume=aster_" + name));
   }
   const overflow = await runReset(t, { scenario: "too-many-volumes" });
   assert.equal(overflow.code, 1);
-  assert.match(overflow.stderr, /more than twelve Aster volumes/u);
+  assert.match(overflow.stderr, /more than fourteen Aster volumes/u);
   assert.doesNotMatch(overflow.log, / down --volumes/u);
 });
 
@@ -559,6 +561,16 @@ test("Router trust reset accepts only owned disposable volumes and exact per-own
     });
     assert.equal(incorrectAuthority.code, 1);
     assert.doesNotMatch(incorrectAuthority.log, / down --volumes/u);
+  }
+  for (const name of ["discovery-router-trust", "discovery-catalog-trust"]) {
+    const result = await runReset(t, {
+      service: "router",
+      environment: {
+        FAKE_VOLUME_NAME: name,
+        FAKE_VOLUME_AUTHORITY: "disposable-local",
+      },
+    });
+    assert.equal(result.code, 0, name + ": " + result.stderr);
   }
   for (const scenario of [
     "wrong-owner-mount",

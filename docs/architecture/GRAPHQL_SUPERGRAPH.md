@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router currently composes Identity, Catalog, Playback and Engagement; Discovery remains planned. [Composition and known-operation checks](../../apps/router/README.md) validate schemas, while [Engagement Docker evidence](../../evidence/phase-08/history-federated-runtime.jsonl) proves the implemented owner-authorized write/read paths. Phase 08 protected release remains separate from local acceptance.
+The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router currently composes Identity, Catalog, Playback, Engagement and the Discovery search candidate. [Composition and known-operation checks](../../apps/router/README.md) validate all five schemas. [Engagement evidence](../../evidence/phase-08/README.md) records its released owner-authorized paths; [Discovery evidence](../../evidence/phase-09/README.md) records the current local search acceptance without claiming rails or release.
 
 ## Subgraphs
 
@@ -12,7 +12,7 @@ The supergraph gives first-party clients one typed API while preserving domain o
 | Catalog | public title browse/detail, localized metadata and attribution; editorial operations use the local CLI |
 | Playback | playback-session mutation, playback capability |
 | Engagement | watchlist, progress, history, continue-watching |
-| Discovery | home, search, trending, optional recommendations |
+| Discovery | implemented bounded title search; home rails, trending and optional recommendations remain planned |
 
 ## Entity ownership
 
@@ -26,7 +26,7 @@ type Title @key(fields: "id") {
 }
 ```
 
-Implemented Engagement contribution (P08-R08 local candidate; protected acceptance remains separate):
+Released Engagement contribution:
 
 ```graphql
 type Title @key(fields: "id") {
@@ -52,11 +52,11 @@ extend type Title @key(fields: "id") {
 }
 ```
 
-Discovery will return title references and ranking metadata rather than duplicating Catalog fields.
+Discovery search returns nullable Catalog `Title` references plus ranking cursor and projection-freshness metadata rather than duplicating Catalog fields. Nullable references preserve the remainder of a page if Catalog retires a title between the Discovery read and entity resolution.
 
 ## Query shape
 
-Implemented query surface excerpt; [generated API](../../infra/router/generated/api.graphql) is authoritative. Catalog currently has no browse filter or search field. Discovery home/search remain planned.
+Implemented query surface excerpt; [generated API](../../infra/router/generated/api.graphql) is authoritative. Catalog has no browse filter or search field; Discovery owns search while home rails remain planned.
 
 ```graphql
 type Query {
@@ -66,6 +66,7 @@ type Query {
   progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
   watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
+  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
 }
 ```
 
@@ -108,6 +109,8 @@ Engagement history/continue-watching uses descending (updatedAt, progress ID), f
 Unbounded collections use keyset pagination.
 
 Watchlist uses descending (addedAt, entry ID), profile-bound w1 cursors and the same 1–20 page bound. Watchlist and continue-watching both validate current Catalog visibility before lookahead; hidden titles never affect page size or hasNextPage. Watchlist replay/removal do not require Catalog, but always require current Identity ownership. See [watchlist semantics](../../services/engagement/README.md#watchlist). General Title/Profile engagement extensions remain P08-R08, separate from these root operations.
+
+Discovery search uses weighted full-text rank descending and title ID ascending, with first 1–20 and first+1 lookahead. Its s1 cursor is bound to the normalized query, locale and active projection generation. Changed queries, replaced generations and malformed positions are rejected rather than traversing mixed state. Freshness and zero results are explicit. See [Discovery search](../../services/discovery/README.md#public-contract).
 
 Rules:
 

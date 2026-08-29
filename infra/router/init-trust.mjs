@@ -28,13 +28,14 @@ if (eventTrust !== undefined && eventTrust !== "true" && eventTrust !== "false")
 }
 // A finite local initializer. Retained event signatures require retaining the original event key.
 const paths = [
-  ...["identity", "catalog", "playback", "engagement"].map(
+  ...["identity", "catalog", "playback", "engagement", "discovery"].map(
     (owner) => `/run/aster-router/${owner}/${owner}.key`,
   ),
   "/run/aster-playback-catalog/catalog.key",
   "/run/aster-engagement-identity/identity.key",
   "/run/aster-engagement-playback/playback.key",
   "/run/aster-engagement-catalog/catalog.key",
+  "/run/aster-discovery-catalog/catalog.key",
   ...(eventTrust === "true" ? ["/run/aster-identity-events/identity.key"] : []),
 ];
 for (const path of paths) {
@@ -57,8 +58,8 @@ for (const path of paths) {
 process.stdout.write(
   JSON.stringify({
     event: "aster.router.trust_initialized",
-    owners: 4,
-    ownerReads: 4,
+    owners: 5,
+    ownerReads: 5,
     identityEvents: eventTrust === "true",
   }) + "\n",
 );

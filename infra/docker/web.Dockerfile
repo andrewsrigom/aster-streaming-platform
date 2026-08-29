@@ -3,6 +3,7 @@ FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a77
 WORKDIR /workspace
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0 NEXT_TELEMETRY_DISABLED=1
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 COPY apps/web/package.json ./apps/web/
 RUN corepack enable && corepack install && pnpm install --frozen-lockfile
 COPY tsconfig.base.json LICENSE ./

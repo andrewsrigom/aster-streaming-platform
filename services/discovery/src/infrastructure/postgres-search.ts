@@ -62,6 +62,38 @@ function repository(tx: AsterPostgresTransaction): SearchRepository {
       );
       return data && discoveryIdentifier(data["generation"]) ? data["generation"] : invalid();
     },
+    async projectionStale(generation, now) {
+      if (!discoveryIdentifier(generation)) {
+        return invalid();
+      }
+      integer(now);
+      const data = discoveryRecord(
+        one(
+          await tx.query({
+            text: `SELECT EXISTS (
+                SELECT 1 FROM discovery.generation_titles
+                WHERE generation_id=$1::uuid AND document_digest IS NOT NULL
+              ) AS has_public,
+              EXISTS (
+                SELECT 1 FROM discovery.generation_titles
+                WHERE generation_id=$1::uuid AND document_digest IS NOT NULL
+                  AND visible_until > $2::bigint
+              ) AS has_fresh`,
+            values: [generation, now],
+          }),
+        ),
+        ["has_public", "has_fresh"],
+      );
+      if (
+        !data ||
+        typeof data["has_public"] !== "boolean" ||
+        typeof data["has_fresh"] !== "boolean" ||
+        (data["has_fresh"] && !data["has_public"])
+      ) {
+        return invalid();
+      }
+      return data["has_public"] && !data["has_fresh"];
+    },
     async find(input, now) {
       integer(now);
       const result = await tx.query({

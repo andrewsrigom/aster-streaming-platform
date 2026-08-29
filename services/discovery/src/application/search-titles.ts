@@ -19,7 +19,7 @@ export interface SearchPage {
 
 type SearchResult = ProjectionStoreResult<
   | Readonly<{ status: "completed"; value: SearchPage }>
-  | Readonly<{ status: "invalid_input" | "invalid_state" | "cursor_expired" }>
+  | Readonly<{ status: "invalid_input" | "invalid_state" | "cursor_expired" | "stale" }>
 >;
 
 export function createTitleSearch(ports: Readonly<{ transactions: SearchUnitOfWork }>) {
@@ -36,6 +36,9 @@ export function createTitleSearch(ports: Readonly<{ transactions: SearchUnitOfWo
         const normalized = normalizeSearchInput(input, generation);
         if (normalized.status !== "completed") {
           return normalized;
+        }
+        if (await repository.projectionStale(generation, now)) {
+          return { status: "stale" } as const;
         }
         const rows = await repository.find(normalized.value, now);
         if (rows.length > normalized.value.first + 1) {

@@ -10,20 +10,34 @@
     "dist/src",
     "migrations/*.sql"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
+    "start": "node ./dist/src/main.js",
+    "migrate:local": "node ./dist/src/migrate-local.js",
     "test": "node --test ./dist/test/*.test.js",
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
   "dependencies": {
+    "@apollo/server": "5.5.1",
+    "@apollo/subgraph": "2.14.4",
+    "@as-integrations/express5": "1.1.2",
     "@aster/broker-kafka": "workspace:*",
     "@aster/event-delivery": "workspace:*",
+    "@aster/http-express": "workspace:*",
     "@aster/postgres": "workspace:*",
     "@aster/runtime": "workspace:*",
     "@aster/telemetry": "workspace:*",
+    "graphql": "16.14.2",
     "pg": "8.23.0"
   },
   "devDependencies": {
+    "@apollo/composition": "2.14.4",
     "@types/node": "24.13.3",
     "@types/pg": "8.23.1",
     "typescript": "6.0.3"

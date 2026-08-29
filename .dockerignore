@@ -2,6 +2,7 @@
 !package.json
 !pnpm-lock.yaml
 !pnpm-workspace.yaml
+!patches/kafkajs@2.2.4.patch
 !tsconfig.base.json
 !turbo.json
 !LICENSE
@@ -29,6 +30,11 @@
 !services/engagement/src/**/*.ts
 !services/engagement/test/**/*.ts
 !services/engagement/migrations/*.sql
+!services/discovery/package.json
+!services/discovery/tsconfig.json
+!services/discovery/src/**/*.ts
+!services/discovery/test/**/*.ts
+!services/discovery/migrations/*.sql
 !workers/media/package.json
 !workers/media/tsconfig.json
 !workers/media/src/**/*.ts
@@ -66,6 +72,7 @@
 !infra/docker/catalog.Dockerfile
 !infra/docker/playback.Dockerfile
 !infra/docker/engagement.Dockerfile
+!infra/docker/discovery.Dockerfile
 !infra/docker/web.Dockerfile
 !infra/docker/media-fixture.Dockerfile
 !infra/docker/collector.Dockerfile

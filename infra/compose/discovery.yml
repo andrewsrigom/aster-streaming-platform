@@ -1,0 +1,102 @@
+# Opt-in Discovery runtime. Requires compose.yml and events.yml.
+services:
+  router:
+    depends_on:
+      discovery:
+        condition: service_healthy
+
+  catalog:
+    environment:
+      ASTER_CATALOG_DISCOVERY_READ_ENABLED: "true"
+      ASTER_CATALOG_DISCOVERY_READER_DATABASE_URL: postgresql://aster_catalog_discovery_reader_local@postgres:5432/aster
+      ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD: aster-test-only
+    volumes:
+      - discovery-catalog-trust:/run/aster-discovery-catalog:ro
+
+  discovery:
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/discovery.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      discovery-init:
+        condition: service_completed_successfully
+      router-trust-init:
+        condition: service_completed_successfully
+      catalog:
+        condition: service_healthy
+      broker-init:
+        condition: service_completed_successfully
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_DISCOVERY_LOCAL_ENABLED: "true"
+      ASTER_DISCOVERY_HTTP_HOST: 0.0.0.0
+      ASTER_DISCOVERY_HTTP_PORT: "3500"
+      ASTER_DISCOVERY_DATABASE_URL: postgresql://aster_discovery_local@postgres:5432/aster
+      ASTER_DISCOVERY_DATABASE_PASSWORD: aster-test-only
+      ASTER_DISCOVERY_PROJECTOR_DATABASE_URL: postgresql://aster_discovery_projector_local@postgres:5432/aster
+      ASTER_DISCOVERY_PROJECTOR_DATABASE_PASSWORD: aster-test-only
+      ASTER_ROUTER_TRUST_ENABLED: "true"
+      ASTER_EVENTS_ENABLED: "true"
+    volumes:
+      - discovery-router-trust:/run/aster-router:ro
+      - discovery-catalog-trust:/run/aster-discovery-catalog:ro
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 15s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 384M
+          pids: 64
+
+  discovery-init:
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+    profiles: [runtime, integration, observability, full]
+    build:
+      context: ../..
+      dockerfile: infra/docker/discovery.Dockerfile
+    labels:
+      com.aster.environment: local
+      com.aster.scope: platform
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASTER_ENVIRONMENT: local
+      ASTER_DISCOVERY_MIGRATION_ENABLED: "true"
+      ASTER_DISCOVERY_ADMIN_DATABASE_URL: postgresql://aster@postgres:5432/aster
+      ASTER_DISCOVERY_ADMIN_DATABASE_PASSWORD: aster-test-only
+    command: ["./dist/src/migrate-local.js"]
+    networks: [platform]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      disable: true
+    stop_grace_period: 15s
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+          pids: 32

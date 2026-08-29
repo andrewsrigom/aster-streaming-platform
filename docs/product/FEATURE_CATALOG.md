@@ -10,26 +10,26 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Local accounts and sessions | Identity and Profiles | 02 | RELEASED |
 | Multiple viewer profiles | Identity and Profiles | 02 | RELEASED |
 | Profile authorization | Identity and Profiles | 02 | RELEASED |
-| Rights-aware title lifecycle | Catalog | 03 | PLANNED |
-| Public catalog browse | Catalog | 03 | PLANNED |
-| Attribution page | Catalog | 03 | PLANNED |
-| Federated supergraph | Platform | 04 | PLANNED |
-| Entity extension across contexts | Platform | 04 | PLANNED |
-| SSR catalog and title pages | Web | 05 | PLANNED |
-| Apollo cache hydration | Web | 05 | PLANNED |
-| Redux player interaction state | Web | 05 | PLANNED |
-| Source acquisition | Media | 06 | PLANNED |
-| FFmpeg probe and transcode | Media | 06 | PLANNED |
-| HLS packaging and validation | Media | 06 | PLANNED |
-| Atomic publication | Catalog and Media | 06 | PLANNED |
-| Playback session | Playback | 07 | PLANNED |
-| Accessible adaptive player | Web and Playback | 07 | PLANNED |
-| Playback experience telemetry | Playback | 07 | PLANNED |
-| Monotonic progress | Engagement | 08 | PLANNED |
-| Continue-watching | Engagement | 08 | PLANNED |
-| Watchlist and history | Engagement | 08 | PLANNED |
+| Rights-aware title lifecycle | Catalog | 03 | RELEASED |
+| Public catalog browse | Catalog | 03 | RELEASED |
+| Attribution page | Catalog | 03 | RELEASED |
+| Federated supergraph | Platform | 04 | RELEASED |
+| Entity extension across contexts | Platform | 04 | RELEASED |
+| SSR catalog and title pages | Web | 05 | RELEASED |
+| Apollo cache hydration | Web | 05 | RELEASED |
+| Redux player interaction state | Web | 05 | RELEASED |
+| Source acquisition | Media | 06 | RELEASED |
+| FFmpeg probe and transcode | Media | 06 | RELEASED |
+| HLS packaging and validation | Media | 06 | RELEASED |
+| Atomic publication | Catalog and Media | 06 | RELEASED |
+| Playback session | Playback | 07 | RELEASED |
+| Accessible adaptive player | Web and Playback | 07 | RELEASED |
+| Playback experience telemetry | Playback | 07 | RELEASED |
+| Monotonic progress | Engagement | 08 | RELEASED |
+| Continue-watching | Engagement | 08 | RELEASED |
+| Watchlist and history | Engagement | 08 | RELEASED |
 | Home rails | Discovery | 09 | PLANNED |
-| Search | Discovery | 09 | PLANNED |
+| Search | Discovery | 09 | IMPLEMENTED |
 | Degraded home fallbacks | Discovery | 09 | PLANNED |
 | Cache-aside and invalidation | Platform | 10 | PLANNED |
 | TTL jitter and stale serving | Platform | 10 | PLANNED |
@@ -49,4 +49,4 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
 
-Phase 02 release evidence: [local Identity API](../../evidence/phase-02/release.txt). Hosted identity remains planned. Catalog has [tested domain rules and durable rights history](../../services/catalog/README.md), but its operator/public capability is not yet implemented.
+Release status through Phase 08 is summarized in [current state](../../.ai/CURRENT_STATE.md) and linked phase evidence. Discovery search has implemented local tests and runtime acceptance in the active candidate; it becomes `RELEASED` only after protected merge and exact-main CI. Hosted identity and hosted release remain planned.

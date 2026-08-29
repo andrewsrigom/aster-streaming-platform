@@ -20,7 +20,7 @@ const rows: readonly SearchRow[] = [
   { titleId: id(3), rank: 700000, sourceVersion: 1, indexedAt: now, visibleUntil: now + 50 },
 ];
 
-function fixture(found: readonly SearchRow[] = rows) {
+function fixture(found: readonly SearchRow[] = rows, stale = false) {
   const state = { transactions: 0, searches: 0, input: undefined as unknown };
   const transactions: SearchUnitOfWork = {
     async run(work, signal) {
@@ -31,6 +31,7 @@ function fixture(found: readonly SearchRow[] = rows) {
             status: "completed",
             value: await work({
               activeGeneration: () => Promise.resolve(generation),
+              projectionStale: () => Promise.resolve(stale),
               find(value) {
                 state.searches++;
                 state.input = value;
@@ -66,6 +67,15 @@ test("returns a bounded page with query-bound cursors and source freshness", asy
     first: 2,
     after: null,
   });
+});
+
+test("an entirely expired public projection is explicit stale state, not an empty success", async () => {
+  const f = fixture([], true);
+  assert.deepEqual(await f.search.execute(input(), now, AbortSignal.timeout(1000)), {
+    status: "completed",
+    value: { status: "stale" },
+  });
+  assert.equal(f.state.searches, 0);
 });
 
 test("cursor from a replaced generation expires without querying mixed rows", async () => {

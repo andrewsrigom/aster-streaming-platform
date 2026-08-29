@@ -232,6 +232,10 @@ export function validateWorkflowPolicy(
     [/node \.\/tools\/verify-ci-policy\.ts/u, "CI policy check is required"],
     [/node \.\/tools\/verify-local-platform\.mjs/u, "local-platform policy check is required"],
     [/\.\/tools\/verify-local-platform\.test\.mjs/u, "local-platform policy tests are required"],
+    [
+      /\.\/tools\/verify-discovery-runtime\.test\.mjs/u,
+      "Discovery runtime policy tests are required",
+    ],
     [/\.\/tools\/reset-local-platform\.test\.mjs/u, "local-reset adverse tests are required"],
     [/pnpm install --frozen-lockfile/u, "frozen installation is required"],
     [/pnpm check:source/u, "non-duplicated source gate is required"],
@@ -266,6 +270,10 @@ export function validateWorkflowPolicy(
     [
       /- name: Prove Engagement persistence and federated progress\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 20\s+run: \|\s+pnpm engagement:integration\s+pnpm engagement:runtime/u,
       "Engagement changes require bounded real persistence and owner-authorized progress acceptance",
+    ],
+    [
+      /- name: Prove Discovery projection and federated search\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: \|\s+pnpm discovery:integration\s+pnpm discovery:runtime/u,
+      "Discovery changes require bounded real projection and federated search acceptance",
     ],
     [
       /- name: Prove Docker-only playable demo\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15/u,

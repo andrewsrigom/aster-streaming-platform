@@ -13,6 +13,8 @@
   "scripts": {
     "playback:integration": "turbo run build --filter=@aster/playback && node ./tools/run-playback-integration.mjs",
     "engagement:integration": "turbo run build --filter=@aster/engagement && node ./tools/run-engagement-integration.mjs && node ./tools/run-engagement-integration.mjs --watchlist && node ./tools/run-engagement-integration.mjs --fields && node ./tools/run-engagement-integration.mjs --events",
+    "discovery:integration": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-integration.mjs",
+    "discovery:runtime": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-runtime.mjs",
     "engagement:runtime": "turbo run build --filter=@aster/engagement && node ./tools/run-engagement-runtime.mjs",
     "playback:runtime": "turbo run build --filter=@aster/playback && node ./tools/run-playback-runtime.mjs",
     "router:demo": "node ./tools/verify-local-router.mjs",
@@ -68,7 +70,7 @@
     "logging:test": "turbo run test --filter=@aster/runtime",
     "platform:check": "node ./tools/verify-local-platform.mjs",
     "platform:compose:check": "docker compose -f ./infra/compose/compose.yml config --quiet",
-    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs",
+    "platform:test": "node --test ./tools/verify-local-platform.test.mjs ./tools/verify-catalog-runtime.test.mjs ./tools/verify-playback-runtime.test.mjs ./tools/verify-engagement-runtime.test.mjs ./tools/verify-discovery-runtime.test.mjs ./tools/verify-router-runtime.test.mjs ./tools/reset-local-platform.test.mjs ./tools/media/*.test.mjs ./tools/run-media-candidate.test.mjs ./tools/media-origin.test.mjs",
     "security:check": "node ./tools/scan-secrets.ts --all",
     "security:staged": "node ./tools/scan-secrets.ts --staged",
     "security:test": "node --test ./tools/scan-secrets.test.ts",
