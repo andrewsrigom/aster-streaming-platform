@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 08 — Progress, History, Watchlist, and Continue-Watching**
 
-Status: **IN_PROGRESS**, P08-R11 on feat/p08-player-progress, checkpoint533368d5b163d32f6ba008ad410c19c17110c350 plus accepted browser corrections, unpublished; base main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc. PR30 and R09/R10/R12 are DONE through protected/confirmation/exact main push33212852513. All historical checkpoints were restored once and must never be reapplied. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P08-R11 on fix/p08-browser-ack, PR32. Protected run33225822813 on dc571bd passed every source, owner, platform, immutable replay and health boundary, then proved Chromium can discard the selected progress body even when read inside the response event. The active local correction leaves response bodies to the application and gates navigation on exact transport selection plus its rendered durable confirmation under the shared12-second deadline. This concrete blocker is not WAITING_EXTERNAL. P09-R01 is READY, preserved unpublished through6ca3703 on feat/p09-discovery-search; historical stashes are superseded. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-R11's [real personalized demo](../evidence/phase-08/player-demo.md) passes save/resume exactly2seconds, history/completion, watchlist, keyboard focus, profile isolation, optional-save failure with continuing media, sign-out and accessibility. Anonymous media/caption/direct-origin proof also passes. Final supervisor exits0, confirms initializer/topic replay and removes only its21-container/13-volume/two-network fixture. Original Web/Router/origin restored; retained health200. Corrections preserve pending pause/seek priority and trim unused library selections within the unchanged page/cost limits.26 affected player tests,11 owner-cost tests,nine library tests and22 CI policy tests pass. Earlier70/70 source evidence remains supporting; refreshed coherent gate and own protected review/publication remain.
+R11 now uses one exact GraphQL response observer without competing for the application's response body. Profiles require rendered empty state; progress requires the exact sampled request plus `Progress saved`, which production exposes only after parsing a matching durable sequence. Later library reads continue proving exact resume/completion. Seven observer regressions, the full104-test Web suite, types, scoped lint and the43-task affected candidate pass locally. PR32 run33225822813 proves every preceding integration boundary and immutable replay; cleanup succeeded. The [seed replay correction](../evidence/phase-08/player-seed-replay.txt) remains valid. Protected acceptance remains required. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -24,11 +24,11 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase08 protected player release/phase closeout, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Phase08 exact post-merge closeout, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-The refreshed P08-R11 [candidate gate](../evidence/phase-08/player-demo-candidate.txt) passes70/70 with exact-main composition and31 matching source hashes. Publish one coherent candidate, obtain initial/confirmation review and protected CI, squash and confirm exact main push. Then audit Phase08 requirements and Phase09 prerequisites. Carry forward accepted local browser/media/SQL/Kafka evidence unless changed inputs invalidate it; no repeated host experiment.
+Publish the completed P08-R11 application-owned response confirmation in the same PR32, then require protected full demo/replay, exact-head review and exact main success. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased. Rebase and resume Phase09 from preserved commit6ca3703 after repair; no repeated host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 
@@ -40,7 +40,7 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 ## Current risks
 
-- One seed replay returned upload unavailable; later finite diagnostic, normal startup and replay verified identical bytes and recovered. Root cause is unproved. If fresh protected CI reproduces it, diagnose that bootstrap boundary; do not loop, reset retained data or attribute it to CPU. Details remain in player-demo.md.
+- Run33225822813 proves read-only seed replay and every earlier integration but disproves observer-owned body capture as a stable Chromium API boundary. The application-owned confirmation helper passes its affected gate but still needs protected browser proof. The exact earlier SDK/provider seed transport cause remains unproved. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event signing key; old finite migrators/readiness may reject new schema versions. Drain and use compatible binaries or roll forward.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.

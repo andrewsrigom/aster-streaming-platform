@@ -6,7 +6,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
-Current handoff: R11 now passes the real browser save/resume/library/watchlist/profile/failure/accessibility journey and Docker replay/cleanup. Fixed lost pause/seek flush priority, trimmed over-budget library selections without lowering page size and restored keyboard focus. Added the journey to the existing CI lane and documented opt-in startup/cleanup. Only three retained port owners were temporarily stopped and restored; all disposable resources were removed, retained health200. PR30/R09/R10/R12 remain DONE at squash7fe10ed; no historical checkpoint may be reapplied.
+Current handoff: PR32 observer head77eda41 passed both actual browser journeys and clean reviews, but CI33220547568 failed in final immutable-seed replay. Added bounded presence lookup/full-byte read-only reuse; only absence permits one conditional creation. P08-R11 remains IN_PROGRESS on fix/p08-browser-ack. P09 domain/ADR-0035/21 tests are preserved unpublished at0e31767 plus Catalog snapshot WIP stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32, READY after repair/rebase. Retained demo/media and host processes are unchanged.
 
 Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
 
@@ -16,7 +16,7 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 ### Evidence
 
-Current R11 checkpoint: [browser/demo evidence](../evidence/phase-08/player-demo.md) records anonymous1/1 in5124ms and personalized1/1 in23559ms, actual resume2seconds, zero axe violations and final supervisor exit0.26 affected player tests,11 owner-cost tests,nine library tests and22 CI policy tests pass; Web image771f9cb and [exact sources](../evidence/phase-08/player-demo-source.sha256) identify the accepted runtime. Initial cost/flush failures and recovered seed upload rejection remain recorded, not relabelled. Earlier70/70 gate is supporting evidence; refreshed candidate gate remains. No unchanged CPU, retained-film or Kafka experiment.
+Current R11 correction: nine seed regressions/two file tests pass; scoped lint passes after fixing test braces/method binding. One existing real media-origin fixture passed first create, read-only replay with zero additional PUTs, corruption refusal, immutable headers and all existing access/compensation checks; exact cleanup reports zero. [Seed evidence](../evidence/phase-08/player-seed-replay.txt) retains the initial red regression and original CI failure. Earlier five observer regressions,26 player tests,14/14 gate and both actual PR32 browser passes remain supporting. No SQL, Compose, dependency, retained-film or host change.
 
 Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
 
@@ -24,7 +24,7 @@ R08 protected/main gates pass. Native pinned tooling and its executable pnpm shi
 
 ### Next action
 
-Current: P08-R11 [refreshed source gate](../evidence/phase-08/player-demo-candidate.txt) passes70/70,45 cached,1m54.807s with exact-main composition and31 source hashes. Next: protected review/CI/publication, then Phase08 closeout and Phase09 eligibility. Local browser/demo acceptance is complete; do not repeat it without an invalidating change. The following prior checkpoint remains historical:
+Current: affected gate passes43/43 (24 cached,1m48.49s); publish the seed correction in PR32, refresh review for its bootstrap boundary, then require protected full demo/replay and exact main success. [Prior protected evidence](../evidence/phase-08/player-release.txt) remains supporting, not a successful main claim. Resume Phase09 after repair/rebase and apply only its exact new stash once. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 
@@ -2185,3 +2185,30 @@ Reconcile Phase 00 requirement traceability and audit the full delivery plan bef
 ### Next action
 
 Execute Phase 00 beginning with source-code license selection.
+# 2026-08-28 — Response-event progress acknowledgement capture
+
+- Preserved P09 private Catalog transport in stash `3c62b4289287b3ac799d498daf1577bbbf4eaf30` after 21 focused transport tests and scoped lint passed, then returned to the failing predecessor.
+- Inspected protected PR32 run33222164370: all source/platform/Catalog/Playback/Engagement and immutable replay stages passed; the personalized browser failed because Chromium discarded the selected response body before the post-`waitForResponse` `json()` call.
+- Replaced the waiter continuation with one purpose-filtered Page response listener that starts the selected body read inside the event turn and removes itself before validation.
+- Added deterministic body-start ordering coverage. Full Web tests pass103/103; type generation, strict TypeScript, scoped lint and the43/43 affected gate pass. Protected acceptance remains pending.
+
+# 2026-08-28 — Shared Profiles and progress body capture
+
+- Inspected exact-head PR32 run33223692248: every source, platform, owner, immutable replay and health boundary passed; the personalized browser failed only because its separate Profiles body was consumed after UI work and Chromium discarded it.
+- Preserved the rebased P09 Catalog private-runtime work in stash bc626511ae49d0bcb553c734a5278d835c277be5 before returning to the predecessor.
+- Centralized exact GraphQL response selection and event-turn body capture for Profiles and progress without changing production behavior, retries or acceptance assertions.
+- Full Web tests pass104/104, including seven observer regressions; type generation, strict TypeScript, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.
+
+# 2026-08-28 — Selected-body deadline correction
+
+- Accepted review5056138342's P1 finding: exact6c78d2a cleared the12-second timer after response selection instead of after body settlement.
+- Preserved rebased P09 private runtime in stash 01b1dad9bbda289976d137b1a20af9f7cf102add before returning to the predecessor.
+- Kept the original response deadline active through selected body success/failure and added a deterministic stalled-body regression.
+- Full Web tests pass105/105, including eight observer regressions; strict types, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.
+
+Application-owned browser response confirmation, 2026-08-28:
+
+- Inspected exact-head PR32 run33225822813: source quality, real platform, Catalog, Playback, Engagement, immutable seed replay and health passed; only the first personalized progress acknowledgement failed because Chromium discarded its body despite `response.json()` starting inside the response event.
+- Removed body consumption from the acceptance observer. It now selects the exact transport request, then waits within the same12-second deadline for state rendered after the application's GraphQL client parses and accepts the response.
+- Profiles require rendered empty state before mutation. Progress requires the exact sampled request plus the production `Progress saved` state; subsequent owner reads still prove resume/completion and isolation.
+- Full Web tests pass104/104, including seven observer regressions; strict types and scoped lint pass. The43-task affected candidate passed by checkpoint:42 executable tasks remained green, then the sole documentation heading-limit failure was compacted and documentation/state/format rechecks passed. P09 is safely committed through6ca3703; old P09 stashes are superseded. Protected acceptance remains pending.

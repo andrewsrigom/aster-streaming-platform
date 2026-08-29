@@ -1,0 +1,37 @@
+P08-R11 protected release checkpoint — 2026-08-28
+
+PR: https://github.com/andrewsrigom/aster-streaming-platform/pull/31
+Reviewed head: 3bd7f547e81c3e0019332558d6e469bf41ea915b
+Clean initial review: issuecomment-5458553590
+Clean confirmation: issuecomment-5458594360
+No inline review threads remained.
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33217783905
+Status: completed; conclusion: success; exact reviewed head above.
+Source job: 99005227222; frozen install/source, real platform, Catalog, Playback,
+Engagement, anonymous/personalized playable demo and dependency audit all passed.
+One known moderate advisory remains, no high/critical failure.
+Expected-head squash succeeded: e20a7ded16d4867a4a7d29e9b4913ce2b6ea8ee2.
+Exact main push33218775702 failed in personalized browser acknowledgement observation:
+Network.getResponseBody reported a body unavailable after navigation.
+Source job99008227199 passed all preceding stages; scoped fixture cleanup succeeded.
+Correction is required; no complete phase-release claim yet.
+Retained Phase07 demo/data untouched. No CI retries or duplicate candidate pipelines.
+
+Selected raw source-job output (full log inspected via GitHub):
+2026-08-28T22:53:15.2580230Z {"event":"event_consumer_redelivery","deliveries":2,"durableEffects":1,"sameOffsetAndBytes":true}
+2026-08-28T22:53:31.7305690Z {"event":"event_broker_recovered","pending":0,"durableProgress":"unchanged","backgroundRetry":"completed","signedDeletionConsumer":"recovered"}
+2026-08-28T22:53:32.1979615Z {"event":"event_owner_shutdown","owner":"identity","running":false,"oomKilled":false,"exitCode":143}
+2026-08-28T22:53:32.2138652Z {"event":"event_owner_shutdown","owner":"catalog","running":false,"oomKilled":false,"exitCode":143}
+2026-08-28T22:53:32.2284232Z {"event":"event_owner_shutdown","owner":"engagement","running":false,"oomKilled":false,"exitCode":143}
+2026-08-28T22:53:34.6735018Z {"event":"engagement_runtime_fixture_cleaned","remaining":0,"retainedRuntimeTouched":false}
+2026-08-28T22:55:13.3897454Z   1 passed (5.6s)
+2026-08-28T22:55:44.9188346Z playable-seed-1  | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
+2026-08-28T22:55:45.0395247Z playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+2026-08-28T22:56:32.9858092Z   1 passed (15.7s)
+2026-08-28T22:56:55.6725388Z playable-seed-1  | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
+2026-08-28T22:56:55.8231400Z playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+2026-08-28T22:56:55.9543467Z playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+2026-08-28T22:56:55.9545346Z playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+2026-08-28T22:56:55.9546900Z playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
+2026-08-28T22:56:55.9568184Z playable-seed-1      | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
+2026-08-28T22:56:55.9576879Z playable-seed-1      | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}

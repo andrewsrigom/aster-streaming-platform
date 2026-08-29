@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { waitForGraphqlConfirmation, waitForSavedProgress } from "../support/saved-progress.ts";
 
 test.skip(
   process.env["ASTER_ENGAGEMENT_DEMO"] !== "true",
@@ -20,37 +21,6 @@ async function createProfile(page: Page, name: string) {
   );
   await dialog.getByRole("button", { name: "Close profiles" }).click();
 }
-function savedResponse(page: Page, position?: number, status?: string) {
-  return page.waitForResponse(
-    async (response) => {
-      if (
-        response.url() !== endpoint ||
-        response.request().method() !== "POST" ||
-        (response.request().postDataJSON() as { operationName?: string }).operationName !==
-          "RecordProgress"
-      ) {
-        return false;
-      }
-      const result = (await response.json()) as {
-        data?: {
-          recordProgress?: {
-            code: string;
-            progress?: { positionMs: number; status: string };
-          };
-        };
-      };
-      const value = result.data?.recordProgress;
-      return (
-        value?.code === "COMPLETED" &&
-        !!value.progress &&
-        (position === undefined || Math.abs(value.progress.positionMs - position) < 150) &&
-        (status === undefined || value.progress.status === status)
-      );
-    },
-    { timeout: 12000 },
-  );
-}
-
 test("real profile progress, resume, library, watchlist and optional-save failure", async ({
   page,
   context,
@@ -65,22 +35,20 @@ test("real profile progress, resume, library, watchlist and optional-save failur
   const html = await initial?.text();
   expect(html).not.toMatch(/profileId|positionMs|aster_local_session=/u);
   await page.getByRole("button", { name: "Choose a profile", exact: true }).click();
-  const before = page.waitForResponse(
-    (response) =>
-      response.url() === endpoint &&
-      response.request().method() === "POST" &&
-      (response.request().postDataJSON() as { operationName?: string }).operationName ===
-        "Profiles",
-  );
+  const before = waitForGraphqlConfirmation(page, endpoint, {
+    matchesRequest: (body) =>
+      (body as { operationName?: string } | null)?.operationName === "Profiles",
+    confirm: async () => {
+      await expect(page.getByRole("button", { name: "Create profile", exact: true })).toBeVisible();
+      await expect(
+        page.getByText("No profiles yet. Create one with a fictional name.", { exact: true }),
+      ).toBeVisible();
+    },
+    successMessage: "Profiles request must succeed",
+    timeoutMessage: "Timed out waiting for the initial profile collection.",
+  });
   await page.getByRole("button", { name: "Start local session", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Create profile", exact: true })).toBeVisible();
-  const baseline = (await (await before).json()) as {
-    data?: { profiles: { profiles: unknown[] } };
-  };
-  expect(
-    baseline.data?.profiles.profiles,
-    "Refuse to modify a retained profile collection",
-  ).toEqual([]);
+  await before;
   await createProfile(page, "Journey One");
   await page.goto(watch);
   await page.getByRole("button", { name: "Start playback", exact: true }).press("Enter");
@@ -89,14 +57,18 @@ test("real profile progress, resume, library, watchlist and optional-save failur
   await expect
     .poll(() => video.evaluate((element) => (element as HTMLVideoElement).readyState))
     .toBeGreaterThan(1);
-  const saved = savedResponse(page, 2000, "IN_PROGRESS");
+  const saved = waitForSavedProgress(
+    page,
+    endpoint,
+    { titleId, positionMs: 2000, status: "IN_PROGRESS" },
+    () => expect(page.getByText("Journey One: Progress saved.", { exact: true })).toBeVisible(),
+  );
   await video.evaluate((element) => {
     const media = element as HTMLVideoElement;
     media.pause();
     media.currentTime = 2;
   });
   await saved;
-  await expect(page.getByText("Journey One: Progress saved.", { exact: true })).toBeVisible();
   await page.goto("/library");
   await expect(page.getByRole("link", { name: "Resume title", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Viewing history", exact: true }).click();
@@ -139,7 +111,15 @@ test("real profile progress, resume, library, watchlist and optional-save failur
     .toBeCloseTo(2, 1);
   const resumeSeekSeconds = Number(await video.getAttribute("data-resume-seek-seconds"));
   await page.screenshot({ path: info.outputPath("resumed-player.png"), fullPage: true });
-  const completion = savedResponse(page, undefined, "COMPLETED");
+  const completionPosition = await video.evaluate((element) =>
+    Math.round(((element as HTMLVideoElement).duration - 0.1) * 1000),
+  );
+  const completion = waitForSavedProgress(
+    page,
+    endpoint,
+    { titleId, positionMs: completionPosition, status: "COMPLETED" },
+    () => expect(page.getByText("Journey One: Progress saved.", { exact: true })).toBeVisible(),
+  );
   await video.evaluate(async (element) => {
     const media = element as HTMLVideoElement;
     media.currentTime = media.duration - 0.1;

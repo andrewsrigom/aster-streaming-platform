@@ -18,15 +18,26 @@ import { assertPlayableSeedApproval, attestPlayableSeed } from "./playable-attes
 import { readGeneratedObject, verifyGeneratedDirectory } from "./playable-files.js";
 import { localMediaStorage, prepareLocalMediaStorage } from "../media/local-storage.js";
 
-async function putImmutable(
-  storage: AsterObjectStorageAdapter,
+export async function ensurePlayableObject(
+  storage: Pick<AsterObjectStorageAdapter, "head" | "read" | "write">,
   key: string,
   bytes: Buffer,
   contentType: string,
   signal: AbortSignal,
   publiclyCacheable = false,
 ) {
+  signal.throwIfAborted();
   const sha256 = createHash("sha256").update(bytes).digest("hex");
+  const existing = await storage.head({ key }, signal);
+  signal.throwIfAborted();
+  if (existing.status === "completed") {
+    // Replay needs integrity verification, not another conditional streaming PUT.
+    await verifyCandidateObject(storage, key, { bytes: bytes.length, sha256 }, signal);
+    return;
+  }
+  if (existing.status !== "not_found") {
+    throw new Error("Playable seed object lookup unavailable.");
+  }
   const source = Readable.from([bytes]);
   try {
     const result = await storage.write(
@@ -85,7 +96,7 @@ export function createPlayableSeedPublisher(
       if (!original) {
         throw new Error("Missing generated source.");
       }
-      await putImmutable(
+      await ensurePlayableObject(
         originals,
         "originals/" + seed.checksum + "/source.mkv",
         await readGeneratedObject(directory, original, signal),
@@ -96,7 +107,7 @@ export function createPlayableSeedPublisher(
       if (reportBytes.length > 16384) {
         throw new Error("Generated report too large.");
       }
-      await putImmutable(
+      await ensurePlayableObject(
         originals,
         "technical-fixtures/" + createHash("sha256").update(reportBytes).digest("hex") + ".json",
         reportBytes,
@@ -108,7 +119,7 @@ export function createPlayableSeedPublisher(
         .sort((a, b) => Number(a.name === "master.m3u8") - Number(b.name === "master.m3u8"));
       for (const file of files) {
         signal.throwIfAborted();
-        await putImmutable(
+        await ensurePlayableObject(
           storage,
           seed.prefix + file.name,
           await readGeneratedObject(directory, file, signal),

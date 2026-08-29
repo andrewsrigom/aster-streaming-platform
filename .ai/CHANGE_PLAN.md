@@ -1,84 +1,85 @@
-# Work Item: Honest player progress, resume and owned library
+# Work Item: Complete browser acknowledgement and immutable demo replay
 
 - Status: IN_PROGRESS
-- Owner: Web interaction; Engagement owns durable progress and membership
+- Owner: Web acceptance harness and Catalog local bootstrap; Engagement owns durable progress
 - Phase: 08
-- Requirement IDs: P08-R11; supports ENG-R01–ENG-R06 and Phase08 closeout
+- Requirement IDs: P08-R11
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-A viewer selects an owned profile, watches and resumes a title, sees truthful save status and bounded continue-watching/history/watchlist. Anonymous playback remains usable without personalization.
+The browser journey observes durable save before navigation, and replay verifies existing immutable media without uploading it again.
 
 ## Current behavior
 
-Predecessor PR30 is released at main7fe10ed9251c5e2c9d6f08d32ce3d93a29f627cc, exact push33212852513 successful. R11 checkpoint533368d plus browser corrections passes real personalized save/resume/library/failure/focus/accessibility and disposable startup/replay/cleanup. The refreshed candidate gate passes70/70 with exact-main composition and31 matching source hashes. Own protected release remains. Retained Phase07 demo restored intact; no historical checkpoint may be reapplied.
+PR31 passed protected CI33217783905 and two clean reviews, then merged as e20a7de. Exact main33218775702 failed only in the personalized browser helper: Network.getResponseBody reported a body unavailable after navigation. The asynchronous waitForResponse predicate can read several bodies concurrently. All preceding source, SQL, Kafka and anonymous-browser stages passed; cleanup succeeded. This failed-test blocker is not WAITING_EXTERNAL.
+
+The observer correction at 77eda41 passed both real browser journeys in PR32 run33220547568 and clean initial5458820383/confirmation5458880876 reviews. That run failed later in playable-seed replay: non-retryable streaming request and INITIALIZATION_REJECTED. The initializer conditionally uploads even existing objects before readback; a transport failure can prevent verification. The exact underlying SDK/provider failure is not proved. This reproduced bootstrap blocker remains IN_PROGRESS, not WAITING_EXTERNAL.
+
+The read-only seed correction at ea4c72f passed source quality, real platform, Catalog generation, Playback and Engagement integration, including immutable seed reuse. Protected run33222164370 then reproduced the browser failure in the first personalized progress acknowledgement: `response.json()` began only after `waitForResponse` resolved, and Chromium had already discarded the resource body. Source job99018340341 otherwise passed through the complete bootstrap; cleanup succeeded. This is the active blocker.
+
+The event-turn progress correction at d2ba88f passed its exact-head confirmation review without findings. Protected run33223692248 passed source, platform, Catalog, Playback, Engagement, immutable replay and service health, then failed before profile creation because the separate initial `Profiles` response body was also read only after UI work. Chromium reported the same discarded-resource error at engagement.spec.ts:47. The correction centralized exact GraphQL response selection and started both profile and progress body reads inside their response event.
+
+Review5056138342 on exact6c78d2a found one P1 deadline regression: selection removed the listener and cleared the timer before `response.json()` settled, so a stalled selected body could defer failure to Playwright's90-second test timeout. The correction keeps the original timer active through body success/failure; the same deadline now covers selection and consumption.
+
+Protected run33225822813 on exact dc571bd passed source quality, the real platform, Catalog, Playback, Engagement, immutable seed replay and health, then failed only in the personalized browser at the first selected progress body. Chromium can discard `Network.getResponseBody` even when the observer calls `response.json()` inside the response event. Reading application-owned bodies from the acceptance observer is therefore the active defect, not a timing gap.
+
+P09 domain, Catalog snapshot, private runtime and persisted projection work is preserved unpublished through6ca3703 on feat/p09-discovery-search. Historical P09 stashes are superseded and must not be reapplied. Retained demo remains Phase07.
 
 ## Proposed behavior
 
-Use the existing public supergraph, Apollo clients, Identity profile selection and client-only HLS player. Add a finite reporter, private profile-scoped Apollo state and a small library view. Keep the current player widgets and Redux preferences. No new service, dependency, durable browser queue or account flow.
+Select each intended GraphQL request synchronously by endpoint, method and exact request predicate, but leave its body exclusively owned by the application GraphQL client. After a successful selected transport response, require application-rendered confirmation inside the same original12-second deadline. The profile bootstrap renders the empty collection before creating anything. Progress selects the exact title/sample request and accepts `Progress saved` only because production code emits it after a matching `COMPLETED` sequence; subsequent owner reads prove exact resume or completed-history state. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
+
+For each generated seed object, use the existing bounded storage HEAD. Existing objects require complete size/SHA256 readback and no PUT; only not_found permits one conditional PUT followed by the same verification. Keep If-None-Match for a competing creator between HEAD and PUT. Other lookup/write failures reject without retry. No data replacement, uncertain-success fallback or shared-adapter rewrite.
 
 ## Boundaries
 
-Engagement remains PostgreSQL authority for sequence, thresholds, history and membership; Identity authorizes ownership, Catalog owns visibility, Playback owns sessions. Web owns only pending user intent and UI coordination. Affected paths: apps/web/features/engagement, features/playback, private profile notification, app/library, components/navigation, focused/browser tests, known operations and reviewed demo/cleanup integration. Domain/application service contracts and media bytes are unchanged.
+Affected: apps/web/test, services/catalog/src/infrastructure/fixtures/playable-publisher.ts, its focused tests and the existing real media-origin fixture. Catalog owns media/approval; S3 responses and bytes are untrusted. ADR-0029/0026 retain immutable publication, private originals, rights checks and compensation. No owner, schema, migration, public API, dependency or storage-adapter contract change.
 
 ## Invariants
 
-Only COMPLETED acknowledges a durable save. Seed sequence from a fresh owned read and increment across playback sessions, not from wall time. Uncertain requests retain their exact key/payload; never replace an uncertain intent with a new key. A profile change, sign-out, expiry or tab invalidation discards private caches and cancels old interactive work. Remote state stays in Apollo, not Redux. Optional save/read failure cannot block anonymous media.
+Read no browser response body from the observer. A failed selected transport or missing application confirmation fails. Resolve progress only after the exact request and non-optimistic UI confirmation; owner reads still prove position/status. Keep browser deadlines/zero retries and seed45-second/operation5-second budgets. Existing wrong, truncated, oversized or missing bytes reject; HEAD alone never proves integrity. Preserve content types/cache headers, children-before-master order, rights rechecks and publication barrier.
 
 ## Failure behavior
 
-One report in flight and one coalesced unsent sample, never an offline queue. Report every fifteen seconds while playing, with bounded pause/ended/visibility flushes and at most two attempts for the identical transient/indeterminate command. Stale/conflicting/denied outcomes stop that intent and require fresh state or explicit recovery, not automatic overwriting of another tab.
-
-Use four-second transport deadlines, bounded request/response bytes, no redirects and known operation documents. Visibility-hidden/pagehide may send one bounded keepalive request, but navigation or browser termination can lose it. Keepalive is an attempt, not a save acknowledgement; periodic saving remains primary. Cancellation/failure reports an honest finite UI status. Resume only IN_PROGRESS state after media metadata, clamped to actual duration; absent/completed/failed reads do not seek or claim resume.
+Missing response or rendered confirmation times out; transport/application rejection propagates. Lookup unavailable/cancelled/timed-out does not mean missing. A creation race accepts only completed/already_exists followed by correct readback. Unknown PUT results fail closed. No pipeline retry, host restart or retained-data reset.
 
 ## Data and contracts
 
-No new durable schema, event or owner trust credential. Add bounded client documents to known operations and verify composition. Scope private Apollo cache to the current profile/session generation, bound list pages to twenty and replace pages rather than grow indefinitely. Re-read current server state after session changes and before continued writing. No progress, cookie, signed URL or profile history in localStorage or local QoE output.
+No changes. Tests use fictional metadata and existing GraphQL payloads; private traces stay uncommitted.
 
 ## Security and privacy
 
-Credentialed requests target only the fixed local Router with existing Origin/CSRF policy. Browser profile IDs never authorize a save; owner-side checks remain. Validate enums, identifiers, bounds, response ownership and finite numbers before UI use. Do not hydrate private state into public SSR snapshots. A profile/session broadcast is an invalidation hint, never authority. Requests from an old generation must not refill a new profile cache.
+Do not record cookies, session data or media grants. Preserve production authorization/cost limits and retained runtime.
 
 ## Implementation steps
 
-1. Implement bounded typed operations/response validation and the pure reporter with deterministic adverse tests.
-2. Wire private Apollo/profile lifetime, HLS media events, resume and accessible save status.
-3. Add minimal continue-watching/history/watchlist controls and profile-aware navigation.
-4. Verify the optional demo by combining compose.yml, playable.yml and events.yml, targeting web identity engagement broker-init on a fresh explicitly named project. Inspect that merged model and exact cleanup first. Preserve the Phase07 web-only anonymous command and retained project; no new Compose abstraction is needed if the existing overlays satisfy the flow.
-5. Verify focused, browser, demo and failure acceptance; close Phase08 and check Phase09 prerequisites after ordered protected releases.
-
-Local acceptance uses the fresh project `aster-p08-demo-20260828`: inspected model has only project-named volumes and no host binds; no pre-existing containers or volumes were found. Build serially while the retained demo stays available. For the standard fixed-origin browser contract, stop only the inspected retained Web, Router and media-origin containers, without removing them or their data; restore these same containers after the disposable project is stopped. Test cleanup may remove only resources labelled with the exact fresh project, after rechecking ownership. Never apply `down --volumes` to `aster-p04-development`. Reuse the existing pinned Windows Playwright tooling and a fresh browser context; do not use a personal browser profile.
-
-Acceptance corrections: retain pause/seek flush priority while the preceding save/retry is active; omit unused library fields rather than shrink pages or relax cost protection; restore keyboard focus after watchlist refetch; confine Playwright artifacts to its own output directory. [Actual results and prior failures](../evidence/phase-08/player-demo.md) include the recovered seed upload failure without claiming its root cause. The final supervisor exits0 and removes only the inspected disposable fixture. CI now carries the same two-mode journey in its existing affected lane, with explicit topic completion and complete-model cleanup.
+1. Extract synchronous response selection followed by application-owned rendered confirmation.
+2. Prove unrelated-request isolation, confirmation-before-resolution ordering, shared deadline and adverse transport/application confirmation deterministically.
+3. Prove read-only replay, corruption refusal, cancellation and conditional creation races; extend the existing disposable real S3 fixture without encoding media.
+4. Run the affected candidate gate; update the same PR32 with one coherent correction and refreshed boundary review.
+5. Squash after green CI and confirmation; require exact main success before closing Phase08/resuming Phase09.
 
 ## Tests
 
-Unit: frequency/coalescing, same-key replay, uncertain/stale outcomes, sequence exhaustion, intentional backward seek, maximum duration, cancellation, profile swap, late response, unavailable/empty distinction, completed/no-progress resume and unload attempt without false success. Contract: strict bounded client documents, current schema and private cache policies. Browser: real save/pause/reload/resume, continue-watching completion/history, watchlist add/remove, profile isolation/sign-out, save outage with ongoing media, navigation and accessible status. Reuse current published/generated media; do not re-encode the retained film or repeat CPU experiments.
+Focused tests coordinate completion without arbitrary sleeps. Seven browser observer regressions cover exact request selection, application confirmation ordering, shared deadline and adverse transport/confirmation; the full Web suite passes104 tests with strict types and scoped lint. Existing reporter/client tests prove only a matching parsed `COMPLETED` sequence renders saved. Deterministic seed tests cover read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
 
 ## Evidence
 
-Iteration gate: cheapest affected node:test, TypeScript and scoped lint. Candidate gate: pnpm check:changed and exact-base composition. Acceptance: one coherent real browser/owner demo run, clean Docker-only startup/replay and failure journey; fixtures must use bounded resources and exact ownership cleanup. Raw artifacts under evidence/phase-08 with command, source, environment and limitations.
-
-Repeat heavyweight evidence only if later changes affect transport/lifetime/reporting, owner contracts, media wiring, packaging/bootstrap or cleanup. No unchanged Kafka/SQL/film/CPU repeat. One initial and one confirmation review; extend only for requirement, security/data, availability or public-contract blockers.
-
-Sources checked 2026-08-28: [keepalive](https://developer.mozilla.org/en-US/docs/Web/API/Request/keepalive), [visibility lifecycle](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event), [pagehide limitations](https://developer.mozilla.org/en-US/docs/Web/API/Window/pagehide_event). These do not promise delivery after browser termination. Follow repository frontend/GraphQL invariants over generic Next.js recommendations for direct DB access or server-action mutations.
+Iteration gate: focused browser tests, scoped lint and Web types. Candidate gate: canonical check:changed. Preserve run33225822813 and focused output in evidence/phase-08/player-seed-replay.txt. Existing SQL/Kafka/player/storage evidence remains supporting because their inputs do not change; protected full startup/replay remains required. Do not repeat heavy evidence for unrelated prose. The observer ownership correction changes the acceptance boundary and requires one refreshed confirmation review, stopping after concrete blockers are resolved.
 
 ## Rollback or recovery
 
-Restore compatible prior Web/Router artifacts and stop optional reporting/event activation, retaining all database/media state, pending events and permanent deletion guards. Keep the existing anonymous demo command available. Before any retained owner migration: inspected exact backup, drain, compatible images and rollback/roll-forward verification. No automatic WSL/Docker restart, global cleanup or unrelated-process action.
-
-If PR30 changes, preserve this dependent work, rebase onto its reviewed replacement and repeat affected gates before publication. Never reapply historical restored stashes.
+Revert the invalid correction while retaining the failed gate. Preserve Phase09 branch/stash, media, databases, keys, deletion fences and user applications. No database rollback or delete is needed.
 
 ## Documentation updates
 
-Player/library behavior, save/unload limitations, Docker-only demo and exact cleanup, Phase08 acceptance index and concise repository memory at candidate/closeout checkpoints.
+Phase08 audit/release evidence, concise state/queue/session/handoff and demo replay procedure at the correction checkpoint. The read-before-create optimization preserves ADR-0029; no architecture change.
 
 ## Completion checklist
 
-- [x] Reporter and private client tests pass
-- [x] Real resume/library/failure/accessibility journey passes
-- [x] Clean Docker-only demo and reviewed cleanup pass
-- [ ] Predecessor released; own protected review/CI/release passes
-- [ ] Phase08 acceptance and Phase09 prerequisites recorded
+- [x] Updated regression and affected gates pass (Web104/104, seven observer cases, types, scoped lint and43-task candidate pass)
+- [ ] Protected browser acceptance and reviews pass
+- [ ] Exact main succeeds and Phase08 closes
+- [ ] Phase09 rebased and resumed without lost work
