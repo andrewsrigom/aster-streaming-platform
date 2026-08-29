@@ -4,9 +4,9 @@ Status: local candidate; hosted review, protected CI and release pending
 
 Source and environment
 - Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
-- Reviewed implementation: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88.
-  Its only source change affects the observation emitted for a projection already
-  rejected above 16 KiB; PostgreSQL query and cache fence bytes are unchanged.
+- Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888.
+  Mixed-batch source coalescing changed, so the complete PostgreSQL fixture was
+  repeated even though its query and fence contract did not change.
 - WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
 - Docker Engine 26.0.0; disposable pinned PostgreSQL 18.6 fixture
 
@@ -23,7 +23,7 @@ Related public contract result
 
 Cleanup result
 {"event":"catalog_resources_closed","reservedSlots":0}
-{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":31009}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":26134}
 
 Workload
 - Ran the complete Catalog PostgreSQL integration fixture, including every prior

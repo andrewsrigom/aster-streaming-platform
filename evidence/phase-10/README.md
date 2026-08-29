@@ -29,6 +29,11 @@ Initial hosted review comment 3886890023 found one measurement boundary: an
 oversized projection bypassed storage but supplied a payload sample above the
 telemetry contract. Reviewed implementation
 `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` retains the bypass outcome without
-the invalid size sample. Catalog240/240 and the repeated73/73 affected gate pass;
-the recorded PostgreSQL/Redis experiments remain applicable because no fence,
-wire, TTL, lease, outage or concurrency behavior changed.
+the invalid size sample. Confirmation comments3886917843/44/46 then found a
+pre-rejection Redis GET allocation, whole-batch coalescing and the same metric
+boundary for corrupt reads. Corrected exact
+`2a9b86c221180f2df8caf74f66d9a2495c794888` performs a bounded Redis-side read,
+shares hot titles across mixed batches and preserves finite malformed telemetry.
+Catalog242/242, Redis17/17 and affected73/73 pass. Because Redis wire and
+coalescing behavior changed, both real Redis and PostgreSQL fixtures were
+repeated at that exact commit and pass with cleanup0.

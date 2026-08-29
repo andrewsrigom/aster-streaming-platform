@@ -51,6 +51,19 @@ Append new entries at the top. Keep entries factual and concise.
   implementation `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` omits that invalid
   dimension, retains the bypass counter and adds the actual oversized regression.
   Catalog240/240 and the repeated73/73 affected gate pass in55.132s.
+- Confirmation comments3886917843/44/46 found that Redis GET materialized a
+  hostile oversized value before rejecting it, mixed hot-title batches did not
+  share the common title, and oversized corruption could lose its malformed
+  observation. The findings affect memory, source amplification and required
+  telemetry, so one batched remediation and another confirmation are permitted.
+- Exact `2a9b86c221180f2df8caf74f66d9a2495c794888` uses an atomic Redis-side bounded
+  read, per-title coalescing identities with one refresh for each newly owned
+  batch, and malformed observations without invalid payload samples. Catalog
+  passes242/242, Redis17/17 and the exact affected gate passes73/73 in58.996s.
+- The exact real Redis rerun proves `boundedOversizedRead`,24-call cold
+  coalescing, cross-instance contention, expiry, outage fallback and cleanup0.
+  The exact PostgreSQL rerun proves compact fence fields4, exact rows2, stale
+  dispute rows0, closed resources and cleanup0.
 
 ### Evidence
 
@@ -86,8 +99,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the documentation-only review evidence, publish one PR37 update, resolve
-the finding and obtain confirmation plus corrected protected CI.
+Commit the documentation-only confirmation-remediation evidence, publish one
+PR37 update, resolve the three findings and obtain final confirmation plus
+corrected protected CI.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 

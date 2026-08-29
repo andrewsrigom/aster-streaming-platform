@@ -46,14 +46,17 @@ Redis timeout, malformed bytes, lease loss or eviction falls back to PostgreSQL
 without changing a public result. In-process coalescing and a tokenized Redis
 lease reduce duplicate refreshes; neither authorizes a write. Exact cache keys,
 TTL jitter, command/value limits, finite metrics, optional runtime composition and
-degraded readiness are implemented locally. Catalog240/240 and Redis17/17 pass.
-The disposable Redis8.10 proof compares24 uncached source reads with one
-coalesced cold refresh, observes a cross-instance lease contender, a3.75ms warm
-sample, expired-owner recovery, atomic compare-delete, negative reuse, outage
-bypass and cleanup0. Initial hosted review found that an oversized projection's
-bypass metric included a sample above the telemetry ceiling. Reviewed
-implementation `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` retains the outcome
-without the invalid dimension; Catalog240/240 and affected73/73 pass. Publication,
+degraded readiness are implemented locally. Initial review's oversized-write
+metric defect was corrected. Confirmation then found unbounded Redis GET
+materialization, whole-batch rather than per-title coalescing, and an oversized
+corruption metric that could be dropped. Corrected exact
+`2a9b86c221180f2df8caf74f66d9a2495c794888` performs the size decision inside
+Redis before GET, coalesces shared hot titles across mixed batches while retaining
+one batch for newly owned titles, and records malformed outcomes without invalid
+size samples. Catalog242/242, Redis17/17 and affected73/73 pass. Exact real Redis
+proves the bounded oversized read,24-call cold coalescing, cross-instance lease,
+expiry, outage fallback and cleanup0; real PostgreSQL again proves the four-field
+fence, exact source and stale-dispute rejection with cleanup0. Publication, final
 confirmation and protected acceptance remain pending.
 
 ## Historical Phase 09 corrections

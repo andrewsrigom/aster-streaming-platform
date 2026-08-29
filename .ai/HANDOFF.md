@@ -12,16 +12,21 @@ clean main. The selected slice caches only public-title entity reads. PostgreSQL
 must confirm the current visibility/version fence before positive reuse. Redis is
 optional, bounded and non-authoritative. Implementation, focused suites, real
 PostgreSQL/Redis behavior and the complete affected gate pass locally. Exact
-initial implementation was `a54c324`; hosted review comment3886890023's only
-finding is corrected at `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` with
-Catalog240/240 and affected73/73 passing. Candidate evidence is recorded under
-`evidence/phase-10`. Full Phase00–14 goal remains active.
+initial implementation was `a54c324`; initial review comment3886890023 was fixed
+at `3746868`. Confirmation comments3886917843/44/46 found unbounded Redis GET
+materialization, whole-batch coalescing and a dropped oversized-corruption metric.
+Exact `2a9b86c221180f2df8caf74f66d9a2495c794888` corrects all three. Catalog242/242,
+Redis17/17, affected73/73 and repeated real Redis/PostgreSQL fixtures pass.
+Candidate evidence is under `evidence/phase-10`. Full Phase00–14 goal remains
+active.
 
 ## Exact next actions
 
-1. Commit the documentation-only remediation evidence and publish one PR37 update.
-2. Reply to and resolve comment3886890023, then obtain one confirmation and the
-   corrected protected CI before squash merge and exact-main acceptance.
+1. Commit this documentation-only remediation evidence and publish one PR37
+   update.
+2. Reply to and resolve comments3886917843/44/46, then obtain one final
+   confirmation and corrected protected CI before squash merge and exact-main
+   acceptance.
 
 ## Evidence boundaries
 

@@ -6,7 +6,8 @@ Source
 - Branch: feat/p10-catalog-cache
 - Base: ffe8e243a03b721d551742acd37db9dd645869eb
 - Initial implementation: a54c324f7d2312851bd036f763362d84574bf826
-- Reviewed implementation: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88
+- Initial review correction: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88
+- Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -18,9 +19,9 @@ Environment
 Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
-- @aster/catalog tests: PASS, 240/240.
-- pnpm check:changed: PASS, 73 successful of 73 total, 56 cached,
-  55.132 seconds Turbo wall time on the reviewed implementation.
+- @aster/catalog tests: PASS, 242/242.
+- pnpm check:changed: PASS, 73 successful of 73 total, 52 cached,
+  58.996 seconds Turbo wall time on the confirmation correction.
 - git diff --check: PASS.
 - Documentation scan: PASS, 227 documents, 0 violations.
 - Repository-memory scan: PASS, 52 queue items, active P10-R01,
@@ -38,6 +39,11 @@ Workload and covered contract
   architecture, security, CI-policy and repository-policy gates.
 - A maximum-valid projection larger than 16 KiB bypasses storage, records the
   bypass outcome and does not submit an invalid payload histogram sample.
+- Redis decides whether a value exceeds 16 KiB before returning its bytes. Both
+  positive and negative corrupt oversized reads retain a malformed outcome
+  without an invalid size sample.
+- Concurrent mixed batches share each common hot title while newly owned titles
+  retain one bounded batch source load.
 
 Interpretation
 The local candidate satisfies the written static and focused behavior contract.
@@ -52,6 +58,16 @@ correctly rejects values above the 16-KiB cache ceiling. The reviewed
 implementation omits that non-cacheable size dimension, retains the bypass
 counter and adds the valid oversized projection regression. Catalog240/240 and
 the repeated73/73 affected gate pass.
+
+Confirmation review
+Hosted comments3886917843/44/46 found that Redis GET still materialized a value
+before the application rejected its size, coalescing used the whole batch as its
+identity, and corrupt oversized reads could again lose their malformed metric.
+The confirmation correction moves the bound into one Redis-side Lua operation,
+uses exact per-title identities while batching only newly owned titles, and omits
+only invalid size samples. Catalog242/242, Redis17/17 and the repeated73/73 gate
+pass. Real Redis and PostgreSQL evidence was repeated because wire and source
+coalescing behavior changed.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis

@@ -28,10 +28,13 @@ entity reads use a cache port and adapter while browse remains unchanged.
 PostgreSQL first returns a compact current-visibility fence; only an exact
 versioned cache entry for that fence is reusable. Misses load the source, populate
 a positive or valid-absence entry with deterministic TTL jitter, and use bounded
-process coalescing plus a tokenized Redis refresh lease. Local candidate evidence
-passes at reviewed implementation
-`374686844853a8d1f3cfb75f0b3d1ce7f1c08c88`; protected CI, confirmation and
-release remain pending.
+process coalescing plus a tokenized Redis refresh lease. Confirmation found that
+Redis reads were bounded only after materialization, mixed batches coalesced by
+the whole batch instead of each hot title, and oversized corruption could lose
+its malformed metric. Corrected implementation
+`2a9b86c221180f2df8caf74f66d9a2495c794888` uses one bounded Redis-side read,
+per-title process identities with batched new-title refresh, and finite malformed
+observations. Protected CI, final confirmation and release remain pending.
 
 ## Boundaries
 
@@ -120,10 +123,10 @@ release remain pending.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: local candidate PASS: Catalog240/240, Redis17/17,
+- Acceptance result: local candidate PASS: Catalog242/242, Redis17/17,
   telemetry11/11, affected73/73, real PostgreSQL fence/source/dispute and real
-  Redis expiry/concurrency/outage/cleanup. Hosted review, protected CI and release
-  remain pending.
+  Redis bounded read/expiry/concurrency/outage/cleanup. Hosted protected CI,
+  final confirmation and release remain pending.
 - Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
 - Candidate gate: `pnpm check:changed`, real dependency fixture and audit.
 - Heavyweight repeat triggers: Redis wire contract, cache envelope/fence query,
