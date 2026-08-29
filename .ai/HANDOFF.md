@@ -38,15 +38,20 @@ affected73/73 and repeated real Redis/PostgreSQL fixtures pass. Protected run
 33265036497 passed exact4afe12f, but review discussion3887201296 found shifted
 owner-inclusive waiter buckets. Exact6088bf8 counts only attached callers;
 Catalog245/245 and affected73/73 pass without changing the real cache boundary.
+Exact-head discussion3887242213 then found bounded control-byte replies destroyed
+the Redis connection before malformed cleanup. Exact997ef27 validates returned
+strings by type/byte bound only, keeps write inputs strict and lets Catalog delete
+the exact malformed key. Redis17/17, Catalog245/245, affected73/73 and repeated
+real Redis with `controlValueDeleted=true`/cleanup0 pass; PostgreSQL is unchanged.
 The separate
 `feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
 b65688b; do not publish it before predecessor release.
 
 ## Exact next actions
 
-1. Commit this documentation-only waiter-bucket evidence and publish one PR37
+1. Commit this documentation-only malformed-byte evidence and publish one PR37
    update.
-2. Reply to and resolve discussion3887201296, then obtain corrected
+2. Reply to and resolve discussion3887242213, then obtain corrected
    confirmation and protected CI before squash merge and exact-main acceptance.
 3. Rebase only dependent commits after b65688b onto released squash main, repeat
    affected gates, and resume P10-R04.

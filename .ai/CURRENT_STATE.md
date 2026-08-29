@@ -77,6 +77,12 @@ found that the refresh owner shifted every coalesced waiter bucket. Exact
 `6088bf8` counts only attached callers for fence and positive refreshes;
 Catalog245/245 and affected73/73 pass. Existing real fixtures remain applicable
 because cache bytes, Redis wire, visibility and coordination did not change.
+Exact-head review discussion3887242213 then found that a bounded control-byte
+value destroyed the Redis connection before Catalog malformed recovery. Exact
+`997ef27` validates only type/byte length for returned strings and keeps strict
+write validation. Redis17/17, Catalog245/245 and affected73/73 pass. Repeated real
+Redis proves `controlValueDeleted=true`, the connection remains usable and
+cleanup0; PostgreSQL behavior is unchanged.
 Corrected publication, confirmation and protected acceptance remain pending.
 The local Discovery dependent checkpoint `423c33d` is preserved separately and
 cannot publish until this predecessor releases.

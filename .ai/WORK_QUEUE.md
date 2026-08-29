@@ -29,7 +29,11 @@ the owner. Catalog245/245, affected73/73 and repeated Redis/PostgreSQL fixtures
 pass. Protected run33265036497 passed exact4afe12f, but review discussion
 3887201296 found owner-inclusive waiter buckets. Exact6088bf8 now counts only
 attached callers for both refresh paths; Catalog245/245 and affected73/73 pass.
-Publication and hosted acceptance remain.
+Review discussion3887242213 then found bounded control-byte reads destroyed the
+shared Redis connection before malformed cleanup. Exact997ef27 preserves the
+bounded reply for Catalog parsing/deletion. Redis17/17, Catalog245/245,
+affected73/73 and repeated real Redis with cleanup0 pass. Publication and hosted
+acceptance remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

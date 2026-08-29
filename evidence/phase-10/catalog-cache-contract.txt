@@ -12,6 +12,7 @@ Source
 - Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf
 - Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca
 - Waiter-bucket correction: 6088bf8b16c16df5b5a2b15d8a70e7809661ed64
+- Malformed-byte correction: 997ef270ba2fcb5c360c4593c1284fbdd1bb57ab
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -24,8 +25,8 @@ Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
 - @aster/catalog tests: PASS, 245/245.
-- pnpm check:changed: PASS, 73 successful of 73 total, 58 cached,
-  63.085 seconds Turbo wall time on the waiter-bucket correction.
+- pnpm check:changed: PASS, 73 successful of 73 total, 52 cached,
+  101.768 seconds Turbo wall time on the malformed-byte correction.
 - An earlier affected attempt hit one unrelated Identity terminal-fallback timing
   assertion under concurrent load. The focused Identity suite then passed147/147
   and the complete affected gate passed; no Identity source changed.
@@ -61,6 +62,9 @@ Workload and covered contract
   a visibility boundary execute independent owner decisions.
 - Redis wrong-type values are classified before size/read operations and enter
   the same exact-key malformed deletion path.
+- A bounded control-byte string is accepted as a Redis transport reply, rejected
+  by the strict cache-envelope parser and deleted without resetting the shared
+  connection or disrupting unrelated keys.
 - Negative envelopes include cache time. Missing, future and
   older-than-ten-second values are deleted and rechecked against the owner, so a
   missing or excessive Redis expiry cannot extend public absence.
@@ -123,6 +127,17 @@ both fence and positive refreshes. Catalog245/245 and the complete73/73 affected
 gate pass. The previous real Redis/PostgreSQL evidence remains applicable because
 the correction changes only finite telemetry classification, not cache bytes,
 Redis commands, source coordination, visibility or failure behavior.
+
+Malformed-byte review
+Exact-head review discussion3887242213 found that bounded strings containing a
+control byte were treated as invalid vendor replies, destroying the shared Redis
+connection before Catalog could classify and delete the malformed envelope.
+Correction997ef27 validates only returned type and byte length at the transport
+boundary while keeping write inputs strict. Redis17/17, Catalog245/245 and the
+complete73/73 affected gate pass. Repeated real Redis proves the bounded newline
+value is read, the connection remains ready, Catalog deletes/rebuilds the exact
+key and the disposable fixture cleans to zero. PostgreSQL was not repeated
+because no query, fence, visibility or source behavior changed.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis

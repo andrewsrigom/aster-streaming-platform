@@ -68,3 +68,9 @@ owner and shifted every measurement. Exact `6088bf8` counts only attached
 callers for both fence and positive refreshes. Catalog245/245 and affected73/73
 pass. Real fixtures were not repeated because cache bytes, Redis wire, source
 coordination, visibility and failure behavior are unchanged.
+
+Exact-head review discussion3887242213 then found that a bounded control-byte
+string was rejected as an invalid vendor reply before Catalog could delete the
+malformed envelope. Exact `997ef27` accepts only its bounded transport shape and
+leaves semantic parsing to Catalog. Redis17/17, Catalog245/245, affected73/73 and
+the repeated real Redis fixture pass; `controlValueDeleted=true` and cleanup0.

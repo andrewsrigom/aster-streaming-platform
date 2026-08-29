@@ -54,6 +54,11 @@ Protected run33265036497 then passed exact `4afe12f`, but exact-head review foun
 that coalescing telemetry included the refresh owner in its waiter count. Exact
 `6088bf8` classifies only callers attached behind the owner for both fence and
 positive refresh work; cache and visibility behavior are unchanged.
+Exact-head review discussion3887242213 then found that the Redis adapter rejected
+a bounded control-byte string as an invalid vendor reply and destroyed the
+connection before Catalog could delete it. Exact `997ef27` keeps type/byte bounds
+at transport, preserves strict write inputs and lets Catalog classify/delete the
+malformed envelope.
 
 ## Boundaries
 
@@ -145,10 +150,11 @@ positive refresh work; cache and visibility behavior are unchanged.
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
 - Acceptance result: corrected local candidate PASS: Catalog245/245,
-  Redis17/17, telemetry11/11, affected73/73 (58 cached, 63.085 seconds), real
+  Redis17/17, telemetry11/11, affected73/73 (52 cached, 101.768 seconds), real
   PostgreSQL fence/source/dispute and real Redis bounded/wrong-type/over-age
   reads, positive-plus-negative concurrency, exact attached-caller waiter
-  buckets, outage and cleanup. One earlier affected
+  buckets, bounded control-byte deletion without connection loss, outage and
+  cleanup. One earlier affected
   attempt hit an unrelated Identity terminal-fallback timing failure; its focused
   147/147 rerun and the next complete gate pass. Protected CI, corrected
   confirmation and release remain pending.

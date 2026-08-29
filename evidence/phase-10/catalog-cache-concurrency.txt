@@ -14,6 +14,9 @@ Source and environment
 - Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca.
   The same bounded Redis workload was repeated after negative-envelope recovery
   changed.
+- Malformed-byte correction: 997ef270ba2fcb5c360c4593c1284fbdd1bb57ab.
+  The same workload was repeated with a bounded control-byte value on the real
+  Redis wire.
 - WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
 - Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
 - One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
@@ -24,12 +27,12 @@ CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
 Measured result
 - Callers in each local burst: 24.
 - Direct uncached full source reads: 24.
-- Direct uncached burst sample: 15.78 ms.
+- Direct uncached burst sample: 16.66 ms.
 - Coalesced cold full source reads: 1.
 - Current-fence reads during cold burst: 1.
-- Coalesced cold burst sample: 41.11 ms.
+- Coalesced cold burst sample: 51.02 ms.
 - Warm full source reads: 0.
-- Warm sample: 5.39 ms.
+- Warm sample: 7.94 ms.
 - Cross-instance callers: 2.
 - Cross-instance full source reads: 1.
 - Cross-instance cold-negative callers: 2.

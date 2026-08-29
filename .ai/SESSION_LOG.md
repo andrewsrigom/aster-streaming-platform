@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-29 — Catalog waiter-bucket remediation
+## 2026-08-29 — Catalog final metric and malformed-byte remediations
 
 ### Completed
 
@@ -15,14 +15,22 @@ Append new entries at the top. Keep entries factual and concise.
 - Catalog245/245 and the affected73/73 gate pass with58 cached in63.085 seconds.
   Real Redis/PostgreSQL fixtures remain valid because no cache byte, command,
   source-coordination, visibility or failure boundary changed.
+- Review discussion3887242213 then found bounded control-byte replies destroyed
+  the Redis connection before Catalog malformed recovery. Exact997ef27 accepts
+  only the bounded returned type/bytes, keeps write inputs strict and lets the
+  envelope parser delete the exact key.
+- Redis17/17, Catalog245/245 and affected73/73 pass with52 cached in101.768
+  seconds. Repeated real Redis proves `controlValueDeleted=true`,11 finite metric
+  series and cleanup0; PostgreSQL behavior did not change.
 
 ### Evidence
 
 - `evidence/phase-10/catalog-cache-contract.txt`
+- `evidence/phase-10/catalog-cache-runtime.txt`
 
 ### Next action
 
-Publish one PR37 update, resolve discussion3887201296, require exact-head
+Publish one PR37 update, resolve discussion3887242213, require exact-head
 protected CI and confirmation, then release Catalog and rebase Discovery.
 
 ## 2026-08-29 — Catalog negative-cache age remediation

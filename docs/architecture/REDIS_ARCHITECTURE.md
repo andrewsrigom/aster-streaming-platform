@@ -47,7 +47,9 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
   expensive source operation; fence sharing also requires identical request time
   and rights-use policy
 - Corruption: the Redis-side read rejects oversized and non-string exact values
-  before returning bytes; Catalog deletes that malformed key best-effort
+  before returning bytes; bounded strings, including control bytes, reach the
+  strict Catalog envelope parser for exact malformed-key deletion without a
+  connection reset
 - Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
   coalescing and lease outcomes, bounded attached-caller bucket excluding the
   refresh owner, duration and payload bytes
