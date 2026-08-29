@@ -405,6 +405,9 @@ importers:
       '@aster/postgres':
         specifier: workspace:*
         version: link:../../packages/postgres
+      '@aster/redis':
+        specifier: workspace:*
+        version: link:../../packages/redis
       '@aster/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime

@@ -32,6 +32,7 @@
     "@aster/event-delivery": "workspace:*",
     "@aster/http-express": "workspace:*",
     "@aster/postgres": "workspace:*",
+    "@aster/redis": "workspace:*",
     "@aster/runtime": "workspace:*",
     "@aster/telemetry": "workspace:*",
     "graphql": "16.14.2",

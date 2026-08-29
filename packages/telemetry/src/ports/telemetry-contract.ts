@@ -77,11 +77,13 @@ export const ASTER_CACHE_FAMILIES = Object.freeze([
 
 export const ASTER_CACHE_OUTCOMES = Object.freeze([
   "hit",
+  "stale_hit",
   "negative_hit",
   "miss",
   "malformed",
   "bypass",
   "source_load",
+  "refresh_failed",
   "fence_changed",
   "coalesced",
   "lease_acquired",

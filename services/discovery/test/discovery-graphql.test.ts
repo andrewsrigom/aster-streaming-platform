@@ -83,6 +83,24 @@ function home() {
   return createHomeRails({ transactions });
 }
 
+function staleHome(): ReturnType<typeof createHomeRails> {
+  const source = home();
+  return Object.freeze({
+    async execute(input: unknown, at: number, signal: AbortSignal) {
+      const result = await source.execute(input, at, signal);
+      return result.status === "completed" && result.value.status === "completed"
+        ? {
+            status: "completed" as const,
+            value: {
+              status: "completed" as const,
+              value: Object.freeze({ ...result.value.value, status: "stale" as const }),
+            },
+          }
+        : result;
+    },
+  });
+}
+
 test("Discovery composes additively and contributes search plus Catalog Title references only", () => {
   const root = new URL("../../../../", import.meta.url);
   const previous = readFileSync(new URL("infra/router/generated/api.graphql", root), "utf8");
@@ -159,6 +177,28 @@ test("home resolver exposes explicit empty groups without fabricated titles", as
       genres: { code: "EMPTY", rails: [] },
     },
   });
+});
+
+test("home resolver preserves a bounded stale page with an explicit aggregate code", async () => {
+  const result = await graphql({
+    schema: createDiscoverySchema(),
+    source: HOME_RAILS,
+    variableValues: { first: 10 },
+    contextValue: createDiscoveryGraphqlContext(
+      search(),
+      staleHome(),
+      () => now,
+      AbortSignal.timeout(1_000),
+      id(98),
+    ),
+  });
+  assert.equal(result.errors, undefined);
+  const payload = (result.data as { homeRails: Record<string, unknown> }).homeRails;
+  assert.equal(payload["code"], "STALE");
+  assert.equal(payload["generation"], generation);
+  assert.equal(payload["generatedAt"], now);
+  assert.notEqual(payload["featured"], null);
+  assert.notEqual(payload["genres"], null);
 });
 
 test("search resolver returns bounded Title references and explicit freshness metadata", async () => {

@@ -68,11 +68,53 @@ test("public discovery projection preserves explicit empty results and strips ex
   assert.deepEqual(projectPublicData(search(), "SearchTitles"), search());
 });
 
+test("public discovery projection accepts a bounded stale home snapshot", () => {
+  const stale = { homeRails: { ...home().homeRails, code: "STALE" } };
+  assert.deepEqual(projectPublicData(stale, "HomePublic"), stale);
+  assert.deepEqual(
+    projectPublicData(
+      {
+        homeRails: {
+          code: "STALE",
+          correlationId: id(1),
+          generation: null,
+          generatedAt: null,
+          featured: null,
+          recentlyAdded: null,
+          trending: null,
+          genres: null,
+        },
+      },
+      "HomePublic",
+    ),
+    {
+      homeRails: {
+        code: "STALE",
+        correlationId: id(1),
+        generation: null,
+        generatedAt: null,
+        featured: null,
+        recentlyAdded: null,
+        trending: null,
+        genres: null,
+      },
+    },
+  );
+});
+
 test("discovery projection rejects malformed, unbounded and false-success responses", () => {
   const valid = home();
   for (const value of [
     { homeRails: { ...valid.homeRails, correlationId: "bad" } },
     { homeRails: { ...valid.homeRails, code: "UNAVAILABLE" } },
+    { homeRails: { ...valid.homeRails, code: "STALE", generation: null } },
+    {
+      homeRails: {
+        ...valid.homeRails,
+        code: "STALE",
+        featured: { code: "UNAVAILABLE", rail: null },
+      },
+    },
     {
       homeRails: {
         ...valid.homeRails,

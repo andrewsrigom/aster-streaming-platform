@@ -511,12 +511,17 @@ export function readHomePublicData(value: unknown): HomePublicData {
     throw new Error("Invalid home outcome.");
   }
   const correlationId = identifier(data["correlationId"]);
-  if (code !== "COMPLETED" && code !== "PARTIAL") {
-    if (
-      ["generation", "generatedAt", "featured", "recentlyAdded", "trending", "genres"].some(
-        (name) => data[name] !== null,
-      )
-    ) {
+  const pageFields = [
+    "generation",
+    "generatedAt",
+    "featured",
+    "recentlyAdded",
+    "trending",
+    "genres",
+  ];
+  const stalePage = code === "STALE" && pageFields.some((name) => data[name] !== null);
+  if (code !== "COMPLETED" && code !== "PARTIAL" && !stalePage) {
+    if (pageFields.some((name) => data[name] !== null)) {
       throw new Error("Invalid unavailable home result.");
     }
     return {
@@ -564,7 +569,16 @@ export function readHomePublicData(value: unknown): HomePublicData {
     ) ||
     genreCode === "COMPLETED" ||
     genreCode === "EMPTY";
-  if ((code === "PARTIAL") !== degraded || (code === "PARTIAL" && !usable)) {
+  const cacheEligible =
+    [featured, recentlyAdded, trending].every((result) =>
+      ["COMPLETED", "EMPTY", "FALLBACK"].includes(result.code),
+    ) &&
+    (genreCode === "COMPLETED" || genreCode === "EMPTY");
+  if (
+    (code === "COMPLETED" && degraded) ||
+    (code === "PARTIAL" && (!degraded || !usable)) ||
+    (code === "STALE" && !cacheEligible)
+  ) {
     throw new Error("Invalid home aggregate outcome.");
   }
   return {
