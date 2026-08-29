@@ -72,7 +72,7 @@ const BOUNDED_READ_SCRIPT =
 const COMPARE_AND_DELETE_SCRIPT =
   "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
 const ACQUIRE_RECOVERABLE_LEASE_SCRIPT =
-  "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; if kind ~= 'string' or redis.call('PTTL', KEYS[1]) == -1 then redis.call('DEL', KEYS[1]); redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; return 0";
+  "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; local ttl = redis.call('PTTL', KEYS[1]); if kind ~= 'string' or ttl == -1 or ttl > tonumber(ARGV[2]) then redis.call('DEL', KEYS[1]); redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; return 0";
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
 const STRICT_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 

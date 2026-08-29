@@ -146,6 +146,14 @@ try {
     status: "completed",
     deleted: true,
   });
+  assert.deepEqual(await redis.acquireLease("aster:test:lease-excessive-ttl", "owner-e", 2_000), {
+    status: "completed",
+    stored: true,
+  });
+  assert.deepEqual(await redis.compareAndDelete("aster:test:lease-excessive-ttl", "owner-e"), {
+    status: "completed",
+    deleted: true,
+  });
   assert.deepEqual(await redis.acquireLease("aster:test:lease-wrong-type", "owner-d", 2_000), {
     status: "completed",
     stored: true,
@@ -311,6 +319,7 @@ try {
       expiryObserved: true,
       expiredLeaseRecovered: true,
       nonExpiringLeaseRecovered: true,
+      excessiveTtlLeaseRecovered: true,
       wrongTypeLeaseRecovered: true,
       concurrentCallers: burst.length,
       uncachedFullSourceReadsDuringBurst: 24,

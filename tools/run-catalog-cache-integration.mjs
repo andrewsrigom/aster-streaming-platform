@@ -118,6 +118,23 @@ try {
         ownedId,
         "redis-cli",
         "--raw",
+        "SET",
+        "aster:test:lease-excessive-ttl",
+        "stuck",
+        "PX",
+        "86400000",
+      ],
+      5_000,
+    ),
+    "OK",
+  );
+  assert.equal(
+    await docker(
+      [
+        "exec",
+        ownedId,
+        "redis-cli",
+        "--raw",
         "HSET",
         "aster:test:lease-wrong-type",
         "field",
