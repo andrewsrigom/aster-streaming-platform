@@ -18,9 +18,9 @@ test("Playback composes additively, preserves existing operations and does not e
   const previous = readFileSync(new URL("infra/router/generated/api.graphql", root), "utf8");
   const known = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
   const result = composeServices([
-    ...["identity", "catalog", "engagement"].map((name) => ({
+    ...(["identity", "catalog", "engagement", "discovery"] as const).map((name) => ({
       name,
-      url: `http://${name}:${name === "identity" ? 3100 : name === "engagement" ? 3400 : 3200}/graphql`,
+      url: `http://${name}:${{ identity: 3100, catalog: 3200, engagement: 3400, discovery: 3500 }[name]}/graphql`,
       typeDefs: parse(
         readFileSync(new URL(`infra/router/generated/${name}.graphql`, root), "utf8"),
       ),
