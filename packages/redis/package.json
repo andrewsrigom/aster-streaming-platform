@@ -26,7 +26,7 @@
     "@redis/client": "6.2.1"
   },
   "devDependencies": {
-    "@types/node": "24.13.3",
-    "typescript": "6.0.3"
+    "@types/node": "26.3.0",
+    "typescript": "7.0.2"
   }
 }
