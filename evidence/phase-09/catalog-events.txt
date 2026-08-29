@@ -1,0 +1,64 @@
+P09-R01 Discovery Catalog-event recovery checkpoint — 2026-08-28
+
+Source: unpublished feat/p09-discovery-search working tree after abf884b.
+Environment: Ubuntu-20.04 WSL, Node 24.19.0, pnpm 11.24.0,
+PostgreSQL 18.6 from the repository-pinned digest. The PostgreSQL verifier used
+one disposable 384 MiB / 1 CPU container with tmpfs-only storage and removed
+the exact labelled fixture. The retained Phase 07 demo was not changed.
+
+Implemented scope:
+- Catalog v1 records are bounded, copied and validated before parsing;
+- the event is a refresh hint only; searchable metadata always comes from a
+  fresh Catalog-owned snapshot;
+- one in-process event is admitted without a queue, with caller cancellation;
+- duplicate/stale delivery is reconciled through durable source-version fences;
+- bounded poison records are quarantined before acknowledgement;
+- oversized, unavailable, indeterminate, cancelled or full-quarantine outcomes
+  leave the broker offset retryable;
+- quarantine stores exact key/value/header bytes in 128 serialized slots;
+- replay removes the exact record only after durable apply or idempotent success;
+- the projector role has function-only recovery access and no direct table access;
+- migration 0002 is additive and its down migration refuses non-empty recovery data.
+
+Focused commands:
+pnpm install --frozen-lockfile --offline
+pnpm --filter @aster/discovery build
+pnpm --filter @aster/discovery test
+pnpm exec eslint <six affected Discovery TypeScript files> --max-warnings=0
+
+Result: frozen install, strict build, 41/41 tests and scoped lint pass. The seven
+new deterministic tests cover exact wire copying, no event metadata authority,
+malformed/oversized input, duplicate delivery, owner absence, conflicts,
+dependency failure, one-active admission, cancellation and replay completion.
+
+Real command:
+node tools/run-discovery-integration.mjs
+
+Raw final output:
+{"event":"discovery_migration","postgres":"18.6","version":2,"emptyRollback":true}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2}
+{"event":"discovery_privileges","deniedStatements":3,"catalogIsolation":true}
+{"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":21321}
+
+Source SHA256:
+8d736c57e6ebc47b7cb120cdf711712704488c9cc3c7309324f687c658772e32  services/discovery/migrations/0002-catalog-events.up.sql
+7a62fdb562c40d2b5e4f592f394ae8413c0c673d8684be573e1aaf6eb99ea5fc  services/discovery/migrations/0002-catalog-events.down.sql
+e2d9db778e4a55cba1ff789e69bb015d949d0e92c0662aa4fb3389bb39b968c6  services/discovery/src/application/catalog-event-ports.ts
+efd51764e21e36764e79fab79f6ecc90766ea1b931402ca2327b8f66641f308d  services/discovery/src/application/consume-catalog-event.ts
+fb6723bcd83879e1b68b7b30937269fd18de835c183b15a9d734e0c4810bb213  services/discovery/src/infrastructure/catalog-event-wire.ts
+53d28da11984b0b46b28bf74317804aa8310177b27f369239438eb1dcd151a74  services/discovery/src/infrastructure/postgres-catalog-events.ts
+d4fdea79a9278268a09d3d1992ef7de2858feb7f8a55e4bd0319d830bf0dfbe4  services/discovery/test/catalog-events.test.ts
+80ca9f234cf1b4a642dc0817ff066ac87209da2f6c29c4639826aa66920d9905  services/discovery/test/integration/projection-postgres.ts
+
+Interpretation: the recovery boundary handles a Catalog hint durably without
+turning that hint, Redis or the broker into title truth. Real PostgreSQL proves
+exact maximum-size retention, idempotent duplicate admission, conflict refusal,
+finite capacity, exact replay and role isolation. The broker adapter/runtime,
+offset commit loop, rebuild orchestration, GraphQL/Federation and public search
+remain unimplemented, so this checkpoint does not claim a running consumer or
+public API.

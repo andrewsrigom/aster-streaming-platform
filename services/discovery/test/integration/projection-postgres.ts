@@ -9,6 +9,7 @@ import { createTitleSearch, type SearchPage } from "../../src/application/search
 import { createPostgresProjectionUnitOfWork } from "../../src/infrastructure/postgres-projection.js";
 import { createPostgresRebuildStore } from "../../src/infrastructure/postgres-rebuild.js";
 import { createPostgresSearchUnitOfWork } from "../../src/infrastructure/postgres-search.js";
+import { createPostgresCatalogEvents } from "../../src/infrastructure/postgres-catalog-events.js";
 
 assert.equal(process.env["ASTER_POSTGRES_DISPOSABLE_FIXTURE"], "true");
 const port = Number(process.argv[2]);
@@ -47,6 +48,7 @@ const search = createTitleSearch({
 });
 const rebuildStore = createPostgresRebuildStore(projectorDatabase);
 const rebuilder = createProjectionRebuilder({ store: rebuildStore });
+const catalogEvents = createPostgresCatalogEvents(projectorDatabase, randomUUID);
 const signal = () => AbortSignal.timeout(5000);
 const now = Math.floor(Date.now() / 1000);
 const ids = Array.from({ length: 8 }, () => randomUUID());
@@ -99,9 +101,12 @@ async function find(value: Record<string, unknown>): Promise<SearchPage> {
   assert.equal(result.value.status, "completed");
   return result.value.value;
 }
-async function migrate(direction: "up" | "down") {
+async function migrate(version: 1 | 2, direction: "up" | "down") {
   const sql = await readFile(
-    new URL(`../../../migrations/0001-title-projections.${direction}.sql`, import.meta.url),
+    new URL(
+      `../../../migrations/${String(version).padStart(4, "0")}-${version === 1 ? "title-projections" : "catalog-events"}.${direction}.sql`,
+      import.meta.url,
+    ),
     "utf8",
   );
   const client = await admin.connect();
@@ -118,13 +123,16 @@ async function migrate(direction: "up" | "down") {
 try {
   const version = await admin.query<{ server_version: string }>("SHOW server_version");
   assert.match(version.rows[0]?.server_version ?? "", /^18\.6/u);
-  await migrate("up");
-  await migrate("down");
+  await migrate(1, "up");
+  await migrate(2, "up");
+  await migrate(2, "down");
+  await migrate(1, "down");
   const emptyRollback = await admin.query<{ schema: string | null; roles: number }>(`SELECT
     to_regnamespace('discovery')::text AS schema,
     (SELECT count(*)::int FROM pg_roles WHERE rolname IN ('aster_discovery_runtime','aster_discovery_projector')) AS roles`);
   assert.deepEqual(emptyRollback.rows, [{ schema: null, roles: 0 }]);
-  await migrate("up");
+  await migrate(1, "up");
+  await migrate(2, "up");
   await admin.query(`CREATE ROLE aster_discovery_projector_fixture LOGIN PASSWORD 'aster-test-only'
     NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`);
   await admin.query(`CREATE ROLE aster_discovery_runtime_fixture LOGIN PASSWORD 'aster-test-only'
@@ -135,7 +143,7 @@ try {
     CREATE TABLE catalog.ownership_probe(id integer); INSERT INTO catalog.ownership_probe VALUES (1)`);
   output("discovery_migration", {
     postgres: version.rows[0]?.server_version,
-    version: 1,
+    version: 2,
     emptyRollback: true,
   });
 
@@ -315,6 +323,56 @@ try {
   }
   output("discovery_privileges", { deniedStatements: denied, catalogIsolation: true });
 
+  const quarantineRecord = {
+    topic: "aster.catalog.publication.v1",
+    partition: 0,
+    offset: "42",
+    key: Buffer.from(titleSignal),
+    value: Buffer.alloc(8192, 1),
+    headers: { "content-type": Buffer.from("application/json") },
+  };
+  assert.equal(await catalogEvents.quarantine(quarantineRecord, "envelope", signal()), "stored");
+  assert.equal(await catalogEvents.quarantine(quarantineRecord, "envelope", signal()), "duplicate");
+  assert.equal(
+    await catalogEvents.quarantine(quarantineRecord, "source_conflict", signal()),
+    "unavailable",
+  );
+  const quarantined = await admin.query<{ id: string }>(
+    "SELECT id::text FROM discovery.event_quarantine WHERE broker_offset='42'",
+  );
+  const quarantineId = quarantined.rows[0]?.id;
+  assert.ok(quarantineId);
+  const restored = await catalogEvents.readQuarantine(quarantineId, signal());
+  assert.ok(restored);
+  assert.equal(restored.value.byteLength, 8192);
+  assert.equal(Buffer.compare(Buffer.from(restored.key ?? []), quarantineRecord.key), 0);
+  assert.equal(await catalogEvents.completeReplay(quarantineId, signal()), true);
+  assert.equal(await catalogEvents.readQuarantine(quarantineId, signal()), undefined);
+  await admin.query(`INSERT INTO discovery.event_quarantine(
+      id,slot,topic,partition,broker_offset,key_hex,value_hex,headers,reason)
+    SELECT ('10000000-0000-4000-8000-' || lpad(n::text,12,'0'))::uuid,n,
+      'aster.catalog.publication.v1',0,n::text,NULL,'','{}'::jsonb,'envelope'
+    FROM generate_series(1,128) n`);
+  assert.equal(
+    await catalogEvents.quarantine({ ...quarantineRecord, offset: "999" }, "envelope", signal()),
+    "full",
+  );
+  const recoveryPrivileges = await admin.query<{ direct: boolean; functions: boolean }>(`SELECT
+    has_table_privilege('aster_discovery_projector','discovery.event_quarantine','SELECT,INSERT,UPDATE,DELETE') AS direct,
+    has_function_privilege('aster_discovery_projector','discovery.quarantine_catalog_record(uuid,text,integer,text,text,text,jsonb,text)','EXECUTE')
+      AND has_function_privilege('aster_discovery_projector','discovery.read_catalog_quarantine(uuid)','EXECUTE')
+      AND has_function_privilege('aster_discovery_projector','discovery.complete_catalog_replay(uuid)','EXECUTE') AS functions`);
+  assert.deepEqual(recoveryPrivileges.rows, [{ direct: false, functions: true }]);
+  await admin.query("DELETE FROM discovery.event_quarantine");
+  output("discovery_event_recovery", {
+    exactMaximumBytes: true,
+    duplicate: "idempotent",
+    conflictingOffset: "rejected",
+    fullQuarantine: "offset_uncommitted",
+    replay: "exact",
+    directTableAccess: false,
+  });
+
   const planClient = await admin.connect();
   let planText: string;
   try {
@@ -327,7 +385,7 @@ try {
     planClient.release();
   }
   assert.match(planText, /discovery_search_vector/u);
-  await assert.rejects(migrate("down"), /Retain Discovery projection state/u);
+  await assert.rejects(migrate(1, "down"), /Retain Discovery projection state/u);
   output("discovery_query_plan", { ginIndex: "discovery_search_vector", guardedRollback: true });
 } finally {
   await projectorDatabase.close(AbortSignal.timeout(3000));

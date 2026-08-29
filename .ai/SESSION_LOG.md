@@ -6,7 +6,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
-Latest continuation: implemented Discovery-owned source fences, active/building generation writes, persisted rebuild barriers/checkpoints/promotion and weighted bounded PostgreSQL search. Query cursors bind normalized query, locale and generation; same-version retirement cannot resurrect, while a newer current Catalog version can republish. Protected PR32 run33225822813 passed every setup, owner, replay and health boundary but still lost a selected GraphQL body in Chromium; preserve this P09 checkpoint and return to P08 after commit.
+Latest continuation: exact P08 head d295ec7 passed protected CI33228909828 and clean review5459788095, then squash-merged as6f38ce0. P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626. The sole unpublished P09 dependent remains on the equivalent predecessor tree until that gate completes; retained demo is untouched.
+
+Latest P09 checkpoint: implemented bounded Catalog event-hint inspection, fresh owner-snapshot projection, one-active/no-queue admission and finite exact-byte quarantine/replay. Oversized, cancelled, unavailable, indeterminate and full-quarantine outcomes keep offsets retryable; direct recovery-table access is denied. Strict build,41/41 tests, scoped lint and real PostgreSQL18.6 migration/recovery proof pass. Broker/runtime orchestration and GraphQL remain; no running consumer/API is claimed.
 
 Latest continuation: rebased the sole P09 dependent onto exact predecessor `dc571bd77e08529b8c91ccb53d44b0bf3bfdf089` and applied stash `01b1dad9bbda289976d137b1a20af9f7cf102add` exactly once. Added exact private Catalog snapshot/export operations with a purpose-separated credential, independent one-active/no-queue admission, a two-second deadline and a one-connection read-only pool. Optional Discovery authority or database loss now returns private `UNAVAILABLE` while public Catalog stays ready and later recovers. The same predecessor corrected GraphQL response capture for both Profiles and progress: selected bodies start reading in the response event turn and retain the twelve-second deadline through body settlement. Historical stashes remain safety records and must not be reapplied.
 
@@ -22,7 +24,7 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 Latest Discovery persistence checkpoint:34/34 tests, strict build and scoped lint pass. One disposable PostgreSQL18.6 run proves empty rollback, separate read/projector privileges, Catalog isolation, title-over-synopsis relevance, diacritic normalization, no keyset duplicate after insert, retirement/newer republish, barrier-gated promotion, old-cursor expiry, active survival during partial rebuild, exactly two retained generations, GIN eligibility and guarded non-empty rollback. [Raw evidence](../evidence/phase-09/projection-postgres.txt). Exact labelled tmpfs fixture cleaned to zero; retained demo untouched.
 
-Latest P09 private-runtime checkpoint: strict HTTP/Catalog builds, scoped lint and19/19 focused tests pass. A unique disposable PostgreSQL/real HTTP run proves exact operations, separate read-only credentials and pool limits, public-Catalog isolation during revoked Discovery authority, recovery after grant, and complete cleanup. The predecessor correction passes105/105 Web tests, including eight observer regressions, strict types, scoped lint and43/43 affected tasks. [Catalog evidence](../evidence/phase-09/catalog-snapshots.txt). No retained runtime, media or host process changed.
+Latest P09 private-runtime checkpoint: strict HTTP/Catalog builds, scoped lint and19/19 focused tests pass. A unique disposable PostgreSQL/real HTTP run proves exact operations, separate read-only credentials and pool limits, public-Catalog isolation during revoked Discovery authority, recovery after grant, and complete cleanup. The frozen predecessor correction passes104/104 Web tests, including seven observer regressions, strict types, scoped lint and the43-task affected candidate. [Catalog evidence](../evidence/phase-09/catalog-snapshots.txt). No retained runtime, media or host process changed.
 
 Discovery resumed on cf13c15:31 focused tests and scoped lint pass. Focused PostgreSQL proof passed3 synthetic titles; full Catalog compatibility then exposed only a last-page fixture assumption about unrelated retained titles. Corrected that expectation, reran the affected full SQL suite once: migration1..10, owner/concurrency/media/public GraphQL and source-view checks pass,2055 titles survive view round-trip, cleanup0. [Evidence](../evidence/phase-09/catalog-snapshots.txt). No running Discovery HTTP/search API, retained data change or host experiment.
 
@@ -34,9 +36,9 @@ R08 protected/main gates pass. Native pinned tooling and its executable pnpm shi
 
 ### Next action
 
-Commit and preserve the P09 persistence checkpoint. Then reactivate P08-R11, remove dependence on Chromium retaining a navigated response body without weakening durable-save assertions, and require one fresh protected acceptance/review before merge.
+Continue P09 event/snapshot orchestration and quarantine/replay locally while P08 waits for one protected acceptance/review. Merge P08 first, require exact main, then rebase/recheck P09 before publication.
 
-Current continuation: keep PR32 exact `dc571bd77e08529b8c91ccb53d44b0bf3bfdf089` frozen for its one protected CI and confirmation review. Close this coherent private Catalog checkpoint locally, then implement Discovery-owned projection persistence, rebuild and search without publishing before predecessor release.
+Current continuation: keep PR32 exact `d295ec7f8b2acf7e9f5fe8e60b1134dd785b4cce` frozen for CI33228909828 and review5459772025. Continue Discovery event/snapshot orchestration without publishing before predecessor release.
 
 Current: PR32 ea4c72f is published and waits only for CI33222164370/review request5459001648/merge/exact main. Continue P09 snapshot SQL proof locally on cf13c15; stash770430 applied once, memory conflicts reconciled. Do not publish Discovery before predecessor release or reapply stashes. The following prior checkpoint remains historical:
 

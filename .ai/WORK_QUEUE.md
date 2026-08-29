@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-PR32 run33225822813 passed all setup, owner, immutable-replay and health boundaries, then failed the personalized browser at the selected GraphQL response body. P08-R11 is IN_PROGRESS again, not WAITING_EXTERNAL. P09's local persistence checkpoint passes34 focused tests and real PostgreSQL proof and is preserved unpublished; P09-R01 is READY until the predecessor closes. No stash replay or retained-demo change.
+PR32 exact d295ec7 passed protected CI33228909828 and clean review, then squash-merged as6f38ce0. P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished dependent, based through abf884b on the equivalent predecessor tree. Its bounded Catalog hint, fresh owner projection and exact-byte quarantine/replay checkpoint passes41 tests and real PostgreSQL18.6. Continue broker/runtime orchestration and GraphQL; rebase/recheck before publication. Historical stashes are superseded. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -51,8 +51,8 @@ PR32 run33225822813 passed all setup, owner, immutable-replay and health boundar
 | 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
-| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | IN_PROGRESS |
-| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | READY |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | WAITING_EXTERNAL |
+| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | IN_PROGRESS |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
 
@@ -71,4 +71,3 @@ Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-
 - Add newly discovered work only if it belongs to the active phase.
 - Record future-phase ideas under the relevant specification rather than implementing them early.
 - `READY` items after the active item are ordered runway, not authorization to start them concurrently.
-

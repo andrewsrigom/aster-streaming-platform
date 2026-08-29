@@ -51,12 +51,12 @@ b10fad9758917ca4ab76719cb30d8011bd092b7cf28aeda4a93cc433ecc080c8  services/disco
 0ff875c7172f0861bbdca9784a095dec27427e24e5678667e135b94fa48db45b  services/discovery/src/infrastructure/postgres-rebuild.ts
 2a46a4ba4284dd2e9debb6e396acb99b1c99c073925039a8d04f39383c72a910  services/discovery/test/integration/projection-postgres.ts
 
-Interpretation: the owned persistence/search engine works against real
-PostgreSQL and keeps Catalog isolated. A partial rebuild leaves the current
-generation active; promotion requires the captured barrier and expires old
-cursors. Runtime wiring, current-Catalog event/snapshot orchestration, durable
-quarantine/replay, GraphQL/Federation and Compose are not implemented by this
-checkpoint, so no running public search API is claimed.
+Interpretation at this checkpoint: the owned persistence/search engine works
+against real PostgreSQL and keeps Catalog isolated. A partial rebuild leaves the
+current generation active; promotion requires the captured barrier and expires
+old cursors. The later event-recovery delta is recorded separately in
+catalog-events.txt. Broker/runtime wiring, GraphQL/Federation and Compose are not
+implemented, so no running public search API is claimed.
 
 Predecessor note: protected PR32 run33225822813 passed source, platform,
 Catalog, Playback, Engagement, immutable replay and health, then failed the

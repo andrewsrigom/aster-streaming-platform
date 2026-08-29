@@ -375,6 +375,9 @@ importers:
 
   services/discovery:
     dependencies:
+      '@aster/event-delivery':
+        specifier: workspace:*
+        version: link:../../packages/event-delivery
       '@aster/postgres':
         specifier: workspace:*
         version: link:../../packages/postgres

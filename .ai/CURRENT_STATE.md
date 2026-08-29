@@ -4,9 +4,9 @@ Last updated: 2026-08-28
 
 ## Active phase
 
-**Phase 08 — Progress, History, Watchlist, and Continue-Watching**
+**Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P08-R11. Protected PR32 run33225822813 passed all setup, owner, replay and health boundaries but failed the personalized browser at response.json despite event-turn capture. The active correction must remove dependence on Chromium retaining that body while keeping exact12-second durable-save verification. P09's domain, private Catalog and PostgreSQL persistence/search/rebuild checkpoints are committed locally and preserved unpublished on feat/p09-discovery-search. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 on feat/p09-discovery-search through abf884b plus the current event-recovery checkpoint. PR32 exact d295ec7 passed protected CI/review and squash-merged as 6f38ce0; P08-R11 is **WAITING_EXTERNAL** only for exact-main CI33229726626. The P09 dependent remains unpublished on the equivalent predecessor tree and will rebase/recheck after that gate. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,9 +16,9 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) adds34 focused tests and real PostgreSQL18.6 proof for isolated roles, monotonic retirement fences, active/building writes, rebuild barriers/promotion, weighted GIN relevance, stable keyset pagination, cursor expiry and guarded rollback. Every disposable fixture cleaned to zero. Runtime event/snapshot orchestration, quarantine/replay and GraphQL remain; no running search API exists yet.
+Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) records isolated roles, monotonic retirement fences, active/building writes, rebuild barriers/promotion, weighted GIN relevance, stable keyset pagination, cursor expiry and guarded rollback. [Event recovery evidence](../evidence/phase-09/catalog-events.txt) adds bounded Catalog hints, fresh owner projection, finite exact-byte quarantine/replay and function-only projector privileges; strict build,41/41 tests, scoped lint and real PostgreSQL18.6 pass. Every disposable fixture cleaned to zero. Broker/runtime orchestration and GraphQL remain; no running consumer or search API exists yet.
 
-R11 starts each selected GraphQL body read inside the response event and keeps the original deadline through body settlement. Eight observer regressions, the full105-test Web suite, types, scoped lint and43/43 affected tasks pass locally. Run33223692248 proves every preceding integration boundary and immutable replay; review5056138342's deadline blocker is fixed at exact dc571bd. Retained demo is unchanged.
+R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828 and clean exact-head review pass at d295ec7. PR32 merged as6f38ce0; exact-main CI33229726626 remains. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -30,7 +30,7 @@ Phase08 exact post-merge closeout, Discovery and hosted release remain pending. 
 
 ## Next outcome
 
-Complete P08-R11 by replacing the still-racy browser body dependency without weakening durable acknowledgement. Require focused and affected gates, one refreshed review, protected PR32 and exact main. Then rebase P09 and continue current-source orchestration, quarantine/replay and GraphQL. No host experiment or retained-demo upgrade.
+Complete P09-R01 broker/runtime orchestration and GraphQL on the unpublished dependent. Require exact-main CI33229726626, then rebase/recheck P09 before publication. No host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 
@@ -42,10 +42,9 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 ## Current risks
 
-- Run33223692248 proves read-only seed replay and the event-turn progress helper, but exposes the same Chromium disposal in the independent Profiles waiter. Review5056138342 correctly found the shared body's deadline gap; the fixed helper passes deterministic timing regressions but still needs its affected gate and protected browser proof. The exact earlier SDK/provider seed transport cause remains unproved. No blind retry, retained reset or CPU attribution.
+- P08 exact d295ec7 passed local/protected/review gates and merged as6f38ce0; exact-main CI33229726626 remains. Run33225822813 proved all earlier boundaries while disproving observer body ownership. The exact earlier SDK/provider seed transport cause remains unproved. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event signing key; old finite migrators/readiness may reject new schema versions. Drain and use compatible binaries or roll forward.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
 - Last audit: zero high/critical, one known moderate UUID advisory with inspected Apollo callers unaffected; revisit before hosted release.
 - Preserve MIT/upstream notices. No paid resources, invented media rights or global Docker cleanup.
-

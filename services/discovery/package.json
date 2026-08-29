@@ -16,6 +16,7 @@
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
   "dependencies": {
+    "@aster/event-delivery": "workspace:*",
     "@aster/postgres": "workspace:*",
     "pg": "8.23.0"
   },

@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. Protected PR32 run33225822813 failed only at Chromium GraphQL response-body capture after every earlier boundary passed; P08-R11 is IN_PROGRESS again. Discovery domain, Catalog private source access and Discovery-owned PostgreSQL fences/generations/rebuild/search are preserved locally; event/runtime/GraphQL remain and no public search API runs. No P09 publication; retained demo remains Phase07.
+Active phase: **Phase 09 — Home Rails and Search**. PR32 exact d295ec7 passed protected CI/review and squash-merged as 6f38ce0; P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626. The sole unpublished P09 dependent remains on the equivalent predecessor tree until that gate completes. Discovery domain, Catalog private source access, PostgreSQL fences/generations/rebuild/search and bounded event quarantine/replay are implemented locally; broker runtime/GraphQL remain and no public search API runs. No P09 publication; retained demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

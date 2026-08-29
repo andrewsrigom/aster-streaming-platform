@@ -2,15 +2,15 @@
 
 ## Resume point
 
-PR32 exact dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 failed protected run33225822813 only in the personalized browser: Chromium still discarded the selected GraphQL body at response.json. Every setup, owner, immutable-replay and health boundary passed. This is a concrete P08-R11 blocker, not WAITING_EXTERNAL.
+PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, then squash-merged as6f38ce0. P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626.
 
-P09-R01 is the sole unpublished dependent on feat/p09-discovery-search. Domain, Catalog source/private runtime and Discovery persistence/search/rebuild checkpoints pass. The latest block adds34 focused tests and real PostgreSQL18.6 relevance, isolation, fencing, promotion and rollback proof. Commit and preserve it before repairing P08. No publication before predecessor closeout. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished dependent on feat/p09-discovery-search, based through abf884b on the equivalent predecessor tree. Domain, Catalog source/private runtime and Discovery persistence/search/rebuild pass. The current event checkpoint adds bounded Catalog hints, fresh owner projection, finite exact-byte quarantine and replay; strict build,41/41 tests, scoped lint and real PostgreSQL18.6 recovery/role proof pass. Next: broker/runtime orchestration and GraphQL. Rebase/recheck after exact-main success; no publication before predecessor closeout. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Commit the coherent P09 persistence/search/rebuild checkpoint; do not publish it or reapply any stash.
-2. Return to fix/p08-browser-ack and remove the still-racy selected-body dependency while retaining exact request selection,12-second bounds and durable acknowledgement. Batch one correction, focused regression, affected gate and refreshed review.
-3. Before P09 publication rebase onto accepted predecessor main and repeat affected gates. Frozen install is required after workspace changes. Restore no historical stash.
+1. Follow exact-main CI33229726626; when green, close P08 and rebase P09 onto6f38ce0 before publication.
+2. Continue P09 broker/runtime orchestration around the implemented consumer/quarantine; then add GraphQL in the next coherent checkpoint.
+3. Repeat affected gates after the rebase. Frozen install is required after workspace changes. Restore no historical stash.
 4. If predecessor review/CI exposes another blocker, preserve dependent WIP before correcting it; failed tests are not WAITING_EXTERNAL.
 5. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.
 
@@ -37,4 +37,3 @@ Preserve backup C:/Users/andre/AppData/Local/Temp/aster-p07-runtime-f3750a5a-e6d
 ## Do not do yet
 
 No WSL/Docker restart, global cleanup, unrelated-process action, CPU/memory loop, unchanged heavy proof or retained film encoding. Repository bind-mount integration previously failed: do not retry unchanged. Direct WSL Docker works without host binds. The general reset remains intentionally limited to its old fixed checkpoint; personalized demo cleanup uses its exact project and all three Compose files. No paid resources or invented media rights.
-
