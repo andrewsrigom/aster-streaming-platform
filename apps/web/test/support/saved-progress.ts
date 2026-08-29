@@ -4,18 +4,18 @@ interface ProgressResponse {
   url(): string;
   ok(): boolean;
   request(): { method(): string; postDataJSON(): unknown };
-  json(): Promise<unknown>;
 }
 interface ProgressPage {
   on(event: "response", listener: (response: ProgressResponse) => void): unknown;
   off(event: "response", listener: (response: ProgressResponse) => void): unknown;
 }
 
-export async function waitForGraphqlResponseJson<T>(
+export async function waitForGraphqlConfirmation<T>(
   page: ProgressPage,
   endpoint: string,
   options: {
     matchesRequest(body: unknown): boolean;
+    confirm(): Promise<T>;
     successMessage: string;
     timeoutMessage: string;
     timeoutMs?: number;
@@ -42,18 +42,16 @@ export async function waitForGraphqlResponseJson<T>(
       page.off("response", observe);
       try {
         assert.equal(response.ok(), true, options.successMessage);
-        // Chromium can discard a response body as its document changes. Begin the
-        // sole selected body read before this response event returns.
-        void response.json().then(
-          (body) => {
+        // The application owns the response body. Confirm through state rendered
+        // only after its GraphQL client has parsed and accepted that response.
+        void options.confirm().then(
+          (value) => {
             clearTimeout(timer);
-            resolve(body as T);
+            resolve(value);
           },
           (error: unknown) => {
             clearTimeout(timer);
-            reject(
-              error instanceof Error ? error : new Error("GraphQL response body unavailable."),
-            );
+            reject(error instanceof Error ? error : new Error("GraphQL confirmation unavailable."));
           },
         );
       } catch (error) {
@@ -82,35 +80,16 @@ function matchesProgressRequest(
   );
 }
 
-function verifyProgressResponse(
-  body: unknown,
-  expected: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" },
-): void {
-  const result = body as {
-    data?: {
-      recordProgress?: {
-        code: string;
-        progress?: { titleId: string; positionMs: number; status: string };
-      };
-    };
-  } | null;
-  const value = result?.data?.recordProgress;
-  assert.equal(value?.code, "COMPLETED", "Progress must be durably acknowledged");
-  assert.ok(value.progress);
-  assert.equal(value.progress.titleId, expected.titleId);
-  assert.equal(value.progress.status, expected.status);
-  assert.ok(Math.abs(value.progress.positionMs - expected.positionMs) < 150);
-}
-
 export async function waitForSavedProgress(
   page: ProgressPage,
   endpoint: string,
   expected: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" },
+  confirm: () => Promise<void>,
 ): Promise<void> {
-  const body = await waitForGraphqlResponseJson(page, endpoint, {
+  await waitForGraphqlConfirmation(page, endpoint, {
     matchesRequest: (request) => matchesProgressRequest(request, expected),
+    confirm,
     successMessage: "Progress request must succeed",
     timeoutMessage: "Timed out waiting for saved progress.",
   });
-  verifyProgressResponse(body, expected);
 }

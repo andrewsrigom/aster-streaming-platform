@@ -19,15 +19,17 @@ The observer correction at 77eda41 passed both real browser journeys in PR32 run
 
 The read-only seed correction at ea4c72f passed source quality, real platform, Catalog generation, Playback and Engagement integration, including immutable seed reuse. Protected run33222164370 then reproduced the browser failure in the first personalized progress acknowledgement: `response.json()` began only after `waitForResponse` resolved, and Chromium had already discarded the resource body. Source job99018340341 otherwise passed through the complete bootstrap; cleanup succeeded. This is the active blocker.
 
-The event-turn progress correction at d2ba88f passed its exact-head confirmation review without findings. Protected run33223692248 passed source, platform, Catalog, Playback, Engagement, immutable replay and service health, then failed before profile creation because the separate initial `Profiles` response body was also read only after UI work. Chromium reported the same discarded-resource error at engagement.spec.ts:47. The active correction centralizes exact GraphQL response selection and starts both profile and progress body reads inside their response event.
+The event-turn progress correction at d2ba88f passed its exact-head confirmation review without findings. Protected run33223692248 passed source, platform, Catalog, Playback, Engagement, immutable replay and service health, then failed before profile creation because the separate initial `Profiles` response body was also read only after UI work. Chromium reported the same discarded-resource error at engagement.spec.ts:47. The correction centralized exact GraphQL response selection and started both profile and progress body reads inside their response event.
 
 Review5056138342 on exact6c78d2a found one P1 deadline regression: selection removed the listener and cleared the timer before `response.json()` settled, so a stalled selected body could defer failure to Playwright's90-second test timeout. The correction keeps the original timer active through body success/failure; the same deadline now covers selection and consumption.
 
-P09 domain/Catalog snapshot work is preserved unpublished through c52b259 on feat/p09-discovery-search. Its complete private transport/runtime WIP is in stash 01b1dad9bbda289976d137b1a20af9f7cf102add; apply only that newest stash after predecessor repair and never reapply the historical stashes. Retained demo remains Phase07.
+Protected run33225822813 on exact dc571bd passed source quality, the real platform, Catalog, Playback, Engagement, immutable seed replay and health, then failed only in the personalized browser at the first selected progress body. Chromium can discard `Network.getResponseBody` even when the observer calls `response.json()` inside the response event. Reading application-owned bodies from the acceptance observer is therefore the active defect, not a timing gap.
+
+P09 domain, Catalog snapshot, private runtime and persisted projection work is preserved unpublished through6ca3703 on feat/p09-discovery-search. Historical P09 stashes are superseded and must not be reapplied. Retained demo remains Phase07.
 
 ## Proposed behavior
 
-Select each intended GraphQL request synchronously by endpoint, method and exact request predicate. Start consuming the selected body in the same `response` event turn, remove the listener, and keep the original12-second deadline active until the body succeeds or fails. The progress specialization additionally checks title, sampled position and the durable acknowledgement; the profile bootstrap rejects a retained collection before creating anything. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
+Select each intended GraphQL request synchronously by endpoint, method and exact request predicate, but leave its body exclusively owned by the application GraphQL client. After a successful selected transport response, require application-rendered confirmation inside the same original12-second deadline. The profile bootstrap renders the empty collection before creating anything. Progress selects the exact title/sample request and accepts `Progress saved` only because production code emits it after a matching `COMPLETED` sequence; subsequent owner reads prove exact resume or completed-history state. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
 
 For each generated seed object, use the existing bounded storage HEAD. Existing objects require complete size/SHA256 readback and no PUT; only not_found permits one conditional PUT followed by the same verification. Keep If-None-Match for a competing creator between HEAD and PUT. Other lookup/write failures reject without retry. No data replacement, uncertain-success fallback or shared-adapter rewrite.
 
@@ -37,11 +39,11 @@ Affected: apps/web/test, services/catalog/src/infrastructure/fixtures/playable-p
 
 ## Invariants
 
-Read no unrelated browser body. Matching failed, malformed or wrong-position/status acknowledgements fail. Resolve only after its body is checked. Keep browser deadlines/zero retries and seed45-second/operation5-second budgets. Existing wrong, truncated, oversized or missing bytes reject; HEAD alone never proves integrity. Preserve content types/cache headers, children-before-master order, rights rechecks and publication barrier.
+Read no browser response body from the observer. A failed selected transport or missing application confirmation fails. Resolve progress only after the exact request and non-optimistic UI confirmation; owner reads still prove position/status. Keep browser deadlines/zero retries and seed45-second/operation5-second budgets. Existing wrong, truncated, oversized or missing bytes reject; HEAD alone never proves integrity. Preserve content types/cache headers, children-before-master order, rights rechecks and publication barrier.
 
 ## Failure behavior
 
-Missing response times out; body/ack failures propagate. Lookup unavailable/cancelled/timed-out does not mean missing. A creation race accepts only completed/already_exists followed by correct readback. Unknown PUT results fail closed. No pipeline retry, host restart or retained-data reset.
+Missing response or rendered confirmation times out; transport/application rejection propagates. Lookup unavailable/cancelled/timed-out does not mean missing. A creation race accepts only completed/already_exists followed by correct readback. Unknown PUT results fail closed. No pipeline retry, host restart or retained-data reset.
 
 ## Data and contracts
 
@@ -53,19 +55,19 @@ Do not record cookies, session data or media grants. Preserve production authori
 
 ## Implementation steps
 
-1. Extract synchronous response selection and event-turn acknowledgement capture.
-2. Prove unrelated-body isolation, body-start-before-event-return, body-before-resolution ordering and adverse acknowledgements deterministically.
+1. Extract synchronous response selection followed by application-owned rendered confirmation.
+2. Prove unrelated-request isolation, confirmation-before-resolution ordering, shared deadline and adverse transport/application confirmation deterministically.
 3. Prove read-only replay, corruption refusal, cancellation and conditional creation races; extend the existing disposable real S3 fixture without encoding media.
 4. Run the affected candidate gate; update the same PR32 with one coherent correction and refreshed boundary review.
 5. Squash after green CI and confirmation; require exact main success before closing Phase08/resuming Phase09.
 
 ## Tests
 
-Focused tests coordinate completion without arbitrary sleeps. Eight browser observer regressions include progress/profile body capture during the response event and a selected body that never settles before the shared deadline; the full Web suite passes105 tests with strict types and scoped lint. Deterministic seed tests cover read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
+Focused tests coordinate completion without arbitrary sleeps. Seven browser observer regressions cover exact request selection, application confirmation ordering, shared deadline and adverse transport/confirmation; the full Web suite passes104 tests with strict types and scoped lint. Existing reporter/client tests prove only a matching parsed `COMPLETED` sequence renders saved. Deterministic seed tests cover read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
 
 ## Evidence
 
-Iteration gate: focused seed/browser tests, scoped lint and Catalog/Web types. Candidate gate: canonical check:changed. Preserve earlier failure and focused output; record seed correction in evidence/phase-08/player-seed-replay.txt. Existing SQL/Kafka/player evidence remains supporting because their inputs do not change; this bootstrap change requires fresh real storage and protected full startup/replay. Do not repeat heavy evidence for unrelated prose. Previous browser reviews are clean; the new bootstrap availability boundary justifies a new review and confirmation, stopping after concrete blockers are resolved.
+Iteration gate: focused browser tests, scoped lint and Web types. Candidate gate: canonical check:changed. Preserve run33225822813 and focused output in evidence/phase-08/player-seed-replay.txt. Existing SQL/Kafka/player/storage evidence remains supporting because their inputs do not change; protected full startup/replay remains required. Do not repeat heavy evidence for unrelated prose. The observer ownership correction changes the acceptance boundary and requires one refreshed confirmation review, stopping after concrete blockers are resolved.
 
 ## Rollback or recovery
 
@@ -77,7 +79,7 @@ Phase08 audit/release evidence, concise state/queue/session/handoff and demo rep
 
 ## Completion checklist
 
-- [x] Updated regression and affected gates pass (Web105/105, eight observer cases, types, scoped lint and43/43 candidate)
+- [x] Updated regression and affected gates pass (Web104/104, seven observer cases, types, scoped lint and43-task candidate pass)
 - [ ] Protected browser acceptance and reviews pass
 - [ ] Exact main succeeds and Phase08 closes
 - [ ] Phase09 rebased and resumed without lost work

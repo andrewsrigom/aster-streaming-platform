@@ -2205,3 +2205,10 @@ Execute Phase 00 beginning with source-code license selection.
 - Preserved rebased P09 private runtime in stash 01b1dad9bbda289976d137b1a20af9f7cf102add before returning to the predecessor.
 - Kept the original response deadline active through selected body success/failure and added a deterministic stalled-body regression.
 - Full Web tests pass105/105, including eight observer regressions; strict types, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.
+
+Application-owned browser response confirmation, 2026-08-28:
+
+- Inspected exact-head PR32 run33225822813: source quality, real platform, Catalog, Playback, Engagement, immutable seed replay and health passed; only the first personalized progress acknowledgement failed because Chromium discarded its body despite `response.json()` starting inside the response event.
+- Removed body consumption from the acceptance observer. It now selects the exact transport request, then waits within the same12-second deadline for state rendered after the application's GraphQL client parses and accepts the response.
+- Profiles require rendered empty state before mutation. Progress requires the exact sampled request plus the production `Progress saved` state; subsequent owner reads still prove resume/completion and isolation.
+- Full Web tests pass104/104, including seven observer regressions; strict types and scoped lint pass. The43-task affected candidate passed by checkpoint:42 executable tasks remained green, then the sole documentation heading-limit failure was compacted and documentation/state/format rechecks passed. P09 is safely committed through6ca3703; old P09 stashes are superseded. Protected acceptance remains pending.

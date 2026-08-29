@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33223692248 proves immutable replay and all earlier integration steps, but the old Profiles waiter lost its body. Review5056138342 then found the shared helper cleared its12-second timer before body settlement. The corrected deadline passes105 Web tests, eight observer regressions, types, scoped lint and43/43 affected tasks; protected acceptance remains. P09-R01 is READY, preserved through c52b259 and newest stash 01b1dad9bbda289976d137b1a20af9f7cf102add; apply only that stash after repair and never reapply historical stashes. Retained Phase07 demo remains intact.
+P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 proves immutable replay and all earlier integration steps, but Chromium discarded the selected progress body even during its response event. The local correction leaves bodies to the application and requires exact request plus rendered confirmation within12 seconds;104 Web tests, seven observer regressions, types, scoped lint and the43-task affected candidate pass. Protected acceptance remains. P09-R01 is READY, preserved unpublished through6ca3703; historical stashes are superseded and must not be reapplied. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

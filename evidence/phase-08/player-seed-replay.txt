@@ -103,3 +103,64 @@ Cached:    24 cached, 43 total
 Exit0. Later edits only consolidate evidence/memory; cheap documentation/state
 checks and commit hooks cover them without repeating unchanged real storage.
 Fresh protected acceptance/review, squash and exact main remain pending.
+
+Application-owned browser confirmation correction, 2026-08-28
+
+Exact prior head: dc571bd77e08529b8c91ccb53d44b0bf3bfdf089.
+Failed protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33225822813
+Source job: 99029339322. Dependency review, classify, local platform and
+documentation/security jobs passed. Source quality, real platform, Catalog,
+Playback, Engagement, immutable seed replay and service health passed before the
+single personalized-browser failure. Cleanup succeeded.
+
+Selected failure:
+Error: response.json: Protocol error (Network.getResponseBody): No data found for resource with given identifier
+Response body is not available for a response that was navigated away from.
+at apps/web/test/support/saved-progress.ts:47
+
+Diagnosis boundary:
+The acceptance observer called response.json() during Playwright's response event,
+but Chromium still discarded that resource body. The application GraphQL client
+already owns and must parse the body. A second observer body consumer is neither
+required nor a stable navigation barrier.
+
+Correction:
+- select endpoint, POST operation and exact progress title/sample synchronously;
+- never read a response body from the acceptance observer;
+- after successful selected transport, keep the original12-second deadline active
+  until application-rendered confirmation;
+- require the profile UI to render the empty collection before creating data;
+- require Progress saved, which production emits only after parsing COMPLETED with
+  the matching sequence; subsequent Library reads still prove position/status;
+- preserve zero test retries, optional-save failure, history, watchlist, profile
+  isolation, sign-out clearing and accessibility assertions.
+
+Local iteration evidence with pinned Node24.19.0/pnpm11.24.0:
+pnpm --filter=@aster/web test
+tests 104; pass 104; fail 0; duration 3107ms
+Observer regressions 7/7 cover unrelated selection, application confirmation
+ordering, event-turn start, profile rendered state, shared deadline, failed transport,
+failed confirmation and near-end selection.
+pnpm --filter=@aster/web typecheck
+passed Next route generation and strict TypeScript.
+Scoped ESLint and Prettier check passed for all three affected test files.
+
+This test-only correction cannot invalidate the already passing SQL, Kafka, owner,
+media, immutable-storage or service-health evidence from run33225822813. Fresh
+protected Docker-only browser acceptance, exact-head review, squash and exact-main
+success remain required after the candidate checkpoint below.
+
+Affected candidate checkpoint:
+Packages: //, @aster/catalog, @aster/router, @aster/web.
+Tasks: 42 successful, 43 total;29 cached;2m39.805s.
+The sole failure was docs:check because SESSION_LOG reached501 headings after the
+new evidence entry. No executable task failed. The entry was compacted into the
+preceding session section without changing code, tests or behavior. Focused repeat:
+docs:check passed218 documents,2759 headings,1325 links and zero violations;
+ai:check passed10 files/49 queue items/124 entries with active P08-R11;
+repository-wide format:check passed. The42 earlier task results remain valid because
+the later edit was documentation-only. Together this closes the43-task candidate
+checkpoint without repeating unaffected builds, owner integrations or storage.
+
+Protected Docker-only browser acceptance, exact-head review, squash and exact-main
+success remain required.

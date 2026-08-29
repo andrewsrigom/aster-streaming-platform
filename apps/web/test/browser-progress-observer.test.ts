@@ -1,17 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { waitForGraphqlResponseJson, waitForSavedProgress } from "./support/saved-progress.ts";
+import { waitForGraphqlConfirmation, waitForSavedProgress } from "./support/saved-progress.ts";
 
 type ObserverPage = Parameters<typeof waitForSavedProgress>[0];
 type ObservedResponse = Parameters<Parameters<ObserverPage["on"]>[1]>[0];
 const endpoint = "http://127.0.0.1:4000/graphql";
 const expected = { titleId: "fictional-title", positionMs: 2000, status: "IN_PROGRESS" as const };
-const acknowledgement = () => ({
-  data: { recordProgress: { code: "COMPLETED", progress: { ...expected } } },
-});
 const response = (
-  input = { ...expected },
-  body: () => Promise<unknown> = () => Promise.resolve(acknowledgement()),
+  input: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" } = expected,
 ) => ({
   url: () => endpoint,
   ok: () => true,
@@ -19,7 +15,6 @@ const response = (
     method: () => "POST",
     postDataJSON: () => ({ operationName: "RecordProgress", variables: { input } }),
   }),
-  json: body,
 });
 function pageWith(candidates: ObservedResponse[]): ObserverPage {
   let active: ((response: ObservedResponse) => void) | undefined;
@@ -43,20 +38,16 @@ function pageWith(candidates: ObservedResponse[]): ObserverPage {
   };
 }
 
-test("progress observer skips unrelated bodies and synchronously selects the sampled request", async () => {
-  const unavailable = () => Promise.reject(new Error("Body belongs to an earlier document"));
-  const unrelated = response({ ...expected, positionMs: 0 }, unavailable);
-  const otherTitle = response({ ...expected, titleId: "another-title" }, unavailable);
-  const otherEndpoint = {
-    ...response(undefined, unavailable),
-    url: () => "http://127.0.0.1:4000/health",
-  };
+test("progress observer skips unrelated requests and confirms only the sampled request", async () => {
+  const unrelated = response({ ...expected, positionMs: 0 });
+  const otherTitle = response({ ...expected, titleId: "another-title" });
+  const otherEndpoint = { ...response(), url: () => "http://127.0.0.1:4000/health" };
   const otherOperation = {
-    ...response(undefined, unavailable),
+    ...response(),
     request: () => ({ method: () => "POST", postDataJSON: () => ({ operationName: "Profiles" }) }),
   };
   const get = {
-    ...response(undefined, unavailable),
+    ...response(),
     request: () => ({
       method: () => "GET",
       postDataJSON: () => {
@@ -64,159 +55,109 @@ test("progress observer skips unrelated bodies and synchronously selects the sam
       },
     }),
   };
-  let bodies = 0;
+  let confirmations = 0;
   await waitForSavedProgress(
-    pageWith([
-      unrelated,
-      otherTitle,
-      otherEndpoint,
-      otherOperation,
-      get,
-      response(undefined, () => {
-        bodies++;
-        return Promise.resolve(acknowledgement());
-      }),
-    ]),
+    pageWith([unrelated, otherTitle, otherEndpoint, otherOperation, get, response()]),
     endpoint,
     expected,
+    () => {
+      confirmations++;
+      return Promise.resolve();
+    },
   );
-  assert.equal(bodies, 1);
+  assert.equal(confirmations, 1);
 });
 
-test("progress observer cannot resolve until the selected body has been consumed", async () => {
-  const body = Promise.withResolvers<unknown>();
-  const reading = Promise.withResolvers<undefined>();
+test("navigation remains blocked until application confirmation", async () => {
+  const confirmation = Promise.withResolvers<undefined>();
   let resolved = false;
   const saved = waitForSavedProgress(
-    pageWith([
-      response(undefined, () => {
-        reading.resolve(undefined);
-        return body.promise;
-      }),
-    ]),
+    pageWith([response()]),
     endpoint,
     expected,
+    () => confirmation.promise,
   ).then(() => {
     resolved = true;
   });
-  await reading.promise;
-  assert.equal(resolved, false, "Navigation remains blocked while the body is pending");
-  body.resolve(acknowledgement());
+  await Promise.resolve();
+  assert.equal(resolved, false);
+  confirmation.resolve(undefined);
   await saved;
   assert.equal(resolved, true);
 });
 
-test("progress observer starts the selected body read inside the response event", async () => {
+test("confirmation starts inside the selected response event", async () => {
   let eventActive = true;
-  let bodyStarted = false;
-  const selected = response(undefined, () => {
-    assert.equal(eventActive, true, "Body capture started after the response event");
-    bodyStarted = true;
-    return Promise.resolve(acknowledgement());
-  });
   const page: ObserverPage = {
     on(_event, listener) {
-      listener(selected);
+      listener(response());
       eventActive = false;
     },
     off() {},
   };
-  await waitForSavedProgress(page, endpoint, expected);
-  assert.equal(bodyStarted, true);
+  await waitForSavedProgress(page, endpoint, expected, () => {
+    assert.equal(eventActive, true);
+    return Promise.resolve();
+  });
 });
 
-test("generic GraphQL observer captures the profile body inside the response event", async () => {
-  let eventActive = true;
+test("generic GraphQL observer confirms rendered profile state", async () => {
   const selected = {
-    ...response(undefined, () => {
-      assert.equal(eventActive, true, "Profile body capture started after the response event");
-      return Promise.resolve({ data: { profiles: { profiles: [] } } });
-    }),
+    ...response(),
     request: () => ({
       method: () => "POST",
       postDataJSON: () => ({ operationName: "Profiles" }),
     }),
   };
-  const page: ObserverPage = {
-    on(_event, listener) {
-      listener(selected);
-      eventActive = false;
-    },
-    off() {},
-  };
-  assert.deepEqual(
-    await waitForGraphqlResponseJson(page, endpoint, {
-      matchesRequest: (body) =>
-        (body as { operationName?: string } | null)?.operationName === "Profiles",
-      successMessage: "Profiles request must succeed",
-      timeoutMessage: "Timed out waiting for profiles.",
-    }),
-    { data: { profiles: { profiles: [] } } },
-  );
+  const value = await waitForGraphqlConfirmation(pageWith([selected]), endpoint, {
+    matchesRequest: (body) =>
+      (body as { operationName?: string } | null)?.operationName === "Profiles",
+    confirm: () => Promise.resolve("No profiles yet"),
+    successMessage: "Profiles request must succeed",
+    timeoutMessage: "Timed out waiting for profiles.",
+  });
+  assert.equal(value, "No profiles yet");
 });
 
-test("selected GraphQL body remains inside the original response deadline", async () => {
-  const body = Promise.withResolvers<unknown>();
-  const selected = response(undefined, () => body.promise);
-  const waiting = waitForGraphqlResponseJson(pageWith([selected]), endpoint, {
+test("selected confirmation remains inside the original response deadline", async () => {
+  const confirmation = Promise.withResolvers<undefined>();
+  const waiting = waitForGraphqlConfirmation(pageWith([response()]), endpoint, {
     matchesRequest: () => true,
+    confirm: () => confirmation.promise,
     successMessage: "Selected request must succeed",
-    timeoutMessage: "Selected body exceeded its deadline.",
+    timeoutMessage: "Selected confirmation exceeded its deadline.",
     timeoutMs: 5,
   });
-  await assert.rejects(waiting, /Selected body exceeded its deadline/u);
-  body.resolve(acknowledgement());
+  await assert.rejects(waiting, /Selected confirmation exceeded its deadline/u);
+  confirmation.resolve(undefined);
 });
 
-test("matching transport and body errors fail instead of being ignored", async () => {
+test("matching transport and confirmation errors fail", async () => {
   await assert.rejects(
-    waitForSavedProgress(pageWith([{ ...response(), ok: () => false }]), endpoint, expected),
+    waitForSavedProgress(pageWith([{ ...response(), ok: () => false }]), endpoint, expected, () =>
+      Promise.resolve(),
+    ),
     /Progress request must succeed/u,
   );
   await assert.rejects(
-    waitForSavedProgress(
-      pageWith([response(undefined, () => Promise.reject(new Error("body unavailable")))]),
-      endpoint,
-      expected,
+    waitForSavedProgress(pageWith([response()]), endpoint, expected, () =>
+      Promise.reject(new Error("not durably confirmed")),
     ),
-    /body unavailable/u,
+    /not durably confirmed/u,
   );
 });
 
-test("missing, failed, wrong-title, wrong-position and wrong-status acknowledgements cannot pass", async () => {
-  for (const payload of [
-    null,
-    {},
-    { errors: [{ message: "Unavailable" }] },
-    { data: { recordProgress: { code: "UNAVAILABLE" } } },
-    ...[{ titleId: "another-title" }, { positionMs: 0 }, { status: "COMPLETED" }].map((change) => ({
-      data: { recordProgress: { code: "COMPLETED", progress: { ...expected, ...change } } },
-    })),
-  ]) {
-    await assert.rejects(
-      waitForSavedProgress(
-        pageWith([response(undefined, () => Promise.resolve(payload))]),
-        endpoint,
-        expected,
-      ),
-    );
-  }
-});
-
-test("completion selects the near-end request and still requires server completion", async () => {
+test("completion selects the near-end request before confirmation", async () => {
   const completed = { ...expected, positionMs: 5900, status: "COMPLETED" as const };
-  const end = {
-    ...response(),
-    request: () => ({
-      method: () => "POST",
-      postDataJSON: () => ({ operationName: "RecordProgress", variables: { input: completed } }),
-    }),
-    json: () =>
-      Promise.resolve({
-        data: {
-          recordProgress: { code: "COMPLETED", progress: { ...completed, positionMs: 6000 } },
-        },
-      }),
-  };
-  await waitForSavedProgress(pageWith([response(), end]), endpoint, completed);
+  let confirmed = false;
+  await waitForSavedProgress(
+    pageWith([response(), response(completed)]),
+    endpoint,
+    completed,
+    () => {
+      confirmed = true;
+      return Promise.resolve();
+    },
+  );
+  assert.equal(confirmed, true);
 });

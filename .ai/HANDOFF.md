@@ -2,15 +2,15 @@
 
 ## Resume point
 
-P08-R11 IN_PROGRESS on fix/p08-browser-ack, PR32. Run33223692248 passed every preceding integration/bootstrap boundary and immutable replay, then lost the old initial Profiles response body. Review5056138342 on exact6c78d2a found the shared helper cleared its12-second timer before selected body settlement. The correction now passes105 Web tests, eight observer regressions, strict types and scoped lint locally. Not WAITING_EXTERNAL. P09-R01 is preserved unpublished through c52b259 on feat/p09-discovery-search; its complete newest WIP stash is 01b1dad9bbda289976d137b1a20af9f7cf102add and older stashes must not be reapplied. Full Phase00–14 goal remains active.
+P08-R11 IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 on dc571bd passed every preceding integration/bootstrap boundary and immutable replay, then proved Chromium can discard the selected progress body even inside its response event. The local correction leaves bodies exclusively to the application and requires exact request plus rendered confirmation within12 seconds. Web104/104, seven observer regressions, strict types, scoped lint and the43-task affected candidate pass. Not WAITING_EXTERNAL. P09-R01 is preserved unpublished through6ca3703 on feat/p09-discovery-search; historical stashes are superseded and must not be reapplied. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish the locally accepted body-deadline correction in existing PR32; its affected gate passes43/43. Request confirmation of review5056138342. Require protected full startup/browser/replay, expected-head squash and exact main success; no repeat of the unchanged local storage fixture.
-2. Then close Phase08, switch to feat/p09-discovery-search, rebase onto exact main and apply only stash 01b1dad9bbda289976d137b1a20af9f7cf102add once. It contains the already-rebased Catalog private transport/runtime, real PostgreSQL test and memory updates;19/19 focused transport/runtime tests and the disposable real private-runtime proof passed before stashing. Earlier snapshot SQL proof preserves migrations1..10 and2055 retained synthetic titles. Continue owned projection/rebuild/search; rails/Web later. Reinstall frozen dependencies after workspace changes.
+1. Publish the application-owned confirmation correction in existing PR32 and request one refreshed exact-head confirmation. Require protected full startup/browser/replay, expected-head squash and exact main success; no repeat of the unchanged local storage fixture.
+2. Then close Phase08, switch to feat/p09-discovery-search and rebase commit6ca3703 plus its predecessors onto exact main. Do not apply historical stashes. The committed work already includes Catalog snapshots/private transport, persisted versioned projections, weighted PostgreSQL search and the disposable real proof. Continue event/snapshot orchestration, quarantine/replay and GraphQL/runtime; rails/Web later. Reinstall frozen dependencies after workspace changes.
 3. Phase08 audit/release artifacts accompany this correction; no documentation-only pipeline. Existing browser/SQL/Kafka evidence remains supporting. Bootstrap changes require real storage and protected complete replay; no film encode or retained-runtime change.
 4. PR31 initial review was automatic on ready/open; do not request a duplicate initial review on later PRs while that review is running. Its explicit confirmation is complete. No third round without a concrete blocker.
-5. Only the exact newest Phase09 stash above remains to apply. Preserve all older already-restored stashes without reapplying. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
+5. Preserve every historical Phase09 stash without reapplying; commit6ca3703 is authoritative. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
 
 ## Evidence boundaries
 
