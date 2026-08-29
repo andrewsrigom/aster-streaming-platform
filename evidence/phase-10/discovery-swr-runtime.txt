@@ -1,0 +1,46 @@
+P10 Discovery stale runtime checkpoint
+Date: 2026-08-29
+Status: local candidate runtime PASS
+
+Source and environment
+- Branch: feat/p10-discovery-swr
+- Released base: 903f7b4330db8c47896ea82f5f487a268d817d88
+- Runtime assertion commit: 8faf35a9e96ca51ea335f7c0d2c14f64d8883154
+- WSL2 Ubuntu-20.04; Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
+- One UUID-scoped Compose project; eleven declared services; Redis intentionally
+  not started while Discovery remains configured with its optional Redis cache.
+
+Command
+CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm discovery:runtime
+
+Final result: PASS in 395884 ms; remaining labelled resources: 0.
+
+Raw result
+{"event":"discovery_runtime_started","services":11}
+{"event":"discovery_federated_search","resultCount":1,"zeroResult":"explicit-empty","sourceVersion":5,"freshnessSeconds":300}
+{"event":"discovery_home_runtime","publicRails":4,"recentFallback":true,"ownerPartialResponse":true}
+{"event":"discovery_cache_outage_runtime","redisStarted":false,"discoveryHealthy":true,"publicHomeServed":true}
+{"event":"discovery_projection_runtime","projectedTitles":1,"documents":2,"brokerLag":0}
+{"event":"discovery_quarantine_replay","exactRecord":true,"reclaimed":true}
+{"event":"discovery_failure_isolation","routerReady":true,"catalogBrowse":true}
+{"event":"discovery_restart_recovery","generationPreserved":true,"searchRecovered":true}
+{"event":"discovery_runtime_logs","finiteOperations":true,"rawQueryText":false,"secrets":false,"timerWarnings":false}
+{"event":"discovery_runtime_cleaned","remaining":0,"durationMs":395884}
+
+Covered contract
+- Discovery starts healthy with `ASTER_DISCOVERY_CACHE_ENABLED=true` and the
+  reviewed `redis://redis:6379/0` endpoint while Redis is unavailable.
+- Public home executes the PostgreSQL owner path and preserves the documented
+  partial/fallback shape instead of making cache readiness critical.
+- Search, projection, broker lag, exact quarantine replay, Catalog isolation,
+  Discovery restart recovery and sanitized finite logs pass in the same runtime.
+- Cleanup removes only the UUID-scoped disposable containers, network and
+  volumes.
+
+Interpretation
+The runtime proves that Redis loss does not remove Discovery readiness or public
+home availability. Real Redis envelope, expiry, contention and outage fallback
+are separately proven in discovery-swr-redis.txt.
+
+Limitations
+This finite local run is not a field SLO, capacity result or hosted release.

@@ -9,7 +9,7 @@ import {
 import type { ProjectionStoreResult } from "./projection-ports.js";
 import type { HomeProjectionState, HomeRailRepository, HomeRailUnitOfWork } from "./rail-ports.js";
 
-type HomeRailCode =
+export type HomeRailCode =
   "completed" | "empty" | "fallback" | "unavailable" | "cancelled" | "indeterminate";
 
 export interface HomeRailMetricObservation {
@@ -19,7 +19,7 @@ export interface HomeRailMetricObservation {
   readonly freshnessSeconds?: number;
 }
 
-interface HomeRailEdge {
+export interface HomeRailEdge {
   readonly titleId: string;
   readonly sourceVersion: number;
   readonly indexedAt: number;
@@ -47,7 +47,7 @@ export interface HomeGenreRailResult {
 }
 
 export interface HomeRailsPage {
-  readonly status: "completed" | "partial";
+  readonly status: "completed" | "partial" | "stale";
   readonly generation: string;
   readonly generatedAt: number;
   readonly featured: HomeRailResult;

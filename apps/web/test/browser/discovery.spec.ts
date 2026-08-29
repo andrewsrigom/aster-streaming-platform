@@ -117,6 +117,55 @@ test("search distinguishes empty, stale, expired cursor and invalid URL input", 
   expect((await page.goto("/?locale=en&locale=pt-BR"))?.status()).toBe(404);
 });
 
+test("bounded stale home rails remain usable with an explicit refresh notice", async ({ page }) => {
+  await page.goto("/?locale=en");
+  await page.route(endpoint, (route) => {
+    const request = route.request().postDataJSON() as { operationName?: string };
+    if (request.operationName !== "HomePublic") {
+      return route.continue();
+    }
+    const emptyRail = (key: string, kind: string) => ({
+      key,
+      kind,
+      genre: null,
+      source: kind,
+      oldestIndexedAt: null,
+      freshUntil: null,
+      edges: [],
+    });
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          homeRails: {
+            code: "STALE",
+            correlationId: "00000000-0000-4000-8000-000000090001",
+            generation: "00000000-0000-4000-8000-000000090002",
+            generatedAt: 1_700_000_000,
+            featured: { code: "EMPTY", rail: emptyRail("featured", "FEATURED") },
+            recentlyAdded: {
+              code: "EMPTY",
+              rail: emptyRail("recently-added", "RECENTLY_ADDED"),
+            },
+            trending: { code: "EMPTY", rail: emptyRail("trending", "TRENDING") },
+            genres: { code: "EMPTY", rails: [] },
+          },
+        },
+      }),
+    });
+  });
+
+  await page.getByRole("button", { name: "Refresh discovery", exact: true }).click();
+  await expect(
+    page.getByText("Discovery is refreshing. These rails are a recent bounded snapshot.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("No titles in this rail.", { exact: true })).toHaveCount(3);
+  await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
+});
+
 test("home personalization starts after profile selection and private failure leaves public rails", async ({
   page,
   context,

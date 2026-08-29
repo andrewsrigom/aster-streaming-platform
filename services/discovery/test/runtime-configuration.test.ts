@@ -17,6 +17,8 @@ const runtime = {
   ASTER_DISCOVERY_PROJECTOR_DATABASE_URL:
     "postgresql://aster_discovery_projector_local@postgres:5432/aster",
   ASTER_DISCOVERY_PROJECTOR_DATABASE_PASSWORD: "projector-test",
+  ASTER_DISCOVERY_CACHE_ENABLED: "true",
+  REDIS_URL: "redis://redis:6379/0",
 };
 
 test("runtime configuration keeps read and projector credentials purpose-separated", () => {
@@ -30,6 +32,8 @@ test("runtime configuration keeps read and projector credentials purpose-separat
   );
   assert.equal(new URL(config.connectionString).password, "runtime-test");
   assert.equal(new URL(config.projectorConnectionString).password, "projector-test");
+  assert.equal(config.cache, true);
+  assert.equal(config.redisUrl, "redis://redis:6379/0");
   assert.equal(
     new URL(
       localDiscoveryDatabase(
@@ -54,6 +58,8 @@ test("runtime rejects disabled trust/events, foreign endpoints and unsupported k
     { ASTER_EVENTS_ENABLED: "false" },
     { ASTER_DISCOVERY_HTTP_HOST: "example.com" },
     { ASTER_DISCOVERY_HTTP_PORT: "80" },
+    { ASTER_DISCOVERY_CACHE_ENABLED: "sometimes" },
+    { ASTER_DISCOVERY_CACHE_ENABLED: "true", REDIS_URL: "" },
     { ASTER_DISCOVERY_DATABASE_URL: "postgresql://aster@postgres:5432/aster" },
     {
       ASTER_DISCOVERY_PROJECTOR_DATABASE_URL:
@@ -63,6 +69,16 @@ test("runtime rejects disabled trust/events, foreign endpoints and unsupported k
   ]) {
     assert.throws(() => discoveryRuntimeConfiguration({ ...runtime, ...changed }));
   }
+});
+
+test("runtime keeps Redis optional and explicitly disabled", () => {
+  const config = discoveryRuntimeConfiguration({
+    ...runtime,
+    ASTER_DISCOVERY_CACHE_ENABLED: "false",
+    REDIS_URL: undefined,
+  });
+  assert.equal(config.cache, false);
+  assert.equal("redisUrl" in config, false);
 });
 
 test("database configuration rejects embedded secrets, query options and controls", () => {

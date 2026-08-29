@@ -1,0 +1,63 @@
+P10 Discovery stale contract checkpoint
+Date: 2026-08-29
+Status: local candidate; implementation and required local evidence pass
+
+Source
+- Branch: feat/p10-discovery-swr
+- Released base: 903f7b4330db8c47896ea82f5f487a268d817d88
+- Rebased browser checkpoint: b16cbfe
+- Lease/coalescing correction: 6cc0a6c
+- Platform-policy correction: 53bdbf2
+- Runtime assertion: 8faf35a
+
+Environment
+- WSL2 Ubuntu-20.04, Linux amd64
+- Node.js 24.19.0; pnpm 11.24.0
+
+Commands and results
+- @aster/discovery test: PASS, 99/99.
+- @aster/telemetry test: PASS, 11/11.
+- @aster/web test: PASS, 111/111.
+- Scoped ESLint: PASS.
+- Scoped Prettier: PASS.
+- git diff --check: PASS.
+- Real Redis: PASS; see discovery-swr-redis.txt.
+- Final complete affected gate: PASS, 73/73 tasks, 61 cached, 148.029 seconds at
+  exact candidate checkpoint `0417ffd`.
+- Disposable PostgreSQL/Router runtime: PASS in 395884 ms with non-critical Redis
+  unavailable and cleanup0; see discovery-swr-runtime.txt.
+- Initial PR39 automated review completed at exact `5c4d62d` without findings.
+  The complete local review found three requirement-boundary defects: cold
+  callers could share a result across title expiry, a rejected cache write could
+  mask completed owner data, and one failed consumer closure could skip siblings.
+  The batched correction has focused Discovery103/103, typecheck, lint, format
+  and diff checks passing. Exact `5a5f5e2` then passes the complete affected gate
+  73/73 with56 cached in106.071 seconds.
+
+Covered contract
+- Twelve bounded whole-home key variants and schema-v1 envelopes no larger than
+  16 KiB.
+- Fresh reuse, explicit stale-with-page reuse, maximum age and earliest title
+  visibility expiry.
+- One bounded local refresh with caller-local cancellation and lifecycle drain.
+- Coalescing buckets count attached refresh requests behind the owner rather than
+  shifting the first attachment into the second bucket.
+- Discovery uses the shared atomic recoverable-lease operation. Wrong-type,
+  non-expiring or longer-than-two-second contamination cannot disable refresh
+  coordination for its retained lifetime.
+- Redis loss executes the existing PostgreSQL owner source and cannot change
+  Catalog, Playback or profile authority.
+- The existing GraphQL enum/nullable fields express both legal STALE shapes; Web
+  keeps a bounded stale page usable and rejects malformed false success.
+
+Interpretation
+Focused behavior, the changed Redis boundary, the rebased affected gate and the
+real outage runtime pass. This is a local candidate, not a release claim.
+
+Limitations
+- No field SLO, hosted availability or arbitrary cluster-size claim.
+- The browser result is carried only because all affected Web source/test blobs
+  are unchanged and the rebased Web suite plus affected gate pass.
+- Real Redis, browser and eleven-service runtime were not repeated for the review
+  correction because Redis wire/envelope, public stale shape and composition are
+  unchanged. The affected gate is repeated before corrected publication.

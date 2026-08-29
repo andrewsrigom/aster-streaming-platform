@@ -14,6 +14,17 @@ test("Discovery Compose keeps owner credentials, event activation and disposable
   assert.deepEqual(validateDiscoveryRuntime(sources), []);
   for (const [file, before, after] of [
     ["discovery.yml", 'ASTER_EVENTS_ENABLED: "true"', 'ASTER_EVENTS_ENABLED: "false"'],
+    [
+      "discovery.yml",
+      'ASTER_DISCOVERY_CACHE_ENABLED: "true"',
+      'ASTER_DISCOVERY_CACHE_ENABLED: "false"',
+    ],
+    ["discovery.yml", "redis://redis:6379/0", "redis://catalog:6379/0"],
+    [
+      "discovery.yml",
+      "      ASTER_DISCOVERY_ADMIN_DATABASE_PASSWORD: aster-test-only\n",
+      "      ASTER_DISCOVERY_ADMIN_DATABASE_PASSWORD: aster-test-only\n      REDIS_URL: redis://redis:6379/0\n",
+    ],
     ["discovery.yml", "postgresql://aster_discovery_local@postgres", "postgresql://aster@postgres"],
     [
       "discovery.yml",

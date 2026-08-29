@@ -64,7 +64,10 @@ function Rail({
 
 export function HomeDiscovery({ variables }: { variables: HomeVariables }) {
   const { data, pending, refresh } = usePublicQuery(HOME_PUBLIC, variables);
-  const available = data?.homeRails.code === "COMPLETED" || data?.homeRails.code === "PARTIAL";
+  const available =
+    data?.homeRails.code === "COMPLETED" ||
+    data?.homeRails.code === "PARTIAL" ||
+    (data?.homeRails.code === "STALE" && data.homeRails.generation !== null);
   const payload = available ? data.homeRails : undefined;
   const fixed = payload
     ? [
@@ -89,6 +92,11 @@ export function HomeDiscovery({ variables }: { variables: HomeVariables }) {
         </div>
         {payload ? (
           <div className="space-y-10">
+            {payload.code === "STALE" ? (
+              <p aria-live="polite" className="text-sm text-muted-foreground">
+                Discovery is refreshing. These rails are a recent bounded snapshot.
+              </p>
+            ) : null}
             {fixed.map(({ key, result }) =>
               result?.rail ? (
                 <Rail

@@ -8,6 +8,7 @@ const RUNTIME_FIELDS = new Set([
   "ASTER_DISCOVERY_DATABASE_PASSWORD",
   "ASTER_DISCOVERY_PROJECTOR_DATABASE_URL",
   "ASTER_DISCOVERY_PROJECTOR_DATABASE_PASSWORD",
+  "ASTER_DISCOVERY_CACHE_ENABLED",
 ]);
 
 export function localDiscoveryDatabase(
@@ -79,11 +80,15 @@ export function discoveryRuntimeConfiguration(
   }
   const host = environment["ASTER_DISCOVERY_HTTP_HOST"] ?? "127.0.0.1";
   const port = environment["ASTER_DISCOVERY_HTTP_PORT"] ?? "3500";
+  const cacheEnabled = environment["ASTER_DISCOVERY_CACHE_ENABLED"];
+  const redisUrl = environment["REDIS_URL"];
   if (
     (host !== "127.0.0.1" && host !== "0.0.0.0") ||
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
     Number(port) < 1_024 ||
     Number(port) > 65_535 ||
+    (cacheEnabled !== undefined && cacheEnabled !== "true" && cacheEnabled !== "false") ||
+    (cacheEnabled === "true" && (typeof redisUrl !== "string" || redisUrl.length === 0)) ||
     environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true" ||
     !localEventDeliveryEnabled(
       environment["ASTER_EVENTS_ENABLED"],
@@ -92,10 +97,15 @@ export function discoveryRuntimeConfiguration(
   ) {
     throw new Error("Invalid protected Discovery runtime configuration.");
   }
-  return Object.freeze({
-    host,
+  const validatedHost: "127.0.0.1" | "0.0.0.0" = host;
+  const base = {
+    environment: "local" as const,
+    host: validatedHost,
     port: Number(port),
     connectionString: localDiscoveryDatabase(environment, "runtime"),
     projectorConnectionString: localDiscoveryDatabase(environment, "projector"),
-  });
+  };
+  return cacheEnabled === "true"
+    ? Object.freeze({ ...base, cache: true as const, redisUrl: redisUrl as string })
+    : Object.freeze({ ...base, cache: false as const });
 }

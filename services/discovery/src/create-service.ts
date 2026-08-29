@@ -7,6 +7,7 @@ import {
   type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
+import { createAsterRedisAdapter, type AsterRedisAdapter } from "@aster/redis";
 import {
   bindAsterProcessSignals,
   createAsterDeadline,
@@ -19,6 +20,7 @@ import {
 } from "@aster/runtime";
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createTitleProjector } from "./application/apply-title-snapshot.js";
+import { createCachedDiscoveryHome } from "./application/home-cache.js";
 import { createHomeRails } from "./application/home-rails.js";
 import type { CatalogSnapshotSource } from "./application/catalog-event-ports.js";
 import type { CatalogSnapshotExportSource } from "./application/rebuild-ports.js";
@@ -29,6 +31,11 @@ import { projectionRefreshDue, projectionServiceable } from "./domain/rebuild-st
 import { createCatalogEventHandler } from "./infrastructure/catalog-event-handler.js";
 import { createCatalogEventRuntime } from "./infrastructure/catalog-event-runtime.js";
 import { createCatalogSnapshotClient } from "./infrastructure/catalog-snapshot-client.js";
+import {
+  discoveryCacheDigest,
+  discoveryCacheToken,
+} from "./infrastructure/cache/node-cache-primitives.js";
+import { createRedisDiscoveryHomeCache } from "./infrastructure/cache/redis-home-cache.js";
 import { createPostgresCatalogEvents } from "./infrastructure/postgres-catalog-events.js";
 import { createPostgresProjectionUnitOfWork } from "./infrastructure/postgres-projection.js";
 import { createPostgresHomeRailUnitOfWork } from "./infrastructure/postgres-rails.js";
@@ -48,6 +55,7 @@ interface RuntimeResources {
   readonly projectorDatabase?: AsterPostgresAdapter;
   readonly broker?: AsterKafkaBrokerAdapter;
   readonly source?: CatalogSnapshotSource & CatalogSnapshotExportSource;
+  readonly redis?: AsterRedisAdapter;
   readonly routerTrust?: AsterLocalRouterTrust;
   readonly telemetry?: AsterTelemetry;
   readonly logger?: AsterLogger;
@@ -57,7 +65,11 @@ interface RuntimeResources {
 export function discoveryGraphqlLogOutcome(
   code: DiscoveryOperationTrace["code"],
 ): "ok" | "degraded" | "rejected" {
-  return code === "COMPLETED" ? "ok" : code === "PARTIAL" ? "degraded" : "rejected";
+  return code === "COMPLETED"
+    ? "ok"
+    : code === "PARTIAL" || code === "STALE"
+      ? "degraded"
+      : "rejected";
 }
 
 export async function createDiscoveryService(
@@ -115,8 +127,24 @@ export async function createDiscoveryService(
   }
 
   let broker: AsterKafkaBrokerAdapter | undefined;
+  let redis: AsterRedisAdapter | undefined;
+  let cachedHome: ReturnType<typeof createCachedDiscoveryHome> | undefined;
   let graph: Awaited<ReturnType<typeof createDiscoverySubgraph>> | undefined;
   try {
+    if (config.cache) {
+      redis =
+        resources.redis ??
+        createAsterRedisAdapter({
+          url: config.redisUrl,
+          telemetry,
+          maxInFlightCommands: 32,
+          connectionTimeoutMs: 1_000,
+          operationTimeoutMs: 250,
+          closeTimeoutMs: 1_000,
+          reconnectMaxAttempts: 3,
+          reconnectBaseDelayMs: 50,
+        });
+    }
     const source =
       resources.source ??
       createCatalogSnapshotClient({ credential: await loadLocalCatalogDiscoveryCredential() });
@@ -181,15 +209,29 @@ export async function createDiscoveryService(
           : { status: "completed", value: due };
       },
     });
+    const homeSource = createHomeRails({
+      transactions: createPostgresHomeRailUnitOfWork(runtimeDatabase),
+      monotonicNow: () => performance.now(),
+      observe: (observation) => {
+        telemetry.recordDiscoveryRail?.(observation);
+      },
+    });
+    cachedHome = redis
+      ? createCachedDiscoveryHome({
+          environment: config.environment,
+          source: homeSource,
+          cache: createRedisDiscoveryHomeCache(redis),
+          digest: discoveryCacheDigest,
+          token: discoveryCacheToken,
+          now: () => Math.floor(Date.now() / 1_000),
+          record: (observation) => {
+            telemetry.recordCacheOperation?.({ cache: "discovery_rail", ...observation });
+          },
+        })
+      : undefined;
     graph = await createDiscoverySubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("discovery")),
-      home: createHomeRails({
-        transactions: createPostgresHomeRailUnitOfWork(runtimeDatabase),
-        monotonicNow: () => performance.now(),
-        observe: (observation) => {
-          telemetry.recordDiscoveryRail?.(observation);
-        },
-      }),
+      home: cachedHome ?? homeSource,
       search: createTitleSearch({
         transactions: createPostgresSearchUnitOfWork(runtimeDatabase),
         observeSample: (sample) => {
@@ -225,8 +267,17 @@ export async function createDiscoveryService(
         await http?.stopTraffic(signal);
       },
       stopConsumers: async () => {
-        await Promise.all([monitor.stop(), rebuildRuntime.stop(), events.stop()]);
-        await graph?.stop();
+        const results = await Promise.allSettled([
+          monitor.stop(),
+          cacheMonitor?.stop(),
+          rebuildRuntime.stop(),
+          events.stop(),
+          cachedHome?.stop(AbortSignal.timeout(1_500)),
+          graph?.stop(),
+        ]);
+        if (results.some((result) => result.status === "rejected")) {
+          throw new Error("Discovery consumer closure failed.");
+        }
       },
       flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
       closeDependencies: async (signal) => {
@@ -234,6 +285,7 @@ export async function createDiscoveryService(
         const results = await Promise.all([
           runtimeDatabase.close(signal),
           projectorDatabase.close(signal),
+          ...(redis ? [redis.close(signal)] : []),
           telemetry.shutdown(signal),
         ]);
         if (
@@ -248,14 +300,18 @@ export async function createDiscoveryService(
         startupController.abort();
         http?.forceClose();
         void monitor.stop();
+        void cacheMonitor?.stop();
         void rebuildRuntime.stop();
         void events.stop();
+        cachedHome?.forceClose();
         void graph?.stop();
+        void redis?.close(AbortSignal.timeout(250));
         (resources.terminate ?? ((code) => process.exit(code)))(1);
       },
     });
     const readiness = createAsterReadinessController({ lifecycle, criticalDependencyCount: 3 });
     let previousReadiness = "pending";
+    let previousCacheReadiness = "pending";
     const checkReadiness = async (signal: AbortSignal): Promise<"ready" | "unavailable"> => {
       const storeStatus = await probeDiscoveryStores(
         runtimeDatabase,
@@ -287,12 +343,48 @@ export async function createDiscoveryService(
       }
       return status;
     };
+    const checkCacheReadiness = async (
+      signal: AbortSignal,
+    ): Promise<"disabled" | "ready" | "unavailable"> => {
+      if (!redis) {
+        return "disabled";
+      }
+      let status: "ready" | "unavailable" = "unavailable";
+      try {
+        const result = redis.snapshot().ready
+          ? await redis.probe(signal)
+          : await redis.connect(signal);
+        status = result.status === "completed" ? "ready" : "unavailable";
+      } catch {
+        /* Optional cache failures are sanitized and retried by its monitor. */
+      }
+      if (status !== previousCacheReadiness) {
+        previousCacheReadiness = status;
+        logger.info({
+          event: "aster.discovery.cache_readiness_changed",
+          outcome: status === "ready" ? "ok" : "degraded",
+          properties: [["state", status]],
+        });
+      }
+      return status;
+    };
     const monitor = createAsterReadinessMonitor({
       readiness,
       probes: [checkReadiness],
       intervalMs: 5_000,
       probeTimeoutMs: 2_500,
     });
+    const cacheMonitor = redis
+      ? createAsterReadinessMonitor({
+          readiness: { setCriticalDependencyState: () => "applied" },
+          probes: [
+            async (signal) =>
+              (await checkCacheReadiness(signal)) === "ready" ? "ready" : "unavailable",
+          ],
+          intervalMs: 5_000,
+          probeTimeoutMs: 1_500,
+        })
+      : undefined;
     try {
       http = createDiscoveryHttpServer({
         host: config.host,
@@ -332,12 +424,16 @@ export async function createDiscoveryService(
         await events.check(deadline.signal);
         events.start();
         rebuildRuntime.start();
-        const status = await checkReadiness(deadline.signal);
+        const [status] = await Promise.all([
+          checkReadiness(deadline.signal),
+          checkCacheReadiness(deadline.signal),
+        ]);
         if (startupController.signal.aborted) {
           return "stopped";
         }
         lifecycle.markReady();
         monitor.start();
+        cacheMonitor?.start();
         return status === "ready" ? "ready" : "degraded";
       } catch {
         if (startupController.signal.aborted) {
@@ -354,6 +450,7 @@ export async function createDiscoveryService(
       health: () => readiness.health(),
       port: () => server.port(),
       checkReadiness,
+      checkCacheReadiness,
       start: () => {
         starting ??= start();
         return starting;
@@ -374,6 +471,7 @@ export async function createDiscoveryService(
     await Promise.allSettled([
       graph?.stop(),
       broker?.close(AbortSignal.timeout(2_000)),
+      redis?.close(AbortSignal.timeout(2_000)),
       runtimeDatabase.close(AbortSignal.timeout(2_000)),
       projectorDatabase.close(AbortSignal.timeout(2_000)),
       telemetry.shutdown(AbortSignal.timeout(2_000)),

@@ -56,10 +56,12 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 ## Delivery state
 
 Active phase: **Phase 10 — Advanced Redis and Concurrency**. Phase09 closed
-through PR36, squash main `ffe8e24` and exact-main CI33254719311. P10-R01/R02/
-R03/R05/R06/R07/R10 is active on `feat/p10-catalog-cache`: define the concrete
-cache contract, then implement a rights-safe Catalog cache-aside slice with
-bounded coalescing, lease and metrics.
+through PR36, squash main `ffe8e24` and exact-main CI33254719311. The P10 Catalog
+cache is released through PR37 head `cb86c37`, protected run33270889083, clean
+confirmation, squash main `903f7b4` and exact-main run33272501078. P10-R04 is the
+sole active item on `feat/p10-discovery-swr`, rebased onto that release, with its
+bounded Discovery stale-while-revalidate implementation and local evidence ready
+for final candidate publication.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

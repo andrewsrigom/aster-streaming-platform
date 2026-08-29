@@ -1,6 +1,6 @@
 P10 Catalog cache contract checkpoint
 Date: 2026-08-29
-Status: local candidate; hosted review, protected CI and release pending
+Status: released; see catalog-cache-release.txt
 
 Source
 - Branch: feat/p10-catalog-cache

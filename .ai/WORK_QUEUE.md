@@ -4,16 +4,11 @@ Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTER
 
 Phase09 is DONE through PR36 corrected exact `b5ccd59`, protected run33253867475,
 clean exact-head confirmation, squash main `ffe8e24` and exact-main
-run33254719311. P10 Catalog cache-aside is the sole IN_PROGRESS item on
-`feat/p10-catalog-cache`. It owns the concrete cache design, rights-safe positive
-reuse, short valid-absence caching, TTL jitter, bounded local coalescing,
-tokenized Redis lease and finite measurements. The local implementation and real
-Redis/PostgreSQL proofs pass. Initial review's metric finding and confirmation's
-bounded-read, mixed-batch coalescing and malformed-metric findings are corrected
-at `2a9b86c221180f2df8caf74f66d9a2495c794888`. Catalog242/242, Redis17/17,
-affected73/73 and repeated real Redis/PostgreSQL fixtures pass. Publication
-update, final confirmation and protected acceptance remain. No Redis result may
-replace the PostgreSQL visibility/version fence or authorize a durable decision.
+run33254719311. P10 Catalog cache-aside is DONE through PR37 exact `cb86c37`,
+protected run33270889083, clean confirmation comment5464418106, squash main
+`903f7b4` and exact-main run33272501078. No Redis result may replace the
+PostgreSQL visibility/version fence or authorize a durable decision. The history
+below retains the remediation sequence that produced that release.
 Protected run33260411345 passed at b65688b, but final-confirmation
 discussion3886966492 found uncoordinated cold negative fence reads. Exact
 correction62afee1 coalesces and leases the negative key before PostgreSQL;
@@ -46,13 +41,26 @@ remain. Protected run `33268669701` passed exact `d05dad3`; confirmation discuss
 local `ce97596` keeps the reply binary through its 16 KiB check and fails fatal
 UTF-8 decoding as malformed without resetting the connection. Redis 17/17,
 Catalog 246/246, real invalid-byte recovery/cleanup and affected 73/73 with 50
-cached in 126.735 seconds pass. Publication and corrected hosted confirmation remain.
+cached in 126.735 seconds pass. Publication and corrected hosted confirmation
+were still pending at that checkpoint.
 Exact-head discussion `3887423663` then found finite leases with TTL above the
 two-second policy remained contended for their full duration. Exact local
 `f014ebe` recovers those keys atomically. Redis17/17, Catalog246/246 and repeated
 real Redis pass with the seeded 24-hour lease replaced and cleanup0. The complete
 affected gate passes 73/73 with 51 cached in 107.438 seconds; only hosted gates
-remain.
+remained at that checkpoint.
+
+P10-R04 is the sole `IN_PROGRESS` item on `feat/p10-discovery-swr`, rebased onto
+released main `903f7b4`. It owns bounded Discovery home-page stale serving,
+background refresh, maximum age, explicit fallback and finite metrics. Exact
+PR39 initial automated review completed without findings. The complete local
+review corrected cross-time title expiry, best-effort cache writes and
+all-settled consumer shutdown at exact `5a5f5e2`. Discovery103/103 and the
+corrected complete affected gate pass73/73 with56 cached in106.071 seconds;
+exact `8faf35a` passes the eleven-service PostgreSQL/Router runtime with
+configured Redis absent, healthy Discovery fallback and cleanup0. Telemetry11/11,
+Web111/111, browser1/1 carry-forward and real Redis also pass. Corrected
+publication is next.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
@@ -125,8 +133,8 @@ Historical stashes are superseded.
 | 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | DONE |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | DONE |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | DONE |
-| 50 | Implement rights-safe Catalog cache-aside, jitter, coalescing, lease and metrics | P10-R01 | IN_PROGRESS |
-| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | READY |
+| 50 | Implement rights-safe Catalog cache-aside, jitter, coalescing, lease and metrics | P10-R01 | DONE |
+| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | IN_PROGRESS |
 | 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.

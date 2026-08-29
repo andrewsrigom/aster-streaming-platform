@@ -2,94 +2,57 @@
 
 ## Resume point
 
-Phases 00–09 are released locally. P09-R10 corrected exact `b5ccd59` passed
-protected run 33253867475 and clean confirmation; PR36 squash-merged as main
-`ffe8e24`, whose exact-main run 33254719311 passed. Release evidence is under
-`evidence/phase-09`.
+Phases 00–09 are released locally. P10 Catalog cache-aside is also released:
+PR37 exact `cb86c371849f895934af99f72c361ccb64bccf8e` passed protected run
+`33270889083` and clean confirmation comment `5464418106`, squash-merged without
+bypass as main `903f7b4330db8c47896ea82f5f487a268d817d88`, and exact-main run
+`33272501078` passed all required jobs.
 
-P10-R01/R02/R03/R05/R06/R07/R10 is active on `feat/p10-catalog-cache` from that
-clean main. The selected slice caches only public-title entity reads. PostgreSQL
-must confirm the current visibility/version fence before positive reuse. Redis is
-optional, bounded and non-authoritative. Implementation, focused suites, real
-PostgreSQL/Redis behavior and the complete affected gate pass locally. Exact
-initial implementation was `a54c324`; initial review comment3886890023 was fixed
-at `3746868`. Confirmation comments3886917843/44/46 found unbounded Redis GET
-materialization, whole-batch coalescing and a dropped oversized-corruption metric.
-Exact `2a9b86c221180f2df8caf74f66d9a2495c794888` corrects all three. Catalog242/242,
-Redis17/17, affected73/73 and repeated real Redis/PostgreSQL fixtures pass.
-Candidate evidence is under `evidence/phase-10`. Full Phase00–14 goal remains
-active.
+P10-R04 is the sole active item on `feat/p10-discovery-swr`, rebased onto that
+main release. The implementation adds bounded whole-home stale-while-revalidate,
+finite Redis envelopes and leases, PostgreSQL fallback, explicit Web stale shape
+and finite telemetry. Redis remains disposable and non-critical.
 
-Protected run33260411345 passed exact b65688b. Its final confirmation added
-discussion3886966492: cold/expired absence checks reached `findFences` before
-coalescing and leasing. Exact local correction
-`62afee15240ab1d197aac84b4d63e1a0e1dce382` coordinates the negative key before
-the owner read. Corrected confirmation discussions3887086778/82 found that work
-could still cross request-time visibility and wrong-type Redis keys persisted.
-Exact `2930332e7b1c049c081bfad8c5d62c71009f03bf` scopes fence sharing by time and
-policy and classifies non-string values before Redis size/read operations.
-Catalog244/244, Redis17/17, affected73/73, real Redis positive/negative/wrong-type
-behavior and the complete PostgreSQL fixture pass with cleanup0. Discussion
-3887146000 then found that a recognizable negative marker without bounded Redis
-expiry could hide later publication. Exact
-`f50acbb7cbb26cef480b0bb87018510660da48ca` embeds and validates cache time,
-deletes missing/future/over-age envelopes and rechecks the owner. Catalog245/245,
-affected73/73 and repeated real Redis/PostgreSQL fixtures pass. Protected run
-33265036497 passed exact4afe12f, but review discussion3887201296 found shifted
-owner-inclusive waiter buckets. Exact6088bf8 counts only attached callers;
-Catalog245/245 and affected73/73 pass without changing the real cache boundary.
-Exact-head discussion3887242213 then found bounded control-byte replies destroyed
-the Redis connection before malformed cleanup. Exact997ef27 validates returned
-strings by type/byte bound only, keeps write inputs strict and lets Catalog delete
-the exact malformed key. Redis17/17, Catalog245/245, affected73/73 and repeated
-real Redis with `controlValueDeleted=true`/cleanup0 pass; PostgreSQL is unchanged.
-Protected run `33266926624` passed exact `edf7bc8`. Exact-head discussions
-`3887280597`/`3887280599` then found permanent contention on wrong-type/non-expiring lease
-keys and a zero-waiter reattachment metric defect. Exact local d93afbc adds
-atomic type/expiry lease recovery and monotonic attachment tracking. Redis17/17,
-Catalog246/246, scoped lint/format and repeated real Redis pass with both
-malformed lease classes, exact Catalog-path recovery and cleanup0. Focused
-Identity passed 147/147 after one unrelated timing failure under broad parallel
-load; the capped affected gate passed 73/73, 59 cached, in 90.953 seconds.
-Publication remains pending.
-Protected run `33268669701` passed exact `d05dad3`, but confirmation discussion
-`3887360355` found invalid UTF-8 expansion after the Redis-side byte bound. Exact
-local `ce97596` uses node-redis binary response mapping, validates the raw 16 KiB
-limit and applies fatal UTF-8 decoding. Redis 17/17, Catalog 246/246, real
-invalid-byte rejection plus live probe/exact deletion/cleanup and affected 73/73
-with 50 cached in 126.735 seconds pass. Publication remains pending.
-Exact-head discussion `3887423663` then found that a finite lease with TTL above
-the requested two-second coordination window remained contended. Exact local
-`f014ebe2534f7c151020e46912cf2e7d9161ac81` atomically replaces excessive TTLs
-while preserving holders within the requested window. Redis17/17, Catalog246/246
-and repeated real Redis pass with `excessiveTtlLeaseRecovered=true` and cleanup0.
-The complete affected gate passes 73/73 with 51 cached in 107.438 seconds. Hosted
-gates remain pending.
-The separate
-`feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
-b65688b; do not publish it before predecessor release.
+Local evidence:
+
+- Discovery 99/99, telemetry 11/11 and Web 111/111 pass.
+- Real Redis passes: 24 cold callers use one source read, 24 stale callers use
+  one refresh, two instances recover an excessive-TTL lease, outage falls back
+  to the owner and cleanup reaches zero.
+- The stale browser path passes 1/1; its affected Web blobs are byte-identical
+  after the predecessor squash rebase.
+- PR39 initial automated review found no issue. The complete local review then
+  corrected cross-time title expiry, rejected-write fallback and sibling closure
+  at exact `5a5f5e2`; Discovery103/103 and `pnpm check:changed` pass73/73 with56
+  cached in106.071 seconds.
+- Exact `8faf35a` passes the eleven-service Discovery runtime in 395884 ms:
+  configured Redis is absent, Discovery stays healthy, public home is served,
+  projection lag is zero, quarantine replay and owner isolation/restart pass,
+  and cleanup reaches zero.
+
+Evidence is under `evidence/phase-10`. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish one PR37 update, reply to and resolve discussion `3887423663`,
-   then obtain corrected confirmation/protected CI before squash merge and
-   exact-main acceptance.
-2. Rebase only dependent commits after b65688b onto released squash main, repeat
-   affected gates, and resume P10-R04.
+1. Push the single batched PR39 remediation and await protected CI.
+2. Run one confirmation review and treat only defined blockers.
+3. Squash-merge without bypass, verify exact-main CI, close P10-R04 and activate
+   READY P10-R08 from clean main.
 
 ## Evidence boundaries
 
-Phase09 browser/media evidence is complete and does not repeat. Phase10 records
-only cache behavior, source-query count, expiry, contention, atomic release and
-Redis-loss evidence under `evidence/phase-10`. Runtime proof repeats only when the
-Redis wire, cache envelope/fence query, composition or failure behavior changes.
+Phase09 browser/media evidence does not repeat. Discovery browser1/1 and real
+Redis evidence carry forward because their affected source blobs did not change.
+The review correction did not change Redis wire/envelope, public stale shape or
+composition, so real Redis, browser and eleven-service runtime do not repeat.
+Repeat them only if those boundaries change.
 
 ## Execution environment
 
 Use native WSL Git and pinned Node 24.19.0/pnpm 11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Use
-`CI=true NODE_OPTIONS=--max-old-space-size=1536` and bounded deadlines. Never
-create or use `codex/` branches.
+`CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4` and bounded
+deadlines. Never create or use `codex/` branches.
 
 ## Do not do yet
 

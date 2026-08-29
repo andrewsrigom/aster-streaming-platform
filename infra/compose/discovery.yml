@@ -39,6 +39,8 @@ services:
       ASTER_DISCOVERY_DATABASE_PASSWORD: aster-test-only
       ASTER_DISCOVERY_PROJECTOR_DATABASE_URL: postgresql://aster_discovery_projector_local@postgres:5432/aster
       ASTER_DISCOVERY_PROJECTOR_DATABASE_PASSWORD: aster-test-only
+      ASTER_DISCOVERY_CACHE_ENABLED: "true"
+      REDIS_URL: redis://redis:6379/0
       ASTER_ROUTER_TRUST_ENABLED: "true"
       ASTER_EVENTS_ENABLED: "true"
     volumes:

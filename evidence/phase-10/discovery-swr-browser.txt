@@ -1,0 +1,53 @@
+P10 Discovery stale browser checkpoint
+Date: 2026-08-29T17:44:38Z
+Status: local candidate browser evidence; carry-forward verified
+
+Source
+- Branch: feat/p10-discovery-swr
+- Pre-rebase checkpoint: 423c33d97c10a0a9bc4bbf662a0c847ea027739d
+- Historical frozen predecessor: b65688b14e49fed41c7502ad50a177db9ffdc2ff
+- Historical rebased predecessor: cb86c371849f895934af99f72c361ccb64bccf8e
+- Released base: 903f7b4330db8c47896ea82f5f487a268d817d88
+- Current browser source checkpoint: b16cbfe
+- Candidate gate checkpoint: 53bdbf2
+
+Environment
+- WSL2 Ubuntu-20.04 with pinned Node.js 24.19.0 and pnpm 11.24.0.
+- System Google Chrome at /usr/bin/google-chrome.
+- Docker Compose project aster built sequentially from this checkout with the
+  base, demo, events and Discovery overlays.
+- Compose reported all eleven declared runtime services running and healthy.
+- Web liveness returned {"status":"live"} on loopback port 3000.
+
+Command and raw result
+- ASTER_BROWSER_EXECUTABLE_PATH=/usr/bin/google-chrome pnpm --filter @aster/web
+  test:browser --grep 'bounded stale home rails remain usable with an explicit
+  refresh notice'
+- PASS: 1/1 using one worker; scenario 3.2 seconds, runner 7.3 seconds.
+
+Observed contract
+- The browser first loaded the actual SSR home through Web and Router.
+- The test intercepted only the exact HomePublic refresh operation and returned
+  one bounded STALE aggregate with valid finite identity/time and three empty
+  public rails.
+- The hydrated client kept the rails usable, rendered the exact explicit notice
+  "Discovery is refreshing. These rails are a recent bounded snapshot.", rendered
+all three empty rail states and did not render the page-level failure alert.
+- The browser route did not replace the initial SSR request or any other GraphQL
+  operation.
+- Rebase carry-forward: the four affected Web source/test blob IDs are unchanged
+  from pre-rebase checkpoint e69a727, and the rebased Web suite passes 111/111.
+
+Interpretation
+The local candidate checkpoint proves the user-visible stale contract through
+the real production Web container and browser hydration. It does not prove the
+Discovery Redis envelope or background refresh; those are covered by the focused
+and real Redis/runtime fixtures. It carries across the Catalog squash rebase
+because the Web stale path and browser scenario remain byte-identical, Web
+passes111/111 and the rebased affected gate passes73/73.
+
+Limitations
+- The retained aster demo remains running for evaluator use; this browser
+  checkpoint did not claim disposable-project cleanup.
+- No hosted browser, native Windows/macOS, field SLO or Phase 10 release claim is
+  made.

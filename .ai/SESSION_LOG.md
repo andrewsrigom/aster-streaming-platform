@@ -2,6 +2,54 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Catalog release and Discovery candidate rebase
+
+### Completed
+
+- Re-ran only the failed jobs of protected PR37 run33270889083 once after the
+  Docker demo Engagement closeout race; all protected jobs passed at unchanged
+  exact head `cb86c37`.
+- Exact-head confirmation comment5464418106 found no major issue and unresolved
+  review threads were zero. PR37 squash-merged without bypass as `903f7b4`; its
+  Git tree equals the reviewed head.
+- Exact-main run33272501078 passed source/runtime, documentation/security, local
+  platform and required aggregation. Catalog cache is released locally.
+- Rebased the sole Discovery branch onto `903f7b4` without conflicts. The first
+  complete affected gate rejected a stale platform policy that still banned the
+  Redis composition accepted by ADR-0038. Exact `53bdbf2` narrows the validator
+  to require the reviewed cache flag/endpoint only in Discovery and keep Redis
+  out of its migration initializer.
+- The corrected complete affected gate passes73/73 with17 cached in182.617
+  seconds. No media/browser/CPU experiment was repeated.
+- Exact `8faf35a` makes the eleven-service runtime explicitly assert optional
+  Redis configuration and degraded cache readiness. The single run passes in
+  395884 ms with healthy public home fallback, zero broker lag, replay,
+  Catalog isolation, Discovery restart recovery, sanitized logs and cleanup0.
+- Final candidate checkpoint `0417ffd` passes all73 affected tasks with61 cached
+  in148.029 seconds after the bounded historical-log compaction required by the
+  repository's 500-heading document limit.
+- Initial PR39 automated review completed at exact `5c4d62d` without findings.
+  The complete local review found that cold coalescing could cross a title
+  visibility boundary, a rejected Redis write could mask completed owner data,
+  and one failed consumer closure could skip its siblings. The batched correction
+  adds caller-time revalidation, best-effort writes and all-settled shutdown;
+  Discovery103/103 plus scoped type/lint/format checks pass.
+- Exact `5a5f5e2` passes the corrected complete affected gate73/73 with56 cached
+  in106.071 seconds. Real Redis, browser and eleven-service runtime were not
+  repeated because wire/envelope, public stale shape and composition are
+  unchanged.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-release.txt`
+- `evidence/phase-10/discovery-swr-contract.txt`
+- `evidence/phase-10/discovery-swr-runtime.txt`
+
+### Next action
+
+Push the one batched PR39 remediation, complete protected CI and one confirmation
+review, then release and activate READY P10-R08.
+
 ## 2026-08-29 — Catalog final cache remediations
 
 ### Completed
@@ -55,6 +103,18 @@ Append new entries at the top. Keep entries factual and concise.
   24-hour lease, proves `excessiveTtlLeaseRecovered=true`, owner-token release
   and cleanup0.
 - The complete affected gate passes 73/73 with 51 cached in 107.438 seconds.
+- Published PR37 exact `cb86c37`, resolved discussion `3887423663`, requested one
+  corrected confirmation and started protected run `33270889083`.
+- Rebased the one allowed Discovery dependent onto that frozen head while hosted
+  gates run; predecessor-first publication remains mandatory.
+- Exact `dda4b9c` changes Discovery from generic conditional lease writes to the
+  shared atomic recoverable lease and separates monotonic refresh attachments
+  from active waiters. The first attached caller now records `one`.
+- Discovery99/99, telemetry11/11, Web111/111 and scoped static checks pass. The
+  repeated real Redis fixture proves a preseeded 24-hour exact lease is recovered,
+  cold/stale bursts each use one source refresh, outage returns owner data and
+  cleanup reaches zero. One first fixture attempt exposed and corrected only an
+  early background-refresh assertion in the test harness.
 
 ### Evidence
 
@@ -63,8 +123,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish one PR37 update, resolve discussion `3887423663`, require exact-head
-protected CI and confirmation, then release Catalog and rebase Discovery.
+Require exact-head protected CI and confirmation, then release Catalog. Continue
+Discovery locally and rebase it onto the predecessor squash before publication.
 
 ## 2026-08-29 — Catalog negative-cache age remediation
 
@@ -2402,22 +2462,22 @@ Confirm the configured GitHub identity and target absence, then create and audit
 
 Execute P00-R07 by adding contribution governance and repository templates before the authorized public repository is created and audited.
 
-## 2026-08-26 — Executable documentation truthfulness gate
+**Historical checkpoint — 2026-08-26 — Executable documentation truthfulness gate**
 
-### Completed
+**Completed**
 
 - Added a dependency-free, bounded UTF-8 Markdown scanner for first titles, matching fences, merge markers, local files and heading fragments, canonical terminology, and evidence-supported explicit current-status claims.
 - Added reference-link handling, percent-decoded traversal and Windows absolute-path rejection, symbolic-target protection, stable JSON output, and bounded diagnostics.
 - Added `docs:check` and `docs:test` to the root scripts and expanded the Turbo graph from ten to twelve tasks without changing the fast pre-commit path.
 
-### Evidence
+**Evidence**
 
 - Passed 8 focused tests covering positive content and deliberate title, fence, merge-marker, terminology, status, link, fragment, traversal, absolute-path, and malformed-UTF-8 failures.
 - Passed the actual repository scan over 127 documents, 467,677 Markdown bytes, 1,744 headings, 223 local links, and 2 evidence-supported current-status claims with zero violation.
 - Passed all 12 graph tasks with 33 focused tests in `4.98` seconds forced and `2.99` seconds on the measured cached repeat.
 - Raw evidence: `evidence/phase-00/documentation-validation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, safe secret fixtures, and dependency review with one stable aggregate result.
 

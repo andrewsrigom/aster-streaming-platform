@@ -14,6 +14,7 @@
     "playback:integration": "turbo run build --filter=@aster/playback && node ./tools/run-playback-integration.mjs",
     "engagement:integration": "turbo run build --filter=@aster/engagement && node ./tools/run-engagement-integration.mjs && node ./tools/run-engagement-integration.mjs --watchlist && node ./tools/run-engagement-integration.mjs --fields && node ./tools/run-engagement-integration.mjs --events",
     "discovery:integration": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-integration.mjs",
+    "discovery:cache-integration": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-cache-integration.mjs",
     "discovery:runtime": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-runtime.mjs",
     "engagement:runtime": "turbo run build --filter=@aster/engagement && node ./tools/run-engagement-runtime.mjs",
     "playback:runtime": "turbo run build --filter=@aster/playback && node ./tools/run-playback-runtime.mjs",
