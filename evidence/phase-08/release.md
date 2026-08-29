@@ -1,6 +1,6 @@
 # Phase 08 acceptance
 
-Status: local requirements verified and PR31 merged after protected CI33217783905/two clean reviews. Exact main33218775702 failed in the browser observer. PR32's read-only seed correction and event-turn progress capture passed every preceding protected boundary in CI33223692248, but the old initial Profiles waiter lost its body. The shared correction then required one review fix to keep selected body consumption inside the same12-second deadline. [Shared event-turn response correction](player-browser-ack.txt), green protected acceptance and exact main are required before release.
+Status: **released**. PR32 exact head d295ec7 passed protected CI33228909828 and clean confirmation5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. The final observer leaves GraphQL response bodies to the application and waits for rendered durable confirmation inside the same12-second deadline. [Browser acknowledgement correction](player-browser-ack.txt), [protected release sequence](player-release.txt) and the requirement evidence below close Phase08.
 
 ## Requirement audit
 
@@ -25,10 +25,10 @@ The evidence includes the prescribed concurrency/constraints, query plans, dupli
 
 No hosted deployment or retained-demo Phase08 upgrade is claimed. The retained Phase07 demo, film, database, keys and pending state remain intact. Local browser checks cover isolated Chrome, keyboard focus and automated accessibility, not complete screen-reader/cross-browser certification. Unload delivery is best effort. Private history never enters public SSR, Redux or durable browser storage.
 
-Immutable-seed transport failure reproduced in early PR32 CI after both browser journeys passed. Read-only replay removes the unnecessary conditional PUT while retaining full-byte verification; protected run33223692248 proves it along with all owner/platform stages. That run exposed the same event/body timing failure in the separate Profiles bootstrap read. The shared deterministic correction still requires protected browser acceptance. The original SDK/provider seed cause remains unproved. No unchanged host, film, storage, SQL or Kafka experiment is required.
+Immutable-seed transport failure reproduced in early PR32 CI after both browser journeys passed. Read-only replay removes the unnecessary conditional PUT while retaining full-byte verification. Later protected run33228909828 and exact-main33229726626 pass every owner/platform/replay/browser stage with the final application-state observer. The original SDK/provider seed cause remains unproved but is no longer on the replay path. No unchanged host, film, storage, SQL or Kafka experiment is required.
 
 Stop optional reporting/event activation or restore compatible Web/Router/owner artifacts while retaining databases, deletion guards, media and signing keys. Additive owner migrations require compatible drained runtimes; never use an empty-state down migration as a retained-data recovery path.
 
 ## Next-phase eligibility
 
-Catalog and Web were released in Phases03–07. Engagement backend and events passed PR26–30 protected/exact-main gates; PR31 must finish the player release. Catalog v1 events and source-version conventions exist. Discovery still needs its bounded current-metadata snapshot/export, rebuild-after-retention and retirement/freshness design described in phase09; these are that phase's work, not existing capabilities.
+Catalog, Web, Playback and Engagement are released through Phase08. Catalog v1 events and source-version conventions exist. Discovery still needs its bounded projection/runtime/search capability described in Phase09; those remain Phase09 work, not existing released capabilities.

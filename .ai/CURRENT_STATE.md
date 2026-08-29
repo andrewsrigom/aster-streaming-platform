@@ -1,22 +1,24 @@
 # Current State
 
-Last updated: 2026-08-28
+Last updated: 2026-08-29
 
 ## Active phase
 
-**Phase 08 — Progress, History, Watchlist, and Continue-Watching**
+**Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P08-R11 on fix/p08-browser-ack, PR32. Protected run33225822813 on dc571bd passed every source, owner, platform, immutable replay and health boundary, then proved Chromium can discard the selected progress body even when read inside the response event. The active local correction leaves response bodies to the application and gates navigation on exact transport selection plus its rendered durable confirmation under the shared12-second deadline. This concrete blocker is not WAITING_EXTERNAL. P09-R01 is READY, preserved unpublished through6ca3703 on feat/p09-discovery-search; historical stashes are superseded. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at confirmation-remediated code head16d4921. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
 
 ## Verified
 
-Phases 00–07 are released locally through protected and exact post-merge CI. [Phase 07 acceptance](../evidence/phase-07/release.md) covers all twelve requirements and explicit browser/content limitations. [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights approval, bounded acquisition, isolated HLS/JPEG, replay, publication, rollback and browser evidence. No hosted deployment is claimed.
+Phases 00–08 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. No hosted deployment is claimed.
 
 P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence/phase-08/README.md) records durable progress, history, watchlist and request-scoped fields. [Federated proof](../evidence/phase-08/federated-runtime.txt) covers real owner authorization, replay/conflict, revocation and anonymous Playback continuity. [Entity fields](../evidence/phase-08/engagement-fields.md) retain 98 tests, nine composition tests, real SQL/Docker and 67-task candidate evidence. No unchanged CPU, media or browser repeat is required.
 
 ## Current work
 
-R11 now uses one exact GraphQL response observer without competing for the application's response body. Profiles require rendered empty state; progress requires the exact sampled request plus `Progress saved`, which production exposes only after parsing a matching durable sequence. Later library reads continue proving exact resume/completion. Seven observer regressions, the full104-test Web suite, types, scoped lint and the43-task affected candidate pass locally. PR32 run33225822813 proves every preceding integration boundary and immutable replay; cleanup succeeded. The [seed replay correction](../evidence/phase-08/player-seed-replay.txt) remains valid. Protected acceptance remains required. Retained demo is unchanged.
+Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact16d4921 packaging plus unchanged real PostgreSQL18.6 acceptance: the11-service Kafka/Router proof projects with zero lag, returns one result and explicit empty, replays/reclaims one exact quarantine slot, serves Catalog while Discovery is stopped, preserves its generation through restart, sanitizes logs and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records the initial73/73 gate, Catalog cleanup correction, four initial review remediations and two confirmation blockers. The latter now keep a valid active generation serviceable during maintenance while bootstrap/expiry fail closed, and expose bounded local exact replay. Discovery70/70, runtime107640ms and final73/73 pass. Exact-head publication, discussion resolution, protected CI/final confirmation, squash and exact-main CI remain.
+
+R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -24,11 +26,11 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase08 exact post-merge closeout, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Discovery home rails, personalized composition, browser search and hosted release remain pending. The current search candidate is not released until protected merge and exact-main CI.
 
 ## Next outcome
 
-Publish the completed P08-R11 application-owned response confirmation in the same PR32, then require protected full demo/replay, exact-head review and exact main success. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased. Rebase and resume Phase09 from preserved commit6ca3703 after repair; no repeated host experiment or retained-demo upgrade.
+Publish/merge P09-R01 through protected CI and confirm exact main. Then activate P09-R03 for independent rails, fallbacks and freshness telemetry.
 
 ## Runtime and recovery
 
@@ -40,7 +42,7 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 ## Current risks
 
-- Run33225822813 proves read-only seed replay and every earlier integration but disproves observer-owned body capture as a stable Chromium API boundary. The application-owned confirmation helper passes its affected gate but still needs protected browser proof. The exact earlier SDK/provider seed transport cause remains unproved. No blind retry, retained reset or CPU attribution.
+- The exact earlier SDK/provider seed transport cause remains unproved; the released read-only replay removes that dependency and passes protected/exact-main gates. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event signing key; old finite migrators/readiness may reject new schema versions. Drain and use compatible binaries or roll forward.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.

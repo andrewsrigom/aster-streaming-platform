@@ -30,6 +30,8 @@ import {
   type AsterKafkaConsumerInput,
   type AsterKafkaPublishInput,
   type AsterKafkaTopicInput,
+  type AsterKafkaTopicOffsets,
+  type AsterKafkaTopicOffsetsResult,
 } from "../broker-contract.js";
 
 const MAXIMUM_OPTION_COUNT = 12;
@@ -137,6 +139,7 @@ export type AsterKafkaRawRecord = Readonly<{
 export interface AsterKafkaProducerClient {
   connect(): Promise<void>;
   metadata(topic: string): Promise<void>;
+  offsets(topic: string): Promise<readonly Readonly<{ partition: number; offset: string }>[]>;
   publish(input: AsterKafkaPublishInput): Promise<void>;
   disconnect(): Promise<void>;
 }
@@ -563,6 +566,52 @@ function topicFrom(input: unknown): string | undefined {
   return validTopic(topic) ? topic : undefined;
 }
 
+function topicOffsetsFrom(value: unknown): AsterKafkaTopicOffsets | undefined {
+  try {
+    if (
+      !Array.isArray(value) ||
+      value.length < 1 ||
+      value.length > 32 ||
+      Reflect.ownKeys(value).length !== value.length + 1
+    ) {
+      return undefined;
+    }
+    const offsets: Record<string, string> = {};
+    for (let index = 0; index < value.length; index++) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+      if (!descriptor || !("value" in descriptor)) {
+        return undefined;
+      }
+      const item = descriptor.value as unknown;
+      if (!validPlainInput(item, ["partition", "offset"])) {
+        return undefined;
+      }
+      const partition = ownDataValue(item, "partition"),
+        offset = ownDataValue(item, "offset");
+      if (
+        typeof partition !== "number" ||
+        !Number.isSafeInteger(partition) ||
+        partition < 0 ||
+        partition > 1023 ||
+        typeof offset !== "string" ||
+        !/^(?:0|[1-9][0-9]{0,18})$/u.test(offset) ||
+        BigInt(offset) > 9_223_372_036_854_775_807n ||
+        Object.hasOwn(offsets, String(partition))
+      ) {
+        return undefined;
+      }
+      offsets[String(partition)] = offset;
+    }
+    return Object.freeze(
+      Object.fromEntries(
+        Object.entries(offsets).sort(([left], [right]) => Number(left) - Number(right)),
+      ),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 function byteViewFrom(value: unknown, minimum: number, maximum: number): Uint8Array | undefined {
   try {
     if (
@@ -765,6 +814,12 @@ function defaultClientFactory(
       if (result.topics.length !== 1 || result.topics[0]?.name !== topic) {
         throw new AsterKafkaProtocolError();
       }
+    },
+    async offsets(topic) {
+      return (await admin.fetchTopicOffsets(topic)).map(({ partition, offset }) => ({
+        partition,
+        offset,
+      }));
     },
     async publish(input): Promise<void> {
       await producer.send({
@@ -1088,6 +1143,33 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
       : Promise.resolve(INVALID_REQUEST);
   };
 
+  const offsets = async (
+    input: AsterKafkaTopicInput,
+    signal?: AbortSignal,
+  ): Promise<AsterKafkaTopicOffsetsResult> => {
+    const topic = topicFrom(input);
+    if (!topic) {
+      return INVALID_REQUEST;
+    }
+    let value: AsterKafkaTopicOffsets | undefined;
+    const result = await runProducer(
+      "probe",
+      signal,
+      async (producer) => {
+        const candidate = topicOffsetsFrom(await producer.offsets(topic));
+        if (!candidate) {
+          throw new AsterKafkaProtocolError();
+        }
+        value = candidate;
+      },
+      false,
+    );
+    if (result.status !== "completed") {
+      return result;
+    }
+    return value ? Object.freeze({ status: "completed", value }) : FAILED;
+  };
+
   const publish = (
     input: AsterKafkaPublishInput,
     signal?: AbortSignal,
@@ -1400,6 +1482,7 @@ export function createAsterKafkaBrokerAdapterWithClientFactory(
   return Object.freeze({
     connect,
     metadata,
+    offsets,
     publish,
     startConsumer,
     stopConsumer,

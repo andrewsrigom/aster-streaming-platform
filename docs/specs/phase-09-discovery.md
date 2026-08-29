@@ -76,6 +76,19 @@ Integrate server-rendered public rails and profile-enhanced client behavior with
 7. Integrate web.
 8. Evaluate relevance and failure.
 
+## Implementation readiness
+
+Inspection on 2026-08-28, while the Phase08 player candidate awaits protected release:
+
+- Existing Catalog v1 events contain title/publication IDs, rights revision and aggregate version, not searchable metadata. Keep that released envelope compatible. P09-R01 must define an owner-validated metadata snapshot and bounded rebuild/export contract; never infer current title authority from an old publication event or read Catalog tables from Discovery.
+- Local broker retention is one hour. Rebuild cannot depend on an unlimited event archive. Define concurrent snapshot/event ordering, duplicate/stale handling, retirement fences, freshness expiry and a scoped emergency invalidation procedure before exposing results.
+- Catalog already owns public visibility, localized titles, genres and editorial labels; Engagement already owns continue-watching. Reuse those owners. Public metadata remains Catalog's federated contribution, not a second editable title model.
+- Search uses the existing PostgreSQL baseline, with no external search engine. Evaluate explicit-language full-text vectors, bounded plain queries, weighted relevance and GIN against the representative fixture. PostgreSQL documents [query parsing and ranking](https://www.postgresql.org/docs/18/textsearch-controls.html) and [text-search indexes](https://www.postgresql.org/docs/18/textsearch-indexes.html); actual query plans and relevance acceptance must establish the chosen behavior.
+
+Deliver in three coherent slices after Phase08 passes: P09-R01/R02/R06/R07 (versioned projection, rebuild and usable bounded search), P09-R03/R04/R05/R08/R09 (independent rails, owner composition, degradation and metrics), then P09-R10 (SSR/client journey and phase acceptance). Exact consistency, limits and purpose-separated owner access belong in the first slice's ADR; no dependency or trust change is approved by these readiness notes alone.
+
+Expected paths are services/discovery/{src/domain,src/application,src/infrastructure,src/transport,test,migrations}, the narrow Catalog-owned snapshot adapter, existing Router composition/known operations, and apps/web/features/discovery. Create only paths containing implemented behavior, not empty scaffolding. Keep personal continue-watching out of public SSR and Discovery persistence. Check the existing source, event and runtime gates before adding another service-specific supervisor.
+
 ## Required tests
 
 - Projection replay and duplicate events.

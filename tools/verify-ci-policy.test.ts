@@ -150,6 +150,25 @@ test("Engagement persistence and private-owner runtime checks cannot be suppress
   }
 });
 
+test("Discovery projection and federated search checks cannot be suppressed", async () => {
+  const source = await readFile(workflowPath, "utf8");
+  for (const changed of [
+    source.replace("pnpm discovery:integration", "true"),
+    source.replace("pnpm discovery:runtime", "true"),
+    source.replace(
+      "timeout-minutes: 15\n        run: |\n          pnpm discovery:integration",
+      "timeout-minutes: 90\n        run: |\n          pnpm discovery:integration",
+    ),
+    source.replace(
+      "Prove Discovery projection and federated search\n        if: needs.classify.outputs.platform == 'true'",
+      "Prove Discovery projection and federated search\n        if: false",
+    ),
+  ]) {
+    assert.notEqual(changed, source);
+    assert.ok(validateWorkflowPolicy(changed).some(({ detail }) => detail.startsWith("Discovery")));
+  }
+});
+
 test("Docker context probe cannot be omitted, skipped or left unbounded", async () => {
   const source = await readFile(workflowPath, "utf8");
   for (const changed of [

@@ -1,0 +1,78 @@
+P09-R01/R02/R06/R07 federated search runtime — 2026-08-29
+
+Exact runtime source commit: 16d4921ff569a501ab3227d11ed6617863fb0ce7
+Branch: feat/p09-discovery-search (unpublished candidate)
+Environment: Ubuntu-20.04 WSL amd64, Node 24.19.0, pnpm 11.24.0,
+Docker Engine 26.0.0 and Compose 2.26.1-desktop.1. Images and dependencies are
+pinned by the committed Compose, lockfile and pnpm patch hash.
+
+Commands:
+pnpm discovery:integration
+pnpm discovery:runtime
+
+Carried-forward PostgreSQL output from 04011af (16d4921 changes no migration,
+PostgreSQL adapter or projection transaction):
+{"event":"discovery_migration","postgres":"18.6","version":2,"emptyRollback":true}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2,"activeOffsetCarryForward":true,"durableHandledOffset":"12"}
+{"event":"discovery_privileges","deniedStatements":3,"catalogIsolation":true}
+{"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":2481}
+
+Final disposable Docker output on exact 16d4921:
+{"event":"discovery_runtime_build","project":"aster-discovery-proof-7ec571ca-8880-4492-87dc-883f249d803d","status":"started"}
+{"event":"discovery_runtime_build","project":"aster-discovery-proof-7ec571ca-8880-4492-87dc-883f249d803d","status":"completed"}
+{"event":"discovery_runtime_started","project":"aster-discovery-proof-7ec571ca-8880-4492-87dc-883f249d803d","services":11,"images":{"catalog":"sha256:8e4bbdad215c5c97497633a98c6bb21d804d2c45d4148cb0b5b3e058f2836ad8","discovery":"sha256:da0e30c26cd894c3ae3cc1b9e3794499cde2d3836f0fad48228d68b7c19ddbdf","router":"sha256:e2d5f5f1065d72c4a1951eccfa220fd6ad151003209bc255c63b62006c5bd1d1"}}
+{"event":"discovery_federated_search","resultCount":1,"zeroResult":"explicit-empty","sourceVersion":5,"freshnessSeconds":300}
+{"event":"discovery_projection_runtime","activeGeneration":"6ceda87b-d497-4af7-851a-2164a86611b6","projectedTitles":1,"documents":2,"brokerLag":0}
+{"event":"discovery_quarantine_replay","exactRecord":true,"reclaimed":true}
+{"event":"discovery_failure_isolation","routerReady":true,"catalogBrowse":true}
+{"event":"discovery_restart_recovery","generationPreserved":true,"searchRecovered":true}
+{"event":"discovery_runtime_logs","finiteOperations":true,"rawQueryText":false,"secrets":false,"timerWarnings":false}
+{"event":"discovery_runtime_cleaned","project":"aster-discovery-proof-7ec571ca-8880-4492-87dc-883f249d803d","remaining":0,"durationMs":107640}
+
+Interpretation:
+- migrations and role isolation work against PostgreSQL 18.6;
+- weighted relevance, diacritic normalization, generation-bound keysets, retirement
+  fences, resumable rebuild and exact quarantine/replay pass;
+- Catalog publication reaches Discovery through real Kafka with zero consumer lag;
+- Router returns one federated Catalog Title reference and one explicit empty result;
+- Router continues serving a Catalog browse while the optional Discovery service is
+  stopped;
+- one exact retained quarantine record is revalidated through current Catalog authority
+  and its finite slot is reclaimed;
+- a Discovery restart preserves the active generation and restores search;
+- logs contain finite operation identities but no raw query/title text, test secret or
+  negative/overflow timer warning after the KafkaJS 2.2.4 patch;
+- both fixtures verify exact project ownership and clean to zero resources.
+
+The exact tree also reads the active generation under the projector role and starts a
+new current-source rebuild after 150 seconds, before its 300-second visibility lease
+expires. Readiness continues admitting search against that valid active generation
+during maintenance, then fails closed at expiry; bootstrap remains unavailable. A
+missing handled checkpoint covers only barrier position zero, so an empty partition can
+promote while any positive barrier still requires durable catch-up.
+
+The first repeated PostgreSQL attempt placed the new active-generation assertion before
+the intentionally rejected promotion and failed that test expectation. Moving the
+assertion after the successful promotion corrected the fixture; no production behavior
+changed. The final PostgreSQL and Docker outputs above are the passing results. The
+earlier exact source 1fe7edb proof remains historical evidence for the same projection,
+Kafka and Federation path before the four review remediations.
+
+The first confirmation-remediation Docker attempt tried to construct its replay fixture
+from a Catalog outbox row already removed by successful relay. The resulting empty SQL
+result failed the setup assertion before replay and the fixture cleaned to zero in
+134044ms. The final proof uses a bounded valid synthetic envelope for the existing
+synthetic Catalog title; it exercises the actual packaged replay command and produces
+the passing exact output above.
+
+Limitations: two synthetic titles and one Kafka partition are functional acceptance,
+not relevance quality at product scale, load capacity or an SLO. The fixture uses
+plaintext single-node Kafka, tmpfs PostgreSQL and local purpose-separated credentials.
+It does not prove home rails, profile personalization, browser search, hosted service
+identity, hosted persisted-operation enforcement or a retained-project upgrade. No
+media is downloaded or processed and no release is claimed before protected merge.

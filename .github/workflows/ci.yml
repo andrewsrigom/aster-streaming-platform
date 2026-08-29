@@ -77,6 +77,7 @@ jobs:
           ./tools/resolve-schema-baseline.test.ts
           ./tools/verify-ci-policy.test.ts
           ./tools/reset-local-platform.test.mjs
+          ./tools/verify-discovery-runtime.test.mjs
           ./tools/verify-local-platform.test.mjs
 
   quality:
@@ -148,6 +149,12 @@ jobs:
         run: |
           pnpm engagement:integration
           pnpm engagement:runtime
+      - name: Prove Discovery projection and federated search
+        if: needs.classify.outputs.platform == 'true'
+        timeout-minutes: 15
+        run: |
+          pnpm discovery:integration
+          pnpm discovery:runtime
       - name: Prove Docker-only playable demo
         if: needs.classify.outputs.platform == 'true'
         timeout-minutes: 15

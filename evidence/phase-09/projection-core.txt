@@ -1,0 +1,54 @@
+P09-R01 local domain checkpoint — 2026-08-28
+Base: e20a7ded16d4867a4a7d29e9b4913ce2b6ea8ee2
+Branch: feat/p09-discovery-search (unpublished dependent)
+Environment: Ubuntu-20.04 WSL, Node24.19.0, pnpm11.24.0.
+Scope: pure projection and search-input rules, not a working API or SQL integration.
+Commands: scoped Prettier; pnpm --filter @aster/discovery build/test;
+scoped ESLint; pnpm architecture:check; pnpm unused:check.
+Result: strict build,21 tests,lint,architecture and unused-code checks pass.
+Normal frozen install passed without package-version changes after offline
+metadata was unavailable. No runtime/container/media/host experiment.
+
+The predecessor's exact main run33218775702 failed in Playwright response-body
+observation during navigation. Preserve this local checkpoint; correct Phase08
+first, then rebase and repeat affected gates before any Phase09 publication.
+
+Raw final focused output:
+services/discovery/package.json 28ms (unchanged)
+services/discovery/src/domain/search-input.ts 155ms
+services/discovery/src/domain/title-projection.ts 118ms
+services/discovery/test/search-input.test.ts 53ms (unchanged)
+services/discovery/test/title-projection.test.ts 76ms
+services/discovery/tsconfig.json 4ms (unchanged)
+✔ normalizes title/query Unicode and punctuation consistently without interpreting a query language (25.381735ms)
+✔ query-bound rank/title cursor round-trips and cannot be reused for another search (2.586868ms)
+✔ canonical cursor rejects ambiguous scores, extra components and forged encoding (1.201956ms)
+✔ query, term, page and authority bounds fail without silent truncation (1.389151ms)
+✔ maximum Unicode query fits its bounded cursor without losing scope (1.691044ms)
+✔ rank-descending/id-ascending traversal excludes previous positions despite new inserts (0.550321ms)
+✔ cursor producer refuses malformed internal positions (1.396143ms)
+✔ untrusted query accessors and hostile reflection never escape validation (0.540079ms)
+✔ current snapshot creates a deeply immutable bounded projection without copying authority (22.434361ms)
+✔ exact duplicate has no new indexed time or provenance effect (2.179527ms)
+✔ old hints read the current owner version and never claim their event version is current (1.218412ms)
+✔ out-of-order versions cannot regress metadata or a retirement fence (1.807702ms)
+✔ expiry can hide the same version but cannot be undone by another same-version publication (0.760845ms)
+✔ changed same-version metadata and contradictory leases fail closed (4.134214ms)
+✔ fresh authoritative refresh renews a lease; an old observation cannot extend it (1.106863ms)
+✔ visibility has exact expiry and current-source freshness boundaries (1.189321ms)
+✔ rebuild snapshots do not invent broker provenance or discard version fences (0.657628ms)
+✔ canonical locale, Unicode and sorted lists yield stable duplicate detection (1.614034ms)
+✔ snapshot and metadata limits reject extra authority, malformed values and overflow (2.3388ms)
+✔ invalid persisted identities, schema versions and future clocks cannot be advanced (0.950269ms)
+✔ untrusted snapshot properties and array accessors are never invoked (0.643315ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 327.407588
+$ node ./tools/verify-architecture.ts
+{"check":"architecture","status":"ok","violations":0}
+$ knip --no-config-hints

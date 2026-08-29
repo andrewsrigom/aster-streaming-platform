@@ -1,0 +1,178 @@
+# P09-R01 federated search candidate gate
+
+Date: 2026-08-29
+Branch: feat/p09-discovery-search
+Initial candidate head: e979d7dff4503c7c4dec35542d6dc8b92579eed0
+Catalog CI correction: 5287b29
+Review-remediated code head: 04011af2a0fa46ee3a1a39c02c4384e335bb2f3c
+Confirmation-remediated code head: 16d4921ff569a501ab3227d11ed6617863fb0ce7
+Initial runtime source: 1fe7edb53451ea25f4d55658dd7432f7d084f568
+Node.js: 24.19.0
+pnpm: 11.24.0
+
+Canonical candidate gate:
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 56 cached, 73 total
+  Time: 1m1.745s
+  Exit: 0
+
+Dependency audit:
+
+  pnpm audit --audit-level high
+  High: 0
+  Critical: 0
+  Moderate: 1 (known UUID advisory; inspected Apollo callers are unaffected)
+  Exit: 0
+
+The first aggregate gate exposed three deterministic test-harness ceilings rather than
+production failures. The Playback compatibility test omitted the new Discovery owner;
+the Catalog stalled-download fixture used a 20 ms outer deadline; and the Identity
+adapter fixture used a 5 s child-process ceiling. The corrections include Discovery in
+the compatibility composition and raise only those test-owned outer ceilings to 500 ms
+and 15 s. Focused tests pass and the final canonical gate above is the first complete
+candidate-wide pass.
+
+Initial review inspected the Discovery domain/application, PostgreSQL migrations and
+adapters, event acknowledgement/quarantine, generation rebuild/promotion, Catalog
+purpose-separated reads, GraphQL limits/sanitization, Router trust/composition,
+Kafka offset/patch behavior, Compose isolation, CI classification and cleanup policy.
+No requirement, security/data, availability or public-contract blocker was found.
+
+The initial real PostgreSQL/Kafka/Router evidence in search-runtime.txt remained
+applicable through the Catalog test-only correction. The later automated review changed
+projection maintenance and Compose availability behavior, so both affected real gates
+were repeated on the exact tree later committed as 04011af.
+
+Confirmation review rechecked the complete candidate plus this evidence-only delta and
+found no blocking issue.
+
+Protected run 33236352596 then passed classification, dependency review,
+documentation/security, the local platform and every Catalog integration assertion,
+but the standalone Catalog cleanup guard still allowed at most nine declared volumes.
+The base topology now declares two additional unused, disposable Discovery trust
+volumes, so the proof failed before its already-scoped teardown. Correction 5287b29
+adds exactly those two reviewed names to the proof allowlist and changes its finite
+ceiling to eleven. It does not broaden project, label, authority, attachment or
+post-cleanup checks.
+
+Correction evidence:
+
+  node --test ./tools/verify-catalog-runtime.test.mjs
+  Tests: 3 passed, 3 total
+  Exit: 0
+
+  pnpm catalog:demo
+  Catalog recovery: passed; exit code 143; sanitized logs
+  Cleanup: remaining 0
+  Duration: 89138 ms
+  Exit: 0
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 59 cached, 73 total
+  Time: 53.419s
+  Exit: 0
+
+The remediation confirmation inspected the six-line allowlist/count delta and found no
+
+The automated PR review then identified four valid findings: refresh quiet active
+generations before their 300-second leases expire (discussion 3885713367), treat a
+missing handled checkpoint as broker position zero only (3885713370), keep Router
+startup independent from optional Discovery health (3885713374), and align the public
+query limit with the implemented 80-code-point bound (3885713375). Commit 04011af
+addresses all four in one availability/contract remediation. It starts current-source
+renewal at 150 seconds, validates the active generation through a bounded read-only
+query, promotes an empty partition at barrier zero, removes the Router dependency from
+the overlay, proves Catalog browse through Router while Discovery is stopped, and
+corrects the README limit.
+
+Review-remediation evidence:
+
+  pnpm --filter @aster/discovery build
+  pnpm --filter @aster/discovery test
+  Tests: 69 passed, 69 total
+  pnpm --filter @aster/discovery typecheck
+  Exit: 0
+
+  node --test ./tools/verify-catalog-runtime.test.mjs \
+    ./tools/verify-discovery-runtime.test.mjs
+  Tests: 4 passed, 4 total
+  Exit: 0
+
+  pnpm discovery:integration
+  PostgreSQL 18.6: migrations, active-generation reads, empty-offset promotion,
+  projection/event/search behavior and exact cleanup passed
+  Cleanup: remaining 0
+  Duration: 2481 ms
+  Exit: 0
+
+  pnpm discovery:runtime
+  Search, zero-result, zero-lag, stopped-Discovery Catalog isolation, restart recovery,
+  sanitized logs and exact cleanup passed
+  Cleanup: remaining 0
+  Duration: 104158 ms
+  Exit: 0
+
+  pnpm unused:check
+  Exit: 0
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 63 cached, 73 total
+  Time: 47.155s
+  Exit: 0
+
+The first post-review candidate attempt exposed one unused exported type only; making
+that implementation-only active-generation shape private corrected Knip without a
+runtime change. Commit 40f5771 published that evidence, protected run33237612970 began,
+all four initial discussions were answered/resolved, and the requested exact-head
+confirmation review completed.
+
+That confirmation found two new blocking boundaries: maintenance state incorrectly
+withheld readiness despite a valid retained active generation (discussion3885790201),
+and exact quarantine replay existed only in application tests without an operator
+surface (3885790205). Commit16d4921 addresses both. Readiness now derives from the
+validated active generation: bootstrap and age at or beyond300seconds remain
+unavailable, while a valid active generation continues serving during a maintenance
+rebuild. A local-only UUID-selected command uses one projector connection, the
+purpose-separated Catalog credential and a five-second deadline to revalidate exact
+retained bytes and reclaim the slot only after an applied or duplicate result.
+
+Confirmation-remediation evidence:
+
+  pnpm --filter @aster/discovery build
+  pnpm --filter @aster/discovery test
+  Tests: 70 passed, 70 total
+  pnpm --filter @aster/discovery typecheck
+  Exit: 0
+
+  pnpm discovery:runtime
+  Federated search, explicit empty result, exact quarantine replay/slot reclamation,
+  stopped-Discovery Catalog isolation, restart recovery, sanitized logs and exact
+  cleanup passed
+  Cleanup: remaining 0
+  Duration: 107640 ms
+  Exit: 0
+
+  pnpm unused:check
+  Exit: 0
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 60 cached, 73 total
+  Time: 50.848s
+  Exit: 0
+
+The first repeated runtime attempt used the already-relayed Catalog outbox as a fixture
+source, so its setup inserted no quarantine row and failed before invoking the command;
+ownership-checked cleanup left zero resources. The corrected proof supplies a bounded
+valid synthetic event for the existing synthetic title and passes above. The first
+candidate attempt after adding the command correctly failed because the new executable
+was absent from Knip's explicit entry list; adding that exact entry closed the gate.
+Neither correction weakens production behavior or a check.
+
+Pending at this checkpoint: publish16d4921 plus evidence, resolve the two addressed
+confirmation discussions, run one new exact-head protected CI and final blocking-boundary
+confirmation, squash merge, and exact-main CI. No release is claimed by this file.

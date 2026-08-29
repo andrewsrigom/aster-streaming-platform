@@ -320,7 +320,7 @@ test("diagnostic runs real loopback health transitions and exits naturally", asy
 });
 
 test("real PostgreSQL and Redis adapters fail readiness safely and release their handles", async () => {
-  const result = await runProcess("./real-adapters-fixture.js");
+  const result = await runProcess("./real-adapters-fixture.js", [], process.env, 15_000);
   assert.equal(result.killed, false);
   assert.equal(result.code, 0, result.stderr);
   assert.equal(result.stdout, "real-adapters-natural-exit\n");

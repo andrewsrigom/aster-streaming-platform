@@ -53,6 +53,41 @@ input DeleteProfileInput {
   profileId: ID!
 }
 
+type DiscoveryPageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+enum DiscoverySearchCode {
+  CANCELLED
+  COMPLETED
+  CURSOR_EXPIRED
+  INDETERMINATE
+  INVALID_INPUT
+  STALE
+  UNAVAILABLE
+}
+
+type DiscoverySearchConnection {
+  edges: [DiscoverySearchEdge!]!
+  generation: ID!
+  pageInfo: DiscoveryPageInfo!
+}
+
+type DiscoverySearchEdge {
+  cursor: String!
+  indexedAt: Float!
+  node: Title
+  sourceVersion: Int!
+  visibleUntil: Float!
+}
+
+type DiscoverySearchPayload {
+  code: DiscoverySearchCode!
+  connection: DiscoverySearchConnection
+  correlationId: ID!
+}
+
 enum IdentityOutcome {
   BACKPRESSURE
   CANCELLED
@@ -216,6 +251,7 @@ type Query {
   profile(id: ID!): Profile
   profiles: OwnedProfiles!
   progressHistory(after: String, first: Int! = 20, profileId: ID!): ProgressPagePayload!
+  searchTitles(after: String, first: Int! = 20, locale: String!, query: String!): DiscoverySearchPayload!
   title(id: ID!): Title
   titles(after: String, first: Int!): CatalogTitleConnection!
   watchlist(after: String, first: Int! = 20, profileId: ID!): WatchlistPagePayload!

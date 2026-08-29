@@ -3,6 +3,7 @@ FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a77
 WORKDIR /workspace
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY patches ./patches
 COPY packages/config/package.json ./packages/config/
 COPY packages/runtime/package.json ./packages/runtime/
 COPY packages/telemetry/package.json ./packages/telemetry/

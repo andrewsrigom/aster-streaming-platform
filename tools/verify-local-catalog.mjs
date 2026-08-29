@@ -71,7 +71,7 @@ try {
     ]);
   const first = await compose(["run", "--rm", "--no-deps", "catalog-init"], 20000);
   const repeat = await compose(["run", "--rm", "--no-deps", "catalog-init"], 20000);
-  assert.ok(first.includes('"applied":[1,2,3,4,5,6,7,8,9]'));
+  assert.ok(first.includes('"applied":[1,2,3,4,5,6,7,8,9,10]'));
   assert.ok(repeat.includes('"applied":[]'));
   runtime = await compose(
     [
@@ -202,7 +202,7 @@ try {
     );
   }
   const volumes = await list("volume");
-  assert.ok(volumes.length <= 9);
+  assert.ok(volumes.length <= 11);
   for (const name of volumes) {
     const [volume] = JSON.parse(await docker(["volume", "inspect", name]));
     const attachedIds = (

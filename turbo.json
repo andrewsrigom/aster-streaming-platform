@@ -112,6 +112,9 @@
     "//#platform:check": {
       "inputs": [
         "infra/router/**",
+        "patches/**",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
         "tools/verify-router-runtime.mjs",
         ".dockerignore",
         "infra/docker/**",
@@ -120,6 +123,7 @@
         "services/catalog/package.json",
         "services/playback/package.json",
         "services/engagement/package.json",
+        "services/discovery/package.json",
         "tools/verify-engagement-runtime.mjs",
         "tools/verify-playback-runtime.mjs",
         "tools/verify-catalog-runtime.mjs",
@@ -129,12 +133,16 @@
         "docs/operations/LOCAL_DEVELOPMENT.md",
         "infra/compose/**",
         "tools/reset-local-platform.sh",
-        "tools/verify-local-platform.mjs"
+        "tools/verify-local-platform.mjs",
+        "tools/verify-discovery-runtime.mjs"
       ]
     },
     "//#platform:test": {
       "inputs": [
         "infra/router/**",
+        "patches/**",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
         "tools/verify-router-runtime.mjs",
         "tools/verify-router-runtime.test.mjs",
         ".dockerignore",
@@ -144,6 +152,7 @@
         "services/catalog/package.json",
         "services/playback/package.json",
         "services/engagement/package.json",
+        "services/discovery/package.json",
         "tools/verify-engagement-runtime.mjs",
         "tools/verify-engagement-runtime.test.mjs",
         "tools/verify-playback-runtime.mjs",
@@ -159,7 +168,9 @@
         "tools/reset-local-platform.sh",
         "tools/reset-local-platform.test.mjs",
         "tools/verify-local-platform.mjs",
-        "tools/verify-local-platform.test.mjs"
+        "tools/verify-local-platform.test.mjs",
+        "tools/verify-discovery-runtime.mjs",
+        "tools/verify-discovery-runtime.test.mjs"
       ]
     },
     "//#ai:check": {
@@ -200,7 +211,8 @@
         "infra/compose/**",
         "tools/verify-ci-policy.ts",
         "tools/resolve-schema-baseline.ts",
-        "tools/verify-local-platform.mjs"
+        "tools/verify-local-platform.mjs",
+        "tools/verify-discovery-runtime.mjs"
       ]
     },
     "//#ci:test": {
@@ -215,7 +227,9 @@
         "tools/reset-local-platform.sh",
         "tools/reset-local-platform.test.mjs",
         "tools/verify-local-platform.mjs",
-        "tools/verify-local-platform.test.mjs"
+        "tools/verify-local-platform.test.mjs",
+        "tools/verify-discovery-runtime.mjs",
+        "tools/verify-discovery-runtime.test.mjs"
       ]
     },
     "//#commit:test": {

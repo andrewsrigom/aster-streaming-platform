@@ -2,11 +2,42 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Discovery federated search candidate
+
+### Completed
+
+- Composed the versioned Discovery projection, Catalog event consumer, resumable barrier-gated rebuild and bounded PostgreSQL search into a private Express/Apollo subgraph and the fifth Router owner.
+- Added purpose-separated Router/Catalog trust, strict GraphQL parsing/cost/concurrency controls, generated five-subgraph artifacts, the SearchTitles known operation and an opt-in resource-bounded Compose topology.
+- Added disposable runtime policy, CI execution and safe-reset coverage. Applied a hashed KafkaJS2.2.4 patch that clamps its negative pending-request timer while preserving the existing one-second polling interval and MIT notices.
+- Remediated all four valid automated-review findings in04011af: refresh quiet active generations at150seconds, treat missing handled progress as broker position zero only, remove optional Discovery from Router startup dependencies, prove Catalog isolation while Discovery is stopped, and align the documented query limit to80 code points.
+- Remediated confirmation discussions3885790201/205 in16d4921: readiness now serves a valid active generation during maintenance but fails bootstrap/expiry closed, and a local UUID-selected command revalidates/reclaims exact quarantine bytes through current Catalog authority.
+
+### Evidence
+
+- Runtime source1fe7edb passes Discovery68/68, Router9/9, platform67/67, CI-policy33/33, schema composition and strict lint/type/unused/architecture/format/docs gates. Candidate e979d7d passes the canonical73/73 aggregate gate and dependency audit with zero high/critical findings.
+- Exact-commit PostgreSQL18.6 acceptance passes relevance, stable keysets, fences, rebuild/event recovery, role isolation, GIN and cleanup in2972ms. The11-service Docker proof passes one federated result, explicit empty state,300-second freshness, zero Kafka lag, restart recovery, sanitized logs, no timer warning and exact cleanup in319795ms.
+- Added Discovery operations, architecture and evidence documentation. Initial and confirmation reviews found no blocking requirement, security/data, availability or public-contract issue. Protected run33236352596 passed all independent jobs and Catalog integration behavior, then exposed a stale standalone cleanup ceiling of nine declared volumes.
+- Correction5287b29 adds only the two reviewed Discovery trust volumes to that allowlist/finite ceiling. Focused3/3, real Catalog recovery with zero residue in89138ms and the repeated73/73 gate in53.419s pass. Remediation confirmation found no blocker; a new exact-head protected run remains.
+- Review remediation passes Discovery69/69, focused platform4/4, real PostgreSQL18.6 in2481ms and the11-service Docker proof in104158ms with stopped-Discovery Catalog browse, restart recovery and zero residue. That candidate passes73/73,63 cached, in47.155s; requested automated confirmation later found the two boundaries corrected below.
+- Confirmation remediation passes Discovery70/70 and the11-service Docker proof in107640ms with exact replay reclamation, isolation/recovery and zero residue. Final candidate passes73/73,60 cached, in50.848s. The first replay fixture incorrectly expected a relayed outbox row and the first candidate omitted the new executable from Knip entrypoints; both failures are retained in evidence and corrected without weakening checks.
+
+### Next action
+
+Publish exact16d4921 plus evidence, resolve the two addressed confirmation discussions, require exact-head protected CI/final confirmation, then squash and verify exact main before P09-R03.
+
 ## 2026-08-28 — Owned events and recovery checkpoint
 
 ### Completed
 
-Current handoff: PR32 observer head77eda41 passed both actual browser journeys and clean reviews, but CI33220547568 failed in final immutable-seed replay. Added bounded presence lookup/full-byte read-only reuse; only absence permits one conditional creation. P08-R11 remains IN_PROGRESS on fix/p08-browser-ack. P09 domain/ADR-0035/21 tests are preserved unpublished at0e31767 plus Catalog snapshot WIP stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32, READY after repair/rebase. Retained demo/media and host processes are unchanged.
+Latest 2026-08-29 continuation: implemented canonical Kafka topic barriers, one finite earliest Catalog consumer, exact two-title Catalog export and a resumable generation rebuild. Broker progress now advances durably on the active and concurrent building generations before acknowledgement; rebuild start copies active progress and scan checkpoints cannot overwrite it. This closes the barrier/start race while preserving the active index on partial failure. Broker27/27, event-delivery23/23, Discovery55/55, scoped lint, diff check and real PostgreSQL18.6 pass; the disposable fixture cleaned to zero. [Evidence](../evidence/phase-09/rebuild-runtime.txt). GraphQL/service composition and real Kafka remain next; no public API, retained migration or demo change is claimed.
+
+Latest continuation: exact P08 head d295ec7 passed protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11/Phase08 are DONE. Rebased P09 onto that tree; temporary owner-transport stash82be67e was applied once and dropped. Historical stashes remain superseded. Retained demo is untouched.
+
+Latest P09 checkpoint: implemented bounded Catalog event-hint inspection, fixed purpose-separated owner HTTP reads, broker acknowledgement handling, fresh owner-snapshot projection, one-active/no-queue admission and finite exact-byte quarantine/replay. Oversized, cancelled, unavailable, indeterminate and full-quarantine outcomes keep offsets retryable; direct recovery-table access is denied. Strict build,47/47 tests, scoped lint and real PostgreSQL18.6 migration/recovery proof pass. Broker lifecycle/rebuild orchestration and GraphQL remain; no running consumer/API is claimed.
+
+Latest continuation: rebased the sole P09 dependent onto exact predecessor `dc571bd77e08529b8c91ccb53d44b0bf3bfdf089` and applied stash `01b1dad9bbda289976d137b1a20af9f7cf102add` exactly once. Added exact private Catalog snapshot/export operations with a purpose-separated credential, independent one-active/no-queue admission, a two-second deadline and a one-connection read-only pool. Optional Discovery authority or database loss now returns private `UNAVAILABLE` while public Catalog stays ready and later recovers. The same predecessor corrected GraphQL response capture for both Profiles and progress: selected bodies start reading in the response event turn and retain the twelve-second deadline through body settlement. Historical stashes remain safety records and must not be reapplied.
+
+Current handoff: PR32 is frozen at ea4c72f67818b7e2382da1a6c653d6f835aad23c after11 focused tests, real S3 replay/cleanup and43/43 candidate tasks pass. P08-R11 is WAITING_EXTERNAL only for CI33222164370, refreshed review (request5459001648), squash and exact main. The earlier observer-only run33220547568 failed in seed replay; its clean browser reviews do not certify this new runtime boundary. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search. Its domain checkpoint is nowcf13c153bed54312b681b30e6274fc8129543772 after rebasing onto ea4c72f. Stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32 was applied once and memory conflicts reconciled; never reapply it or older stashes. No publication before predecessor closeout; rebase/recheck if it changes. Retained demo/media and host processes are unchanged.
 
 Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
 
@@ -16,6 +47,12 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 ### Evidence
 
+Latest Discovery persistence checkpoint:34/34 tests, strict build and scoped lint pass. One disposable PostgreSQL18.6 run proves empty rollback, separate read/projector privileges, Catalog isolation, title-over-synopsis relevance, diacritic normalization, no keyset duplicate after insert, retirement/newer republish, barrier-gated promotion, old-cursor expiry, active survival during partial rebuild, exactly two retained generations, GIN eligibility and guarded non-empty rollback. [Raw evidence](../evidence/phase-09/projection-postgres.txt). Exact labelled tmpfs fixture cleaned to zero; retained demo untouched.
+
+Latest P09 private-runtime checkpoint: strict HTTP/Catalog builds, scoped lint and19/19 focused tests pass. A unique disposable PostgreSQL/real HTTP run proves exact operations, separate read-only credentials and pool limits, public-Catalog isolation during revoked Discovery authority, recovery after grant, and complete cleanup. The frozen predecessor correction passes104/104 Web tests, including seven observer regressions, strict types, scoped lint and the43-task affected candidate. [Catalog evidence](../evidence/phase-09/catalog-snapshots.txt). No retained runtime, media or host process changed.
+
+Discovery resumed on cf13c15:31 focused tests and scoped lint pass. Focused PostgreSQL proof passed3 synthetic titles; full Catalog compatibility then exposed only a last-page fixture assumption about unrelated retained titles. Corrected that expectation, reran the affected full SQL suite once: migration1..10, owner/concurrency/media/public GraphQL and source-view checks pass,2055 titles survive view round-trip, cleanup0. [Evidence](../evidence/phase-09/catalog-snapshots.txt). No running Discovery HTTP/search API, retained data change or host experiment.
+
 Current R11 correction: nine seed regressions/two file tests pass; scoped lint passes after fixing test braces/method binding. One existing real media-origin fixture passed first create, read-only replay with zero additional PUTs, corruption refusal, immutable headers and all existing access/compensation checks; exact cleanup reports zero. [Seed evidence](../evidence/phase-08/player-seed-replay.txt) retains the initial red regression and original CI failure. Earlier five observer regressions,26 player tests,14/14 gate and both actual PR32 browser passes remain supporting. No SQL, Compose, dependency, retained-film or host change.
 
 Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
@@ -24,7 +61,11 @@ R08 protected/main gates pass. Native pinned tooling and its executable pnpm shi
 
 ### Next action
 
-Current: affected gate passes43/43 (24 cached,1m48.49s); publish the seed correction in PR32, refresh review for its bootstrap boundary, then require protected full demo/replay and exact main success. [Prior protected evidence](../evidence/phase-08/player-release.txt) remains supporting, not a successful main claim. Resume Phase09 after repair/rebase and apply only its exact new stash once. The following prior checkpoint remains historical:
+Continue P09 event/snapshot orchestration and quarantine/replay locally while P08 waits for one protected acceptance/review. Merge P08 first, require exact main, then rebase/recheck P09 before publication.
+
+Current continuation: keep PR32 exact `d295ec7f8b2acf7e9f5fe8e60b1134dd785b4cce` frozen for CI33228909828 and review5459772025. Continue Discovery event/snapshot orchestration without publishing before predecessor release.
+
+Current: PR32 ea4c72f is published and waits only for CI33222164370/review request5459001648/merge/exact main. Continue P09 snapshot SQL proof locally on cf13c15; stash770430 applied once, memory conflicts reconciled. Do not publish Discovery before predecessor release or reapply stashes. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 
@@ -2155,36 +2196,18 @@ Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions fro
 - Added the canonical MIT license with the project notice `Aster contributors`.
 - Defined separate licensing scopes for project-authored materials, dependencies, and media assets.
 - Updated the README, license documentation, decision ledger, file index, current state, queue, and handoff.
+- The preceding specification baseline defined product journeys, bounded contexts, ownership, event flow, supergraph, caching, media, frontend, resilience, observability, security, deployment, capacity, fifteen gated phases, agent contracts and the rights-review workflow.
 
 ### Evidence
 
 - Inspected `LICENSE` and verified the canonical grant, notice condition, and warranty disclaimer.
 - Searched repository licensing statements and found consistent MIT references.
 - Checked 155 internal links across 124 Markdown files; no broken target was found.
+- The initial starter archive passed documentation validation and made no application implementation claim.
 
 ### Next action
 
-Reconcile Phase 00 requirement traceability and audit the full delivery plan before toolchain initialization.
-
-## 2026-08-25 — Specification baseline
-
-### Completed
-
-- Defined Aster product scope and user journeys.
-- Defined bounded contexts, data ownership, event flow, supergraph, caching, media, frontend, resilience, observability, security, deployment, and capacity models.
-- Recorded accepted architecture decisions.
-- Defined fifteen gated delivery phases.
-- Added an agent operating contract, context files, skills, templates, quality gates, and operational procedures.
-- Added a rights-review workflow for openly licensed media.
-
-### Evidence
-
-- Documentation validation report generated with the starter archive.
-- No application implementation was claimed.
-
-### Next action
-
-Execute Phase 00 beginning with source-code license selection.
+Reconcile Phase 00 requirement traceability and audit the full delivery plan before toolchain initialization. The original baseline next action was to begin Phase 00 with license selection.
 # 2026-08-28 — Response-event progress acknowledgement capture
 
 - Preserved P09 private Catalog transport in stash `3c62b4289287b3ac799d498daf1577bbbf4eaf30` after 21 focused transport tests and scoped lint passed, then returned to the failing predecessor.

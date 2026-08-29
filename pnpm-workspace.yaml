@@ -14,6 +14,8 @@ packageExtensions:
     dependencies:
       "@svta/cml-cmcd": "2.4.0"
       eventemitter3: "5.0.4"
+patchedDependencies:
+  kafkajs@2.2.4: patches/kafkajs@2.2.4.patch
 disallowWorkspaceCycles: true
 minimumReleaseAge: 1440
 minimumReleaseAgeStrict: true

@@ -3,8 +3,10 @@ import { createLocalEventDelivery, type EventDeliveryLifecycle } from "@aster/ev
 import {
   loadLocalRouterTrust,
   loadLocalCatalogPlaybackTrust,
+  loadLocalCatalogDiscoveryTrust,
   createLocalEngagementReadTrust,
   loadLocalEngagementReadCredential,
+  type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import {
   bindAsterProcessSignals,
@@ -20,14 +22,20 @@ import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createCatalogPublicQueries } from "./application/public-queries.js";
 import { createCatalogPlaybackQueries } from "./application/playback-queries.js";
 import { createCatalogEngagementQueries } from "./application/engagement-queries.js";
+import { createCatalogDiscoveryQueries } from "./application/discovery-queries.js";
 import { catalogRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { createPostgresCatalogPublic } from "./infrastructure/persistence/postgres-public.js";
 import { probeCatalogReader } from "./infrastructure/persistence/reader-readiness.js";
+import { createPostgresCatalogDiscovery } from "./infrastructure/persistence/postgres-discovery.js";
+import { probeCatalogDiscoveryReader } from "./infrastructure/persistence/discovery-readiness.js";
 import { createCatalogSubgraph } from "./transport/catalog-subgraph.js";
 import { createCatalogHttpServer, type CatalogHttpServer } from "./transport/http-server.js";
 
 interface RuntimeResources {
   readonly database?: AsterPostgresAdapter;
+  readonly discoveryDatabase?: AsterPostgresAdapter;
+  readonly routerTrust?: AsterLocalRouterTrust;
+  readonly discoveryTrust?: AsterLocalRouterTrust;
   readonly telemetry?: AsterTelemetry;
   readonly logger?: AsterLogger;
   readonly terminate?: (code: number) => void;
@@ -61,6 +69,27 @@ export async function createCatalogService(
     await telemetry.shutdown(AbortSignal.timeout(2000));
     throw error;
   }
+  let discoveryDatabase: AsterPostgresAdapter | undefined;
+  try {
+    if (config.discoveryRead) {
+      discoveryDatabase =
+        resources.discoveryDatabase ??
+        createAsterPostgresAdapter({
+          connectionString: config.discoveryConnectionString,
+          telemetry,
+          maxConnections: 1,
+          connectionTimeoutMs: 1000,
+          statementTimeoutMs: 1000,
+          operationTimeoutMs: 2000,
+        });
+    }
+  } catch (error) {
+    await Promise.allSettled([
+      database.close(AbortSignal.timeout(2000)),
+      telemetry.shutdown(AbortSignal.timeout(2000)),
+    ]);
+    throw error;
+  }
   let graph: Awaited<ReturnType<typeof createCatalogSubgraph>>;
   let events: EventDeliveryLifecycle | undefined;
   try {
@@ -75,7 +104,9 @@ export async function createCatalogService(
         }));
     }
     graph = await createCatalogSubgraph({
-      ...(config.routerTrust ? { routerTrust: await loadLocalRouterTrust("catalog") } : {}),
+      ...(config.routerTrust
+        ? { routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("catalog")) }
+        : {}),
       ...(config.engagementRead
         ? {
             engagement: {
@@ -97,6 +128,18 @@ export async function createCatalogService(
               trust: await loadLocalCatalogPlaybackTrust(),
               queries: createCatalogPlaybackQueries({
                 transactions: createPostgresCatalogPublic(database),
+                policy: { commercial: true, allowLocalMedia: true },
+                now: () => Math.floor(Date.now() / 1000),
+              }),
+            },
+          }
+        : {}),
+      ...(config.discoveryRead && discoveryDatabase
+        ? {
+            discovery: {
+              trust: resources.discoveryTrust ?? (await loadLocalCatalogDiscoveryTrust()),
+              queries: createCatalogDiscoveryQueries({
+                transactions: createPostgresCatalogDiscovery(discoveryDatabase),
                 policy: { commercial: true, allowLocalMedia: true },
                 now: () => Math.floor(Date.now() / 1000),
               }),
@@ -129,6 +172,7 @@ export async function createCatalogService(
   } catch (error) {
     await Promise.allSettled([
       events?.close(AbortSignal.timeout(2000)),
+      discoveryDatabase?.close(AbortSignal.timeout(2000)),
       database.close(AbortSignal.timeout(2000)),
       telemetry.shutdown(AbortSignal.timeout(2000)),
     ]);
@@ -145,13 +189,17 @@ export async function createCatalogService(
       await http?.stopTraffic(signal);
     },
     stopConsumers: async () => {
-      await Promise.all([monitor.stop(), events?.stop()]);
+      await Promise.all([monitor.stop(), discoveryMonitor?.stop(), events?.stop()]);
       await graph.stop();
     },
     flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
     closeDependencies: async (signal) => {
       await events?.close(signal);
-      const results = await Promise.all([database.close(signal), telemetry.shutdown(signal)]);
+      const results = await Promise.all([
+        database.close(signal),
+        ...(discoveryDatabase ? [discoveryDatabase.close(signal)] : []),
+        telemetry.shutdown(signal),
+      ]);
       if (
         results.some(
           (result) => result.status !== "completed" && result.status !== "already_completed",
@@ -171,6 +219,7 @@ export async function createCatalogService(
   });
   const readiness = createAsterReadinessController({ lifecycle, criticalDependencyCount: 1 });
   let previousReadiness = "pending";
+  let previousDiscoveryReadiness = "pending";
   const checkReadiness = async (signal: AbortSignal): Promise<"ready" | "unavailable"> => {
     let status: "ready" | "unavailable" = "unavailable";
     try {
@@ -189,12 +238,47 @@ export async function createCatalogService(
     }
     return status;
   };
+  const checkDiscoveryReadiness = async (
+    signal: AbortSignal,
+  ): Promise<"disabled" | "ready" | "unavailable"> => {
+    if (!discoveryDatabase) {
+      return "disabled";
+    }
+    let status: "ready" | "unavailable" = "unavailable";
+    try {
+      status = await probeCatalogDiscoveryReader(discoveryDatabase, signal);
+    } catch {
+      /* Optional dependency failures are sanitized below. */
+    }
+    if (status !== previousDiscoveryReadiness) {
+      previousDiscoveryReadiness = status;
+      logger.info({
+        event: "aster.catalog.discovery_readiness_changed",
+        outcome: status === "ready" ? "ok" : "degraded",
+        properties: [["state", status]],
+      });
+    }
+    return status;
+  };
   const monitor = createAsterReadinessMonitor({
     readiness,
     probes: [checkReadiness],
     intervalMs: 5000,
     probeTimeoutMs: 3500,
   });
+  const discoveryMonitor = discoveryDatabase
+    ? createAsterReadinessMonitor({
+        readiness: { setCriticalDependencyState: () => "applied" },
+        probes: [
+          async (signal) => {
+            const status = await checkDiscoveryReadiness(signal);
+            return status === "ready" ? "ready" : "unavailable";
+          },
+        ],
+        intervalMs: 5000,
+        probeTimeoutMs: 2500,
+      })
+    : undefined;
   try {
     http = createCatalogHttpServer({
       host: config.host,
@@ -239,6 +323,7 @@ export async function createCatalogService(
       }
       lifecycle.markReady();
       monitor.start();
+      discoveryMonitor?.start();
       events?.start();
       return status === "ready" ? "ready" : "degraded";
     } catch {
@@ -256,6 +341,7 @@ export async function createCatalogService(
     health: () => readiness.health(),
     port: () => server.port(),
     checkReadiness,
+    checkDiscoveryReadiness,
     start: () => {
       starting ??= start();
       return starting;

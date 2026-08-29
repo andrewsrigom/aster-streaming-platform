@@ -106,7 +106,7 @@ Events are facts in past tense. Commands are not published as domain events.
 
 ## Delivery semantics
 
-Phase 08's current [owned-delivery candidate](../../services/engagement/EVENT_DELIVERY.md) implements bounded Identity/Catalog/Engagement relays and authenticated Engagement deletion/quarantine/replay. Its real SQL acceptance passes; Kafka/owner runtime and protected release remain pending. Continue-watching is reconstructed directly from durable progress and current Catalog visibility, not a second event-built store. The Discovery projections below remain planned.
+Phase 08's [released owned delivery](../../services/engagement/EVENT_DELIVERY.md) implements bounded Identity/Catalog/Engagement relays and authenticated Engagement deletion/quarantine/replay. Continue-watching is reconstructed directly from durable progress and current Catalog visibility, not a second event-built store. The current Discovery candidate adds the versioned Catalog title projection below; home rails and Engagement-derived aggregate signals remain planned.
 
 The outbox plus broker provides at-least-once delivery.
 
@@ -138,7 +138,7 @@ The domain clamps impossible positions and applies completion rules.
 
 ## Search and home projections
 
-Discovery consumes Catalog events to build search and rail data. It consumes Engagement events only for aggregate signals that have been approved for that use.
+Discovery consumes Catalog publication events as invalidation hints for the implemented search projection. It reads current metadata through a purpose-separated Catalog snapshot/export contract; old events do not become metadata authority. Rail data and approved Engagement-derived aggregate signals remain planned.
 
 A projection stores:
 
@@ -147,7 +147,7 @@ A projection stores:
 - indexed time;
 - source event ID.
 
-Rebuild uses source snapshots or replay according to the release design.
+Rebuild captures a broker barrier, scans bounded current Catalog snapshots while applying concurrent events to active and building generations, and promotes only after durable catch-up. Durable checkpoints and source-version fences recover beyond broker retention. [ADR-0035](../adr/0035-discovery-projection.md) defines the consistency model.
 
 ## Retention
 

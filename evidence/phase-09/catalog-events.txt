@@ -1,0 +1,73 @@
+P09-R01 Discovery Catalog-event recovery checkpoint — 2026-08-28
+
+Source: unpublished feat/p09-discovery-search, rebased onto main 6f38ce0.
+Environment: Ubuntu-20.04 WSL, Node 24.19.0, pnpm 11.24.0,
+PostgreSQL 18.6 from the repository-pinned digest. The PostgreSQL verifier used
+one disposable 384 MiB / 1 CPU container with tmpfs-only storage and removed
+the exact labelled fixture. The retained Phase 07 demo was not changed.
+
+Implemented scope:
+- Catalog v1 records are bounded, copied and validated before parsing;
+- the event is a refresh hint only; searchable metadata always comes from a
+  fresh Catalog-owned snapshot;
+- the fixed HTTP owner client uses the purpose-separated credential, exact
+  operation, 64 KiB response cap, two-second deadline, one active read and no retry;
+- the broker handler acknowledges only applied, duplicate or durably quarantined
+  outcomes and logs bounded identifiers without event bytes or title metadata;
+- one in-process event is admitted without a queue, with caller cancellation;
+- duplicate/stale delivery is reconciled through durable source-version fences;
+- bounded poison records are quarantined before acknowledgement;
+- oversized, unavailable, indeterminate, cancelled or full-quarantine outcomes
+  leave the broker offset retryable;
+- quarantine stores exact key/value/header bytes in 128 serialized slots;
+- replay removes the exact record only after durable apply or idempotent success;
+- the projector role has function-only recovery access and no direct table access;
+- migration 0002 is additive and its down migration refuses non-empty recovery data.
+
+Focused commands:
+pnpm install --frozen-lockfile --offline
+pnpm --filter @aster/discovery build
+pnpm --filter @aster/discovery test
+pnpm exec eslint <six affected Discovery TypeScript files> --max-warnings=0
+
+Result after owner transport: frozen install, strict build,47/47 tests and
+scoped lint pass. Tests cover exact wire copying, no event metadata authority,
+malformed/oversized input, duplicate delivery, owner absence, conflicts,
+dependency failure, one-active admission, cancellation, replay completion,
+fixed owner headers/body bounds and offset acknowledgement behavior.
+
+Real command:
+node tools/run-discovery-integration.mjs
+
+Raw final output:
+{"event":"discovery_migration","postgres":"18.6","version":2,"emptyRollback":true}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2}
+{"event":"discovery_privileges","deniedStatements":3,"catalogIsolation":true}
+{"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":21321}
+
+Source SHA256:
+8d736c57e6ebc47b7cb120cdf711712704488c9cc3c7309324f687c658772e32  services/discovery/migrations/0002-catalog-events.up.sql
+7a62fdb562c40d2b5e4f592f394ae8413c0c673d8684be573e1aaf6eb99ea5fc  services/discovery/migrations/0002-catalog-events.down.sql
+e2d9db778e4a55cba1ff789e69bb015d949d0e92c0662aa4fb3389bb39b968c6  services/discovery/src/application/catalog-event-ports.ts
+efd51764e21e36764e79fab79f6ecc90766ea1b931402ca2327b8f66641f308d  services/discovery/src/application/consume-catalog-event.ts
+fb6723bcd83879e1b68b7b30937269fd18de835c183b15a9d734e0c4810bb213  services/discovery/src/infrastructure/catalog-event-wire.ts
+53d28da11984b0b46b28bf74317804aa8310177b27f369239438eb1dcd151a74  services/discovery/src/infrastructure/postgres-catalog-events.ts
+d4fdea79a9278268a09d3d1992ef7de2858feb7f8a55e4bd0319d830bf0dfbe4  services/discovery/test/catalog-events.test.ts
+80ca9f234cf1b4a642dc0817ff066ac87209da2f6c29c4639826aa66920d9905  services/discovery/test/integration/projection-postgres.ts
+5b5449b413696b545b1ba39f015ceda643a06353d57c657a78ac20d1cf02079b  services/discovery/src/infrastructure/catalog-event-handler.ts
+e321fcf377da7e30279097fb6e7683a21ad4af1bc20ed570b2aac251a998936f  services/discovery/src/infrastructure/catalog-snapshot-client.ts
+6b37b1e5a6523ec3a4c5c2a1bf369f15ed78484d1f4b19cb2e1012fd674f6086  services/discovery/test/catalog-event-handler.test.ts
+03692b6b1c525e9138f2e9628ca9e5131e31ae8b6dc2e0f4706d4d19fb36b6fe  services/discovery/test/catalog-snapshot-client.test.ts
+
+Interpretation: the recovery boundary handles a Catalog hint durably without
+turning that hint, Redis or the broker into title truth. Real PostgreSQL proves
+exact maximum-size retention, idempotent duplicate admission, conflict refusal,
+finite capacity, exact replay and role isolation. The fixed owner transport and
+handler are implemented, but broker lifecycle, rebuild orchestration,
+GraphQL/Federation and public search remain unimplemented; this checkpoint does
+not claim a running consumer or public API.

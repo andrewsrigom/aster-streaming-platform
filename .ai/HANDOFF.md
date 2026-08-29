@@ -2,21 +2,22 @@
 
 ## Resume point
 
-P08-R11 IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 on dc571bd passed every preceding integration/bootstrap boundary and immutable replay, then proved Chromium can discard the selected progress body even inside its response event. The local correction leaves bodies exclusively to the application and requires exact request plus rendered confirmation within12 seconds. Web104/104, seven observer regressions, strict types, scoped lint and the43-task affected candidate pass. Not WAITING_EXTERNAL. P09-R01 is preserved unpublished through6ca3703 on feat/p09-discovery-search; historical stashes are superseded and must not be reapplied. Full Phase00–14 goal remains active.
+PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
+
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Confirmation-remediated source16d4921 implements bounded search, renewal, maintenance availability, exact quarantine replay, five-owner composition and optional failure isolation. Cleanup correction and four initial review issues pass. Confirmation discussions3885790201/205 found periodic readiness loss and unreachable replay;16d4921 corrects both. Discovery70/70, unchanged PostgreSQL acceptance, the11-service runtime in107640ms and final73/73 pass; runtime proves replay slot reclamation, stopped-Discovery Catalog access and restart recovery. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish the application-owned confirmation correction in existing PR32 and request one refreshed exact-head confirmation. Require protected full startup/browser/replay, expected-head squash and exact main success; no repeat of the unchanged local storage fixture.
-2. Then close Phase08, switch to feat/p09-discovery-search and rebase commit6ca3703 plus its predecessors onto exact main. Do not apply historical stashes. The committed work already includes Catalog snapshots/private transport, persisted versioned projections, weighted PostgreSQL search and the disposable real proof. Continue event/snapshot orchestration, quarantine/replay and GraphQL/runtime; rails/Web later. Reinstall frozen dependencies after workspace changes.
-3. Phase08 audit/release artifacts accompany this correction; no documentation-only pipeline. Existing browser/SQL/Kafka evidence remains supporting. Bootstrap changes require real storage and protected complete replay; no film encode or retained-runtime change.
-4. PR31 initial review was automatic on ready/open; do not request a duplicate initial review on later PRs while that review is running. Its explicit confirmation is complete. No third round without a concrete blocker.
-5. Preserve every historical Phase09 stash without reapplying; commit6ca3703 is authoritative. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
+1. Commit/push final evidence to PR33, reply to and resolve the two addressed confirmation threads, then require exact-head protected CI and final blocking-boundary confirmation.
+2. Squash merge and confirm exact-main CI before starting P09-R03.
+3. If protected CI finds a blocker, batch only the affected correction and repeat its invalidated gate; do not repeat unaffected evidence.
+4. Preserve retained media/databases/keys and user applications. No historical stash, retained migration, Docker/WSL restart, global cleanup or film encode.
 
 ## Evidence boundaries
 
 Protected CI33211565625 now passes the complete corrected event supervisor, including real SQL/Kafka, signed deletion, quarantine/replay, outage recovery, bounded shutdown and cleanup. The earlier local wrapper exited1 on its obsolete SIGTERM assertion; do not rewrite it as success. Earlier70/70 and SQL/Kafka observations remain supporting evidence. events-source.sha256 describes the original checkpoint; test-only deltas are in events-ci.txt. No unchanged heavy event/SQL/CPU/media repeat.
 
-Player unit tests use real Apollo with fake HTTP/media/clocks; the accepted browser uses actual Docker owners, PostgreSQL and HLS. Running retained demo remains Phase07. Manifest de18f996387009a22c3bae6ca1e6416df0615f5a942a7045c15b598598563983 includes reduced library selections. No public schema, SQL or owner runtime change. The source hash file intentionally excludes documentation.
+P09 exact review-remediated runtime source and selected SQL/Kafka/Router output are in evidence/phase-09/search-runtime.txt. Candidate and review evidence are in search-candidate.txt. The affected PostgreSQL and Docker proofs were repeated after the availability changes; no browser/media/CPU repeat applies to this backend-only slice. Protected evidence remains pending.
 
 ## Execution environment
 

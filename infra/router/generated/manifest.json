@@ -3,12 +3,13 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "61572c85baa41f999f05e0b73a6ed728799df8c7939aae64069ca199c890ec96",
-    "supergraph.graphql": "e8911e98812694e05de4da75f16499c43413af47c56164c1cd34bf096a840da7",
-    "catalog.graphql": "326def21b66271c21da64ace0c8c440e2e5d41a179ba601d8b591e3f7bcf39a8",
+    "api.graphql": "acf3e4888bb2b279ab0b4d05189863badd5515e5612bd80df054ae0a6e466d20",
+    "supergraph.graphql": "4b4c3bf87b7c6152e2ae2e26ff2bec5a25fe92f181d371ab8d4cae98108c7635",
+    "catalog.graphql": "2c2c9c9d3bce6e7e36eed2994cfe428c8f3d2490908f61cf9423a5e3785bf4fa",
+    "discovery.graphql": "c7c43adea6c46ed95e6e6076cc7c6ff0a2d7278feb9adc06a35c445571aa95ac",
+    "engagement.graphql": "90bf40b4430a3951b21ee2cabddba70e58f6400393f80d3c800d6c39c21b7f74",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
-    "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
-    "engagement.graphql": "90bf40b4430a3951b21ee2cabddba70e58f6400393f80d3c800d6c39c21b7f74"
+    "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a"
   },
   "subgraphs": [
     {
@@ -97,6 +98,41 @@
           "keys": []
         },
         {
+          "type": "DiscoverySourceDocument",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "defaultLocale",
+            "editorialLabels",
+            "genres",
+            "localizations",
+            "publishedAt",
+            "releaseYear"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoverySourcePage",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "endCursor",
+            "hasNextPage",
+            "snapshots"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoverySourceSnapshot",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "document",
+            "observedAt",
+            "sourceVersion",
+            "titleId",
+            "visibleUntil"
+          ],
+          "keys": []
+        },
+        {
           "type": "EngagementTitleVisibility",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -130,6 +166,8 @@
           "type": "Query",
           "kind": "ObjectTypeDefinition",
           "fields": [
+            "_discoveryExport",
+            "_discoverySnapshots",
             "_engagementTitles",
             "_playbackPublications",
             "title",
@@ -160,223 +198,73 @@
       ]
     },
     {
-      "name": "identity",
-      "routingUrl": "http://identity:3100/graphql",
+      "name": "discovery",
+      "routingUrl": "http://discovery:3500/graphql",
       "ownership": [
         {
-          "type": "CreateProfileInput",
-          "kind": "InputObjectTypeDefinition",
-          "fields": [
-            "mutationId",
-            "profile"
-          ],
-          "keys": []
-        },
-        {
-          "type": "DeleteProfileInput",
-          "kind": "InputObjectTypeDefinition",
-          "fields": [
-            "expectedVersion",
-            "mutationId",
-            "profileId"
-          ],
-          "keys": []
-        },
-        {
-          "type": "EngagementProfileAuthority",
+          "type": "DiscoveryPageInfo",
           "kind": "ObjectTypeDefinition",
           "fields": [
-            "accountId",
-            "checkedAt",
-            "code",
-            "expiresAt",
-            "profileId"
+            "endCursor",
+            "hasNextPage"
           ],
           "keys": []
         },
         {
-          "type": "IdentityOutcome",
+          "type": "DiscoverySearchCode",
           "kind": "EnumTypeDefinition",
           "fields": [],
           "keys": []
         },
         {
-          "type": "Mutation",
+          "type": "DiscoverySearchConnection",
           "kind": "ObjectTypeDefinition",
           "fields": [
-            "createProfile",
-            "deleteProfile",
-            "demoSignIn",
-            "selectProfile",
-            "signOut",
-            "updateProfile"
+            "edges",
+            "generation",
+            "pageInfo"
           ],
           "keys": []
         },
         {
-          "type": "OwnedProfiles",
+          "type": "DiscoverySearchEdge",
           "kind": "ObjectTypeDefinition",
           "fields": [
-            "activeProfileId",
-            "profiles"
+            "cursor",
+            "indexedAt",
+            "node",
+            "sourceVersion",
+            "visibleUntil"
           ],
           "keys": []
         },
         {
-          "type": "Profile",
+          "type": "DiscoverySearchPayload",
           "kind": "ObjectTypeDefinition",
           "fields": [
-            "avatarRef",
-            "displayName",
-            "id",
-            "locale",
-            "maturity",
-            "version"
+            "code",
+            "connection",
+            "correlationId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "searchTitles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Title",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "id"
           ],
           "keys": [
             "id"
           ]
-        },
-        {
-          "type": "ProfileMaturity",
-          "kind": "EnumTypeDefinition",
-          "fields": [],
-          "keys": []
-        },
-        {
-          "type": "ProfileMutationPayload",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "code",
-            "correlationId",
-            "profileId",
-            "version"
-          ],
-          "keys": []
-        },
-        {
-          "type": "ProfilePreferencesInput",
-          "kind": "InputObjectTypeDefinition",
-          "fields": [
-            "displayName",
-            "locale",
-            "maturity"
-          ],
-          "keys": []
-        },
-        {
-          "type": "ProfileSelectionPayload",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "code",
-            "correlationId",
-            "profile"
-          ],
-          "keys": []
-        },
-        {
-          "type": "Query",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "_engagementProfile",
-            "activeProfile",
-            "me",
-            "profile",
-            "profiles"
-          ],
-          "keys": []
-        },
-        {
-          "type": "SessionPayload",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "code",
-            "correlationId",
-            "viewer"
-          ],
-          "keys": []
-        },
-        {
-          "type": "UpdateProfileInput",
-          "kind": "InputObjectTypeDefinition",
-          "fields": [
-            "expectedVersion",
-            "mutationId",
-            "profile",
-            "profileId"
-          ],
-          "keys": []
-        },
-        {
-          "type": "Viewer",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "accountId",
-            "expiresAt"
-          ],
-          "keys": []
-        }
-      ]
-    },
-    {
-      "name": "playback",
-      "routingUrl": "http://playback:3300/graphql",
-      "ownership": [
-        {
-          "type": "EngagementSessionAuthority",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "checkedAt",
-            "code",
-            "createdAt",
-            "expiresAt",
-            "sessionId",
-            "titleId"
-          ],
-          "keys": []
-        },
-        {
-          "type": "Mutation",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "createPlaybackSession"
-          ],
-          "keys": []
-        },
-        {
-          "type": "PlaybackSession",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "expiresAt",
-            "id",
-            "manifestUrl",
-            "titleId"
-          ],
-          "keys": []
-        },
-        {
-          "type": "PlaybackSessionCode",
-          "kind": "EnumTypeDefinition",
-          "fields": [],
-          "keys": []
-        },
-        {
-          "type": "PlaybackSessionPayload",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "code",
-            "correlationId",
-            "session"
-          ],
-          "keys": []
-        },
-        {
-          "type": "Query",
-          "kind": "ObjectTypeDefinition",
-          "fields": [
-            "_engagementSession"
-          ],
-          "keys": []
         }
       ]
     },
@@ -600,6 +488,227 @@
           "keys": []
         }
       ]
+    },
+    {
+      "name": "identity",
+      "routingUrl": "http://identity:3100/graphql",
+      "ownership": [
+        {
+          "type": "CreateProfileInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "mutationId",
+            "profile"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DeleteProfileInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "expectedVersion",
+            "mutationId",
+            "profileId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "EngagementProfileAuthority",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "accountId",
+            "checkedAt",
+            "code",
+            "expiresAt",
+            "profileId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "IdentityOutcome",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "Mutation",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "createProfile",
+            "deleteProfile",
+            "demoSignIn",
+            "selectProfile",
+            "signOut",
+            "updateProfile"
+          ],
+          "keys": []
+        },
+        {
+          "type": "OwnedProfiles",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "activeProfileId",
+            "profiles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Profile",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "avatarRef",
+            "displayName",
+            "id",
+            "locale",
+            "maturity",
+            "version"
+          ],
+          "keys": [
+            "id"
+          ]
+        },
+        {
+          "type": "ProfileMaturity",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "ProfileMutationPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "profileId",
+            "version"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProfilePreferencesInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "displayName",
+            "locale",
+            "maturity"
+          ],
+          "keys": []
+        },
+        {
+          "type": "ProfileSelectionPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "profile"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "_engagementProfile",
+            "activeProfile",
+            "me",
+            "profile",
+            "profiles"
+          ],
+          "keys": []
+        },
+        {
+          "type": "SessionPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "viewer"
+          ],
+          "keys": []
+        },
+        {
+          "type": "UpdateProfileInput",
+          "kind": "InputObjectTypeDefinition",
+          "fields": [
+            "expectedVersion",
+            "mutationId",
+            "profile",
+            "profileId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Viewer",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "accountId",
+            "expiresAt"
+          ],
+          "keys": []
+        }
+      ]
+    },
+    {
+      "name": "playback",
+      "routingUrl": "http://playback:3300/graphql",
+      "ownership": [
+        {
+          "type": "EngagementSessionAuthority",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "checkedAt",
+            "code",
+            "createdAt",
+            "expiresAt",
+            "sessionId",
+            "titleId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Mutation",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "createPlaybackSession"
+          ],
+          "keys": []
+        },
+        {
+          "type": "PlaybackSession",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "expiresAt",
+            "id",
+            "manifestUrl",
+            "titleId"
+          ],
+          "keys": []
+        },
+        {
+          "type": "PlaybackSessionCode",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "PlaybackSessionPayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "session"
+          ],
+          "keys": []
+        },
+        {
+          "type": "Query",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "_engagementSession"
+          ],
+          "keys": []
+        }
+      ]
     }
   ],
   "operations": [
@@ -646,6 +755,10 @@
     {
       "name": "RecordProgress",
       "sha256": "309817337c3df075af2926d1ba9f527df627000dbd754346cd7e446c5c42190c"
+    },
+    {
+      "name": "SearchTitles",
+      "sha256": "daf28dd181dfe67375e6f8525267d58a9c3d9bb806d8e3445d5a9a9ce52d9e84"
     },
     {
       "name": "SelectProfile",

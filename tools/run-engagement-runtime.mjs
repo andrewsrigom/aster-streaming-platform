@@ -62,6 +62,8 @@ const expectedVolumes = new Set([
   "engagement-identity-trust",
   "engagement-playback-trust",
   "engagement-catalog-trust",
+  "discovery-router-trust",
+  "discovery-catalog-trust",
   "identity-event-trust",
   "broker-data",
 ]);

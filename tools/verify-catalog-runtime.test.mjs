@@ -43,7 +43,7 @@ test("standalone owner probes use diagnostics without private Router credential 
     "utf8",
   );
   const versions = [...migrator.matchAll(/"(\d{4})-[a-z-]+"/gu)].map((match) => Number(match[1]));
-  assert.deepEqual(versions, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  assert.deepEqual(versions, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   assert.ok(probe.includes(`first.includes('"applied":${JSON.stringify(versions)}')`));
   assert.ok(probe.includes("repeat.includes('\"applied\":[]')"));
   assert.ok(probe.includes('"infra/compose/subgraph-diagnostics.yml"'));
@@ -55,7 +55,7 @@ test("standalone owner probes use diagnostics without private Router credential 
   }
   assert.ok(probe.includes('"--no-deps"'));
   assert.ok(probe.includes('"127.0.0.1::3200"'));
-  assert.ok(probe.includes("assert.ok(volumes.length <= 9)"));
+  assert.ok(probe.includes("assert.ok(volumes.length <= 11)"));
 });
 
 test("Catalog proof cleanup allows only owned data and unused trust volumes", () => {
@@ -75,6 +75,8 @@ test("Catalog proof cleanup allows only owned data and unused trust volumes", ()
     ["engagement-identity-trust", "disposable-local", []],
     ["engagement-playback-trust", "disposable-local", []],
     ["engagement-catalog-trust", "disposable-local", []],
+    ["discovery-router-trust", "disposable-local", []],
+    ["discovery-catalog-trust", "disposable-local", []],
   ]) {
     const volume = {
       Name: project + "_" + suffix,

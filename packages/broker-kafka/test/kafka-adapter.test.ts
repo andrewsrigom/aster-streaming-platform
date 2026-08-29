@@ -64,12 +64,18 @@ class RecordingTelemetry implements AsterKafkaBrokerTelemetry {
 class FakeProducer implements AsterKafkaProducerClient {
   connectCalls = 0;
   metadataCalls = 0;
+  offsetsCalls = 0;
   publishCalls = 0;
   disconnectCalls = 0;
   lastTopic: string | undefined;
   lastPublish: AsterKafkaPublishInput | undefined;
   connectHandler: () => Promise<void> = () => Promise.resolve();
   metadataHandler: (topic: string) => Promise<void> = () => Promise.resolve();
+  offsetsHandler: AsterKafkaProducerClient["offsets"] = () =>
+    Promise.resolve([
+      { partition: 2, offset: "11" },
+      { partition: 0, offset: "9" },
+    ]);
   publishHandler: AsterKafkaProducerClient["publish"] = () => Promise.resolve();
   disconnectHandler: () => Promise<void> = () => Promise.resolve();
 
@@ -82,6 +88,12 @@ class FakeProducer implements AsterKafkaProducerClient {
     this.metadataCalls += 1;
     this.lastTopic = topic;
     return this.metadataHandler(topic);
+  }
+
+  offsets(topic: string): Promise<readonly Readonly<{ partition: number; offset: string }>[]> {
+    this.offsetsCalls += 1;
+    this.lastTopic = topic;
+    return this.offsetsHandler(topic);
   }
 
   publish(input: AsterKafkaPublishInput): Promise<void> {
@@ -418,7 +430,7 @@ test("constructs one finite idempotent no-log client policy", async () => {
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
-test("connect, metadata, and publish emit only finite telemetry and copied bytes", async () => {
+test("connect, metadata, offsets and publish emit only finite telemetry and copied bytes", async () => {
   const telemetry = new RecordingTelemetry();
   const bundle = new FakeBundle();
   const adapter = createAsterKafkaBrokerAdapterWithClientFactory(options(telemetry), () => bundle);
@@ -427,6 +439,10 @@ test("connect, metadata, and publish emit only finite telemetry and copied bytes
 
   assert.deepEqual(await adapter.connect(), { status: "completed" });
   assert.deepEqual(await adapter.metadata({ topic: "aster.probe" }), { status: "completed" });
+  assert.deepEqual(await adapter.offsets({ topic: "aster.probe" }), {
+    status: "completed",
+    value: { 0: "9", 2: "11" },
+  });
   assert.deepEqual(await adapter.publish({ topic: "aster.probe", key, value }), {
     status: "completed",
   });
@@ -444,6 +460,7 @@ test("connect, metadata, and publish emit only finite telemetry and copied bytes
     telemetry.attempts.map(({ input, outcome }) => ({ operation: input.operation, outcome })),
     [
       { operation: "connect", outcome: "success" },
+      { operation: "probe", outcome: "success" },
       { operation: "probe", outcome: "success" },
       { operation: "publish", outcome: "success" },
     ],
@@ -480,8 +497,36 @@ test("rejects invalid operations before vendor work and requires an explicit con
     }),
     { status: "rejected", reason: "invalid_request" },
   );
+  assert.deepEqual(await adapter.offsets({ topic: "../unsafe" }), {
+    status: "rejected",
+    reason: "invalid_request",
+  });
   assert.equal(bundle.producer.publishCalls, 0);
   assert.deepEqual(await adapter.close(), { status: "completed" });
+});
+
+test("topic barriers reject malformed, duplicate and unbounded vendor offsets", async () => {
+  for (const rows of [
+    [],
+    [{ partition: 0, offset: "-1" }],
+    [{ partition: 0, offset: "9223372036854775808" }],
+    [
+      { partition: 0, offset: "1" },
+      { partition: 0, offset: "2" },
+    ],
+    Object.assign([{ partition: 0, offset: "1" }], { extra: true }),
+  ]) {
+    const telemetry = new RecordingTelemetry();
+    const bundle = new FakeBundle();
+    bundle.producer.offsetsHandler = () => Promise.resolve(rows);
+    const adapter = createAsterKafkaBrokerAdapterWithClientFactory(
+      options(telemetry),
+      () => bundle,
+    );
+    assert.deepEqual(await adapter.connect(), { status: "completed" });
+    assert.deepEqual(await adapter.offsets({ topic: "aster.probe" }), { status: "unavailable" });
+    assert.deepEqual(await adapter.close(), { status: "completed" });
+  }
 });
 
 test("rejects excess publishes before extending producer work", async () => {

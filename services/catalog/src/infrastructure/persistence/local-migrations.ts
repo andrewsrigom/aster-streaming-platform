@@ -12,6 +12,7 @@ const migrations = [
   "0007-media-attestations",
   "0008-publication-activations",
   "0009-event-relay",
+  "0010-discovery-reads",
 ] as const;
 export async function migrateLocalCatalog(
   environment: Readonly<Record<string, string | undefined>>,
@@ -53,7 +54,7 @@ export async function migrateLocalCatalog(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 10",
+              "SELECT version FROM catalog.schema_migrations ORDER BY version LIMIT 11",
             )
           ).rows.map((row) => row.version);
     if (
@@ -121,6 +122,23 @@ export async function migrateLocalCatalog(
       throw new Error("Incompatible local Catalog relay login.");
     }
     await client.query("GRANT aster_catalog_relay TO aster_catalog_relay_local");
+    await client.query(`DO $local$ BEGIN
+      IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'aster_catalog_discovery_reader_local') THEN
+        CREATE ROLE aster_catalog_discovery_reader_local LOGIN PASSWORD 'aster-test-only'
+          NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+      END IF;
+    END $local$`);
+    const discoveryReader = await client.query<{ allowed: boolean }>(`SELECT rolcanlogin
+      AND NOT (rolsuper OR rolcreatedb OR rolcreaterole OR rolreplication OR rolbypassrls)
+      AND NOT EXISTS (SELECT 1 FROM pg_roles delegated WHERE delegated.rolname NOT IN ('aster_catalog_discovery_reader_local', 'aster_catalog_discovery_reader')
+        AND pg_has_role('aster_catalog_discovery_reader_local', delegated.oid, 'MEMBER')) AS allowed
+      FROM pg_roles WHERE rolname = 'aster_catalog_discovery_reader_local'`);
+    if (discoveryReader.rows[0]?.allowed !== true) {
+      throw new Error("Incompatible local Catalog Discovery reader login.");
+    }
+    await client.query(
+      "GRANT aster_catalog_discovery_reader TO aster_catalog_discovery_reader_local",
+    );
     signal.throwIfAborted();
     return { applied: Object.freeze(applied) };
   } finally {

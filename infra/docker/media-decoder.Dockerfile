@@ -2,6 +2,7 @@ FROM docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a77
 WORKDIR /workspace
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY patches ./patches
 COPY workers/media/package.json ./workers/media/
 RUN corepack enable && corepack install && pnpm install --frozen-lockfile
 COPY workers/media ./workers/media

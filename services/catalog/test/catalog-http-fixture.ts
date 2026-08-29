@@ -22,7 +22,10 @@ interface CatalogHttpResponse {
 export async function catalogHttpFixture(
   queries: CatalogPublicQueries,
   monotonicNow?: () => number,
-  ownerReads?: Pick<CatalogSubgraphOptions, "routerTrust" | "playback" | "engagement">,
+  ownerReads?: Pick<
+    CatalogSubgraphOptions,
+    "routerTrust" | "playback" | "engagement" | "discovery"
+  >,
 ) {
   const adapter = createExpressHttpAdapter({ bodyLimitBytes: 32768 });
   const http = createServer({ maxHeaderSize: 16384 }, adapter.requestListener);

@@ -94,6 +94,7 @@ test("Web Docker context includes both exact public-build verifier files", () =>
 
 test("media Docker context allows only reviewed worker source, tests and packaging", () => {
   for (const required of [
+    "!patches/kafkajs@2.2.4.patch",
     "!workers/media/package.json",
     "!workers/media/tsconfig.json",
     "!workers/media/src/**/*.ts",
@@ -125,6 +126,7 @@ test("runtime image rejects weakened pin, install, user, entrypoint, health and 
   const file = "infra/docker/identity.Dockerfile";
   for (const [before, after] of [
     ["@sha256:", "@changed:"],
+    ["COPY patches ./patches", "COPY unreviewed ./patches"],
     ["--frozen-lockfile", "--no-frozen-lockfile"],
     ["--prod deploy", "deploy"],
     ["USER node", "USER root"],

@@ -4,6 +4,7 @@ import { GraphQLError, parse } from "graphql";
 import type { CatalogPublicQueries, CatalogReadResult } from "../application/public-queries.js";
 import type { CatalogPlaybackQueries } from "../application/playback-queries.js";
 import type { CatalogEngagementQueries } from "../application/engagement-queries.js";
+import type { CatalogDiscoveryQueries } from "../application/discovery-queries.js";
 import type { PublicCatalogTitle } from "../domain/public-title.js";
 import { catalogIdentifier, catalogRecord } from "../domain/values.js";
 
@@ -53,6 +54,28 @@ export const CATALOG_TYPE_DEFS = parse(`
     title(id: ID!): Title
     _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
     _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible
+    _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible
+    _discoveryExport(after: ID): DiscoverySourcePage! @inaccessible
+  }
+  type DiscoverySourceDocument @inaccessible {
+    defaultLocale: String!
+    localizations: [LocalizedTitle!]!
+    genres: [String!]!
+    editorialLabels: [String!]!
+    releaseYear: Int
+    publishedAt: Float!
+  }
+  type DiscoverySourceSnapshot @inaccessible {
+    titleId: ID!
+    sourceVersion: Int!
+    observedAt: Float!
+    visibleUntil: Float
+    document: DiscoverySourceDocument
+  }
+  type DiscoverySourcePage @inaccessible {
+    snapshots: [DiscoverySourceSnapshot!]!
+    endCursor: ID
+    hasNextPage: Boolean!
   }
   type EngagementVisibleTitle @inaccessible { titleId: ID! visible: Boolean! }
   type EngagementTitleVisibility @inaccessible {
@@ -78,6 +101,7 @@ export interface CatalogGraphqlContext {
   readonly outcome: { code: string };
   readonly playback?: CatalogPlaybackQueries;
   readonly engagement?: CatalogEngagementQueries;
+  readonly discovery?: CatalogDiscoveryQueries;
 }
 function owned(value: unknown): CatalogGraphqlContext {
   const owner: unknown =
@@ -109,6 +133,7 @@ export function createCatalogGraphqlContext(
   correlationId: string,
   playback?: CatalogPlaybackQueries,
   engagement?: CatalogEngagementQueries,
+  discovery?: CatalogDiscoveryQueries,
 ): CatalogGraphqlContext {
   const cache = new Map<string, Promise<PublicCatalogTitle | null>>();
   const context: CatalogGraphqlContext = {
@@ -117,6 +142,7 @@ export function createCatalogGraphqlContext(
     correlationId,
     ...(playback ? { playback } : {}),
     ...(engagement ? { engagement } : {}),
+    ...(discovery ? { discovery } : {}),
     outcome: { code: "COMPLETED" },
     titles: new DataLoader(async (ids) => completed(await queries.byIds(ids, signal), context), {
       maxBatchSize: 20,
@@ -155,6 +181,23 @@ export function createCatalogSchema() {
     typeDefs: CATALOG_TYPE_DEFS,
     resolvers: {
       Query: {
+        _discoverySnapshots: async (_: unknown, args: { ids: unknown }, raw: unknown) => {
+          const context = owned(raw);
+          if (!context.discovery) {
+            throw new CatalogGraphqlError("FORBIDDEN");
+          }
+          return completed(await context.discovery.byIds(args.ids, context.signal), context);
+        },
+        _discoveryExport: async (_: unknown, args: { after?: unknown }, raw: unknown) => {
+          const context = owned(raw);
+          if (!context.discovery) {
+            throw new CatalogGraphqlError("FORBIDDEN");
+          }
+          return completed(
+            await context.discovery.exportPage(args.after ?? null, context.signal),
+            context,
+          );
+        },
         _engagementTitles: async (_: unknown, args: { ids: readonly unknown[] }, raw: unknown) => {
           const context = owned(raw);
           if (!context.engagement) {

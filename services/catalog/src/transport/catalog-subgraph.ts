@@ -21,6 +21,8 @@ import { GraphQLError, type GraphQLFormattedError } from "graphql";
 import type { CatalogPublicQueries } from "../application/public-queries.js";
 import type { CatalogPlaybackQueries } from "../application/playback-queries.js";
 import type { CatalogEngagementQueries } from "../application/engagement-queries.js";
+import type { CatalogDiscoveryQueries } from "../application/discovery-queries.js";
+import { inspectCatalogDiscoveryOperation } from "./discovery-operation.js";
 import { inspectCatalogEngagementOperation } from "./engagement-operation.js";
 import { inspectCatalogPlaybackOperation } from "./playback-operation.js";
 import {
@@ -64,13 +66,17 @@ export interface CatalogSubgraphOptions {
     trust: AsterLocalRouterTrust;
     queries: CatalogEngagementQueries;
   }>;
+  readonly discovery?: Readonly<{
+    trust: AsterLocalRouterTrust;
+    queries: CatalogDiscoveryQueries;
+  }>;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: CatalogOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
 }
 
 export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
-  if ((options.playback || options.engagement) && !options.routerTrust) {
+  if ((options.playback || options.engagement || options.discovery) && !options.routerTrust) {
     throw new Error("Catalog owner reads require protected transport.");
   }
   const schema = createCatalogSchema();
@@ -81,10 +87,13 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
   let refreshedAt = now();
   let engagementCredit = 32;
   let engagementRefreshedAt = now();
+  let discoveryCredit = 32;
+  let discoveryRefreshedAt = now();
   let closed = false;
   let stopping: Promise<void> | undefined;
   const controllers = new Set<AbortController>();
   const engagementControllers = new Set<AbortController>();
+  const discoveryControllers = new Set<AbortController>();
   const pending = new Set<Promise<unknown>>();
 
   const diagnostic = (code: "graphql_engine_error" | "graphql_engine_warning"): void => {
@@ -174,12 +183,15 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     const routerContext = options.routerTrust?.accept(request);
     const playbackContext = options.playback?.trust.accept(request);
     const engagementContext = options.engagement?.trust.accept(request);
+    const discoveryContext = options.discovery?.trust.accept(request);
     const startedAt = now();
-    const correlationId = engagementContext?.correlationId ?? randomUUID();
+    const correlationId =
+      discoveryContext?.correlationId ?? engagementContext?.correlationId ?? randomUUID();
     const traceId =
       routerContext?.traceId ??
       playbackContext?.traceId ??
       engagementContext?.traceId ??
+      discoveryContext?.traceId ??
       randomUUID().replaceAll("-", "");
     const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
     let operation: CatalogOperation | "rejected" = "rejected";
@@ -209,7 +221,13 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     };
     response.set("X-Request-Id", correlationId);
     response.set("Cache-Control", "no-store");
-    if (options.routerTrust && !routerContext && !playbackContext && !engagementContext) {
+    if (
+      options.routerTrust &&
+      !routerContext &&
+      !playbackContext &&
+      !engagementContext &&
+      !discoveryContext
+    ) {
       reject(403, "FORBIDDEN");
       record();
       return;
@@ -220,13 +238,26 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
       record();
       return;
     }
-    const lane = engagementContext ? engagementControllers : controllers;
-    if (closed || lane.size >= (engagementContext ? 1 : CATALOG_GRAPHQL_LIMITS.concurrent)) {
+    const lane = discoveryContext
+      ? discoveryControllers
+      : engagementContext
+        ? engagementControllers
+        : controllers;
+    if (
+      closed ||
+      lane.size >= (engagementContext || discoveryContext ? 1 : CATALOG_GRAPHQL_LIMITS.concurrent)
+    ) {
       reject(503, "UNAVAILABLE");
       record();
       return;
     }
-    if (engagementContext) {
+    if (discoveryContext) {
+      discoveryCredit = Math.min(
+        32,
+        discoveryCredit + (Math.max(0, startedAt - discoveryRefreshedAt) * 4) / 1000,
+      );
+      discoveryRefreshedAt = startedAt;
+    } else if (engagementContext) {
       engagementCredit = Math.min(
         32,
         engagementCredit + (Math.max(0, startedAt - engagementRefreshedAt) * 4) / 1000,
@@ -240,22 +271,26 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
       );
       refreshedAt = startedAt;
     }
-    if ((engagementContext ? engagementCredit : credit) < 1) {
+    if ((discoveryContext ? discoveryCredit : engagementContext ? engagementCredit : credit) < 1) {
       response.set("Retry-After", "1");
       reject(429, "LIMIT_EXCEEDED");
       record();
       return;
     }
-    if (engagementContext) {
+    if (discoveryContext) {
+      discoveryCredit -= 1;
+    } else if (engagementContext) {
       engagementCredit -= 1;
     } else {
       credit -= 1;
     }
-    const decision = engagementContext
-      ? inspectCatalogEngagementOperation(request.body as unknown)
-      : playbackContext
-        ? inspectCatalogPlaybackOperation(request.body as unknown)
-        : inspectCatalogOperation(request.body as unknown, schema);
+    const decision = discoveryContext
+      ? inspectCatalogDiscoveryOperation(request.body as unknown)
+      : engagementContext
+        ? inspectCatalogEngagementOperation(request.body as unknown)
+        : playbackContext
+          ? inspectCatalogPlaybackOperation(request.body as unknown)
+          : inspectCatalogOperation(request.body as unknown, schema);
     if (decision.status !== "accepted") {
       reject(400, decision.code);
       record();
@@ -271,6 +306,7 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
       correlationId,
       playbackContext ? options.playback?.queries : undefined,
       engagementContext ? options.engagement?.queries : undefined,
+      discoveryContext ? options.discovery?.queries : undefined,
     );
     contexts.set(request, context);
     const timer = setTimeout(
@@ -278,7 +314,7 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
         controller.abort();
         reject(503, "CANCELLED");
       },
-      engagementContext ? 2000 : CATALOG_GRAPHQL_LIMITS.deadlineMs,
+      engagementContext || discoveryContext ? 2000 : CATALOG_GRAPHQL_LIMITS.deadlineMs,
     );
     timer.unref();
     const execution = Promise.resolve().then(() => apollo(request, response, onError));
@@ -305,7 +341,11 @@ export async function createCatalogSubgraph(options: CatalogSubgraphOptions) {
     stop(): Promise<void> {
       if (!stopping) {
         closed = true;
-        for (const controller of [...controllers, ...engagementControllers]) {
+        for (const controller of [
+          ...controllers,
+          ...engagementControllers,
+          ...discoveryControllers,
+        ]) {
           controller.abort();
         }
         stopping = Promise.allSettled([...pending]).then(() => server.stop());

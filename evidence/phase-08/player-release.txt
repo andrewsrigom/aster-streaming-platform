@@ -35,3 +35,20 @@ Selected raw source-job output (full log inspected via GitHub):
 2026-08-28T22:56:55.9546900Z playable-generate-1  | {"event":"generated_hls_reused","sourceChecksum":"a3dd31b3057c90edfd9ff98525d30c132f517288173861d5d6ffd84d69f791ae","totalBytes":1948485}
 2026-08-28T22:56:55.9568184Z playable-seed-1      | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
 2026-08-28T22:56:55.9576879Z playable-seed-1      | {"event":"catalog_playable_seed","titleId":"00000000-0000-4000-8000-000007000001","state":"PUBLISHED","changed":false}
+
+Final correction release — 2026-08-29
+
+PR32 reviewed head: d295ec7f8b2acf7e9f5fe8e60b1134dd785b4cce
+Protected run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33228909828
+Status: completed; conclusion: success. Classify, local platform,
+documentation/security, install/source quality and CI required passed.
+Clean confirmation: issuecomment-5459788095. The earlier P1 deadline thread was
+corrected, confirmed and resolved before merge.
+Expected-head squash: 6f38ce0d2b7c31718508258bba97f76976acdd60.
+Exact main push: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33229726626
+Status: completed; conclusion: success. Local platform, documentation/security,
+install/source quality and CI required passed; dependency review was correctly
+skipped for the push event.
+
+P08-R11 and Phase08 are released. No hosted deployment or retained Phase08 demo
+upgrade is claimed. The retained Phase07 demo/data was untouched.

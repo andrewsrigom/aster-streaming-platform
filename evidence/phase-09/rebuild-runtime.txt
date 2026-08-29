@@ -1,0 +1,68 @@
+P09-R01 Discovery broker/rebuild runtime checkpoint — 2026-08-29
+
+Source: unpublished feat/p09-discovery-search based on main 6f38ce0.
+Environment: Ubuntu-20.04 WSL, Node 24.19.0, pnpm 11.24.0,
+PostgreSQL 18.6 from the repository-pinned digest. The SQL verifier used one
+disposable labelled container with tmpfs-only storage and removed it. The
+retained aster-p04-development demo and every unrelated Docker project were
+unchanged.
+
+Implemented scope:
+- the Kafka adapter reads a fixed topic's canonical partition log-end offsets
+  with the same finite lifecycle, deadline, cancellation and telemetry bounds;
+- one Discovery worker connects, starts earliest Catalog consumption, recovers
+  with bounded backoff, exposes an exact rebuild barrier and owns shutdown;
+- Catalog export uses its exact purpose-separated operation, credential and
+  endpoint with a shared one-active/no-queue lane, two-second deadline, no
+  retry/redirect and a 64-KiB response cap;
+- export pages admit at most two strictly ascending title snapshots and reject
+  malformed cursors, arrays or envelopes before projection;
+- rebuild captures a broker barrier, resumes a durable Catalog keyset scan into
+  the BUILDING generation, checkpoints each page and promotes only after the
+  scan and consumer catch-up complete;
+- partial source/projector/store failure preserves the active generation and
+  resumable building checkpoint;
+- consumer next offsets are durably recorded on the active generation and any
+  concurrent building generation before Kafka acknowledgement; a new rebuild
+  copies active progress, closing the barrier/start race without skipping facts;
+- scan checkpoints cannot overwrite concurrently advancing consumer offsets.
+
+Focused commands and results:
+pnpm --filter @aster/broker-kafka build
+pnpm --filter @aster/broker-kafka test                 # 27/27 pass
+pnpm --filter @aster/event-delivery build
+pnpm --filter @aster/event-delivery test               # 23/23 pass
+pnpm --filter @aster/discovery build
+pnpm --filter @aster/discovery test                    # 55/55 pass
+pnpm exec eslint services/discovery/src services/discovery/test \
+  packages/broker-kafka/src packages/broker-kafka/test \
+  packages/event-delivery/test/local-runtime.test.ts --max-warnings=0
+node tools/run-discovery-integration.mjs
+git diff --check
+
+Raw real PostgreSQL output:
+{"event":"discovery_migration","postgres":"18.6","version":2,"emptyRollback":true}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2,"activeOffsetCarryForward":true,"durableHandledOffset":"12"}
+{"event":"discovery_privileges","deniedStatements":3,"catalogIsolation":true}
+{"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":4235}
+
+Source SHA256:
+11d15d9bc14b5c2847c8acd59478ebd4c9038306c1e5eaaf05df228388d677f4  packages/broker-kafka/src/broker-contract.ts
+89fe5915c5e4a461347f8c56a4ff822c4bc4b9c5ffb220c9882d6ad1fc55240d  packages/broker-kafka/src/infrastructure/kafka-adapter.ts
+615b25726661739176a69017c4c94a3c8fa7a63d546a9acae2ba7f18de4b3df4  services/discovery/src/application/run-projection-rebuild.ts
+90e52cf29802d7f465c14ed74791847f75fc1d9a3804593fe7130f6ce2b1b3a2  services/discovery/src/infrastructure/catalog-event-runtime.ts
+47656f6f2f0b2e07c07e5d0c34cc57bd60e13d3692f691e7ac27bdf55464fe5a  services/discovery/src/infrastructure/catalog-snapshot-client.ts
+ed91321a5d68ca68361f412474e6360f9344139d7a3946fe068a7604f1199255  services/discovery/src/infrastructure/postgres-rebuild.ts
+f93e5dd27a2d4006c78333e107714dd8a97a6cb60572c0eb6813e745cce7c119  services/discovery/test/projection-rebuild-runner.test.ts
+8ac87b436637fa98d1ef82785d483d20ce2a23f41708de365677ea4e1eaa07ce  services/discovery/test/integration/projection-postgres.ts
+
+Interpretation: the finite orchestration and durable SQL invariants required for
+retention-safe rebuild are implemented and focused gates pass. This checkpoint
+does not yet prove a composed Discovery service against real Kafka, expose the
+public search API or satisfy the complete P09-R01 candidate gate. Those remain
+for the service/Federation checkpoint; no release is claimed.

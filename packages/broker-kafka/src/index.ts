@@ -16,5 +16,7 @@ export type {
   AsterKafkaConsumerInput,
   AsterKafkaPublishInput,
   AsterKafkaTopicInput,
+  AsterKafkaTopicOffsets,
+  AsterKafkaTopicOffsetsResult,
 } from "./broker-contract.js";
 export { createAsterKafkaBrokerAdapter } from "./infrastructure/kafka-adapter.js";

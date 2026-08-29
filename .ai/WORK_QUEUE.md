@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 proves immutable replay and all earlier integration steps, but Chromium discarded the selected progress body even during its response event. The local correction leaves bodies to the application and requires exact request plus rendered confirmation within12 seconds;104 Web tests, seven observer regressions, types, scoped lint and the43-task affected candidate pass. Protected acceptance remains. P09-R01 is READY, preserved unpublished through6ca3703; historical stashes are superseded and must not be reapplied. Retained Phase07 demo remains intact.
+Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at confirmation-remediated code head16d4921. Projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass Discovery70/70, exact PostgreSQL18.6, an11-service real Kafka/Router proof and73/73. Earlier protected cleanup and four initial review findings are corrected. Exact-head confirmation then found maintenance readiness and unreachable replay;16d4921 keeps a valid active generation serviceable during rebuild and adds a bounded exact-replay command proven in Docker. Next: publish exact head, resolve both addressed threads, protected CI/final confirmation and release. Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -51,8 +51,8 @@ P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 proves immut
 | 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
-| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | IN_PROGRESS |
-| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | READY |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | DONE |
+| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | IN_PROGRESS |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
 

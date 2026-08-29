@@ -1,0 +1,65 @@
+P09-R01/R02/R06/R07 Discovery persistence checkpoint — 2026-08-28
+Base: 62eda2a on unpublished feat/p09-discovery-search.
+Environment: Ubuntu-20.04 WSL, Node24.19.0, pnpm11.24.0, PostgreSQL18.6
+from the repository-pinned digest. The PostgreSQL verifier used one disposable
+384MiB/1CPU container with tmpfs-only storage and an exact ownership label.
+It removed that container and left the retained Phase07 demo untouched.
+
+Implemented scope:
+- Discovery-owned additive schema with separate read-only runtime and projector roles;
+- durable monotonic source fences and at most active plus building/previous generation;
+- empty-state-only down migration and data-preserving guarded rollback;
+- transactional active/building writes, same-version retirement fencing and newer republish;
+- normalized explicit-simple-dictionary weighted title/genre/synopsis GIN search;
+- query/generation-bound rank-descending/title-ascending keyset cursors;
+- persisted rebuild barriers, handled offsets, scan checkpoints and atomic promotion.
+
+Focused commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/discovery build
+pnpm --filter @aster/discovery test
+pnpm exec eslint services/discovery/src services/discovery/test --max-warnings=0
+
+Result: strict build,34/34 tests and scoped lint pass. Tests cover current and
+hostile inputs, duplicate/stale/conflicting versions, hidden fences, active plus
+building writes, exact offset comparison without Number precision, incomplete
+barriers, query/cursor bounds, empty results and cancellation.
+
+The first affected gate reported only the Router artifact compiled before the
+new private Catalog `@inaccessible` fields. `pnpm schema:update` regenerated the
+Catalog/supergraph/manifest artifacts; the public API hash stayed unchanged and
+the exact Router composition/compatibility suite passed9/9. Final canonical
+affected gate:73/73 tasks,61 cached,2m41.391s, exit0.
+
+Real command:
+node tools/run-discovery-integration.mjs
+
+Raw final output:
+{"event":"discovery_migration","postgres":"18.6","version":1,"emptyRollback":true}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2}
+{"event":"discovery_privileges","deniedStatements":3,"catalogIsolation":true}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":5140}
+
+Final source SHA256:
+598815ec98e01a511b7b463afb70111cae6a46cfb0ae135db2a141ff1a7ba130  services/discovery/migrations/0001-title-projections.up.sql
+377ffc38fb4b13a6b381318603ef745651d756d2f99150d0fab311f160d65486  services/discovery/src/infrastructure/postgres-projection.ts
+b10fad9758917ca4ab76719cb30d8011bd092b7cf28aeda4a93cc433ecc080c8  services/discovery/src/infrastructure/postgres-search.ts
+0ff875c7172f0861bbdca9784a095dec27427e24e5678667e135b94fa48db45b  services/discovery/src/infrastructure/postgres-rebuild.ts
+2a46a4ba4284dd2e9debb6e396acb99b1c99c073925039a8d04f39383c72a910  services/discovery/test/integration/projection-postgres.ts
+
+Interpretation at this checkpoint: the owned persistence/search engine works
+against real PostgreSQL and keeps Catalog isolated. A partial rebuild leaves the
+current generation active; promotion requires the captured barrier and expires
+old cursors. The later event-recovery delta is recorded separately in
+catalog-events.txt. Broker/runtime wiring, GraphQL/Federation and Compose are not
+implemented, so no running public search API is claimed.
+
+Predecessor note: protected PR32 run33225822813 passed source, platform,
+Catalog, Playback, Engagement, immutable replay and health, then failed the
+personalized browser because Chromium still discarded a selected GraphQL body
+at response.json. This is a concrete P08 blocker, not an external wait. Preserve
+this committed P09 checkpoint, repair P08, then rebase/recheck before publication.

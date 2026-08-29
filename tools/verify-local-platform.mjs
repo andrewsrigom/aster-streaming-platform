@@ -14,6 +14,10 @@ import {
   validateRouterRuntime,
   validateRouterSources,
 } from "./verify-router-runtime.mjs";
+import {
+  readDiscoveryRuntimeSources,
+  validateDiscoveryRuntime,
+} from "./verify-discovery-runtime.mjs";
 
 import {
   readObservabilitySources,
@@ -151,13 +155,14 @@ export function validateLocalPlatform(source) {
   ]) {
     source = source.replace(serviceBlock(source, name), "");
   }
-  for (const owner of ["identity", "catalog", "playback", "engagement"]) {
+  for (const owner of ["identity", "catalog", "playback", "engagement", "discovery"]) {
     source = source.replace(volumeBlock(owner + "-router-trust", "disposable-local"), "");
   }
   source = source.replace(volumeBlock("playback-catalog-trust", "disposable-local"), "");
   for (const owner of ["identity", "playback", "catalog"]) {
     source = source.replace(volumeBlock("engagement-" + owner + "-trust", "disposable-local"), "");
   }
+  source = source.replace(volumeBlock("discovery-catalog-trust", "disposable-local"), "");
   for (const name of ["broker", "storage"]) {
     source = source
       .replace(serviceBlock(source, name), "")
@@ -477,16 +482,25 @@ export function validatePublicPlatformCommands(documents) {
 
 export async function runLocalPlatformCheck(path = composePath) {
   try {
-    const [source, reset, readme, localDevelopment, runtimeImage, observability, router] =
-      await Promise.all([
-        readFile(path, "utf8"),
-        readFile(resetPath, "utf8"),
-        readFile(readmePath, "utf8"),
-        readFile(localDevelopmentPath, "utf8"),
-        readRuntimeImageSources(repositoryRoot),
-        readObservabilitySources(repositoryRoot),
-        readRouterSources(repositoryRoot),
-      ]);
+    const [
+      source,
+      reset,
+      readme,
+      localDevelopment,
+      runtimeImage,
+      observability,
+      router,
+      discovery,
+    ] = await Promise.all([
+      readFile(path, "utf8"),
+      readFile(resetPath, "utf8"),
+      readFile(readmePath, "utf8"),
+      readFile(localDevelopmentPath, "utf8"),
+      readRuntimeImageSources(repositoryRoot),
+      readObservabilitySources(repositoryRoot),
+      readRouterSources(repositoryRoot),
+      readDiscoveryRuntimeSources(repositoryRoot),
+    ]);
     const violations = [
       ...validateEventDeliveryOverlay(
         await readFile(resolve(repositoryRoot, "infra/compose/events.yml"), "utf8"),
@@ -496,6 +510,7 @@ export async function runLocalPlatformCheck(path = composePath) {
       ...validateRuntimeImage(runtimeImage),
       ...validateObservabilityProfile(observability),
       ...validateRouterSources(router),
+      ...validateDiscoveryRuntime(discovery),
       ...validatePublicPlatformCommands([
         { file: "README.md", source: readme },
         { file: "docs/operations/LOCAL_DEVELOPMENT.md", source: localDevelopment },

@@ -14,12 +14,14 @@ const productionPackages = [
   "services/catalog",
   "services/playback",
   "services/engagement",
+  "services/discovery",
 ];
 const allowedContext = [
   "**",
   "!package.json",
   "!pnpm-lock.yaml",
   "!pnpm-workspace.yaml",
+  "!patches/kafkajs@2.2.4.patch",
   "!tsconfig.base.json",
   "!turbo.json",
   "!LICENSE",
@@ -47,6 +49,11 @@ const allowedContext = [
   "!services/engagement/src/**/*.ts",
   "!services/engagement/test/**/*.ts",
   "!services/engagement/migrations/*.sql",
+  "!services/discovery/package.json",
+  "!services/discovery/tsconfig.json",
+  "!services/discovery/src/**/*.ts",
+  "!services/discovery/test/**/*.ts",
+  "!services/discovery/migrations/*.sql",
   "!workers/media/package.json",
   "!workers/media/tsconfig.json",
   "!workers/media/src/**/*.ts",
@@ -84,6 +91,7 @@ const allowedContext = [
   "!infra/docker/catalog.Dockerfile",
   "!infra/docker/playback.Dockerfile",
   "!infra/docker/engagement.Dockerfile",
+  "!infra/docker/discovery.Dockerfile",
   "!infra/docker/web.Dockerfile",
   "!infra/docker/media-fixture.Dockerfile",
   "!infra/docker/collector.Dockerfile",
@@ -115,6 +123,7 @@ export async function readRuntimeImageSources(root) {
     "infra/docker/catalog.Dockerfile",
     "infra/docker/playback.Dockerfile",
     "infra/docker/engagement.Dockerfile",
+    "infra/docker/discovery.Dockerfile",
     "infra/docker/web.Dockerfile",
     "infra/compose/demo.yml",
     "infra/compose/playable.yml",
@@ -146,7 +155,7 @@ export function validateRuntimeImage(sources) {
   ) {
     reject("telemetry images must retain reviewed base pins and baked public configuration only");
   }
-  for (const owner of ["identity", "catalog", "playback", "engagement"]) {
+  for (const owner of ["identity", "catalog", "playback", "engagement", "discovery"]) {
     const dockerfile = sources[`infra/docker/${owner}.Dockerfile`] ?? "";
     const from = dockerfile.match(/^FROM .+$/gm) ?? [];
     if (
@@ -156,6 +165,7 @@ export function validateRuntimeImage(sources) {
       reject("both build and runtime must use the reviewed immutable Node image");
     }
     for (const required of [
+      "COPY patches ./patches",
       "pnpm install --frozen-lockfile",
       `TURBO_TELEMETRY_DISABLED=1 pnpm exec turbo run build --filter=@aster/${owner}`,
       `pnpm --filter=@aster/${owner} --prod deploy --legacy /out`,
@@ -184,6 +194,7 @@ export function validateRuntimeImage(sources) {
     reject("Web build and runtime must use the reviewed immutable Node image");
   }
   for (const required of [
+    "COPY patches ./patches",
     "pnpm install --frozen-lockfile",
     "pnpm --filter=@aster/web build",
     "COPY --from=build --chown=node:node /workspace/apps/web/.next/standalone ./",

@@ -375,3 +375,30 @@ query Watchlist($profileId: ID!, $first: Int! = 20, $after: String) {
     }
   }
 }
+
+query SearchTitles($query: String!, $locale: String!, $first: Int! = 20, $after: String) {
+  searchTitles(query: $query, locale: $locale, first: $first, after: $after) {
+    code
+    correlationId
+    connection {
+      generation
+      edges {
+        cursor
+        sourceVersion
+        indexedAt
+        visibleUntil
+        node {
+          id
+          localized(locale: $locale) {
+            locale
+            title
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

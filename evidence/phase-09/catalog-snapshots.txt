@@ -1,0 +1,204 @@
+P09-R01/R02/R06/R07 — Catalog snapshot persistence checkpoint, 2026-08-28
+
+Base domain checkpoint: cf13c153bed54312b681b30e6274fc8129543772.
+Frozen predecessor: PR32 ea4c72f67818b7e2382da1a6c653d6f835aad23c.
+No Discovery publication before predecessor protected/exact-main release.
+Stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32 was restored once.
+
+Scope:
+Catalog-owned version/visibility snapshots, at most two requested IDs or two
+exported titles plus one lookahead. Draft/retired versions carry no searchable
+metadata. Publication time comes from retained activation/command audit.
+Rights/artwork expiry caps the300-second visibility lease. One application
+read is admitted without a queue; cancellation keeps admission until settlement.
+Migration0010 adds a security-barrier view and a separate restricted read group/
+local login. Public-reader privileges remain unchanged. No cross-owner SQL,
+public GraphQL snapshot endpoint, running Discovery service or search release yet.
+
+Environment:
+WSL Ubuntu-20.04; Node24.19.0/pnpm11.24.0, TypeScript6.0.3,
+CI=true, NODE_OPTIONS=--max-old-space-size=1536.
+PostgreSQL18.6 image pinned by infra/compose/compose.yml; disposable384MiB/1CPU
+container with256MiB tmpfs and a unique loopback port. Exact labelled cleanup.
+No retained demo, film, real account or host restart.
+
+Commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/catalog build
+pnpm --filter @aster/discovery build
+node --test services/catalog/dist/test/discovery-snapshot.test.js services/catalog/dist/test/discovery-queries.test.js services/discovery/dist/test/*.test.js
+Scoped ESLint passed for new domain/application/persistence and changed integration
+runners after removing four redundant optional chains.
+✔ snapshot batch preserves requested order, duplicates and genuine absence with one owner read (10.839273ms)
+✔ bounded export retains hidden versions and advances a strict two-title keyset (4.725763ms)
+✔ malformed, oversized, sparse or accessor input rejects before persistence (0.959539ms)
+✔ expired/backwards observations, failure and cancellation cannot masquerade as an empty snapshot (1.62931ms)
+✔ one outstanding owner read has no queue and cancellation releases admission only after completion (2.450361ms)
+✔ duplicate, unrelated, excessive and unordered repository rows fail closed (5.874614ms)
+✔ Discovery snapshot exposes only bounded public search facts and genuine publication time (10.07066ms)
+✔ hidden source keeps its actual version without exposing metadata or inventing publication time (3.355523ms)
+✔ known title and artwork rights expiry shorten the visibility lease (2.922903ms)
+✔ malformed source, mismatched authority and absent publication time are unavailable, never hidden success (2.950704ms)
+✔ normalizes title/query Unicode and punctuation consistently without interpreting a query language (11.952522ms)
+✔ query-bound rank/title cursor round-trips and cannot be reused for another search (1.469969ms)
+✔ canonical cursor rejects ambiguous scores, extra components and forged encoding (0.816617ms)
+✔ query, term, page and authority bounds fail without silent truncation (1.084982ms)
+✔ maximum Unicode query fits its bounded cursor without losing scope (1.410571ms)
+✔ rank-descending/id-ascending traversal excludes previous positions despite new inserts (0.349341ms)
+✔ cursor producer refuses malformed internal positions (0.845605ms)
+✔ untrusted query accessors and hostile reflection never escape validation (0.238812ms)
+✔ current snapshot creates a deeply immutable bounded projection without copying authority (9.115125ms)
+✔ exact duplicate has no new indexed time or provenance effect (0.838724ms)
+✔ old hints read the current owner version and never claim their event version is current (0.852171ms)
+✔ out-of-order versions cannot regress metadata or a retirement fence (1.427538ms)
+✔ expiry can hide the same version but cannot be undone by another same-version publication (0.547602ms)
+✔ changed same-version metadata and contradictory leases fail closed (2.62111ms)
+✔ fresh authoritative refresh renews a lease; an old observation cannot extend it (0.512184ms)
+✔ visibility has exact expiry and current-source freshness boundaries (0.544836ms)
+✔ rebuild snapshots do not invent broker provenance or discard version fences (0.434634ms)
+✔ canonical locale, Unicode and sorted lists yield stable duplicate detection (0.616339ms)
+✔ snapshot and metadata limits reject extra authority, malformed values and overflow (0.893627ms)
+✔ invalid persisted identities, schema versions and future clocks cannot be advanced (0.588787ms)
+✔ untrusted snapshot properties and array accessors are never invoked (0.339408ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 211.413368
+
+node tools/run-catalog-integration.mjs --discovery
+Initial isolated three-title proof passed: source version5, actual publishedAt
+1787800010, rights expiry1787800021, draft version1 and missing-title null.
+Five forbidden statements denied; public reader had no source-view privilege.
+Two+one page traversal, expiration and retirement version6, up/down/up with all
+three titles preserved and public reader ready. Slots0; fixture remaining0,
+duration4562ms. This is a small functional fixture, not an SLO measurement.
+
+The first full compatibility run passed old Catalog boundaries and new source/
+role checks, then failed only the new fixture's last-page assertion: another
+suite legitimately retained title10000000-0000-4000-8000-000000000001 after the
+new draft. Export correctly included it. Cleanup remaining0,duration30104ms.
+The test now compares the global ordered page/lookahead with retained source IDs,
+rather than incorrectly assuming that this fixture owns every remaining title.
+No production code or assertion on ordering, bounds, retirement or privacy weakened.
+
+pnpm --filter @aster/catalog build
+pnpm exec eslint services/catalog/test/integration/discovery-postgres.ts
+node tools/run-catalog-integration.mjs
+Corrected complete Catalog compatibility proof exited0:
+{"event":"catalog_migration_isolation","duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_rights_round_trip","revisions":2,"provenance":true,"staleVersionRefused":true}
+{"event":"catalog_concurrency_keyset","callers":8,"committed":1,"stale":7,"stablePages":true,"synchronizedTransactions":8}
+{"event":"catalog_atomic_rollback","faults":["throw","rollback","abort"],"retainedRevisions":4,"titleVersion":5}
+{"event":"catalog_lock_failure","mode":"abort","durationMs":31,"retainedRevisions":4}
+{"event":"catalog_lock_failure","mode":"timeout","durationMs":1015,"retainedRevisions":4}
+{"event":"catalog_constraints_query_plan","provenanceRequired":true,"ownerProjectionRequired":true,"latestMustExist":true,"plan":[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Plans":[{"Node Type":"Index Only Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Backward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"rights_revisions","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":4,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000001'::uuid) AND (revision < 4))"}]}}]}]}
+{"event":"catalog_adapter_reconnect","retainedRevisions":4,"closedAdapterFails":true}
+{"event":"catalog_unicode_orphan_guard","jsonBytes":10856,"exactRoundTrip":true,"missingTitleRejected":true}
+{"event":"catalog_migration_round_trip","dependencyGuard":true,"cleanReinstall":true}
+{"event":"catalog_workflow_migration_privileges","roundTrip":true,"forbiddenStatements":8}
+{"event":"catalog_publish_dispute_serialization","first":"publish","staleContender":"conflict","finalState":"RETIRED","events":2}
+{"event":"catalog_publish_dispute_serialization","first":"dispute","staleContender":"conflict","finalState":"RETIRED","events":1}
+{"event":"catalog_workflow_atomic_faults","faults":["throw-after-outbox","abort-after-outbox"],"unchanged":true}
+{"event":"catalog_workflow_replay_expiry","exactlyOnceAudit":true,"changedReplayRejected":true,"expiredReceiptsReclaimed":4}
+{"event":"catalog_reserved_takedown_capacity","resource":"receipts","normalLimit":63,"retiredAtFullCapacity":64,"databaseBound":true}
+{"event":"catalog_reserved_takedown_capacity","resource":"outbox","normalLimit":127,"retiredAtFullCapacity":128,"databaseBound":true}
+{"event":"catalog_metadata_audit","unicodeRoundTrip":true,"immutableArtworkReviews":2}
+{"event":"catalog_acquisition_cli_guard","missingRequestRefused":true,"defaultDisabled":true,"attestationWriterRefused":true}
+{"event":"catalog_cli_verified","freshMigrations":[1,2,3,4,5,6,7,8,9,10],"mediaMigrationDownUp":true,"durableMediaRequestReplay":true,"mutableMediaAuditRoleRejected":true,"retiredMediaRequestRejected":true,"idempotentInit":true,"createReviewRetire":true,"inspect":true,"safeReplay":true,"unattestedMediaRejected":true,"hostedRejected":true,"unavailableDatabase":true,"inputDeadlineMs":10000,"sanitizedCorrelatedLogs":true}
+{"event":"catalog_activation_migration","emptyRoundTrip":true,"backfill":true,"directWritesDenied":5}
+{"event":"catalog_publication_rollback","replacement":true,"originalRestored":true,"currentApprovalPreserved":true,"unactivatedCandidateRejected":true,"outboxIndependentHistory":true,"exactReplay":true,"retainedHistoryDowngradeRefused":true}
+{"event":"catalog_activation_atomicity","postTriggerFailure":true,"cancellation":true,"forgedEventRejected":true}
+{"event":"catalog_rollback_dispute_serialization","first":"rollback","staleContender":"conflict","finalState":"RETIRED"}
+{"event":"catalog_rollback_dispute_serialization","first":"dispute","staleContender":"conflict","finalState":"RETIRED"}
+{"event":"catalog_public_migration","roundTrip":true,"duplicateRefused":true,"forbiddenStatements":10}
+{"event":"catalog_public_visibility","draftReviewedAndMediaReadyExcluded":true,"expiredTitleAndArtworkExcludedBeforeLimit":true,"cursorRemovalAndInsertStable":true,"retirementAndDisputeImmediate":true,"batchQueries":1,"orderedTitles":22,"attributionDerived":true,"internalsExcluded":true}
+{"event":"catalog_local_media_visibility","defaultExcludesBeforeLimit":true,"explicitLocalIncludesManifestAndArtwork":true,"batchPolicy":true}
+{"event":"catalog_public_query_plans","draftRows":2000,"plans":[[{"QUERY PLAN":[{"Plan":{"Node Type":"Limit","Parallel Aware":false,"Async Capable":false,"Startup Cost":22.18,"Total Cost":22.19,"Plan Rows":1,"Plan Width":627,"Actual Startup Time":0.355,"Actual Total Time":0.357,"Actual Rows":8,"Actual Loops":1,"Disabled":false,"Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Sort","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Startup Cost":22.18,"Total Cost":22.19,"Plan Rows":1,"Plan Width":627,"Actual Startup Time":0.354,"Actual Total Time":0.355,"Actual Rows":8,"Actual Loops":1,"Disabled":false,"Sort Key":["public_candidates.id"],"Sort Method":"top-N heapsort","Sort Space Used":41,"Sort Space Type":"Memory","Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Subquery Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Alias":"public_candidates","Startup Cost":0.43,"Total Cost":22.17,"Plan Rows":1,"Plan Width":627,"Actual Startup Time":0.099,"Actual Total Time":0.295,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Filter":"(((public_candidates.rights ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((public_candidates.rights ->> 'assetSourceUrl'::text) ~~ 'https://%'::text) AND ((public_candidates.publication ->> 'manifestUrl'::text) ~~ 'https://%'::text) AND ((public_candidates.rights ->> 'status'::text) = 'APPROVED'::text) AND ((public_candidates.rights ->> 'redistributionAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'modificationAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((public_candidates.rights ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((public_candidates.rights ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.rights ->> 'sourceChecksum'::text) IS NULL) OR ((public_candidates.rights ->> 'sourceChecksum'::text) = (public_candidates.publication ->> 'sourceChecksum'::text))) AND (((public_candidates.rights ->> 'validUntil'::text) IS NULL) OR (((public_candidates.rights ->> 'validUntil'::text))::bigint > '1787800011'::bigint)) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint >= ((public_candidates.rights ->> 'reviewedAt'::text))::bigint) AND (((public_candidates.metadata -> 'artwork'::text) = 'null'::jsonb) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'status'::text) = 'APPROVED'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'redistributionAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'modificationAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'assetSourceUrl'::text) ~~ 'https://%'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text) IS NULL) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text))::bigint > '1787800011'::bigint)))))","Rows Removed by Filter":0,"Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Subquery","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.43,"Total Cost":21.93,"Plan Rows":1,"Plan Width":627,"Actual Startup Time":0.084,"Actual Total Time":0.226,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"((r.title_id = t.id) AND (r.revision = t.rights_revision))","Rows Removed by Join Filter":0,"Shared Hit Blocks":76,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.28,"Total Cost":21.16,"Plan Rows":1,"Plan Width":1399,"Actual Startup Time":0.045,"Actual Total Time":0.082,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Shared Hit Blocks":40,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Index Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"catalog_published_titles","Relation Name":"titles","Alias":"t","Startup Cost":0.14,"Total Cost":12.82,"Plan Rows":1,"Plan Width":563,"Actual Startup Time":0.021,"Actual Total Time":0.029,"Actual Rows":18,"Actual Loops":1,"Disabled":false,"Index Cond":"(id > '00000000-0000-4000-8000-000000000110'::uuid)","Rows Removed by Index Recheck":0,"Filter":"(rights_revision = latest_rights_revision)","Rows Removed by Filter":0,"Index Searches":1,"Shared Hit Blocks":4,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"publications_title_id_id_rights_revision_key","Relation Name":"publications","Alias":"p","Startup Cost":0.14,"Total Cost":8.16,"Plan Rows":1,"Plan Width":836,"Actual Startup Time":0.002,"Actual Total Time":0.002,"Actual Rows":1,"Actual Loops":18,"Disabled":false,"Index Cond":"((title_id = t.id) AND (id = t.publication_id) AND (rights_revision = t.rights_revision))","Rows Removed by Index Recheck":0,"Index Searches":18,"Shared Hit Blocks":36,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"r","Startup Cost":0.15,"Total Cost":0.75,"Plan Rows":1,"Plan Width":52,"Actual Startup Time":0.002,"Actual Total Time":0.002,"Actual Rows":1,"Actual Loops":18,"Disabled":false,"Index Cond":"((title_id = p.title_id) AND (revision = p.rights_revision))","Rows Removed by Index Recheck":0,"Filter":"((status)::text = 'APPROVED'::text)","Rows Removed by Filter":0,"Index Searches":18,"Shared Hit Blocks":36,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]}]}]}]},"Planning":{"Shared Hit Blocks":177,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},"Planning Time":2.242,"Triggers":[],"Execution Time":0.52}]}],[{"QUERY PLAN":[{"Plan":{"Node Type":"Subquery Scan","Parallel Aware":false,"Async Capable":false,"Alias":"public_candidates","Startup Cost":0.43,"Total Cost":24.76,"Plan Rows":1,"Plan Width":627,"Actual Startup Time":0.104,"Actual Total Time":0.107,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Filter":"(((public_candidates.rights ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((public_candidates.rights ->> 'assetSourceUrl'::text) ~~ 'https://%'::text) AND ((public_candidates.publication ->> 'manifestUrl'::text) ~~ 'https://%'::text) AND ((public_candidates.rights ->> 'status'::text) = 'APPROVED'::text) AND ((public_candidates.rights ->> 'redistributionAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'modificationAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((public_candidates.rights ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((public_candidates.rights ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((public_candidates.rights ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint <= '1787800011'::bigint) AND (((public_candidates.rights ->> 'sourceChecksum'::text) IS NULL) OR ((public_candidates.rights ->> 'sourceChecksum'::text) = (public_candidates.publication ->> 'sourceChecksum'::text))) AND (((public_candidates.rights ->> 'validUntil'::text) IS NULL) OR (((public_candidates.rights ->> 'validUntil'::text))::bigint > '1787800011'::bigint)) AND (((public_candidates.publication ->> 'validatedAt'::text))::bigint >= ((public_candidates.rights ->> 'reviewedAt'::text))::bigint) AND (((public_candidates.metadata -> 'artwork'::text) = 'null'::jsonb) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'status'::text) = 'APPROVED'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'redistributionAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'modificationAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = ANY ('{true,false}'::text[])) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'commercialUseAllowed'::text) = 'true'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'assetSourceUrl'::text) ~~ 'https://%'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'shareAlikeRequired'::text) = 'false'::text) AND ((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'technicalRestrictions'::text) = 'NONE'::text) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'reviewedAt'::text))::bigint <= '1787800011'::bigint) AND (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text) IS NULL) OR (((((public_candidates.metadata -> 'artwork'::text) -> 'rights'::text) ->> 'validUntil'::text))::bigint > '1787800011'::bigint)))))","Rows Removed by Filter":0,"Shared Hit Blocks":6,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Subquery","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.43,"Total Cost":24.52,"Plan Rows":1,"Plan Width":627,"Actual Startup Time":0.087,"Actual Total Time":0.089,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"(r.revision = t.rights_revision)","Rows Removed by Join Filter":0,"Shared Hit Blocks":6,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Nested Loop","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Join Type":"Inner","Startup Cost":0.28,"Total Cost":16.33,"Plan Rows":1,"Plan Width":1399,"Actual Startup Time":0.052,"Actual Total Time":0.053,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Inner Unique":true,"Join Filter":"((p.rights_revision = t.rights_revision) AND (p.id = t.publication_id))","Rows Removed by Join Filter":0,"Shared Hit Blocks":4,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0,"Plans":[{"Node Type":"Index Scan","Parent Relationship":"Outer","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"catalog_published_titles","Relation Name":"titles","Alias":"t","Startup Cost":0.14,"Total Cost":8.16,"Plan Rows":1,"Plan Width":563,"Actual Startup Time":0.034,"Actual Total Time":0.035,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Index Cond":"(id = '00000000-0000-4000-8000-000000000128'::uuid)","Rows Removed by Index Recheck":0,"Filter":"(rights_revision = latest_rights_revision)","Rows Removed by Filter":0,"Index Searches":1,"Shared Hit Blocks":2,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"publications_title_id_id_rights_revision_key","Relation Name":"publications","Alias":"p","Startup Cost":0.14,"Total Cost":8.16,"Plan Rows":1,"Plan Width":836,"Actual Startup Time":0.014,"Actual Total Time":0.014,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Index Cond":"(title_id = '00000000-0000-4000-8000-000000000128'::uuid)","Rows Removed by Index Recheck":0,"Index Searches":1,"Shared Hit Blocks":2,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]},{"Node Type":"Index Scan","Parent Relationship":"Inner","Parallel Aware":false,"Async Capable":false,"Scan Direction":"Forward","Index Name":"rights_revisions_pkey","Relation Name":"rights_revisions","Alias":"r","Startup Cost":0.15,"Total Cost":8.17,"Plan Rows":1,"Plan Width":52,"Actual Startup Time":0.017,"Actual Total Time":0.017,"Actual Rows":1,"Actual Loops":1,"Disabled":false,"Index Cond":"((title_id = '00000000-0000-4000-8000-000000000128'::uuid) AND (revision = p.rights_revision))","Rows Removed by Index Recheck":0,"Filter":"((status)::text = 'APPROVED'::text)","Rows Removed by Filter":0,"Index Searches":1,"Shared Hit Blocks":2,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0}]}]},"Planning":{"Shared Hit Blocks":0,"Shared Read Blocks":0,"Shared Dirtied Blocks":0,"Shared Written Blocks":0,"Local Hit Blocks":0,"Local Read Blocks":0,"Local Dirtied Blocks":0,"Local Written Blocks":0,"Temp Read Blocks":0,"Temp Written Blocks":0},"Planning Time":0.525,"Triggers":[],"Execution Time":0.294}]}]]}
+{"event":"catalog_public_http_postgres","anonymousEntities":{"_entities":[{"id":"00000000-0000-4000-8000-000000000128","localized":{"title":"Synthetic title"},"attribution":{"creator":"Synthetic creator","licenseUrl":"https://example.invalid/license"}},null,{"id":"00000000-0000-4000-8000-000000000110","localized":{"title":"Synthetic title"},"attribution":{"creator":"Synthetic creator","licenseUrl":"https://example.invalid/license"}},{"id":"00000000-0000-4000-8000-000000000128","localized":{"title":"Synthetic title"},"attribution":{"creator":"Synthetic creator","licenseUrl":"https://example.invalid/license"}}]},"sqlQueries":1,"retirementNextRequest":true,"correlated":true}
+{"event":"catalog_public_failures","blockedReadCancelled":true,"nextReadRecovered":true,"closedAdapterUnavailable":true}
+{"event":"catalog_candidate_reviews","reviewed":2,"state":"NEEDS_CLARIFICATION","incompleteApprovalRejected":true,"publicInvisible":true,"filmDownloads":0}
+{"event":"catalog_media_request_concurrency","callers":8,"accepted":8,"durableRequests":1,"independentRead":true,"changedReplayRefused":true,"duplicateWorkRefused":true,"editorialStateUnchanged":true}
+{"event":"catalog_media_request_rollback_privileges","postInsertRollback":true,"sameIdRetry":true,"immutableOperatorAudit":true,"privateFromReaders":true,"nonemptyDownRefused":true}
+{"event":"catalog_media_request_capacity","retainedRequests":16,"overflowRefused":true,"replayUsesNoSlot":true,"retirementNotBlocked":true,"retiredReplayRefused":true}
+{"event":"catalog_media_request_dispute_race","synchronizedTitleLock":true,"disputeCommitted":true,"requestRefused":true,"durableRequests":0,"sourceDownloads":0}
+{"event":"catalog_acquisition_concurrency","callers":8,"admitted":1,"globalSlot":true,"invalidResultRefused":true,"completedReplay":true,"originalReadAuthorized":true,"revokedOriginalRefused":true}
+{"event":"catalog_acquisition_reuse_authority","requestChecksumAloneRefused":true,"approvedChecksumPermitsReuse":true}
+{"event":"catalog_acquisition_recovery","expiredLeaseRecovered":true,"staleCompletionRefused":true,"attempts":3,"retryBudgetEnforced":true,"finalExpiredAttemptRetired":true}
+{"event":"catalog_acquisition_rights","disputeStopsCompletion":true,"failureAuditRetained":true,"deterministicFailureNotRetried":true}
+{"event":"catalog_acquisition_audit","failedClaimRolledBack":true,"readerPrivate":true,"noDeleteGrant":true,"nonemptyDownRefused":true,"noPublicationAuthority":true}
+{"event":"catalog_processing_idempotency","callers":8,"admitted":1,"exactReplay":true,"conflictingCompletionRefused":true,"sameBytesReused":true,"requestingRightsRechecked":true,"publicationAuthority":false}
+{"event":"catalog_artwork_recipe_isolation","separateKey":true,"sameGlobalSlot":true,"exactReplay":true,"hlsUnchanged":true,"crossRecipeCompletionRefused":true,"currentRightsRequired":true}
+{"event":"catalog_processing_recovery","staleCompletionRefused":true,"attempts":3,"finalLeaseRetired":true}
+{"event":"catalog_processing_audit","rollback":true,"cancellationRetried":true,"terminalInvalidOutput":true,"rightsRaceRefused":true,"readerPrivate":true,"nonemptyDownRefused":true,"noEditorialChanges":true}
+{"event":"catalog_attester_isolation","noEditorialWrites":true,"noCrossContextRead":true,"publicExecuteDenied":true,"safeSearchPath":true,"excessColumnGrantRejected":true,"emptyMigrationRoundTrip":true}
+{"event":"catalog_attestation_activation","publicationId":"00000000-0000-4000-8000-000000930017","independentlyRegistered":true,"exactReplay":true,"registrationDoesNotActivate":true,"normalOperatorPublish":true,"retainedAuditDowngradeRejected":true,"publicationClockAdvanced":true,"futurePublicationRejected":true}
+{"event":"catalog_attestation_dispute_race","serializedOnTitle":true,"staleAndRevokedRegistrationRejected":true,"retainedAttestations":1}
+{"event":"catalog_cross_title_computation_reuse","sameProcessingIds":true,"originalRequestHistoryPreserved":true,"independentlyApprovedNewTitlePublished":true,"exactReplay":true,"unapprovedAndWrongChecksumRejected":true,"originalTitleDisputeIndependent":true,"newTitleDisputeRejected":true}
+{"event":"catalog_discovery_source","exactVersion":5,"publishedAtFromAudit":1787800010,"rightsExpiry":1787800021,"hiddenVersion":1,"privateDraftOmitted":true,"missingNotInvented":true}
+{"event":"catalog_discovery_privileges","forbiddenStatements":5,"publicReaderUnchanged":true,"separateReadOnlyRole":true}
+{"event":"catalog_discovery_export_retirement","pageSizes":[2,2],"stableCursor":true,"expiryHiddenWithoutVersionChange":true,"retiredVersion":6}
+{"event":"catalog_discovery_view_roundtrip","retainedTitles":2055,"dataPreserved":true,"publicReaderStillReady":true,"hiddenFencePreserved":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":29546}
+
+Interpretation and limits:
+The complete real SQL suite includes fresh migrations1..10, old migration
+round-trips, owner privileges, workflow concurrency/rollback, real public GraphQL,
+rights/media audit and the new source view. The view round-trip preserves2055
+titles and the hidden version fence. No film generation/download occurred.
+The focused three-title result remains supporting: only the test's last-page
+expectation changed afterwards. Later transport work must prove purpose-separated
+credentials, independent admission and bounded responses before exposing snapshots.
+Discovery index generations, consumer/rebuild, search API, relevance and rails
+remain future work within the active phase; this checkpoint does not satisfy all
+four requirements on its own.
+
+Private Catalog transport/runtime checkpoint — 2026-08-28
+Base predecessor: dc571bd77e08529b8c91ccb53d44b0bf3bfdf089. The Catalog
+source/runtime changes are identical to the earlier real proof; the later
+predecessor deltas affect only Web tests and repository memory.
+
+Implemented boundary:
+- private @inaccessible snapshot/export fields accept only their two exact query
+  documents from origin http://discovery:3500;
+- separate x-aster-discovery-credential and required bounded correlation UUID;
+- independent one-active/no-queue lane, two-second deadline and32 initial/
+  four-per-second credits;
+- separate one-connection Catalog reader pool and optional readiness monitor;
+- Discovery pool/credential/config failure returns private UNAVAILABLE without
+  changing public Catalog readiness or consuming Router/Engagement admission;
+- secrets and unpublished metadata do not enter responses or logs.
+
+Focused commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/http-express build
+pnpm --filter @aster/catalog build
+node --test packages/http-express/dist/test/local-router-trust.test.js services/catalog/dist/test/discovery-transport.test.js services/catalog/dist/test/runtime.test.js
+pnpm exec eslint <15 changed HTTP/Catalog transport/runtime/test files>
+Result:19/19 tests pass; strict builds and scoped ESLint pass. The test covers
+exact-operation purpose isolation, malformed authority, response64-KiB bound,
+independent rate/admission, pending-read shutdown, separate optional authority,
+public readiness during outage, recovery and secret-free logs.
+
+Real command:
+node tools/run-catalog-integration.mjs --discovery
+Raw result:
+{"event":"catalog_discovery_source","exactVersion":5,"publishedAtFromAudit":1787800010,"rightsExpiry":1787800021,"hiddenVersion":1,"privateDraftOmitted":true,"missingNotInvented":true}
+{"event":"catalog_discovery_privileges","forbiddenStatements":5,"publicReaderUnchanged":true,"separateReadOnlyRole":true}
+{"event":"catalog_discovery_export_retirement","pageSizes":[2,1],"stableCursor":true,"expiryHiddenWithoutVersionChange":true,"retiredVersion":6}
+{"event":"catalog_discovery_view_roundtrip","retainedTitles":3,"dataPreserved":true,"publicReaderStillReady":true,"hiddenFencePreserved":true}
+{"event":"catalog_discovery_private_runtime","exactOperations":true,"separateCredential":true,"separatePoolLimit":1,"failureDoesNotBlockPublicCatalog":true,"recoveryObserved":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":6483}
+
+Interpretation and limits:
+The actual Catalog HTTP service created its optional pool from validated local
+configuration. Revoking the Discovery role made only the private operation
+unavailable; public Catalog remained HTTP200. Regrant recovered the private read.
+The unique384-MiB/1CPU PostgreSQL fixture and service resources closed to zero.
+This proves current-source access, not Discovery-owned storage, event catch-up,
+search, relevance or a public API. No retained demo, film or host process changed.

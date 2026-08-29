@@ -83,6 +83,64 @@ input DeleteProfileInput @join__type(graph: IDENTITY) {
   expectedVersion: Int!
 }
 
+type DiscoveryPageInfo @join__type(graph: DISCOVERY) {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+enum DiscoverySearchCode @join__type(graph: DISCOVERY) {
+  COMPLETED @join__enumValue(graph: DISCOVERY)
+  INVALID_INPUT @join__enumValue(graph: DISCOVERY)
+  CURSOR_EXPIRED @join__enumValue(graph: DISCOVERY)
+  STALE @join__enumValue(graph: DISCOVERY)
+  UNAVAILABLE @join__enumValue(graph: DISCOVERY)
+  CANCELLED @join__enumValue(graph: DISCOVERY)
+  INDETERMINATE @join__enumValue(graph: DISCOVERY)
+}
+
+type DiscoverySearchConnection @join__type(graph: DISCOVERY) {
+  generation: ID!
+  edges: [DiscoverySearchEdge!]!
+  pageInfo: DiscoveryPageInfo!
+}
+
+type DiscoverySearchEdge @join__type(graph: DISCOVERY) {
+  cursor: String!
+  node: Title
+  sourceVersion: Int!
+  indexedAt: Float!
+  visibleUntil: Float!
+}
+
+type DiscoverySearchPayload @join__type(graph: DISCOVERY) {
+  code: DiscoverySearchCode!
+  correlationId: ID!
+  connection: DiscoverySearchConnection
+}
+
+type DiscoverySourceDocument @join__type(graph: CATALOG) @inaccessible {
+  defaultLocale: String!
+  localizations: [LocalizedTitle!]!
+  genres: [String!]!
+  editorialLabels: [String!]!
+  releaseYear: Int
+  publishedAt: Float!
+}
+
+type DiscoverySourcePage @join__type(graph: CATALOG) @inaccessible {
+  snapshots: [DiscoverySourceSnapshot!]!
+  endCursor: ID
+  hasNextPage: Boolean!
+}
+
+type DiscoverySourceSnapshot @join__type(graph: CATALOG) @inaccessible {
+  titleId: ID!
+  sourceVersion: Int!
+  observedAt: Float!
+  visibleUntil: Float
+  document: DiscoverySourceDocument
+}
+
 type EngagementProfileAuthority @join__type(graph: IDENTITY) @inaccessible {
   code: IdentityOutcome!
   accountId: ID
@@ -129,6 +187,7 @@ scalar join__FieldSet
 
 enum join__Graph {
   CATALOG @join__graph(name: "catalog", url: "http://catalog:3200/graphql")
+  DISCOVERY @join__graph(name: "discovery", url: "http://discovery:3500/graphql")
   ENGAGEMENT @join__graph(name: "engagement", url: "http://engagement:3400/graphql")
   IDENTITY @join__graph(name: "identity", url: "http://identity:3100/graphql")
   PLAYBACK @join__graph(name: "playback", url: "http://playback:3300/graphql")
@@ -290,11 +349,14 @@ enum ProgressStatus @join__type(graph: ENGAGEMENT) {
   COMPLETED @join__enumValue(graph: ENGAGEMENT)
 }
 
-type Query @join__type(graph: CATALOG) @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
+type Query @join__type(graph: CATALOG) @join__type(graph: DISCOVERY) @join__type(graph: ENGAGEMENT) @join__type(graph: IDENTITY) @join__type(graph: PLAYBACK) {
   titles(first: Int!, after: String): CatalogTitleConnection! @join__field(graph: CATALOG)
   title(id: ID!): Title @join__field(graph: CATALOG)
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible @join__field(graph: CATALOG)
   _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible @join__field(graph: CATALOG)
+  _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible @join__field(graph: CATALOG)
+  _discoveryExport(after: ID): DiscoverySourcePage! @inaccessible @join__field(graph: CATALOG)
+  searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload! @join__field(graph: DISCOVERY)
   progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
   watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @join__field(graph: ENGAGEMENT)
@@ -330,7 +392,7 @@ input SetWatchlistInput @join__type(graph: ENGAGEMENT) {
   present: Boolean!
 }
 
-type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: ENGAGEMENT, key: "id") {
+type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: DISCOVERY, key: "id") @join__type(graph: ENGAGEMENT, key: "id") {
   id: ID!
   localized(locale: String! = "en"): LocalizedTitle! @join__field(graph: CATALOG)
   releaseYear: Int @join__field(graph: CATALOG)

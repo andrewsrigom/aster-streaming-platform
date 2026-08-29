@@ -2,6 +2,8 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 source16d4921 verifies these boundaries locally; protected release remains pending.
+
 [ADR-0034](../docs/adr/0034-owned-event-delivery.md) defines owner-local fenced relays, unchanged v1 envelopes, dedicated Identity-event authentication and durable deletion/quarantine/replay. Real recovery required a one-second rebalance wait inside the existing broker deadline and an independent outbound step while inbound consumption recovers. Separate background credentials do not widen request roles; candidate/protected release remains.
 
 [ADR-0033](../docs/adr/0033-request-scoped-engagement-fields.md) defines nullable Title/Profile progress and membership, request-only DataLoader 2.2.3 caches, twenty pairs/five profiles, current ownership and lazy Catalog visibility. One owned SQL batch preserves order/missing data; Catalog failure does not gate progress. No migration or new trust transport.

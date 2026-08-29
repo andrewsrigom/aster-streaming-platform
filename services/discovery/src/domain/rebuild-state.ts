@@ -1,0 +1,185 @@
+import { discoveryIdentifier, discoveryRecord } from "./title-projection.js";
+
+export const DISCOVERY_BOOTSTRAP_GENERATION = "00000000-0000-4000-8000-000000090001";
+export const DISCOVERY_REFRESH_AFTER_SECONDS = 150;
+export const DISCOVERY_VISIBILITY_LEASE_SECONDS = 300;
+
+export type BrokerOffsets = Readonly<Record<string, string>>;
+export interface RebuildStart {
+  readonly generation: string;
+  readonly startedAt: number;
+  readonly barrier: BrokerOffsets;
+}
+export interface RebuildCheckpoint {
+  readonly generation: string;
+  readonly after: string | null;
+  readonly scanComplete: boolean;
+  readonly rowsApplied: number;
+}
+export interface RebuildHandledOffset {
+  readonly partition: number;
+  readonly offset: string;
+}
+
+const timestamp = (value: unknown): value is number =>
+  typeof value === "number" &&
+  Number.isSafeInteger(value) &&
+  value >= 0 &&
+  value <= 253_402_300_799;
+const rows = (value: unknown): value is number =>
+  typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= 1_000_000;
+
+export function normalizeBrokerOffsets(value: unknown): BrokerOffsets | undefined {
+  try {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return undefined;
+    }
+    const names = Reflect.ownKeys(value);
+    if (
+      names.length > 32 ||
+      names.some(
+        (name) =>
+          typeof name !== "string" || !/^(?:0|[1-9][0-9]{0,3})$/u.test(name) || Number(name) > 1023,
+      )
+    ) {
+      return undefined;
+    }
+    const record = discoveryRecord(value, names as string[]);
+    if (!record) {
+      return undefined;
+    }
+    const normalized: Record<string, string> = {};
+    for (const name of [...(names as string[])].sort((a, b) => Number(a) - Number(b))) {
+      const offset = record[name];
+      if (
+        typeof offset !== "string" ||
+        !/^(?:0|[1-9][0-9]{0,18})$/u.test(offset) ||
+        BigInt(offset) > 9_223_372_036_854_775_807n
+      ) {
+        return undefined;
+      }
+      normalized[name] = offset;
+    }
+    return Object.freeze(normalized);
+  } catch {
+    return undefined;
+  }
+}
+
+export function offsetsCover(handled: BrokerOffsets, barrier: BrokerOffsets): boolean {
+  return Object.entries(barrier).every(([partition, offset]) => {
+    const value = handled[partition] ?? "0";
+    return BigInt(value) >= BigInt(offset);
+  });
+}
+
+export function projectionRefreshDue(value: unknown, now: number): boolean | undefined {
+  try {
+    const active = discoveryRecord(value, ["generation", "startedAt"]);
+    if (
+      !active ||
+      !discoveryIdentifier(active["generation"]) ||
+      !timestamp(active["startedAt"]) ||
+      !timestamp(now) ||
+      active["startedAt"] > now
+    ) {
+      return undefined;
+    }
+    return (
+      active["generation"] === DISCOVERY_BOOTSTRAP_GENERATION ||
+      now - active["startedAt"] >= DISCOVERY_REFRESH_AFTER_SECONDS
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+export function projectionServiceable(value: unknown, now: number): boolean | undefined {
+  try {
+    const active = discoveryRecord(value, ["generation", "startedAt"]);
+    if (
+      !active ||
+      !discoveryIdentifier(active["generation"]) ||
+      !timestamp(active["startedAt"]) ||
+      !timestamp(now) ||
+      active["startedAt"] > now
+    ) {
+      return undefined;
+    }
+    return (
+      active["generation"] !== DISCOVERY_BOOTSTRAP_GENERATION &&
+      now - active["startedAt"] < DISCOVERY_VISIBILITY_LEASE_SECONDS
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+export function normalizeRebuildStart(value: unknown): RebuildStart | undefined {
+  try {
+    const input = discoveryRecord(value, ["generation", "startedAt", "barrier"]);
+    const barrier = input && normalizeBrokerOffsets(input["barrier"]);
+    return input &&
+      discoveryIdentifier(input["generation"]) &&
+      timestamp(input["startedAt"]) &&
+      barrier
+      ? Object.freeze({
+          generation: input["generation"],
+          startedAt: input["startedAt"],
+          barrier,
+        })
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function normalizeRebuildCheckpoint(value: unknown): RebuildCheckpoint | undefined {
+  try {
+    const input = discoveryRecord(value, ["generation", "after", "scanComplete", "rowsApplied"]);
+    return input &&
+      discoveryIdentifier(input["generation"]) &&
+      (input["after"] === null || discoveryIdentifier(input["after"])) &&
+      typeof input["scanComplete"] === "boolean" &&
+      rows(input["rowsApplied"])
+      ? Object.freeze({
+          generation: input["generation"],
+          after: input["after"],
+          scanComplete: input["scanComplete"],
+          rowsApplied: input["rowsApplied"],
+        })
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function normalizeRebuildHandledOffset(value: unknown): RebuildHandledOffset | undefined {
+  try {
+    const input = discoveryRecord(value, ["partition", "offset"]);
+    const offsets =
+      input && typeof input["partition"] === "number" && Number.isSafeInteger(input["partition"])
+        ? normalizeBrokerOffsets({ [String(input["partition"])]: input["offset"] })
+        : undefined;
+    return input && offsets
+      ? Object.freeze({
+          partition: input["partition"] as number,
+          offset: input["offset"] as string,
+        })
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function validPromotion(value: unknown): value is Readonly<{
+  generation: string;
+  completedAt: number;
+}> {
+  try {
+    const input = discoveryRecord(value, ["generation", "completedAt"]);
+    return !!input && discoveryIdentifier(input["generation"]) && timestamp(input["completedAt"]);
+  } catch {
+    return false;
+  }
+}

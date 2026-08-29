@@ -78,6 +78,31 @@ type Query {
   title(id: ID!): Title
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible
   _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible
+  _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible
+  _discoveryExport(after: ID): DiscoverySourcePage! @inaccessible
+}
+
+type DiscoverySourceDocument @inaccessible {
+  defaultLocale: String!
+  localizations: [LocalizedTitle!]!
+  genres: [String!]!
+  editorialLabels: [String!]!
+  releaseYear: Int
+  publishedAt: Float!
+}
+
+type DiscoverySourceSnapshot @inaccessible {
+  titleId: ID!
+  sourceVersion: Int!
+  observedAt: Float!
+  visibleUntil: Float
+  document: DiscoverySourceDocument
+}
+
+type DiscoverySourcePage @inaccessible {
+  snapshots: [DiscoverySourceSnapshot!]!
+  endCursor: ID
+  hasNextPage: Boolean!
 }
 
 type EngagementVisibleTitle @inaccessible {
