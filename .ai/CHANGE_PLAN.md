@@ -40,6 +40,11 @@ PostgreSQL before either coalescing boundary. Correction
 `62afee15240ab1d197aac84b4d63e1a0e1dce382` gives each exact negative key the
 same bounded process sharing and tokenized Redis lease before the owner fence
 read; valid positive fence checks and Redis-outage fallback remain unchanged.
+Corrected confirmation then found that fence coalescing could cross a request
+time/policy boundary and a wrong-type Redis key bypassed exact malformed cleanup.
+Exact implementation `2930332e7b1c049c081bfad8c5d62c71009f03bf`
+includes the visibility scope in the shared identity and rejects non-string keys
+inside the bounded Redis script before `STRLEN`/`GET`.
 
 ## Boundaries
 
@@ -128,11 +133,13 @@ read; valid positive fence checks and Redis-outage fallback remain unchanged.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: corrected local candidate PASS: Catalog243/243,
-  Redis17/17, telemetry11/11, affected73/73, real PostgreSQL
-  fence/source/dispute and real Redis bounded read/positive-plus-negative
-  concurrency/outage/cleanup. Protected CI, corrected confirmation and release
-  remain pending.
+- Acceptance result: corrected local candidate PASS: Catalog244/244,
+  Redis17/17, telemetry11/11, affected73/73 (59 cached, 83.646 seconds), real
+  PostgreSQL fence/source/dispute and real Redis bounded/wrong-type reads,
+  positive-plus-negative concurrency, outage and cleanup. One earlier affected
+  attempt hit an unrelated Identity terminal-fallback timing failure; its focused
+  147/147 rerun and the next complete gate pass. Protected CI, corrected
+  confirmation and release remain pending.
 - Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
 - Candidate gate: `pnpm check:changed`, real dependency fixture and audit.
 - Heavyweight repeat triggers: Redis wire contract, cache envelope/fence query,

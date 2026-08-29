@@ -42,7 +42,10 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
 - Stampede: at most 128 process-local owners plus a two-second tokenized Redis
   lease released by atomic compare-and-delete; positive projection refreshes and
   cold negative-key owner-fence reads both enter coordination before their
-  expensive source operation
+  expensive source operation; fence sharing also requires identical request time
+  and rights-use policy
+- Corruption: the Redis-side read rejects oversized and non-string exact values
+  before returning bytes; Catalog deletes that malformed key best-effort
 - Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
   coalescing and lease outcomes, bounded waiter bucket, duration and payload bytes
 

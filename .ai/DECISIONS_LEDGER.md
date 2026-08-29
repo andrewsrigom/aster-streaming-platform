@@ -6,8 +6,10 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 cache to Catalog public-title entity projections. Every positive reuse follows a
 current PostgreSQL visibility/version fence; browse ordering, rights and Playback
 authority remain uncached. Entries, deterministic jitter, process coalescing and
-tokenized Redis leases are finite. Redis loss bypasses to source, and cache
-coordination never authorizes durable work.
+tokenized Redis leases are finite. Fence work shares only within an identical
+request-time/policy scope; wrong-type or oversized Redis values are rejected
+before value bytes reach the application. Redis loss bypasses to source, and
+cache coordination never authorizes durable work.
 
 [ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size
 independent public rails, explicit freshness/outcomes, stable recent fallback,

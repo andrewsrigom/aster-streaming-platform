@@ -31,7 +31,10 @@ bytes. The positive value is a schema-v1 JSON envelope with the exact fence,
 cache time and already-projected public title. It is at most 16 KiB and contains
 no raw rights record, credential, profile data, signed media URL or private
 metadata. Unknown fields, wrong versions, non-finite values, mismatched IDs or
-oversized/malformed bytes are misses; delete only that exact key best-effort.
+oversized/malformed bytes and non-string Redis values are misses; delete only
+that exact key best-effort. The Redis-side bounded read checks the key type and
+size before returning value bytes, so wrong-type or oversized values never enter
+the application parser.
 
 Positive entries expire after 120 seconds plus deterministic 0–30 second jitter
 derived from SHA-256 of the full key. A valid UUID that has no current public
@@ -46,8 +49,10 @@ keys need no global invalidation and expire naturally. Never scan keys.
 
 Within one process, at most 128 distinct cold keys may own shared refresh work.
 This bound covers both exact positive-fence projections and negative-key owner
-fence lookups: concurrent cold or expired absence checks for the same ID share
-one PostgreSQL fence read before a negative marker is written.
+fence lookups. Fence work is shared only when title ID, request time and rights-use
+policy are identical; calls on opposite sides of a visibility boundary cannot
+reuse one another's PostgreSQL decision. Concurrent identical cold or expired
+absence checks share one fence read before a negative marker is written.
 The first request creates work with its own finite deadline; later callers attach
 as waiters and retain independent cancellation. A cancelled caller stops waiting
 without aborting work still used by another caller. Settled work is removed. When

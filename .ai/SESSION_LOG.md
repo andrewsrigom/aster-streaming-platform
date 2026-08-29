@@ -2,6 +2,41 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Catalog corrected-confirmation visibility and Redis-type remediation
+
+### Completed
+
+- Preserved the dependent Discovery stale-cache implementation and documentation
+  as checkpoint `423c33d` before returning to predecessor PR37.
+- Corrected review discussion3887086778 by including request time and rights-use
+  policy in each per-title fence coalescing identity. A synchronized expiry case
+  proves calls on opposite visibility sides perform separate owner decisions.
+- Corrected discussion3887086782 by checking Redis key type inside the bounded
+  Lua read before `STRLEN`/`GET`; non-string exact keys now enter the existing
+  malformed deletion path.
+- Committed implementation as `2930332e7b1c049c081bfad8c5d62c71009f03bf`.
+  Catalog244/244 and Redis17/17 pass. Real Redis reports bounded oversized read,
+  `wrongTypeDeleted=true`, positive/negative coordination, outage fallback and
+  cleanup0. Complete PostgreSQL integration proves the compact fence, exact
+  source, stale-dispute rejection and cleanup0.
+- The first affected gate hit one unrelated Identity terminal-fallback timing
+  assertion under parallel load. Focused Identity passed147/147; the next full
+  affected gate passed73/73,59 cached, in83.646 seconds. No Identity source or
+  deadline changed.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-contract.txt`
+- `evidence/phase-10/catalog-cache-runtime.txt`
+- `evidence/phase-10/catalog-cache-postgres.txt`
+- `evidence/phase-10/catalog-cache-concurrency.txt`
+
+### Next action
+
+Publish one PR37 update, resolve both corrected-confirmation discussions, require
+exact-head protected CI and confirmation, then squash/verify main and rebase the
+preserved Discovery commits after old predecessor `b65688b`.
+
 ## 2026-08-29 — Web discovery release and Phase 10 activation
 
 ### Completed
@@ -2336,23 +2371,23 @@ Execute P00-R05 by turning the current documentation audit contract into a bound
 
 Execute P00-R04 by selecting and adding the minimal strict TypeScript, format, lint, unused-code, architecture-boundary, and fast commit-message toolchain.
 
-## 2026-08-26 — Exact Node.js and pnpm toolchain
+**Historical checkpoint — 2026-08-26 — Exact Node.js and pnpm toolchain**
 
-### Completed
+**Completed**
 
 - Selected and pinned the active Node.js `24.19.0` Krypton LTS release and pnpm `11.24.0` from current official support and compatibility evidence.
 - Added a minimal private root manifest, `.nvmrc`, `.node-version`, and an integrity-pinned `packageManager` declaration without creating a workspace, dependencies, or lockfile.
 - Added a dependency-free guard for exact active versions and duplicated pins, with bounded parsing and network-disabled Corepack detection.
 - Installed the checksum-verified Node.js release in the user-local runtime location and activated the exact pnpm release through Corepack.
 
-### Evidence
+**Evidence**
 
 - Passed 7 of 7 built-in tests, syntax checks, the active-environment guard, deliberate old-Node and pnpm-mismatch failures, and an empty-Corepack-cache failure with network disabled.
 - Verified the official Node.js SHA-256 and pnpm registry SHA-512 values recorded in `evidence/phase-00/toolchain-selection.txt`.
 - Verified 127 Markdown files and 189 internal links with no structure or broken-link issue.
 - Confirmed `node_modules`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, restricted private-context vocabulary, and `Zone.Identifier` files are absent.
 
-### Next action
+**Next action**
 
 Execute P00-R02 by initializing local Git policy, the minimal pnpm workspace, a verified Turborepo task graph, and deterministic ignores.
 

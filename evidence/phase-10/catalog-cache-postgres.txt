@@ -10,6 +10,9 @@ Source and environment
 - Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382.
   Fence coordination changed without changing SQL or authority, so the complete
   disposable PostgreSQL fixture was repeated.
+- Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf.
+  Request visibility became part of fence-sharing identity. The complete
+  disposable PostgreSQL fixture was repeated at that exact implementation.
 - WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
 - Docker Engine 26.0.0; disposable pinned PostgreSQL 18.6 fixture
 
@@ -26,7 +29,7 @@ Related public contract result
 
 Cleanup result
 {"event":"catalog_resources_closed","reservedSlots":0}
-{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":24593}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":33608}
 
 Workload
 - Ran the complete Catalog PostgreSQL integration fixture, including every prior

@@ -17,8 +17,12 @@ replace the PostgreSQL visibility/version fence or authorize a durable decision.
 Protected run33260411345 passed at b65688b, but final-confirmation
 discussion3886966492 found uncoordinated cold negative fence reads. Exact
 correction62afee1 coalesces and leases the negative key before PostgreSQL;
-Catalog243/243, affected73/73 and repeated real Redis/PostgreSQL fixtures pass.
-Corrected publication, confirmation and protected acceptance remain.
+corrected confirmation discussions3887086778/82 then found cross-time visibility
+sharing and persistent wrong-type keys. Exact2930332 scopes fence sharing by
+request time/policy and makes the bounded Redis script classify non-string values
+for exact deletion. Catalog244/244, Redis17/17, affected73/73 and repeated real
+Redis/PostgreSQL fixtures pass. Corrected publication, confirmation and protected
+acceptance remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

@@ -45,3 +45,11 @@ coordination boundary. Corrected exact
 and leases it across instances before querying the owner. Catalog243/243,
 affected73/73 and repeated Redis/PostgreSQL fixtures pass; corrected protected CI
 and confirmation remain pending.
+
+Corrected confirmation discussions3887086778/82 found that concurrent fence work
+could cross a request-time visibility boundary and Redis wrong-type keys bypassed
+malformed cleanup. Exact `2930332e7b1c049c081bfad8c5d62c71009f03bf` scopes
+fence coalescing by title, time and policy, and classifies non-string Redis keys
+inside the bounded script. Catalog244/244, Redis17/17 and the complete affected
+73/73 gate pass. Real PostgreSQL and Redis fixtures pass with exact cleanup;
+Redis additionally proves `wrongTypeDeleted=true`.

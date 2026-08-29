@@ -9,6 +9,7 @@ Source
 - Initial review correction: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88
 - Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888
 - Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382
+- Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -20,10 +21,12 @@ Environment
 Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
-- @aster/catalog tests: PASS, 243/243.
-- pnpm check:changed: PASS, 73 successful of 73 total, 56 cached,
-  52.249 seconds Turbo wall time; 56.16 seconds elapsed and 1,726,116 KiB
-  maximum RSS on the final-confirmation correction.
+- @aster/catalog tests: PASS, 244/244.
+- pnpm check:changed: PASS, 73 successful of 73 total, 59 cached,
+  83.646 seconds Turbo wall time on the corrected-confirmation correction.
+- An earlier affected attempt hit one unrelated Identity terminal-fallback timing
+  assertion under concurrent load. The focused Identity suite then passed147/147
+  and the complete affected gate passed; no Identity source changed.
 - git diff --check: PASS.
 - Documentation scan: PASS, 227 documents, 0 violations.
 - Repository-memory scan: PASS, 52 queue items, active P10-R01,
@@ -49,6 +52,10 @@ Workload and covered contract
 - Twenty-four concurrent cold absence checks share one in-process owner-fence
   read; two independent readers share one owner-fence read through the negative
   key lease before reusing the short absence marker.
+- Fence sharing includes request time and rights-use policy, so calls straddling
+  a visibility boundary execute independent owner decisions.
+- Redis wrong-type values are classified before size/read operations and enter
+  the same exact-key malformed deletion path.
 
 Interpretation
 The local candidate satisfies the written static and focused behavior contract.
@@ -83,6 +90,14 @@ separate exact negative-key in-process entry under the shared128-entry ceiling
 and acquires the same tokenized lease before the fence read. Catalog243/243,
 the affected73/73 gate and repeated real Redis/PostgreSQL fixtures pass. Corrected
 protected CI and confirmation remain pending.
+
+Corrected-confirmation review
+Hosted discussions3887086778/82 found that a later request could join fence work
+created with an earlier visibility time and that Redis `STRLEN` raised on a
+non-string key before malformed cleanup. Correction2930332 adds time/policy to
+the per-title fence identity and checks Redis key type before size/value reads.
+Catalog244/244, Redis17/17 and the complete73/73 gate pass. Both real fixtures
+were repeated because the visibility and Redis-wire boundaries changed.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis

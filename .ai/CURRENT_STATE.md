@@ -55,16 +55,20 @@ Redis before GET, coalesces shared hot titles across mixed batches while retaini
 one batch for newly owned titles, and records malformed outcomes without invalid
 size samples. Protected run33260411345 passed at b65688b, but final-confirmation
 discussion3886966492 found that a cold absence check reached PostgreSQL before
-either coordination boundary. Exact correction
+either coordination boundary. Correction
 `62afee15240ab1d197aac84b4d63e1a0e1dce382` coalesces each negative key in
-process and leases it across instances before the owner fence read. Catalog
-243/243 and affected73/73 pass. Exact real Redis proves bounded oversized reads,
-24-call cold positive/fence coalescing, one cross-instance negative fence read,
-expiry, outage fallback and cleanup0; real PostgreSQL again proves the four-field
-fence, exact source and stale-dispute rejection with cleanup0. Corrected
-publication, confirmation and protected acceptance remain pending. The local
-Discovery dependent checkpoint is preserved separately and cannot publish until
-this predecessor releases.
+process and leases it across instances before the owner fence read. Corrected
+confirmation discussions3887086778/82 then found cross-time fence sharing and a
+persistent wrong-type Redis key. Exact `2930332e7b1c049c081bfad8c5d62c71009f03bf`
+keys fence work by ID, request time and policy, and classifies non-string Redis
+values inside the bounded script for exact deletion. Catalog244/244, Redis17/17
+and affected73/73 pass. Exact real Redis proves bounded oversized/wrong-type
+reads,24-call cold positive/fence coalescing, one cross-instance negative fence
+read, expiry, outage fallback and cleanup0; real PostgreSQL again proves the
+four-field fence, exact source and stale-dispute rejection with cleanup0.
+Corrected publication, confirmation and protected acceptance remain pending.
+The local Discovery dependent checkpoint `423c33d` is preserved separately and
+cannot publish until this predecessor releases.
 
 ## Historical Phase 09 corrections
 
@@ -112,9 +116,10 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Discovery stale-while-revalidate, operation-specific Redis rate limiting,
-expensive-path concurrency limits, the mixed outage/hot-key closeout and Phase10
-release are not implemented. Hosted deployment remains Phase14.
+Discovery stale-while-revalidate is implemented only on the preserved dependent
+candidate and is not integrated or released. Operation-specific Redis rate
+limiting, expensive-path concurrency limits, the mixed outage/hot-key closeout
+and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
