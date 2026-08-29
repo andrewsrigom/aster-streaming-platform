@@ -257,21 +257,24 @@ export function createHomeRails(ports: Readonly<HomeRailPorts>) {
         };
       }
       const generation = state.value.generation;
-      const selections = await Promise.all([
-        select<readonly HomeRailRow[]>(
+      const selections = [
+        await select<readonly HomeRailRow[]>(
           (repository) => repository.fixed(generation, "featured", request.first, now),
           signal,
         ),
-        select<readonly HomeRailRow[]>(
+        await select<readonly HomeRailRow[]>(
           (repository) => repository.fixed(generation, "recently_added", request.first, now),
           signal,
         ),
-        select<readonly HomeRailRow[]>(
+        await select<readonly HomeRailRow[]>(
           (repository) => repository.fixed(generation, "trending", request.first, now),
           signal,
         ),
-        select<unknown>((repository) => repository.genres(generation, request.first, now), signal),
-      ] as const);
+        await select<unknown>(
+          (repository) => repository.genres(generation, request.first, now),
+          signal,
+        ),
+      ] as const;
       const recent = fixedResult(selections[1].result, "recently_added", now, request.first);
       const featured = fallback(
         fixedResult(selections[0].result, "featured", now, request.first),

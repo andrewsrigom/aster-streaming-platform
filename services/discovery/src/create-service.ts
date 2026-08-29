@@ -75,7 +75,8 @@ export async function createDiscoveryService(
       createAsterPostgresAdapter({
         connectionString: config.connectionString,
         telemetry,
-        maxConnections: 4,
+        // Four admitted GraphQL operations plus one readiness reservation.
+        maxConnections: 5,
         connectionTimeoutMs: 1_000,
         statementTimeoutMs: 900,
         operationTimeoutMs: 1_000,

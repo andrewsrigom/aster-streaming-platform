@@ -182,6 +182,40 @@ test("invalid adapter ordering is isolated and all-selection failure is unavaila
   );
 });
 
+test("overlapping home requests reserve at most one transaction each", async () => {
+  let active = 0;
+  let maximum = 0;
+  const repository: HomeRailRepository = {
+    state: () => Promise.resolve({ generation, status: "fresh" }),
+    fixed: (_generation, source) =>
+      Promise.resolve(source === "recently_added" ? [row(2), row(3)] : [row(1)]),
+    genres: () => Promise.resolve([{ genre: "drama", available: 1, rows: [row(2)] }]),
+  };
+  const transactions: HomeRailUnitOfWork = {
+    async run(work, signal) {
+      if (signal.aborted) {
+        return { status: "cancelled" };
+      }
+      active += 1;
+      maximum = Math.max(maximum, active);
+      try {
+        await new Promise<void>((resolve) => setTimeout(resolve, 5));
+        return { status: "completed", value: await work(repository) };
+      } finally {
+        active -= 1;
+      }
+    },
+  };
+  const home = createHomeRails({ transactions });
+  const results = await Promise.all([
+    home.execute({ first: 2 }, now, AbortSignal.timeout(1000)),
+    home.execute({ first: 2 }, now, AbortSignal.timeout(1000)),
+  ]);
+  assert.ok(results.every((result) => result.status === "completed"));
+  assert.equal(maximum, 2);
+  assert.equal(active, 0);
+});
+
 test("records final bounded rail outcomes and telemetry cannot change the response", async () => {
   const observations: HomeRailMetricObservation[] = [];
   let timestamp = 0;
