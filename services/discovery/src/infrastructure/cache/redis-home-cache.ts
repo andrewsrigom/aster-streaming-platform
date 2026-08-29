@@ -38,8 +38,11 @@ export function createRedisDiscoveryHomeCache(redis: AsterRedisAdapter): Discove
     async read(key, signal) {
       return readResult(await redis.read(key, signal));
     },
-    async write(key, value, ttlMs, mode, signal) {
-      return booleanResult(await redis.write(key, value, ttlMs, mode, signal));
+    async write(key, value, ttlMs, signal) {
+      return booleanResult(await redis.write(key, value, ttlMs, "replace", signal));
+    },
+    async acquireLease(key, ownershipToken, ttlMs, signal) {
+      return booleanResult(await redis.acquireLease(key, ownershipToken, ttlMs, signal));
     },
     async delete(key, signal) {
       return booleanResult(await redis.delete(key, signal));

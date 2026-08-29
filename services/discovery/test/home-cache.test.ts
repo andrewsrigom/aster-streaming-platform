@@ -79,19 +79,22 @@ class FakeCache implements DiscoveryHomeCacheStore {
     );
   }
 
-  write(
-    key: string,
-    value: string,
-    _ttlMs: number,
-    mode: "replace" | "if_absent",
-  ): Promise<DiscoveryHomeCacheResult<boolean>> {
+  write(key: string, value: string): Promise<DiscoveryHomeCacheResult<boolean>> {
     if (!this.available) {
       return Promise.resolve({ status: "bypass" });
     }
-    if (mode === "if_absent" && this.values.has(key)) {
+    this.values.set(key, value);
+    return Promise.resolve({ status: "completed", value: true });
+  }
+
+  acquireLease(key: string, ownershipToken: string): Promise<DiscoveryHomeCacheResult<boolean>> {
+    if (!this.available) {
+      return Promise.resolve({ status: "bypass" });
+    }
+    if (this.values.has(key)) {
       return Promise.resolve({ status: "completed", value: false });
     }
-    this.values.set(key, value);
+    this.values.set(key, ownershipToken);
     return Promise.resolve({ status: "completed", value: true });
   }
 
@@ -328,7 +331,9 @@ test("mixed caller cancellation preserves one shared cold refresh", async () => 
   release?.();
   assert.equal((await second).status, "completed");
   assert.equal(f.sourceCalls(), 1);
-  assert.ok(f.observations.some(({ outcome }) => outcome === "coalesced"));
+  const coalesced = f.observations.find(({ outcome }) => outcome === "coalesced");
+  assert.ok(coalesced);
+  assert.equal(coalesced.waiterBucket, "one");
 });
 
 test("oversized corruption and Redis loss never replace the source result", async () => {

@@ -60,6 +60,7 @@ interface CacheOptions {
 interface SharedEntry {
   readonly controller: AbortController;
   promise: Promise<HomeRailsResult>;
+  attachments: number;
   waiters: number;
   detached: boolean;
   settled: boolean;
@@ -549,7 +550,7 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
         cachedAt +
         jitter(options, `${key}:expiry`, DISCOVERY_HOME_CACHE_POLICY.expiryJitterSeconds)) *
       1_000;
-    const result = await options.cache.write(key, value, ttlMs, "replace", signal);
+    const result = await options.cache.write(key, value, ttlMs, signal);
     if (result.status !== "completed") {
       record({ outcome: "bypass", durationMs: 0 });
     }
@@ -592,7 +593,7 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
     }
     const lease = leaseKey(options, key);
     const acquired = await options.cache
-      .write(lease, token, DISCOVERY_HOME_CACHE_POLICY.leaseTtlMs, "if_absent", signal)
+      .acquireLease(lease, token, DISCOVERY_HOME_CACHE_POLICY.leaseTtlMs, signal)
       .catch(() => ({ status: "bypass" as const }));
     if (acquired.status === "cancelled") {
       return { status: "cancelled" };
@@ -638,7 +639,8 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
     const existing = entries.get(key);
     if (existing) {
       existing.detached ||= detached;
-      const count = existing.waiters + 1;
+      existing.attachments += 1;
+      const count = existing.attachments;
       record({
         outcome: "coalesced",
         durationMs: 0,
@@ -653,6 +655,7 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
     const entry: SharedEntry = {
       controller,
       promise: Promise.resolve({ status: "unavailable" }),
+      attachments: 0,
       waiters: 0,
       detached,
       settled: false,

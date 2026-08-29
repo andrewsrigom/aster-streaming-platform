@@ -179,7 +179,6 @@ try {
         result.value.value.status === "stale",
     ),
   );
-  assert.equal(sourceReads - staleSourceBefore, 1);
   for (let attempt = 0; ; attempt += 1) {
     const raw = await redis.read("aster:test:discovery:home:v1:10", requestSignal());
     if (raw.status === "completed" && raw.value?.includes(`"cachedAt":${String(wallNow)}`)) {
@@ -188,6 +187,7 @@ try {
     assert.ok(attempt < 100, "Expected refreshed Discovery cache value.");
     await delay(5);
   }
+  assert.equal(sourceReads - staleSourceBefore, 1);
 
   const crossInstanceBefore = sourceReads;
   const crossInstance = await Promise.all([
@@ -232,6 +232,7 @@ try {
       staleDurationMs: Math.round(staleDurationMs * 100) / 100,
       crossInstanceCallers: crossInstance.length,
       crossInstanceSourceReads: 1,
+      excessiveTtlLeaseRecovered: true,
       outageReturnedOwnerValue: true,
       finiteMetricSeries: cacheOutcomes.points.length,
     }) + "\n",

@@ -12,7 +12,12 @@ export interface DiscoveryHomeCacheStore {
     key: string,
     value: string,
     ttlMs: number,
-    mode: "replace" | "if_absent",
+    signal: AbortSignal,
+  ): Promise<DiscoveryHomeCacheResult<boolean>>;
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
     signal: AbortSignal,
   ): Promise<DiscoveryHomeCacheResult<boolean>>;
   delete(key: string, signal: AbortSignal): Promise<DiscoveryHomeCacheResult<boolean>>;

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath, URL } from "node:url";
 import { performance } from "node:perf_hooks";
@@ -80,6 +80,26 @@ try {
   assert.equal(
     await docker(
       ["exec", ownedId, "redis-cli", "--raw", "SET", "aster:test:oversized", "x".repeat(16_385)],
+      5_000,
+    ),
+    "OK",
+  );
+  const homeKey = "aster:test:discovery:home:v1:9";
+  const contaminatedLeaseKey =
+    "aster:test:discovery:home-lease:v1:" + createHash("sha256").update(homeKey).digest("hex");
+  assert.equal(
+    await docker(
+      [
+        "exec",
+        ownedId,
+        "redis-cli",
+        "--raw",
+        "SET",
+        contaminatedLeaseKey,
+        "stuck",
+        "PX",
+        "86400000",
+      ],
       5_000,
     ),
     "OK",
