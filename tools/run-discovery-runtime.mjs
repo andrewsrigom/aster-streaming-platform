@@ -55,15 +55,11 @@ const compose = (args, timeout) => docker([...composeArgs, ...args], timeout);
 const emit = (event, facts) => process.stdout.write(JSON.stringify({ event, ...facts }) + "\n");
 const operation =
   "query SearchTitles($query:String!,$locale:String!){searchTitles(query:$query,locale:$locale,first:5){code correlationId connection{generation edges{cursor sourceVersion indexedAt visibleUntil node{id localized(locale:$locale){locale title}}} pageInfo{endCursor hasNextPage}}}}";
+const browseOperation =
+  "query Browse($first:Int!,$locale:String!){titles(first:$first){edges{node{id localized(locale:$locale){title}}}}}";
 
-async function graphql(port, query) {
-  const body = Buffer.from(
-    JSON.stringify({
-      query: operation,
-      operationName: "SearchTitles",
-      variables: { query, locale: "en" },
-    }),
-  );
+async function executeGraphql(port, payload) {
+  const body = Buffer.from(JSON.stringify(payload));
   assert.ok(body.byteLength < 16_384);
   return new Promise((resolve, reject) => {
     const outgoing = request(
@@ -109,6 +105,13 @@ async function graphql(port, query) {
     outgoing.end(body);
   });
 }
+
+const graphql = (port, query) =>
+  executeGraphql(port, {
+    query: operation,
+    operationName: "SearchTitles",
+    variables: { query, locale: "en" },
+  });
 
 let stage = "config";
 let failure;
@@ -248,8 +251,19 @@ try {
     brokerLag: 0,
   });
 
+  stage = "isolation";
+  await compose(["stop", "--timeout", "15", "discovery"], 30_000);
+  const browse = await executeGraphql(port, {
+    query: browseOperation,
+    operationName: "Browse",
+    variables: { first: 1, locale: "en" },
+  });
+  assert.equal(browse.status, 200);
+  assert.equal(browse.body.errors, undefined);
+  assert.equal(browse.body.data?.titles?.edges?.length, 1);
+  emit("discovery_failure_isolation", { routerReady: true, catalogBrowse: true });
+
   stage = "restart";
-  await compose(["restart", "--timeout", "15", "discovery"], 30_000);
   await compose(
     ["up", "--no-build", "--wait", "--wait-timeout", "90", "discovery", "router"],
     120_000,

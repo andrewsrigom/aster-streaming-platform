@@ -1,10 +1,5 @@
 # Opt-in Discovery runtime. Requires compose.yml and events.yml.
 services:
-  router:
-    depends_on:
-      discovery:
-        condition: service_healthy
-
   catalog:
     environment:
       ASTER_CATALOG_DISCOVERY_READ_ENABLED: "true"

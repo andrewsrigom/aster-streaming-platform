@@ -61,11 +61,11 @@ export function validateDiscoveryRuntime(sources) {
   }
   if (
     JSON.stringify(serviceNames(overlay)) !==
-    JSON.stringify(["catalog", "discovery", "discovery-init", "router"])
+    JSON.stringify(["catalog", "discovery", "discovery-init"])
   ) {
     violations.push({
       rule: "discovery-runtime",
-      detail: "Discovery activation must stay inside its owner, Catalog and Router service set",
+      detail: "Discovery activation must modify only its owner and Catalog",
     });
   }
   rejectValues(
@@ -74,17 +74,6 @@ export function validateDiscoveryRuntime(sources) {
     violations,
     "Discovery overlay",
   );
-
-  const router = serviceBlock(overlay, "router");
-  if (
-    router.trim() !==
-    "router:\n    depends_on:\n      discovery:\n        condition: service_healthy"
-  ) {
-    violations.push({
-      rule: "discovery-runtime",
-      detail: "Router must health-gate only the explicitly activated Discovery subgraph",
-    });
-  }
 
   const catalog = serviceBlock(overlay, "catalog");
   requireValues(

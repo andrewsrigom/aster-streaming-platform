@@ -3,11 +3,14 @@ import test from "node:test";
 import { createProjectionRebuilder } from "../src/application/rebuild-projection.js";
 import type { RebuildStore } from "../src/application/rebuild-ports.js";
 import {
+  DISCOVERY_BOOTSTRAP_GENERATION,
+  DISCOVERY_REFRESH_AFTER_SECONDS,
   normalizeBrokerOffsets,
   normalizeRebuildCheckpoint,
   normalizeRebuildHandledOffset,
   normalizeRebuildStart,
   offsetsCover,
+  projectionRefreshDue,
 } from "../src/domain/rebuild-state.js";
 
 const id = (value: number) => `00000000-0000-4000-8000-${String(value).padStart(12, "0")}`;
@@ -19,6 +22,25 @@ test("broker barriers are bounded, canonical and compared without numeric precis
   assert.ok(barrier);
   assert.equal(offsetsCover({ 0: "10", 2: "10", 10: "9223372036854775807" }, barrier), true);
   assert.equal(offsetsCover({ 0: "8", 2: "11", 10: "9223372036854775807" }, barrier), false);
+  assert.equal(offsetsCover({}, { 0: "0" }), true);
+  assert.equal(offsetsCover({}, { 0: "1" }), false);
+});
+
+test("active projections refresh before their finite visibility leases expire", () => {
+  assert.equal(
+    projectionRefreshDue({ generation: DISCOVERY_BOOTSTRAP_GENERATION, startedAt: 0 }, now),
+    true,
+  );
+  assert.equal(projectionRefreshDue({ generation: id(91), startedAt: now - 149 }, now), false);
+  assert.equal(
+    projectionRefreshDue(
+      { generation: id(91), startedAt: now - DISCOVERY_REFRESH_AFTER_SECONDS },
+      now,
+    ),
+    true,
+  );
+  assert.equal(projectionRefreshDue({ generation: id(91), startedAt: now + 1 }, now), undefined);
+  assert.equal(projectionRefreshDue({ generation: id(91), startedAt: now }, Number.NaN), undefined);
 });
 
 test("offset, checkpoint and generation bounds reject ambiguous state", () => {
@@ -84,6 +106,8 @@ test("untrusted offset and lifecycle accessors are never invoked", async () => {
 
   const calls: string[] = [];
   const store: RebuildStore = {
+    active: () =>
+      Promise.resolve({ status: "completed", value: { generation: id(1), startedAt: now } }),
     start: () => {
       calls.push("start");
       return Promise.resolve({ status: "completed", value: "started" });
@@ -126,6 +150,8 @@ test("untrusted offset and lifecycle accessors are never invoked", async () => {
 test("validated lifecycle commands retain exact barrier and checkpoint data", async () => {
   const observed: unknown[] = [];
   const store: RebuildStore = {
+    active: () =>
+      Promise.resolve({ status: "completed", value: { generation: id(1), startedAt: now } }),
     start: (value) => {
       observed.push(value);
       return Promise.resolve({ status: "completed", value: "started" });

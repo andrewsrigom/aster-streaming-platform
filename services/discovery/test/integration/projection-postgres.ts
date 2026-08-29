@@ -146,6 +146,13 @@ try {
     version: 2,
     emptyRollback: true,
   });
+  assert.deepEqual(await rebuildStore.active(signal()), {
+    status: "completed",
+    value: {
+      generation: "00000000-0000-4000-8000-000000090001",
+      startedAt: 0,
+    },
+  });
 
   assert.equal(
     (
@@ -270,6 +277,10 @@ try {
       value: "promoted",
     },
   );
+  assert.deepEqual(await rebuildStore.active(signal()), {
+    status: "completed",
+    value: { generation: generation2, startedAt: now },
+  });
   const expired = await search.execute(
     { query: "signal", locale: "en", first: 1, after: first.endCursor },
     now,

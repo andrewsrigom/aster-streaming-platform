@@ -29,6 +29,11 @@ test("Discovery Compose keeps owner credentials, event activation and disposable
     ["discovery.yml", "read_only: true", "read_only: false"],
     ["discovery.yml", "pids: 64", "x-pids: 64"],
     ["discovery.yml", "  discovery:\n", "  web:\n"],
+    [
+      "discovery.yml",
+      "services:\n",
+      "services:\n  router:\n    depends_on:\n      discovery:\n        condition: service_healthy\n\n",
+    ],
     ["events.yml", "aster.catalog.publication.v1", "aster.catalog.unreviewed.v1"],
     [
       "compose.yml",

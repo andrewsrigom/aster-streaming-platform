@@ -28,6 +28,8 @@ function fixture() {
     [id(2), { snapshots: [snapshot(3)], endCursor: id(3), hasNextPage: false }],
   ]);
   const store: RebuildStore = {
+    active: () =>
+      Promise.resolve({ status: "completed", value: { generation: id(1), startedAt: now } }),
     building: () => {
       if (state.building) {
         state.building = { ...state.building, handled: { 0: state.handled } };

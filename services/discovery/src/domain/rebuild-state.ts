@@ -1,5 +1,8 @@
 import { discoveryIdentifier, discoveryRecord } from "./title-projection.js";
 
+export const DISCOVERY_BOOTSTRAP_GENERATION = "00000000-0000-4000-8000-000000090001";
+export const DISCOVERY_REFRESH_AFTER_SECONDS = 150;
+
 export type BrokerOffsets = Readonly<Record<string, string>>;
 export interface RebuildStart {
   readonly generation: string;
@@ -64,9 +67,30 @@ export function normalizeBrokerOffsets(value: unknown): BrokerOffsets | undefine
 
 export function offsetsCover(handled: BrokerOffsets, barrier: BrokerOffsets): boolean {
   return Object.entries(barrier).every(([partition, offset]) => {
-    const value = handled[partition];
-    return value !== undefined && BigInt(value) >= BigInt(offset);
+    const value = handled[partition] ?? "0";
+    return BigInt(value) >= BigInt(offset);
   });
+}
+
+export function projectionRefreshDue(value: unknown, now: number): boolean | undefined {
+  try {
+    const active = discoveryRecord(value, ["generation", "startedAt"]);
+    if (
+      !active ||
+      !discoveryIdentifier(active["generation"]) ||
+      !timestamp(active["startedAt"]) ||
+      !timestamp(now) ||
+      active["startedAt"] > now
+    ) {
+      return undefined;
+    }
+    return (
+      active["generation"] === DISCOVERY_BOOTSTRAP_GENERATION ||
+      now - active["startedAt"] >= DISCOVERY_REFRESH_AFTER_SECONDS
+    );
+  } catch {
+    return undefined;
+  }
 }
 
 export function normalizeRebuildStart(value: unknown): RebuildStart | undefined {

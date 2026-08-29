@@ -83,6 +83,29 @@ export function createPostgresRebuildStore(
   database: Pick<AsterPostgresAdapter, "transaction">,
 ): RebuildStore {
   return Object.freeze<RebuildStore>({
+    active(signal) {
+      return transaction(database, signal, async (tx) => {
+        const value = record(
+          one(
+            await tx.query({
+              text: `SELECT g.id::text AS generation,g.started_at
+                FROM discovery.generation_control c
+                JOIN discovery.generations g ON g.id=c.active_generation
+                WHERE c.singleton AND g.state='ACTIVE'`,
+            }),
+          ),
+          ["generation", "started_at"],
+        );
+        const generation = value["generation"];
+        return {
+          action: "rollback",
+          value: Object.freeze({
+            generation: discoveryIdentifier(generation) ? generation : invalid(),
+            startedAt: integer(value["started_at"]),
+          }),
+        } as const;
+      });
+    },
     start(value, signal) {
       return transaction(database, signal, async (tx) => {
         const control = record(

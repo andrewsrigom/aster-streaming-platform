@@ -23,6 +23,7 @@ import type { CatalogSnapshotExportSource } from "./application/rebuild-ports.js
 import { createProjectionRebuilder } from "./application/rebuild-projection.js";
 import { createProjectionRebuildRunner } from "./application/run-projection-rebuild.js";
 import { createTitleSearch } from "./application/search-titles.js";
+import { projectionRefreshDue } from "./domain/rebuild-state.js";
 import { createCatalogEventHandler } from "./infrastructure/catalog-event-handler.js";
 import { createCatalogEventRuntime } from "./infrastructure/catalog-event-runtime.js";
 import { createCatalogSnapshotClient } from "./infrastructure/catalog-snapshot-client.js";
@@ -35,8 +36,6 @@ import { discoveryRuntimeConfiguration } from "./infrastructure/runtime-configur
 import { probeDiscoveryStores } from "./infrastructure/store-readiness.js";
 import { createDiscoverySubgraph } from "./transport/discovery-subgraph.js";
 import { createDiscoveryHttpServer, type DiscoveryHttpServer } from "./transport/http-server.js";
-
-const BOOTSTRAP_GENERATION = "00000000-0000-4000-8000-000000090001";
 
 interface RuntimeResources {
   readonly runtimeDatabase?: AsterPostgresAdapter;
@@ -159,13 +158,14 @@ export async function createDiscoveryService(
         if (building.value) {
           return { status: "completed", value: true };
         }
-        const bootstrap = await rebuildStore.state(BOOTSTRAP_GENERATION, signal);
-        return bootstrap.status === "completed"
-          ? {
-              status: "completed",
-              value: bootstrap.value?.state === "ACTIVE",
-            }
-          : { status: bootstrap.status };
+        const active = await rebuildStore.active(signal);
+        if (active.status !== "completed") {
+          return { status: active.status };
+        }
+        const due = projectionRefreshDue(active.value, Math.floor(Date.now() / 1_000));
+        return due === undefined
+          ? { status: "indeterminate" }
+          : { status: "completed", value: due };
       },
     });
     graph = await createDiscoverySubgraph({

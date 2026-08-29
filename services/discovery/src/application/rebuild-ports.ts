@@ -19,6 +19,11 @@ export interface RebuildGenerationState {
   readonly rowsApplied: number;
 }
 
+interface ActiveRebuildGeneration {
+  readonly generation: string;
+  readonly startedAt: number;
+}
+
 export interface CatalogSnapshotExportPage {
   readonly snapshots: readonly unknown[];
   readonly endCursor: string | null;
@@ -42,6 +47,7 @@ export interface RebuildProjector {
 }
 
 export interface RebuildStore {
+  active(signal: AbortSignal): Promise<ProjectionStoreResult<ActiveRebuildGeneration>>;
   start(value: RebuildStart, signal: AbortSignal): Promise<ProjectionStoreResult<RebuildOutcome>>;
   checkpoint(
     value: RebuildCheckpoint,
