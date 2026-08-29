@@ -68,7 +68,7 @@ const VALUE_TOO_LARGE_REJECTED = Object.freeze({
   reason: "value_too_large",
 } as const);
 const BOUNDED_READ_SCRIPT =
-  "local size = redis.call('STRLEN', KEYS[1]); if size == 0 and redis.call('EXISTS', KEYS[1]) == 0 then return {0} end; if size > tonumber(ARGV[1]) then return {2} end; return {1, redis.call('GET', KEYS[1])}";
+  "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then return {0} end; if kind ~= 'string' then return {3} end; local size = redis.call('STRLEN', KEYS[1]); if size > tonumber(ARGV[1]) then return {2} end; return {1, redis.call('GET', KEYS[1])}";
 const COMPARE_AND_DELETE_SCRIPT =
   "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
@@ -89,7 +89,7 @@ type ValidatedOptions = Readonly<{
 
 export type AsterRedisClientEvent = "connect" | "ready" | "reconnecting" | "error" | "end";
 
-type BoundedReadReply = readonly [0] | readonly [1, string] | readonly [2];
+type BoundedReadReply = readonly [0] | readonly [1, string] | readonly [2] | readonly [3];
 
 export interface AsterRedisClient {
   readonly isOpen: boolean;
@@ -817,7 +817,7 @@ export function createAsterRedisAdapterWithClientFactory(
     if (!Array.isArray(value)) {
       return false;
     }
-    if ((value[0] === 0 || value[0] === 2) && value.length === 1) {
+    if ((value[0] === 0 || value[0] === 2 || value[0] === 3) && value.length === 1) {
       return true;
     }
     return value[0] === 1 && value.length === 2 && validValue(value[1]);
@@ -840,7 +840,7 @@ export function createAsterRedisAdapterWithClientFactory(
     if (result.value[0] === 0) {
       return Object.freeze({ status: "completed", value: null });
     }
-    if (result.value[0] === 2) {
+    if (result.value[0] === 2 || result.value[0] === 3) {
       return VALUE_TOO_LARGE_REJECTED;
     }
     return Object.freeze({ status: "completed", value: result.value[1] });

@@ -68,6 +68,21 @@ try {
     status: "completed",
     value: null,
   });
+  assert.deepEqual(await redis.read("aster:test:wrong-type", requestSignal()), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  assert.deepEqual(await boundedCache.read("aster:test:wrong-type", requestSignal()), {
+    status: "malformed",
+  });
+  assert.deepEqual(await boundedCache.delete("aster:test:wrong-type", requestSignal()), {
+    status: "completed",
+    value: true,
+  });
+  assert.deepEqual(await redis.read("aster:test:wrong-type", requestSignal()), {
+    status: "completed",
+    value: null,
+  });
   assert.deepEqual(await redis.write("aster:test:lease", "owner-a", 2_000, "if_absent"), {
     status: "completed",
     stored: true,
@@ -233,6 +248,7 @@ try {
     JSON.stringify({
       event: "catalog_cache_redis_verified",
       boundedOversizedRead: true,
+      wrongTypeDeleted: true,
       atomicCompareDelete: true,
       expiryObserved: true,
       expiredLeaseRecovered: true,

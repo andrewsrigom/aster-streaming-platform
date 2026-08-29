@@ -86,6 +86,13 @@ class FakeClient implements AsterRedisClient {
   pingHandler: (signal: AbortSignal) => Promise<string> = () => Promise.resolve("PONG");
   getHandler: (key: string, signal: AbortSignal) => Promise<string | null> = () =>
     Promise.resolve(null);
+  boundedReadHandler:
+    | ((
+        key: string,
+        maximumBytes: number,
+        signal: AbortSignal,
+      ) => Promise<readonly [0] | readonly [1, string] | readonly [2] | readonly [3]>)
+    | undefined;
   setHandler: (
     key: string,
     value: string,
@@ -118,8 +125,11 @@ class FakeClient implements AsterRedisClient {
     key: string,
     maximumBytes: number,
     signal: AbortSignal,
-  ): Promise<readonly [0] | readonly [1, string] | readonly [2]> {
+  ): Promise<readonly [0] | readonly [1, string] | readonly [2] | readonly [3]> {
     this.getCalls += 1;
+    if (this.boundedReadHandler) {
+      return this.boundedReadHandler(key, maximumBytes, signal);
+    }
     const value = await this.getHandler(key, signal);
     if (value === null) {
       return [0];
@@ -358,6 +368,12 @@ test("executes only bounded cache commands and reports finite dependency operati
     status: "rejected",
     reason: "value_too_large",
   });
+  client.boundedReadHandler = () => Promise.resolve([3]);
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  client.boundedReadHandler = undefined;
   assert.deepEqual(await adapter.write("aster:test:key", "cached", 2_000, "replace"), {
     status: "completed",
     stored: true,
@@ -382,6 +398,7 @@ test("executes only bounded cache commands and reports finite dependency operati
     telemetry.attempts.map(({ input, outcome }) => [input.operation, outcome]),
     [
       ["connect", "success"],
+      ["read", "success"],
       ["read", "success"],
       ["read", "success"],
       ["write", "success"],

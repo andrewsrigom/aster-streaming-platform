@@ -84,6 +84,13 @@ try {
     ),
     "OK",
   );
+  assert.equal(
+    await docker(
+      ["exec", ownedId, "redis-cli", "--raw", "HSET", "aster:test:wrong-type", "field", "value"],
+      5_000,
+    ),
+    "1",
+  );
   const result = await execute(
     process.execPath,
     ["services/catalog/dist/test/integration/cache-redis.js", String(port)],

@@ -67,15 +67,23 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
     sourceBatches: [] as string[][],
     beforeFences: undefined as (() => Promise<void>) | undefined,
     beforeSource: undefined as (() => Promise<void>) | undefined,
+    fenceEligibleAt: undefined as
+      ((candidate: PublicCatalogCandidate, at: number) => boolean) | undefined,
   };
   const source: CatalogPublicEntitySource = {
-    async findFences(ids) {
+    async findFences(ids, readScope) {
       state.fenceReads += 1;
       await state.beforeFences?.();
       return {
         status: "completed",
         value: Object.freeze(
-          state.candidates.filter((candidate) => ids.includes(fence(candidate).id)).map(fence),
+          state.candidates
+            .filter(
+              (candidate) =>
+                ids.includes(fence(candidate).id) &&
+                (state.fenceEligibleAt?.(candidate, readScope.now) ?? true),
+            )
+            .map(fence),
         ),
       };
     },
@@ -259,6 +267,36 @@ test("concurrent cold negative misses share one owner fence read", async () => {
   assert.ok(results.every((result) => result.status === "completed" && result.value.length === 0));
   assert.equal(f.source.state.fenceReads, 1);
   assert.ok(f.observations.some((value) => value.outcome === "coalesced"));
+});
+
+test("fence coalescing never shares visibility decisions across request time", async () => {
+  const f = readerFixture();
+  const expiresAt = now + 1;
+  f.source.state.fenceEligibleAt = (_candidate, at) => at < expiresAt;
+  let release: (() => void) | undefined;
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  f.source.state.beforeFences = () => blocked;
+
+  const eligible = f.reader.findMany([id(1)], scope, signal());
+  while (f.source.state.fenceReads < 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  const expired = f.reader.findMany([id(1)], { ...scope, now: expiresAt }, signal());
+  while (f.source.state.fenceReads < 2) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  release?.();
+
+  const [eligibleResult, expiredResult] = await Promise.all([eligible, expired]);
+  assert.equal(eligibleResult.status, "completed");
+  assert.deepEqual(
+    eligibleResult.value.map((title) => title.id),
+    [id(1)],
+  );
+  assert.deepEqual(expiredResult, { status: "completed", value: [] });
+  assert.equal(f.source.state.fenceReads, 2);
 });
 
 test("TTL jitter is deterministic per key and distributed inside both policy windows", async () => {

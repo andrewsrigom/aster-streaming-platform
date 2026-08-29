@@ -87,6 +87,13 @@ function negativeKey(environment: string, id: string): string {
   return `aster:${environment}:catalog:public-title-absent:v1:${id}`;
 }
 
+function fenceCoalescingIdentity(input: CacheOptions, id: string, scope: CatalogReadScope): string {
+  return digest(
+    input,
+    `${negativeKey(input.environment, id)}:${String(scope.now)}:${scope.policy.commercial ? "commercial" : "noncommercial"}:${scope.policy.allowLocalMedia === true ? "local" : "remote"}`,
+  );
+}
+
 function leaseKey(input: CacheOptions, key: string): string {
   return `aster:${input.environment}:catalog:public-title-lease:v1:${digest(input, key)}`;
 }
@@ -587,7 +594,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     const created: Array<{ identity: string; id: string; entry: SharedFenceEntry }> = [];
     const overflow: string[] = [];
     for (const id of ids) {
-      const identity = digest(input, negativeKey(input.environment, id));
+      const identity = fenceCoalescingIdentity(input, id, scope);
       const existing = fenceEntries.get(identity);
       if (existing) {
         const count = existing.waiters + 1;
