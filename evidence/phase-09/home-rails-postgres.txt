@@ -9,6 +9,7 @@ Environment
 Final result: PASS
 
 {"event":"discovery_migration","postgres":"18.6","version":3,"emptyRollback":true}
+{"event":"discovery_mixed_readiness","migration":3,"stagedSearch":"ready","rails":"ready"}
 {"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
 {"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
 {"event":"discovery_home_rails","independentGroups":4,"recentFallback":true,"genreRails":2}
@@ -17,7 +18,7 @@ Final result: PASS
 {"event":"discovery_privileges","deniedStatements":5,"catalogIsolation":true}
 {"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
 {"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
-{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":2553}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":3026}
 
 Findings corrected before the final pass
 - The first rail query used a top-level WITH statement. The shared PostgreSQL
@@ -32,6 +33,8 @@ Findings corrected before the final pass
 
 Proved boundaries
 - migration 0003 rolls up/down when empty and preserves existing projection data;
+- the staged search-only readiness and rails readiness both accept the real
+  migration3 schema using their purpose-separated runtime/projector logins;
 - rail rows join generation/fence only at matching source version and digest;
 - runtime can SELECT the security-barrier view; projector cannot;
 - stable featured/recent/trending/genre order and recent fallback execute against

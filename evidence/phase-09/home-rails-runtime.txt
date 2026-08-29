@@ -10,9 +10,9 @@ Environment
 Final result: PASS
 
 Final images
-- Catalog: sha256:2be576cecee469b05d3bcb928193aeed5bc6594344f4544f3d87fd48a89225b3c
-- Discovery: sha256:19a662fc248c6f44e3dcd61def56899930ed379e34513aabe5aa501c9e5e94b18
-- Router: sha256:550cf67423e035f23e292ec272eca10cdc7c48809e0a597f13983daea2da00e1e
+- Catalog: sha256:ddc789912107cf5dc1595a125c040a42e9d659f04d226ff40d002e6d7db6c6e7
+- Discovery: sha256:ecc2eb8e854080b0c9c4ab320995d4648d9dec72fa02dafd74c435762fb8c8fa
+- Router: sha256:1d032903166171e55332e5362186fbb34b9fdf2a8e3cda73a292cdced1c723b5
 
 Final observations
 {"event":"discovery_runtime_started","services":11}
@@ -23,7 +23,7 @@ Final observations
 {"event":"discovery_failure_isolation","routerReady":true,"catalogBrowse":true}
 {"event":"discovery_restart_recovery","generationPreserved":true,"searchRecovered":true}
 {"event":"discovery_runtime_logs","finiteOperations":true,"rawQueryText":false,"secrets":false,"timerWarnings":false}
-{"event":"discovery_runtime_cleaned","remaining":0,"durationMs":155311}
+{"event":"discovery_runtime_cleaned","remaining":0,"durationMs":148002}
 
 Finding corrected before the final pass
 - The first full HomePublic request was rejected by Discovery's 64-field ceiling:
@@ -37,10 +37,14 @@ Finding corrected before the final pass
 
 Additional metric proof
 - @aster/telemetry: 10/10 tests pass.
-- @aster/discovery: 82/82 tests pass.
+- @aster/discovery: 88/88 tests pass after the admission and staged-readiness
+  remediation.
 - The Discovery metric integration executes real home/search use cases, collects
   the OpenTelemetry rail duration/outcome/freshness and sampled search bucket
   instruments, and confirms the only product attributes are finite vocabularies.
+- The repeated eleven-service proof uses one transaction per home request, the
+  five-connection runtime pool and the rails-only readiness checks; all public,
+  isolation, restart, logging and exact-cleanup observations pass unchanged.
 
 Limitations
 - Engagement is deliberately absent to prove nullable partial composition; this

@@ -6,9 +6,10 @@ P09-R01 is DONE through PR33, protected run33238473742, squash main `0bdcb27`
 and exact-main run33239191134. P09-R03 is the sole IN_PROGRESS item on dependent
 `feat/p09-home-rails`. Rails/fallback/owner composition/telemetry are locally
 verified; confirmation found database-admission and migration-rollout blockers.
-Admission is corrected. Frozen precursor PR35 exact `8002594` passes75/75 and
-42/42 after correcting the old init preflight; it must release before migration3
-and the final PR34 gates. Historical stashes are superseded.
+Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
+confirmation and protected CI, then squash-merged as main `583c835`; exact-main
+run33244657936 passed. The dependent is rebased on that squash and ready for its
+single PR34 publication update. Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

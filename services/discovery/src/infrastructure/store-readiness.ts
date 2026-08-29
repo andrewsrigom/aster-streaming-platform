@@ -1,6 +1,7 @@
 import type { AsterPostgresAdapter } from "@aster/postgres";
 
 type Database = Pick<AsterPostgresAdapter, "transaction">;
+type ReadinessProfile = "search" | "rails";
 
 export function discoverySearchSchemaCompatible(value: unknown): boolean {
   if (!Array.isArray(value) || (value.length !== 2 && value.length !== 3)) {
@@ -17,6 +18,7 @@ export function discoverySearchSchemaCompatible(value: unknown): boolean {
 async function probe(
   database: Database,
   role: "runtime" | "projector",
+  profile: ReadinessProfile,
   signal: AbortSignal,
 ): Promise<boolean> {
   const login = role === "runtime" ? "aster_discovery_local" : "aster_discovery_projector_local";
@@ -49,8 +51,8 @@ async function probe(
     });
     if (
       versions.rowCount !== versions.rows.length ||
-      versions.rows.length !== 3 ||
-      !discoverySearchSchemaCompatible(versions.rows)
+      !discoverySearchSchemaCompatible(versions.rows) ||
+      (profile === "rails" && versions.rows.length !== 3)
     ) {
       return { action: "rollback", value: false } as const;
     }
@@ -68,8 +70,6 @@ async function probe(
         text: `SELECT NOT has_table_privilege(current_user,'discovery.generations','INSERT,UPDATE,DELETE')
           AND NOT has_table_privilege(current_user,'discovery.generation_titles','INSERT,UPDATE,DELETE')
           AND NOT has_table_privilege(current_user,'discovery.search_documents','INSERT,UPDATE,DELETE')
-          AND NOT has_table_privilege(current_user,'discovery.title_fences','SELECT')
-          AND has_table_privilege(current_user,'discovery.rail_documents','SELECT')
           AS allowed`,
       });
       const row = denied.rows[0];
@@ -91,12 +91,33 @@ async function probe(
           AND has_function_privilege(current_user,
             'discovery.complete_catalog_replay(uuid)','EXECUTE')
           AND NOT has_table_privilege(current_user,'discovery.event_quarantine','SELECT,INSERT,UPDATE,DELETE')
-          AND NOT has_table_privilege(current_user,'discovery.rail_documents','SELECT')
           AS allowed`,
       });
       const row = functions.rows[0];
       if (
         functions.rowCount !== 1 ||
+        typeof row !== "object" ||
+        row === null ||
+        Object.getOwnPropertyDescriptor(row, "allowed")?.value !== true
+      ) {
+        return { action: "rollback", value: false } as const;
+      }
+    }
+    if (profile === "rails") {
+      const railAccess = await tx.query({
+        text:
+          role === "runtime"
+            ? `SELECT
+              NOT has_table_privilege(current_user,'discovery.title_fences','SELECT')
+              AND has_table_privilege(current_user,'discovery.rail_documents','SELECT')
+              AS allowed`
+            : `SELECT
+              NOT has_table_privilege(current_user,'discovery.rail_documents','SELECT')
+              AS allowed`,
+      });
+      const row = railAccess.rows[0];
+      if (
+        railAccess.rowCount !== 1 ||
         typeof row !== "object" ||
         row === null ||
         Object.getOwnPropertyDescriptor(row, "allowed")?.value !== true
@@ -115,8 +136,20 @@ export async function probeDiscoveryStores(
   signal: AbortSignal,
 ): Promise<"ready" | "unavailable"> {
   const results = await Promise.all([
-    probe(runtime, "runtime", signal),
-    probe(projector, "projector", signal),
+    probe(runtime, "runtime", "rails", signal),
+    probe(projector, "projector", "rails", signal),
+  ]).catch(() => [false, false]);
+  return results.every(Boolean) ? "ready" : "unavailable";
+}
+
+export async function probeDiscoverySearchCompatibleStores(
+  runtime: Database,
+  projector: Database,
+  signal: AbortSignal,
+): Promise<"ready" | "unavailable"> {
+  const results = await Promise.all([
+    probe(runtime, "runtime", "search", signal),
+    probe(projector, "projector", "search", signal),
   ]).catch(() => [false, false]);
   return results.every(Boolean) ? "ready" : "unavailable";
 }

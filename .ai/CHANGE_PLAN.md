@@ -20,10 +20,9 @@ Search is released in main `0bdcb27`. PR34 candidate `7d31678` locally verified
 the initial rails slice, but confirmation found two blockers: four SQL transactions
 per home request exceeded shared admission, and migration3 had no readiness overlap
 with the released binary. The database-admission correction is local. Precursor
-PR35 exact `8002594` accepts only ordered migrations1–2 or1–3 in readiness and
-its old init preflight without applying migration3. Its corrected75/75 focused
-tests and42/42 affected gate pass; protected CI/confirmation remain before any
-migration3 publication.
+PR35 exact `8002594` passed75/75,42/42, clean confirmation and protected
+run33243983340, then squash-merged as main `583c835`. Exact-main run33244657936
+passed every required job; migration3 publication is now unblocked.
 
 ## Proposed behavior
 
@@ -94,7 +93,7 @@ readiness reservation fit the five-connection runtime pool.
 
 ## Implementation steps
 
-1. Release PR35 compatibility precursor and confirm exact main.
+1. Precursor exact-main run33244657936 passed.
 2. Rebase PR34 and prove migration3 against staged-old and rails-new readiness.
 3. Keep one transaction per home request, five finite runtime connections and an
    overlapping-request regression.
@@ -120,7 +119,9 @@ readiness reservation fit the five-connection runtime pool.
 - Raw artifact path: `evidence/phase-09/home-rails-*.txt`.
 - Acceptance result: initial rails passed Discovery82/82, telemetry10/10, real
   PostgreSQL/runtime and54/54; admission fix passes Discovery83/83. Precursor
-  correction passes75/75 and42/42. Rebased aggregate/heavy gates remain.
+  correction passes75/75,42/42, protected CI and review. Rebased Discovery88/88, real PostgreSQL mixed
+  readiness and the repeated eleven-service runtime pass; final exact-main rebase
+  preserves exact affected source objects and the final54/54 candidate passes.
 - Iteration gate: strict builds, focused node:test and scoped lint.
 - Candidate gate: canonical affected gate and schema compatibility.
 - Heavyweight repeat triggers: mixed-version/view SQL and changed pool/fan-out
@@ -131,7 +132,7 @@ readiness reservation fit the five-connection runtime pool.
 
 ## Rollback or recovery
 
-Keep schema2 until PR35 exact main. Afterward migration3 is old-search compatible.
+PR35 exact-main passed; migration3 is old-search compatible.
 Restore prior Router/owner artifacts and drop only the rail view once no rails
 binary uses it. Preserve projections, Catalog/Engagement data, media and credentials.
 
@@ -143,8 +144,8 @@ and repository memory.
 ## Completion checklist
 
 - [x] Requirements implemented
-- [ ] Rebased tests and candidate pass
-- [ ] Final evidence captured
+- [x] Final exact-main rebase and candidate pass
+- [x] Affected heavyweight evidence captured
 - [x] Documentation current for dependent work
 - [x] `.ai/` state updated
 - [x] Remaining risks recorded

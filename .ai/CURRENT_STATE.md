@@ -7,9 +7,9 @@ Last updated: 2026-08-29
 **Phase 09 — Home Rails and Search**
 
 Status: **IN_PROGRESS**, P09-R03 dependent work active on
-`feat/p09-home-rails`, based on frozen schema precursor PR35 exact `8002594`.
-P09-R01 is released through PR33 and exact-main CI33239191134. Precursor exact-main
-release must precede migration3/publication. Full Phase00–14 goal stays active.
+`feat/p09-home-rails`, rebased on precursor squash main `583c835`. P09-R01 is
+released through PR33 and exact-main CI33239191134. Precursor exact-main
+run33244657936 passed; migration3/publication is unblocked. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -45,8 +45,14 @@ old/new schema overlap. Home selections now use one transaction at a time per
 request, with five runtime connections covering four GraphQL admissions plus
 readiness; Discovery83/83 and focused static gates pass. Frozen PR35 accepts only
 ordered markers `1–2` or `1–3` in readiness and its old init preflight without
-using/applying migration3. Its corrected75/75 and42/42 gates pass; protected
-CI/confirmation remain. [Compatibility evidence](../evidence/phase-09/home-rails-compatibility.txt).
+using/applying migration3. Its corrected75/75,42/42, protected run33243983340
+and confirmation pass; it merged as583c835 and exact-main CI33244657936 passed.
+The dependent is rebased onto that squash; Discovery88/88, real PostgreSQL
+staged-old/rails-new readiness and the
+repeated eleven-service runtime plus final54/54 candidate pass. Exact affected
+source object IDs stayed unchanged across the squash rebase, so no heavyweight
+proof was duplicated.
+[Compatibility evidence](../evidence/phase-09/home-rails-compatibility.txt).
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -56,14 +62,13 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Home rails remain unreleased while their finite schema precursor completes.
+Home rails remain unreleased while PR34 completes protected review and CI.
 Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Release P09-R03 precursor PR35 through protected/exact-main CI. Rebase this
-dependent branch onto its squash, prove migration3 with staged-old/new readiness,
-repeat affected SQL/runtime/candidate gates and complete PR34 remediation review.
+Publish the single P09-R03 PR34 update and complete its remediation
+review/protected release.
 
 ## Runtime and recovery
 
@@ -77,8 +82,8 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 - The exact earlier SDK/provider seed transport cause remains unproved; the released read-only replay removes that dependency and passes protected/exact-main gates. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event
-  signing key. Migration3 must not run before the finite search compatibility
-  precursor reaches exact main.
+  signing key. Migration3 is allowed only with the released finite search
+  compatibility precursor now verified by exact-main CI33244657936.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
 - Last audit: zero high/critical, one known moderate UUID advisory with inspected Apollo callers unaffected; revisit before hosted release.

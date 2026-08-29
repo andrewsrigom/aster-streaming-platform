@@ -1,20 +1,20 @@
 P09-R03 home-rails candidate checkpoint
 Date: 2026-08-29
 Branch: feat/p09-home-rails
-Compatibility base: 0bdcb275dc354a684342cd3ceb19e11aa1dc0d63
+Compatibility base: 583c83500c336e01081b18311782769d1cdd2b3b
 
 Canonical candidate gate
 
 Command: pnpm check:changed
 Result: PASS
 Tasks: 54 successful, 54 total
-Cached: 25
-Duration: 1m11.918s
+Cached: 39
+Duration: 48.761s
 
 The gate covered affected builds, tests, strict type checks, workspace ESLint,
 Prettier, Knip, architecture, platform, documentation, repository memory,
 community, secret scanning, CI policy, staged policy and commit policy. Discovery
-passed 82 tests, telemetry passed 10 tests, Router passed 9 composition and
+passed 88 tests, telemetry passed 10 tests, Router passed 9 composition and
 compatibility tests, and platform policy passed 67 tests.
 
 Schema compatibility
@@ -37,6 +37,10 @@ Corrections retained
   lint and formatting then passed.
 - No lockfile or dependency version changed, so a new dependency/license audit
   was not triggered. The all-files secret scan passed.
+- The first post-merge aggregate stopped after41/52 tasks because CURRENT_STATE's
+  next outcome omitted the literal active requirement ID. Restoring `P09-R03`
+  made repository-memory check/test pass; the repeated aggregate then passed
+  all54 tasks without weakening or skipping a gate.
 
 Heavyweight evidence applicability
 
@@ -46,8 +50,16 @@ telemetry behavior, packaging or failure boundaries; therefore the passing real
 PostgreSQL and 11-service runtime evidence remains applicable under the recorded
 repeat triggers.
 
+The squash rebase preserved the exact affected Git object IDs:
+
+- services/discovery: eb9482d048a2b8c2e17a4055af1ba605e020d0b1
+- services/engagement: 23a84fad39084490397a131ae8b0401bc07bd5e3
+- packages/telemetry: 2bfc3fd89f9ea168610ce0cbb5b0bb51b41f7765
+- infra/router: 907fdf615807072b41b1dff3c47f8f6bcededc64
+- tools/run-discovery-runtime.mjs: 5e214abdff600eed94eb31d5a620feaf20ca316d
+
 Review/release state
 
-This is a local verified candidate checkpoint. Initial review, confirmation,
-protected pull-request CI, squash merge and exact-main CI remain required before
-P09-R03 is released.
+This is a local verified remediation candidate. The initial/confirmation review
+found the two recorded blockers; exact-head remediation confirmation, protected
+pull-request CI, squash merge and exact-main CI remain before P09-R03 release.

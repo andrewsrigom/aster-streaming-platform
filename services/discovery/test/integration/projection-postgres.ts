@@ -12,6 +12,10 @@ import { createPostgresHomeRailUnitOfWork } from "../../src/infrastructure/postg
 import { createPostgresRebuildStore } from "../../src/infrastructure/postgres-rebuild.js";
 import { createPostgresSearchUnitOfWork } from "../../src/infrastructure/postgres-search.js";
 import { createPostgresCatalogEvents } from "../../src/infrastructure/postgres-catalog-events.js";
+import {
+  probeDiscoverySearchCompatibleStores,
+  probeDiscoveryStores,
+} from "../../src/infrastructure/store-readiness.js";
 
 assert.equal(process.env["ASTER_POSTGRES_DISPOSABLE_FIXTURE"], "true");
 const port = Number(process.argv[2]);
@@ -145,14 +149,37 @@ try {
     NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`);
   await admin.query(`CREATE ROLE aster_discovery_runtime_fixture LOGIN PASSWORD 'aster-test-only'
     NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`);
+  await admin.query(`CREATE ROLE aster_discovery_projector_local LOGIN PASSWORD 'aster-test-only'
+    NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`);
+  await admin.query(`CREATE ROLE aster_discovery_local LOGIN PASSWORD 'aster-test-only'
+    NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`);
   await admin.query("GRANT aster_discovery_projector TO aster_discovery_projector_fixture");
   await admin.query("GRANT aster_discovery_runtime TO aster_discovery_runtime_fixture");
+  await admin.query("GRANT aster_discovery_projector TO aster_discovery_projector_local");
+  await admin.query("GRANT aster_discovery_runtime TO aster_discovery_local");
   await admin.query(`CREATE SCHEMA catalog; REVOKE ALL ON SCHEMA catalog FROM PUBLIC;
     CREATE TABLE catalog.ownership_probe(id integer); INSERT INTO catalog.ownership_probe VALUES (1)`);
   output("discovery_migration", {
     postgres: version.rows[0]?.server_version,
     version: 3,
     emptyRollback: true,
+  });
+  const stagedProjector = database("aster_discovery_projector_local", 1);
+  const stagedRuntime = database("aster_discovery_local", 1);
+  try {
+    assert.equal(
+      await probeDiscoverySearchCompatibleStores(stagedRuntime, stagedProjector, signal()),
+      "ready",
+    );
+    assert.equal(await probeDiscoveryStores(stagedRuntime, stagedProjector, signal()), "ready");
+  } finally {
+    await stagedProjector.close(AbortSignal.timeout(3000));
+    await stagedRuntime.close(AbortSignal.timeout(3000));
+  }
+  output("discovery_mixed_readiness", {
+    migration: 3,
+    stagedSearch: "ready",
+    rails: "ready",
   });
   assert.deepEqual(await rebuildStore.active(signal()), {
     status: "completed",

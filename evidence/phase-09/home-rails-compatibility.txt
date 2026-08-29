@@ -57,3 +57,13 @@ Pending
 
 Publish corrected exact head, resolve confirmation, protected squash merge and
 exact-main CI. Then PR34 rebases and proves the actual migration3 boundary.
+
+Protected release transition
+
+- Corrected exact8002594 received a clean confirmation review.
+- Protected PR run33243983340 passed all required jobs.
+- PR35 squash-merged as main583c835.
+- Exact-main run33244657936 passed all required jobs in16m57s; migration3 and
+  PR34 publication are unblocked.
+- The dependent rails branch rebased onto the squash with identical affected
+  source object IDs, preserving its real SQL/runtime evidence.

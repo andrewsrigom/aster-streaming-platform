@@ -15,8 +15,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Accepted PR35 confirmation discussion3886054205: the old init migrator now
   tolerates ordered marker3 without owning/applying that script, preserves valid
   bootstrap/partial installation and reads marker4 so it fails closed.
-- Preserved the separate PR34 database-admission correction locally on
-  `feat/p09-home-rails` commit `615a8c7`; no migration3 was applied.
+- Rebased the separate PR34 database-admission correction onto frozen precursor
+  exact8002594 and added real staged-search/rails readiness without applying
+  migration3 to retained data.
+- PR35 exact8002594 passed clean confirmation and protected run33243983340, then
+  squash-merged as main583c835. The dependent rebased onto the identical tree;
+  exact-main run33244657936 passed every required job.
 
 ### Evidence
 
@@ -33,11 +37,16 @@ Append new entries at the top. Keep entries factual and concise.
   avoiding its remaining heavyweight work. Retained data/runtime stayed untouched.
 - Cancelled superseded PR35 run33243447562 after its blocker arrived, then passed
   the corrected candidate instead of completing heavyweight invalid-head work.
+- Dependent Discovery88/88 passes. Disposable PostgreSQL18.6 proves both readiness
+  profiles on migration3 and cleanup0 in3026ms; the repeated eleven-service runtime
+  passes public/fallback/isolation/restart/logging boundaries and cleanup0 in148002ms.
+- Exact-squash source object IDs match the heavyweight candidate. The first
+  aggregate stopped only on a missing literal P09-R03 resume target; after that
+  memory correction, the final affected candidate passes54/54,39 cached, in48.761s.
 
 ### Next action
 
-Publish the precursor for protected review/release and exact-main CI. Then rebase
-PR34, prove migration3 old/new readiness and complete both blockers.
+Publish the PR34 correction once and complete remediation review/protected release.
 
 ## 2026-08-29 — Independent home rails local candidate
 
