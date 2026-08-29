@@ -32,8 +32,9 @@ background lifecycle, explicit stale client shape and PostgreSQL fallback.
   contention, outage fallback and exact cleanup (pending exact-head capture).
 - `discovery-swr-runtime.txt`: real PostgreSQL/Router runtime and non-critical
   Redis outage behavior (pending candidate capture).
-- `discovery-swr-browser.txt`: stale rails and visible refresh warning through
-  the Web client (pending candidate capture).
+- [Discovery browser](discovery-swr-browser.txt): stale rails and visible refresh
+  warning pass 1/1 through the production Web client at the pre-rebase dependent
+  checkpoint; exact-head carry-forward remains pending.
 
 Every artifact records the exact implementation commit, environment, command,
 workload, raw result, interpretation and limitations. They support the local
