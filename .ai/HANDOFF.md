@@ -2,50 +2,38 @@
 
 ## Resume point
 
-Phases 00–09 are released locally. P10 Catalog cache-aside is also released:
-PR37 exact `cb86c371849f895934af99f72c361ccb64bccf8e` passed protected run
-`33270889083` and clean confirmation comment `5464418106`, squash-merged without
-bypass as main `903f7b4330db8c47896ea82f5f487a268d817d88`, and exact-main run
-`33272501078` passed all required jobs.
+Phases 00–09 are released locally. P10 Catalog cache-aside is released through
+main `903f7b4` and exact-main run `33272501078`.
 
-P10-R04 is the sole active item on `feat/p10-discovery-swr`, rebased onto that
-main release. The implementation adds bounded whole-home stale-while-revalidate,
-finite Redis envelopes and leases, PostgreSQL fallback, explicit Web stale shape
-and finite telemetry. Redis remains disposable and non-critical.
+P10 Discovery stale-while-revalidate passed PR39 exact `601cc95`, protected run
+`33274397440`, clean confirmation and squash-merged without bypass as main
+`6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0`. Exact-main run
+`33275183338` is the sole predecessor condition. P10-R08 is the permitted
+dependent `IN_PROGRESS` item on `feat/p10-operation-limiters`, based on that
+exact merge, and must not publish before the run passes.
 
-Local evidence:
-
-- Discovery 99/99, telemetry 11/11 and Web 111/111 pass.
-- Real Redis passes: 24 cold callers use one source read, 24 stale callers use
-  one refresh, two instances recover an excessive-TTL lease, outage falls back
-  to the owner and cleanup reaches zero.
-- The stale browser path passes 1/1; its affected Web blobs are byte-identical
-  after the predecessor squash rebase.
-- PR39 initial automated review found no issue. The complete local review then
-  corrected cross-time title expiry, rejected-write fallback and sibling closure
-  at exact `5a5f5e2`; Discovery103/103 and `pnpm check:changed` pass73/73 with56
-  cached in106.071 seconds.
-- Exact `8faf35a` passes the eleven-service Discovery runtime in 395884 ms:
-  configured Redis is absent, Discovery stays healthy, public home is served,
-  projection lag is zero, quarantine replay and owner isolation/restart pass,
-  and cleanup reaches zero.
-
-Evidence is under `evidence/phase-10`. Full Phase00–14 goal remains active.
+The active plan implements an atomic Redis-server-time token bucket for
+Engagement progress/watchlist after current owner authorization and idempotent
+replay, with bounded local fallback/hot-key shielding. Discovery search receives
+two active slots, one waiter and a 100 ms queue bound. P10-R08 also owns the real
+atomicity, outage, cardinality and hot-key evidence and closes Phase 10.
 
 ## Exact next actions
 
-1. Push the single batched PR39 remediation and await protected CI.
-2. Run one confirmation review and treat only defined blockers.
-3. Squash-merge without bypass, verify exact-main CI, close P10-R04 and activate
-   READY P10-R08 from clean main.
+1. Verify exact-main run `33275183338` and record the Discovery release.
+2. Write ADR-0039 and implement the Redis token-bucket command plus telemetry.
+3. Apply Engagement rate admission and optional non-critical Redis lifecycle.
+4. Add Discovery search bulkhead and focused adverse tests.
+5. Run real Redis/PostgreSQL evidence, the affected gate, review and release.
 
 ## Evidence boundaries
 
-Phase09 browser/media evidence does not repeat. Discovery browser1/1 and real
-Redis evidence carry forward because their affected source blobs did not change.
-The review correction did not change Redis wire/envelope, public stale shape or
-composition, so real Redis, browser and eleven-service runtime do not repeat.
-Repeat them only if those boundaries change.
+Discovery's existing real Redis, browser and eleven-service outage artifacts stay
+valid because P10-R08 changes neither its cache bytes nor stale public shape.
+Repeat them only if that boundary changes. Redis script/key/policy changes repeat
+the limiter atomicity/hot-key fixture. Engagement owner/result placement repeats
+the durable Redis-outage fixture. Search admission changes repeat its concurrency
+proof. Unchanged media/player evidence does not repeat.
 
 ## Execution environment
 
@@ -56,7 +44,7 @@ deadlines. Never create or use `codex/` branches.
 
 ## Do not do yet
 
-Do not cache browse ordering, rights or Playback authority. Do not make Redis a
-critical readiness dependency, scan keys, add Phase11 retry/circuit policy, add
-Phase13 GraphQL calibration, repeat unchanged media/browser/CPU work, restart WSL
-or Docker globally, or alter unrelated retained projects and data.
+Do not add Phase11 retries/circuits or Phase13 trusted-operation/public-proxy
+calibration. Do not make Redis durable or critical readiness, expose raw account
+identity in keys/telemetry, scan/flush Redis, repeat unchanged media/browser/CPU
+work, restart WSL/Docker globally, or alter unrelated retained projects/data.

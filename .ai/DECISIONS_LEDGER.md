@@ -2,6 +2,15 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0039](../docs/adr/0039-operation-admission-and-redis-degradation.md)
+places Engagement progress/watchlist token buckets after current account
+authorization and idempotent replay. A bounded process-local shield rejects hot
+bursts before Redis and supplies finite degraded admission during Redis loss;
+Redis server time and one atomic versioned state coordinate replicas but never
+authorize a durable write. Discovery search separately uses two active slots,
+one waiter and a 100-millisecond bound. Phase13 retains final public identity and
+GraphQL calibration.
+
 [ADR-0038](../docs/adr/0038-bounded-discovery-home-stale-cache.md) limits the
 Discovery cache to twelve whole public-home variants. A validated snapshot is
 fresh for fifteen seconds plus jitter and may be served explicitly as stale for
