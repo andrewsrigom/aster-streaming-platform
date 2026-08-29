@@ -55,7 +55,7 @@ test("standalone owner probes use diagnostics without private Router credential 
   }
   assert.ok(probe.includes('"--no-deps"'));
   assert.ok(probe.includes('"127.0.0.1::3200"'));
-  assert.ok(probe.includes("assert.ok(volumes.length <= 9)"));
+  assert.ok(probe.includes("assert.ok(volumes.length <= 11)"));
 });
 
 test("Catalog proof cleanup allows only owned data and unused trust volumes", () => {
@@ -75,6 +75,8 @@ test("Catalog proof cleanup allows only owned data and unused trust volumes", ()
     ["engagement-identity-trust", "disposable-local", []],
     ["engagement-playback-trust", "disposable-local", []],
     ["engagement-catalog-trust", "disposable-local", []],
+    ["discovery-router-trust", "disposable-local", []],
+    ["discovery-catalog-trust", "disposable-local", []],
   ]) {
     const volume = {
       Name: project + "_" + suffix,
