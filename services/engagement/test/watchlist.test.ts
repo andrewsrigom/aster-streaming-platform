@@ -113,7 +113,9 @@ test("watchlist admission follows owner and replay but precedes Catalog and pers
         assert.equal(accountId, id(1));
         assert.equal(
           admissionId,
-          rejected.ports.digest(`set_watchlist\0${id(1)}\0${id(2)}\0${id(4)}`),
+          rejected.ports.digest(
+            `${rejected.ports.digest(`set_watchlist\0${id(1)}\0${id(2)}\0${id(4)}`)}\0${rejected.ports.digest(watchlistRequestPayload(input()))}`,
+          ),
         );
         return Promise.resolve({ status: "rejected", retryAfterMs: 1_000 });
       },
@@ -158,6 +160,7 @@ test("concurrent identical watchlist retries consume one admission and replay on
     },
   });
   const attempts = Array.from({ length: 5 }, () => writer.set(input(), f.request));
+  const conflict = writer.set(input({ present: false }), f.request);
   await entered.promise;
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(admissions, 1);
@@ -169,6 +172,36 @@ test("concurrent identical watchlist retries consume one admission and replay on
   assert.equal(f.calls.catalog.length, 1);
   assert.equal(f.calls.transaction, 1);
   assert.equal(f.state().events.length, 1);
+  assert.equal((await conflict).status, "conflict");
+  assert.equal(admissions, 1);
+});
+
+test("unsaved watchlist retries share admission only for the same canonical payload across replicas", async () => {
+  const f = watchlistFixture();
+  f.retired.add(id(3));
+  f.retired.add(id(7));
+  const admissions: string[] = [];
+  const ports = {
+    ...f.ports,
+    limiter: {
+      admit: (_operation: string, _accountId: string, admissionId: string) => {
+        admissions.push(admissionId);
+        return Promise.resolve({ status: "allowed" as const });
+      },
+    },
+  };
+  const first = createWatchlistWriter(ports);
+  const second = createWatchlistWriter(ports);
+  assert.equal((await first.set(input(), f.request)).status, "not_visible");
+  assert.equal((await second.set(input(), f.request)).status, "not_visible");
+  assert.equal((await first.set(input({ titleId: id(7) }), f.request)).status, "not_visible");
+  assert.equal(f.state().receipts.length, 0);
+  assert.equal((await second.set(input({ present: false }), f.request)).status, "completed");
+  assert.equal(admissions.length, 4);
+  assert.equal(admissions[0], admissions[1]);
+  assert.equal(new Set(admissions).size, 3);
+  assert.equal(f.state().receipts.length, 1);
+  assert.equal(f.calls.transaction, 1);
 });
 
 test("profile-scoped key conflicts across title and action before Catalog access", async () => {

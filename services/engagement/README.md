@@ -21,6 +21,10 @@ Input requires exactly profileId, titleId, playbackSessionId, idempotencyKey (UU
 
 Only COMPLETED acknowledges durable progress, a receipt and an outbox event in one transaction. Keys are unique per profile, across titles. Exact same-key replay returns the original result for one hour, even after newer progress or the original Playback session expires; current Identity authorization remains required. Changed payload, including title, gives CONFLICT; older/equal sequence under a new key gives STALE. Concurrent work for one authorized account/profile/idempotency key is serialized in a bounded local lane before receipt inspection and rate admission. A finite atomic Redis admission marker makes replicas reuse that rate decision, while PostgreSQL still serializes and owns the one durable effect. A newer intentional backward seek is permitted. Opening is strictly greater than min(30 seconds, 5% duration); completion is at least max(95% duration, duration minus thirty seconds). Positions are reports, not proof of viewing.
 
+The shared admission identity includes the canonical request digest. Changed
+payloads are distinct rate attempts even when an earlier attempt saved no receipt;
+local ordering remains key-only so a committed receipt still detects conflicts.
+
 INVALID_INPUT, UNAUTHENTICATED, NOT_FOUND, NOT_PLAYABLE, BACKPRESSURE,
 LIMIT_EXCEEDED, UNAVAILABLE, CANCELLED and INDETERMINATE are non-success
 outcomes; transport errors also occur. A limited mutation supplies a bounded

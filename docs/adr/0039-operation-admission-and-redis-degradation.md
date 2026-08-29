@@ -26,7 +26,8 @@ It holds at most 1,024 active keys and 31 waiters per key, propagates waiter
 cancellation, and returns `BACKPRESSURE` at capacity. That queue prevents one
 process from charging a concurrent same-key burst repeatedly. It does not
 coordinate replicas, so the shared Redis decision also receives a SHA-256 digest
-of operation, authorized account, profile and idempotency key. Its atomic finite
+of operation, authorized account, profile, idempotency key and the canonical
+request digest. Its atomic finite
 marker makes another replica reuse the first allowed admission without consuming
 another token. PostgreSQL receipt and aggregate locking still serialize the
 durable effect. The rate partition is the authorized account, not the untrusted
@@ -114,7 +115,9 @@ record bounded command outcomes.
   shed locally before repeated Redis commands.
 - Concurrent identical retries split across replicas charge the account-operation
   bucket once during the finite admission window, while distinct idempotency keys
-  remain independent rate attempts.
+  or payloads remain independent rate attempts, including after a rejected owner
+  result that creates no receipt. Local same-key ordering excludes the payload
+  digest so changed requests still observe a committed receipt conflict.
 - Concurrent same-key work inside one process reaches receipt/rate admission in
   order, preventing identical retries from multiplying token use.
 - Redis loss degrades distribution accuracy, not durable progress correctness or

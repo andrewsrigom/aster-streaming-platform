@@ -1,6 +1,6 @@
 P10 operation admission contract checkpoint
 Date: 2026-08-29
-Status: cross-replica review remediation passes locally; protected repeat pending
+Status: request-digest remediation passes focused/candidate gates; protected repeat pending
 
 Source
 - Branch: feat/p10-operation-limiters
@@ -9,6 +9,11 @@ Source
 - Review remediation: ade7379e07438bb394af6131d5f9ac1111f5225d
 - Cross-replica remediation: c5ea7c8b243042fc897cd2fcd28e17e260d01f0b
 - Corrected candidate tree: 48682156685c68ed9fa102fd68c12f5b7df3ecc9
+- Request-digest correction parent: aa5e6af6546e5fc463fbc089d6dd11921f25cd5a
+- Corrected source Git blobs:
+  record-progress.ts: 375d44d98f8c92e54de7a183a0048b429427564e
+  set-watchlist.ts: 0804858ef61db77a828efccf5873c704f871e5a9
+  integration/operation-limiter-redis.ts: 4929e229c9212956bb2f82802d48635fca94970d
 - Generated compatibility base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
 - Generated manifest SHA-256:
   d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303
@@ -34,6 +39,23 @@ Commands and raw results
   PASS 124/124; scoped ESLint, Prettier and git diff check PASS.
 - Cross-replica corrected pnpm check:changed: PASS, 73/73, 44 cached,
   61.854 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- Request-digest correction: pnpm --filter @aster/engagement build PASS;
+  pnpm --filter @aster/engagement test PASS 126/126 in 2303.69615 ms.
+  Both application regressions exercise the same key with different payloads
+  after a result with no durable receipt; exact payloads share a digest across
+  instances and changed payloads do not. Concurrent changed-payload callers
+  still wait for the key-only lane and return conflict after the first commit.
+- Corrected request-digest pnpm check:changed: PASS 73/73, 56 cached,
+  48.173 seconds. Two earlier attempts stopped on session-entry sections and the
+  documentation heading cap; consolidation into the existing work-item entry
+  corrected both without changing the validator or application source.
+- Prior protected run33280768684 passed every required job at exactaa5e6af.
+  Redis: 24 independent callers, 4 allowed/20 rejected; 24 identical callers,
+  1 charge/23 reuses; 5 malformed states recovered; 5 hot attempts/4 commands;
+  local outage fallback; exact fixture cleanup remaining0 in1725 ms.
+  PostgreSQL: crossReplicaLimiterCalls2, crossReplicaLimiterCharges1, effects1;
+  Redis outage durableProgress1/durableReceipts1/durableEvents1/exactReplayEffects1.
+  This run predates and does not verify the request-digest correction.
 - git diff --check, Prettier, ESLint, Knip, strict TypeScript, architecture,
   security, documentation, repository memory and schema compatibility: PASS.
 - The implementation candidate was committed after the complete source gate.
@@ -92,11 +114,16 @@ Local dependency limitation
   passed; its corrected repeat is the pending real Redis/PostgreSQL boundary.
 
 Interpretation
-The cross-replica correction satisfies focused static, unit, application and
-complete affected-source gates. The previous exact-head protected run proves the
-public payloads and prior limiter behavior, but it cannot prove the new two-key
-Lua command. Protected real Redis/PostgreSQL execution and the permitted
-blocking-boundary confirmation still must pass before release.
+Confirmation discussion3887956537 at aa5e6af found that the shared marker omitted
+the canonical request digest. The local correction preserves the finite Redis
+algorithm and key-only ordering while binding the marker to that digest.
+Focused Engagement126/126 passes. The extended real Redis fixture now exercises
+two production watchlist writers with two exact retries and four changed title
+payloads under one key, all against hidden titles and without receipts. It
+requires six Redis commands, five Catalog calls and one shared rejection.
+The corrected candidate gate passes73/73. Protected extended-fixture execution
+and blocking-boundary confirmation still must pass before release.
+No unchanged Docker/WSL probe was repeated.
 
 Limitations
 - No hosted deployment, field SLO, arbitrary replica-count or production

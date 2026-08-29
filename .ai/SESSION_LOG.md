@@ -33,17 +33,28 @@ Append new entries at the top. Keep entries factual and concise.
   decision. Separate limiter/recorder replicas now reuse one charge while
   PostgreSQL remains the receipt/effect owner. Redis18/18, Engagement124/124,
   scoped static checks and the affected73/73 gate pass,44 cached,in61.854 seconds.
+- Confirmed discussion3887956537 at `aa5e6af`; bound both Engagement admission
+  digests to the canonical payload without changing key-only local ordering.
+  Engagement126/126 passes, covering unsaved changed payloads across replicas and
+  concurrent same-key conflicts after one effect. The extended two-writer real
+  Redis fixture awaits hosted execution; no local Docker/WSL probe was repeated.
 
 ### Evidence
 
 - Local `pnpm check:changed`: 73/73 tasks passed.
+- Request-digest candidate attempts stopped on session-entry structure and the
+  500-heading document bound. This continuation is consolidated into its existing
+  work-item entry before the corrected cached gate; no check is weakened.
+- Corrected request-digest candidate passes73/73,56 cached,in48.173 seconds.
+  Prior protected run33280768684 passed at aa5e6af, including real Redis two-key
+  atomicity and PostgreSQL outage/replica proof; the new digest still needs CI.
 - Generated supergraph: compatibility base `6a2fe3a`, eight artifacts, manifest
   SHA-256 `d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303`.
 
 ### Next action
 
-Publish exact c5ea7c8 plus this evidence checkpoint, run the protected real
-fixtures, resolve discussion3887901456 and request the permitted
+Publish the request-digest correction plus this checkpoint, run protected real
+fixtures, resolve discussion3887956537 and request the permitted
 blocking-boundary confirmation before release.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase

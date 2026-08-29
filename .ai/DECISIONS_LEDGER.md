@@ -7,7 +7,8 @@ places Engagement progress/watchlist token buckets after current account
 authorization and idempotent replay. A bounded process-local shield rejects hot
 bursts before Redis and supplies finite degraded admission during Redis loss;
 Redis server time, one atomic versioned bucket and a finite admission-digest
-marker make identical retries share one charge across replicas but never
+marker, bound to the authorized idempotency identity and canonical request digest,
+make identical retries share one charge across replicas but never
 authorize a durable write. Discovery search separately uses two active slots,
 one waiter and a 100-millisecond bound. Phase13 retains final public identity and
 GraphQL calibration.

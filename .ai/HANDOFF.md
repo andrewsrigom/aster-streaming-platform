@@ -27,15 +27,21 @@ exact041c75e. Confirmation discussion3887901456 then found duplicate token
 charges when identical retries reach different Engagement replicas. Exact
 c5ea7c8 adds a finite atomic v2 admission marker to the shared bucket decision;
 Redis18/18, Engagement124/124, scoped static checks and affected73/73 pass,44
-cached,in61.854 seconds. The new Redis script/key requires a protected repeat.
+cached,in61.854 seconds. Confirmation at `aa5e6af` then found discussion3887956537.
+The local correction binds shared admission to the canonical request digest, but
+keeps local ordering key-only for receipt conflict detection. Engagement126/126
+passes. The extended two-writer Redis fixture tests exact retry reuse and
+changed-payload competition even when no receipt is written; execution is pending.
+The corrected candidate passes73/73,56 cached,in48.173 seconds. Prior protected
+run33280768684 passed at aa5e6af; it predates this digest correction.
 
 ## Exact next actions
 
-1. Commit this cross-replica evidence checkpoint and push PR40 once.
+1. Commit the accepted request-digest candidate/checkpoint and push PR40 once.
 2. Require protected CI to repeat the real Redis/PostgreSQL fixtures at the exact
    head; Discovery/browser/media carry forward because their boundaries did not
    change.
-3. Reply to and resolve discussion3887901456, then request the permitted
+3. Reply to and resolve discussion3887956537, then request the permitted
    blocking-boundary confirmation.
 4. Capture release evidence, squash-merge, confirm exact-main CI and close Phase10.
 

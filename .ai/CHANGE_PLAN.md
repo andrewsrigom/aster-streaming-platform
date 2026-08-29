@@ -43,7 +43,15 @@ serialization. Exact `c5ea7c8` adds one finite atomic v2 admission marker to the
 shared bucket decision. Redis18/18, Engagement124/124, scoped static checks and
 the corrected affected gate pass 73/73 with 44 cached in 61.854 seconds. The
 Redis script/key changed, so the protected real-dependency repeat and permitted
-blocking-boundary confirmation remain before release.
+blocking-boundary confirmation remain before release. The completed confirmation
+at `aa5e6af` found discussion3887956537: the shared admission identity omits the
+request digest, so different unsuccessful attempts can reuse the same marker.
+Bind the shared identity to the existing canonical request digest while keeping
+local ordering keyed only by the authorized idempotency identity. Verify both
+operations, concurrent conflict detection and the real Redis two-replica path.
+The correction passes Engagement126/126 and the complete affected73/73 gate,
+56 cached,in48.173 seconds. Run33280768684 passed at the prior exactaa5e6af,
+including the two-key Lua proof, but cannot prove the changed application digest.
 
 ## Proposed behavior
 
@@ -66,7 +74,9 @@ can spend one token; concurrent identical callers then observe its receipt rathe
 than multiplying token use or durable effects. Keys partition by
 environment, exact operation and a SHA-256 pseudonym of the authorized account.
 The companion admission key contains only a SHA-256 digest of the authorized
-account/profile/idempotency identity and expires with the bucket policy.
+account/profile/idempotency identity plus the canonical request digest and expires
+with the bucket policy. Changed payloads are separate rate attempts even when an
+earlier attempt wrote no durable receipt; exact retries still deduplicate.
 Policies are twelve-token/four-per-second progress and four-token/one-per-second
 watchlist buckets. A bounded 1,024-partition process-local shield applies the same
 policy before Redis. It rejects a local hot burst without a Redis command; if
@@ -214,10 +224,10 @@ dependency closure.
   the Phase 10 complete acceptance gate.
 - Raw artifact path: `evidence/phase-10/operation-limiters-*.txt`, Discovery
   release evidence and updated Phase 10 index.
-- Acceptance result: both earlier protected real-dependency runs passed, and the
-  cross-replica correction passes its focused suites plus the complete affected
-  73/73 local candidate. The new two-key Redis command still requires protected
-  real-dependency execution.
+- Acceptance result: prior protected run33280768684 passed the two-key Lua and
+  real durable fixtures at aa5e6af. The request-digest correction passes focused
+  Engagement126/126 and affected73/73. Its extended two-writer Redis fixture still
+  requires protected execution.
 - Iteration gate: affected package/service builds and focused tests, then scoped
   lint/format.
 - Candidate gate: `pnpm check:changed` plus real Redis atomicity/hot-key and
@@ -227,9 +237,9 @@ dependency closure.
   repeat durable outage evidence; search admission changes repeat concurrency
   proof. Unchanged media, player and browser assets do not repeat.
 - Review stopping rule: the complete initial review and first confirmation are
-  collected. Discussion3887901456 is a new blocking availability/idempotency
-  boundary, so one confirmation of this exact remediation is permitted; no
-  speculative extra round follows.
+  collected. Discussion3887956537 is a new blocking rate-identity boundary, so
+  one confirmation of the request-digest remediation is permitted; no speculative
+  extra round follows.
 
 ## Rollback or recovery
 

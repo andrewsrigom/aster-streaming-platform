@@ -107,7 +107,8 @@ adds the atomic cross-instance Redis decision. Redis readiness is observed but
 non-critical, and outage keeps the local bound without changing PostgreSQL
 authorization, transaction or acknowledgement. Bucket policies, state TTL, key
 shape, finite admission-marker TTL and local cardinality are code-owned and
-cannot be widened by runtime configuration. One authorized idempotency admission
+cannot be widened by runtime configuration. One authorized idempotency admission,
+including its canonical request digest,
 charges the shared v2 bucket once across replicas; PostgreSQL remains the receipt
 and effect authority.
 

@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { createAsterRedisAdapter, type AsterRedisAdapter } from "@aster/redis";
 import { createAsterTelemetry, type AsterOperationLimitMetricInput } from "@aster/telemetry";
 import { createEngagementOperationLimiter } from "../../src/infrastructure/operation-limiter.js";
+import { createWatchlistWriter } from "../../src/application/set-watchlist.js";
+import { watchlistFixture, watchlistId, watchlistInput } from "../watchlist-fixture.js";
 
 const port = Number(process.argv[2]);
 assert.ok(Number.isSafeInteger(port) && port > 1_023 && port < 65_536);
@@ -94,6 +96,46 @@ try {
   assert.equal(completedDuplicates.filter((result) => result.deduplicated).length, 23);
   assert.ok(completedDuplicates.every((result) => result.remaining === 3));
 
+  const unsaved = watchlistFixture();
+  unsaved.authority.accountId = watchlistId(901);
+  const changedTitles = Array.from({ length: 4 }, (_, index) => watchlistId(902 + index));
+  for (const titleId of [watchlistInput().titleId, ...changedTitles]) {
+    unsaved.retired.add(titleId);
+  }
+  let unsavedCommands = 0;
+  const writers = [first, second].map((redis) =>
+    createWatchlistWriter({
+      ...unsaved.ports,
+      limiter: createEngagementOperationLimiter({
+        environment: "test",
+        digest: unsaved.ports.digest,
+        redis: {
+          consumeTokenBucket: (...args: Parameters<AsterRedisAdapter["consumeTokenBucket"]>) => {
+            unsavedCommands++;
+            return redis.consumeTokenBucket(...args);
+          },
+        },
+      }),
+    }),
+  );
+  const exactRetries = await Promise.all(
+    writers.map((writer) => writer.set(watchlistInput(), unsaved.request)),
+  );
+  assert.ok(exactRetries.every((result) => result.status === "not_visible"));
+  const changedAttempts = await Promise.all(
+    changedTitles.map((titleId, index) => {
+      const writer = writers[index % 2];
+      assert.ok(writer);
+      return writer.set(watchlistInput({ titleId }), unsaved.request);
+    }),
+  );
+  assert.equal(changedAttempts.filter((result) => result.status === "not_visible").length, 3);
+  assert.equal(changedAttempts.filter((result) => result.status === "limit_exceeded").length, 1);
+  assert.equal(unsavedCommands, 6);
+  assert.equal(unsaved.calls.catalog.length, 5);
+  assert.equal(unsaved.calls.transaction, 0);
+  assert.equal(unsaved.state().receipts.length, 0);
+
   const metrics: AsterOperationLimitMetricInput[] = [];
   let commands = 0;
   const counted = {
@@ -148,6 +190,9 @@ try {
       duplicateCallers: duplicates.length,
       duplicateCharges: 1,
       duplicateReuses: 23,
+      unsavedRequestCommands: unsavedCommands,
+      changedPayloads: changedAttempts.length,
+      changedPayloadRejected: 1,
       recoveredStates: corruptedKeys.length,
       hotBurstAttempts: burst.length,
       hotBurstRedisCommands,

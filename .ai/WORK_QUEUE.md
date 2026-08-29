@@ -63,6 +63,11 @@ atomically deduplicates the finite shared admission marker. Redis18/18,
 Engagement124/124 and affected73/73 pass; one protected real-dependency repeat
 and the permitted blocking-boundary confirmation remain before merge.
 
+Confirmation at `aa5e6af` found discussion3887956537. The local correction adds
+the canonical request digest to shared admission identity, retaining key-only
+local ordering. Engagement126/126 and the corrected73/73 candidate pass. Hosted
+gates and one blocking-boundary confirmation remain before P10-R08 can close.
+
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
 confirmation and protected CI, then squash-merged as main `583c835`; exact-main

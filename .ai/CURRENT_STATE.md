@@ -150,6 +150,16 @@ remain.
 The local Docker daemon remains unavailable; no repeated daemon/WSL probe is
 authorized or needed.
 
+Confirmation at `aa5e6af` found discussion3887956537: the shared admission identity
+also needs the canonical request digest. The correction binds both Engagement
+operations to that digest while preserving key-only local conflict ordering.
+Engagement126/126 passes, including unsaved changed-payload and concurrent
+conflict regressions. The extended real Redis fixture exercises two writers,
+exact retries and distinct payloads without durable receipts. Its protected
+execution remains pending. The corrected candidate passes73/73,56 cached,in48.173
+seconds. Prior protected run33280768684 passed at aa5e6af, including the two-key
+Lua proof and PostgreSQL outage/replica fixtures; it predates the digest correction.
+
 ## Historical Phase 09 corrections
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
@@ -196,14 +206,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The c5ea7c8 protected real-dependency repeat, blocking-boundary confirmation,
-release evidence, merge, exact-main CI and Phase10 closeout remain. Hosted
+The request-digest correction's protected gate, confirmation, release
+evidence, merge, exact-main CI and Phase10 closeout remain. Hosted
 deployment remains Phase14.
 
 ## Next outcome
 
-Publish exact c5ea7c8 plus its evidence checkpoint to PR40, run protected hosted
-fixtures and the permitted blocking-boundary confirmation, then release P10-R08
+Publish the request-digest correction with its evidence checkpoint to PR40, run
+protected fixtures and the permitted blocking-boundary confirmation, then release P10-R08
 and mark Phase 10 complete after exact-main gates.
 
 ## Runtime and recovery
