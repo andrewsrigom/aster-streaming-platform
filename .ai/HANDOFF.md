@@ -66,15 +66,20 @@ while preserving holders within the requested window. Redis17/17, Catalog246/246
 and repeated real Redis pass with `excessiveTtlLeaseRecovered=true` and cleanup0.
 The complete affected gate passes 73/73 with 51 cached in 107.438 seconds. Hosted
 gates remain pending.
-The separate `feat/p10-discovery-swr` branch is the sole active dependent, now
+P10-R04 on `feat/p10-discovery-swr` is the sole active dependent, now
 rebased onto that exact frozen predecessor. Its bounded stale-cache plan is
-active; do not publish it before predecessor release.
+implemented through exact `dda4b9c`; do not publish it before predecessor
+release. Discovery99/99, telemetry11/11, Web111/111, scoped lint/format and real
+Redis pass. The real fixture proves recoverable 24-hour lease contamination,
+24-to-one cold/stale refresh amplification, outage fallback and cleanup0. The
+browser source/test blobs are unchanged across rebase, so browser1/1 carries
+forward; the complete affected gate remains.
 
 ## Exact next actions
 
 1. Monitor exact-head PR37 confirmation/protected CI and merge only when clean.
-2. Implement and focus-test Discovery locally. After Catalog squash/exact-main,
-   rebase the dependent commits and repeat affected gates before publication.
+2. After Catalog squash/exact-main, rebase the dependent commits, run the complete
+   affected gate and finish remaining runtime evidence before publication.
 
 ## Evidence boundaries
 

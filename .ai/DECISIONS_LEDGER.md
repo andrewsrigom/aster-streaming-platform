@@ -8,6 +8,8 @@ fresh for fifteen seconds plus jitter and may be served explicitly as stale for
 at most sixty seconds, shortened by every title visibility lease. One bounded
 process refresh and a tokenized Redis lease coordinate work; Redis failure uses
 the existing PostgreSQL source and never changes Catalog or Playback authority.
+Lease acquisition recovers wrong-type, non-expiring or longer-than-policy keys,
+and coalescing counts monotonic attachments separately from active waiters.
 
 [ADR-0037](../docs/adr/0037-rights-safe-catalog-cache.md) limits the first Phase10
 cache to Catalog public-title entity projections. Every positive reuse follows a

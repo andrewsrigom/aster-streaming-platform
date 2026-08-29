@@ -26,10 +26,10 @@ background lifecycle, explicit stale client shape and PostgreSQL fallback.
   metrics and exact cleanup.
 - [Concurrency](catalog-cache-concurrency.txt): cold-key amplification, warm
   reuse, cross-instance lease contention and compare-delete safety.
-- `discovery-swr-contract.txt`: focused Discovery, GraphQL, Web and telemetry
-  contract proof (pending candidate capture).
-- `discovery-swr-redis.txt`: real bounded Redis behavior, stale bursts, lease
-  contention, outage fallback and exact cleanup (pending exact-head capture).
+- [Discovery contract](discovery-swr-contract.txt): focused Discovery, GraphQL,
+  Web and telemetry contract proof.
+- [Discovery Redis](discovery-swr-redis.txt): real bounded Redis behavior, stale
+  bursts, recoverable lease contention, outage fallback and exact cleanup.
 - `discovery-swr-runtime.txt`: real PostgreSQL/Router runtime and non-critical
   Redis outage behavior (pending candidate capture).
 - [Discovery browser](discovery-swr-browser.txt): stale rails and visible refresh

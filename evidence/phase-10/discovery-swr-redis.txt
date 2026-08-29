@@ -1,0 +1,40 @@
+P10 Discovery stale Redis checkpoint
+Date: 2026-08-29
+Status: local dependent candidate; predecessor release and candidate gate pending
+
+Source and environment
+- Frozen predecessor: cb86c371849f895934af99f72c361ccb64bccf8e
+- Lease/coalescing correction: dda4b9cf8b9876b0c7a03be92dcfbdc15fad523b
+- WSL2 Ubuntu-20.04; Node.js 24.19.0; pnpm 11.24.0
+- Docker Engine 26.0.0; one disposable pinned Redis 8.10.0 container
+- Fixture limits: 0.5 CPU, 128 MiB, 64 PIDs, tmpfs and loopback-only port
+
+Command
+CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm discovery:cache-integration
+
+Final result: PASS
+
+Raw result
+{"event":"discovery_cache_redis_verified","boundedOversizedRead":true,"atomicCompareDelete":true,"concurrentCallers":24,"uncachedSourceReadsDuringBurst":24,"uncachedBurstDurationMs":16.24,"sourceReadsDuringBurst":1,"burstDurationMs":28.62,"warmSourceReads":0,"warmDurationMs":1.78,"staleCallers":24,"staleSourceReads":1,"staleDurationMs":8.15,"crossInstanceCallers":2,"crossInstanceSourceReads":1,"excessiveTtlLeaseRecovered":true,"outageReturnedOwnerValue":true,"finiteMetricSeries":10}
+{"event":"discovery_cache_fixture_cleaned","remaining":0,"durationMs":1746}
+
+Workload
+- Rejected and deleted one over-16-KiB exact value through the bounded shared
+  Redis read.
+- Compared 24 direct source reads with one cold coalesced refresh and zero warm
+  source reads.
+- Returned one eligible stale page to 24 callers while one detached refresh
+  replaced it.
+- Seeded the exact first=9 lease with a 24-hour TTL. Two independent readers
+  recovered it into the requested two-second window and performed one source
+  read, proving Discovery uses the shared recoverable lease operation.
+- Closed Redis and returned the owner result through documented bypass.
+- Collected ten finite metric series and removed the only labelled fixture.
+
+Interpretation
+Redis changes refresh amplification and latency only. It remains disposable and
+non-critical; no stale page crosses envelope age or title visibility bounds.
+
+Limitations
+- Timings are shared-host laboratory samples, not SLO or capacity evidence.
+- The finite 24-caller/two-instance workload does not prove arbitrary scale.

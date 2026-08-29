@@ -60,6 +60,9 @@ stale for at most sixty seconds from capture and never reaches any title's
 refresh notice while one bounded background refresh runs. Projection stale with
 no eligible cache page returns the existing null-field `STALE` response. Redis
 loss runs the normal PostgreSQL source and cannot affect Catalog or Playback.
+Refresh uses the shared recoverable two-second lease, so wrong-type,
+non-expiring or longer-lived contaminated keys are replaced atomically rather
+than suppressing coordination for their retained lifetime.
 
 ## Projection and recovery
 
@@ -115,7 +118,7 @@ The first command uses a disposable PostgreSQL 18.6 fixture to prove migrations,
 role isolation, relevance, stable keysets, rail ordering/fallback,
 generation-fence matching, rebuild/event recovery and the GIN plan. The second
 starts one UUID-named disposable Redis container and proves bounded reads,
-fresh/stale reuse, coordination, outage fallback and exact cleanup. The third
+fresh/stale reuse, recoverable coordination, outage fallback and exact cleanup. The third
 builds a UUID-named
 disposable Docker project, projects Catalog through Kafka, exercises search and
 home rails through Router, proves nullable Engagement partial response, restart

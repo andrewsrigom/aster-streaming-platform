@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 58250)
-Total output lines: 2581
-
 # Session Log
 
 Append new entries at the top. Keep entries factual and concise.
@@ -62,6 +59,14 @@ Append new entries at the top. Keep entries factual and concise.
   corrected confirmation and started protected run `33270889083`.
 - Rebased the one allowed Discovery dependent onto that frozen head while hosted
   gates run; predecessor-first publication remains mandatory.
+- Exact `dda4b9c` changes Discovery from generic conditional lease writes to the
+  shared atomic recoverable lease and separates monotonic refresh attachments
+  from active waiters. The first attached caller now records `one`.
+- Discovery99/99, telemetry11/11, Web111/111 and scoped static checks pass. The
+  repeated real Redis fixture proves a preseeded 24-hour exact lease is recovered,
+  cold/stale bursts each use one source refresh, outage returns owner data and
+  cleanup reaches zero. One first fixture attempt exposed and corrected only an
+  early background-refresh assertion in the test harness.
 
 ### Evidence
 
@@ -1236,7 +1241,422 @@ Activate P03-R05 public browse/schema from this coherent source checkpoint. Actu
 
 ### Completed
 
-- P03-R01 committed as 4968d42. P03-R02 adds the Catalog schema, immutable rights/provenance, ve…8250 tokens truncated…lete `MIT AND MITNFA` expression under ADR-0012 without a package exclusion. Its seven low OpenSSF Scorecard annotations remain informational and no high-or-higher vulnerability is reported.
+- P03-R01 committed as 4968d42. P03-R02 adds the Catalog schema, immutable rights/provenance, version/revision compare-and-set and bounded history reads using existing PostgreSQL infrastructure.
+
+### Evidence
+
+- 61 focused tests and reviewed real PostgreSQL integration pass: eight synchronized writers yield one commit; rollback/abort/timeout, Unicode, ownership/privilege and migration guards pass. Fixture cleaned in 3261 ms total with zero remaining; retained demo stays healthy.
+
+### Next action
+
+- Initial review added transaction synchronization and a real Unicode round-trip; confirmation complete, no independent approval claim. Candidate gate passes 52 tasks (38 cached, 17.092 s), 61 Catalog tests and high/critical audit. P03-R02 closed locally; next READY P03-R06 operator/lifecycle/outbox, then public queries/schema. Evidence/completed plan: `evidence/phase-03/catalog-persistence.txt`.
+
+## 2026-08-27 — Identity released; Catalog domain started
+
+### Completed
+
+- Squash merged Phase 02 PR 19 as `ec6386c` after protected `33066484199`; exact post-merge `33066827332` passes. One PR and one run per event, no bypass or independent approval claim. Local Docker demo remains healthy with retained data.
+- Started P03-R01 on `feat/p03-catalog-rights` from clean main. Added bounded rights normalization/approval, derived attribution and immutable title lifecycle rules. No runtime dependency, Catalog persistence/public API or media download.
+
+### Evidence
+
+- Hosted post-merge: 144 Identity tests, eleven scenarios (158185 ms, cleanup 1012 ms/zero remaining), UID 1000, six metric families and Docker six-step product smoke. Raw: `evidence/phase-02/release.txt`.
+- Catalog focused: 52/52 tests, 91.658842 ms; scoped lint/typecheck and Knip pass. Initial/confirmation review corrected hidden evidence fields and retired linkage; no remaining domain blocker. Raw: `evidence/phase-03/catalog-domain.txt`.
+
+### Next action
+
+- P03-R01 candidate gate passes 52 tasks, 52 Catalog tests and high/critical audit (18.031 s); commit the coherent local slice, then plan P03-R02 persistence/operator/public queries. Keep actual media attestation and rights authority separate from pure fixture validation. Do not publish a domain-only PR or rerun unchanged Identity containers.
+
+## 2026-08-27 — Guarded Identity product candidate
+
+### Completed
+
+- Implemented and wired the bounded Federation v2 Identity API, request-scoped entity batching, cookies/CSRF, sanitized outcomes, cancellation, restricted runtime readiness and separate finite migrations. Docker now runs the real local login/profile journey; no UI/Router/playback claim.
+- Owner authorized Apollo Elastic-2.0 and standing compatible licensing decisions. ADR-0014 accepts Elastic-2.0/0BSD; Aster stays MIT. Initial review corrected late-response header cleanup and stale status prose in one batch; focused confirmation passes. No independent approval or remote release claimed.
+
+### Evidence
+
+- Initial candidate: all 49 tasks and 144 Identity tests pass. Eleven real scenarios pass in 162778 ms; cleanup 2732 ms/zero remaining. After review, HTTP tests and a fresh subgraph fixture pass (12545 ms, cleanup 1387 ms). Rebuilt Docker six-step smoke passes; repeat migration is a no-op, notices retained, 189 packaged dependency versions match source.
+- Exact commands, fingerprints and limits: `evidence/phase-02/identity-subgraph.txt`. Audit passes high/critical with one moderate uuid advisory outside inspected Apollo v1/v4 call paths. Disposable fixtures removed only their own synthetic data; the Aster demo and retained user data remain.
+
+### Next action
+
+- Final pre-push gate passed (49 tasks, 34 cached, 17.891 s; 144 Identity tests; high/critical audit) and executing-agent confirmation is complete. Publish one coherent PR, require protected exact-head CI, squash and verify post-merge; then check Phase 03 prerequisites. No more licensing permission pause for this accepted graph.
+
+## 2026-08-27 — Local cookie/CSRF checkpoint; license decision
+
+### Completed
+
+- Committed owned profiles/outbox as `5a263e8`. Implemented the next local transport boundary: exact Host/Origin, custom-header CSRF, bounded unambiguous cookies/headers, absolute HttpOnly cookie lifetime and preserved Express async error handling. Still unwired; new files remain uncommitted for the next functional block.
+- Verified Apollo dependency metadata and exact upstream source. Selected Federation internals/composition use Elastic-2.0, outside current license policy. Created proposed ADR-0014; no packages installed, policy changed, remote write or pipeline.
+
+### Evidence
+
+- Focused 70/70 tests (19 transport + 51 crypto); full Identity 130/130, all 49 tasks (35 cached, 14.98 s), audit and diff checks pass. Test-only shorthand callbacks corrected after focused ESLint; no gate weakened.
+- Commands, fingerprints, limits and license sources: `evidence/phase-02/identity-subgraph.txt`. No Docker resources changed.
+
+### Next action
+
+Owner decision on proposed ADR-0014 is required by AGENTS/skill agent before installing the new license graph or altering policy. P02-R09 stays unfinished, not WAITING_EXTERNAL or phase verified. After authorization, continue schema/resolvers and real product startup; do not repeat unchanged tests merely while waiting.
+
+## 2026-08-27 — Owned profiles and transactional facts
+
+### Completed
+
+- Implemented normalized owned profiles, per-session active selection, optimistic versions and 24-hour retry receipts. Migration 0002 atomically stores audit/outbox facts; deletion removes preferences and clears every selected reference without deleting the account.
+- Bounded profiles/receipts/audit/outbox and defined backpressure without pending-event loss. Reused existing PostgreSQL transactions and fixture supervision; no new dependency, service, remote write or pipeline.
+
+### Evidence
+
+- Identity 111 tests, PostgreSQL 29 tests, all 49 source tasks (34 cached, 16.103 s), audit and executing-agent initial/confirmation review pass. No independent review claimed.
+- Real profile run 10780 ms; eight duplicate callers create one fact; eight callers crossing a two-profile limit admit one/reject seven. Foreign ownership, post-write rollback, revocation ordering, deletion replay, retention, timeout/cancellation and restrictive migration round-trip pass. Cleanup removed only one synthetic fixture in 1048 ms, zero remaining.
+- Exact commands/fingerprints and raw output: `evidence/phase-02/profiles-outbox.txt`.
+
+### Next action
+
+P02-R09 cookie/GraphQL transport is active. Wire product startup before publishing a runnable candidate; existing health-only Docker behavior is not a login demo. No broker relay until Phase 08.
+
+## 2026-08-27 — Durable account/session candidate
+
+### Completed
+
+- Implemented account/session policies, bounded one-client PostgreSQL transactions, explicit owner SQL and migration 0001. No ORM, new service, public route or remote pipeline was added.
+- Added real database admission/rollback/revocation/restart/privilege/migration tests using the existing isolated fixture supervisor. Batched initial review remediation for dispatch/retirement, commit ambiguity and migration deadlines.
+
+### Evidence
+
+- PostgreSQL 29 tests, Identity 91 tests, all 49 canonical tasks (33 cached, 14.369 s), audit and executing-agent confirmation pass. Real database scenario: 12334 ms; cleanup: 1021 ms, zero remaining. Eight first logins produce one account/eight sessions; limit crossing admits four of eight at four existing sessions.
+- Two disposable test fixtures removed; unrelated Docker resources preserved. Raw commands, measured values and limitations: `evidence/phase-02/account-sessions.txt`.
+
+### Next action
+
+P02-R02 is locally verified; P02-R03 profiles/outbox is active. Consolidate the functional local checkpoint without another remote pipeline. Phase 02 remains unpublished; no independent review or runnable product login is claimed.
+
+## 2026-08-27 — Phase 01 release and first Identity boundary
+
+### Completed
+
+- Resolved all three PR 18 documentation findings; final source-backed baseline sweep and executing-agent confirmation passed. Squash merged as `b0544c9` after protected run `33047330768`; exact post-merge `33047629326` passed. No independent approval is claimed.
+- Started P02-R01 from clean main on `feat/p02-identity-session`. ADR-0013 selects local-only signed assertions and mandatory owner-held session validity. Added the first domain contract and guarded JOSE adapter; runtime startup is unchanged.
+
+### Evidence
+
+- Final protected matrix: 145020 ms, cleanup 975 ms. Post-merge matrix: 153008 ms, cleanup 1053 ms. Both have zero residual fixture resources and passing Docker UID/health/six-metric proof; audit passes.
+- Initial Identity cryptographic suite passes 47 tests; corrected focused lint issues and removed an asynchronous saturation-test ordering race. Expanded opt-in cases and final candidate gates follow. jose 6.2.10 adds one MIT package, no runtime dependency; registry audit passes.
+
+### Next action
+
+P02-R01 is now locally committed as `64a3aa8`; final 51 focused cases, 85 Identity tests and all 49 tasks pass. P02-R02 is active for PostgreSQL session/account validity before GraphQL/cookie integration. No branch push or new pipeline was created. Activation memory edits belong to the next functional commit.
+
+## 2026-08-27 — Complete Docker confirmation findings
+
+### Completed
+
+- Collected automated confirmation `5037946690`: README incorrectly called implemented profiles pending; the local runbook incorrectly called the first passing hosted run pending. Corrected both together and removed related stale checkpoint wording. Runtime/public-command bytes are unchanged.
+- Protected run `33046678570` passed all six jobs at `d751109`; retained earlier clean evidence at `38801ce` without repeating containers or cold checkout.
+
+### Evidence
+
+- Exact hosted full-profile UID/health/six metrics, matrix (145033 ms), cleanup (1025 ms, zero residual resources) and audit pass; raw excerpts in `evidence/phase-01/docker-demo.txt`.
+- Documentation, repository-memory, secret and diff gates verify this prose-only batch before publication. No independent approval is claimed.
+
+### Next action
+
+Confirm the narrow remediation, resolve both review threads, require exact-head CI and squash/post-merge, then activate P02-R01. Batch final release metadata with Phase 02 activation instead of creating a metadata-only pipeline loop.
+
+## 2026-08-27 — Protected Docker candidate and runway correction
+
+### Completed
+
+- Published PR 18 at `d148bf7`; protected run `33046068184` passed all six jobs. Automated review `3869300306` found stale runway claims; corrected current paths, profiles and evaluator evidence in one documentation-only batch.
+- Corrected provisional executing-agent comment `5435289209`: confirmation is incomplete until the new review finding is resolved. No independent approval is claimed.
+
+### Evidence
+
+- Hosted Docker full profile and six real metrics pass. The real eight-scenario matrix passed in 152950 ms, cleanup 1042 ms with zero fixture resources; audit/license checks pass. Raw results: `evidence/phase-01/docker-demo.txt`.
+- Documentation/memory/secret checks pass. No executable/public-command bytes changed after clean source `38801ce`; no local heavy experiment repeated for prose.
+
+### Next action
+
+Publish this correction, reply/resolve the finding and request one confirmation review. Require final exact-head CI before squash and post-merge verification; only then activate P02-R01.
+
+## 2026-08-27 — Optional Docker profiles and real configured telemetry
+
+### Completed
+
+- Added validated optional OTLP configuration, integration/observability/full profiles, baked telemetry configs, bounded logs and exact nine-service/four-volume reset. Identity still owns only PostgreSQL/Redis runtime dependencies.
+- Extended the existing conditional CI platform job with Docker image/full-profile health and six real metric checks; hosted execution remains pending. Condensed current memory; historical detail remains in evidence and this log.
+
+### Evidence
+
+- Config 20/20, Identity 34/34, platform/reset 29/29, CI 22/22; final affected gate 49/49 (33 cached, 14.863 s). Corrected test-only lint/tuple errors before acceptance.
+- Real metrics, Collector loss with Identity still ready/live, telemetry status/recovery and degraded SIGTERM pass (4223 ms, exit 143). A wrong ad hoc metric-label assertion was corrected against the declared contract without repeating the outage. Exact reset removed only nine Aster containers, two networks and four synthetic volumes; unrelated inventory matches. Raw outputs/fingerprints: `evidence/phase-01/docker-demo.txt`.
+
+### Next action
+
+Source `38801ce` then passed exact clean Docker-only acceptance (36.89 s), occupied-port/recovery (4.56/5.60 s), 49/49 uncached tasks (32.418 s), audit and preserved Docker state. The clean 228M temporary clone was removed. Initial executing-agent review has no blocker. Next publish the coherent candidate, require protected CI/confirmation and release; no P01-R10 PR yet, Phase 02 remains gated.
+
+## 2026-08-27 — Docker runtime, real recovery and safe reset
+
+### Completed
+
+- Committed portable image checkpoint `4837207`; added the runtime profile, optional classified database-password input and guarded all-profile reset. No product scope or hosted mutation.
+- Fixed two measured Docker behaviors: internal-only port publication and inherited helper anonymous volumes. Identity alone joins the edge bridge; PostgreSQL/Redis remain internal and helpers use tmpfs.
+
+### Evidence
+
+- Config 17/17, Identity 33/33, platform/reset 25/25; affected gate 49/49 (28 cached, 18.58 s). Real readiness 503/live 200 on each stopped dependency and automatic recovery pass. Windows localhost access passes; SIGTERM exits naturally with 143 in 561 ms including CLI/inspection.
+- Warm-layer image rebuild plus empty-project start 39.71 s; core-only start 7.38 s. Exact reset, repeat and legacy-helper cleanup pass; unrelated four containers and 22 volume/network entries match pre/post. Only synthetic test data was deleted. Raw commands, image IDs, fingerprints and limitations: `evidence/phase-01/docker-demo.txt`.
+
+### Next action
+
+Connect optional validated OTLP export and integration/observability/full profiles; extend exact reset ownership before new resources. Then final cold/occupied-port/CI evidence and Phase 01 protected closeout. No P01-R10 publication yet.
+
+## 2026-08-27 — P01-R09 released; Docker-only closeout activated
+
+### Completed
+
+- Squash-merged PR 17 as `a1f7281` after protected run `33041524806` passed every applicable gate. Exact post-merge run `33041787663` also passed, including the real matrix. No bypass, rerun or additional PR.
+- Started P01-R10 locally from clean main on `feat/p01-r10-docker-demo`; its plan covers portable production packaging, lightweight/optional profiles, exact reset and Docker-only evaluator evidence. Condensed the handoff to current resume facts and linked historical evidence.
+
+### Evidence
+
+- Protected matrix: 143.136 s plus 1.043 s cleanup, 83 ms all-adapter shutdown. Post-merge: 148.892 s plus 1.015 s cleanup, 74 ms shutdown. Audit and all applicable jobs pass; zero unresolved review threads.
+- `evidence/phase-01/real-integration.txt` records exact heads, runs and confirmation comment `5434669574`. The 212M clean clone was removed after exact-path/clean-Git verification; source and caches remain.
+
+### Next action
+
+P01-R10's image checkpoint now builds and passes: UID 1000, 255269001 bytes, seven workspace imports, all 114 external production versions matching the lockfile, controlled HTTP diagnostic and missing-config exit 1. Platform/CI tests pass 21/21 each; affected gate passes 49/49 in 52.272 s. Raw evidence: `evidence/phase-01/docker-demo.txt`. Next implement validated optional database-password configuration and guarded runtime/profile/reset behavior. No product capability or full evaluator profile is claimed.
+
+## 2026-08-27 — Complete real-dependency matrix and scoped CI
+
+### Completed
+
+- Added one six-service/four-volume fixture and `pnpm integration` covering eight existing and new scenarios. Test-only held HTTP now proves ordered shutdown of every real adapter and final metric delivery; production Identity ownership is unchanged.
+- Added real integration to the existing protected quality job only for affected platform/runtime/bootstrap inputs, with a 15-minute deadline. No new job, pipeline or commit hook.
+
+### Evidence
+
+- Complete matrix: 135.621 s plus 5.004 s cleanup; all-adapter shutdown 70 ms; telemetry 429 bounded series, 304 ms stalled flush and 7 ms exporter-down shutdown with only `flush_telemetry` degraded. Every worker exits naturally. All disposable resources removed; the same four unrelated stopped containers remain.
+- Affected gate: 49/49 tasks, 25 cached, 18.951 s; Identity 33/33 including eleven ownership guards. CI classification/policy 21/21, Compose validation and no-known-vulnerability audit pass. Raw output and source fingerprints: `evidence/phase-01/real-integration.txt`.
+
+### Next action
+
+Source `cbc5255` also passes frozen offline installation and 49/49 uncached tasks in a fresh no-local clone (40.586 s), audit, clean Git and executing-agent confirmation. Publish one protected PR and verify post-merge. P01-R10 follows release; do not repeat the matrix or cold checkout for prose-only updates.
+
+## 2026-08-27 — Real Collector and Prometheus integration checkpoint
+
+### Completed
+
+- Added digest-pinned core Collector 0.159.0 and Prometheus 3.14.0, an explicit telemetry fixture and real Identity OTLP/scrape/failure/recovery checks. No production dependency, adapter or public contract changed.
+- Proved HTTP/dependency histograms, CPU/memory/event-loop delay, backend restart, cumulative recovery, bounded stalled export and exporter-down shutdown with readiness preserved.
+- Corrected two measured Docker Desktop bind issues: explicit private propagation and exact file device/inode validation for translated mounts. No host/daemon change; rejected cleanup preserved resources until exact ownership was verified.
+
+### Evidence
+
+- `pnpm integration:telemetry`: 29.755 s plus 5.744 s cleanup, 202 series, unavailable flush 17 ms, stalled flush 306 ms, shutdown 15 ms with only `flush_telemetry` degraded and natural exit. All disposable resources removed; four unrelated stopped containers preserved.
+- `pnpm check:changed`: 49/49 tasks, 25 cached, 28.383 s; Identity 32/32, ten ownership guards and two bounded HTTP tests pass. Dependency graph/lockfile unchanged from the audited broker/S3 checkpoint `0cd02ef`.
+- Exact image references, source fingerprints, failed experiments and final output: `evidence/phase-01/real-integration.txt`. Executing-agent initial/confirmation review has no checkpoint blocker; no independent or hosted approval claimed.
+
+### Next action
+
+Finish P01-R09's test-only all-adapter HTTP drain and combined matrix after the shared harness stabilizes, then cold/forced/protected release gates. Do not add broker/S3 dependencies to production Identity or begin P01-R10 before release.
+
+## 2026-08-27 — Real Kafka and S3 integration checkpoint
+
+### Completed
+
+- Added separate digest-pinned Apache Kafka 4.3.1 KRaft and VersityGW 1.7.0 POSIX fixtures, shared bounded supervision and exact-owned cleanup. SDK administration stays test-only; no production adapter or Identity dependency change.
+- Proved keyed delivery/manual commit, cancelled and failed handler replay, ambiguous publish outcomes, multipart SHA-256/backpressure/cancellation cleanup, credential rejection, dependency restart and natural client exit.
+- Corrected only test-harness initialization and reduced Kafka health CLI overhead. No remote pipeline or additional product behavior.
+
+### Evidence
+
+- Broker passed in 50.796 s; storage in 17.635 s; the shared-harness four-scenario core regression in 74.790 s. Eight no-Docker ownership tests and Identity 28/28 tests pass.
+- `pnpm check:changed`: 49/49 tasks, 25 cached, 37.066 s. Documentation, memory, architecture, formatting, lint, secrets and existing tests pass; high-severity audit reports no known vulnerability. All fixture resources are removed and the same four unrelated stopped containers remain.
+- Source fingerprints, exact commands, resource samples, primary image references and limitations: `evidence/phase-01/real-integration.txt`. Executing-agent initial/confirmation review, not independent or hosted approval.
+
+### Next action
+
+Continue P01-R09 with Collector/Prometheus and real export/scrape/failure proof, then complete acceptance and protected release. P01-R10 and product functionality remain later work.
+
+## 2026-08-27 — Real core integration and idle-pool disconnect correction
+
+### Completed
+
+- Added explicit isolated PostgreSQL/Redis/Identity integration with exact-owned Docker cleanup, bounded subprocesses, temporary stable loopback ports and no default Compose change.
+- Real PostgreSQL stop exposed an unhandled idle-pool error; added its adapter-owned handler and real Pool regression. Exercised timeouts, cancellation, Redis capacity, readiness recovery, natural signals and held HTTP drain.
+- Kept this implementation and the prior activation memory in one local checkpoint; no remote pipeline or new dependency/image.
+
+### Evidence
+
+- Combined four-scenario run passed in 66.401 seconds. Signal and held-HTTP drain took 53 ms and 61 ms in that run; these are observations, not SLOs. Zero fixture resources remain; four unrelated containers are preserved.
+- Identity 26/26 and PostgreSQL 12/12 focused tests pass, including six no-Docker fixture guards. First affected gate identified the synthetic credential URL form; corrected without changing scanner policy. Final core checkpoint passes 30/30 affected tasks (13 cached) in 20.178 seconds and all four real scenarios in 64.118 seconds, including 57 ms signal drain and 77 ms held-HTTP drain. Executing-agent confirmation found no core blocker.
+- Raw artifact: `evidence/phase-01/real-integration.txt`.
+
+### Next action
+
+Continue P01-R09 with broker/S3 compatibility and Collector/Prometheus from the completed local core checkpoint. The complete item and P01-R10 Docker-only closeout are not claimed.
+
+## 2026-08-27 — Released P01-R08 and activated real integration
+
+### Completed
+
+- Published PR 16 once, recorded executing-agent confirmation review without claiming independence, and squash-merged the accepted candidate as `f174aa6` with protections intact.
+- Confirmed the exact post-merge run, fast-forwarded clean main, and created `feat/p01-r09-real-integration` for the accepted real-dependency item.
+- Read-only Docker preflight passed; no integration container or new image has been started. Removed only the validated temporary cold-checkout directory.
+
+### Evidence
+
+- Protected run `33036056777` and exact post-merge run `33036182208`: all applicable jobs PASS.
+- Source `282ccb5`: 49/49 forced cold tasks, frozen offline install, diagnostic, audit and clean Git. Evidence-only `ce2ab18` preserved those source inputs.
+- Docker Engine 26.0.0 responds; default Aster running-container listing is empty; core services remain unchanged.
+
+### Next action
+
+Implement P01-R09's isolated PostgreSQL/Redis happy-path and cleanup harness, then real failure/recovery. Include this activation memory with the next coherent implementation commit rather than creating an extra documentation-only pipeline.
+
+## 2026-08-27 — Executable Identity composition and process diagnostic
+
+### Completed
+
+- Implemented real HTTP/configuration/telemetry/PostgreSQL/Redis factories, clock/IDs, fixed listener limits, snapshot health, HTTP metrics, readiness events, environment entrypoint and controlled loopback diagnostic.
+- Added partial-construction cleanup and explicit terminal ownership when asynchronous adapter closure cannot prove disposal after the lifecycle deadline. Normal SIGTERM drains accepted work and exits naturally; forced signal/manual paths terminate within the tested subprocess bound.
+- Real-client testing found node-redis mutating frozen options before connecting. Corrected the vendor-only copy and added a real TCP regression without changing dependencies or public contracts.
+
+### Evidence
+
+- Evidence: 20/20 Identity tests, 15/15 Redis tests, diagnostic, targeted ESLint, architecture and Knip pass. Frozen offline installation changes only Identity workspace links. Combined/full/clean-checkout/release gates remain next; no container integration or product behavior is claimed.
+
+### Next action
+
+Source commit `282ccb5` passes the 49/49 affected gate and a separate frozen clone with 49/49 forced uncached tasks, diagnostic, high-severity audit and clean Git. Finish protected publication closeout for P01-R08; no independent/hosted review is claimed yet.
+
+## 2026-08-26 — Implemented controlled Identity runtime orchestration
+
+### Completed
+
+- Added the product-empty Identity workspace with one startup deadline, two critical dependency gates, recoverable readiness, one monitor, work admission, ordered closure, and removable signal ownership against source-owned ports.
+- Kept real listener/client construction and the synchronous force-close or terminal fallback explicit as the next composition boundary.
+
+### Evidence
+
+- Identity build/typecheck, 9/9 focused tests, architecture, unused-code checks, and frozen offline installation pass. Lockfile changes only add the new workspace importer; existing versions are unchanged.
+
+### Next action
+
+Compose real factories, prove partial cleanup and terminal behavior, add the loopback process diagnostic, and run one combined affected gate.
+
+## 2026-08-26 — Implemented reference listener and startup configuration
+
+### Completed
+
+- Added required non-secret HTTP host, unprivileged port, and total startup deadline values to the Phase 01 reference schema, typed result, and redacted diagnostic.
+- Kept internal dependency and monitor budgets in the upcoming composition policy; updated the existing README command without adding a service or dependency.
+
+### Evidence
+
+- Configuration build, typecheck, targeted ESLint, 13/13 tests, and the updated README diagnostic pass. The health checkpoint is committed as `d6d6ffc`.
+
+### Next action
+
+Create the product-empty Identity composition root with controlled ports and focused lifecycle tests.
+
+## 2026-08-26 — Implemented fixed public health routes
+
+### Completed
+
+- Added exact non-cacheable `GET`/`HEAD` liveness and readiness routes before the GraphQL mount gate.
+- Added coherent finite snapshot validation, stable status selection, unsupported-method handling, and sanitization for throwing, accessor-backed, excessive, or incoherent providers without dependency I/O in the adapter.
+
+### Evidence
+
+- HTTP build, typecheck, targeted ESLint, targeted formatting, and 10/10 tests pass. Real sockets cover starting, dependency-unavailable, ready, failed, `HEAD`, unsupported method, hostile provider, and preserved pre-mount GraphQL behavior.
+
+### Next action
+
+Add the minimum listener and startup configuration needed by the product-empty Identity composition root.
+
+## 2026-08-26 — Implemented the bounded readiness recovery monitor
+
+### Completed
+
+- Added one sequential, non-overlapping monitor with bounded anonymous probes, 20% jitter, one overall cycle timeout, cancellation, terminal stop, late-completion suppression, and unreferenced production timers.
+- Scheduler/random/probe/readiness failures produce stable unavailable state without leaking causes or starting unbounded work.
+
+### Evidence
+
+- Targeted formatting, ESLint, typecheck, build, declaration isolation, natural process exit, and 80/80 runtime tests pass. Per the checkpoint policy, no additional full affected gate was run after the green combined deadline/readiness candidate.
+
+### Next action
+
+Add the fixed Express liveness/readiness routes and focused real-socket contract tests.
+
+## 2026-08-26 — Implemented recoverable dependency readiness
+
+### Completed
+
+- Added a bounded readiness controller over the released lifecycle with up to 32 anonymous critical gates, pending/ready/unavailable transitions, topology-free frozen snapshots, recovery without lifecycle rollback, and ready-only work leases.
+- Hardened options, lifecycle snapshots, and leases against accessors, malformed values, thrown providers, unbounded counts, invalid transitions, and late recovery after drain.
+
+### Evidence
+
+- Runtime typecheck/build and 71/71 runtime tests pass; the combined deadline/readiness affected gate passes 14/14 tasks in `22.358s` of Turborepo time and `23.51s` elapsed at `860052 KiB` maximum RSS.
+
+### Next action
+
+Implement the single non-overlapping recovery monitor with focused deterministic tests.
+
+## 2026-08-26 — Implemented the propagated deadline checkpoint
+
+### Completed
+
+- Added a dependency-free `@aster/runtime` deadline with a finite 1–300000 millisecond monotonic budget, derived cancellation signal, non-increasing remaining budget, and idempotent disposal.
+- Parent cancellation does not copy its reason. Plain own-data validation rejects unknown/accessor/proxy input and forged signals; platform AbortSignal/EventTarget operations bypass caller-owned properties.
+- The default timer is unreferenced. A subprocess with a five-minute unused deadline exits naturally, and disposal releases resources without aborting completed work.
+- Documented the implemented local checkpoint separately from the still-planned readiness, monitor, health, configuration, and Identity composition behavior.
+
+### Evidence
+
+- Sixteen focused deadline cases and the complete 62-test runtime package pass, including deterministic timeout, parent cancellation, clock regression/failure, synchronous and invalid scheduler behavior, cleanup, declaration isolation, real expiry, and natural process exit.
+- Runtime typecheck passed in `2.53s` at `327472 KiB` maximum RSS; build passed in `1.58s` at `257576 KiB`; the measured 60-test package run passed in `0.97s` at `141996 KiB` before the final two scheduler regressions, and the final 62-test run also passes.
+- Targeted ESLint passed in `2.36s` at `374004 KiB`; targeted formatting passed in `0.69s` at `142192 KiB`.
+- The final affected graph passed 46/46 tasks with 32 cached in `13.173s` of Turborepo time and `14.24s` elapsed at `869316 KiB` maximum RSS; it executed the final 62-test runtime suite and every selected repository validator.
+- Raw ledger: `evidence/phase-01/runtime-composition.txt`.
+
+### Next action
+
+Verify the rebased deadline checkpoint once, then implement the bounded readiness controller.
+
+## 2026-08-26 — Released P01-R07 and activated P01-R08 on released main
+
+### Completed
+
+- P01-R07 pull request 14 passed exact-head run `33024975611` and merged as `0dd4dad`; its cold task-order correction passed pull request 15 run `33026707150`, merged as `61226eb3ce4976e31edde1f8b8198bcdd10095a6`, and exact post-merge run `33026799005` passed.
+- Activated local P01-R08 branch `feat/p01-r08-runtime-composition` on corrective released `main` with the delivery sequence: deadline/readiness contracts, monitor, health routes, minimum configuration, and product-empty Identity composition.
+- Consolidated the candidate gate to the combined runtime contracts, combined HTTP/service composition, and closeout instead of repeating the full gate after every micro-edit.
+
+### Evidence
+
+- P01-R07 protected and post-merge runs are recorded above; the rebased P01-R08 affected gate remains the next verification.
+
+### Next action
+
+Verify the rebased deadline once, then implement readiness with focused tests before the combined runtime-contract gate.
+
+## 2026-08-26 — Passed hosted policy confirmation and remediated late review
+
+### Completed
+
+- Published the narrow ADR-0012 policy remediation as exact head `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a` on pull request 14 without changing dependencies or adapter runtime source.
+- Observed protected run `33023896325` complete successfully after the delayed pull-request event was delivered during the documented GitHub Actions degradation.
+- Received two late independent review comments after the run: `3867503077` found that accepted Kafka publish interruption was not publicly distinguished as delivery-ambiguous, and `3867503082` found that an S3 bucket-probe 404 was incorrectly treated as a healthy object miss.
+- Implemented the warranted additional-round remediation: accepted Kafka publish interruption now returns a finite `delivery_ambiguous` result with abort/timeout reason, pre-acceptance abort remains ordinary abort, and only S3 object reads treat 404 as normal `not_found`; bucket probe reports degraded/unavailable.
+
+### Evidence
+
+- Classify change, Dependency review, Documentation and security, Install and source quality including the frozen install and high-severity audit, Local platform including health-gated Compose verification, and `CI required` all pass.
+- Dependency review accepts the complete `MIT AND MITNFA` expression under ADR-0012 without a package exclusion. Its seven low OpenSSF Scorecard annotations remain informational and no high-or-higher vulnerability is reported.
 - Exact hosted candidate: `f8aa6f8b1cb744bf8a98500049e4d652cc270c9a`; run: `33023896325`.
 - Targeted formatting, lint, typecheck, build, Kafka 21/21, and S3 16/16 pass for the late-review remediation.
 - The remediation affected graph passes 46/46 tasks with 29 cached in `18.538` seconds of Turborepo time and `19.66` seconds elapsed, with `861432` KiB maximum RSS.

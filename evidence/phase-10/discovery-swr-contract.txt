@@ -1,0 +1,49 @@
+P10 Discovery stale contract checkpoint
+Date: 2026-08-29
+Status: local dependent candidate; predecessor release and complete candidate gate pending
+
+Source
+- Branch: feat/p10-discovery-swr
+- Frozen predecessor: cb86c371849f895934af99f72c361ccb64bccf8e
+- Rebased browser checkpoint: 7469cc0
+- Lease/coalescing correction: dda4b9cf8b9876b0c7a03be92dcfbdc15fad523b
+
+Environment
+- WSL2 Ubuntu-20.04, Linux amd64
+- Node.js 24.19.0; pnpm 11.24.0
+
+Commands and results
+- @aster/discovery test: PASS, 99/99.
+- @aster/telemetry test: PASS, 11/11.
+- @aster/web test: PASS, 111/111.
+- Scoped ESLint: PASS.
+- Scoped Prettier: PASS.
+- git diff --check: PASS.
+- Real Redis: PASS; see discovery-swr-redis.txt.
+
+Covered contract
+- Twelve bounded whole-home key variants and schema-v1 envelopes no larger than
+  16 KiB.
+- Fresh reuse, explicit stale-with-page reuse, maximum age and earliest title
+  visibility expiry.
+- One bounded local refresh with caller-local cancellation and lifecycle drain.
+- Coalescing buckets count attached refresh requests behind the owner rather than
+  shifting the first attachment into the second bucket.
+- Discovery uses the shared atomic recoverable-lease operation. Wrong-type,
+  non-expiring or longer-than-two-second contamination cannot disable refresh
+  coordination for its retained lifetime.
+- Redis loss executes the existing PostgreSQL owner source and cannot change
+  Catalog, Playback or profile authority.
+- The existing GraphQL enum/nullable fields express both legal STALE shapes; Web
+  keeps a bounded stale page usable and rejects malformed false success.
+
+Interpretation
+Focused behavior and the real changed Redis boundary pass on the rebased
+dependent source. This is not a release claim. The complete affected gate and
+predecessor squash rebase remain before publication.
+
+Limitations
+- No field SLO, hosted availability or arbitrary cluster-size claim.
+- PostgreSQL/runtime/browser evidence is carried only where the affected source
+  blobs are unchanged; the final predecessor squash still triggers the written
+  affected gate.

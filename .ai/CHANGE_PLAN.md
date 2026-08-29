@@ -42,6 +42,12 @@ work. Missing, malformed, expired or unavailable cache state falls back to the
 existing owner read. Source failure without an eligible stale page retains the
 existing explicit result.
 
+The rebased local implementation now uses the shared atomic recoverable lease
+instead of a plain conditional write. It replaces wrong-type, non-expiring or
+longer-than-two-second contamination while preserving valid holders inside the
+requested window. Monotonic refresh attachments are tracked separately from
+active cancellation waiters so the first coalesced request records `one`.
+
 ## Boundaries
 
 - Owning context: Discovery owns home ordering, cache policy and refresh;
@@ -74,6 +80,7 @@ existing explicit result.
 | Malformed, oversized or expired envelope | Delete exact key best-effort and use source | cache `malformed` or `miss` |
 | Eligible stale hit | Return `STALE` with rails immediately; refresh in background | cache `stale_hit` and refresh outcome |
 | Refresh lease contention | Keep serving stale; do not create a request wait loop | cache `lease_contended` |
+| Lease key is wrong-type, non-expiring or longer than two seconds | Atomically replace only that contaminated key with the caller's finite lease | cache `lease_acquired` |
 | Refresh source unavailable | Retain eligible stale bytes until maximum age | cache `refresh_failed` |
 | No eligible stale value and source failure | Return existing unavailable, cancelled or indeterminate result | source result and cache outcome |
 | Caller or service cancellation | Stop that wait; abort orphaned work and drain lifecycle | bounded cancellation outcome |
@@ -134,7 +141,11 @@ existing explicit result.
 - Commands: focused Discovery/Web/telemetry tests, strict static checks, affected
   gate, disposable Redis/PostgreSQL and runtime/browser experiment where changed.
 - Raw artifact path: `evidence/phase-10/discovery-swr-*.txt` and Phase 10 index.
-- Acceptance result: pending implementation.
+- Acceptance result: local iteration PASS at exact `dda4b9c`: Discovery99/99,
+  telemetry11/11, Web111/111, scoped lint/format and real Redis pass. The Redis
+  fixture proves 24 cold callers to one source read, 24 stale callers to one
+  detached refresh, cross-instance excessive-TTL recovery, outage fallback and
+  cleanup0. Complete affected gate and predecessor release remain pending.
 - Iteration gate: focused Discovery cache, Web projection and telemetry tests plus
   strict typecheck/lint.
 - Candidate gate: `pnpm check:changed`, real Redis/Discovery fixture and affected
@@ -159,8 +170,8 @@ Phase 10 evidence and repository memory.
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
+- [x] Focused tests pass
+- [x] Iteration evidence captured
+- [x] Documentation current
 - [x] `.ai/` state updated
 - [ ] Remaining risks recorded

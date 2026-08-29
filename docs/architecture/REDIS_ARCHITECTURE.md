@@ -72,7 +72,10 @@ Pattern: stale-while-revalidate.
 - Stale bound: at most sixty seconds from capture and never at/after the earliest
   title visibility expiry
 - Coordination: at most twelve process entries and a two-second tokenized lease;
-  stale callers return immediately while one lifecycle-owned refresh runs
+  stale callers return immediately while one lifecycle-owned refresh runs;
+  atomic acquisition recovers wrong-type, non-expiring and longer-than-policy
+  lease contamination, while coalescing counts attachments separately from
+  active cancellation waiters
 - Public result: eligible cache fallback uses the existing `STALE` code with page
   fields; source-projection stale without a cache page keeps null fields
 - Failure: Redis outage or an ineligible value executes the PostgreSQL source;

@@ -59,6 +59,11 @@ P10-R04 is the sole `IN_PROGRESS` dependent on `feat/p10-discovery-swr`, rebased
 onto that frozen exact head. It owns bounded Discovery home-page stale serving,
 background refresh, maximum age, explicit fallback and finite metrics. It cannot
 publish before the predecessor; if PR37 changes, rebase and repeat affected gates.
+Exact `dda4b9c` adopts shared recoverable lease acquisition and separate
+attachment telemetry. Discovery99/99, telemetry11/11, Web111/111 and real Redis
+pass with 24 cold callers/one source read, 24 stale callers/one refresh,
+cross-instance excessive-TTL recovery, outage fallback and cleanup0. Complete
+affected acceptance remains after predecessor release.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

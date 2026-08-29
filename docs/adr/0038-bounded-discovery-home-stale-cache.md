@@ -56,15 +56,20 @@ Within one process, each exact page key may own one shared refresh. At most twel
 entries exist. Cold callers wait on that shared work with independent
 cancellation; a cancelled caller does not abort work still required by another.
 Stale callers do not wait. The first stale caller starts detached refresh and
-later callers attach without creating more work. Shared work has a 1.5-second
+later refresh requests attach without creating more work. Coalescing telemetry
+counts only attachments behind the owner and tracks that monotonic count
+separately from active cancellation waiters. Shared work has a 1.5-second
 deadline and settled entries are removed.
 
-Across instances, refresh uses the released tokenized Redis lease: two-second
-`SET NX PX`, a random 128-bit token and atomic compare-and-delete release. A cold
-loser waits once for 25 milliseconds and checks the page again before source
-fallback. A stale loser keeps serving the already-eligible snapshot and starts no
-request wait loop. Lease loss or duplicate source reads are safe because they
-write only a disposable validated projection.
+Across instances, refresh uses the shared tokenized Redis lease: a two-second
+atomic acquisition, random 128-bit token and compare-and-delete release. The
+acquisition preserves string holders whose remaining TTL is inside the requested
+window and replaces wrong-type, non-expiring or longer-lived contamination with
+the caller's finite lease. A cold loser waits once for 25 milliseconds and checks
+the page again before source fallback. A stale loser keeps serving the
+already-eligible snapshot and starts no request wait loop. Lease loss or
+duplicate source reads are safe because they write only a disposable validated
+projection.
 
 Background work belongs to the Discovery service lifecycle, not the request that
 observed stale data. Graceful shutdown stops admission, aborts and drains every
