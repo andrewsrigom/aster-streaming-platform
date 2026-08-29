@@ -6,8 +6,9 @@ Last updated: 2026-08-29
 
 **Phase 10 — Advanced Redis and Concurrency**
 
-Status: **IN_PROGRESS**, Catalog cache slice active on `feat/p10-catalog-cache`
-from released main `ffe8e24`. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**. Catalog cache predecessor is `WAITING_EXTERNAL` at PR37
+head `cb86c37`; Discovery stale-while-revalidate is the sole active dependent on
+`feat/p10-discovery-swr`. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -107,8 +108,9 @@ finite holders inside it. Redis17/17, Catalog246/246 and repeated real Redis pas
 with `excessiveTtlLeaseRecovered=true` and cleanup0. The complete affected gate
 passes 73/73 with 51 cached in 107.438 seconds. Hosted CI and corrected
 confirmation remain pending.
-The local Discovery dependent checkpoint `423c33d` is preserved separately and
-cannot publish until this predecessor releases.
+The Discovery stale-cache plan is active on the dependent branch rebased onto
+that frozen predecessor. It cannot publish until Catalog releases; product
+implementation is not claimed at this checkpoint.
 
 ## Historical Phase 09 corrections
 
@@ -156,16 +158,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Discovery stale-while-revalidate is implemented only on the preserved dependent
-candidate and is not integrated or released. Operation-specific Redis rate
+Discovery stale-while-revalidate is planned only on the dependent candidate and
+is not integrated or released. Operation-specific Redis rate
 limiting, expensive-path concurrency limits, the mixed outage/hot-key closeout
 and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish the P10-R01 binary-read correction, resolve its exact-head discussion and
-complete corrected protected/exact-main acceptance. Then rebase the preserved
-Discovery stale-while-revalidate checkpoint and finish its remaining evidence.
+Complete PR37 protected/review/exact-main acceptance while implementing the one
+allowed local P10-R04 Discovery dependent. After the predecessor squash, rebase
+and repeat affected gates before publishing Discovery.
 
 ## Runtime and recovery
 

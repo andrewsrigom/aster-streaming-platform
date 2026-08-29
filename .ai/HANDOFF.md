@@ -7,7 +7,8 @@ protected run 33253867475 and clean confirmation; PR36 squash-merged as main
 `ffe8e24`, whose exact-main run 33254719311 passed. Release evidence is under
 `evidence/phase-09`.
 
-P10-R01/R02/R03/R05/R06/R07/R10 is active on `feat/p10-catalog-cache` from that
+P10-R01/R02/R03/R05/R06/R07/R10 is frozen `WAITING_EXTERNAL` on PR37 head
+`cb86c371849f895934af99f72c361ccb64bccf8e` from that
 clean main. The selected slice caches only public-title entity reads. PostgreSQL
 must confirm the current visibility/version fence before positive reuse. Redis is
 optional, bounded and non-authoritative. Implementation, focused suites, real
@@ -65,17 +66,15 @@ while preserving holders within the requested window. Redis17/17, Catalog246/246
 and repeated real Redis pass with `excessiveTtlLeaseRecovered=true` and cleanup0.
 The complete affected gate passes 73/73 with 51 cached in 107.438 seconds. Hosted
 gates remain pending.
-The separate
-`feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
-b65688b; do not publish it before predecessor release.
+The separate `feat/p10-discovery-swr` branch is the sole active dependent, now
+rebased onto that exact frozen predecessor. Its bounded stale-cache plan is
+active; do not publish it before predecessor release.
 
 ## Exact next actions
 
-1. Publish one PR37 update, reply to and resolve discussion `3887423663`,
-   then obtain corrected confirmation/protected CI before squash merge and
-   exact-main acceptance.
-2. Rebase only dependent commits after b65688b onto released squash main, repeat
-   affected gates, and resume P10-R04.
+1. Monitor exact-head PR37 confirmation/protected CI and merge only when clean.
+2. Implement and focus-test Discovery locally. After Catalog squash/exact-main,
+   rebase the dependent commits and repeat affected gates before publication.
 
 ## Evidence boundaries
 
