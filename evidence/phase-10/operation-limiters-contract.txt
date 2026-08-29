@@ -1,0 +1,70 @@
+P10 operation admission contract checkpoint
+Date: 2026-08-29
+Status: local candidate; implementation and non-Docker gates pass
+
+Source
+- Branch: feat/p10-operation-limiters
+- Released base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
+- Implementation candidate: baf02d2733590f80d6d39ce796483a7d69a4c4ab
+- Candidate tree: d26116d1ff38652ae61bac6121d7ee9d633075a4
+- Generated compatibility base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
+- Generated manifest SHA-256:
+  57b0081027cf85459de5e0449c552251ac41d116181efdf0cefea8133160e1a0
+
+Environment
+- WSL2 Ubuntu-20.04, Linux 6.18.33.2-microsoft-standard-WSL2 x86_64
+- 6 logical CPUs; 11,962 MiB memory; 8,192 MiB swap
+- Node.js 24.19.0; pnpm 11.24.0
+
+Commands and raw results
+- @aster/redis build and tests: PASS, 18/18.
+- @aster/telemetry build and tests: PASS, 12/12.
+- @aster/engagement build and tests: PASS, 119/119.
+- @aster/discovery build and tests: PASS, 105/105.
+- Root CI-policy tests: PASS, 33/33.
+- Root local-platform policy tests: PASS, 67/67.
+- pnpm check:changed: PASS, 73 successful of 73 total, 46 cached,
+  78.553 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- git diff --check, Prettier, ESLint, Knip, strict TypeScript, architecture,
+  security, documentation, repository memory and schema compatibility: PASS.
+- The implementation candidate was committed after the complete source gate.
+  Subsequent changes before that commit were repository-memory/evidence prose;
+  their dedicated documentation and repository-memory checks passed.
+
+Covered contract
+- One bounded Redis-server-time Lua decision uses integer milli-tokens, finite
+  expiry and strict input/reply validation.
+- Missing, malformed, wrong-type, future, non-expiring and excessive-TTL state
+  is recovered only at the exact limiter key.
+- Engagement partitions progress and watchlist policy by authorized account
+  pseudonym and operation after current owner plus idempotent replay checks.
+- A 1,024-partition local shield bounds degraded admission and sheds a local hot
+  caller before another Redis command. Progress refills at four tokens/second;
+  watchlist refills at one token/second.
+- Redis failure cannot acknowledge a mutation. Existing PostgreSQL transaction,
+  receipt and outbox behavior remains authoritative.
+- Discovery search admits two active operations and one FIFO waiter for at most
+  100 milliseconds. Home rails bypass that lane; cancellation and shutdown
+  settle waiters and release permits.
+- Metrics use only finite limiter, operation, outcome and queue buckets. Raw
+  account/profile IDs, pseudonyms, credentials and Redis keys are not labels.
+- Federation output adds only LIMIT_EXCEEDED enum values and preserves the
+  released operation inventory.
+
+Local dependency limitation
+- The disposable real Redis command was attempted once after implementation and
+  stopped before container creation because the local Docker daemon was not
+  reachable through /var/run/docker.sock.
+- No repeated Docker/WSL restart or probe loop was run. The protected hosted CI
+  integration is the pending real Redis/PostgreSQL evidence boundary.
+
+Interpretation
+The candidate satisfies the written static, unit, application, transport and
+schema contract. It is implemented, not yet verified or released: real
+dependency fixtures, protected CI and confirmation review remain.
+
+Limitations
+- No hosted deployment, field SLO, arbitrary replica-count or production
+  capacity claim is made.
+- The representative limits are Phase 10 study policies. Phase 13 still owns
+  final public Router identity and workload-based GraphQL calibration.
