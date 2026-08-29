@@ -37,6 +37,15 @@ Append new entries at the top. Keep entries factual and concise.
 - The first broad-parallel affected attempt hit the unchanged Identity
   terminal-fallback timing assertion. Focused Identity passed 147/147; the
   concurrency-capped rerun passed 73/73 with 59 cached in 90.953 seconds.
+- Protected run `33268669701` passed exact `d05dad3`. Confirmation discussion
+  `3887360355` found invalid UTF-8 could expand after the Redis-side bound and
+  reset the connection.
+- Exact `ce97596794c05bdd5b92fb9a75dde2a9e4be159f` retains bounded Redis replies
+  as bytes through validation and applies fatal UTF-8 decoding. The unit case
+  uses 16 KiB of invalid bytes without connection destruction; the real fixture
+  proves rejection, live probe, exact deletion and cleanup 0.
+- Redis 17/17, Catalog 246/246 and affected 73/73 pass with 50 cached in 126.735
+  seconds.
 
 ### Evidence
 
@@ -45,7 +54,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish one PR37 update, resolve discussions `3887280597`/`3887280599`, require exact-head
+Publish one PR37 update, resolve discussion `3887360355`, require exact-head
 protected CI and confirmation, then release Catalog and rebase Discovery.
 
 ## 2026-08-29 — Catalog negative-cache age remediation

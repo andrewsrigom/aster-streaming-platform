@@ -20,6 +20,9 @@ Source and environment
 - Lease/reattachment correction: d93afbcc8bf87f71dc926c9010c2180820aeccfb.
   The same workload was repeated after atomic malformed-lease recovery and
   monotonic attached-caller classification changed coordination behavior.
+- Binary-read correction: ce97596794c05bdd5b92fb9a75dde2a9e4be159f.
+  The fixture was repeated with a 16 KiB invalid UTF-8 Redis value; coordination
+  behavior was unchanged.
 - WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
 - Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
 - One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
@@ -30,12 +33,12 @@ CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
 Measured result
 - Callers in each local burst: 24.
 - Direct uncached full source reads: 24.
-- Direct uncached burst sample: 17.31 ms.
+- Direct uncached burst sample: 15.37 ms.
 - Coalesced cold full source reads: 1.
 - Current-fence reads during cold burst: 1.
-- Coalesced cold burst sample: 50.91 ms.
+- Coalesced cold burst sample: 36.92 ms.
 - Warm full source reads: 0.
-- Warm sample: 11.61 ms.
+- Warm sample: 4.84 ms.
 - Cross-instance callers: 2.
 - Cross-instance full source reads: 1.
 - Cross-instance cold-negative callers: 2.

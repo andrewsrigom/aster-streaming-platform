@@ -48,9 +48,10 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
   and rights-use policy; atomic acquisition replaces only non-string or
   non-expiring malformed lease keys and preserves valid finite holders
 - Corruption: the Redis-side read rejects oversized and non-string exact values
-  before returning bytes; bounded strings, including control bytes, reach the
-  strict Catalog envelope parser for exact malformed-key deletion without a
-  connection reset
+  before returning bytes; the client keeps bounded replies binary until strict
+  UTF-8 decoding. Invalid encoding is malformed without a connection reset;
+  valid strings, including control bytes, reach the strict Catalog envelope
+  parser for exact deletion
 - Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
   coalescing and lease outcomes, bounded attached-caller bucket excluding the
   refresh owner and tracked independently from active cancellation waiters,

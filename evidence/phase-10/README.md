@@ -86,3 +86,12 @@ non-expiring and wrong-type lease recovery, one Catalog-path cross-instance
 negative fence read and cleanup 0. After one unrelated Identity terminal-fallback
 timing failure, focused Identity passed 147/147 and the concurrency-capped affected
 gate passed 73/73 with 59 cached in 90.953 seconds. Hosted gates remain.
+
+Protected run `33268669701` passed exact `d05dad3`, but exact-head discussion
+`3887360355` found that invalid UTF-8 could expand after the Redis-side byte bound
+and reset the shared connection. Exact
+`ce97596794c05bdd5b92fb9a75dde2a9e4be159f` keeps the Lua reply binary through
+the raw 16 KiB validation and applies fatal UTF-8 decoding. Redis 17/17, Catalog
+246/246 and affected 73/73 pass with 50 cached in 126.735 seconds. The repeated
+real Redis fixture seeds 16 KiB of invalid bytes and proves malformed rejection,
+a live connection probe, exact deletion and cleanup 0. Corrected hosted gates remain.

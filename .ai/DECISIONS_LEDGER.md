@@ -8,7 +8,9 @@ current PostgreSQL visibility/version fence; browse ordering, rights and Playbac
 authority remain uncached. Entries, deterministic jitter, process coalescing and
 tokenized Redis leases are finite. Fence work shares only within an identical
 request-time/policy scope; wrong-type or oversized Redis values are rejected
-before value bytes reach the application. Negative envelopes carry cache time;
+before value bytes reach the application. Accepted bounded replies remain binary
+until fatal UTF-8 decoding, so invalid encoding reaches exact malformed-key
+recovery without resetting the connection. Negative envelopes carry cache time;
 missing, future or older-than-ten-second values are deleted and rechecked even
 when Redis expiry is absent or excessive. Redis loss bypasses to source, and
 cache coordination never authorizes durable work. Lease acquisition atomically

@@ -93,6 +93,13 @@ recovery, one cross-instance negative fence read and cleanup 0. Focused Identity
 passed 147/147 after one unrelated terminal-fallback timing failure under broad
 parallel load; the concurrency-capped affected gate then passed 73/73 with 59
 cached in 90.953 seconds. Publication and confirmation remain pending.
+Protected run `33268669701` then passed exact `d05dad3`; exact-head confirmation
+discussion `3887360355` found post-decode expansion of Lua-bounded invalid UTF-8.
+Exact local `ce97596` retains the raw reply as at most 16 KiB of bytes and applies
+fatal UTF-8 decoding without resetting the connection. Redis 17/17, Catalog
+246/246, the real invalid-byte deletion/probe/cleanup fixture and affected 73/73
+gate with 50 cached in 126.735 seconds pass. Publication and corrected
+confirmation remain pending.
 The local Discovery dependent checkpoint `423c33d` is preserved separately and
 cannot publish until this predecessor releases.
 
@@ -149,10 +156,9 @@ and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish the P10-R01 two exact-head review corrections, resolve their discussions
-and complete protected/exact-main
-acceptance. Then rebase the preserved Discovery stale-while-revalidate checkpoint
-and finish its remaining evidence.
+Publish the P10-R01 binary-read correction, resolve its exact-head discussion and
+complete corrected protected/exact-main acceptance. Then rebase the preserved
+Discovery stale-while-revalidate checkpoint and finish its remaining evidence.
 
 ## Runtime and recovery
 

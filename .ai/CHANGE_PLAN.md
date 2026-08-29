@@ -66,6 +66,16 @@ sibling kept shared work alive but record the wrong waiter bucket. Exact
 `d93afbcc8bf87f71dc926c9010c2180820aeccfb` acquires leases through one atomic
 type/expiry recovery script and separates monotonic attachment telemetry from
 active cancellation waiters.
+Exact-head confirmation discussion `3887360355` found that node-redis could
+expand Lua-bounded invalid UTF-8 while decoding it, causing the post-decode byte
+validator to reset the shared connection instead of returning malformed exact-key
+data. The correction will preserve the Redis-side raw-byte bound through binary
+transport, reject invalid UTF-8 without resetting the connection and prove exact
+deletion with focused and real Redis checks.
+Exact `ce97596794c05bdd5b92fb9a75dde2a9e4be159f` implements that binary transport
+and fatal decode. Redis 17/17, Catalog 246/246, the real 16 KiB invalid-byte
+fixture and the complete affected gate pass; the connection probe succeeds
+before exact deletion and fixture cleanup reaches zero.
 
 ## Boundaries
 
@@ -157,17 +167,18 @@ active cancellation waiters.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: corrected local candidate PASS: Catalog246/246,
-  Redis17/17, telemetry11/11, affected73/73 (59 cached, 90.953 seconds), real
+- Acceptance result: corrected local candidate PASS: Catalog 246/246,
+  Redis 17/17, telemetry 11/11, affected 73/73 (50 cached, 126.735 seconds), real
   PostgreSQL fence/source/dispute and real Redis bounded/wrong-type/over-age
   reads, positive-plus-negative concurrency, exact attached-caller waiter
-  buckets, bounded control-byte deletion without connection loss, malformed
-  lease recovery, outage and cleanup. One earlier affected
+  buckets, invalid-UTF-8 and control-byte deletion without connection loss,
+  malformed lease recovery, outage and cleanup. One earlier affected
   attempt hit an unrelated Identity terminal-fallback timing failure; its focused
   147/147 rerun and the next complete gate pass. The latest remediation's first
   candidate attempt hit the same unchanged Identity timing assertion; focused
-  Identity passed 147/147 and a concurrency-capped rerun passed 73/73. Protected CI, corrected
-  confirmation and release remain pending.
+  Identity passed 147/147 and a concurrency-capped rerun passed 73/73. Protected
+  run `33268669701` passed predecessor exact `d05dad3`; corrected confirmation
+  and release remain pending.
 - Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
 - Candidate gate: `pnpm check:changed`, real dependency fixture and audit.
 - Heavyweight repeat triggers: Redis wire contract, cache envelope/fence query,

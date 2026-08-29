@@ -34,9 +34,11 @@ metadata. Unknown fields, wrong versions, non-finite values, mismatched IDs or
 oversized/malformed bytes and non-string Redis values are misses; delete only
 that exact key best-effort. The Redis-side bounded read checks the key type and
 size before returning value bytes, so wrong-type or oversized values never enter
-the application parser. A bounded string remains a successful transport reply
-even when it contains control bytes; the envelope parser classifies and deletes
-it without destroying the shared Redis connection. The negative schema-v1 envelope contains its cache time;
+the application parser. The client preserves the raw bounded reply as bytes and
+decodes it with fatal UTF-8 validation. Invalid encoding becomes malformed exact-key
+data without resetting the connection; a valid bounded string remains a
+successful transport reply even when it contains control bytes, allowing the
+envelope parser to classify and delete it. The negative schema-v1 envelope contains its cache time;
 missing, future or more-than-ten-second-old times are malformed and trigger the
 same exact-key deletion path.
 

@@ -41,7 +41,12 @@ Catalog246/246 and repeated real Redis pass with malformed lease recovery,
 cross-instance negative fence reads 1 and cleanup 0. Focused Identity passed 147/147
 after one unrelated timing failure under broad parallel load; the capped affected
 gate passed 73/73, 59 cached, in 90.953 seconds. Publication and hosted confirmation
-remain.
+remain. Protected run `33268669701` passed exact `d05dad3`; confirmation discussion
+`3887360355` then found invalid UTF-8 expansion after the Redis-side bound. Exact
+local `ce97596` keeps the reply binary through its 16 KiB check and fails fatal
+UTF-8 decoding as malformed without resetting the connection. Redis 17/17,
+Catalog 246/246, real invalid-byte recovery/cleanup and affected 73/73 with 50
+cached in 126.735 seconds pass. Publication and corrected hosted confirmation remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
