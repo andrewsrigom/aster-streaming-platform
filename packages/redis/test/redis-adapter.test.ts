@@ -114,9 +114,17 @@ class FakeClient implements AsterRedisClient {
     return this.pingHandler(signal);
   }
 
-  get(key: string, signal: AbortSignal): Promise<string | null> {
+  async getBounded(
+    key: string,
+    maximumBytes: number,
+    signal: AbortSignal,
+  ): Promise<readonly [0] | readonly [1, string] | readonly [2]> {
     this.getCalls += 1;
-    return this.getHandler(key, signal);
+    const value = await this.getHandler(key, signal);
+    if (value === null) {
+      return [0];
+    }
+    return Buffer.byteLength(value, "utf8") > maximumBytes ? [2] : [1, value];
   }
 
   set(
@@ -345,6 +353,11 @@ test("executes only bounded cache commands and reports finite dependency operati
     status: "completed",
     value: "cached",
   });
+  client.getHandler = () => Promise.resolve("x".repeat(16_385));
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
   assert.deepEqual(await adapter.write("aster:test:key", "cached", 2_000, "replace"), {
     status: "completed",
     stored: true,
@@ -369,6 +382,7 @@ test("executes only bounded cache commands and reports finite dependency operati
     telemetry.attempts.map(({ input, outcome }) => [input.operation, outcome]),
     [
       ["connect", "success"],
+      ["read", "success"],
       ["read", "success"],
       ["write", "success"],
       ["write", "success"],

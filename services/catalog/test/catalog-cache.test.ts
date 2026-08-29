@@ -64,6 +64,7 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
     candidates: [...initial],
     fenceReads: 0,
     sourceReads: 0,
+    sourceBatches: [] as string[][],
     beforeSource: undefined as (() => Promise<void>) | undefined,
   };
   const source: CatalogPublicEntitySource = {
@@ -78,6 +79,7 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
     },
     async findManyAtFences(fences) {
       state.sourceReads += 1;
+      state.sourceBatches.push(fences.map((value) => value.id));
       await state.beforeSource?.();
       return {
         status: "completed",
@@ -295,6 +297,26 @@ test("malformed positive bytes are deleted and rebuilt from the exact owner fenc
   assert.notEqual(f.cache.values.get(key), "not-json");
 });
 
+test("oversized Redis corruption retains malformed telemetry without an invalid size sample", async () => {
+  const f = readerFixture();
+  assert.equal((await f.reader.findMany([id(1)], scope, signal())).status, "completed");
+  const key = [...f.cache.values.keys()].find((value) => value.includes(":public-title:v1:"));
+  assert.ok(key);
+  f.cache.values.set(key, "x".repeat(CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes + 1));
+
+  const rebuilt = await f.reader.findMany([id(1)], scope, signal());
+
+  assert.equal(rebuilt.status, "completed");
+  assert.equal(f.source.state.sourceReads, 2);
+  const malformed = f.observations.findLast((value) => value.outcome === "malformed");
+  assert.ok(malformed);
+  assert.equal(malformed.payloadBytes, undefined);
+  assert.notEqual(
+    f.cache.values.get(key),
+    "x".repeat(CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes + 1),
+  );
+});
+
 test("concurrent cold callers share one source refresh while cancellation remains caller-local", async () => {
   const f = readerFixture();
   let release: (() => void) | undefined;
@@ -320,6 +342,48 @@ test("concurrent cold callers share one source refresh while cancellation remain
   assert.equal(
     f.observations.some((value) => value.outcome === "coalesced"),
     true,
+  );
+});
+
+test("mixed batches coalesce each shared hot title while retaining new-title batching", async () => {
+  const f = readerFixture([publicCandidate(1), publicCandidate(2), publicCandidate(3)]);
+  let starts = 0;
+  let release: (() => void) | undefined;
+  let firstStarted: (() => void) | undefined;
+  let bothStarted: (() => void) | undefined;
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const firstBarrier = new Promise<void>((resolve) => {
+    firstStarted = resolve;
+  });
+  const bothBarrier = new Promise<void>((resolve) => {
+    bothStarted = resolve;
+  });
+  f.source.state.beforeSource = async () => {
+    starts += 1;
+    if (starts === 1) {
+      firstStarted?.();
+    }
+    if (starts === 2) {
+      bothStarted?.();
+    }
+    await blocked;
+  };
+
+  const first = f.reader.findMany([id(1), id(2)], scope, signal());
+  await firstBarrier;
+  const second = f.reader.findMany([id(1), id(3)], scope, signal());
+  await bothBarrier;
+  release?.();
+
+  assert.equal((await first).status, "completed");
+  assert.equal((await second).status, "completed");
+  assert.equal(f.source.state.sourceReads, 2);
+  assert.equal(f.source.state.sourceBatches.filter((batch) => batch.includes(id(1))).length, 1);
+  assert.deepEqual(
+    f.source.state.sourceBatches.map((batch) => [...batch].sort()).sort(),
+    [[id(1), id(2)].sort(), [id(3)]].sort(),
   );
 });
 

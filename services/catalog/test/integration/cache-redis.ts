@@ -52,6 +52,22 @@ function candidateFence(candidate: PublicCatalogCandidate): CatalogPublicFence {
 
 try {
   assert.deepEqual(await redis.connect(requestSignal()), { status: "completed" });
+  assert.deepEqual(await redis.read("aster:test:oversized", requestSignal()), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  const boundedCache = createRedisCatalogPublicCache(redis);
+  assert.deepEqual(await boundedCache.read("aster:test:oversized", requestSignal()), {
+    status: "malformed",
+  });
+  assert.deepEqual(await boundedCache.delete("aster:test:oversized", requestSignal()), {
+    status: "completed",
+    value: true,
+  });
+  assert.deepEqual(await redis.read("aster:test:oversized", requestSignal()), {
+    status: "completed",
+    value: null,
+  });
   assert.deepEqual(await redis.write("aster:test:lease", "owner-a", 2_000, "if_absent"), {
     status: "completed",
     stored: true,
@@ -204,6 +220,7 @@ try {
   process.stdout.write(
     JSON.stringify({
       event: "catalog_cache_redis_verified",
+      boundedOversizedRead: true,
       atomicCompareDelete: true,
       expiryObserved: true,
       expiredLeaseRecovered: true,

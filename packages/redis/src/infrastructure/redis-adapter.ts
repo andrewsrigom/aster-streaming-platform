@@ -63,6 +63,12 @@ const INVALID_INPUT_REJECTED = Object.freeze({
   status: "rejected",
   reason: "invalid_input",
 } as const);
+const VALUE_TOO_LARGE_REJECTED = Object.freeze({
+  status: "rejected",
+  reason: "value_too_large",
+} as const);
+const BOUNDED_READ_SCRIPT =
+  "local size = redis.call('STRLEN', KEYS[1]); if size == 0 and redis.call('EXISTS', KEYS[1]) == 0 then return {0} end; if size > tonumber(ARGV[1]) then return {2} end; return {1, redis.call('GET', KEYS[1])}";
 const COMPARE_AND_DELETE_SCRIPT =
   "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
@@ -83,12 +89,14 @@ type ValidatedOptions = Readonly<{
 
 export type AsterRedisClientEvent = "connect" | "ready" | "reconnecting" | "error" | "end";
 
+type BoundedReadReply = readonly [0] | readonly [1, string] | readonly [2];
+
 export interface AsterRedisClient {
   readonly isOpen: boolean;
   readonly isReady: boolean;
   connect(): Promise<void>;
   ping(signal: AbortSignal): Promise<string>;
-  get(key: string, signal: AbortSignal): Promise<string | null>;
+  getBounded(key: string, maximumBytes: number, signal: AbortSignal): Promise<BoundedReadReply>;
   set(
     key: string,
     value: string,
@@ -462,8 +470,11 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
     ping(signal): Promise<string> {
       return client.withCommandOptions({ abortSignal: signal }).ping();
     },
-    get(key, signal): Promise<string | null> {
-      return client.withCommandOptions({ abortSignal: signal }).get(key);
+    getBounded(key, maximumBytes, signal): Promise<BoundedReadReply> {
+      return client.withCommandOptions({ abortSignal: signal }).eval(BOUNDED_READ_SCRIPT, {
+        keys: [key],
+        arguments: [String(maximumBytes)],
+      }) as unknown as Promise<BoundedReadReply>;
     },
     set(key, value, ttlMs, onlyIfAbsent, signal): Promise<string | null> {
       return client.withCommandOptions({ abortSignal: signal }).set(key, value, {
@@ -802,17 +813,37 @@ export function createAsterRedisAdapterWithClientFactory(
     validCommandText(key, ASTER_REDIS_COMMAND_LIMITS.maximumKeyBytes);
   const validValue = (value: unknown): value is string =>
     validCommandText(value, ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes, true);
+  const validBoundedReadReply = (value: unknown): value is BoundedReadReply => {
+    if (!Array.isArray(value)) {
+      return false;
+    }
+    if ((value[0] === 0 || value[0] === 2) && value.length === 1) {
+      return true;
+    }
+    return value[0] === 1 && value.length === 2 && validValue(value[1]);
+  };
 
   const read = async (key: string, signal?: AbortSignal): Promise<AsterRedisReadResult> => {
     if (!validKey(key)) {
       return INVALID_INPUT_REJECTED;
     }
-    return runCommand(
+    const result = await runCommand(
       "read",
       signal,
-      (client, operationSignal) => client.get(key, operationSignal),
-      (value): value is string | null => typeof value === "string" || value === null,
+      (client, operationSignal) =>
+        client.getBounded(key, ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes, operationSignal),
+      validBoundedReadReply,
     );
+    if (result.status !== "completed") {
+      return result;
+    }
+    if (result.value[0] === 0) {
+      return Object.freeze({ status: "completed", value: null });
+    }
+    if (result.value[0] === 2) {
+      return VALUE_TOO_LARGE_REJECTED;
+    }
+    return Object.freeze({ status: "completed", value: result.value[1] });
   };
 
   const write = async (

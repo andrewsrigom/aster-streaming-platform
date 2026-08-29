@@ -58,7 +58,9 @@ export type AsterRedisOperationResult =
 export type AsterRedisCommandFailure = Exclude<AsterRedisOperationResult, { status: "completed" }>;
 
 export type AsterRedisReadResult =
-  Readonly<{ status: "completed"; value: string | null }> | AsterRedisCommandFailure;
+  | Readonly<{ status: "completed"; value: string | null }>
+  | Readonly<{ status: "rejected"; reason: "value_too_large" }>
+  | AsterRedisCommandFailure;
 
 export type AsterRedisWriteResult =
   Readonly<{ status: "completed"; stored: boolean }> | AsterRedisCommandFailure;

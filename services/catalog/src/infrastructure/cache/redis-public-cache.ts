@@ -15,6 +15,9 @@ function unavailable<T>(result: { readonly status: string }): CatalogCacheResult
 }
 
 function readResult(result: AsterRedisReadResult): CatalogCacheResult<string | null> {
+  if (result.status === "rejected" && result.reason === "value_too_large") {
+    return { status: "malformed" };
+  }
   return result.status === "completed"
     ? { status: "completed", value: result.value }
     : unavailable(result);

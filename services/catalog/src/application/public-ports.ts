@@ -54,6 +54,7 @@ export interface CatalogPublicEntityReader {
 
 export type CatalogCacheResult<T> =
   | Readonly<{ status: "completed"; value: T }>
+  | Readonly<{ status: "malformed" }>
   | Readonly<{ status: "cancelled" }>
   | Readonly<{ status: "bypass" }>;
 

@@ -45,8 +45,13 @@ type CacheOptions = Readonly<{
 }>;
 
 type SharedEntry = {
+  readonly work: SharedWork;
+  promise: Promise<CatalogStoreResult<PublicCatalogTitle | null>>;
+  waiters: number;
+};
+
+type SharedWork = {
   readonly controller: AbortController;
-  promise: Promise<CatalogStoreResult<readonly PublicCatalogTitle[]>>;
   waiters: number;
   settled: boolean;
 };
@@ -362,6 +367,11 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     if (result.status === "cancelled") {
       return { status: "cancelled" };
     }
+    if (result.status === "malformed") {
+      record({ outcome: "malformed", durationMs: duration() });
+      await deleteMalformed(key, signal);
+      return { status: signal.aborted ? "cancelled" : "miss" };
+    }
     if (result.status === "bypass") {
       record({ outcome: "bypass", durationMs: duration() });
       return { status: "miss" };
@@ -372,10 +382,11 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     }
     const title = parseEnvelope(result.value, fence, scope.now);
     if (!title) {
+      const payloadBytes = Buffer.byteLength(result.value);
       record({
         outcome: "malformed",
         durationMs: duration(),
-        payloadBytes: Buffer.byteLength(result.value),
+        ...(payloadBytes <= CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes ? { payloadBytes } : {}),
       });
       await deleteMalformed(key, signal);
       return { status: signal.aborted ? "cancelled" : "miss" };
@@ -603,50 +614,109 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     scope: CatalogReadScope,
     signal: AbortSignal,
   ): Promise<CatalogStoreResult<readonly PublicCatalogTitle[]>> => {
-    const identity = digest(
-      input,
-      fences
-        .map((fence) => positiveKey(input.environment, fence))
-        .sort()
-        .join("|"),
-    );
-    let entry = entries.get(identity);
-    if (!entry) {
-      if (entries.size >= CATALOG_PUBLIC_CACHE_POLICY.maximumCoalescingEntries) {
-        return refresh(fences, scope, signal);
+    const createdWork: SharedWork = {
+      controller: new AbortController(),
+      waiters: 0,
+      settled: false,
+    };
+    const selected: SharedEntry[] = [];
+    const created: Array<{
+      identity: string;
+      fence: CatalogPublicFence;
+      entry: SharedEntry;
+    }> = [];
+    const overflow: CatalogPublicFence[] = [];
+    for (const fence of fences) {
+      const identity = digest(input, positiveKey(input.environment, fence));
+      const existing = entries.get(identity);
+      if (existing) {
+        const count = existing.waiters + 1;
+        record({
+          outcome: "coalesced",
+          durationMs: 0,
+          waiterBucket: count === 1 ? "one" : count <= 4 ? "two_to_four" : "five_plus",
+        });
+        selected.push(existing);
+        continue;
       }
-      const controller = new AbortController();
-      const workSignal = AbortSignal.any([
-        controller.signal,
-        AbortSignal.timeout(CATALOG_PUBLIC_CACHE_POLICY.sharedWorkTimeoutMs),
-      ]);
-      const created: SharedEntry = {
-        controller,
+      if (entries.size >= CATALOG_PUBLIC_CACHE_POLICY.maximumCoalescingEntries) {
+        overflow.push(fence);
+        continue;
+      }
+      const entry: SharedEntry = {
+        work: createdWork,
         waiters: 0,
-        settled: false,
         promise: Promise.resolve({ status: "unavailable" }),
       };
-      created.promise = refresh(fences, scope, workSignal).finally(() => {
-        created.settled = true;
-        entries.delete(identity);
-      });
-      entries.set(identity, created);
-      entry = created;
-    } else {
-      const count = entry.waiters + 1;
-      record({
-        outcome: "coalesced",
-        durationMs: 0,
-        waiterBucket: count === 1 ? "one" : count <= 4 ? "two_to_four" : "five_plus",
-      });
+      entries.set(identity, entry);
+      created.push({ identity, fence, entry });
+      selected.push(entry);
     }
-    entry.waiters += 1;
+    if (created.length > 0) {
+      const workSignal = AbortSignal.any([
+        createdWork.controller.signal,
+        AbortSignal.timeout(CATALOG_PUBLIC_CACHE_POLICY.sharedWorkTimeoutMs),
+      ]);
+      const batch = refresh(
+        created.map((value) => value.fence),
+        scope,
+        workSignal,
+      );
+      for (const item of created) {
+        item.entry.promise = batch
+          .then((result): CatalogStoreResult<PublicCatalogTitle | null> =>
+            result.status === "completed"
+              ? {
+                  status: "completed",
+                  value: result.value.find((title) => title.id === item.fence.id) ?? null,
+                }
+              : result,
+          )
+          .finally(() => {
+            entries.delete(item.identity);
+          });
+      }
+      void batch.then(
+        () => {
+          createdWork.settled = true;
+        },
+        () => {
+          createdWork.settled = true;
+        },
+      );
+    }
+    for (const entry of selected) {
+      entry.waiters += 1;
+      entry.work.waiters += 1;
+    }
     try {
-      return await waitForCaller(entry.promise, signal);
+      const [shared, direct] = await Promise.all([
+        Promise.all(selected.map((entry) => waitForCaller(entry.promise, signal))),
+        overflow.length > 0
+          ? refresh(overflow, scope, signal)
+          : Promise.resolve({ status: "completed", value: [] } as const),
+      ]);
+      const titles: PublicCatalogTitle[] = [];
+      for (const result of shared) {
+        if (result.status !== "completed") {
+          return result;
+        }
+        if (result.value) {
+          titles.push(result.value);
+        }
+      }
+      if (direct.status !== "completed") {
+        return direct;
+      }
+      titles.push(...direct.value);
+      return { status: "completed", value: Object.freeze(titles) };
     } finally {
-      entry.waiters -= 1;
-      if (entry.waiters === 0 && !entry.settled) {
-        entry.controller.abort();
+      for (const entry of selected) {
+        entry.waiters -= 1;
+        entry.work.waiters -= 1;
+        if (entry.work.waiters === 0 && !entry.work.settled) {
+          entry.work.controller.abort();
+        }
       }
     }
   };
@@ -684,16 +754,22 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
         if (cached.status === "cancelled") {
           return { status: "cancelled" };
         }
-        if (cached.status === "bypass") {
+        if (cached.status === "malformed") {
+          record({ outcome: "malformed", durationMs });
+          await deleteMalformed(key, signal);
+        } else if (cached.status === "bypass") {
           record({ outcome: "bypass", durationMs });
         } else if (cached.value === NEGATIVE_VALUE) {
           negativeHits.add(id);
           record({ outcome: "negative_hit", durationMs });
         } else if (cached.value !== null) {
+          const payloadBytes = Buffer.byteLength(cached.value);
           record({
             outcome: "malformed",
             durationMs,
-            payloadBytes: Buffer.byteLength(cached.value),
+            ...(payloadBytes <= CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes
+              ? { payloadBytes }
+              : {}),
           });
           await deleteMalformed(key, signal);
         }
