@@ -1,0 +1,59 @@
+P09-R03 schema-compatibility precursor
+Date: 2026-08-29
+Branch: fix/p09-discovery-schema-compatibility
+Base: 0bdcb275dc354a684342cd3ceb19e11aa1dc0d63
+
+Review trigger
+
+PR34 confirmation review discussion 3886014606 found that the released search
+binary required exactly migration markers 1-2 while the home-rail candidate
+required exactly markers 1-3. Applying migration 3 first made the old binary
+unready; deploying the new binary first made the new binary unready. The initial
+PR34 protected run 33242380775 was cancelled after the blocking finding rather
+than spending the remaining pipeline time on an invalid candidate.
+
+Correction
+
+The released search readiness now accepts exactly ordered markers 1-2 or 1-3.
+It continues querying only its existing migration-2 objects and privileges. It
+rejects bootstrap, gaps, rewritten markers, marker 4 and hostile row accessors.
+Migration 3 remains unapplied until this precursor reaches exact main.
+
+Focused verification
+
+- Discovery strict build: pass.
+- Discovery tests: 73/73 pass.
+- Scoped ESLint and Prettier: pass.
+- Git diff whitespace check: pass.
+- Canonical affected gate: 42/42 tasks pass, 26 cached, in 47.199s.
+- The first test invocation picked up ignored build output from the later feature
+  branch after a branch switch. Exact stale generated files were removed; the
+  clean branch build/test then passed 73/73. No source check was weakened.
+
+Pending
+
+Initial/confirmation review, protected merge and exact-main CI. Afterward PR34
+must rebase and prove the actual migration-3 view with both staged-old and
+rails-new readiness behavior.
+
+Confirmation finding
+
+PR35 discussion 3886054205 identified that readiness compatibility alone was
+insufficient: discovery-init runs the released image's migration preflight, and
+that preflight rejected marker 3 before the service could become ready. The
+corrected precursor also accepts ordered markers 1-3 in the preflight while its
+two-entry migration list still applies only migrations 1-2. It reads one row
+beyond the finite maximum so marker 4 fails closed.
+
+Corrected verification
+
+- Discovery strict build and75/75 tests: pass.
+- Scoped ESLint, Prettier and Git diff checks: pass.
+- Canonical affected gate:42/42 tasks pass,26 cached, in47.204s.
+- Superseded protected run33243447562 was cancelled after the blocker instead of
+  completing heavyweight work for an invalid candidate.
+
+Pending
+
+Publish corrected exact head, resolve confirmation, protected squash merge and
+exact-main CI. Then PR34 rebases and proves the actual migration3 boundary.

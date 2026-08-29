@@ -2,6 +2,43 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Discovery schema compatibility precursor
+
+### Completed
+
+- Recorded P09-R01 release through PR33/main and activated the P09-R03 rollout
+  precursor after PR34 confirmation found no migration version shared by old and
+  new binaries.
+- Changed released search readiness to accept exactly ordered markers `1–2` or
+  the reviewed successor `1–3` while retaining all existing role/privilege/object
+  checks and rejecting gaps, rewrites and marker4.
+- Accepted PR35 confirmation discussion3886054205: the old init migrator now
+  tolerates ordered marker3 without owning/applying that script, preserves valid
+  bootstrap/partial installation and reads marker4 so it fails closed.
+- Preserved the separate PR34 database-admission correction locally on
+  `feat/p09-home-rails` commit `615a8c7`; no migration3 was applied.
+
+### Evidence
+
+- Corrected clean branch Discovery build and75/75 tests pass, including
+  readiness/migrator current/successor, bootstrap/partial, gap/future and hostile
+  readiness-row cases; scoped lint, format and diff checks pass.
+- The canonical affected candidate passes42/42,26 cached, in47.199s.
+  That result predates the confirmation correction; the corrected candidate
+  passes42/42,26 cached, in47.204s.
+- The first branch-switched test saw ignored feature-build output. Only exact
+  generated files were removed, then the clean build passed; no source check was
+  weakened.
+- Cancelled invalidated PR34 run33242380775 after both review blockers arrived,
+  avoiding its remaining heavyweight work. Retained data/runtime stayed untouched.
+- Cancelled superseded PR35 run33243447562 after its blocker arrived, then passed
+  the corrected candidate instead of completing heavyweight invalid-head work.
+
+### Next action
+
+Publish the precursor for protected review/release and exact-main CI. Then rebase
+PR34, prove migration3 old/new readiness and complete both blockers.
+
 ## 2026-08-29 — Discovery federated search candidate
 
 ### Completed
@@ -2189,40 +2226,40 @@ Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions fro
 
 Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions from current official compatibility evidence.
 
-## 2026-08-25 — MIT source-code license
+**Historical checkpoint — 2026-08-25 — MIT source-code license**
 
-### Completed
+**Completed**
 
 - Added the canonical MIT license with the project notice `Aster contributors`.
 - Defined separate licensing scopes for project-authored materials, dependencies, and media assets.
 - Updated the README, license documentation, decision ledger, file index, current state, queue, and handoff.
 - The preceding specification baseline defined product journeys, bounded contexts, ownership, event flow, supergraph, caching, media, frontend, resilience, observability, security, deployment, capacity, fifteen gated phases, agent contracts and the rights-review workflow.
 
-### Evidence
+**Evidence**
 
 - Inspected `LICENSE` and verified the canonical grant, notice condition, and warranty disclaimer.
 - Searched repository licensing statements and found consistent MIT references.
 - Checked 155 internal links across 124 Markdown files; no broken target was found.
 - The initial starter archive passed documentation validation and made no application implementation claim.
 
-### Next action
+**Next action**
 
 Reconcile Phase 00 requirement traceability and audit the full delivery plan before toolchain initialization. The original baseline next action was to begin Phase 00 with license selection.
-# 2026-08-28 — Response-event progress acknowledgement capture
+**Historical continuation — 2026-08-28 — Response-event progress acknowledgement capture**
 
 - Preserved P09 private Catalog transport in stash `3c62b4289287b3ac799d498daf1577bbbf4eaf30` after 21 focused transport tests and scoped lint passed, then returned to the failing predecessor.
 - Inspected protected PR32 run33222164370: all source/platform/Catalog/Playback/Engagement and immutable replay stages passed; the personalized browser failed because Chromium discarded the selected response body before the post-`waitForResponse` `json()` call.
 - Replaced the waiter continuation with one purpose-filtered Page response listener that starts the selected body read inside the event turn and removes itself before validation.
 - Added deterministic body-start ordering coverage. Full Web tests pass103/103; type generation, strict TypeScript, scoped lint and the43/43 affected gate pass. Protected acceptance remains pending.
 
-# 2026-08-28 — Shared Profiles and progress body capture
+**Historical continuation — 2026-08-28 — Shared Profiles and progress body capture**
 
 - Inspected exact-head PR32 run33223692248: every source, platform, owner, immutable replay and health boundary passed; the personalized browser failed only because its separate Profiles body was consumed after UI work and Chromium discarded it.
 - Preserved the rebased P09 Catalog private-runtime work in stash bc626511ae49d0bcb553c734a5278d835c277be5 before returning to the predecessor.
 - Centralized exact GraphQL response selection and event-turn body capture for Profiles and progress without changing production behavior, retries or acceptance assertions.
 - Full Web tests pass104/104, including seven observer regressions; type generation, strict TypeScript, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.
 
-# 2026-08-28 — Selected-body deadline correction
+**Historical continuation — 2026-08-28 — Selected-body deadline correction**
 
 - Accepted review5056138342's P1 finding: exact6c78d2a cleared the12-second timer after response selection instead of after body settlement.
 - Preserved rebased P09 private runtime in stash 01b1dad9bbda289976d137b1a20af9f7cf102add before returning to the predecessor.

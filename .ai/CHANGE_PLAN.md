@@ -1,75 +1,131 @@
-# Work Item: Versioned Discovery projection and bounded title search
+# Work Item: Stage Discovery schema compatibility before home rails
 
 - Status: IN_PROGRESS
-- Owner: Discovery read model; Catalog owns title and publication truth
+- Owner: Discovery read model
 - Phase: 09
-- Requirement IDs: P09-R01, P09-R02, P09-R06, P09-R07
-- Created: 2026-08-28
+- Requirement IDs: P09-R03, P09-R09
+- Created: 2026-08-29
 - Updated: 2026-08-29
 
 ## Outcome
 
-A viewer can search published titles through the supergraph using a bounded, versioned PostgreSQL read model that can be rebuilt after broker retention expires. Retired or disputed titles disappear within the explicit freshness limit.
+The released search-only Discovery binary remains ready on its current migration
+set and after the next additive home-rail migration, so migration-first rollout
+and rollback do not create a readiness gap.
 
 ## Current behavior
 
-PR32 exact d295ec7 passed protected CI33228909828 and clean confirmation review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are released. Run33225822813 proved immutable replay and every preceding owner/platform boundary, then disproved observer-owned body reads; the released source leaves bodies to the application and requires rendered durable confirmation within12 seconds.
-
-P09-R01 is the sole active unpublished item on feat/p09-discovery-search. Confirmation-remediated source16d4921 composes the owned projection, finite broker consumer/rebuild, bounded GraphQL subgraph, five-owner supergraph and opt-in runtime. Initial candidate e979d7d passes73/73 and zero high/critical audit findings. The protected Catalog cleanup ceiling and four initial review findings are corrected through04011af. Exact-head confirmation found maintenance rebuild state withholding readiness and replay inaccessible to operators. Commit16d4921 derives readiness from the validated active generation, keeps it serviceable before300-second expiry, fails bootstrap/expiry closed, and adds a local UUID-selected five-second replay command using existing purpose-separated authority. Discovery70/70, unchanged PostgreSQL18.6 acceptance, the11-service exact replay/failure-isolation runtime in107640ms and final73/73 pass. Exact-head publication, two discussion resolutions, protected CI/final confirmation, squash and exact-main CI remain. Historical stashes are superseded and must not be reapplied.
+P09-R01 is released in main `0bdcb27` through PR33 and exact-main CI33239191134.
+PR34 candidate `7d31678` proved home rails locally, but confirmation review found
+that the released binary requires exactly migrations `1–2` while the rails binary
+requires exactly `1–3`. No deployment order keeps both versions ready.
 
 ## Proposed behavior
 
-Use the existing PostgreSQL, broker, Node/Express and Federation boundaries. Implement projection rules, Catalog-owned current snapshots/export, owned persistence/rebuild/consumer, then a bounded search subgraph. ADR-0035 defines consistency and freshness. No external search engine, Redis authority, media work or personal recommendation store.
-
+Release one compatibility precursor from current main. Search readiness accepts
+only ordered markers `1–2` or the single reviewed additive successor `1–3`.
+The local migration preflight preserves its valid bootstrap and partial-current
+states and also tolerates ordered markers `1–3`, while continuing to use and
+apply only the two migration-2-era scripts and objects. Both paths reject gaps,
+rewrites and marker `4`. Merge this precursor before rebasing PR34 and applying
+migration `0003`.
 
 ## Boundaries
 
-Catalog owns metadata/visibility and its private read adapter. Discovery owns searchable copies, source versions, projection generations and query ordering. Existing event-delivery/broker adapters transport facts; events are invalidation hints, not publication authority. Public fields return Catalog Title references. Planned paths: services/discovery, narrow services/catalog application/transport/persistence reads, Router artifacts/known operations and opt-in Compose. Web rails remain the later P09-R10 slice.
+- Owning context: Discovery.
+- Affected services/packages: Discovery readiness, tests, migration/ADR docs and
+  Phase 09 evidence/memory.
+- Authoritative data: unchanged Discovery projection derived from Catalog.
+- Read models/caches: PostgreSQL projection; no Redis or new data.
+- Trust boundaries: database migration rows returned to readiness.
+- External dependencies: existing PostgreSQL only.
 
 ## Invariants
 
-Only current Catalog snapshots can populate public metadata. Older source versions cannot overwrite newer state; same-version conflicting metadata cannot silently replace it; hidden state cannot become visible at the same version. Preserve retirement fences through replay/rebuild. Public results expire within300seconds, with source-rights expiry as an earlier cap, and never grant media access. Query metadata continues to come from Catalog.
+- The search-only binary never queries migration-3 objects.
+- The search-only migrator never applies migration `0003`; it only tolerates its
+  marker after another reviewed image has applied it.
+- Readiness compatibility is finite: only exactly `1–2` and `1–3` pass.
+- Migration preflight additionally preserves valid bootstrap and partial-current
+  states so it can still install migrations `1–2`.
+- A missing, gapped, rewritten or future schema fails readiness closed.
+- Migration `0003` is not applied before this precursor reaches main.
 
 ## Failure behavior
 
-Cancellation/deadlines stop uncommitted work. Unknown commits are replayable through source version. Invalid or conflicting events are durably quarantined before acknowledgement; full bounded quarantine leaves the offset uncommitted. Snapshot failure is unavailable, never a fabricated empty or hidden title. A partial rebuild never replaces the active generation. Discovery failure must not affect Catalog/Playback admission.
+| Failure | Expected behavior | Telemetry |
+|---|---|---|
+| Migration rows missing, gapped or future | Readiness unavailable | existing finite dependency/readiness state |
+| Marker `3` present | Search-only binary remains ready using existing objects | existing readiness state |
+| Database unavailable/cancelled | Existing unavailable behavior | existing dependency outcome |
 
 ## Data and contracts
 
-Add owned Discovery schema/roles with additive migrations and empty-state-only down migration. Keep Catalog v1 events unchanged. Add purpose-separated private snapshot/export GraphQL reads under the existing owner-read model; do not reuse another consumer's key. No cross-owner SQL. Search queries are normalized and bounded with query-bound keyset cursors. Keep at most two projection generations; retain source-version fences and bounded quarantine/rebuild checkpoints. No personal data or new cache.
+- Schema/migration: no schema mutation in this precursor.
+- GraphQL: unchanged search contract and artifacts.
+- Events: unchanged Catalog v1 events.
+- Cache: none.
+- Compatibility: released search binary accepts current and one additive successor.
+- Retention/deletion: unchanged.
 
 ## Security and privacy
 
-Validate all source/event/query input and exact ownership. Bound metadata, response bytes, page size, concurrency and total traversal. Separate optional Catalog admission from public traffic. No media URLs, rights records, browser credentials or raw search text in telemetry. Reject cursor/query substitution and oversized or malformed documents.
+- Authorization: unchanged role/membership/privilege checks remain mandatory.
+- Input limits: at most four ordered migration rows are read.
+- Sensitive data: no new data or logs.
+- Abuse cases: hostile row accessors are not invoked; unexpected rows fail closed.
 
 ## Implementation steps
 
-1. Pure snapshot/projection/search-input rules and deterministic adverse tests.
-2. Catalog snapshot/export adapter and purpose isolation; real owned SQL evidence.
-3. Complete broker/runtime orchestration around the implemented current-snapshot event consumer, durable quarantine/replay, persistence and generation rebuild.
-4. Search GraphQL, composition/cost limits, opt-in runtime and representative query plans/relevance.
-5. Protected candidate/release, then independent rails and client integration in their queued slices.
+1. Extract finite readiness and migrator schema-compatibility predicates with
+   adverse tests.
+2. Document the required two-stage rollout and rollback.
+3. Run the affected candidate gate, one initial review and one confirmation.
+4. Protected squash merge and exact-main CI, then rebase/remediate PR34.
 
 ## Tests
 
-Domain: bounds, canonicalization, duplicate/stale/conflicting versions, fresh/expired input and retirement fences. Application: cancellation, snapshot failure, invalid event and finite rebuild. Integration: real PostgreSQL constraints/generation switch, Kafka acknowledgement/replay and actual owner isolation. Contract: schema/known operations, page/cost/cursor safety. Browser: no new UI in this slice; existing public browse/playback remains a smoke boundary. Failure: unavailable Catalog/broker/Discovery, expired freshness and incomplete rebuild.
+- Domain: not applicable; no domain rule changes.
+- Application: readiness and migration-preflight current/successor/gap/future
+  predicate tests, plus hostile readiness rows.
+- Integration: PR34 repeats real migration-3 mixed-version evidence after rebase.
+- Contract: no GraphQL change; source gate protects existing schema.
+- Browser: not applicable.
+- Performance/failure: no heavyweight runtime change; readiness failure behavior is
+  bounded by focused tests and the later real SQL gate.
 
 ## Evidence
 
-Iteration gate: scoped strict TypeScript, deterministic node:test and changed-file lint. Candidate gate: canonical check:changed and exact-main schema compatibility. Capture raw output, hashes, environment, workload and limitations under evidence/phase-09. Repeat SQL/Kafka/runtime evidence only for changes affecting their semantics, packaging or bootstrap; no unchanged host/media experiment. One initial and one confirmation review; extend only for requirement, security/data, availability or public-contract blockers.
+- Commands: Discovery build/tests, scoped lint/format, then `pnpm check:changed`.
+- Raw artifact path: `evidence/phase-09/home-rails-compatibility.txt`.
+- Acceptance result: first candidate passed 73/73 Discovery tests and the 42/42
+  affected gate. Confirmation found the migration-preflight blocker; corrected
+  verification passes Discovery75/75 and the affected42/42 gate; protected
+  release is pending.
+- Iteration gate: strict build, focused node:test, scoped ESLint/Prettier.
+- Candidate gate: canonical affected `pnpm check:changed`.
+- Heavyweight repeat triggers: predicate/test/doc changes do not repeat Docker,
+  media or unchanged search runtime; PR34 must repeat migration-3 SQL/readiness.
+- Review stopping rule: one initial and one confirmation round; reopen only for a
+  requirement, security/data, availability or public-contract blocker.
 
 ## Rollback or recovery
 
-Disable optional Discovery and restore compatible Router/Catalog artifacts. Retain source data, version fences, quarantine and the prior active index. Never repair a failed rebuild by deleting Catalog or retained demo data. No WSL/Docker restart or global cleanup. Publication is predecessor-first.
+Restore the prior search binary while schema remains at migration `2`. If this
+precursor is already released it is behavior-compatible with migration `2`; do
+not apply migration `3` until its exact-main gate passes. Preserve all projections,
+fences, quarantine and retained media.
 
 ## Documentation updates
 
-ADR-0035, Discovery operations and contracts, phase evidence, and concise repository memory at candidate/closeout checkpoints.
+ADR-0035, Discovery migration guide, Phase 09 release/evidence and repository
+memory.
 
 ## Completion checklist
 
-- [x] Projection, consumer and search implementation satisfies the four requirements
-- [x] Required tests and real runtime evidence pass
-- [x] Relevance, freshness and retirement behavior measured
-- [x] Documentation and memory current
-- [ ] Predecessor and own protected release complete
+- [x] Requirements satisfied
+- [x] Focused tests pass
+- [x] Candidate evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

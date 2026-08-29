@@ -2,7 +2,7 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
-[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 source16d4921 verifies these boundaries locally; protected release remains pending.
+[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 is released through main0bdcb27. Before migration3, its search readiness gains one finite compatibility stage accepting only ordered markers1–2 or1–3; the old init preflight tolerates marker3 without owning or applying that script.
 
 [ADR-0034](../docs/adr/0034-owned-event-delivery.md) defines owner-local fenced relays, unchanged v1 envelopes, dedicated Identity-event authentication and durable deletion/quarantine/replay. Real recovery required a one-second rebalance wait inside the existing broker deadline and an independent outbound step while inbound consumption recovers. Separate background credentials do not widen request roles; candidate/protected release remains.
 

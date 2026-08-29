@@ -2,6 +2,18 @@ import type { AsterPostgresAdapter } from "@aster/postgres";
 
 type Database = Pick<AsterPostgresAdapter, "transaction">;
 
+export function discoverySearchSchemaCompatible(value: unknown): boolean {
+  if (!Array.isArray(value) || (value.length !== 2 && value.length !== 3)) {
+    return false;
+  }
+  return value.every(
+    (row, index) =>
+      typeof row === "object" &&
+      row !== null &&
+      Object.getOwnPropertyDescriptor(row, "version")?.value === index + 1,
+  );
+}
+
 async function probe(
   database: Database,
   role: "runtime" | "projector",
@@ -33,17 +45,11 @@ async function probe(
       return { action: "rollback", value: false } as const;
     }
     const versions = await tx.query({
-      text: "SELECT version FROM discovery.schema_migrations ORDER BY version LIMIT 3",
+      text: "SELECT version FROM discovery.schema_migrations ORDER BY version LIMIT 4",
     });
     if (
-      versions.rowCount !== 2 ||
-      versions.rows.length !== 2 ||
-      versions.rows.some(
-        (value, index) =>
-          typeof value !== "object" ||
-          value === null ||
-          Object.getOwnPropertyDescriptor(value, "version")?.value !== index + 1,
-      )
+      versions.rowCount !== versions.rows.length ||
+      !discoverySearchSchemaCompatible(versions.rows)
     ) {
       return { action: "rollback", value: false } as const;
     }

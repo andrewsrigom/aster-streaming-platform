@@ -6,7 +6,10 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at confirmation-remediated code head16d4921. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R03 schema-compatibility precursor active on
+`fix/p09-discovery-schema-compatibility` from exact released main `0bdcb27`.
+P09-R01 is released through PR33 and exact-main CI33239191134. Full Phase00–14
+goal stays active.
 
 ## Verified
 
@@ -14,9 +17,22 @@ Phases 00–08 are released locally through protected and exact post-merge CI. [
 
 P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence/phase-08/README.md) records durable progress, history, watchlist and request-scoped fields. [Federated proof](../evidence/phase-08/federated-runtime.txt) covers real owner authorization, replay/conflict, revocation and anonymous Playback continuity. [Entity fields](../evidence/phase-08/engagement-fields.md) retain 98 tests, nine composition tests, real SQL/Docker and 67-task candidate evidence. No unchanged CPU, media or browser repeat is required.
 
+P09-R01/R02/R06/R07 are released. [Search release](../evidence/phase-09/search-release.md)
+records candidate `fc353c3`, protected run33238473742, resolved review, squash
+`0bdcb27` and exact-main run33239191134.
+
 ## Current work
 
-Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact16d4921 packaging plus unchanged real PostgreSQL18.6 acceptance: the11-service Kafka/Router proof projects with zero lag, returns one result and explicit empty, replays/reclaims one exact quarantine slot, serves Catalog while Discovery is stopped, preserves its generation through restart, sanitizes logs and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records the initial73/73 gate, Catalog cleanup correction, four initial review remediations and two confirmation blockers. The latter now keep a valid active generation serviceable during maintenance while bootstrap/expiry fail closed, and expose bounded local exact replay. Discovery70/70, runtime107640ms and final73/73 pass. Exact-head publication, discussion resolution, protected CI/final confirmation, squash and exact-main CI remain.
+The released search runtime remains unchanged. PR34 candidate `7d31678` adds
+home rails, but confirmation discussion3886014606 found no schema version shared
+by released and new binaries. The active precursor makes released search
+readiness accept only ordered markers `1–2` or `1–3` while using only its existing
+objects and privileges. PR35 confirmation discussion3886054205 additionally
+found its init migrator rejected marker3; the corrected preflight now tolerates
+that marker without owning/applying its script and rejects marker4. Corrected
+focused Discovery75/75, strict build, lint and format plus the corrected affected
+42/42 gate pass. Protected confirmation/release remain pending.
+[Compatibility evidence](../evidence/phase-09/home-rails-compatibility.txt).
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -26,11 +42,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Discovery home rails, personalized composition, browser search and hosted release remain pending. The current search candidate is not released until protected merge and exact-main CI.
+Home rails remain unreleased while their finite schema precursor completes.
+Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Publish/merge P09-R01 through protected CI and confirm exact main. Then activate P09-R03 for independent rails, fallbacks and freshness telemetry.
+Publish/merge the P09-R03 schema precursor through protected CI and exact main.
+Complete corrected candidate/confirmation, rebase PR34, prove migration3 with old/new readiness, remediate bounded SQL
+admission, then complete its confirmation/protected release before P09-R10.
 
 ## Runtime and recovery
 
@@ -43,7 +62,9 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 ## Current risks
 
 - The exact earlier SDK/provider seed transport cause remains unproved; the released read-only replay removes that dependency and passes protected/exact-main gates. No blind retry, retained reset or CPU attribution.
-- Retain uncertain claims, pending facts, permanent deletion fences and the event signing key; old finite migrators/readiness may reject new schema versions. Drain and use compatible binaries or roll forward.
+- Retain uncertain claims, pending facts, permanent deletion fences and the event
+  signing key. Migration3 must not run before the finite search compatibility
+  precursor reaches exact main.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
 - Last audit: zero high/critical, one known moderate UUID advisory with inspected Apollo callers unaffected; revisit before hosted release.

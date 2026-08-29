@@ -2,7 +2,14 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at confirmation-remediated code head16d4921. Projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass Discovery70/70, exact PostgreSQL18.6, an11-service real Kafka/Router proof and73/73. Earlier protected cleanup and four initial review findings are corrected. Exact-head confirmation then found maintenance readiness and unreachable replay;16d4921 keeps a valid active generation serviceable during rebuild and adds a bounded exact-replay command proven in Docker. Next: publish exact head, resolve both addressed threads, protected CI/final confirmation and release. Historical stashes are superseded.
+P09-R01 is DONE through PR33, protected run33238473742, squash main `0bdcb27`
+and exact-main run33239191134. P09-R03 is the sole IN_PROGRESS item. Its PR34
+confirmation found two blocking boundaries: database fan-out and no migration-3
+readiness overlap. The active minimal precursor stages finite search compatibility
+from main. Its first42/42 affected gate passed; confirmation then exposed the
+init-preflight boundary, now corrected with75/75 focused tests. Complete the
+corrected42/42 candidate before rebasing and completing PR34. Historical stashes are
+superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -52,15 +59,19 @@ Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
 | 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | DONE |
-| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | IN_PROGRESS |
-| 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
+| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | DONE |
+| 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | IN_PROGRESS |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
 ## Work-item rules
 
-The next planned slices stay in services/engagement, existing owner subgraphs and apps/web. Watchlist needs durable membership/replay and current Catalog filtering before pagination; no new service or Redis authority. R08 owns request-scoped batching, R09 also covers R10/R12 event/deletion acceptance, and R11 owns browser save/resume. Activate them in order, not concurrently with the current dependent candidate.
+P09-R03 first releases a search-only readiness precursor accepting exactly
+migration markers `1–2` or `1–3`. It does not apply migration3 or query rail
+objects. Its old init preflight tolerates marker3 but still owns only scripts1–2.
+After exact main, PR34 rebases and completes the rail migration,
+owner-composed GraphQL and bounded telemetry. P09-R10 remains the later Web slice.
 
 Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected/post-merge gates pass. P08-R06 has [protected closeout evidence](../evidence/phase-08/history-visibility.md). Watchlist has [protected closeout evidence](../evidence/phase-08/watchlist.md) under ADR-0032. Entity fields, relay and browser reports follow. No repeated CPU or film experiment.
 
