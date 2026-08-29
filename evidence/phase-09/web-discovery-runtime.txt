@@ -7,8 +7,8 @@ Source and environment
 - Branch: feat/p09-web-discovery
 - Base: a3f969cda582a97f07e14e90a814f98e9eb35b96
 - Implementation commit: 19a510cbccb04614373b448055f985df6bce7368
-- Publication head adds only this exact-candidate evidence/state checkpoint before
-  hosted review; it does not invalidate the recorded source/runtime gates
+- Published checkpoint: b087bc5564595d5434ba63be2dca880cce748531
+- PR36: https://github.com/andrewsrigom/aster-streaming-platform/pull/36
 - Node.js 24.19.0 and pnpm 11.24.0 from the repository-pinned runtime
 - Docker Engine 26.0.0; Docker Compose 2.26.1-desktop.1
 - Linux/WSL amd64; no native Windows/macOS/arm64 portability claim
@@ -92,9 +92,22 @@ Review and remediation
   degraded child. Direct adverse tests cover the contradictions; unused exports
   were removed.
 - Web110/110, strict types/lint/format and the rebuilt production image pass after
-  remediation. The exact rebuilt runtime then passes all four discovery browser
-  tests, including Discovery stop/recovery. Confirmation review found no remaining
-  requirement, security/data, availability, hydration or public-contract blocker.
+  that local remediation. The exact rebuilt runtime then passes all four discovery
+  browser tests, including Discovery stop/recovery.
+- Published checkpoint `b087bc5` passed every protected job in run33252690275.
+  Hosted review5058080810 then found three requirement-relevant boundary defects:
+  supplied invalid/repeated discovery locales became English owner queries; a
+  failed genre group was invisible beside usable fixed rails; and malformed
+  `PARTIAL` responses with no usable group passed positive projection.
+- The batched correction rejects unsupported/repeated locale values as HTTP404,
+  renders explicit genre-group failure and requires both degradation and a usable
+  group for `PARTIAL`. Direct regressions, Web110/110, strict types, scoped lint,
+  production build/artifact/notice scans and the rebuilt disposable browser set
+  pass8/8. The repeat covers invalid URLs, partial UI, Router/Discovery outage,
+  recovery and owner-safe personalization. Exact cleanup again reports
+  containers0, networks0 and volumes0. The corrected affected candidate passes
+  46/46 tasks,32 cached, in51.27s. Protected CI and confirmation on the new exact
+  head remain pending.
 
 Honest limitations and remaining gate
 - The demo has one generated technical title and does not establish film rights,
@@ -110,5 +123,6 @@ Honest limitations and remaining gate
   `--volumes`; label-filtered verification reports containers0, networks0 and
   volumes0. Images remain cached. Retained projects and host processes were not
   changed by cleanup.
-- Publication, protected CI and exact post-merge CI remain required before Phase
-  09 is released.
+- Publish the review correction, resolve its three discussions after the exact
+  diff is available, obtain one confirmation plus protected CI, then squash and
+  pass exact post-merge CI before Phase09 is released.

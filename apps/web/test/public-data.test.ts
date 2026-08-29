@@ -74,6 +74,7 @@ test("locale, page and title inputs are deterministic and bounded", () => {
 
 test("home and search URL inputs are deterministic and bounded", () => {
   assert.deepEqual(homeVariables({}), { first: 10, locale: "en" });
+  assert.deepEqual(homeVariables({ locale: "en" }), { first: 10, locale: "en" });
   assert.deepEqual(homeVariables({ locale: "pt-BR" }), { first: 10, locale: "pt-BR" });
   assert.deepEqual(searchVariables({ q: "Café noir", locale: "pt-BR" }), {
     query: "Café noir",
@@ -82,6 +83,8 @@ test("home and search URL inputs are deterministic and bounded", () => {
     after: null,
   });
   assert.equal(searchVariables({}), null);
+  assert.throws(() => homeVariables({ locale: "fr" }));
+  assert.throws(() => homeVariables({ locale: ["en", "pt-BR"] }));
   for (const input of [
     { after: "s1.cursor" },
     { q: " " },
@@ -89,6 +92,8 @@ test("home and search URL inputs are deterministic and bounded", () => {
     { q: "x".repeat(161) },
     { q: "title", after: "../private" },
     { q: ["title", "second"] },
+    { q: "title", locale: "fr" },
+    { q: "title", locale: ["en", "pt-BR"] },
   ]) {
     assert.throws(() => searchVariables(input));
   }

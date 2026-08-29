@@ -350,7 +350,13 @@ const cursor = (value: unknown): string => {
 };
 
 function discoveryLocale(value: unknown): Locale {
-  return value === "pt-BR" ? "pt-BR" : "en";
+  if (value === undefined || value === "en") {
+    return "en";
+  }
+  if (value === "pt-BR") {
+    return "pt-BR";
+  }
+  throw new Error("Invalid discovery locale.");
 }
 
 export function homeVariables(input: Record<string, string | string[] | undefined>): HomeVariables {
@@ -552,7 +558,13 @@ export function readHomePublicData(value: unknown): HomePublicData {
       (result) => result.code !== "COMPLETED" && result.code !== "EMPTY",
     ) ||
     (genreCode !== "COMPLETED" && genreCode !== "EMPTY");
-  if ((code === "PARTIAL") !== degraded) {
+  const usable =
+    [featured, recentlyAdded, trending].some((result) =>
+      ["COMPLETED", "EMPTY", "FALLBACK"].includes(result.code),
+    ) ||
+    genreCode === "COMPLETED" ||
+    genreCode === "EMPTY";
+  if ((code === "PARTIAL") !== degraded || (code === "PARTIAL" && !usable)) {
     throw new Error("Invalid home aggregate outcome.");
   }
   return {

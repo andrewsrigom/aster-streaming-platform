@@ -122,8 +122,10 @@ an independent route when Discovery is unavailable.
 - Commands: focused Web tests/build/lint; schema checks; affected candidate; one
   disposable browser/runtime acceptance.
 - Raw artifact path: `evidence/phase-09/web-discovery-*.txt` and Phase 09 index.
-- Acceptance result: local Web/Router, affected browser/runtime, initial/
-  confirmation review and46/46 candidate pass; protected release pending.
+- Acceptance result: initial local candidate and46/46 pass; published `b087bc5`
+  passed protected run33252690275. Hosted review found three boundary defects;
+  their batched correction passes Web110/110, build/scans, browser8/8 and the
+  affected46/46 candidate. Hosted confirmation and release remain.
 - Iteration gate: Web typecheck/build, focused node:test and scoped ESLint.
 - Candidate gate: `pnpm check:changed`, schema compatibility and public-artifact scan.
 - Heavyweight repeat triggers: changes to public preload/hydration, private profile

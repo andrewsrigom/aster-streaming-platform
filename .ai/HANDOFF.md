@@ -45,16 +45,23 @@ artifact/notice scans, Router10/10 and schema composition pass. Disposable proje
 `aster-p09-web-proof-829b704d` passes the new discovery journey3/3, Discovery
 isolation1/1 and the affected browser group after one fixed keyboard-harness
 assumption. Initial review's rail-source/aggregate semantic correction then passes
-Web110/110, rebuilt discovery browser4/4 and confirmation with no blocker. Final
+Web110/110, rebuilt discovery browser4/4 and local re-review with no blocker. Final
 candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
 moderate. Exact disposable cleanup reports containers0/networks0/volumes0.
 Implementation commit is exact19a510cbccb04614373b448055f985df6bce7368;
-the following publication checkpoint is documentation/state only.
+published checkpoint b087bc5564595d5434ba63be2dca880cce748531 passed every
+protected job in run33252690275. Hosted review5058080810 found invalid discovery
+locale coercion, an invisible failed genre group and accepted unusable PARTIAL
+payloads. Their batched local correction rejects the URLs, surfaces the group and
+requires one usable aggregate child. Web110/110, strict types/lint, production
+build/scans and rebuilt browser8/8 pass; cleanup is containers0/networks0/volumes0.
+The corrected affected candidate passes46/46,32 cached, in51.27s.
 
 ## Exact next actions
 
-1. Commit/push the coherent candidate and record its exact commit.
-2. Open the P09-R10 PR, request exact-head hosted review and await protected CI.
+1. Commit and push the batched PR36 correction once.
+2. Resolve the three corrected discussions, request one exact-head confirmation
+   and await protected CI.
 3. Treat only blocking confirmation findings, squash merge and pass exact-main CI.
 
 ## Evidence boundaries

@@ -21,6 +21,12 @@ Append new entries at the top. Keep entries factual and concise.
   accessibility/public artifacts and a stopped/recovered Discovery owner.
 - Updated the one-command browsing demo to include the event/Discovery overlays
   with sequential image builds for evaluator-machine reliability.
+- Published checkpoint `b087bc5` as PR36; protected run33252690275 passed every
+  required job. Hosted review5058080810 found invalid/repeated locale coercion,
+  invisible genre-group failure and accepted unusable `PARTIAL` payloads.
+- Corrected the three boundaries in one batch with direct variable, projection
+  and browser regressions. Owners, schema, dependencies, caches and topology do
+  not change.
 
 ### Evidence
 
@@ -49,11 +55,16 @@ Append new entries at the top. Keep entries factual and concise.
   `19a510cbccb04614373b448055f985df6bce7368`; the next checkpoint records only its
   evidence/state before one remote publication.
 - Raw candidate evidence: `evidence/phase-09/web-discovery-runtime.txt`.
+- Review correction passes Web110/110, strict types, scoped lint, production
+  build/artifact/notice scans and rebuilt browser acceptance8/8. Exact teardown
+  again reports containers0, networks0 and volumes0.
+- Corrected affected candidate passes46/46,32 cached, in51.27s.
 
 ### Next action
 
-Commit/publish the frozen candidate, complete hosted exact-head review/protected
-CI, squash merge and pass exact-main CI to release Phase 09.
+Publish the one remediation commit, resolve the three discussions and obtain one
+exact-head confirmation/protected CI before squash merge and exact-main Phase09
+acceptance.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 

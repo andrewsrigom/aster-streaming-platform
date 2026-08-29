@@ -106,6 +106,13 @@ export function HomeDiscovery({ variables }: { variables: HomeVariables }) {
             {payload.genres?.rails.map((rail) => (
               <Rail key={rail.key} rail={rail} locale={variables.locale} />
             ))}
+            {payload.genres &&
+            payload.genres.code !== "COMPLETED" &&
+            payload.genres.code !== "EMPTY" ? (
+              <p className="text-sm text-muted-foreground">
+                Genre discovery is temporarily unavailable.
+              </p>
+            ) : null}
           </div>
         ) : null}
         <DiscoveryFeedback

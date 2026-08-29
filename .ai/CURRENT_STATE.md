@@ -42,11 +42,17 @@ production build/artifact/notice scans pass, the new discovery journey passes3/3
 Discovery isolation passes1/1 and the affected browser group passes after one
 bounded keyboard-harness correction. [Runtime evidence](../evidence/phase-09/web-discovery-runtime.txt).
 Initial review's rail-source/aggregate semantic boundary is corrected; the rebuilt
-image passes discovery4/4 and confirmation has no blocker. The final affected
+image passes discovery4/4 and local re-review had no blocker. The final affected
 candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
-moderate. Exact disposable cleanup reports containers0/networks0/volumes0.
-Implementation commit is exact `19a510cbccb04614373b448055f985df6bce7368`;
-the publication checkpoint changes evidence/state only.
+moderate. Implementation commit is exact
+`19a510cbccb04614373b448055f985df6bce7368`; published checkpoint `b087bc5`
+passed protected run33252690275. Hosted review5058080810 found three real edge
+defects: invalid/repeated discovery locale coercion, invisible genre-group failure
+and accepted unusable `PARTIAL` payloads. Their batched local correction passes
+Web110/110, strict types/lint, production artifact/notice scans and rebuilt browser
+acceptance8/8; exact cleanup again reports containers0/networks0/volumes0. Final
+affected candidate passes46/46,32 cached, in51.27s. Publication and confirmation
+remain.
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
 old/new schema overlap. Home selections now use one transaction at a time per
@@ -97,8 +103,8 @@ acceptance remain pending. Hosted release remains Phase 14.
 
 ## Next outcome
 
-Complete P09-R10: commit/publish the frozen local candidate, complete hosted
-confirmation and protected CI, then squash and pass exact-main Phase 09 acceptance.
+Complete P09-R10: publish the hosted-review correction once, complete confirmation
+and protected CI, then squash and pass exact-main Phase09 acceptance.
 
 ## Runtime and recovery
 

@@ -91,6 +91,16 @@ test("discovery projection rejects malformed, unbounded and false-success respon
     {
       homeRails: {
         ...valid.homeRails,
+        code: "PARTIAL",
+        featured: { code: "UNAVAILABLE", rail: null },
+        recentlyAdded: { code: "CANCELLED", rail: null },
+        trending: { code: "INDETERMINATE", rail: null },
+        genres: { code: "UNAVAILABLE", rails: [] },
+      },
+    },
+    {
+      homeRails: {
+        ...valid.homeRails,
         genres: {
           code: "COMPLETED",
           rails: Array.from({ length: 4 }, (_, index) => ({

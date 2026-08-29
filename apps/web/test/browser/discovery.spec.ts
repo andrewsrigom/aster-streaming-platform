@@ -113,6 +113,8 @@ test("search distinguishes empty, stale, expired cursor and invalid URL input", 
       await page.goto("/search?q=one%20two%20three%20four%20five%20six%20seven%20eight%20nine")
     )?.status(),
   ).toBe(404);
+  expect((await page.goto("/search?q=Signal&locale=fr"))?.status()).toBe(404);
+  expect((await page.goto("/?locale=en&locale=pt-BR"))?.status()).toBe(404);
 });
 
 test("home personalization starts after profile selection and private failure leaves public rails", async ({

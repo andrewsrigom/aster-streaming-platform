@@ -172,7 +172,7 @@ test("empty rails, missing titles and invalid inputs differ from unavailable dat
       body: JSON.stringify({
         data: {
           homeRails: {
-            code: "COMPLETED",
+            code: "PARTIAL",
             correlationId: "00000000-0000-4000-8000-000000090001",
             generation: "00000000-0000-4000-8000-000000090002",
             generatedAt: 1000,
@@ -209,7 +209,7 @@ test("empty rails, missing titles and invalid inputs differ from unavailable dat
                 edges: [],
               },
             },
-            genres: { code: "EMPTY", rails: [] },
+            genres: { code: "UNAVAILABLE", rails: [] },
           },
         },
       }),
@@ -217,6 +217,9 @@ test("empty rails, missing titles and invalid inputs differ from unavailable dat
   });
   await page.getByRole("button", { name: "Refresh discovery", exact: true }).click();
   await expect(page.getByText("No titles in this rail.", { exact: true })).toHaveCount(3);
+  await expect(
+    page.getByText("Genre discovery is temporarily unavailable.", { exact: true }),
+  ).toBeVisible();
   await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
   await page.unroute(endpoint);
   await page.goto("/title/00000000-0000-4000-8000-000005099999");

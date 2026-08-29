@@ -8,9 +8,12 @@ protected run33248598719, clean confirmation, squash main `a3f969c` and exact-ma
 run33249289718. P09-R10 is the sole IN_PROGRESS item on
 `feat/p09-web-discovery`. Its exact documents, bounded public SSR/search,
 profile-safe private enhancement and Discovery failure isolation are implemented;
-Web110/110, Router10/10, rebuilt browser4/4, final candidate46/46 and confirmation
-review pass; exact disposable cleanup is zero. Publication, hosted confirmation,
-protected and exact-main release remain. Historical rails review details remain below.
+Web110/110, Router10/10, rebuilt browser4/4 and final candidate46/46 pass. Published
+checkpoint `b087bc5` passed protected run33252690275; hosted review found three
+boundary defects. Their batched local correction passes Web110/110, build/scans and
+rebuilt browser8/8 with exact cleanup zero. The corrected affected candidate
+passes46/46 in51.27s. One update, confirmation, protected and exact-main release
+remain. Historical rails review details remain below.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

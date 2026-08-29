@@ -21,7 +21,11 @@ export function readBrowseVariables(input: Record<string, string | string[] | un
 }
 
 export function readHomeVariables(input: Record<string, string | string[] | undefined>) {
-  return homeVariables(input);
+  try {
+    return homeVariables(input);
+  } catch {
+    notFound();
+  }
 }
 
 export function readSearchVariables(input: Record<string, string | string[] | undefined>) {
