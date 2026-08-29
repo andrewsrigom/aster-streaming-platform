@@ -10,8 +10,11 @@ export interface RebuildCheckpoint {
   readonly generation: string;
   readonly after: string | null;
   readonly scanComplete: boolean;
-  readonly handled: BrokerOffsets;
   readonly rowsApplied: number;
+}
+export interface RebuildHandledOffset {
+  readonly partition: number;
+  readonly offset: string;
 }
 
 const timestamp = (value: unknown): value is number =>
@@ -87,26 +90,35 @@ export function normalizeRebuildStart(value: unknown): RebuildStart | undefined 
 
 export function normalizeRebuildCheckpoint(value: unknown): RebuildCheckpoint | undefined {
   try {
-    const input = discoveryRecord(value, [
-      "generation",
-      "after",
-      "scanComplete",
-      "handled",
-      "rowsApplied",
-    ]);
-    const handled = input && normalizeBrokerOffsets(input["handled"]);
+    const input = discoveryRecord(value, ["generation", "after", "scanComplete", "rowsApplied"]);
     return input &&
       discoveryIdentifier(input["generation"]) &&
       (input["after"] === null || discoveryIdentifier(input["after"])) &&
       typeof input["scanComplete"] === "boolean" &&
-      rows(input["rowsApplied"]) &&
-      handled
+      rows(input["rowsApplied"])
       ? Object.freeze({
           generation: input["generation"],
           after: input["after"],
           scanComplete: input["scanComplete"],
-          handled,
           rowsApplied: input["rowsApplied"],
+        })
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function normalizeRebuildHandledOffset(value: unknown): RebuildHandledOffset | undefined {
+  try {
+    const input = discoveryRecord(value, ["partition", "offset"]);
+    const offsets =
+      input && typeof input["partition"] === "number" && Number.isSafeInteger(input["partition"])
+        ? normalizeBrokerOffsets({ [String(input["partition"])]: input["offset"] })
+        : undefined;
+    return input && offsets
+      ? Object.freeze({
+          partition: input["partition"] as number,
+          offset: input["offset"] as string,
         })
       : undefined;
   } catch {

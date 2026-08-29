@@ -125,11 +125,28 @@ export function createPostgresRebuildStore(
             }),
           );
         }
+        const activeProgress = record(
+          one(
+            await tx.query({
+              text: `SELECT handled_offsets FROM discovery.generations
+                WHERE id=$1::uuid AND state='ACTIVE' FOR UPDATE`,
+              values: [active],
+            }),
+          ),
+          ["handled_offsets"],
+        );
+        const handled = offsets(activeProgress["handled_offsets"]);
         changed(
           await tx.query({
-            text: `INSERT INTO discovery.generations(id,state,started_at,barrier_offsets)
-              VALUES ($1::uuid,'BUILDING',$2::bigint,$3::jsonb) RETURNING id`,
-            values: [value.generation, value.startedAt, JSON.stringify(value.barrier)],
+            text: `INSERT INTO discovery.generations(
+                id,state,started_at,barrier_offsets,handled_offsets)
+              VALUES ($1::uuid,'BUILDING',$2::bigint,$3::jsonb,$4::jsonb) RETURNING id`,
+            values: [
+              value.generation,
+              value.startedAt,
+              JSON.stringify(value.barrier),
+              JSON.stringify(handled),
+            ],
           }),
         );
         changed(
@@ -166,30 +183,68 @@ export function createPostgresRebuildStore(
         ) {
           return invalid();
         }
-        const handled = offsets(current["handled_offsets"]);
+        offsets(current["handled_offsets"]);
         const rowsApplied = integer(current["rows_applied"], 1_000_000);
         if (
           (after !== null && (value.after === null || value.after < after)) ||
           (current["scan_complete"] && !value.scanComplete) ||
-          value.rowsApplied < rowsApplied ||
-          !offsetsCover(value.handled, handled)
+          value.rowsApplied < rowsApplied
         ) {
           return { action: "rollback", value: "conflict" } as const;
         }
         changed(
           await tx.query({
             text: `UPDATE discovery.generations SET last_title_id=$2::uuid,scan_complete=$3::boolean,
-              handled_offsets=$4::jsonb,rows_applied=$5::integer
+              rows_applied=$4::integer
               WHERE id=$1::uuid AND state='BUILDING' RETURNING id`,
-            values: [
-              value.generation,
-              value.after,
-              value.scanComplete,
-              JSON.stringify(value.handled),
-              value.rowsApplied,
-            ],
+            values: [value.generation, value.after, value.scanComplete, value.rowsApplied],
           }),
         );
+        return { action: "commit", value: "checkpointed" } as const;
+      });
+    },
+    recordHandled(value, signal) {
+      return transaction(database, signal, async (tx) => {
+        const control = record(
+          one(
+            await tx.query({
+              text: `SELECT active_generation::text AS active,
+                building_generation::text AS building
+                FROM discovery.generation_control WHERE singleton FOR UPDATE`,
+            }),
+          ),
+          ["active", "building"],
+        );
+        const active = control["active"];
+        const building = control["building"];
+        if (!discoveryIdentifier(active) || (building !== null && !discoveryIdentifier(building))) {
+          return invalid();
+        }
+        for (const generation of building === null ? [active] : [active, building]) {
+          const current = record(
+            one(
+              await tx.query({
+                text: `SELECT handled_offsets FROM discovery.generations
+                  WHERE id=$1::uuid FOR UPDATE`,
+                values: [generation],
+              }),
+            ),
+            ["handled_offsets"],
+          );
+          const handled = offsets(current["handled_offsets"]);
+          const partition = String(value.partition);
+          const previous = handled[partition];
+          if (previous !== undefined && BigInt(previous) >= BigInt(value.offset)) {
+            continue;
+          }
+          changed(
+            await tx.query({
+              text: `UPDATE discovery.generations SET handled_offsets=$2::jsonb
+                WHERE id=$1::uuid RETURNING id`,
+              values: [generation, JSON.stringify({ ...handled, [partition]: value.offset })],
+            }),
+          );
+        }
         return { action: "commit", value: "checkpointed" } as const;
       });
     },
@@ -287,7 +342,53 @@ export function createPostgresRebuildStore(
         return {
           action: "rollback",
           value: Object.freeze({
+            generation,
             state: status(value["state"]),
+            barrier: offsets(value["barrier_offsets"]),
+            handled: offsets(value["handled_offsets"]),
+            after,
+            scanComplete: value["scan_complete"],
+            rowsApplied: integer(value["rows_applied"], 1_000_000),
+          }),
+        } as const;
+      });
+    },
+    building(signal) {
+      return transaction(database, signal, async (tx) => {
+        const result = await tx.query({
+          text: `SELECT g.id::text AS generation,g.state,g.barrier_offsets,g.handled_offsets,
+            g.last_title_id::text AS after,g.scan_complete,g.rows_applied
+            FROM discovery.generation_control c
+            JOIN discovery.generations g ON g.id=c.building_generation
+            WHERE c.singleton`,
+        });
+        if (result.rowCount === 0 && result.rows.length === 0) {
+          return { action: "rollback", value: null } as const;
+        }
+        const value = record(one(result), [
+          "generation",
+          "state",
+          "barrier_offsets",
+          "handled_offsets",
+          "after",
+          "scan_complete",
+          "rows_applied",
+        ]);
+        const generation = value["generation"];
+        const after = value["after"];
+        if (
+          !discoveryIdentifier(generation) ||
+          value["state"] !== "BUILDING" ||
+          (after !== null && !discoveryIdentifier(after)) ||
+          typeof value["scan_complete"] !== "boolean"
+        ) {
+          return invalid();
+        }
+        return {
+          action: "rollback",
+          value: Object.freeze({
+            generation,
+            state: "BUILDING" as const,
             barrier: offsets(value["barrier_offsets"]),
             handled: offsets(value["handled_offsets"]),
             after,

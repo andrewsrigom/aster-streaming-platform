@@ -1,12 +1,54 @@
-import type { BrokerOffsets, RebuildCheckpoint, RebuildStart } from "../domain/rebuild-state.js";
+import type {
+  BrokerOffsets,
+  RebuildCheckpoint,
+  RebuildHandledOffset,
+  RebuildStart,
+} from "../domain/rebuild-state.js";
 import type { ProjectionStoreResult } from "./projection-ports.js";
+import type { ProjectionApplyResult } from "./apply-title-snapshot.js";
 
 export type RebuildOutcome = "started" | "checkpointed" | "promoted" | "busy" | "conflict";
+
+export interface RebuildGenerationState {
+  readonly generation: string;
+  readonly state: "ACTIVE" | "BUILDING" | "PREVIOUS";
+  readonly barrier: BrokerOffsets;
+  readonly handled: BrokerOffsets;
+  readonly after: string | null;
+  readonly scanComplete: boolean;
+  readonly rowsApplied: number;
+}
+
+export interface CatalogSnapshotExportPage {
+  readonly snapshots: readonly unknown[];
+  readonly endCursor: string | null;
+  readonly hasNextPage: boolean;
+}
+
+export interface CatalogSnapshotExportSource {
+  exportPage(
+    after: string | null,
+    correlationId: string,
+    signal: AbortSignal,
+  ): Promise<ProjectionStoreResult<CatalogSnapshotExportPage>>;
+}
+
+export interface RebuildProjector {
+  apply(
+    snapshot: unknown,
+    context: Readonly<{ now: number; event: null }>,
+    signal: AbortSignal,
+  ): Promise<ProjectionApplyResult>;
+}
 
 export interface RebuildStore {
   start(value: RebuildStart, signal: AbortSignal): Promise<ProjectionStoreResult<RebuildOutcome>>;
   checkpoint(
     value: RebuildCheckpoint,
+    signal: AbortSignal,
+  ): Promise<ProjectionStoreResult<RebuildOutcome>>;
+  recordHandled(
+    value: RebuildHandledOffset,
     signal: AbortSignal,
   ): Promise<ProjectionStoreResult<RebuildOutcome>>;
   promote(
@@ -16,14 +58,6 @@ export interface RebuildStore {
   state(
     generation: string,
     signal: AbortSignal,
-  ): Promise<
-    ProjectionStoreResult<Readonly<{
-      state: "ACTIVE" | "BUILDING" | "PREVIOUS";
-      barrier: BrokerOffsets;
-      handled: BrokerOffsets;
-      after: string | null;
-      scanComplete: boolean;
-      rowsApplied: number;
-    }> | null>
-  >;
+  ): Promise<ProjectionStoreResult<RebuildGenerationState | null>>;
+  building(signal: AbortSignal): Promise<ProjectionStoreResult<RebuildGenerationState | null>>;
 }

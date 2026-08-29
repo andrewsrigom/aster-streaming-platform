@@ -5,7 +5,7 @@
 - Phase: 09
 - Requirement IDs: P09-R01, P09-R02, P09-R06, P09-R07
 - Created: 2026-08-28
-- Updated: 2026-08-28
+- Updated: 2026-08-29
 
 ## Outcome
 
@@ -15,7 +15,7 @@ A viewer can search published titles through the supergraph using a bounded, ver
 
 PR32 exact d295ec7 passed protected CI33228909828 and clean confirmation review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are released. Run33225822813 proved immutable replay and every preceding owner/platform boundary, then disproved observer-owned body reads; the released source leaves bodies to the application and requires rendered durable confirmation within12 seconds.
 
-P09-R01 is the sole active unpublished item on feat/p09-discovery-search, rebased onto released main6f38ce0 through a3f0e24. Domain, Catalog snapshot/private runtime and Discovery persistence/rebuild/search rules pass their focused suites. Bounded Catalog hint inspection, fresh purpose-separated owner HTTP reads, finite durable quarantine, exact replay and the broker handler pass47 focused tests plus real PostgreSQL18.6 recovery/role proof. No running broker consumer or search API is claimed. Next are broker lifecycle/rebuild orchestration and GraphQL. Historical stashes are superseded and must not be reapplied.
+P09-R01 is the sole active unpublished item on feat/p09-discovery-search, rebased onto released main6f38ce0 through dd3f8c1 plus the current working checkpoint. Domain, Catalog snapshot/export, Discovery persistence/search, finite broker lifecycle and resumable barrier-gated rebuild pass55 Discovery,27 broker and23 event-delivery tests plus real PostgreSQL18.6 recovery/role proof. Consumer progress is durable on active/building generations before acknowledgement and cannot be overwritten by scan checkpoints. A composed running Discovery service, real Kafka proof and search API are not yet claimed. Next is GraphQL/runtime composition. Historical stashes are superseded and must not be reapplied.
 
 ## Proposed behavior
 

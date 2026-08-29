@@ -4,13 +4,13 @@
 
 PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
 
-P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search, rebased onto main6f38ce0 through a3f0e24. Domain, Catalog source/private runtime and Discovery persistence/search/rebuild pass. The current checkpoint adds bounded Catalog hints, fixed purpose-separated owner HTTP reads, broker acknowledgement handling, finite exact-byte quarantine and replay; strict build,47/47 tests, scoped lint and real PostgreSQL18.6 recovery/role proof pass. Next: broker lifecycle/rebuild orchestration and GraphQL. Historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search, rebased onto main6f38ce0 through dd3f8c1 plus the working broker/rebuild checkpoint. Domain, Catalog source/export, Discovery persistence/search, canonical Kafka barriers, finite consumer lifecycle and resumable barrier-gated rebuild pass broker27/27, event-delivery23/23, Discovery55/55, scoped lint and real PostgreSQL18.6. Consumer offsets are durable on active/building generations before acknowledgement. Next: compose GraphQL/runtime and prove real Kafka. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Complete the finite Discovery broker lifecycle and rebuild scan/barrier orchestration around the implemented consumer/quarantine.
-2. Add bounded search GraphQL/Federation and opt-in runtime in the next coherent checkpoint.
-3. Run the affected candidate gate, real broker/runtime evidence and review before publication. Frozen install is required after workspace changes. Restore no historical stash.
+1. Add bounded search GraphQL/Federation and compose the existing projection, consumer, Catalog client and rebuild runner into one opt-in service.
+2. Run real broker/runtime evidence and the affected candidate gate before publication. Frozen install is required after workspace changes. Restore no historical stash.
+3. Complete the initial/confirmation review and protected release before starting P09-R03.
 4. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.
 
 ## Evidence boundaries

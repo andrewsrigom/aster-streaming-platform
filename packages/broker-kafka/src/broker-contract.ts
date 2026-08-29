@@ -49,6 +49,8 @@ export interface AsterKafkaTopicInput {
   readonly topic: string;
 }
 
+export type AsterKafkaTopicOffsets = Readonly<Record<string, string>>;
+
 export interface AsterKafkaPublishInput extends AsterKafkaTopicInput {
   readonly key: Uint8Array;
   readonly value: Uint8Array;
@@ -90,6 +92,10 @@ export type AsterKafkaBrokerOperationResult =
     }>
   | Readonly<{ status: "failed" }>;
 
+export type AsterKafkaTopicOffsetsResult =
+  | Readonly<{ status: "completed"; value: AsterKafkaTopicOffsets }>
+  | Exclude<AsterKafkaBrokerOperationResult, Readonly<{ status: "completed" }>>;
+
 export type AsterKafkaBrokerCloseResult = Readonly<{
   status: "completed" | "already_completed" | "timed_out" | "aborted" | "failed";
 }>;
@@ -107,6 +113,7 @@ export interface AsterKafkaBrokerAdapter {
     input: AsterKafkaTopicInput,
     signal?: AbortSignal,
   ): Promise<AsterKafkaBrokerOperationResult>;
+  offsets(input: AsterKafkaTopicInput, signal?: AbortSignal): Promise<AsterKafkaTopicOffsetsResult>;
   publish(
     input: AsterKafkaPublishInput,
     signal?: AbortSignal,

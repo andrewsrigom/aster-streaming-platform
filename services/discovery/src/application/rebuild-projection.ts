@@ -1,5 +1,6 @@
 import {
   normalizeRebuildCheckpoint,
+  normalizeRebuildHandledOffset,
   normalizeRebuildStart,
   validPromotion,
 } from "../domain/rebuild-state.js";
@@ -20,6 +21,12 @@ export function createProjectionRebuilder(ports: Readonly<{ store: RebuildStore 
       const input = normalizeRebuildCheckpoint(value);
       return input
         ? ports.store.checkpoint(input, signal)
+        : Promise.resolve({ status: "completed", value: "invalid_input" });
+    },
+    recordHandled(value: unknown, signal: AbortSignal): Promise<Result> {
+      const input = normalizeRebuildHandledOffset(value);
+      return input
+        ? ports.store.recordHandled(input, signal)
         : Promise.resolve({ status: "completed", value: "invalid_input" });
     },
     promote(value: unknown, signal: AbortSignal): Promise<Result> {

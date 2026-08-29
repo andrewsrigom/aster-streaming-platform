@@ -225,23 +225,33 @@ try {
     newerVersionRepublish: "applied",
   });
 
+  assert.deepEqual(await rebuilder.recordHandled({ partition: 0, offset: "8" }, signal()), {
+    status: "completed",
+    value: "checkpointed",
+  });
   const started = await rebuilder.start(
     { generation: generation2, startedAt: now, barrier: { 0: "10" } },
     signal(),
   );
   assert.deepEqual(started, { status: "completed", value: "started" });
+  const initialBuild = await rebuildStore.state(generation2, signal());
+  assert.equal(initialBuild.status, "completed");
+  assert.deepEqual(initialBuild.value?.handled, { 0: "8" });
   assert.equal((await apply(snapshot(titleOcean, 2, null), null)).status, "applied");
   const premature = await rebuilder.checkpoint(
     {
       generation: generation2,
       after: titleOcean,
       scanComplete: true,
-      handled: { 0: "9" },
       rowsApplied: 4,
     },
     signal(),
   );
   assert.deepEqual(premature, { status: "completed", value: "checkpointed" });
+  assert.deepEqual(await rebuilder.recordHandled({ partition: 0, offset: "9" }, signal()), {
+    status: "completed",
+    value: "checkpointed",
+  });
   assert.deepEqual(
     await rebuilder.promote({ generation: generation2, completedAt: now + 1 }, signal()),
     {
@@ -249,19 +259,10 @@ try {
       value: "conflict",
     },
   );
-  assert.deepEqual(
-    await rebuilder.checkpoint(
-      {
-        generation: generation2,
-        after: titleOcean,
-        scanComplete: true,
-        handled: { 0: "10" },
-        rowsApplied: 4,
-      },
-      signal(),
-    ),
-    { status: "completed", value: "checkpointed" },
-  );
+  assert.deepEqual(await rebuilder.recordHandled({ partition: 0, offset: "10" }, signal()), {
+    status: "completed",
+    value: "checkpointed",
+  });
   assert.deepEqual(
     await rebuilder.promote({ generation: generation2, completedAt: now + 1 }, signal()),
     {
@@ -283,6 +284,20 @@ try {
     ),
     { status: "completed", value: "started" },
   );
+  const carriedBuild = await rebuildStore.state(generation3, signal());
+  assert.equal(carriedBuild.status, "completed");
+  assert.deepEqual(carriedBuild.value?.handled, { 0: "10" });
+  assert.deepEqual(await rebuilder.recordHandled({ partition: 0, offset: "12" }, signal()), {
+    status: "completed",
+    value: "checkpointed",
+  });
+  assert.deepEqual(await rebuilder.recordHandled({ partition: 0, offset: "11" }, signal()), {
+    status: "completed",
+    value: "checkpointed",
+  });
+  const rebuilding = await rebuildStore.state(generation3, signal());
+  assert.equal(rebuilding.status, "completed");
+  assert.deepEqual(rebuilding.value?.handled, { 0: "12" });
   const generations = await admin.query<{ state: string; count: number }>(
     "SELECT state,count(*)::int AS count FROM discovery.generations GROUP BY state ORDER BY state",
   );
@@ -295,6 +310,8 @@ try {
     cursorExpiredAfterPromotion: true,
     activeSurvivesPartialNextBuild: true,
     retainedGenerations: 2,
+    activeOffsetCarryForward: true,
+    durableHandledOffset: "12",
   });
 
   const client = await admin.connect();

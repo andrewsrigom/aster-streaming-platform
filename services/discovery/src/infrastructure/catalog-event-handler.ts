@@ -8,6 +8,7 @@ import type {
   CatalogSnapshotSource,
 } from "../application/catalog-event-ports.js";
 import { createCatalogEventConsumer } from "../application/consume-catalog-event.js";
+import type { createProjectionRebuilder } from "../application/rebuild-projection.js";
 import { inspectCatalogEvent } from "./catalog-event-wire.js";
 
 export function createCatalogEventHandler(
@@ -18,6 +19,7 @@ export function createCatalogEventHandler(
     now: () => number;
     logger: Pick<AsterLogger, "info">;
     telemetry: Pick<AsterTelemetry, "startDependencyOperation">;
+    recordHandled: ReturnType<typeof createProjectionRebuilder>["recordHandled"];
   }>,
 ): (record: AsterKafkaConsumedRecord) => Promise<void> {
   const consumer = createCatalogEventConsumer({
@@ -50,7 +52,21 @@ export function createCatalogEventHandler(
       } catch {
         /* Optional telemetry cannot decide broker acknowledgement. */
       }
-      const outcome = await consumer.handle(record, deadline.signal);
+      let outcome = await consumer.handle(record, deadline.signal);
+      if (outcome !== "retry") {
+        try {
+          const next = (BigInt(offset) + 1n).toString();
+          const progress = await options.recordHandled(
+            { partition, offset: next },
+            deadline.signal,
+          );
+          if (progress.status !== "completed" || progress.value !== "checkpointed") {
+            outcome = "retry";
+          }
+        } catch {
+          outcome = "retry";
+        }
+      }
       const inspection = inspectCatalogEvent(record);
       try {
         options.logger.info({

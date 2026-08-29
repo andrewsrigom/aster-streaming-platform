@@ -135,6 +135,7 @@ function fixture(event = profileEvent()) {
       return Promise.resolve({ status: "completed" });
     },
     metadata: () => Promise.resolve({ status: "completed" }),
+    offsets: () => Promise.resolve({ status: "completed", value: { 0: "0" } }),
     publish: (record) => {
       calls.push("publish");
       published.push(record);

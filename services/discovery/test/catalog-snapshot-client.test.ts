@@ -93,6 +93,81 @@ test("Catalog snapshot client sends one fixed purpose-separated read and preserv
   }
 });
 
+test("Catalog snapshot client scans exact bounded and strictly ordered export pages", async () => {
+  let calls = 0;
+  const f = await fixture((incoming, response) => {
+    calls++;
+    const chunks: Buffer[] = [];
+    incoming.on("data", (chunk: Buffer) => chunks.push(chunk));
+    incoming.on("end", () => {
+      const body: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+      assert.deepEqual(body, {
+        operationName: "DiscoveryExport",
+        variables: { after: calls === 1 ? null : id(2) },
+        query:
+          "query DiscoveryExport($after: ID) { _discoveryExport(after: $after) { snapshots { titleId sourceVersion observedAt visibleUntil document { defaultLocale localizations { locale title synopsis } genres editorialLabels releaseYear publishedAt } } endCursor hasNextPage } }",
+      });
+      const values = calls === 1 ? [snapshot, { ...snapshot, titleId: id(2) }] : [];
+      response.setHeader("content-type", "application/graphql-response+json");
+      response.end(
+        JSON.stringify({
+          data: {
+            _discoveryExport: {
+              snapshots: values,
+              endCursor: values.at(-1)?.titleId ?? null,
+              hasNextPage: calls === 1,
+            },
+          },
+        }),
+      );
+    });
+  });
+  try {
+    assert.deepEqual(await f.client.exportPage(null, id(3), AbortSignal.timeout(3000)), {
+      status: "completed",
+      value: {
+        snapshots: [snapshot, { ...snapshot, titleId: id(2) }],
+        endCursor: id(2),
+        hasNextPage: true,
+      },
+    });
+    assert.deepEqual(await f.client.exportPage(id(2), id(3), AbortSignal.timeout(3000)), {
+      status: "completed",
+      value: { snapshots: [], endCursor: null, hasNextPage: false },
+    });
+    assert.equal(calls, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test("Catalog snapshot export fails closed on malformed pagination", async () => {
+  const invalidPages = [
+    { snapshots: [snapshot], endCursor: snapshot.titleId, hasNextPage: true },
+    { snapshots: [snapshot, snapshot], endCursor: snapshot.titleId, hasNextPage: false },
+    {
+      snapshots: [{ ...snapshot, titleId: id(2) }, snapshot],
+      endCursor: snapshot.titleId,
+      hasNextPage: false,
+    },
+    { snapshots: [snapshot], endCursor: id(2), hasNextPage: false },
+    { snapshots: [snapshot], endCursor: snapshot.titleId, hasNextPage: false, extra: true },
+  ];
+  for (const page of invalidPages) {
+    const f = await fixture((_incoming, response) => {
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ data: { _discoveryExport: page } }));
+    });
+    try {
+      assert.deepEqual(await f.client.exportPage(null, id(3), AbortSignal.timeout(3000)), {
+        status: "unavailable",
+      });
+    } finally {
+      await f.close();
+    }
+  }
+});
+
 test("Catalog snapshot client fails closed on transport and envelope violations without retry", async () => {
   for (const scenario of [
     "status",

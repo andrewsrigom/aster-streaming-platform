@@ -43,6 +43,9 @@ function fixture() {
       value: { status: "applied", value: {} as never },
     } as Awaited<ReturnType<CatalogEventProjector["apply"]>>,
     quarantine: "stored" as const,
+    handled: { status: "completed", value: "checkpointed" } as
+      | Readonly<{ status: "completed"; value: "checkpointed" }>
+      | Readonly<{ status: "unavailable" }>,
   };
   const handler = createCatalogEventHandler({
     now: () => now,
@@ -70,6 +73,7 @@ function fixture() {
         },
       }),
     },
+    recordHandled: () => Promise.resolve(state.handled),
   });
   const record = (value: unknown = event) => ({
     key: encoder.encode(id(1)),
@@ -100,6 +104,10 @@ test("handler acknowledges durable poison quarantine but keeps unavailable outco
   unavailable.state.projection = { status: "unavailable" };
   await assert.rejects(unavailable.handler(unavailable.record()), /requires retry/u);
   assert.deepEqual(unavailable.observations, ["unavailable"]);
+
+  const checkpoint = fixture();
+  checkpoint.state.handled = { status: "unavailable" };
+  await assert.rejects(checkpoint.handler(checkpoint.record()), /requires retry/u);
 });
 
 test("handler propagates broker cancellation without logging event bytes", async () => {

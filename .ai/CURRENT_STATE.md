@@ -1,12 +1,12 @@
 # Current State
 
-Last updated: 2026-08-28
+Last updated: 2026-08-29
 
 ## Active phase
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 on feat/p09-discovery-search, rebased onto released main6f38ce0 through a3f0e24 plus the current owner-transport checkpoint. PR32 exact d295ec7 passed protected CI/review, squash merge and exact-main CI33229726626; P08-R11 and Phase08 are released. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 on feat/p09-discovery-search, rebased onto released main6f38ce0 through dd3f8c1 plus the current broker/rebuild checkpoint. PR32 exact d295ec7 passed protected CI/review, squash merge and exact-main CI33229726626; P08-R11 and Phase08 are released. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) records isolated roles, monotonic retirement fences, active/building writes, rebuild barriers/promotion, weighted GIN relevance, stable keyset pagination, cursor expiry and guarded rollback. [Event recovery evidence](../evidence/phase-09/catalog-events.txt) adds bounded Catalog hints, fixed purpose-separated owner HTTP reads, broker acknowledgement handling, finite exact-byte quarantine/replay and function-only projector privileges; strict build,47/47 tests, scoped lint and real PostgreSQL18.6 pass. Every disposable fixture cleaned to zero. Broker lifecycle/rebuild orchestration and GraphQL remain; no running consumer or search API exists yet.
+Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) records isolated roles, monotonic retirement fences, weighted GIN relevance, stable keysets and guarded rollback. [Event recovery](../evidence/phase-09/catalog-events.txt) covers bounded hints and exact quarantine/replay. [Rebuild runtime](../evidence/phase-09/rebuild-runtime.txt) adds canonical Kafka barriers, finite earliest consumer lifecycle, exact bounded Catalog export and resumable barrier-gated generation promotion. Consumer offsets advance durably on active/building generations before acknowledgement; scan checkpoints cannot regress them. Broker27/27, event-delivery23/23, Discovery55/55, scoped lint and real PostgreSQL18.6 pass; every disposable fixture cleaned to zero. Service composition, real Kafka runtime proof and GraphQL remain; no public search API exists yet.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -30,7 +30,7 @@ Discovery and hosted release remain pending. Retained demo has not been upgraded
 
 ## Next outcome
 
-Complete P09-R01 broker lifecycle/rebuild orchestration and GraphQL, then run the affected candidate gate before publication. No host experiment or retained-demo upgrade.
+Complete P09-R01 by composing the implemented Discovery broker/rebuild/search pieces behind bounded GraphQL/Federation, then prove real Kafka/runtime and run the affected candidate gate before publication. No host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 

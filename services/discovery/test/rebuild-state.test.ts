@@ -5,6 +5,7 @@ import type { RebuildStore } from "../src/application/rebuild-ports.js";
 import {
   normalizeBrokerOffsets,
   normalizeRebuildCheckpoint,
+  normalizeRebuildHandledOffset,
   normalizeRebuildStart,
   offsetsCover,
 } from "../src/domain/rebuild-state.js";
@@ -40,19 +41,22 @@ test("offset, checkpoint and generation bounds reject ambiguous state", () => {
     normalizeRebuildStart({ generation: id(90), startedAt: now, barrier: {}, extra: true }),
     undefined,
   );
+  assert.deepEqual(normalizeRebuildHandledOffset({ partition: 2, offset: "11" }), {
+    partition: 2,
+    offset: "11",
+  });
+  assert.equal(normalizeRebuildHandledOffset({ partition: -1, offset: "11" }), undefined);
   assert.deepEqual(
     normalizeRebuildCheckpoint({
       generation: id(90),
       after: id(5),
       scanComplete: false,
-      handled: { 0: "9" },
       rowsApplied: 5,
     }),
     {
       generation: id(90),
       after: id(5),
       scanComplete: false,
-      handled: { 0: "9" },
       rowsApplied: 5,
     },
   );
@@ -61,7 +65,6 @@ test("offset, checkpoint and generation bounds reject ambiguous state", () => {
       generation: id(90),
       after: "bad",
       scanComplete: false,
-      handled: {},
       rowsApplied: 0,
     }),
     undefined,
@@ -89,11 +92,16 @@ test("untrusted offset and lifecycle accessors are never invoked", async () => {
       calls.push("checkpoint");
       return Promise.resolve({ status: "completed", value: "checkpointed" });
     },
+    recordHandled: () => {
+      calls.push("handled");
+      return Promise.resolve({ status: "completed", value: "checkpointed" });
+    },
     promote: () => {
       calls.push("promote");
       return Promise.resolve({ status: "completed", value: "promoted" });
     },
     state: () => Promise.resolve({ status: "completed", value: null }),
+    building: () => Promise.resolve({ status: "completed", value: null }),
   };
   const rebuilder = createProjectionRebuilder({ store });
   const hostile = new Proxy(
@@ -126,11 +134,16 @@ test("validated lifecycle commands retain exact barrier and checkpoint data", as
       observed.push(value);
       return Promise.resolve({ status: "completed", value: "checkpointed" });
     },
+    recordHandled: (value) => {
+      observed.push(value);
+      return Promise.resolve({ status: "completed", value: "checkpointed" });
+    },
     promote: (value) => {
       observed.push(value);
       return Promise.resolve({ status: "completed", value: "promoted" });
     },
     state: () => Promise.resolve({ status: "completed", value: null }),
+    building: () => Promise.resolve({ status: "completed", value: null }),
   };
   const rebuilder = createProjectionRebuilder({ store });
   const started = await rebuilder.start(
@@ -144,13 +157,18 @@ test("validated lifecycle commands retain exact barrier and checkpoint data", as
       generation: id(90),
       after: id(5),
       scanComplete: true,
-      handled: { 0: "10" },
       rowsApplied: 5,
     },
     AbortSignal.timeout(1000),
   );
   assert.equal(checkpointed.status, "completed");
   assert.equal(checkpointed.value, "checkpointed");
+  const handled = await rebuilder.recordHandled(
+    { partition: 0, offset: "11" },
+    AbortSignal.timeout(1000),
+  );
+  assert.equal(handled.status, "completed");
+  assert.equal(handled.value, "checkpointed");
   const promoted = await rebuilder.promote(
     { generation: id(90), completedAt: now + 1 },
     AbortSignal.timeout(1000),
@@ -163,9 +181,9 @@ test("validated lifecycle commands retain exact barrier and checkpoint data", as
       generation: id(90),
       after: id(5),
       scanComplete: true,
-      handled: { 0: "10" },
       rowsApplied: 5,
     },
+    { partition: 0, offset: "11" },
     { generation: id(90), completedAt: now + 1 },
   ]);
 });
