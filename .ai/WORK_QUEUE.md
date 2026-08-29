@@ -2,18 +2,15 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P09-R01 is DONE through PR33, protected run33238473742, squash main `0bdcb27`
-and exact-main run33239191134. P09-R03 is DONE through PR34 exact390b655,
-protected run33248598719, clean confirmation, squash main `a3f969c` and exact-main
-run33249289718. P09-R10 is the sole IN_PROGRESS item on
-`feat/p09-web-discovery`. Its exact documents, bounded public SSR/search,
-profile-safe private enhancement and Discovery failure isolation are implemented;
-Web110/110, Router10/10, rebuilt browser4/4 and final candidate46/46 pass. Published
-checkpoint `b087bc5` passed protected run33252690275; hosted review found three
-boundary defects. Their batched local correction passes Web110/110, build/scans and
-rebuilt browser8/8 with exact cleanup zero. The corrected affected candidate
-passes46/46 in51.27s. One update, confirmation, protected and exact-main release
-remain. Historical rails review details remain below.
+Phase09 is DONE through PR36 corrected exact `b5ccd59`, protected run33253867475,
+clean exact-head confirmation, squash main `ffe8e24` and exact-main
+run33254719311. P10 Catalog cache-aside is the sole IN_PROGRESS item on
+`feat/p10-catalog-cache`. It owns the concrete cache design, rights-safe positive
+reuse, short valid-absence caching, TTL jitter, bounded local coalescing,
+tokenized Redis lease and finite measurements. The local implementation and real
+Redis/PostgreSQL proofs pass; exact candidate publication/review remains. No Redis
+result may replace the PostgreSQL visibility/version fence or authorize a durable
+decision.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
@@ -85,7 +82,10 @@ Historical stashes are superseded.
 | 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | DONE |
 | 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | DONE |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | DONE |
-| 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | IN_PROGRESS |
+| 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | DONE |
+| 50 | Implement rights-safe Catalog cache-aside, jitter, coalescing, lease and metrics | P10-R01 | IN_PROGRESS |
+| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | READY |
+| 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | READY |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
@@ -97,6 +97,13 @@ objects. After exact main, PR34 rebases and completes the rail migration,
 owner-composed GraphQL and bounded telemetry. P09-R10 consumes those exact public
 and private operations through existing Web SSR/private-client boundaries. It adds
 no service, profile copy, Redux remote state, Redis authority or cross-owner SQL.
+
+P10-R01 starts with Catalog public-title reads because the owner already has a
+measurable bounded PostgreSQL path. The positive cache may reuse metadata only
+after a current PostgreSQL visibility/version fence; browse ordering and playback
+authority are not cached. Later P10 items reuse the proven primitives for optional
+Discovery stale serving and operation limiters. No Phase11 retry/circuit policy or
+Phase13 GraphQL calibration is implemented early.
 
 Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected/post-merge gates pass. P08-R06 has [protected closeout evidence](../evidence/phase-08/history-visibility.md). Watchlist has [protected closeout evidence](../evidence/phase-08/watchlist.md) under ADR-0032. Entity fields, relay and browser reports follow. No repeated CPU or film experiment.
 

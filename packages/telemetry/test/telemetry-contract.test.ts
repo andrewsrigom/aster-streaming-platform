@@ -315,6 +315,51 @@ test("records bounded Discovery rail and sampled search metrics", async () => {
   await telemetry.shutdown();
 });
 
+test("records finite cache outcomes, latency, payload and waiter buckets", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "cache-metric-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+  });
+  const record = telemetry.recordCacheOperation?.bind(telemetry);
+  assert.ok(record);
+  assert.deepEqual(
+    record({
+      cache: "catalog_public_title",
+      outcome: "coalesced",
+      durationMs: 12,
+      payloadBytes: 4_096,
+      waiterBucket: "two_to_four",
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    record({
+      cache: "catalog_public_title",
+      outcome: "hit",
+      durationMs: 1,
+      waiterBucket: "five_plus",
+    }),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+
+  const collection = await telemetry.collect();
+  assert.equal(collection.status, "collected");
+  const outcomes = metricByName(collection.metrics, ASTER_METRIC_CATALOG.cacheOutcomes.name);
+  assert.deepEqual(
+    { ...outcomes.points[0]?.attributes },
+    {
+      "aster.cache": "catalog_public_title",
+      "aster.outcome": "coalesced",
+      "aster.cache.waiters": "two_to_four",
+    },
+  );
+  const payload = metricByName(collection.metrics, ASTER_METRIC_CATALOG.cachePayloadBytes.name);
+  assert.equal((payload.points[0]?.value as { count: number } | undefined)?.count, 1);
+  assert.equal(telemetry.exportHealth().droppedObservations, 1);
+  await telemetry.shutdown();
+});
+
 test("aggregates finite series beyond the configured cardinality ceiling", async () => {
   const telemetry = createAsterTelemetry({
     serviceName: "cardinality-test",

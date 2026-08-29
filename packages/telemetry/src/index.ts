@@ -1,4 +1,7 @@
 export {
+  ASTER_CACHE_FAMILIES,
+  ASTER_CACHE_OUTCOMES,
+  ASTER_CACHE_WAITER_BUCKETS,
   ASTER_DEPENDENCIES,
   ASTER_DEPENDENCY_OPERATIONS,
   ASTER_DISCOVERY_RAIL_KINDS,
@@ -11,6 +14,10 @@ export {
   type AsterCollectedMetric,
   type AsterCollectedMetricPoint,
   type AsterDependency,
+  type AsterCacheFamily,
+  type AsterCacheMetricInput,
+  type AsterCacheOutcome,
+  type AsterCacheWaiterBucket,
   type AsterDependencyCompletion,
   type AsterDependencyObservation,
   type AsterDependencyObservationInput,

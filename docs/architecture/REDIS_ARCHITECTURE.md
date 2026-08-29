@@ -26,15 +26,27 @@ Do not put raw emails, access tokens, or signed URLs in keys.
 
 ## Catalog cache
 
-Pattern: cache-aside with event invalidation.
+Pattern: cache-aside with a current-owner fence and bounded expiry.
 
-- Source: Catalog PostgreSQL
-- TTL: minutes, with jitter
-- Negative cache: short for valid missing IDs
-- Consistency: publication changes invalidate immediately through local write path and event
+- Source and visibility authority: Catalog PostgreSQL
+- Scope: public-title entity projections only; browse ordering and Playback
+  authority are not cached
+- Positive reuse: only after the current owner fence exactly matches title,
+  rights, publication and schema versions
+- TTL: 120 seconds plus deterministic 0–30 second jitter
+- Negative cache: 5 seconds plus 0–5 second jitter for a valid UUID absent from
+  the current public resource set; this at-most-ten-second public-discoverability
+  delay is its only consistency boundary
+- Consistency: versioned positive keys expire; no scan-based invalidation
 - Failure: read PostgreSQL directly
-- Stampede: in-process coalescing plus short Redis lease
-- Metrics: hit, miss, stale, bypass, refresh, error, payload bytes
+- Stampede: at most 128 process-local owners plus a two-second tokenized Redis
+  lease released by atomic compare-and-delete
+- Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
+  coalescing and lease outcomes, bounded waiter bucket, duration and payload bytes
+
+The exact contract and safety trade-off are in
+[ADR-0037](../adr/0037-rights-safe-catalog-cache.md). This section describes the
+accepted Phase10 target until implementation evidence marks it verified.
 
 ## Discovery rails
 

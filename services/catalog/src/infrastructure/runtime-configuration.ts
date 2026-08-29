@@ -13,6 +13,7 @@ const fields = new Set([
   "ASTER_CATALOG_DISCOVERY_READ_ENABLED",
   "ASTER_CATALOG_DISCOVERY_READER_DATABASE_URL",
   "ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD",
+  "ASTER_CATALOG_CACHE_ENABLED",
 ]);
 
 export function catalogRuntimeConfiguration(
@@ -29,6 +30,8 @@ export function catalogRuntimeConfiguration(
   const playbackRead = environment["ASTER_CATALOG_PLAYBACK_READ_ENABLED"];
   const engagementRead = environment["ASTER_CATALOG_ENGAGEMENT_READ_ENABLED"];
   const discoveryRead = environment["ASTER_CATALOG_DISCOVERY_READ_ENABLED"];
+  const cacheEnabled = environment["ASTER_CATALOG_CACHE_ENABLED"];
+  const redisUrl = environment["REDIS_URL"];
   const discoveryDatabaseConfigured =
     environment["ASTER_CATALOG_DISCOVERY_READER_DATABASE_URL"] !== undefined ||
     environment["ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD"] !== undefined;
@@ -43,6 +46,8 @@ export function catalogRuntimeConfiguration(
     (engagementRead !== undefined && engagementRead !== "true" && engagementRead !== "false") ||
     (engagementRead === "true" && routerTrust !== "true") ||
     (discoveryRead !== undefined && discoveryRead !== "true" && discoveryRead !== "false") ||
+    (cacheEnabled !== undefined && cacheEnabled !== "true" && cacheEnabled !== "false") ||
+    (cacheEnabled === "true" && (typeof redisUrl !== "string" || redisUrl.length === 0)) ||
     (discoveryRead === "true" && routerTrust !== "true") ||
     (discoveryRead !== "true" && discoveryDatabaseConfigured)
   ) {
@@ -50,6 +55,7 @@ export function catalogRuntimeConfiguration(
   }
   const validatedHost: "127.0.0.1" | "0.0.0.0" = host;
   const base = {
+    environment: "local" as const,
     host: validatedHost,
     port: Number(port),
     connectionString: localCatalogDatabase(environment, "reader"),
@@ -61,12 +67,18 @@ export function catalogRuntimeConfiguration(
     ...(playbackRead === "true" ? { playbackRead: true as const } : {}),
     ...(engagementRead === "true" ? { engagementRead: true as const } : {}),
     discoveryRead: false as const,
+    cache: false as const,
   };
+  const cache =
+    cacheEnabled === "true"
+      ? { cache: true as const, redisUrl: redisUrl as string }
+      : { cache: false as const };
   return discoveryRead === "true"
     ? Object.freeze({
         ...base,
+        ...cache,
         discoveryRead: true as const,
         discoveryConnectionString: localCatalogDatabase(environment, "discovery-reader"),
       })
-    : Object.freeze(base);
+    : Object.freeze({ ...base, ...cache });
 }

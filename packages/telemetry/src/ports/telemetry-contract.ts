@@ -70,6 +70,31 @@ export const ASTER_DISCOVERY_RAIL_OUTCOMES = Object.freeze([
   "indeterminate",
 ] as const);
 
+export const ASTER_CACHE_FAMILIES = Object.freeze([
+  "catalog_public_title",
+  "discovery_rail",
+] as const);
+
+export const ASTER_CACHE_OUTCOMES = Object.freeze([
+  "hit",
+  "negative_hit",
+  "miss",
+  "malformed",
+  "bypass",
+  "source_load",
+  "fence_changed",
+  "coalesced",
+  "lease_acquired",
+  "lease_contended",
+  "lease_lost",
+] as const);
+
+export const ASTER_CACHE_WAITER_BUCKETS = Object.freeze([
+  "one",
+  "two_to_four",
+  "five_plus",
+] as const);
+
 export type AsterTelemetryEnvironment = (typeof ASTER_TELEMETRY_ENVIRONMENTS)[number];
 export type AsterHttpMethod = (typeof ASTER_HTTP_METHODS)[number];
 export type AsterHttpRoute = (typeof ASTER_HTTP_ROUTES)[number];
@@ -78,6 +103,9 @@ export type AsterDependencyOperation = (typeof ASTER_DEPENDENCY_OPERATIONS)[numb
 export type AsterObservationOutcome = (typeof ASTER_OBSERVATION_OUTCOMES)[number];
 export type AsterDiscoveryRailKind = (typeof ASTER_DISCOVERY_RAIL_KINDS)[number];
 export type AsterDiscoveryRailOutcome = (typeof ASTER_DISCOVERY_RAIL_OUTCOMES)[number];
+export type AsterCacheFamily = (typeof ASTER_CACHE_FAMILIES)[number];
+export type AsterCacheOutcome = (typeof ASTER_CACHE_OUTCOMES)[number];
+export type AsterCacheWaiterBucket = (typeof ASTER_CACHE_WAITER_BUCKETS)[number];
 
 export type AsterTelemetryExportOptions =
   | Readonly<{ mode: "none" }>
@@ -169,6 +197,14 @@ export interface AsterDiscoverySearchSampleInput {
   readonly topRank: number | null;
 }
 
+export interface AsterCacheMetricInput {
+  readonly cache: AsterCacheFamily;
+  readonly outcome: AsterCacheOutcome;
+  readonly durationMs: number;
+  readonly payloadBytes?: number;
+  readonly waiterBucket?: AsterCacheWaiterBucket;
+}
+
 export type AsterRecordMetricResult =
   | Readonly<{ status: "recorded" }>
   | Readonly<{ status: "rejected"; reason: "invalid_dimension" | "telemetry_closed" }>;
@@ -208,6 +244,7 @@ export interface AsterTelemetry {
   ): AsterStartDependencyObservationResult;
   recordDiscoveryRail?(input: AsterDiscoveryRailMetricInput): AsterRecordMetricResult;
   recordDiscoverySearchSample?(input: AsterDiscoverySearchSampleInput): AsterRecordMetricResult;
+  recordCacheOperation?(input: AsterCacheMetricInput): AsterRecordMetricResult;
   collect(): Promise<AsterMetricCollectionResult>;
   exportHealth(): AsterTelemetryExportHealth;
   forceFlush(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;

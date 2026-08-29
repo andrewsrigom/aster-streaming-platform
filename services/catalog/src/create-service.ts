@@ -1,4 +1,5 @@
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
+import { createAsterRedisAdapter, type AsterRedisAdapter } from "@aster/redis";
 import { createLocalEventDelivery, type EventDeliveryLifecycle } from "@aster/event-delivery";
 import {
   loadLocalRouterTrust,
@@ -20,11 +21,20 @@ import {
 } from "@aster/runtime";
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createCatalogPublicQueries } from "./application/public-queries.js";
+import { createCachedCatalogPublicEntities } from "./application/public-cache.js";
 import { createCatalogPlaybackQueries } from "./application/playback-queries.js";
 import { createCatalogEngagementQueries } from "./application/engagement-queries.js";
 import { createCatalogDiscoveryQueries } from "./application/discovery-queries.js";
 import { catalogRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
-import { createPostgresCatalogPublic } from "./infrastructure/persistence/postgres-public.js";
+import {
+  createPostgresCatalogPublic,
+  createPostgresCatalogPublicEntitySource,
+} from "./infrastructure/persistence/postgres-public.js";
+import { createRedisCatalogPublicCache } from "./infrastructure/cache/redis-public-cache.js";
+import {
+  catalogCacheDigest,
+  catalogCacheToken,
+} from "./infrastructure/cache/node-cache-primitives.js";
 import { probeCatalogReader } from "./infrastructure/persistence/reader-readiness.js";
 import { createPostgresCatalogDiscovery } from "./infrastructure/persistence/postgres-discovery.js";
 import { probeCatalogDiscoveryReader } from "./infrastructure/persistence/discovery-readiness.js";
@@ -34,6 +44,7 @@ import { createCatalogHttpServer, type CatalogHttpServer } from "./transport/htt
 interface RuntimeResources {
   readonly database?: AsterPostgresAdapter;
   readonly discoveryDatabase?: AsterPostgresAdapter;
+  readonly redis?: AsterRedisAdapter;
   readonly routerTrust?: AsterLocalRouterTrust;
   readonly discoveryTrust?: AsterLocalRouterTrust;
   readonly telemetry?: AsterTelemetry;
@@ -85,6 +96,30 @@ export async function createCatalogService(
     }
   } catch (error) {
     await Promise.allSettled([
+      database.close(AbortSignal.timeout(2000)),
+      telemetry.shutdown(AbortSignal.timeout(2000)),
+    ]);
+    throw error;
+  }
+  let redis: AsterRedisAdapter | undefined;
+  try {
+    if (config.cache) {
+      redis =
+        resources.redis ??
+        createAsterRedisAdapter({
+          url: config.redisUrl,
+          telemetry,
+          maxInFlightCommands: 32,
+          connectionTimeoutMs: 1_000,
+          operationTimeoutMs: 250,
+          closeTimeoutMs: 1_000,
+          reconnectMaxAttempts: 3,
+          reconnectBaseDelayMs: 50,
+        });
+    }
+  } catch (error) {
+    await Promise.allSettled([
+      discoveryDatabase?.close(AbortSignal.timeout(2000)),
       database.close(AbortSignal.timeout(2000)),
       telemetry.shutdown(AbortSignal.timeout(2000)),
     ]);
@@ -148,6 +183,23 @@ export async function createCatalogService(
         : {}),
       queries: createCatalogPublicQueries({
         transactions: createPostgresCatalogPublic(database),
+        ...(redis
+          ? {
+              entities: createCachedCatalogPublicEntities({
+                environment: config.environment,
+                source: createPostgresCatalogPublicEntitySource(database),
+                cache: createRedisCatalogPublicCache(redis),
+                digest: catalogCacheDigest,
+                token: catalogCacheToken,
+                record: (observation) => {
+                  telemetry.recordCacheOperation?.({
+                    cache: "catalog_public_title",
+                    ...observation,
+                  });
+                },
+              }),
+            }
+          : {}),
         policy: { commercial: true, allowLocalMedia: true },
         now: () => Math.floor(Date.now() / 1000),
       }),
@@ -172,6 +224,7 @@ export async function createCatalogService(
   } catch (error) {
     await Promise.allSettled([
       events?.close(AbortSignal.timeout(2000)),
+      redis?.close(AbortSignal.timeout(2000)),
       discoveryDatabase?.close(AbortSignal.timeout(2000)),
       database.close(AbortSignal.timeout(2000)),
       telemetry.shutdown(AbortSignal.timeout(2000)),
@@ -189,7 +242,12 @@ export async function createCatalogService(
       await http?.stopTraffic(signal);
     },
     stopConsumers: async () => {
-      await Promise.all([monitor.stop(), discoveryMonitor?.stop(), events?.stop()]);
+      await Promise.all([
+        monitor.stop(),
+        discoveryMonitor?.stop(),
+        cacheMonitor?.stop(),
+        events?.stop(),
+      ]);
       await graph.stop();
     },
     flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
@@ -198,6 +256,7 @@ export async function createCatalogService(
       const results = await Promise.all([
         database.close(signal),
         ...(discoveryDatabase ? [discoveryDatabase.close(signal)] : []),
+        ...(redis ? [redis.close(signal)] : []),
         telemetry.shutdown(signal),
       ]);
       if (
@@ -212,7 +271,9 @@ export async function createCatalogService(
       startupController.abort();
       http?.forceClose();
       void monitor.stop();
+      void cacheMonitor?.stop();
       void graph.stop();
+      void redis?.close(AbortSignal.timeout(250));
       // A forced deadline is a process boundary, not permission to retain orphaned sockets.
       (resources.terminate ?? ((code) => process.exit(code)))(1);
     },
@@ -220,6 +281,7 @@ export async function createCatalogService(
   const readiness = createAsterReadinessController({ lifecycle, criticalDependencyCount: 1 });
   let previousReadiness = "pending";
   let previousDiscoveryReadiness = "pending";
+  let previousCacheReadiness = "pending";
   const checkReadiness = async (signal: AbortSignal): Promise<"ready" | "unavailable"> => {
     let status: "ready" | "unavailable" = "unavailable";
     try {
@@ -260,6 +322,31 @@ export async function createCatalogService(
     }
     return status;
   };
+  const checkCacheReadiness = async (
+    signal: AbortSignal,
+  ): Promise<"disabled" | "ready" | "unavailable"> => {
+    if (!redis) {
+      return "disabled";
+    }
+    let status: "ready" | "unavailable" = "unavailable";
+    try {
+      const result = redis.snapshot().ready
+        ? await redis.probe(signal)
+        : await redis.connect(signal);
+      status = result.status === "completed" ? "ready" : "unavailable";
+    } catch {
+      /* Optional cache failure is sanitized and retried by its monitor. */
+    }
+    if (status !== previousCacheReadiness) {
+      previousCacheReadiness = status;
+      logger.info({
+        event: "aster.catalog.cache_readiness_changed",
+        outcome: status === "ready" ? "ok" : "degraded",
+        properties: [["state", status]],
+      });
+    }
+    return status;
+  };
   const monitor = createAsterReadinessMonitor({
     readiness,
     probes: [checkReadiness],
@@ -277,6 +364,17 @@ export async function createCatalogService(
         ],
         intervalMs: 5000,
         probeTimeoutMs: 2500,
+      })
+    : undefined;
+  const cacheMonitor = redis
+    ? createAsterReadinessMonitor({
+        readiness: { setCriticalDependencyState: () => "applied" },
+        probes: [
+          async (signal) =>
+            (await checkCacheReadiness(signal)) === "ready" ? "ready" : "unavailable",
+        ],
+        intervalMs: 5_000,
+        probeTimeoutMs: 1_500,
       })
     : undefined;
   try {
@@ -317,13 +415,17 @@ export async function createCatalogService(
     });
     try {
       await server.listen(deadline.signal);
-      const status = await checkReadiness(deadline.signal);
+      const [status] = await Promise.all([
+        checkReadiness(deadline.signal),
+        checkCacheReadiness(deadline.signal),
+      ]);
       if (startupController.signal.aborted) {
         return "stopped";
       }
       lifecycle.markReady();
       monitor.start();
       discoveryMonitor?.start();
+      cacheMonitor?.start();
       events?.start();
       return status === "ready" ? "ready" : "degraded";
     } catch {
@@ -342,6 +444,7 @@ export async function createCatalogService(
     port: () => server.port(),
     checkReadiness,
     checkDiscoveryReadiness,
+    checkCacheReadiness,
     start: () => {
       starting ??= start();
       return starting;

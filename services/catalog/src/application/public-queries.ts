@@ -12,6 +12,7 @@ import { catalogIdentifier, catalogRecord, catalogTimestamp } from "../domain/va
 import type { RightsUsePolicy } from "../domain/rights.js";
 import type { CatalogPublicUnitOfWork } from "./public-ports.js";
 import type { CatalogPublicRepository } from "./public-ports.js";
+import type { CatalogPublicEntityReader } from "./public-ports.js";
 import type { CatalogStoreResult } from "./rights-ports.js";
 
 export type CatalogReadResult<T> =
@@ -26,6 +27,7 @@ const cursorFor = (id: string): string => "c1." + id;
 export function createCatalogPublicQueries(
   ports: Readonly<{
     transactions: CatalogPublicUnitOfWork;
+    entities?: CatalogPublicEntityReader;
     policy: RightsUsePolicy;
     now: () => number;
   }>,
@@ -48,6 +50,26 @@ export function createCatalogPublicQueries(
         : { status: result.status === "cancelled" ? "cancelled" : "unavailable" };
     } catch {
       return { status: cancelled() ? "cancelled" : "unavailable" };
+    }
+  }
+  async function readEntities(
+    ids: readonly string[],
+    now: number,
+    signal: AbortSignal,
+  ): Promise<CatalogReadResult<readonly PublicCatalogTitle[]>> {
+    if (!ports.entities) {
+      return { status: "unavailable" };
+    }
+    try {
+      const result = await ports.entities.findMany(ids, { now, policy: ports.policy }, signal);
+      if (signal.aborted) {
+        return { status: "cancelled" };
+      }
+      return result.status === "completed"
+        ? { status: "completed", value: result.value }
+        : { status: result.status === "cancelled" ? "cancelled" : "unavailable" };
+    } catch {
+      return { status: signal.aborted ? "cancelled" : "unavailable" };
     }
   }
   function project(candidate: PublicCatalogCandidate, now: number): PublicCatalogTitle {
@@ -138,6 +160,26 @@ export function createCatalogPublicQueries(
         return { status: "completed", value: [] };
       }
       const unique = [...new Set(ids)];
+      if (ports.entities) {
+        const result = await readEntities(unique, now, signal);
+        if (result.status !== "completed") {
+          return result;
+        }
+        if (result.value.length > unique.length) {
+          return { status: "unavailable" };
+        }
+        const titles = new Map<string, PublicCatalogTitle>();
+        for (const title of result.value) {
+          if (!unique.includes(title.id) || titles.has(title.id)) {
+            return { status: "unavailable" };
+          }
+          titles.set(title.id, title);
+        }
+        return {
+          status: "completed",
+          value: Object.freeze(ids.map((id) => titles.get(id) ?? null)),
+        };
+      }
       return read<readonly (PublicCatalogTitle | null)[]>(signal, async (repository) => {
         const candidates = await repository.findMany(unique, { now, policy: ports.policy });
         if (candidates.length > unique.length) {

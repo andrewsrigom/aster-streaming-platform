@@ -7,16 +7,22 @@ import type {
 } from "@aster/telemetry";
 
 import {
+  ASTER_REDIS_COMMAND_LIMITS,
   ASTER_REDIS_DEFAULTS,
   type AsterRedisAdapter,
   type AsterRedisCloseResult,
+  type AsterRedisCommandFailure,
   AsterRedisConfigurationError,
   type AsterRedisConfigurationIssue,
   AsterRedisLifecycleError,
   type AsterRedisOperationResult,
   type AsterRedisOptions,
+  type AsterRedisReadResult,
   type AsterRedisSnapshot,
   type AsterRedisTelemetry,
+  type AsterRedisDeleteResult,
+  type AsterRedisWriteMode,
+  type AsterRedisWriteResult,
 } from "../redis-contract.js";
 
 const MAXIMUM_OPTION_COUNT = 8;
@@ -53,6 +59,13 @@ const INVALID_SIGNAL_REJECTED = Object.freeze({
   status: "rejected",
   reason: "invalid_signal",
 } as const);
+const INVALID_INPUT_REJECTED = Object.freeze({
+  status: "rejected",
+  reason: "invalid_input",
+} as const);
+const COMPARE_AND_DELETE_SCRIPT =
+  "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
+const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
 
 type ValidatedOptions = Readonly<{
   url: string;
@@ -75,6 +88,16 @@ export interface AsterRedisClient {
   readonly isReady: boolean;
   connect(): Promise<void>;
   ping(signal: AbortSignal): Promise<string>;
+  get(key: string, signal: AbortSignal): Promise<string | null>;
+  set(
+    key: string,
+    value: string,
+    ttlMs: number,
+    onlyIfAbsent: boolean,
+    signal: AbortSignal,
+  ): Promise<string | null>;
+  del(key: string, signal: AbortSignal): Promise<number>;
+  compareAndDelete(key: string, expectedValue: string, signal: AbortSignal): Promise<number>;
   destroy(): void;
   on(event: AsterRedisClientEvent, listener: (detail?: unknown) => void): void;
   off(event: AsterRedisClientEvent, listener: (detail?: unknown) => void): void;
@@ -99,6 +122,8 @@ type WaitResult<T> =
   | Readonly<{ status: "timed_out" }>
   | Readonly<{ status: "aborted" }>
   | Readonly<{ status: "failed"; error: unknown }>;
+
+type RedisCommandResult<T> = Readonly<{ status: "completed"; value: T }> | AsterRedisCommandFailure;
 
 type ClientRegistration = Readonly<{
   client: AsterRedisClient;
@@ -308,6 +333,28 @@ function validSignal(signal: AbortSignal | undefined): boolean {
   return signal === undefined || signal instanceof AbortSignal;
 }
 
+function validCommandText(
+  value: unknown,
+  maximumBytes: number,
+  allowEmpty = false,
+): value is string {
+  return (
+    typeof value === "string" &&
+    (allowEmpty || value.length > 0) &&
+    Buffer.byteLength(value, "utf8") <= maximumBytes &&
+    !containsControlCharacter(value)
+  );
+}
+
+function validTtl(value: unknown): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isSafeInteger(value) &&
+    value >= 1 &&
+    value <= ASTER_REDIS_COMMAND_LIMITS.maximumTtlMs
+  );
+}
+
 function waitFor<T>(
   promise: Promise<T>,
   signal: AbortSignal | undefined,
@@ -372,7 +419,9 @@ function completeObservation(
   }
 }
 
-function outcomeFor(result: AsterRedisOperationResult): AsterObservationOutcome {
+function outcomeFor(
+  result: Readonly<{ status: AsterRedisOperationResult["status"] }>,
+): AsterObservationOutcome {
   switch (result.status) {
     case "completed":
       return "success";
@@ -412,6 +461,24 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
     },
     ping(signal): Promise<string> {
       return client.withCommandOptions({ abortSignal: signal }).ping();
+    },
+    get(key, signal): Promise<string | null> {
+      return client.withCommandOptions({ abortSignal: signal }).get(key);
+    },
+    set(key, value, ttlMs, onlyIfAbsent, signal): Promise<string | null> {
+      return client.withCommandOptions({ abortSignal: signal }).set(key, value, {
+        expiration: { type: "PX", value: ttlMs },
+        ...(onlyIfAbsent ? { condition: "NX" as const } : {}),
+      });
+    },
+    del(key, signal): Promise<number> {
+      return client.withCommandOptions({ abortSignal: signal }).del(key);
+    },
+    compareAndDelete(key, expectedValue, signal): Promise<number> {
+      return client.withCommandOptions({ abortSignal: signal }).eval(COMPARE_AND_DELETE_SCRIPT, {
+        keys: [key],
+        arguments: [expectedValue],
+      }) as Promise<number>;
     },
     destroy(): void {
       client.destroy();
@@ -638,9 +705,14 @@ export function createAsterRedisAdapterWithClientFactory(
     }
   };
 
-  const probe = async (signal?: AbortSignal): Promise<AsterRedisOperationResult> => {
-    const observation = observationFor(options.telemetry, "probe");
-    let finalResult: AsterRedisOperationResult = FAILED;
+  const runCommand = async <T>(
+    operation: AsterDependencyOperation,
+    signal: AbortSignal | undefined,
+    invoke: (client: AsterRedisClient, operationSignal: AbortSignal) => Promise<T>,
+    validReply: (value: unknown) => value is T,
+  ): Promise<RedisCommandResult<T>> => {
+    const observation = observationFor(options.telemetry, operation);
+    let finalResult: RedisCommandResult<T> = FAILED;
     let completeOperation: (() => void) | undefined;
     let operationController: AbortController | undefined;
     let client: AsterRedisClient | undefined;
@@ -676,16 +748,16 @@ export function createAsterRedisAdapterWithClientFactory(
       const operationSignal = signal
         ? AbortSignal.any([signal, operationController.signal])
         : operationController.signal;
-      let raw: Promise<string>;
+      let raw: Promise<T>;
       try {
-        raw = Promise.resolve(client.ping(operationSignal));
+        raw = Promise.resolve(invoke(client, operationSignal));
       } catch {
         finalResult = destroyCurrent(client) ? UNAVAILABLE : FAILED;
         return finalResult;
       }
       const result = await waitFor(raw, operationSignal, options.operationTimeoutMs);
-      if (result.status === "completed" && result.value === "PONG") {
-        finalResult = COMPLETED;
+      if (result.status === "completed" && validReply(result.value)) {
+        finalResult = Object.freeze({ status: "completed", value: result.value });
         return finalResult;
       }
       if (result.status === "aborted") {
@@ -714,6 +786,89 @@ export function createAsterRedisAdapterWithClientFactory(
       completeOperation?.();
       activeOperations.delete(settlement);
     }
+  };
+
+  const probe = async (signal?: AbortSignal): Promise<AsterRedisOperationResult> => {
+    const result = await runCommand(
+      "probe",
+      signal,
+      (client, operationSignal) => client.ping(operationSignal),
+      (value): value is string => value === "PONG",
+    );
+    return result.status === "completed" ? COMPLETED : result;
+  };
+
+  const validKey = (key: unknown): key is string =>
+    validCommandText(key, ASTER_REDIS_COMMAND_LIMITS.maximumKeyBytes);
+  const validValue = (value: unknown): value is string =>
+    validCommandText(value, ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes, true);
+
+  const read = async (key: string, signal?: AbortSignal): Promise<AsterRedisReadResult> => {
+    if (!validKey(key)) {
+      return INVALID_INPUT_REJECTED;
+    }
+    return runCommand(
+      "read",
+      signal,
+      (client, operationSignal) => client.get(key, operationSignal),
+      (value): value is string | null => typeof value === "string" || value === null,
+    );
+  };
+
+  const write = async (
+    key: string,
+    value: string,
+    ttlMs: number,
+    mode: AsterRedisWriteMode,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisWriteResult> => {
+    if (!validKey(key) || !validValue(value) || !validTtl(ttlMs) || !WRITE_MODES.has(mode)) {
+      return INVALID_INPUT_REJECTED;
+    }
+    const result = await runCommand(
+      "write",
+      signal,
+      (client, operationSignal) =>
+        client.set(key, value, ttlMs, mode === "if_absent", operationSignal),
+      (reply): reply is string | null => reply === "OK" || reply === null,
+    );
+    return result.status === "completed"
+      ? Object.freeze({ status: "completed", stored: result.value === "OK" })
+      : result;
+  };
+
+  const deleteKey = async (key: string, signal?: AbortSignal): Promise<AsterRedisDeleteResult> => {
+    if (!validKey(key)) {
+      return INVALID_INPUT_REJECTED;
+    }
+    const result = await runCommand(
+      "delete",
+      signal,
+      (client, operationSignal) => client.del(key, operationSignal),
+      (reply): reply is number => reply === 0 || reply === 1,
+    );
+    return result.status === "completed"
+      ? Object.freeze({ status: "completed", deleted: result.value === 1 })
+      : result;
+  };
+
+  const compareAndDelete = async (
+    key: string,
+    expectedValue: string,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisDeleteResult> => {
+    if (!validKey(key) || !validValue(expectedValue) || expectedValue.length === 0) {
+      return INVALID_INPUT_REJECTED;
+    }
+    const result = await runCommand(
+      "delete",
+      signal,
+      (client, operationSignal) => client.compareAndDelete(key, expectedValue, operationSignal),
+      (reply): reply is number => reply === 0 || reply === 1,
+    );
+    return result.status === "completed"
+      ? Object.freeze({ status: "completed", deleted: result.value === 1 })
+      : result;
   };
 
   const snapshot = (): AsterRedisSnapshot =>
@@ -784,6 +939,10 @@ export function createAsterRedisAdapterWithClientFactory(
   return Object.freeze({
     connect,
     probe,
+    read,
+    write,
+    delete: deleteKey,
+    compareAndDelete,
     snapshot,
     close,
     lifecycleHooks: () => lifecycleHooks,

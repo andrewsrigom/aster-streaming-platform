@@ -31,6 +31,8 @@ Hosted controls and load capacity remain planned.
 - [Web discovery runtime](web-discovery-runtime.txt) records public SSR,
   profile-safe enhancement, finite client caches, browser failure isolation and
   the disposable Docker candidate.
+- [Web discovery release](web-discovery-release.md) records PR36, corrected
+  exact-head confirmation, protected CI, squash main and exact-main CI.
 
 The released search candidate passed 70 Discovery tests, nine Router
 composition/compatibility tests, 67 platform-policy tests, 33 CI-policy tests,
@@ -54,3 +56,8 @@ real PostgreSQL18.6, the11-service Router runtime, schema compatibility and the
 54/54 candidate. Protected run33248598719 and clean confirmation pass; PR34
 squash `a3f969c` and exact-main run33249289718 release the slice. The cancelled
 invalid-head run and all review corrections remain in candidate evidence.
+
+P09-R10 corrected exact `b5ccd59` passes Web110/110, Router10/10, browser8/8 and
+the46/46 affected candidate. Protected run33253867475 and exact-head confirmation
+pass; PR36 squash `ffe8e24` and exact-main run33254719311 release the final slice
+and close Phase09.

@@ -135,6 +135,9 @@ No Collector, scrape endpoint, log backend, trace SDK, retention policy, dashboa
 | `aster.dependency.operation.outcomes` | `{operation}` | dependency, operation, outcome |
 | `aster.telemetry.export.attempts` | `{attempt}` | export result |
 | `aster.telemetry.dropped_observations` | `{observation}` | bounded drop reason |
+| `aster.cache.operation.duration` | `s` | cache family, finite outcome, optional waiter bucket |
+| `aster.cache.operation.outcomes` | `{operation}` | cache family, finite outcome, optional waiter bucket |
+| `aster.cache.payload.size` | `By` | cache family, finite outcome |
 | `process.cpu.time` | `s` | CPU mode `user` or `system` |
 | `process.cpu.utilization` | `1` | CPU mode `user` or `system` |
 | `process.memory.usage` | `By` | none |

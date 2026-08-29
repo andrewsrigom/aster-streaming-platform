@@ -1,150 +1,142 @@
-# Work Item: Server-rendered discovery and profile-safe home enhancement
+# Work Item: Rights-safe Catalog cache-aside
 
 - Status: IN_PROGRESS
-- Owner: Web presentation; Discovery owns rails/search; Engagement owns progress
-- Phase: 09
-- Requirement IDs: P09-R10, DSC-R01, DSC-R02, DSC-R03, DSC-R04, DSC-R05
+- Owner: Catalog; Platform owns the bounded Redis adapter
+- Phase: 10
+- Requirement IDs: P10-R01, P10-R02, P10-R03, P10-R05, P10-R06, P10-R07, P10-R10
 - Created: 2026-08-29
 - Updated: 2026-08-29
 
 ## Outcome
 
-A viewer receives public home rails and bounded search in the initial HTML, then
-an authenticated browser may add owner-authorized continue-watching without
-serializing profile data into the server response or changing the public render.
+Repeated public-title entity reads may reuse a bounded Redis projection only
+after Catalog PostgreSQL confirms the current publication, rights and title
+version. Cold bursts share bounded refresh work. Redis loss or corrupt data
+changes latency and source load, never public visibility or durable truth.
 
 ## Current behavior
 
-Search and home-owner capabilities are released through main `a3f969c`. PR34
-exact `390b655` passed protected run33248598719, received a clean exact-head
-confirmation, squash-merged, and exact-main run33249289718 passed. This branch now
-server-renders bounded HomePublic/SearchTitles views and admits HomePersonalized
-only through the isolated owner-confirmed profile client. Focused static, package,
-schema and disposable browser/failure acceptance pass; the complete browser and
-candidate gates remain before publication.
+Released main reads Catalog public entities from bounded PostgreSQL transactions
+and has no product cache. The active branch contains the locally passing
+candidate below; it is not released behavior.
 
 ## Proposed behavior
 
-Add exact Web documents matching `HomePublic`, `SearchTitles` and
-`HomePersonalized`. Render public home rails and search through the existing
-request-scoped Apollo preload and positive response projection. Add
-continue-watching only after the browser establishes the selected profile in the
-existing disposable private Apollo generation. Keep Catalog browse available as
-an independent route when Discovery is unavailable.
+The local candidate adds exact bounded Redis get, set-with-expiry,
+conditional-set, delete and atomic compare-and-delete operations. Catalog public
+entity reads use a cache port and adapter while browse remains unchanged.
+PostgreSQL first returns a compact current-visibility fence; only an exact
+versioned cache entry for that fence is reusable. Misses load the source, populate
+a positive or valid-absence entry with deterministic TTL jitter, and use bounded
+process coalescing plus a tokenized Redis refresh lease. Release evidence remains
+pending.
 
 ## Boundaries
 
-- Owning context: Web owns presentation only; Discovery owns projected rails and
-  search; Catalog owns title metadata; Engagement owns progress.
-- Affected services/packages: `apps/web`, Phase 09 documentation/evidence and
-  existing Router operation compatibility only.
-- Authoritative data: unchanged owner GraphQL responses; no Web persistence.
-- Read models/caches: request-scoped public Apollo and disposable profile-scoped
-  private Apollo; no Redux copy, browser persistence or cross-request cache.
-- Trust boundaries: URL search parameters, public GraphQL response, local session
-  cookie and profile-scoped private GraphQL response.
-- External dependencies: existing Web, Router, Discovery, Catalog, Engagement and
-  Identity runtimes.
+- Owning context: Catalog owns title visibility and every returned field;
+  Platform owns Redis transport only.
+- Affected services/packages: `services/catalog`, `packages/redis`, local Compose,
+  operations documentation and Phase 10 evidence.
+- Authoritative data: Catalog PostgreSQL; Redis remains disposable.
+- Read models/caches: only `Title` entity reads by valid ID; browse ordering,
+  Discovery projection and Playback authority are excluded.
+- Trust boundaries: title IDs, PostgreSQL rows, Redis keys/bytes, timeouts and
+  cancellation signals.
+- External dependencies: existing pinned PostgreSQL 18.6 and Redis 8.10.0 images.
 
 ## Invariants
 
-- Public SSR sends no cookie, profile identifier or private owner credential.
-- Server HTML and first browser render use the same bounded Apollo snapshot.
-- Profile enhancement starts only after current Identity selection and is removed
-  on session/profile change, expiry, page suspension or cancellation.
-- Apollo owns all remote rail/search/progress state; Redux remains local shell and
-  player interaction state.
-- One failed or stale rail remains explicit and cannot erase usable siblings.
-- Discovery failure does not block Catalog browse, title detail or playback.
-- Search is at most20 results/page; home is at most10 titles/rail and three genres.
+- A positive hit follows a current owner visibility/version fence.
+- An absent marker is written only after the owner reports no currently public
+  candidate; its bounded TTL is the only publication-visibility delay.
+- Keys, values, TTLs, waiters and coalescing entries are finite and versioned.
+- One caller cannot cancel shared work still needed by another caller.
+- Lease expiry or duplicate refresh cannot authorize a durable write.
+- Redis failure bypasses the cache without retries inside the product request.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Discovery unavailable during public SSR | Sanitized home/search unavailable state; Catalog routes remain usable | existing Router/Discovery outcome |
-| Home partial or fallback | Render only returned usable rails with explicit source/state text | existing rail outcome/fallback metrics |
-| Empty or stale search | Distinguish no matches, stale projection and unavailable dependency | existing search outcome/quality metric |
-| Invalid query/cursor/locale | Reject before browser/owner work; invalid route is not an empty result | Web/Router rejection only |
-| Engagement unavailable | Keep public SSR unchanged; show private enhancement unavailable | Router partial/Engagement outcome |
-| Profile/session changes | Cancel and discard old private client/cache; late data cannot render | existing private lifecycle state |
+| Redis timeout/unavailable/capacity rejection | Read PostgreSQL directly | cache outcome `bypass`; Redis dependency outcome |
+| Malformed, oversized or wrong-version value | Delete the exact key best-effort and rebuild | cache outcome `malformed` |
+| Lease not acquired or expires | Wait once within a finite budget, then source fallback; duplicates are safe | lease outcome `contended` or `lost` |
+| Caller cancels while sharing refresh | That caller exits; shared work continues only for remaining bounded waiters | coalescing outcome and waiter bucket |
+| PostgreSQL fence/source unavailable | Return existing Catalog unavailable/cancelled result; cached bytes cannot override it | source outcome `unavailable` |
+| Title changes after fence read | Exact source load must match the fence; bounded re-check or miss, never mismatched data | source outcome `fence_changed` |
 
 ## Data and contracts
 
-- Schema/migration: none.
-- GraphQL: consume existing exact `HomePublic`, `SearchTitles` and
-  `HomePersonalized` known operations without changing ownership/nullability.
-- Events: none.
-- Cache: add finite one-snapshot public home/search roots and finite private home
-  roots; normalized public `Title` identity remains stable.
-- Compatibility: documents must exactly match Router inventory and generated API.
-- Retention/deletion: Web stores no profile/search/rail data outside in-memory
-  request or private-profile client lifetimes.
+- Schema/migration: additive read query only; no table migration expected.
+- GraphQL: existing schema, response shape, nullability and twenty-ID batch stay
+  unchanged.
+- Events: existing Catalog publication events stay unchanged; no event is required
+  for correctness because keys contain the owner fence.
+- Cache: schema-v1 positive projection, schema-v1 short absence marker, 120-second
+  positive TTL plus 0–30 seconds deterministic jitter, 5-second negative TTL plus
+  0–5 seconds jitter, value at most 16 KiB, key at most 256 UTF-8 bytes.
+- Compatibility: old binaries ignore new keys; new binaries ignore unknown values.
+- Retention/deletion: all entries expire. No scan-based deletion. Absence markers
+  can delay discovery of a new publication by at most ten seconds; versioned
+  positive keys age out.
 
 ## Security and privacy
 
-- Authorization: owner-side Engagement authorization remains mandatory; the Web
-  binds `profileId` to the current private scope and cannot substitute it.
-- Input limits: query at most80 code points/160 UTF-16 units/eight normalized
-  terms at the owner; cursor at most1280 safe URL characters; locale is `en` or
-  `pt-BR`; page20; home10.
-- Sensitive data: no profile, progress, cookie, private errors, endpoints or
-  credentials in HTML, public Apollo snapshots, URLs, logs or evidence.
-- Abuse cases: reject unknown operation substitution, foreign profile variables,
-  oversized response collections, malformed identifiers/scalars and automatic
-  retries; all browser work has the existing four-second deadline/cancellation.
+- Authorization: unchanged public Catalog policy and PostgreSQL fence; a Redis
+  entry never grants playback or publication.
+- Input limits: at most twenty valid UUIDs, 256-byte keys, 16-KiB values, 128
+  process coalescing entries, finite lease/wait deadlines.
+- Sensitive data: cache contains only already-public bounded metadata; no rights
+  record, credential, profile data, token, cookie or signed media URL.
+- Abuse cases: reject crafted keys/values/TTLs, hash lease identities, avoid key
+  scans, cap admission and expose only finite metric labels.
 
 ## Implementation steps
 
-1. Record the P09-R03 protected/main release and activate P09-R10.
-2. Add exact documents, bounded variable/response projection and cache policies.
-3. Render accessible public home rails and bounded search from SSR snapshots.
-4. Add profile-scoped continue-watching through the existing private lifecycle.
-5. Verify failure, hydration, accessibility, operation count and runtime journeys.
-6. Update Phase 09 acceptance/evidence and complete initial/confirmation review.
+1. Record the exact cache/fence/lease design in ADR-0037 and evidence index.
+2. Extend `@aster/redis` with exact bounded data and compare-delete commands.
+3. Add Catalog fence reads, cache port/adapter, deterministic jitter and safe
+   malformed-entry recovery.
+4. Add bounded process coalescing, token lease and finite measurements.
+5. Compose optional non-critical Redis lifecycle into Catalog and local Docker.
+6. Verify focused behavior, real PostgreSQL/Redis, outage and cold-key burst.
+7. Complete one review, one confirmation and protected release.
 
 ## Tests
 
-- Domain: URL query/locale/cursor normalization and response-shape bounds.
-- Application: public snapshot allowlist, finite cache roots, private profile
-  binding, partial owner failure and late-profile cancellation.
-- Integration: generated schema and exact Router known-operation compatibility.
-- Contract: Home/Search documents, nullability, profile ownership and no private
-  fields in public artifacts.
-- Browser: SSR with disabled/delayed JavaScript, zero automatic initial browser
-  GraphQL, search traversal, empty/stale/unavailable states, profile enhancement,
-  profile swap and Discovery isolation from Catalog/playback.
-- Performance/failure: existing mobile budgets, hydration mark and bounded
-  operation counts on a dedicated disposable runtime; no media encode or CPU loop.
+- Domain: key/value parsing, fence equality, deterministic jitter and bounds.
+- Application: hit, miss, valid absence, non-public title, malformed entry,
+  cancellation and order/duplicate preservation.
+- Integration: real PostgreSQL fence/source races; real Redis expiry, NX lease and
+  atomic compare-delete.
+- Contract: unchanged GraphQL entity shape and public policy.
+- Performance/failure: concurrent cold key, waiter/map bounds, Redis outage and
+  source-query amplification.
 
 ## Evidence
 
-- Commands: focused Web tests/build/lint; schema checks; affected candidate; one
-  disposable browser/runtime acceptance.
-- Raw artifact path: `evidence/phase-09/web-discovery-*.txt` and Phase 09 index.
-- Acceptance result: initial local candidate and46/46 pass; published `b087bc5`
-  passed protected run33252690275. Hosted review found three boundary defects;
-  their batched correction passes Web110/110, build/scans, browser8/8 and the
-  affected46/46 candidate. Hosted confirmation and release remain.
-- Iteration gate: Web typecheck/build, focused node:test and scoped ESLint.
-- Candidate gate: `pnpm check:changed`, schema compatibility and public-artifact scan.
-- Heavyweight repeat triggers: changes to public preload/hydration, private profile
-  lifetime, Router operation, runtime topology or browser-visible fallback repeat
-  the affected browser/runtime proof. Pure prose does not repeat it.
-- Review stopping rule: one complete initial review and one confirmation. Reopen
-  only for requirement, security/data, hydration/availability or public-contract
-  blockers; record speculative polish for its owning later phase.
+- Commands: focused package/service tests, strict typecheck/lint, affected gate,
+  disposable PostgreSQL/Redis experiment and audit.
+- Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
+- Acceptance result: pending.
+- Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
+- Candidate gate: `pnpm check:changed`, real dependency fixture and audit.
+- Heavyweight repeat triggers: Redis wire contract, cache envelope/fence query,
+  Catalog runtime composition or degraded behavior changes repeat real fixtures;
+  pure prose and metric wording do not.
+- Review stopping rule: one complete initial review and one confirmation; reopen
+  only for requirement, security/data, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Restore the prior Web home and remove only the additive discovery views/documents.
-Owner services, projections, profile/progress data, retained media and Catalog
-browse remain unchanged. A disabled Discovery service must leave browse/playback.
+Disable the optional Catalog cache, restore the prior compatible Catalog and Redis
+artifacts, and let all versioned keys expire. Preserve PostgreSQL, media, rights,
+events and other services. No data migration or cache flush is required.
 
 ## Documentation updates
 
-Web README, ADR-0036 implementation status, feature catalog, Phase 09 evidence and
-repository memory.
+ADR-0037, Redis architecture, Catalog/Redis READMEs, configuration, Phase 10
+evidence and repository memory.
 
 ## Completion checklist
 

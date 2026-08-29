@@ -2,6 +2,13 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0037](../docs/adr/0037-rights-safe-catalog-cache.md) limits the first Phase10
+cache to Catalog public-title entity projections. Every positive reuse follows a
+current PostgreSQL visibility/version fence; browse ordering, rights and Playback
+authority remain uncached. Entries, deterministic jitter, process coalescing and
+tokenized Redis leases are finite. Redis loss bypasses to source, and cache
+coordination never authorizes durable work.
+
 [ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size
 independent public rails, explicit freshness/outcomes, stable recent fallback,
 curated rather than behavioral trending, and nullable Engagement-owned home

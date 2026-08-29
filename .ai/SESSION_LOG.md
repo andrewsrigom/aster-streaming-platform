@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-29 — Web discovery local candidate
+## 2026-08-29 — Web discovery release and Phase 10 activation
 
 ### Completed
 
@@ -27,6 +27,19 @@ Append new entries at the top. Keep entries factual and concise.
 - Corrected the three boundaries in one batch with direct variable, projection
   and browser regressions. Owners, schema, dependencies, caches and topology do
   not change.
+- Corrected exact `b5ccd59` passed protected run33253867475 and clean exact-head
+  confirmation. PR36 squash-merged as main `ffe8e24`; exact-main run33254719311
+  passed every required job and closes Phase09.
+- Activated the first Phase10 Catalog cache slice on `feat/p10-catalog-cache`
+  from clean main. The plan preserves PostgreSQL visibility/rights authority and
+  admits no cached result without a current owner fence.
+- Implemented bounded Redis data commands, atomic compare-delete, Catalog
+  cache-aside, short negative entries, deterministic TTL jitter, process
+  coalescing, tokenized leases, optional runtime composition and finite metrics.
+- Catalog239/239, Redis17/17, telemetry11/11 and the complete73-task affected
+  gate pass. Real PostgreSQL proves compact/exact fence reads. A disposable pinned
+  Redis fixture compares24 uncached full-source reads with one coalesced refresh,
+  observes cross-instance contention and cleans its only container.
 
 ### Evidence
 
@@ -62,9 +75,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the one remediation commit, resolve the three discussions and obtain one
-exact-head confirmation/protected CI before squash merge and exact-main Phase09
-acceptance.
+Create the exact implementation checkpoint, record Phase10 evidence and publish
+one coherent candidate for initial review and protected CI.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 

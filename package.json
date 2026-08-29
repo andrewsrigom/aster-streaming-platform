@@ -33,6 +33,7 @@
     "media:probe": "node ./tools/serve-media-probe.mjs",
     "media:origin:test": "node ./tools/run-media-origin-integration.mjs",
     "catalog:integration": "turbo run build --filter=@aster/catalog && node ./tools/run-catalog-integration.mjs",
+    "catalog:cache-integration": "turbo run build --filter=@aster/catalog && node ./tools/run-catalog-cache-integration.mjs",
     "ai:check": "node ./tools/verify-ai-state.ts",
     "ai:test": "node --test ./tools/verify-ai-state.test.ts",
     "architecture:check": "node ./tools/verify-architecture.ts",

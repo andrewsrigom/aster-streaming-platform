@@ -109,6 +109,8 @@ services:
       ASTER_ROUTER_TRUST_ENABLED: "true"
       ASTER_CATALOG_PLAYBACK_READ_ENABLED: "true"
       ASTER_CATALOG_ENGAGEMENT_READ_ENABLED: "true"
+      ASTER_CATALOG_CACHE_ENABLED: "true"
+      REDIS_URL: redis://redis:6379/0
     volumes:
       - catalog-router-trust:/run/aster-router:ro
       - playback-catalog-trust:/run/aster-playback-catalog:ro

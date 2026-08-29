@@ -13,6 +13,7 @@ import {
   type ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
 import type {
+  AsterCacheMetricInput,
   AsterCollectedMetric,
   AsterCollectedMetricPoint,
   AsterDependencyCompletion,
@@ -33,6 +34,9 @@ import type {
   AsterTelemetryOptions,
 } from "../ports/telemetry-contract.js";
 import {
+  ASTER_CACHE_FAMILIES,
+  ASTER_CACHE_OUTCOMES,
+  ASTER_CACHE_WAITER_BUCKETS,
   ASTER_DISCOVERY_RAIL_KINDS,
   ASTER_DISCOVERY_RAIL_OUTCOMES,
 } from "../ports/telemetry-contract.js";
@@ -41,6 +45,7 @@ import { HealthTrackingExporter, type ExportAttemptObserver } from "./health-tra
 import { ManualMetricReader } from "./manual-metric-reader.js";
 import {
   ASTER_METRIC_CATALOG,
+  CACHE_PAYLOAD_BUCKETS_BYTES,
   DEPENDENCY_DURATION_BUCKETS_SECONDS,
   DISCOVERY_FRESHNESS_BUCKETS_SECONDS,
   HTTP_DURATION_BUCKETS_SECONDS,
@@ -158,6 +163,45 @@ function parseDiscoverySearchSample(input: unknown): AsterDiscoverySearchSampleI
   return Object.freeze({
     resultCount: value["resultCount"],
     topRank: value["topRank"],
+  });
+}
+
+function parseCacheMetric(input: unknown): AsterCacheMetricInput | undefined {
+  const required = ["cache", "outcome", "durationMs"];
+  const value =
+    exactRecord(input, required) ??
+    exactRecord(input, [...required, "payloadBytes"]) ??
+    exactRecord(input, [...required, "waiterBucket"]) ??
+    exactRecord(input, [...required, "payloadBytes", "waiterBucket"]);
+  if (
+    !value ||
+    !ASTER_CACHE_FAMILIES.includes(value["cache"] as never) ||
+    !ASTER_CACHE_OUTCOMES.includes(value["outcome"] as never) ||
+    !finite(value["durationMs"], 0, 60_000) ||
+    (Object.hasOwn(value, "payloadBytes") &&
+      (!Number.isSafeInteger(value["payloadBytes"]) ||
+        !finite(value["payloadBytes"], 0, 16_384))) ||
+    (Object.hasOwn(value, "waiterBucket") &&
+      (!ASTER_CACHE_WAITER_BUCKETS.includes(value["waiterBucket"] as never) ||
+        value["outcome"] !== "coalesced"))
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    cache: value["cache"] as AsterCacheMetricInput["cache"],
+    outcome: value["outcome"] as AsterCacheMetricInput["outcome"],
+    durationMs: value["durationMs"],
+    ...(Object.hasOwn(value, "payloadBytes")
+      ? { payloadBytes: value["payloadBytes"] as number }
+      : {}),
+    ...(Object.hasOwn(value, "waiterBucket")
+      ? {
+          waiterBucket: value["waiterBucket"] as Exclude<
+            AsterCacheMetricInput["waiterBucket"],
+            undefined
+          >,
+        }
+      : {}),
   });
 }
 
@@ -313,6 +357,9 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
   private readonly discoveryRailOutcomes;
   private readonly discoveryRailFreshness;
   private readonly discoverySearchQualitySamples;
+  private readonly cacheDuration;
+  private readonly cacheOutcomes;
+  private readonly cachePayloadBytes;
   private readonly runtimeCallback: BatchObservableCallback;
   private readonly runtimeObservables: Observable[];
   private activeObservations = 0;
@@ -434,6 +481,39 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           ],
           aggregationCardinalityLimit: options.cardinalityLimit,
         },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.cacheDuration.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: { boundaries: [...DEPENDENCY_DURATION_BUCKETS_SECONDS], recordMinMax: true },
+          },
+          attributesProcessors: [
+            createAllowListAttributesProcessor(["aster.cache", "aster.outcome"]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.cacheOutcomes.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.cache",
+              "aster.outcome",
+              "aster.cache.waiters",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.cachePayloadBytes.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: { boundaries: [...CACHE_PAYLOAD_BUCKETS_BYTES], recordMinMax: true },
+          },
+          attributesProcessors: [
+            createAllowListAttributesProcessor(["aster.cache", "aster.outcome"]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
       ],
     });
 
@@ -481,6 +561,18 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     this.discoverySearchQualitySamples = meter.createCounter(
       ASTER_METRIC_CATALOG.discoverySearchQualitySamples.name,
       ASTER_METRIC_CATALOG.discoverySearchQualitySamples,
+    );
+    this.cacheDuration = meter.createHistogram(
+      ASTER_METRIC_CATALOG.cacheDuration.name,
+      ASTER_METRIC_CATALOG.cacheDuration,
+    );
+    this.cacheOutcomes = meter.createCounter(
+      ASTER_METRIC_CATALOG.cacheOutcomes.name,
+      ASTER_METRIC_CATALOG.cacheOutcomes,
+    );
+    this.cachePayloadBytes = meter.createHistogram(
+      ASTER_METRIC_CATALOG.cachePayloadBytes.name,
+      ASTER_METRIC_CATALOG.cachePayloadBytes,
     );
 
     const processCpuTime = meter.createObservableCounter(
@@ -714,6 +806,28 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       "aster.discovery.result_bucket": resultBucket,
       "aster.discovery.top_rank_bucket": rankBucket,
     });
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordCacheOperation(input: AsterCacheMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseCacheMetric(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const attributes = {
+      "aster.cache": value.cache,
+      "aster.outcome": value.outcome,
+      ...(value.waiterBucket === undefined ? {} : { "aster.cache.waiters": value.waiterBucket }),
+    };
+    this.cacheDuration.record(value.durationMs / 1_000, attributes);
+    this.cacheOutcomes.add(1, attributes);
+    if (value.payloadBytes !== undefined) {
+      this.cachePayloadBytes.record(value.payloadBytes, attributes);
+    }
     return Object.freeze({ status: "recorded" });
   }
 
