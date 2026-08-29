@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 09 — Home Rails and Search**. PR32 exact d295ec7 passed protected CI/review, squash-merged as6f38ce0 and passed exact-main CI33229726626. P09 is rebased onto that released main. Discovery domain, Catalog private source access, PostgreSQL fences/generations/rebuild/search, bounded event quarantine/replay, fixed owner client and broker handler are implemented locally; broker lifecycle/rebuild runtime/GraphQL remain and no public search API runs. No P09 publication; retained demo remains Phase07.
+Active phase: **Phase 09 — Home Rails and Search**. PR32 exact d295ec7 passed protected CI/review, squash-merged as6f38ce0 and passed exact-main CI33229726626. P09-R01 now has a complete unpublished Discovery candidate on feat/p09-discovery-search. Exact code04011af includes current-source projection renewal, bounded search, event/rebuild recovery, five-owner Federation and optional-failure isolation;69 tests, real PostgreSQL/Kafka/Router and73/73 candidate tasks pass. Review evidence is being published to PR33; protected release remains. Retained demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

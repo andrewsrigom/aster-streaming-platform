@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at corrected code head5287b29. Its projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass focused/static gates, exact PostgreSQL18.6, an11-service real Kafka/Router proof and the73/73 aggregate gate. Protected run33236352596 exposed a stale Catalog cleanup ceiling only; the narrow correction passes focused tests, real Catalog cleanup and repeated73/73. Remediation confirmation found no blocker. Next: new protected run and release. Historical stashes are superseded.
+Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at review-remediated code head04011af. Its projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass Discovery69/69, focused platform4/4, exact PostgreSQL18.6, an11-service real Kafka/Router proof and the73/73 aggregate gate. Protected run33236352596 exposed a stale Catalog cleanup ceiling; correction5287b29 passes. Automated review then found four valid refresh, empty-offset, optional-Router and documentation findings;04011af corrects all four, including real stopped-Discovery Catalog isolation. Confirmation found no blocker. Next: publish exact head, resolve addressed threads, protected CI/review and release. Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

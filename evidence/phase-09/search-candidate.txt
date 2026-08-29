@@ -3,8 +3,9 @@
 Date: 2026-08-29
 Branch: feat/p09-discovery-search
 Initial candidate head: e979d7dff4503c7c4dec35542d6dc8b92579eed0
-Corrected code head: 5287b29
-Runtime source: 1fe7edb53451ea25f4d55658dd7432f7d084f568
+Catalog CI correction: 5287b29
+Review-remediated code head: 04011af2a0fa46ee3a1a39c02c4384e335bb2f3c
+Initial runtime source: 1fe7edb53451ea25f4d55658dd7432f7d084f568
 Node.js: 24.19.0
 pnpm: 11.24.0
 
@@ -38,11 +39,10 @@ purpose-separated reads, GraphQL limits/sanitization, Router trust/composition,
 Kafka offset/patch behavior, Compose isolation, CI classification and cleanup policy.
 No requirement, security/data, availability or public-contract blocker was found.
 
-The real PostgreSQL/Kafka/Router evidence in search-runtime.txt remains applicable to
-this candidate. Commits after runtime source 1fe7edb change evidence prose and test
-harnesses only; they do not change production SQL, event, GraphQL, Router, image or
-bootstrap behavior. Therefore the heavyweight proof is not repeated under the written
-repeat-trigger rule.
+The initial real PostgreSQL/Kafka/Router evidence in search-runtime.txt remained
+applicable through the Catalog test-only correction. The later automated review changed
+projection maintenance and Compose availability behavior, so both affected real gates
+were repeated on the exact tree later committed as 04011af.
 
 Confirmation review rechecked the complete candidate plus this evidence-only delta and
 found no blocking issue.
@@ -75,5 +75,58 @@ Correction evidence:
   Exit: 0
 
 The remediation confirmation inspected the six-line allowlist/count delta and found no
-new blocker. Pending at this checkpoint: a new exact-head protected run, squash merge
-and exact-main CI. No release is claimed by this file.
+
+The automated PR review then identified four valid findings: refresh quiet active
+generations before their 300-second leases expire (discussion 3885713367), treat a
+missing handled checkpoint as broker position zero only (3885713370), keep Router
+startup independent from optional Discovery health (3885713374), and align the public
+query limit with the implemented 80-code-point bound (3885713375). Commit 04011af
+addresses all four in one availability/contract remediation. It starts current-source
+renewal at 150 seconds, validates the active generation through a bounded read-only
+query, promotes an empty partition at barrier zero, removes the Router dependency from
+the overlay, proves Catalog browse through Router while Discovery is stopped, and
+corrects the README limit.
+
+Review-remediation evidence:
+
+  pnpm --filter @aster/discovery build
+  pnpm --filter @aster/discovery test
+  Tests: 69 passed, 69 total
+  pnpm --filter @aster/discovery typecheck
+  Exit: 0
+
+  node --test ./tools/verify-catalog-runtime.test.mjs \
+    ./tools/verify-discovery-runtime.test.mjs
+  Tests: 4 passed, 4 total
+  Exit: 0
+
+  pnpm discovery:integration
+  PostgreSQL 18.6: migrations, active-generation reads, empty-offset promotion,
+  projection/event/search behavior and exact cleanup passed
+  Cleanup: remaining 0
+  Duration: 2481 ms
+  Exit: 0
+
+  pnpm discovery:runtime
+  Search, zero-result, zero-lag, stopped-Discovery Catalog isolation, restart recovery,
+  sanitized logs and exact cleanup passed
+  Cleanup: remaining 0
+  Duration: 104158 ms
+  Exit: 0
+
+  pnpm unused:check
+  Exit: 0
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 63 cached, 73 total
+  Time: 47.155s
+  Exit: 0
+
+The first post-review candidate attempt exposed one unused exported type only; making
+that implementation-only active-generation shape private corrected Knip without a
+runtime change. A confirmation inspection found no remaining requirement,
+security/data, availability or public-contract blocker. Pending at this checkpoint:
+publish 04011af plus evidence, resolve the four addressed discussions, run one
+exact-head protected CI and confirmation review, squash merge, and exact-main CI. No
+release is claimed by this file.
