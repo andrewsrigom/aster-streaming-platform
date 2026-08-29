@@ -50,6 +50,12 @@ type SharedEntry = {
   waiters: number;
 };
 
+type SharedFenceEntry = {
+  readonly work: SharedWork;
+  promise: Promise<CatalogStoreResult<CatalogPublicFence | null>>;
+  waiters: number;
+};
+
 type SharedWork = {
   readonly controller: AbortController;
   waiters: number;
@@ -326,6 +332,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
   }
   const makeToken = input.token;
   const entries = new Map<string, SharedEntry>();
+  const fenceEntries = new Map<string, SharedFenceEntry>();
 
   const record = (observation: CatalogCacheObservation): void => {
     try {
@@ -350,6 +357,37 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
 
   const deleteMalformed = async (key: string, signal: AbortSignal): Promise<void> => {
     await input.cache.delete(key, signal);
+  };
+
+  const readNegative = async (
+    id: string,
+    signal: AbortSignal,
+  ): Promise<Readonly<{ status: "hit" | "miss" | "cancelled" }>> => {
+    const started = performance.now();
+    const key = negativeKey(input.environment, id);
+    const cached = await input.cache.read(key, signal);
+    const durationMs = Math.max(0, performance.now() - started);
+    if (cached.status === "cancelled") {
+      return { status: "cancelled" };
+    }
+    if (cached.status === "malformed") {
+      record({ outcome: "malformed", durationMs });
+      await deleteMalformed(key, signal);
+    } else if (cached.status === "bypass") {
+      record({ outcome: "bypass", durationMs });
+    } else if (cached.value === NEGATIVE_VALUE) {
+      record({ outcome: "negative_hit", durationMs });
+      return { status: "hit" };
+    } else if (cached.value !== null) {
+      const payloadBytes = Buffer.byteLength(cached.value);
+      record({
+        outcome: "malformed",
+        durationMs,
+        ...(payloadBytes <= CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes ? { payloadBytes } : {}),
+      });
+      await deleteMalformed(key, signal);
+    }
+    return { status: signal.aborted ? "cancelled" : "miss" };
   };
 
   const readPositive = async (
@@ -439,6 +477,210 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     );
     if (result.status === "bypass") {
       record({ outcome: "bypass", durationMs: 0 });
+    }
+  };
+
+  const refreshFences = async (
+    ids: readonly string[],
+    scope: CatalogReadScope,
+    signal: AbortSignal,
+  ): Promise<CatalogStoreResult<readonly CatalogPublicFence[]>> => {
+    const leases = await Promise.all(
+      ids.map(async (id) => {
+        const started = performance.now();
+        const key = negativeKey(input.environment, id);
+        const token = makeToken();
+        if (!catalogIdentifier(token)) {
+          return Object.freeze({ id, key, token: "", acquired: false, bypass: true });
+        }
+        const acquired = await input.cache.write(
+          leaseKey(input, key),
+          token,
+          CATALOG_PUBLIC_CACHE_POLICY.leaseTtlMs,
+          "if_absent",
+          signal,
+        );
+        if (acquired.status !== "completed") {
+          record({ outcome: "bypass", durationMs: Math.max(0, performance.now() - started) });
+          return Object.freeze({ id, key, token, acquired: false, bypass: true });
+        }
+        record({
+          outcome: acquired.value ? "lease_acquired" : "lease_contended",
+          durationMs: Math.max(0, performance.now() - started),
+        });
+        return Object.freeze({ id, key, token, acquired: acquired.value, bypass: false });
+      }),
+    );
+    const resolvedAbsent = new Set<string>();
+    try {
+      if (signal.aborted) {
+        return { status: "cancelled" };
+      }
+      const contended = leases.filter((lease) => !lease.acquired && !lease.bypass);
+      if (contended.length > 0) {
+        if (!(await waitForDelay(CATALOG_PUBLIC_CACHE_POLICY.leaseWaitMs, signal))) {
+          return { status: "cancelled" };
+        }
+        for (const lease of contended) {
+          const cached = await readNegative(lease.id, signal);
+          if (cached.status === "cancelled") {
+            return { status: "cancelled" };
+          }
+          if (cached.status === "hit") {
+            resolvedAbsent.add(lease.id);
+          }
+        }
+      }
+      const pending = ids.filter((id) => !resolvedAbsent.has(id));
+      if (pending.length === 0) {
+        return { status: "completed", value: [] };
+      }
+      const fences = await input.source.findFences(pending, scope, signal);
+      if (fences.status !== "completed") {
+        return fences;
+      }
+      if (fences.value.length > pending.length) {
+        return { status: "unavailable" };
+      }
+      const fenceById = new Map<string, CatalogPublicFence>();
+      for (const fence of fences.value) {
+        if (!validFence(fence) || !pending.includes(fence.id) || fenceById.has(fence.id)) {
+          return { status: "unavailable" };
+        }
+        fenceById.set(fence.id, fence);
+      }
+      const absent = pending.filter((id) => !fenceById.has(id));
+      for (let index = 0; index < absent.length; index += 1) {
+        record({ outcome: "miss", durationMs: 0 });
+      }
+      await Promise.all(absent.map((id) => writeNegative(id, signal)));
+      return { status: "completed", value: Object.freeze([...fenceById.values()]) };
+    } finally {
+      await Promise.all(
+        leases
+          .filter((lease) => lease.acquired)
+          .map(async (lease) => {
+            const released = await input.cache.compareAndDelete(
+              leaseKey(input, lease.key),
+              lease.token,
+              AbortSignal.timeout(250),
+            );
+            if (released.status !== "completed" || !released.value) {
+              record({ outcome: "lease_lost", durationMs: 0 });
+            }
+          }),
+      );
+    }
+  };
+
+  const coalesceFences = async (
+    ids: readonly string[],
+    scope: CatalogReadScope,
+    signal: AbortSignal,
+  ): Promise<CatalogStoreResult<readonly CatalogPublicFence[]>> => {
+    const createdWork: SharedWork = {
+      controller: new AbortController(),
+      waiters: 0,
+      settled: false,
+    };
+    const selected: SharedFenceEntry[] = [];
+    const created: Array<{ identity: string; id: string; entry: SharedFenceEntry }> = [];
+    const overflow: string[] = [];
+    for (const id of ids) {
+      const identity = digest(input, negativeKey(input.environment, id));
+      const existing = fenceEntries.get(identity);
+      if (existing) {
+        const count = existing.waiters + 1;
+        record({
+          outcome: "coalesced",
+          durationMs: 0,
+          waiterBucket: count === 1 ? "one" : count <= 4 ? "two_to_four" : "five_plus",
+        });
+        selected.push(existing);
+        continue;
+      }
+      if (
+        entries.size + fenceEntries.size >=
+        CATALOG_PUBLIC_CACHE_POLICY.maximumCoalescingEntries
+      ) {
+        overflow.push(id);
+        continue;
+      }
+      const entry: SharedFenceEntry = {
+        work: createdWork,
+        waiters: 0,
+        promise: Promise.resolve({ status: "unavailable" }),
+      };
+      fenceEntries.set(identity, entry);
+      created.push({ identity, id, entry });
+      selected.push(entry);
+    }
+    if (created.length > 0) {
+      const workSignal = AbortSignal.any([
+        createdWork.controller.signal,
+        AbortSignal.timeout(CATALOG_PUBLIC_CACHE_POLICY.sharedWorkTimeoutMs),
+      ]);
+      const batch = refreshFences(
+        created.map((value) => value.id),
+        scope,
+        workSignal,
+      );
+      for (const item of created) {
+        item.entry.promise = batch
+          .then((result): CatalogStoreResult<CatalogPublicFence | null> =>
+            result.status === "completed"
+              ? {
+                  status: "completed",
+                  value: result.value.find((fence) => fence.id === item.id) ?? null,
+                }
+              : result,
+          )
+          .finally(() => {
+            fenceEntries.delete(item.identity);
+          });
+      }
+      void batch.then(
+        () => {
+          createdWork.settled = true;
+        },
+        () => {
+          createdWork.settled = true;
+        },
+      );
+    }
+    for (const entry of selected) {
+      entry.waiters += 1;
+      entry.work.waiters += 1;
+    }
+    try {
+      const [shared, direct] = await Promise.all([
+        Promise.all(selected.map((entry) => waitForCaller(entry.promise, signal))),
+        overflow.length > 0
+          ? refreshFences(overflow, scope, signal)
+          : Promise.resolve({ status: "completed", value: [] } as const),
+      ]);
+      const fences: CatalogPublicFence[] = [];
+      for (const result of shared) {
+        if (result.status !== "completed") {
+          return result;
+        }
+        if (result.value) {
+          fences.push(result.value);
+        }
+      }
+      if (direct.status !== "completed") {
+        return direct;
+      }
+      fences.push(...direct.value);
+      return { status: "completed", value: Object.freeze(fences) };
+    } finally {
+      for (const entry of selected) {
+        entry.waiters -= 1;
+        entry.work.waiters -= 1;
+        if (entry.work.waiters === 0 && !entry.work.settled) {
+          entry.work.controller.abort();
+        }
+      }
     }
   };
 
@@ -639,7 +881,10 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
         selected.push(existing);
         continue;
       }
-      if (entries.size >= CATALOG_PUBLIC_CACHE_POLICY.maximumCoalescingEntries) {
+      if (
+        entries.size + fenceEntries.size >=
+        CATALOG_PUBLIC_CACHE_POLICY.maximumCoalescingEntries
+      ) {
         overflow.push(fence);
         continue;
       }
@@ -737,41 +982,15 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       }
 
       const negativeReads = await Promise.all(
-        ids.map(async (id) => {
-          const started = performance.now();
-          const key = negativeKey(input.environment, id);
-          const cached = await input.cache.read(key, signal);
-          return Object.freeze({
-            id,
-            key,
-            cached,
-            durationMs: Math.max(0, performance.now() - started),
-          });
-        }),
+        ids.map(async (id) => ({ id, cached: await readNegative(id, signal) })),
       );
       const negativeHits = new Set<string>();
-      for (const { id, key, cached, durationMs } of negativeReads) {
+      for (const { id, cached } of negativeReads) {
         if (cached.status === "cancelled") {
           return { status: "cancelled" };
         }
-        if (cached.status === "malformed") {
-          record({ outcome: "malformed", durationMs });
-          await deleteMalformed(key, signal);
-        } else if (cached.status === "bypass") {
-          record({ outcome: "bypass", durationMs });
-        } else if (cached.value === NEGATIVE_VALUE) {
+        if (cached.status === "hit") {
           negativeHits.add(id);
-          record({ outcome: "negative_hit", durationMs });
-        } else if (cached.value !== null) {
-          const payloadBytes = Buffer.byteLength(cached.value);
-          record({
-            outcome: "malformed",
-            durationMs,
-            ...(payloadBytes <= CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes
-              ? { payloadBytes }
-              : {}),
-          });
-          await deleteMalformed(key, signal);
         }
       }
       const unresolved = ids.filter((id) => !negativeHits.has(id));
@@ -779,25 +998,10 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
         return { status: "completed", value: [] };
       }
 
-      const fences = await input.source.findFences(unresolved, scope, signal);
+      const fences = await coalesceFences(unresolved, scope, signal);
       if (fences.status !== "completed") {
         return fences;
       }
-      if (fences.value.length > unresolved.length) {
-        return { status: "unavailable" };
-      }
-      const fenceById = new Map<string, CatalogPublicFence>();
-      for (const fence of fences.value) {
-        if (!validFence(fence) || !unresolved.includes(fence.id) || fenceById.has(fence.id)) {
-          return { status: "unavailable" };
-        }
-        fenceById.set(fence.id, fence);
-      }
-      const absent = unresolved.filter((id) => !fenceById.has(id));
-      for (let index = 0; index < absent.length; index += 1) {
-        record({ outcome: "miss", durationMs: 0 });
-      }
-      await Promise.all(absent.map((id) => writeNegative(id, signal)));
 
       const cachedFences = await Promise.all(
         fences.value.map(async (fence) => ({

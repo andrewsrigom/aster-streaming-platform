@@ -165,13 +165,25 @@ try {
     true,
   );
   assert.equal(state.sourceReads, 1);
-  assert.equal(state.fenceReads, 24);
+  assert.equal(state.fenceReads, 1);
   const warmStarted = performance.now();
   const warm = await reader.findMany([id(2)], scope, requestSignal());
   const warmDurationMs = performance.now() - warmStarted;
   assert.equal(warm.status, "completed");
   assert.equal(state.sourceReads, 1);
-  assert.equal(state.fenceReads, 25);
+  assert.equal(state.fenceReads, 2);
+
+  const crossInstanceNegativeFenceBefore = state.fenceReads;
+  const crossInstanceNegative = await Promise.all([
+    reader.findMany([id(98)], scope, requestSignal()),
+    createReader().findMany([id(98)], scope, requestSignal()),
+  ]);
+  assert.ok(
+    crossInstanceNegative.every(
+      (result) => result.status === "completed" && result.value.length === 0,
+    ),
+  );
+  assert.equal(state.fenceReads - crossInstanceNegativeFenceBefore, 1);
 
   assert.deepEqual(await reader.findMany([id(99)], scope, requestSignal()), {
     status: "completed",
@@ -228,13 +240,15 @@ try {
       uncachedFullSourceReadsDuringBurst: 24,
       uncachedBurstDurationMs: Math.round(baselineDurationMs * 100) / 100,
       fullSourceReadsDuringBurst: 1,
-      fenceReadsDuringBurst: 24,
+      fenceReadsDuringBurst: 1,
       burstDurationMs: Math.round(burstDurationMs * 100) / 100,
       warmFullSourceReads: 0,
       warmDurationMs: Math.round(warmDurationMs * 100) / 100,
       negativeFenceReadsOnSecondCall: 0,
       crossInstanceCallers: crossInstance.length,
       crossInstanceFullSourceReads: 1,
+      crossInstanceNegativeCallers: crossInstanceNegative.length,
+      crossInstanceNegativeFenceReads: 1,
       leaseContentionObserved: true,
       outageReturnedOwnerValue: true,
       finiteMetricSeries: cacheOutcomes.points.length,

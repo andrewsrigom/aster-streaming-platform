@@ -65,17 +65,19 @@ function sourceFixture(initial: readonly PublicCatalogCandidate[] = [publicCandi
     fenceReads: 0,
     sourceReads: 0,
     sourceBatches: [] as string[][],
+    beforeFences: undefined as (() => Promise<void>) | undefined,
     beforeSource: undefined as (() => Promise<void>) | undefined,
   };
   const source: CatalogPublicEntitySource = {
-    findFences(ids) {
+    async findFences(ids) {
       state.fenceReads += 1;
-      return Promise.resolve({
+      await state.beforeFences?.();
+      return {
         status: "completed",
         value: Object.freeze(
           state.candidates.filter((candidate) => ids.includes(fence(candidate).id)).map(fence),
         ),
-      });
+      };
     },
     async findManyAtFences(fences) {
       state.sourceReads += 1;
@@ -229,6 +231,34 @@ test("a short negative entry applies only after a valid identifier misses owner 
     f.observations.some((value) => value.outcome === "negative_hit"),
     true,
   );
+});
+
+test("concurrent cold negative misses share one owner fence read", async () => {
+  const f = readerFixture([]);
+  let started: (() => void) | undefined;
+  let release: (() => void) | undefined;
+  const barrier = new Promise<void>((resolve) => {
+    started = resolve;
+  });
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  f.source.state.beforeFences = async () => {
+    started?.();
+    await blocked;
+  };
+
+  const burst = Promise.all(
+    Array.from({ length: 24 }, () => f.reader.findMany([id(99)], scope, signal())),
+  );
+  await barrier;
+  assert.equal(f.source.state.fenceReads, 1);
+  release?.();
+  const results = await burst;
+
+  assert.ok(results.every((result) => result.status === "completed" && result.value.length === 0));
+  assert.equal(f.source.state.fenceReads, 1);
+  assert.ok(f.observations.some((value) => value.outcome === "coalesced"));
 });
 
 test("TTL jitter is deterministic per key and distributed inside both policy windows", async () => {
