@@ -117,7 +117,7 @@ try {
     deleted: true,
   });
 
-  const candidates = [publicCandidate(2), publicCandidate(3)];
+  const candidates = [publicCandidate(2), publicCandidate(3), publicCandidate(97)];
   const expectedFences = candidates.map(candidateFence);
   const state = { fenceReads: 0, sourceReads: 0 };
   const source: CatalogPublicEntitySource = {
@@ -155,6 +155,18 @@ try {
     });
   const baselineFence = expectedFences[0];
   assert.ok(baselineFence);
+  const corruptedNegative = await createReader().findMany([id(97)], scope, requestSignal());
+  assert.equal(corruptedNegative.status, "completed");
+  assert.deepEqual(
+    corruptedNegative.value.map((title) => title.id),
+    [id(97)],
+  );
+  assert.deepEqual(
+    await redis.read(`aster:test:catalog:public-title-absent:v1:${id(97)}`, requestSignal()),
+    { status: "completed", value: null },
+  );
+  state.fenceReads = 0;
+  state.sourceReads = 0;
   const baselineStarted = performance.now();
   const baseline = await Promise.all(
     Array.from({ length: 24 }, () =>
@@ -249,6 +261,7 @@ try {
       event: "catalog_cache_redis_verified",
       boundedOversizedRead: true,
       wrongTypeDeleted: true,
+      unboundedNegativeDeleted: true,
       atomicCompareDelete: true,
       expiryObserved: true,
       expiredLeaseRecovered: true,

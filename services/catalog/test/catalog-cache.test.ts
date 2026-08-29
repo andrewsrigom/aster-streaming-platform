@@ -223,6 +223,9 @@ test("a short negative entry applies only after a valid identifier misses owner 
   assert.equal(f.observations.filter((value) => value.outcome === "miss").length, 1);
   const negative = f.cache.writes.find((value) => value.key.includes(":public-title-absent:v1:"));
   assert.ok(negative);
+  const negativeValue = f.cache.values.get(negative.key);
+  assert.ok(negativeValue);
+  assert.deepEqual(JSON.parse(negativeValue), { schema: 1, kind: "absent", cachedAt: now });
   assert.equal(negative.ttlMs >= CATALOG_PUBLIC_CACHE_POLICY.negativeTtlMs, true);
   assert.equal(
     negative.ttlMs <=
@@ -239,6 +242,41 @@ test("a short negative entry applies only after a valid identifier misses owner 
     f.observations.some((value) => value.outcome === "negative_hit"),
     true,
   );
+});
+
+test("negative entries without a current bounded age are deleted before owner visibility is reused", async () => {
+  const maximumAgeSeconds = Math.ceil(
+    (CATALOG_PUBLIC_CACHE_POLICY.negativeTtlMs + CATALOG_PUBLIC_CACHE_POLICY.negativeJitterMs) /
+      1_000,
+  );
+  const laterScope = { ...scope, now: now + maximumAgeSeconds + 1 };
+  const corruptedValues = [
+    '{"schema":1,"kind":"absent"}',
+    JSON.stringify({ schema: 1, kind: "absent", cachedAt: now }),
+    JSON.stringify({ schema: 1, kind: "absent", cachedAt: laterScope.now + 1 }),
+  ];
+
+  for (const corrupted of corruptedValues) {
+    const f = readerFixture([]);
+    assert.equal((await f.reader.findMany([id(99)], scope, signal())).status, "completed");
+    const key = [...f.cache.values.keys()].find((value) =>
+      value.includes(":public-title-absent:v1:"),
+    );
+    assert.ok(key);
+    f.cache.values.set(key, corrupted);
+    f.source.state.candidates = [publicCandidate(99)];
+
+    const visible = await f.reader.findMany([id(99)], laterScope, signal());
+
+    assert.equal(visible.status, "completed");
+    assert.deepEqual(
+      visible.value.map((title) => title.id),
+      [id(99)],
+    );
+    assert.equal(f.source.state.fenceReads, 2);
+    assert.ok(f.observations.some((value) => value.outcome === "malformed"));
+    assert.notEqual(f.cache.values.get(key), corrupted);
+  }
 });
 
 test("concurrent cold negative misses share one owner fence read", async () => {

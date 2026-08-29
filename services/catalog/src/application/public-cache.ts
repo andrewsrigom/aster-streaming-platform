@@ -32,7 +32,6 @@ export const CATALOG_PUBLIC_CACHE_POLICY = Object.freeze({
   maximumCoalescingEntries: 128,
 } as const);
 
-const NEGATIVE_VALUE = '{"schema":1,"kind":"absent"}';
 const ENVIRONMENTS = new Set(["local", "test", "development", "staging", "production"]);
 
 type CacheOptions = Readonly<{
@@ -259,6 +258,29 @@ function parseEnvelope(
   }
 }
 
+function validNegativeEnvelope(value: string, now: number): boolean {
+  if (Buffer.byteLength(value, "utf8") > CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes) {
+    return false;
+  }
+  try {
+    const input = catalogRecord(JSON.parse(value) as unknown, ["schema", "kind", "cachedAt"]);
+    const cachedAt = input?.["cachedAt"];
+    const maximumAgeSeconds = Math.ceil(
+      (CATALOG_PUBLIC_CACHE_POLICY.negativeTtlMs + CATALOG_PUBLIC_CACHE_POLICY.negativeJitterMs) /
+        1_000,
+    );
+    return (
+      input?.["schema"] === 1 &&
+      input["kind"] === "absent" &&
+      catalogTimestamp(cachedAt) &&
+      cachedAt <= now &&
+      now - cachedAt <= maximumAgeSeconds
+    );
+  } catch {
+    return false;
+  }
+}
+
 function fenceForCandidate(
   candidate: Parameters<typeof projectPublicTitle>[0],
 ): CatalogPublicFence | undefined {
@@ -368,6 +390,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
 
   const readNegative = async (
     id: string,
+    scope: CatalogReadScope,
     signal: AbortSignal,
   ): Promise<Readonly<{ status: "hit" | "miss" | "cancelled" }>> => {
     const started = performance.now();
@@ -382,7 +405,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       await deleteMalformed(key, signal);
     } else if (cached.status === "bypass") {
       record({ outcome: "bypass", durationMs });
-    } else if (cached.value === NEGATIVE_VALUE) {
+    } else if (cached.value !== null && validNegativeEnvelope(cached.value, scope.now)) {
       record({ outcome: "negative_hit", durationMs });
       return { status: "hit" };
     } else if (cached.value !== null) {
@@ -472,11 +495,15 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     }
   };
 
-  const writeNegative = async (id: string, signal: AbortSignal): Promise<void> => {
+  const writeNegative = async (
+    id: string,
+    scope: CatalogReadScope,
+    signal: AbortSignal,
+  ): Promise<void> => {
     const key = negativeKey(input.environment, id);
     const result = await input.cache.write(
       key,
-      NEGATIVE_VALUE,
+      JSON.stringify({ schema: 1, kind: "absent", cachedAt: scope.now }),
       CATALOG_PUBLIC_CACHE_POLICY.negativeTtlMs +
         jitter(input, key, CATALOG_PUBLIC_CACHE_POLICY.negativeJitterMs),
       "replace",
@@ -529,7 +556,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
           return { status: "cancelled" };
         }
         for (const lease of contended) {
-          const cached = await readNegative(lease.id, signal);
+          const cached = await readNegative(lease.id, scope, signal);
           if (cached.status === "cancelled") {
             return { status: "cancelled" };
           }
@@ -560,7 +587,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       for (let index = 0; index < absent.length; index += 1) {
         record({ outcome: "miss", durationMs: 0 });
       }
-      await Promise.all(absent.map((id) => writeNegative(id, signal)));
+      await Promise.all(absent.map((id) => writeNegative(id, scope, signal)));
       return { status: "completed", value: Object.freeze([...fenceById.values()]) };
     } finally {
       await Promise.all(
@@ -821,7 +848,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
           }
           const currentById = new Map(current.value.map((value) => [value.id, value]));
           const absent = ids.filter((id) => !currentById.has(id));
-          await Promise.all(absent.map((id) => writeNegative(id, signal)));
+          await Promise.all(absent.map((id) => writeNegative(id, scope, signal)));
           if (current.value.length > 0) {
             const second = await timed("source_load", () =>
               loadExact(current.value, scope, signal),
@@ -989,7 +1016,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       }
 
       const negativeReads = await Promise.all(
-        ids.map(async (id) => ({ id, cached: await readNegative(id, signal) })),
+        ids.map(async (id) => ({ id, cached: await readNegative(id, scope, signal) })),
       );
       const negativeHits = new Set<string>();
       for (const { id, cached } of negativeReads) {
