@@ -4,7 +4,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 
-Completed:
+### Completed
 
 - Re-ran only the failed jobs of protected PR37 run33270889083 once after the
   Docker demo Engagement closeout race; all protected jobs passed at unchanged
@@ -26,13 +26,13 @@ Completed:
   395884 ms with healthy public home fallback, zero broker lag, replay,
   Catalog isolation, Discovery restart recovery, sanitized logs and cleanup0.
 
-Evidence:
+### Evidence
 
 - `evidence/phase-10/catalog-cache-release.txt`
 - `evidence/phase-10/discovery-swr-contract.txt`
 - `evidence/phase-10/discovery-swr-runtime.txt`
 
-Next action:
+### Next action
 
 Run the final documentation/candidate checkpoint, publish one Discovery PR and
 complete its bounded review/CI/release sequence. Then activate READY P10-R08.
@@ -2449,22 +2449,22 @@ Confirm the configured GitHub identity and target absence, then create and audit
 
 Execute P00-R07 by adding contribution governance and repository templates before the authorized public repository is created and audited.
 
-## 2026-08-26 — Executable documentation truthfulness gate
+**Historical checkpoint — 2026-08-26 — Executable documentation truthfulness gate**
 
-### Completed
+**Completed**
 
 - Added a dependency-free, bounded UTF-8 Markdown scanner for first titles, matching fences, merge markers, local files and heading fragments, canonical terminology, and evidence-supported explicit current-status claims.
 - Added reference-link handling, percent-decoded traversal and Windows absolute-path rejection, symbolic-target protection, stable JSON output, and bounded diagnostics.
 - Added `docs:check` and `docs:test` to the root scripts and expanded the Turbo graph from ten to twelve tasks without changing the fast pre-commit path.
 
-### Evidence
+**Evidence**
 
 - Passed 8 focused tests covering positive content and deliberate title, fence, merge-marker, terminology, status, link, fragment, traversal, absolute-path, and malformed-UTF-8 failures.
 - Passed the actual repository scan over 127 documents, 467,677 Markdown bytes, 1,744 headings, 223 local links, and 2 evidence-supported current-status claims with zero violation.
 - Passed all 12 graph tasks with 33 focused tests in `4.98` seconds forced and `2.99` seconds on the measured cached repeat.
 - Raw evidence: `evidence/phase-00/documentation-validation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, safe secret fixtures, and dependency review with one stable aggregate result.
 
