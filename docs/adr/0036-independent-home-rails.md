@@ -68,6 +68,13 @@ responses as degraded and rejected/unusable operations as rejected. A title
 reference may resolve to null if Catalog retires it after rail selection; other
 entries remain usable.
 
+The three genre rails can flatten at most36 `Title` representations into one
+Catalog Federation fetch when `first` is12. Catalog accepts exactly that finite
+entity ceiling while retaining20 for ordinary product lists. Its request-scoped
+DataLoader splits owner reads into batches of at most20, preserving the existing
+application/SQL batch bound. Body, input-node, cost, deadline and concurrency
+limits remain unchanged.
+
 The projection's existing 300-second lease and proactive renewal remain the
 freshness policy. Queries exclude expired rows. Retirement events update active and
 building generations through ADR-0035, while Catalog remains the final visibility
@@ -93,7 +100,8 @@ client condition is not authorization.
 Verify pure aggregation and fallback rules, independent statement failure, empty
 and stale state, cancellation, generation/fence matching, restricted view grants,
 stable ordering, GraphQL cost/composition/nullability, owner authorization, finite
-metric attributes and Router partial response. Use real PostgreSQL for view/query
+metric attributes, Router partial response and a36-reference Catalog entity fetch
+split into owner batches of at most20. Use real PostgreSQL for view/query
 semantics and one disposable runtime for packaging and failure isolation. Browser
 SSR/hydration remains P09-R10.
 

@@ -28,6 +28,7 @@ export const CATALOG_GRAPHQL_LIMITS = Object.freeze({
   inputDepth: 8,
   inputNodes: 256,
   listSize: 20,
+  entityRepresentations: 36,
   concurrent: 8,
   deadlineMs: 3_000,
   rateBurst: 64,
@@ -49,7 +50,7 @@ function record(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function inspectInput(value: unknown): void {
+function inspectInput(value: unknown, listSize: number = CATALOG_GRAPHQL_LIMITS.listSize): void {
   let nodes = 0;
   const walk = (item: unknown, depth: number): void => {
     nodes += 1;
@@ -57,7 +58,7 @@ function inspectInput(value: unknown): void {
       throw new OperationRejected("LIMIT_EXCEEDED");
     }
     if (Array.isArray(item)) {
-      if (item.length > CATALOG_GRAPHQL_LIMITS.listSize) {
+      if (item.length > listSize) {
         throw new OperationRejected("LIMIT_EXCEEDED");
       }
       for (const child of item as unknown[]) {
@@ -89,7 +90,7 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
       throw new OperationRejected("LIMIT_EXCEEDED");
     }
     const variables = body["variables"] ?? {};
-    inspectInput(variables);
+    inspectInput(variables, CATALOG_GRAPHQL_LIMITS.entityRepresentations);
     const document = parse(body["query"], {
       maxTokens: CATALOG_GRAPHQL_LIMITS.tokens,
       noLocation: true,
@@ -127,7 +128,7 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
         }
       }
     }
-    inspectInput(effectiveVariables);
+    inspectInput(effectiveVariables, CATALOG_GRAPHQL_LIMITS.entityRepresentations);
     let fields = 0;
     let aliases = 0;
     let cost = 0;
@@ -211,7 +212,14 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
         }
         for (const argument of item.arguments ?? []) {
           const value: unknown = valueFromASTUntyped(argument.value, effectiveVariables);
-          inspectInput(value);
+          const entityRepresentations =
+            item.name.value === "_entities" && argument.name.value === "representations";
+          inspectInput(
+            value,
+            entityRepresentations
+              ? CATALOG_GRAPHQL_LIMITS.entityRepresentations
+              : CATALOG_GRAPHQL_LIMITS.listSize,
+          );
           if (item.name.value === "titles" && argument.name.value === "first") {
             if (typeof value !== "number" || !Number.isInteger(value) || value < 1 || value > 20) {
               throw new OperationRejected("LIMIT_EXCEEDED");
@@ -233,9 +241,10 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
             throw new OperationRejected("INVALID_INPUT");
           }
           if (
-            item.name.value === "_entities" &&
-            argument.name.value === "representations" &&
+            entityRepresentations &&
             (!Array.isArray(value) ||
+              value.length < 1 ||
+              value.length > CATALOG_GRAPHQL_LIMITS.entityRepresentations ||
               (value as unknown[]).some(
                 (reference) =>
                   !catalogRecord(reference, ["__typename", "id"]) ||
@@ -246,11 +255,7 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
           ) {
             throw new OperationRejected("INVALID_INPUT");
           }
-          if (
-            item.name.value === "_entities" &&
-            argument.name.value === "representations" &&
-            Array.isArray(value)
-          ) {
+          if (entityRepresentations && Array.isArray(value)) {
             listBound = Math.max(1, value.length);
           }
         }

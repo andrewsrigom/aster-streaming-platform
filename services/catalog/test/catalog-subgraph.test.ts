@@ -82,6 +82,21 @@ test("entity resolution batches repeated IDs once, preserves order/nulls and nev
   }
 });
 
+test("home-sized entity resolution splits owner reads into batches of twenty", async () => {
+  const f = publicFixture();
+  const http = await catalogHttpFixture(f.queries);
+  try {
+    const items = Array.from({ length: 36 }, (_, n) => ({ __typename: "Title", id: id(n) }));
+    const response = await http.send({ query: entities, variables: { items } });
+    assert.equal(response.status, 200);
+    assert.equal(response.json.errors, undefined);
+    assert.equal((response.json.data?.["_entities"] as unknown[]).length, 36);
+    assert.equal(f.state.calls, 2);
+  } finally {
+    await http.close();
+  }
+});
+
 test("invalid operations and oversized/simple bodies are rejected without application access", async () => {
   const f = publicFixture();
   const http = await catalogHttpFixture(f.queries);

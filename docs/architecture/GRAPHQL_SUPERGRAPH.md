@@ -63,6 +63,11 @@ preserve the remainder of a page if Catalog retires a title between the Discover
 read and entity resolution. Engagement alone owns the nullable
 `homeContinueWatching` root.
 
+The maximum three-genre branch can flatten36 `Title` representations. Catalog's
+federation guard admits that exact finite maximum; its request-scoped DataLoader
+keeps owner reads at the existing20-title batch limit. Ordinary product list limits
+do not change.
+
 ## Query shape
 
 Implemented query surface excerpt; [generated API](../../infra/router/generated/api.graphql)

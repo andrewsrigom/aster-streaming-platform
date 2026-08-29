@@ -23,7 +23,7 @@ records candidate `fc353c3`, protected run 33238473742, resolved review, squash
 
 P09-R03 locally verifies migration 0003, independent featured/recent/
 curated-trending/genre rails, stable recent fallback, nullable Engagement home
-composition and finite OpenTelemetry product instruments. Discovery 82/82,
+composition and finite OpenTelemetry product instruments. Discovery 89/89,
 telemetry 10/10, PostgreSQL 18.6 and the 11-service Router runtime pass. The
 failed SQL/guard harness attempts and exact cleanup are retained in [home SQL](../evidence/phase-09/home-rails-postgres.txt)
 and [runtime evidence](../evidence/phase-09/home-rails-runtime.txt). Schema
@@ -64,7 +64,12 @@ affected candidate in47.708s. Its publication update remains.
 Exact `8650670` passed protected run33246333963. Final confirmation review5057560831
 found only a stale architecture excerpt defaulting `homeContinueWatching` to20
 while the authoritative schema/generated API use10. The documentation-only
-correction now matches the schema; closeout confirmation and protected CI remain.
+correction `df08a70` passed protected run33247048014. Closeout review5057633664
+then found that the genre branch can flatten36 valid Catalog entities while the
+transport admitted20. The correction admits exactly36 federation references,
+keeps ordinary lists at20 and uses the existing request-scoped DataLoader to
+split owner reads into batches of at most20. Catalog build and230/230 tests pass.
+The corrected affected candidate passes54/54,38 cached, in55.844s.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -74,13 +79,13 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Home rails remain unreleased while PR34 completes protected review and CI.
+Home rails remain unreleased while PR34 completes corrected protected review and CI.
 Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Publish the documentation-only P09-R03 correction and complete closeout
-confirmation/protected release.
+Pass the corrected P09-R03 affected gate, publish the Catalog entity-capacity
+correction and complete closeout confirmation/protected release.
 
 ## Runtime and recovery
 

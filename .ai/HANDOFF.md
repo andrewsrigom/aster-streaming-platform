@@ -22,13 +22,19 @@ corrected locally; focused Discovery89/89 and the final54/54 affected candidate
 in47.708s pass.
 Exact8650670 passed protected run33246333963. Final confirmation found only the
 GraphQL architecture excerpt default20/schema default10 mismatch; fixed locally.
+Exactdf08a70 passed protected run33247048014. Closeout review5057633664 discussion
+3886259953 found the genre branch can flatten36 Catalog references while its guard
+accepted20. The local correction accepts36 valid Title representations, rejects37
+and proves the existing DataLoader splits36 into two owner reads of at most20;
+Catalog build and230/230 tests pass.
+The corrected affected candidate passes54/54,38 cached, in55.844s.
 Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Update PR34.
-2. Reply to and resolve discussion3886202415.
-3. Require closeout confirmation/protected CI, then
+1. Commit and update PR34.
+2. Reply to and resolve discussion3886259953 (`PRRT_kwDOUEkeis6dZCdY`).
+3. Require one availability-boundary confirmation/protected CI, then
    squash/exact-main and activate P09-R10.
 
 ## Evidence boundaries
@@ -38,8 +44,10 @@ and [runtime](../evidence/phase-09/home-rails-runtime.txt) evidence retain failu
 corrections and zero residue. Pool/admission and mixed-version changes received both
 affected repeats; source object IDs remained exact after the final squash rebase.
 The later log classifier and ADR prose are covered by focused/candidate gates and
-cannot affect SQL, media or binary runtime behavior. The latest correction changes
-only a non-authoritative architecture excerpt. Browser/media/CPU evidence is unaffected.
+cannot affect SQL, media or binary runtime behavior. The Catalog change affects
+only bounded GraphQL admission and request-scoped batching: a real HTTP regression
+proves36 references become two owner reads of at most20. It cannot affect the
+unchanged projection SQL, media or Docker topology. Browser/media/CPU evidence is unaffected.
 
 ## Execution environment
 

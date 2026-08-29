@@ -27,8 +27,12 @@ Append new entries at the top. Keep entries factual and concise.
   build,89/89 tests, lint, formatting and final54/54 affected candidate in47.708s pass.
 - Exact8650670 passed protected run33246333963. Final confirmation
   review5057560831 found only an architecture excerpt with default20 while the
-  authoritative home personalization schema uses10; corrected locally. Repository
-  memory, documentation, schema, formatting and diff checks pass.
+  authoritative home personalization schema uses10; exactdf08a70 corrected it and
+  protected run33247048014 passed. Closeout review5057633664 then found the genre
+  branch can flatten36 Catalog entities while its transport admitted20. Catalog
+  now accepts36 valid Title representations, rejects37 and retains owner reads of
+  at most20 through its request-scoped DataLoader. Build and230/230 tests pass.
+  The corrected affected candidate passes54/54,38 cached, in55.844s.
 
 ### Evidence
 
@@ -54,7 +58,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Update PR34 and complete closeout confirmation/protected release.
+Commit and update PR34, then complete one availability-boundary confirmation/
+protected release.
 
 ## 2026-08-29 — Independent home rails local candidate
 

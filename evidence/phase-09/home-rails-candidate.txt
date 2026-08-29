@@ -83,3 +83,21 @@ while the authoritative schema and generated API default it to10. The excerpt no
 uses10. Repository-memory, documentation, schema, formatting and diff checks pass.
 This changes no schema, operation, source, package or runtime byte; the prior
 candidate and protected evidence remain applicable before one closeout publication.
+
+Catalog federation capacity correction
+
+Exactdf08a70 passed protected run33247048014. Closeout review5057633664 found
+that the three genre rails can flatten36 valid Title representations into one
+Catalog federation branch while its transport guard accepted only20. Catalog now
+admits at most36 valid Title representations, rejects37 and leaves ordinary list
+arguments capped at20. Its existing request-scoped DataLoader retains
+maxBatchSize20; a real local HTTP regression proves36 representations resolve in
+two owner reads. Catalog build and230/230 tests, scoped ESLint, formatting and
+diff checks pass. Projection SQL, Router topology, media and retained data are
+unchanged, so their heavyweight evidence remains applicable.
+
+Command: pnpm check:changed
+Result: PASS
+Tasks: 54 successful, 54 total
+Cached: 38
+Duration: 55.844s

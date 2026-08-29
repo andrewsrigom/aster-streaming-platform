@@ -16,6 +16,11 @@ The other commands require the pinned Node/pnpm toolchain and Docker. `catalog:d
 
 The runtime uses `aster_catalog_reader_local`, with only the live Catalog public view. It receives no operator/admin credentials. Readiness checks actual schema and privileges, including absence of Identity access; a five-second bounded monitor recovers after dependency restoration. GraphQL keeps its existing request limits and deadlines. HTTP has 128 connection slots, 10-second request/socket limits, 5-second header/keepalive limits and bounded shutdown (10 seconds; forced exit on failure). The container runs UID 1000, read-only, without added capabilities, capped at 384 MiB/one CPU/64 PIDs. PostgreSQL has a four-connection pool and one-second connection/statement limits. Redis is not a Catalog read dependency.
 
+Ordinary Catalog lists remain capped at20. A trusted Router `_entities` request
+accepts at most36 valid `Title` references, the exact maximum of the three home
+genre rails. The request-scoped DataLoader splits that federation input into
+owner reads of at most20; body, input-node, cost and request limits still apply.
+
 Structured operation/lifecycle logs contain correlation IDs, never query documents or database credentials. Shared local HTTP/dependency/runtime metrics are collected in process; remote Catalog metric export and exported distributed traces are not claimed. Stop only Catalog to roll back its runtime; retain rights, audit and outbox data. For unready service, inspect bounded logs and initializer exit status, restore database/schema/reader grants, then confirm `/health/ready` and a browse query. Do not grant administrator rights to make readiness pass.
 
 [Historical candidate records](examples/candidate-sources.json) remain NEEDS_CLARIFICATION; [Phase 03 evidence](../../evidence/phase-03/candidate-sources.md) preserves their original retrieval limitations. Phase 06 adds a separately reviewed [Big Buck Bunny draft](examples/big-buck-bunny.json) and [real local approval](../../evidence/phase-06/catalog-approval.json). Its exact archive was acquired and processed; the renewed rights/artwork approval and immutable bundle are now locally published. No source film is automatically acquired by normal Catalog startup.

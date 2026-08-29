@@ -28,7 +28,10 @@ that usable partial logs were classified as rejected and ADR-0036 still describe
 the superseded parallel admission model; both corrections reached exact
 `8650670` and protected run33246333963 passed. Its final confirmation found one
 architecture excerpt using default20 instead of the authoritative schema default10;
-the documentation-only correction is local.
+the documentation-only correction reached exact `df08a70` and protected
+run33247048014 passed. Closeout confirmation then found the three genre rails can
+flatten36 Catalog `Title` representations while its guard allowed20; the bounded
+Catalog federation correction is local.
 
 ## Proposed behavior
 
@@ -45,8 +48,8 @@ readiness reservation fit the five-connection runtime pool.
 
 - Owning context: Discovery owns rail definitions/order; Engagement owns
   continue-watching; Catalog owns public title truth.
-- Affected services/packages: Discovery, narrow Engagement transport, telemetry,
-  Router artifacts and Phase 09 evidence.
+- Affected services/packages: Discovery, narrow Engagement and Catalog federation
+  transports, telemetry, Router artifacts and Phase 09 evidence.
 - Authoritative data: Catalog title/publication facts and Engagement progress.
 - Read models/caches: existing versioned Discovery PostgreSQL projection; no Redis.
 - Trust boundaries: public GraphQL input, Router owner credentials, projection rows,
@@ -61,6 +64,8 @@ readiness reservation fit the five-connection runtime pool.
 - Results are bounded to twelve titles per rail and three genre rails.
 - Expired projection rows are not served; fallback bypasses no rights/visibility.
 - A home request reserves at most one runtime transaction concurrently.
+- Catalog admits at most36 home entity representations and retains owner batches
+  of at most20 through its request-scoped DataLoader.
 - Migration3 waits for the finite search compatibility precursor on exact main.
 - The old search migrator tolerates marker3 but owns/applies only scripts1–2 and
   rejects marker4.
@@ -91,7 +96,7 @@ readiness reservation fit the five-connection runtime pool.
 
 - Authorization: public rails need none; personalization stays in Engagement.
 - Input limits: first1–12, fixed rail/edge result bounds, existing body/parser/depth/
-  alias/cost/deadline/concurrency limits.
+  alias/cost/deadline/concurrency limits; Catalog entities36, other lists20.
 - Sensitive data: no query/title text, profile ID, credential or media URL in
   rail/search telemetry.
 - Abuse cases: reject operation substitution, excess fields/aliases and malformed
@@ -115,6 +120,8 @@ readiness reservation fit the five-connection runtime pool.
 - Integration: real PostgreSQL view, privileges, generation match, ordering,
   expiry, retirement and mixed old/new readiness.
 - Contract: five-subgraph composition, nullability, known operations and cost.
+- Owner batching: Catalog accepts36 valid entity references, rejects37 and splits
+  the accepted maximum into owner reads of at most20.
 - Browser: excluded; P09-R10 owns visible SSR/hydration.
 - Performance/failure: Router proof with rail fault, Engagement isolation and
   finite metrics; no media/CPU experiment.
@@ -129,16 +136,19 @@ readiness reservation fit the five-connection runtime pool.
   readiness and the repeated eleven-service runtime pass; final exact-main rebase
   preserved exact affected source objects and the54/54 candidate passed. The
   latest partial-log/ADR correction passes focused Discovery89/89 and the final
-  affected54/54 candidate in47.708s.
+  affected54/54 candidate in47.708s. The Catalog capacity correction passes its
+  build and230/230 focused tests; the corrected affected candidate passes54/54,
+  38 cached, in55.844s.
 - Iteration gate: strict builds, focused node:test and scoped lint.
 - Candidate gate: canonical affected gate and schema compatibility.
 - Heavyweight repeat triggers: mixed-version/view SQL and changed pool/admission
   repeat PostgreSQL and Router runtime; docs-only closeout carries them forward.
 - Review stopping rule: confirmation produced two P1 blockers and remediation
   confirmation produced two requirement/documentation P2 blockers. Batch the
-  latter; final confirmation then found one public-contract documentation mismatch.
-  Correct it and run one closeout confirmation because the public contract changed;
-  reopen only for requirement, security/data, availability or public-contract blockers.
+  latter; subsequent confirmations found a public-contract documentation mismatch
+  and then the real Catalog entity-capacity blocker. Correct the bounded owner
+  contract and run one confirmation because availability changed; reopen only for
+  requirement, security/data, availability or public-contract blockers.
 
 ## Rollback or recovery
 
@@ -154,7 +164,7 @@ and repository memory.
 ## Completion checklist
 
 - [x] Requirements implemented
-- [x] Final corrected candidate pass
+- [x] Final Catalog-capacity candidate pass
 - [x] Affected heavyweight evidence captured
 - [x] Documentation current for dependent work
 - [x] `.ai/` state updated
