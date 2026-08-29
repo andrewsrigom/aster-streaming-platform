@@ -1,12 +1,14 @@
 P10 Discovery stale contract checkpoint
 Date: 2026-08-29
-Status: local dependent candidate; predecessor release and complete candidate gate pending
+Status: local candidate; implementation and required local evidence pass
 
 Source
 - Branch: feat/p10-discovery-swr
-- Frozen predecessor: cb86c371849f895934af99f72c361ccb64bccf8e
-- Rebased browser checkpoint: 7469cc0
-- Lease/coalescing correction: dda4b9cf8b9876b0c7a03be92dcfbdc15fad523b
+- Released base: 903f7b4330db8c47896ea82f5f487a268d817d88
+- Rebased browser checkpoint: b16cbfe
+- Lease/coalescing correction: 6cc0a6c
+- Platform-policy correction: 53bdbf2
+- Runtime assertion: 8faf35a
 
 Environment
 - WSL2 Ubuntu-20.04, Linux amd64
@@ -20,6 +22,10 @@ Commands and results
 - Scoped Prettier: PASS.
 - git diff --check: PASS.
 - Real Redis: PASS; see discovery-swr-redis.txt.
+- Complete affected gate: PASS, 73/73 tasks, 17 cached, 182.617 seconds at
+  exact `53bdbf2`.
+- Disposable PostgreSQL/Router runtime: PASS in 395884 ms with non-critical Redis
+  unavailable and cleanup0; see discovery-swr-runtime.txt.
 
 Covered contract
 - Twelve bounded whole-home key variants and schema-v1 envelopes no larger than
@@ -38,12 +44,10 @@ Covered contract
   keeps a bounded stale page usable and rejects malformed false success.
 
 Interpretation
-Focused behavior and the real changed Redis boundary pass on the rebased
-dependent source. This is not a release claim. The complete affected gate and
-predecessor squash rebase remain before publication.
+Focused behavior, the changed Redis boundary, the rebased affected gate and the
+real outage runtime pass. This is a local candidate, not a release claim.
 
 Limitations
 - No field SLO, hosted availability or arbitrary cluster-size claim.
-- PostgreSQL/runtime/browser evidence is carried only where the affected source
-  blobs are unchanged; the final predecessor squash still triggers the written
-  affected gate.
+- The browser result is carried only because all affected Web source/test blobs
+  are unchanged and the rebased Web suite plus affected gate pass.

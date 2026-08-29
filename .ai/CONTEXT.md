@@ -57,10 +57,11 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 Active phase: **Phase 10 — Advanced Redis and Concurrency**. Phase09 closed
 through PR36, squash main `ffe8e24` and exact-main CI33254719311. The P10 Catalog
-cache candidate is frozen at PR37 head `cb86c37` and waits only for hosted gates
-and predecessor-first release. P10-R04 is the sole active dependent on
-`feat/p10-discovery-swr`, based on that exact head, to implement bounded Discovery
-stale-while-revalidate without publishing before the predecessor.
+cache is released through PR37 head `cb86c37`, protected run33270889083, clean
+confirmation, squash main `903f7b4` and exact-main run33272501078. P10-R04 is the
+sole active item on `feat/p10-discovery-swr`, rebased onto that release, with its
+bounded Discovery stale-while-revalidate implementation and local evidence ready
+for final candidate publication.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

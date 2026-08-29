@@ -6,9 +6,9 @@ Last updated: 2026-08-29
 
 **Phase 10 — Advanced Redis and Concurrency**
 
-Status: **IN_PROGRESS**. Catalog cache predecessor is `WAITING_EXTERNAL` at PR37
-head `cb86c37`; Discovery stale-while-revalidate is the sole active dependent on
-`feat/p10-discovery-swr`. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**. Catalog cache is released on main `903f7b4`; Discovery
+stale-while-revalidate is the sole active item on `feat/p10-discovery-swr`. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -93,29 +93,32 @@ real Redis pass; the fixture proves both malformed lease classes, Catalog-path
 recovery, one cross-instance negative fence read and cleanup 0. Focused Identity
 passed 147/147 after one unrelated terminal-fallback timing failure under broad
 parallel load; the concurrency-capped affected gate then passed 73/73 with 59
-cached in 90.953 seconds. Publication and confirmation remain pending.
+cached in 90.953 seconds. At that checkpoint, publication and confirmation were pending.
 Protected run `33268669701` then passed exact `d05dad3`; exact-head confirmation
 discussion `3887360355` found post-decode expansion of Lua-bounded invalid UTF-8.
 Exact local `ce97596` retains the raw reply as at most 16 KiB of bytes and applies
 fatal UTF-8 decoding without resetting the connection. Redis 17/17, Catalog
 246/246, the real invalid-byte deletion/probe/cleanup fixture and affected 73/73
-gate with 50 cached in 126.735 seconds pass. Publication and corrected
-confirmation remain pending.
+gate with 50 cached in 126.735 seconds pass. At that checkpoint, publication and
+corrected confirmation were pending.
 Exact-head discussion `3887423663` then found that a finite but excessive lease
 TTL remained contended beyond the two-second policy. Exact local `f014ebe`
 atomically replaces remaining TTLs above the requested window while preserving
 finite holders inside it. Redis17/17, Catalog246/246 and repeated real Redis pass
 with `excessiveTtlLeaseRecovered=true` and cleanup0. The complete affected gate
-passes 73/73 with 51 cached in 107.438 seconds. Hosted CI and corrected
-confirmation remain pending.
-The Discovery stale cache is implemented on the dependent branch rebased onto
-that frozen predecessor. Exact `dda4b9c` uses shared recoverable lease
-acquisition and separate monotonic coalescing attachments. Discovery99/99,
-telemetry11/11, Web111/111 and real Redis pass; the Redis fixture proves one
-source read for 24 cold callers, one detached refresh for 24 stale callers,
-cross-instance 24-hour lease recovery, outage fallback and cleanup0. The Web
-stale-path blobs are unchanged across rebase, so the recorded browser1/1 remains
-supporting evidence. Catalog release and the complete affected gate remain.
+passes 73/73 with 51 cached in 107.438 seconds. At that checkpoint, hosted CI and
+corrected confirmation were pending. PR37 exact `cb86c37` then passed protected
+run33270889083 and clean confirmation comment5464418106, squash-merged without
+bypass as main `903f7b4`, and exact-main run33272501078 passed all required jobs.
+
+The Discovery stale cache is rebased onto released main `903f7b4`. Exact
+`53bdbf2` aligns the local platform policy with ADR-0038 and passes the complete
+affected gate, 73/73 in 182.617 seconds. Exact `8faf35a` makes the disposable
+runtime assert the configured non-critical Redis outage; the eleven-service
+PostgreSQL/Router proof passes in 395884 ms with healthy Discovery, public home
+fallback, zero broker lag, replay, isolation, restart recovery and cleanup0.
+Discovery99/99, telemetry11/11, Web111/111 and real Redis also pass. The Web stale
+path remains byte-identical after rebase, so browser1/1 carries forward.
 
 ## Historical Phase 09 corrections
 
@@ -163,16 +166,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Discovery stale-while-revalidate is implemented only on the local dependent
-candidate and is not published or released. Operation-specific Redis rate
+Discovery stale-while-revalidate is implemented only on the local candidate and
+is not published or released. Operation-specific Redis rate
 limiting, expensive-path concurrency limits, the mixed outage/hot-key closeout
 and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Complete PR37 protected/review/exact-main acceptance while implementing the one
-allowed local P10-R04 Discovery dependent. After the predecessor squash, rebase
-and repeat affected gates before publishing Discovery.
+Finish the P10-R04 Discovery candidate checkpoint, publish one PR, complete its
+initial review and protected CI, remediate only defined blockers, confirm,
+squash-merge and verify exact-main CI. Then activate P10-R08 from clean main.
 
 ## Runtime and recovery
 

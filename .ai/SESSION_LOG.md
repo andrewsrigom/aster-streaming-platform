@@ -2,6 +2,41 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Catalog release and Discovery candidate rebase
+
+Completed:
+
+- Re-ran only the failed jobs of protected PR37 run33270889083 once after the
+  Docker demo Engagement closeout race; all protected jobs passed at unchanged
+  exact head `cb86c37`.
+- Exact-head confirmation comment5464418106 found no major issue and unresolved
+  review threads were zero. PR37 squash-merged without bypass as `903f7b4`; its
+  Git tree equals the reviewed head.
+- Exact-main run33272501078 passed source/runtime, documentation/security, local
+  platform and required aggregation. Catalog cache is released locally.
+- Rebased the sole Discovery branch onto `903f7b4` without conflicts. The first
+  complete affected gate rejected a stale platform policy that still banned the
+  Redis composition accepted by ADR-0038. Exact `53bdbf2` narrows the validator
+  to require the reviewed cache flag/endpoint only in Discovery and keep Redis
+  out of its migration initializer.
+- The corrected complete affected gate passes73/73 with17 cached in182.617
+  seconds. No media/browser/CPU experiment was repeated.
+- Exact `8faf35a` makes the eleven-service runtime explicitly assert optional
+  Redis configuration and degraded cache readiness. The single run passes in
+  395884 ms with healthy public home fallback, zero broker lag, replay,
+  Catalog isolation, Discovery restart recovery, sanitized logs and cleanup0.
+
+Evidence:
+
+- `evidence/phase-10/catalog-cache-release.txt`
+- `evidence/phase-10/discovery-swr-contract.txt`
+- `evidence/phase-10/discovery-swr-runtime.txt`
+
+Next action:
+
+Run the final documentation/candidate checkpoint, publish one Discovery PR and
+complete its bounded review/CI/release sequence. Then activate READY P10-R08.
+
 ## 2026-08-29 — Catalog final cache remediations
 
 ### Completed

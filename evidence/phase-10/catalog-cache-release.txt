@@ -1,0 +1,42 @@
+P10 Catalog cache release
+Date: 2026-08-29
+Status: released
+
+Source and publication
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/37
+- Exact reviewed head: cb86c371849f895934af99f72c361ccb64bccf8e
+- Protected run: 33270889083, successful after one failed-job rerun on the same
+  exact head.
+- Confirmation comment: 5464418106, no major issue found at the exact head.
+- Unresolved review threads before merge: 0.
+- Merge state before merge: CLEAN.
+- Squash merge: 903f7b4330db8c47896ea82f5f487a268d817d88 at
+  2026-08-29T20:04:10Z, without protection bypass.
+- Exact-main run: 33272501078, PASS.
+- Exact-main run URL:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33272501078
+
+Protected result
+- Classify change: PASS.
+- Install and source quality: PASS, including platform, Catalog, Playback,
+  Engagement, Discovery, Docker-only demo and dependency audit.
+- Documentation and security: PASS.
+- Local platform: PASS.
+- CI required: PASS.
+- Dependency review: skipped as designed for a push event.
+
+Failed-attempt boundary
+The first attempt of run 33270889083 failed only in the Docker demo Engagement
+browser closeout assertion. The same exact Web blobs had passed run 33270033538;
+the failure was consistent with the test closing the dialog immediately after
+sign-out before its notification settled. No source or empty commit was created.
+Failed jobs were rerun once and all protected jobs passed at the same exact SHA.
+
+Integrity
+The reviewed head and squash commit have identical Git trees. The exact-main run
+therefore verifies the released source without an intervening implementation
+change.
+
+Limitations
+This is a repository/local release. No hosted Aster deployment or field SLO is
+claimed.

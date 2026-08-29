@@ -1,6 +1,6 @@
 P10 Catalog cache runtime checkpoint
 Date: 2026-08-29
-Status: local candidate; hosted review, protected CI and release pending
+Status: released; see catalog-cache-release.txt
 
 Source and environment
 - Implementation commit: a54c324f7d2312851bd036f763362d84574bf826

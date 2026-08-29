@@ -19,10 +19,9 @@ authority.
 
 Released Discovery reads projection state and four independent PostgreSQL rail
 selections for every home request. It returns explicit stale or unavailable state
-without rails when the projection or store cannot serve. Frozen predecessor PR37
-adds reviewed Redis primitives but is not released; this dependent branch starts
-from its exact head `cb86c371849f895934af99f72c361ccb64bccf8e` and cannot publish
-before that predecessor merges.
+without rails when the projection or store cannot serve. PR37 released the
+reviewed Redis primitives as main `903f7b4330db8c47896ea82f5f487a268d817d88`;
+this branch is rebased onto that exact release.
 
 ## Proposed behavior
 
@@ -119,8 +118,8 @@ active cancellation waiters so the first coalesced request records `one`.
 4. Compose optional Redis lifecycle, metrics and local configuration.
 5. Accept and render the explicit `STALE` page shape in Web.
 6. Prove focused behavior, real Redis/PostgreSQL, Router/Web contract and outage.
-7. Rebase onto the predecessor squash, repeat affected gates and publish only
-   after its exact-main acceptance.
+7. Rebase onto the predecessor squash, repeat affected gates and publish after
+   its exact-main acceptance. Completed on main `903f7b4`.
 
 ## Tests
 
@@ -141,11 +140,12 @@ active cancellation waiters so the first coalesced request records `one`.
 - Commands: focused Discovery/Web/telemetry tests, strict static checks, affected
   gate, disposable Redis/PostgreSQL and runtime/browser experiment where changed.
 - Raw artifact path: `evidence/phase-10/discovery-swr-*.txt` and Phase 10 index.
-- Acceptance result: local iteration PASS at exact `dda4b9c`: Discovery99/99,
-  telemetry11/11, Web111/111, scoped lint/format and real Redis pass. The Redis
-  fixture proves 24 cold callers to one source read, 24 stale callers to one
-  detached refresh, cross-instance excessive-TTL recovery, outage fallback and
-  cleanup0. Complete affected gate and predecessor release remain pending.
+- Acceptance result: Discovery99/99, telemetry11/11, Web111/111, scoped static
+  checks and real Redis pass. The Redis fixture proves 24 cold callers to one
+  source read, 24 stale callers to one detached refresh, cross-instance
+  excessive-TTL recovery, outage fallback and cleanup0. Exact `53bdbf2` passes
+  the complete affected gate 73/73 in 182.617 seconds. Exact `8faf35a` passes the
+  eleven-service PostgreSQL/Router outage runtime in 395884 ms with cleanup0.
 - Iteration gate: focused Discovery cache, Web projection and telemetry tests plus
   strict typecheck/lint.
 - Candidate gate: `pnpm check:changed`, real Redis/Discovery fixture and affected
@@ -169,9 +169,9 @@ Phase 10 evidence and repository memory.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
+- [x] Requirements satisfied
 - [x] Focused tests pass
 - [x] Iteration evidence captured
 - [x] Documentation current
 - [x] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Remaining risks recorded

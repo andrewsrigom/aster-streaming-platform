@@ -1,8 +1,8 @@
 # Phase 10 Evidence Index
 
-Status: Catalog predecessor correction is in hosted acceptance. Discovery stale
-cache implementation and focused evidence are local; candidate gates remain. No
-Phase 10 requirement is released yet.
+Status: Catalog cache is released through PR37 and exact-main CI. Discovery stale
+cache implementation and local candidate evidence pass; publication remains.
+Phase 10 stays open for Discovery release and the operation-limiter closeout.
 
 ## Active slice
 
@@ -26,19 +26,21 @@ background lifecycle, explicit stale client shape and PostgreSQL fallback.
   metrics and exact cleanup.
 - [Concurrency](catalog-cache-concurrency.txt): cold-key amplification, warm
   reuse, cross-instance lease contention and compare-delete safety.
+- [Catalog release](catalog-cache-release.txt): protected exact-head acceptance,
+  confirmation, squash and exact-main CI.
 - [Discovery contract](discovery-swr-contract.txt): focused Discovery, GraphQL,
   Web and telemetry contract proof.
 - [Discovery Redis](discovery-swr-redis.txt): real bounded Redis behavior, stale
   bursts, recoverable lease contention, outage fallback and exact cleanup.
-- `discovery-swr-runtime.txt`: real PostgreSQL/Router runtime and non-critical
-  Redis outage behavior (pending candidate capture).
+- [Discovery runtime](discovery-swr-runtime.txt): real PostgreSQL/Router runtime,
+  non-critical Redis outage behavior, isolation/restart and exact cleanup.
 - [Discovery browser](discovery-swr-browser.txt): stale rails and visible refresh
-  warning pass 1/1 through the production Web client at the pre-rebase dependent
-  checkpoint; exact-head carry-forward remains pending.
+  warning pass 1/1 through the production Web client; byte-identical source and
+  the rebased candidate gate support carry-forward.
 
 Every artifact records the exact implementation commit, environment, command,
-workload, raw result, interpretation and limitations. They support the local
-candidate only; release requires the remaining hosted gates.
+workload, raw result, interpretation and limitations. Catalog has release
+evidence; Discovery artifacts support its local candidate only.
 
 Initial hosted review comment 3886890023 found one measurement boundary: an
 oversized projection bypassed storage but supplied a payload sample above the
@@ -117,4 +119,6 @@ requested two-second policy remained contended for its full duration. Exact
 with that requested window and replaces longer-lived contamination. Redis17/17,
 Catalog246/246 and repeated real Redis pass with a seeded 24-hour lease recovered
 and cleanup0. The complete affected gate passes73/73 with51 cached in107.438
-seconds. Corrected hosted gates remain.
+seconds. At that checkpoint, corrected hosted gates remained. PR37 exact
+`cb86c37` later passed run33270889083 and confirmation comment5464418106,
+squash-merged as `903f7b4`, and exact-main run33272501078 passed.
