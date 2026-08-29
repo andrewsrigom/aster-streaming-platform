@@ -34,6 +34,10 @@ Append new entries at the top. Keep entries factual and concise.
   and one failed consumer closure could skip its siblings. The batched correction
   adds caller-time revalidation, best-effort writes and all-settled shutdown;
   Discovery103/103 plus scoped type/lint/format checks pass.
+- Exact `5a5f5e2` passes the corrected complete affected gate73/73 with56 cached
+  in106.071 seconds. Real Redis, browser and eleven-service runtime were not
+  repeated because wire/envelope, public stale shape and composition are
+  unchanged.
 
 ### Evidence
 
@@ -43,8 +47,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish one Discovery PR and complete its bounded review/CI/release sequence.
-Then activate READY P10-R08.
+Push the one batched PR39 remediation, complete protected CI and one confirmation
+review, then release and activate READY P10-R08.
 
 ## 2026-08-29 — Catalog final cache remediations
 

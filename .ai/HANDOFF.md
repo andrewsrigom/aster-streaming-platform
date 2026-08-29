@@ -21,8 +21,10 @@ Local evidence:
   to the owner and cleanup reaches zero.
 - The stale browser path passes 1/1; its affected Web blobs are byte-identical
   after the predecessor squash rebase.
-- Final candidate checkpoint `0417ffd` passes `pnpm check:changed`, 73/73 tasks
-  with61 cached in148.029 seconds.
+- PR39 initial automated review found no issue. The complete local review then
+  corrected cross-time title expiry, rejected-write fallback and sibling closure
+  at exact `5a5f5e2`; Discovery103/103 and `pnpm check:changed` pass73/73 with56
+  cached in106.071 seconds.
 - Exact `8faf35a` passes the eleven-service Discovery runtime in 395884 ms:
   configured Redis is absent, Discovery stays healthy, public home is served,
   projection lag is zero, quarantine replay and owner isolation/restart pass,
@@ -32,9 +34,8 @@ Evidence is under `evidence/phase-10`. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Push `feat/p10-discovery-swr` once and open one PR.
-2. Complete one initial review and protected CI, batch only defined blockers,
-   then one confirmation review.
+1. Push the single batched PR39 remediation and await protected CI.
+2. Run one confirmation review and treat only defined blockers.
 3. Squash-merge without bypass, verify exact-main CI, close P10-R04 and activate
    READY P10-R08 from clean main.
 
@@ -42,8 +43,9 @@ Evidence is under `evidence/phase-10`. Full Phase00–14 goal remains active.
 
 Phase09 browser/media evidence does not repeat. Discovery browser1/1 and real
 Redis evidence carry forward because their affected source blobs did not change.
-Repeat runtime only if Redis wire/envelope, cache visibility, composition or
-failure behavior changes.
+The review correction did not change Redis wire/envelope, public stale shape or
+composition, so real Redis, browser and eleven-service runtime do not repeat.
+Repeat them only if those boundaries change.
 
 ## Execution environment
 

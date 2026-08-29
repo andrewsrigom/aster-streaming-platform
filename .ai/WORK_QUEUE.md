@@ -53,11 +53,14 @@ remained at that checkpoint.
 P10-R04 is the sole `IN_PROGRESS` item on `feat/p10-discovery-swr`, rebased onto
 released main `903f7b4`. It owns bounded Discovery home-page stale serving,
 background refresh, maximum age, explicit fallback and finite metrics. Exact
-Final candidate checkpoint `0417ffd` passes the complete affected gate 73/73
-with61 cached in148.029 seconds; exact `8faf35a` passes the eleven-service
-PostgreSQL/Router runtime with configured Redis absent, healthy Discovery
-fallback and cleanup0. Discovery99/99, telemetry11/11, Web111/111, browser1/1
-carry-forward and real Redis also pass. Publication is next.
+PR39 initial automated review completed without findings. The complete local
+review corrected cross-time title expiry, best-effort cache writes and
+all-settled consumer shutdown at exact `5a5f5e2`. Discovery103/103 and the
+corrected complete affected gate pass73/73 with56 cached in106.071 seconds;
+exact `8faf35a` passes the eleven-service PostgreSQL/Router runtime with
+configured Redis absent, healthy Discovery fallback and cleanup0. Telemetry11/11,
+Web111/111, browser1/1 carry-forward and real Redis also pass. Corrected
+publication is next.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

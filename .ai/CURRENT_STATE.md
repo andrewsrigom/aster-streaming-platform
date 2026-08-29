@@ -112,9 +112,11 @@ run33270889083 and clean confirmation comment5464418106, squash-merged without
 bypass as main `903f7b4`, and exact-main run33272501078 passed all required jobs.
 
 The Discovery stale cache is rebased onto released main `903f7b4`. Exact
-`53bdbf2` aligns the local platform policy with ADR-0038. The final candidate
-checkpoint `0417ffd` passes the complete affected gate, 73/73 with61 cached in
-148.029 seconds. Exact `8faf35a` makes the disposable
+`53bdbf2` aligns the local platform policy with ADR-0038. PR39 initial automated
+review found no issue; the complete local review then corrected cross-time title
+expiry, best-effort cache writes and all-settled consumer shutdown at `5a5f5e2`.
+Discovery103/103 and the corrected complete affected gate pass 73/73 with56
+cached in106.071 seconds. Exact `8faf35a` makes the disposable
 runtime assert the configured non-critical Redis outage; the eleven-service
 PostgreSQL/Router proof passes in 395884 ms with healthy Discovery, public home
 fallback, zero broker lag, replay, isolation, restart recovery and cleanup0.

@@ -153,7 +153,8 @@ active cancellation waiters so the first coalesced request records `one`.
   additionally found cross-time cold coalescing, a rejected cache write masking
   completed owner data, and sibling shutdown short-circuiting. The batched
   correction revalidates caller visibility, makes writes best-effort and attempts
-  all consumer closures; focused Discovery103/103 and static gates pass.
+  all consumer closures; exact `5a5f5e2` passes Discovery103/103, static gates
+  and the complete affected gate73/73 with56 cached in106.071 seconds.
 - Iteration gate: focused Discovery cache, Web projection and telemetry tests plus
   strict typecheck/lint.
 - Candidate gate: `pnpm check:changed`, real Redis/Discovery fixture and affected

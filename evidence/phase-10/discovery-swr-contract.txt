@@ -31,7 +31,8 @@ Commands and results
   callers could share a result across title expiry, a rejected cache write could
   mask completed owner data, and one failed consumer closure could skip siblings.
   The batched correction has focused Discovery103/103, typecheck, lint, format
-  and diff checks passing.
+  and diff checks passing. Exact `5a5f5e2` then passes the complete affected gate
+  73/73 with56 cached in106.071 seconds.
 
 Covered contract
 - Twelve bounded whole-home key variants and schema-v1 envelopes no larger than
