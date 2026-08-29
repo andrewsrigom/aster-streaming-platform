@@ -121,6 +121,7 @@ export function createWatchlistWriter(ports: WatchlistPorts) {
         const admission = await ports.limiter?.admit(
           "set_watchlist",
           owner.value.accountId,
+          admissionKey,
           signal,
         );
         signal.throwIfAborted();

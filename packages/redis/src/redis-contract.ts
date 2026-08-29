@@ -83,6 +83,7 @@ export type AsterRedisTokenBucketResult =
       retryAfterMs: number;
       resetAfterMs: number;
       recovered: boolean;
+      deduplicated: boolean;
     }>
   | AsterRedisCommandFailure;
 
@@ -124,7 +125,8 @@ export interface AsterRedisAdapter {
     signal?: AbortSignal,
   ): Promise<AsterRedisDeleteResult>;
   consumeTokenBucket(
-    key: string,
+    bucketKey: string,
+    admissionKey: string,
     policy: AsterRedisTokenBucketPolicy,
     signal?: AbortSignal,
   ): Promise<AsterRedisTokenBucketResult>;

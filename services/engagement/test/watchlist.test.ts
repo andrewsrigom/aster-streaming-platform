@@ -108,9 +108,13 @@ test("watchlist admission follows owner and replay but precedes Catalog and pers
   const writer = createWatchlistWriter({
     ...rejected.ports,
     limiter: {
-      admit: (_operation, accountId) => {
+      admit: (_operation, accountId, admissionId) => {
         admissions++;
         assert.equal(accountId, id(1));
+        assert.equal(
+          admissionId,
+          rejected.ports.digest(`set_watchlist\0${id(1)}\0${id(2)}\0${id(4)}`),
+        );
         return Promise.resolve({ status: "rejected", retryAfterMs: 1_000 });
       },
     },

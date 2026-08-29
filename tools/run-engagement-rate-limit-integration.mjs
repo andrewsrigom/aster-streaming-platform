@@ -27,8 +27,8 @@ const docker = async (args, timeout = 10_000) => {
   });
   return stdout.trim();
 };
-const prefix = "aster:test:engagement:rate:v1:set_watchlist:";
-const keys = ["a", "b", "c", "d", "e", "f"].map((value) => prefix + value.repeat(64));
+const prefix = "aster:test:engagement:rate:v2:set_watchlist:";
+const keys = ["a", "b", "c", "d", "e", "f"].map((value) => prefix + value.repeat(64) + ":bucket");
 let ownedId;
 let primaryError;
 const started = performance.now();

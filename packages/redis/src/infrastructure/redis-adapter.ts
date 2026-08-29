@@ -75,8 +75,29 @@ const COMPARE_AND_DELETE_SCRIPT =
   "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
 const ACQUIRE_RECOVERABLE_LEASE_SCRIPT =
   "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; local ttl = redis.call('PTTL', KEYS[1]); if kind ~= 'string' or ttl == -1 or ttl > tonumber(ARGV[2]) then redis.call('DEL', KEYS[1]); redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; return 0";
-const CONSUME_TOKEN_BUCKET_SCRIPT =
-  "local capacity = tonumber(ARGV[1]); local refill = tonumber(ARGV[2]); local cost = tonumber(ARGV[3]); local state_ttl = tonumber(ARGV[4]); local clock = redis.call('TIME'); local now = tonumber(clock[1]) * 1000 + math.floor(tonumber(clock[2]) / 1000); local tokens = capacity; local recovered = 0; local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'string' then local raw = redis.call('GET', KEYS[1]); local saved_tokens, saved_at = string.match(raw, '^v1:(%d+):(%d+)$'); local ttl = redis.call('PTTL', KEYS[1]); saved_tokens = tonumber(saved_tokens); saved_at = tonumber(saved_at); if saved_tokens and saved_at and saved_tokens >= 0 and saved_tokens <= capacity and saved_at <= now and now - saved_at <= state_ttl and ttl >= 0 and ttl <= state_ttl then tokens = math.min(capacity, saved_tokens + math.floor((now - saved_at) * refill / 1000)); else recovered = 1 end elseif kind ~= 'none' then redis.call('DEL', KEYS[1]); recovered = 1 end; local allowed = 0; if tokens >= cost then tokens = tokens - cost; allowed = 1 end; local retry = 0; if allowed == 0 then retry = math.ceil((cost - tokens) * 1000 / refill) end; local reset = math.ceil((capacity - tokens) * 1000 / refill); redis.call('PSETEX', KEYS[1], state_ttl, 'v1:' .. tokens .. ':' .. now); return {allowed, math.floor(tokens / 1000), retry, reset, recovered}";
+const CONSUME_TOKEN_BUCKET_SCRIPT = [
+  "local capacity = tonumber(ARGV[1])",
+  "local refill = tonumber(ARGV[2])",
+  "local cost = tonumber(ARGV[3])",
+  "local state_ttl = tonumber(ARGV[4])",
+  "local marker_kind = redis.call('TYPE', KEYS[2]).ok",
+  "if marker_kind == 'string' then local marker = redis.call('GET', KEYS[2]); local saved_remaining, saved_reset = string.match(marker, '^v1:(%d+):(%d+)$'); local marker_ttl = redis.call('PTTL', KEYS[2]); saved_remaining = tonumber(saved_remaining); saved_reset = tonumber(saved_reset); if saved_remaining and saved_reset and saved_remaining >= 0 and saved_remaining < capacity / 1000 and saved_reset >= 1 and saved_reset <= state_ttl and marker_ttl >= 0 and marker_ttl <= state_ttl then return {1, saved_remaining, 0, saved_reset, 0, 1} end; redis.call('DEL', KEYS[2]) elseif marker_kind ~= 'none' then redis.call('DEL', KEYS[2]) end",
+  "local clock = redis.call('TIME')",
+  "local now = tonumber(clock[1]) * 1000 + math.floor(tonumber(clock[2]) / 1000)",
+  "local tokens = capacity",
+  "local recovered = 0",
+  "local kind = redis.call('TYPE', KEYS[1]).ok",
+  "if kind == 'string' then local raw = redis.call('GET', KEYS[1]); local saved_tokens, saved_at = string.match(raw, '^v1:(%d+):(%d+)$'); local ttl = redis.call('PTTL', KEYS[1]); saved_tokens = tonumber(saved_tokens); saved_at = tonumber(saved_at); if saved_tokens and saved_at and saved_tokens >= 0 and saved_tokens <= capacity and saved_at <= now and now - saved_at <= state_ttl and ttl >= 0 and ttl <= state_ttl then tokens = math.min(capacity, saved_tokens + math.floor((now - saved_at) * refill / 1000)) else recovered = 1 end elseif kind ~= 'none' then redis.call('DEL', KEYS[1]); recovered = 1 end",
+  "local allowed = 0",
+  "if tokens >= cost then tokens = tokens - cost; allowed = 1 end",
+  "local retry = 0",
+  "if allowed == 0 then retry = math.ceil((cost - tokens) * 1000 / refill) end",
+  "local reset = math.ceil((capacity - tokens) * 1000 / refill)",
+  "local remaining = math.floor(tokens / 1000)",
+  "redis.call('PSETEX', KEYS[1], state_ttl, 'v1:' .. tokens .. ':' .. now)",
+  "if allowed == 1 then redis.call('PSETEX', KEYS[2], state_ttl, 'v1:' .. remaining .. ':' .. reset) end",
+  "return {allowed, remaining, retry, reset, recovered, 0}",
+].join("; ");
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
 const STRICT_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 
@@ -97,7 +118,7 @@ type ValidatedOptions = Readonly<{
 export type AsterRedisClientEvent = "connect" | "ready" | "reconnecting" | "error" | "end";
 
 type BoundedReadReply = readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3];
-type TokenBucketReply = readonly [0 | 1, number, number, number, 0 | 1];
+type TokenBucketReply = readonly [0 | 1, number, number, number, 0 | 1, 0 | 1];
 
 export interface AsterRedisClient {
   readonly isOpen: boolean;
@@ -119,7 +140,8 @@ export interface AsterRedisClient {
     signal: AbortSignal,
   ): Promise<number>;
   consumeTokenBucket(
-    key: string,
+    bucketKey: string,
+    admissionKey: string,
     capacityMilliTokens: number,
     refillMilliTokensPerSecond: number,
     costMilliTokens: number,
@@ -558,7 +580,8 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
         }) as Promise<number>;
     },
     consumeTokenBucket(
-      key,
+      bucketKey,
+      admissionKey,
       capacityMilliTokens,
       refillMilliTokensPerSecond,
       costMilliTokens,
@@ -566,7 +589,7 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
       signal,
     ): Promise<TokenBucketReply> {
       return client.withCommandOptions({ abortSignal: signal }).eval(CONSUME_TOKEN_BUCKET_SCRIPT, {
-        keys: [key],
+        keys: [bucketKey, admissionKey],
         arguments: [
           String(capacityMilliTokens),
           String(refillMilliTokensPerSecond),
@@ -926,7 +949,7 @@ export function createAsterRedisAdapterWithClientFactory(
     policy: AsterRedisTokenBucketPolicy,
   ): value is TokenBucketReply =>
     Array.isArray(value) &&
-    value.length === 5 &&
+    value.length === 6 &&
     (value[0] === 0 || value[0] === 1) &&
     value.slice(1).every((item) => typeof item === "number" && Number.isSafeInteger(item)) &&
     typeof value[1] === "number" &&
@@ -938,7 +961,8 @@ export function createAsterRedisAdapterWithClientFactory(
     typeof value[3] === "number" &&
     value[3] >= 1 &&
     value[3] <= policy.ttlMs &&
-    (value[4] === 0 || (value[4] === 1 && value[0] === 1));
+    (value[4] === 0 || (value[4] === 1 && value[0] === 1 && value[5] === 0)) &&
+    (value[5] === 0 || (value[5] === 1 && value[0] === 1));
 
   const read = async (key: string, signal?: AbortSignal): Promise<AsterRedisReadResult> => {
     if (!validKey(key)) {
@@ -1052,12 +1076,13 @@ export function createAsterRedisAdapterWithClientFactory(
   };
 
   const consumeTokenBucket = async (
-    key: string,
+    bucketKey: string,
+    admissionKey: string,
     input: AsterRedisTokenBucketPolicy,
     signal?: AbortSignal,
   ): Promise<AsterRedisTokenBucketResult> => {
     const policy = tokenBucketPolicy(input);
-    if (!validKey(key) || !policy) {
+    if (!validKey(bucketKey) || !validKey(admissionKey) || bucketKey === admissionKey || !policy) {
       return INVALID_INPUT_REJECTED;
     }
     const result = await runCommand(
@@ -1065,7 +1090,8 @@ export function createAsterRedisAdapterWithClientFactory(
       signal,
       (client, operationSignal) =>
         client.consumeTokenBucket(
-          key,
+          bucketKey,
+          admissionKey,
           policy.capacity * 1_000,
           policy.refillPerSecond * 1_000,
           policy.cost * 1_000,
@@ -1082,6 +1108,7 @@ export function createAsterRedisAdapterWithClientFactory(
           retryAfterMs: result.value[2],
           resetAfterMs: result.value[3],
           recovered: result.value[4] === 1,
+          deduplicated: result.value[5] === 1,
         })
       : result;
   };

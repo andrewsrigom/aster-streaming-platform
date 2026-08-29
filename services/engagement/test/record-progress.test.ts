@@ -212,9 +212,15 @@ test("operation admission follows owner and replay but precedes Playback and per
   const recorder = createProgressRecorder({
     ...rejected.ports,
     limiter: {
-      admit: (_operation, accountId) => {
+      admit: (_operation, accountId, admissionId) => {
         admissions++;
         assert.equal(accountId, id(2));
+        assert.equal(
+          admissionId,
+          createHash("sha256")
+            .update(`record_progress\0${id(2)}\0${id(3)}\0${id(6)}`)
+            .digest("hex"),
+        );
         return Promise.resolve({ status: "rejected", retryAfterMs: 250 });
       },
     },

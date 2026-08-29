@@ -47,12 +47,21 @@ function cancelled(signal: AbortSignal): boolean {
   return signal.aborted;
 }
 
-function redisKey(
+function redisBucketKey(
   environment: EngagementOperationLimiterOptions["environment"],
   operation: EngagementLimitedOperation,
   digest: string,
 ): string {
-  return `aster:${environment}:engagement:rate:v1:${operation}:${digest}`;
+  return `aster:${environment}:engagement:rate:v2:${operation}:${digest}:bucket`;
+}
+
+function redisAdmissionKey(
+  environment: EngagementOperationLimiterOptions["environment"],
+  operation: EngagementLimitedOperation,
+  accountDigest: string,
+  admissionDigest: string,
+): string {
+  return `aster:${environment}:engagement:rate:v2:${operation}:${accountDigest}:admission:${admissionDigest}`;
 }
 
 export function createEngagementOperationLimiter(options: EngagementOperationLimiterOptions) {
@@ -124,14 +133,20 @@ export function createEngagementOperationLimiter(options: EngagementOperationLim
 
   const distributedAdmission = async (
     operation: EngagementLimitedOperation,
-    key: string,
+    bucketKey: string,
+    admissionKey: string,
     signal: AbortSignal,
   ): Promise<AsterRedisTokenBucketResult | null> => {
     if (!options.redis) {
       return null;
     }
     try {
-      return await options.redis.consumeTokenBucket(key, POLICIES[operation], signal);
+      return await options.redis.consumeTokenBucket(
+        bucketKey,
+        admissionKey,
+        POLICIES[operation],
+        signal,
+      );
     } catch {
       return { status: "unavailable" };
     }
@@ -141,6 +156,7 @@ export function createEngagementOperationLimiter(options: EngagementOperationLim
     async admit(
       operation: EngagementLimitedOperation,
       accountId: string,
+      admissionId: string,
       signal: AbortSignal,
     ): Promise<EngagementOperationAdmission> {
       const startedAt = now();
@@ -153,7 +169,7 @@ export function createEngagementOperationLimiter(options: EngagementOperationLim
         return { status: "cancelled" };
       }
       const digest = progressIdentifier(accountId) ? options.digest(accountId) : "";
-      if (!/^[a-f0-9]{64}$/u.test(digest)) {
+      if (!/^[a-f0-9]{64}$/u.test(digest) || !/^[a-f0-9]{64}$/u.test(admissionId)) {
         record(operation, "closed", startedAt);
         return { status: "unavailable" };
       }
@@ -170,7 +186,8 @@ export function createEngagementOperationLimiter(options: EngagementOperationLim
       }
       const distributed = await distributedAdmission(
         operation,
-        redisKey(options.environment, operation, digest),
+        redisBucketKey(options.environment, operation, digest),
+        redisAdmissionKey(options.environment, operation, digest, admissionId),
         signal,
       );
       if (cancelled(signal) || distributed?.status === "aborted") {

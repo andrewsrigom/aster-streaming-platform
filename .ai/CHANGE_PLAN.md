@@ -34,18 +34,26 @@ Engagement/Discovery limit responses depended on private subgraph HTTP behavior.
 Exact `ade7379` serializes same-key work before receipt/admission and exposes the
 two limit decisions in portable GraphQL payloads. Engagement123/123,
 Discovery105/105 and Web111/111 pass after the batched remediation; the corrected
-complete candidate passes 73/73 with 48 cached in 73.641 seconds. Corrected hosted
-CI and confirmation remain before verification/release.
+complete candidate passes 73/73 with 48 cached in 73.641 seconds. Protected run
+`33279111820` then passed every required job at exact `041c75e`, including the
+corrected real Redis/PostgreSQL fixtures. Its confirmation review found one
+remaining replica boundary: process-local same-key ordering cannot prevent two
+Engagement replicas from charging the shared bucket before PostgreSQL receipt
+serialization. This plan now owns one batched correction at that shared Redis
+boundary before release.
 
 ## Proposed behavior
 
 Add one Redis-server-time token-bucket command with a small deterministic Lua
-script. It validates the exact key and bounded integer policy, atomically recovers
-missing, malformed, wrong-type or non-expiring limiter state, consumes one token,
-sets a finite TTL and returns only allowed/rejected, remaining capacity,
-retry-after and recovery state. Vendor timeout, abort, malformed reply and
-capacity behavior stay inside the existing adapter deadline and cancellation
-contract.
+script. It validates the exact bucket and admission keys plus bounded integer
+policy. A first allowed idempotency admission atomically consumes one token and
+records a finite marker; another replica presenting the same admission digest
+reuses that decision without another charge. Independent admission digests still
+compete for the account-operation bucket. The command atomically recovers
+missing, malformed, wrong-type or non-expiring limiter state, sets finite TTLs
+and returns only allowed/rejected, remaining capacity, retry-after, recovery and
+deduplication state. Vendor timeout, abort, malformed reply and capacity behavior
+stay inside the existing adapter deadline and cancellation contract.
 
 Engagement wraps `record_progress` and `set_watchlist` after Identity has returned
 current account/profile authority. A process-local queue serializes the same
@@ -54,6 +62,8 @@ admission, with at most 1,024 active keys and 31 waiters per key. The first call
 can spend one token; concurrent identical callers then observe its receipt rather
 than multiplying token use or durable effects. Keys partition by
 environment, exact operation and a SHA-256 pseudonym of the authorized account.
+The companion admission key contains only a SHA-256 digest of the authorized
+account/profile/idempotency identity and expires with the bucket policy.
 Policies are twelve-token/four-per-second progress and four-token/one-per-second
 watchlist buckets. A bounded 1,024-partition process-local shield applies the same
 policy before Redis. It rejects a local hot burst without a Redis command; if
@@ -97,6 +107,9 @@ dependency closure.
   write by Redis behavior.
 - Concurrent work for one authorized idempotency key is serialized before receipt
   inspection, so one in-process burst cannot charge one token per identical retry.
+- Across Engagement replicas, one atomic Redis marker makes the same authorized
+  idempotency admission charge at most once during the bounded execution window;
+  PostgreSQL receipt and aggregate locks remain the durable effect authority.
 - Redis acceptance never authorizes, commits or acknowledges progress/watchlist;
   PostgreSQL owner checks and transactions remain decisive.
 - Redis loss may multiply the documented local capacity by healthy process count,
@@ -116,6 +129,7 @@ dependency closure.
 | Redis timeout, disconnect, unavailable or command capacity | Continue only if the local bucket admitted; durable owner path remains unchanged | limiter `local_fallback` plus Redis dependency outcome |
 | Redis atomic rejection | Return `LIMIT_EXCEEDED` and bounded retry metadata; execute no later owner dependency/write | limiter `rejected` |
 | Same-key mutation already in flight | Wait in the bounded local idempotency lane, then replay/conflict before another rate decision | existing finite owner/result outcomes |
+| Same-key mutation reaches another replica before receipt commit | Reuse the finite atomic Redis admission marker without another token charge; PostgreSQL serializes the durable receipt/effect | limiter allowed outcome with bounded Redis dependency telemetry |
 | Idempotency lane capacity exhausted or waiter limit reached | Return `BACKPRESSURE` before receipt/limiter/dependency work | no unbounded queue |
 | Wrong-type, malformed, future, non-expiring or excessive-TTL state | Atomically replace only the exact key with one finite current decision | limiter `recovered` and decision |
 | Caller cancellation before a Redis decision | Return cancelled; do not fall back or write | limiter `cancelled` |
@@ -133,9 +147,11 @@ dependency closure.
   mutation payloads. First-party persisted operations select the retry field.
   Private `Retry-After` headers are supplemental and not required through Router.
 - Events: unchanged; rejected attempts append no outbox event.
-- Cache: no cache changes. Limiter keys use
-  `aster:{environment}:engagement:rate:v1:{operation}:{accountDigest}` without
-  literal Redis Cluster hash-tag braces; compact versioned state and finite TTL.
+- Cache: no cache changes. Limiter v2 keys use separate bounded bucket and
+  admission families under
+  `aster:{environment}:engagement:rate:v2:{operation}:{accountDigest}` without
+  literal Redis Cluster hash-tag braces; both values are compact, versioned and
+  expire after the policy TTL. Superseded v1 bucket keys expire naturally.
 - Compatibility: older clients already treat non-completed mutation codes as
   failures; generated supergraph/manifest are regenerated additively.
 - Retention/deletion: Redis limiter state expires automatically; local state is
@@ -157,7 +173,8 @@ dependency closure.
 ## Implementation steps
 
 1. Record the identity, algorithm, failure and hot-key choices in ADR-0039.
-2. Add and unit-test the bounded atomic Redis token-bucket command.
+2. Add and unit-test the bounded atomic Redis token-bucket command, including
+   cross-client idempotency admission deduplication.
 3. Add finite operation-limit telemetry and a bounded local token-bucket shield.
 4. Apply rate admission after owner/idempotency checks to Engagement progress and
    watchlist writes; compose optional non-critical Redis lifecycle.
@@ -173,7 +190,8 @@ dependency closure.
   refill, five concurrent same-key progress/watchlist retries consuming one
   admission/effect, bounded/cancellable idempotency queues, rejection before later
   dependencies and Redis-failure local fallback.
-- Adapter: atomic allow/reject boundary, server time, malformed/wrong-type state,
+- Adapter: atomic allow/reject boundary, same-admission deduplication across two
+  clients, distinct-admission charging, server time, malformed/wrong-type state,
   reply validation, timeout, cancellation and command capacity.
 - Integration: real Redis concurrent same-key/two-instance atomicity, hot-key
   command reduction, TTL/cardinality and exact cleanup; real PostgreSQL progress

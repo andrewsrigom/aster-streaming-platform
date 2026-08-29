@@ -199,6 +199,7 @@ export function createProgressRecorder(ports: ProgressPorts) {
         const admission = await ports.limiter?.admit(
           "record_progress",
           owner.value.accountId,
+          admissionKey,
           signal,
         );
         signal.throwIfAborted();

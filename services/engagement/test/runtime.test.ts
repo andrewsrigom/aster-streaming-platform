@@ -131,6 +131,7 @@ function fixtureRedis() {
         retryAfterMs: 0,
         resetAfterMs: 1_000,
         recovered: false,
+        deduplicated: false,
       }),
     snapshot: () => ({
       state: state.closed ? "closed" : state.ready ? "ready" : "idle",

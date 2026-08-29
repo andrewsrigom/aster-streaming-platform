@@ -23,19 +23,24 @@ Limit the existing `record_progress` and `set_watchlist` operations after curren
 Identity owner authorization. Before receipt inspection and rate admission, a
 process-local queue serializes each authorized account/profile/idempotency key.
 It holds at most 1,024 active keys and 31 waiters per key, propagates waiter
-cancellation, and returns `BACKPRESSURE` at capacity. Therefore a concurrent
-same-key burst can spend one token and produce one durable effect; later callers
-observe the resulting receipt or conflict before another rate decision. The rate
-partition is the authorized account, not the untrusted profile argument or raw
-session cookie. A SHA-256 pseudonym of the validated account ID is used only in
-bounded local maps and the short-lived Redis key; it is never logged or used as a
-metric attribute.
+cancellation, and returns `BACKPRESSURE` at capacity. That queue prevents one
+process from charging a concurrent same-key burst repeatedly. It does not
+coordinate replicas, so the shared Redis decision also receives a SHA-256 digest
+of operation, authorized account, profile and idempotency key. Its atomic finite
+marker makes another replica reuse the first allowed admission without consuming
+another token. PostgreSQL receipt and aggregate locking still serialize the
+durable effect. The rate partition is the authorized account, not the untrusted
+profile argument or raw session cookie. SHA-256 pseudonyms are used only in
+bounded local maps and short-lived Redis keys; they are never logged or used as
+metric attributes.
 
 Use these versioned key families without literal Redis Cluster hash-tag braces:
 
 ```text
-aster:{environment}:engagement:rate:v1:record_progress:{accountDigest}
-aster:{environment}:engagement:rate:v1:set_watchlist:{accountDigest}
+aster:{environment}:engagement:rate:v2:record_progress:{accountDigest}:bucket
+aster:{environment}:engagement:rate:v2:record_progress:{accountDigest}:admission:{admissionDigest}
+aster:{environment}:engagement:rate:v2:set_watchlist:{accountDigest}:bucket
+aster:{environment}:engagement:rate:v2:set_watchlist:{accountDigest}:admission:{admissionDigest}
 ```
 
 The representative Phase 10 policies are:
@@ -45,14 +50,18 @@ The representative Phase 10 policies are:
 | `record_progress` | 12 tokens | 4 tokens/second | 1 | 30 seconds |
 | `set_watchlist` | 4 tokens | 1 token/second | 1 | 30 seconds |
 
-One small Lua command uses Redis server `TIME`, integer milli-tokens and one
-string state envelope. It validates type, version, token range, timestamp and
-remaining TTL; missing, malformed, wrong-type, future, non-expiring or
-longer-than-policy state is replaced atomically by a full current bucket before
-the present cost is applied. Each decision writes one finite `PSETEX` state and
-returns only allowed/rejected, remaining whole tokens, retry-after milliseconds,
-reset milliseconds and whether recovery occurred. All inputs and replies are
-bounded by the shared adapter.
+One small Lua command uses Redis server `TIME`, integer milli-tokens, one bucket
+envelope and one admission marker. It validates type, version, token range,
+timestamp and remaining TTL; missing, malformed, wrong-type, future,
+non-expiring or longer-than-policy bucket state is replaced atomically by a full
+current bucket before the present cost is applied. A first allowed decision
+writes both values with the policy TTL. A valid existing admission marker returns
+the original bounded decision snapshot without changing the bucket or refreshing
+the marker. A rejected decision creates no marker, so a later attempt may be
+admitted after refill. The reply contains only allowed/rejected, remaining whole
+tokens, retry-after milliseconds, reset milliseconds, recovery and
+deduplication state. All inputs and replies are bounded by the shared adapter.
+Superseded v1 bucket keys expire naturally.
 
 ### Local outage and hot-key shield
 
@@ -103,6 +112,9 @@ record bounded command outcomes.
 
 - Concurrent replicas share one atomic rate decision while one hot caller is
   shed locally before repeated Redis commands.
+- Concurrent identical retries split across replicas charge the account-operation
+  bucket once during the finite admission window, while distinct idempotency keys
+  remain independent rate attempts.
 - Concurrent same-key work inside one process reaches receipt/rate admission in
   order, preventing identical retries from multiplying token use.
 - Redis loss degrades distribution accuracy, not durable progress correctness or
@@ -140,6 +152,12 @@ deployment has one Discovery instance, and a finite local bulkhead proves the
 required queue behavior without adding distributed lease-release failure modes.
 Phase 14 may revisit replica-wide capacity from measured deployment pressure.
 
+### Hold a PostgreSQL lock while asking Redis
+
+Rejected because a non-authoritative network call must not extend an
+authoritative transaction or database lock. PostgreSQL continues to serialize
+the receipt and effect only after the disposable admission decision.
+
 ### Shard limiter keys or add a Redis cluster
 
 Rejected without measured infrastructure pressure. One atomic command, local
@@ -148,6 +166,6 @@ hot-key shedding, finite TTL and measured contention are the first response.
 ## Rollback
 
 Disable distributed Engagement limiting and retain the compatible local shield,
-or restore the previous Engagement/Discovery artifacts. Let v1 limiter keys
-expire naturally. No Redis scan/flush, PostgreSQL migration, event replay, media
-action or user-data deletion is required.
+or restore the previous Engagement/Discovery artifacts. Let v1 and v2 limiter
+keys expire naturally. No Redis scan/flush, PostgreSQL migration, event replay,
+media action or user-data deletion is required.

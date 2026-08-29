@@ -109,14 +109,15 @@ class FakeClient implements AsterRedisClient {
     signal: AbortSignal,
   ) => Promise<number> = () => Promise.resolve(1);
   tokenBucketHandler: (
-    key: string,
+    bucketKey: string,
+    admissionKey: string,
     capacityMilliTokens: number,
     refillMilliTokensPerSecond: number,
     costMilliTokens: number,
     ttlMs: number,
     signal: AbortSignal,
-  ) => Promise<readonly [0 | 1, number, number, number, 0 | 1]> = () =>
-    Promise.resolve([1, 3, 0, 1_000, 0]);
+  ) => Promise<readonly [0 | 1, number, number, number, 0 | 1, 0 | 1]> = () =>
+    Promise.resolve([1, 3, 0, 1_000, 0, 0]);
   deleteHandler: (key: string, signal: AbortSignal) => Promise<number> = () => Promise.resolve(0);
   compareAndDeleteHandler: (
     key: string,
@@ -177,16 +178,18 @@ class FakeClient implements AsterRedisClient {
   }
 
   consumeTokenBucket(
-    key: string,
+    bucketKey: string,
+    admissionKey: string,
     capacityMilliTokens: number,
     refillMilliTokensPerSecond: number,
     costMilliTokens: number,
     ttlMs: number,
     signal: AbortSignal,
-  ): Promise<readonly [0 | 1, number, number, number, 0 | 1]> {
+  ): Promise<readonly [0 | 1, number, number, number, 0 | 1, 0 | 1]> {
     this.tokenBucketCalls += 1;
     return this.tokenBucketHandler(
-      key,
+      bucketKey,
+      admissionKey,
       capacityMilliTokens,
       refillMilliTokensPerSecond,
       costMilliTokens,
@@ -451,13 +454,14 @@ test("executes only bounded cache commands and reports finite dependency operati
     status: "completed",
     stored: true,
   });
-  client.tokenBucketHandler = (key, capacity, refill, cost, ttlMs) => {
-    assert.equal(key, "aster:test:rate");
+  client.tokenBucketHandler = (bucketKey, admissionKey, capacity, refill, cost, ttlMs) => {
+    assert.equal(bucketKey, "aster:test:rate");
+    assert.equal(admissionKey, "aster:test:rate:admission:a");
     assert.deepEqual([capacity, refill, cost, ttlMs], [4_000, 1_000, 1_000, 30_000]);
-    return Promise.resolve([1, 3, 0, 1_000, 1]);
+    return Promise.resolve([1, 3, 0, 1_000, 1, 0]);
   };
   assert.deepEqual(
-    await adapter.consumeTokenBucket("aster:test:rate", {
+    await adapter.consumeTokenBucket("aster:test:rate", "aster:test:rate:admission:a", {
       capacity: 4,
       refillPerSecond: 1,
       cost: 1,
@@ -470,6 +474,7 @@ test("executes only bounded cache commands and reports finite dependency operati
       retryAfterMs: 0,
       resetAfterMs: 1_000,
       recovered: true,
+      deduplicated: false,
     },
   );
   assert.deepEqual(await adapter.delete("aster:test:key"), {
@@ -524,7 +529,7 @@ test("rejects malformed cache command input before vendor work", async () => {
   assert.deepEqual(await adapter.acquireLease("key", "owner", 0), rejected);
   assert.deepEqual(await adapter.compareAndDelete("key", ""), rejected);
   assert.deepEqual(
-    await adapter.consumeTokenBucket("key", {
+    await adapter.consumeTokenBucket("key", "admission", {
       capacity: 4,
       refillPerSecond: 1,
       cost: 5,
@@ -533,7 +538,7 @@ test("rejects malformed cache command input before vendor work", async () => {
     rejected,
   );
   assert.deepEqual(
-    await adapter.consumeTokenBucket("key", {
+    await adapter.consumeTokenBucket("key", "admission", {
       capacity: 4,
       refillPerSecond: 1,
       cost: 1,
@@ -546,7 +551,19 @@ test("rejects malformed cache command input before vendor work", async () => {
     "unexpected",
     { value: true },
   );
-  assert.deepEqual(await adapter.consumeTokenBucket("key", policyWithHiddenInput), rejected);
+  assert.deepEqual(
+    await adapter.consumeTokenBucket("key", "admission", policyWithHiddenInput),
+    rejected,
+  );
+  assert.deepEqual(
+    await adapter.consumeTokenBucket("key", "key", {
+      capacity: 4,
+      refillPerSecond: 1,
+      cost: 1,
+      ttlMs: 30_000,
+    }),
+    rejected,
+  );
   assert.deepEqual(
     [
       client.getCalls,
@@ -563,11 +580,13 @@ test("rejects malformed cache command input before vendor work", async () => {
 
 test("rejects malformed token-bucket replies without exposing vendor values", async () => {
   const malformed = [
-    [2, 3, 0, 1_000, 0],
-    [1, 5, 0, 1_000, 0],
-    [0, 0, 0, 1_000, 0],
-    [1, 3, 0, 30_001, 0],
-    [1, 3, 0, 1_000, 2],
+    [2, 3, 0, 1_000, 0, 0],
+    [1, 5, 0, 1_000, 0, 0],
+    [0, 0, 0, 1_000, 0, 0],
+    [1, 3, 0, 30_001, 0, 0],
+    [1, 3, 0, 1_000, 2, 0],
+    [0, 0, 1_000, 1_000, 0, 1],
+    [1, 3, 0, 1_000, 1, 1],
   ] as const;
   for (const reply of malformed) {
     const telemetry = new RecordingTelemetry();
@@ -575,9 +594,9 @@ test("rejects malformed token-bucket replies without exposing vendor values", as
     const adapter = createAsterRedisAdapterWithClientFactory(options(telemetry), () => client);
     assert.deepEqual(await adapter.connect(), { status: "completed" });
     client.tokenBucketHandler = () =>
-      Promise.resolve(reply as unknown as readonly [0 | 1, number, number, number, 0 | 1]);
+      Promise.resolve(reply as unknown as readonly [0 | 1, number, number, number, 0 | 1, 0 | 1]);
     assert.deepEqual(
-      await adapter.consumeTokenBucket("aster:test:rate", {
+      await adapter.consumeTokenBucket("aster:test:rate", "aster:test:rate:admission:a", {
         capacity: 4,
         refillPerSecond: 1,
         cost: 1,

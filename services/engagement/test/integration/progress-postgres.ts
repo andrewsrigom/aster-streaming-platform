@@ -254,9 +254,62 @@ try {
     return store.transactions.run(work, requestSignal);
   };
   const concurrent = race.input();
-  const repeated = await Promise.all([race.record(concurrent), race.record(concurrent)]);
+  const sharedAdmissions = new Set<string>();
+  let limiterCalls = 0;
+  let limiterCharges = 0;
+  const sharedRedis = {
+    consumeTokenBucket: (
+      _bucketKey: string,
+      admissionKey: string,
+    ): Promise<
+      Readonly<{
+        status: "completed";
+        allowed: true;
+        remaining: number;
+        retryAfterMs: 0;
+        resetAfterMs: number;
+        recovered: false;
+        deduplicated: boolean;
+      }>
+    > => {
+      limiterCalls++;
+      const deduplicated = sharedAdmissions.has(admissionKey);
+      if (!deduplicated) {
+        sharedAdmissions.add(admissionKey);
+        limiterCharges++;
+      }
+      return Promise.resolve({
+        status: "completed",
+        allowed: true,
+        remaining: 11,
+        retryAfterMs: 0,
+        resetAfterMs: 250,
+        recovered: false,
+        deduplicated,
+      });
+    },
+  };
+  const limiterOptions = {
+    environment: "test" as const,
+    digest: (value: string) => createHash("sha256").update(value).digest("hex"),
+    redis: sharedRedis,
+  };
+  const firstReplica = createProgressRecorder({
+    ...race.ports,
+    limiter: createEngagementOperationLimiter(limiterOptions),
+  });
+  const secondReplica = createProgressRecorder({
+    ...race.ports,
+    limiter: createEngagementOperationLimiter(limiterOptions),
+  });
+  const repeated = await Promise.all([
+    firstReplica.record(concurrent, race.request),
+    secondReplica.record(concurrent, race.request),
+  ]);
   assert.equal(repeated[0].status, "completed");
   assert.deepEqual(repeated[0], repeated[1]);
+  assert.equal(limiterCalls, 2);
+  assert.equal(limiterCharges, 1);
   assert.deepEqual(await counts(race.profileId), { progress: 1, receipts: 1, outbox: 1 });
   race.ports.transactions.run = store.transactions.run.bind(store.transactions);
   assert.equal((await race.record(race.input({ sequence: 3 }))).status, "completed");
@@ -266,6 +319,8 @@ try {
   assert.equal(back.value.positionMs, 500);
   output("engagement_synchronized_replay_ordering", {
     duplicateWinners: 1,
+    crossReplicaLimiterCalls: limiterCalls,
+    crossReplicaLimiterCharges: limiterCharges,
     effects: 1,
     stale: "rejected",
     newerSeekBackward: "accepted",

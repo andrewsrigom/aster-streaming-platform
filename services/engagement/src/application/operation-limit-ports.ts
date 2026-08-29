@@ -10,6 +10,7 @@ export interface EngagementOperationLimiter {
   admit(
     operation: EngagementLimitedOperation,
     accountId: string,
+    admissionId: string,
     signal: AbortSignal,
   ): Promise<EngagementOperationAdmission>;
 }
