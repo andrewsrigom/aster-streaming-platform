@@ -4,11 +4,11 @@
 
 PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
 
-P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Runtime source1fe7edb implements the bounded GraphQL subgraph, five-owner composition and opt-in service around the existing projection/consumer/rebuild. Candidate e979d7d passes73/73 aggregate tasks and zero high/critical audit findings. Exact PostgreSQL and the11-service Kafka/Router proof pass relevance, fences, rebuild/recovery, one result, explicit empty state, zero lag, restart recovery, sanitized logs, timer-patch packaging and exact cleanup. Initial and confirmation reviews found no blocker; historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Runtime source1fe7edb implements the bounded GraphQL subgraph, five-owner composition and opt-in service around the existing projection/consumer/rebuild. Initial candidate e979d7d passes73/73 aggregate tasks and zero high/critical audit findings. Protected run33236352596 passed all independent jobs and Catalog behavior, then failed its stale nine-volume cleanup ceiling. Correction5287b29 recognizes the two new reviewed Discovery trust volumes and passes focused3/3, real Catalog recovery/zero cleanup and repeated73/73; remediation confirmation is clean. Exact PostgreSQL and the11-service Kafka/Router proof pass relevance, fences, rebuild/recovery, one result, explicit empty state, zero lag, restart recovery, sanitized logs, timer-patch packaging and exact cleanup. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish the existing branch, open the P09-R01 PR, wait for protected CI, squash merge and confirm exact-main CI before starting P09-R03.
+1. Push the correction/evidence to PR33, wait for the new exact-head protected CI, squash merge and confirm exact-main CI before starting P09-R03.
 2. Preserve the exact candidate head and do not repeat unaffected SQL/Kafka/Router evidence.
 3. If protected CI finds a blocker, batch only the affected correction and repeat its invalidated gate.
 4. Preserve retained media/databases/keys and user applications. No historical stash, retained migration, Docker/WSL restart, global cleanup or film encode.

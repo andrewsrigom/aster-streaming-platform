@@ -14,7 +14,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 - Runtime source1fe7edb passes Discovery68/68, Router9/9, platform67/67, CI-policy33/33, schema composition and strict lint/type/unused/architecture/format/docs gates. Candidate e979d7d passes the canonical73/73 aggregate gate and dependency audit with zero high/critical findings.
 - Exact-commit PostgreSQL18.6 acceptance passes relevance, stable keysets, fences, rebuild/event recovery, role isolation, GIN and cleanup in2972ms. The11-service Docker proof passes one federated result, explicit empty state,300-second freshness, zero Kafka lag, restart recovery, sanitized logs, no timer warning and exact cleanup in319795ms.
-- Added Discovery operations, architecture and evidence documentation. Initial and confirmation reviews found no blocking requirement, security/data, availability or public-contract issue; protected release remains.
+- Added Discovery operations, architecture and evidence documentation. Initial and confirmation reviews found no blocking requirement, security/data, availability or public-contract issue. Protected run33236352596 passed all independent jobs and Catalog integration behavior, then exposed a stale standalone cleanup ceiling of nine declared volumes.
+- Correction5287b29 adds only the two reviewed Discovery trust volumes to that allowlist/finite ceiling. Focused3/3, real Catalog recovery with zero residue in89138ms and the repeated73/73 gate in53.419s pass. Remediation confirmation found no blocker; a new exact-head protected run remains.
 
 ### Next action
 

@@ -2,7 +2,8 @@
 
 Date: 2026-08-29
 Branch: feat/p09-discovery-search
-Candidate head: e979d7dff4503c7c4dec35542d6dc8b92579eed0
+Initial candidate head: e979d7dff4503c7c4dec35542d6dc8b92579eed0
+Corrected code head: 5287b29
 Runtime source: 1fe7edb53451ea25f4d55658dd7432f7d084f568
 Node.js: 24.19.0
 pnpm: 11.24.0
@@ -44,5 +45,35 @@ bootstrap behavior. Therefore the heavyweight proof is not repeated under the wr
 repeat-trigger rule.
 
 Confirmation review rechecked the complete candidate plus this evidence-only delta and
-found no blocking issue. Pending at this checkpoint: protected pull-request checks,
-squash merge and exact-main CI. No release is claimed by this file.
+found no blocking issue.
+
+Protected run 33236352596 then passed classification, dependency review,
+documentation/security, the local platform and every Catalog integration assertion,
+but the standalone Catalog cleanup guard still allowed at most nine declared volumes.
+The base topology now declares two additional unused, disposable Discovery trust
+volumes, so the proof failed before its already-scoped teardown. Correction 5287b29
+adds exactly those two reviewed names to the proof allowlist and changes its finite
+ceiling to eleven. It does not broaden project, label, authority, attachment or
+post-cleanup checks.
+
+Correction evidence:
+
+  node --test ./tools/verify-catalog-runtime.test.mjs
+  Tests: 3 passed, 3 total
+  Exit: 0
+
+  pnpm catalog:demo
+  Catalog recovery: passed; exit code 143; sanitized logs
+  Cleanup: remaining 0
+  Duration: 89138 ms
+  Exit: 0
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 59 cached, 73 total
+  Time: 53.419s
+  Exit: 0
+
+The remediation confirmation inspected the six-line allowlist/count delta and found no
+new blocker. Pending at this checkpoint: a new exact-head protected run, squash merge
+and exact-main CI. No release is claimed by this file.

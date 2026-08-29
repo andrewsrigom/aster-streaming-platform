@@ -6,7 +6,7 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at head e979d7d. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at corrected code head5287b29. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact1fe7edb: real PostgreSQL18.6 migrations/relevance/keysets/fences/rebuild/recovery/roles/GIN pass; the11-service disposable Kafka/Router proof projects one title with zero lag, returns one federated result and an explicit empty result, preserves its active generation through restart, emits no raw query/title/secret or timer warning, and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records exact e979d7d passing73/73 aggregate tasks, zero high/critical audit findings and both reviews with no blocker. Protected release remains.
+Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact1fe7edb: real PostgreSQL18.6 migrations/relevance/keysets/fences/rebuild/recovery/roles/GIN pass; the11-service disposable Kafka/Router proof projects one title with zero lag, returns one federated result and an explicit empty result, preserves its active generation through restart, emits no raw query/title/secret or timer warning, and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records e979d7d passing73/73 aggregate tasks and zero high/critical audit findings. Protected run33236352596 then exposed only a stale Catalog cleanup ceiling after its runtime assertions passed; correction5287b29 passes focused3/3, real recovery/zero cleanup residue and repeated73/73. Remediation confirmation found no blocker. A new protected run remains.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
