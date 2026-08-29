@@ -5,6 +5,7 @@ Branch: feat/p09-discovery-search
 Initial candidate head: e979d7dff4503c7c4dec35542d6dc8b92579eed0
 Catalog CI correction: 5287b29
 Review-remediated code head: 04011af2a0fa46ee3a1a39c02c4384e335bb2f3c
+Confirmation-remediated code head: 16d4921ff569a501ab3227d11ed6617863fb0ce7
 Initial runtime source: 1fe7edb53451ea25f4d55658dd7432f7d084f568
 Node.js: 24.19.0
 pnpm: 11.24.0
@@ -125,8 +126,53 @@ Review-remediation evidence:
 
 The first post-review candidate attempt exposed one unused exported type only; making
 that implementation-only active-generation shape private corrected Knip without a
-runtime change. A confirmation inspection found no remaining requirement,
-security/data, availability or public-contract blocker. Pending at this checkpoint:
-publish 04011af plus evidence, resolve the four addressed discussions, run one
-exact-head protected CI and confirmation review, squash merge, and exact-main CI. No
-release is claimed by this file.
+runtime change. Commit 40f5771 published that evidence, protected run33237612970 began,
+all four initial discussions were answered/resolved, and the requested exact-head
+confirmation review completed.
+
+That confirmation found two new blocking boundaries: maintenance state incorrectly
+withheld readiness despite a valid retained active generation (discussion3885790201),
+and exact quarantine replay existed only in application tests without an operator
+surface (3885790205). Commit16d4921 addresses both. Readiness now derives from the
+validated active generation: bootstrap and age at or beyond300seconds remain
+unavailable, while a valid active generation continues serving during a maintenance
+rebuild. A local-only UUID-selected command uses one projector connection, the
+purpose-separated Catalog credential and a five-second deadline to revalidate exact
+retained bytes and reclaim the slot only after an applied or duplicate result.
+
+Confirmation-remediation evidence:
+
+  pnpm --filter @aster/discovery build
+  pnpm --filter @aster/discovery test
+  Tests: 70 passed, 70 total
+  pnpm --filter @aster/discovery typecheck
+  Exit: 0
+
+  pnpm discovery:runtime
+  Federated search, explicit empty result, exact quarantine replay/slot reclamation,
+  stopped-Discovery Catalog isolation, restart recovery, sanitized logs and exact
+  cleanup passed
+  Cleanup: remaining 0
+  Duration: 107640 ms
+  Exit: 0
+
+  pnpm unused:check
+  Exit: 0
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 60 cached, 73 total
+  Time: 50.848s
+  Exit: 0
+
+The first repeated runtime attempt used the already-relayed Catalog outbox as a fixture
+source, so its setup inserted no quarantine row and failed before invoking the command;
+ownership-checked cleanup left zero resources. The corrected proof supplies a bounded
+valid synthetic event for the existing synthetic title and passes above. The first
+candidate attempt after adding the command correctly failed because the new executable
+was absent from Knip's explicit entry list; adding that exact entry closed the gate.
+Neither correction weakens production behavior or a check.
+
+Pending at this checkpoint: publish16d4921 plus evidence, resolve the two addressed
+confirmation discussions, run one new exact-head protected CI and final blocking-boundary
+confirmation, squash merge, and exact-main CI. No release is claimed by this file.

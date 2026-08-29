@@ -4,11 +4,11 @@
 
 PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
 
-P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Review-remediated source04011af implements bounded search, current-source renewal, empty-partition promotion, five-owner composition and optional Discovery failure isolation. Initial candidate e979d7d passed73/73 and zero high/critical audit findings. Protected run33236352596 exposed only the Catalog cleanup ceiling; correction5287b29 passes. Automated review discussions3885713367/70/74/75 found four valid issues and04011af corrects all of them. Discovery69/69, focused platform4/4, exact PostgreSQL in2481ms, the11-service Kafka/Router proof in104158ms and final73/73 pass; Catalog remains available through Router while Discovery is stopped. Confirmation is clean. Historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Confirmation-remediated source16d4921 implements bounded search, renewal, maintenance availability, exact quarantine replay, five-owner composition and optional failure isolation. Cleanup correction and four initial review issues pass. Confirmation discussions3885790201/205 found periodic readiness loss and unreachable replay;16d4921 corrects both. Discovery70/70, unchanged PostgreSQL acceptance, the11-service runtime in107640ms and final73/73 pass; runtime proves replay slot reclamation, stopped-Discovery Catalog access and restart recovery. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Commit/push the review evidence to PR33, reply to and resolve the four addressed threads, then require exact-head protected CI and one confirmation review.
+1. Commit/push final evidence to PR33, reply to and resolve the two addressed confirmation threads, then require exact-head protected CI and final blocking-boundary confirmation.
 2. Squash merge and confirm exact-main CI before starting P09-R03.
 3. If protected CI finds a blocker, batch only the affected correction and repeat its invalidated gate; do not repeat unaffected evidence.
 4. Preserve retained media/databases/keys and user applications. No historical stash, retained migration, Docker/WSL restart, global cleanup or film encode.

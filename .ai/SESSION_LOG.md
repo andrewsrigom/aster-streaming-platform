@@ -10,6 +10,7 @@ Append new entries at the top. Keep entries factual and concise.
 - Added purpose-separated Router/Catalog trust, strict GraphQL parsing/cost/concurrency controls, generated five-subgraph artifacts, the SearchTitles known operation and an opt-in resource-bounded Compose topology.
 - Added disposable runtime policy, CI execution and safe-reset coverage. Applied a hashed KafkaJS2.2.4 patch that clamps its negative pending-request timer while preserving the existing one-second polling interval and MIT notices.
 - Remediated all four valid automated-review findings in04011af: refresh quiet active generations at150seconds, treat missing handled progress as broker position zero only, remove optional Discovery from Router startup dependencies, prove Catalog isolation while Discovery is stopped, and align the documented query limit to80 code points.
+- Remediated confirmation discussions3885790201/205 in16d4921: readiness now serves a valid active generation during maintenance but fails bootstrap/expiry closed, and a local UUID-selected command revalidates/reclaims exact quarantine bytes through current Catalog authority.
 
 ### Evidence
 
@@ -17,11 +18,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Exact-commit PostgreSQL18.6 acceptance passes relevance, stable keysets, fences, rebuild/event recovery, role isolation, GIN and cleanup in2972ms. The11-service Docker proof passes one federated result, explicit empty state,300-second freshness, zero Kafka lag, restart recovery, sanitized logs, no timer warning and exact cleanup in319795ms.
 - Added Discovery operations, architecture and evidence documentation. Initial and confirmation reviews found no blocking requirement, security/data, availability or public-contract issue. Protected run33236352596 passed all independent jobs and Catalog integration behavior, then exposed a stale standalone cleanup ceiling of nine declared volumes.
 - Correction5287b29 adds only the two reviewed Discovery trust volumes to that allowlist/finite ceiling. Focused3/3, real Catalog recovery with zero residue in89138ms and the repeated73/73 gate in53.419s pass. Remediation confirmation found no blocker; a new exact-head protected run remains.
-- Review remediation passes Discovery69/69, focused platform4/4, real PostgreSQL18.6 in2481ms and the11-service Docker proof in104158ms with stopped-Discovery Catalog browse, restart recovery and zero residue. The final candidate passes73/73,63 cached, in47.155s. Confirmation found no blocker.
+- Review remediation passes Discovery69/69, focused platform4/4, real PostgreSQL18.6 in2481ms and the11-service Docker proof in104158ms with stopped-Discovery Catalog browse, restart recovery and zero residue. That candidate passes73/73,63 cached, in47.155s; requested automated confirmation later found the two boundaries corrected below.
+- Confirmation remediation passes Discovery70/70 and the11-service Docker proof in107640ms with exact replay reclamation, isolation/recovery and zero residue. Final candidate passes73/73,60 cached, in50.848s. The first replay fixture incorrectly expected a relayed outbox row and the first candidate omitted the new executable from Knip entrypoints; both failures are retained in evidence and corrected without weakening checks.
 
 ### Next action
 
-Publish exact04011af plus evidence, resolve the four addressed discussions, require one protected exact-head CI and confirmation review, then squash and verify exact main before P09-R03.
+Publish exact16d4921 plus evidence, resolve the two addressed confirmation discussions, require exact-head protected CI/final confirmation, then squash and verify exact main before P09-R03.
 
 ## 2026-08-28 — Owned events and recovery checkpoint
 

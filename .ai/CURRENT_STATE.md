@@ -6,7 +6,7 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at review-remediated code head04011af. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at confirmation-remediated code head16d4921. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact04011af: real PostgreSQL18.6 migrations/relevance/keysets/fences/rebuild/recovery/roles/GIN pass; the11-service disposable Kafka/Router proof projects one title with zero lag, returns one result and an explicit empty result, serves Catalog through Router while Discovery is stopped, preserves its active generation through restart, emits no raw query/title/secret or timer warning, and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records the initial73/73 gate, the protected Catalog cleanup finding/correction and all four valid automated-review remediations: proactive150-second refresh, empty broker position zero, Router startup isolation and the documented80-code-point limit. Discovery69/69, focused platform4/4, real SQL in2481ms, runtime in104158ms and the final73/73 gate pass. Confirmation found no blocker. Exact-head publication, protected CI/review, squash and exact-main CI remain.
+Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact16d4921 packaging plus unchanged real PostgreSQL18.6 acceptance: the11-service Kafka/Router proof projects with zero lag, returns one result and explicit empty, replays/reclaims one exact quarantine slot, serves Catalog while Discovery is stopped, preserves its generation through restart, sanitizes logs and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records the initial73/73 gate, Catalog cleanup correction, four initial review remediations and two confirmation blockers. The latter now keep a valid active generation serviceable during maintenance while bootstrap/expiry fail closed, and expose bounded local exact replay. Discovery70/70, runtime107640ms and final73/73 pass. Exact-head publication, discussion resolution, protected CI/final confirmation, squash and exact-main CI remain.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
