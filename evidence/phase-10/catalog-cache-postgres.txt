@@ -4,6 +4,9 @@ Status: local candidate; hosted review, protected CI and release pending
 
 Source and environment
 - Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- Reviewed implementation: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88.
+  Its only source change affects the observation emitted for a projection already
+  rejected above 16 KiB; PostgreSQL query and cache fence bytes are unchanged.
 - WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
 - Docker Engine 26.0.0; disposable pinned PostgreSQL 18.6 fixture
 

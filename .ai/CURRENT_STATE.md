@@ -46,13 +46,15 @@ Redis timeout, malformed bytes, lease loss or eviction falls back to PostgreSQL
 without changing a public result. In-process coalescing and a tokenized Redis
 lease reduce duplicate refreshes; neither authorizes a write. Exact cache keys,
 TTL jitter, command/value limits, finite metrics, optional runtime composition and
-degraded readiness are implemented locally. Catalog239/239 and Redis17/17 pass.
+degraded readiness are implemented locally. Catalog240/240 and Redis17/17 pass.
 The disposable Redis8.10 proof compares24 uncached source reads with one
 coalesced cold refresh, observes a cross-instance lease contender, a3.75ms warm
 sample, expired-owner recovery, atomic compare-delete, negative reuse, outage
-bypass and cleanup0. Exact implementation commit
-`a54c324f7d2312851bd036f763362d84574bf826` and its local evidence are complete;
-publication, hosted review and protected acceptance remain pending.
+bypass and cleanup0. Initial hosted review found that an oversized projection's
+bypass metric included a sample above the telemetry ceiling. Reviewed
+implementation `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` retains the outcome
+without the invalid dimension; Catalog240/240 and affected73/73 pass. Publication,
+confirmation and protected acceptance remain pending.
 
 ## Historical Phase 09 corrections
 

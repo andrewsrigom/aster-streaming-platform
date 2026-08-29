@@ -45,6 +45,12 @@ Append new entries at the top. Keep entries factual and concise.
   fence fields4, exact candidate rows2, stale rows0 and cleanup0; its exact-source
   Redis rerun reports24 callers, one coalesced source load, one cross-instance
   source load, safe expiry/compare-delete/outage fallback and cleanup0.
+- PR37 opened at exact705a2e0. Initial hosted review comment3886890023 found that
+  a valid over-16-KiB projection correctly bypassed storage but supplied a payload
+  sample the telemetry boundary rejects, dropping the outcome too. Reviewed
+  implementation `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` omits that invalid
+  dimension, retains the bypass counter and adds the actual oversized regression.
+  Catalog240/240 and the repeated73/73 affected gate pass in55.132s.
 
 ### Evidence
 
@@ -80,8 +86,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the documentation-only Phase10 evidence checkpoint, publish one coherent
-candidate and begin initial review plus protected CI.
+Commit the documentation-only review evidence, publish one PR37 update, resolve
+the finding and obtain confirmation plus corrected protected CI.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 

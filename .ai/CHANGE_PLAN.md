@@ -29,8 +29,9 @@ PostgreSQL first returns a compact current-visibility fence; only an exact
 versioned cache entry for that fence is reusable. Misses load the source, populate
 a positive or valid-absence entry with deterministic TTL jitter, and use bounded
 process coalescing plus a tokenized Redis refresh lease. Local candidate evidence
-passes at implementation commit `a54c324f7d2312851bd036f763362d84574bf826`;
-hosted review, protected CI and release remain pending.
+passes at reviewed implementation
+`374686844853a8d1f3cfb75f0b3d1ce7f1c08c88`; protected CI, confirmation and
+release remain pending.
 
 ## Boundaries
 
@@ -119,7 +120,7 @@ hosted review, protected CI and release remain pending.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: local candidate PASS: Catalog239/239, Redis17/17,
+- Acceptance result: local candidate PASS: Catalog240/240, Redis17/17,
   telemetry11/11, affected73/73, real PostgreSQL fence/source/dispute and real
   Redis expiry/concurrency/outage/cleanup. Hosted review, protected CI and release
   remain pending.

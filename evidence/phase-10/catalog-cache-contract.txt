@@ -5,7 +5,8 @@ Status: local candidate; hosted review, protected CI and release pending
 Source
 - Branch: feat/p10-catalog-cache
 - Base: ffe8e243a03b721d551742acd37db9dd645869eb
-- Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- Initial implementation: a54c324f7d2312851bd036f763362d84574bf826
+- Reviewed implementation: 374686844853a8d1f3cfb75f0b3d1ce7f1c08c88
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -17,9 +18,9 @@ Environment
 Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
-- @aster/catalog tests: PASS, 239/239.
+- @aster/catalog tests: PASS, 240/240.
 - pnpm check:changed: PASS, 73 successful of 73 total, 56 cached,
-  54.77 seconds Turbo wall time.
+  55.132 seconds Turbo wall time on the reviewed implementation.
 - git diff --check: PASS.
 - Documentation scan: PASS, 227 documents, 0 violations.
 - Repository-memory scan: PASS, 52 queue items, active P10-R01,
@@ -35,12 +36,22 @@ Workload and covered contract
   unchanged while the configured cache reader avoids the legacy transaction.
 - Finite cache telemetry labels and strict TypeScript, ESLint, Prettier, Knip,
   architecture, security, CI-policy and repository-policy gates.
+- A maximum-valid projection larger than 16 KiB bypasses storage, records the
+  bypass outcome and does not submit an invalid payload histogram sample.
 
 Interpretation
 The local candidate satisfies the written static and focused behavior contract.
 Redis is an optional transport behind repository-owned ports; Catalog domain and
 application layers do not import a Redis client. The aggregate gate is supporting
 candidate evidence, not a release claim.
+
+Initial review
+Hosted review comment 3886890023 found that the first implementation submitted
+the actual oversized projection as `payloadBytes`, while the telemetry boundary
+correctly rejects values above the 16-KiB cache ceiling. The reviewed
+implementation omits that non-cacheable size dimension, retains the bypass
+counter and adds the valid oversized projection regression. Catalog240/240 and
+the repeated73/73 affected gate pass.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis

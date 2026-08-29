@@ -24,3 +24,11 @@ coalescing, tokenized lease, degraded behavior and finite measurements.
 Every artifact records the exact implementation commit, environment, command,
 workload, raw result, interpretation and limitations. They support the local
 candidate only; release requires the remaining hosted gates.
+
+Initial hosted review comment 3886890023 found one measurement boundary: an
+oversized projection bypassed storage but supplied a payload sample above the
+telemetry contract. Reviewed implementation
+`374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` retains the bypass outcome without
+the invalid size sample. Catalog240/240 and the repeated73/73 affected gate pass;
+the recorded PostgreSQL/Redis experiments remain applicable because no fence,
+wire, TTL, lease, outage or concurrency behavior changed.
