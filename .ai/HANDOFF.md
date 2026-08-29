@@ -48,6 +48,8 @@ assumption. Initial review's rail-source/aggregate semantic correction then pass
 Web110/110, rebuilt discovery browser4/4 and confirmation with no blocker. Final
 candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
 moderate. Exact disposable cleanup reports containers0/networks0/volumes0.
+Implementation commit is exact19a510cbccb04614373b448055f985df6bce7368;
+the following publication checkpoint is documentation/state only.
 
 ## Exact next actions
 

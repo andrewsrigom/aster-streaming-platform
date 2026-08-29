@@ -45,6 +45,8 @@ Initial review's rail-source/aggregate semantic boundary is corrected; the rebui
 image passes discovery4/4 and confirmation has no blocker. The final affected
 candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
 moderate. Exact disposable cleanup reports containers0/networks0/volumes0.
+Implementation commit is exact `19a510cbccb04614373b448055f985df6bce7368`;
+the publication checkpoint changes evidence/state only.
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
 old/new schema overlap. Home selections now use one transaction at a time per

@@ -6,8 +6,9 @@ publication, protected CI and release still pending
 Source and environment
 - Branch: feat/p09-web-discovery
 - Base: a3f969cda582a97f07e14e90a814f98e9eb35b96
-- Source state: coherent local candidate based on the exact main above; publication
-  records its resulting commit before hosted review
+- Implementation commit: 19a510cbccb04614373b448055f985df6bce7368
+- Publication head adds only this exact-candidate evidence/state checkpoint before
+  hosted review; it does not invalidate the recorded source/runtime gates
 - Node.js 24.19.0 and pnpm 11.24.0 from the repository-pinned runtime
 - Docker Engine 26.0.0; Docker Compose 2.26.1-desktop.1
 - Linux/WSL amd64; no native Windows/macOS/arm64 portability claim

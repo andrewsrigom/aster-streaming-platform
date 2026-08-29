@@ -45,6 +45,9 @@ Append new entries at the top. Keep entries factual and concise.
 - Final affected candidate passes46/46 in1m03.813s. Audit reports zero
   high/critical and one known moderate. Exact disposable teardown and label audit
   report containers0, networks0 and volumes0; images remain cached.
+- Committed the coherent implementation as exact
+  `19a510cbccb04614373b448055f985df6bce7368`; the next checkpoint records only its
+  evidence/state before one remote publication.
 - Raw candidate evidence: `evidence/phase-09/web-discovery-runtime.txt`.
 
 ### Next action
