@@ -61,6 +61,11 @@ fan-out. The local correction classifies partial as degraded, records sequential
 one-transaction selection and passes focused Discovery89/89 plus the final54/54
 affected candidate in47.708s. Its publication update remains.
 
+Exact `8650670` passed protected run33246333963. Final confirmation review5057560831
+found only a stale architecture excerpt defaulting `homeContinueWatching` to20
+while the authoritative schema/generated API use10. The documentation-only
+correction now matches the schema; closeout confirmation and protected CI remain.
+
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
@@ -74,8 +79,8 @@ Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Update PR34 with the corrected P09-R03 candidate and complete final confirmation/
-protected release.
+Publish the documentation-only P09-R03 correction and complete closeout
+confirmation/protected release.
 
 ## Runtime and recovery
 

@@ -25,6 +25,10 @@ Append new entries at the top. Keep entries factual and concise.
   review5057520267 found usable partial responses logged as rejected and stale
   parallel-fan-out ADR text. Both were corrected together; focused Discovery
   build,89/89 tests, lint, formatting and final54/54 affected candidate in47.708s pass.
+- Exact8650670 passed protected run33246333963. Final confirmation
+  review5057560831 found only an architecture excerpt with default20 while the
+  authoritative home personalization schema uses10; corrected locally. Repository
+  memory, documentation, schema, formatting and diff checks pass.
 
 ### Evidence
 
@@ -50,7 +54,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Update PR34 and complete final confirmation/protected release.
+Update PR34 and complete closeout confirmation/protected release.
 
 ## 2026-08-29 — Independent home rails local candidate
 

@@ -12,6 +12,8 @@ run33244657936 passed. The dependent is rebased on that squash and ready for its
 PR34 correction. Exact0d1a7ef passed protected run33245434181; remediation review
 found partial-log classification and stale ADR execution wording. Both are fixed
 locally with Discovery89/89 and final54/54 affected candidate in47.708s.
+Exact8650670 passed protected run33246333963; final confirmation found only a
+GraphQL architecture excerpt default20/schema default10 mismatch, fixed locally.
 Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |

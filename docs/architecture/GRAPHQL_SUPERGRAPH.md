@@ -79,7 +79,7 @@ type Query {
   watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
   searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
   homeRails(first: Int! = 10): DiscoveryHomePayload!
-  homeContinueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload
+  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
 }
 ```
 

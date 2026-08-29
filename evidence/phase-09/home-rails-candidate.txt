@@ -73,3 +73,13 @@ degraded, documents sequential one-transaction admission and passes Discovery
 build,89/89 tests, scoped lint, formatting and the54/54 affected candidate in
 47.708s. Publication update, confirmation, merge and exact-main CI remain before
 release.
+
+Closeout documentation correction
+
+Exact8650670 passed protected run33246333963, including all required jobs and
+15m30s source/integration acceptance. Final confirmation review5057560831 found
+only that the implemented-query excerpt defaulted `homeContinueWatching` to20
+while the authoritative schema and generated API default it to10. The excerpt now
+uses10. Repository-memory, documentation, schema, formatting and diff checks pass.
+This changes no schema, operation, source, package or runtime byte; the prior
+candidate and protected evidence remain applicable before one closeout publication.

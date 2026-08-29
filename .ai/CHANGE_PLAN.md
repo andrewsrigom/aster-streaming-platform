@@ -25,7 +25,10 @@ run33243983340, then squash-merged as main `583c835`. Exact-main run33244657936
 passed every required job; migration3 publication is now unblocked. PR34 exact
 `0d1a7ef` passed protected run33245434181. Its remediation confirmation found
 that usable partial logs were classified as rejected and ADR-0036 still described
-the superseded parallel admission model; both corrections are local.
+the superseded parallel admission model; both corrections reached exact
+`8650670` and protected run33246333963 passed. Its final confirmation found one
+architecture excerpt using default20 instead of the authoritative schema default10;
+the documentation-only correction is local.
 
 ## Proposed behavior
 
@@ -133,9 +136,9 @@ readiness reservation fit the five-connection runtime pool.
   repeat PostgreSQL and Router runtime; docs-only closeout carries them forward.
 - Review stopping rule: confirmation produced two P1 blockers and remediation
   confirmation produced two requirement/documentation P2 blockers. Batch the
-  latter and run one final confirmation because observability behavior changed;
-  reopen only for requirement, security/data, availability or public-contract
-  blockers.
+  latter; final confirmation then found one public-contract documentation mismatch.
+  Correct it and run one closeout confirmation because the public contract changed;
+  reopen only for requirement, security/data, availability or public-contract blockers.
 
 ## Rollback or recovery
 
