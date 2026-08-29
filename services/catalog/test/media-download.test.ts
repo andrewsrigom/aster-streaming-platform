@@ -149,7 +149,7 @@ test("stalls and cancellation destroy streams and release only owned temporary f
   const before = await ownedDirectories();
   const stalled = new Readable({ read() {} });
   await assert.rejects(
-    downloadMediaSource(source, signal(), { network: network({ body: stalled }), deadlineMs: 20 }),
+    downloadMediaSource(source, signal(), { network: network({ body: stalled }), deadlineMs: 500 }),
     { code: "SOURCE_TIMEOUT" },
   );
   assert.equal(stalled.destroyed, true);
