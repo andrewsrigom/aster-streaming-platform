@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32: browser correction passed actual journeys/reviews, but CI33220547568 failed later in immutable-seed replay. Correct read-only reuse before publication. P09-R01 is READY, with unpublished21-test domain checkpoint0e31767 on feat/p09-discovery-search plus Catalog snapshot stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32. Rebase after predecessor repair; apply only that stash once, not historical stashes. Retained Phase07 demo remains intact.
+P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33222164370 proves read-only immutable replay and all earlier integration steps, but the personalized browser still lost its selected response body after `waitForResponse` resolved. Event-turn capture passes103 Web tests, types, scoped lint and43/43 affected tasks; protected acceptance remains. P09-R01 is READY, with unpublished checkpoints on feat/p09-discovery-search and the newest purpose-named WIP stash; inspect exact Git state before restore and never reapply historical stashes. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

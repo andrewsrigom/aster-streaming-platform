@@ -4,7 +4,7 @@ P08-R01/R06/R07/R08 are DONE through protected and exact post-merge gates. [Watc
 
 ## Implemented core
 
-[PR32 seed replay correction](player-seed-replay.txt) records the later bootstrap failure after both browser journeys passed, deterministic read-only reuse tests and real S3 proof. It does not claim protected release; [phase audit](release.md) tracks that remaining gate.
+[PR32 seed replay correction](player-seed-replay.txt) records the later bootstrap failure after both browser journeys passed, deterministic read-only reuse tests and real S3 proof. Protected run33222164370 then proved that replay and exposed the remaining browser event/body race; [browser acknowledgement evidence](player-browser-ack.txt) records its event-turn correction. Neither artifact claims protected release; [phase audit](release.md) tracks that remaining gate.
 
 Engagement owns the (profile, title) aggregate. Sequence does not reset with a new playback session. Exact receipt replay returns the original result, including after a newer update or the old session's expiry; current Identity authorization is still required. Conflicting payloads and stale sequences do not write. Newer deliberate seeking may move the saved position backward. Positions clamp without collapsing distinct request digests.
 

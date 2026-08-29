@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-R11's browser correction selects requests synchronously and consumes one checked body before navigation; five regressions,26 player tests, Web types/lint and the14/14 gate pass. PR32 also passed the actual anonymous/personalized browser tests. The new [seed replay correction](../evidence/phase-08/player-seed-replay.txt) checks presence, verifies existing complete bytes without PUT and permits one conditional create only for explicit absence. Nine regressions/two file tests, scoped lint, real S3 replay/corruption/header checks and43/43 candidate tasks pass; exact fixture cleanup reports zero. Fresh protected acceptance/review remain required. Retained demo is unchanged.
+R11's browser correction now starts its one selected acknowledgement body read inside the response event before Chromium can discard it. Six observer regressions, the full103-test Web suite, types, scoped lint and43/43 affected tasks pass locally. PR32 run33222164370 proved the seed correction and every preceding integration boundary, then reproduced the old body-discard failure in the first personalized progress save; cleanup succeeded. The [seed replay correction](../evidence/phase-08/player-seed-replay.txt) remains valid: existing complete bytes are verified without PUT and only explicit absence permits one conditional create. Protected browser acceptance remains required. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -28,7 +28,7 @@ Phase08 exact post-merge closeout, Discovery and hosted release remain pending. 
 
 ## Next outcome
 
-Complete P08-R11 immutable replay correction under CHANGE_PLAN in the same PR32. Require real S3 proof, affected gate, refreshed boundary review, protected full demo/replay and exact main success. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased. Resume preserved Phase09 after repair; no repeated host experiment or retained-demo upgrade.
+Complete P08-R11 response-event capture under CHANGE_PLAN in the same PR32. Repeat the affected gate, then require protected full demo/replay, confirmation review and exact main success. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased. Resume preserved Phase09 after repair; no repeated host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 
@@ -40,7 +40,7 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 ## Current risks
 
-- Seed replay upload unavailable reproduced in CI33220547568 after both browser tests passed. Read-only replay removes its unnecessary conditional upload; the exact earlier SDK/provider transport cause remains unproved. No blind retry, retained reset or CPU attribution.
+- Run33222164370 proves read-only seed replay but reproduces Chromium response-body disposal after `waitForResponse` resolves. Event-turn body capture passes deterministic regressions but still needs protected browser proof. The exact earlier SDK/provider seed transport cause remains unproved. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event signing key; old finite migrators/readiness may reject new schema versions. Drain and use compatible binaries or roll forward.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.

@@ -2185,3 +2185,9 @@ Reconcile Phase 00 requirement traceability and audit the full delivery plan bef
 ### Next action
 
 Execute Phase 00 beginning with source-code license selection.
+# 2026-08-28 — Response-event progress acknowledgement capture
+
+- Preserved P09 private Catalog transport in stash `3c62b4289287b3ac799d498daf1577bbbf4eaf30` after 21 focused transport tests and scoped lint passed, then returned to the failing predecessor.
+- Inspected protected PR32 run33222164370: all source/platform/Catalog/Playback/Engagement and immutable replay stages passed; the personalized browser failed because Chromium discarded the selected response body before the post-`waitForResponse` `json()` call.
+- Replaced the waiter continuation with one purpose-filtered Page response listener that starts the selected body read inside the event turn and removes itself before validation.
+- Added deterministic body-start ordering coverage. Full Web tests pass103/103; type generation, strict TypeScript, scoped lint and the43/43 affected gate pass. Protected acceptance remains pending.

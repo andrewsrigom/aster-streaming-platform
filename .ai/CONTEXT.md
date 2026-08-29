@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR32 corrects the PR31 post-merge observer failure; both real browser journeys and reviews pass at77eda41. CI33220547568 failed later in immutable-seed replay, now owned by P08-R11. Phase09 work is preserved locally at0e31767 plus the exact stash in HANDOFF. Retained demo stays Phase07; no data migration or film processing is implied.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR32's ea4c72f seed correction passes local real-storage/candidate evidence and protected run33222164370 proved its full replay, but that run reproduced Chromium response-body disposal in the personalized browser. Event-turn acknowledgement capture passes103 Web tests, types, scoped lint and43/43 affected tasks; protected acceptance remains. Phase09 work is preserved locally at dcc2a13/cf13c15 plus the exact newest stash in HANDOFF. Retained demo stays Phase07; no data migration or film processing is implied.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

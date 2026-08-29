@@ -3,7 +3,7 @@ import test from "node:test";
 import { waitForSavedProgress } from "./support/saved-progress.ts";
 
 type ObserverPage = Parameters<typeof waitForSavedProgress>[0];
-type ObservedResponse = Awaited<ReturnType<ObserverPage["waitForResponse"]>>;
+type ObservedResponse = Parameters<Parameters<ObserverPage["on"]>[1]>[0];
 const endpoint = "http://127.0.0.1:4000/graphql";
 const expected = { titleId: "fictional-title", positionMs: 2000, status: "IN_PROGRESS" as const };
 const acknowledgement = () => ({
@@ -22,21 +22,23 @@ const response = (
   json: body,
 });
 function pageWith(candidates: ObservedResponse[]): ObserverPage {
+  let active: ((response: ObservedResponse) => void) | undefined;
   return {
-    waitForResponse(predicate, options) {
-      assert.equal(options.timeout, 12000);
+    on(event, listener) {
+      assert.equal(event, "response");
+      active = listener;
       for (const candidate of candidates) {
-        const matches = predicate(candidate);
-        assert.equal(
-          typeof matches,
-          "boolean",
-          "Response selection must not start asynchronous work",
-        );
-        if (matches) {
-          return Promise.resolve(candidate);
+        if (active !== listener) {
+          break;
         }
+        listener(candidate);
       }
-      return Promise.reject(new Error("No matching progress response"));
+    },
+    off(event, listener) {
+      assert.equal(event, "response");
+      if (active === listener) {
+        active = undefined;
+      }
     },
   };
 }
@@ -102,6 +104,25 @@ test("progress observer cannot resolve until the selected body has been consumed
   body.resolve(acknowledgement());
   await saved;
   assert.equal(resolved, true);
+});
+
+test("progress observer starts the selected body read inside the response event", async () => {
+  let eventActive = true;
+  let bodyStarted = false;
+  const selected = response(undefined, () => {
+    assert.equal(eventActive, true, "Body capture started after the response event");
+    bodyStarted = true;
+    return Promise.resolve(acknowledgement());
+  });
+  const page: ObserverPage = {
+    on(_event, listener) {
+      listener(selected);
+      eventActive = false;
+    },
+    off() {},
+  };
+  await waitForSavedProgress(page, endpoint, expected);
+  assert.equal(bodyStarted, true);
 });
 
 test("matching transport and body errors fail instead of being ignored", async () => {

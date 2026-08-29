@@ -17,11 +17,13 @@ PR31 passed protected CI33217783905 and two clean reviews, then merged as e20a7d
 
 The observer correction at 77eda41 passed both real browser journeys in PR32 run33220547568 and clean initial5458820383/confirmation5458880876 reviews. That run failed later in playable-seed replay: non-retryable streaming request and INITIALIZATION_REJECTED. The initializer conditionally uploads even existing objects before readback; a transport failure can prevent verification. The exact underlying SDK/provider failure is not proved. This reproduced bootstrap blocker remains IN_PROGRESS, not WAITING_EXTERNAL.
 
+The read-only seed correction at ea4c72f passed source quality, real platform, Catalog generation, Playback and Engagement integration, including immutable seed reuse. Protected run33222164370 then reproduced the browser failure in the first personalized progress acknowledgement: `response.json()` began only after `waitForResponse` resolved, and Chromium had already discarded the resource body. Source job99018340341 otherwise passed through the complete bootstrap; cleanup succeeded. This is the active blocker.
+
 P09 domain work is preserved unpublished at 0e31767 on feat/p09-discovery-search, with Catalog snapshot WIP in stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32. Rebase after predecessor repair and apply only that stash once. Retained demo remains Phase07.
 
 ## Proposed behavior
 
-Select the intended request synchronously by endpoint, operation, title and sampled position. Consume and assert that single response outside the predicate before permitting navigation. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
+Select the intended request synchronously by endpoint, operation, title and sampled position. Start consuming the selected body in the same `response` event turn, remove the listener, and resolve only after the acknowledgement is validated. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
 
 For each generated seed object, use the existing bounded storage HEAD. Existing objects require complete size/SHA256 readback and no PUT; only not_found permits one conditional PUT followed by the same verification. Keep If-None-Match for a competing creator between HEAD and PUT. Other lookup/write failures reject without retry. No data replacement, uncertain-success fallback or shared-adapter rewrite.
 
@@ -47,15 +49,15 @@ Do not record cookies, session data or media grants. Preserve production authori
 
 ## Implementation steps
 
-1. Extract synchronous response selection and awaited acknowledgement checks.
-2. Prove unrelated-body isolation, body-before-resolution ordering and adverse acknowledgements deterministically.
+1. Extract synchronous response selection and event-turn acknowledgement capture.
+2. Prove unrelated-body isolation, body-start-before-event-return, body-before-resolution ordering and adverse acknowledgements deterministically.
 3. Prove read-only replay, corruption refusal, cancellation and conditional creation races; extend the existing disposable real S3 fixture without encoding media.
 4. Run the affected candidate gate; update the same PR32 with one coherent correction and refreshed boundary review.
 5. Squash after green CI and confirmation; require exact main success before closing Phase08/resuming Phase09.
 
 ## Tests
 
-Focused tests coordinate completion without sleeps. Add deterministic seed read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation cases. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
+Focused tests coordinate completion without sleeps. Six browser observer regressions now include body capture during the response event; the full Web suite passes103 tests with strict types and scoped lint. Add deterministic seed read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation cases. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
 
 ## Evidence
 
@@ -71,7 +73,7 @@ Phase08 audit/release evidence, concise state/queue/session/handoff and demo rep
 
 ## Completion checklist
 
-- [x] Regression and affected gates pass (11 focused tests; real storage;43/43 candidate)
+- [x] Updated regression and affected gates pass (Web103/103, types, scoped lint and43/43 candidate pass)
 - [ ] Protected browser acceptance and reviews pass
 - [ ] Exact main succeeds and Phase08 closes
 - [ ] Phase09 rebased and resumed without lost work

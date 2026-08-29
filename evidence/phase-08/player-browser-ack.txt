@@ -68,3 +68,43 @@ Cached:    1 cached, 14 total
 Exit:0.14/14 affected tasks pass; one cached;2m23.67s.
 Later edits only consolidate this evidence and repository memory; repeat their
 cheap checks and commit hooks, not unchanged runtime experiments.
+
+Protected replay after the seed correction — 2026-08-28
+Run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33222164370
+Source job:99018340341; exact head ea4c72f67818b7e2382da1a6c653d6f835aad23c.
+Source quality, real platform, Catalog generation, Playback and Engagement
+integration passed. The Docker-only seed replay also passed and logged
+generated_hls_reused plus catalog_playable_seed state PUBLISHED/changed:false.
+The personalized browser then failed at the first selected acknowledgement:
+response.json reported Network.getResponseBody with no resource data. Cleanup
+completed. This proves that calling json only after waitForResponse resolves is
+still late enough for Chromium to discard the body; it does not invalidate the
+durable owner behavior or the now-passing immutable replay.
+
+Correction: register one Page response listener, synchronously filter endpoint,
+method, operation, title and position, remove the listener on the first match,
+and start its sole json/body read before that response event returns. Resolve
+only after the same HTTP, owner code, title, position and status assertions.
+Malformed request metadata is ignored without reading its body. Timeout remains
+12 seconds; no browser retry or production behavior changes.
+
+Focused environment: native Ubuntu-20.04 WSL, Node24.19.0/pnpm11.24.0.
+Commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/web test
+pnpm --filter @aster/web typecheck
+pnpm exec eslint apps/web/test/support/saved-progress.ts apps/web/test/browser-progress-observer.test.ts apps/web/test/browser/engagement.spec.ts
+Results:103/103 Web tests pass, including six observer regressions; Next type
+generation/strict TypeScript and scoped ESLint pass. The new regression asserts
+the selected body read starts inside the response event. This deterministic
+gate is not a fresh browser run; protected Docker acceptance remains required.
+Changed source SHA256:
+a9e774feeb5c2735a2538d05ba1dd83793b16f9b95ccd687444d392077ce7a83  apps/web/test/support/saved-progress.ts
+cd81f6837df0e84626ebd1f0142c63e60846898eb93c875b403780f487ca8df2  apps/web/test/browser-progress-observer.test.ts
+
+Canonical affected candidate gate: runQualityGate(["--changed"], limited) with
+the documented task inventory, concurrency2 and error-only logs.
+Packages: //, @aster/catalog, @aster/router, @aster/web.
+Tasks:43 successful,43 total;29 cached;1m58.382s; exit0.
+Later evidence/memory-only edits require cheap validation and commit hooks, not
+another unchanged candidate, storage, browser or host experiment.

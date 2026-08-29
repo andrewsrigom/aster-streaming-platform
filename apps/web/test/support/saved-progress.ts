@@ -7,38 +7,39 @@ interface ProgressResponse {
   json(): Promise<unknown>;
 }
 interface ProgressPage {
-  waitForResponse(
-    predicate: (response: ProgressResponse) => boolean,
-    options: { timeout: number },
-  ): Promise<ProgressResponse>;
+  on(event: "response", listener: (response: ProgressResponse) => void): unknown;
+  off(event: "response", listener: (response: ProgressResponse) => void): unknown;
 }
 
-export async function waitForSavedProgress(
-  page: ProgressPage,
+function matchesProgressRequest(
+  candidate: ProgressResponse,
   endpoint: string,
+  expected: { titleId: string; positionMs: number },
+): boolean {
+  if (candidate.url() !== endpoint || candidate.request().method() !== "POST") {
+    return false;
+  }
+  try {
+    const request = candidate.request().postDataJSON() as {
+      operationName?: string;
+      variables?: { input?: { titleId?: string; positionMs?: number } };
+    } | null;
+    const input = request?.variables?.input;
+    return (
+      request?.operationName === "RecordProgress" &&
+      input?.titleId === expected.titleId &&
+      typeof input.positionMs === "number" &&
+      Math.abs(input.positionMs - expected.positionMs) < 150
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function verifyProgressResponse(
+  response: ProgressResponse,
   expected: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" },
 ): Promise<void> {
-  const response = await page.waitForResponse(
-    (candidate) => {
-      if (candidate.url() !== endpoint || candidate.request().method() !== "POST") {
-        return false;
-      }
-      const request = candidate.request().postDataJSON() as {
-        operationName?: string;
-        variables?: { input?: { titleId?: string; positionMs?: number } };
-      } | null;
-      const input = request?.variables?.input;
-      return (
-        request?.operationName === "RecordProgress" &&
-        input?.titleId === expected.titleId &&
-        typeof input.positionMs === "number" &&
-        Math.abs(input.positionMs - expected.positionMs) < 150
-      );
-    },
-    { timeout: 12000 },
-  );
-  // One selected body must be consumed before navigation; async predicates can leave
-  // other body reads running after a matching response has resolved the waiter.
   assert.equal(response.ok(), true, "Progress request must succeed");
   const result = (await response.json()) as {
     data?: {
@@ -54,4 +55,28 @@ export async function waitForSavedProgress(
   assert.equal(value.progress.titleId, expected.titleId);
   assert.equal(value.progress.status, expected.status);
   assert.ok(Math.abs(value.progress.positionMs - expected.positionMs) < 150);
+}
+
+export async function waitForSavedProgress(
+  page: ProgressPage,
+  endpoint: string,
+  expected: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" },
+): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      page.off("response", observe);
+      reject(new Error("Timed out waiting for saved progress."));
+    }, 12000);
+    const observe = (response: ProgressResponse): void => {
+      if (!matchesProgressRequest(response, endpoint, expected)) {
+        return;
+      }
+      clearTimeout(timer);
+      page.off("response", observe);
+      // Chromium can discard a response body as its document changes. Begin the single
+      // selected body read in this event turn, while the resource is still addressable.
+      void verifyProgressResponse(response, expected).then(resolve, reject);
+    };
+    page.on("response", observe);
+  });
 }
