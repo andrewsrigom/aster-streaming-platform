@@ -1,0 +1,50 @@
+P09-R01/R02/R06/R07 federated search runtime — 2026-08-29
+
+Exact source commit: 1fe7edb53451ea25f4d55658dd7432f7d084f568
+Branch: feat/p09-discovery-search (unpublished candidate)
+Environment: Ubuntu-20.04 WSL amd64, Node 24.19.0, pnpm 11.24.0,
+Docker Engine 26.0.0 and Compose 2.26.1-desktop.1. Images and dependencies are
+pinned by the committed Compose, lockfile and pnpm patch hash.
+
+Commands:
+pnpm discovery:integration
+pnpm discovery:runtime
+
+Real PostgreSQL output on the exact commit:
+{"event":"discovery_migration","postgres":"18.6","version":2,"emptyRollback":true}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2,"activeOffsetCarryForward":true,"durableHandledOffset":"12"}
+{"event":"discovery_privileges","deniedStatements":3,"catalogIsolation":true}
+{"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":2972}
+
+Disposable Docker output on the exact commit:
+{"event":"discovery_runtime_build","project":"aster-discovery-proof-09798893-30b8-4c45-8218-3de9ace2ab05","status":"started"}
+{"event":"discovery_runtime_build","project":"aster-discovery-proof-09798893-30b8-4c45-8218-3de9ace2ab05","status":"completed"}
+{"event":"discovery_runtime_started","project":"aster-discovery-proof-09798893-30b8-4c45-8218-3de9ace2ab05","services":11,"images":{"catalog":"sha256:3e8c1b0b2534e2b87789f05ca5d4392270941932016781eed7bf051a5096c617","discovery":"sha256:e231cb4dd0d9685484f283d2421435b237a5c4ce9581a3dbc29d707699008d1e","router":"sha256:fef9199dc7f5b20ed690917ae7c76d4a4a0956957242a3ae1e74027ffa90a64b"}}
+{"event":"discovery_federated_search","resultCount":1,"zeroResult":"explicit-empty","sourceVersion":5,"freshnessSeconds":300}
+{"event":"discovery_projection_runtime","activeGeneration":"e6761db3-ebeb-45d7-8c30-5f4da054a239","projectedTitles":1,"documents":2,"brokerLag":0}
+{"event":"discovery_restart_recovery","generationPreserved":true,"searchRecovered":true}
+{"event":"discovery_runtime_logs","finiteOperations":true,"rawQueryText":false,"secrets":false,"timerWarnings":false}
+{"event":"discovery_runtime_cleaned","project":"aster-discovery-proof-09798893-30b8-4c45-8218-3de9ace2ab05","remaining":0,"durationMs":319795}
+
+Interpretation:
+- migrations and role isolation work against PostgreSQL 18.6;
+- weighted relevance, diacritic normalization, generation-bound keysets, retirement
+  fences, resumable rebuild and exact quarantine/replay pass;
+- Catalog publication reaches Discovery through real Kafka with zero consumer lag;
+- Router returns one federated Catalog Title reference and one explicit empty result;
+- a Discovery restart preserves the active generation and restores search;
+- logs contain finite operation identities but no raw query/title text, test secret or
+  negative/overflow timer warning after the KafkaJS 2.2.4 patch;
+- both fixtures verify exact project ownership and clean to zero resources.
+
+Limitations: two synthetic titles and one Kafka partition are functional acceptance,
+not relevance quality at product scale, load capacity or an SLO. The fixture uses
+plaintext single-node Kafka, tmpfs PostgreSQL and local purpose-separated credentials.
+It does not prove home rails, profile personalization, browser search, hosted service
+identity, hosted persisted-operation enforcement or a retained-project upgrade. No
+media is downloaded or processed and no release is claimed before protected merge.

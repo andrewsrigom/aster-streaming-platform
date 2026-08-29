@@ -4,20 +4,20 @@
 
 PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
 
-P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search, rebased onto main6f38ce0 through dd3f8c1 plus the working broker/rebuild checkpoint. Domain, Catalog source/export, Discovery persistence/search, canonical Kafka barriers, finite consumer lifecycle and resumable barrier-gated rebuild pass broker27/27, event-delivery23/23, Discovery55/55, scoped lint and real PostgreSQL18.6. Consumer offsets are durable on active/building generations before acknowledgement. Next: compose GraphQL/runtime and prove real Kafka. Historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Source1fe7edb implements the bounded GraphQL subgraph, five-owner composition and opt-in service around the existing projection/consumer/rebuild. Discovery68/68, Router9/9, platform67/67, CI-policy33/33 and strict static gates pass. Exact PostgreSQL and the11-service Kafka/Router proof pass relevance, fences, rebuild/recovery, one result, explicit empty state, zero lag, restart recovery, sanitized logs, timer-patch packaging and exact cleanup. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Add bounded search GraphQL/Federation and compose the existing projection, consumer, Catalog client and rebuild runner into one opt-in service.
-2. Run real broker/runtime evidence and the affected candidate gate before publication. Frozen install is required after workspace changes. Restore no historical stash.
-3. Complete the initial/confirmation review and protected release before starting P09-R03.
-4. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.
+1. Run the canonical changed candidate gate and dependency audit; capture exact output under phase-09 evidence.
+2. Perform one initial review, batch only requirement/security/data/availability/public-contract blockers, then one confirmation review.
+3. Publish the existing branch, open the P09-R01 PR, wait for protected CI, squash merge and confirm exact-main CI before starting P09-R03.
+4. Preserve retained media/databases/keys and user applications. No historical stash, retained migration, Docker/WSL restart, global cleanup or film encode.
 
 ## Evidence boundaries
 
 Protected CI33211565625 now passes the complete corrected event supervisor, including real SQL/Kafka, signed deletion, quarantine/replay, outage recovery, bounded shutdown and cleanup. The earlier local wrapper exited1 on its obsolete SIGTERM assertion; do not rewrite it as success. Earlier70/70 and SQL/Kafka observations remain supporting evidence. events-source.sha256 describes the original checkpoint; test-only deltas are in events-ci.txt. No unchanged heavy event/SQL/CPU/media repeat.
 
-Player unit tests use real Apollo with fake HTTP/media/clocks; the accepted browser uses actual Docker owners, PostgreSQL and HLS. Running retained demo remains Phase07. Manifest de18f996387009a22c3bae6ca1e6416df0615f5a942a7045c15b598598563983 includes reduced library selections. No public schema, SQL or owner runtime change. The source hash file intentionally excludes documentation.
+P09 exact source and raw SQL/Kafka/Router output are in evidence/phase-09/search-runtime.txt. Runtime packaging and telemetry changed, so the exact Docker repeat supersedes the earlier service proof. No browser/media/CPU repeat is applicable to this backend-only slice. Candidate-wide, review and protected evidence remain pending.
 
 ## Execution environment
 

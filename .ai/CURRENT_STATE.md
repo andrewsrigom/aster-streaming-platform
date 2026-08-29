@@ -6,7 +6,7 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 on feat/p09-discovery-search, rebased onto released main6f38ce0 through dd3f8c1 plus the current broker/rebuild checkpoint. PR32 exact d295ec7 passed protected CI/review, squash merge and exact-main CI33229726626; P08-R11 and Phase08 are released. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at source1fe7edb. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) records isolated roles, monotonic retirement fences, weighted GIN relevance, stable keysets and guarded rollback. [Event recovery](../evidence/phase-09/catalog-events.txt) covers bounded hints and exact quarantine/replay. [Rebuild runtime](../evidence/phase-09/rebuild-runtime.txt) adds canonical Kafka barriers, finite earliest consumer lifecycle, exact bounded Catalog export and resumable barrier-gated generation promotion. Consumer offsets advance durably on active/building generations before acknowledgement; scan checkpoints cannot regress them. Broker27/27, event-delivery23/23, Discovery55/55, scoped lint and real PostgreSQL18.6 pass; every disposable fixture cleaned to zero. Service composition, real Kafka runtime proof and GraphQL remain; no public search API exists yet.
+Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact1fe7edb: real PostgreSQL18.6 migrations/relevance/keysets/fences/rebuild/recovery/roles/GIN pass; the11-service disposable Kafka/Router proof projects one title with zero lag, returns one federated result and an explicit empty result, preserves its active generation through restart, emits no raw query/title/secret or timer warning, and cleans to zero. Discovery68/68, Router9/9, platform67/67 and CI-policy33/33 pass with strict type/lint/unused/architecture/format/schema/docs checks. Candidate-wide gate, review and protected release remain.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -26,11 +26,11 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08; that optional upgrade is not a release blocker. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Discovery home rails, personalized composition, browser search and hosted release remain pending. The current search candidate is not released until protected merge and exact-main CI.
 
 ## Next outcome
 
-Complete P09-R01 by composing the implemented Discovery broker/rebuild/search pieces behind bounded GraphQL/Federation, then prove real Kafka/runtime and run the affected candidate gate before publication. No host experiment or retained-demo upgrade.
+Run the P09-R01 candidate gate, initial review and confirmation, publish/merge through protected CI and confirm exact main. Then activate P09-R03 for independent rails, fallbacks and freshness telemetry.
 
 ## Runtime and recovery
 

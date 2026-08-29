@@ -2,6 +2,24 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Discovery federated search candidate
+
+### Completed
+
+- Composed the versioned Discovery projection, Catalog event consumer, resumable barrier-gated rebuild and bounded PostgreSQL search into a private Express/Apollo subgraph and the fifth Router owner.
+- Added purpose-separated Router/Catalog trust, strict GraphQL parsing/cost/concurrency controls, generated five-subgraph artifacts, the SearchTitles known operation and an opt-in resource-bounded Compose topology.
+- Added disposable runtime policy, CI execution and safe-reset coverage. Applied a hashed KafkaJS2.2.4 patch that clamps its negative pending-request timer while preserving the existing one-second polling interval and MIT notices.
+
+### Evidence
+
+- Source1fe7edb passes Discovery68/68, Router9/9, platform67/67, CI-policy33/33, schema composition and strict lint/type/unused/architecture/format/docs gates.
+- Exact-commit PostgreSQL18.6 acceptance passes relevance, stable keysets, fences, rebuild/event recovery, role isolation, GIN and cleanup in2972ms. The11-service Docker proof passes one federated result, explicit empty state,300-second freshness, zero Kafka lag, restart recovery, sanitized logs, no timer warning and exact cleanup in319795ms.
+- Added Discovery operations, architecture and evidence documentation. Candidate-wide gate, initial/confirmation review and protected release remain.
+
+### Next action
+
+Run the canonical candidate gate and dependency audit, complete initial/confirmation review, then publish for protected release.
+
 ## 2026-08-28 — Owned events and recovery checkpoint
 
 ### Completed
@@ -2173,36 +2191,18 @@ Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions fro
 - Added the canonical MIT license with the project notice `Aster contributors`.
 - Defined separate licensing scopes for project-authored materials, dependencies, and media assets.
 - Updated the README, license documentation, decision ledger, file index, current state, queue, and handoff.
+- The preceding specification baseline defined product journeys, bounded contexts, ownership, event flow, supergraph, caching, media, frontend, resilience, observability, security, deployment, capacity, fifteen gated phases, agent contracts and the rights-review workflow.
 
 ### Evidence
 
 - Inspected `LICENSE` and verified the canonical grant, notice condition, and warranty disclaimer.
 - Searched repository licensing statements and found consistent MIT references.
 - Checked 155 internal links across 124 Markdown files; no broken target was found.
+- The initial starter archive passed documentation validation and made no application implementation claim.
 
 ### Next action
 
-Reconcile Phase 00 requirement traceability and audit the full delivery plan before toolchain initialization.
-
-## 2026-08-25 — Specification baseline
-
-### Completed
-
-- Defined Aster product scope and user journeys.
-- Defined bounded contexts, data ownership, event flow, supergraph, caching, media, frontend, resilience, observability, security, deployment, and capacity models.
-- Recorded accepted architecture decisions.
-- Defined fifteen gated delivery phases.
-- Added an agent operating contract, context files, skills, templates, quality gates, and operational procedures.
-- Added a rights-review workflow for openly licensed media.
-
-### Evidence
-
-- Documentation validation report generated with the starter archive.
-- No application implementation was claimed.
-
-### Next action
-
-Execute Phase 00 beginning with source-code license selection.
+Reconcile Phase 00 requirement traceability and audit the full delivery plan before toolchain initialization. The original baseline next action was to begin Phase 00 with license selection.
 # 2026-08-28 — Response-event progress acknowledgement capture
 
 - Preserved P09 private Catalog transport in stash `3c62b4289287b3ac799d498daf1577bbbf4eaf30` after 21 focused transport tests and scoped lint passed, then returned to the failing predecessor.

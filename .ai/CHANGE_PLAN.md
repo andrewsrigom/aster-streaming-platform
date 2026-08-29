@@ -15,7 +15,7 @@ A viewer can search published titles through the supergraph using a bounded, ver
 
 PR32 exact d295ec7 passed protected CI33228909828 and clean confirmation review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are released. Run33225822813 proved immutable replay and every preceding owner/platform boundary, then disproved observer-owned body reads; the released source leaves bodies to the application and requires rendered durable confirmation within12 seconds.
 
-P09-R01 is the sole active unpublished item on feat/p09-discovery-search, rebased onto released main6f38ce0 through dd3f8c1 plus the current working checkpoint. Domain, Catalog snapshot/export, Discovery persistence/search, finite broker lifecycle and resumable barrier-gated rebuild pass55 Discovery,27 broker and23 event-delivery tests plus real PostgreSQL18.6 recovery/role proof. Consumer progress is durable on active/building generations before acknowledgement and cannot be overwritten by scan checkpoints. A composed running Discovery service, real Kafka proof and search API are not yet claimed. Next is GraphQL/runtime composition. Historical stashes are superseded and must not be reapplied.
+P09-R01 is the sole active unpublished item on feat/p09-discovery-search. Exact source1fe7edb composes the owned projection, finite broker consumer/rebuild, bounded GraphQL subgraph, five-owner supergraph and opt-in runtime. Discovery68/68, Router9/9, platform67/67 and CI-policy33/33 pass. Exact-commit PostgreSQL18.6 proves relevance, stable keysets, retirement fences, rebuild/event recovery, role isolation and GIN use. The disposable11-service Kafka/Router proof returns one result and explicit empty state, preserves the generation through restart, has zero lag/timer warnings and cleans to zero. Candidate-wide gate, review and protected release remain. Historical stashes are superseded and must not be reapplied.
 
 ## Proposed behavior
 
@@ -68,8 +68,8 @@ ADR-0035, Discovery operations and contracts, phase evidence, and concise reposi
 
 ## Completion checklist
 
-- [ ] Projection, consumer and search implementation satisfies the four requirements
-- [ ] Required tests and real runtime evidence pass
-- [ ] Relevance, freshness and retirement behavior measured
-- [ ] Documentation and memory current
+- [x] Projection, consumer and search implementation satisfies the four requirements
+- [x] Required tests and real runtime evidence pass
+- [x] Relevance, freshness and retirement behavior measured
+- [x] Documentation and memory current
 - [ ] Predecessor and own protected release complete

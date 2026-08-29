@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-PR32 exact d295ec7 passed protected CI33228909828 and clean review, squash-merged as6f38ce0 and passed exact-main CI33229726626. Phase08 is DONE. P09-R01 is the sole IN_PROGRESS unpublished item, rebased onto that main through dd3f8c1 plus the working broker/rebuild checkpoint. Canonical barriers, finite consumer lifecycle, exact Catalog export, durable active/building offsets and resumable promotion pass broker27, event-delivery23, Discovery55 and real PostgreSQL18.6. Next: compose Discovery GraphQL/runtime and prove real Kafka. Historical stashes are superseded. Retained Phase07 demo remains intact.
+Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at source1fe7edb. Its projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass focused/static gates, exact PostgreSQL18.6 and an11-service real Kafka/Router proof with restart recovery and zero cleanup residue. Next: candidate gate, review and protected release. Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
