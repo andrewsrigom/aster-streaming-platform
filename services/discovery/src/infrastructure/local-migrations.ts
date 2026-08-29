@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { Client } from "pg";
 import { localDiscoveryDatabase } from "./runtime-configuration.js";
 
-const MIGRATIONS = ["0001-title-projections", "0002-catalog-events"] as const;
+const MIGRATIONS = ["0001-title-projections", "0002-catalog-events", "0003-home-rails"] as const;
 const MAX_COMPATIBLE_SCHEMA_VERSION = 3;
 
 export function discoveryLocalSchemaCompatible(

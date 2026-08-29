@@ -2,7 +2,13 @@
 
 ## Current status
 
-Phases 00–08 are released locally, including the accessible player, browser save/resume and owner-authorized Engagement paths. The current Phase 09 candidate adds [bounded federated title search](../../services/discovery/README.md) through an explicit opt-in overlay; home rails and browser search remain planned. PostgreSQL is durable, Redis disposable, and private owner credentials/resource limits remain explicit. [Current state](../../.ai/CURRENT_STATE.md).
+Phases 00–08 are released locally. [Current state](../../.ai/CURRENT_STATE.md).
+The accessible player, browser save/resume, owner-authorized Engagement paths and
+Phase 09 search release are recorded in the [current state](../../.ai/CURRENT_STATE.md).
+the current candidate adds [bounded home rails](../../services/discovery/README.md#home-rails)
+through the explicit Discovery overlay. Browser rails/search remain P09-R10.
+PostgreSQL is durable, Redis disposable, and private owner credentials/resource
+limits remain explicit.
 
 ### Identity reference process
 
@@ -83,13 +89,18 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus | 4000, 9090 |
 | `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus | 4000, 9090 |
 
-Discovery is intentionally absent from the base profiles. Start the implemented search candidate with the event and Discovery overlays:
+Discovery is intentionally absent from the base profiles. Start released search
+and the current rails candidate with the event and Discovery overlays:
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime up --build --wait --wait-timeout 180 router discovery
 ```
 
-This adds Kafka, the Catalog relay, Discovery migrations/runtime and the fifth Router subgraph. Discovery and Kafka remain private; only Router stays on `127.0.0.1:4000`. Preserve named data while stopping this topology with:
+This adds Kafka, the Catalog relay, Discovery migrations/runtime and the fifth
+Router subgraph. `SearchTitles`, `HomePublic` and `HomePersonalized` are known
+operations; the latter preserves public rails when nullable Engagement is absent.
+Discovery and Kafka remain private; only Router stays on `127.0.0.1:4000`.
+Preserve named data while stopping this topology with:
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile "*" down

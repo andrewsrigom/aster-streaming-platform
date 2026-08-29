@@ -16,6 +16,7 @@ import {
   type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
+import type { createHomeRails } from "../application/home-rails.js";
 import type { createTitleSearch } from "../application/search-titles.js";
 import {
   createDiscoveryGraphqlContext,
@@ -31,6 +32,7 @@ import {
 
 const OUTCOMES = new Set([
   "COMPLETED",
+  "PARTIAL",
   "INVALID_INPUT",
   "CURSOR_EXPIRED",
   "STALE",
@@ -53,6 +55,7 @@ export interface DiscoveryOperationTrace {
 export interface DiscoverySubgraphOptions {
   readonly routerTrust: AsterLocalRouterTrust;
   readonly search: ReturnType<typeof createTitleSearch>;
+  readonly home: ReturnType<typeof createHomeRails>;
   readonly now: () => number;
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: DiscoveryOperationTrace) => void;
@@ -233,6 +236,7 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
     const signal = AbortSignal.any([getExpressRequestAbortSignal(response), controller.signal]);
     const context = createDiscoveryGraphqlContext(
       options.search,
+      options.home,
       options.now,
       signal,
       correlationId,

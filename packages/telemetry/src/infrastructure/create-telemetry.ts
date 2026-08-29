@@ -17,11 +17,14 @@ import type {
   AsterCollectedMetricPoint,
   AsterDependencyCompletion,
   AsterDependencyObservationInput,
+  AsterDiscoveryRailMetricInput,
+  AsterDiscoverySearchSampleInput,
   AsterHttpCompletion,
   AsterHttpObservationInput,
   AsterMetricAttributeValue,
   AsterMetricCollectionResult,
   AsterObservationCompletionResult,
+  AsterRecordMetricResult,
   AsterStartDependencyObservationResult,
   AsterStartHttpObservationResult,
   AsterTelemetry,
@@ -29,12 +32,17 @@ import type {
   AsterTelemetryOperationResult,
   AsterTelemetryOptions,
 } from "../ports/telemetry-contract.js";
+import {
+  ASTER_DISCOVERY_RAIL_KINDS,
+  ASTER_DISCOVERY_RAIL_OUTCOMES,
+} from "../ports/telemetry-contract.js";
 import { elapsedSeconds } from "./duration.js";
 import { HealthTrackingExporter, type ExportAttemptObserver } from "./health-tracking-exporter.js";
 import { ManualMetricReader } from "./manual-metric-reader.js";
 import {
   ASTER_METRIC_CATALOG,
   DEPENDENCY_DURATION_BUCKETS_SECONDS,
+  DISCOVERY_FRESHNESS_BUCKETS_SECONDS,
   HTTP_DURATION_BUCKETS_SECONDS,
 } from "./metric-catalog.js";
 import {
@@ -79,6 +87,78 @@ function systemClock(): RuntimeClock {
 
 function statusClass(statusCode: number): "1xx" | "2xx" | "3xx" | "4xx" | "5xx" {
   return `${Math.trunc(statusCode / 100)}xx` as "1xx" | "2xx" | "3xx" | "4xx" | "5xx";
+}
+
+function exactRecord(value: unknown, keys: readonly string[]): Record<string, unknown> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  if (
+    Reflect.ownKeys(descriptors).length !== keys.length ||
+    Reflect.ownKeys(descriptors).some((key) => typeof key !== "string" || !keys.includes(key))
+  ) {
+    return undefined;
+  }
+  const result: Record<string, unknown> = Object.create(null) as Record<string, unknown>;
+  for (const key of keys) {
+    const descriptor = descriptors[key];
+    if (!descriptor || !("value" in descriptor)) {
+      return undefined;
+    }
+    result[key] = descriptor.value as unknown;
+  }
+  return result;
+}
+
+function finite(value: unknown, minimum: number, maximum: number): value is number {
+  return (
+    typeof value === "number" && Number.isFinite(value) && value >= minimum && value <= maximum
+  );
+}
+
+function parseDiscoveryRail(input: unknown): AsterDiscoveryRailMetricInput | undefined {
+  const keys = ["kind", "outcome", "durationMs"];
+  const withFreshness = exactRecord(input, [...keys, "freshnessSeconds"]);
+  const value = withFreshness ?? exactRecord(input, keys);
+  if (
+    !value ||
+    !ASTER_DISCOVERY_RAIL_KINDS.includes(value["kind"] as never) ||
+    !ASTER_DISCOVERY_RAIL_OUTCOMES.includes(value["outcome"] as never) ||
+    !finite(value["durationMs"], 0, 60_000) ||
+    (Object.hasOwn(value, "freshnessSeconds") && !finite(value["freshnessSeconds"], 0, 300))
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    kind: value["kind"] as AsterDiscoveryRailMetricInput["kind"],
+    outcome: value["outcome"] as AsterDiscoveryRailMetricInput["outcome"],
+    durationMs: value["durationMs"],
+    ...(Object.hasOwn(value, "freshnessSeconds")
+      ? { freshnessSeconds: value["freshnessSeconds"] as number }
+      : {}),
+  });
+}
+
+function parseDiscoverySearchSample(input: unknown): AsterDiscoverySearchSampleInput | undefined {
+  const value = exactRecord(input, ["resultCount", "topRank"]);
+  if (
+    !value ||
+    !Number.isSafeInteger(value["resultCount"]) ||
+    !finite(value["resultCount"], 0, 20) ||
+    !(
+      (value["resultCount"] === 0 && value["topRank"] === null) ||
+      (value["resultCount"] > 0 &&
+        Number.isSafeInteger(value["topRank"]) &&
+        finite(value["topRank"], 0, 1_000_000))
+    )
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    resultCount: value["resultCount"],
+    topRank: value["topRank"],
+  });
 }
 
 function frozenHealth(
@@ -229,6 +309,10 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
   private readonly dependencyOutcomes;
   private readonly dropped;
   private readonly exportAttempts;
+  private readonly discoveryRailDuration;
+  private readonly discoveryRailOutcomes;
+  private readonly discoveryRailFreshness;
+  private readonly discoverySearchQualitySamples;
   private readonly runtimeCallback: BatchObservableCallback;
   private readonly runtimeObservables: Observable[];
   private activeObservations = 0;
@@ -310,6 +394,46 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           ],
           aggregationCardinalityLimit: options.cardinalityLimit,
         },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.discoveryRailDuration.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: { boundaries: [...HTTP_DURATION_BUCKETS_SECONDS], recordMinMax: true },
+          },
+          attributesProcessors: [
+            createAllowListAttributesProcessor(["aster.discovery.rail", "aster.outcome"]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.discoveryRailFreshness.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: {
+              boundaries: [...DISCOVERY_FRESHNESS_BUCKETS_SECONDS],
+              recordMinMax: true,
+            },
+          },
+          attributesProcessors: [createAllowListAttributesProcessor(["aster.discovery.rail"])],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.discoveryRailOutcomes.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor(["aster.discovery.rail", "aster.outcome"]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.discoverySearchQualitySamples.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.discovery.result_bucket",
+              "aster.discovery.top_rank_bucket",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
       ],
     });
 
@@ -341,6 +465,22 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     this.exportAttempts = meter.createCounter(
       ASTER_METRIC_CATALOG.exportAttempts.name,
       ASTER_METRIC_CATALOG.exportAttempts,
+    );
+    this.discoveryRailDuration = meter.createHistogram(
+      ASTER_METRIC_CATALOG.discoveryRailDuration.name,
+      ASTER_METRIC_CATALOG.discoveryRailDuration,
+    );
+    this.discoveryRailOutcomes = meter.createCounter(
+      ASTER_METRIC_CATALOG.discoveryRailOutcomes.name,
+      ASTER_METRIC_CATALOG.discoveryRailOutcomes,
+    );
+    this.discoveryRailFreshness = meter.createHistogram(
+      ASTER_METRIC_CATALOG.discoveryRailFreshness.name,
+      ASTER_METRIC_CATALOG.discoveryRailFreshness,
+    );
+    this.discoverySearchQualitySamples = meter.createCounter(
+      ASTER_METRIC_CATALOG.discoverySearchQualitySamples.name,
+      ASTER_METRIC_CATALOG.discoverySearchQualitySamples,
     );
 
     const processCpuTime = meter.createObservableCounter(
@@ -526,6 +666,55 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
         },
       }),
     });
+  }
+
+  recordDiscoveryRail(input: AsterDiscoveryRailMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseDiscoveryRail(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const attributes = {
+      "aster.discovery.rail": value.kind,
+      "aster.outcome": value.outcome,
+    };
+    this.discoveryRailDuration.record(value.durationMs / 1_000, attributes);
+    this.discoveryRailOutcomes.add(1, attributes);
+    if (value.freshnessSeconds !== undefined) {
+      this.discoveryRailFreshness.record(value.freshnessSeconds, {
+        "aster.discovery.rail": value.kind,
+      });
+    }
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordDiscoverySearchSample(input: AsterDiscoverySearchSampleInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseDiscoverySearchSample(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const resultBucket =
+      value.resultCount === 0 ? "zero" : value.resultCount <= 5 ? "one_to_five" : "six_to_twenty";
+    const rankBucket =
+      value.topRank === null
+        ? "none"
+        : value.topRank < 100_000
+          ? "low"
+          : value.topRank < 500_000
+            ? "medium"
+            : "high";
+    this.discoverySearchQualitySamples.add(1, {
+      "aster.discovery.result_bucket": resultBucket,
+      "aster.discovery.top_rank_bucket": rankBucket,
+    });
+    return Object.freeze({ status: "recorded" });
   }
 
   async collect(): Promise<AsterMetricCollectionResult> {

@@ -53,12 +53,31 @@ export const ASTER_OBSERVATION_OUTCOMES = Object.freeze([
   "error",
 ] as const);
 
+export const ASTER_DISCOVERY_RAIL_KINDS = Object.freeze([
+  "featured",
+  "recently_added",
+  "trending",
+  "genre",
+] as const);
+
+export const ASTER_DISCOVERY_RAIL_OUTCOMES = Object.freeze([
+  "completed",
+  "empty",
+  "fallback",
+  "stale",
+  "unavailable",
+  "cancelled",
+  "indeterminate",
+] as const);
+
 export type AsterTelemetryEnvironment = (typeof ASTER_TELEMETRY_ENVIRONMENTS)[number];
 export type AsterHttpMethod = (typeof ASTER_HTTP_METHODS)[number];
 export type AsterHttpRoute = (typeof ASTER_HTTP_ROUTES)[number];
 export type AsterDependency = (typeof ASTER_DEPENDENCIES)[number];
 export type AsterDependencyOperation = (typeof ASTER_DEPENDENCY_OPERATIONS)[number];
 export type AsterObservationOutcome = (typeof ASTER_OBSERVATION_OUTCOMES)[number];
+export type AsterDiscoveryRailKind = (typeof ASTER_DISCOVERY_RAIL_KINDS)[number];
+export type AsterDiscoveryRailOutcome = (typeof ASTER_DISCOVERY_RAIL_OUTCOMES)[number];
 
 export type AsterTelemetryExportOptions =
   | Readonly<{ mode: "none" }>
@@ -138,6 +157,22 @@ export interface AsterTelemetryExportHealth {
   readonly lastResult: "never" | "success" | "failure";
 }
 
+export interface AsterDiscoveryRailMetricInput {
+  readonly kind: AsterDiscoveryRailKind;
+  readonly outcome: AsterDiscoveryRailOutcome;
+  readonly durationMs: number;
+  readonly freshnessSeconds?: number;
+}
+
+export interface AsterDiscoverySearchSampleInput {
+  readonly resultCount: number;
+  readonly topRank: number | null;
+}
+
+export type AsterRecordMetricResult =
+  | Readonly<{ status: "recorded" }>
+  | Readonly<{ status: "rejected"; reason: "invalid_dimension" | "telemetry_closed" }>;
+
 export type AsterMetricAttributeValue = string | number | boolean;
 
 export interface AsterCollectedMetricPoint {
@@ -171,6 +206,8 @@ export interface AsterTelemetry {
   startDependencyOperation(
     input: AsterDependencyObservationInput,
   ): AsterStartDependencyObservationResult;
+  recordDiscoveryRail?(input: AsterDiscoveryRailMetricInput): AsterRecordMetricResult;
+  recordDiscoverySearchSample?(input: AsterDiscoverySearchSampleInput): AsterRecordMetricResult;
   collect(): Promise<AsterMetricCollectionResult>;
   exportHealth(): AsterTelemetryExportHealth;
   forceFlush(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;

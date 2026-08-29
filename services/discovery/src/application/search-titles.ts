@@ -22,9 +22,24 @@ type SearchResult = ProjectionStoreResult<
   | Readonly<{ status: "invalid_input" | "invalid_state" | "cursor_expired" | "stale" }>
 >;
 
-export function createTitleSearch(ports: Readonly<{ transactions: SearchUnitOfWork }>) {
+export interface SearchQualitySample {
+  readonly resultCount: number;
+  readonly topRank: number | null;
+}
+
+interface TitleSearchPorts {
+  readonly transactions: SearchUnitOfWork;
+  readonly observeSample?: (sample: SearchQualitySample) => void;
+}
+
+export function createTitleSearch(ports: Readonly<TitleSearchPorts>) {
   return Object.freeze({
-    async execute(input: unknown, now: number, signal: AbortSignal): Promise<SearchResult> {
+    async execute(
+      input: unknown,
+      now: number,
+      signal: AbortSignal,
+      sampled = false,
+    ): Promise<SearchResult> {
       if (signal.aborted) {
         return { status: "cancelled" };
       }
@@ -45,6 +60,18 @@ export function createTitleSearch(ports: Readonly<{ transactions: SearchUnitOfWo
           return { status: "invalid_state" } as const;
         }
         const selected = rows.slice(0, normalized.value.first);
+        if (sampled) {
+          try {
+            ports.observeSample?.(
+              Object.freeze({
+                resultCount: selected.length,
+                topRank: selected[0]?.rank ?? null,
+              }),
+            );
+          } catch {
+            // Telemetry is non-authoritative and cannot change search results.
+          }
+        }
         const edges = selected.map((row) =>
           Object.freeze({
             cursor: searchCursor(normalized.value, row),

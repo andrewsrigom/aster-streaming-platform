@@ -4,6 +4,8 @@ import { once } from "node:events";
 import { createServer, request, type IncomingHttpHeaders } from "node:http";
 import test from "node:test";
 import { createExpressHttpAdapter, createLocalRouterTrust } from "@aster/http-express";
+import { createHomeRails } from "../src/application/home-rails.js";
+import type { HomeRailUnitOfWork } from "../src/application/rail-ports.js";
 import { createTitleSearch } from "../src/application/search-titles.js";
 import type { SearchUnitOfWork } from "../src/application/search-ports.js";
 import {
@@ -15,6 +17,8 @@ const id = (value: number) => `00000000-0000-4000-8000-${String(value).padStart(
 const now = 1_700_000_000;
 const SEARCH_TITLES =
   "query SearchTitles($query: String!, $locale: String!, $first: Int! = 20, $after: String) { searchTitles(query: $query, locale: $locale, first: $first, after: $after) { code correlationId connection { generation edges { cursor sourceVersion indexedAt visibleUntil node { id } } pageInfo { endCursor hasNextPage } } } }";
+const HOME_RAILS =
+  "query HomeRails($first:Int!=10){homeRails(first:$first){code correlationId generation featured{code rail{key edges{node{id}}}} recentlyAdded{code} trending{code} genres{code rails{key}}}}";
 
 async function fixture(gate?: Promise<unknown>) {
   const key = randomBytes(32).toString("hex");
@@ -50,8 +54,23 @@ async function fixture(gate?: Promise<unknown>) {
     },
   };
   const traces: DiscoveryOperationTrace[] = [];
+  const homeTransactions: HomeRailUnitOfWork = {
+    async run(work, signal) {
+      return signal.aborted
+        ? { status: "cancelled" }
+        : {
+            status: "completed",
+            value: await work({
+              state: () => Promise.resolve({ generation: id(90), status: "empty" }),
+              fixed: () => Promise.resolve([]),
+              genres: () => Promise.resolve([]),
+            }),
+          };
+    },
+  };
   const graph = await createDiscoverySubgraph({
     routerTrust: createLocalRouterTrust("discovery", key),
+    home: createHomeRails({ transactions: homeTransactions }),
     search: createTitleSearch({ transactions }),
     now: () => now,
     monotonicNow: () => 0,
@@ -151,6 +170,26 @@ test("subgraph admits one authenticated bounded search and records no query text
     assert.equal(f.traces.length, 1);
     assert.equal(f.traces[0]?.operation, "search_titles");
     assert.doesNotMatch(JSON.stringify(f.traces), /Signal|searchTitles/u);
+  } finally {
+    await f.close();
+  }
+});
+
+test("subgraph admits bounded home rails and records only the finite operation", async () => {
+  const f = await fixture();
+  try {
+    const result = await f.send({
+      query: HOME_RAILS,
+      operationName: "HomeRails",
+      variables: { first: 10 },
+    });
+    assert.equal(result.status, 200);
+    assert.equal(
+      (result.json["data"] as { homeRails: { code: string } }).homeRails.code,
+      "COMPLETED",
+    );
+    assert.equal(f.traces[0]?.operation, "home_rails");
+    assert.doesNotMatch(JSON.stringify(f.traces), /HomeRails|homeRails/u);
   } finally {
     await f.close();
   }

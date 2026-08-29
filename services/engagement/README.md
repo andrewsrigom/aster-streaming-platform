@@ -43,6 +43,12 @@ For the resumable list use operation `ContinueWatching` and field `continueWatch
 
 Catalog resolves title metadata through its existing request-scoped entity batch. Missing/retired metadata is nullable; history retains the owned progress row without copying editorial data. Continue-watching's private visibility snapshot expires within two seconds, including conservative rights-expiry filtering, and is rechecked before disclosure; concurrent owner changes are bounded, not distributed-transactional. COMPLETED returns a connection, including an empty successful page. Authorization/SQL/Catalog failures return a non-success code and null connection, never a fabricated empty success. History does not require that private Catalog call. Missing/deleted/foreign profiles and revoked sessions disclose no history. SQL reads create no receipt, event or projection write. Retention follows the existing 256-title-per-profile bound until profile deletion; cleanup delivery remains P08-R12.
 
+`homeContinueWatching(profileId, first, after)` is a nullable home-composition
+alias over the same application query, authorization, cursor and visibility
+rules. It creates no home table or Discovery dependency. Its nullable root lets a
+federated home response preserve public Discovery rails when Engagement is absent;
+an internal owner failure still returns the existing explicit payload code.
+
 ## Watchlist
 
 `setWatchlist(input: SetWatchlistInput!)` accepts exactly profileId, titleId and idempotencyKey UUIDs and present Boolean. Only COMPLETED acknowledges committed membership, the profile's monotonically versioned watchlist head, receipt and event. Same key/payload returns its original result for one hour, even after a later removal; changed title/action is CONFLICT. Fresh Identity ownership is required for commands, replay and pages. Additions require current Catalog visibility; NOT_VISIBLE does not add. Removal and replay do not require Catalog. An uncertain response is retried only with the same key and payload.

@@ -1,0 +1,53 @@
+P09-R03 home-rails candidate checkpoint
+Date: 2026-08-29
+Branch: feat/p09-home-rails
+Compatibility base: 0bdcb275dc354a684342cd3ceb19e11aa1dc0d63
+
+Canonical candidate gate
+
+Command: pnpm check:changed
+Result: PASS
+Tasks: 54 successful, 54 total
+Cached: 25
+Duration: 1m11.918s
+
+The gate covered affected builds, tests, strict type checks, workspace ESLint,
+Prettier, Knip, architecture, platform, documentation, repository memory,
+community, secret scanning, CI policy, staged policy and commit policy. Discovery
+passed 82 tests, telemetry passed 10 tests, Router passed 9 composition and
+compatibility tests, and platform policy passed 67 tests.
+
+Schema compatibility
+
+Command: pnpm schema:check
+Result: PASS
+Subgraphs: 5
+Compatibility base: 0bdcb275dc354a684342cd3ceb19e11aa1dc0d63
+Artifacts: 8
+Manifest SHA-256: 995840e1964065b6e03a39648877f49e99975149978a73162dc893129b0fdc2f
+
+Corrections retained
+
+- The first aggregate attempt failed because HANDOFF lacked its canonical
+  "Do not do yet" section and SESSION_LOG exceeded the 500-heading document
+  ceiling. Repository memory was compacted without discarding historical facts;
+  ai, documentation and formatting checks then passed.
+- The next aggregate attempt found four internal-only rail declarations exported
+  unnecessarily. Their exports were removed; Knip, Discovery typecheck, scoped
+  lint and formatting then passed.
+- No lockfile or dependency version changed, so a new dependency/license audit
+  was not triggered. The all-files secret scan passed.
+
+Heavyweight evidence applicability
+
+The final corrections affect repository-memory structure and TypeScript export
+surface only. They do not change migration 0003, rail SQL/view, GraphQL runtime,
+telemetry behavior, packaging or failure boundaries; therefore the passing real
+PostgreSQL and 11-service runtime evidence remains applicable under the recorded
+repeat triggers.
+
+Review/release state
+
+This is a local verified candidate checkpoint. Initial review, confirmation,
+protected pull-request CI, squash merge and exact-main CI remain required before
+P09-R03 is released.

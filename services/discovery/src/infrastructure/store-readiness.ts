@@ -49,6 +49,7 @@ async function probe(
     });
     if (
       versions.rowCount !== versions.rows.length ||
+      versions.rows.length !== 3 ||
       !discoverySearchSchemaCompatible(versions.rows)
     ) {
       return { action: "rollback", value: false } as const;
@@ -67,6 +68,8 @@ async function probe(
         text: `SELECT NOT has_table_privilege(current_user,'discovery.generations','INSERT,UPDATE,DELETE')
           AND NOT has_table_privilege(current_user,'discovery.generation_titles','INSERT,UPDATE,DELETE')
           AND NOT has_table_privilege(current_user,'discovery.search_documents','INSERT,UPDATE,DELETE')
+          AND NOT has_table_privilege(current_user,'discovery.title_fences','SELECT')
+          AND has_table_privilege(current_user,'discovery.rail_documents','SELECT')
           AS allowed`,
       });
       const row = denied.rows[0];
@@ -88,6 +91,7 @@ async function probe(
           AND has_function_privilege(current_user,
             'discovery.complete_catalog_replay(uuid)','EXECUTE')
           AND NOT has_table_privilege(current_user,'discovery.event_quarantine','SELECT,INSERT,UPDATE,DELETE')
+          AND NOT has_table_privilege(current_user,'discovery.rail_documents','SELECT')
           AS allowed`,
       });
       const row = functions.rows[0];

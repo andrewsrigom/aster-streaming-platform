@@ -4,9 +4,11 @@ import { readFile } from "node:fs/promises";
 import { Pool } from "pg";
 import { createAsterPostgresAdapter } from "@aster/postgres";
 import { createTitleProjector } from "../../src/application/apply-title-snapshot.js";
+import { createHomeRails } from "../../src/application/home-rails.js";
 import { createProjectionRebuilder } from "../../src/application/rebuild-projection.js";
 import { createTitleSearch, type SearchPage } from "../../src/application/search-titles.js";
 import { createPostgresProjectionUnitOfWork } from "../../src/infrastructure/postgres-projection.js";
+import { createPostgresHomeRailUnitOfWork } from "../../src/infrastructure/postgres-rails.js";
 import { createPostgresRebuildStore } from "../../src/infrastructure/postgres-rebuild.js";
 import { createPostgresSearchUnitOfWork } from "../../src/infrastructure/postgres-search.js";
 import { createPostgresCatalogEvents } from "../../src/infrastructure/postgres-catalog-events.js";
@@ -24,12 +26,12 @@ const options = {
 };
 const admin = new Pool({ ...options, connectionString: endpoint.toString(), max: 2 });
 admin.on("error", () => undefined);
-const database = (username: string) => {
+const database = (username: string, maxConnections: number) => {
   const target = new URL(endpoint);
   target.username = username;
   return createAsterPostgresAdapter({
     connectionString: target.toString(),
-    maxConnections: 2,
+    maxConnections,
     connectionTimeoutMs: 500,
     statementTimeoutMs: 1000,
     operationTimeoutMs: 1500,
@@ -38,14 +40,16 @@ const database = (username: string) => {
     },
   });
 };
-const projectorDatabase = database("aster_discovery_projector_fixture");
-const runtimeDatabase = database("aster_discovery_runtime_fixture");
+const projectorDatabase = database("aster_discovery_projector_fixture", 2);
+const runtimeDatabase = database("aster_discovery_runtime_fixture", 4);
 const projector = createTitleProjector({
   transactions: createPostgresProjectionUnitOfWork(projectorDatabase),
 });
 const search = createTitleSearch({
   transactions: createPostgresSearchUnitOfWork(runtimeDatabase),
 });
+const homeTransactions = createPostgresHomeRailUnitOfWork(runtimeDatabase);
+const home = createHomeRails({ transactions: homeTransactions });
 const rebuildStore = createPostgresRebuildStore(projectorDatabase);
 const rebuilder = createProjectionRebuilder({ store: rebuildStore });
 const catalogEvents = createPostgresCatalogEvents(projectorDatabase, randomUUID);
@@ -101,10 +105,11 @@ async function find(value: Record<string, unknown>): Promise<SearchPage> {
   assert.equal(result.value.status, "completed");
   return result.value.value;
 }
-async function migrate(version: 1 | 2, direction: "up" | "down") {
+async function migrate(version: 1 | 2 | 3, direction: "up" | "down") {
+  const names = ["title-projections", "catalog-events", "home-rails"] as const;
   const sql = await readFile(
     new URL(
-      `../../../migrations/${String(version).padStart(4, "0")}-${version === 1 ? "title-projections" : "catalog-events"}.${direction}.sql`,
+      `../../../migrations/${String(version).padStart(4, "0")}-${names[version - 1]}.${direction}.sql`,
       import.meta.url,
     ),
     "utf8",
@@ -125,6 +130,8 @@ try {
   assert.match(version.rows[0]?.server_version ?? "", /^18\.6/u);
   await migrate(1, "up");
   await migrate(2, "up");
+  await migrate(3, "up");
+  await migrate(3, "down");
   await migrate(2, "down");
   await migrate(1, "down");
   const emptyRollback = await admin.query<{ schema: string | null; roles: number }>(`SELECT
@@ -133,6 +140,7 @@ try {
   assert.deepEqual(emptyRollback.rows, [{ schema: null, roles: 0 }]);
   await migrate(1, "up");
   await migrate(2, "up");
+  await migrate(3, "up");
   await admin.query(`CREATE ROLE aster_discovery_projector_fixture LOGIN PASSWORD 'aster-test-only'
     NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`);
   await admin.query(`CREATE ROLE aster_discovery_runtime_fixture LOGIN PASSWORD 'aster-test-only'
@@ -143,7 +151,7 @@ try {
     CREATE TABLE catalog.ownership_probe(id integer); INSERT INTO catalog.ownership_probe VALUES (1)`);
   output("discovery_migration", {
     postgres: version.rows[0]?.server_version,
-    version: 2,
+    version: 3,
     emptyRollback: true,
   });
   assert.deepEqual(await rebuildStore.active(signal()), {
@@ -212,6 +220,33 @@ try {
     false,
   );
   output("discovery_keyset", { duplicateAcrossInsert: false, cursorBoundToGeneration: true });
+
+  const genreProbe = await homeTransactions.run(
+    (repository) => repository.genres("00000000-0000-4000-8000-000000090001", 2, now),
+    signal(),
+  );
+  assert.equal(genreProbe.status, "completed");
+  assert.deepEqual(
+    genreProbe.value.map((group) => group.genre),
+    ["drama", "nature"],
+  );
+  const rails = await home.execute({ first: 2 }, now, signal());
+  assert.equal(rails.status, "completed");
+  assert.equal(rails.value.status, "completed");
+  assert.equal(rails.value.value.status, "partial");
+  assert.equal(rails.value.value.featured.code, "completed");
+  assert.equal(rails.value.value.recentlyAdded.rail?.edges.length, 2);
+  assert.equal(rails.value.value.trending.code, "fallback");
+  assert.equal(rails.value.value.trending.rail?.source, "recently_added");
+  assert.deepEqual(
+    rails.value.value.genres.rails.map((rail) => rail.genre),
+    ["drama", "nature"],
+  );
+  output("discovery_home_rails", {
+    independentGroups: 4,
+    recentFallback: true,
+    genreRails: rails.value.value.genres.rails.length,
+  });
 
   assert.equal((await apply(snapshot(titleSignal, 1, null), null)).status, "refreshed");
   assert.equal(
@@ -339,10 +374,25 @@ try {
     }
     await client.query("BEGIN");
     await client.query("SET LOCAL ROLE aster_discovery_runtime");
+    assert.equal((await client.query("SELECT count(*) FROM discovery.rail_documents")).rowCount, 1);
+    await client.query("ROLLBACK");
+    await client.query("BEGIN");
+    await client.query("SET LOCAL ROLE aster_discovery_runtime");
+    await assert.rejects(client.query("SELECT * FROM discovery.title_fences"), { code: "42501" });
+    await client.query("ROLLBACK");
+    await client.query("BEGIN");
+    await client.query("SET LOCAL ROLE aster_discovery_runtime");
     await assert.rejects(
       client.query("UPDATE discovery.generation_titles SET source_version=source_version+1"),
       { code: "42501" },
     );
+    await client.query("ROLLBACK");
+    denied += 2;
+    await client.query("BEGIN");
+    await client.query("SET LOCAL ROLE aster_discovery_projector");
+    await assert.rejects(client.query("SELECT * FROM discovery.rail_documents"), {
+      code: "42501",
+    });
     await client.query("ROLLBACK");
     denied++;
   } finally {

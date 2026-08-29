@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { performance } from "node:perf_hooks";
 import { createAsterKafkaBrokerAdapter, type AsterKafkaBrokerAdapter } from "@aster/broker-kafka";
 import {
   loadLocalCatalogDiscoveryCredential,
@@ -18,6 +19,7 @@ import {
 } from "@aster/runtime";
 import { createAsterTelemetry, type AsterTelemetry } from "@aster/telemetry";
 import { createTitleProjector } from "./application/apply-title-snapshot.js";
+import { createHomeRails } from "./application/home-rails.js";
 import type { CatalogSnapshotSource } from "./application/catalog-event-ports.js";
 import type { CatalogSnapshotExportSource } from "./application/rebuild-ports.js";
 import { createProjectionRebuilder } from "./application/rebuild-projection.js";
@@ -29,6 +31,7 @@ import { createCatalogEventRuntime } from "./infrastructure/catalog-event-runtim
 import { createCatalogSnapshotClient } from "./infrastructure/catalog-snapshot-client.js";
 import { createPostgresCatalogEvents } from "./infrastructure/postgres-catalog-events.js";
 import { createPostgresProjectionUnitOfWork } from "./infrastructure/postgres-projection.js";
+import { createPostgresHomeRailUnitOfWork } from "./infrastructure/postgres-rails.js";
 import { createPostgresRebuildStore } from "./infrastructure/postgres-rebuild.js";
 import { createPostgresSearchUnitOfWork } from "./infrastructure/postgres-search.js";
 import { createProjectionRebuildRuntime } from "./infrastructure/projection-rebuild-runtime.js";
@@ -170,8 +173,18 @@ export async function createDiscoveryService(
     });
     graph = await createDiscoverySubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("discovery")),
+      home: createHomeRails({
+        transactions: createPostgresHomeRailUnitOfWork(runtimeDatabase),
+        monotonicNow: () => performance.now(),
+        observe: (observation) => {
+          telemetry.recordDiscoveryRail?.(observation);
+        },
+      }),
       search: createTitleSearch({
         transactions: createPostgresSearchUnitOfWork(runtimeDatabase),
+        observeSample: (sample) => {
+          telemetry.recordDiscoverySearchSample?.(sample);
+        },
       }),
       now: () => Math.floor(Date.now() / 1_000),
       onOperation: (trace) =>

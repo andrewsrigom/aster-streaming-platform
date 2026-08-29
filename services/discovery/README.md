@@ -1,6 +1,10 @@
-# Discovery search
+# Discovery search and home rails
 
-P09-R01, P09-R02, P09-R06 and P09-R07 are implemented in the current candidate. Discovery owns a rebuildable PostgreSQL read model and bounded title search. Catalog remains the authority for title metadata, publication and rights; search edges return federated `Title` references so current public metadata is resolved by Catalog.
+P09-R01, P09-R02, P09-R06 and P09-R07 are released. The current P09-R03
+candidate adds independent home rails and bounded product metrics over the same
+rebuildable PostgreSQL projection. Catalog remains the authority for title
+metadata, publication and rights; Discovery returns federated `Title` references
+so current public metadata is resolved by Catalog.
 
 ## Public contract
 
@@ -30,6 +34,24 @@ Query and indexed text use the same Unicode, punctuation and whitespace normaliz
 
 `COMPLETED` returns a connection, including an explicit empty result. `STALE`, `CURSOR_EXPIRED`, `INVALID_INPUT`, `UNAVAILABLE`, `CANCELLED` and `INDETERMINATE` return no connection. A title entity can become null if Catalog retires it after the projection read; this preserves the rest of the search page instead of nulling the whole connection. Search never grants playback access.
 
+## Home rails
+
+`HomePublic` requests `homeRails(first: 1–12)`. It returns featured, recently
+added, curated trending and at most three genre groups. Each group has its own
+code, source, oldest indexed time and earliest visibility expiry. Featured and
+curated trending use the matching Catalog editorial label; trending is not a
+behavioral-popularity claim. Genre order is count descending then slug, while
+title order is publication time descending then title ID.
+
+The four selections use independent read-only transactions. If featured or
+trending is empty or unavailable and recent completed with titles, that group is
+returned as `FALLBACK` with source `RECENTLY_ADDED`. A genre failure does not erase
+fixed rails. An expired projection returns `STALE`; it never fabricates empty
+success. `HomePersonalized` combines the public root with nullable
+Engagement-owned `homeContinueWatching`. If Engagement is unavailable, Router can
+retain public rails with a partial GraphQL response; Discovery stores no profile
+or progress data.
+
 ## Projection and recovery
 
 Catalog v1 publication events are bounded invalidation hints. For each accepted hint, Discovery fetches one current snapshot through its purpose-separated private Catalog operation before writing. Older versions cannot replace newer state, same-version conflicts fail closed, and retirement or rights-expiry fences cannot be resurrected by replay.
@@ -40,9 +62,25 @@ A rebuild captures one broker high-water barrier, scans current Catalog snapshot
 
 ## Runtime and failure boundaries
 
-Discovery listens privately on 3500. The API login can read only the active search view; the projector login owns projection/event/rebuild functions. Catalog snapshot access has its own private credential volume. Router has a separate Discovery credential and starts independently, so an unavailable optional Discovery cannot prevent Catalog or Playback traffic. No cross-owner SQL, Redis authority, raw query text, title text, credential or signed media URL enters telemetry.
+Discovery listens privately on 3500. The API login can read the active search
+tables and the generation/fence-matched rail view; the projector login cannot read
+that view and owns projection/event/rebuild functions. Catalog snapshot access has
+its own private credential volume. Router has a separate Discovery credential and
+starts independently, so an unavailable optional Discovery cannot prevent Catalog
+or Playback traffic. No cross-owner SQL or Redis authority is introduced.
 
-The subgraph accepts one named root operation, a 16 KiB body, bounded parser/depth/alias/field/cost limits, four active requests and no hidden queue. Application, owner-read, SQL and broker work receive finite deadlines and cancellation. Readiness requires the owned schema and an active projection; Catalog or broker failure makes projection maintenance unavailable without changing Catalog or Playback admission.
+Finite OpenTelemetry instruments record rail kind/outcome, selection duration,
+served freshness and deterministically sampled search result/top-rank buckets.
+They never label query/title text, title/profile/correlation IDs, credentials or
+media URLs. These measurements are not an SLO or popularity signal.
+
+The subgraph accepts one named root operation, a 16 KiB body, bounded
+parser/depth/alias/96-field/1024-cost limits, four active requests and no hidden
+queue. The field budget includes Router's bounded entity metadata for all six
+possible rails. Application, owner-read, SQL and broker work receive finite
+deadlines and cancellation. Readiness requires schema version 3 and an active
+projection; Catalog or broker failure makes projection maintenance unavailable
+without changing Catalog or Playback admission.
 
 Replay one exact retained local quarantine record only after correcting its underlying owner or projection condition:
 
@@ -61,4 +99,12 @@ pnpm discovery:integration
 pnpm discovery:runtime
 ```
 
-The first command uses a disposable PostgreSQL 18.6 fixture to prove migrations, role isolation, relevance, normalization, keyset stability, retirement fences, rebuild/cursor state, event recovery and the GIN plan. The second builds a UUID-named disposable Docker project, performs Catalog-to-Kafka-to-Discovery projection, searches through Router, checks an empty result, restart recovery, zero consumer lag and sanitized finite telemetry, then verifies exact cleanup. It does not use retained product data or prove rails, browser integration, hosted operation controls or load capacity. [Phase evidence](../../evidence/phase-09/README.md).
+The first command uses a disposable PostgreSQL 18.6 fixture to prove migrations,
+role isolation, relevance, stable keysets, rail ordering/fallback, generation-fence
+matching, rebuild/event recovery and the GIN plan. The second builds a UUID-named
+disposable Docker project, projects Catalog through Kafka, exercises search and
+home rails through Router, proves nullable Engagement partial response, restart
+recovery, zero lag, sanitized logs and exact cleanup. Product metrics are also
+collected in the focused Discovery/telemetry contract test. It does not use
+retained product data or prove browser integration, hosted controls or load
+capacity. [Phase evidence](../../evidence/phase-09/README.md).

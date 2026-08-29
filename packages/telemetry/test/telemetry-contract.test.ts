@@ -5,6 +5,8 @@ import { test } from "node:test";
 import {
   ASTER_DEPENDENCIES,
   ASTER_DEPENDENCY_OPERATIONS,
+  ASTER_DISCOVERY_RAIL_KINDS,
+  ASTER_DISCOVERY_RAIL_OUTCOMES,
   ASTER_HTTP_METHODS,
   ASTER_HTTP_ROUTES,
   ASTER_METRIC_CATALOG,
@@ -85,6 +87,8 @@ test("freezes the public finite vocabularies", () => {
     ASTER_DEPENDENCIES,
     ASTER_DEPENDENCY_OPERATIONS,
     ASTER_OBSERVATION_OUTCOMES,
+    ASTER_DISCOVERY_RAIL_KINDS,
+    ASTER_DISCOVERY_RAIL_OUTCOMES,
   ]) {
     assert.equal(Object.isFrozen(vocabulary), true);
   }
@@ -228,6 +232,86 @@ test("bounds hostile dimensions and active observation capacity", async () => {
   const health = telemetry.exportHealth();
   assert.equal(health.droppedObservations, 3);
   assert.equal(Object.isFrozen(health), true);
+  await telemetry.shutdown();
+});
+
+test("records bounded Discovery rail and sampled search metrics", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "discovery-metric-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+    export: { mode: "none" },
+  });
+  const recordRail = telemetry.recordDiscoveryRail?.bind(telemetry);
+  const recordSearchSample = telemetry.recordDiscoverySearchSample?.bind(telemetry);
+  assert.ok(recordRail);
+  assert.ok(recordSearchSample);
+
+  assert.deepEqual(
+    recordRail({
+      kind: "featured",
+      outcome: "completed",
+      durationMs: 25,
+      freshnessSeconds: 12,
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(recordSearchSample({ resultCount: 6, topRank: 600_000 }), {
+    status: "recorded",
+  });
+  assert.deepEqual(
+    recordRail({
+      kind: "secret-title",
+      outcome: "completed",
+      durationMs: 25,
+    } as never),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+
+  const collection = await telemetry.collect();
+  assert.equal(collection.status, "collected");
+  const duration = metricByName(
+    collection.metrics,
+    ASTER_METRIC_CATALOG.discoveryRailDuration.name,
+  );
+  assert.deepEqual(
+    { ...duration.points[0]?.attributes },
+    {
+      "aster.discovery.rail": "featured",
+      "aster.outcome": "completed",
+    },
+  );
+  const freshness = metricByName(
+    collection.metrics,
+    ASTER_METRIC_CATALOG.discoveryRailFreshness.name,
+  );
+  assert.deepEqual(
+    { ...freshness.points[0]?.attributes },
+    {
+      "aster.discovery.rail": "featured",
+    },
+  );
+  const quality = metricByName(
+    collection.metrics,
+    ASTER_METRIC_CATALOG.discoverySearchQualitySamples.name,
+  );
+  assert.deepEqual(
+    { ...quality.points[0]?.attributes },
+    {
+      "aster.discovery.result_bucket": "six_to_twenty",
+      "aster.discovery.top_rank_bucket": "high",
+    },
+  );
+  assert.ok(
+    collection.metrics.every((metric) =>
+      metric.points.every((point) =>
+        Object.keys(point.attributes).every(
+          (key) => !key.includes("query") && !key.includes("title") && !key.includes("profile"),
+        ),
+      ),
+    ),
+  );
+  assert.equal(telemetry.exportHealth().droppedObservations, 1);
   await telemetry.shutdown();
 });
 

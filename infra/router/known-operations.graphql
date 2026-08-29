@@ -402,3 +402,159 @@ query SearchTitles($query: String!, $locale: String!, $first: Int! = 20, $after:
     }
   }
 }
+
+query HomePublic($first: Int! = 10, $locale: String! = "en") {
+  homeRails(first: $first) {
+    code
+    correlationId
+    generation
+    generatedAt
+    featured {
+      code
+      rail {
+        key
+        kind
+        source
+        oldestIndexedAt
+        freshUntil
+        edges {
+          sourceVersion
+          indexedAt
+          visibleUntil
+          node {
+            id
+            localized(locale: $locale) {
+              locale
+              title
+            }
+          }
+        }
+      }
+    }
+    recentlyAdded {
+      code
+      rail {
+        key
+        kind
+        source
+        oldestIndexedAt
+        freshUntil
+        edges {
+          sourceVersion
+          indexedAt
+          visibleUntil
+          node {
+            id
+            localized(locale: $locale) {
+              locale
+              title
+            }
+          }
+        }
+      }
+    }
+    trending {
+      code
+      rail {
+        key
+        kind
+        source
+        oldestIndexedAt
+        freshUntil
+        edges {
+          sourceVersion
+          indexedAt
+          visibleUntil
+          node {
+            id
+            localized(locale: $locale) {
+              locale
+              title
+            }
+          }
+        }
+      }
+    }
+    genres {
+      code
+      rails {
+        key
+        kind
+        genre
+        source
+        oldestIndexedAt
+        freshUntil
+        edges {
+          sourceVersion
+          indexedAt
+          visibleUntil
+          node {
+            id
+            localized(locale: $locale) {
+              locale
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query HomePersonalized($profileId: ID!, $first: Int! = 10, $locale: String! = "en") {
+  homeRails(first: $first) {
+    code
+    featured {
+      code
+      rail {
+        key
+        source
+        edges {
+          node {
+            id
+            localized(locale: $locale) {
+              title
+            }
+          }
+        }
+      }
+    }
+    recentlyAdded {
+      code
+      rail {
+        key
+        edges {
+          node {
+            id
+            localized(locale: $locale) {
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+  homeContinueWatching(profileId: $profileId, first: $first) {
+    code
+    correlationId
+    connection {
+      edges {
+        node {
+          titleId
+          positionMs
+          durationMs
+          status
+          title {
+            id
+            localized(locale: $locale) {
+              title
+            }
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+      }
+    }
+  }
+}

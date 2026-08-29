@@ -3,8 +3,10 @@
 The first Phase 09 slice releases P09-R01, P09-R02, P09-R06 and P09-R07 on main
 `0bdcb275`. It adds a Catalog-authorized versioned projection,
 retention-independent rebuild, bounded PostgreSQL search, a fifth Federation
-subgraph and an opt-in disposable runtime. The active precursor stages schema
-compatibility before the home-rail migration. Browser integration, hosted
+subgraph and an opt-in disposable runtime. The active second slice locally
+verifies independent home rails, stable recent fallback, nullable
+Engagement-owned composition and finite product telemetry. Its frozen precursor
+stages search compatibility before migration3. Browser integration, hosted
 controls, load capacity and phase release remain planned.
 
 ## Checkpoints
@@ -20,8 +22,20 @@ controls, load capacity and phase release remain planned.
   resolved confirmation, squash merge and exact-main CI.
 - [Home-rail schema compatibility](home-rails-compatibility.txt) records the
   rolling-deployment blocker, finite precursor and focused verification.
+- [Home-rail PostgreSQL](home-rails-postgres.txt) records migration 0003,
+  generation/fence matching, ordering/fallback and restricted-view privileges.
+- [Federated home runtime](home-rails-runtime.txt) records public rails, nullable
+  Engagement partial response, Router guard correction, restart and exact cleanup.
+- [Home-rail candidate](home-rails-candidate.txt) records schema compatibility,
+  the 54/54 aggregate gate, corrections and heavyweight carry-forward reasoning.
 
-The current source passes 70 Discovery tests, nine Router composition/compatibility tests, 67 platform-policy tests, 33 CI-policy tests, schema composition for five subgraphs, strict TypeScript, workspace lint, unused-code, architecture and formatting gates. Real PostgreSQL integration passes migrations 1–2, relevance/diacritic behavior, stable keysets, retirement fences, empty-partition promotion, proactive generation refresh, rebuild state, role isolation, exact event recovery, the GIN plan and exact cleanup.
+The released search candidate passed 70 Discovery tests, nine Router
+composition/compatibility tests, 67 platform-policy tests, 33 CI-policy tests,
+schema composition for five subgraphs, strict TypeScript, workspace lint,
+unused-code, architecture and formatting gates. Its real PostgreSQL integration
+passed migrations 1–2, relevance/diacritic behavior, stable keysets, retirement
+fences, empty-partition promotion, proactive generation refresh, rebuild state,
+role isolation, exact event recovery, the GIN plan and exact cleanup.
 
 Exact confirmation-remediated runtime commit `16d4921ff569a501ab3227d11ed6617863fb0ce7`
 passes the disposable Docker gate; unchanged real PostgreSQL evidence is carried
@@ -31,3 +45,9 @@ projects with zero lag, returns one result plus explicit empty, replays and
 reclaims one exact quarantine slot, serves Catalog while Discovery is stopped,
 recovers search, sanitizes logs and cleans every fixture resource. No
 retained-project upgrade, hosted deployment or complete Phase 09 claim is made.
+
+P09-R03 currently passes 82 Discovery tests, 10 telemetry tests, real PostgreSQL
+18.6, the 11-service Router runtime, schema compatibility and the 54/54 candidate
+gate. Its database-admission correction passes Discovery83/83. Precursor PR35
+passes73/73 and42/42; mixed-version SQL/runtime and the rebased aggregate remain.
+Home rails are verified locally, not released.

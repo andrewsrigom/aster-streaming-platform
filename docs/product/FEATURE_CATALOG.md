@@ -28,9 +28,9 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Monotonic progress | Engagement | 08 | RELEASED |
 | Continue-watching | Engagement | 08 | RELEASED |
 | Watchlist and history | Engagement | 08 | RELEASED |
-| Home rails | Discovery | 09 | PLANNED |
-| Search | Discovery | 09 | IMPLEMENTED |
-| Degraded home fallbacks | Discovery | 09 | PLANNED |
+| Home rails | Discovery | 09 | VERIFIED |
+| Search | Discovery | 09 | RELEASED |
+| Degraded home fallbacks | Discovery | 09 | VERIFIED |
 | Cache-aside and invalidation | Platform | 10 | PLANNED |
 | TTL jitter and stale serving | Platform | 10 | PLANNED |
 | Request coalescing and leases | Platform | 10 | PLANNED |
@@ -49,4 +49,8 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
 
-Release status through Phase 08 is summarized in [current state](../../.ai/CURRENT_STATE.md) and linked phase evidence. Discovery search has implemented local tests and runtime acceptance in the active candidate; it becomes `RELEASED` only after protected merge and exact-main CI. Hosted identity and hosted release remain planned.
+Release status through Discovery search is summarized in
+[current state](../../.ai/CURRENT_STATE.md) and linked phase evidence. Home rails
+and owner-isolated fallbacks are locally verified in the active Phase 09
+candidate, not released. Browser integration, hosted identity and hosted release
+remain planned.
