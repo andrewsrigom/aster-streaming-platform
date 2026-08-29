@@ -119,6 +119,7 @@ export function validateDiscoveryRuntime(sources) {
               '      ASTER_DISCOVERY_LOCAL_ENABLED: "true"\n      ASTER_DISCOVERY_HTTP_HOST: 0.0.0.0\n      ASTER_DISCOVERY_HTTP_PORT: "3500"\n',
               "      ASTER_DISCOVERY_DATABASE_URL: postgresql://aster_discovery_local@postgres:5432/aster\n      ASTER_DISCOVERY_DATABASE_PASSWORD: aster-test-only\n",
               "      ASTER_DISCOVERY_PROJECTOR_DATABASE_URL: postgresql://aster_discovery_projector_local@postgres:5432/aster\n      ASTER_DISCOVERY_PROJECTOR_DATABASE_PASSWORD: aster-test-only\n",
+              '      ASTER_DISCOVERY_CACHE_ENABLED: "true"\n      REDIS_URL: redis://redis:6379/0\n',
               '      ASTER_ROUTER_TRUST_ENABLED: "true"\n      ASTER_EVENTS_ENABLED: "true"\n',
               "    volumes:\n      - discovery-router-trust:/run/aster-router:ro\n      - discovery-catalog-trust:/run/aster-discovery-catalog:ro\n",
               '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
@@ -145,13 +146,12 @@ export function validateDiscoveryRuntime(sources) {
         "network_mode:",
         "cap_add:",
         "${",
-        "redis",
         "identity",
         "playback",
         "engagement",
         ...(runtime
           ? ["command:", "healthcheck:", "ASTER_DISCOVERY_ADMIN", "ASTER_DISCOVERY_MIGRATION"]
-          : ["volumes:", "ASTER_DISCOVERY_PROJECTOR"]),
+          : ["volumes:", "ASTER_DISCOVERY_PROJECTOR", "redis"]),
       ],
       violations,
       name,
