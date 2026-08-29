@@ -6,13 +6,12 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–08 are released locally through protected and exact post-merge CI.
+Phases 00–09 are released locally through protected and exact post-merge CI.
 Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js
 SSR, accessible HLS playback, durable progress/resume, owned library and owner
-event recovery pass their recorded acceptance. Phase 09 Discovery search/home
-owners are released; their Web SSR/private enhancement is implemented on the
-active branch and remains a release candidate. Exact progress lives in
-`.ai/CURRENT_STATE.md`.
+event recovery, Discovery search/home and its SSR/private enhancement pass their
+recorded acceptance. Phase10 advanced Redis and concurrency is active. Exact
+progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -56,12 +55,11 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 09 — Home Rails and Search**. P09-R01 is released through
-main `0bdcb27` and exact-main CI33239191134. P09-R03 is released through PR34,
-main `a3f969c` and exact-main CI33249289718. P09-R10 is active on
-`feat/p09-web-discovery`: public SSR rails/search and browser-only profile
-enhancement are implemented with focused browser/runtime acceptance; complete the
-candidate, review and protected release to close Phase 09.
+Active phase: **Phase 10 — Advanced Redis and Concurrency**. Phase09 closed
+through PR36, squash main `ffe8e24` and exact-main CI33254719311. P10-R01/R02/
+R03/R05/R06/R07/R10 is active on `feat/p10-catalog-cache`: define the concrete
+cache contract, then implement a rights-safe Catalog cache-aside slice with
+bounded coalescing, lease and metrics.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

@@ -2,7 +2,134 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-29 — Web discovery local candidate
+## 2026-08-29 — Catalog final cache remediations
+
+### Completed
+
+- Protected run33265036497 passed exact4afe12f. Exact-head review discussion
+  3887201296 then found that the refresh owner shifted every coalesced waiter
+  bucket upward.
+- Exact6088bf8 counts only callers attached behind the owner in both fence and
+  positive refresh paths. The 24-caller negative regression proves bucket counts
+  1/3/19; the two-caller positive regression records `one`.
+- Catalog245/245 and the affected73/73 gate pass with58 cached in63.085 seconds.
+  Real Redis/PostgreSQL fixtures remain valid because no cache byte, command,
+  source-coordination, visibility or failure boundary changed.
+- Review discussion3887242213 then found bounded control-byte replies destroyed
+  the Redis connection before Catalog malformed recovery. Exact997ef27 accepts
+  only the bounded returned type/bytes, keeps write inputs strict and lets the
+  envelope parser delete the exact key.
+- Redis17/17, Catalog245/245 and affected73/73 pass with52 cached in101.768
+  seconds. Repeated real Redis proves `controlValueDeleted=true`,11 finite metric
+  series and cleanup0; PostgreSQL behavior did not change.
+- Exact-head protected run `33266926624` passed `edf7bc8`. Review discussions
+  `3887280597`/`3887280599` then found that wrong-type/non-expiring lease keys could contend
+  permanently and zero-caller entries kept alive by sibling batch work could
+  misclassify their first later reattachment.
+- Exact `d93afbcc8bf87f71dc926c9010c2180820aeccfb` adds a specialized bounded Redis
+  lease acquisition script that atomically preserves valid finite holders while
+  replacing malformed keys. Coalescing now tracks monotonic attachments
+  separately from active cancellation waiters.
+- Redis17/17, Catalog246/246, strict types, scoped lint/format and repeated real
+  Redis pass. The fixture proves standalone wrong-type/non-expiring recovery,
+  exact Catalog-path recovery, one cross-instance negative fence read and
+  cleanup 0.
+- The first broad-parallel affected attempt hit the unchanged Identity
+  terminal-fallback timing assertion. Focused Identity passed 147/147; the
+  concurrency-capped rerun passed 73/73 with 59 cached in 90.953 seconds.
+- Protected run `33268669701` passed exact `d05dad3`. Confirmation discussion
+  `3887360355` found invalid UTF-8 could expand after the Redis-side bound and
+  reset the connection.
+- Exact `ce97596794c05bdd5b92fb9a75dde2a9e4be159f` retains bounded Redis replies
+  as bytes through validation and applies fatal UTF-8 decoding. The unit case
+  uses 16 KiB of invalid bytes without connection destruction; the real fixture
+  proves rejection, live probe, exact deletion and cleanup 0.
+- Redis 17/17, Catalog 246/246 and affected 73/73 pass with 50 cached in 126.735
+  seconds.
+- Exact-head discussion `3887423663` then found that a finite lease with TTL
+  above the requested two-second window remained contended for its full
+  duration. Exact `f014ebe2534f7c151020e46912cf2e7d9161ac81` compares `PTTL`
+  with the requested TTL inside the atomic acquisition script and replaces only
+  longer-lived contamination.
+- Redis17/17 and Catalog246/246 pass. The repeated real Redis fixture seeds a
+  24-hour lease, proves `excessiveTtlLeaseRecovered=true`, owner-token release
+  and cleanup0.
+- The complete affected gate passes 73/73 with 51 cached in 107.438 seconds.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-contract.txt`
+- `evidence/phase-10/catalog-cache-runtime.txt`
+
+### Next action
+
+Publish one PR37 update, resolve discussion `3887423663`, require exact-head
+protected CI and confirmation, then release Catalog and rebase Discovery.
+
+## 2026-08-29 — Catalog negative-cache age remediation
+
+### Completed
+
+- Corrected review discussion3887146000: negative schema-v1 envelopes now carry
+  `cachedAt` and reject missing, future or more-than-ten-second-old values before
+  an absence can bypass the Catalog owner.
+- Added focused missing-time, over-age and future-time regressions plus a real
+  Redis no-expiry marker case that proves exact deletion and visible owner data.
+- Committed implementation as `f50acbb7cbb26cef480b0bb87018510660da48ca`.
+  Catalog245/245, affected73/73 (57 cached,54.75 seconds), real Redis10 finite
+  series/cleanup0 and the complete PostgreSQL fixture/cleanup0 pass.
+- Cancelled superseded protected run33264164708 after the review invalidated its
+  candidate, avoiding an unnecessary full pipeline.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-contract.txt`
+- `evidence/phase-10/catalog-cache-runtime.txt`
+- `evidence/phase-10/catalog-cache-postgres.txt`
+- `evidence/phase-10/catalog-cache-concurrency.txt`
+
+### Next action
+
+Publish one PR37 update, resolve discussion3887146000, require exact-head
+protected CI and confirmation, then release Catalog and rebase the preserved
+Discovery checkpoint after old predecessor `b65688b`.
+
+## 2026-08-29 — Catalog corrected-confirmation visibility and Redis-type remediation
+
+### Completed
+
+- Preserved the dependent Discovery stale-cache implementation and documentation
+  as checkpoint `423c33d` before returning to predecessor PR37.
+- Corrected review discussion3887086778 by including request time and rights-use
+  policy in each per-title fence coalescing identity. A synchronized expiry case
+  proves calls on opposite visibility sides perform separate owner decisions.
+- Corrected discussion3887086782 by checking Redis key type inside the bounded
+  Lua read before `STRLEN`/`GET`; non-string exact keys now enter the existing
+  malformed deletion path.
+- Committed implementation as `2930332e7b1c049c081bfad8c5d62c71009f03bf`.
+  Catalog244/244 and Redis17/17 pass. Real Redis reports bounded oversized read,
+  `wrongTypeDeleted=true`, positive/negative coordination, outage fallback and
+  cleanup0. Complete PostgreSQL integration proves the compact fence, exact
+  source, stale-dispute rejection and cleanup0.
+- The first affected gate hit one unrelated Identity terminal-fallback timing
+  assertion under parallel load. Focused Identity passed147/147; the next full
+  affected gate passed73/73,59 cached, in83.646 seconds. No Identity source or
+  deadline changed.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-contract.txt`
+- `evidence/phase-10/catalog-cache-runtime.txt`
+- `evidence/phase-10/catalog-cache-postgres.txt`
+- `evidence/phase-10/catalog-cache-concurrency.txt`
+
+### Next action
+
+Publish one PR37 update, resolve both corrected-confirmation discussions, require
+exact-head protected CI and confirmation, then squash/verify main and rebase the
+preserved Discovery commits after old predecessor `b65688b`.
+
+## 2026-08-29 — Web discovery release and Phase 10 activation
 
 ### Completed
 
@@ -27,6 +154,50 @@ Append new entries at the top. Keep entries factual and concise.
 - Corrected the three boundaries in one batch with direct variable, projection
   and browser regressions. Owners, schema, dependencies, caches and topology do
   not change.
+- Corrected exact `b5ccd59` passed protected run33253867475 and clean exact-head
+  confirmation. PR36 squash-merged as main `ffe8e24`; exact-main run33254719311
+  passed every required job and closes Phase09.
+- Activated the first Phase10 Catalog cache slice on `feat/p10-catalog-cache`
+  from clean main. The plan preserves PostgreSQL visibility/rights authority and
+  admits no cached result without a current owner fence.
+- Implemented bounded Redis data commands, atomic compare-delete, Catalog
+  cache-aside, short negative entries, deterministic TTL jitter, process
+  coalescing, tokenized leases, optional runtime composition and finite metrics.
+- Catalog239/239, Redis17/17, telemetry11/11 and the complete73-task affected
+  gate pass. Real PostgreSQL proves compact/exact fence reads. A disposable pinned
+  Redis fixture compares24 uncached full-source reads with one coalesced refresh,
+  observes cross-instance contention and cleans its only container.
+- Exact implementation `a54c324f7d2312851bd036f763362d84574bf826`
+  preserves the passing tree. Its exact-source PostgreSQL rerun reports compact
+  fence fields4, exact candidate rows2, stale rows0 and cleanup0; its exact-source
+  Redis rerun reports24 callers, one coalesced source load, one cross-instance
+  source load, safe expiry/compare-delete/outage fallback and cleanup0.
+- PR37 opened at exact705a2e0. Initial hosted review comment3886890023 found that
+  a valid over-16-KiB projection correctly bypassed storage but supplied a payload
+  sample the telemetry boundary rejects, dropping the outcome too. Reviewed
+  implementation `374686844853a8d1f3cfb75f0b3d1ce7f1c08c88` omits that invalid
+  dimension, retains the bypass counter and adds the actual oversized regression.
+  Catalog240/240 and the repeated73/73 affected gate pass in55.132s.
+- Confirmation comments3886917843/44/46 found that Redis GET materialized a
+  hostile oversized value before rejecting it, mixed hot-title batches did not
+  share the common title, and oversized corruption could lose its malformed
+  observation. The findings affect memory, source amplification and required
+  telemetry, so one batched remediation and another confirmation are permitted.
+- Exact `2a9b86c221180f2df8caf74f66d9a2495c794888` uses an atomic Redis-side bounded
+  read, per-title coalescing identities with one refresh for each newly owned
+  batch, and malformed observations without invalid payload samples. Catalog
+  passes242/242, Redis17/17 and the exact affected gate passes73/73 in58.996s.
+- The exact real Redis rerun proves `boundedOversizedRead`,24-call cold
+  coalescing, cross-instance contention, expiry, outage fallback and cleanup0.
+  The exact PostgreSQL rerun proves compact fence fields4, exact rows2, stale
+  dispute rows0, closed resources and cleanup0.
+- Protected PR37 run33260411345 passed at b65688b, but final-confirmation
+  discussion3886966492 found that cold absence checks reached PostgreSQL before
+  coordination. Preserved dependent Discovery checkpoint8e88e80 separately.
+- Exact correction62afee15240ab1d197aac84b4d63e1a0e1dce382 coalesces and leases
+  negative keys before the owner read. Catalog243/243, affected73/73 and repeated
+  real Redis/PostgreSQL fixtures pass with cleanup0; two independent negative
+  callers now cause one fence read.
 
 ### Evidence
 
@@ -59,12 +230,16 @@ Append new entries at the top. Keep entries factual and concise.
   build/artifact/notice scans and rebuilt browser acceptance8/8. Exact teardown
   again reports containers0, networks0 and volumes0.
 - Corrected affected candidate passes46/46,32 cached, in51.27s.
+- Final-confirmation correction evidence: [contract](../evidence/phase-10/catalog-cache-contract.txt),
+  [Redis runtime](../evidence/phase-10/catalog-cache-runtime.txt),
+  [concurrency](../evidence/phase-10/catalog-cache-concurrency.txt) and
+  [PostgreSQL](../evidence/phase-10/catalog-cache-postgres.txt).
 
 ### Next action
 
-Publish the one remediation commit, resolve the three discussions and obtain one
-exact-head confirmation/protected CI before squash merge and exact-main Phase09
-acceptance.
+Commit the final-confirmation evidence, publish one PR37 update, resolve
+discussion3886966492 and obtain corrected confirmation plus protected CI. Then
+squash/exact-main release and rebase the preserved Discovery checkpoint.
 
 ## 2026-08-29 — Discovery schema compatibility precursor
 
@@ -2246,16 +2421,16 @@ Execute P00-R07 by adding contribution governance and repository templates befor
 
 Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, safe secret fixtures, and dependency review with one stable aggregate result.
 
-## 2026-08-26 — Strict and tiered source-quality foundation
+**Historical checkpoint — 2026-08-26 — Strict and tiered source-quality foundation**
 
-### Completed
+**Completed**
 
 - Exact-pinned TypeScript `6.0.3`, ESLint `10.9.1`, `@eslint/js` `10.0.1`, typescript-eslint `8.68.0`, Prettier `3.9.6`, Knip `6.32.2`, and `@types/node` `24.13.3` after current compatibility, license, engine, and release-maturity review.
 - Added strict shared and root TypeScript policies, type-aware linting, deterministic code/config formatting, unused-code analysis, and ten root Turbo tasks.
 - Added a bounded TypeScript-AST architecture scanner with inward-layer and forbidden-client rules plus adverse fixtures.
 - Added repository-local staged-file and commit-message hooks that keep repository-wide and heavyweight work outside the commit path.
 
-### Evidence
+**Evidence**
 
 - Passed a frozen install without changing any authoritative configuration or lockfile byte.
 - Passed 25 focused tests, an actual repository scan with zero violation, and deliberate Express-in-domain, outward-layer, package-escape, malformed-source, staged-path, and malformed-message failures.
@@ -2263,20 +2438,20 @@ Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, sa
 - Verified 127 Markdown files and 212 internal links with no structure or broken-link issue; found no restricted private-context vocabulary or `Zone.Identifier` file.
 - Raw evidence: `evidence/phase-00/source-quality-foundation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R05 by turning the current documentation audit contract into a bounded, tested, repository-owned command and integrating it into the task graph.
 
-## 2026-08-26 — Local Git and monorepo execution foundation
+**Historical checkpoint — 2026-08-26 — Local Git and monorepo execution foundation**
 
-### Completed
+**Completed**
 
 - Initialized local Git on `main` with LF normalization, explicit batch-file handling, and repository-local pull, fetch, and push defaults.
 - Added deterministic ignores for dependencies, caches, builds, logs, local secrets, editor state, operating-system metadata, and both observed `Zone.Identifier` filename representations without ignoring evidence or safe environment examples.
 - Added a root-only pnpm workspace, shared integrity lockfile, strict 24-hour dependency-maturity policy, and version-specific reviewed exceptions for the signed Turbo artifacts selected inside that window.
 - Pinned Turborepo `2.10.12` and registered the existing toolchain guard and tests as strict-environment, uncached root tasks without scaffolding future package directories.
 
-### Evidence
+**Evidence**
 
 - Passed the first and repeated frozen installations with 7 supply-chain entries verified and no change to authoritative workspace files.
 - Passed root-only workspace discovery, Turbo version and dry-run assertions, and two real tasks with 7 of 7 built-in tests and no cached result.
@@ -2284,27 +2459,27 @@ Execute P00-R05 by turning the current documentation audit contract into a bound
 - Verified 127 Markdown files and 196 internal links with no structure or broken-link issue; Docker daemon `26.0.0` remained responsive.
 - Raw evidence: `evidence/phase-00/workspace-foundation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R04 by selecting and adding the minimal strict TypeScript, format, lint, unused-code, architecture-boundary, and fast commit-message toolchain.
 
-## 2026-08-26 — Exact Node.js and pnpm toolchain
+**Historical checkpoint — 2026-08-26 — Exact Node.js and pnpm toolchain**
 
-### Completed
+**Completed**
 
 - Selected and pinned the active Node.js `24.19.0` Krypton LTS release and pnpm `11.24.0` from current official support and compatibility evidence.
 - Added a minimal private root manifest, `.nvmrc`, `.node-version`, and an integrity-pinned `packageManager` declaration without creating a workspace, dependencies, or lockfile.
 - Added a dependency-free guard for exact active versions and duplicated pins, with bounded parsing and network-disabled Corepack detection.
 - Installed the checksum-verified Node.js release in the user-local runtime location and activated the exact pnpm release through Corepack.
 
-### Evidence
+**Evidence**
 
 - Passed 7 of 7 built-in tests, syntax checks, the active-environment guard, deliberate old-Node and pnpm-mismatch failures, and an empty-Corepack-cache failure with network disabled.
 - Verified the official Node.js SHA-256 and pnpm registry SHA-512 values recorded in `evidence/phase-00/toolchain-selection.txt`.
 - Verified 127 Markdown files and 189 internal links with no structure or broken-link issue.
 - Confirmed `node_modules`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, restricted private-context vocabulary, and `Zone.Identifier` files are absent.
 
-### Next action
+**Next action**
 
 Execute P00-R02 by initializing local Git policy, the minimal pnpm workspace, a verified Turborepo task graph, and deterministic ignores.
 

@@ -7,7 +7,10 @@ import { createCatalogCommands } from "../../src/application/commands.js";
 import { createCatalogPublicQueries } from "../../src/application/public-queries.js";
 import { createLocalCatalogOperator } from "../../src/infrastructure/identity/local-operator.js";
 import { createPostgresCatalogWorkflow } from "../../src/infrastructure/persistence/postgres-workflow.js";
-import { createPostgresCatalogPublic } from "../../src/infrastructure/persistence/postgres-public.js";
+import {
+  createPostgresCatalogPublic,
+  createPostgresCatalogPublicEntitySource,
+} from "../../src/infrastructure/persistence/postgres-public.js";
 import { catalogTestId as id, catalogTestTime as now } from "../rights-fixture.js";
 import { hash, metadataFixture, publicationFixture, rightsFacts } from "../workflow-fixture.js";
 import { catalogHttpFixture } from "../catalog-http-fixture.js";
@@ -160,6 +163,7 @@ export async function verifyPublicCatalog(
         ),
     }),
   });
+  const entitySource = createPostgresCatalogPublicEntitySource(reader);
   try {
     await assert.rejects(migrations("up"));
     await migrations("down");
@@ -257,6 +261,23 @@ export async function verifyPublicCatalog(
       [id(128), null, null, null, null, null, id(104), id(128)],
     );
     assert.equal(statements.length - beforeBatch, 1);
+    const fenced = await entitySource.findFences(
+      [id(104), id(128), id(999)],
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.equal(fenced.status, "completed");
+    assert.deepEqual(
+      fenced.value.map((value) => value.id),
+      [id(104), id(128)],
+    );
+    const exact = await entitySource.findManyAtFences(
+      fenced.value,
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.equal(exact.status, "completed");
+    assert.equal(exact.value.length, 2);
     assert.equal(
       (
         await commands.execute(
@@ -267,9 +288,22 @@ export async function verifyPublicCatalog(
       ).status,
       "completed",
     );
+    const oldFence = fenced.value[0];
+    assert.ok(oldFence);
+    const retiredFence = await entitySource.findManyAtFences(
+      [oldFence],
+      { now: clock, policy: { commercial: true } },
+      signal(),
+    );
+    assert.deepEqual(retiredFence, { status: "completed", value: [] });
     assert.deepEqual(await queries.byIds([id(104)], signal()), {
       status: "completed",
       value: [null],
+    });
+    output("catalog_public_cache_fence", {
+      compactFenceFields: 4,
+      exactCandidateRows: exact.value.length,
+      staleFenceRowsAfterDispute: retiredFence.value.length,
     });
     const allIds: string[] = [];
     let after: string | null = null;

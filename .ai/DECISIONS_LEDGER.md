@@ -2,6 +2,22 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0037](../docs/adr/0037-rights-safe-catalog-cache.md) limits the first Phase10
+cache to Catalog public-title entity projections. Every positive reuse follows a
+current PostgreSQL visibility/version fence; browse ordering, rights and Playback
+authority remain uncached. Entries, deterministic jitter, process coalescing and
+tokenized Redis leases are finite. Fence work shares only within an identical
+request-time/policy scope; wrong-type or oversized Redis values are rejected
+before value bytes reach the application. Accepted bounded replies remain binary
+until fatal UTF-8 decoding, so invalid encoding reaches exact malformed-key
+recovery without resetting the connection. Negative envelopes carry cache time;
+missing, future or older-than-ten-second values are deleted and rechecked even
+when Redis expiry is absent or excessive. Redis loss bypasses to source, and
+cache coordination never authorizes durable work. Lease acquisition atomically
+replaces wrong-type, non-expiring or longer-than-policy malformed keys while
+preserving finite holders within the requested window, and coalescing records
+monotonic attachments separately from active cancellation waiters.
+
 [ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size
 independent public rails, explicit freshness/outcomes, stable recent fallback,
 curated rather than behavioral trending, and nullable Engagement-owned home

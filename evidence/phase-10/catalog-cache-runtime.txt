@@ -1,0 +1,80 @@
+P10 Catalog cache runtime checkpoint
+Date: 2026-08-29
+Status: local candidate; hosted review, protected CI and release pending
+
+Source and environment
+- Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888.
+  Redis wire behavior changed to reject values above 16 KiB before returning
+  their bytes, so this fixture was repeated at that exact commit.
+- Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382.
+  Cold negative fence coordination changed, so this fixture was repeated.
+- Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf.
+  Wrong-type classification moved inside the bounded Redis script, so this
+  fixture was repeated at the exact implementation commit.
+- Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca.
+  Negative-envelope interpretation changed, so the fixture now seeds a
+  recognizable absence marker without expiry and proves exact recovery.
+- Malformed-byte correction: 997ef270ba2fcb5c360c4593c1284fbdd1bb57ab.
+  Bounded control-byte strings now remain successful transport replies for
+  envelope classification, so this Redis-wire fixture was repeated.
+- Lease/reattachment correction: d93afbcc8bf87f71dc926c9010c2180820aeccfb.
+  Lease acquisition now recovers wrong-type and non-expiring keys atomically, so
+  the Redis-wire fixture was repeated at this exact implementation commit.
+- Binary-read correction: ce97596794c05bdd5b92fb9a75dde2a9e4be159f.
+  The client now validates Lua-bounded replies as raw bytes before fatal UTF-8
+  decoding, so the Redis-wire fixture was repeated at this exact commit.
+- Excessive-lease correction: f014ebe2534f7c151020e46912cf2e7d9161ac81.
+  Lease acquisition now rejects remaining TTLs above its requested window, so
+  the Redis-wire fixture was repeated at this exact commit.
+- WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
+- Docker Engine 26.0.0; one disposable pinned Redis 8.10.0 container
+- Redis fixture limits: 0.5 CPU, 128 MiB, tmpfs storage and loopback ephemeral
+  host port
+
+Command
+CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
+
+Final result: PASS
+
+Raw result
+{"event":"catalog_cache_redis_verified","boundedOversizedRead":true,"wrongTypeDeleted":true,"invalidUtf8Deleted":true,"controlValueDeleted":true,"unboundedNegativeDeleted":true,"atomicCompareDelete":true,"expiryObserved":true,"expiredLeaseRecovered":true,"nonExpiringLeaseRecovered":true,"excessiveTtlLeaseRecovered":true,"wrongTypeLeaseRecovered":true,"concurrentCallers":24,"uncachedFullSourceReadsDuringBurst":24,"uncachedBurstDurationMs":17,"fullSourceReadsDuringBurst":1,"fenceReadsDuringBurst":1,"burstDurationMs":80.36,"warmFullSourceReads":0,"warmDurationMs":147.67,"negativeFenceReadsOnSecondCall":0,"crossInstanceCallers":2,"crossInstanceFullSourceReads":1,"crossInstanceNegativeCallers":2,"crossInstanceNegativeFenceReads":1,"catalogNonExpiringLeaseRecovered":true,"leaseContentionObserved":true,"outageReturnedOwnerValue":true,"finiteMetricSeries":11}
+{"event":"catalog_cache_fixture_cleaned","remaining":0,"durationMs":5151}
+
+Workload
+- Verified Redis-side bounded oversized and wrong-type read rejection, exact
+  malformed-key deletion, expiry, conditional lease acquisition and
+  token-owner-only release against the actual wire protocol.
+- Seeded a bounded newline-bearing positive value, read it without destroying
+  the connection, classified/deleted it through Catalog and rebuilt valid JSON.
+- Seeded exactly 16 KiB of invalid UTF-8, rejected it after raw-byte validation,
+  proved the connection still answered a probe and deleted only the exact key.
+- Seeded an exact absence marker without expiry, rejected its missing cache time,
+  deleted only that key and returned the now-visible owner title.
+- Exercised a cold positive entry, current-fence warm reuse, valid absence and a
+  second negative read that skipped a new fence query.
+- Exercised two independent cache readers on one cold absent ID and observed one
+  owner-fence read before both returned the same genuine absence.
+- Proved an expired lease owner can be recovered and a stale owner cannot remove
+  its successor's lease.
+- Seeded standalone wrong-type, non-expiring and 24-hour lease keys and recovered
+  all atomically. Seeded the exact Catalog negative-lease key without expiry before
+  two independent readers; one caller acquired the repaired finite lease and the
+  pair still performed one owner-fence read.
+- Stopped the exact Redis fixture during an owner read and received the owner
+  value through the documented cache bypass.
+- Collected eleven finite metric series without keys, title IDs, errors or other
+  high-cardinality labels.
+
+Interpretation
+Redis changes latency and source amplification only. It is not a readiness or
+durability dependency, and its outage does not replace the Catalog result. The
+short negative entry can delay discovery of a new publication by no more than
+ten seconds; it cannot make hidden content public.
+
+Limitations
+- This is one bounded local failure experiment, not an availability percentage,
+  production latency distribution or field SLO.
+- Malformed-envelope recovery and optional-readiness behavior are asserted in
+  the 246-test Catalog suite; the real fixture concentrates on bounded wire
+  behavior, expiry, contention and outage.

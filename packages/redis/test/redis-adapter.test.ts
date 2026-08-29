@@ -73,6 +73,11 @@ class FakeClient implements AsterRedisClient {
   isReady = false;
   connectCalls = 0;
   pingCalls = 0;
+  getCalls = 0;
+  setCalls = 0;
+  acquireLeaseCalls = 0;
+  deleteCalls = 0;
+  compareAndDeleteCalls = 0;
   destroyCalls = 0;
   connectHandler: () => Promise<void> = () => {
     this.isReady = true;
@@ -80,6 +85,34 @@ class FakeClient implements AsterRedisClient {
     return Promise.resolve();
   };
   pingHandler: (signal: AbortSignal) => Promise<string> = () => Promise.resolve("PONG");
+  getHandler: (key: string, signal: AbortSignal) => Promise<string | null> = () =>
+    Promise.resolve(null);
+  boundedReadHandler:
+    | ((
+        key: string,
+        maximumBytes: number,
+        signal: AbortSignal,
+      ) => Promise<readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3]>)
+    | undefined;
+  setHandler: (
+    key: string,
+    value: string,
+    ttlMs: number,
+    onlyIfAbsent: boolean,
+    signal: AbortSignal,
+  ) => Promise<string | null> = () => Promise.resolve("OK");
+  acquireLeaseHandler: (
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal: AbortSignal,
+  ) => Promise<number> = () => Promise.resolve(1);
+  deleteHandler: (key: string, signal: AbortSignal) => Promise<number> = () => Promise.resolve(0);
+  compareAndDeleteHandler: (
+    key: string,
+    expectedValue: string,
+    signal: AbortSignal,
+  ) => Promise<number> = () => Promise.resolve(0);
   destroyHandler: () => void = () => {};
   readonly listeners = new Map<AsterRedisClientEvent, Set<(detail?: unknown) => void>>();
 
@@ -93,6 +126,54 @@ class FakeClient implements AsterRedisClient {
   ping(signal: AbortSignal): Promise<string> {
     this.pingCalls += 1;
     return this.pingHandler(signal);
+  }
+
+  async getBounded(
+    key: string,
+    maximumBytes: number,
+    signal: AbortSignal,
+  ): Promise<readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3]> {
+    this.getCalls += 1;
+    if (this.boundedReadHandler) {
+      return this.boundedReadHandler(key, maximumBytes, signal);
+    }
+    const value = await this.getHandler(key, signal);
+    if (value === null) {
+      return [0];
+    }
+    const bytes = Buffer.from(value, "utf8");
+    return bytes.byteLength > maximumBytes ? [2] : [1, bytes];
+  }
+
+  set(
+    key: string,
+    value: string,
+    ttlMs: number,
+    onlyIfAbsent: boolean,
+    signal: AbortSignal,
+  ): Promise<string | null> {
+    this.setCalls += 1;
+    return this.setHandler(key, value, ttlMs, onlyIfAbsent, signal);
+  }
+
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal: AbortSignal,
+  ): Promise<number> {
+    this.acquireLeaseCalls += 1;
+    return this.acquireLeaseHandler(key, ownershipToken, ttlMs, signal);
+  }
+
+  del(key: string, signal: AbortSignal): Promise<number> {
+    this.deleteCalls += 1;
+    return this.deleteHandler(key, signal);
+  }
+
+  compareAndDelete(key: string, expectedValue: string, signal: AbortSignal): Promise<number> {
+    this.compareAndDeleteCalls += 1;
+    return this.compareAndDeleteHandler(key, expectedValue, signal);
   }
 
   destroy(): void {
@@ -272,6 +353,136 @@ test("connect and probe expose ready state and finite telemetry", async () => {
   );
   assert.deepEqual(await adapter.close(), { status: "completed" });
   assert.equal(client.destroyCalls, 1);
+});
+
+test("executes only bounded cache commands and reports finite dependency operations", async () => {
+  const telemetry = new RecordingTelemetry();
+  const client = new FakeClient();
+  client.getHandler = (key) => Promise.resolve(key === "aster:test:key" ? "cached" : null);
+  client.setHandler = (key, value, ttlMs, onlyIfAbsent) => {
+    assert.equal(key, "aster:test:key");
+    assert.equal(value, "cached");
+    assert.equal(ttlMs, 2_000);
+    return Promise.resolve(onlyIfAbsent ? null : "OK");
+  };
+  client.deleteHandler = (key) => Promise.resolve(key === "aster:test:key" ? 1 : 0);
+  let lease = "owner-a";
+  client.compareAndDeleteHandler = (_key, expected) => {
+    if (lease !== expected) {
+      return Promise.resolve(0);
+    }
+    lease = "";
+    return Promise.resolve(1);
+  };
+  const adapter = createAsterRedisAdapterWithClientFactory(options(telemetry), () => client);
+
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "completed",
+    value: "cached",
+  });
+  client.boundedReadHandler = () => Promise.resolve([1, Buffer.from("malformed\0\nvalue")]);
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "completed",
+    value: "malformed\0\nvalue",
+  });
+  assert.equal(client.destroyCalls, 0);
+  client.boundedReadHandler = () => Promise.resolve([1, Buffer.alloc(16_384, 0xff)]);
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  assert.equal(client.destroyCalls, 0);
+  client.boundedReadHandler = undefined;
+  client.getHandler = () => Promise.resolve("x".repeat(16_385));
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  client.boundedReadHandler = () => Promise.resolve([3]);
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  client.boundedReadHandler = undefined;
+  assert.deepEqual(await adapter.write("aster:test:key", "cached", 2_000, "replace"), {
+    status: "completed",
+    stored: true,
+  });
+  assert.deepEqual(await adapter.write("aster:test:key", "cached", 2_000, "if_absent"), {
+    status: "completed",
+    stored: false,
+  });
+  client.acquireLeaseHandler = (_key, ownershipToken, ttlMs) => {
+    assert.equal(ownershipToken, "owner-a");
+    assert.equal(ttlMs, 2_000);
+    return Promise.resolve(1);
+  };
+  assert.deepEqual(await adapter.acquireLease("aster:test:lease", "owner-a", 2_000), {
+    status: "completed",
+    stored: true,
+  });
+  assert.deepEqual(await adapter.delete("aster:test:key"), {
+    status: "completed",
+    deleted: true,
+  });
+  assert.deepEqual(await adapter.compareAndDelete("aster:test:lease", "owner-b"), {
+    status: "completed",
+    deleted: false,
+  });
+  assert.deepEqual(await adapter.compareAndDelete("aster:test:lease", "owner-a"), {
+    status: "completed",
+    deleted: true,
+  });
+  assert.deepEqual(
+    telemetry.attempts.map(({ input, outcome }) => [input.operation, outcome]),
+    [
+      ["connect", "success"],
+      ["read", "success"],
+      ["read", "success"],
+      ["read", "success"],
+      ["read", "success"],
+      ["read", "success"],
+      ["write", "success"],
+      ["write", "success"],
+      ["write", "success"],
+      ["delete", "success"],
+      ["delete", "success"],
+      ["delete", "success"],
+    ],
+  );
+  assert.deepEqual(await adapter.close(), { status: "completed" });
+});
+
+test("rejects malformed cache command input before vendor work", async () => {
+  const client = new FakeClient();
+  const adapter = createAsterRedisAdapterWithClientFactory(
+    options(new RecordingTelemetry()),
+    () => client,
+  );
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
+  const rejected = { status: "rejected", reason: "invalid_input" };
+
+  assert.deepEqual(await adapter.read(""), rejected);
+  assert.deepEqual(await adapter.read("x".repeat(257)), rejected);
+  assert.deepEqual(await adapter.write("key", "x".repeat(16_385), 10, "replace"), rejected);
+  assert.deepEqual(await adapter.write("key", "value", 0, "replace"), rejected);
+  assert.deepEqual(await adapter.write("key", "value", 300_001, "replace"), rejected);
+  assert.deepEqual(await adapter.write("key", "value", 10, "unknown" as "replace"), rejected);
+  assert.deepEqual(await adapter.acquireLease("key", "", 10), rejected);
+  assert.deepEqual(await adapter.acquireLease("key", "owner", 0), rejected);
+  assert.deepEqual(await adapter.compareAndDelete("key", ""), rejected);
+  assert.deepEqual(
+    [
+      client.getCalls,
+      client.setCalls,
+      client.acquireLeaseCalls,
+      client.deleteCalls,
+      client.compareAndDeleteCalls,
+    ],
+    [0, 0, 0, 0, 0],
+  );
+  assert.deepEqual(await adapter.close(), { status: "completed" });
 });
 
 test("shares one bounded connect while caller cancellation remains local", async () => {
@@ -523,7 +734,7 @@ test("runs an unavailable-endpoint diagnostic and keeps the Redis client private
   const diagnostic = spawnSync(process.execPath, [diagnosticPath], {
     encoding: "utf8",
     env: {},
-    timeout: 3_000,
+    timeout: 5_000,
   });
   assert.equal(diagnostic.status, 0, diagnostic.stderr);
   assert.equal(diagnostic.stderr, "");

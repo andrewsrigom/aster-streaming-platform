@@ -4,6 +4,7 @@ import { createServer } from "node:net";
 import { test } from "node:test";
 import { createLocalCatalogDiscoveryTrust, createLocalRouterTrust } from "@aster/http-express";
 import type { AsterPostgresAdapter } from "@aster/postgres";
+import type { AsterRedisAdapter } from "@aster/redis";
 import { createAsterLogger } from "@aster/runtime";
 import { createAsterTelemetry } from "@aster/telemetry";
 import { createCatalogService } from "../src/create-service.js";
@@ -80,6 +81,38 @@ function fixtureDatabase() {
   return { database, state };
 }
 
+function unavailableRedis() {
+  const state = { connectCalls: 0, closeCalls: 0, closed: false };
+  const unavailable = () => Promise.resolve({ status: "unavailable" } as const);
+  const bypassRead = () => Promise.resolve({ status: "unavailable" } as const);
+  const redis: AsterRedisAdapter = {
+    connect: () => {
+      state.connectCalls += 1;
+      return unavailable();
+    },
+    probe: unavailable,
+    read: bypassRead,
+    write: unavailable,
+    acquireLease: unavailable,
+    delete: unavailable,
+    compareAndDelete: unavailable,
+    snapshot: () => ({
+      state: state.closed ? "closed" : "degraded",
+      open: false,
+      ready: false,
+      inFlightCommands: 0,
+      reconnectAttempts: 0,
+    }),
+    close: () => {
+      state.closeCalls += 1;
+      state.closed = true;
+      return Promise.resolve({ status: "completed" });
+    },
+    lifecycleHooks: () => ({ closeDependencies: () => Promise.resolve() }),
+  };
+  return { redis, state };
+}
+
 test("Catalog runtime configuration rejects hosted, privileged and malformed local settings", () => {
   assert.equal(catalogRuntimeConfiguration(environment).port, 3200);
   for (const change of [
@@ -100,6 +133,8 @@ test("Catalog runtime configuration rejects hosted, privileged and malformed loc
     { ASTER_CATALOG_PLAYBACK_READ_ENABLED: "invalid" },
     { ASTER_CATALOG_DISCOVERY_READ_ENABLED: "true" },
     { ASTER_CATALOG_DISCOVERY_READ_ENABLED: "invalid" },
+    { ASTER_CATALOG_CACHE_ENABLED: "invalid" },
+    { ASTER_CATALOG_CACHE_ENABLED: "true" },
     { ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD: "unused" },
     {
       ASTER_ROUTER_TRUST_ENABLED: "true",
@@ -120,6 +155,13 @@ test("Catalog runtime configuration rejects hosted, privileged and malformed loc
     }).playbackRead,
     true,
   );
+  const cache = catalogRuntimeConfiguration({
+    ...environment,
+    ASTER_CATALOG_CACHE_ENABLED: "true",
+    REDIS_URL: "redis://127.0.0.1:6379/0",
+  });
+  assert.equal(cache.cache, true);
+  assert.equal(cache.redisUrl, "redis://127.0.0.1:6379/0");
   const discovery = catalogRuntimeConfiguration(discoveryEnvironment);
   assert.equal(discovery.discoveryRead, true);
   assert.match(
@@ -240,6 +282,29 @@ test("optional Discovery uses separate authority and failure does not block publ
   } finally {
     await service.shutdown();
   }
+});
+
+test("optional Redis loss changes cache readiness but not Catalog readiness", async () => {
+  const primary = fixtureDatabase();
+  const cache = unavailableRedis();
+  const service = await createCatalogService(
+    {
+      ...environment,
+      ASTER_CATALOG_HTTP_PORT: String(await freePort()),
+      ASTER_CATALOG_CACHE_ENABLED: "true",
+      REDIS_URL: "redis://127.0.0.1:6379/0",
+    },
+    { database: primary.database, redis: cache.redis },
+  );
+  try {
+    assert.equal(await service.start(), "ready");
+    assert.equal(service.health().readiness, "ready");
+    assert.equal(await service.checkCacheReadiness(AbortSignal.timeout(100)), "unavailable");
+    assert.equal(cache.state.connectCalls >= 2, true);
+  } finally {
+    assert.equal((await service.shutdown()).outcome, "completed");
+  }
+  assert.equal(cache.state.closeCalls, 1);
 });
 
 test("Catalog serves guarded GraphQL, fails readiness on dependency/authority loss, recovers and closes", async () => {

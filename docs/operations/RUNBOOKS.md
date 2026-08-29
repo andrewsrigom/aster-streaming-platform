@@ -56,11 +56,13 @@ Do not flush the cache.
 1. inspect provider or local health;
 2. distinguish network, authentication, failover, and saturation;
 3. inspect database load caused by bypass;
-4. inspect user SLIs.
+4. inspect `catalog_public_title` cache `bypass` and source-load outcomes;
+5. inspect user SLIs.
 
 ### Mitigate
 
-- activate documented cache bypass;
+- rely on Catalog's automatic cache bypass; disable the optional cache on the
+  next controlled restart if repeated reconnect work is harmful;
 - serve bounded stale local data where allowed;
 - reduce optional discovery traffic;
 - enforce local emergency concurrency limits;
@@ -71,6 +73,7 @@ Do not flush the cache.
 
 - restore Redis;
 - verify clients reconnect with backoff;
+- confirm Catalog stayed ready and owner-fenced entity reads remained correct;
 - warm only measured critical keys with bounded concurrency;
 - verify durable data was not lost;
 - inspect memory and eviction.

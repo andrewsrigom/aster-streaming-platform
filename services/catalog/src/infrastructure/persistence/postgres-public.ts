@@ -1,11 +1,13 @@
 import type { AsterPostgresAdapter, AsterPostgresTransaction } from "@aster/postgres";
 import type {
+  CatalogPublicEntitySource,
+  CatalogPublicFence,
   CatalogPublicRepository,
   CatalogPublicUnitOfWork,
   CatalogReadScope,
 } from "../../application/public-ports.js";
 import type { PublicCatalogCandidate } from "../../domain/public-title.js";
-import { catalogTimestamp } from "../../domain/values.js";
+import { catalogIdentifier, catalogTimestamp, catalogVersion } from "../../domain/values.js";
 import {
   catalogUnitOfWork,
   InvalidCatalogInput,
@@ -63,6 +65,24 @@ function candidate(value: unknown): PublicCatalogCandidate {
     publication: data["publication"],
   };
 }
+
+function fence(value: unknown): CatalogPublicFence {
+  const data = row(value);
+  if (
+    !catalogIdentifier(data["id"]) ||
+    !catalogVersion(data["title_version"]) ||
+    !catalogVersion(data["rights_revision"]) ||
+    !catalogIdentifier(data["publication_id"])
+  ) {
+    return invalidRow();
+  }
+  return Object.freeze({
+    id: data["id"],
+    titleVersion: data["title_version"],
+    rightsRevision: data["rights_revision"],
+    publicationId: data["publication_id"],
+  });
+}
 function publicRepositories(tx: AsterPostgresTransaction): CatalogPublicRepository {
   async function query(
     text: string,
@@ -107,4 +127,92 @@ export function createPostgresCatalogPublic(
   database: Pick<AsterPostgresAdapter, "transaction">,
 ): CatalogPublicUnitOfWork {
   return catalogUnitOfWork(database, publicRepositories);
+}
+
+interface CatalogPublicEntityRepository {
+  findFences(
+    ids: readonly string[],
+    scope: CatalogReadScope,
+  ): Promise<readonly CatalogPublicFence[]>;
+  findManyAtFences(
+    fences: readonly CatalogPublicFence[],
+    scope: CatalogReadScope,
+  ): Promise<readonly PublicCatalogCandidate[]>;
+}
+
+function validateIds(ids: readonly string[]): void {
+  if (ids.length === 0 || ids.length > 20 || new Set(ids).size !== ids.length) {
+    throw new InvalidCatalogInput();
+  }
+  ids.forEach(requireId);
+}
+
+function entityRepositories(tx: AsterPostgresTransaction): CatalogPublicEntityRepository {
+  return {
+    async findFences(ids, scope) {
+      validateIds(ids);
+      const placeholders = ids.map((_, index) => "$" + String(index + 4) + "::uuid").join(", ");
+      const result = await tx.query({
+        text: `SELECT id, version AS title_version, rights_revision, publication_id FROM catalog.public_candidates WHERE ${eligible} AND id IN (${placeholders}) ORDER BY id`,
+        values: [...scopeValues(scope), ...ids],
+      });
+      if (result.rowCount !== result.rows.length || result.rows.length > ids.length) {
+        return invalidRow();
+      }
+      return Object.freeze(result.rows.map(fence));
+    },
+    async findManyAtFences(fences, scope) {
+      validateIds(fences.map((value) => value.id));
+      for (const value of fences) {
+        if (
+          !catalogVersion(value.titleVersion) ||
+          !catalogVersion(value.rightsRevision) ||
+          !catalogIdentifier(value.publicationId)
+        ) {
+          throw new InvalidCatalogInput();
+        }
+      }
+      const values: (string | number | boolean)[] = [...scopeValues(scope)];
+      const predicates = fences.map((value) => {
+        const offset = values.length + 1;
+        values.push(value.id, value.titleVersion, value.rightsRevision, value.publicationId);
+        return `(id = $${String(offset)}::uuid AND version = $${String(offset + 1)}::integer AND rights_revision = $${String(offset + 2)}::integer AND publication_id = $${String(offset + 3)}::uuid)`;
+      });
+      const result = await tx.query({
+        text: `SELECT ${columns} FROM catalog.public_candidates WHERE ${eligible} AND (${predicates.join(" OR ")}) ORDER BY id`,
+        values,
+      });
+      if (result.rowCount !== result.rows.length || result.rows.length > fences.length) {
+        return invalidRow();
+      }
+      return Object.freeze(result.rows.map(candidate));
+    },
+  };
+}
+
+export function createPostgresCatalogPublicEntitySource(
+  database: Pick<AsterPostgresAdapter, "transaction">,
+): CatalogPublicEntitySource {
+  const transactions = catalogUnitOfWork(database, entityRepositories);
+  const source: CatalogPublicEntitySource = {
+    findFences(ids, scope, signal) {
+      return transactions.run(
+        async (repository) => ({
+          status: "completed",
+          value: await repository.findFences(ids, scope),
+        }),
+        signal,
+      );
+    },
+    findManyAtFences(fences, scope, signal) {
+      return transactions.run(
+        async (repository) => ({
+          status: "completed",
+          value: await repository.findManyAtFences(fences, scope),
+        }),
+        signal,
+      );
+    },
+  };
+  return Object.freeze(source);
 }

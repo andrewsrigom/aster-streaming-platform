@@ -207,6 +207,34 @@ test("invalid pages and entity inputs reject before SQL; batches preserve duplic
   assert.equal(f.state.calls, 1);
 });
 
+test("configured entity reader preserves duplicate order and explicit nulls without opening a transaction", async () => {
+  const title = projectPublicTitle(publicCandidate(), now, policy);
+  assert.ok(title);
+  let entityReads = 0;
+  const queries = createCatalogPublicQueries({
+    policy,
+    now: () => now,
+    transactions: {
+      run: () => Promise.reject(new Error("entity reads must not open the legacy transaction")),
+    },
+    entities: {
+      findMany: (ids) => {
+        entityReads += 1;
+        assert.deepEqual(ids, [id(1), id(99)]);
+        return Promise.resolve({ status: "completed", value: [title] });
+      },
+    },
+  });
+
+  const result = await queries.byIds([id(1), id(99), id(1)], signal());
+  assert.equal(result.status, "completed");
+  assert.deepEqual(
+    result.value.map((value) => value?.id ?? null),
+    [id(1), null, id(1)],
+  );
+  assert.equal(entityReads, 1);
+});
+
 test("public reads reject corrupt owner rows, excessive pages, wrong order and dependency faults", async () => {
   for (const values of [
     [publicCandidate(2), publicCandidate(1)],

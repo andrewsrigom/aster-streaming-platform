@@ -9,6 +9,12 @@ export const ASTER_REDIS_DEFAULTS = Object.freeze({
   reconnectBaseDelayMs: 50,
 } as const);
 
+export const ASTER_REDIS_COMMAND_LIMITS = Object.freeze({
+  maximumKeyBytes: 256,
+  maximumValueBytes: 16_384,
+  maximumTtlMs: 300_000,
+} as const);
+
 export type AsterRedisConfigurationOption =
   | "<options>"
   | "url"
@@ -45,9 +51,24 @@ export type AsterRedisOperationResult =
   | Readonly<{ status: "unavailable" }>
   | Readonly<{
       status: "rejected";
-      reason: "capacity_exceeded" | "adapter_closed" | "invalid_signal";
+      reason: "capacity_exceeded" | "adapter_closed" | "invalid_input" | "invalid_signal";
     }>
   | Readonly<{ status: "failed" }>;
+
+export type AsterRedisCommandFailure = Exclude<AsterRedisOperationResult, { status: "completed" }>;
+
+export type AsterRedisReadResult =
+  | Readonly<{ status: "completed"; value: string | null }>
+  | Readonly<{ status: "rejected"; reason: "value_too_large" }>
+  | AsterRedisCommandFailure;
+
+export type AsterRedisWriteResult =
+  Readonly<{ status: "completed"; stored: boolean }> | AsterRedisCommandFailure;
+
+export type AsterRedisDeleteResult =
+  Readonly<{ status: "completed"; deleted: boolean }> | AsterRedisCommandFailure;
+
+export type AsterRedisWriteMode = "replace" | "if_absent";
 
 export type AsterRedisCloseResult = Readonly<{
   status: "completed" | "already_completed" | "timed_out" | "aborted" | "failed";
@@ -64,6 +85,26 @@ export type AsterRedisSnapshot = Readonly<{
 export interface AsterRedisAdapter {
   connect(signal?: AbortSignal): Promise<AsterRedisOperationResult>;
   probe(signal?: AbortSignal): Promise<AsterRedisOperationResult>;
+  read(key: string, signal?: AbortSignal): Promise<AsterRedisReadResult>;
+  write(
+    key: string,
+    value: string,
+    ttlMs: number,
+    mode: AsterRedisWriteMode,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisWriteResult>;
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisWriteResult>;
+  delete(key: string, signal?: AbortSignal): Promise<AsterRedisDeleteResult>;
+  compareAndDelete(
+    key: string,
+    expectedValue: string,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisDeleteResult>;
   snapshot(): AsterRedisSnapshot;
   close(signal?: AbortSignal): Promise<AsterRedisCloseResult>;
   lifecycleHooks(): Readonly<{

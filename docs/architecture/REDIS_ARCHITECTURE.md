@@ -26,15 +26,41 @@ Do not put raw emails, access tokens, or signed URLs in keys.
 
 ## Catalog cache
 
-Pattern: cache-aside with event invalidation.
+Pattern: cache-aside with a current-owner fence and bounded expiry.
 
-- Source: Catalog PostgreSQL
-- TTL: minutes, with jitter
-- Negative cache: short for valid missing IDs
-- Consistency: publication changes invalidate immediately through local write path and event
+- Source and visibility authority: Catalog PostgreSQL
+- Scope: public-title entity projections only; browse ordering and Playback
+  authority are not cached
+- Positive reuse: only after the current owner fence exactly matches title,
+  rights, publication and schema versions
+- TTL: 120 seconds plus deterministic 0–30 second jitter
+- Negative cache: 5 seconds plus 0–5 second jitter for a valid UUID absent from
+  the current public resource set; its schema-v1 envelope records cache time and
+  rejects missing, future or more-than-ten-second-old values, so missing or
+  excessive Redis expiry cannot extend the same at-most-ten-second
+  public-discoverability boundary
+- Consistency: versioned positive keys expire; no scan-based invalidation
 - Failure: read PostgreSQL directly
-- Stampede: in-process coalescing plus short Redis lease
-- Metrics: hit, miss, stale, bypass, refresh, error, payload bytes
+- Stampede: at most 128 process-local owners plus a two-second tokenized Redis
+  lease released by atomic compare-and-delete; positive projection refreshes and
+  cold negative-key owner-fence reads both enter coordination before their
+  expensive source operation; fence sharing also requires identical request time
+  and rights-use policy; atomic acquisition replaces non-string, non-expiring or
+  longer-than-policy malformed lease keys and preserves finite holders within
+  the requested coordination window
+- Corruption: the Redis-side read rejects oversized and non-string exact values
+  before returning bytes; the client keeps bounded replies binary until strict
+  UTF-8 decoding. Invalid encoding is malformed without a connection reset;
+  valid strings, including control bytes, reach the strict Catalog envelope
+  parser for exact deletion
+- Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
+  coalescing and lease outcomes, bounded attached-caller bucket excluding the
+  refresh owner and tracked independently from active cancellation waiters,
+  duration and payload bytes
+
+The exact contract and safety trade-off are in
+[ADR-0037](../adr/0037-rights-safe-catalog-cache.md). This section describes the
+locally verified Phase10 candidate; protected release evidence is still pending.
 
 ## Discovery rails
 

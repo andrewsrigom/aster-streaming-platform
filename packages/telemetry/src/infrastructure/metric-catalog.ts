@@ -10,6 +10,8 @@ export const DISCOVERY_FRESHNESS_BUCKETS_SECONDS = Object.freeze([
   1, 5, 15, 30, 60, 120, 180, 240, 300,
 ]);
 
+export const CACHE_PAYLOAD_BUCKETS_BYTES = Object.freeze([256, 1_024, 4_096, 8_192, 16_384]);
+
 export const ASTER_METRIC_CATALOG = Object.freeze({
   httpDuration: Object.freeze({
     name: "http.server.request.duration",
@@ -65,6 +67,21 @@ export const ASTER_METRIC_CATALOG = Object.freeze({
     name: "aster.discovery.search.quality_samples",
     description: "Deterministically sampled search result-count and top-rank buckets.",
     unit: "{sample}",
+  }),
+  cacheDuration: Object.freeze({
+    name: "aster.cache.operation.duration",
+    description: "Duration of one bounded product-cache decision.",
+    unit: "s",
+  }),
+  cacheOutcomes: Object.freeze({
+    name: "aster.cache.operation.outcomes",
+    description: "Number of product-cache decisions by finite family and outcome.",
+    unit: "{operation}",
+  }),
+  cachePayloadBytes: Object.freeze({
+    name: "aster.cache.payload.size",
+    description: "Size of a bounded product-cache payload when measured.",
+    unit: "By",
   }),
   processCpuTime: Object.freeze({
     name: "process.cpu.time",

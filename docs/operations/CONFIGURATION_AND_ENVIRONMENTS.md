@@ -76,6 +76,16 @@ pnpm config:test
 
 The raw compatibility, redaction, dependency, and process-cost results are in the [P01-R03 evidence](../../evidence/phase-01/runtime-configuration.txt).
 
+## Catalog cache runtime
+
+Catalog owns a separate fail-closed schema for its optional public-title entity
+cache. `ASTER_CATALOG_CACHE_ENABLED` accepts only `true` or `false`; omission or
+`false` keeps direct PostgreSQL reads. `true` requires the server-only `REDIS_URL`
+and enables the bounded cache from [ADR-0037](../adr/0037-rights-safe-catalog-cache.md).
+Redis remains non-critical: connection or command failure bypasses to PostgreSQL
+and does not change Catalog readiness. The runtime does not accept cache TTL,
+capacity or key-shape overrides; those reviewed safety bounds are code-owned.
+
 ## Configuration classes
 
 ### Build-time public

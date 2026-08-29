@@ -1,0 +1,91 @@
+P10 Catalog cache concurrency checkpoint
+Date: 2026-08-29
+Status: local candidate; hosted review, protected CI and release pending
+
+Source and environment
+- Implementation commit: a54c324f7d2312851bd036f763362d84574bf826
+- Confirmation correction: 2a9b86c221180f2df8caf74f66d9a2495c794888.
+  Per-title process identities replace whole-batch identities, so this fixture
+  was repeated at that exact commit.
+- Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382.
+  Cold negative keys now join before the owner-fence read.
+- Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf.
+  Fence entries now share only within one exact request-time/policy scope.
+- Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca.
+  The same bounded Redis workload was repeated after negative-envelope recovery
+  changed.
+- Malformed-byte correction: 997ef270ba2fcb5c360c4593c1284fbdd1bb57ab.
+  The same workload was repeated with a bounded control-byte value on the real
+  Redis wire.
+- Lease/reattachment correction: d93afbcc8bf87f71dc926c9010c2180820aeccfb.
+  The same workload was repeated after atomic malformed-lease recovery and
+  monotonic attached-caller classification changed coordination behavior.
+- Binary-read correction: ce97596794c05bdd5b92fb9a75dde2a9e4be159f.
+  The fixture was repeated with a 16 KiB invalid UTF-8 Redis value; coordination
+  behavior was unchanged.
+- Excessive-lease correction: f014ebe2534f7c151020e46912cf2e7d9161ac81.
+  The fixture was repeated with a preseeded 24-hour lease and recovered it into
+  the requested two-second window.
+- WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
+- Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
+- One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
+
+Command
+CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
+
+Measured result
+- Callers in each local burst: 24.
+- Direct uncached full source reads: 24.
+- Direct uncached burst sample: 15.37 ms.
+- Coalesced cold full source reads: 1.
+- Current-fence reads during cold burst: 1.
+- Coalesced cold burst sample: 36.92 ms.
+- Warm full source reads: 0.
+- Warm sample: 4.84 ms.
+- Cross-instance callers: 2.
+- Cross-instance full source reads: 1.
+- Cross-instance cold-negative callers: 2.
+- Cross-instance cold-negative fence reads: 1.
+- Lease contention observed: true.
+- Expired owner recovered: true.
+- Non-expiring owner recovered: true.
+- Excessive-TTL owner recovered: true.
+- Wrong-type owner recovered: true.
+- Catalog-path non-expiring lease recovered: true.
+- Atomic compare-delete safe: true.
+- Remaining disposable containers: 0.
+
+Workload
+The baseline invoked the full owner source directly for 24 concurrent callers.
+The cache path then invoked 24 callers for one cold key. Exact negative-key
+process coalescing reduced the owner-fence reads to one, and positive-fence
+coalescing reduced full source loads to one. A warm call reused the exact
+positive entry. Two independent cache reader instances contended on the same
+positive lease and caused one full source load; two instances checking a cold
+absent ID used one fence read and the resulting short marker. Lease
+expiry/recovery, wrong-type/non-expiring/excessive-TTL recovery and owner-token
+compare-delete completed the failure boundary.
+
+The focused 246-test Catalog suite also synchronizes concurrent requests for
+`[hot,A]` and `[hot,B]`: the hot title appears in one source batch while the new
+`B` title is refreshed separately, proving per-title overlap without splitting a
+request's newly owned titles into one query each. A second synchronized case puts
+two calls on opposite sides of a visibility expiry and proves they execute two
+owner fence reads, returning the title only to the eligible scope.
+Another synchronized mixed-batch cancellation leaves one title with no active
+caller while its sibling keeps the shared batch alive; the first later
+reattachment is classified in the `one` bucket.
+
+Interpretation
+Bounded in-process sharing removes same-process cold-key source amplification;
+the short Redis lease also coordinates the tested two-instance overlap. Every
+shared result derives from the same current Catalog fence response, while later
+requests still perform a new owner check; amplification reduction does not make
+Redis the visibility authority.
+
+Limitations
+- Wall times are shared-host laboratory samples. The direct baseline exercises
+  the full source only, while the cache path deliberately adds fence, Redis and
+  coalescing work; their elapsed values are not a throughput comparison or SLO.
+- The experiment proves this finite 24-caller/two-instance workload, not arbitrary
+  cluster size. Admission remains capped by the application and GraphQL limits.

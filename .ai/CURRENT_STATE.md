@@ -4,15 +4,14 @@ Last updated: 2026-08-29
 
 ## Active phase
 
-**Phase 09 — Home Rails and Search**
+**Phase 10 — Advanced Redis and Concurrency**
 
-Status: **IN_PROGRESS**, P09-R10 active on `feat/p09-web-discovery` from released
-main `a3f969c`. P09-R01 and P09-R03 are released through exact-main CI. Full
-Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, Catalog cache slice active on `feat/p10-catalog-cache`
+from released main `ffe8e24`. Full Phase00–14 goal stays active.
 
 ## Verified
 
-Phases 00–08 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. No hosted deployment is claimed.
+Phases 00–09 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. No hosted deployment is claimed.
 
 P09-R01/R02/R06/R07 are released. [Search release](../evidence/phase-09/search-release.md)
 records candidate `fc353c3`, protected run 33238473742, resolved review, squash
@@ -30,29 +29,88 @@ compatibility and the [54/54 candidate gate](../evidence/phase-09/home-rails-can
 also pass. PR34 exact `390b655` passed protected run33248598719 and clean
 confirmation, squash-merged as `a3f969c`, and exact-main run33249289718 passed.
 
+P09-R10 is [released](../evidence/phase-09/web-discovery-release.md) through
+corrected candidate `b5ccd59`, protected run33253867475, clean exact-head
+confirmation, PR36 squash main `ffe8e24` and exact-main run33254719311. Public
+SSR home/search, owner-confirmed private continue-watching, explicit degradation
+and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
+46/46 candidate gates.
+
 ## Current work
 
-P09-R10 now integrates the released owner contracts into Web. Public home rails
-and search use request-scoped Apollo SSR plus positive projection; profile
-continue-watching starts only after owner-confirmed browser selection in the
-disposable private Apollo generation. Public HTML contains no profile/session
-data, Apollo remains the sole remote-state cache and Discovery failure leaves
-Catalog browse/title and Playback usable. Web tests pass110/110, Router10/10,
-production build/artifact/notice scans pass, the new discovery journey passes3/3,
-Discovery isolation passes1/1 and the affected browser group passes after one
-bounded keyboard-harness correction. [Runtime evidence](../evidence/phase-09/web-discovery-runtime.txt).
-Initial review's rail-source/aggregate semantic boundary is corrected; the rebuilt
-image passes discovery4/4 and local re-review had no blocker. The final affected
-candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
-moderate. Implementation commit is exact
-`19a510cbccb04614373b448055f985df6bce7368`; published checkpoint `b087bc5`
-passed protected run33252690275. Hosted review5058080810 found three real edge
-defects: invalid/repeated discovery locale coercion, invisible genre-group failure
-and accepted unusable `PARTIAL` payloads. Their batched local correction passes
-Web110/110, strict types/lint, production artifact/notice scans and rebuilt browser
-acceptance8/8; exact cleanup again reports containers0/networks0/volumes0. Final
-affected candidate passes46/46,32 cached, in51.27s. Publication and confirmation
-remain.
+P10's first slice defines and implements the Catalog public-title cache boundary.
+PostgreSQL remains the visibility and rights authority; a cache hit may reuse only
+a bounded version-matched public projection after the owner confirms the current
+visibility/version fence. Valid absence may use only a short negative cache.
+Redis timeout, malformed bytes, lease loss or eviction falls back to PostgreSQL
+without changing a public result. In-process coalescing and a tokenized Redis
+lease reduce duplicate refreshes; neither authorizes a write. Exact cache keys,
+TTL jitter, command/value limits, finite metrics, optional runtime composition and
+degraded readiness are implemented locally. Initial review's oversized-write
+metric defect was corrected. Confirmation then found unbounded Redis GET
+materialization, whole-batch rather than per-title coalescing, and an oversized
+corruption metric that could be dropped. Corrected exact
+`2a9b86c221180f2df8caf74f66d9a2495c794888` performs the size decision inside
+Redis before GET, coalesces shared hot titles across mixed batches while retaining
+one batch for newly owned titles, and records malformed outcomes without invalid
+size samples. Protected run33260411345 passed at b65688b, but final-confirmation
+discussion3886966492 found that a cold absence check reached PostgreSQL before
+either coordination boundary. Correction
+`62afee15240ab1d197aac84b4d63e1a0e1dce382` coalesces each negative key in
+process and leases it across instances before the owner fence read. Corrected
+confirmation discussions3887086778/82 then found cross-time fence sharing and a
+persistent wrong-type Redis key. Exact `2930332e7b1c049c081bfad8c5d62c71009f03bf`
+keys fence work by ID, request time and policy, and classifies non-string Redis
+values inside the bounded script for exact deletion. Catalog244/244, Redis17/17
+and affected73/73 pass. Exact real Redis proves bounded oversized/wrong-type
+reads,24-call cold positive/fence coalescing, one cross-instance negative fence
+read, expiry, outage fallback and cleanup0; real PostgreSQL again proves the
+four-field fence, exact source and stale-dispute rejection with cleanup0.
+The next confirmation discussion3887146000 found that an exact old absence
+marker without a bounded Redis expiry could hide later publication indefinitely.
+Exact `f50acbb7cbb26cef480b0bb87018510660da48ca` timestamps the negative envelope,
+rejects missing/future/older-than-ten-second values and deletes the exact key
+before owner recheck. Catalog245/245, affected73/73, real Redis including the
+unbounded marker and the complete PostgreSQL fixture pass with cleanup0.
+Protected run33265036497 passed exact `4afe12f`, but review discussion3887201296
+found that the refresh owner shifted every coalesced waiter bucket. Exact
+`6088bf8` counts only attached callers for fence and positive refreshes;
+Catalog245/245 and affected73/73 pass. Existing real fixtures remain applicable
+because cache bytes, Redis wire, visibility and coordination did not change.
+Exact-head review discussion3887242213 then found that a bounded control-byte
+value destroyed the Redis connection before Catalog malformed recovery. Exact
+`997ef27` validates only type/byte length for returned strings and keeps strict
+write validation. Redis17/17, Catalog245/245 and affected73/73 pass. Repeated real
+Redis proves `controlValueDeleted=true`, the connection remains usable and
+cleanup0; PostgreSQL behavior is unchanged.
+Protected run `33266926624` passed exact `edf7bc8`, but review discussions
+`3887280597`/`3887280599` found a permanently contended malformed lease and a zero-waiter
+reattachment metric case. Exact local correction `d93afbc` atomically recovers
+wrong-type/non-expiring lease keys and tracks monotonic attachments separately
+from active waiters. Redis17/17, Catalog246/246, scoped lint/format and repeated
+real Redis pass; the fixture proves both malformed lease classes, Catalog-path
+recovery, one cross-instance negative fence read and cleanup 0. Focused Identity
+passed 147/147 after one unrelated terminal-fallback timing failure under broad
+parallel load; the concurrency-capped affected gate then passed 73/73 with 59
+cached in 90.953 seconds. Publication and confirmation remain pending.
+Protected run `33268669701` then passed exact `d05dad3`; exact-head confirmation
+discussion `3887360355` found post-decode expansion of Lua-bounded invalid UTF-8.
+Exact local `ce97596` retains the raw reply as at most 16 KiB of bytes and applies
+fatal UTF-8 decoding without resetting the connection. Redis 17/17, Catalog
+246/246, the real invalid-byte deletion/probe/cleanup fixture and affected 73/73
+gate with 50 cached in 126.735 seconds pass. Publication and corrected
+confirmation remain pending.
+Exact-head discussion `3887423663` then found that a finite but excessive lease
+TTL remained contended beyond the two-second policy. Exact local `f014ebe`
+atomically replaces remaining TTLs above the requested window while preserving
+finite holders inside it. Redis17/17, Catalog246/246 and repeated real Redis pass
+with `excessiveTtlLeaseRecovered=true` and cleanup0. The complete affected gate
+passes 73/73 with 51 cached in 107.438 seconds. Hosted CI and corrected
+confirmation remain pending.
+The local Discovery dependent checkpoint `423c33d` is preserved separately and
+cannot publish until this predecessor releases.
+
+## Historical Phase 09 corrections
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
 old/new schema overlap. Home selections now use one transaction at a time per
@@ -98,13 +156,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Complete candidate/review/protected release and exact post-merge Phase 09
-acceptance remain pending. Hosted release remains Phase 14.
+Discovery stale-while-revalidate is implemented only on the preserved dependent
+candidate and is not integrated or released. Operation-specific Redis rate
+limiting, expensive-path concurrency limits, the mixed outage/hot-key closeout
+and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Complete P09-R10: publish the hosted-review correction once, complete confirmation
-and protected CI, then squash and pass exact-main Phase09 acceptance.
+Publish the P10-R01 binary-read correction, resolve its exact-head discussion and
+complete corrected protected/exact-main acceptance. Then rebase the preserved
+Discovery stale-while-revalidate checkpoint and finish its remaining evidence.
 
 ## Runtime and recovery
 
