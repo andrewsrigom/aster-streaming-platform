@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 09 — Home Rails and Search**. PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 with local acceptance complete; P08-R11 is WAITING_EXTERNAL only for protected CI, confirmation, squash and exact main. The sole local dependent is rebased onto that exact head; no publication before predecessor closeout. Discovery domain plus purpose-separated Catalog snapshot persistence/private runtime are implemented locally. Discovery-owned projection and search are not running yet. Retained demo remains Phase07.
+Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. Protected PR32 run33225822813 failed only at Chromium GraphQL response-body capture after every earlier boundary passed; P08-R11 is IN_PROGRESS again. Discovery domain, Catalog private source access and Discovery-owned PostgreSQL fences/generations/rebuild/search are preserved locally; event/runtime/GraphQL remain and no public search API runs. No P09 publication; retained demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

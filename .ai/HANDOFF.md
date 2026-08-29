@@ -2,14 +2,14 @@
 
 ## Resume point
 
-PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main.
+PR32 exact dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 failed protected run33225822813 only in the personalized browser: Chromium still discarded the selected GraphQL body at response.json. Every setup, owner, immutable-replay and health boundary passed. This is a concrete P08-R11 blocker, not WAITING_EXTERNAL.
 
-P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, rebased onto that exact head. Domain and Catalog snapshot work pass31 focused tests, scoped lint and real SQL compatibility across2055 synthetic titles. Complete private transport/runtime stash 01b1dad9bbda289976d137b1a20af9f7cf102add was applied exactly once; never apply it or older stashes again. Its19 focused tests and real PostgreSQL HTTP/failure/recovery proof pass. No publication before predecessor closeout. Full Phase00–14 goal remains active.
+P09-R01 is the sole unpublished dependent on feat/p09-discovery-search. Domain, Catalog source/private runtime and Discovery persistence/search/rebuild checkpoints pass. The latest block adds34 focused tests and real PostgreSQL18.6 relevance, isolation, fencing, promotion and rollback proof. Commit and preserve it before repairing P08. No publication before predecessor closeout. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Follow the automatically triggered exact-head PR32 CI and confirmation request5459416204. Squash only if protected acceptance/review pass, then require exact main success. No CI retry or repeated storage experiment.
-2. Finish the coherent Catalog private-runtime checkpoint without reapplying any stash, then implement Discovery-owned projection generations, rebuild/consumer and bounded search. Rails/Web remain later slices.
+1. Commit the coherent P09 persistence/search/rebuild checkpoint; do not publish it or reapply any stash.
+2. Return to fix/p08-browser-ack and remove the still-racy selected-body dependency while retaining exact request selection,12-second bounds and durable acknowledgement. Batch one correction, focused regression, affected gate and refreshed review.
 3. Before P09 publication rebase onto accepted predecessor main and repeat affected gates. Frozen install is required after workspace changes. Restore no historical stash.
 4. If predecessor review/CI exposes another blocker, preserve dependent WIP before correcting it; failed tests are not WAITING_EXTERNAL.
 5. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.

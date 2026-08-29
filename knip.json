@@ -16,6 +16,7 @@
       "entry": [
         "tools/media/generate-hls.mjs",
         "tools/media/probe-client.ts",
+        "tools/run-discovery-integration.mjs",
         "infra/router/init-trust.mjs"
       ]
     },

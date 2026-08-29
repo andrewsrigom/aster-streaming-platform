@@ -4,8 +4,8 @@
   "graphqlVersion": "16.14.2",
   "files": {
     "api.graphql": "61572c85baa41f999f05e0b73a6ed728799df8c7939aae64069ca199c890ec96",
-    "supergraph.graphql": "e8911e98812694e05de4da75f16499c43413af47c56164c1cd34bf096a840da7",
-    "catalog.graphql": "326def21b66271c21da64ace0c8c440e2e5d41a179ba601d8b591e3f7bcf39a8",
+    "supergraph.graphql": "e7ab3a9d9ba8e363b4e283aa54a8c6e3ef957f1cc9d032440efce8a4f388fc6a",
+    "catalog.graphql": "2c2c9c9d3bce6e7e36eed2994cfe428c8f3d2490908f61cf9423a5e3785bf4fa",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
     "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a",
     "engagement.graphql": "90bf40b4430a3951b21ee2cabddba70e58f6400393f80d3c800d6c39c21b7f74"
@@ -97,6 +97,41 @@
           "keys": []
         },
         {
+          "type": "DiscoverySourceDocument",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "defaultLocale",
+            "editorialLabels",
+            "genres",
+            "localizations",
+            "publishedAt",
+            "releaseYear"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoverySourcePage",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "endCursor",
+            "hasNextPage",
+            "snapshots"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoverySourceSnapshot",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "document",
+            "observedAt",
+            "sourceVersion",
+            "titleId",
+            "visibleUntil"
+          ],
+          "keys": []
+        },
+        {
           "type": "EngagementTitleVisibility",
           "kind": "ObjectTypeDefinition",
           "fields": [
@@ -130,6 +165,8 @@
           "type": "Query",
           "kind": "ObjectTypeDefinition",
           "fields": [
+            "_discoveryExport",
+            "_discoverySnapshots",
             "_engagementTitles",
             "_playbackPublications",
             "title",

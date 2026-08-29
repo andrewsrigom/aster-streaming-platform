@@ -83,6 +83,29 @@ input DeleteProfileInput @join__type(graph: IDENTITY) {
   expectedVersion: Int!
 }
 
+type DiscoverySourceDocument @join__type(graph: CATALOG) @inaccessible {
+  defaultLocale: String!
+  localizations: [LocalizedTitle!]!
+  genres: [String!]!
+  editorialLabels: [String!]!
+  releaseYear: Int
+  publishedAt: Float!
+}
+
+type DiscoverySourcePage @join__type(graph: CATALOG) @inaccessible {
+  snapshots: [DiscoverySourceSnapshot!]!
+  endCursor: ID
+  hasNextPage: Boolean!
+}
+
+type DiscoverySourceSnapshot @join__type(graph: CATALOG) @inaccessible {
+  titleId: ID!
+  sourceVersion: Int!
+  observedAt: Float!
+  visibleUntil: Float
+  document: DiscoverySourceDocument
+}
+
 type EngagementProfileAuthority @join__type(graph: IDENTITY) @inaccessible {
   code: IdentityOutcome!
   accountId: ID
@@ -295,6 +318,8 @@ type Query @join__type(graph: CATALOG) @join__type(graph: ENGAGEMENT) @join__typ
   title(id: ID!): Title @join__field(graph: CATALOG)
   _playbackPublications(ids: [ID!]!): [CurrentPlaybackPublication]! @inaccessible @join__field(graph: CATALOG)
   _engagementTitles(ids: [ID!]!): EngagementTitleVisibility! @inaccessible @join__field(graph: CATALOG)
+  _discoverySnapshots(ids: [ID!]!): [DiscoverySourceSnapshot]! @inaccessible @join__field(graph: CATALOG)
+  _discoveryExport(after: ID): DiscoverySourcePage! @inaccessible @join__field(graph: CATALOG)
   progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload! @join__field(graph: ENGAGEMENT)
   watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload! @join__field(graph: ENGAGEMENT)

@@ -2,7 +2,7 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
-[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases, bounded PostgreSQL search and two-generation rebuild beyond broker retention. No external search engine or cross-owner SQL. Domain rules and purpose-separated Catalog persistence/private runtime are implemented; Discovery-owned search/rebuild acceptance remains P09-R01.
+[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases, bounded PostgreSQL search and two-generation rebuild beyond broker retention. No external search engine or cross-owner SQL. Domain rules, purpose-separated Catalog access and Discovery-owned PostgreSQL fences/generation/search engine are implemented locally; event/runtime/GraphQL acceptance remains P09-R01.
 
 [ADR-0034](../docs/adr/0034-owned-event-delivery.md) defines owner-local fenced relays, unchanged v1 envelopes, dedicated Identity-event authentication and durable deletion/quarantine/replay. Real recovery required a one-second rebalance wait inside the existing broker deadline and an independent outbound step while inbound consumption recovers. Separate background credentials do not widen request roles; candidate/protected release remains.
 

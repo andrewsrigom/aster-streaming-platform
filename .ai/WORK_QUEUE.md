@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, rebased onto that exact head. Its complete private transport/runtime stash 01b1dad9bbda289976d137b1a20af9f7cf102add was applied exactly once; never apply it or older stashes again. No publication before predecessor closeout. Retained Phase07 demo remains intact.
+PR32 run33225822813 passed all setup, owner, immutable-replay and health boundaries, then failed the personalized browser at the selected GraphQL response body. P08-R11 is IN_PROGRESS again, not WAITING_EXTERNAL. P09's local persistence checkpoint passes34 focused tests and real PostgreSQL proof and is preserved unpublished; P09-R01 is READY until the predecessor closes. No stash replay or retained-demo change.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -51,8 +51,8 @@ PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, e
 | 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
-| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | WAITING_EXTERNAL |
-| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | IN_PROGRESS |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | IN_PROGRESS |
+| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | READY |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
 
