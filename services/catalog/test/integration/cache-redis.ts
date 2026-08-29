@@ -84,6 +84,22 @@ try {
     status: "completed",
     value: null,
   });
+  assert.deepEqual(await redis.read("aster:test:invalid-utf8", requestSignal()), {
+    status: "rejected",
+    reason: "value_too_large",
+  });
+  assert.deepEqual(await redis.probe(requestSignal()), { status: "completed" });
+  assert.deepEqual(await boundedCache.read("aster:test:invalid-utf8", requestSignal()), {
+    status: "malformed",
+  });
+  assert.deepEqual(await boundedCache.delete("aster:test:invalid-utf8", requestSignal()), {
+    status: "completed",
+    value: true,
+  });
+  assert.deepEqual(await redis.read("aster:test:invalid-utf8", requestSignal()), {
+    status: "completed",
+    value: null,
+  });
   assert.deepEqual(await redis.read(controlValueKey, requestSignal()), {
     status: "completed",
     value: "malformed\nvalue",
@@ -288,6 +304,7 @@ try {
       event: "catalog_cache_redis_verified",
       boundedOversizedRead: true,
       wrongTypeDeleted: true,
+      invalidUtf8Deleted: true,
       controlValueDeleted: true,
       unboundedNegativeDeleted: true,
       atomicCompareDelete: true,

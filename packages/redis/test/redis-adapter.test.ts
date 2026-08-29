@@ -92,7 +92,7 @@ class FakeClient implements AsterRedisClient {
         key: string,
         maximumBytes: number,
         signal: AbortSignal,
-      ) => Promise<readonly [0] | readonly [1, string] | readonly [2] | readonly [3]>)
+      ) => Promise<readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3]>)
     | undefined;
   setHandler: (
     key: string,
@@ -132,7 +132,7 @@ class FakeClient implements AsterRedisClient {
     key: string,
     maximumBytes: number,
     signal: AbortSignal,
-  ): Promise<readonly [0] | readonly [1, string] | readonly [2] | readonly [3]> {
+  ): Promise<readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3]> {
     this.getCalls += 1;
     if (this.boundedReadHandler) {
       return this.boundedReadHandler(key, maximumBytes, signal);
@@ -141,7 +141,8 @@ class FakeClient implements AsterRedisClient {
     if (value === null) {
       return [0];
     }
-    return Buffer.byteLength(value, "utf8") > maximumBytes ? [2] : [1, value];
+    const bytes = Buffer.from(value, "utf8");
+    return bytes.byteLength > maximumBytes ? [2] : [1, bytes];
   }
 
   set(
@@ -380,10 +381,16 @@ test("executes only bounded cache commands and reports finite dependency operati
     status: "completed",
     value: "cached",
   });
-  client.boundedReadHandler = () => Promise.resolve([1, "malformed\0\nvalue"]);
+  client.boundedReadHandler = () => Promise.resolve([1, Buffer.from("malformed\0\nvalue")]);
   assert.deepEqual(await adapter.read("aster:test:key"), {
     status: "completed",
     value: "malformed\0\nvalue",
+  });
+  assert.equal(client.destroyCalls, 0);
+  client.boundedReadHandler = () => Promise.resolve([1, Buffer.alloc(16_384, 0xff)]);
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "rejected",
+    reason: "value_too_large",
   });
   assert.equal(client.destroyCalls, 0);
   client.boundedReadHandler = undefined;
@@ -431,6 +438,7 @@ test("executes only bounded cache commands and reports finite dependency operati
     telemetry.attempts.map(({ input, outcome }) => [input.operation, outcome]),
     [
       ["connect", "success"],
+      ["read", "success"],
       ["read", "success"],
       ["read", "success"],
       ["read", "success"],

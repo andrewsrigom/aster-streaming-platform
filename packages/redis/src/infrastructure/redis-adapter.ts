@@ -1,4 +1,4 @@
-import { createClient } from "@redis/client";
+import { createClient, RESP_TYPES } from "@redis/client";
 
 import type {
   AsterDependencyObservation,
@@ -74,6 +74,7 @@ const COMPARE_AND_DELETE_SCRIPT =
 const ACQUIRE_RECOVERABLE_LEASE_SCRIPT =
   "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; if kind ~= 'string' or redis.call('PTTL', KEYS[1]) == -1 then redis.call('DEL', KEYS[1]); redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; return 0";
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
+const STRICT_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 
 type ValidatedOptions = Readonly<{
   url: string;
@@ -91,7 +92,7 @@ type ValidatedOptions = Readonly<{
 
 export type AsterRedisClientEvent = "connect" | "ready" | "reconnecting" | "error" | "end";
 
-type BoundedReadReply = readonly [0] | readonly [1, string] | readonly [2] | readonly [3];
+type BoundedReadReply = readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3];
 
 export interface AsterRedisClient {
   readonly isOpen: boolean;
@@ -479,10 +480,15 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
       return client.withCommandOptions({ abortSignal: signal }).ping();
     },
     getBounded(key, maximumBytes, signal): Promise<BoundedReadReply> {
-      return client.withCommandOptions({ abortSignal: signal }).eval(BOUNDED_READ_SCRIPT, {
-        keys: [key],
-        arguments: [String(maximumBytes)],
-      }) as unknown as Promise<BoundedReadReply>;
+      return client
+        .withCommandOptions({
+          abortSignal: signal,
+          typeMapping: { [RESP_TYPES.BLOB_STRING]: Buffer },
+        })
+        .eval(BOUNDED_READ_SCRIPT, {
+          keys: [key],
+          arguments: [String(maximumBytes)],
+        }) as unknown as Promise<BoundedReadReply>;
     },
     set(key, value, ttlMs, onlyIfAbsent, signal): Promise<string | null> {
       return client.withCommandOptions({ abortSignal: signal }).set(key, value, {
@@ -829,9 +835,6 @@ export function createAsterRedisAdapterWithClientFactory(
     validCommandText(key, ASTER_REDIS_COMMAND_LIMITS.maximumKeyBytes);
   const validValue = (value: unknown): value is string =>
     validCommandText(value, ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes, true);
-  const validReadValue = (value: unknown): value is string =>
-    typeof value === "string" &&
-    Buffer.byteLength(value, "utf8") <= ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes;
   const validBoundedReadReply = (value: unknown): value is BoundedReadReply => {
     if (!Array.isArray(value)) {
       return false;
@@ -839,7 +842,12 @@ export function createAsterRedisAdapterWithClientFactory(
     if ((value[0] === 0 || value[0] === 2 || value[0] === 3) && value.length === 1) {
       return true;
     }
-    return value[0] === 1 && value.length === 2 && validReadValue(value[1]);
+    return (
+      value[0] === 1 &&
+      value.length === 2 &&
+      Buffer.isBuffer(value[1]) &&
+      value[1].byteLength <= ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes
+    );
   };
 
   const read = async (key: string, signal?: AbortSignal): Promise<AsterRedisReadResult> => {
@@ -862,7 +870,14 @@ export function createAsterRedisAdapterWithClientFactory(
     if (result.value[0] === 2 || result.value[0] === 3) {
       return VALUE_TOO_LARGE_REJECTED;
     }
-    return Object.freeze({ status: "completed", value: result.value[1] });
+    try {
+      return Object.freeze({
+        status: "completed",
+        value: STRICT_UTF8_DECODER.decode(result.value[1]),
+      });
+    } catch {
+      return VALUE_TOO_LARGE_REJECTED;
+    }
   };
 
   const write = async (

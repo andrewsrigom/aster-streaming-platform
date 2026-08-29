@@ -93,6 +93,19 @@ try {
   );
   assert.equal(
     await docker(
+      [
+        "exec",
+        ownedId,
+        "sh",
+        "-c",
+        "head -c 16384 /dev/zero | tr '\\000' '\\377' | redis-cli -x SET aster:test:invalid-utf8",
+      ],
+      5_000,
+    ),
+    "OK",
+  );
+  assert.equal(
+    await docker(
       ["exec", ownedId, "redis-cli", "--raw", "SET", "aster:test:lease-no-expiry", "stuck"],
       5_000,
     ),
