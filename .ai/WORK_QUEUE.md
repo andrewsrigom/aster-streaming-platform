@@ -57,8 +57,11 @@ eleven-service outage and release evidence remain linked under
 `evidence/phase-10`. P10-R08 is the sole `IN_PROGRESS` item on
 `feat/p10-operation-limiters`, based exactly on that release. Initial PR40
 run33277368515 passed; exactade7379 corrects its three initial review blockers.
-Its corrected local gate passes73/73; hosted gates and confirmation remain before
-merge.
+Protected run33279111820 passed exact041c75e; confirmation discussion3887901456
+then found duplicate token charges across Engagement replicas. Exact c5ea7c8
+atomically deduplicates the finite shared admission marker. Redis18/18,
+Engagement124/124 and affected73/73 pass; one protected real-dependency repeat
+and the permitted blocking-boundary confirmation remain before merge.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

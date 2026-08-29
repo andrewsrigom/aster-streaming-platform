@@ -39,8 +39,11 @@ complete candidate passes 73/73 with 48 cached in 73.641 seconds. Protected run
 corrected real Redis/PostgreSQL fixtures. Its confirmation review found one
 remaining replica boundary: process-local same-key ordering cannot prevent two
 Engagement replicas from charging the shared bucket before PostgreSQL receipt
-serialization. This plan now owns one batched correction at that shared Redis
-boundary before release.
+serialization. Exact `c5ea7c8` adds one finite atomic v2 admission marker to the
+shared bucket decision. Redis18/18, Engagement124/124, scoped static checks and
+the corrected affected gate pass 73/73 with 44 cached in 61.854 seconds. The
+Redis script/key changed, so the protected real-dependency repeat and permitted
+blocking-boundary confirmation remain before release.
 
 ## Proposed behavior
 
@@ -211,8 +214,10 @@ dependency closure.
   the Phase 10 complete acceptance gate.
 - Raw artifact path: `evidence/phase-10/operation-limiters-*.txt`, Discovery
   release evidence and updated Phase 10 index.
-- Acceptance result: the initial candidate/protected real-dependency run and the
-  corrected 73/73 local candidate pass. Corrected hosted gates remain pending.
+- Acceptance result: both earlier protected real-dependency runs passed, and the
+  cross-replica correction passes its focused suites plus the complete affected
+  73/73 local candidate. The new two-key Redis command still requires protected
+  real-dependency execution.
 - Iteration gate: affected package/service builds and focused tests, then scoped
   lint/format.
 - Candidate gate: `pnpm check:changed` plus real Redis atomicity/hot-key and
@@ -221,9 +226,10 @@ dependency closure.
   repeat Redis evidence; owner placement/result or Engagement composition changes
   repeat durable outage evidence; search admission changes repeat concurrency
   proof. Unchanged media, player and browser assets do not repeat.
-- Review stopping rule: one complete initial review and one confirmation. Reopen
-  only for a requirement, security/data invariant, availability behavior or
-  public-contract blocker.
+- Review stopping rule: the complete initial review and first confirmation are
+  collected. Discussion3887901456 is a new blocking availability/idempotency
+  boundary, so one confirmation of this exact remediation is permitted; no
+  speculative extra round follows.
 
 ## Rollback or recovery
 

@@ -1,13 +1,14 @@
 P10 operation admission contract checkpoint
 Date: 2026-08-29
-Status: corrected local candidate; hosted confirmation pending
+Status: cross-replica review remediation passes locally; protected repeat pending
 
 Source
 - Branch: feat/p10-operation-limiters
 - Released base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
 - Implementation candidate: baf02d2733590f80d6d39ce796483a7d69a4c4ab
 - Review remediation: ade7379e07438bb394af6131d5f9ac1111f5225d
-- Corrected candidate tree: 4e729374150d46a30a06d2f965bcbd2438e1daf1
+- Cross-replica remediation: c5ea7c8b243042fc897cd2fcd28e17e260d01f0b
+- Corrected candidate tree: 48682156685c68ed9fa102fd68c12f5b7df3ecc9
 - Generated compatibility base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
 - Generated manifest SHA-256:
   d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303
@@ -29,6 +30,10 @@ Commands and raw results
   78.553 seconds Turbo wall time with TURBO_CONCURRENCY=4.
 - Corrected pnpm check:changed after review remediation: PASS, 73/73, 48 cached,
   73.641 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- Cross-replica correction: @aster/redis PASS 18/18; @aster/engagement
+  PASS 124/124; scoped ESLint, Prettier and git diff check PASS.
+- Cross-replica corrected pnpm check:changed: PASS, 73/73, 44 cached,
+  61.854 seconds Turbo wall time with TURBO_CONCURRENCY=4.
 - git diff --check, Prettier, ESLint, Knip, strict TypeScript, architecture,
   security, documentation, repository memory and schema compatibility: PASS.
 - The implementation candidate was committed after the complete source gate.
@@ -37,7 +42,15 @@ Commands and raw results
 - Protected run 33277368515 passed every required job at exact 6719bda,
   including the real Redis and PostgreSQL fixtures. Its initial review produced
   three P2 findings; exact ade7379 corrects all three. Corrected hosted gates are
-  intentionally pending rather than attributed to the earlier run.
+  intentionally not attributed to that earlier run.
+- Protected run 33279111820 passed every required job at exact 041c75e. Its real
+  Redis output recorded four charged/20 rejected independent attempts,
+  hotBurstRedisCommands 4 and local outage fallback; its PostgreSQL output
+  recorded one durable effect during Redis loss. Confirmation discussion
+  3887901456 then found that process-local same-key ordering did not coordinate
+  token charges across Engagement replicas. Exact c5ea7c8 adds one finite atomic
+  admission marker at the shared Redis boundary. Because the Redis script/key
+  changed, a new protected real-dependency run is required.
 
 Covered contract
 - One bounded Redis-server-time Lua decision uses integer milli-tokens, finite
@@ -49,6 +62,13 @@ Covered contract
 - A bounded/cancellable same-key lane serializes receipt inspection and rate
   admission. Five concurrent progress retries and five concurrent watchlist
   retries each consume one admission and produce/replay one durable effect.
+- The application derives the same bounded admission digest in separate recorder
+  instances. The Redis command atomically stores its finite marker only after an
+  allowed charge; a second adapter reuses that decision. Distinct admission
+  digests still consume or reject against the shared account-operation bucket.
+- The real PostgreSQL fixture now holds two recorder replicas after negative
+  receipt reads and requires two limiter calls, one limiter charge, one receipt,
+  one event and one durable progress result.
 - A 1,024-partition local shield bounds degraded admission and sheds a local hot
   caller before another Redis command. Progress refills at four tokens/second;
   watchlist refills at one token/second.
@@ -72,11 +92,11 @@ Local dependency limitation
   passed; its corrected repeat is the pending real Redis/PostgreSQL boundary.
 
 Interpretation
-The corrected candidate satisfies focused static, unit, application, transport
-and schema contracts. Real dependency fixtures passed on its prior code boundary,
-but the review remediation changed admission placement and public payloads; the
-corrected complete gate passes, while protected CI and confirmation review still
-must pass.
+The cross-replica correction satisfies focused static, unit, application and
+complete affected-source gates. The previous exact-head protected run proves the
+public payloads and prior limiter behavior, but it cannot prove the new two-key
+Lua command. Protected real Redis/PostgreSQL execution and the permitted
+blocking-boundary confirmation still must pass before release.
 
 Limitations
 - No hosted deployment, field SLO, arbitrary replica-count or production

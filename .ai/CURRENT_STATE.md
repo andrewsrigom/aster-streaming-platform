@@ -136,7 +136,17 @@ mutation work is serialized before receipt/rate admission, Engagement retry
 timing is in the GraphQL payload, and Discovery saturation is a public payload
 code. Redis18/18, telemetry12/12, Engagement123/123, Discovery105/105 and
 Web111/111 focused suites pass. The corrected complete candidate passes73/73,
-48 cached,in73.641 seconds. Corrected hosted gates and confirmation review remain.
+48 cached,in73.641 seconds. Protected run33279111820 then passed all required
+jobs and the corrected real fixtures at exact041c75e. Confirmation discussion
+3887901456 found one remaining blocking boundary: different Engagement replicas
+could each charge the shared bucket before PostgreSQL serialized the receipt.
+Exact c5ea7c8 changes the Redis decision to one v2 bucket plus one finite atomic
+admission-digest marker. Two limiter/recorder instances now make two admission
+calls but one charge, while PostgreSQL still produces one receipt/event/effect.
+Redis18/18, Engagement124/124, scoped static checks and the corrected affected
+gate pass73/73,44 cached,in61.854 seconds. The Redis script/key changed, so one
+protected real-dependency repeat and the permitted blocking-boundary confirmation
+remain.
 The local Docker daemon remains unavailable; no repeated daemon/WSL probe is
 authorized or needed.
 
@@ -186,14 +196,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Corrected protected CI, confirmation review, release evidence, merge, exact-main
-CI and Phase10 closeout remain. Hosted deployment remains Phase14.
+The c5ea7c8 protected real-dependency repeat, blocking-boundary confirmation,
+release evidence, merge, exact-main CI and Phase10 closeout remain. Hosted
+deployment remains Phase14.
 
 ## Next outcome
 
-Publish the corrected candidate to PR40, run protected hosted fixtures and one
-confirmation review, then release P10-R08 and mark Phase 10 complete after
-exact-main gates.
+Publish exact c5ea7c8 plus its evidence checkpoint to PR40, run protected hosted
+fixtures and the permitted blocking-boundary confirmation, then release P10-R08
+and mark Phase 10 complete after exact-main gates.
 
 ## Runtime and recovery
 

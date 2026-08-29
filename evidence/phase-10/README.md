@@ -45,9 +45,10 @@ two-active/one-waiter search policy, finite telemetry and durable-state boundary
 - [Discovery release](discovery-swr-release.txt): protected exact-head acceptance,
   clean confirmation, squash and exact-main CI.
 - [Operation-limiter contract](operation-limiters-contract.txt): focused suites,
-  finite policy boundaries and the complete 73/73 local candidate gate.
-- Operation-limiter Redis, PostgreSQL and release artifacts remain pending the
-  hosted dependency gates.
+  finite policy boundaries, cross-replica admission correction and the complete
+  73/73 local candidate gate.
+- Operation-limiter Redis, PostgreSQL and release artifacts require one protected
+  repeat after the shared Redis admission-marker correction.
 
 Every artifact records the exact implementation commit, environment, command,
 workload, raw result, interpretation and limitations. Catalog has release

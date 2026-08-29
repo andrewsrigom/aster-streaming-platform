@@ -26,17 +26,25 @@ Append new entries at the top. Keep entries factual and concise.
   `retryAfterMs`; Discovery exposes `LIMIT_EXCEEDED` through the public payload.
   Engagement123/123, Discovery105/105 and Web111/111 pass. The corrected complete
   candidate passes73/73,48 cached,in73.641 seconds.
+- Protected run33279111820 passed all jobs and corrected real fixtures at exact
+  041c75e. Confirmation discussion3887901456 found that process-local ordering
+  did not prevent duplicate charges across Engagement replicas.
+- Exact c5ea7c8 adds one finite v2 admission marker to the atomic Redis bucket
+  decision. Separate limiter/recorder replicas now reuse one charge while
+  PostgreSQL remains the receipt/effect owner. Redis18/18, Engagement124/124,
+  scoped static checks and the affected73/73 gate pass,44 cached,in61.854 seconds.
 
 ### Evidence
 
 - Local `pnpm check:changed`: 73/73 tasks passed.
 - Generated supergraph: compatibility base `6a2fe3a`, eight artifacts, manifest
-  SHA-256 `57b0081027cf85459de5e0449c552251ac41d116181efdf0cefea8133160e1a0`.
+  SHA-256 `d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303`.
 
 ### Next action
 
-Publish exact ade7379 plus the passing corrected candidate evidence, then require
-protected CI and one confirmation review before release.
+Publish exact c5ea7c8 plus this evidence checkpoint, run the protected real
+fixtures, resolve discussion3887901456 and request the permitted
+blocking-boundary confirmation before release.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 
