@@ -49,7 +49,8 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
 - Corruption: the Redis-side read rejects oversized and non-string exact values
   before returning bytes; Catalog deletes that malformed key best-effort
 - Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
-  coalescing and lease outcomes, bounded waiter bucket, duration and payload bytes
+  coalescing and lease outcomes, bounded attached-caller bucket excluding the
+  refresh owner, duration and payload bytes
 
 The exact contract and safety trade-off are in
 [ADR-0037](../adr/0037-rights-safe-catalog-cache.md). This section describes the

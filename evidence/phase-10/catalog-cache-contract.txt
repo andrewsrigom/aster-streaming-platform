@@ -11,6 +11,7 @@ Source
 - Final-confirmation correction: 62afee15240ab1d197aac84b4d63e1a0e1dce382
 - Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf
 - Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca
+- Waiter-bucket correction: 6088bf8b16c16df5b5a2b15d8a70e7809661ed64
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -23,8 +24,8 @@ Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
 - @aster/catalog tests: PASS, 245/245.
-- pnpm check:changed: PASS, 73 successful of 73 total, 57 cached,
-  54.75 seconds Turbo wall time on the negative-age correction.
+- pnpm check:changed: PASS, 73 successful of 73 total, 58 cached,
+  63.085 seconds Turbo wall time on the waiter-bucket correction.
 - An earlier affected attempt hit one unrelated Identity terminal-fallback timing
   assertion under concurrent load. The focused Identity suite then passed147/147
   and the complete affected gate passed; no Identity source changed.
@@ -53,6 +54,9 @@ Workload and covered contract
 - Twenty-four concurrent cold absence checks share one in-process owner-fence
   read; two independent readers share one owner-fence read through the negative
   key lease before reusing the short absence marker.
+- Coalesced waiter buckets count attached callers behind the owner: a 24-caller
+  cold absence burst records one `one`, three `two_to_four` and nineteen
+  `five_plus` observations. The two-caller positive path records `one`.
 - Fence sharing includes request time and rights-use policy, so calls straddling
   a visibility boundary execute independent owner decisions.
 - Redis wrong-type values are classified before size/read operations and enter
@@ -110,6 +114,15 @@ publication indefinitely. Correction f50acbb embeds `cachedAt`, validates it
 against the same ten-second maximum, and treats missing, future or older values
 as malformed. Catalog245/245, affected73/73 and repeated real Redis/PostgreSQL
 fixtures pass; real Redis proves exact deletion of a seeded no-expiry marker.
+
+Waiter-bucket review
+Protected run33265036497 passed exact 4afe12f, but exact-head review discussion
+3887201296 found that the refresh owner was included in every coalesced waiter
+bucket. Correction6088bf8 records only callers attached behind the owner for
+both fence and positive refreshes. Catalog245/245 and the complete73/73 affected
+gate pass. The previous real Redis/PostgreSQL evidence remains applicable because
+the correction changes only finite telemetry classification, not cache bytes,
+Redis commands, source coordination, visibility or failure behavior.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis

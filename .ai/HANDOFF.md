@@ -34,15 +34,19 @@ behavior and the complete PostgreSQL fixture pass with cleanup0. Discussion
 expiry could hide later publication. Exact
 `f50acbb7cbb26cef480b0bb87018510660da48ca` embeds and validates cache time,
 deletes missing/future/over-age envelopes and rechecks the owner. Catalog245/245,
-affected73/73 and repeated real Redis/PostgreSQL fixtures pass. The separate
+affected73/73 and repeated real Redis/PostgreSQL fixtures pass. Protected run
+33265036497 passed exact4afe12f, but review discussion3887201296 found shifted
+owner-inclusive waiter buckets. Exact6088bf8 counts only attached callers;
+Catalog245/245 and affected73/73 pass without changing the real cache boundary.
+The separate
 `feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
 b65688b; do not publish it before predecessor release.
 
 ## Exact next actions
 
-1. Commit this documentation-only latest-confirmation evidence and publish one
-   PR37 update.
-2. Reply to and resolve discussion3887146000, then obtain corrected
+1. Commit this documentation-only waiter-bucket evidence and publish one PR37
+   update.
+2. Reply to and resolve discussion3887201296, then obtain corrected
    confirmation and protected CI before squash merge and exact-main acceptance.
 3. Rebase only dependent commits after b65688b onto released squash main, repeat
    affected gates, and resume P10-R04.

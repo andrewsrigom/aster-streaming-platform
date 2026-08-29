@@ -72,6 +72,11 @@ Exact `f50acbb7cbb26cef480b0bb87018510660da48ca` timestamps the negative envelop
 rejects missing/future/older-than-ten-second values and deletes the exact key
 before owner recheck. Catalog245/245, affected73/73, real Redis including the
 unbounded marker and the complete PostgreSQL fixture pass with cleanup0.
+Protected run33265036497 passed exact `4afe12f`, but review discussion3887201296
+found that the refresh owner shifted every coalesced waiter bucket. Exact
+`6088bf8` counts only attached callers for fence and positive refreshes;
+Catalog245/245 and affected73/73 pass. Existing real fixtures remain applicable
+because cache bytes, Redis wire, visibility and coordination did not change.
 Corrected publication, confirmation and protected acceptance remain pending.
 The local Discovery dependent checkpoint `423c33d` is preserved separately and
 cannot publish until this predecessor releases.

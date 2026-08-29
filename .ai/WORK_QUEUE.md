@@ -26,7 +26,10 @@ acceptance remain. Discussion3887146000 then found that an otherwise recognizabl
 absence marker could survive without bounded Redis expiry. Exact f50acbb embeds
 and validates cache time, deletes missing/future/over-age envelopes and rechecks
 the owner. Catalog245/245, affected73/73 and repeated Redis/PostgreSQL fixtures
-pass; publication and hosted acceptance remain.
+pass. Protected run33265036497 passed exact4afe12f, but review discussion
+3887201296 found owner-inclusive waiter buckets. Exact6088bf8 now counts only
+attached callers for both refresh paths; Catalog245/245 and affected73/73 pass.
+Publication and hosted acceptance remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

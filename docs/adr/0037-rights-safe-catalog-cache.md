@@ -61,7 +61,8 @@ The first request creates work with its own finite deadline; later callers attac
 as waiters and retain independent cancellation. A cancelled caller stops waiting
 without aborting work still used by another caller. Settled work is removed. When
 the map is full, a request loads the source directly instead of allocating an
-unbounded entry.
+unbounded entry. Coalescing telemetry counts only callers attached behind the
+owner; the owner itself is not included in the bounded waiter bucket.
 
 Across processes, acquire a two-second Redis lease with `SET NX PX` and a random
 128-bit token. A loser waits at most 25 milliseconds, checks the cache once, then

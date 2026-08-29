@@ -2,6 +2,29 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Catalog waiter-bucket remediation
+
+### Completed
+
+- Protected run33265036497 passed exact4afe12f. Exact-head review discussion
+  3887201296 then found that the refresh owner shifted every coalesced waiter
+  bucket upward.
+- Exact6088bf8 counts only callers attached behind the owner in both fence and
+  positive refresh paths. The 24-caller negative regression proves bucket counts
+  1/3/19; the two-caller positive regression records `one`.
+- Catalog245/245 and the affected73/73 gate pass with58 cached in63.085 seconds.
+  Real Redis/PostgreSQL fixtures remain valid because no cache byte, command,
+  source-coordination, visibility or failure boundary changed.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-contract.txt`
+
+### Next action
+
+Publish one PR37 update, resolve discussion3887201296, require exact-head
+protected CI and confirmation, then release Catalog and rebase Discovery.
+
 ## 2026-08-29 — Catalog negative-cache age remediation
 
 ### Completed
@@ -2357,16 +2380,16 @@ Execute P00-R07 by adding contribution governance and repository templates befor
 
 Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, safe secret fixtures, and dependency review with one stable aggregate result.
 
-## 2026-08-26 — Strict and tiered source-quality foundation
+**Historical checkpoint — 2026-08-26 — Strict and tiered source-quality foundation**
 
-### Completed
+**Completed**
 
 - Exact-pinned TypeScript `6.0.3`, ESLint `10.9.1`, `@eslint/js` `10.0.1`, typescript-eslint `8.68.0`, Prettier `3.9.6`, Knip `6.32.2`, and `@types/node` `24.13.3` after current compatibility, license, engine, and release-maturity review.
 - Added strict shared and root TypeScript policies, type-aware linting, deterministic code/config formatting, unused-code analysis, and ten root Turbo tasks.
 - Added a bounded TypeScript-AST architecture scanner with inward-layer and forbidden-client rules plus adverse fixtures.
 - Added repository-local staged-file and commit-message hooks that keep repository-wide and heavyweight work outside the commit path.
 
-### Evidence
+**Evidence**
 
 - Passed a frozen install without changing any authoritative configuration or lockfile byte.
 - Passed 25 focused tests, an actual repository scan with zero violation, and deliberate Express-in-domain, outward-layer, package-escape, malformed-source, staged-path, and malformed-message failures.
@@ -2374,7 +2397,7 @@ Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, sa
 - Verified 127 Markdown files and 212 internal links with no structure or broken-link issue; found no restricted private-context vocabulary or `Zone.Identifier` file.
 - Raw evidence: `evidence/phase-00/source-quality-foundation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R05 by turning the current documentation audit contract into a bounded, tested, repository-owned command and integrating it into the task graph.
 

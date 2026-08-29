@@ -61,3 +61,10 @@ envelopes and deletes missing, future or over-age values before owner recheck.
 Catalog245/245 and affected73/73 pass. Repeated real Redis proves
 `unboundedNegativeDeleted=true`; the complete PostgreSQL fixture also passes with
 cleanup0.
+
+Protected run33265036497 passed exact `4afe12f`, but its exact-head review
+discussion3887201296 found that coalesced waiter buckets included the refresh
+owner and shifted every measurement. Exact `6088bf8` counts only attached
+callers for both fence and positive refreshes. Catalog245/245 and affected73/73
+pass. Real fixtures were not repeated because cache bytes, Redis wire, source
+coordination, visibility and failure behavior are unchanged.

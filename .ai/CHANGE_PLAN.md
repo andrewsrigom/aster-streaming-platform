@@ -50,6 +50,10 @@ excessive Redis expiry could outlive the ten-second publication-discoverability
 contract. Exact correction `f50acbb7cbb26cef480b0bb87018510660da48ca`
 embeds and strictly validates `cachedAt`; missing, future or older-than-ten-second
 envelopes are malformed, deleted exactly and rechecked against Catalog.
+Protected run33265036497 then passed exact `4afe12f`, but exact-head review found
+that coalescing telemetry included the refresh owner in its waiter count. Exact
+`6088bf8` classifies only callers attached behind the owner for both fence and
+positive refresh work; cache and visibility behavior are unchanged.
 
 ## Boundaries
 
@@ -141,9 +145,10 @@ envelopes are malformed, deleted exactly and rechecked against Catalog.
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
 - Acceptance result: corrected local candidate PASS: Catalog245/245,
-  Redis17/17, telemetry11/11, affected73/73 (57 cached, 54.75 seconds), real
+  Redis17/17, telemetry11/11, affected73/73 (58 cached, 63.085 seconds), real
   PostgreSQL fence/source/dispute and real Redis bounded/wrong-type/over-age
-  reads, positive-plus-negative concurrency, outage and cleanup. One earlier affected
+  reads, positive-plus-negative concurrency, exact attached-caller waiter
+  buckets, outage and cleanup. One earlier affected
   attempt hit an unrelated Identity terminal-fallback timing failure; its focused
   147/147 rerun and the next complete gate pass. Protected CI, corrected
   confirmation and release remain pending.
