@@ -122,6 +122,22 @@ try {
     status: "completed",
     deleted: true,
   });
+  assert.deepEqual(await redis.acquireLease("aster:test:lease-no-expiry", "owner-c", 2_000), {
+    status: "completed",
+    stored: true,
+  });
+  assert.deepEqual(await redis.compareAndDelete("aster:test:lease-no-expiry", "owner-c"), {
+    status: "completed",
+    deleted: true,
+  });
+  assert.deepEqual(await redis.acquireLease("aster:test:lease-wrong-type", "owner-d", 2_000), {
+    status: "completed",
+    stored: true,
+  });
+  assert.deepEqual(await redis.compareAndDelete("aster:test:lease-wrong-type", "owner-d"), {
+    status: "completed",
+    deleted: true,
+  });
 
   const candidates = [publicCandidate(2), publicCandidate(3), publicCandidate(97)];
   const expectedFences = candidates.map(candidateFence);
@@ -277,6 +293,8 @@ try {
       atomicCompareDelete: true,
       expiryObserved: true,
       expiredLeaseRecovered: true,
+      nonExpiringLeaseRecovered: true,
+      wrongTypeLeaseRecovered: true,
       concurrentCallers: burst.length,
       uncachedFullSourceReadsDuringBurst: 24,
       uncachedBurstDurationMs: Math.round(baselineDurationMs * 100) / 100,
@@ -290,6 +308,7 @@ try {
       crossInstanceFullSourceReads: 1,
       crossInstanceNegativeCallers: crossInstanceNegative.length,
       crossInstanceNegativeFenceReads: 1,
+      catalogNonExpiringLeaseRecovered: true,
       leaseContentionObserved: true,
       outageReturnedOwnerValue: true,
       finiteMetricSeries: cacheOutcomes.points.length,

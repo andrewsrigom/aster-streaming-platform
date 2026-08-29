@@ -71,6 +71,8 @@ const BOUNDED_READ_SCRIPT =
   "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then return {0} end; if kind ~= 'string' then return {3} end; local size = redis.call('STRLEN', KEYS[1]); if size > tonumber(ARGV[1]) then return {2} end; return {1, redis.call('GET', KEYS[1])}";
 const COMPARE_AND_DELETE_SCRIPT =
   "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
+const ACQUIRE_RECOVERABLE_LEASE_SCRIPT =
+  "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; if kind ~= 'string' or redis.call('PTTL', KEYS[1]) == -1 then redis.call('DEL', KEYS[1]); redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; return 0";
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
 
 type ValidatedOptions = Readonly<{
@@ -104,6 +106,12 @@ export interface AsterRedisClient {
     onlyIfAbsent: boolean,
     signal: AbortSignal,
   ): Promise<string | null>;
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal: AbortSignal,
+  ): Promise<number>;
   del(key: string, signal: AbortSignal): Promise<number>;
   compareAndDelete(key: string, expectedValue: string, signal: AbortSignal): Promise<number>;
   destroy(): void;
@@ -481,6 +489,14 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
         expiration: { type: "PX", value: ttlMs },
         ...(onlyIfAbsent ? { condition: "NX" as const } : {}),
       });
+    },
+    acquireLease(key, ownershipToken, ttlMs, signal): Promise<number> {
+      return client
+        .withCommandOptions({ abortSignal: signal })
+        .eval(ACQUIRE_RECOVERABLE_LEASE_SCRIPT, {
+          keys: [key],
+          arguments: [ownershipToken, String(ttlMs)],
+        }) as Promise<number>;
     },
     del(key, signal): Promise<number> {
       return client.withCommandOptions({ abortSignal: signal }).del(key);
@@ -871,6 +887,31 @@ export function createAsterRedisAdapterWithClientFactory(
       : result;
   };
 
+  const acquireLease = async (
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisWriteResult> => {
+    if (
+      !validKey(key) ||
+      !validValue(ownershipToken) ||
+      ownershipToken.length === 0 ||
+      !validTtl(ttlMs)
+    ) {
+      return INVALID_INPUT_REJECTED;
+    }
+    const result = await runCommand(
+      "write",
+      signal,
+      (client, operationSignal) => client.acquireLease(key, ownershipToken, ttlMs, operationSignal),
+      (reply): reply is number => reply === 0 || reply === 1,
+    );
+    return result.status === "completed"
+      ? Object.freeze({ status: "completed", stored: result.value === 1 })
+      : result;
+  };
+
   const deleteKey = async (key: string, signal?: AbortSignal): Promise<AsterRedisDeleteResult> => {
     if (!validKey(key)) {
       return INVALID_INPUT_REJECTED;
@@ -975,6 +1016,7 @@ export function createAsterRedisAdapterWithClientFactory(
     probe,
     read,
     write,
+    acquireLease,
     delete: deleteKey,
     compareAndDelete,
     snapshot,

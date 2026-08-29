@@ -43,6 +43,9 @@ export function createRedisCatalogPublicCache(redis: AsterRedisAdapter): Catalog
     async write(key, value, ttlMs, mode, signal) {
       return writeResult(await redis.write(key, value, ttlMs, mode, signal));
     },
+    async acquireLease(key, ownershipToken, ttlMs, signal) {
+      return writeResult(await redis.acquireLease(key, ownershipToken, ttlMs, signal));
+    },
     async delete(key, signal) {
       return deleteResult(await redis.delete(key, signal));
     },

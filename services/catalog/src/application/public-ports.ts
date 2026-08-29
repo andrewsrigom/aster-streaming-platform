@@ -67,6 +67,12 @@ export interface CatalogPublicCacheStore {
     mode: "replace" | "if_absent",
     signal: AbortSignal,
   ): Promise<CatalogCacheResult<boolean>>;
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal: AbortSignal,
+  ): Promise<CatalogCacheResult<boolean>>;
   delete(key: string, signal: AbortSignal): Promise<CatalogCacheResult<boolean>>;
   compareAndDelete(
     key: string,

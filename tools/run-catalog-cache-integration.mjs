@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath, URL } from "node:url";
 import { performance } from "node:perf_hooks";
@@ -90,6 +90,38 @@ try {
       5_000,
     ),
     "1",
+  );
+  assert.equal(
+    await docker(
+      ["exec", ownedId, "redis-cli", "--raw", "SET", "aster:test:lease-no-expiry", "stuck"],
+      5_000,
+    ),
+    "OK",
+  );
+  assert.equal(
+    await docker(
+      [
+        "exec",
+        ownedId,
+        "redis-cli",
+        "--raw",
+        "HSET",
+        "aster:test:lease-wrong-type",
+        "field",
+        "value",
+      ],
+      5_000,
+    ),
+    "1",
+  );
+  const negativeKey =
+    "aster:test:catalog:public-title-absent:v1:00000000-0000-4000-8000-000000000098";
+  const negativeLeaseKey =
+    "aster:test:catalog:public-title-lease:v1:" +
+    createHash("sha256").update(negativeKey).digest("hex");
+  assert.equal(
+    await docker(["exec", ownedId, "redis-cli", "--raw", "SET", negativeLeaseKey, "stuck"], 5_000),
+    "OK",
   );
   assert.equal(
     await docker(

@@ -93,6 +93,12 @@ export interface AsterRedisAdapter {
     mode: AsterRedisWriteMode,
     signal?: AbortSignal,
   ): Promise<AsterRedisWriteResult>;
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisWriteResult>;
   delete(key: string, signal?: AbortSignal): Promise<AsterRedisDeleteResult>;
   compareAndDelete(
     key: string,

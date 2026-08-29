@@ -47,6 +47,14 @@ function memoryCache() {
       values.set(key, value);
       return Promise.resolve({ status: "completed", value: true });
     },
+    acquireLease: (key, ownershipToken, ttlMs) => {
+      writes.push({ key, ttlMs, mode: "lease" });
+      if (values.has(key)) {
+        return Promise.resolve({ status: "completed", value: false });
+      }
+      values.set(key, ownershipToken);
+      return Promise.resolve({ status: "completed", value: true });
+    },
     delete: (key) => Promise.resolve({ status: "completed", value: values.delete(key) }),
     compareAndDelete: (key, expectedValue) => {
       if (values.get(key) !== expectedValue) {
@@ -341,6 +349,41 @@ test("fence coalescing never shares visibility decisions across request time", a
   assert.equal(f.source.state.fenceReads, 2);
 });
 
+test("a title reattaching to sibling-owned fence work starts at the one-waiter bucket", async () => {
+  const f = readerFixture([publicCandidate(1), publicCandidate(2)]);
+  let started: (() => void) | undefined;
+  let release: (() => void) | undefined;
+  const barrier = new Promise<void>((resolve) => {
+    started = resolve;
+  });
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  f.source.state.beforeFences = async () => {
+    started?.();
+    await blocked;
+  };
+  const ownerController = new AbortController();
+  const owner = f.reader.findMany([id(1), id(2)], scope, ownerController.signal);
+  await barrier;
+  const siblingWaiter = f.reader.findMany([id(2)], scope, signal());
+  while (f.observations.filter((value) => value.outcome === "coalesced").length < 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  ownerController.abort();
+  assert.equal((await owner).status, "cancelled");
+
+  const reattached = f.reader.findMany([id(1)], scope, signal());
+  while (f.observations.filter((value) => value.outcome === "coalesced").length < 2) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  const coalesced = f.observations.filter((value) => value.outcome === "coalesced");
+  assert.equal(coalesced[1]?.waiterBucket, "one");
+  release?.();
+  assert.equal((await siblingWaiter).status, "completed");
+  assert.equal((await reattached).status, "completed");
+});
+
 test("TTL jitter is deterministic per key and distributed inside both policy windows", async () => {
   const candidates = Array.from({ length: 20 }, (_, index) => publicCandidate(index + 1));
   const ids = candidates.map((candidate) => fence(candidate).id);
@@ -501,6 +544,7 @@ test("Redis loss bypasses to PostgreSQL and cannot change the public result", as
   const bypass: CatalogPublicCacheStore = {
     read: () => Promise.resolve({ status: "bypass" }),
     write: () => Promise.resolve({ status: "bypass" }),
+    acquireLease: () => Promise.resolve({ status: "bypass" }),
     delete: () => Promise.resolve({ status: "bypass" }),
     compareAndDelete: () => Promise.resolve({ status: "bypass" }),
   };

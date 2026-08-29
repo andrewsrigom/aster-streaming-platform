@@ -75,6 +75,7 @@ class FakeClient implements AsterRedisClient {
   pingCalls = 0;
   getCalls = 0;
   setCalls = 0;
+  acquireLeaseCalls = 0;
   deleteCalls = 0;
   compareAndDeleteCalls = 0;
   destroyCalls = 0;
@@ -100,6 +101,12 @@ class FakeClient implements AsterRedisClient {
     onlyIfAbsent: boolean,
     signal: AbortSignal,
   ) => Promise<string | null> = () => Promise.resolve("OK");
+  acquireLeaseHandler: (
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal: AbortSignal,
+  ) => Promise<number> = () => Promise.resolve(1);
   deleteHandler: (key: string, signal: AbortSignal) => Promise<number> = () => Promise.resolve(0);
   compareAndDeleteHandler: (
     key: string,
@@ -146,6 +153,16 @@ class FakeClient implements AsterRedisClient {
   ): Promise<string | null> {
     this.setCalls += 1;
     return this.setHandler(key, value, ttlMs, onlyIfAbsent, signal);
+  }
+
+  acquireLease(
+    key: string,
+    ownershipToken: string,
+    ttlMs: number,
+    signal: AbortSignal,
+  ): Promise<number> {
+    this.acquireLeaseCalls += 1;
+    return this.acquireLeaseHandler(key, ownershipToken, ttlMs, signal);
   }
 
   del(key: string, signal: AbortSignal): Promise<number> {
@@ -389,6 +406,15 @@ test("executes only bounded cache commands and reports finite dependency operati
     status: "completed",
     stored: false,
   });
+  client.acquireLeaseHandler = (_key, ownershipToken, ttlMs) => {
+    assert.equal(ownershipToken, "owner-a");
+    assert.equal(ttlMs, 2_000);
+    return Promise.resolve(1);
+  };
+  assert.deepEqual(await adapter.acquireLease("aster:test:lease", "owner-a", 2_000), {
+    status: "completed",
+    stored: true,
+  });
   assert.deepEqual(await adapter.delete("aster:test:key"), {
     status: "completed",
     deleted: true,
@@ -409,6 +435,7 @@ test("executes only bounded cache commands and reports finite dependency operati
       ["read", "success"],
       ["read", "success"],
       ["read", "success"],
+      ["write", "success"],
       ["write", "success"],
       ["write", "success"],
       ["delete", "success"],
@@ -434,10 +461,18 @@ test("rejects malformed cache command input before vendor work", async () => {
   assert.deepEqual(await adapter.write("key", "value", 0, "replace"), rejected);
   assert.deepEqual(await adapter.write("key", "value", 300_001, "replace"), rejected);
   assert.deepEqual(await adapter.write("key", "value", 10, "unknown" as "replace"), rejected);
+  assert.deepEqual(await adapter.acquireLease("key", "", 10), rejected);
+  assert.deepEqual(await adapter.acquireLease("key", "owner", 0), rejected);
   assert.deepEqual(await adapter.compareAndDelete("key", ""), rejected);
   assert.deepEqual(
-    [client.getCalls, client.setCalls, client.deleteCalls, client.compareAndDeleteCalls],
-    [0, 0, 0, 0],
+    [
+      client.getCalls,
+      client.setCalls,
+      client.acquireLeaseCalls,
+      client.deleteCalls,
+      client.compareAndDeleteCalls,
+    ],
+    [0, 0, 0, 0, 0],
   );
   assert.deepEqual(await adapter.close(), { status: "completed" });
 });

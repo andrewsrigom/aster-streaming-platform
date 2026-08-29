@@ -46,12 +46,14 @@ type CacheOptions = Readonly<{
 type SharedEntry = {
   readonly work: SharedWork;
   promise: Promise<CatalogStoreResult<PublicCatalogTitle | null>>;
+  attachments: number;
   waiters: number;
 };
 
 type SharedFenceEntry = {
   readonly work: SharedWork;
   promise: Promise<CatalogStoreResult<CatalogPublicFence | null>>;
+  attachments: number;
   waiters: number;
 };
 
@@ -527,11 +529,10 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
         if (!catalogIdentifier(token)) {
           return Object.freeze({ id, key, token: "", acquired: false, bypass: true });
         }
-        const acquired = await input.cache.write(
+        const acquired = await input.cache.acquireLease(
           leaseKey(input, key),
           token,
           CATALOG_PUBLIC_CACHE_POLICY.leaseTtlMs,
-          "if_absent",
           signal,
         );
         if (acquired.status !== "completed") {
@@ -624,7 +625,8 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       const identity = fenceCoalescingIdentity(input, id, scope);
       const existing = fenceEntries.get(identity);
       if (existing) {
-        const attachedCallers = existing.waiters;
+        existing.attachments += 1;
+        const attachedCallers = existing.attachments;
         record({
           outcome: "coalesced",
           durationMs: 0,
@@ -643,6 +645,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       }
       const entry: SharedFenceEntry = {
         work: createdWork,
+        attachments: 0,
         waiters: 0,
         promise: Promise.resolve({ status: "unavailable" }),
       };
@@ -772,11 +775,10 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
         if (!catalogIdentifier(token)) {
           return Object.freeze({ fence, key, token: "", acquired: false, bypass: true });
         }
-        const acquired = await input.cache.write(
+        const acquired = await input.cache.acquireLease(
           leaseKey(input, key),
           token,
           CATALOG_PUBLIC_CACHE_POLICY.leaseTtlMs,
-          "if_absent",
           signal,
         );
         if (acquired.status !== "completed") {
@@ -907,7 +909,8 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       const identity = digest(input, positiveKey(input.environment, fence));
       const existing = entries.get(identity);
       if (existing) {
-        const attachedCallers = existing.waiters;
+        existing.attachments += 1;
+        const attachedCallers = existing.attachments;
         record({
           outcome: "coalesced",
           durationMs: 0,
@@ -926,6 +929,7 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       }
       const entry: SharedEntry = {
         work: createdWork,
+        attachments: 0,
         waiters: 0,
         promise: Promise.resolve({ status: "unavailable" }),
       };
