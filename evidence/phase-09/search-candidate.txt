@@ -1,0 +1,48 @@
+# P09-R01 federated search candidate gate
+
+Date: 2026-08-29
+Branch: feat/p09-discovery-search
+Candidate head: e979d7dff4503c7c4dec35542d6dc8b92579eed0
+Runtime source: 1fe7edb53451ea25f4d55658dd7432f7d084f568
+Node.js: 24.19.0
+pnpm: 11.24.0
+
+Canonical candidate gate:
+
+  pnpm check:changed
+  Tasks: 73 successful, 73 total
+  Cached: 56 cached, 73 total
+  Time: 1m1.745s
+  Exit: 0
+
+Dependency audit:
+
+  pnpm audit --audit-level high
+  High: 0
+  Critical: 0
+  Moderate: 1 (known UUID advisory; inspected Apollo callers are unaffected)
+  Exit: 0
+
+The first aggregate gate exposed three deterministic test-harness ceilings rather than
+production failures. The Playback compatibility test omitted the new Discovery owner;
+the Catalog stalled-download fixture used a 20 ms outer deadline; and the Identity
+adapter fixture used a 5 s child-process ceiling. The corrections include Discovery in
+the compatibility composition and raise only those test-owned outer ceilings to 500 ms
+and 15 s. Focused tests pass and the final canonical gate above is the first complete
+candidate-wide pass.
+
+Initial review inspected the Discovery domain/application, PostgreSQL migrations and
+adapters, event acknowledgement/quarantine, generation rebuild/promotion, Catalog
+purpose-separated reads, GraphQL limits/sanitization, Router trust/composition,
+Kafka offset/patch behavior, Compose isolation, CI classification and cleanup policy.
+No requirement, security/data, availability or public-contract blocker was found.
+
+The real PostgreSQL/Kafka/Router evidence in search-runtime.txt remains applicable to
+this candidate. Commits after runtime source 1fe7edb change evidence prose and test
+harnesses only; they do not change production SQL, event, GraphQL, Router, image or
+bootstrap behavior. Therefore the heavyweight proof is not repeated under the written
+repeat-trigger rule.
+
+Confirmation review rechecked the complete candidate plus this evidence-only delta and
+found no blocking issue. Pending at this checkpoint: protected pull-request checks,
+squash merge and exact-main CI. No release is claimed by this file.

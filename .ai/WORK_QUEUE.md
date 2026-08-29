@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at source1fe7edb. Its projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass focused/static gates, exact PostgreSQL18.6 and an11-service real Kafka/Router proof with restart recovery and zero cleanup residue. Next: candidate gate, review and protected release. Historical stashes are superseded.
+Phase08 is DONE through protected merge main6f38ce0 and exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished item at candidate e979d7d. Its projection, consumer/rebuild, bounded GraphQL, five-subgraph composition and opt-in runtime pass focused/static gates, exact PostgreSQL18.6, an11-service real Kafka/Router proof and the73/73 aggregate gate. Initial and confirmation reviews found no blocker. Next: protected release. Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

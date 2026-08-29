@@ -6,7 +6,7 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at source1fe7edb. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 candidate on feat/p09-discovery-search at head e979d7d. P08-R11 and Phase08 are released through main6f38ce0 and exact-main CI33229726626. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact1fe7edb: real PostgreSQL18.6 migrations/relevance/keysets/fences/rebuild/recovery/roles/GIN pass; the11-service disposable Kafka/Router proof projects one title with zero lag, returns one federated result and an explicit empty result, preserves its active generation through restart, emits no raw query/title/secret or timer warning, and cleans to zero. Discovery68/68, Router9/9, platform67/67 and CI-policy33/33 pass with strict type/lint/unused/architecture/format/schema/docs checks. Candidate-wide gate, review and protected release remain.
+Discovery search is implemented locally behind the fifth Federation subgraph. [Search runtime evidence](../evidence/phase-09/search-runtime.txt) records exact1fe7edb: real PostgreSQL18.6 migrations/relevance/keysets/fences/rebuild/recovery/roles/GIN pass; the11-service disposable Kafka/Router proof projects one title with zero lag, returns one federated result and an explicit empty result, preserves its active generation through restart, emits no raw query/title/secret or timer warning, and cleans to zero. [Candidate evidence](../evidence/phase-09/search-candidate.txt) records exact e979d7d passing73/73 aggregate tasks, zero high/critical audit findings and both reviews with no blocker. Protected release remains.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -30,7 +30,7 @@ Discovery home rails, personalized composition, browser search and hosted releas
 
 ## Next outcome
 
-Run the P09-R01 candidate gate, initial review and confirmation, publish/merge through protected CI and confirm exact main. Then activate P09-R03 for independent rails, fallbacks and freshness telemetry.
+Publish/merge P09-R01 through protected CI and confirm exact main. Then activate P09-R03 for independent rails, fallbacks and freshness telemetry.
 
 ## Runtime and recovery
 

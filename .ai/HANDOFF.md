@@ -4,20 +4,20 @@
 
 PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
 
-P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Source1fe7edb implements the bounded GraphQL subgraph, five-owner composition and opt-in service around the existing projection/consumer/rebuild. Discovery68/68, Router9/9, platform67/67, CI-policy33/33 and strict static gates pass. Exact PostgreSQL and the11-service Kafka/Router proof pass relevance, fences, rebuild/recovery, one result, explicit empty state, zero lag, restart recovery, sanitized logs, timer-patch packaging and exact cleanup. Historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Runtime source1fe7edb implements the bounded GraphQL subgraph, five-owner composition and opt-in service around the existing projection/consumer/rebuild. Candidate e979d7d passes73/73 aggregate tasks and zero high/critical audit findings. Exact PostgreSQL and the11-service Kafka/Router proof pass relevance, fences, rebuild/recovery, one result, explicit empty state, zero lag, restart recovery, sanitized logs, timer-patch packaging and exact cleanup. Initial and confirmation reviews found no blocker; historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Run the canonical changed candidate gate and dependency audit; capture exact output under phase-09 evidence.
-2. Perform one initial review, batch only requirement/security/data/availability/public-contract blockers, then one confirmation review.
-3. Publish the existing branch, open the P09-R01 PR, wait for protected CI, squash merge and confirm exact-main CI before starting P09-R03.
+1. Publish the existing branch, open the P09-R01 PR, wait for protected CI, squash merge and confirm exact-main CI before starting P09-R03.
+2. Preserve the exact candidate head and do not repeat unaffected SQL/Kafka/Router evidence.
+3. If protected CI finds a blocker, batch only the affected correction and repeat its invalidated gate.
 4. Preserve retained media/databases/keys and user applications. No historical stash, retained migration, Docker/WSL restart, global cleanup or film encode.
 
 ## Evidence boundaries
 
 Protected CI33211565625 now passes the complete corrected event supervisor, including real SQL/Kafka, signed deletion, quarantine/replay, outage recovery, bounded shutdown and cleanup. The earlier local wrapper exited1 on its obsolete SIGTERM assertion; do not rewrite it as success. Earlier70/70 and SQL/Kafka observations remain supporting evidence. events-source.sha256 describes the original checkpoint; test-only deltas are in events-ci.txt. No unchanged heavy event/SQL/CPU/media repeat.
 
-P09 exact source and raw SQL/Kafka/Router output are in evidence/phase-09/search-runtime.txt. Runtime packaging and telemetry changed, so the exact Docker repeat supersedes the earlier service proof. No browser/media/CPU repeat is applicable to this backend-only slice. Candidate-wide, review and protected evidence remain pending.
+P09 exact runtime source and raw SQL/Kafka/Router output are in evidence/phase-09/search-runtime.txt. Candidate e979d7d and its aggregate/review evidence are in search-candidate.txt. Commits after runtime source1fe7edb affect evidence and test harnesses only; they cannot invalidate runtime packaging or behavior. No browser/media/CPU repeat is applicable to this backend-only slice. Protected evidence remains pending.
 
 ## Execution environment
 
