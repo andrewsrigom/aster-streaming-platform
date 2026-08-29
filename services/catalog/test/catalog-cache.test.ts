@@ -304,7 +304,11 @@ test("concurrent cold negative misses share one owner fence read", async () => {
 
   assert.ok(results.every((result) => result.status === "completed" && result.value.length === 0));
   assert.equal(f.source.state.fenceReads, 1);
-  assert.ok(f.observations.some((value) => value.outcome === "coalesced"));
+  const coalesced = f.observations.filter((value) => value.outcome === "coalesced");
+  assert.equal(coalesced.length, 23);
+  assert.equal(coalesced.filter((value) => value.waiterBucket === "one").length, 1);
+  assert.equal(coalesced.filter((value) => value.waiterBucket === "two_to_four").length, 3);
+  assert.equal(coalesced.filter((value) => value.waiterBucket === "five_plus").length, 19);
 });
 
 test("fence coalescing never shares visibility decisions across request time", async () => {
@@ -445,10 +449,9 @@ test("concurrent cold callers share one source refresh while cancellation remain
     [id(1)],
   );
   assert.equal(f.source.state.sourceReads, 1);
-  assert.equal(
-    f.observations.some((value) => value.outcome === "coalesced"),
-    true,
-  );
+  const coalesced = f.observations.filter((value) => value.outcome === "coalesced");
+  assert.ok(coalesced.length >= 1);
+  assert.ok(coalesced.every((value) => value.waiterBucket === "one"));
 });
 
 test("mixed batches coalesce each shared hot title while retaining new-title batching", async () => {

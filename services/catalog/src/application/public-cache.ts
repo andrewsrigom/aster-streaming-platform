@@ -624,11 +624,12 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       const identity = fenceCoalescingIdentity(input, id, scope);
       const existing = fenceEntries.get(identity);
       if (existing) {
-        const count = existing.waiters + 1;
+        const attachedCallers = existing.waiters;
         record({
           outcome: "coalesced",
           durationMs: 0,
-          waiterBucket: count === 1 ? "one" : count <= 4 ? "two_to_four" : "five_plus",
+          waiterBucket:
+            attachedCallers === 1 ? "one" : attachedCallers <= 4 ? "two_to_four" : "five_plus",
         });
         selected.push(existing);
         continue;
@@ -906,11 +907,12 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
       const identity = digest(input, positiveKey(input.environment, fence));
       const existing = entries.get(identity);
       if (existing) {
-        const count = existing.waiters + 1;
+        const attachedCallers = existing.waiters;
         record({
           outcome: "coalesced",
           durationMs: 0,
-          waiterBucket: count === 1 ? "one" : count <= 4 ? "two_to_four" : "five_plus",
+          waiterBucket:
+            attachedCallers === 1 ? "one" : attachedCallers <= 4 ? "two_to_four" : "five_plus",
         });
         selected.push(existing);
         continue;
