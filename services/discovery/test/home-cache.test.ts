@@ -66,6 +66,7 @@ function page(generatedAt: number, visibleFor = 300): HomeRailsPage {
 class FakeCache implements DiscoveryHomeCacheStore {
   readonly values = new Map<string, string>();
   available = true;
+  rejectWrites = false;
 
   read(key: string): Promise<DiscoveryHomeCacheResult<string | null>> {
     if (!this.available) {
@@ -80,6 +81,9 @@ class FakeCache implements DiscoveryHomeCacheStore {
   }
 
   write(key: string, value: string): Promise<DiscoveryHomeCacheResult<boolean>> {
+    if (this.rejectWrites) {
+      return Promise.reject(new Error("Cache write failed."));
+    }
     if (!this.available) {
       return Promise.resolve({ status: "bypass" });
     }
@@ -306,6 +310,49 @@ test("maximum stale age and title visibility expiry force an owner reload", asyn
   assert.equal(hidden.value.status, "completed");
   assert.equal(hidden.value.value.generatedAt, 1_700_000_010);
   assert.equal(visibility.sourceCalls(), 2);
+});
+
+test("coalesced cold callers never cross a title visibility boundary", async () => {
+  const f = fixture(10);
+  let release: (() => void) | undefined;
+  let started: (() => void) | undefined;
+  const blocked = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const barrier = new Promise<void>((resolve) => {
+    started = resolve;
+  });
+  f.setBeforeSource(async () => {
+    started?.();
+    await blocked;
+  });
+
+  const beforeExpiry = f.home.execute({ first: 10 }, 1_700_000_000, AbortSignal.timeout(1_000));
+  await barrier;
+  const atExpiry = f.home.execute({ first: 10 }, 1_700_000_010, AbortSignal.timeout(1_000));
+  release?.();
+
+  const [first, second] = await Promise.all([beforeExpiry, atExpiry]);
+  assert.equal(first.status, "completed");
+  assert.equal(first.value.status, "completed");
+  assert.equal(first.value.value.generatedAt, 1_700_000_000);
+  assert.equal(second.status, "completed");
+  assert.equal(second.value.status, "completed");
+  assert.equal(second.value.value.generatedAt, 1_700_000_010);
+  assert.equal(f.sourceCalls(), 2);
+});
+
+test("cache write rejection cannot replace a completed source result", async () => {
+  const f = fixture();
+  f.cache.rejectWrites = true;
+
+  const result = await f.home.execute({ first: 10 }, 1_700_000_000, AbortSignal.timeout(1_000));
+
+  assert.equal(result.status, "completed");
+  assert.equal(result.value.status, "completed");
+  assert.equal(result.value.value.generatedAt, 1_700_000_000);
+  assert.equal(f.sourceCalls(), 1);
+  assert.ok(f.observations.some(({ outcome }) => outcome === "bypass"));
 });
 
 test("mixed caller cancellation preserves one shared cold refresh", async () => {

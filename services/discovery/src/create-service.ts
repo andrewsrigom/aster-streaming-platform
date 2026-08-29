@@ -267,14 +267,17 @@ export async function createDiscoveryService(
         await http?.stopTraffic(signal);
       },
       stopConsumers: async () => {
-        await Promise.all([
+        const results = await Promise.allSettled([
           monitor.stop(),
           cacheMonitor?.stop(),
           rebuildRuntime.stop(),
           events.stop(),
+          cachedHome?.stop(AbortSignal.timeout(1_500)),
+          graph?.stop(),
         ]);
-        await cachedHome?.stop(AbortSignal.timeout(1_500));
-        await graph?.stop();
+        if (results.some((result) => result.status === "rejected")) {
+          throw new Error("Discovery consumer closure failed.");
+        }
       },
       flushTelemetry: telemetry.lifecycleHooks().flushTelemetry,
       closeDependencies: async (signal) => {

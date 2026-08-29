@@ -28,6 +28,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Final candidate checkpoint `0417ffd` passes all73 affected tasks with61 cached
   in148.029 seconds after the bounded historical-log compaction required by the
   repository's 500-heading document limit.
+- Initial PR39 automated review completed at exact `5c4d62d` without findings.
+  The complete local review found that cold coalescing could cross a title
+  visibility boundary, a rejected Redis write could mask completed owner data,
+  and one failed consumer closure could skip its siblings. The batched correction
+  adds caller-time revalidation, best-effort writes and all-settled shutdown;
+  Discovery103/103 plus scoped type/lint/format checks pass.
 
 ### Evidence
 

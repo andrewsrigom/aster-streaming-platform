@@ -55,6 +55,10 @@ refresh notice.
 Within one process, each exact page key may own one shared refresh. At most twelve
 entries exist. Cold callers wait on that shared work with independent
 cancellation; a cancelled caller does not abort work still required by another.
+Before a caller accepts shared source work, Discovery rechecks that the result was
+not generated in its future and that every returned title remains visible at the
+caller's own request time. A caller crossing that boundary executes a new owner
+read instead of reusing the earlier result.
 Stale callers do not wait. The first stale caller starts detached refresh and
 later refresh requests attach without creating more work. Coalescing telemetry
 counts only attachments behind the owner and tracks that monotonic count
@@ -75,13 +79,15 @@ Background work belongs to the Discovery service lifecycle, not the request that
 observed stale data. Graceful shutdown stops admission, aborts and drains every
 owned refresh before Redis/PostgreSQL closure. Forced shutdown aborts refreshes
 and closes Redis within the existing process deadline. No timer or promise is
-left as an unbounded owner.
+left as an unbounded owner. Consumer shutdown attempts the cache, GraphQL,
+projection, event and readiness closures even if one sibling closure fails.
 
 ## Failure and measurements
 
 Redis is optional and non-critical. Timeout, abort, capacity rejection,
 reconnect, eviction or malformed data executes the existing PostgreSQL home use
-case. Redis readiness is reported separately and never changes Discovery's
+case. A rejected cache write cannot replace a completed owner response. Redis
+readiness is reported separately and never changes Discovery's
 critical readiness. If source refresh fails while stale data remains eligible,
 later requests may continue to use that same bounded value; without eligible
 stale data the existing unavailable, cancelled or indeterminate result is

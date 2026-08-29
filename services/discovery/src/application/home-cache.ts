@@ -389,6 +389,14 @@ function cacheablePage(result: HomeRailsResult): HomeRailsPage | undefined {
     : undefined;
 }
 
+function sourceResultVisibleAt(result: HomeRailsResult, now: number): boolean {
+  if (result.status !== "completed" || result.value.status !== "completed") {
+    return true;
+  }
+  const page = result.value.value;
+  return page.generatedAt <= now && edges(page).every((edge) => edge.visibleUntil > now);
+}
+
 function waitForDelay(ms: number, signal: AbortSignal): Promise<boolean> {
   if (signal.aborted) {
     return Promise.resolve(false);
@@ -550,8 +558,10 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
         cachedAt +
         jitter(options, `${key}:expiry`, DISCOVERY_HOME_CACHE_POLICY.expiryJitterSeconds)) *
       1_000;
-    const result = await options.cache.write(key, value, ttlMs, signal);
-    if (result.status !== "completed") {
+    const result = await options.cache
+      .write(key, value, ttlMs, signal)
+      .catch(() => ({ status: "bypass" as const }));
+    if (result.status !== "completed" || !result.value) {
       record({ outcome: "bypass", durationMs: 0 });
     }
   };
@@ -709,7 +719,10 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
       }
       entry.waiters += 1;
       try {
-        return await waitForCaller(entry.promise, signal);
+        const result = await waitForCaller(entry.promise, signal);
+        return sourceResultVisibleAt(result, now)
+          ? result
+          : await source(request.first, now, signal);
       } finally {
         entry.waiters -= 1;
         if (entry.waiters === 0 && !entry.detached && !entry.settled) {

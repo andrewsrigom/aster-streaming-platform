@@ -26,6 +26,12 @@ Commands and results
   exact candidate checkpoint `0417ffd`.
 - Disposable PostgreSQL/Router runtime: PASS in 395884 ms with non-critical Redis
   unavailable and cleanup0; see discovery-swr-runtime.txt.
+- Initial PR39 automated review completed at exact `5c4d62d` without findings.
+  The complete local review found three requirement-boundary defects: cold
+  callers could share a result across title expiry, a rejected cache write could
+  mask completed owner data, and one failed consumer closure could skip siblings.
+  The batched correction has focused Discovery103/103, typecheck, lint, format
+  and diff checks passing.
 
 Covered contract
 - Twelve bounded whole-home key variants and schema-v1 envelopes no larger than
@@ -51,3 +57,6 @@ Limitations
 - No field SLO, hosted availability or arbitrary cluster-size claim.
 - The browser result is carried only because all affected Web source/test blobs
   are unchanged and the rebased Web suite plus affected gate pass.
+- Real Redis, browser and eleven-service runtime were not repeated for the review
+  correction because Redis wire/envelope, public stale shape and composition are
+  unchanged. The affected gate is repeated before corrected publication.

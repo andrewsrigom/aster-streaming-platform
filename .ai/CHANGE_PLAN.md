@@ -68,6 +68,8 @@ active cancellation waiters so the first coalesced request records `one`.
 - Cache capture age never exceeds sixty seconds, regardless of Redis TTL.
 - Only schema-valid pages without transient failed rail results enter the cache.
 - One caller cannot cancel refresh work still used by another caller.
+- Shared cold source work is revalidated against each caller's request time; a
+  visibility-boundary crossing performs a new owner read.
 - A lease coordinates disposable refresh only and authorizes no durable write.
 - Background work is finite, observed and drained or cancelled during shutdown.
 
@@ -147,6 +149,11 @@ active cancellation waiters so the first coalesced request records `one`.
   checkpoint `0417ffd` passes the complete affected gate 73/73 with61 cached in
   148.029 seconds. Exact `8faf35a` passes the eleven-service PostgreSQL/Router
   outage runtime in 395884 ms with cleanup0.
+- Initial exact-head automated review found no issue. The complete local review
+  additionally found cross-time cold coalescing, a rejected cache write masking
+  completed owner data, and sibling shutdown short-circuiting. The batched
+  correction revalidates caller visibility, makes writes best-effort and attempts
+  all consumer closures; focused Discovery103/103 and static gates pass.
 - Iteration gate: focused Discovery cache, Web projection and telemetry tests plus
   strict typecheck/lint.
 - Candidate gate: `pnpm check:changed`, real Redis/Discovery fixture and affected
