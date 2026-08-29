@@ -99,6 +99,21 @@ try {
         "redis-cli",
         "--raw",
         "SET",
+        "aster:test:catalog:public-title:v1:00000000-0000-4000-8000-000000000097:5:2:00000000-0000-4000-8000-000000000200",
+        "malformed\nvalue",
+      ],
+      5_000,
+    ),
+    "OK",
+  );
+  assert.equal(
+    await docker(
+      [
+        "exec",
+        ownedId,
+        "redis-cli",
+        "--raw",
+        "SET",
         "aster:test:catalog:public-title-absent:v1:00000000-0000-4000-8000-000000000097",
         '{"schema":1,"kind":"absent"}',
       ],

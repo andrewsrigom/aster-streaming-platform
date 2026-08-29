@@ -363,6 +363,13 @@ test("executes only bounded cache commands and reports finite dependency operati
     status: "completed",
     value: "cached",
   });
+  client.boundedReadHandler = () => Promise.resolve([1, "malformed\0\nvalue"]);
+  assert.deepEqual(await adapter.read("aster:test:key"), {
+    status: "completed",
+    value: "malformed\0\nvalue",
+  });
+  assert.equal(client.destroyCalls, 0);
+  client.boundedReadHandler = undefined;
   client.getHandler = () => Promise.resolve("x".repeat(16_385));
   assert.deepEqual(await adapter.read("aster:test:key"), {
     status: "rejected",
@@ -398,6 +405,7 @@ test("executes only bounded cache commands and reports finite dependency operati
     telemetry.attempts.map(({ input, outcome }) => [input.operation, outcome]),
     [
       ["connect", "success"],
+      ["read", "success"],
       ["read", "success"],
       ["read", "success"],
       ["read", "success"],

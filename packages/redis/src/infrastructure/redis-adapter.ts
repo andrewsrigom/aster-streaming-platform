@@ -813,6 +813,9 @@ export function createAsterRedisAdapterWithClientFactory(
     validCommandText(key, ASTER_REDIS_COMMAND_LIMITS.maximumKeyBytes);
   const validValue = (value: unknown): value is string =>
     validCommandText(value, ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes, true);
+  const validReadValue = (value: unknown): value is string =>
+    typeof value === "string" &&
+    Buffer.byteLength(value, "utf8") <= ASTER_REDIS_COMMAND_LIMITS.maximumValueBytes;
   const validBoundedReadReply = (value: unknown): value is BoundedReadReply => {
     if (!Array.isArray(value)) {
       return false;
@@ -820,7 +823,7 @@ export function createAsterRedisAdapterWithClientFactory(
     if ((value[0] === 0 || value[0] === 2 || value[0] === 3) && value.length === 1) {
       return true;
     }
-    return value[0] === 1 && value.length === 2 && validValue(value[1]);
+    return value[0] === 1 && value.length === 2 && validReadValue(value[1]);
   };
 
   const read = async (key: string, signal?: AbortSignal): Promise<AsterRedisReadResult> => {

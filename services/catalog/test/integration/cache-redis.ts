@@ -34,6 +34,7 @@ const redis = createAsterRedisAdapter({
 });
 const requestSignal = () => AbortSignal.timeout(2_000);
 const scope = { now, policy: { commercial: true } };
+const controlValueKey = `aster:test:catalog:public-title:v1:${id(97)}:5:2:${id(200)}`;
 
 function candidateFence(candidate: PublicCatalogCandidate): CatalogPublicFence {
   const title = candidate.title as {
@@ -83,6 +84,11 @@ try {
     status: "completed",
     value: null,
   });
+  assert.deepEqual(await redis.read(controlValueKey, requestSignal()), {
+    status: "completed",
+    value: "malformed\nvalue",
+  });
+  assert.deepEqual(await redis.probe(requestSignal()), { status: "completed" });
   assert.deepEqual(await redis.write("aster:test:lease", "owner-a", 2_000, "if_absent"), {
     status: "completed",
     stored: true,
@@ -161,6 +167,11 @@ try {
     corruptedNegative.value.map((title) => title.id),
     [id(97)],
   );
+  const repairedControlValue = await redis.read(controlValueKey, requestSignal());
+  assert.ok(repairedControlValue.status === "completed" && repairedControlValue.value !== null);
+  const repairedPayload = repairedControlValue.value;
+  assert.notEqual(repairedPayload, "malformed\nvalue");
+  assert.doesNotThrow(() => JSON.parse(repairedPayload));
   assert.deepEqual(
     await redis.read(`aster:test:catalog:public-title-absent:v1:${id(97)}`, requestSignal()),
     { status: "completed", value: null },
@@ -261,6 +272,7 @@ try {
       event: "catalog_cache_redis_verified",
       boundedOversizedRead: true,
       wrongTypeDeleted: true,
+      controlValueDeleted: true,
       unboundedNegativeDeleted: true,
       atomicCompareDelete: true,
       expiryObserved: true,
