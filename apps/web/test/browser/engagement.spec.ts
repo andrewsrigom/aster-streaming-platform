@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { waitForSavedProgress } from "../support/saved-progress.ts";
+import { waitForGraphqlResponseJson, waitForSavedProgress } from "../support/saved-progress.ts";
 
 test.skip(
   process.env["ASTER_ENGAGEMENT_DEMO"] !== "true",
@@ -35,18 +35,17 @@ test("real profile progress, resume, library, watchlist and optional-save failur
   const html = await initial?.text();
   expect(html).not.toMatch(/profileId|positionMs|aster_local_session=/u);
   await page.getByRole("button", { name: "Choose a profile", exact: true }).click();
-  const before = page.waitForResponse(
-    (response) =>
-      response.url() === endpoint &&
-      response.request().method() === "POST" &&
-      (response.request().postDataJSON() as { operationName?: string }).operationName ===
-        "Profiles",
-  );
+  const before = waitForGraphqlResponseJson<{
+    data?: { profiles: { profiles: unknown[] } };
+  }>(page, endpoint, {
+    matchesRequest: (body) =>
+      (body as { operationName?: string } | null)?.operationName === "Profiles",
+    successMessage: "Profiles request must succeed",
+    timeoutMessage: "Timed out waiting for the initial profile collection.",
+  });
   await page.getByRole("button", { name: "Start local session", exact: true }).click();
   await expect(page.getByRole("button", { name: "Create profile", exact: true })).toBeVisible();
-  const baseline = (await (await before).json()) as {
-    data?: { profiles: { profiles: unknown[] } };
-  };
+  const baseline = await before;
   expect(
     baseline.data?.profiles.profiles,
     "Refuse to modify a retained profile collection",

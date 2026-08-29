@@ -11,37 +11,77 @@ interface ProgressPage {
   off(event: "response", listener: (response: ProgressResponse) => void): unknown;
 }
 
-function matchesProgressRequest(
-  candidate: ProgressResponse,
+export async function waitForGraphqlResponseJson<T>(
+  page: ProgressPage,
   endpoint: string,
-  expected: { titleId: string; positionMs: number },
-): boolean {
-  if (candidate.url() !== endpoint || candidate.request().method() !== "POST") {
-    return false;
-  }
-  try {
-    const request = candidate.request().postDataJSON() as {
-      operationName?: string;
-      variables?: { input?: { titleId?: string; positionMs?: number } };
-    } | null;
-    const input = request?.variables?.input;
-    return (
-      request?.operationName === "RecordProgress" &&
-      input?.titleId === expected.titleId &&
-      typeof input.positionMs === "number" &&
-      Math.abs(input.positionMs - expected.positionMs) < 150
-    );
-  } catch {
-    return false;
-  }
+  options: {
+    matchesRequest(body: unknown): boolean;
+    successMessage: string;
+    timeoutMessage: string;
+  },
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      page.off("response", observe);
+      reject(new Error(options.timeoutMessage));
+    }, 12000);
+    const observe = (response: ProgressResponse): void => {
+      if (response.url() !== endpoint || response.request().method() !== "POST") {
+        return;
+      }
+      try {
+        if (!options.matchesRequest(response.request().postDataJSON())) {
+          return;
+        }
+      } catch {
+        return;
+      }
+      clearTimeout(timer);
+      page.off("response", observe);
+      try {
+        assert.equal(response.ok(), true, options.successMessage);
+        // Chromium can discard a response body as its document changes. Begin the
+        // sole selected body read before this response event returns.
+        void response.json().then(
+          (body) => {
+            resolve(body as T);
+          },
+          (error: unknown) => {
+            reject(
+              error instanceof Error ? error : new Error("GraphQL response body unavailable."),
+            );
+          },
+        );
+      } catch (error) {
+        reject(error instanceof Error ? error : new Error("GraphQL response selection failed."));
+      }
+    };
+    page.on("response", observe);
+  });
 }
 
-async function verifyProgressResponse(
-  response: ProgressResponse,
+function matchesProgressRequest(
+  body: unknown,
+  expected: { titleId: string; positionMs: number },
+): boolean {
+  const request = body as {
+    operationName?: string;
+    variables?: { input?: { titleId?: string; positionMs?: number } };
+  } | null;
+  const input = request?.variables?.input;
+  return (
+    request?.operationName === "RecordProgress" &&
+    input?.titleId === expected.titleId &&
+    typeof input.positionMs === "number" &&
+    Math.abs(input.positionMs - expected.positionMs) < 150
+  );
+}
+
+function verifyProgressResponse(
+  body: unknown,
   expected: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" },
-): Promise<void> {
-  assert.equal(response.ok(), true, "Progress request must succeed");
-  const result = (await response.json()) as {
+): void {
+  const result = body as {
     data?: {
       recordProgress?: {
         code: string;
@@ -62,21 +102,10 @@ export async function waitForSavedProgress(
   endpoint: string,
   expected: { titleId: string; positionMs: number; status: "IN_PROGRESS" | "COMPLETED" },
 ): Promise<void> {
-  await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      page.off("response", observe);
-      reject(new Error("Timed out waiting for saved progress."));
-    }, 12000);
-    const observe = (response: ProgressResponse): void => {
-      if (!matchesProgressRequest(response, endpoint, expected)) {
-        return;
-      }
-      clearTimeout(timer);
-      page.off("response", observe);
-      // Chromium can discard a response body as its document changes. Begin the single
-      // selected body read in this event turn, while the resource is still addressable.
-      void verifyProgressResponse(response, expected).then(resolve, reject);
-    };
-    page.on("response", observe);
+  const body = await waitForGraphqlResponseJson(page, endpoint, {
+    matchesRequest: (request) => matchesProgressRequest(request, expected),
+    successMessage: "Progress request must succeed",
+    timeoutMessage: "Timed out waiting for saved progress.",
   });
+  verifyProgressResponse(body, expected);
 }

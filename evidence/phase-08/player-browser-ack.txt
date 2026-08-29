@@ -108,3 +108,39 @@ Packages: //, @aster/catalog, @aster/router, @aster/web.
 Tasks:43 successful,43 total;29 cached;1m58.382s; exit0.
 Later evidence/memory-only edits require cheap validation and commit hooks, not
 another unchanged candidate, storage, browser or host experiment.
+
+Protected Profiles-body failure and shared correction — 2026-08-28
+Run: https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33223692248
+Source job:99022970346; exact head d2ba88f54dcb82c568b8aa4e286632a044e63799.
+The exact-head confirmation review completed without findings. Source quality,
+real platform, Catalog generation, Playback, Engagement, immutable generated-HLS
+reuse, seed replay and service health passed. The personalized browser failed
+before profile creation at engagement.spec.ts:47: the initial Profiles response
+was selected with waitForResponse, but json() began only after UI work and
+Chromium reported Network.getResponseBody with no resource data. Exact cleanup
+completed. This does not invalidate the passing owner or replay boundaries.
+
+Correction: one test-only GraphQL observer synchronously selects endpoint, POST
+and an exact request predicate, removes itself, checks transport success and
+starts the sole json read before the response event returns. Profiles uses it
+before checking the empty isolated collection; progress adds its existing title,
+position, owner-code and status validation. The12-second timeout and zero browser
+retries remain. No production Web, owner, schema, SQL, Compose or retained data
+changes.
+
+Focused environment: native Ubuntu-20.04 WSL, Node24.19.0/pnpm11.24.0.
+Commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/web test
+pnpm --filter @aster/web typecheck
+pnpm exec eslint apps/web/test/support/saved-progress.ts apps/web/test/browser/engagement.spec.ts apps/web/test/browser-progress-observer.test.ts
+Results:104/104 Web tests pass, including seven observer regressions; Next type
+generation/strict TypeScript and scoped ESLint pass. The new regression proves
+the generic Profiles body starts inside the event. This remains deterministic
+local evidence; protected Docker browser acceptance is required.
+
+Canonical affected candidate gate: runQualityGate(["--changed"], limited) with
+the documented inventory, concurrency2 and error-only logs. Packages: root,
+Catalog, Router and Web. Tasks:43 successful,43 total;29 cached;1m38.431s;
+exit0. Later evidence-only edits require cheap state/document checks and commit
+hooks, not another unchanged candidate or runtime experiment.

@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33222164370 proves read-only immutable replay and all earlier integration steps, but the personalized browser still lost its selected response body after `waitForResponse` resolved. Event-turn capture passes103 Web tests, types, scoped lint and43/43 affected tasks; protected acceptance remains. P09-R01 is READY, with unpublished checkpoints on feat/p09-discovery-search and the newest purpose-named WIP stash; inspect exact Git state before restore and never reapply historical stashes. Retained Phase07 demo remains intact.
+P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33223692248 proves read-only immutable replay and all earlier integration steps, but the independent Profiles waiter still read its selected body after UI work and Chromium discarded it. Shared event-turn capture passes104 Web tests, seven observer regressions, types, scoped lint and43/43 affected tasks; protected acceptance remains. P09-R01 is READY, preserved through1bb26c2 and newest stash bc626511ae49d0bcb553c734a5278d835c277be5; apply only that stash after repair and never reapply historical stashes. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

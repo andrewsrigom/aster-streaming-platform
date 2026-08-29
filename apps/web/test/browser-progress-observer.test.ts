@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { waitForSavedProgress } from "./support/saved-progress.ts";
+import { waitForGraphqlResponseJson, waitForSavedProgress } from "./support/saved-progress.ts";
 
 type ObserverPage = Parameters<typeof waitForSavedProgress>[0];
 type ObservedResponse = Parameters<Parameters<ObserverPage["on"]>[1]>[0];
@@ -123,6 +123,36 @@ test("progress observer starts the selected body read inside the response event"
   };
   await waitForSavedProgress(page, endpoint, expected);
   assert.equal(bodyStarted, true);
+});
+
+test("generic GraphQL observer captures the profile body inside the response event", async () => {
+  let eventActive = true;
+  const selected = {
+    ...response(undefined, () => {
+      assert.equal(eventActive, true, "Profile body capture started after the response event");
+      return Promise.resolve({ data: { profiles: { profiles: [] } } });
+    }),
+    request: () => ({
+      method: () => "POST",
+      postDataJSON: () => ({ operationName: "Profiles" }),
+    }),
+  };
+  const page: ObserverPage = {
+    on(_event, listener) {
+      listener(selected);
+      eventActive = false;
+    },
+    off() {},
+  };
+  assert.deepEqual(
+    await waitForGraphqlResponseJson(page, endpoint, {
+      matchesRequest: (body) =>
+        (body as { operationName?: string } | null)?.operationName === "Profiles",
+      successMessage: "Profiles request must succeed",
+      timeoutMessage: "Timed out waiting for profiles.",
+    }),
+    { data: { profiles: { profiles: [] } } },
+  );
 });
 
 test("matching transport and body errors fail instead of being ignored", async () => {

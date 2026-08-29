@@ -2191,3 +2191,10 @@ Execute Phase 00 beginning with source-code license selection.
 - Inspected protected PR32 run33222164370: all source/platform/Catalog/Playback/Engagement and immutable replay stages passed; the personalized browser failed because Chromium discarded the selected response body before the post-`waitForResponse` `json()` call.
 - Replaced the waiter continuation with one purpose-filtered Page response listener that starts the selected body read inside the event turn and removes itself before validation.
 - Added deterministic body-start ordering coverage. Full Web tests pass103/103; type generation, strict TypeScript, scoped lint and the43/43 affected gate pass. Protected acceptance remains pending.
+
+# 2026-08-28 — Shared Profiles and progress body capture
+
+- Inspected exact-head PR32 run33223692248: every source, platform, owner, immutable replay and health boundary passed; the personalized browser failed only because its separate Profiles body was consumed after UI work and Chromium discarded it.
+- Preserved the rebased P09 Catalog private-runtime work in stash bc626511ae49d0bcb553c734a5278d835c277be5 before returning to the predecessor.
+- Centralized exact GraphQL response selection and event-turn body capture for Profiles and progress without changing production behavior, retries or acceptance assertions.
+- Full Web tests pass104/104, including seven observer regressions; type generation, strict TypeScript, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.
