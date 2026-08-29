@@ -2378,16 +2378,16 @@ Execute P00-R06 by adding a minimal non-duplicated GitHub Actions foundation, sa
 
 Execute P00-R05 by turning the current documentation audit contract into a bounded, tested, repository-owned command and integrating it into the task graph.
 
-## 2026-08-26 — Local Git and monorepo execution foundation
+**Historical checkpoint — 2026-08-26 — Local Git and monorepo execution foundation**
 
-### Completed
+**Completed**
 
 - Initialized local Git on `main` with LF normalization, explicit batch-file handling, and repository-local pull, fetch, and push defaults.
 - Added deterministic ignores for dependencies, caches, builds, logs, local secrets, editor state, operating-system metadata, and both observed `Zone.Identifier` filename representations without ignoring evidence or safe environment examples.
 - Added a root-only pnpm workspace, shared integrity lockfile, strict 24-hour dependency-maturity policy, and version-specific reviewed exceptions for the signed Turbo artifacts selected inside that window.
 - Pinned Turborepo `2.10.12` and registered the existing toolchain guard and tests as strict-environment, uncached root tasks without scaffolding future package directories.
 
-### Evidence
+**Evidence**
 
 - Passed the first and repeated frozen installations with 7 supply-chain entries verified and no change to authoritative workspace files.
 - Passed root-only workspace discovery, Turbo version and dry-run assertions, and two real tasks with 7 of 7 built-in tests and no cached result.
@@ -2395,7 +2395,7 @@ Execute P00-R05 by turning the current documentation audit contract into a bound
 - Verified 127 Markdown files and 196 internal links with no structure or broken-link issue; Docker daemon `26.0.0` remained responsive.
 - Raw evidence: `evidence/phase-00/workspace-foundation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R04 by selecting and adding the minimal strict TypeScript, format, lint, unused-code, architecture-boundary, and fast commit-message toolchain.
 
