@@ -37,7 +37,10 @@ import { createPostgresSearchUnitOfWork } from "./infrastructure/postgres-search
 import { createProjectionRebuildRuntime } from "./infrastructure/projection-rebuild-runtime.js";
 import { discoveryRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { probeDiscoveryStores } from "./infrastructure/store-readiness.js";
-import { createDiscoverySubgraph } from "./transport/discovery-subgraph.js";
+import {
+  createDiscoverySubgraph,
+  type DiscoveryOperationTrace,
+} from "./transport/discovery-subgraph.js";
 import { createDiscoveryHttpServer, type DiscoveryHttpServer } from "./transport/http-server.js";
 
 interface RuntimeResources {
@@ -49,6 +52,12 @@ interface RuntimeResources {
   readonly telemetry?: AsterTelemetry;
   readonly logger?: AsterLogger;
   readonly terminate?: (code: number) => void;
+}
+
+export function discoveryGraphqlLogOutcome(
+  code: DiscoveryOperationTrace["code"],
+): "ok" | "degraded" | "rejected" {
+  return code === "COMPLETED" ? "ok" : code === "PARTIAL" ? "degraded" : "rejected";
 }
 
 export async function createDiscoveryService(
@@ -194,7 +203,7 @@ export async function createDiscoveryService(
           operation: trace.operation,
           requestId: trace.correlationId,
           durationMs: trace.durationMs,
-          outcome: trace.code === "COMPLETED" ? "ok" : "rejected",
+          outcome: discoveryGraphqlLogOutcome(trace.code),
           properties: [
             ["code", trace.code],
             ["trace_id", trace.traceId],

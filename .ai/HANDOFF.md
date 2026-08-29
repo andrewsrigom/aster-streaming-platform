@@ -16,21 +16,27 @@ its corrected75/75 plus42/42, clean confirmation and protected run33243983340 pa
 PR35 merged as583c835; exact-main run33244657936 passed. Discovery88/88, real
 mixed readiness and repeated runtime pass with cleanup0. Migration3/publication
 is unblocked. Final candidate passes54/54,39 cached, in48.761s.
+PR34 exact0d1a7ef passed protected run33245434181; remediation confirmation then
+found partial-log classification and stale parallel wording in ADR-0036. Both are
+corrected locally; focused Discovery89/89 and the final54/54 affected candidate
+in47.708s pass.
 Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Update PR34 once, reply to and resolve both discussions.
-2. Require remediation confirmation/protected CI, then
+1. Update PR34.
+2. Reply to and resolve discussions3886159885/887.
+3. Require final confirmation/protected CI, then
    squash/exact-main and activate P09-R10.
 
 ## Evidence boundaries
 
 The precursor evidence is in `home-rails-compatibility.txt`. Initial [SQL](../evidence/phase-09/home-rails-postgres.txt)
 and [runtime](../evidence/phase-09/home-rails-runtime.txt) evidence retain failures,
-corrections and zero residue. Pool/fan-out and mixed-version changes received both
+corrections and zero residue. Pool/admission and mixed-version changes received both
 affected repeats; source object IDs remained exact after the final squash rebase.
-Browser/media/CPU evidence is unaffected.
+The later log classifier and ADR prose are covered by focused/candidate gates and
+cannot affect SQL, media or binary runtime behavior. Browser/media/CPU evidence is unaffected.
 
 ## Execution environment
 

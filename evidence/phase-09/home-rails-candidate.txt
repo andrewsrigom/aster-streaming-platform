@@ -8,13 +8,13 @@ Canonical candidate gate
 Command: pnpm check:changed
 Result: PASS
 Tasks: 54 successful, 54 total
-Cached: 39
-Duration: 48.761s
+Cached: 38
+Duration: 47.708s
 
 The gate covered affected builds, tests, strict type checks, workspace ESLint,
 Prettier, Knip, architecture, platform, documentation, repository memory,
 community, secret scanning, CI policy, staged policy and commit policy. Discovery
-passed 88 tests, telemetry passed 10 tests, Router passed 9 composition and
+passed 89 tests, telemetry passed 10 tests, Router passed 9 composition and
 compatibility tests, and platform policy passed 67 tests.
 
 Schema compatibility
@@ -41,14 +41,19 @@ Corrections retained
   next outcome omitted the literal active requirement ID. Restoring `P09-R03`
   made repository-memory check/test pass; the repeated aggregate then passed
   all54 tasks without weakening or skipping a gate.
+- Remediation confirmation found usable partial GraphQL responses classified as
+  rejected and stale parallel wording in ADR-0036. The correction maps only
+  `PARTIAL` to degraded, records sequential admission and adds one direct policy
+  regression; Discovery89/89 and the final54/54 affected gate pass.
 
 Heavyweight evidence applicability
 
-The final corrections affect repository-memory structure and TypeScript export
-surface only. They do not change migration 0003, rail SQL/view, GraphQL runtime,
-telemetry behavior, packaging or failure boundaries; therefore the passing real
-PostgreSQL and 11-service runtime evidence remains applicable under the recorded
-repeat triggers.
+The latest source correction changes only the finite structured-log outcome for a
+usable partial response. It does not change migration 0003, rail SQL/view,
+GraphQL response, transaction admission, telemetry metrics, packaging boundaries
+or failure isolation. The direct policy regression and affected build/test gate
+cover the changed behavior; the passing real PostgreSQL and 11-service functional
+evidence remains applicable under the recorded repeat triggers.
 
 The squash rebase preserved the exact affected Git object IDs:
 
@@ -60,6 +65,11 @@ The squash rebase preserved the exact affected Git object IDs:
 
 Review/release state
 
-This is a local verified remediation candidate. The initial/confirmation review
-found the two recorded blockers; exact-head remediation confirmation, protected
-pull-request CI, squash merge and exact-main CI remain before P09-R03 release.
+Exact0d1a7ef passed protected run33245434181 in17m5s. Remediation confirmation
+review5057520267 then found two requirement-relevant issues: usable `PARTIAL`
+GraphQL responses were logged as rejected, and ADR-0036 still described the
+superseded parallel fan-out. The local correction maps partial responses to
+degraded, documents sequential one-transaction admission and passes Discovery
+build,89/89 tests, scoped lint, formatting and the54/54 affected candidate in
+47.708s. Publication update, confirmation, merge and exact-main CI remain before
+release.

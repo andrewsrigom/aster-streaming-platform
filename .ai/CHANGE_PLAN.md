@@ -22,7 +22,10 @@ per home request exceeded shared admission, and migration3 had no readiness over
 with the released binary. The database-admission correction is local. Precursor
 PR35 exact `8002594` passed75/75,42/42, clean confirmation and protected
 run33243983340, then squash-merged as main `583c835`. Exact-main run33244657936
-passed every required job; migration3 publication is now unblocked.
+passed every required job; migration3 publication is now unblocked. PR34 exact
+`0d1a7ef` passed protected run33245434181. Its remediation confirmation found
+that usable partial logs were classified as rejected and ADR-0036 still described
+the superseded parallel admission model; both corrections are local.
 
 ## Proposed behavior
 
@@ -84,7 +87,7 @@ readiness reservation fit the five-connection runtime pool.
 ## Security and privacy
 
 - Authorization: public rails need none; personalization stays in Engagement.
-- Input limits: first1–12, fixed rail/edge fan-out, existing body/parser/depth/
+- Input limits: first1–12, fixed rail/edge result bounds, existing body/parser/depth/
   alias/cost/deadline/concurrency limits.
 - Sensitive data: no query/title text, profile ID, credential or media URL in
   rail/search telemetry.
@@ -98,13 +101,13 @@ readiness reservation fit the five-connection runtime pool.
 3. Keep one transaction per home request, five finite runtime connections and an
    overlapping-request regression.
 4. Repeat affected PostgreSQL/runtime/candidate gates.
-5. Resolve both review discussions, request blocking-boundary confirmation and
-   publish through protected release.
+5. Resolve review discussions, confirm the corrected observability/documentation
+   boundary and publish through protected release.
 
 ## Tests
 
 - Domain: input bounds, stable keys/source labels, outcomes and fallback.
-- Application: independent failures, stale/cancelled, maximum fan-out and two
+- Application: independent failures, stale/cancelled, maximum rail/edge bounds and two
   overlapping requests with one transaction each.
 - Integration: real PostgreSQL view, privileges, generation match, ordering,
   expiry, retirement and mixed old/new readiness.
@@ -121,14 +124,18 @@ readiness reservation fit the five-connection runtime pool.
   PostgreSQL/runtime and54/54; admission fix passes Discovery83/83. Precursor
   correction passes75/75,42/42, protected CI and review. Rebased Discovery88/88, real PostgreSQL mixed
   readiness and the repeated eleven-service runtime pass; final exact-main rebase
-  preserves exact affected source objects and the final54/54 candidate passes.
+  preserved exact affected source objects and the54/54 candidate passed. The
+  latest partial-log/ADR correction passes focused Discovery89/89 and the final
+  affected54/54 candidate in47.708s.
 - Iteration gate: strict builds, focused node:test and scoped lint.
 - Candidate gate: canonical affected gate and schema compatibility.
-- Heavyweight repeat triggers: mixed-version/view SQL and changed pool/fan-out
+- Heavyweight repeat triggers: mixed-version/view SQL and changed pool/admission
   repeat PostgreSQL and Router runtime; docs-only closeout carries them forward.
-- Review stopping rule: initial plus confirmation already produced two blockers;
-  run one remediation confirmation because both boundaries changed, then reopen
-  only for requirement, security/data, availability or public-contract blockers.
+- Review stopping rule: confirmation produced two P1 blockers and remediation
+  confirmation produced two requirement/documentation P2 blockers. Batch the
+  latter and run one final confirmation because observability behavior changed;
+  reopen only for requirement, security/data, availability or public-contract
+  blockers.
 
 ## Rollback or recovery
 
@@ -144,7 +151,7 @@ and repository memory.
 ## Completion checklist
 
 - [x] Requirements implemented
-- [x] Final exact-main rebase and candidate pass
+- [x] Final corrected candidate pass
 - [x] Affected heavyweight evidence captured
 - [x] Documentation current for dependent work
 - [x] `.ai/` state updated

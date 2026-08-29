@@ -54,6 +54,13 @@ source object IDs stayed unchanged across the squash rebase, so no heavyweight
 proof was duplicated.
 [Compatibility evidence](../evidence/phase-09/home-rails-compatibility.txt).
 
+PR34 exact `0d1a7ef` passed protected run33245434181. Remediation confirmation
+review5057520267 found two additional requirement-relevant issues: `PARTIAL`
+GraphQL responses logged as rejected and ADR-0036 still describing parallel
+fan-out. The local correction classifies partial as degraded, records sequential
+one-transaction selection and passes focused Discovery89/89 plus the final54/54
+affected candidate in47.708s. Its publication update remains.
+
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
@@ -67,8 +74,8 @@ Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Publish the single P09-R03 PR34 update and complete its remediation
-review/protected release.
+Update PR34 with the corrected P09-R03 candidate and complete final confirmation/
+protected release.
 
 ## Runtime and recovery
 

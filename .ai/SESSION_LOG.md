@@ -21,6 +21,10 @@ Append new entries at the top. Keep entries factual and concise.
 - PR35 exact8002594 passed clean confirmation and protected run33243983340, then
   squash-merged as main583c835. The dependent rebased onto the identical tree;
   exact-main run33244657936 passed every required job.
+- PR34 exact0d1a7ef passed protected run33245434181. Remediation confirmation
+  review5057520267 found usable partial responses logged as rejected and stale
+  parallel-fan-out ADR text. Both were corrected together; focused Discovery
+  build,89/89 tests, lint, formatting and final54/54 affected candidate in47.708s pass.
 
 ### Evidence
 
@@ -46,7 +50,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the PR34 correction once and complete remediation review/protected release.
+Update PR34 and complete final confirmation/protected release.
 
 ## 2026-08-29 — Independent home rails local candidate
 

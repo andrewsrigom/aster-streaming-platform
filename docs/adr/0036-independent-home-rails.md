@@ -37,14 +37,15 @@ popularity, a real-time trend or a recommendation model. Real-time social trends
 remain a Phase 09 non-goal. A future behavior-derived ranker would require its own
 privacy, deletion, consistency and event decision.
 
-Execute the four primary selections as a fixed-size fan-out. Each selection uses
-its own read-only transaction and failure result, so a statement failure cannot
-roll back another rail. The fan-out is constant, not input controlled; existing
-GraphQL request concurrency and deadlines bound total work. Aggregate with settled
-outcomes. If featured or curated trending is empty or unavailable and the
-independent recent selection completed with titles, serve those recent references
-as `FALLBACK` and identify `RECENTLY_ADDED` as the served source. Do not fabricate a
-fallback when recent is stale, unavailable or empty.
+Execute the four primary selections sequentially in fixed featured, recently
+added, curated-trending and genre order. Each selection uses its own read-only
+transaction and failure result, so a request holds at most one transaction and a
+statement failure cannot roll back another rail. Existing GraphQL request
+concurrency and deadlines bound total work; aggregate the four independent
+outcomes after the final selection. If featured or curated trending is empty or
+unavailable and the independent recent selection completed with titles, serve
+those recent references as `FALLBACK` and identify `RECENTLY_ADDED` as the served
+source. Do not fabricate a fallback when recent is stale, unavailable or empty.
 
 Add a nullable `homeContinueWatching` root to Engagement that invokes the existing
 authorized continue-watching application query. It adds no table, projection or
@@ -62,8 +63,10 @@ cancelled and indeterminate outcomes. The home payload is `COMPLETED` only when 
 groups completed without fallback; it is `PARTIAL` when at least one usable group
 coexists with fallback or failure, and unavailable/stale/cancelled/indeterminate
 when no group is usable. Empty is a successful explicit state, not a dependency
-error. A title reference may resolve to null if Catalog retires it after rail
-selection; other entries remain usable.
+error. Structured logs classify `COMPLETED` as successful, usable `PARTIAL`
+responses as degraded and rejected/unusable operations as rejected. A title
+reference may resolve to null if Catalog retires it after rail selection; other
+entries remain usable.
 
 The projection's existing 300-second lease and proactive renewal remain the
 freshness policy. Queries exclude expired rows. Retirement events update active and

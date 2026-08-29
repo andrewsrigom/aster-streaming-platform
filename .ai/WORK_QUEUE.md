@@ -9,7 +9,10 @@ verified; confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
 confirmation and protected CI, then squash-merged as main `583c835`; exact-main
 run33244657936 passed. The dependent is rebased on that squash and ready for its
-single PR34 publication update. Historical stashes are superseded.
+PR34 correction. Exact0d1a7ef passed protected run33245434181; remediation review
+found partial-log classification and stale ADR execution wording. Both are fixed
+locally with Discovery89/89 and final54/54 affected candidate in47.708s.
+Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

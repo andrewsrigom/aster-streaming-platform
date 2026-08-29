@@ -5,7 +5,9 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 [ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size
 independent public rails, explicit freshness/outcomes, stable recent fallback,
 curated rather than behavioral trending, and nullable Engagement-owned home
-personalization. No profile copy, new service, cache or event is introduced.
+personalization. Four selections execute sequentially so each request reserves at
+most one transaction; usable partial responses log as degraded. No profile copy,
+new service, cache or event is introduced.
 
 [ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 is released through main `0bdcb27`. Its finite migration3 compatibility stage accepts only ordered markers1–2 or1–3; the old init preflight tolerates marker3 without owning or applying that script. PR35 released this precursor as main `583c835` and exact-main CI33244657936 passed.
 
