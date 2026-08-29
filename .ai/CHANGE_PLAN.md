@@ -143,9 +143,10 @@ active cancellation waiters so the first coalesced request records `one`.
 - Acceptance result: Discovery99/99, telemetry11/11, Web111/111, scoped static
   checks and real Redis pass. The Redis fixture proves 24 cold callers to one
   source read, 24 stale callers to one detached refresh, cross-instance
-  excessive-TTL recovery, outage fallback and cleanup0. Exact `53bdbf2` passes
-  the complete affected gate 73/73 in 182.617 seconds. Exact `8faf35a` passes the
-  eleven-service PostgreSQL/Router outage runtime in 395884 ms with cleanup0.
+  excessive-TTL recovery, outage fallback and cleanup0. Final candidate
+  checkpoint `0417ffd` passes the complete affected gate 73/73 with61 cached in
+  148.029 seconds. Exact `8faf35a` passes the eleven-service PostgreSQL/Router
+  outage runtime in 395884 ms with cleanup0.
 - Iteration gate: focused Discovery cache, Web projection and telemetry tests plus
   strict typecheck/lint.
 - Candidate gate: `pnpm check:changed`, real Redis/Discovery fixture and affected

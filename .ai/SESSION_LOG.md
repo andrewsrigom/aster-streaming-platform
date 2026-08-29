@@ -25,6 +25,9 @@ Append new entries at the top. Keep entries factual and concise.
   Redis configuration and degraded cache readiness. The single run passes in
   395884 ms with healthy public home fallback, zero broker lag, replay,
   Catalog isolation, Discovery restart recovery, sanitized logs and cleanup0.
+- Final candidate checkpoint `0417ffd` passes all73 affected tasks with61 cached
+  in148.029 seconds after the bounded historical-log compaction required by the
+  repository's 500-heading document limit.
 
 ### Evidence
 
@@ -34,8 +37,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Run the final documentation/candidate checkpoint, publish one Discovery PR and
-complete its bounded review/CI/release sequence. Then activate READY P10-R08.
+Publish one Discovery PR and complete its bounded review/CI/release sequence.
+Then activate READY P10-R08.
 
 ## 2026-08-29 — Catalog final cache remediations
 

@@ -1,7 +1,7 @@
 # Phase 10 Evidence Index
 
 Status: Catalog cache is released through PR37 and exact-main CI. Discovery stale
-cache implementation and local candidate evidence pass; publication remains.
+cache implementation and final73/73 local candidate evidence pass; publication remains.
 Phase 10 stays open for Discovery release and the operation-limiter closeout.
 
 ## Active slice

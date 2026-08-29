@@ -22,8 +22,8 @@ Commands and results
 - Scoped Prettier: PASS.
 - git diff --check: PASS.
 - Real Redis: PASS; see discovery-swr-redis.txt.
-- Complete affected gate: PASS, 73/73 tasks, 17 cached, 182.617 seconds at
-  exact `53bdbf2`.
+- Final complete affected gate: PASS, 73/73 tasks, 61 cached, 148.029 seconds at
+  exact candidate checkpoint `0417ffd`.
 - Disposable PostgreSQL/Router runtime: PASS in 395884 ms with non-critical Redis
   unavailable and cleanup0; see discovery-swr-runtime.txt.
 

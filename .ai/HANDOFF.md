@@ -21,7 +21,8 @@ Local evidence:
   to the owner and cleanup reaches zero.
 - The stale browser path passes 1/1; its affected Web blobs are byte-identical
   after the predecessor squash rebase.
-- Exact `53bdbf2` passes `pnpm check:changed`, 73/73 tasks in 182.617 seconds.
+- Final candidate checkpoint `0417ffd` passes `pnpm check:changed`, 73/73 tasks
+  with61 cached in148.029 seconds.
 - Exact `8faf35a` passes the eleven-service Discovery runtime in 395884 ms:
   configured Redis is absent, Discovery stays healthy, public home is served,
   projection lag is zero, quarantine replay and owner isolation/restart pass,
@@ -31,12 +32,10 @@ Evidence is under `evidence/phase-10`. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Finish the documentation/evidence candidate checkpoint and run its applicable
-   final local gates.
-2. Push `feat/p10-discovery-swr` once and open one PR.
-3. Complete one initial review and protected CI, batch only defined blockers,
+1. Push `feat/p10-discovery-swr` once and open one PR.
+2. Complete one initial review and protected CI, batch only defined blockers,
    then one confirmation review.
-4. Squash-merge without bypass, verify exact-main CI, close P10-R04 and activate
+3. Squash-merge without bypass, verify exact-main CI, close P10-R04 and activate
    READY P10-R08 from clean main.
 
 ## Evidence boundaries
