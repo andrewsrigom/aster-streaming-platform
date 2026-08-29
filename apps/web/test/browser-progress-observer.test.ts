@@ -155,6 +155,19 @@ test("generic GraphQL observer captures the profile body inside the response eve
   );
 });
 
+test("selected GraphQL body remains inside the original response deadline", async () => {
+  const body = Promise.withResolvers<unknown>();
+  const selected = response(undefined, () => body.promise);
+  const waiting = waitForGraphqlResponseJson(pageWith([selected]), endpoint, {
+    matchesRequest: () => true,
+    successMessage: "Selected request must succeed",
+    timeoutMessage: "Selected body exceeded its deadline.",
+    timeoutMs: 5,
+  });
+  await assert.rejects(waiting, /Selected body exceeded its deadline/u);
+  body.resolve(acknowledgement());
+});
+
 test("matching transport and body errors fail instead of being ignored", async () => {
   await assert.rejects(
     waitForSavedProgress(pageWith([{ ...response(), ok: () => false }]), endpoint, expected),

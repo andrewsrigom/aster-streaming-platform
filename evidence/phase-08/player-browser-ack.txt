@@ -144,3 +144,27 @@ the documented inventory, concurrency2 and error-only logs. Packages: root,
 Catalog, Router and Web. Tasks:43 successful,43 total;29 cached;1m38.431s;
 exit0. Later evidence-only edits require cheap state/document checks and commit
 hooks, not another unchanged candidate or runtime experiment.
+
+Exact-head deadline review — 2026-08-28
+Review5056138342 on6c78d2a reported one blocking failure mode: after selecting a
+response, the helper cleared its12-second timer before json() settled. A server
+that returned headers and stalled the body could therefore defer rejection to
+the outer90-second Playwright timeout. The finding is valid; the candidate was
+returned to IN_PROGRESS while CI33225258258 was already running.
+
+Correction: removing the listener still prevents a second body selection, but
+the original timer remains active until body success or failure. Timeout rejects
+the observer while the already-started body read stays safely handled; a late
+settlement cannot change the rejected result. The test-only timeout override is
+validated as a positive safe integer no greater than the production12-second
+bound and exists only to prove the stalled-body failure deterministically.
+
+Local commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/web test
+pnpm --filter @aster/web typecheck
+pnpm exec eslint apps/web/test/support/saved-progress.ts apps/web/test/browser-progress-observer.test.ts apps/web/test/browser/engagement.spec.ts
+Results:105/105 Web tests pass, including eight observer regressions; strict
+types and scoped lint pass. Canonical affected gate:43/43 tasks pass,29 cached,
+1m33.373s, exit0. No runtime, storage, host or retained-demo experiment was
+repeated.

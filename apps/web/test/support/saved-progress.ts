@@ -18,13 +18,16 @@ export async function waitForGraphqlResponseJson<T>(
     matchesRequest(body: unknown): boolean;
     successMessage: string;
     timeoutMessage: string;
+    timeoutMs?: number;
   },
 ): Promise<T> {
+  const timeoutMs = options.timeoutMs ?? 12000;
+  assert.ok(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 12000);
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
       page.off("response", observe);
       reject(new Error(options.timeoutMessage));
-    }, 12000);
+    }, timeoutMs);
     const observe = (response: ProgressResponse): void => {
       if (response.url() !== endpoint || response.request().method() !== "POST") {
         return;
@@ -36,7 +39,6 @@ export async function waitForGraphqlResponseJson<T>(
       } catch {
         return;
       }
-      clearTimeout(timer);
       page.off("response", observe);
       try {
         assert.equal(response.ok(), true, options.successMessage);
@@ -44,15 +46,18 @@ export async function waitForGraphqlResponseJson<T>(
         // sole selected body read before this response event returns.
         void response.json().then(
           (body) => {
+            clearTimeout(timer);
             resolve(body as T);
           },
           (error: unknown) => {
+            clearTimeout(timer);
             reject(
               error instanceof Error ? error : new Error("GraphQL response body unavailable."),
             );
           },
         );
       } catch (error) {
+        clearTimeout(timer);
         reject(error instanceof Error ? error : new Error("GraphQL response selection failed."));
       }
     };

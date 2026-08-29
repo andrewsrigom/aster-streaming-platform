@@ -2198,3 +2198,10 @@ Execute Phase 00 beginning with source-code license selection.
 - Preserved the rebased P09 Catalog private-runtime work in stash bc626511ae49d0bcb553c734a5278d835c277be5 before returning to the predecessor.
 - Centralized exact GraphQL response selection and event-turn body capture for Profiles and progress without changing production behavior, retries or acceptance assertions.
 - Full Web tests pass104/104, including seven observer regressions; type generation, strict TypeScript, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.
+
+# 2026-08-28 — Selected-body deadline correction
+
+- Accepted review5056138342's P1 finding: exact6c78d2a cleared the12-second timer after response selection instead of after body settlement.
+- Preserved rebased P09 private runtime in stash 01b1dad9bbda289976d137b1a20af9f7cf102add before returning to the predecessor.
+- Kept the original response deadline active through selected body success/failure and added a deterministic stalled-body regression.
+- Full Web tests pass105/105, including eight observer regressions; strict types, scoped lint and43/43 affected tasks pass. Protected acceptance remains pending.

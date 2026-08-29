@@ -21,11 +21,13 @@ The read-only seed correction at ea4c72f passed source quality, real platform, C
 
 The event-turn progress correction at d2ba88f passed its exact-head confirmation review without findings. Protected run33223692248 passed source, platform, Catalog, Playback, Engagement, immutable replay and service health, then failed before profile creation because the separate initial `Profiles` response body was also read only after UI work. Chromium reported the same discarded-resource error at engagement.spec.ts:47. The active correction centralizes exact GraphQL response selection and starts both profile and progress body reads inside their response event.
 
-P09 domain/Catalog snapshot work is preserved unpublished through 1bb26c2 on feat/p09-discovery-search. Its complete private transport/runtime WIP is in stash bc626511ae49d0bcb553c734a5278d835c277be5; apply only that newest stash after predecessor repair and never reapply the historical stashes. Retained demo remains Phase07.
+Review5056138342 on exact6c78d2a found one P1 deadline regression: selection removed the listener and cleared the timer before `response.json()` settled, so a stalled selected body could defer failure to Playwright's90-second test timeout. The correction keeps the original timer active through body success/failure; the same deadline now covers selection and consumption.
+
+P09 domain/Catalog snapshot work is preserved unpublished through c52b259 on feat/p09-discovery-search. Its complete private transport/runtime WIP is in stash 01b1dad9bbda289976d137b1a20af9f7cf102add; apply only that newest stash after predecessor repair and never reapply the historical stashes. Retained demo remains Phase07.
 
 ## Proposed behavior
 
-Select each intended GraphQL request synchronously by endpoint, method and exact request predicate. Start consuming the selected body in the same `response` event turn, remove the listener, and resolve only after the body is available. The progress specialization additionally checks title, sampled position and the durable acknowledgement; the profile bootstrap rejects a retained collection before creating anything. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
+Select each intended GraphQL request synchronously by endpoint, method and exact request predicate. Start consuming the selected body in the same `response` event turn, remove the listener, and keep the original12-second deadline active until the body succeeds or fails. The progress specialization additionally checks title, sampled position and the durable acknowledgement; the profile bootstrap rejects a retained collection before creating anything. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
 
 For each generated seed object, use the existing bounded storage HEAD. Existing objects require complete size/SHA256 readback and no PUT; only not_found permits one conditional PUT followed by the same verification. Keep If-None-Match for a competing creator between HEAD and PUT. Other lookup/write failures reject without retry. No data replacement, uncertain-success fallback or shared-adapter rewrite.
 
@@ -59,7 +61,7 @@ Do not record cookies, session data or media grants. Preserve production authori
 
 ## Tests
 
-Focused tests coordinate completion without sleeps. Seven browser observer regressions include progress and generic profile body capture during the response event; the full Web suite passes104 tests with strict types and scoped lint. Deterministic seed tests cover read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
+Focused tests coordinate completion without arbitrary sleeps. Eight browser observer regressions include progress/profile body capture during the response event and a selected body that never settles before the shared deadline; the full Web suite passes105 tests with strict types and scoped lint. Deterministic seed tests cover read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
 
 ## Evidence
 
@@ -75,7 +77,7 @@ Phase08 audit/release evidence, concise state/queue/session/handoff and demo rep
 
 ## Completion checklist
 
-- [x] Updated regression and affected gates pass (Web104/104, seven observer cases, types, scoped lint and43/43 candidate)
+- [x] Updated regression and affected gates pass (Web105/105, eight observer cases, types, scoped lint and43/43 candidate)
 - [ ] Protected browser acceptance and reviews pass
 - [ ] Exact main succeeds and Phase08 closes
 - [ ] Phase09 rebased and resumed without lost work

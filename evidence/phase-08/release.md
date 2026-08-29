@@ -1,6 +1,6 @@
 # Phase 08 acceptance
 
-Status: local requirements verified and PR31 merged after protected CI33217783905/two clean reviews. Exact main33218775702 failed in the browser observer. PR32's read-only seed correction and event-turn progress capture passed every preceding protected boundary in CI33223692248, but the independent initial Profiles waiter read its response body only after UI work and Chromium discarded it. [Shared event-turn response correction](player-browser-ack.txt), green protected acceptance and exact main are required before release.
+Status: local requirements verified and PR31 merged after protected CI33217783905/two clean reviews. Exact main33218775702 failed in the browser observer. PR32's read-only seed correction and event-turn progress capture passed every preceding protected boundary in CI33223692248, but the old initial Profiles waiter lost its body. The shared correction then required one review fix to keep selected body consumption inside the same12-second deadline. [Shared event-turn response correction](player-browser-ack.txt), green protected acceptance and exact main are required before release.
 
 ## Requirement audit
 
