@@ -2,22 +2,35 @@
 
 ## Resume point
 
-PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
+P09-R01 is released through PR33 exact candidate `fc353c3`, protected
+run33238473742, squash main `0bdcb27` and exact-main run33239191134.
 
-P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search. Confirmation-remediated source16d4921 implements bounded search, renewal, maintenance availability, exact quarantine replay, five-owner composition and optional failure isolation. Cleanup correction and four initial review issues pass. Confirmation discussions3885790201/205 found periodic readiness loss and unreachable replay;16d4921 corrects both. Discovery70/70, unchanged PostgreSQL acceptance, the11-service runtime in107640ms and final73/73 pass; runtime proves replay slot reclamation, stopped-Discovery Catalog access and restart recovery. Historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R03 is active. PR34 candidate `7d31678` locally verifies home rails, but its
+confirmation review found database fan-out and no migration-3 readiness overlap.
+The fan-out correction is preserved locally on `feat/p09-home-rails` commit
+`615a8c7`. The current branch `fix/p09-discovery-schema-compatibility` stages the
+released search binary to accept only ordered migrations1–2 or1–3 before
+migration3 is applied. Discovery73/73 and focused static gates pass. Full
+Phase00–14 goal remains active. The affected candidate passes42/42 in47.199s.
 
 ## Exact next actions
 
-1. Commit/push final evidence to PR33, reply to and resolve the two addressed confirmation threads, then require exact-head protected CI and final blocking-boundary confirmation.
-2. Squash merge and confirm exact-main CI before starting P09-R03.
-3. If protected CI finds a blocker, batch only the affected correction and repeat its invalidated gate; do not repeat unaffected evidence.
-4. Preserve retained media/databases/keys and user applications. No historical stash, retained migration, Docker/WSL restart, global cleanup or film encode.
+1. Commit/publish the precursor, complete initial/confirmation review and protected PR.
+2. Squash merge and confirm exact-main CI before migration3.
+3. Rebase `feat/p09-home-rails`, add real mixed-version readiness proof, repeat
+   affected gates and update PR34 once.
+4. Resolve both review discussions, require remediation confirmation/protected CI,
+   then squash/exact-main and activate P09-R10.
 
 ## Evidence boundaries
 
 Protected CI33211565625 now passes the complete corrected event supervisor, including real SQL/Kafka, signed deletion, quarantine/replay, outage recovery, bounded shutdown and cleanup. The earlier local wrapper exited1 on its obsolete SIGTERM assertion; do not rewrite it as success. Earlier70/70 and SQL/Kafka observations remain supporting evidence. events-source.sha256 describes the original checkpoint; test-only deltas are in events-ci.txt. No unchanged heavy event/SQL/CPU/media repeat.
 
-P09 exact review-remediated runtime source and selected SQL/Kafka/Router output are in evidence/phase-09/search-runtime.txt. Candidate and review evidence are in search-candidate.txt. The affected PostgreSQL and Docker proofs were repeated after the availability changes; no browser/media/CPU repeat applies to this backend-only slice. Protected evidence remains pending.
+P09 search release evidence is in `evidence/phase-09/search-release.md`. The
+compatibility trigger/correction is in `home-rails-compatibility.txt`. This
+precursor changes only the readiness predicate and docs, so it does not repeat
+unchanged Docker/media/search runtime. PR34 must repeat actual migration3 SQL and
+readiness after rebase.
 
 ## Execution environment
 

@@ -27,6 +27,13 @@ Require strict projection/boundary tests, real SQL constraints and query plans, 
 
 Disable optional Discovery or restore compatible prior Router/Catalog artifacts for rollback. Preserve source data, projection fences and recovery records; never reset Catalog or retained media. Migrations are additive and down migration is empty-state-only. A failed rebuild does not justify dropping the active index.
 
+Before applying additive migration `0003`, release a search-only compatibility
+stage that accepts the current ordered markers `1–2` and the single reviewed
+successor `1–3` while continuing to use only its existing objects and privileges.
+It rejects gaps, rewrites and version `4`. The rails binary may require marker
+`3` only after this stage reaches main. This preserves readiness for old and new
+binaries during migration-first rollout and rollback.
+
 The optional Compose overlay does not add Discovery as a Router startup dependency. Router may start and serve Catalog/Playback while Discovery is unavailable; only search degrades through the existing subgraph timeout/error boundary.
 
 Sources checked2026-08-28: PostgreSQL18 [plain-query parsing and ranking](https://www.postgresql.org/docs/18/textsearch-controls.html) and [GIN text-search indexes](https://www.postgresql.org/docs/18/textsearch-indexes.html). Bounds, consistency and recovery above are Aster decisions; runtime and relevance evidence remain required.
