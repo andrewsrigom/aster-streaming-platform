@@ -154,24 +154,69 @@ test("explicit refresh follows the current consumer after shared-query route cha
   }
 });
 
-test("empty, missing and invalid inputs differ from unavailable data; home locale is respected", async ({
+test("empty rails, missing titles and invalid inputs differ from unavailable data", async ({
   page,
 }) => {
   await page.goto("/?locale=pt-BR");
-  await expect(page.getByRole("heading", { name: "Sinal / 01", exact: true })).toBeVisible();
-  await page.route(endpoint, (route) =>
-    route.fulfill({
+  await expect(
+    page.getByLabel("Featured").getByRole("heading", { name: "Sinal / 01", exact: true }),
+  ).toBeVisible();
+  await page.route(endpoint, (route) => {
+    const request = route.request().postDataJSON() as { operationName?: string };
+    if (request.operationName !== "HomePublic") {
+      return route.continue();
+    }
+    return route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
-        data: { titles: { edges: [], pageInfo: { endCursor: null, hasNextPage: false } } },
+        data: {
+          homeRails: {
+            code: "COMPLETED",
+            correlationId: "00000000-0000-4000-8000-000000090001",
+            generation: "00000000-0000-4000-8000-000000090002",
+            generatedAt: 1000,
+            featured: {
+              code: "EMPTY",
+              rail: {
+                key: "featured",
+                kind: "FEATURED",
+                source: "FEATURED",
+                oldestIndexedAt: null,
+                freshUntil: null,
+                edges: [],
+              },
+            },
+            recentlyAdded: {
+              code: "EMPTY",
+              rail: {
+                key: "recently-added",
+                kind: "RECENTLY_ADDED",
+                source: "RECENTLY_ADDED",
+                oldestIndexedAt: null,
+                freshUntil: null,
+                edges: [],
+              },
+            },
+            trending: {
+              code: "EMPTY",
+              rail: {
+                key: "trending",
+                kind: "TRENDING",
+                source: "TRENDING",
+                oldestIndexedAt: null,
+                freshUntil: null,
+                edges: [],
+              },
+            },
+            genres: { code: "EMPTY", rails: [] },
+          },
+        },
       }),
-    }),
-  );
-  await page.getByRole("button", { name: "Refresh collection", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "The collection is quiet. For now.", exact: true }),
-  ).toBeVisible();
+    });
+  });
+  await page.getByRole("button", { name: "Refresh discovery", exact: true }).click();
+  await expect(page.getByText("No titles in this rail.", { exact: true })).toHaveCount(3);
   await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
   await page.unroute(endpoint);
   await page.goto("/title/00000000-0000-4000-8000-000005099999");

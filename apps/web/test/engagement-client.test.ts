@@ -10,6 +10,7 @@ import {
   readProgressCommand,
   readProgressOutcome,
 } from "../features/engagement/operations.ts";
+import { HOME_PERSONALIZED } from "../features/discovery/operations.ts";
 
 const id = (n: number) => "00000000-0000-4000-8000-" + String(n).padStart(12, "0");
 const pair = { profileId: id(1), titleId: id(2) };
@@ -59,7 +60,7 @@ test("player engagement documents match the first-party inventory", async () => 
       "utf8",
     ),
   );
-  for (const document of [PLAYER_PROGRESS, RECORD_PROGRESS]) {
+  for (const document of [PLAYER_PROGRESS, RECORD_PROGRESS, HOME_PERSONALIZED]) {
     const operation = document.definitions[0];
     assert.ok(operation?.kind === Kind.OPERATION_DEFINITION);
     const known = inventory.definitions.find(
@@ -164,6 +165,57 @@ test("private transport sends only the fixed credentialed operation and strips u
     variables: { input },
   });
   assert.ok(!JSON.stringify(r.client.cache.extract()).includes("canary"));
+});
+
+test("personalized home binds the selected profile and preserves public data on private failure", async (t) => {
+  const requests: {
+    operationName: string;
+    query: string;
+    variables: { profileId: string; first: number; locale: string };
+  }[] = [];
+  const r = runtime(t, (_url, init) => {
+    assert.ok(typeof init?.body === "string");
+    requests.push(JSON.parse(init.body) as (typeof requests)[number]);
+    return Promise.resolve(
+      Response.json({
+        data: {
+          homeRails: {
+            code: "PARTIAL",
+            featured: null,
+            recentlyAdded: null,
+            private: "canary",
+          },
+          homeContinueWatching: null,
+        },
+        errors: [{ message: "private owner canary" }],
+      }),
+    );
+  });
+  const result = await r.client.query({
+    query: HOME_PERSONALIZED,
+    variables: { profileId: pair.profileId, first: 10, locale: "en" },
+  });
+  assert.equal(
+    result.data?.homeRails && (result.data.homeRails as { code: string }).code,
+    "PARTIAL",
+  );
+  assert.equal(result.data?.homeContinueWatching, null);
+  assert.deepEqual(requests, [
+    {
+      operationName: "HomePersonalized",
+      query: print(HOME_PERSONALIZED),
+      variables: { profileId: pair.profileId, first: 10, locale: "en" },
+    },
+  ]);
+  assert.equal(JSON.stringify(result.data).includes("canary"), false);
+  assert.equal(JSON.stringify(r.client.cache.extract()).includes("canary"), false);
+  await assert.rejects(
+    r.client.query({
+      query: HOME_PERSONALIZED,
+      variables: { profileId: id(99), first: 10, locale: "en" },
+    }),
+  );
+  assert.equal(requests.length, 1);
 });
 
 test("private cache replaces the current title and never reports another title's absence", async (t) => {

@@ -1,10 +1,18 @@
 # Public Web checkpoint
 
-Status: Phase 05 public browsing, local profiles, Docker packaging, public recovery, responsive artwork and accessibility checks are released. Home, browse, localized title and attribution pages use the actual Apollo Router/Catalog. Profile creation/selection and sign-in/out use Identity through Router. [Actual-reader and final performance evidence](../../evidence/phase-05/reader-review.md) is recorded. Phase 07's HLS player and clean playable demo are implemented, with candidate acceptance/release in progress; use the separate [playback guide](PLAYBACK.md).
+Status: Phase 05 public browsing/local profiles and Phase 07–08 playback,
+save/resume and library journeys are released. Browse, localized title and
+attribution pages use Router/Catalog. The active P09-R10 candidate adds public
+SSR home rails and search plus a browser-only, owner-authorized continue-watching
+enhancement. Use the separate [playback guide](PLAYBACK.md) for playable media.
 
 ## Docker-only demo
 
-Use the single command in the [root README](../../README.md#run-the-docker-web-demo). The explicit `demo.yml` overlay adds Web and runs the finite Catalog initializer with the fixed synthetic seed after migrations. The ordinary API-only runtime does not seed a catalog. Web builds from the frozen lock, ships traced Next standalone output plus static files, and needs no host dependencies or bind mount.
+Use the single command in the [root README](../../README.md#run-the-docker-web-demo).
+The explicit overlays add Web, the finite Catalog initializer, event delivery and
+Discovery projection. The ordinary API-only runtime neither seeds a catalog nor
+starts Discovery. Web builds from the frozen lock, ships traced Next standalone
+output plus static files, and needs no host dependencies or bind mount.
 
 Web runs as UID/GID 1000 with a read-only root, dropped capabilities, one CPU, 512 MiB memory and 64 PIDs. Its only writable application path is the 32 MiB disposable image cache. It joins only the Router edge network; no private owner network, credentials or volumes are supplied. `/health/live` checks the Web process, not the health of Catalog or Identity. A ten-second orchestrator grace bounds shutdown.
 
@@ -12,7 +20,7 @@ The build preserves upstream dependency notices under standalone `THIRD_PARTY_LI
 
 The initializer reads the bundled, measured generated-media report (16 KiB input bound), validates explicit local/operator/seed activation, and has a 25-second migration-plus-seed deadline with cancellation. It reuses prior technical evidence instead of running FFmpeg at each startup. Existing title changes/takedowns are preserved: inspect `catalog-init` logs and resolve the specific conflict through Catalog, never delete PostgreSQL to repair startup.
 
-Use `docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime logs --tail 30 web catalog-init` for startup failures. Stop with the root README's all-profile command to retain data. The guarded local reset recognizes this exact overlay and Web cache mount; it still requires explicit destructive confirmation. Occupied loopback ports require stopping only the identified conflicting process/project. Linux/WSL amd64 is the current test platform; native Windows/macOS/arm64 portability is not yet proven.
+Use `docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime logs --tail 30 web catalog-init discovery` for startup failures. Stop with the root README's all-profile command to retain data. The guarded local reset recognizes this exact overlay and Web cache mount; it still requires explicit destructive confirmation. Occupied loopback ports require stopping only the identified conflicting process/project. Linux/WSL amd64 is the current test platform; native Windows/macOS/arm64 portability is not yet proven.
 
 ## Run locally
 
@@ -32,17 +40,28 @@ The seed is opt-in. It runs the network-disabled generated HLS verifier, builds 
 
 ## Rendering and boundaries
 
-- `registerApolloClient` creates request-scoped preload clients. Public routes avoid a Suspense/loading fallback around critical Catalog content: React's streamed replacement otherwise requires JavaScript to reveal it. The bounded fetch completes before the public HTML shell is sent.
+- `registerApolloClient` creates request-scoped preload clients. Public Catalog,
+  `HomePublic` and `SearchTitles` routes avoid a Suspense/loading fallback around
+  critical content: React's streamed replacement otherwise requires JavaScript
+  to reveal it. The bounded fetch completes before the public HTML shell is sent.
 - Public operations are versioned in the Router inventory. A positive projection copies only selected public fields and bounded scalar/collection values; upstream cookies, extra fields and extensions do not enter Apollo hydration.
 - The transport permits 256 KiB and four seconds, combines caller cancellation, rejects redirects and does not retry automatically.
 - Server requests use Node HTTP because the pinned Node Fetch implementation discards an explicit Host header. This preserves Router's canonical public Host even when connecting to Compose DNS. Only fixed public headers are sent; browser cookies/identity headers are never forwarded. A process-local pool admits at most 16 requests with no application wait queue and four idle sockets; Apollo caches remain request-scoped. The browser still uses Fetch.
-- Cache policies retain one page and one detail root, distinguish different cursors/IDs, and collect unreferenced entities after a consumer update. A populated 25-page test bounds the normalized title store to 21 entities; this is not a whole-process memory benchmark.
+- Cache policies retain one snapshot for each bounded browse, detail, home and
+  search root, distinguish arguments, and collect unreferenced entities after a
+  consumer update. Focused tests cover replacement and bounded normalized title
+  storage; this is not a whole-process memory benchmark.
 - Public links do not prefetch automatically. Locale is explicit (`en` or `pt-BR`), never inferred independently during hydration. Localized content carries its language tag.
 - `ASTER_WEB_ROUTER_URL` is server-only and accepts only the documented loopback/Compose Router URLs. Web owns no database, session or operator credentials. Router accepts only the exact local Web/diagnostic origins under [ADR-0018](../../docs/adr/0018-local-web-session-boundary.md).
 
 ## Public failure and recovery
 
-Home, browse, title and attribution render a sanitized unavailable state when a public query fails, including with JavaScript disabled. This degraded HTML is HTTP 200; a successful HTML response alone does not prove Catalog availability. Missing titles, an empty collection and unavailable data are separate states. Invalid cursor syntax returns 404, and the home route respects the explicit locale.
+Home, search, browse, title and attribution render sanitized explicit states when
+their public query fails, including with JavaScript disabled. This degraded HTML
+is HTTP 200; a successful HTML response alone does not prove an owner available.
+Missing titles, empty results, stale/expired cursors and unavailable data remain
+separate states. Discovery failure leaves Catalog browse/title/playback links
+usable; Catalog failure does not turn cached Discovery references into authority.
 
 `Refresh collection` makes one read request. A React transition retains the previous snapshot with an explicit stale notice only while the four-second-bounded refresh is pending. A failed result removes those details; cached metadata never authorizes playback or proves current rights. `Try again` retries explicitly, and the normal `Reload page` link preserves the query/locale without JavaScript. No polling or background refresh is enabled.
 
@@ -70,7 +89,7 @@ Open Profiles in the header or `/profiles`, then start the local demonstration s
 
 While a mutation disables its initiating action, focus moves to the still-enabled Close control. Two persistent, explicit polite/atomic live regions announce pending work and results without relying on initially populated status elements. This also avoids rapid status-bar event suppression observed in Orca. The [reader review](../../evidence/phase-05/reader-review.md) records actual speech and the supported scope. Closing cancels the client request but cannot undo an already committed owner mutation.
 
-The dialog loads on demand. Its separate Apollo client holds remote profiles, while a per-render-tree Redux store coordinates only the dialog, local step, busy state and finite notices. Input drafts stay in component state. Closing, session/profile changes, cross-tab invalidation and expiry cancel requests and discard the private cache. Expiry requires explicit recheck rather than an automatic refresh loop; a skewed browser clock cannot authorize a session. No Identity data is serialized into public SSR or persisted in browser storage.
+The dialog loads on demand. Its separate Apollo client holds remote profiles, while a per-render-tree Redux store coordinates only the dialog, local step, busy state and finite notices. Input drafts stay in component state. Closing, session/profile changes, cross-tab invalidation and expiry cancel requests and discard the private cache. Expiry requires explicit recheck rather than an automatic refresh loop; a skewed browser clock cannot authorize a session. After a selected profile is owner-confirmed, the same isolated private client may request `HomePersonalized` and render at most ten continue-watching entries. Public SSR never sends a profile ID, session cookie or private progress, and no Identity data is serialized into public SSR or persisted in browser storage.
 
 Web source remains strict TypeScript. Its declaration-file-only compatibility exception for upstream RTK types is recorded in ADR-0018; other packages retain declaration checking.
 
@@ -83,4 +102,14 @@ pnpm --filter @aster/web exec playwright install chromium
 pnpm --filter @aster/web test:browser
 ```
 
-Browser checks require the production Web server and seeded Docker Router to be running, with no concurrent traffic to the test stack. They read Router logs to confirm one initial Browse operation. `ASTER_ROUTER_CONTAINER` selects a non-default local container (default `aster-router-1`); `ASTER_BROWSER_EXECUTABLE_PATH` optionally selects an existing Chrome executable. Tests cover public HTML/hydration, disabled/delayed JavaScript, keyboard/dialog focus, real local profile/cookie flows, cross-tab logout, browser-clock expiry, retry and negative origin checks. The profile test removes only its newly created fixture through Identity, preserving its audit. Use a dedicated test stack, not a concurrently used viewer session. [Evidence and remaining acceptance](../../evidence/phase-05/README.md).
+Browser checks require the production Web server and seeded Docker Router to be
+running, with no concurrent traffic to the test stack. They read Router logs to
+confirm the expected finite public operation. `ASTER_ROUTER_CONTAINER` and
+`ASTER_DISCOVERY_CONTAINER` select non-default local containers;
+`ASTER_BROWSER_EXECUTABLE_PATH` optionally selects an existing Chrome executable.
+Tests cover no-JavaScript SSR home/search, hydration without public replay,
+explicit search states, keyboard/dialog focus, real profile/cookie flows,
+private-home isolation, Discovery outage/recovery, cross-tab logout, retry and
+negative origin checks. Profile tests remove only their created fixtures through
+Identity, preserving audit. Use a dedicated test stack, not a concurrently used
+viewer session. [Phase 09 evidence](../../evidence/phase-09/README.md).

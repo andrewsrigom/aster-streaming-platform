@@ -6,10 +6,9 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R03 dependent work active on
-`feat/p09-home-rails`, rebased on precursor squash main `583c835`. P09-R01 is
-released through PR33 and exact-main CI33239191134. Precursor exact-main
-run33244657936 passed; migration3/publication is unblocked. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R10 active on `feat/p09-web-discovery` from released
+main `a3f969c`. P09-R01 and P09-R03 are released through exact-main CI. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -21,24 +20,31 @@ records candidate `fc353c3`, protected run 33238473742, resolved review, squash
 11-service Kafka/Router runtime and 73-task candidate remain linked from the
 [Phase 09 index](../evidence/phase-09/README.md).
 
-P09-R03 locally verifies migration 0003, independent featured/recent/
+P09-R03 releases migration 0003, independent featured/recent/
 curated-trending/genre rails, stable recent fallback, nullable Engagement home
-composition and finite OpenTelemetry product instruments. Discovery 89/89,
+composition and finite OpenTelemetry product instruments. Discovery 90/90,
 telemetry 10/10, PostgreSQL 18.6 and the 11-service Router runtime pass. The
 failed SQL/guard harness attempts and exact cleanup are retained in [home SQL](../evidence/phase-09/home-rails-postgres.txt)
 and [runtime evidence](../evidence/phase-09/home-rails-runtime.txt). Schema
 compatibility and the [54/54 candidate gate](../evidence/phase-09/home-rails-candidate.txt)
-also pass.
+also pass. PR34 exact `390b655` passed protected run33248598719 and clean
+confirmation, squash-merged as `a3f969c`, and exact-main run33249289718 passed.
 
 ## Current work
 
-P09-R03 implements the smallest owner-safe rails slice. Discovery reads its
-released projection through a generation/fence-matched restricted view. Each
-rail retains its own result/freshness state; fixed rails fall back only to an
-independently successful recent rail. Engagement remains the sole
-continue-watching owner and contributes a nullable home field. Router acceptance
-preserves public rails while Engagement is absent. No profile truth enters
-Discovery.
+P09-R10 now integrates the released owner contracts into Web. Public home rails
+and search use request-scoped Apollo SSR plus positive projection; profile
+continue-watching starts only after owner-confirmed browser selection in the
+disposable private Apollo generation. Public HTML contains no profile/session
+data, Apollo remains the sole remote-state cache and Discovery failure leaves
+Catalog browse/title and Playback usable. Web tests pass110/110, Router10/10,
+production build/artifact/notice scans pass, the new discovery journey passes3/3,
+Discovery isolation passes1/1 and the affected browser group passes after one
+bounded keyboard-harness correction. [Runtime evidence](../evidence/phase-09/web-discovery-runtime.txt).
+Initial review's rail-source/aggregate semantic boundary is corrected; the rebuilt
+image passes discovery4/4 and confirmation has no blocker. The final affected
+candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
+moderate. Exact disposable cleanup reports containers0/networks0/volumes0.
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
 old/new schema overlap. Home selections now use one transaction at a time per
@@ -84,13 +90,13 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Home rails remain unreleased while PR34 completes corrected protected review and CI.
-Browser rails/search, SSR/hydration and hosted release remain pending.
+Complete candidate/review/protected release and exact post-merge Phase 09
+acceptance remain pending. Hosted release remains Phase 14.
 
 ## Next outcome
 
-Publish the P09-R03 fallback-contract correction and complete closeout
-confirmation/protected release.
+Complete P09-R10: commit/publish the frozen local candidate, complete hosted
+confirmation and protected CI, then squash and pass exact-main Phase 09 acceptance.
 
 ## Runtime and recovery
 

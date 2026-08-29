@@ -10,6 +10,7 @@ import { readGitBaseline } from "../src/baseline.js";
 import { fileURLToPath } from "node:url";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { Kind, parse } from "graphql";
 
 const root = new URL("../../../../", import.meta.url);
 const sources = {
@@ -20,6 +21,16 @@ const sources = {
   playback: readFileSync(new URL("infra/router/generated/playback.graphql", root), "utf8"),
 };
 const operations = readFileSync(new URL("infra/router/known-operations.graphql", root), "utf8");
+const routerPolicy = readFileSync(new URL("infra/router/main.rhai", root), "utf8");
+
+test("every known operation has a finite Router telemetry label", () => {
+  for (const definition of parse(operations).definitions) {
+    if (definition.kind === Kind.OPERATION_DEFINITION) {
+      assert.ok(definition.name);
+      assert.match(routerPolicy, new RegExp(`"${definition.name.value}"`, "u"));
+    }
+  }
+});
 
 test("five owner schemas compose deterministically, retain entity ownership and validate all known operations", () => {
   const first = composeLocalSupergraph(sources, operations);

@@ -29,6 +29,8 @@ test("served HTML and browser-loaded public/lazy assets contain no private serve
     "/",
     "/browse",
     "/browse?locale=pt-BR",
+    "/search",
+    "/search?q=Signal",
     "/title/00000000-0000-4000-8000-000005000001",
     "/attribution",
     "/profiles",
@@ -66,7 +68,7 @@ test("served HTML and browser-loaded public/lazy assets contain no private serve
   console.log(
     JSON.stringify({
       event: "web_served_artifact_scan",
-      htmlRoutes: 6,
+      htmlRoutes: 8,
       loadedAssets: paths.length,
       findings: 0,
     }),

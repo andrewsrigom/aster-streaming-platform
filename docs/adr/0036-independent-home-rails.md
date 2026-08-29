@@ -53,8 +53,14 @@ Discovery call. A personalized Router operation selects `homeRails` and this
 nullable sibling. Engagement subgraph failure may null the personalized field and
 produce a GraphQL error without nulling public home data. Internal owner failures
 still return Engagement's existing explicit payload code. Public SSR does not send
-profile identity; P09-R10 will request personalization after an active profile is
-known.
+profile identity. P09-R10 implements this split: Web server-renders exact bounded
+`HomePublic` and `SearchTitles` operations through a request-scoped public Apollo
+client and positive projection. The browser checks Identity first and sends exact
+`HomePersonalized` only through the isolated private Apollo client after an active
+profile is owner-confirmed. Profile changes, expiry and sign-out cancel and discard
+that private cache. Public rails stay present when the nullable Engagement field
+or the whole Discovery service is unavailable; Catalog browse remains the
+independent public fallback when Discovery itself cannot respond.
 
 ## Contract and failure behavior
 
@@ -102,8 +108,8 @@ and stale state, cancellation, generation/fence matching, restricted view grants
 stable ordering, GraphQL cost/composition/nullability, owner authorization, finite
 metric attributes, Router partial response and a36-reference Catalog entity fetch
 split into owner batches of at most20. Use real PostgreSQL for view/query
-semantics and one disposable runtime for packaging and failure isolation. Browser
-SSR/hydration remains P09-R10.
+semantics and one disposable runtime for packaging and failure isolation. P09-R10
+implements browser SSR/hydration and records its separate acceptance evidence.
 
 Rollback restores the prior compatible subgraph/Router artifacts and drops only
 the additive view when no rail binary uses it. Preserve projection generations,

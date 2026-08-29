@@ -1,178 +1,154 @@
-# Work Item: Independent home rails, stable fallbacks and owner composition
+# Work Item: Server-rendered discovery and profile-safe home enhancement
 
 - Status: IN_PROGRESS
-- Owner: Discovery read model; Engagement owns continue-watching; Catalog owns title truth
+- Owner: Web presentation; Discovery owns rails/search; Engagement owns progress
 - Phase: 09
-- Requirement IDs: P09-R03, P09-R04, P09-R05, P09-R08, P09-R09
+- Requirement IDs: P09-R10, DSC-R01, DSC-R02, DSC-R03, DSC-R04, DSC-R05
 - Created: 2026-08-29
 - Updated: 2026-08-29
 
 ## Outcome
 
-A viewer can request a bounded home model whose public rails fail independently,
-report freshness and use a stable recent fallback. An authenticated home request
-can compose Engagement-owned continue-watching without copying profile or progress
-truth into Discovery.
+A viewer receives public home rails and bounded search in the initial HTML, then
+an authenticated browser may add owner-authorized continue-watching without
+serializing profile data into the server response or changing the public render.
 
 ## Current behavior
 
-Search is released in main `0bdcb27`. PR34 candidate `7d31678` locally verified
-the initial rails slice, but confirmation found two blockers: four SQL transactions
-per home request exceeded shared admission, and migration3 had no readiness overlap
-with the released binary. The database-admission correction is local. Precursor
-PR35 exact `8002594` passed75/75,42/42, clean confirmation and protected
-run33243983340, then squash-merged as main `583c835`. Exact-main run33244657936
-passed every required job; migration3 publication is now unblocked. PR34 exact
-`0d1a7ef` passed protected run33245434181. Its remediation confirmation found
-that usable partial logs were classified as rejected and ADR-0036 still described
-the superseded parallel admission model; both corrections reached exact
-`8650670` and protected run33246333963 passed. Its final confirmation found one
-architecture excerpt using default20 instead of the authoritative schema default10;
-the documentation-only correction reached exact `df08a70` and protected
-run33247048014 passed. Closeout confirmation then found the three genre rails can
-flatten36 Catalog `Title` representations while its guard allowed20; the bounded
-Catalog federation correction is local.
-Exact `dbce479` then passed the corrected local54/54 candidate. Closeout review
-5057751709 found fallback could replace `cancelled` or `indeterminate` primary
-outcomes despite the written contract allowing only `empty` or `unavailable`;
-the narrow fallback correction is local.
+Search and home-owner capabilities are released through main `a3f969c`. PR34
+exact `390b655` passed protected run33248598719, received a clean exact-head
+confirmation, squash-merged, and exact-main run33249289718 passed. This branch now
+server-renders bounded HomePublic/SearchTitles views and admits HomePersonalized
+only through the isolated owner-confirmed profile client. Focused static, package,
+schema and disposable browser/failure acceptance pass; the complete browser and
+candidate gates remain before publication.
 
 ## Proposed behavior
 
-Add one bounded `homeRails` query to Discovery. It returns separately coded
-featured, recently added, curated trending and at most three genre rails. A failed
-or empty featured/trending selection may reuse only a successfully read recent
-rail and says `FALLBACK`. Curated trending means the Catalog editorial label
-`trending`; it makes no behavioral-popularity claim. Add nullable Engagement
-`homeContinueWatching` through existing owner authorization. Each home request
-uses at most one runtime transaction at a time; four GraphQL admissions plus one
-readiness reservation fit the five-connection runtime pool.
+Add exact Web documents matching `HomePublic`, `SearchTitles` and
+`HomePersonalized`. Render public home rails and search through the existing
+request-scoped Apollo preload and positive response projection. Add
+continue-watching only after the browser establishes the selected profile in the
+existing disposable private Apollo generation. Keep Catalog browse available as
+an independent route when Discovery is unavailable.
 
 ## Boundaries
 
-- Owning context: Discovery owns rail definitions/order; Engagement owns
-  continue-watching; Catalog owns public title truth.
-- Affected services/packages: Discovery, narrow Engagement and Catalog federation
-  transports, telemetry, Router artifacts and Phase 09 evidence.
-- Authoritative data: Catalog title/publication facts and Engagement progress.
-- Read models/caches: existing versioned Discovery PostgreSQL projection; no Redis.
-- Trust boundaries: public GraphQL input, Router owner credentials, projection rows,
-  migration rows and telemetry labels.
-- External dependencies: existing PostgreSQL, Router/Federation and OpenTelemetry.
+- Owning context: Web owns presentation only; Discovery owns projected rails and
+  search; Catalog owns title metadata; Engagement owns progress.
+- Affected services/packages: `apps/web`, Phase 09 documentation/evidence and
+  existing Router operation compatibility only.
+- Authoritative data: unchanged owner GraphQL responses; no Web persistence.
+- Read models/caches: request-scoped public Apollo and disposable profile-scoped
+  private Apollo; no Redux copy, browser persistence or cross-request cache.
+- Trust boundaries: URL search parameters, public GraphQL response, local session
+  cookie and profile-scoped private GraphQL response.
+- External dependencies: existing Web, Router, Discovery, Catalog, Engagement and
+  Identity runtimes.
 
 ## Invariants
 
-- Discovery never persists profile, progress or session data.
-- Current Catalog resolves every returned `Title` reference.
-- One rail failure cannot remove an independently completed rail.
-- Results are bounded to twelve titles per rail and three genre rails.
-- Expired projection rows are not served; fallback bypasses no rights/visibility.
-- A home request reserves at most one runtime transaction concurrently.
-- Catalog admits at most36 home entity representations and retains owner batches
-  of at most20 through its request-scoped DataLoader.
-- Migration3 waits for the finite search compatibility precursor on exact main.
-- The old search migrator tolerates marker3 but owns/applies only scripts1–2 and
-  rejects marker4.
+- Public SSR sends no cookie, profile identifier or private owner credential.
+- Server HTML and first browser render use the same bounded Apollo snapshot.
+- Profile enhancement starts only after current Identity selection and is removed
+  on session/profile change, expiry, page suspension or cancellation.
+- Apollo owns all remote rail/search/progress state; Redux remains local shell and
+  player interaction state.
+- One failed or stale rail remains explicit and cannot erase usable siblings.
+- Discovery failure does not block Catalog browse, title detail or playback.
+- Search is at most20 results/page; home is at most10 titles/rail and three genres.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Featured/trending unavailable or empty | Use independently completed recent titles as `FALLBACK`; otherwise preserve primary result, including cancelled/indeterminate | rail outcome, duration, fallback count |
-| Genre error | Fixed rails remain; genres report failure | rail outcome and duration |
-| Projection stale | Explicit `STALE`, no edges | freshness and stale outcome |
-| Engagement unavailable | Nullable personalized root fails without nulling public rails | owner/Router outcome |
-| Cancellation/deadline | Stop pending SQL and propagate bounded cancellation | cancelled outcome |
-| Migration mismatch | Readiness unavailable; old search remains ready on staged marker3 | existing readiness outcome |
+| Discovery unavailable during public SSR | Sanitized home/search unavailable state; Catalog routes remain usable | existing Router/Discovery outcome |
+| Home partial or fallback | Render only returned usable rails with explicit source/state text | existing rail outcome/fallback metrics |
+| Empty or stale search | Distinguish no matches, stale projection and unavailable dependency | existing search outcome/quality metric |
+| Invalid query/cursor/locale | Reject before browser/owner work; invalid route is not an empty result | Web/Router rejection only |
+| Engagement unavailable | Keep public SSR unchanged; show private enhancement unavailable | Router partial/Engagement outcome |
+| Profile/session changes | Cancel and discard old private client/cache; late data cannot render | existing private lifecycle state |
 
 ## Data and contracts
 
-- Schema/migration: additive security-barrier `rail_documents` view over matching
-  generation/fence version/digest. Down drops only the view.
-- GraphQL: additive `homeRails` and nullable `homeContinueWatching`.
-- Events: unchanged Catalog and Engagement v1 events.
-- Cache: none; projection lease remains at most300seconds.
-- Compatibility: precursor accepts current/successor markers; rails binary requires
-  marker3 and its restricted view.
-- Retention/deletion: no new personal data; rails follow projection retention.
+- Schema/migration: none.
+- GraphQL: consume existing exact `HomePublic`, `SearchTitles` and
+  `HomePersonalized` known operations without changing ownership/nullability.
+- Events: none.
+- Cache: add finite one-snapshot public home/search roots and finite private home
+  roots; normalized public `Title` identity remains stable.
+- Compatibility: documents must exactly match Router inventory and generated API.
+- Retention/deletion: Web stores no profile/search/rail data outside in-memory
+  request or private-profile client lifetimes.
 
 ## Security and privacy
 
-- Authorization: public rails need none; personalization stays in Engagement.
-- Input limits: first1–12, fixed rail/edge result bounds, existing body/parser/depth/
-  alias/cost/deadline/concurrency limits; Catalog entities36, other lists20.
-- Sensitive data: no query/title text, profile ID, credential or media URL in
-  rail/search telemetry.
-- Abuse cases: reject operation substitution, excess fields/aliases and malformed
-  persisted rows before application authority.
+- Authorization: owner-side Engagement authorization remains mandatory; the Web
+  binds `profileId` to the current private scope and cannot substitute it.
+- Input limits: query at most80 code points/160 UTF-16 units/eight normalized
+  terms at the owner; cursor at most1280 safe URL characters; locale is `en` or
+  `pt-BR`; page20; home10.
+- Sensitive data: no profile, progress, cookie, private errors, endpoints or
+  credentials in HTML, public Apollo snapshots, URLs, logs or evidence.
+- Abuse cases: reject unknown operation substitution, foreign profile variables,
+  oversized response collections, malformed identifiers/scalars and automatic
+  retries; all browser work has the existing four-second deadline/cancellation.
 
 ## Implementation steps
 
-1. Precursor exact-main run33244657936 passed.
-2. Rebase PR34 and prove migration3 against staged-old and rails-new readiness.
-3. Keep one transaction per home request, five finite runtime connections and an
-   overlapping-request regression.
-4. Repeat affected PostgreSQL/runtime/candidate gates.
-5. Resolve review discussions, confirm the corrected observability/documentation
-   boundary and publish through protected release.
+1. Record the P09-R03 protected/main release and activate P09-R10.
+2. Add exact documents, bounded variable/response projection and cache policies.
+3. Render accessible public home rails and bounded search from SSR snapshots.
+4. Add profile-scoped continue-watching through the existing private lifecycle.
+5. Verify failure, hydration, accessibility, operation count and runtime journeys.
+6. Update Phase 09 acceptance/evidence and complete initial/confirmation review.
 
 ## Tests
 
-- Domain: input bounds, stable keys/source labels, outcomes and fallback.
-- Application: independent failures, stale/cancelled, maximum rail/edge bounds and two
-  overlapping requests with one transaction each; fallback preserves cancelled
-  and indeterminate primary outcomes.
-- Integration: real PostgreSQL view, privileges, generation match, ordering,
-  expiry, retirement and mixed old/new readiness.
-- Contract: five-subgraph composition, nullability, known operations and cost.
-- Owner batching: Catalog accepts36 valid entity references, rejects37 and splits
-  the accepted maximum into owner reads of at most20.
-- Browser: excluded; P09-R10 owns visible SSR/hydration.
-- Performance/failure: Router proof with rail fault, Engagement isolation and
-  finite metrics; no media/CPU experiment.
+- Domain: URL query/locale/cursor normalization and response-shape bounds.
+- Application: public snapshot allowlist, finite cache roots, private profile
+  binding, partial owner failure and late-profile cancellation.
+- Integration: generated schema and exact Router known-operation compatibility.
+- Contract: Home/Search documents, nullability, profile ownership and no private
+  fields in public artifacts.
+- Browser: SSR with disabled/delayed JavaScript, zero automatic initial browser
+  GraphQL, search traversal, empty/stale/unavailable states, profile enhancement,
+  profile swap and Discovery isolation from Catalog/playback.
+- Performance/failure: existing mobile budgets, hydration mark and bounded
+  operation counts on a dedicated disposable runtime; no media encode or CPU loop.
 
 ## Evidence
 
-- Commands: focused tests during edits; affected `pnpm check:changed` at candidate.
-- Raw artifact path: `evidence/phase-09/home-rails-*.txt`.
-- Acceptance result: initial rails passed Discovery82/82, telemetry10/10, real
-  PostgreSQL/runtime and54/54; admission fix passes Discovery83/83. Precursor
-  correction passes75/75,42/42, protected CI and review. Rebased Discovery88/88, real PostgreSQL mixed
-  readiness and the repeated eleven-service runtime pass; final exact-main rebase
-  preserved exact affected source objects and the54/54 candidate passed. The
-  latest partial-log/ADR correction passes focused Discovery89/89 and the final
-  affected54/54 candidate in47.708s. The Catalog capacity correction passes its
-  build and230/230 focused tests; the corrected affected candidate passes54/54,
-  38 cached, in55.844s. The fallback correction passes Discovery build and90/90
-  focused tests; its corrected affected candidate passes54/54,38 cached, in49.022s.
-- Iteration gate: strict builds, focused node:test and scoped lint.
-- Candidate gate: canonical affected gate and schema compatibility.
-- Heavyweight repeat triggers: mixed-version/view SQL and changed pool/admission
-  repeat PostgreSQL and Router runtime; docs-only closeout carries them forward.
-- Review stopping rule: confirmation produced two P1 blockers and remediation
-  confirmation produced two requirement/documentation P2 blockers. Batch the
-  latter; subsequent confirmations found a public-contract documentation mismatch
-  and then the real Catalog entity-capacity blocker. Its confirmation found one
-  public-contract blocker where fallback hid cancelled/indeterminate outcomes.
-  Correct that narrow boundary and run one final confirmation; reopen only for
-  requirement, security/data, availability or public-contract blockers.
+- Commands: focused Web tests/build/lint; schema checks; affected candidate; one
+  disposable browser/runtime acceptance.
+- Raw artifact path: `evidence/phase-09/web-discovery-*.txt` and Phase 09 index.
+- Acceptance result: local Web/Router, affected browser/runtime, initial/
+  confirmation review and46/46 candidate pass; protected release pending.
+- Iteration gate: Web typecheck/build, focused node:test and scoped ESLint.
+- Candidate gate: `pnpm check:changed`, schema compatibility and public-artifact scan.
+- Heavyweight repeat triggers: changes to public preload/hydration, private profile
+  lifetime, Router operation, runtime topology or browser-visible fallback repeat
+  the affected browser/runtime proof. Pure prose does not repeat it.
+- Review stopping rule: one complete initial review and one confirmation. Reopen
+  only for requirement, security/data, hydration/availability or public-contract
+  blockers; record speculative polish for its owning later phase.
 
 ## Rollback or recovery
 
-PR35 exact-main passed; migration3 is old-search compatible.
-Restore prior Router/owner artifacts and drop only the rail view once no rails
-binary uses it. Preserve projections, Catalog/Engagement data, media and credentials.
+Restore the prior Web home and remove only the additive discovery views/documents.
+Owner services, projections, profile/progress data, retained media and Catalog
+browse remain unchanged. A disabled Discovery service must leave browse/playback.
 
 ## Documentation updates
 
-ADR-0035/0036, Discovery/Engagement operations, migration guide, Phase 09 evidence
-and repository memory.
+Web README, ADR-0036 implementation status, feature catalog, Phase 09 evidence and
+repository memory.
 
 ## Completion checklist
 
-- [x] Requirements implemented
-- [x] Final fallback-contract candidate pass
-- [x] Affected heavyweight evidence captured
-- [x] Documentation current for dependent work
-- [x] `.ai/` state updated
-- [x] Remaining risks recorded
+- [ ] Requirements satisfied
+- [ ] Tests pass
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

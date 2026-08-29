@@ -14,7 +14,13 @@ const messages = {
   expired: "Your session expired. Sign in again to use your library.",
   suspended: "Private data cleared while this page is inactive.",
 };
-export function PrivateProfile({ children }: { children: (scope: ReadyProfile) => ReactNode }) {
+export function PrivateProfile({
+  children,
+  feature = "your library",
+}: {
+  children: (scope: ReadyProfile) => ReactNode;
+  feature?: string;
+}) {
   const [state, setState] = useState<PrivateProfileView>({ kind: "checking" });
   const controller = useRef<ReturnType<typeof attachPrivateProfile> | null>(null);
   useEffect(() => {
@@ -41,7 +47,13 @@ export function PrivateProfile({ children }: { children: (scope: ReadyProfile) =
   return (
     <div className="space-y-5">
       <p aria-live="polite" aria-atomic="true">
-        {state.kind === "ready" ? `Profile: ${state.profileName}` : messages[state.kind]}
+        {state.kind === "ready"
+          ? `Profile: ${state.profileName}`
+          : state.kind === "anonymous"
+            ? `Sign in and select a local profile to use ${feature}.`
+            : state.kind === "unselected"
+              ? `Select a profile to use ${feature}.`
+              : messages[state.kind]}
       </p>
       {state.kind === "ready" ? (
         <Fragment key={state.generation}>{children(state)}</Fragment>

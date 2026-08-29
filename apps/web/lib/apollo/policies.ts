@@ -24,9 +24,11 @@ export const publicCachePolicies: TypePolicies = {
   Profile: { keyFields: ["id"] },
   Query: {
     fields: {
-      // Keep one page and one detail root; mounted consumers collect orphaned entities.
+      // Keep one snapshot per finite root; mounted consumers collect orphaned entities.
       titles: oneSnapshot(["first", "after"]),
       title: oneSnapshot(["id"]),
+      homeRails: oneSnapshot(["first"]),
+      searchTitles: oneSnapshot(["query", "locale", "first", "after"]),
     },
   },
 };

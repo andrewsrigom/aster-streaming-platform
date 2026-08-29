@@ -6,7 +6,13 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–08 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR, accessible HLS playback, durable progress/resume, owned library and owner event recovery pass their recorded acceptance. The one-command retained demo remains intentionally Phase07; this is not a missing Phase08 release gate. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–08 are released locally through protected and exact post-merge CI.
+Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js
+SSR, accessible HLS playback, durable progress/resume, owned library and owner
+event recovery pass their recorded acceptance. Phase 09 Discovery search/home
+owners are released; their Web SSR/private enhancement is implemented on the
+active branch and remains a release candidate. Exact progress lives in
+`.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -51,13 +57,11 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 ## Delivery state
 
 Active phase: **Phase 09 — Home Rails and Search**. P09-R01 is released through
-PR33, protected CI33238473742, squash main `0bdcb27` and exact-main CI33239191134.
-P09-R03 is active on dependent `feat/p09-home-rails`, now based on frozen
-compatibility precursor PR35 exact `471c445`. Independent rails, owner-preserving
-personalization, fallback and telemetry are locally verified; confirmation found
-database admission and rollout blockers. Admission is corrected locally; migration3
-and publication wait for precursor exact main and repeated affected gates. Retained
-demo remains Phase07.
+main `0bdcb27` and exact-main CI33239191134. P09-R03 is released through PR34,
+main `a3f969c` and exact-main CI33249289718. P09-R10 is active on
+`feat/p09-web-discovery`: public SSR rails/search and browser-only profile
+enhancement are implemented with focused browser/runtime acceptance; complete the
+candidate, review and protected release to close Phase 09.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
