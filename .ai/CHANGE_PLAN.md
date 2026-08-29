@@ -32,6 +32,10 @@ the documentation-only correction reached exact `df08a70` and protected
 run33247048014 passed. Closeout confirmation then found the three genre rails can
 flatten36 Catalog `Title` representations while its guard allowed20; the bounded
 Catalog federation correction is local.
+Exact `dbce479` then passed the corrected local54/54 candidate. Closeout review
+5057751709 found fallback could replace `cancelled` or `indeterminate` primary
+outcomes despite the written contract allowing only `empty` or `unavailable`;
+the narrow fallback correction is local.
 
 ## Proposed behavior
 
@@ -74,7 +78,7 @@ readiness reservation fit the five-connection runtime pool.
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Featured/trending error or empty | Use independently completed recent titles as `FALLBACK`; otherwise preserve primary result | rail outcome, duration, fallback count |
+| Featured/trending unavailable or empty | Use independently completed recent titles as `FALLBACK`; otherwise preserve primary result, including cancelled/indeterminate | rail outcome, duration, fallback count |
 | Genre error | Fixed rails remain; genres report failure | rail outcome and duration |
 | Projection stale | Explicit `STALE`, no edges | freshness and stale outcome |
 | Engagement unavailable | Nullable personalized root fails without nulling public rails | owner/Router outcome |
@@ -116,7 +120,8 @@ readiness reservation fit the five-connection runtime pool.
 
 - Domain: input bounds, stable keys/source labels, outcomes and fallback.
 - Application: independent failures, stale/cancelled, maximum rail/edge bounds and two
-  overlapping requests with one transaction each.
+  overlapping requests with one transaction each; fallback preserves cancelled
+  and indeterminate primary outcomes.
 - Integration: real PostgreSQL view, privileges, generation match, ordering,
   expiry, retirement and mixed old/new readiness.
 - Contract: five-subgraph composition, nullability, known operations and cost.
@@ -138,7 +143,8 @@ readiness reservation fit the five-connection runtime pool.
   latest partial-log/ADR correction passes focused Discovery89/89 and the final
   affected54/54 candidate in47.708s. The Catalog capacity correction passes its
   build and230/230 focused tests; the corrected affected candidate passes54/54,
-  38 cached, in55.844s.
+  38 cached, in55.844s. The fallback correction passes Discovery build and90/90
+  focused tests; its corrected affected candidate passes54/54,38 cached, in49.022s.
 - Iteration gate: strict builds, focused node:test and scoped lint.
 - Candidate gate: canonical affected gate and schema compatibility.
 - Heavyweight repeat triggers: mixed-version/view SQL and changed pool/admission
@@ -146,8 +152,9 @@ readiness reservation fit the five-connection runtime pool.
 - Review stopping rule: confirmation produced two P1 blockers and remediation
   confirmation produced two requirement/documentation P2 blockers. Batch the
   latter; subsequent confirmations found a public-contract documentation mismatch
-  and then the real Catalog entity-capacity blocker. Correct the bounded owner
-  contract and run one confirmation because availability changed; reopen only for
+  and then the real Catalog entity-capacity blocker. Its confirmation found one
+  public-contract blocker where fallback hid cancelled/indeterminate outcomes.
+  Correct that narrow boundary and run one final confirmation; reopen only for
   requirement, security/data, availability or public-contract blockers.
 
 ## Rollback or recovery
@@ -164,7 +171,7 @@ and repository memory.
 ## Completion checklist
 
 - [x] Requirements implemented
-- [x] Final Catalog-capacity candidate pass
+- [x] Final fallback-contract candidate pass
 - [x] Affected heavyweight evidence captured
 - [x] Documentation current for dependent work
 - [x] `.ai/` state updated

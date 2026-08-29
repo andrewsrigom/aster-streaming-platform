@@ -131,8 +131,7 @@ function genreResult(
 
 function fallback(primary: HomeRailResult, recent: HomeRailResult, kind: "featured" | "trending") {
   if (
-    primary.code === "completed" ||
-    primary.code === "fallback" ||
+    (primary.code !== "empty" && primary.code !== "unavailable") ||
     recent.code !== "completed" ||
     !recent.rail ||
     recent.rail.edges.length === 0

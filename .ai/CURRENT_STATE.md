@@ -70,6 +70,11 @@ transport admitted20. The correction admits exactly36 federation references,
 keeps ordinary lists at20 and uses the existing request-scoped DataLoader to
 split owner reads into batches of at most20. Catalog build and230/230 tests pass.
 The corrected affected candidate passes54/54,38 cached, in55.844s.
+Exact `dbce479` was published and protected run33248060625 started. Closeout
+review5057751709 found fallback could hide `cancelled` or `indeterminate` primary
+outcomes behind a completed recent rail. The run was cancelled as invalidated.
+Fallback is now restricted to the documented `empty` and `unavailable` codes;
+Discovery build,90/90 focused tests and the affected54/54 candidate in49.022s pass.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -84,8 +89,8 @@ Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Pass the corrected P09-R03 affected gate, publish the Catalog entity-capacity
-correction and complete closeout confirmation/protected release.
+Publish the P09-R03 fallback-contract correction and complete closeout
+confirmation/protected release.
 
 ## Runtime and recovery
 

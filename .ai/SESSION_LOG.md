@@ -33,6 +33,11 @@ Append new entries at the top. Keep entries factual and concise.
   now accepts36 valid Title representations, rejects37 and retains owner reads of
   at most20 through its request-scoped DataLoader. Build and230/230 tests pass.
   The corrected affected candidate passes54/54,38 cached, in55.844s.
+- Published exactdbce479. Closeout review5057751709 found fallback could replace
+  cancelled/indeterminate primary results with recent titles. Cancelled invalidated
+  protected run33248060625. Fallback now applies only to empty/unavailable and a
+  direct response/telemetry regression passes with Discovery build,90/90 tests
+  and the affected54/54 candidate in49.022s.
 
 ### Evidence
 
@@ -58,7 +63,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit and update PR34, then complete one availability-boundary confirmation/
+Commit and update PR34, then complete one final public-contract confirmation/
 protected release.
 
 ## 2026-08-29 — Independent home rails local candidate

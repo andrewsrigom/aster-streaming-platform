@@ -124,6 +124,42 @@ test("failed or empty computed rails reuse only an independently completed recen
   assert.equal(withoutFallback.value.value.trending.code, "empty");
 });
 
+test("fallback never hides indeterminate or cancelled primary outcomes", async () => {
+  let admission = 0;
+  const observations: HomeRailMetricObservation[] = [];
+  const repository: HomeRailRepository = {
+    state: () => Promise.resolve({ generation, status: "fresh" }),
+    fixed: (_generation, source) =>
+      Promise.resolve(source === "recently_added" ? [row(2), row(3)] : [row(1)]),
+    genres: () => Promise.resolve([{ genre: "drama", available: 1, rows: [row(2)] }]),
+  };
+  const transactions: HomeRailUnitOfWork = {
+    async run(work) {
+      const current = admission++;
+      if (current === 1) {
+        return { status: "indeterminate" };
+      }
+      if (current === 3) {
+        return { status: "cancelled" };
+      }
+      return { status: "completed", value: await work(repository) };
+    },
+  };
+  const result = await createHomeRails({
+    transactions,
+    observe: (observation) => observations.push(observation),
+  }).execute({ first: 2 }, now, AbortSignal.timeout(1000));
+  assert.equal(result.status, "completed");
+  assert.equal(result.value.status, "completed");
+  assert.equal(result.value.value.status, "partial");
+  assert.equal(result.value.value.featured.code, "indeterminate");
+  assert.equal(result.value.value.featured.rail, null);
+  assert.equal(result.value.value.trending.code, "cancelled");
+  assert.equal(result.value.value.trending.rail, null);
+  assert.equal(observations.find(({ kind }) => kind === "featured")?.outcome, "indeterminate");
+  assert.equal(observations.find(({ kind }) => kind === "trending")?.outcome, "cancelled");
+});
+
 test("empty, stale, invalid and cancelled requests do not invent rails", async () => {
   const empty = fixture({ state: "empty" });
   const emptyResult = await empty.home.execute({ first: 2 }, now, AbortSignal.timeout(1000));

@@ -101,3 +101,21 @@ Result: PASS
 Tasks: 54 successful, 54 total
 Cached: 38
 Duration: 55.844s
+
+Fallback contract correction
+
+Exactdbce479 was published and protected run33248060625 started. Closeout review
+5057751709 found that a completed recent rail could replace `cancelled` or
+`indeterminate` featured/trending outcomes with `FALLBACK`, contradicting the
+written empty/unavailable-only contract and hiding the primary telemetry outcome.
+The invalidated run was cancelled. Fallback now accepts only primary `empty` or
+`unavailable`; a direct regression proves both uncertain outcomes remain explicit
+in the response and metrics. Discovery build and90/90 tests, scoped ESLint,
+formatting and diff checks pass. SQL, transport, Router, media and retained data
+are unchanged.
+
+Command: pnpm check:changed
+Result: PASS
+Tasks: 54 successful, 54 total
+Cached: 38
+Duration: 49.022s

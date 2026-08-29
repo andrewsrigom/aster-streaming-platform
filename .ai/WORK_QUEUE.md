@@ -19,6 +19,10 @@ Catalog federation capacity mismatch: the genre branch can emit36 references
 while Catalog admitted20. The local correction accepts36, rejects37 and retains
 DataLoader owner batches of at most20; focused Catalog build and230/230 pass.
 The corrected affected candidate passes54/54,38 cached, in55.844s.
+Exactdbce479 was published; closeout review5057751709 found fallback could replace
+cancelled/indeterminate primary results. The invalidated protected run33248060625
+was cancelled. The local correction restricts fallback to empty/unavailable and
+passes Discovery build,90/90 focused tests and the affected54/54 candidate in49.022s.
 Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |

@@ -28,13 +28,18 @@ accepted20. The local correction accepts36 valid Title representations, rejects3
 and proves the existing DataLoader splits36 into two owner reads of at most20;
 Catalog build and230/230 tests pass.
 The corrected affected candidate passes54/54,38 cached, in55.844s.
+Exactdbce479 was published and protected run33248060625 started. Closeout
+review5057751709 discussion3886349355 (`PRRT_kwDOUEkeis6dZPxv`) found fallback
+hid cancelled/indeterminate primary outcomes. The invalidated run was cancelled.
+Fallback now applies only to empty/unavailable; Discovery build,90/90 and the
+affected54/54 candidate in49.022s pass.
 Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
 1. Commit and update PR34.
-2. Reply to and resolve discussion3886259953 (`PRRT_kwDOUEkeis6dZCdY`).
-3. Require one availability-boundary confirmation/protected CI, then
+2. Reply to and resolve discussion3886349355 (`PRRT_kwDOUEkeis6dZPxv`).
+3. Require one final public-contract confirmation/protected CI, then
    squash/exact-main and activate P09-R10.
 
 ## Evidence boundaries
@@ -47,7 +52,9 @@ The later log classifier and ADR prose are covered by focused/candidate gates an
 cannot affect SQL, media or binary runtime behavior. The Catalog change affects
 only bounded GraphQL admission and request-scoped batching: a real HTTP regression
 proves36 references become two owner reads of at most20. It cannot affect the
-unchanged projection SQL, media or Docker topology. Browser/media/CPU evidence is unaffected.
+unchanged projection SQL, media or Docker topology. The fallback correction is
+pure aggregation with a direct outcome/telemetry regression. Browser/media/CPU
+evidence is unaffected.
 
 ## Execution environment
 

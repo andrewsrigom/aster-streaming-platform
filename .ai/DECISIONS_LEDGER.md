@@ -8,7 +8,9 @@ curated rather than behavioral trending, and nullable Engagement-owned home
 personalization. Four selections execute sequentially so each request reserves at
 most one transaction; usable partial responses log as degraded. The genre branch
 may federate at most36 Catalog Title references; Catalog splits them into owner
-batches of at most20. No profile copy, new service, cache or event is introduced.
+batches of at most20. Fallback applies only to empty/unavailable primary results
+and never hides cancelled/indeterminate outcomes. No profile copy, new service,
+cache or event is introduced.
 
 [ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 is released through main `0bdcb27`. Its finite migration3 compatibility stage accepts only ordered markers1–2 or1–3; the old init preflight tolerates marker3 without owning or applying that script. PR35 released this precursor as main `583c835` and exact-main CI33244657936 passed.
 
