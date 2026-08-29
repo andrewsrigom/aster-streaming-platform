@@ -6,7 +6,7 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–07 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR and the accessible HLS player run in Docker. The one-command generated playable demo includes captioned media, initialization, readiness and safe replay. The old browse seed is non-delivery. Phase08 backend/event delivery is released; player saving/resume and owned library pass real isolated browser/Docker acceptance. Their protected release and phase closeout remain pending. Exact progress lives in `.ai/CURRENT_STATE.md`.
+Phases 00–08 are released locally through protected and exact post-merge CI. Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js SSR, accessible HLS playback, durable progress/resume, owned library and owner event recovery pass their recorded acceptance. The one-command retained demo remains intentionally Phase07; this is not a missing Phase08 release gate. Exact progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 09 — Home Rails and Search**. PR32 exact d295ec7 passed protected CI/review and squash-merged as 6f38ce0; P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626. The sole unpublished P09 dependent remains on the equivalent predecessor tree until that gate completes. Discovery domain, Catalog private source access, PostgreSQL fences/generations/rebuild/search and bounded event quarantine/replay are implemented locally; broker runtime/GraphQL remain and no public search API runs. No P09 publication; retained demo remains Phase07.
+Active phase: **Phase 09 — Home Rails and Search**. PR32 exact d295ec7 passed protected CI/review, squash-merged as6f38ce0 and passed exact-main CI33229726626. P09 is rebased onto that released main. Discovery domain, Catalog private source access, PostgreSQL fences/generations/rebuild/search, bounded event quarantine/replay, fixed owner client and broker handler are implemented locally; broker lifecycle/rebuild runtime/GraphQL remain and no public search API runs. No P09 publication; retained demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

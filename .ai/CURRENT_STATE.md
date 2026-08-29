@@ -6,19 +6,19 @@ Last updated: 2026-08-28
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01 on feat/p09-discovery-search through abf884b plus the current event-recovery checkpoint. PR32 exact d295ec7 passed protected CI/review and squash-merged as 6f38ce0; P08-R11 is **WAITING_EXTERNAL** only for exact-main CI33229726626. The P09 dependent remains unpublished on the equivalent predecessor tree and will rebase/recheck after that gate. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01 on feat/p09-discovery-search, rebased onto released main6f38ce0 through a3f0e24 plus the current owner-transport checkpoint. PR32 exact d295ec7 passed protected CI/review, squash merge and exact-main CI33229726626; P08-R11 and Phase08 are released. Full Phase00–14 goal stays active.
 
 ## Verified
 
-Phases 00–07 are released locally through protected and exact post-merge CI. [Phase 07 acceptance](../evidence/phase-07/release.md) covers all twelve requirements and explicit browser/content limitations. [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights approval, bounded acquisition, isolated HLS/JPEG, replay, publication, rollback and browser evidence. No hosted deployment is claimed.
+Phases 00–08 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. No hosted deployment is claimed.
 
 P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence/phase-08/README.md) records durable progress, history, watchlist and request-scoped fields. [Federated proof](../evidence/phase-08/federated-runtime.txt) covers real owner authorization, replay/conflict, revocation and anonymous Playback continuity. [Entity fields](../evidence/phase-08/engagement-fields.md) retain 98 tests, nine composition tests, real SQL/Docker and 67-task candidate evidence. No unchanged CPU, media or browser repeat is required.
 
 ## Current work
 
-Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) records isolated roles, monotonic retirement fences, active/building writes, rebuild barriers/promotion, weighted GIN relevance, stable keyset pagination, cursor expiry and guarded rollback. [Event recovery evidence](../evidence/phase-09/catalog-events.txt) adds bounded Catalog hints, fresh owner projection, finite exact-byte quarantine/replay and function-only projector privileges; strict build,41/41 tests, scoped lint and real PostgreSQL18.6 pass. Every disposable fixture cleaned to zero. Broker/runtime orchestration and GraphQL remain; no running consumer or search API exists yet.
+Discovery domain and Catalog source/private-runtime checkpoints pass. [Projection persistence evidence](../evidence/phase-09/projection-postgres.txt) records isolated roles, monotonic retirement fences, active/building writes, rebuild barriers/promotion, weighted GIN relevance, stable keyset pagination, cursor expiry and guarded rollback. [Event recovery evidence](../evidence/phase-09/catalog-events.txt) adds bounded Catalog hints, fixed purpose-separated owner HTTP reads, broker acknowledgement handling, finite exact-byte quarantine/replay and function-only projector privileges; strict build,47/47 tests, scoped lint and real PostgreSQL18.6 pass. Every disposable fixture cleaned to zero. Broker lifecycle/rebuild orchestration and GraphQL remain; no running consumer or search API exists yet.
 
-R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828 and clean exact-head review pass at d295ec7. PR32 merged as6f38ce0; exact-main CI33229726626 remains. Retained demo is unchanged.
+R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
 Owner relays, dedicated signed Identity consumption, deletion/quarantine/replay, bounded lifecycle and opt-in Compose are implemented under ADR-0034. Latest strict builds, 54 focused tests, 24 CI/platform tests and six shutdown/platform tests pass. [Real SQL](../evidence/phase-08/events-postgres.txt) passes including maximum quarantine bytes. [Real Kafka/owner observations](../evidence/phase-08/events-runtime.txt) prove backlog, redelivery, poison/replay/offsets, outage saves, recovery and new deletion consumption. All fixtures were cleaned.
 
@@ -26,11 +26,11 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase08 exact post-merge closeout, Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
+Discovery and hosted release remain pending. Retained demo has not been upgraded to Phase08; that optional upgrade is not a release blocker. Signal / 01 is browse-only; Signal / 02 is the generated captioned sample.
 
 ## Next outcome
 
-Complete P09-R01 broker/runtime orchestration and GraphQL on the unpublished dependent. Require exact-main CI33229726626, then rebase/recheck P09 before publication. No host experiment or retained-demo upgrade.
+Complete P09-R01 broker lifecycle/rebuild orchestration and GraphQL, then run the affected candidate gate before publication. No host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 
@@ -42,7 +42,7 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 ## Current risks
 
-- P08 exact d295ec7 passed local/protected/review gates and merged as6f38ce0; exact-main CI33229726626 remains. Run33225822813 proved all earlier boundaries while disproving observer body ownership. The exact earlier SDK/provider seed transport cause remains unproved. No blind retry, retained reset or CPU attribution.
+- The exact earlier SDK/provider seed transport cause remains unproved; the released read-only replay removes that dependency and passes protected/exact-main gates. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event signing key; old finite migrators/readiness may reject new schema versions. Drain and use compatible binaries or roll forward.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.

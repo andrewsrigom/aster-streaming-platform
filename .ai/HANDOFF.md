@@ -2,17 +2,16 @@
 
 ## Resume point
 
-PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, then squash-merged as6f38ce0. P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626.
+PR32 exact d295ec7 passed Web104/104, seven observer regressions, the43-task affected candidate, protected CI33228909828 and clean review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are DONE.
 
-P09-R01 is the sole IN_PROGRESS unpublished dependent on feat/p09-discovery-search, based through abf884b on the equivalent predecessor tree. Domain, Catalog source/private runtime and Discovery persistence/search/rebuild pass. The current event checkpoint adds bounded Catalog hints, fresh owner projection, finite exact-byte quarantine and replay; strict build,41/41 tests, scoped lint and real PostgreSQL18.6 recovery/role proof pass. Next: broker/runtime orchestration and GraphQL. Rebase/recheck after exact-main success; no publication before predecessor closeout. Historical stashes are superseded. Full Phase00–14 goal remains active.
+P09-R01 is the sole IN_PROGRESS unpublished item on feat/p09-discovery-search, rebased onto main6f38ce0 through a3f0e24. Domain, Catalog source/private runtime and Discovery persistence/search/rebuild pass. The current checkpoint adds bounded Catalog hints, fixed purpose-separated owner HTTP reads, broker acknowledgement handling, finite exact-byte quarantine and replay; strict build,47/47 tests, scoped lint and real PostgreSQL18.6 recovery/role proof pass. Next: broker lifecycle/rebuild orchestration and GraphQL. Historical stashes are superseded. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Follow exact-main CI33229726626; when green, close P08 and rebase P09 onto6f38ce0 before publication.
-2. Continue P09 broker/runtime orchestration around the implemented consumer/quarantine; then add GraphQL in the next coherent checkpoint.
-3. Repeat affected gates after the rebase. Frozen install is required after workspace changes. Restore no historical stash.
-4. If predecessor review/CI exposes another blocker, preserve dependent WIP before correcting it; failed tests are not WAITING_EXTERNAL.
-5. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.
+1. Complete the finite Discovery broker lifecycle and rebuild scan/barrier orchestration around the implemented consumer/quarantine.
+2. Add bounded search GraphQL/Federation and opt-in runtime in the next coherent checkpoint.
+3. Run the affected candidate gate, real broker/runtime evidence and review before publication. Frozen install is required after workspace changes. Restore no historical stash.
+4. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.
 
 ## Evidence boundaries
 

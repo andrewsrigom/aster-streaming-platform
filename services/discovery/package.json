@@ -16,8 +16,11 @@
     "typecheck": "tsc --project ./tsconfig.json --noEmit --composite false --incremental false"
   },
   "dependencies": {
+    "@aster/broker-kafka": "workspace:*",
     "@aster/event-delivery": "workspace:*",
     "@aster/postgres": "workspace:*",
+    "@aster/runtime": "workspace:*",
+    "@aster/telemetry": "workspace:*",
     "pg": "8.23.0"
   },
   "devDependencies": {

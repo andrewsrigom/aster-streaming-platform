@@ -13,9 +13,9 @@ A viewer can search published titles through the supergraph using a bounded, ver
 
 ## Current behavior
 
-PR32 exact d295ec7 passed protected CI33228909828 and clean confirmation review5459788095, then squash-merged as 6f38ce0. P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626. Run33225822813 proved immutable replay and every preceding owner/platform boundary, then disproved observer-owned body reads; the released source leaves bodies to the application and requires rendered durable confirmation within12 seconds.
+PR32 exact d295ec7 passed protected CI33228909828 and clean confirmation review5459788095, squash-merged as6f38ce0 and passed exact-main CI33229726626. P08-R11 and Phase08 are released. Run33225822813 proved immutable replay and every preceding owner/platform boundary, then disproved observer-owned body reads; the released source leaves bodies to the application and requires rendered durable confirmation within12 seconds.
 
-P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, based on the exact predecessor tree through abf884b. Domain, Catalog snapshot/private runtime and Discovery persistence/rebuild/search rules pass their focused suites. The current checkpoint adds bounded Catalog hint inspection, fresh owner projection, finite durable quarantine and exact replay;41 focused tests and real PostgreSQL18.6 recovery/role proof pass. No running broker consumer or search API is claimed. Next are broker/runtime orchestration and GraphQL. Rebase onto squash main and recheck after exact-main success; historical stashes are superseded and must not be reapplied.
+P09-R01 is the sole active unpublished item on feat/p09-discovery-search, rebased onto released main6f38ce0 through a3f0e24. Domain, Catalog snapshot/private runtime and Discovery persistence/rebuild/search rules pass their focused suites. Bounded Catalog hint inspection, fresh purpose-separated owner HTTP reads, finite durable quarantine, exact replay and the broker handler pass47 focused tests plus real PostgreSQL18.6 recovery/role proof. No running broker consumer or search API is claimed. Next are broker lifecycle/rebuild orchestration and GraphQL. Historical stashes are superseded and must not be reapplied.
 
 ## Proposed behavior
 

@@ -375,12 +375,21 @@ importers:
 
   services/discovery:
     dependencies:
+      '@aster/broker-kafka':
+        specifier: workspace:*
+        version: link:../../packages/broker-kafka
       '@aster/event-delivery':
         specifier: workspace:*
         version: link:../../packages/event-delivery
       '@aster/postgres':
         specifier: workspace:*
         version: link:../../packages/postgres
+      '@aster/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
+      '@aster/telemetry':
+        specifier: workspace:*
+        version: link:../../packages/telemetry
       pg:
         specifier: 8.23.0
         version: 8.23.0

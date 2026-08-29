@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-PR32 exact d295ec7 passed protected CI33228909828 and clean review, then squash-merged as6f38ce0. P08-R11 is WAITING_EXTERNAL only for exact-main CI33229726626. P09-R01 is the sole IN_PROGRESS unpublished dependent, based through abf884b on the equivalent predecessor tree. Its bounded Catalog hint, fresh owner projection and exact-byte quarantine/replay checkpoint passes41 tests and real PostgreSQL18.6. Continue broker/runtime orchestration and GraphQL; rebase/recheck before publication. Historical stashes are superseded. Retained Phase07 demo remains intact.
+PR32 exact d295ec7 passed protected CI33228909828 and clean review, squash-merged as6f38ce0 and passed exact-main CI33229726626. Phase08 is DONE. P09-R01 is the sole IN_PROGRESS unpublished item, rebased onto that main through a3f0e24. Its bounded Catalog hints, fixed owner reads, broker handler and exact-byte quarantine/replay pass47 tests and real PostgreSQL18.6. Continue broker lifecycle/rebuild orchestration and GraphQL. Historical stashes are superseded. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -51,7 +51,7 @@ PR32 exact d295ec7 passed protected CI33228909828 and clean review, then squash-
 | 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
-| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | WAITING_EXTERNAL |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | DONE |
 | 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | IN_PROGRESS |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
