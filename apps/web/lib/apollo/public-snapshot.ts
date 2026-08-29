@@ -1,5 +1,11 @@
 import { Kind, type SelectionSetNode, type DocumentNode } from "graphql";
 import { BROWSE, TITLE_DETAIL } from "./operations.ts";
+import {
+  HOME_PUBLIC,
+  SEARCH_TITLES,
+  readHomePublicData,
+  readSearchData,
+} from "../../features/discovery/operations.ts";
 
 function project(value: unknown, selection: SelectionSetNode | undefined): unknown {
   if (value === null) {
@@ -48,11 +54,20 @@ export function projectPublicData(value: unknown, operationName: unknown): unkno
       ? BROWSE
       : operationName === "TitleDetail"
         ? TITLE_DETAIL
-        : undefined;
+        : operationName === "HomePublic"
+          ? HOME_PUBLIC
+          : operationName === "SearchTitles"
+            ? SEARCH_TITLES
+            : undefined;
   if (!document) {
     throw new Error("Unknown public operation.");
   }
-  return projectSelectedData(value, document);
+  const projected = projectSelectedData(value, document);
+  return operationName === "HomePublic"
+    ? readHomePublicData(projected)
+    : operationName === "SearchTitles"
+      ? readSearchData(projected)
+      : projected;
 }
 
 export function projectSelectedData(value: unknown, document: DocumentNode): unknown {

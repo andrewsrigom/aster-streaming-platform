@@ -6,7 +6,12 @@ The repository begins with specifications. The implementation must remain tracea
 
 ## Current status
 
-Phases 00–07 are released locally, including the accessible player and Docker-only playable demo. Phase 08's [owner-authorized engagement APIs and event delivery](services/engagement/README.md) have passed protected release. Player saving, resume and library integration pass local browser/Docker acceptance; their protected release remains pending. See [current state](.ai/CURRENT_STATE.md), [playback guide](apps/web/PLAYBACK.md), [Router](apps/router/README.md) and [Phase 08 evidence](evidence/phase-08/README.md).
+[Phases 00–08 are released locally](.ai/CURRENT_STATE.md), including the accessible player, Docker-only
+playable demo and owner-authorized save/resume/library journey. Phase 09's
+[Discovery-owned search and home rails are released](evidence/phase-09/README.md); the current candidate adds
+their public SSR views and profile-safe continue-watching enhancement to Web.
+See [current state](.ai/CURRENT_STATE.md), [Web guide](apps/web/README.md),
+[playback guide](apps/web/PLAYBACK.md) and [Phase 09 evidence](evidence/phase-09/README.md).
 
 Do not describe planned behavior as implemented behavior. The source of truth for current progress is [`.ai/CURRENT_STATE.md`](.ai/CURRENT_STATE.md).
 
@@ -32,17 +37,40 @@ Use **Profiles → Start local session**, create/select a fictional profile, the
 
 ## Run the Docker Web demo
 
-This earlier checkpoint demonstrates browsing and optional local profiles, without playable media. Use the playable command above for the streaming journey; do not run both projects on the same ports.
+This checkpoint demonstrates public home rails, bounded search, Catalog browsing
+and optional local profile progress, without playable media. Use the playable
+command above for the streaming journey; do not run both projects on the same
+ports.
 
 From the repository root, with Git and Docker Engine 26.0.0+/Compose 2.26.1+:
 
 ```bash
-docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120
+docker compose --parallel 1 --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime up --build --wait --wait-timeout 180
 ```
 
-Open [Aster](http://127.0.0.1:3000). Browse the generated title, change its language, inspect attribution, and open Profiles to start a local session and create/select a fictional profile. No host Node, pnpm, FFmpeg or hosted account is required. The first build needs registry access; ports 3000 and 4000 must be free. Use `127.0.0.1`, not `localhost`, to preserve the exact local cookie/origin policy.
+Open [Aster](http://127.0.0.1:3000). Inspect the generated home rails, search the
+collection, browse the title, change its language, inspect attribution, and open
+Profiles to start a local session and create/select a fictional profile. The home
+then loads owner-authorized continue-watching without putting private profile data
+in public HTML. No host Node, pnpm, FFmpeg or hosted account is required. The
+first build needs registry access; ports 3000 and 4000 must be free. Use
+`127.0.0.1`, not `localhost`, to preserve the exact local cookie/origin policy.
 
-The overlay explicitly opts into the Catalog-owned technical seed after migrations. Repeating initialization preserves data and does not duplicate the seed. Modified or retired seed data fails closed instead of being overwritten. This is a browsing/profile demo, **not playable VOD**: the bundled measured report is reused, media URLs deliberately do not deliver video, and no third-party film is approved. [Web behavior, limits and recovery](apps/web/README.md).
+The overlays explicitly opt into the Catalog-owned technical seed, event relay and
+Discovery projection after migrations. Repeating initialization preserves data
+and does not duplicate the seed. Modified or retired seed data fails closed
+instead of being overwritten. This is a browsing/profile demo, **not playable
+VOD**: the bundled measured report is reused, media URLs deliberately do not
+deliver video, and no third-party film is approved. [Web behavior, limits and
+recovery](apps/web/README.md).
+
+For the lower-resource Catalog/profile checkpoint, omit event/Discovery. Home and
+search then show their deliberate unavailable states while `/browse`, title and
+profile routes remain usable:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120
+```
 
 ## Run the Docker federated API checkpoint
 
@@ -71,6 +99,12 @@ docker compose --project-name aster --file infra/compose/compose.yml --file infr
 Open [Prometheus](http://127.0.0.1:9090) and query `process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds` or `aster_dependency_operation_outcomes_total`. Broker/storage remain internal; Collector failure does not make Identity unready. Smaller [profiles](docs/operations/LOCAL_DEVELOPMENT.md#optional-profiles) are available.
 
 Stop all enabled Aster profiles while retaining named local data:
+
+```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile "*" down
+```
+
+If only the lower-resource checkpoint was started, its exact retained-data stop is:
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --profile "*" down
@@ -225,7 +259,10 @@ Run `pnpm integration` on Linux/WSL for the released eight-scenario real Postgre
 
 P01-R10's [Identity image checkpoint](docs/operations/LOCAL_DEVELOPMENT.md#identity-image-checkpoint) builds and runs a controlled diagnostic with Docker only. The non-root production image, database-connected runtime, optional profiles and Docker-only start commands above are implemented and verified by clean-checkout and protected CI evidence. This is a runtime demonstration, not a playable product.
 
-The Docker-only playable demo above is the released Phase 07 journey. There is no supported `pnpm dev` command; Phase 08 browser saving remains planned.
+The Docker-only playable demo above is the released Phase 07 journey, and its
+profile save/resume/library path is the released Phase 08 journey. There is no
+supported root-level `pnpm dev` command. Phase 09 Web discovery is the active
+candidate.
 
 See [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) for command behavior, feedback lanes, and future checkpoints.
 

@@ -14,6 +14,12 @@ import { publicCachePolicies } from "../lib/apollo/policies.ts";
 import { boundedGraphqlFetch } from "../lib/apollo/transport.ts";
 import { projectPublicData } from "../lib/apollo/public-snapshot.ts";
 import { titleMetadata } from "../features/catalog/metadata.ts";
+import {
+  HOME_PUBLIC,
+  SEARCH_TITLES,
+  homeVariables,
+  searchVariables,
+} from "../features/discovery/operations.ts";
 
 test("title metadata omits absent fields and their separators", () => {
   assert.equal(titleMetadata({ releaseYear: null, runtimeSeconds: null, genres: [] }), "");
@@ -36,7 +42,7 @@ test("public Web operations match the versioned Router inventory", async () => {
       "utf8",
     ),
   );
-  for (const document of [BROWSE, TITLE_DETAIL]) {
+  for (const document of [BROWSE, TITLE_DETAIL, HOME_PUBLIC, SEARCH_TITLES]) {
     const operation = document.definitions[0];
     assert.ok(operation?.kind === Kind.OPERATION_DEFINITION);
     const known = source.definitions.find(
@@ -63,6 +69,33 @@ test("locale, page and title inputs are deterministic and bounded", () => {
   assert.equal(titleIdentifier("00000000-0000-4000-8000-000000081000"), true);
   for (const value of ["../../private", "not-an-id", "0".repeat(1000)]) {
     assert.equal(titleIdentifier(value), false);
+  }
+});
+
+test("home and search URL inputs are deterministic and bounded", () => {
+  assert.deepEqual(homeVariables({}), { first: 10, locale: "en" });
+  assert.deepEqual(homeVariables({ locale: "en" }), { first: 10, locale: "en" });
+  assert.deepEqual(homeVariables({ locale: "pt-BR" }), { first: 10, locale: "pt-BR" });
+  assert.deepEqual(searchVariables({ q: "Café noir", locale: "pt-BR" }), {
+    query: "Café noir",
+    locale: "pt-BR",
+    first: 20,
+    after: null,
+  });
+  assert.equal(searchVariables({}), null);
+  assert.throws(() => homeVariables({ locale: "fr" }));
+  assert.throws(() => homeVariables({ locale: ["en", "pt-BR"] }));
+  for (const input of [
+    { after: "s1.cursor" },
+    { q: " " },
+    { q: "one two three four five six seven eight nine" },
+    { q: "x".repeat(161) },
+    { q: "title", after: "../private" },
+    { q: ["title", "second"] },
+    { q: "title", locale: "fr" },
+    { q: "title", locale: ["en", "pt-BR"] },
+  ]) {
+    assert.throws(() => searchVariables(input));
   }
 });
 

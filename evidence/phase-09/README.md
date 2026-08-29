@@ -3,11 +3,11 @@
 The first Phase 09 slice releases P09-R01, P09-R02, P09-R06 and P09-R07 on main
 `0bdcb275`. It adds a Catalog-authorized versioned projection,
 retention-independent rebuild, bounded PostgreSQL search, a fifth Federation
-subgraph and an opt-in disposable runtime. The active second slice locally
-verifies independent home rails, stable recent fallback, nullable
-Engagement-owned composition and finite product telemetry. Its frozen precursor
-stages search compatibility before migration3. Browser integration, hosted
-controls, load capacity and phase release remain planned.
+subgraph and an opt-in disposable runtime. The second slice releases independent
+home rails, stable recent fallback, nullable Engagement-owned composition and
+finite product telemetry through main `a3f969c` and exact-main CI33249289718.
+The active final slice owns Web SSR/client integration and Phase 09 acceptance.
+Hosted controls and load capacity remain planned.
 
 ## Checkpoints
 
@@ -28,6 +28,9 @@ controls, load capacity and phase release remain planned.
   Engagement partial response, Router guard correction, restart and exact cleanup.
 - [Home-rail candidate](home-rails-candidate.txt) records schema compatibility,
   the 54/54 aggregate gate, corrections and heavyweight carry-forward reasoning.
+- [Web discovery runtime](web-discovery-runtime.txt) records public SSR,
+  profile-safe enhancement, finite client caches, browser failure isolation and
+  the disposable Docker candidate.
 
 The released search candidate passed 70 Discovery tests, nine Router
 composition/compatibility tests, 67 platform-policy tests, 33 CI-policy tests,
@@ -46,8 +49,8 @@ reclaims one exact quarantine slot, serves Catalog while Discovery is stopped,
 recovers search, sanitizes logs and cleans every fixture resource. No
 retained-project upgrade, hosted deployment or complete Phase 09 claim is made.
 
-P09-R03 currently passes 82 Discovery tests, 10 telemetry tests, real PostgreSQL
-18.6, the 11-service Router runtime, schema compatibility and the 54/54 candidate
-gate. Its database-admission correction passes Discovery83/83. Precursor PR35
-passes73/73 and42/42; mixed-version SQL/runtime and the rebased aggregate remain.
-Home rails are verified locally, not released.
+P09-R03 final exact390b655 passes Discovery90/90, Catalog230/230, telemetry10/10,
+real PostgreSQL18.6, the11-service Router runtime, schema compatibility and the
+54/54 candidate. Protected run33248598719 and clean confirmation pass; PR34
+squash `a3f969c` and exact-main run33249289718 release the slice. The cancelled
+invalid-head run and all review corrections remain in candidate evidence.

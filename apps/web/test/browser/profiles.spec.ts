@@ -286,7 +286,9 @@ test("profile outage exposes retry and keeps public browsing available", async (
   await page.getByRole("button", { name: "Retry session" }).click();
   await expect(page.getByRole("button", { name: "Start local session" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("heading", { name: "Signal / 01", exact: true })).toBeVisible();
+  await expect(
+    page.getByLabel("Featured").getByRole("heading", { name: "Signal / 01", exact: true }),
+  ).toBeVisible();
 });
 
 test("expiry removes private controls without a refetch loop and reduced-motion dialog traps focus", async ({

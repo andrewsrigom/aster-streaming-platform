@@ -162,6 +162,7 @@ for (const width of [390, 1280]) {
     for (const [path, heading] of [
       ["/", /A little curiosity\.\s*A different perspective\./u],
       ["/browse?locale=pt-BR", "Browse the Aster collection"],
+      ["/search?q=Signal", "Search the collection"],
       [titlePath, "Signal / 01"],
       ["/attribution", "Credit where it belongs."],
       ["/profiles", "Who is exploring?"],

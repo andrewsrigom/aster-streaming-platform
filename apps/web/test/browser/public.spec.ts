@@ -52,11 +52,12 @@ test("valid title details omit absent optional metadata without empty separators
   await expect(page.getByRole("heading", { name: "Attribution and rights" })).toBeVisible();
 });
 
-test("published public HTML hydrates without browser GraphQL or automatic route prefetch", async ({
+test("published discovery HTML hydrates without browser public GraphQL or route prefetch", async ({
   page,
 }, info) => {
   const errors: string[] = [];
-  const unexpected: string[] = [];
+  const browserOperations: string[] = [];
+  const routePrefetches: string[] = [];
   const started = new Date().toISOString();
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => {
@@ -65,8 +66,12 @@ test("published public HTML hydrates without browser GraphQL or automatic route 
     }
   });
   page.on("request", (request) => {
-    if (request.url().includes("/graphql") || request.url().includes("_rsc=")) {
-      unexpected.push(request.url());
+    if (request.url() === "http://127.0.0.1:4000/graphql") {
+      const body = request.postDataJSON() as { operationName?: string } | null;
+      browserOperations.push(body?.operationName ?? "unknown");
+    }
+    if (request.url().includes("_rsc=")) {
+      routePrefetches.push(request.url());
     }
   });
   const response = await page.goto("/");
@@ -75,11 +80,14 @@ test("published public HTML hydrates without browser GraphQL or automatic route 
   }
   expect(response.status()).toBe(200);
   const html = await response.text();
-  expect(html).toMatch(/<h3[^>]*>Signal \/ 01<\/h3>/u);
-  await expect(page.getByRole("heading", { name: "Signal / 01", exact: true })).toBeVisible();
+  expect(html).toMatch(/>Signal \/ 01<\/a>/u);
+  await expect(
+    page.getByLabel("Featured").getByRole("heading", { name: "Signal / 01", exact: true }),
+  ).toBeVisible();
   await page.waitForLoadState("networkidle");
   expect(errors).toEqual([]);
-  expect(unexpected).toEqual([]);
+  expect(browserOperations).toEqual(["Viewer"]);
+  expect(routePrefetches).toEqual([]);
   const router = process.env["ASTER_ROUTER_CONTAINER"] ?? "aster-router-1";
   expect(router).toMatch(/^aster(?:-[a-z0-9-]+)?-router-1$/u);
   const logs = await promisify(execFile)("docker", ["logs", "--since", started, router], {
@@ -92,7 +100,8 @@ test("published public HTML hydrates without browser GraphQL or automatic route 
     .split("\n")
     .map((line) => JSON.parse(line) as Record<string, unknown>);
   const operations = events.filter(
-    (event) => event["kind"] === "aster.router.operation" && event["aster.operation"] === "Browse",
+    (event) =>
+      event["kind"] === "aster.router.operation" && event["aster.operation"] === "HomePublic",
   );
   expect(operations).toHaveLength(1);
   expect(operations[0]?.["graphql_error"]).toBe(false);
@@ -100,10 +109,11 @@ test("published public HTML hydrates without browser GraphQL or automatic route 
   console.log(
     JSON.stringify({
       event: "web_public_hydration",
-      browserGraphqlOrPrefetch: unexpected.length,
+      browserOperations,
+      routePrefetches: routePrefetches.length,
       consoleErrorsOrWarnings: errors.length,
       ssrTitle: true,
-      routerBrowseOperations: operations.length,
+      routerHomeOperations: operations.length,
     }),
   );
 });
@@ -171,7 +181,7 @@ test("keyboard-only skip, title navigation and attribution navigation", async ({
   const attribution = page.getByRole("link", { name: "Attribution", exact: true });
   for (
     let step = 0;
-    step < 10 && !(await attribution.evaluate((element) => element === document.activeElement));
+    step < 14 && !(await attribution.evaluate((element) => element === document.activeElement));
     step++
   ) {
     await page.keyboard.press("Tab");

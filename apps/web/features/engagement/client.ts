@@ -1,6 +1,8 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { print } from "graphql";
 import { readGraphqlResponse } from "../../lib/apollo/response.ts";
+import { projectSelectedData } from "../../lib/apollo/public-snapshot.ts";
+import { HOME_PERSONALIZED, readHomeContinueWatching } from "../discovery/operations.ts";
 import { playerIdentifier } from "../playback/operations.ts";
 import {
   PLAYER_PROGRESS,
@@ -55,6 +57,7 @@ export function createEngagementClient(
         input?: unknown;
         first?: unknown;
         after?: unknown;
+        locale?: unknown;
       };
     } | null;
     const variables = parsed?.variables;
@@ -88,6 +91,19 @@ export function createEngagementClient(
         kind: "membership" as const,
         query: print(WATCHLIST_MEMBERSHIP),
         variables: { profileId, titleId: variables.titleId },
+      };
+    }
+    if (
+      parsed?.operationName === "HomePersonalized" &&
+      variables?.profileId === profileId &&
+      variables.first === 10 &&
+      (variables.locale === "en" || variables.locale === "pt-BR")
+    ) {
+      return {
+        operationName: "HomePersonalized" as const,
+        kind: "home" as const,
+        query: print(HOME_PERSONALIZED),
+        variables: { profileId, first: 10 as const, locale: variables.locale },
       };
     }
     if (parsed?.operationName === "RecordProgress") {
@@ -147,10 +163,24 @@ export function createEngagementClient(
       signal.throwIfAborted();
       assertFresh();
       const data = body["data"];
-      if ("errors" in body || !data || typeof data !== "object" || Array.isArray(data)) {
+      if (
+        !data ||
+        typeof data !== "object" ||
+        Array.isArray(data) ||
+        ("errors" in body && operation.kind !== "home")
+      ) {
         throw new Error("Invalid engagement response.");
       }
       const fields = data as Record<string, unknown>;
+      if (operation.kind === "home") {
+        const selected = projectSelectedData(fields, HOME_PERSONALIZED) as Record<string, unknown>;
+        return Response.json({
+          data: {
+            ...selected,
+            homeContinueWatching: readHomeContinueWatching(selected["homeContinueWatching"]),
+          },
+        });
+      }
       if (operation.kind === "library") {
         const field = libraryOperations[operation.libraryKind].field;
         return Response.json({
@@ -202,6 +232,8 @@ export function createEngagementClient(
           progressHistory: { keyArgs: false, merge: false },
           continueWatching: { keyArgs: false, merge: false },
           watchlist: { keyArgs: false, merge: false },
+          homeRails: { merge: false },
+          homeContinueWatching: { merge: false },
         },
       },
     },

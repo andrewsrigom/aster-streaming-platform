@@ -1,0 +1,128 @@
+P09-R10 Web discovery candidate evidence
+Date: 2026-08-29
+Status: local implementation, candidate and runtime acceptance complete;
+publication, protected CI and release still pending
+
+Source and environment
+- Branch: feat/p09-web-discovery
+- Base: a3f969cda582a97f07e14e90a814f98e9eb35b96
+- Implementation commit: 19a510cbccb04614373b448055f985df6bce7368
+- Published checkpoint: b087bc5564595d5434ba63be2dca880cce748531
+- PR36: https://github.com/andrewsrigom/aster-streaming-platform/pull/36
+- Node.js 24.19.0 and pnpm 11.24.0 from the repository-pinned runtime
+- Docker Engine 26.0.0; Docker Compose 2.26.1-desktop.1
+- Linux/WSL amd64; no native Windows/macOS/arm64 portability claim
+- Disposable Compose project: aster-p09-web-proof-829b704d
+- Overlays: compose.yml, demo.yml, events.yml and discovery.yml, runtime profile
+
+Implemented boundary
+- The public server admits only exact HomePublic/SearchTitles documents, bounded
+  variables and positively projected response fields. Initial HTML contains home
+  rails/search states without browser cookies, profile IDs, progress or extensions.
+- A separate private Apollo client admits exact HomePersonalized only after the
+  browser establishes the owner-confirmed selected profile. It retains one bounded
+  home/progress snapshot and is discarded on profile/session lifecycle changes.
+- Apollo remains the owner of remote GraphQL state. Redux remains limited to the
+  existing profile-dialog interaction state.
+- Home, search and private progress distinguish completed, empty, partial, stale,
+  expired/invalid and unavailable states. Discovery failure leaves Catalog browse,
+  title and playback authority independent.
+- Router telemetry now classifies HomePublic and HomePersonalized by finite known
+  operation names. A regression requires every known operation to have a finite
+  telemetry label.
+
+Focused static and package checks
+- @aster/web strict TypeScript: pass.
+- Scoped ESLint: pass.
+- @aster/web Node tests: 110/110 pass.
+- @aster/web production build: pass.
+- Public-build scanner: 0 findings.
+- Third-party notice packaging: pass.
+- @aster/router build/tests: 10/10 pass.
+- Five-subgraph schema composition check: pass.
+- git diff --check: pass before documentation closeout; repeated by candidate gate.
+- Final affected candidate: 46/46 tasks pass in 1m03.813s. It includes strict
+  type/build/tests, workspace lint/format/unused/architecture, 67 platform-policy
+  tests, Router10/10, documentation/memory/security/CI/community policy and
+  adverse checks.
+- Registry audit: zero high/critical and one known moderate UUID advisory. The
+  existing reviewed Apollo callers remain unaffected; revisit before hosted
+  release.
+
+Disposable browser/runtime acceptance
+- All required retained P09 services were built sequentially to limit local host
+  pressure. The final Web, Router, Discovery, Identity, Engagement, Catalog,
+  Playback, PostgreSQL, Redis and Kafka processes reported healthy.
+- New discovery journey: 3/3 pass. It proves no-JavaScript public home/search SSR,
+  explicit fallback/empty/stale/invalid states, no public browser GraphQL replay,
+  profile selection followed by empty continue-watching, and a sanitized private
+  HomePersonalized 503 that leaves public rails rendered.
+- Discovery-only failure injection: 1/1 pass. Pausing the exact disposable
+  Discovery container degrades home while Catalog browse remains available;
+  unpausing it recovers search. No unrelated project or host process was changed.
+- Existing affected browser group: 17/18 initially passed. The one failure was an
+  obsolete fixed Tab-count assumption after adding the Search navigation link.
+  The bounded keyboard loop was updated; its focused rerun passed 1/1.
+- The affected group also proves axe scans at 390 px and 1280 px, stable profile
+  dialog states, profile SSR isolation, eight HTML-route/seventeen-asset public
+  artifact scans with 0 findings, delayed/no JavaScript behavior and Router/public
+  recovery.
+- One complete-suite invocation passed all 27 tests applicable to the browsing
+  stack, including the mobile performance laboratory, and skipped two opt-in
+  journeys. Eleven Phase 07 player tests failed their shared precondition because
+  this disposable browsing stack contains only the non-playable title and not the
+  separate playable fixture ID. Every failure rendered `Title unavailable` before
+  player code could start. This is an honest environment mismatch, not a passing
+  P09 result or evidence of a player regression; unchanged Phase 07 playable
+  acceptance is carried forward under the written no-media-repeat rule.
+- The three mobile samples stayed inside the existing laboratory budgets: initial
+  JavaScript 234939 bytes, interactive JavaScript 253374 bytes, initial images
+  10204 bytes, hydration 2565.0–2622.5 ms, LCP 1576–1584 ms, INP 72–104 ms and
+  CLS 0. These shared-host samples are not a field SLO.
+- A hydrated fresh home makes only the existing private Viewer session check in
+  the browser. HomePublic remains server-rendered and is not replayed or prefetched.
+  No-JavaScript navigation makes zero browser requests.
+
+Review and remediation
+- The complete initial review found that positive projection bounded rail shape
+  but did not reject a contradictory rail source or parent COMPLETED/PARTIAL code,
+  and that three internal declarations were unnecessarily exported. The boundary
+  now requires an ordinary rail source to match its kind, a fallback source to be
+  RECENTLY_ADDED only for featured/trending, and the aggregate code to match any
+  degraded child. Direct adverse tests cover the contradictions; unused exports
+  were removed.
+- Web110/110, strict types/lint/format and the rebuilt production image pass after
+  that local remediation. The exact rebuilt runtime then passes all four discovery
+  browser tests, including Discovery stop/recovery.
+- Published checkpoint `b087bc5` passed every protected job in run33252690275.
+  Hosted review5058080810 then found three requirement-relevant boundary defects:
+  supplied invalid/repeated discovery locales became English owner queries; a
+  failed genre group was invisible beside usable fixed rails; and malformed
+  `PARTIAL` responses with no usable group passed positive projection.
+- The batched correction rejects unsupported/repeated locale values as HTTP404,
+  renders explicit genre-group failure and requires both degradation and a usable
+  group for `PARTIAL`. Direct regressions, Web110/110, strict types, scoped lint,
+  production build/artifact/notice scans and the rebuilt disposable browser set
+  pass8/8. The repeat covers invalid URLs, partial UI, Router/Discovery outage,
+  recovery and owner-safe personalization. Exact cleanup again reports
+  containers0, networks0 and volumes0. The corrected affected candidate passes
+  46/46 tasks,32 cached, in51.27s. Protected CI and confirmation on the new exact
+  head remain pending.
+
+Honest limitations and remaining gate
+- The demo has one generated technical title and does not establish film rights,
+  hosted behavior, production capacity, an SLO or a recommendation model.
+- Earlier P09 owner SQL/Kafka/media evidence is carried forward because this slice
+  changes Web presentation and Router operation classification, not those owners.
+- The first affected-scope repository gate stopped on its documentation policy:
+  replacing two historical exact Compose examples removed strings required by the
+  platform validator. The full Discovery command remains primary and the honest
+  lower-resource command/stop examples were restored. Focused platform,
+  documentation, format and repository-memory checks then pass.
+- The exact disposable project was stopped with its four reviewed overlays and
+  `--volumes`; label-filtered verification reports containers0, networks0 and
+  volumes0. Images remain cached. Retained projects and host processes were not
+  changed by cleanup.
+- Publish the review correction, resolve its three discussions after the exact
+  diff is available, obtain one confirmation plus protected CI, then squash and
+  pass exact post-merge CI before Phase09 is released.

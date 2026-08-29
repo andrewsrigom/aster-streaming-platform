@@ -2,6 +2,70 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Web discovery local candidate
+
+### Completed
+
+- PR34 exact390b655 passed protected run33248598719 and a clean exact-head
+  confirmation, squash-merged as main `a3f969c`, and exact-main run33249289718
+  passed every required job.
+- Activated P09-R10 from clean exact main on `feat/p09-web-discovery`. Restored
+  the Web/SSR, GraphQL, product, testing, documentation and security boundaries.
+  ADR-0008, ADR-0018 and ADR-0036 already decide the required ownership; no new
+  service, store, dependency or ADR is needed.
+- Added exact HomePublic/SearchTitles/HomePersonalized documents, strict variables
+  and positive response projections, finite public/private cache roots, SSR home
+  rails/search states and owner-confirmed continue-watching.
+- Added Router finite-operation coverage and browser acceptance for no-JavaScript
+  SSR, hydration without public replay, search states, private failure isolation,
+  accessibility/public artifacts and a stopped/recovered Discovery owner.
+- Updated the one-command browsing demo to include the event/Discovery overlays
+  with sequential image builds for evaluator-machine reliability.
+- Published checkpoint `b087bc5` as PR36; protected run33252690275 passed every
+  required job. Hosted review5058080810 found invalid/repeated locale coercion,
+  invisible genre-group failure and accepted unusable `PARTIAL` payloads.
+- Corrected the three boundaries in one batch with direct variable, projection
+  and browser regressions. Owners, schema, dependencies, caches and topology do
+  not change.
+
+### Evidence
+
+- PR34 protected run33248598719 and exact-main run33249289718 pass every required
+  job. Local branch starts at exact main `a3f969c` with a clean worktree.
+- Web tests110/110, production build, public artifact/notice scans, Router10/10
+  and five-subgraph schema composition pass.
+- Disposable Docker browser checks pass discovery3/3 and isolation1/1. The
+  affected group passed17/18 before correcting one obsolete fixed Tab-count in
+  the test harness; its focused rerun passes1/1. No product behavior was weakened.
+- A complete-suite attempt passed all27 browsing-stack tests plus the mobile
+  performance laboratory. Eleven player tests correctly lacked their separate
+  Phase07 playable fixture and rendered Title unavailable; two opt-in journeys
+  skipped. The current plan does not repeat unchanged media generation.
+- The first candidate stopped on exact historical Compose strings required by the
+  platform-policy check. Restoring an explicit lower-resource command alongside
+  the new full demo makes platform/docs/format/AI-state checks pass.
+- The next candidate exposed three unnecessary exports. Removing them produced a
+  clean46/46 pass. Initial review then tightened contradictory rail source and
+  aggregate status validation; direct adverse tests, Web110/110, rebuilt image and
+  discovery browser4/4 pass. Confirmation found no blocker.
+- Final affected candidate passes46/46 in1m03.813s. Audit reports zero
+  high/critical and one known moderate. Exact disposable teardown and label audit
+  report containers0, networks0 and volumes0; images remain cached.
+- Committed the coherent implementation as exact
+  `19a510cbccb04614373b448055f985df6bce7368`; the next checkpoint records only its
+  evidence/state before one remote publication.
+- Raw candidate evidence: `evidence/phase-09/web-discovery-runtime.txt`.
+- Review correction passes Web110/110, strict types, scoped lint, production
+  build/artifact/notice scans and rebuilt browser acceptance8/8. Exact teardown
+  again reports containers0, networks0 and volumes0.
+- Corrected affected candidate passes46/46,32 cached, in51.27s.
+
+### Next action
+
+Publish the one remediation commit, resolve the three discussions and obtain one
+exact-head confirmation/protected CI before squash merge and exact-main Phase09
+acceptance.
+
 ## 2026-08-29 — Discovery schema compatibility precursor
 
 ### Completed
@@ -2244,9 +2308,9 @@ Execute P00-R04 by selecting and adding the minimal strict TypeScript, format, l
 
 Execute P00-R02 by initializing local Git policy, the minimal pnpm workspace, a verified Turborepo task graph, and deterministic ignores.
 
-## 2026-08-25 — Engineering demonstration and repository governance contract
+**Historical checkpoint — 2026-08-25 — Engineering demonstration and repository governance contract**
 
-### Completed
+**Completed**
 
 - Mapped Node.js production behavior, domain and Clean Architecture, resilience, Redis, observability and SLOs, Federation v2, GraphQL performance and security, SSR and hydration, Apollo Client and Redux, and media streaming to implementation phases and evidence.
 - Defined progressive development, Docker-only demo, and resource-heavy laboratory lanes without reordering the fifteen phases.
@@ -2255,7 +2319,7 @@ Execute P00-R02 by initializing local Git policy, the minimal pnpm workspace, a 
 - Defined coherent atomic commits, squash merge, fast changed-file hooks, affected pre-push checks, non-duplicated pull-request CI, superseded-run cancellation, and explicit phase or release gates for heavyweight suites.
 - Recorded owner authorization for the future public GitHub target `andrewsrigom/aster-streaming-platform` and sequenced creation after local Git, initial checks, and CI.
 
-### Evidence
+**Evidence**
 
 - Verified 127 Markdown files with no empty document, missing top-level title, unbalanced fence, or broken internal link before final state updates.
 - Verified 169 sequential phase requirements across 15 specifications.
@@ -2264,7 +2328,7 @@ Execute P00-R02 by initializing local Git policy, the minimal pnpm workspace, a 
 - Found no restricted private-context vocabulary and confirmed Git and the public remote remain uncreated.
 - Final raw audit: `evidence/phase-00/plan-clarity-audit.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions from current official compatibility evidence.
 

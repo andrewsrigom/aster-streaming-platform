@@ -10,10 +10,27 @@ import { publicCachePolicies } from "./policies";
 import { boundedGraphqlFetch } from "./transport";
 import { createPublicRouterFetch } from "./server-transport";
 import { browseVariables } from "./operations";
+import { homeVariables, searchVariables } from "../../features/discovery/operations";
 
 export function readBrowseVariables(input: Record<string, string | string[] | undefined>) {
   try {
     return browseVariables(input);
+  } catch {
+    notFound();
+  }
+}
+
+export function readHomeVariables(input: Record<string, string | string[] | undefined>) {
+  try {
+    return homeVariables(input);
+  } catch {
+    notFound();
+  }
+}
+
+export function readSearchVariables(input: Record<string, string | string[] | undefined>) {
+  try {
+    return searchVariables(input);
   } catch {
     notFound();
   }

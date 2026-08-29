@@ -39,6 +39,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Link prefetch={false} href="/browse">
                   Collection
                 </Link>
+                <Link prefetch={false} href="/search">
+                  Search
+                </Link>
                 <Link prefetch={false} href="/attribution">
                   Attribution
                 </Link>

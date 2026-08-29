@@ -6,8 +6,9 @@ P09-R01 is released through PR33 exact candidate `fc353c3`, protected run
 33238473742, resolved review, squash main `0bdcb27` and exact-main run
 33239191134. Search/projection evidence remains under `evidence/phase-09`.
 
-P09-R03 is active on dependent `feat/p09-home-rails`, rebased on precursor squash
-main `583c835`. Rails, fallback, owner composition, telemetry, real SQL/runtime
+P09-R03 is released through PR34 exact390b655, protected run33248598719, clean
+confirmation, squash main `a3f969c` and exact-main run33249289718. Rails,
+fallback, owner composition, telemetry, real SQL/runtime
 and the initial54/54 gate pass. Confirmation discussions3886014605/606 found
 database fan-out and rollout blockers. Fan-out now uses one transaction per home
 request with one readiness pool reservation; Discovery83/83 passes. PR35 stages
@@ -32,15 +33,36 @@ Exactdbce479 was published and protected run33248060625 started. Closeout
 review5057751709 discussion3886349355 (`PRRT_kwDOUEkeis6dZPxv`) found fallback
 hid cancelled/indeterminate primary outcomes. The invalidated run was cancelled.
 Fallback now applies only to empty/unavailable; Discovery build,90/90 and the
-affected54/54 candidate in49.022s pass.
+affected54/54 candidate in49.022s pass. P09-R10 is active on
+`feat/p09-web-discovery` from clean exact main. Its plan covers public Apollo SSR
+rails/search, isolated profile enhancement and Phase 09 browser acceptance.
 Full Phase00–14 goal remains active.
+
+P09-R10 implementation now includes exact HomePublic/SearchTitles public
+projection, SSR home/search views, one-snapshot cache policies, owner-confirmed
+HomePersonalized progress and finite Router labels. Web110/110, production build,
+artifact/notice scans, Router10/10 and schema composition pass. Disposable project
+`aster-p09-web-proof-829b704d` passes the new discovery journey3/3, Discovery
+isolation1/1 and the affected browser group after one fixed keyboard-harness
+assumption. Initial review's rail-source/aggregate semantic correction then passes
+Web110/110, rebuilt discovery browser4/4 and local re-review with no blocker. Final
+candidate passes46/46 in1m03.813s; audit has zero high/critical and one known
+moderate. Exact disposable cleanup reports containers0/networks0/volumes0.
+Implementation commit is exact19a510cbccb04614373b448055f985df6bce7368;
+published checkpoint b087bc5564595d5434ba63be2dca880cce748531 passed every
+protected job in run33252690275. Hosted review5058080810 found invalid discovery
+locale coercion, an invisible failed genre group and accepted unusable PARTIAL
+payloads. Their batched local correction rejects the URLs, surfaces the group and
+requires one usable aggregate child. Web110/110, strict types/lint, production
+build/scans and rebuilt browser8/8 pass; cleanup is containers0/networks0/volumes0.
+The corrected affected candidate passes46/46,32 cached, in51.27s.
 
 ## Exact next actions
 
-1. Commit and update PR34.
-2. Reply to and resolve discussion3886349355 (`PRRT_kwDOUEkeis6dZPxv`).
-3. Require one final public-contract confirmation/protected CI, then
-   squash/exact-main and activate P09-R10.
+1. Commit and push the batched PR36 correction once.
+2. Resolve the three corrected discussions, request one exact-head confirmation
+   and await protected CI.
+3. Treat only blocking confirmation findings, squash merge and pass exact-main CI.
 
 ## Evidence boundaries
 
@@ -55,6 +77,11 @@ proves36 references become two owner reads of at most20. It cannot affect the
 unchanged projection SQL, media or Docker topology. The fallback correction is
 pure aggregation with a direct outcome/telemetry regression. Browser/media/CPU
 evidence is unaffected.
+
+P09-R10 records new Web/browser evidence in `web-discovery-runtime.txt` for
+hydration, profile lifecycle and Discovery failure. It carries forward unchanged
+owner SQL/Kafka/media evidence; local final candidate/review/cleanup results are
+appended. Publication must add the exact commit and protected/exact-main results.
 
 ## Execution environment
 

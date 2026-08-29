@@ -4,9 +4,9 @@
 
 Phases 00–08 are released locally. [Current state](../../.ai/CURRENT_STATE.md).
 The accessible player, browser save/resume, owner-authorized Engagement paths and
-Phase 09 search release are recorded in the [current state](../../.ai/CURRENT_STATE.md).
-the current candidate adds [bounded home rails](../../services/discovery/README.md#home-rails)
-through the explicit Discovery overlay. Browser rails/search remain P09-R10.
+Phase 09 Discovery search/home release are recorded there. The current P09-R10
+candidate integrates [bounded home rails](../../services/discovery/README.md#home-rails),
+search and profile-safe continue-watching into Web.
 PostgreSQL is durable, Redis disposable, and private owner credentials/resource
 limits remain explicit.
 
@@ -39,13 +39,26 @@ The Phase 00 repository checkpoint still does not require Docker. The following 
 
 ### Docker runtime checkpoint
 
-For the browser demo, add the explicit Web/seed overlay:
+For the complete browsing demo, add the Web/seed, event and Discovery overlays:
+
+```bash
+docker compose --parallel 1 --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime up --build --wait --wait-timeout 180
+```
+
+Open <http://127.0.0.1:3000>. This requires no host Node/pnpm/FFmpeg and
+preserves existing data. The fixed technical seed reuses the checked-in
+generated-media report; no media bytes are bundled or playable. The additional
+overlays start Kafka, Catalog event relay and Discovery so home/search are live.
+`--parallel 1` limits concurrent image builds for evaluator machines. Web has a
+512 MiB/1 CPU/64 PID ceiling and a 32 MiB disposable cache. Its liveness endpoint
+does not claim upstream readiness. [Docker Web boundaries and recovery](../../apps/web/README.md#docker-only-demo).
+
+The lower-resource Catalog/profile checkpoint deliberately omits Discovery. Home
+and search degrade explicitly while Catalog browsing remains usable:
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/demo.yml --profile runtime up --build --wait --wait-timeout 120
 ```
-
-Open <http://127.0.0.1:3000>. This requires no host Node/pnpm/FFmpeg and preserves existing data. The fixed technical seed reuses the checked-in generated-media report; no media bytes are bundled or playable. Web has a 512 MiB/1 CPU/64 PID ceiling and a 32 MiB disposable cache. Its liveness endpoint does not claim upstream readiness. [Docker Web boundaries and recovery](../../apps/web/README.md#docker-only-demo).
 
 For the API-only checkpoint, from the repository root:
 
@@ -70,6 +83,13 @@ It uses memory-only credentials and removes only its own synthetic profile. Insp
 Stop all profiles without deleting their named data volumes:
 
 ```bash
+docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile "*" down
+```
+
+For a project started with only the lower-resource overlay, use its exact
+retained-data stop:
+
+```bash
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --file infra/compose/demo.yml --profile "*" down
 ```
 
@@ -90,7 +110,7 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus | 4000, 9090 |
 
 Discovery is intentionally absent from the base profiles. Start released search
-and the current rails candidate with the event and Discovery overlays:
+and home rails with the event and Discovery overlays:
 
 ```bash
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/events.yml --file infra/compose/discovery.yml --profile runtime up --build --wait --wait-timeout 180 router discovery
