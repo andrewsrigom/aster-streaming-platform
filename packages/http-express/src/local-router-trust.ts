@@ -25,6 +25,7 @@ const HOSTS = {
   "identity-engagement": "identity:3100",
   "playback-engagement": "playback:3300",
   "catalog-engagement": "catalog:3200",
+  "catalog-discovery": "catalog:3200",
 } as const;
 
 /** Transport authentication only; no account, profile or operator authority. */
@@ -50,6 +51,10 @@ export function createLocalEngagementReadTrust(
   return createTransportTrust(`${owner}-engagement`, credential);
 }
 
+export function createLocalCatalogDiscoveryTrust(credential: string): AsterLocalRouterTrust {
+  return createTransportTrust("catalog-discovery", credential);
+}
+
 function createTransportTrust(
   owner: keyof typeof HOSTS,
   credential: string,
@@ -62,16 +67,22 @@ function createTransportTrust(
     owner === "identity-engagement" ||
     owner === "playback-engagement" ||
     owner === "catalog-engagement";
-  const credentialHeader = engagement
-    ? "x-aster-engagement-credential"
-    : owner === "catalog-playback"
-      ? "x-aster-playback-credential"
-      : "x-aster-router-credential";
-  const origin = engagement
-    ? "http://engagement:3400"
-    : owner === "catalog-playback"
-      ? "http://playback:3300"
-      : "http://127.0.0.1:4000";
+  const discovery = owner === "catalog-discovery";
+  const correlatedRead = engagement || discovery;
+  const credentialHeader = discovery
+    ? "x-aster-discovery-credential"
+    : engagement
+      ? "x-aster-engagement-credential"
+      : owner === "catalog-playback"
+        ? "x-aster-playback-credential"
+        : "x-aster-router-credential";
+  const origin = discovery
+    ? "http://discovery:3500"
+    : engagement
+      ? "http://engagement:3400"
+      : owner === "catalog-playback"
+        ? "http://playback:3300"
+        : "http://127.0.0.1:4000";
   return Object.freeze({
     accept(request: IncomingMessage): AsterRouterContext | undefined {
       if (
@@ -104,7 +115,7 @@ function createTransportTrust(
           (name.startsWith("x-aster-") &&
             name !== "x-aster-csrf" &&
             name !== credentialHeader &&
-            !(engagement && name === "x-aster-correlation-id")) ||
+            !(correlatedRead && name === "x-aster-correlation-id")) ||
           (owner !== "identity" &&
             owner !== "identity-engagement" &&
             owner !== "engagement" &&
@@ -124,9 +135,9 @@ function createTransportTrust(
       ) {
         return undefined;
       }
-      const correlationId = engagement ? headers.get("x-aster-correlation-id") : undefined;
+      const correlationId = correlatedRead ? headers.get("x-aster-correlation-id") : undefined;
       if (
-        engagement &&
+        correlatedRead &&
         (!correlationId ||
           !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/u.test(
             correlationId,
@@ -171,6 +182,18 @@ export async function loadLocalCatalogPlaybackTrust(
   directory = "/run/aster-playback-catalog",
 ): Promise<AsterLocalRouterTrust> {
   return createLocalCatalogPlaybackTrust(await loadLocalCatalogPlaybackCredential(directory));
+}
+
+export async function loadLocalCatalogDiscoveryCredential(
+  directory = "/run/aster-discovery-catalog",
+): Promise<string> {
+  return readCredential(join(directory, "catalog.key"));
+}
+
+export async function loadLocalCatalogDiscoveryTrust(
+  directory = "/run/aster-discovery-catalog",
+): Promise<AsterLocalRouterTrust> {
+  return createLocalCatalogDiscoveryTrust(await loadLocalCatalogDiscoveryCredential(directory));
 }
 
 export async function loadLocalEngagementReadCredential(

@@ -13,13 +13,9 @@ A viewer can search published titles through the supergraph using a bounded, ver
 
 ## Current behavior
 
-PR32 is frozen at d2ba88f54dcb82c568b8aa4e286632a044e63799 after103 Web tests, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for CI33223692248, confirmation request5459202276, squash and exact main. Run33222164370 proved immutable replay and exposed the response-body race corrected by this exact head.
-
-PR32 is frozen at 6c78d2a87853d8b6d0830214be8d434fb76122b9 after104 Web tests, seven observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for its automatically triggered protected CI, exact-head review request5459353777, squash and exact main. Run33223692248 proved immutable replay and every preceding owner/platform boundary, then exposed the Profiles body race corrected by this exact head.
-
 PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. Review5056138342's selected-body deadline blocker is corrected by this exact head.
 
-P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, being rebased onto that exact predecessor. Domain and Catalog snapshot/query rules pass31 focused tests. Real SQL passes migration0010, separate-reader privileges, expiry/retirement, bounded global pages and data-preserving view round-trip with2055 synthetic titles; the full Catalog compatibility suite passes. Its complete private transport/runtime WIP remains in stash 01b1dad9bbda289976d137b1a20af9f7cf102add until this rebase completes; older stashes must not be reapplied. No running search API is claimed. No publication before predecessor closeout; rebase/recheck if it changes.
+P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, rebased onto that exact predecessor. Domain and Catalog snapshot/query rules pass31 focused tests. Real SQL passes migration0010, separate-reader privileges, expiry/retirement, bounded global pages and data-preserving view rollback across2055 retained synthetic titles. Purpose-separated private GraphQL snapshot/export, credential, admission lane and one-connection reader pool pass19 focused runtime tests plus real failure/recovery isolation. Stash 01b1dad9bbda289976d137b1a20af9f7cf102add was applied exactly once after rebase and must not be applied again. No running search API is claimed. No publication before predecessor closeout; rebase/recheck if it changes.
 
 ## Proposed behavior
 
@@ -41,6 +37,8 @@ Cancellation/deadlines stop uncommitted work. Unknown commits are replayable thr
 ## Data and contracts
 
 Add owned Discovery schema/roles with additive migrations and empty-state-only down migration. Keep Catalog v1 events unchanged. Add purpose-separated private snapshot/export GraphQL reads under the existing owner-read model; do not reuse another consumer's key. No cross-owner SQL. Search queries are normalized and bounded with query-bound keyset cursors. Keep at most two projection generations; retain source-version fences and bounded quarantine/rebuild checkpoints. No personal data or new cache.
+
+The private caller is Discovery at local origin http://discovery:3500, with its own x-aster-discovery-credential and required correlation ID. Accept only the exact snapshot/export documents. Its independent lane permits one active request, no queue, a two-second deadline and32 initial/four-per-second rate credits; it cannot consume public/Engagement credits. Catalog runtime wiring and the separate read pool are implemented and tested. Compose/secret activation remains disabled until the Discovery-owned runtime can use the contract end to end.
 
 ## Security and privacy
 

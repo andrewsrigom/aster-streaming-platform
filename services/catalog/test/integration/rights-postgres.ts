@@ -436,6 +436,7 @@ async function verify() {
     admin,
     makeDatabase("aster_catalog_discovery_reader_local"),
     makeDatabase("aster_catalog_reader_local"),
+    port,
   );
 }
 try {
@@ -453,6 +454,7 @@ try {
       admin,
       makeDatabase("aster_catalog_discovery_reader_local"),
       makeDatabase("aster_catalog_reader_local"),
+      port,
     );
   } else {
     await verify();

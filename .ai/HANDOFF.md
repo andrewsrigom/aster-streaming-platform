@@ -4,12 +4,12 @@
 
 PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main.
 
-P09-R01 is the sole unpublished dependent on feat/p09-discovery-search and is being rebased onto that exact head. Domain and Catalog snapshot work pass31 focused tests, scoped lint and real SQL compatibility across2055 synthetic titles. Complete private transport/runtime WIP is preserved in stash 01b1dad9bbda289976d137b1a20af9f7cf102add; older stashes must not be reapplied. No publication before predecessor closeout. Full Phase00–14 goal remains active.
+P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, rebased onto that exact head. Domain and Catalog snapshot work pass31 focused tests, scoped lint and real SQL compatibility across2055 synthetic titles. Complete private transport/runtime stash 01b1dad9bbda289976d137b1a20af9f7cf102add was applied exactly once; never apply it or older stashes again. Its19 focused tests and real PostgreSQL HTTP/failure/recovery proof pass. No publication before predecessor closeout. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
 1. Follow the automatically triggered exact-head PR32 CI and confirmation request5459416204. Squash only if protected acceptance/review pass, then require exact main success. No CI retry or repeated storage experiment.
-2. Finish this rebase, apply stash 01b1dad9bbda289976d137b1a20af9f7cf102add once, and continue from its already-passing private credential/pool/readiness and real PostgreSQL runtime proof. Then implement owned projection/rebuild/search; rails/Web remain later slices.
+2. Finish the coherent Catalog private-runtime checkpoint without reapplying any stash, then implement Discovery-owned projection generations, rebuild/consumer and bounded search. Rails/Web remain later slices.
 3. Before P09 publication rebase onto accepted predecessor main and repeat affected gates. Frozen install is required after workspace changes. Restore no historical stash.
 4. If predecessor review/CI exposes another blocker, preserve dependent WIP before correcting it; failed tests are not WAITING_EXTERNAL.
 5. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.

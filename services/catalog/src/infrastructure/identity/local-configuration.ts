@@ -1,11 +1,12 @@
 export function localCatalogDatabase(
   environment: Readonly<Record<string, string | undefined>>,
-  mode: "operator" | "migration" | "reader" | "attester",
+  mode: "operator" | "migration" | "reader" | "discovery-reader" | "attester",
 ): string {
+  const applicationReader = mode === "reader" || mode === "discovery-reader";
   if (
     environment["ASTER_ENVIRONMENT"] !== "local" ||
     environment[
-      mode === "reader"
+      applicationReader
         ? "ASTER_CATALOG_LOCAL_ENABLED"
         : mode === "attester"
           ? "ASTER_MEDIA_PUBLICATION_ENABLED"
@@ -17,11 +18,13 @@ export function localCatalogDatabase(
   const prefix =
     mode === "attester"
       ? "ASTER_CATALOG_ATTESTER_DATABASE"
-      : mode === "reader"
-        ? "ASTER_CATALOG_READER_DATABASE"
-        : mode === "operator"
-          ? "ASTER_CATALOG_DATABASE"
-          : "ASTER_CATALOG_ADMIN_DATABASE";
+      : mode === "discovery-reader"
+        ? "ASTER_CATALOG_DISCOVERY_READER_DATABASE"
+        : mode === "reader"
+          ? "ASTER_CATALOG_READER_DATABASE"
+          : mode === "operator"
+            ? "ASTER_CATALOG_DATABASE"
+            : "ASTER_CATALOG_ADMIN_DATABASE";
   const field = prefix + "_URL";
   const source = environment[field];
   const pwd = environment[prefix + "_PASSWORD"];
@@ -45,11 +48,13 @@ export function localCatalogDatabase(
     url.username !==
       (mode === "attester"
         ? "aster_catalog_attester_local"
-        : mode === "reader"
-          ? "aster_catalog_reader_local"
-          : mode === "operator"
-            ? "aster_catalog_local"
-            : "aster") ||
+        : mode === "discovery-reader"
+          ? "aster_catalog_discovery_reader_local"
+          : mode === "reader"
+            ? "aster_catalog_reader_local"
+            : mode === "operator"
+              ? "aster_catalog_local"
+              : "aster") ||
     url.password !== "" ||
     (url.port !== "" && (Number(url.port) < 1024 || Number(url.port) > 65535))
   ) {

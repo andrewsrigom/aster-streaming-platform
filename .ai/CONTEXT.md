@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 09 — Home Rails and Search**. PR32 is frozen at d2ba88f54dcb82c568b8aa4e286632a044e63799 after103 Web tests, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for CI33223692248, confirmation request5459202276, squash and exact main. The sole local dependent is rebased onto that exact head; no publication before predecessor closeout. Domain and Catalog snapshot work are implemented locally, not a running search API. Retained demo remains Phase07.
+Active phase: **Phase 09 — Home Rails and Search**. PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 with local acceptance complete; P08-R11 is WAITING_EXTERNAL only for protected CI, confirmation, squash and exact main. The sole local dependent is rebased onto that exact head; no publication before predecessor closeout. Discovery domain plus purpose-separated Catalog snapshot persistence/private runtime are implemented locally. Discovery-owned projection and search are not running yet. Retained demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

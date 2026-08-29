@@ -11,7 +11,10 @@ import {
   createLocalRouterTrust,
   loadLocalRouterTrust,
   createLocalCatalogPlaybackTrust,
+  createLocalCatalogDiscoveryTrust,
   createLocalEngagementReadTrust,
+  loadLocalCatalogDiscoveryCredential,
+  loadLocalCatalogDiscoveryTrust,
   loadLocalEngagementReadCredential,
   loadLocalCatalogPlaybackCredential,
   loadLocalCatalogPlaybackTrust,
@@ -183,6 +186,31 @@ test("owner-read file is separate, bounded and private with sanitized startup fa
     await writeFile(path, Buffer.alloc(64, 0xe1));
     await assert.rejects(
       loadLocalCatalogPlaybackCredential(directory),
+      /credential is unavailable/,
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("Discovery owner-read file is purpose-separated, bounded and private", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "aster-discovery-trust-"));
+  const path = join(directory, "catalog.key");
+  try {
+    await assert.rejects(loadLocalCatalogDiscoveryTrust(directory), /credential is unavailable/);
+    await writeFile(path, key, { mode: 0o400 });
+    assert.equal(await loadLocalCatalogDiscoveryCredential(directory), key);
+    assert.ok(await loadLocalCatalogDiscoveryTrust(directory));
+    assert.notEqual(createLocalCatalogDiscoveryTrust(key), createLocalCatalogPlaybackTrust(key));
+    await chmod(path, 0o644);
+    await assert.rejects(
+      loadLocalCatalogDiscoveryCredential(directory),
+      /credential is unavailable/,
+    );
+    await chmod(path, 0o600);
+    await writeFile(path, "x".repeat(65));
+    await assert.rejects(
+      loadLocalCatalogDiscoveryCredential(directory),
       /credential is unavailable/,
     );
   } finally {

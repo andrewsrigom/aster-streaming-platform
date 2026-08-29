@@ -6,7 +6,7 @@ Last updated: 2026-08-28
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R01. PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search and is being rebased onto that exact head. Its complete private transport/runtime WIP is preserved in stash 01b1dad9bbda289976d137b1a20af9f7cf102add; older stashes must not be reapplied. No publication before predecessor closeout; rebase/recheck if it changes. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**, P09-R01. PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, rebased onto that exact head. Stash 01b1dad9bbda289976d137b1a20af9f7cf102add was applied exactly once; never apply it or older stashes again. No publication before predecessor closeout; rebase/recheck if it changes. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -16,7 +16,7 @@ P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence
 
 ## Current work
 
-Discovery domain and Catalog snapshot/query rules pass31 focused tests and scoped lint. [Real Catalog SQL proof](../evidence/phase-09/catalog-snapshots.txt) passes migrations1..10, separate-reader permissions, source visibility/expiry/retirement, global pagination and data-preserving view rollback across2055 retained synthetic titles. Its initial last-page fixture assumption was corrected without production changes. Both fixtures cleaned to zero. Next: private Catalog transport and owned projection/search; no running search API yet.
+Discovery domain and Catalog snapshot/query rules pass31 focused tests and scoped lint. [Catalog snapshot evidence](../evidence/phase-09/catalog-snapshots.txt) proves migrations1..10, separate-reader permissions, source visibility/expiry/retirement, global pagination and data-preserving rollback across2055 retained synthetic titles. The private Catalog GraphQL transport now accepts only exact Discovery operations under its own credential, correlation, one-active/no-queue lane, two-second deadline and one-connection reader pool. Nineteen focused runtime tests plus a real PostgreSQL HTTP failure/recovery proof pass; optional Discovery failure leaves public Catalog ready. All disposable fixtures cleaned to zero. Discovery-owned persistence/search remains next; no running search API yet.
 
 R11 starts each selected GraphQL body read inside the response event and keeps the original deadline through body settlement. Eight observer regressions, the full105-test Web suite, types, scoped lint and43/43 affected tasks pass locally. Run33223692248 proves every preceding integration boundary and immutable replay; review5056138342's deadline blocker is fixed at exact dc571bd. Retained demo is unchanged.
 
@@ -30,7 +30,7 @@ Phase08 exact post-merge closeout, Discovery and hosted release remain pending. 
 
 ## Next outcome
 
-Continue P09-R01 private Catalog runtime, owned SQL/rebuild and bounded search under ADR-0035. Domain/snapshot checkpoints are implemented; projection/search runtime acceptance remains. PR32 must pass protected browser acceptance/review and exact main before dependent publication. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased until then. No host experiment or retained-demo upgrade.
+Continue P09-R01 with Discovery-owned PostgreSQL generations, rebuild checkpoints, current-source consumer and bounded search under ADR-0035. Domain and private Catalog source access are implemented; projection/search runtime acceptance remains. PR32 must pass protected browser acceptance/review and exact main before dependent publication. The [Phase08 audit](../evidence/phase-08/release.md) remains unreleased until then. No host experiment or retained-demo upgrade.
 
 ## Runtime and recovery
 

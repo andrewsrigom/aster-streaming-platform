@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search and is being rebased onto that exact head. Its complete private transport/runtime WIP is stash 01b1dad9bbda289976d137b1a20af9f7cf102add; older stashes must not be reapplied. No publication before predecessor closeout. Retained Phase07 demo remains intact.
+PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, rebased onto that exact head. Its complete private transport/runtime stash 01b1dad9bbda289976d137b1a20af9f7cf102add was applied exactly once; never apply it or older stashes again. No publication before predecessor closeout. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|

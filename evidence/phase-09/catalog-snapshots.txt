@@ -156,3 +156,49 @@ credentials, independent admission and bounded responses before exposing snapsho
 Discovery index generations, consumer/rebuild, search API, relevance and rails
 remain future work within the active phase; this checkpoint does not satisfy all
 four requirements on its own.
+
+Private Catalog transport/runtime checkpoint — 2026-08-28
+Base predecessor: dc571bd77e08529b8c91ccb53d44b0bf3bfdf089. The Catalog
+source/runtime changes are identical to the earlier real proof; the later
+predecessor deltas affect only Web tests and repository memory.
+
+Implemented boundary:
+- private @inaccessible snapshot/export fields accept only their two exact query
+  documents from origin http://discovery:3500;
+- separate x-aster-discovery-credential and required bounded correlation UUID;
+- independent one-active/no-queue lane, two-second deadline and32 initial/
+  four-per-second credits;
+- separate one-connection Catalog reader pool and optional readiness monitor;
+- Discovery pool/credential/config failure returns private UNAVAILABLE without
+  changing public Catalog readiness or consuming Router/Engagement admission;
+- secrets and unpublished metadata do not enter responses or logs.
+
+Focused commands:
+pnpm install --frozen-lockfile
+pnpm --filter @aster/http-express build
+pnpm --filter @aster/catalog build
+node --test packages/http-express/dist/test/local-router-trust.test.js services/catalog/dist/test/discovery-transport.test.js services/catalog/dist/test/runtime.test.js
+pnpm exec eslint <15 changed HTTP/Catalog transport/runtime/test files>
+Result:19/19 tests pass; strict builds and scoped ESLint pass. The test covers
+exact-operation purpose isolation, malformed authority, response64-KiB bound,
+independent rate/admission, pending-read shutdown, separate optional authority,
+public readiness during outage, recovery and secret-free logs.
+
+Real command:
+node tools/run-catalog-integration.mjs --discovery
+Raw result:
+{"event":"catalog_discovery_source","exactVersion":5,"publishedAtFromAudit":1787800010,"rightsExpiry":1787800021,"hiddenVersion":1,"privateDraftOmitted":true,"missingNotInvented":true}
+{"event":"catalog_discovery_privileges","forbiddenStatements":5,"publicReaderUnchanged":true,"separateReadOnlyRole":true}
+{"event":"catalog_discovery_export_retirement","pageSizes":[2,1],"stableCursor":true,"expiryHiddenWithoutVersionChange":true,"retiredVersion":6}
+{"event":"catalog_discovery_view_roundtrip","retainedTitles":3,"dataPreserved":true,"publicReaderStillReady":true,"hiddenFencePreserved":true}
+{"event":"catalog_discovery_private_runtime","exactOperations":true,"separateCredential":true,"separatePoolLimit":1,"failureDoesNotBlockPublicCatalog":true,"recoveryObserved":true}
+{"event":"catalog_resources_closed","reservedSlots":0}
+{"event":"catalog_fixture_cleaned","remaining":0,"durationMs":6483}
+
+Interpretation and limits:
+The actual Catalog HTTP service created its optional pool from validated local
+configuration. Revoking the Discovery role made only the private operation
+unavailable; public Catalog remained HTTP200. Regrant recovered the private read.
+The unique384-MiB/1CPU PostgreSQL fixture and service resources closed to zero.
+This proves current-source access, not Discovery-owned storage, event catch-up,
+search, relevance or a public API. No retained demo, film or host process changed.

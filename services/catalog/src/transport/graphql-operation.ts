@@ -190,7 +190,9 @@ export function inspectCatalogOperation(body: unknown, schema: GraphQLSchema): O
         if (
           item.name.value.startsWith("__") ||
           item.name.value === "_playbackPublications" ||
-          item.name.value === "_engagementTitles"
+          item.name.value === "_engagementTitles" ||
+          item.name.value === "_discoverySnapshots" ||
+          item.name.value === "_discoveryExport"
         ) {
           throw new OperationRejected("INVALID_INPUT");
         }

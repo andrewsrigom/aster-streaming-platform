@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { request as httpRequest } from "node:http";
+import { createServer } from "node:net";
 import type { Pool } from "pg";
+import { createLocalCatalogDiscoveryTrust, createLocalRouterTrust } from "@aster/http-express";
 import type { AsterPostgresAdapter } from "@aster/postgres";
+import { createAsterLogger } from "@aster/runtime";
+import { createCatalogService } from "../../src/create-service.js";
 import { createCatalogDiscoveryQueries } from "../../src/application/discovery-queries.js";
 import { createPostgresCatalogDiscovery } from "../../src/infrastructure/persistence/postgres-discovery.js";
 import { probeCatalogDiscoveryReader } from "../../src/infrastructure/persistence/discovery-readiness.js";
 import { probeCatalogReader } from "../../src/infrastructure/persistence/reader-readiness.js";
+import { CATALOG_DISCOVERY_SNAPSHOTS } from "../../src/transport/discovery-operation.js";
 import { publicCandidate } from "../public-fixture.js";
 import { catalogTestId as id, catalogTestTime as now } from "../rights-fixture.js";
 
@@ -13,6 +19,7 @@ export async function verifyDiscoverySources(
   admin: Pool,
   database: AsterPostgresAdapter,
   publicReader: AsterPostgresAdapter,
+  databasePort: number,
 ): Promise<void> {
   const signal = () => AbortSignal.timeout(2000);
   const output = (event: string, facts: Record<string, unknown>) =>
@@ -32,6 +39,22 @@ export async function verifyDiscoverySources(
     } finally {
       client.release();
     }
+  };
+  const freePort = async (): Promise<number> => {
+    const server = createServer();
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const address = server.address();
+    assert.ok(address && typeof address !== "string");
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
+    return address.port;
   };
   let time = now + 20;
   const queries = createCatalogDiscoveryQueries({
@@ -232,6 +255,141 @@ export async function verifyDiscoverySources(
       publicReaderStillReady: true,
       hiddenFencePreserved: true,
     });
+
+    const routerKey = "c".repeat(64);
+    const discoveryKey = "d".repeat(64);
+    const service = await createCatalogService(
+      {
+        ASTER_ENVIRONMENT: "local",
+        ASTER_CATALOG_LOCAL_ENABLED: "true",
+        ASTER_CATALOG_HTTP_PORT: String(await freePort()),
+        ASTER_CATALOG_READER_DATABASE_URL:
+          "postgresql://aster_catalog_reader_local@127.0.0.1:" + String(databasePort) + "/aster",
+        ASTER_CATALOG_READER_DATABASE_PASSWORD: "aster-test-only",
+        ASTER_ROUTER_TRUST_ENABLED: "true",
+        ASTER_CATALOG_DISCOVERY_READ_ENABLED: "true",
+        ASTER_CATALOG_DISCOVERY_READER_DATABASE_URL:
+          "postgresql://aster_catalog_discovery_reader_local@127.0.0.1:" +
+          String(databasePort) +
+          "/aster",
+        ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD: "aster-test-only",
+      },
+      {
+        database: publicReader,
+        routerTrust: createLocalRouterTrust("catalog", routerKey),
+        discoveryTrust: createLocalCatalogDiscoveryTrust(discoveryKey),
+        logger: createAsterLogger({
+          service: "catalog",
+          version: "0.0.0",
+          environment: "integration",
+          destination: { write: () => undefined },
+        }),
+      },
+    );
+    const post = async (body: object, headers: Record<string, string>) =>
+      new Promise<{ readonly status: number; readonly text: string }>((resolve, reject) => {
+        const request = httpRequest(
+          "http://127.0.0.1:" + String(service.port()) + "/graphql",
+          {
+            method: "POST",
+            headers: { "content-type": "application/json", connection: "close", ...headers },
+            signal: AbortSignal.timeout(3000),
+          },
+          (response) => {
+            const chunks: Buffer[] = [];
+            response.on("data", (chunk: Buffer) => {
+              chunks.push(chunk);
+            });
+            response.once("error", reject);
+            response.once("end", () => {
+              resolve({
+                status: response.statusCode ?? 500,
+                text: Buffer.concat(chunks).toString("utf8"),
+              });
+            });
+          },
+        );
+        request.once("error", reject);
+        request.end(JSON.stringify(body));
+      });
+    const base = { host: "catalog:3200", "x-aster-csrf": "1" };
+    const publicHeaders = {
+      ...base,
+      origin: "http://127.0.0.1:4000",
+      "x-aster-router-credential": routerKey,
+    };
+    const discoveryHeaders = {
+      ...base,
+      origin: "http://discovery:3500",
+      "x-aster-discovery-credential": discoveryKey,
+      "x-aster-correlation-id": id(979998),
+    };
+    const discoveryBody = {
+      query: CATALOG_DISCOVERY_SNAPSHOTS,
+      operationName: "DiscoverySnapshots",
+      variables: { ids: [firstId, draftId] },
+    };
+    let membershipRevoked = false;
+    try {
+      assert.equal(await service.start(), "ready");
+      assert.equal(await service.checkDiscoveryReadiness(signal()), "ready");
+      const privateRead = await post(discoveryBody, discoveryHeaders);
+      assert.equal(privateRead.status, 200);
+      const privateJson = JSON.parse(privateRead.text) as {
+        data?: { _discoverySnapshots?: { sourceVersion: number; document: unknown }[] };
+        errors?: unknown[];
+      };
+      assert.equal(privateJson.errors, undefined);
+      assert.deepEqual(
+        privateJson.data?._discoverySnapshots?.map((source) => ({
+          sourceVersion: source.sourceVersion,
+          document: source.document,
+        })),
+        [
+          { sourceVersion: 6, document: null },
+          { sourceVersion: 1, document: null },
+        ],
+      );
+      assert.doesNotMatch(privateRead.text, /manifestUrl|rights|privateDraftCanary|reviewedBy/u);
+      assert.equal((await post(discoveryBody, publicHeaders)).status, 400);
+
+      await admin.query(
+        "REVOKE aster_catalog_discovery_reader FROM aster_catalog_discovery_reader_local",
+      );
+      membershipRevoked = true;
+      assert.equal(await service.checkDiscoveryReadiness(signal()), "unavailable");
+      const unavailable = await post(discoveryBody, discoveryHeaders);
+      assert.equal(unavailable.status, 200);
+      assert.match(unavailable.text, /UNAVAILABLE/u);
+      const publicRead = await post(
+        {
+          query: "query RuntimeCatalog { titles(first: 1) { edges { node { id } } } }",
+          operationName: "RuntimeCatalog",
+        },
+        publicHeaders,
+      );
+      assert.equal(publicRead.status, 200);
+      assert.doesNotMatch(publicRead.text, /UNAVAILABLE/u);
+      await admin.query(
+        "GRANT aster_catalog_discovery_reader TO aster_catalog_discovery_reader_local",
+      );
+      membershipRevoked = false;
+      assert.equal(await service.checkDiscoveryReadiness(signal()), "ready");
+      output("catalog_discovery_private_runtime", {
+        exactOperations: true,
+        separateCredential: true,
+        separatePoolLimit: 1,
+        failureDoesNotBlockPublicCatalog: true,
+        recoveryObserved: true,
+      });
+    } finally {
+      if (membershipRevoked) {
+        await admin.query(
+          "GRANT aster_catalog_discovery_reader TO aster_catalog_discovery_reader_local",
+        );
+      }
+      await service.shutdown();
+    }
   } finally {
     await database.close();
     await publicReader.close();
