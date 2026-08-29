@@ -45,14 +45,16 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
   lease released by atomic compare-and-delete; positive projection refreshes and
   cold negative-key owner-fence reads both enter coordination before their
   expensive source operation; fence sharing also requires identical request time
-  and rights-use policy
+  and rights-use policy; atomic acquisition replaces only non-string or
+  non-expiring malformed lease keys and preserves valid finite holders
 - Corruption: the Redis-side read rejects oversized and non-string exact values
   before returning bytes; bounded strings, including control bytes, reach the
   strict Catalog envelope parser for exact malformed-key deletion without a
   connection reset
 - Metrics: hit, negative hit, miss, malformed, bypass, source load, fence change,
   coalescing and lease outcomes, bounded attached-caller bucket excluding the
-  refresh owner, duration and payload bytes
+  refresh owner and tracked independently from active cancellation waiters,
+  duration and payload bytes
 
 The exact contract and safety trade-off are in
 [ADR-0037](../adr/0037-rights-safe-catalog-cache.md). This section describes the

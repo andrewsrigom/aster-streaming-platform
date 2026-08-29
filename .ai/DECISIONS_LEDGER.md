@@ -11,7 +11,10 @@ request-time/policy scope; wrong-type or oversized Redis values are rejected
 before value bytes reach the application. Negative envelopes carry cache time;
 missing, future or older-than-ten-second values are deleted and rechecked even
 when Redis expiry is absent or excessive. Redis loss bypasses to source, and
-cache coordination never authorizes durable work.
+cache coordination never authorizes durable work. Lease acquisition atomically
+replaces only wrong-type or non-expiring malformed keys while preserving finite
+holders, and coalescing records monotonic attachments separately from active
+cancellation waiters.
 
 [ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size
 independent public rails, explicit freshness/outcomes, stable recent fallback,

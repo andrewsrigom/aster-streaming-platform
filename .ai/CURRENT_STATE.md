@@ -83,7 +83,16 @@ value destroyed the Redis connection before Catalog malformed recovery. Exact
 write validation. Redis17/17, Catalog245/245 and affected73/73 pass. Repeated real
 Redis proves `controlValueDeleted=true`, the connection remains usable and
 cleanup0; PostgreSQL behavior is unchanged.
-Corrected publication, confirmation and protected acceptance remain pending.
+Protected run `33266926624` passed exact `edf7bc8`, but review discussions
+`3887280597`/`3887280599` found a permanently contended malformed lease and a zero-waiter
+reattachment metric case. Exact local correction `d93afbc` atomically recovers
+wrong-type/non-expiring lease keys and tracks monotonic attachments separately
+from active waiters. Redis17/17, Catalog246/246, scoped lint/format and repeated
+real Redis pass; the fixture proves both malformed lease classes, Catalog-path
+recovery, one cross-instance negative fence read and cleanup 0. Focused Identity
+passed 147/147 after one unrelated terminal-fallback timing failure under broad
+parallel load; the concurrency-capped affected gate then passed 73/73 with 59
+cached in 90.953 seconds. Publication and confirmation remain pending.
 The local Discovery dependent checkpoint `423c33d` is preserved separately and
 cannot publish until this predecessor releases.
 
@@ -140,9 +149,10 @@ and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish the P10-R01 latest confirmation correction, resolve its finding and
-complete corrected protected/exact-main acceptance. Then rebase the preserved
-Discovery stale-while-revalidate checkpoint and finish its remaining evidence.
+Publish the P10-R01 two exact-head review corrections, resolve their discussions
+and complete protected/exact-main
+acceptance. Then rebase the preserved Discovery stale-while-revalidate checkpoint
+and finish its remaining evidence.
 
 ## Runtime and recovery
 

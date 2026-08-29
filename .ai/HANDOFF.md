@@ -43,17 +43,25 @@ the Redis connection before malformed cleanup. Exact997ef27 validates returned
 strings by type/byte bound only, keeps write inputs strict and lets Catalog delete
 the exact malformed key. Redis17/17, Catalog245/245, affected73/73 and repeated
 real Redis with `controlValueDeleted=true`/cleanup0 pass; PostgreSQL is unchanged.
+Protected run `33266926624` passed exact `edf7bc8`. Exact-head discussions
+`3887280597`/`3887280599` then found permanent contention on wrong-type/non-expiring lease
+keys and a zero-waiter reattachment metric defect. Exact local d93afbc adds
+atomic type/expiry lease recovery and monotonic attachment tracking. Redis17/17,
+Catalog246/246, scoped lint/format and repeated real Redis pass with both
+malformed lease classes, exact Catalog-path recovery and cleanup0. Focused
+Identity passed 147/147 after one unrelated timing failure under broad parallel
+load; the capped affected gate passed 73/73, 59 cached, in 90.953 seconds.
+Publication remains pending.
 The separate
 `feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
 b65688b; do not publish it before predecessor release.
 
 ## Exact next actions
 
-1. Commit this documentation-only malformed-byte evidence and publish one PR37
-   update.
-2. Reply to and resolve discussion3887242213, then obtain corrected
-   confirmation and protected CI before squash merge and exact-main acceptance.
-3. Rebase only dependent commits after b65688b onto released squash main, repeat
+1. Commit/publish one PR37 update, reply to and resolve discussions `3887280597`/`3887280599`,
+   then obtain corrected confirmation/protected CI before squash merge and
+   exact-main acceptance.
+2. Rebase only dependent commits after b65688b onto released squash main, repeat
    affected gates, and resume P10-R04.
 
 ## Evidence boundaries

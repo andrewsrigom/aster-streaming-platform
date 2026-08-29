@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-29 — Catalog final metric and malformed-byte remediations
+## 2026-08-29 — Catalog final cache remediations
 
 ### Completed
 
@@ -22,6 +22,21 @@ Append new entries at the top. Keep entries factual and concise.
 - Redis17/17, Catalog245/245 and affected73/73 pass with52 cached in101.768
   seconds. Repeated real Redis proves `controlValueDeleted=true`,11 finite metric
   series and cleanup0; PostgreSQL behavior did not change.
+- Exact-head protected run `33266926624` passed `edf7bc8`. Review discussions
+  `3887280597`/`3887280599` then found that wrong-type/non-expiring lease keys could contend
+  permanently and zero-caller entries kept alive by sibling batch work could
+  misclassify their first later reattachment.
+- Exact `d93afbcc8bf87f71dc926c9010c2180820aeccfb` adds a specialized bounded Redis
+  lease acquisition script that atomically preserves valid finite holders while
+  replacing malformed keys. Coalescing now tracks monotonic attachments
+  separately from active cancellation waiters.
+- Redis17/17, Catalog246/246, strict types, scoped lint/format and repeated real
+  Redis pass. The fixture proves standalone wrong-type/non-expiring recovery,
+  exact Catalog-path recovery, one cross-instance negative fence read and
+  cleanup 0.
+- The first broad-parallel affected attempt hit the unchanged Identity
+  terminal-fallback timing assertion. Focused Identity passed 147/147; the
+  concurrency-capped rerun passed 73/73 with 59 cached in 90.953 seconds.
 
 ### Evidence
 
@@ -30,7 +45,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish one PR37 update, resolve discussion3887242213, require exact-head
+Publish one PR37 update, resolve discussions `3887280597`/`3887280599`, require exact-head
 protected CI and confirmation, then release Catalog and rebase Discovery.
 
 ## 2026-08-29 — Catalog negative-cache age remediation

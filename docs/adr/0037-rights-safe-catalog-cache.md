@@ -64,12 +64,21 @@ as waiters and retain independent cancellation. A cancelled caller stops waiting
 without aborting work still used by another caller. Settled work is removed. When
 the map is full, a request loads the source directly instead of allocating an
 unbounded entry. Coalescing telemetry counts only callers attached behind the
-owner; the owner itself is not included in the bounded waiter bucket.
+owner; the owner itself is not included in the bounded waiter bucket. Each entry
+retains a monotonic attached-caller count separately from its active waiter count,
+so a title can lose every caller while sibling entries keep their shared batch
+alive and still classify its first later reattachment as one waiter.
 
 Across processes, acquire a two-second Redis lease with `SET NX PX` and a random
 128-bit token. A loser waits at most 25 milliseconds, checks the cache once, then
 loads the authoritative source if necessary. Release uses one atomic Lua
 compare-and-delete operation; a client never deletes another holder's lease.
+Lease acquisition is one bounded atomic operation that also inspects the exact
+key type and remaining expiry. A non-string or non-expiring key is malformed and
+is replaced with the caller's token plus the two-second expiry; a valid finite
+string lease remains contended. This prevents corrupt data from disabling
+coordination permanently without allowing one holder to steal another valid
+lease.
 The same lease protocol surrounds a cold negative-key fence read, so an owner
 that confirms absence publishes the short marker before releasing its lease.
 Lease expiry, holder failure and duplicate refresh are safe because refresh only

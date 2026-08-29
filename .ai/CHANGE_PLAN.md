@@ -59,6 +59,13 @@ a bounded control-byte string as an invalid vendor reply and destroyed the
 connection before Catalog could delete it. Exact `997ef27` keeps type/byte bounds
 at transport, preserves strict write inputs and lets Catalog classify/delete the
 malformed envelope.
+Protected run `33266926624` passed exact `edf7bc8`, but its exact-head review found
+two remaining coordination defects: a wrong-type or non-expiring lease could
+contend forever, and an entry with zero local callers could be reattached while a
+sibling kept shared work alive but record the wrong waiter bucket. Exact
+`d93afbcc8bf87f71dc926c9010c2180820aeccfb` acquires leases through one atomic
+type/expiry recovery script and separates monotonic attachment telemetry from
+active cancellation waiters.
 
 ## Boundaries
 
@@ -91,6 +98,7 @@ malformed envelope.
 | Redis timeout/unavailable/capacity rejection | Read PostgreSQL directly | cache outcome `bypass`; Redis dependency outcome |
 | Malformed, oversized, wrong-version or over-age value | Delete the exact key best-effort and rebuild | cache outcome `malformed` |
 | Lease not acquired or expires | Wait once within a finite budget, then source fallback; duplicates are safe | lease outcome `contended` or `lost` |
+| Lease key is wrong-type or has no expiry | Atomically replace only that malformed key with a finite owned lease | lease outcome `acquired` |
 | Caller cancels while sharing refresh | That caller exits; shared work continues only for remaining bounded waiters | coalescing outcome and waiter bucket |
 | PostgreSQL fence/source unavailable | Return existing Catalog unavailable/cancelled result; cached bytes cannot override it | source outcome `unavailable` |
 | Title changes after fence read | Exact source load must match the fence; bounded re-check or miss, never mismatched data | source outcome `fence_changed` |
@@ -149,14 +157,16 @@ malformed envelope.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: corrected local candidate PASS: Catalog245/245,
-  Redis17/17, telemetry11/11, affected73/73 (52 cached, 101.768 seconds), real
+- Acceptance result: corrected local candidate PASS: Catalog246/246,
+  Redis17/17, telemetry11/11, affected73/73 (59 cached, 90.953 seconds), real
   PostgreSQL fence/source/dispute and real Redis bounded/wrong-type/over-age
   reads, positive-plus-negative concurrency, exact attached-caller waiter
-  buckets, bounded control-byte deletion without connection loss, outage and
-  cleanup. One earlier affected
+  buckets, bounded control-byte deletion without connection loss, malformed
+  lease recovery, outage and cleanup. One earlier affected
   attempt hit an unrelated Identity terminal-fallback timing failure; its focused
-  147/147 rerun and the next complete gate pass. Protected CI, corrected
+  147/147 rerun and the next complete gate pass. The latest remediation's first
+  candidate attempt hit the same unchanged Identity timing assertion; focused
+  Identity passed 147/147 and a concurrency-capped rerun passed 73/73. Protected CI, corrected
   confirmation and release remain pending.
 - Iteration gate: affected Redis/Catalog tests, strict typecheck and scoped lint.
 - Candidate gate: `pnpm check:changed`, real dependency fixture and audit.

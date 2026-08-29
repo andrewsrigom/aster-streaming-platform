@@ -33,7 +33,15 @@ Review discussion3887242213 then found bounded control-byte reads destroyed the
 shared Redis connection before malformed cleanup. Exact997ef27 preserves the
 bounded reply for Catalog parsing/deletion. Redis17/17, Catalog245/245,
 affected73/73 and repeated real Redis with cleanup0 pass. Publication and hosted
-acceptance remain.
+acceptance remain. Protected run `33266926624` passed exact `edf7bc8`, but exact-head
+review discussions `3887280597`/`3887280599` found permanently contended malformed leases and
+zero-waiter reattachment misclassification. Exact local d93afbc uses atomic
+type/expiry lease recovery and separate monotonic attachment counts. Redis17/17,
+Catalog246/246 and repeated real Redis pass with malformed lease recovery,
+cross-instance negative fence reads 1 and cleanup 0. Focused Identity passed 147/147
+after one unrelated timing failure under broad parallel load; the capped affected
+gate passed 73/73, 59 cached, in 90.953 seconds. Publication and hosted confirmation
+remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

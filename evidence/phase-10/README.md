@@ -74,3 +74,15 @@ string was rejected as an invalid vendor reply before Catalog could delete the
 malformed envelope. Exact `997ef27` accepts only its bounded transport shape and
 leaves semantic parsing to Catalog. Redis17/17, Catalog245/245, affected73/73 and
 the repeated real Redis fixture pass; `controlValueDeleted=true` and cleanup0.
+
+Protected run `33266926624` passed exact `edf7bc8`, but exact-head discussions
+`3887280597`/`3887280599` found that malformed lease keys could contend permanently and an
+entry with no active caller could be reattached while sibling work remained yet
+record the second waiter bucket. Exact
+`d93afbcc8bf87f71dc926c9010c2180820aeccfb` adds bounded atomic type/expiry lease
+recovery and separates monotonic attachment counts from active cancellation
+waiters. Redis17/17 and Catalog246/246 pass. Repeated real Redis proves
+non-expiring and wrong-type lease recovery, one Catalog-path cross-instance
+negative fence read and cleanup 0. After one unrelated Identity terminal-fallback
+timing failure, focused Identity passed 147/147 and the concurrency-capped affected
+gate passed 73/73 with 59 cached in 90.953 seconds. Hosted gates remain.
