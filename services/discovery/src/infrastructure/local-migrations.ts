@@ -3,6 +3,18 @@ import { Client } from "pg";
 import { localDiscoveryDatabase } from "./runtime-configuration.js";
 
 const MIGRATIONS = ["0001-title-projections", "0002-catalog-events"] as const;
+const MAX_COMPATIBLE_SCHEMA_VERSION = 3;
+
+export function discoveryLocalSchemaCompatible(
+  versions: readonly number[],
+  relationExists: boolean,
+): boolean {
+  return (
+    versions.length <= MAX_COMPATIBLE_SCHEMA_VERSION &&
+    !(versions.length === 0 && relationExists) &&
+    versions.every((version, index) => version === index + 1)
+  );
+}
 
 async function ensureLogin(
   client: Client,
@@ -68,14 +80,10 @@ export async function migrateLocalDiscovery(
         ? []
         : (
             await client.query<{ version: number }>(
-              "SELECT version FROM discovery.schema_migrations ORDER BY version LIMIT 3",
+              `SELECT version FROM discovery.schema_migrations ORDER BY version LIMIT ${MAX_COMPATIBLE_SCHEMA_VERSION + 1}`,
             )
           ).rows.map((row) => row.version);
-    if (
-      versions.length > MIGRATIONS.length ||
-      versions.some((version, index) => version !== index + 1) ||
-      (versions.length === 0 && relation.rows[0]?.relation !== null)
-    ) {
+    if (!discoveryLocalSchemaCompatible(versions, relation.rows[0]?.relation !== null)) {
       throw new Error("Unsupported Discovery schema.");
     }
     const applied: number[] = [];

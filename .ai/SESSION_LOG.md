@@ -12,19 +12,27 @@ Append new entries at the top. Keep entries factual and concise.
 - Changed released search readiness to accept exactly ordered markers `1–2` or
   the reviewed successor `1–3` while retaining all existing role/privilege/object
   checks and rejecting gaps, rewrites and marker4.
+- Accepted PR35 confirmation discussion3886054205: the old init migrator now
+  tolerates ordered marker3 without owning/applying that script, preserves valid
+  bootstrap/partial installation and reads marker4 so it fails closed.
 - Preserved the separate PR34 database-admission correction locally on
   `feat/p09-home-rails` commit `615a8c7`; no migration3 was applied.
 
 ### Evidence
 
-- Clean branch Discovery build and73/73 tests pass, including current/successor,
-  gap/future and hostile-row cases; scoped lint, format and diff checks pass.
+- Corrected clean branch Discovery build and75/75 tests pass, including
+  readiness/migrator current/successor, bootstrap/partial, gap/future and hostile
+  readiness-row cases; scoped lint, format and diff checks pass.
 - The canonical affected candidate passes42/42,26 cached, in47.199s.
+  That result predates the confirmation correction; the corrected candidate
+  passes42/42,26 cached, in47.204s.
 - The first branch-switched test saw ignored feature-build output. Only exact
   generated files were removed, then the clean build passed; no source check was
   weakened.
 - Cancelled invalidated PR34 run33242380775 after both review blockers arrived,
   avoiding its remaining heavyweight work. Retained data/runtime stayed untouched.
+- Cancelled superseded PR35 run33243447562 after its blocker arrived, then passed
+  the corrected candidate instead of completing heavyweight invalid-head work.
 
 ### Next action
 

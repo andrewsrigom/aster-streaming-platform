@@ -23,10 +23,12 @@ requires exactly `1–3`. No deployment order keeps both versions ready.
 ## Proposed behavior
 
 Release one compatibility precursor from current main. Search readiness accepts
-only ordered markers `1–2` or the single reviewed additive successor `1–3`, while
-continuing to use only migration-2 objects and privileges. It rejects bootstrap,
-gaps, rewrites and marker `4`. Merge this precursor before rebasing PR34 and
-applying migration `0003`.
+only ordered markers `1–2` or the single reviewed additive successor `1–3`.
+The local migration preflight preserves its valid bootstrap and partial-current
+states and also tolerates ordered markers `1–3`, while continuing to use and
+apply only the two migration-2-era scripts and objects. Both paths reject gaps,
+rewrites and marker `4`. Merge this precursor before rebasing PR34 and applying
+migration `0003`.
 
 ## Boundaries
 
@@ -41,7 +43,11 @@ applying migration `0003`.
 ## Invariants
 
 - The search-only binary never queries migration-3 objects.
-- Compatibility is finite: only exactly `1–2` and `1–3` pass.
+- The search-only migrator never applies migration `0003`; it only tolerates its
+  marker after another reviewed image has applied it.
+- Readiness compatibility is finite: only exactly `1–2` and `1–3` pass.
+- Migration preflight additionally preserves valid bootstrap and partial-current
+  states so it can still install migrations `1–2`.
 - A missing, gapped, rewritten or future schema fails readiness closed.
 - Migration `0003` is not applied before this precursor reaches main.
 
@@ -71,7 +77,8 @@ applying migration `0003`.
 
 ## Implementation steps
 
-1. Extract the finite schema-compatibility predicate and adverse tests.
+1. Extract finite readiness and migrator schema-compatibility predicates with
+   adverse tests.
 2. Document the required two-stage rollout and rollback.
 3. Run the affected candidate gate, one initial review and one confirmation.
 4. Protected squash merge and exact-main CI, then rebase/remediate PR34.
@@ -79,7 +86,8 @@ applying migration `0003`.
 ## Tests
 
 - Domain: not applicable; no domain rule changes.
-- Application: current/successor/gap/future/hostile-row predicate tests.
+- Application: readiness and migration-preflight current/successor/gap/future
+  predicate tests, plus hostile readiness rows.
 - Integration: PR34 repeats real migration-3 mixed-version evidence after rebase.
 - Contract: no GraphQL change; source gate protects existing schema.
 - Browser: not applicable.
@@ -90,8 +98,10 @@ applying migration `0003`.
 
 - Commands: Discovery build/tests, scoped lint/format, then `pnpm check:changed`.
 - Raw artifact path: `evidence/phase-09/home-rails-compatibility.txt`.
-- Acceptance result: focused 73/73 Discovery tests and the 42/42 affected
-  candidate pass; review/protected release pending.
+- Acceptance result: first candidate passed 73/73 Discovery tests and the 42/42
+  affected gate. Confirmation found the migration-preflight blocker; corrected
+  verification passes Discovery75/75 and the affected42/42 gate; protected
+  release is pending.
 - Iteration gate: strict build, focused node:test, scoped ESLint/Prettier.
 - Candidate gate: canonical affected `pnpm check:changed`.
 - Heavyweight repeat triggers: predicate/test/doc changes do not repeat Docker,

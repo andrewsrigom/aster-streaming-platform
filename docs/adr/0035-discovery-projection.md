@@ -30,9 +30,12 @@ Disable optional Discovery or restore compatible prior Router/Catalog artifacts 
 Before applying additive migration `0003`, release a search-only compatibility
 stage that accepts the current ordered markers `1–2` and the single reviewed
 successor `1–3` while continuing to use only its existing objects and privileges.
-It rejects gaps, rewrites and version `4`. The rails binary may require marker
-`3` only after this stage reaches main. This preserves readiness for old and new
-binaries during migration-first rollout and rollback.
+Its local migration preflight likewise tolerates marker `3` without owning or
+applying that script; it retains bootstrap/partial installation of migrations
+`1–2` and reads one marker beyond the finite ceiling to reject version `4`.
+Both paths reject gaps and rewrites. The rails binary may require marker `3`
+only after this stage reaches main. This preserves init and readiness for old
+and new binaries during migration-first rollout and rollback.
 
 The optional Compose overlay does not add Discovery as a Router startup dependency. Router may start and serve Catalog/Playback while Discovery is unavailable; only search degrades through the existing subgraph timeout/error boundary.
 

@@ -9,5 +9,8 @@ Migration `0002` adds a128-record exact-byte quarantine and replay boundary for 
 The released search readiness accepts ordered markers `1–2` and the single
 reviewed additive successor `1–3`, but rejects gaps and future marker `4`. Release
 that compatibility stage before applying migration `0003`; the search binary
-continues using only migration-2 objects. This makes migration-first rollout and
-rollback compatible while the later rails binary requires its new view.
+continues using only migration-2 objects. Its init preflight also accepts marker
+`3` after a newer image applies it, but its fixed two-script list never applies
+that migration. Valid bootstrap/partial migration states remain supported and a
+four-row read makes marker `4` fail closed. This makes migration-first rollout
+and rollback compatible while the later rails binary requires its new view.

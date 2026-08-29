@@ -27,8 +27,11 @@ The released search runtime remains unchanged. PR34 candidate `7d31678` adds
 home rails, but confirmation discussion3886014606 found no schema version shared
 by released and new binaries. The active precursor makes released search
 readiness accept only ordered markers `1–2` or `1–3` while using only its existing
-objects and privileges. Focused Discovery73/73, strict build, lint and format
-plus the affected42/42 gate pass.
+objects and privileges. PR35 confirmation discussion3886054205 additionally
+found its init migrator rejected marker3; the corrected preflight now tolerates
+that marker without owning/applying its script and rejects marker4. Corrected
+focused Discovery75/75, strict build, lint and format plus the corrected affected
+42/42 gate pass. Protected confirmation/release remain pending.
 [Compatibility evidence](../evidence/phase-09/home-rails-compatibility.txt).
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
@@ -45,7 +48,7 @@ Browser rails/search, SSR/hydration and hosted release remain pending.
 ## Next outcome
 
 Publish/merge the P09-R03 schema precursor through protected CI and exact main.
-Rebase PR34, prove migration3 with old/new readiness, remediate bounded SQL
+Complete corrected candidate/confirmation, rebase PR34, prove migration3 with old/new readiness, remediate bounded SQL
 admission, then complete its confirmation/protected release before P09-R10.
 
 ## Runtime and recovery

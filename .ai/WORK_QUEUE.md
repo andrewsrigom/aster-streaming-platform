@@ -6,8 +6,10 @@ P09-R01 is DONE through PR33, protected run33238473742, squash main `0bdcb27`
 and exact-main run33239191134. P09-R03 is the sole IN_PROGRESS item. Its PR34
 confirmation found two blocking boundaries: database fan-out and no migration-3
 readiness overlap. The active minimal precursor stages finite search compatibility
-from main and passes its42/42 affected gate; merge it before rebasing and
-completing PR34. Historical stashes are superseded.
+from main. Its first42/42 affected gate passed; confirmation then exposed the
+init-preflight boundary, now corrected with75/75 focused tests. Complete the
+corrected42/42 candidate before rebasing and completing PR34. Historical stashes are
+superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -67,7 +69,8 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 P09-R03 first releases a search-only readiness precursor accepting exactly
 migration markers `1–2` or `1–3`. It does not apply migration3 or query rail
-objects. After exact main, PR34 rebases and completes the rail migration,
+objects. Its old init preflight tolerates marker3 but still owns only scripts1–2.
+After exact main, PR34 rebases and completes the rail migration,
 owner-composed GraphQL and bounded telemetry. P09-R10 remains the later Web slice.
 
 Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected/post-merge gates pass. P08-R06 has [protected closeout evidence](../evidence/phase-08/history-visibility.md). Watchlist has [protected closeout evidence](../evidence/phase-08/watchlist.md) under ADR-0032. Entity fields, relay and browser reports follow. No repeated CPU or film experiment.

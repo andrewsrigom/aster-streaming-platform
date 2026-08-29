@@ -8,14 +8,18 @@ run33238473742, squash main `0bdcb27` and exact-main run33239191134.
 P09-R03 is active. PR34 candidate `7d31678` locally verifies home rails, but its
 confirmation review found database fan-out and no migration-3 readiness overlap.
 The fan-out correction is preserved locally on `feat/p09-home-rails` commit
-`615a8c7`. The current branch `fix/p09-discovery-schema-compatibility` stages the
+`2211983` above rails commit `6ab80f6`; it must rebase after this precursor changes.
+The current branch `fix/p09-discovery-schema-compatibility` stages the
 released search binary to accept only ordered migrations1–2 or1–3 before
-migration3 is applied. Discovery73/73 and focused static gates pass. Full
-Phase00–14 goal remains active. The affected candidate passes42/42 in47.199s.
+migration3 is applied. PR35 confirmation also found the old init preflight
+rejected marker3; the correction tolerates it without applying an unknown script.
+Discovery75/75 and focused static gates pass. Full Phase00–14 goal remains active.
+The corrected affected candidate passes42/42,26 cached, in47.204s.
 
 ## Exact next actions
 
-1. Commit/publish the precursor, complete initial/confirmation review and protected PR.
+1. Commit/publish the corrected precursor and resolve its confirmation review
+   through protected PR.
 2. Squash merge and confirm exact-main CI before migration3.
 3. Rebase `feat/p09-home-rails`, add real mixed-version readiness proof, repeat
    affected gates and update PR34 once.
@@ -28,7 +32,7 @@ Protected CI33211565625 now passes the complete corrected event supervisor, incl
 
 P09 search release evidence is in `evidence/phase-09/search-release.md`. The
 compatibility trigger/correction is in `home-rails-compatibility.txt`. This
-precursor changes only the readiness predicate and docs, so it does not repeat
+precursor changes only readiness/init predicates and docs, so it does not repeat
 unchanged Docker/media/search runtime. PR34 must repeat actual migration3 SQL and
 readiness after rebase.
 

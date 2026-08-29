@@ -35,3 +35,25 @@ Pending
 Initial/confirmation review, protected merge and exact-main CI. Afterward PR34
 must rebase and prove the actual migration-3 view with both staged-old and
 rails-new readiness behavior.
+
+Confirmation finding
+
+PR35 discussion 3886054205 identified that readiness compatibility alone was
+insufficient: discovery-init runs the released image's migration preflight, and
+that preflight rejected marker 3 before the service could become ready. The
+corrected precursor also accepts ordered markers 1-3 in the preflight while its
+two-entry migration list still applies only migrations 1-2. It reads one row
+beyond the finite maximum so marker 4 fails closed.
+
+Corrected verification
+
+- Discovery strict build and75/75 tests: pass.
+- Scoped ESLint, Prettier and Git diff checks: pass.
+- Canonical affected gate:42/42 tasks pass,26 cached, in47.204s.
+- Superseded protected run33243447562 was cancelled after the blocker instead of
+  completing heavyweight work for an invalid candidate.
+
+Pending
+
+Publish corrected exact head, resolve confirmation, protected squash merge and
+exact-main CI. Then PR34 rebases and proves the actual migration3 boundary.
