@@ -4,6 +4,7 @@ const RUNTIME_FIELDS = new Set([
   "ASTER_ENGAGEMENT_HTTP_PORT",
   "ASTER_ENGAGEMENT_DATABASE_URL",
   "ASTER_ENGAGEMENT_DATABASE_PASSWORD",
+  "ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED",
 ]);
 
 export function localEngagementDatabase(
@@ -65,23 +66,33 @@ export function engagementRuntimeConfiguration(
   }
   const host = environment["ASTER_ENGAGEMENT_HTTP_HOST"] ?? "127.0.0.1";
   const port = environment["ASTER_ENGAGEMENT_HTTP_PORT"] ?? "3400";
+  const distributedRateLimit = environment["ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED"];
+  const redisUrl = environment["REDIS_URL"];
   if (
     (host !== "127.0.0.1" && host !== "0.0.0.0") ||
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
     Number(port) < 1024 ||
     Number(port) > 65535 ||
+    (distributedRateLimit !== undefined &&
+      distributedRateLimit !== "true" &&
+      distributedRateLimit !== "false") ||
+    (distributedRateLimit === "true" && (typeof redisUrl !== "string" || redisUrl.length === 0)) ||
     environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true"
   ) {
     throw new Error("Invalid protected Engagement listener configuration.");
   }
-  return Object.freeze({
-    host,
+  const validatedHost: "127.0.0.1" | "0.0.0.0" = host;
+  const base = {
+    host: validatedHost,
     port: Number(port),
     connectionString: localEngagementDatabase(environment, "runtime"),
     events: localEventDeliveryEnabled(
       environment["ASTER_EVENTS_ENABLED"],
       environment["ASTER_ENVIRONMENT"],
     ),
-  });
+  };
+  return distributedRateLimit === "true"
+    ? Object.freeze({ ...base, distributedRateLimit: true as const, redisUrl: redisUrl as string })
+    : Object.freeze({ ...base, distributedRateLimit: false as const });
 }
 import { localEventDeliveryEnabled } from "@aster/event-delivery";

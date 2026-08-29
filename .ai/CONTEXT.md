@@ -58,10 +58,11 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 Active phase: **Phase 10 — Advanced Redis and Concurrency**. Phase09 closed
 through PR36, squash main `ffe8e24` and exact-main CI33254719311. The P10 Catalog
 cache is released through PR37 head `cb86c37`, protected run33270889083, clean
-confirmation, squash main `903f7b4` and exact-main run33272501078. P10-R04 is the
-sole active item on `feat/p10-discovery-swr`, rebased onto that release, with its
-bounded Discovery stale-while-revalidate implementation and local evidence ready
-for final candidate publication.
+confirmation, squash main `903f7b4` and exact-main run33272501078. Discovery
+stale-while-revalidate passed PR39 exact `601cc95`, protected run33274397440 and
+clean confirmation, then squash-merged as main `6a2fe3a`; exact-main run
+33275183338 passed. P10-R08 is the sole active item on
+`feat/p10-operation-limiters`.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

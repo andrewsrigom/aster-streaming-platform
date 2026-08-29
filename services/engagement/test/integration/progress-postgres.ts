@@ -7,6 +7,7 @@ import { createPostgresProgressRead } from "../../src/infrastructure/postgres-pr
 import { createProgressQueries } from "../../src/application/read-progress.js";
 import { createPostgresProgress } from "../../src/infrastructure/postgres-progress.js";
 import { createProgressRecorder } from "../../src/application/record-progress.js";
+import { createEngagementOperationLimiter } from "../../src/infrastructure/operation-limiter.js";
 import type { ProgressPorts, ProgressRequest } from "../../src/application/progress-ports.js";
 import {
   DEFAULT_PROGRESS_POLICY,
@@ -217,6 +218,26 @@ try {
   );
   output("engagement_runtime_isolation", { crossOwnerDdlAndRetentionWrites: "rejected" });
 
+  const outage = fixture();
+  const outageLimiter = createEngagementOperationLimiter({
+    environment: "test",
+    digest: (value) => createHash("sha256").update(value).digest("hex"),
+    redis: { consumeTokenBucket: () => Promise.resolve({ status: "unavailable" }) },
+  });
+  const outageRecorder = createProgressRecorder({ ...outage.ports, limiter: outageLimiter });
+  const outageInput = outage.input();
+  const outageAccepted = await outageRecorder.record(outageInput, outage.request);
+  assert.equal(outageAccepted.status, "completed");
+  assert.deepEqual(await outageRecorder.record(outageInput, outage.request), outageAccepted);
+  assert.deepEqual(await counts(outage.profileId), { progress: 1, receipts: 1, outbox: 1 });
+  output("engagement_redis_outage_progress", {
+    localAdmission: "allowed",
+    durableProgress: 1,
+    durableReceipts: 1,
+    durableEvents: 1,
+    exactReplayEffects: 1,
+  });
+
   // Hold both callbacks at the transaction boundary so receipt preflight cannot serialize the test.
   const race = fixture();
   let arrivals = 0;
@@ -233,9 +254,62 @@ try {
     return store.transactions.run(work, requestSignal);
   };
   const concurrent = race.input();
-  const repeated = await Promise.all([race.record(concurrent), race.record(concurrent)]);
+  const sharedAdmissions = new Set<string>();
+  let limiterCalls = 0;
+  let limiterCharges = 0;
+  const sharedRedis = {
+    consumeTokenBucket: (
+      _bucketKey: string,
+      admissionKey: string,
+    ): Promise<
+      Readonly<{
+        status: "completed";
+        allowed: true;
+        remaining: number;
+        retryAfterMs: 0;
+        resetAfterMs: number;
+        recovered: false;
+        deduplicated: boolean;
+      }>
+    > => {
+      limiterCalls++;
+      const deduplicated = sharedAdmissions.has(admissionKey);
+      if (!deduplicated) {
+        sharedAdmissions.add(admissionKey);
+        limiterCharges++;
+      }
+      return Promise.resolve({
+        status: "completed",
+        allowed: true,
+        remaining: 11,
+        retryAfterMs: 0,
+        resetAfterMs: 250,
+        recovered: false,
+        deduplicated,
+      });
+    },
+  };
+  const limiterOptions = {
+    environment: "test" as const,
+    digest: (value: string) => createHash("sha256").update(value).digest("hex"),
+    redis: sharedRedis,
+  };
+  const firstReplica = createProgressRecorder({
+    ...race.ports,
+    limiter: createEngagementOperationLimiter(limiterOptions),
+  });
+  const secondReplica = createProgressRecorder({
+    ...race.ports,
+    limiter: createEngagementOperationLimiter(limiterOptions),
+  });
+  const repeated = await Promise.all([
+    firstReplica.record(concurrent, race.request),
+    secondReplica.record(concurrent, race.request),
+  ]);
   assert.equal(repeated[0].status, "completed");
   assert.deepEqual(repeated[0], repeated[1]);
+  assert.equal(limiterCalls, 2);
+  assert.equal(limiterCharges, 1);
   assert.deepEqual(await counts(race.profileId), { progress: 1, receipts: 1, outbox: 1 });
   race.ports.transactions.run = store.transactions.run.bind(store.transactions);
   assert.equal((await race.record(race.input({ sequence: 3 }))).status, "completed");
@@ -245,6 +319,8 @@ try {
   assert.equal(back.value.positionMs, 500);
   output("engagement_synchronized_replay_ordering", {
     duplicateWinners: 1,
+    crossReplicaLimiterCalls: limiterCalls,
+    crossReplicaLimiterCharges: limiterCharges,
     effects: 1,
     stale: "rejected",
     newerSeekBackward: "accepted",

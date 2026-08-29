@@ -83,6 +83,16 @@ export const ASTER_METRIC_CATALOG = Object.freeze({
     description: "Size of a bounded product-cache payload when measured.",
     unit: "By",
   }),
+  operationLimitDuration: Object.freeze({
+    name: "aster.operation.limit.duration",
+    description: "Duration of one bounded rate or concurrency admission decision.",
+    unit: "s",
+  }),
+  operationLimitOutcomes: Object.freeze({
+    name: "aster.operation.limit.outcomes",
+    description: "Number of operation admission decisions by finite policy and outcome.",
+    unit: "{decision}",
+  }),
   processCpuTime: Object.freeze({
     name: "process.cpu.time",
     description: "Total CPU seconds broken down by CPU mode.",

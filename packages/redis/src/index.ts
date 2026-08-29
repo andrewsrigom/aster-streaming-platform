@@ -16,6 +16,8 @@ export type {
   AsterRedisSnapshot,
   AsterRedisTelemetry,
   AsterRedisDeleteResult,
+  AsterRedisTokenBucketPolicy,
+  AsterRedisTokenBucketResult,
   AsterRedisWriteMode,
   AsterRedisWriteResult,
 } from "./redis-contract.js";

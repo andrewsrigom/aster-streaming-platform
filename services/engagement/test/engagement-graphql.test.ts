@@ -42,7 +42,7 @@ const state: ProgressState = {
   updatedAt: 100,
 };
 const query =
-  "mutation RecordProgress($input: RecordProgressInput!) { recordProgress(input: $input) { code correlationId progress { id profileId titleId sequence version positionMs durationMs status occurredAt updatedAt } } }";
+  "mutation RecordProgress($input: RecordProgressInput!) { recordProgress(input: $input) { code correlationId retryAfterMs progress { id profileId titleId sequence version positionMs durationMs status occurredAt updatedAt } } }";
 const body = { query, operationName: "RecordProgress", variables: { input } };
 type RecordProgress = EngagementSubgraphOptions["recorder"]["record"];
 
@@ -52,7 +52,7 @@ const homeContinueQuery =
   "query HomeContinueWatching($profileId:ID!, $first:Int! = 10) { homeContinueWatching(profileId:$profileId, first:$first) { code correlationId connection { edges { node { titleId positionMs durationMs status title { __typename id } } } pageInfo { hasNextPage } } } }";
 
 const watchlistMutation =
-  "mutation SetWatchlist($input: SetWatchlistInput!) { setWatchlist(input: $input) { code correlationId change { id profileId titleId present version updatedAt } } }";
+  "mutation SetWatchlist($input: SetWatchlistInput!) { setWatchlist(input: $input) { code correlationId retryAfterMs change { id profileId titleId present version updatedAt } } }";
 const watchlistPage =
   "query Watchlist($profileId: ID!, $first: Int! = 20, $after: String) { watchlist(profileId: $profileId, first: $first, after: $after) { code correlationId connection { edges { cursor node { id profileId titleId addedAt title { __typename id } } } pageInfo { endCursor hasNextPage } } } }";
 
@@ -242,6 +242,34 @@ test("watchlist HTTP non-success and uncertain commits never fabricate acknowled
     }
   } finally {
     await f.close();
+  }
+
+  const limited = await fixture(
+    () => {
+      throw new Error("not progress");
+    },
+    undefined,
+    {
+      writer: {
+        set: () => Promise.resolve({ status: "limit_exceeded", retryAfterMs: 1_001 }),
+      },
+      queries: w.queries,
+    },
+  );
+  try {
+    const response = await limited.send({
+      query: watchlistMutation,
+      variables: { input: watchlistInput() },
+    });
+    const result = JSON.parse(response.text) as {
+      data: { setWatchlist: { code: string; retryAfterMs: number; change: unknown } };
+    };
+    assert.equal(result.data.setWatchlist.code, "LIMIT_EXCEEDED");
+    assert.equal(result.data.setWatchlist.retryAfterMs, 1_001);
+    assert.equal(result.data.setWatchlist.change, null);
+    assert.equal(response.retryAfter, "2");
+  } finally {
+    await limited.close();
   }
 });
 
@@ -444,6 +472,7 @@ async function fixture(
         text: string;
         cache: string | undefined;
         cookie: string[] | undefined;
+        retryAfter: string | undefined;
       }>((resolve, reject) => {
         const outgoing = request(
           {
@@ -470,6 +499,7 @@ async function fixture(
                 text: Buffer.concat(chunks).toString("utf8"),
                 cache: incoming.headers["cache-control"],
                 cookie: incoming.headers["set-cookie"],
+                retryAfter: incoming.headers["retry-after"],
               });
             });
           },
@@ -635,6 +665,21 @@ test("non-success, ambiguous commit and exceptions never fabricate progress", as
     } finally {
       await f.close();
     }
+  }
+  const limited = await fixture(() =>
+    Promise.resolve({ status: "limit_exceeded", retryAfterMs: 30_001 }),
+  );
+  try {
+    const response = await limited.send();
+    const value = JSON.parse(response.text) as {
+      data: { recordProgress: { code: string; retryAfterMs: number | null; progress: unknown } };
+    };
+    assert.equal(value.data.recordProgress.code, "LIMIT_EXCEEDED");
+    assert.equal(value.data.recordProgress.retryAfterMs, 30_000);
+    assert.equal(value.data.recordProgress.progress, null);
+    assert.equal(response.retryAfter, "30");
+  } finally {
+    await limited.close();
   }
   const f = await fixture(() => Promise.reject(new Error("private SQL cookie details")));
   try {

@@ -5,6 +5,7 @@ import type {
   WatchlistPageInput,
 } from "../domain/watchlist.js";
 import type { ProgressCatalog, ProgressPorts } from "./progress-ports.js";
+import type { EngagementOperationLimiter } from "./operation-limit-ports.js";
 
 export type WatchlistResult<T> =
   | Readonly<{ status: "completed"; value: T }>
@@ -16,9 +17,11 @@ export type WatchlistResult<T> =
         | "not_visible"
         | "conflict"
         | "backpressure"
+        | "limit_exceeded"
         | "unavailable"
         | "cancelled"
         | "indeterminate";
+      retryAfterMs?: number;
     }>;
 export interface WatchlistOwner {
   readonly accountId: string;
@@ -68,6 +71,7 @@ export interface WatchlistStore {
   ): Promise<WatchlistResult<WatchlistChange>>;
 }
 export interface WatchlistPorts {
+  readonly limiter?: EngagementOperationLimiter;
   readonly identity: ProgressPorts["identity"];
   readonly catalog: ProgressCatalog;
   readonly store: WatchlistStore;

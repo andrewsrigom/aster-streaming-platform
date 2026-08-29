@@ -22,6 +22,7 @@ import {
   readWatchlistVisibility,
   watchlistGuarded,
 } from "./watchlist-request.js";
+import { createIdempotencyAdmissionQueue } from "./idempotency-admission.js";
 
 function replay(
   receipt: WatchlistReceipt | null,
@@ -64,6 +65,7 @@ function replay(
 }
 
 export function createWatchlistWriter(ports: WatchlistPorts) {
+  const idempotencyAdmissions = createIdempotencyAdmissionQueue();
   return Object.freeze({
     async set(value: unknown, request: ProgressRequest): Promise<WatchlistResult<WatchlistChange>> {
       const input = normalizeWatchlistInput(value);
@@ -78,6 +80,7 @@ export function createWatchlistWriter(ports: WatchlistPorts) {
       const signal = AbortSignal.any([request.signal, AbortSignal.timeout(2500)]);
       const scoped = { ...request, signal };
       let writing = false;
+      let releaseIdempotency: (() => void) | undefined;
       try {
         const owner = await authorizeWatchlist(ports, input.profileId, scoped);
         if (owner.status !== "completed") {
@@ -89,6 +92,17 @@ export function createWatchlistWriter(ports: WatchlistPorts) {
         if (!/^[a-f0-9]{64}$/u.test(digest)) {
           return { status: "unavailable" };
         }
+        const admissionKey = ports.digest(
+          `set_watchlist\0${owner.value.accountId}\0${input.profileId}\0${input.idempotencyKey}`,
+        );
+        const ordering = await idempotencyAdmissions.acquire(admissionKey, signal);
+        if (ordering.status === "cancelled") {
+          return { status: "cancelled" };
+        }
+        if (ordering.status === "capacity") {
+          return { status: "backpressure" };
+        }
+        releaseIdempotency = ordering.release;
         const found = await watchlistGuarded(
           () => ports.store.receipt(owner.value, input.idempotencyKey, signal),
           signal,
@@ -103,6 +117,19 @@ export function createWatchlistWriter(ports: WatchlistPorts) {
         const existing = replay(found.value, owner.value, input, digest, ports.now());
         if (existing) {
           return existing;
+        }
+        const admission = await ports.limiter?.admit(
+          "set_watchlist",
+          owner.value.accountId,
+          ports.digest(`${admissionKey}\0${digest}`),
+          signal,
+        );
+        signal.throwIfAborted();
+        if (admission?.status === "rejected") {
+          return { status: "limit_exceeded", retryAfterMs: admission.retryAfterMs };
+        }
+        if (admission?.status === "cancelled" || admission?.status === "unavailable") {
+          return { status: admission.status };
         }
         let checkedAt = owner.value.checkedAt;
         let expiresAt = owner.value.expiresAt;
@@ -189,6 +216,8 @@ export function createWatchlistWriter(ports: WatchlistPorts) {
         return {
           status: writing ? "indeterminate" : request.signal.aborted ? "cancelled" : "unavailable",
         };
+      } finally {
+        releaseIdempotency?.();
       }
     },
   });

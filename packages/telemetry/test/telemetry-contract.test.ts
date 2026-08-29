@@ -386,6 +386,79 @@ test("records finite cache outcomes, latency, payload and waiter buckets", async
   await telemetry.shutdown();
 });
 
+test("records only finite operation-limit policy dimensions", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "operation-limit-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+  });
+  const record = telemetry.recordOperationLimit?.bind(telemetry);
+  assert.ok(record);
+  assert.deepEqual(
+    record({
+      limiter: "rate",
+      operation: "record_progress",
+      outcome: "local_fallback",
+      durationMs: 4,
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    record({
+      limiter: "concurrency",
+      operation: "search_titles",
+      outcome: "queued",
+      durationMs: 25,
+      queueBucket: "one",
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    record({
+      limiter: "rate",
+      operation: "record_progress",
+      outcome: "allowed",
+      durationMs: 1,
+      queueBucket: "one",
+    }),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+  assert.deepEqual(
+    record({
+      limiter: "concurrency",
+      operation: "record_progress",
+      outcome: "allowed",
+      durationMs: 1,
+    }),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+
+  const collection = await telemetry.collect();
+  assert.equal(collection.status, "collected");
+  const outcomes = metricByName(
+    collection.metrics,
+    ASTER_METRIC_CATALOG.operationLimitOutcomes.name,
+  );
+  assert.deepEqual(
+    outcomes.points.map((point) => ({ ...point.attributes })),
+    [
+      {
+        "aster.limiter": "rate",
+        "aster.operation": "record_progress",
+        "aster.outcome": "local_fallback",
+      },
+      {
+        "aster.limiter": "concurrency",
+        "aster.operation": "search_titles",
+        "aster.outcome": "queued",
+        "aster.limit.queue": "one",
+      },
+    ],
+  );
+  assert.equal(telemetry.exportHealth().droppedObservations, 2);
+  await telemetry.shutdown();
+});
+
 test("aggregates finite series beyond the configured cardinality ceiling", async () => {
   const telemetry = createAsterTelemetry({
     serviceName: "cardinality-test",

@@ -66,6 +66,14 @@ test("public discovery projection preserves explicit empty results and strips ex
   assert.equal(JSON.stringify(selectedHome).includes("canary"), false);
   assert.equal((selectedHome as HomePublicData).homeRails.featured?.code, "EMPTY");
   assert.deepEqual(projectPublicData(search(), "SearchTitles"), search());
+  const limited = {
+    searchTitles: {
+      code: "LIMIT_EXCEEDED",
+      correlationId: id(4),
+      connection: null,
+    },
+  };
+  assert.deepEqual(projectPublicData(limited, "SearchTitles"), limited);
 });
 
 test("public discovery projection accepts a bounded stale home snapshot", () => {

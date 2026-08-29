@@ -6,7 +6,7 @@ import type { createTitleSearch } from "../application/search-titles.js";
 export const DISCOVERY_TYPE_DEFS = parse(`
   extend schema @link(url: "https://specs.apollo.dev/federation/v2.3", import: ["@key"])
   enum DiscoverySearchCode {
-    COMPLETED INVALID_INPUT CURSOR_EXPIRED STALE UNAVAILABLE CANCELLED INDETERMINATE
+    COMPLETED INVALID_INPUT CURSOR_EXPIRED STALE LIMIT_EXCEEDED UNAVAILABLE CANCELLED INDETERMINATE
   }
   enum DiscoveryHomeCode {
     COMPLETED PARTIAL INVALID_INPUT STALE UNAVAILABLE CANCELLED INDETERMINATE
@@ -79,6 +79,7 @@ export interface DiscoveryGraphqlContext {
   readonly search: ReturnType<typeof createTitleSearch>;
   readonly home: ReturnType<typeof createHomeRails>;
   readonly now: () => number;
+  readonly searchAdmission: "admitted" | "limit_exceeded";
   readonly outcome: { code: string };
 }
 
@@ -107,6 +108,7 @@ export function createDiscoveryGraphqlContext(
   signal: AbortSignal,
   correlationId: string,
   traceparent?: string,
+  searchAdmission: DiscoveryGraphqlContext["searchAdmission"] = "admitted",
 ): DiscoveryGraphqlContext {
   const context: DiscoveryGraphqlContext = {
     search,
@@ -114,6 +116,7 @@ export function createDiscoveryGraphqlContext(
     now,
     signal,
     correlationId,
+    searchAdmission,
     ...(traceparent ? { traceparent } : {}),
     outcome: { code: "COMPLETED" },
   };
@@ -192,6 +195,14 @@ export function createDiscoverySchema() {
           raw: unknown,
         ) => {
           const context = owned(raw);
+          if (context.searchAdmission === "limit_exceeded") {
+            context.outcome.code = "LIMIT_EXCEEDED";
+            return {
+              code: context.outcome.code,
+              correlationId: context.correlationId,
+              connection: null,
+            };
+          }
           const result = await context.search.execute(
             {
               query: args.query,

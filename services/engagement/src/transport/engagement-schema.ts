@@ -16,7 +16,7 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
   enum ProgressStatus { NOT_STARTED IN_PROGRESS COMPLETED }
   enum ProgressCode {
     COMPLETED INVALID_INPUT UNAUTHENTICATED NOT_FOUND NOT_PLAYABLE
-    STALE CONFLICT BACKPRESSURE UNAVAILABLE CANCELLED INDETERMINATE
+    STALE CONFLICT BACKPRESSURE LIMIT_EXCEEDED UNAVAILABLE CANCELLED INDETERMINATE
   }
   input RecordProgressInput {
     profileId: ID! titleId: ID! playbackSessionId: ID! idempotencyKey: ID!
@@ -47,10 +47,15 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
     homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
     watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
   }
-  type ProgressPayload { code: ProgressCode! correlationId: ID! progress: Progress }
+  type ProgressPayload {
+    code: ProgressCode!
+    correlationId: ID!
+    retryAfterMs: Int
+    progress: Progress
+  }
   enum WatchlistCode {
     COMPLETED INVALID_INPUT UNAUTHENTICATED NOT_FOUND NOT_VISIBLE
-    CONFLICT BACKPRESSURE UNAVAILABLE CANCELLED INDETERMINATE
+    CONFLICT BACKPRESSURE LIMIT_EXCEEDED UNAVAILABLE CANCELLED INDETERMINATE
   }
   input SetWatchlistInput { profileId: ID! titleId: ID! idempotencyKey: ID! present: Boolean! }
   type WatchlistChange {
@@ -60,7 +65,12 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
   type WatchlistEdge { cursor: String! node: WatchlistEntry! }
   type WatchlistConnection { edges: [WatchlistEdge!]! pageInfo: ProgressPageInfo! }
   type WatchlistPagePayload { code: WatchlistCode! correlationId: ID! connection: WatchlistConnection }
-  type WatchlistPayload { code: WatchlistCode! correlationId: ID! change: WatchlistChange }
+  type WatchlistPayload {
+    code: WatchlistCode!
+    correlationId: ID!
+    retryAfterMs: Int
+    change: WatchlistChange
+  }
   type Mutation {
     recordProgress(input: RecordProgressInput!): ProgressPayload!
     setWatchlist(input: SetWatchlistInput!): WatchlistPayload!
@@ -80,6 +90,7 @@ export interface EngagementGraphqlContext {
   readonly watchlist?: EngagementWatchlist;
   readonly fields?: ReturnType<typeof createEngagementFieldLoaders>;
   readonly outcome: { code: string };
+  readonly setRetryAfter: (retryAfterMs: number | undefined) => void;
 }
 const OWNER = Symbol("engagement-request-owner");
 const contexts = new WeakSet<object>();
@@ -106,6 +117,7 @@ export function createEngagementGraphqlContext(
   queries?: ReturnType<typeof createProgressQueries>,
   watchlist?: EngagementWatchlist,
   fields?: ReturnType<typeof createEngagementFieldQueries>,
+  setRetryAfter: (retryAfterMs: number | undefined) => void = () => undefined,
 ): EngagementGraphqlContext {
   const context: EngagementGraphqlContext = {
     recorder,
@@ -126,6 +138,7 @@ export function createEngagementGraphqlContext(
         }
       : {}),
     outcome: { code: "COMPLETED" },
+    setRetryAfter,
   };
   contexts.add(context);
   Object.defineProperty(context, OWNER, { value: context, enumerable: true });
@@ -146,6 +159,12 @@ function publicProgress(value: ProgressState) {
     updatedAt: value.updatedAt,
     title: { __typename: "Title", id: value.titleId },
   };
+}
+
+function publicRetryAfter(value: number | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? Math.min(30_000, Math.max(1, Math.ceil(value)))
+    : 1_000;
 }
 
 function pageResolver(kind: ProgressListKind) {
@@ -277,10 +296,16 @@ export function createEngagementSchema() {
             throw new EngagementGraphqlError("CANCELLED");
           }
           context.outcome.code = result.status.toUpperCase();
+          const retryAfterMs =
+            result.status === "limit_exceeded" ? publicRetryAfter(result.retryAfterMs) : null;
+          if (result.status === "limit_exceeded") {
+            context.setRetryAfter(retryAfterMs ?? undefined);
+          }
           const value = result.status === "completed" ? result.value : null;
           return {
             code: context.outcome.code,
             correlationId: context.correlationId,
+            retryAfterMs,
             change: value
               ? {
                   id: value.id,
@@ -300,9 +325,15 @@ export function createEngagementSchema() {
             throw new EngagementGraphqlError("CANCELLED");
           }
           context.outcome.code = result.status.toUpperCase();
+          const retryAfterMs =
+            result.status === "limit_exceeded" ? publicRetryAfter(result.retryAfterMs) : null;
+          if (result.status === "limit_exceeded") {
+            context.setRetryAfter(retryAfterMs ?? undefined);
+          }
           return {
             code: context.outcome.code,
             correlationId: context.correlationId,
+            retryAfterMs,
             progress: result.status === "completed" ? publicProgress(result.value) : null,
           };
         },

@@ -135,6 +135,7 @@ enum DiscoverySearchCode {
   CURSOR_EXPIRED
   INDETERMINATE
   INVALID_INPUT
+  LIMIT_EXCEEDED
   STALE
   UNAVAILABLE
 }
@@ -275,6 +276,7 @@ enum ProgressCode {
   CONFLICT
   INDETERMINATE
   INVALID_INPUT
+  LIMIT_EXCEEDED
   NOT_FOUND
   NOT_PLAYABLE
   STALE
@@ -307,6 +309,7 @@ type ProgressPayload {
   code: ProgressCode!
   correlationId: ID!
   progress: Progress
+  retryAfterMs: Int
 }
 
 enum ProgressStatus {
@@ -398,6 +401,7 @@ enum WatchlistCode {
   CONFLICT
   INDETERMINATE
   INVALID_INPUT
+  LIMIT_EXCEEDED
   NOT_FOUND
   NOT_VISIBLE
   UNAUTHENTICATED
@@ -432,4 +436,5 @@ type WatchlistPayload {
   change: WatchlistChange
   code: WatchlistCode!
   correlationId: ID!
+  retryAfterMs: Int
 }

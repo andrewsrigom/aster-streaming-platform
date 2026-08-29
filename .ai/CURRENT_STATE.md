@@ -6,8 +6,9 @@ Last updated: 2026-08-29
 
 **Phase 10 — Advanced Redis and Concurrency**
 
-Status: **IN_PROGRESS**. Catalog cache is released on main `903f7b4`; Discovery
-stale-while-revalidate is the sole active item on `feat/p10-discovery-swr`. Full
+Status: **IN_PROGRESS**. Catalog cache is released on main `903f7b4`. Discovery
+stale-while-revalidate is released on main `6a2fe3a` through exact-main run
+`33275183338`. P10-R08 is active on `feat/p10-operation-limiters`. Full
 Phase00–14 goal stays active.
 
 ## Verified
@@ -123,6 +124,42 @@ fallback, zero broker lag, replay, isolation, restart recovery and cleanup0.
 Discovery99/99, telemetry11/11, Web111/111 and real Redis also pass. The Web stale
 path remains byte-identical after rebase, so browser1/1 carries forward.
 
+P10-R08 now owns the remaining Phase10 requirements. Its implementation places
+Redis-backed token buckets after current Engagement owner authorization and
+idempotency replay, partitioned by operation and an account pseudonym, with a
+bounded process-local outage/hot-key shield. Discovery search has a separate
+two-active/one-waiter/100-ms bulkhead. Redis remains disposable; final
+GraphQL/router identity and workload calibration remains Phase13. Initial
+protected run33277368515 passed every job and real fixture at exact6719bda. Its
+three P2 review findings are corrected together at exactade7379: same-key
+mutation work is serialized before receipt/rate admission, Engagement retry
+timing is in the GraphQL payload, and Discovery saturation is a public payload
+code. Redis18/18, telemetry12/12, Engagement123/123, Discovery105/105 and
+Web111/111 focused suites pass. The corrected complete candidate passes73/73,
+48 cached,in73.641 seconds. Protected run33279111820 then passed all required
+jobs and the corrected real fixtures at exact041c75e. Confirmation discussion
+3887901456 found one remaining blocking boundary: different Engagement replicas
+could each charge the shared bucket before PostgreSQL serialized the receipt.
+Exact c5ea7c8 changes the Redis decision to one v2 bucket plus one finite atomic
+admission-digest marker. Two limiter/recorder instances now make two admission
+calls but one charge, while PostgreSQL still produces one receipt/event/effect.
+Redis18/18, Engagement124/124, scoped static checks and the corrected affected
+gate pass73/73,44 cached,in61.854 seconds. The Redis script/key changed, so one
+protected real-dependency repeat and the permitted blocking-boundary confirmation
+remain.
+The local Docker daemon remains unavailable; no repeated daemon/WSL probe is
+authorized or needed.
+
+Confirmation at `aa5e6af` found discussion3887956537: the shared admission identity
+also needs the canonical request digest. The correction binds both Engagement
+operations to that digest while preserving key-only local conflict ordering.
+Engagement126/126 passes, including unsaved changed-payload and concurrent
+conflict regressions. The extended real Redis fixture exercises two writers,
+exact retries and distinct payloads without durable receipts. Its protected
+execution remains pending. The corrected candidate passes73/73,56 cached,in48.173
+seconds. Prior protected run33280768684 passed at aa5e6af, including the two-key
+Lua proof and PostgreSQL outage/replica fixtures; it predates the digest correction.
+
 ## Historical Phase 09 corrections
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
@@ -169,16 +206,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Discovery stale-while-revalidate is implemented only on the local candidate and
-is not published or released. Operation-specific Redis rate
-limiting, expensive-path concurrency limits, the mixed outage/hot-key closeout
-and Phase10 release are not implemented. Hosted deployment remains Phase14.
+The request-digest correction's protected gate, confirmation, release
+evidence, merge, exact-main CI and Phase10 closeout remain. Hosted
+deployment remains Phase14.
 
 ## Next outcome
 
-Finish the P10-R04 Discovery candidate checkpoint, publish one PR, complete its
-initial review and protected CI, remediate only defined blockers, confirm,
-squash-merge and verify exact-main CI. Then activate P10-R08 from clean main.
+Publish the request-digest correction with its evidence checkpoint to PR40, run
+protected fixtures and the permitted blocking-boundary confirmation, then release P10-R08
+and mark Phase 10 complete after exact-main gates.
 
 ## Runtime and recovery
 

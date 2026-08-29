@@ -2,6 +2,61 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Operation admission candidate implementation
+
+### Completed
+
+- Implemented the bounded Redis-server-time token bucket, exact policy/reply
+  validation and atomic recovery of malformed, wrong-type, future, non-expiring
+  and excessive-TTL state.
+- Added Engagement account-operation admission after current owner and receipt
+  replay, a 1,024-partition local outage/hot-key shield, additive
+  `LIMIT_EXCEEDED` results and non-critical Redis lifecycle.
+- Added the Discovery two-active/one-waiter/100-ms search bulkhead without making
+  home rails wait for search capacity, plus finite limiter telemetry.
+- Redis18/18, telemetry12/12, corrected Engagement123/123, Discovery105/105 and
+  Web111/111 pass. The initial non-Docker candidate gate passed 73/73 after
+  correcting one obsolete Catalog Redis mock and strict lint findings.
+- The disposable real Redis/PostgreSQL fixtures are implemented. One local Redis
+  attempt found Docker unavailable, so no repeated Docker/WSL loop was run.
+- Protected run33277368515 passed all required jobs and real fixtures at exact
+  6719bda. Initial review then found three P2 public-contract blockers.
+- Exact ade7379 batches the remediation: bounded same-key serialization prevents
+  identical retries spending multiple tokens; Engagement exposes bounded
+  `retryAfterMs`; Discovery exposes `LIMIT_EXCEEDED` through the public payload.
+  Engagement123/123, Discovery105/105 and Web111/111 pass. The corrected complete
+  candidate passes73/73,48 cached,in73.641 seconds.
+- Protected run33279111820 passed all jobs and corrected real fixtures at exact
+  041c75e. Confirmation discussion3887901456 found that process-local ordering
+  did not prevent duplicate charges across Engagement replicas.
+- Exact c5ea7c8 adds one finite v2 admission marker to the atomic Redis bucket
+  decision. Separate limiter/recorder replicas now reuse one charge while
+  PostgreSQL remains the receipt/effect owner. Redis18/18, Engagement124/124,
+  scoped static checks and the affected73/73 gate pass,44 cached,in61.854 seconds.
+- Confirmed discussion3887956537 at `aa5e6af`; bound both Engagement admission
+  digests to the canonical payload without changing key-only local ordering.
+  Engagement126/126 passes, covering unsaved changed payloads across replicas and
+  concurrent same-key conflicts after one effect. The extended two-writer real
+  Redis fixture awaits hosted execution; no local Docker/WSL probe was repeated.
+
+### Evidence
+
+- Local `pnpm check:changed`: 73/73 tasks passed.
+- Request-digest candidate attempts stopped on session-entry structure and the
+  500-heading document bound. This continuation is consolidated into its existing
+  work-item entry before the corrected cached gate; no check is weakened.
+- Corrected request-digest candidate passes73/73,56 cached,in48.173 seconds.
+  Prior protected run33280768684 passed at aa5e6af, including real Redis two-key
+  atomicity and PostgreSQL outage/replica proof; the new digest still needs CI.
+- Generated supergraph: compatibility base `6a2fe3a`, eight artifacts, manifest
+  SHA-256 `d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303`.
+
+### Next action
+
+Publish the request-digest correction plus this checkpoint, run protected real
+fixtures, resolve discussion3887956537 and request the permitted
+blocking-boundary confirmation before release.
+
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 
 ### Completed
@@ -2442,23 +2497,23 @@ Execute P00-R08 by adding bounded `.ai/` consistency checks to the normal contri
 
 Confirm the configured GitHub identity and target absence, then create and audit the authorized public repository without claiming settings before they are observed.
 
-## 2026-08-26 — Efficient and secure CI foundation
+**Historical checkpoint — 2026-08-26 — Efficient and secure CI foundation**
 
-### Completed
+**Completed**
 
 - Added one least-privilege GitHub Actions workflow for pull requests, `main` pushes, and manual diagnosis with concurrency cancellation and one stable `CI required` result.
 - Added fail-safe path classification, a dependency-free redacting repository and staged-index secret scanner, a workflow-policy validator, and focused adverse tests.
 - Pinned every external action to a reviewed immutable commit, kept frozen installation authoritative over cache restoration, and added high-severity registry audit, pull-request dependency and license review, and bounded weekly Dependabot groups.
 - Hardened the aggregate decision against unexpected skipped jobs and made source deletions select the complete quality path.
 
-### Evidence
+**Evidence**
 
 - Passed checksum-verified actionlint `1.7.12` with zero workflow error, 13 focused CI-policy/classification tests, 6 secret-scanner tests, and 27 dependency-free governance tests.
 - Passed frozen installation without changing manifests, the forced sixteen-task graph with 52 focused tests in `4.94` seconds of Turbo task time, and the registry audit with no known vulnerability.
 - Verified 127 Markdown documents, 237 local links, zero secret finding, and zero CI-policy violation; hosted workflow and repository protections remain deliberately unclaimed until publication.
 - Raw evidence: `evidence/phase-00/ci-security-foundation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R07 by adding contribution governance and repository templates before the authorized public repository is created and audited.
 

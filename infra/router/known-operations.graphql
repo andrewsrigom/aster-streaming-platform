@@ -253,6 +253,7 @@ mutation RecordProgress($input: RecordProgressInput!) {
   recordProgress(input: $input) {
     code
     correlationId
+    retryAfterMs
     progress {
       id
       profileId
@@ -330,6 +331,7 @@ mutation SetWatchlist($input: SetWatchlistInput!) {
   setWatchlist(input: $input) {
     code
     correlationId
+    retryAfterMs
     change {
       id
       profileId

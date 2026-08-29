@@ -97,6 +97,21 @@ Discovery admission. TTL, stale age, key variants, value size, coalescing
 capacity and lease deadlines are fixed reviewed code policy, not runtime
 overrides.
 
+## Engagement operation admission runtime
+
+Engagement always applies the bounded process-local account/operation shield
+from [ADR-0039](../adr/0039-operation-admission-and-redis-degradation.md).
+`ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED` accepts only `true` or `false`; omission or
+`false` keeps local-only admission. `true` requires server-only `REDIS_URL` and
+adds the atomic cross-instance Redis decision. Redis readiness is observed but
+non-critical, and outage keeps the local bound without changing PostgreSQL
+authorization, transaction or acknowledgement. Bucket policies, state TTL, key
+shape, finite admission-marker TTL and local cardinality are code-owned and
+cannot be widened by runtime configuration. One authorized idempotency admission,
+including its canonical request digest,
+charges the shared v2 bucket once across replicas; PostgreSQL remains the receipt
+and effect authority.
+
 ## Configuration classes
 
 ### Build-time public

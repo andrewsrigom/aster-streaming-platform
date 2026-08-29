@@ -164,6 +164,7 @@ enum DiscoverySearchCode @join__type(graph: DISCOVERY) {
   INVALID_INPUT @join__enumValue(graph: DISCOVERY)
   CURSOR_EXPIRED @join__enumValue(graph: DISCOVERY)
   STALE @join__enumValue(graph: DISCOVERY)
+  LIMIT_EXCEEDED @join__enumValue(graph: DISCOVERY)
   UNAVAILABLE @join__enumValue(graph: DISCOVERY)
   CANCELLED @join__enumValue(graph: DISCOVERY)
   INDETERMINATE @join__enumValue(graph: DISCOVERY)
@@ -382,6 +383,7 @@ enum ProgressCode @join__type(graph: ENGAGEMENT) {
   STALE @join__enumValue(graph: ENGAGEMENT)
   CONFLICT @join__enumValue(graph: ENGAGEMENT)
   BACKPRESSURE @join__enumValue(graph: ENGAGEMENT)
+  LIMIT_EXCEEDED @join__enumValue(graph: ENGAGEMENT)
   UNAVAILABLE @join__enumValue(graph: ENGAGEMENT)
   CANCELLED @join__enumValue(graph: ENGAGEMENT)
   INDETERMINATE @join__enumValue(graph: ENGAGEMENT)
@@ -411,6 +413,7 @@ type ProgressPagePayload @join__type(graph: ENGAGEMENT) {
 type ProgressPayload @join__type(graph: ENGAGEMENT) {
   code: ProgressCode!
   correlationId: ID!
+  retryAfterMs: Int
   progress: Progress
 }
 
@@ -510,6 +513,7 @@ enum WatchlistCode @join__type(graph: ENGAGEMENT) {
   NOT_VISIBLE @join__enumValue(graph: ENGAGEMENT)
   CONFLICT @join__enumValue(graph: ENGAGEMENT)
   BACKPRESSURE @join__enumValue(graph: ENGAGEMENT)
+  LIMIT_EXCEEDED @join__enumValue(graph: ENGAGEMENT)
   UNAVAILABLE @join__enumValue(graph: ENGAGEMENT)
   CANCELLED @join__enumValue(graph: ENGAGEMENT)
   INDETERMINATE @join__enumValue(graph: ENGAGEMENT)
@@ -542,5 +546,6 @@ type WatchlistPagePayload @join__type(graph: ENGAGEMENT) {
 type WatchlistPayload @join__type(graph: ENGAGEMENT) {
   code: WatchlistCode!
   correlationId: ID!
+  retryAfterMs: Int
   change: WatchlistChange
 }

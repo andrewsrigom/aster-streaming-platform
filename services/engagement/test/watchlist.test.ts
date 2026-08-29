@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createWatchlistWriter } from "../src/application/set-watchlist.js";
 import {
   advanceWatchlist,
   createWatchlistEvent,
@@ -99,6 +100,108 @@ test("same-key replay survives a later removal and Catalog outage without anothe
   assert.equal(f.calls.transaction, 2);
   assert.equal(f.calls.identity, 3);
   assert.equal(f.calls.catalog.length, 1);
+});
+
+test("watchlist admission follows owner and replay but precedes Catalog and persistence", async () => {
+  const rejected = watchlistFixture();
+  let admissions = 0;
+  const writer = createWatchlistWriter({
+    ...rejected.ports,
+    limiter: {
+      admit: (_operation, accountId, admissionId) => {
+        admissions++;
+        assert.equal(accountId, id(1));
+        assert.equal(
+          admissionId,
+          rejected.ports.digest(
+            `${rejected.ports.digest(`set_watchlist\0${id(1)}\0${id(2)}\0${id(4)}`)}\0${rejected.ports.digest(watchlistRequestPayload(input()))}`,
+          ),
+        );
+        return Promise.resolve({ status: "rejected", retryAfterMs: 1_000 });
+      },
+    },
+  });
+  assert.deepEqual(await writer.set(input(), rejected.request), {
+    status: "limit_exceeded",
+    retryAfterMs: 1_000,
+  });
+  assert.equal(admissions, 1);
+  assert.equal(rejected.calls.receipt, 1);
+  assert.equal(rejected.calls.catalog.length, 0);
+  assert.equal(rejected.calls.transaction, 0);
+
+  const replayed = watchlistFixture();
+  const first = await replayed.writer.set(input(), replayed.request);
+  const replayWriter = createWatchlistWriter({
+    ...replayed.ports,
+    limiter: {
+      admit: () => {
+        throw new Error("must not admit replay");
+      },
+    },
+  });
+  assert.deepEqual(await replayWriter.set(input(), replayed.request), first);
+});
+
+test("concurrent identical watchlist retries consume one admission and replay one effect", async () => {
+  const f = watchlistFixture();
+  const entered = Promise.withResolvers<undefined>();
+  const release = Promise.withResolvers<undefined>();
+  let admissions = 0;
+  const writer = createWatchlistWriter({
+    ...f.ports,
+    limiter: {
+      admit: async () => {
+        admissions++;
+        entered.resolve(undefined);
+        await release.promise;
+        return { status: "allowed" };
+      },
+    },
+  });
+  const attempts = Array.from({ length: 5 }, () => writer.set(input(), f.request));
+  const conflict = writer.set(input({ present: false }), f.request);
+  await entered.promise;
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(admissions, 1);
+  release.resolve(undefined);
+  const results = await Promise.all(attempts);
+  assert.ok(results.every((result) => result.status === "completed"));
+  assert.ok(results.every((result) => JSON.stringify(result) === JSON.stringify(results[0])));
+  assert.equal(admissions, 1);
+  assert.equal(f.calls.catalog.length, 1);
+  assert.equal(f.calls.transaction, 1);
+  assert.equal(f.state().events.length, 1);
+  assert.equal((await conflict).status, "conflict");
+  assert.equal(admissions, 1);
+});
+
+test("unsaved watchlist retries share admission only for the same canonical payload across replicas", async () => {
+  const f = watchlistFixture();
+  f.retired.add(id(3));
+  f.retired.add(id(7));
+  const admissions: string[] = [];
+  const ports = {
+    ...f.ports,
+    limiter: {
+      admit: (_operation: string, _accountId: string, admissionId: string) => {
+        admissions.push(admissionId);
+        return Promise.resolve({ status: "allowed" as const });
+      },
+    },
+  };
+  const first = createWatchlistWriter(ports);
+  const second = createWatchlistWriter(ports);
+  assert.equal((await first.set(input(), f.request)).status, "not_visible");
+  assert.equal((await second.set(input(), f.request)).status, "not_visible");
+  assert.equal((await first.set(input({ titleId: id(7) }), f.request)).status, "not_visible");
+  assert.equal(f.state().receipts.length, 0);
+  assert.equal((await second.set(input({ present: false }), f.request)).status, "completed");
+  assert.equal(admissions.length, 4);
+  assert.equal(admissions[0], admissions[1]);
+  assert.equal(new Set(admissions).size, 3);
+  assert.equal(f.state().receipts.length, 1);
+  assert.equal(f.calls.transaction, 1);
 });
 
 test("profile-scoped key conflicts across title and action before Catalog access", async () => {

@@ -97,6 +97,26 @@ export const ASTER_CACHE_WAITER_BUCKETS = Object.freeze([
   "five_plus",
 ] as const);
 
+export const ASTER_OPERATION_LIMITERS = Object.freeze(["rate", "concurrency"] as const);
+
+export const ASTER_LIMITED_OPERATIONS = Object.freeze([
+  "record_progress",
+  "set_watchlist",
+  "search_titles",
+] as const);
+
+export const ASTER_OPERATION_LIMIT_OUTCOMES = Object.freeze([
+  "allowed",
+  "rejected",
+  "local_fallback",
+  "recovered",
+  "queued",
+  "cancelled",
+  "closed",
+] as const);
+
+export const ASTER_OPERATION_LIMIT_QUEUE_BUCKETS = Object.freeze(["none", "one"] as const);
+
 export type AsterTelemetryEnvironment = (typeof ASTER_TELEMETRY_ENVIRONMENTS)[number];
 export type AsterHttpMethod = (typeof ASTER_HTTP_METHODS)[number];
 export type AsterHttpRoute = (typeof ASTER_HTTP_ROUTES)[number];
@@ -108,6 +128,10 @@ export type AsterDiscoveryRailOutcome = (typeof ASTER_DISCOVERY_RAIL_OUTCOMES)[n
 export type AsterCacheFamily = (typeof ASTER_CACHE_FAMILIES)[number];
 export type AsterCacheOutcome = (typeof ASTER_CACHE_OUTCOMES)[number];
 export type AsterCacheWaiterBucket = (typeof ASTER_CACHE_WAITER_BUCKETS)[number];
+export type AsterOperationLimiter = (typeof ASTER_OPERATION_LIMITERS)[number];
+export type AsterLimitedOperation = (typeof ASTER_LIMITED_OPERATIONS)[number];
+export type AsterOperationLimitOutcome = (typeof ASTER_OPERATION_LIMIT_OUTCOMES)[number];
+export type AsterOperationLimitQueueBucket = (typeof ASTER_OPERATION_LIMIT_QUEUE_BUCKETS)[number];
 
 export type AsterTelemetryExportOptions =
   | Readonly<{ mode: "none" }>
@@ -207,6 +231,14 @@ export interface AsterCacheMetricInput {
   readonly waiterBucket?: AsterCacheWaiterBucket;
 }
 
+export interface AsterOperationLimitMetricInput {
+  readonly limiter: AsterOperationLimiter;
+  readonly operation: AsterLimitedOperation;
+  readonly outcome: AsterOperationLimitOutcome;
+  readonly durationMs: number;
+  readonly queueBucket?: AsterOperationLimitQueueBucket;
+}
+
 export type AsterRecordMetricResult =
   | Readonly<{ status: "recorded" }>
   | Readonly<{ status: "rejected"; reason: "invalid_dimension" | "telemetry_closed" }>;
@@ -247,6 +279,7 @@ export interface AsterTelemetry {
   recordDiscoveryRail?(input: AsterDiscoveryRailMetricInput): AsterRecordMetricResult;
   recordDiscoverySearchSample?(input: AsterDiscoverySearchSampleInput): AsterRecordMetricResult;
   recordCacheOperation?(input: AsterCacheMetricInput): AsterRecordMetricResult;
+  recordOperationLimit?(input: AsterOperationLimitMetricInput): AsterRecordMetricResult;
   collect(): Promise<AsterMetricCollectionResult>;
   exportHealth(): AsterTelemetryExportHealth;
   forceFlush(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;

@@ -49,6 +49,7 @@ export function SearchResults({ variables }: { variables: SearchVariables }) {
     available ||
     result?.code === "CURSOR_EXPIRED" ||
     result?.code === "STALE" ||
+    result?.code === "LIMIT_EXCEEDED" ||
     result?.code === "INVALID_INPUT";
   const connection = available ? result.connection : null;
   const startHref = `/search?q=${encodeURIComponent(variables.query)}&locale=${variables.locale}`;
@@ -89,6 +90,8 @@ export function SearchResults({ variables }: { variables: SearchVariables }) {
         </p>
       ) : result?.code === "STALE" ? (
         <p role="alert">Search is stale and is not being presented as current.</p>
+      ) : result?.code === "LIMIT_EXCEEDED" ? (
+        <p role="alert">Search is busy. Try again shortly.</p>
       ) : result?.code === "INVALID_INPUT" ? (
         <p role="alert">The search request was rejected. Check the query and start again.</p>
       ) : null}

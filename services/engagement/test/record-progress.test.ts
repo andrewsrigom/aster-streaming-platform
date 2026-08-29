@@ -4,6 +4,7 @@ import test from "node:test";
 import { createProgressRecorder } from "../src/application/record-progress.js";
 import {
   DEFAULT_PROGRESS_POLICY,
+  progressRequestPayload,
   type ProgressInput,
   type ProgressState,
 } from "../src/domain/progress.js";
@@ -204,6 +205,107 @@ test("exact replay survives playback expiry and returns the original result even
   assert.equal(f.calls.identity, 3);
   assert.equal(f.state().current?.sequence, 2);
   assert.equal(f.state().events.length, 2);
+});
+
+test("operation admission follows owner and replay but precedes Playback and persistence", async () => {
+  const rejected = fixture();
+  let admissions = 0;
+  const recorder = createProgressRecorder({
+    ...rejected.ports,
+    limiter: {
+      admit: (_operation, accountId, admissionId) => {
+        admissions++;
+        assert.equal(accountId, id(2));
+        assert.equal(
+          admissionId,
+          rejected.ports.digest(
+            `${rejected.ports.digest(`record_progress\0${id(2)}\0${id(3)}\0${id(6)}`)}\0${rejected.ports.digest(progressRequestPayload(input()))}`,
+          ),
+        );
+        return Promise.resolve({ status: "rejected", retryAfterMs: 250 });
+      },
+    },
+  });
+  assert.deepEqual(await recorder.record(input(), rejected.request), {
+    status: "limit_exceeded",
+    retryAfterMs: 250,
+  });
+  assert.equal(admissions, 1);
+  assert.deepEqual(rejected.calls, { identity: 1, playback: 0, receipt: 1, transaction: 0 });
+
+  const replayed = fixture();
+  const first = await replayed.recorder.record(input(), replayed.request);
+  const replayRecorder = createProgressRecorder({
+    ...replayed.ports,
+    limiter: {
+      admit: () => {
+        throw new Error("must not admit replay");
+      },
+    },
+  });
+  assert.deepEqual(await replayRecorder.record(input(), replayed.request), first);
+});
+
+test("concurrent identical progress retries consume one admission and replay one effect", async () => {
+  const f = fixture();
+  const entered = Promise.withResolvers<undefined>();
+  const release = Promise.withResolvers<undefined>();
+  let admissions = 0;
+  const recorder = createProgressRecorder({
+    ...f.ports,
+    limiter: {
+      admit: async () => {
+        admissions++;
+        entered.resolve(undefined);
+        await release.promise;
+        return { status: "allowed" };
+      },
+    },
+  });
+  const attempts = Array.from({ length: 5 }, () => recorder.record(input(), f.request));
+  const conflict = recorder.record(input({ positionMs: 2000 }), f.request);
+  await entered.promise;
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(admissions, 1);
+  release.resolve(undefined);
+  const results = await Promise.all(attempts);
+  assert.ok(results.every((result) => result.status === "completed"));
+  assert.ok(results.every((result) => JSON.stringify(result) === JSON.stringify(results[0])));
+  assert.equal(admissions, 1);
+  assert.equal(f.calls.playback, 1);
+  assert.equal(f.calls.transaction, 1);
+  assert.equal(f.state().events.length, 1);
+  assert.equal((await conflict).status, "conflict");
+  assert.equal(admissions, 1);
+});
+
+test("unsaved progress retries share admission only for the same canonical payload across replicas", async () => {
+  const f = fixture();
+  const admissions: string[] = [];
+  const ports: ProgressPorts = {
+    ...f.ports,
+    playback: { inspect: () => Promise.resolve({ status: "not_playable" }) },
+    limiter: {
+      admit: (_operation, _accountId, admissionId) => {
+        admissions.push(admissionId);
+        return Promise.resolve({ status: "allowed" });
+      },
+    },
+  };
+  const first = createProgressRecorder(ports);
+  const second = createProgressRecorder(ports);
+  const attempts = [input(), input(), input({ positionMs: 2000 }), input({ titleId: id(40) })];
+  for (const [index, attempt] of attempts.entries()) {
+    assert.equal(
+      (await (index % 2 === 0 ? first : second).record(attempt, f.request)).status,
+      "not_playable",
+    );
+  }
+  assert.equal(admissions.length, 4);
+  assert.equal(admissions[0], admissions[1]);
+  assert.equal(new Set(admissions).size, 3);
+  assert.equal(f.state().receipts.length, 0);
+  assert.equal(f.calls.transaction, 0);
 });
 
 test("same key with changed raw payload conflicts even when positions clamp to the same value", async () => {

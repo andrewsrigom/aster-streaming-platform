@@ -168,6 +168,7 @@ export interface SearchData {
       | "CURSOR_EXPIRED"
       | "INVALID_INPUT"
       | "STALE"
+      | "LIMIT_EXCEEDED"
       | "UNAVAILABLE"
       | "CANCELLED"
       | "INDETERMINATE";
@@ -605,6 +606,7 @@ export function readSearchData(value: unknown): SearchData {
       "CURSOR_EXPIRED",
       "INVALID_INPUT",
       "STALE",
+      "LIMIT_EXCEEDED",
       "UNAVAILABLE",
       "CANCELLED",
       "INDETERMINATE",

@@ -17,6 +17,7 @@ export interface SavedProgress {
 export interface ProgressOutcome {
   readonly code: ProgressSaveResult["code"];
   readonly correlationId: string;
+  readonly retryAfterMs?: number;
   readonly progress: SavedProgress | null;
 }
 export interface ProgressPair {
@@ -53,6 +54,7 @@ export const RECORD_PROGRESS: TypedDocumentNode<
     recordProgress(input: $input) {
       code
       correlationId
+      retryAfterMs
       progress {
         id
         profileId
@@ -141,7 +143,11 @@ export function readProgressOutcome(value: unknown, command: ProgressCommand): P
   const input = record(value);
   const code = input["code"];
   const correlationId = identifier(input["correlationId"]);
+  const retryAfterMs = input["retryAfterMs"];
   if (code === "COMPLETED") {
+    if (retryAfterMs !== null && retryAfterMs !== undefined) {
+      throw new Error("Invalid progress retry policy.");
+    }
     const progress = readSavedProgress(input["progress"], command);
     if (
       progress.sequence !== command.sequence ||
@@ -162,11 +168,18 @@ export function readProgressOutcome(value: unknown, command: ProgressCommand): P
       code !== "STALE" &&
       code !== "CONFLICT" &&
       code !== "BACKPRESSURE" &&
+      code !== "LIMIT_EXCEEDED" &&
       code !== "UNAVAILABLE" &&
       code !== "CANCELLED" &&
       code !== "INDETERMINATE")
   ) {
     throw new Error("Invalid progress outcome.");
+  }
+  if (code === "LIMIT_EXCEEDED") {
+    return { code, correlationId, retryAfterMs: integer(retryAfterMs, 1, 30_000), progress: null };
+  }
+  if (retryAfterMs !== null && retryAfterMs !== undefined) {
+    throw new Error("Invalid progress retry policy.");
   }
   return { code, correlationId, progress: null };
 }

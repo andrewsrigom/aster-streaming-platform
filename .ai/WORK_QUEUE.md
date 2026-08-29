@@ -50,17 +50,23 @@ real Redis pass with the seeded 24-hour lease replaced and cleanup0. The complet
 affected gate passes 73/73 with 51 cached in 107.438 seconds; only hosted gates
 remained at that checkpoint.
 
-P10-R04 is the sole `IN_PROGRESS` item on `feat/p10-discovery-swr`, rebased onto
-released main `903f7b4`. It owns bounded Discovery home-page stale serving,
-background refresh, maximum age, explicit fallback and finite metrics. Exact
-PR39 initial automated review completed without findings. The complete local
-review corrected cross-time title expiry, best-effort cache writes and
-all-settled consumer shutdown at exact `5a5f5e2`. Discovery103/103 and the
-corrected complete affected gate pass73/73 with56 cached in106.071 seconds;
-exact `8faf35a` passes the eleven-service PostgreSQL/Router runtime with
-configured Redis absent, healthy Discovery fallback and cleanup0. Telemetry11/11,
-Web111/111, browser1/1 carry-forward and real Redis also pass. Corrected
-publication is next.
+P10-R04 is DONE. PR39 exact `601cc95` passed protected run `33274397440` and clean
+confirmation, squash-merged without bypass as main `6a2fe3a`, and exact-main run
+`33275183338` passed. Its Discovery103/103, affected73/73, real Redis, browser,
+eleven-service outage and release evidence remain linked under
+`evidence/phase-10`. P10-R08 is the sole `IN_PROGRESS` item on
+`feat/p10-operation-limiters`, based exactly on that release. Initial PR40
+run33277368515 passed; exactade7379 corrects its three initial review blockers.
+Protected run33279111820 passed exact041c75e; confirmation discussion3887901456
+then found duplicate token charges across Engagement replicas. Exact c5ea7c8
+atomically deduplicates the finite shared admission marker. Redis18/18,
+Engagement124/124 and affected73/73 pass; one protected real-dependency repeat
+and the permitted blocking-boundary confirmation remain before merge.
+
+Confirmation at `aa5e6af` found discussion3887956537. The local correction adds
+the canonical request digest to shared admission identity, retaining key-only
+local ordering. Engagement126/126 and the corrected73/73 candidate pass. Hosted
+gates and one blocking-boundary confirmation remain before P10-R08 can close.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
@@ -134,8 +140,8 @@ Historical stashes are superseded.
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | DONE |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | DONE |
 | 50 | Implement rights-safe Catalog cache-aside, jitter, coalescing, lease and metrics | P10-R01 | DONE |
-| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | IN_PROGRESS |
-| 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | READY |
+| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | DONE |
+| 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | IN_PROGRESS |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

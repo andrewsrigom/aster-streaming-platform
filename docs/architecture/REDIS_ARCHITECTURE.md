@@ -93,7 +93,22 @@ Progress mutation invalidates or version-bumps the cache. Cache loss causes reco
 
 ## Rate limiting
 
-Use distinct policies:
+The implemented representative policy limits Engagement viewer writes only:
+
+- `record_progress`: twelve tokens, four tokens/second;
+- `set_watchlist`: four tokens, one token/second.
+
+Both use a thirty-second state TTL. Admission follows current Identity account
+authorization and exact idempotency replay. The Redis key contains only the
+environment, fixed operation and SHA-256 account pseudonym. One server-time Lua
+command atomically recovers malformed, wrong-type, future, non-expiring or
+excessive-TTL state, consumes integer milli-tokens and returns bounded decision
+metadata. A 1,024-partition local shield applies first; its rejection avoids a
+Redis command, while Redis outage can use only a locally admitted decision.
+Redis never authorizes or acknowledges the durable mutation. Exact behavior and
+trade-offs are in [ADR-0039](../adr/0039-operation-admission-and-redis-degradation.md).
+
+Future phases may select distinct policies for:
 
 - anonymous browse;
 - authenticated queries;
@@ -103,13 +118,12 @@ Use distinct policies:
 - operator operations;
 - media-processing administration.
 
-A token-bucket or sliding-window Lua script returns allowed state and retry metadata atomically.
-
-Fail-open or fail-closed is chosen per operation:
+Fail-open or fail-closed remains an operation-owned choice:
 
 - public catalog browse may fail open with local emergency bounds;
 - operator mutations fail closed;
-- playback session uses a conservative local limit if Redis is unavailable;
+- current Engagement viewer writes use the documented bounded local fallback;
+- playback-session policy remains future work;
 - GraphQL cost and concurrency limits still apply regardless of Redis.
 
 ## Request coalescing

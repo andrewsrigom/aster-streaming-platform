@@ -21,6 +21,7 @@ export type ProgressSaveResult =
         | "STALE"
         | "CONFLICT"
         | "BACKPRESSURE"
+        | "LIMIT_EXCEEDED"
         | "UNAVAILABLE"
         | "CANCELLED"
         | "INDETERMINATE";
@@ -184,9 +185,13 @@ export function createProgressReporter(options: {
       arm(flushRequested);
       return;
     }
-    const retryable = ["UNAVAILABLE", "INDETERMINATE", "BACKPRESSURE", "CANCELLED"].includes(
-      result.code,
-    );
+    const retryable = [
+      "UNAVAILABLE",
+      "INDETERMINATE",
+      "BACKPRESSURE",
+      "LIMIT_EXCEEDED",
+      "CANCELLED",
+    ].includes(result.code);
     if (retryable && attempts < 2) {
       notify("pending");
       arm(true);

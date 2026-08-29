@@ -1,8 +1,8 @@
 # Phase 10 Evidence Index
 
-Status: Catalog cache is released through PR37 and exact-main CI. Discovery stale
-cache implementation and final73/73 local candidate evidence pass; publication remains.
-Phase 10 stays open for Discovery release and the operation-limiter closeout.
+Status: Catalog cache and Discovery stale cache are released through protected
+review, squash and exact-main CI. Phase 10 stays open only for the
+operation-limiter closeout.
 
 ## Active slice
 
@@ -15,6 +15,11 @@ P10-R04 adds a bounded stale-while-revalidate cache to the Discovery public-home
 read model. [ADR-0038](../../docs/adr/0038-bounded-discovery-home-stale-cache.md)
 defines its twelve key variants, 16-KiB envelope, age and visibility bounds,
 background lifecycle, explicit stale client shape and PostgreSQL fallback.
+
+P10-R08/R09/R10/R11/R12 add account-partitioned Engagement write admission and
+a search-only Discovery bulkhead. [ADR-0039](../../docs/adr/0039-operation-admission-and-redis-degradation.md)
+defines the atomic server-time Redis bucket, bounded local degraded mode,
+two-active/one-waiter search policy, finite telemetry and durable-state boundary.
 
 ## Candidate artifacts
 
@@ -37,10 +42,17 @@ background lifecycle, explicit stale client shape and PostgreSQL fallback.
 - [Discovery browser](discovery-swr-browser.txt): stale rails and visible refresh
   warning pass 1/1 through the production Web client; byte-identical source and
   the rebased candidate gate support carry-forward.
+- [Discovery release](discovery-swr-release.txt): protected exact-head acceptance,
+  clean confirmation, squash and exact-main CI.
+- [Operation-limiter contract](operation-limiters-contract.txt): focused suites,
+  finite policy boundaries, cross-replica admission correction and the complete
+  73/73 local candidate gate.
+- Operation-limiter Redis, PostgreSQL and release artifacts require one protected
+  repeat after the shared Redis admission-marker correction.
 
 Every artifact records the exact implementation commit, environment, command,
 workload, raw result, interpretation and limitations. Catalog has release
-evidence; Discovery artifacts support its local candidate only.
+evidence; both cache slices now have release evidence.
 
 Initial hosted review comment 3886890023 found one measurement boundary: an
 oversized projection bypassed storage but supplied a payload sample above the

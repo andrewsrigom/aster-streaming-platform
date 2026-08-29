@@ -1,0 +1,132 @@
+P10 operation admission contract checkpoint
+Date: 2026-08-29
+Status: request-digest remediation passes focused/candidate gates; protected repeat pending
+
+Source
+- Branch: feat/p10-operation-limiters
+- Released base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
+- Implementation candidate: baf02d2733590f80d6d39ce796483a7d69a4c4ab
+- Review remediation: ade7379e07438bb394af6131d5f9ac1111f5225d
+- Cross-replica remediation: c5ea7c8b243042fc897cd2fcd28e17e260d01f0b
+- Corrected candidate tree: 48682156685c68ed9fa102fd68c12f5b7df3ecc9
+- Request-digest correction parent: aa5e6af6546e5fc463fbc089d6dd11921f25cd5a
+- Corrected source Git blobs:
+  record-progress.ts: 375d44d98f8c92e54de7a183a0048b429427564e
+  set-watchlist.ts: 0804858ef61db77a828efccf5873c704f871e5a9
+  integration/operation-limiter-redis.ts: 4929e229c9212956bb2f82802d48635fca94970d
+- Generated compatibility base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
+- Generated manifest SHA-256:
+  d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303
+
+Environment
+- WSL2 Ubuntu-20.04, Linux 6.18.33.2-microsoft-standard-WSL2 x86_64
+- 6 logical CPUs; 11,962 MiB memory; 8,192 MiB swap
+- Node.js 24.19.0; pnpm 11.24.0
+
+Commands and raw results
+- @aster/redis build and tests: PASS, 18/18.
+- @aster/telemetry build and tests: PASS, 12/12.
+- @aster/engagement build and tests after remediation: PASS, 123/123.
+- @aster/discovery build and tests: PASS, 105/105.
+- @aster/web typecheck and tests after remediation: PASS, 111/111.
+- Root CI-policy tests: PASS, 33/33.
+- Root local-platform policy tests: PASS, 67/67.
+- pnpm check:changed: PASS, 73 successful of 73 total, 46 cached,
+  78.553 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- Corrected pnpm check:changed after review remediation: PASS, 73/73, 48 cached,
+  73.641 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- Cross-replica correction: @aster/redis PASS 18/18; @aster/engagement
+  PASS 124/124; scoped ESLint, Prettier and git diff check PASS.
+- Cross-replica corrected pnpm check:changed: PASS, 73/73, 44 cached,
+  61.854 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- Request-digest correction: pnpm --filter @aster/engagement build PASS;
+  pnpm --filter @aster/engagement test PASS 126/126 in 2303.69615 ms.
+  Both application regressions exercise the same key with different payloads
+  after a result with no durable receipt; exact payloads share a digest across
+  instances and changed payloads do not. Concurrent changed-payload callers
+  still wait for the key-only lane and return conflict after the first commit.
+- Corrected request-digest pnpm check:changed: PASS 73/73, 56 cached,
+  48.173 seconds. Two earlier attempts stopped on session-entry sections and the
+  documentation heading cap; consolidation into the existing work-item entry
+  corrected both without changing the validator or application source.
+- Prior protected run33280768684 passed every required job at exactaa5e6af.
+  Redis: 24 independent callers, 4 allowed/20 rejected; 24 identical callers,
+  1 charge/23 reuses; 5 malformed states recovered; 5 hot attempts/4 commands;
+  local outage fallback; exact fixture cleanup remaining0 in1725 ms.
+  PostgreSQL: crossReplicaLimiterCalls2, crossReplicaLimiterCharges1, effects1;
+  Redis outage durableProgress1/durableReceipts1/durableEvents1/exactReplayEffects1.
+  This run predates and does not verify the request-digest correction.
+- git diff --check, Prettier, ESLint, Knip, strict TypeScript, architecture,
+  security, documentation, repository memory and schema compatibility: PASS.
+- The implementation candidate was committed after the complete source gate.
+  Subsequent changes before that commit were repository-memory/evidence prose;
+  their dedicated documentation and repository-memory checks passed.
+- Protected run 33277368515 passed every required job at exact 6719bda,
+  including the real Redis and PostgreSQL fixtures. Its initial review produced
+  three P2 findings; exact ade7379 corrects all three. Corrected hosted gates are
+  intentionally not attributed to that earlier run.
+- Protected run 33279111820 passed every required job at exact 041c75e. Its real
+  Redis output recorded four charged/20 rejected independent attempts,
+  hotBurstRedisCommands 4 and local outage fallback; its PostgreSQL output
+  recorded one durable effect during Redis loss. Confirmation discussion
+  3887901456 then found that process-local same-key ordering did not coordinate
+  token charges across Engagement replicas. Exact c5ea7c8 adds one finite atomic
+  admission marker at the shared Redis boundary. Because the Redis script/key
+  changed, a new protected real-dependency run is required.
+
+Covered contract
+- One bounded Redis-server-time Lua decision uses integer milli-tokens, finite
+  expiry and strict input/reply validation.
+- Missing, malformed, wrong-type, future, non-expiring and excessive-TTL state
+  is recovered only at the exact limiter key.
+- Engagement partitions progress and watchlist policy by authorized account
+  pseudonym and operation after current owner plus idempotent replay checks.
+- A bounded/cancellable same-key lane serializes receipt inspection and rate
+  admission. Five concurrent progress retries and five concurrent watchlist
+  retries each consume one admission and produce/replay one durable effect.
+- The application derives the same bounded admission digest in separate recorder
+  instances. The Redis command atomically stores its finite marker only after an
+  allowed charge; a second adapter reuses that decision. Distinct admission
+  digests still consume or reject against the shared account-operation bucket.
+- The real PostgreSQL fixture now holds two recorder replicas after negative
+  receipt reads and requires two limiter calls, one limiter charge, one receipt,
+  one event and one durable progress result.
+- A 1,024-partition local shield bounds degraded admission and sheds a local hot
+  caller before another Redis command. Progress refills at four tokens/second;
+  watchlist refills at one token/second.
+- Redis failure cannot acknowledge a mutation. Existing PostgreSQL transaction,
+  receipt and outbox behavior remains authoritative.
+- Discovery search admits two active operations and one FIFO waiter for at most
+  100 milliseconds. Overflow is a portable `LIMIT_EXCEEDED` payload with no
+  source call. Home rails bypass that lane; cancellation and shutdown settle
+  waiters and release permits.
+- Metrics use only finite limiter, operation, outcome and queue buckets. Raw
+  account/profile IDs, pseudonyms, credentials and Redis keys are not labels.
+- Federation output additively exposes limit enum values and nullable Engagement
+  retry metadata. The versioned first-party operation inventory selects the new
+  retry fields.
+
+Local dependency limitation
+- The disposable real Redis command was attempted once after implementation and
+  stopped before container creation because the local Docker daemon was not
+  reachable through /var/run/docker.sock.
+- No repeated Docker/WSL restart or probe loop was run. The initial hosted fixture
+  passed; its corrected repeat is the pending real Redis/PostgreSQL boundary.
+
+Interpretation
+Confirmation discussion3887956537 at aa5e6af found that the shared marker omitted
+the canonical request digest. The local correction preserves the finite Redis
+algorithm and key-only ordering while binding the marker to that digest.
+Focused Engagement126/126 passes. The extended real Redis fixture now exercises
+two production watchlist writers with two exact retries and four changed title
+payloads under one key, all against hidden titles and without receipts. It
+requires six Redis commands, five Catalog calls and one shared rejection.
+The corrected candidate gate passes73/73. Protected extended-fixture execution
+and blocking-boundary confirmation still must pass before release.
+No unchanged Docker/WSL probe was repeated.
+
+Limitations
+- No hosted deployment, field SLO, arbitrary replica-count or production
+  capacity claim is made.
+- The representative limits are Phase 10 study policies. Phase 13 still owns
+  final public Router identity and workload-based GraphQL calibration.

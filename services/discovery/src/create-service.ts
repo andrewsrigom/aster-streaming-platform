@@ -239,6 +239,7 @@ export async function createDiscoveryService(
         },
       }),
       now: () => Math.floor(Date.now() / 1_000),
+      onLimit: (metric) => telemetry.recordOperationLimit?.(metric),
       onOperation: (trace) =>
         logger.info({
           event: "aster.discovery.graphql_completed",

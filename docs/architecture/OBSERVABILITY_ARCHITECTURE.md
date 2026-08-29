@@ -138,6 +138,8 @@ No Collector, scrape endpoint, log backend, trace SDK, retention policy, dashboa
 | `aster.cache.operation.duration` | `s` | cache family, finite outcome, optional waiter bucket |
 | `aster.cache.operation.outcomes` | `{operation}` | cache family, finite outcome, optional waiter bucket |
 | `aster.cache.payload.size` | `By` | cache family, finite outcome |
+| `aster.operation.limit.duration` | `s` | limiter kind, fixed operation, finite outcome, optional queue bucket |
+| `aster.operation.limit.outcomes` | `{operation}` | limiter kind, fixed operation, finite outcome, optional queue bucket |
 | `process.cpu.time` | `s` | CPU mode `user` or `system` |
 | `process.cpu.utilization` | `1` | CPU mode `user` or `system` |
 | `process.memory.usage` | `By` | none |

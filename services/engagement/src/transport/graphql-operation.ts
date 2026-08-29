@@ -56,7 +56,12 @@ const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = 
     watchlist: "WatchlistPage",
   },
   Mutation: { recordProgress: "Payload", setWatchlist: "WatchlistPayload" },
-  WatchlistPayload: { code: null, correlationId: null, change: "WatchlistChange" },
+  WatchlistPayload: {
+    code: null,
+    correlationId: null,
+    retryAfterMs: null,
+    change: "WatchlistChange",
+  },
   WatchlistChange: {
     id: null,
     profileId: null,
@@ -69,7 +74,7 @@ const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = 
   WatchlistConnection: { edges: "WatchlistEdge", pageInfo: "PageInfo" },
   WatchlistEdge: { cursor: null, node: "WatchlistEntry" },
   WatchlistEntry: { id: null, profileId: null, titleId: null, addedAt: null, title: "Title" },
-  Payload: { code: null, correlationId: null, progress: "Progress" },
+  Payload: { code: null, correlationId: null, retryAfterMs: null, progress: "Progress" },
   Progress: {
     id: null,
     profileId: null,
