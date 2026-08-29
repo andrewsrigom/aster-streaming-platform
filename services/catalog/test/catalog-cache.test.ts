@@ -145,6 +145,52 @@ test("a positive hit still checks the current PostgreSQL fence and skips the ful
   );
 });
 
+test("an oversized valid projection records a bypass without an invalid payload sample", async () => {
+  const base = publicCandidate();
+  const longText = "x".repeat(1_024);
+  const longUrl = `https://example.invalid/${"x".repeat(1_900)}`;
+  const oversized: PublicCatalogCandidate = {
+    ...base,
+    rights: {
+      ...(base.rights as Record<string, unknown>),
+      workTitle: longText,
+      creator: longText,
+      copyrightHolder: longText,
+      canonicalSourceUrl: longUrl,
+      licenseName: longText,
+      licenseUrl: longUrl,
+      attributionText: longText,
+      modificationNotice: longText,
+    },
+    metadata: {
+      ...(base.metadata as Record<string, unknown>),
+      localizations: ["en", "de", "es", "fr"].map((locale) => ({
+        locale,
+        title: "x".repeat(160),
+        synopsis: longText,
+      })),
+      credits: Array.from({ length: 16 }, () => ({
+        name: "x".repeat(128),
+        role: "x".repeat(64),
+      })),
+    },
+  };
+  const f = readerFixture([oversized]);
+
+  const result = await f.reader.findMany([id(1)], scope, signal());
+
+  assert.equal(result.status, "completed");
+  assert.equal(result.value.length, 1);
+  assert.equal(
+    f.cache.writes.some((value) => value.key.includes(":public-title:v1:")),
+    false,
+  );
+  assert.deepEqual(
+    f.observations.find((value) => value.outcome === "bypass"),
+    { outcome: "bypass", durationMs: 0 },
+  );
+});
+
 test("a retired title cannot be returned from a surviving positive cache entry", async () => {
   const f = readerFixture();
   assert.equal((await f.reader.findMany([id(1)], scope, signal())).status, "completed");

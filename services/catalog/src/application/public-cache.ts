@@ -398,7 +398,9 @@ export function createCachedCatalogPublicEntities(input: CacheOptions): CatalogP
     const value = JSON.stringify({ schema: 1, kind: "present", fence, cachedAt: scope.now, title });
     const bytes = Buffer.byteLength(value, "utf8");
     if (bytes > CATALOG_PUBLIC_CACHE_POLICY.maximumValueBytes) {
-      record({ outcome: "bypass", durationMs: 0, payloadBytes: bytes });
+      // Payload metrics describe values admitted to the bounded cache. The bypass
+      // outcome retains the rejected write without submitting an invalid sample.
+      record({ outcome: "bypass", durationMs: 0 });
       return;
     }
     const result = await input.cache.write(
