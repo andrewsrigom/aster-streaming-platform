@@ -91,7 +91,8 @@ media URLs. These measurements are not an SLO or popularity signal.
 The subgraph accepts one named root operation, a 16 KiB body, bounded
 parser/depth/alias/96-field/1024-cost limits and four active requests. Search has
 two active permits, one FIFO waiter and a 100-ms maximum wait; overflow or expiry
-returns `LIMIT_EXCEEDED`, while home rails do not enter that lane. The field
+returns `DiscoverySearchCode.LIMIT_EXCEEDED` with a null connection in the public
+GraphQL payload, while home rails do not enter that lane. The field
 budget includes Router's bounded entity metadata for all six
 possible rails. Application, owner-read, SQL and broker work receive finite
 deadlines and cancellation. Readiness requires schema version 3 and an active

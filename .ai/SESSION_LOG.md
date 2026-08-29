@@ -14,11 +14,18 @@ Append new entries at the top. Keep entries factual and concise.
   `LIMIT_EXCEEDED` results and non-critical Redis lifecycle.
 - Added the Discovery two-active/one-waiter/100-ms search bulkhead without making
   home rails wait for search capacity, plus finite limiter telemetry.
-- Redis18/18, telemetry12/12, Engagement119/119 and Discovery105/105 pass. The
-  complete non-Docker candidate gate passes 73/73 after correcting one obsolete
-  Catalog Redis mock and strict lint findings.
+- Redis18/18, telemetry12/12, corrected Engagement123/123, Discovery105/105 and
+  Web111/111 pass. The initial non-Docker candidate gate passed 73/73 after
+  correcting one obsolete Catalog Redis mock and strict lint findings.
 - The disposable real Redis/PostgreSQL fixtures are implemented. One local Redis
   attempt found Docker unavailable, so no repeated Docker/WSL loop was run.
+- Protected run33277368515 passed all required jobs and real fixtures at exact
+  6719bda. Initial review then found three P2 public-contract blockers.
+- Exact ade7379 batches the remediation: bounded same-key serialization prevents
+  identical retries spending multiple tokens; Engagement exposes bounded
+  `retryAfterMs`; Discovery exposes `LIMIT_EXCEEDED` through the public payload.
+  Engagement123/123, Discovery105/105 and Web111/111 pass. The corrected complete
+  candidate passes73/73,48 cached,in73.641 seconds.
 
 ### Evidence
 
@@ -28,8 +35,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the coherent candidate, publish one PR and use hosted CI for the real
-Redis/PostgreSQL gates before confirmation and release.
+Publish exact ade7379 plus the passing corrected candidate evidence, then require
+protected CI and one confirmation review before release.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

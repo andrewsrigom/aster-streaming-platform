@@ -129,11 +129,16 @@ Redis-backed token buckets after current Engagement owner authorization and
 idempotency replay, partitioned by operation and an account pseudonym, with a
 bounded process-local outage/hot-key shield. Discovery search has a separate
 two-active/one-waiter/100-ms bulkhead. Redis remains disposable; final
-GraphQL/router identity and workload calibration remains Phase13. Redis18/18,
-telemetry12/12, Engagement119/119 and Discovery105/105 focused suites pass. The
-complete non-Docker candidate gate passes 73/73. The real Redis fixture is
-implemented but its local run is pending because the Docker daemon is
-unavailable; no repeated daemon/WSL probe is authorized or needed.
+GraphQL/router identity and workload calibration remains Phase13. Initial
+protected run33277368515 passed every job and real fixture at exact6719bda. Its
+three P2 review findings are corrected together at exactade7379: same-key
+mutation work is serialized before receipt/rate admission, Engagement retry
+timing is in the GraphQL payload, and Discovery saturation is a public payload
+code. Redis18/18, telemetry12/12, Engagement123/123, Discovery105/105 and
+Web111/111 focused suites pass. The corrected complete candidate passes73/73,
+48 cached,in73.641 seconds. Corrected hosted gates and confirmation review remain.
+The local Docker daemon remains unavailable; no repeated daemon/WSL probe is
+authorized or needed.
 
 ## Historical Phase 09 corrections
 
@@ -181,14 +186,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The real limiter Redis/PostgreSQL evidence, review/release and Phase10 release
-remain. Hosted deployment remains Phase14.
+Corrected protected CI, confirmation review, release evidence, merge, exact-main
+CI and Phase10 closeout remain. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Freeze the candidate, run disposable Redis/PostgreSQL evidence in hosted CI,
-complete review, then release P10-R08 and mark Phase 10 complete after protected
-and exact-main gates.
+Publish the corrected candidate to PR40, run protected hosted fixtures and one
+confirmation review, then release P10-R08 and mark Phase 10 complete after
+exact-main gates.
 
 ## Runtime and recovery
 

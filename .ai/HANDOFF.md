@@ -17,12 +17,19 @@ replay, with bounded local fallback/hot-key shielding. Discovery search receives
 two active slots, one waiter and a 100 ms queue bound. P10-R08 also owns the real
 atomicity, outage, cardinality and hot-key evidence and closes Phase 10.
 
+PR40 initial protected run `33277368515` passed at exact `6719bda`. Its three P2
+findings are corrected together at exact `ade7379`: same-key serialization before
+receipt/rate admission, portable Engagement `retryAfterMs`, and portable
+Discovery `LIMIT_EXCEEDED`. Focused Engagement123/123, Discovery105/105 and
+Web111/111 pass. The corrected complete candidate passes73/73,48 cached,in73.641
+seconds. Corrected hosted gates remain.
+
 ## Exact next actions
 
-1. Commit the reviewed implementation and local 73/73 candidate checkpoint.
-2. Publish one PR so hosted CI runs the disposable Redis and PostgreSQL fixtures.
-3. Capture exact evidence and update the Phase 10 index/runbooks.
-4. Complete one review round, batch blockers, confirm and release.
+1. Commit the corrected evidence checkpoint.
+2. Push PR40 once so hosted CI repeats affected real fixtures/browser evidence.
+3. Resolve the three corrected discussions and request one confirmation review.
+4. Capture release evidence, squash-merge, confirm exact-main CI and close Phase10.
 
 ## Evidence boundaries
 

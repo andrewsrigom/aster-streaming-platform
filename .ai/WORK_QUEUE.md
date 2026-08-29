@@ -55,7 +55,10 @@ confirmation, squash-merged without bypass as main `6a2fe3a`, and exact-main run
 `33275183338` passed. Its Discovery103/103, affected73/73, real Redis, browser,
 eleven-service outage and release evidence remain linked under
 `evidence/phase-10`. P10-R08 is the sole `IN_PROGRESS` item on
-`feat/p10-operation-limiters`, based exactly on that release.
+`feat/p10-operation-limiters`, based exactly on that release. Initial PR40
+run33277368515 passed; exactade7379 corrects its three initial review blockers.
+Its corrected local gate passes73/73; hosted gates and confirmation remain before
+merge.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

@@ -20,12 +20,16 @@ calibration.
 ### Engagement write rate
 
 Limit the existing `record_progress` and `set_watchlist` operations after current
-Identity owner authorization and after an existing idempotency receipt has been
-accepted, but before later Playback/Catalog reads or an Engagement write
-transaction. The partition is the authorized account, not the untrusted profile
-argument or raw session cookie. A SHA-256 pseudonym of the validated account ID
-is used only in the local map and short-lived Redis key; it is never logged or
-used as a metric attribute.
+Identity owner authorization. Before receipt inspection and rate admission, a
+process-local queue serializes each authorized account/profile/idempotency key.
+It holds at most 1,024 active keys and 31 waiters per key, propagates waiter
+cancellation, and returns `BACKPRESSURE` at capacity. Therefore a concurrent
+same-key burst can spend one token and produce one durable effect; later callers
+observe the resulting receipt or conflict before another rate decision. The rate
+partition is the authorized account, not the untrusted profile argument or raw
+session cookie. A SHA-256 pseudonym of the validated account ID is used only in
+bounded local maps and the short-lived Redis key; it is never logged or used as a
+metric attribute.
 
 Use these versioned key families without literal Redis Cluster hash-tag braces:
 
@@ -67,11 +71,13 @@ local partition map cannot represent a new active partition, Redis may still
 decide it, but Redis failure rejects that attempt rather than becoming an
 unbounded bypass. Caller cancellation never falls back to allow.
 
-`LIMIT_EXCEEDED` is added to the two Engagement mutation result enums. A limited
-response carries a bounded `Retry-After` value and performs no later owner call,
-transaction, receipt or outbox write. A successful Redis decision never
-authorizes or acknowledges progress/watchlist; PostgreSQL and existing owner
-checks remain decisive.
+`LIMIT_EXCEEDED` is added to the two Engagement mutation result enums. Their
+payloads add nullable `retryAfterMs`, bounded to 1–30,000 ms and selected by the
+first-party operations. A private `Retry-After` header remains supplemental; the
+public result does not depend on Apollo Router forwarding subgraph headers. A
+limited response performs no later owner call, transaction, receipt or outbox
+write. A successful Redis decision never authorizes or acknowledges
+progress/watchlist; PostgreSQL and existing owner checks remain decisive.
 
 ### Discovery search concurrency
 
@@ -80,7 +86,10 @@ bulkhead with two active permits, one FIFO waiter and a 100-millisecond maximum
 wait. Queue overflow, expiry, caller cancellation and closure settle explicitly.
 Home rails and schema reads do not enter or wait for the search lane. Shutdown
 closes admission, rejects waiters and drains active GraphQL work through the
-existing lifecycle.
+existing lifecycle. Overflow and queue expiry use the additive
+`DiscoverySearchCode.LIMIT_EXCEEDED` payload with a null connection over a normal
+GraphQL response, so Router preserves the public result instead of translating a
+private HTTP 429 into a generic subgraph error.
 
 ### Telemetry and privacy
 
@@ -94,6 +103,8 @@ record bounded command outcomes.
 
 - Concurrent replicas share one atomic rate decision while one hot caller is
   shed locally before repeated Redis commands.
+- Concurrent same-key work inside one process reaches receipt/rate admission in
+  order, preventing identical retries from multiplying token use.
 - Redis loss degrades distribution accuracy, not durable progress correctness or
   service readiness.
 - Owner authorization still executes before rate admission, so this policy
@@ -101,8 +112,8 @@ record bounded command outcomes.
   edge/network abuse controls.
 - Search saturation cannot occupy every Discovery execution slot, and its queue
   has finite memory and latency.
-- Additive result enums require regenerated Federation artifacts but do not change
-  operations or fields.
+- Additive result enums and nullable retry fields require regenerated Federation
+  artifacts and first-party operations but preserve existing clients.
 
 ## Alternatives considered
 

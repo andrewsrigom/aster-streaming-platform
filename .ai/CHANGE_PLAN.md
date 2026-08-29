@@ -26,9 +26,16 @@ is released through PR39, squash `6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0`
 and exact-main run `33275183338`. The candidate implements the bounded Redis
 token-bucket command, Engagement account-operation admission, local degraded
 shield, finite limiter telemetry and the Discovery search-only bulkhead. Focused
-Redis, telemetry, Engagement and Discovery suites pass, and the complete affected
-candidate gate passes 73/73. Real disposable Redis/PostgreSQL and hosted gates
-remain before verification and release.
+Redis, telemetry, Engagement and Discovery suites pass, and the initial complete
+affected candidate gate passed 73/73. Protected run `33277368515` passed the real
+Redis/PostgreSQL fixtures at exact `6719bda`. Its initial review found three public
+contract blockers: concurrent identical retries could spend multiple tokens, and
+Engagement/Discovery limit responses depended on private subgraph HTTP behavior.
+Exact `ade7379` serializes same-key work before receipt/admission and exposes the
+two limit decisions in portable GraphQL payloads. Engagement123/123,
+Discovery105/105 and Web111/111 pass after the batched remediation; the corrected
+complete candidate passes 73/73 with 48 cached in 73.641 seconds. Corrected hosted
+CI and confirmation remain before verification/release.
 
 ## Proposed behavior
 
@@ -41,8 +48,11 @@ capacity behavior stay inside the existing adapter deadline and cancellation
 contract.
 
 Engagement wraps `record_progress` and `set_watchlist` after Identity has returned
-current account/profile authority and after an idempotency receipt replay check,
-but before Playback/Catalog reads or a write transaction. Keys partition by
+current account/profile authority. A process-local queue serializes the same
+authorized account/profile/idempotency key before receipt inspection and rate
+admission, with at most 1,024 active keys and 31 waiters per key. The first caller
+can spend one token; concurrent identical callers then observe its receipt rather
+than multiplying token use or durable effects. Keys partition by
 environment, exact operation and a SHA-256 pseudonym of the authorized account.
 Policies are twelve-token/four-per-second progress and four-token/one-per-second
 watchlist buckets. A bounded 1,024-partition process-local shield applies the same
@@ -50,13 +60,16 @@ policy before Redis. It rejects a local hot burst without a Redis command; if
 Redis is unavailable after local admission, the local result is the explicit
 degraded decision. Successful Redis rejection remains authoritative. Idempotent
 replays do not spend another token. A limit result performs no durable write and
-returns `LIMIT_EXCEEDED` with bounded `Retry-After` metadata.
+returns `LIMIT_EXCEEDED` with bounded `retryAfterMs` in the public GraphQL payload;
+the private subgraph header is supplemental only.
 
 Discovery adds a local search-only bulkhead after operation validation: two
 active searches, one queued caller, 100 ms maximum queue wait and independent
 cancellation. Overflow or wait expiry is an explicit bounded rejection; home
-rails and schema reads do not enter that lane. Shutdown closes admission and
-settles every waiter before dependency closure.
+rails and schema reads do not enter that lane. Search rejection returns HTTP 200
+with `DiscoverySearchCode.LIMIT_EXCEEDED` and no source result, so Apollo Router
+preserves the outcome. Shutdown closes admission and settles every waiter before
+dependency closure.
 
 ## Boundaries
 
@@ -82,6 +95,8 @@ settles every waiter before dependency closure.
   untrusted profile IDs or cookies do not select it directly.
 - Idempotent receipt replay precedes limiting and cannot be converted into a new
   write by Redis behavior.
+- Concurrent work for one authorized idempotency key is serialized before receipt
+  inspection, so one in-process burst cannot charge one token per identical retry.
 - Redis acceptance never authorizes, commits or acknowledges progress/watchlist;
   PostgreSQL owner checks and transactions remain decisive.
 - Redis loss may multiply the documented local capacity by healthy process count,
@@ -100,20 +115,23 @@ settles every waiter before dependency closure.
 |---|---|---|
 | Redis timeout, disconnect, unavailable or command capacity | Continue only if the local bucket admitted; durable owner path remains unchanged | limiter `local_fallback` plus Redis dependency outcome |
 | Redis atomic rejection | Return `LIMIT_EXCEEDED` and bounded retry metadata; execute no later owner dependency/write | limiter `rejected` |
+| Same-key mutation already in flight | Wait in the bounded local idempotency lane, then replay/conflict before another rate decision | existing finite owner/result outcomes |
+| Idempotency lane capacity exhausted or waiter limit reached | Return `BACKPRESSURE` before receipt/limiter/dependency work | no unbounded queue |
 | Wrong-type, malformed, future, non-expiring or excessive-TTL state | Atomically replace only the exact key with one finite current decision | limiter `recovered` and decision |
 | Caller cancellation before a Redis decision | Return cancelled; do not fall back or write | limiter `cancelled` |
 | Local partition capacity exhausted | Redis remains the global authority for existing identities; reject new local admission safely when Redis cannot decide | limiter `rejected` or Redis decision |
 | Search active slots full with queue available | Wait at most 100 ms with caller cancellation | concurrency `queued` then terminal outcome |
-| Search queue full or wait expires | Reject without running the search source | concurrency `rejected` |
+| Search queue full or wait expires | Return a public `LIMIT_EXCEEDED` payload without running the search source | concurrency `rejected` |
 | Limiter telemetry failure | Preserve the already made admission decision | no behavior change |
 | Redis outage during real progress traffic | Existing local bucket bounds admission; PostgreSQL transaction/idempotency still determines success | outage artifact and durable row/receipt counts |
 
 ## Data and contracts
 
 - Schema/migration: no PostgreSQL migration.
-- GraphQL: additive `LIMIT_EXCEEDED` values for Engagement mutation payload enums;
-  bounded `Retry-After` is set on a limited mutation response. No public operation,
-  field or argument changes.
+- GraphQL: additive `LIMIT_EXCEEDED` values for Engagement mutation payload enums
+  and `DiscoverySearchCode`; additive nullable `retryAfterMs` on both Engagement
+  mutation payloads. First-party persisted operations select the retry field.
+  Private `Retry-After` headers are supplemental and not required through Router.
 - Events: unchanged; rejected attempts append no outbox event.
 - Cache: no cache changes. Limiter keys use
   `aster:{environment}:engagement:rate:v1:{operation}:{accountDigest}` without
@@ -128,8 +146,8 @@ settles every waiter before dependency closure.
 - Authorization: limiter placement follows successful current owner validation;
   it never substitutes for authorization.
 - Input limits: two fixed operation names, fixed policies, 256-byte Redis key,
-  bounded integer replies, 1,024 local partitions, two active searches and one
-  waiter.
+  bounded integer replies, 1,024 local partitions, 1,024 active idempotency keys
+  with 31 waiters each, two active searches and one waiter.
 - Sensitive data: SHA-256 account pseudonym exists only in a short-lived Redis
   key/local map and is never logged or labeled; credentials and raw IDs are absent.
 - Abuse cases: rotating profile IDs cannot create capacity; malformed Redis state
@@ -152,17 +170,19 @@ settles every waiter before dependency closure.
 ## Tests
 
 - Domain/application: policy validation, account/operation partition, independent
-  refill, idempotent replay before limit, rejection before later dependencies and
-  Redis-failure local fallback.
+  refill, five concurrent same-key progress/watchlist retries consuming one
+  admission/effect, bounded/cancellable idempotency queues, rejection before later
+  dependencies and Redis-failure local fallback.
 - Adapter: atomic allow/reject boundary, server time, malformed/wrong-type state,
   reply validation, timeout, cancellation and command capacity.
 - Integration: real Redis concurrent same-key/two-instance atomicity, hot-key
   command reduction, TTL/cardinality and exact cleanup; real PostgreSQL progress
   succeeds and remains idempotent while Redis is absent.
-- Contract: additive Federation composition/generated artifacts and finite metric
-  labels.
-- Browser: not repeated unless mutation response or Web handling changes beyond
-  the already compatible non-completed code path.
+- Contract: additive Federation composition/generated artifacts, portable
+  Engagement retry/search-limit payloads and finite metric labels.
+- Browser: repeat the affected hosted journey because the corrected public
+  mutation/search response handling changed; unchanged media encoding is carried
+  forward.
 - Performance/failure: two-active/one-waiter search barrier, overflow, wait expiry,
   cancellation, home isolation, Redis outage and measured hot burst.
 
@@ -173,8 +193,8 @@ settles every waiter before dependency closure.
   the Phase 10 complete acceptance gate.
 - Raw artifact path: `evidence/phase-10/operation-limiters-*.txt`, Discovery
   release evidence and updated Phase 10 index.
-- Acceptance result: implementation and the complete local non-Docker candidate
-  gate pass; real disposable dependency and hosted evidence remain pending.
+- Acceptance result: the initial candidate/protected real-dependency run and the
+  corrected 73/73 local candidate pass. Corrected hosted gates remain pending.
 - Iteration gate: affected package/service builds and focused tests, then scoped
   lint/format.
 - Candidate gate: `pnpm check:changed` plus real Redis atomicity/hot-key and
@@ -204,6 +224,6 @@ runbooks, Phase 10 evidence/index, roadmap and repository memory.
 - [x] Requirements satisfied in implementation and focused contracts
 - [x] Local non-Docker candidate tests pass
 - [ ] Evidence captured
-- [ ] Documentation current
+- [x] Documentation current
 - [ ] `.ai/` state updated
 - [ ] Remaining risks recorded

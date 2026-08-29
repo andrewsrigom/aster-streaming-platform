@@ -1,15 +1,16 @@
 P10 operation admission contract checkpoint
 Date: 2026-08-29
-Status: local candidate; implementation and non-Docker gates pass
+Status: corrected local candidate; hosted confirmation pending
 
 Source
 - Branch: feat/p10-operation-limiters
 - Released base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
 - Implementation candidate: baf02d2733590f80d6d39ce796483a7d69a4c4ab
-- Candidate tree: d26116d1ff38652ae61bac6121d7ee9d633075a4
+- Review remediation: ade7379e07438bb394af6131d5f9ac1111f5225d
+- Corrected candidate tree: 4e729374150d46a30a06d2f965bcbd2438e1daf1
 - Generated compatibility base: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0
 - Generated manifest SHA-256:
-  57b0081027cf85459de5e0449c552251ac41d116181efdf0cefea8133160e1a0
+  d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303
 
 Environment
 - WSL2 Ubuntu-20.04, Linux 6.18.33.2-microsoft-standard-WSL2 x86_64
@@ -19,17 +20,24 @@ Environment
 Commands and raw results
 - @aster/redis build and tests: PASS, 18/18.
 - @aster/telemetry build and tests: PASS, 12/12.
-- @aster/engagement build and tests: PASS, 119/119.
+- @aster/engagement build and tests after remediation: PASS, 123/123.
 - @aster/discovery build and tests: PASS, 105/105.
+- @aster/web typecheck and tests after remediation: PASS, 111/111.
 - Root CI-policy tests: PASS, 33/33.
 - Root local-platform policy tests: PASS, 67/67.
 - pnpm check:changed: PASS, 73 successful of 73 total, 46 cached,
   78.553 seconds Turbo wall time with TURBO_CONCURRENCY=4.
+- Corrected pnpm check:changed after review remediation: PASS, 73/73, 48 cached,
+  73.641 seconds Turbo wall time with TURBO_CONCURRENCY=4.
 - git diff --check, Prettier, ESLint, Knip, strict TypeScript, architecture,
   security, documentation, repository memory and schema compatibility: PASS.
 - The implementation candidate was committed after the complete source gate.
   Subsequent changes before that commit were repository-memory/evidence prose;
   their dedicated documentation and repository-memory checks passed.
+- Protected run 33277368515 passed every required job at exact 6719bda,
+  including the real Redis and PostgreSQL fixtures. Its initial review produced
+  three P2 findings; exact ade7379 corrects all three. Corrected hosted gates are
+  intentionally pending rather than attributed to the earlier run.
 
 Covered contract
 - One bounded Redis-server-time Lua decision uses integer milli-tokens, finite
@@ -38,30 +46,37 @@ Covered contract
   is recovered only at the exact limiter key.
 - Engagement partitions progress and watchlist policy by authorized account
   pseudonym and operation after current owner plus idempotent replay checks.
+- A bounded/cancellable same-key lane serializes receipt inspection and rate
+  admission. Five concurrent progress retries and five concurrent watchlist
+  retries each consume one admission and produce/replay one durable effect.
 - A 1,024-partition local shield bounds degraded admission and sheds a local hot
   caller before another Redis command. Progress refills at four tokens/second;
   watchlist refills at one token/second.
 - Redis failure cannot acknowledge a mutation. Existing PostgreSQL transaction,
   receipt and outbox behavior remains authoritative.
 - Discovery search admits two active operations and one FIFO waiter for at most
-  100 milliseconds. Home rails bypass that lane; cancellation and shutdown
-  settle waiters and release permits.
+  100 milliseconds. Overflow is a portable `LIMIT_EXCEEDED` payload with no
+  source call. Home rails bypass that lane; cancellation and shutdown settle
+  waiters and release permits.
 - Metrics use only finite limiter, operation, outcome and queue buckets. Raw
   account/profile IDs, pseudonyms, credentials and Redis keys are not labels.
-- Federation output adds only LIMIT_EXCEEDED enum values and preserves the
-  released operation inventory.
+- Federation output additively exposes limit enum values and nullable Engagement
+  retry metadata. The versioned first-party operation inventory selects the new
+  retry fields.
 
 Local dependency limitation
 - The disposable real Redis command was attempted once after implementation and
   stopped before container creation because the local Docker daemon was not
   reachable through /var/run/docker.sock.
-- No repeated Docker/WSL restart or probe loop was run. The protected hosted CI
-  integration is the pending real Redis/PostgreSQL evidence boundary.
+- No repeated Docker/WSL restart or probe loop was run. The initial hosted fixture
+  passed; its corrected repeat is the pending real Redis/PostgreSQL boundary.
 
 Interpretation
-The candidate satisfies the written static, unit, application, transport and
-schema contract. It is implemented, not yet verified or released: real
-dependency fixtures, protected CI and confirmation review remain.
+The corrected candidate satisfies focused static, unit, application, transport
+and schema contracts. Real dependency fixtures passed on its prior code boundary,
+but the review remediation changed admission placement and public payloads; the
+corrected complete gate passes, while protected CI and confirmation review still
+must pass.
 
 Limitations
 - No hosted deployment, field SLO, arbitrary replica-count or production

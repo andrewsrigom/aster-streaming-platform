@@ -11,6 +11,7 @@ mutation RecordProgress($input: RecordProgressInput!) {
   recordProgress(input: $input) {
     code
     correlationId
+    retryAfterMs
     progress { id profileId titleId sequence version positionMs durationMs status occurredAt updatedAt }
   }
 }
@@ -18,13 +19,14 @@ mutation RecordProgress($input: RecordProgressInput!) {
 
 Input requires exactly profileId, titleId, playbackSessionId, idempotencyKey (UUID v4), sequence (positive Int), positionMs (integer, clamped to duration), durationMs (positive integer, at most twelve hours) and occurredAt (integer UTC epoch seconds, represented by GraphQL Float). Sequence belongs to the profile/title across playback sessions. New reports allow thirty seconds future skew and 120 seconds delivery age.
 
-Only COMPLETED acknowledges durable progress, a receipt and an outbox event in one transaction. Keys are unique per profile, across titles. Exact same-key replay returns the original result for one hour, even after newer progress or the original Playback session expires; current Identity authorization remains required. Changed payload, including title, gives CONFLICT; older/equal sequence under a new key gives STALE. A newer intentional backward seek is permitted. Opening is strictly greater than min(30 seconds, 5% duration); completion is at least max(95% duration, duration minus thirty seconds). Positions are reports, not proof of viewing.
+Only COMPLETED acknowledges durable progress, a receipt and an outbox event in one transaction. Keys are unique per profile, across titles. Exact same-key replay returns the original result for one hour, even after newer progress or the original Playback session expires; current Identity authorization remains required. Changed payload, including title, gives CONFLICT; older/equal sequence under a new key gives STALE. Concurrent work for one authorized account/profile/idempotency key is serialized in a bounded local lane before receipt inspection and rate admission, so identical retries consume one token and replay one durable effect in a process. A newer intentional backward seek is permitted. Opening is strictly greater than min(30 seconds, 5% duration); completion is at least max(95% duration, duration minus thirty seconds). Positions are reports, not proof of viewing.
 
 INVALID_INPUT, UNAUTHENTICATED, NOT_FOUND, NOT_PLAYABLE, BACKPRESSURE,
 LIMIT_EXCEEDED, UNAVAILABLE, CANCELLED and INDETERMINATE are non-success
 outcomes; transport errors also occur. A limited mutation supplies a bounded
-`Retry-After` header. An uncertain mutation response may only be retried with the
-same idempotency key and unchanged payload. Never show a successful save before
+`retryAfterMs` payload value; its private-subgraph `Retry-After` header is only
+supplemental. An uncertain mutation response may only be retried with the same
+idempotency key and unchanged payload. Never show a successful save before
 acknowledgement or stop media because optional saving failed. No browser retry
 queue is implemented yet.
 
