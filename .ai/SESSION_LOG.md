@@ -2,6 +2,34 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Catalog negative-cache age remediation
+
+### Completed
+
+- Corrected review discussion3887146000: negative schema-v1 envelopes now carry
+  `cachedAt` and reject missing, future or more-than-ten-second-old values before
+  an absence can bypass the Catalog owner.
+- Added focused missing-time, over-age and future-time regressions plus a real
+  Redis no-expiry marker case that proves exact deletion and visible owner data.
+- Committed implementation as `f50acbb7cbb26cef480b0bb87018510660da48ca`.
+  Catalog245/245, affected73/73 (57 cached,54.75 seconds), real Redis10 finite
+  series/cleanup0 and the complete PostgreSQL fixture/cleanup0 pass.
+- Cancelled superseded protected run33264164708 after the review invalidated its
+  candidate, avoiding an unnecessary full pipeline.
+
+### Evidence
+
+- `evidence/phase-10/catalog-cache-contract.txt`
+- `evidence/phase-10/catalog-cache-runtime.txt`
+- `evidence/phase-10/catalog-cache-postgres.txt`
+- `evidence/phase-10/catalog-cache-concurrency.txt`
+
+### Next action
+
+Publish one PR37 update, resolve discussion3887146000, require exact-head
+protected CI and confirmation, then release Catalog and rebase the preserved
+Discovery checkpoint after old predecessor `b65688b`.
+
 ## 2026-08-29 — Catalog corrected-confirmation visibility and Redis-type remediation
 
 ### Completed

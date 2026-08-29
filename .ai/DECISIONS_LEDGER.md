@@ -8,7 +8,9 @@ current PostgreSQL visibility/version fence; browse ordering, rights and Playbac
 authority remain uncached. Entries, deterministic jitter, process coalescing and
 tokenized Redis leases are finite. Fence work shares only within an identical
 request-time/policy scope; wrong-type or oversized Redis values are rejected
-before value bytes reach the application. Redis loss bypasses to source, and
+before value bytes reach the application. Negative envelopes carry cache time;
+missing, future or older-than-ten-second values are deleted and rechecked even
+when Redis expiry is absent or excessive. Redis loss bypasses to source, and
 cache coordination never authorizes durable work.
 
 [ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size

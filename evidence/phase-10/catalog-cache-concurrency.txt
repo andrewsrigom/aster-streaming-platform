@@ -11,6 +11,9 @@ Source and environment
   Cold negative keys now join before the owner-fence read.
 - Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf.
   Fence entries now share only within one exact request-time/policy scope.
+- Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca.
+  The same bounded Redis workload was repeated after negative-envelope recovery
+  changed.
 - WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
 - Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
 - One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
@@ -21,12 +24,12 @@ CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
 Measured result
 - Callers in each local burst: 24.
 - Direct uncached full source reads: 24.
-- Direct uncached burst sample: 15.64 ms.
+- Direct uncached burst sample: 15.78 ms.
 - Coalesced cold full source reads: 1.
 - Current-fence reads during cold burst: 1.
-- Coalesced cold burst sample: 37.96 ms.
+- Coalesced cold burst sample: 41.11 ms.
 - Warm full source reads: 0.
-- Warm sample: 3.57 ms.
+- Warm sample: 5.39 ms.
 - Cross-instance callers: 2.
 - Cross-instance full source reads: 1.
 - Cross-instance cold-negative callers: 2.
@@ -46,7 +49,7 @@ positive lease and caused one full source load; two instances checking a cold
 absent ID used one fence read and the resulting short marker. Lease
 expiry/recovery and owner-token compare-delete completed the failure boundary.
 
-The focused 244-test Catalog suite also synchronizes concurrent requests for
+The focused 245-test Catalog suite also synchronizes concurrent requests for
 `[hot,A]` and `[hot,B]`: the hot title appears in one source batch while the new
 `B` title is refreshed separately, proving per-title overlap without splitting a
 request's newly owned titles into one query each. A second synchronized case puts

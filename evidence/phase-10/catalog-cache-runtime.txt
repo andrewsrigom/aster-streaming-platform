@@ -12,6 +12,9 @@ Source and environment
 - Corrected-confirmation correction: 2930332e7b1c049c081bfad8c5d62c71009f03bf.
   Wrong-type classification moved inside the bounded Redis script, so this
   fixture was repeated at the exact implementation commit.
+- Negative-age correction: f50acbb7cbb26cef480b0bb87018510660da48ca.
+  Negative-envelope interpretation changed, so the fixture now seeds a
+  recognizable absence marker without expiry and proves exact recovery.
 - WSL2 Ubuntu-20.04, Linux amd64; Node.js 24.19.0; pnpm 11.24.0
 - Docker Engine 26.0.0; one disposable pinned Redis 8.10.0 container
 - Redis fixture limits: 0.5 CPU, 128 MiB, tmpfs storage and loopback ephemeral
@@ -23,13 +26,15 @@ CI=true NODE_OPTIONS=--max-old-space-size=1536 pnpm catalog:cache-integration
 Final result: PASS
 
 Raw result
-{"event":"catalog_cache_redis_verified","boundedOversizedRead":true,"wrongTypeDeleted":true,"atomicCompareDelete":true,"expiryObserved":true,"expiredLeaseRecovered":true,"concurrentCallers":24,"uncachedFullSourceReadsDuringBurst":24,"uncachedBurstDurationMs":15.64,"fullSourceReadsDuringBurst":1,"fenceReadsDuringBurst":1,"burstDurationMs":37.96,"warmFullSourceReads":0,"warmDurationMs":3.57,"negativeFenceReadsOnSecondCall":0,"crossInstanceCallers":2,"crossInstanceFullSourceReads":1,"crossInstanceNegativeCallers":2,"crossInstanceNegativeFenceReads":1,"leaseContentionObserved":true,"outageReturnedOwnerValue":true,"finiteMetricSeries":9}
-{"event":"catalog_cache_fixture_cleaned","remaining":0,"durationMs":1779}
+{"event":"catalog_cache_redis_verified","boundedOversizedRead":true,"wrongTypeDeleted":true,"unboundedNegativeDeleted":true,"atomicCompareDelete":true,"expiryObserved":true,"expiredLeaseRecovered":true,"concurrentCallers":24,"uncachedFullSourceReadsDuringBurst":24,"uncachedBurstDurationMs":15.78,"fullSourceReadsDuringBurst":1,"fenceReadsDuringBurst":1,"burstDurationMs":41.11,"warmFullSourceReads":0,"warmDurationMs":5.39,"negativeFenceReadsOnSecondCall":0,"crossInstanceCallers":2,"crossInstanceFullSourceReads":1,"crossInstanceNegativeCallers":2,"crossInstanceNegativeFenceReads":1,"leaseContentionObserved":true,"outageReturnedOwnerValue":true,"finiteMetricSeries":10}
+{"event":"catalog_cache_fixture_cleaned","remaining":0,"durationMs":2031}
 
 Workload
 - Verified Redis-side bounded oversized and wrong-type read rejection, exact
   malformed-key deletion, expiry, conditional lease acquisition and
   token-owner-only release against the actual wire protocol.
+- Seeded an exact absence marker without expiry, rejected its missing cache time,
+  deleted only that key and returned the now-visible owner title.
 - Exercised a cold positive entry, current-fence warm reuse, valid absence and a
   second negative read that skipped a new fence query.
 - Exercised two independent cache readers on one cold absent ID and observed one
@@ -38,7 +43,7 @@ Workload
   its successor's lease.
 - Stopped the exact Redis fixture during an owner read and received the owner
   value through the documented cache bypass.
-- Collected nine finite metric series without keys, title IDs, errors or other
+- Collected ten finite metric series without keys, title IDs, errors or other
   high-cardinality labels.
 
 Interpretation
@@ -51,5 +56,5 @@ Limitations
 - This is one bounded local failure experiment, not an availability percentage,
   production latency distribution or field SLO.
 - Malformed-envelope recovery and optional-readiness behavior are asserted in
-  the 244-test Catalog suite; the real fixture concentrates on bounded wire
+  the 245-test Catalog suite; the real fixture concentrates on bounded wire
   behavior, expiry, contention and outage.

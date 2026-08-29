@@ -45,6 +45,11 @@ time/policy boundary and a wrong-type Redis key bypassed exact malformed cleanup
 Exact implementation `2930332e7b1c049c081bfad8c5d62c71009f03bf`
 includes the visibility scope in the shared identity and rejects non-string keys
 inside the bounded Redis script before `STRLEN`/`GET`.
+The next confirmation found that a recognizable negative marker with missing or
+excessive Redis expiry could outlive the ten-second publication-discoverability
+contract. Exact correction `f50acbb7cbb26cef480b0bb87018510660da48ca`
+embeds and strictly validates `cachedAt`; missing, future or older-than-ten-second
+envelopes are malformed, deleted exactly and rechecked against Catalog.
 
 ## Boundaries
 
@@ -63,7 +68,8 @@ inside the bounded Redis script before `STRLEN`/`GET`.
 
 - A positive hit follows a current owner visibility/version fence.
 - An absent marker is written only after the owner reports no currently public
-  candidate; its bounded TTL is the only publication-visibility delay.
+  candidate; Redis TTL and the independently validated envelope age both cap the
+  publication-visibility delay at ten seconds.
 - Keys, values, TTLs, waiters and coalescing entries are finite and versioned.
 - One caller cannot cancel shared work still needed by another caller.
 - Lease expiry or duplicate refresh cannot authorize a durable write.
@@ -74,7 +80,7 @@ inside the bounded Redis script before `STRLEN`/`GET`.
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
 | Redis timeout/unavailable/capacity rejection | Read PostgreSQL directly | cache outcome `bypass`; Redis dependency outcome |
-| Malformed, oversized or wrong-version value | Delete the exact key best-effort and rebuild | cache outcome `malformed` |
+| Malformed, oversized, wrong-version or over-age value | Delete the exact key best-effort and rebuild | cache outcome `malformed` |
 | Lease not acquired or expires | Wait once within a finite budget, then source fallback; duplicates are safe | lease outcome `contended` or `lost` |
 | Caller cancels while sharing refresh | That caller exits; shared work continues only for remaining bounded waiters | coalescing outcome and waiter bucket |
 | PostgreSQL fence/source unavailable | Return existing Catalog unavailable/cancelled result; cached bytes cannot override it | source outcome `unavailable` |
@@ -87,9 +93,10 @@ inside the bounded Redis script before `STRLEN`/`GET`.
   unchanged.
 - Events: existing Catalog publication events stay unchanged; no event is required
   for correctness because keys contain the owner fence.
-- Cache: schema-v1 positive projection, schema-v1 short absence marker, 120-second
-  positive TTL plus 0–30 seconds deterministic jitter, 5-second negative TTL plus
-  0–5 seconds jitter, value at most 16 KiB, key at most 256 UTF-8 bytes.
+- Cache: schema-v1 positive projection, schema-v1 timestamped short absence
+  envelope, 120-second positive TTL plus 0–30 seconds deterministic jitter,
+  5-second negative TTL plus 0–5 seconds jitter and a matching ten-second
+  application age ceiling, value at most 16 KiB, key at most 256 UTF-8 bytes.
 - Compatibility: old binaries ignore new keys; new binaries ignore unknown values.
 - Retention/deletion: all entries expire. No scan-based deletion. Absence markers
   can delay discovery of a new publication by at most ten seconds; versioned
@@ -133,10 +140,10 @@ inside the bounded Redis script before `STRLEN`/`GET`.
 - Commands: focused package/service tests, strict typecheck/lint, affected gate,
   disposable PostgreSQL/Redis experiment and audit.
 - Raw artifact path: `evidence/phase-10/catalog-cache-*.txt` and Phase 10 index.
-- Acceptance result: corrected local candidate PASS: Catalog244/244,
-  Redis17/17, telemetry11/11, affected73/73 (59 cached, 83.646 seconds), real
-  PostgreSQL fence/source/dispute and real Redis bounded/wrong-type reads,
-  positive-plus-negative concurrency, outage and cleanup. One earlier affected
+- Acceptance result: corrected local candidate PASS: Catalog245/245,
+  Redis17/17, telemetry11/11, affected73/73 (57 cached, 54.75 seconds), real
+  PostgreSQL fence/source/dispute and real Redis bounded/wrong-type/over-age
+  reads, positive-plus-negative concurrency, outage and cleanup. One earlier affected
   attempt hit an unrelated Identity terminal-fallback timing failure; its focused
   147/147 rerun and the next complete gate pass. Protected CI, corrected
   confirmation and release remain pending.

@@ -35,8 +35,10 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
   rights, publication and schema versions
 - TTL: 120 seconds plus deterministic 0–30 second jitter
 - Negative cache: 5 seconds plus 0–5 second jitter for a valid UUID absent from
-  the current public resource set; this at-most-ten-second public-discoverability
-  delay is its only consistency boundary
+  the current public resource set; its schema-v1 envelope records cache time and
+  rejects missing, future or more-than-ten-second-old values, so missing or
+  excessive Redis expiry cannot extend the same at-most-ten-second
+  public-discoverability boundary
 - Consistency: versioned positive keys expire; no scan-based invalidation
 - Failure: read PostgreSQL directly
 - Stampede: at most 128 process-local owners plus a two-second tokenized Redis

@@ -22,7 +22,11 @@ sharing and persistent wrong-type keys. Exact2930332 scopes fence sharing by
 request time/policy and makes the bounded Redis script classify non-string values
 for exact deletion. Catalog244/244, Redis17/17, affected73/73 and repeated real
 Redis/PostgreSQL fixtures pass. Corrected publication, confirmation and protected
-acceptance remain.
+acceptance remain. Discussion3887146000 then found that an otherwise recognizable
+absence marker could survive without bounded Redis expiry. Exact f50acbb embeds
+and validates cache time, deletes missing/future/over-age envelopes and rechecks
+the owner. Catalog245/245, affected73/73 and repeated Redis/PostgreSQL fixtures
+pass; publication and hosted acceptance remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

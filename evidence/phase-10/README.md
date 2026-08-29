@@ -53,3 +53,11 @@ fence coalescing by title, time and policy, and classifies non-string Redis keys
 inside the bounded script. Catalog244/244, Redis17/17 and the complete affected
 73/73 gate pass. Real PostgreSQL and Redis fixtures pass with exact cleanup;
 Redis additionally proves `wrongTypeDeleted=true`.
+
+Latest confirmation discussion3887146000 found that an exact absence marker
+without bounded Redis expiry could survive beyond the ten-second consistency
+contract. Exact `f50acbb7cbb26cef480b0bb87018510660da48ca` timestamps negative
+envelopes and deletes missing, future or over-age values before owner recheck.
+Catalog245/245 and affected73/73 pass. Repeated real Redis proves
+`unboundedNegativeDeleted=true`; the complete PostgreSQL fixture also passes with
+cleanup0.

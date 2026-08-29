@@ -12,8 +12,8 @@ browse ordering, rights records, publication commands, Playback authority or
 Discovery ordering. PostgreSQL remains the current-visibility authority. Before a
 positive cache value is returned, Catalog reads a compact fence containing the
 title ID, title version, rights revision and publication ID under the current
-rights-use policy. A value is reusable only when its schema and complete fence
-equal that owner result. This lightweight check intentionally remains on cache
+rights-use policy. A positive value is reusable only when its schema and complete
+fence equal that owner result. This lightweight check intentionally remains on cache
 hits: Redis reduces full candidate reads and projection work but never decides
 that retired or expired content is public.
 
@@ -34,16 +34,20 @@ metadata. Unknown fields, wrong versions, non-finite values, mismatched IDs or
 oversized/malformed bytes and non-string Redis values are misses; delete only
 that exact key best-effort. The Redis-side bounded read checks the key type and
 size before returning value bytes, so wrong-type or oversized values never enter
-the application parser.
+the application parser. The negative schema-v1 envelope contains its cache time;
+missing, future or more-than-ten-second-old times are malformed and trigger the
+same exact-key deletion path.
 
 Positive entries expire after 120 seconds plus deterministic 0–30 second jitter
 derived from SHA-256 of the full key. A valid UUID that has no current public
 candidate may use a negative marker for 5 seconds plus deterministic 0–5 second
 jitter. This can briefly preserve public absence after a new publication but can
-never expose an ineligible title. Its expiry is the explicit and only consistency
-boundary, so a new publication becomes discoverable through this entity path no
-later than ten seconds after an earlier valid absence read. Versioned positive
-keys need no global invalidation and expire naturally. Never scan keys.
+never expose an ineligible title. Redis expiry is the primary consistency
+boundary; the application independently rejects a negative envelope older than
+the same ten-second maximum so a missing or excessive Redis expiry cannot extend
+absence. A new publication therefore becomes discoverable through this entity
+path no later than ten seconds after an earlier valid absence read. Versioned
+positive keys need no global invalidation and expire naturally. Never scan keys.
 
 ## Refresh coordination
 

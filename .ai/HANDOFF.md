@@ -29,15 +29,20 @@ could still cross request-time visibility and wrong-type Redis keys persisted.
 Exact `2930332e7b1c049c081bfad8c5d62c71009f03bf` scopes fence sharing by time and
 policy and classifies non-string values before Redis size/read operations.
 Catalog244/244, Redis17/17, affected73/73, real Redis positive/negative/wrong-type
-behavior and the complete PostgreSQL fixture pass with cleanup0. The separate
+behavior and the complete PostgreSQL fixture pass with cleanup0. Discussion
+3887146000 then found that a recognizable negative marker without bounded Redis
+expiry could hide later publication. Exact
+`f50acbb7cbb26cef480b0bb87018510660da48ca` embeds and validates cache time,
+deletes missing/future/over-age envelopes and rechecks the owner. Catalog245/245,
+affected73/73 and repeated real Redis/PostgreSQL fixtures pass. The separate
 `feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
 b65688b; do not publish it before predecessor release.
 
 ## Exact next actions
 
-1. Commit this documentation-only corrected-confirmation evidence and publish one
+1. Commit this documentation-only latest-confirmation evidence and publish one
    PR37 update.
-2. Reply to and resolve discussions3887086778/82, then obtain corrected
+2. Reply to and resolve discussion3887146000, then obtain corrected
    confirmation and protected CI before squash merge and exact-main acceptance.
 3. Rebase only dependent commits after b65688b onto released squash main, repeat
    affected gates, and resume P10-R04.

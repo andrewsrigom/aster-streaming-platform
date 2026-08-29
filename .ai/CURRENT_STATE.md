@@ -66,6 +66,12 @@ and affected73/73 pass. Exact real Redis proves bounded oversized/wrong-type
 reads,24-call cold positive/fence coalescing, one cross-instance negative fence
 read, expiry, outage fallback and cleanup0; real PostgreSQL again proves the
 four-field fence, exact source and stale-dispute rejection with cleanup0.
+The next confirmation discussion3887146000 found that an exact old absence
+marker without a bounded Redis expiry could hide later publication indefinitely.
+Exact `f50acbb7cbb26cef480b0bb87018510660da48ca` timestamps the negative envelope,
+rejects missing/future/older-than-ten-second values and deletes the exact key
+before owner recheck. Catalog245/245, affected73/73, real Redis including the
+unbounded marker and the complete PostgreSQL fixture pass with cleanup0.
 Corrected publication, confirmation and protected acceptance remain pending.
 The local Discovery dependent checkpoint `423c33d` is preserved separately and
 cannot publish until this predecessor releases.
@@ -123,7 +129,7 @@ and Phase10 release are not implemented. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish the P10-R01 final-confirmation correction, resolve its finding and
+Publish the P10-R01 latest confirmation correction, resolve its finding and
 complete corrected protected/exact-main acceptance. Then rebase the preserved
 Discovery stale-while-revalidate checkpoint and finish its remaining evidence.
 
