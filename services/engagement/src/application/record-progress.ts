@@ -182,6 +182,18 @@ export function createProgressRecorder(ports: ProgressPorts) {
         if (accepted) {
           return accepted;
         }
+        const admission = await ports.limiter?.admit(
+          "record_progress",
+          owner.value.accountId,
+          signal,
+        );
+        signal.throwIfAborted();
+        if (admission?.status === "rejected") {
+          return { status: "limit_exceeded", retryAfterMs: admission.retryAfterMs };
+        }
+        if (admission?.status === "cancelled" || admission?.status === "unavailable") {
+          return { status: admission.status };
+        }
         const playback = await guarded(
           () => ports.playback.inspect(input.playbackSessionId, input.titleId, ownerRequest),
           signal,

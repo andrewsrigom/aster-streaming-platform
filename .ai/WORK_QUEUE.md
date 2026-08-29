@@ -50,13 +50,12 @@ real Redis pass with the seeded 24-hour lease replaced and cleanup0. The complet
 affected gate passes 73/73 with 51 cached in 107.438 seconds; only hosted gates
 remained at that checkpoint.
 
-P10-R04 is `WAITING_EXTERNAL` only for exact-main run `33275183338`. PR39 exact
-`601cc95` passed protected run `33274397440` and clean confirmation, then
-squash-merged without bypass as main `6a2fe3a`. Its Discovery103/103, affected
-73/73, real Redis, browser and eleven-service outage evidence remain linked under
-`evidence/phase-10`. P10-R08 is the one permitted dependent `IN_PROGRESS` item on
-`feat/p10-operation-limiters`, based exactly on that frozen merge. It must not
-publish before the predecessor run succeeds.
+P10-R04 is DONE. PR39 exact `601cc95` passed protected run `33274397440` and clean
+confirmation, squash-merged without bypass as main `6a2fe3a`, and exact-main run
+`33275183338` passed. Its Discovery103/103, affected73/73, real Redis, browser,
+eleven-service outage and release evidence remain linked under
+`evidence/phase-10`. P10-R08 is the sole `IN_PROGRESS` item on
+`feat/p10-operation-limiters`, based exactly on that release.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
@@ -130,7 +129,7 @@ Historical stashes are superseded.
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | DONE |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | DONE |
 | 50 | Implement rights-safe Catalog cache-aside, jitter, coalescing, lease and metrics | P10-R01 | DONE |
-| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | WAITING_EXTERNAL |
+| 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | DONE |
 | 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | IN_PROGRESS |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.

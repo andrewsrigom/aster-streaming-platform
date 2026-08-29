@@ -26,7 +26,7 @@ async function fixture(gate?: Promise<unknown>) {
   const transactions: SearchUnitOfWork = {
     async run(work, signal) {
       state.calls++;
-      if (state.calls === 4) {
+      if (state.calls === 2) {
         state.entered.resolve(undefined);
       }
       if (gate) {
@@ -222,18 +222,28 @@ test("subgraph rejects substituted trust and malformed operations before search"
   }
 });
 
-test("subgraph bounds concurrent searches without a hidden queue", async () => {
+test("search bulkhead queues one, rejects excess and preserves home capacity", async () => {
   const release = Promise.withResolvers<undefined>();
   const f = await fixture(release.promise);
   try {
-    const admitted = Array.from({ length: 4 }, () => f.send());
+    const admitted = Array.from({ length: 2 }, () => f.send());
     await f.state.entered.promise;
+    const queued = f.send();
+    await new Promise((resolve) => setImmediate(resolve));
     const excess = await f.send();
-    assert.equal(excess.status, 503);
-    assert.equal(f.state.calls, 4);
+    assert.equal(excess.status, 429);
+    assert.equal(excess.headers["retry-after"], "1");
+    assert.equal(f.state.calls, 2);
+    const homeResult = await f.send({
+      query: HOME_RAILS,
+      operationName: "HomeRails",
+      variables: { first: 10 },
+    });
+    assert.equal(homeResult.status, 200);
     release.resolve(undefined);
-    const completed = await Promise.all(admitted);
+    const completed = await Promise.all([...admitted, queued]);
     assert.ok(completed.every((result) => result.status === 200));
+    assert.equal(f.state.calls, 3);
   } finally {
     release.resolve(undefined);
     await f.close();

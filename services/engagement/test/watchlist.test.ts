@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createWatchlistWriter } from "../src/application/set-watchlist.js";
 import {
   advanceWatchlist,
   createWatchlistEvent,
@@ -99,6 +100,41 @@ test("same-key replay survives a later removal and Catalog outage without anothe
   assert.equal(f.calls.transaction, 2);
   assert.equal(f.calls.identity, 3);
   assert.equal(f.calls.catalog.length, 1);
+});
+
+test("watchlist admission follows owner and replay but precedes Catalog and persistence", async () => {
+  const rejected = watchlistFixture();
+  let admissions = 0;
+  const writer = createWatchlistWriter({
+    ...rejected.ports,
+    limiter: {
+      admit: (_operation, accountId) => {
+        admissions++;
+        assert.equal(accountId, id(1));
+        return Promise.resolve({ status: "rejected", retryAfterMs: 1_000 });
+      },
+    },
+  });
+  assert.deepEqual(await writer.set(input(), rejected.request), {
+    status: "limit_exceeded",
+    retryAfterMs: 1_000,
+  });
+  assert.equal(admissions, 1);
+  assert.equal(rejected.calls.receipt, 1);
+  assert.equal(rejected.calls.catalog.length, 0);
+  assert.equal(rejected.calls.transaction, 0);
+
+  const replayed = watchlistFixture();
+  const first = await replayed.writer.set(input(), replayed.request);
+  const replayWriter = createWatchlistWriter({
+    ...replayed.ports,
+    limiter: {
+      admit: () => {
+        throw new Error("must not admit replay");
+      },
+    },
+  });
+  assert.deepEqual(await replayWriter.set(input(), replayed.request), first);
 });
 
 test("profile-scoped key conflicts across title and action before Catalog access", async () => {

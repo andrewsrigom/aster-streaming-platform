@@ -444,6 +444,7 @@ async function fixture(
         text: string;
         cache: string | undefined;
         cookie: string[] | undefined;
+        retryAfter: string | undefined;
       }>((resolve, reject) => {
         const outgoing = request(
           {
@@ -470,6 +471,7 @@ async function fixture(
                 text: Buffer.concat(chunks).toString("utf8"),
                 cache: incoming.headers["cache-control"],
                 cookie: incoming.headers["set-cookie"],
+                retryAfter: incoming.headers["retry-after"],
               });
             });
           },
@@ -635,6 +637,20 @@ test("non-success, ambiguous commit and exceptions never fabricate progress", as
     } finally {
       await f.close();
     }
+  }
+  const limited = await fixture(() =>
+    Promise.resolve({ status: "limit_exceeded", retryAfterMs: 30_001 }),
+  );
+  try {
+    const response = await limited.send();
+    const value = JSON.parse(response.text) as {
+      data: { recordProgress: { code: string; progress: unknown } };
+    };
+    assert.equal(value.data.recordProgress.code, "LIMIT_EXCEEDED");
+    assert.equal(value.data.recordProgress.progress, null);
+    assert.equal(response.retryAfter, "30");
+  } finally {
+    await limited.close();
   }
   const f = await fixture(() => Promise.reject(new Error("private SQL cookie details")));
   try {

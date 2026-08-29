@@ -20,7 +20,13 @@ Input requires exactly profileId, titleId, playbackSessionId, idempotencyKey (UU
 
 Only COMPLETED acknowledges durable progress, a receipt and an outbox event in one transaction. Keys are unique per profile, across titles. Exact same-key replay returns the original result for one hour, even after newer progress or the original Playback session expires; current Identity authorization remains required. Changed payload, including title, gives CONFLICT; older/equal sequence under a new key gives STALE. A newer intentional backward seek is permitted. Opening is strictly greater than min(30 seconds, 5% duration); completion is at least max(95% duration, duration minus thirty seconds). Positions are reports, not proof of viewing.
 
-INVALID_INPUT, UNAUTHENTICATED, NOT_FOUND, NOT_PLAYABLE, BACKPRESSURE, UNAVAILABLE, CANCELLED and INDETERMINATE are non-success outcomes; transport errors also occur. An uncertain mutation response may only be retried with the same idempotency key and unchanged payload. Never show a successful save before acknowledgement or stop media because optional saving failed. No browser retry queue is implemented yet.
+INVALID_INPUT, UNAUTHENTICATED, NOT_FOUND, NOT_PLAYABLE, BACKPRESSURE,
+LIMIT_EXCEEDED, UNAVAILABLE, CANCELLED and INDETERMINATE are non-success
+outcomes; transport errors also occur. A limited mutation supplies a bounded
+`Retry-After` header. An uncertain mutation response may only be retried with the
+same idempotency key and unchanged payload. Never show a successful save before
+acknowledgement or stop media because optional saving failed. No browser retry
+queue is implemented yet.
 
 ## History and continue-watching
 
@@ -77,9 +83,14 @@ docker compose --project-name aster --file infra/compose/compose.yml --profile r
 
 Engagement listens privately on 3400, uses restricted aster_engagement_local PostgreSQL credentials, and mounts only its own Router key plus three distinct private owner-read keys. Each owner accepts one exact private operation; @inaccessible removes those fields from the public API but is not the authorization mechanism. Cookies travel to Identity only; Playback and Catalog return no media URL in their private reads. [ADR-0030](../../docs/adr/0030-local-engagement-progress.md) specifies progress trust, retention and capacity; [ADR-0031](../../docs/adr/0031-current-catalog-visibility.md) specifies current Catalog visibility.
 
-Budgets: four active GraphQL operations, one root operation, 16 KiB body, 4 KiB source, 40 fields, depth six, four aliases and cost 384. Read cost multiplies edge selections by the requested page bound, plus base cost 32 for history or 128 for continue-watching's bounded visibility scan; mutation cost includes both private owner checks and cannot fan out. A 32-credit burst refills at four/second. Identity/Playback clients have four slots; Catalog has one. All have 4 KiB responses, a two-second ceiling and no retries/redirects. Application budget is 2.5 seconds, GraphQL/Router subgraph 2.7 seconds and public Router three seconds. SQL has four connections and a one-second operation ceiling. Every path propagates cancellation.
+Budgets: four active GraphQL operations, one root operation, 16 KiB body, 4 KiB source, 40 fields, depth six, four aliases and cost 384. Read cost multiplies edge selections by the requested page bound, plus base cost 32 for history or 128 for continue-watching's bounded visibility scan; mutation cost includes both private owner checks and cannot fan out. A 32-credit transport burst refills at four/second. After current owner authorization and exact receipt replay, new progress uses a twelve-token/four-per-second account bucket and watchlist uses four/one-per-second. The 1,024-partition local shield rejects hot bursts before Redis; distributed Redis failure degrades to that local decision and never changes PostgreSQL authority. Identity/Playback clients have four slots; Catalog has one. All have 4 KiB responses, a two-second ceiling and no retries/redirects. Application budget is 2.5 seconds, GraphQL/Router subgraph 2.7 seconds and public Router three seconds. SQL has four connections and a one-second operation ceiling. Every path propagates cancellation. [ADR-0039](../../docs/adr/0039-operation-admission-and-redis-degradation.md).
 
 Readiness checks only Engagement's restricted store/schema/commit constraint. Owner failures reject the individual save. Router/Playback startup never depends on Identity or Engagement. Inspect `docker compose --project-name aster --file infra/compose/compose.yml ps --all` and scoped logs for engagement, engagement-init, identity, playback and router. Logs contain finite outcomes and trace/correlation, not cookies, private keys, account data or media URLs. No dashboard or SLO claim is made.
+
+`ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED=true` enables distributed coordination and
+requires server-only `REDIS_URL`; omission or `false` retains the same bounded
+local shield. Redis readiness is observed but non-critical. Policies, key shape,
+TTL and local capacity are reviewed code policy, not environment overrides.
 
 Rollback stops Engagement and restores compatible prior owner/Router images and artifacts; retain all database/media state. If restoring older Identity/Playback/Catalog images, also disable their new Engagement-read flags. Rotate only inspected disposable trust volumes after stopping affected consumers. The [down migration](migrations/0001-progress.down.sql) refuses any retained progress, receipt, outbox or profile fence. It is not a normal recovery command.
 
@@ -87,7 +98,8 @@ Rollback stops Engagement and restores compatible prior owner/Router images and 
 
 ```sh
 pnpm engagement:integration
+pnpm engagement:rate-limit-integration
 pnpm engagement:runtime
 ```
 
-The first command runs progress, watchlist, entity-field and event real-SQL verifiers in separate disposable fixtures: atomicity, replay/conflict/concurrency, keyset pages/query plans, capacity, privileges, deletion races and reconstruction. Internal --watchlist, --fields and --events selectors accept no target or connection override. The second builds one UUID-named Docker project, verifies owner-authorized saves/reads and query plans, then exercises the [event runtime](EVENT_DELIVERY.md). Query-plan exposure remains disabled in the normal runtime. Cleanup verifies exact ownership before deleting only its disposable containers, trust/broker volumes, networks and tmpfs database. No retained project, media download or CPU benchmark is involved. [Evidence and limitations](../../evidence/phase-08/README.md).
+The first command runs progress, watchlist, entity-field and event real-SQL verifiers in separate disposable fixtures: atomicity, replay/conflict/concurrency, keyset pages/query plans, capacity, privileges, deletion races and reconstruction. The rate-limit command uses one disposable Redis container to prove cross-adapter atomicity, malformed-state recovery, TTL, hot-key command reduction and outage fallback. Internal selectors accept no target or connection override. The runtime command builds one UUID-named Docker project, verifies owner-authorized saves/reads and query plans, then exercises the [event runtime](EVENT_DELIVERY.md). Query-plan exposure remains disabled in the normal runtime. Cleanup verifies exact ownership before deleting only its disposable containers, trust/broker volumes, networks and tmpfs database. No retained project, media download or CPU benchmark is involved. [Evidence and limitations](../../evidence/phase-08/README.md).

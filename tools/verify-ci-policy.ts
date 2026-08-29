@@ -268,8 +268,8 @@ export function validateWorkflowPolicy(
       "Playback changes require bounded real persistence and federated runtime acceptance",
     ],
     [
-      /- name: Prove Engagement persistence and federated progress\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 20\s+run: \|\s+pnpm engagement:integration\s+pnpm engagement:runtime/u,
-      "Engagement changes require bounded real persistence and owner-authorized progress acceptance",
+      /- name: Prove Engagement persistence and federated progress\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 20\s+run: \|\s+pnpm engagement:integration\s+pnpm engagement:rate-limit-integration\s+pnpm engagement:runtime/u,
+      "Engagement changes require bounded real persistence, Redis admission and owner-authorized progress acceptance",
     ],
     [
       /- name: Prove Discovery projection and federated search\s+if: needs\.classify\.outputs\.platform == 'true'\s+timeout-minutes: 15\s+run: \|\s+pnpm discovery:integration\s+pnpm discovery:runtime/u,

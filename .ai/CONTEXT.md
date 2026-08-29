@@ -61,8 +61,8 @@ cache is released through PR37 head `cb86c37`, protected run33270889083, clean
 confirmation, squash main `903f7b4` and exact-main run33272501078. Discovery
 stale-while-revalidate passed PR39 exact `601cc95`, protected run33274397440 and
 clean confirmation, then squash-merged as main `6a2fe3a`; exact-main run
-33275183338 is pending. P10-R08 is the permitted dependent local item on
-`feat/p10-operation-limiters` and may not publish until that predecessor passes.
+33275183338 passed. P10-R08 is the sole active item on
+`feat/p10-operation-limiters`.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

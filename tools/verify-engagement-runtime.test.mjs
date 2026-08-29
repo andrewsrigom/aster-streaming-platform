@@ -156,6 +156,8 @@ test("Engagement Compose isolates runtime credentials, dependencies and finite m
     ],
     ["postgresql://aster_engagement_local@postgres", "postgresql://aster@postgres"],
     ['ASTER_ENGAGEMENT_LOCAL_ENABLED: "true"', 'ASTER_ENGAGEMENT_LOCAL_ENABLED: "false"'],
+    ['ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true"', 'ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "false"'],
+    ["REDIS_URL: redis://redis:6379/0", "REDIS_URL: redis://remote.invalid:6379/0"],
     [
       '      ASTER_ENGAGEMENT_HTTP_PORT: "3400"',
       "      ASTER_ENGAGEMENT_ADMIN_DATABASE_PASSWORD: aster-test-only",

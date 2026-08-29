@@ -18,6 +18,7 @@ import {
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 import type { createHomeRails } from "../application/home-rails.js";
 import type { createTitleSearch } from "../application/search-titles.js";
+import type { AsterOperationLimitMetricInput } from "@aster/telemetry";
 import {
   createDiscoveryGraphqlContext,
   createDiscoverySchema,
@@ -29,6 +30,7 @@ import {
   inspectDiscoveryOperation,
   type DiscoveryOperation,
 } from "./graphql-operation.js";
+import { createSearchConcurrencyLimiter } from "./search-concurrency.js";
 
 const OUTCOMES = new Set([
   "COMPLETED",
@@ -60,6 +62,7 @@ export interface DiscoverySubgraphOptions {
   readonly monotonicNow?: () => number;
   readonly onOperation?: (trace: DiscoveryOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
+  readonly onLimit?: (metric: AsterOperationLimitMetricInput) => unknown;
 }
 
 export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions) {
@@ -67,11 +70,17 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
   const contexts = new WeakMap<IncomingMessage, DiscoveryGraphqlContext>();
   const errorCorrelations = new WeakMap<object, string>();
   const now = options.monotonicNow ?? (() => performance.now());
+  const searchConcurrency = createSearchConcurrencyLimiter({
+    monotonicNow: now,
+    ...(options.onLimit ? { recordMetric: options.onLimit } : {}),
+  });
   const lane = {
     credit: DISCOVERY_GRAPHQL_LIMITS.rateBurst as number,
     refreshedAt: now(),
     controllers: new Set<AbortController>(),
   };
+  const unavailable = (): boolean =>
+    closed || lane.controllers.size >= DISCOVERY_GRAPHQL_LIMITS.concurrent;
   let closed = false;
   let stopping: Promise<void> | undefined;
   const pending = new Set<Promise<unknown>>();
@@ -205,7 +214,7 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
       record();
       return;
     }
-    if (closed || lane.controllers.size >= DISCOVERY_GRAPHQL_LIMITS.concurrent) {
+    if (unavailable()) {
       reject(503, "UNAVAILABLE");
       record();
       return;
@@ -231,9 +240,28 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
       return;
     }
     operation = decision.operation;
+    const requestSignal = getExpressRequestAbortSignal(response);
+    const searchPermit =
+      operation === "search_titles" ? await searchConcurrency.acquire(requestSignal) : undefined;
+    if (searchPermit && searchPermit.status !== "acquired") {
+      if (searchPermit.status === "rejected") {
+        response.set("Retry-After", "1");
+        reject(429, "LIMIT_EXCEEDED");
+      } else {
+        reject(503, searchPermit.status === "cancelled" ? "CANCELLED" : "UNAVAILABLE");
+      }
+      record();
+      return;
+    }
+    if (unavailable()) {
+      searchPermit?.release();
+      reject(503, "UNAVAILABLE");
+      record();
+      return;
+    }
     const controller = new AbortController();
     lane.controllers.add(controller);
-    const signal = AbortSignal.any([getExpressRequestAbortSignal(response), controller.signal]);
+    const signal = AbortSignal.any([requestSignal, controller.signal]);
     const context = createDiscoveryGraphqlContext(
       options.search,
       options.home,
@@ -262,6 +290,7 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
       contexts.delete(request);
       lane.controllers.delete(controller);
       pending.delete(execution);
+      searchPermit?.release();
       record();
     }
   };
@@ -272,6 +301,7 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
     stop(): Promise<void> {
       if (!stopping) {
         closed = true;
+        searchConcurrency.close();
         for (const controller of lane.controllers) {
           controller.abort();
         }

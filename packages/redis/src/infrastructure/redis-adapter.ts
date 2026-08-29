@@ -21,6 +21,8 @@ import {
   type AsterRedisSnapshot,
   type AsterRedisTelemetry,
   type AsterRedisDeleteResult,
+  type AsterRedisTokenBucketPolicy,
+  type AsterRedisTokenBucketResult,
   type AsterRedisWriteMode,
   type AsterRedisWriteResult,
 } from "../redis-contract.js";
@@ -73,6 +75,8 @@ const COMPARE_AND_DELETE_SCRIPT =
   "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end";
 const ACQUIRE_RECOVERABLE_LEASE_SCRIPT =
   "local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'none' then redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; local ttl = redis.call('PTTL', KEYS[1]); if kind ~= 'string' or ttl == -1 or ttl > tonumber(ARGV[2]) then redis.call('DEL', KEYS[1]); redis.call('PSETEX', KEYS[1], ARGV[2], ARGV[1]); return 1 end; return 0";
+const CONSUME_TOKEN_BUCKET_SCRIPT =
+  "local capacity = tonumber(ARGV[1]); local refill = tonumber(ARGV[2]); local cost = tonumber(ARGV[3]); local state_ttl = tonumber(ARGV[4]); local clock = redis.call('TIME'); local now = tonumber(clock[1]) * 1000 + math.floor(tonumber(clock[2]) / 1000); local tokens = capacity; local recovered = 0; local kind = redis.call('TYPE', KEYS[1]).ok; if kind == 'string' then local raw = redis.call('GET', KEYS[1]); local saved_tokens, saved_at = string.match(raw, '^v1:(%d+):(%d+)$'); local ttl = redis.call('PTTL', KEYS[1]); saved_tokens = tonumber(saved_tokens); saved_at = tonumber(saved_at); if saved_tokens and saved_at and saved_tokens >= 0 and saved_tokens <= capacity and saved_at <= now and now - saved_at <= state_ttl and ttl >= 0 and ttl <= state_ttl then tokens = math.min(capacity, saved_tokens + math.floor((now - saved_at) * refill / 1000)); else recovered = 1 end elseif kind ~= 'none' then redis.call('DEL', KEYS[1]); recovered = 1 end; local allowed = 0; if tokens >= cost then tokens = tokens - cost; allowed = 1 end; local retry = 0; if allowed == 0 then retry = math.ceil((cost - tokens) * 1000 / refill) end; local reset = math.ceil((capacity - tokens) * 1000 / refill); redis.call('PSETEX', KEYS[1], state_ttl, 'v1:' .. tokens .. ':' .. now); return {allowed, math.floor(tokens / 1000), retry, reset, recovered}";
 const WRITE_MODES = new Set<unknown>(["replace", "if_absent"]);
 const STRICT_UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 
@@ -93,6 +97,7 @@ type ValidatedOptions = Readonly<{
 export type AsterRedisClientEvent = "connect" | "ready" | "reconnecting" | "error" | "end";
 
 type BoundedReadReply = readonly [0] | readonly [1, Buffer] | readonly [2] | readonly [3];
+type TokenBucketReply = readonly [0 | 1, number, number, number, 0 | 1];
 
 export interface AsterRedisClient {
   readonly isOpen: boolean;
@@ -113,6 +118,14 @@ export interface AsterRedisClient {
     ttlMs: number,
     signal: AbortSignal,
   ): Promise<number>;
+  consumeTokenBucket(
+    key: string,
+    capacityMilliTokens: number,
+    refillMilliTokensPerSecond: number,
+    costMilliTokens: number,
+    ttlMs: number,
+    signal: AbortSignal,
+  ): Promise<TokenBucketReply>;
   del(key: string, signal: AbortSignal): Promise<number>;
   compareAndDelete(key: string, expectedValue: string, signal: AbortSignal): Promise<number>;
   destroy(): void;
@@ -372,6 +385,46 @@ function validTtl(value: unknown): value is number {
   );
 }
 
+function tokenBucketPolicy(value: unknown): AsterRedisTokenBucketPolicy | undefined {
+  try {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return undefined;
+    }
+    const keys = Reflect.ownKeys(value);
+    if (
+      keys.length !== 4 ||
+      keys.some(
+        (key) =>
+          typeof key !== "string" ||
+          !["capacity", "refillPerSecond", "cost", "ttlMs"].includes(key),
+      )
+    ) {
+      return undefined;
+    }
+    const capacity = ownDataValue(value, "capacity");
+    const refillPerSecond = ownDataValue(value, "refillPerSecond");
+    const cost = ownDataValue(value, "cost");
+    const ttlMs = ownDataValue(value, "ttlMs");
+    if (
+      ![capacity, refillPerSecond, cost].every(
+        (item) =>
+          typeof item === "number" && Number.isSafeInteger(item) && item >= 1 && item <= 1_000,
+      ) ||
+      typeof capacity !== "number" ||
+      typeof refillPerSecond !== "number" ||
+      typeof cost !== "number" ||
+      cost > capacity ||
+      !validTtl(ttlMs) ||
+      ttlMs < Math.ceil((capacity * 1_000) / refillPerSecond)
+    ) {
+      return undefined;
+    }
+    return Object.freeze({ capacity, refillPerSecond, cost, ttlMs });
+  } catch {
+    return undefined;
+  }
+}
+
 function waitFor<T>(
   promise: Promise<T>,
   signal: AbortSignal | undefined,
@@ -503,6 +556,24 @@ function defaultClientFactory(configuration: AsterRedisClientConfiguration): Ast
           keys: [key],
           arguments: [ownershipToken, String(ttlMs)],
         }) as Promise<number>;
+    },
+    consumeTokenBucket(
+      key,
+      capacityMilliTokens,
+      refillMilliTokensPerSecond,
+      costMilliTokens,
+      ttlMs,
+      signal,
+    ): Promise<TokenBucketReply> {
+      return client.withCommandOptions({ abortSignal: signal }).eval(CONSUME_TOKEN_BUCKET_SCRIPT, {
+        keys: [key],
+        arguments: [
+          String(capacityMilliTokens),
+          String(refillMilliTokensPerSecond),
+          String(costMilliTokens),
+          String(ttlMs),
+        ],
+      }) as unknown as Promise<TokenBucketReply>;
     },
     del(key, signal): Promise<number> {
       return client.withCommandOptions({ abortSignal: signal }).del(key);
@@ -850,6 +921,25 @@ export function createAsterRedisAdapterWithClientFactory(
     );
   };
 
+  const validTokenBucketReply = (
+    value: unknown,
+    policy: AsterRedisTokenBucketPolicy,
+  ): value is TokenBucketReply =>
+    Array.isArray(value) &&
+    value.length === 5 &&
+    (value[0] === 0 || value[0] === 1) &&
+    value.slice(1).every((item) => typeof item === "number" && Number.isSafeInteger(item)) &&
+    typeof value[1] === "number" &&
+    value[1] >= 0 &&
+    value[1] < policy.capacity &&
+    typeof value[2] === "number" &&
+    (value[0] === 0 ? value[2] >= 1 : value[2] === 0) &&
+    value[2] <= policy.ttlMs &&
+    typeof value[3] === "number" &&
+    value[3] >= 1 &&
+    value[3] <= policy.ttlMs &&
+    (value[4] === 0 || (value[4] === 1 && value[0] === 1));
+
   const read = async (key: string, signal?: AbortSignal): Promise<AsterRedisReadResult> => {
     if (!validKey(key)) {
       return INVALID_INPUT_REJECTED;
@@ -961,6 +1051,41 @@ export function createAsterRedisAdapterWithClientFactory(
       : result;
   };
 
+  const consumeTokenBucket = async (
+    key: string,
+    input: AsterRedisTokenBucketPolicy,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisTokenBucketResult> => {
+    const policy = tokenBucketPolicy(input);
+    if (!validKey(key) || !policy) {
+      return INVALID_INPUT_REJECTED;
+    }
+    const result = await runCommand(
+      "command",
+      signal,
+      (client, operationSignal) =>
+        client.consumeTokenBucket(
+          key,
+          policy.capacity * 1_000,
+          policy.refillPerSecond * 1_000,
+          policy.cost * 1_000,
+          policy.ttlMs,
+          operationSignal,
+        ),
+      (reply): reply is TokenBucketReply => validTokenBucketReply(reply, policy),
+    );
+    return result.status === "completed"
+      ? Object.freeze({
+          status: "completed",
+          allowed: result.value[0] === 1,
+          remaining: result.value[1],
+          retryAfterMs: result.value[2],
+          resetAfterMs: result.value[3],
+          recovered: result.value[4] === 1,
+        })
+      : result;
+  };
+
   const snapshot = (): AsterRedisSnapshot =>
     Object.freeze({
       state,
@@ -1034,6 +1159,7 @@ export function createAsterRedisAdapterWithClientFactory(
     acquireLease,
     delete: deleteKey,
     compareAndDelete,
+    consumeTokenBucket,
     snapshot,
     close,
     lifecycleHooks: () => lifecycleHooks,

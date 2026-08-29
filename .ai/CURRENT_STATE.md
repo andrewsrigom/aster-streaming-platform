@@ -7,9 +7,8 @@ Last updated: 2026-08-29
 **Phase 10 — Advanced Redis and Concurrency**
 
 Status: **IN_PROGRESS**. Catalog cache is released on main `903f7b4`. Discovery
-stale-while-revalidate passed protected CI and clean confirmation, squash-merged
-as main `6a2fe3a`, and waits only for exact-main run `33275183338`. P10-R08 is the
-one permitted dependent local item on `feat/p10-operation-limiters`. Full
+stale-while-revalidate is released on main `6a2fe3a` through exact-main run
+`33275183338`. P10-R08 is active on `feat/p10-operation-limiters`. Full
 Phase00–14 goal stays active.
 
 ## Verified
@@ -125,13 +124,16 @@ fallback, zero broker lag, replay, isolation, restart recovery and cleanup0.
 Discovery99/99, telemetry11/11, Web111/111 and real Redis also pass. The Web stale
 path remains byte-identical after rebase, so browser1/1 carries forward.
 
-P10-R08 now owns the remaining Phase10 requirements. Its accepted plan places
+P10-R08 now owns the remaining Phase10 requirements. Its implementation places
 Redis-backed token buckets after current Engagement owner authorization and
 idempotency replay, partitioned by operation and an account pseudonym, with a
-bounded process-local outage/hot-key shield. Discovery search receives a separate
-two-active/one-waiter bulkhead. Redis remains disposable; final GraphQL/router
-identity and workload calibration remains Phase13. Implementation and evidence
-are pending.
+bounded process-local outage/hot-key shield. Discovery search has a separate
+two-active/one-waiter/100-ms bulkhead. Redis remains disposable; final
+GraphQL/router identity and workload calibration remains Phase13. Redis18/18,
+telemetry12/12, Engagement119/119 and Discovery105/105 focused suites pass. The
+complete non-Docker candidate gate passes 73/73. The real Redis fixture is
+implemented but its local run is pending because the Docker daemon is
+unavailable; no repeated daemon/WSL probe is authorized or needed.
 
 ## Historical Phase 09 corrections
 
@@ -179,17 +181,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Operation-specific Redis rate limiting, expensive-path concurrency limits, the
-mixed outage/hot-key closeout and Phase10 release are not implemented. Discovery
-is merged but not called released until exact-main run `33275183338` succeeds.
-Hosted deployment remains Phase14.
+The real limiter Redis/PostgreSQL evidence, review/release and Phase10 release
+remain. Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Verify exact-main run `33275183338`, record Discovery release, then implement and
-measure P10-R08 operation-specific rate limiting, finite search concurrency,
-Redis outage, atomicity and hot-key behavior. Release that single closeout and
-mark Phase 10 complete only after its protected and exact-main gates.
+Freeze the candidate, run disposable Redis/PostgreSQL evidence in hosted CI,
+complete review, then release P10-R08 and mark Phase 10 complete after protected
+and exact-main gates.
 
 ## Runtime and recovery
 

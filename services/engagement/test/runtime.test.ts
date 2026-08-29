@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { createServer } from "node:net";
 import test from "node:test";
 import type { AsterPostgresAdapter } from "@aster/postgres";
+import type { AsterRedisAdapter } from "@aster/redis";
 import { createLocalRouterTrust } from "@aster/http-express";
 import { createAsterLogger } from "@aster/runtime";
 import { createAsterTelemetry } from "@aster/telemetry";
@@ -102,8 +103,72 @@ function fixtureDatabase() {
   return { database, state };
 }
 
+function fixtureRedis() {
+  const state = { available: true, ready: false, closed: false };
+  const result = () =>
+    Promise.resolve(
+      state.available && !state.closed
+        ? ({ status: "completed" } as const)
+        : ({ status: "unavailable" } as const),
+    );
+  const redis: AsterRedisAdapter = {
+    connect: async () => {
+      const value = await result();
+      state.ready = value.status === "completed";
+      return value;
+    },
+    probe: result,
+    read: () => Promise.resolve({ status: "completed", value: null }),
+    write: () => Promise.resolve({ status: "completed", stored: true }),
+    acquireLease: () => Promise.resolve({ status: "completed", stored: true }),
+    delete: () => Promise.resolve({ status: "completed", deleted: true }),
+    compareAndDelete: () => Promise.resolve({ status: "completed", deleted: true }),
+    consumeTokenBucket: () =>
+      Promise.resolve({
+        status: "completed",
+        allowed: true,
+        remaining: 1,
+        retryAfterMs: 0,
+        resetAfterMs: 1_000,
+        recovered: false,
+      }),
+    snapshot: () => ({
+      state: state.closed ? "closed" : state.ready ? "ready" : "idle",
+      open: !state.closed,
+      ready: state.ready,
+      inFlightCommands: 0,
+      reconnectAttempts: 0,
+    }),
+    close: () => {
+      state.closed = true;
+      state.ready = false;
+      return Promise.resolve({ status: "completed" });
+    },
+    lifecycleHooks: () => ({ closeDependencies: () => Promise.resolve() }),
+  };
+  return { redis, state };
+}
+
 test("Engagement runtime requires explicit local activation, fixed owner credentials and protected listener", () => {
-  assert.equal(engagementRuntimeConfiguration(environment).port, 3400);
+  assert.deepEqual(
+    {
+      port: engagementRuntimeConfiguration(environment).port,
+      distributedRateLimit: engagementRuntimeConfiguration(environment).distributedRateLimit,
+    },
+    { port: 3400, distributedRateLimit: false },
+  );
+  assert.deepEqual(
+    engagementRuntimeConfiguration({
+      ...environment,
+      ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true",
+      REDIS_URL: "redis://redis:6379/0",
+    }),
+    {
+      ...engagementRuntimeConfiguration(environment),
+      distributedRateLimit: true,
+      redisUrl: "redis://redis:6379/0",
+    },
+  );
   for (const change of [
     { ASTER_ENGAGEMENT_UNKNOWN_FLAG: "true" },
     { ASTER_ENVIRONMENT: "production" },
@@ -123,6 +188,8 @@ test("Engagement runtime requires explicit local activation, fixed owner credent
     { ASTER_ENGAGEMENT_HTTP_PORT: "80" },
     { ASTER_ENGAGEMENT_HTTP_PORT: "65536" },
     { ASTER_ENGAGEMENT_HTTP_PORT: "3400.0" },
+    { ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "sometimes" },
+    { ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true", REDIS_URL: "" },
   ]) {
     assert.throws(() => engagementRuntimeConfiguration({ ...environment, ...change }));
   }
@@ -178,6 +245,7 @@ test("store readiness rejects authority, schema, admission and connectivity loss
 
 test("runtime probes only its store without calling optional owners, denies untrusted GraphQL, recovers readiness and shuts down", async () => {
   const { database, state } = fixtureDatabase();
+  const rateLimit = fixtureRedis();
   const logs: string[] = [];
   let ownerCalls = 0;
   const telemetry = createAsterTelemetry({
@@ -186,9 +254,15 @@ test("runtime probes only its store without calling optional owners, denies untr
     environment: "test",
   });
   const service = await createEngagementService(
-    { ...environment, ASTER_ENGAGEMENT_HTTP_PORT: String(await freePort()) },
+    {
+      ...environment,
+      ASTER_ENGAGEMENT_HTTP_PORT: String(await freePort()),
+      ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true",
+      REDIS_URL: "redis://redis:6379/0",
+    },
     {
       database,
+      redis: rateLimit.redis,
       telemetry,
       owners: {
         catalog: { visibility: () => Promise.resolve({ status: "unavailable" }) },
@@ -239,6 +313,12 @@ test("runtime probes only its store without calling optional owners, denies untr
     assert.equal(await service.start(), "ready");
     assert.equal(await service.start(), "ready");
     assert.equal(await status("/health/ready"), 200);
+    assert.equal(await service.checkRateLimitReadiness(AbortSignal.timeout(2_000)), "ready");
+    rateLimit.state.available = false;
+    assert.equal(await service.checkRateLimitReadiness(AbortSignal.timeout(2_000)), "unavailable");
+    assert.equal(await status("/health/ready"), 200);
+    rateLimit.state.available = true;
+    assert.equal(await service.checkRateLimitReadiness(AbortSignal.timeout(2_000)), "ready");
     assert.equal(await status("/graphql", { query: "{ _service { sdl } }" }), 403);
     for (const field of ["allowed", "available", "constraint"] as const) {
       state[field] = false;
@@ -257,6 +337,7 @@ test("runtime probes only its store without calling optional owners, denies untr
     assert.doesNotMatch(logs.join(""), /aster-test-only|postgresql:\/\/|master\.m3u8/u);
     assert.equal((await service.shutdown()).outcome, "completed");
     assert.equal(state.closed, true);
+    assert.equal(rateLimit.state.closed, true);
     assert.equal(service.health().phase, "stopped");
   } finally {
     await service.shutdown();

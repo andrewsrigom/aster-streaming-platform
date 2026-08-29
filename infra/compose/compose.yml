@@ -261,6 +261,8 @@ services:
       ASTER_ENGAGEMENT_HTTP_PORT: "3400"
       ASTER_ENGAGEMENT_DATABASE_URL: postgresql://aster_engagement_local@postgres:5432/aster
       ASTER_ENGAGEMENT_DATABASE_PASSWORD: aster-test-only
+      ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true"
+      REDIS_URL: redis://redis:6379/0
       ASTER_ROUTER_TRUST_ENABLED: "true"
     volumes:
       - engagement-router-trust:/run/aster-router:ro

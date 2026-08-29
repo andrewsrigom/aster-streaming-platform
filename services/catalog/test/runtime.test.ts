@@ -94,6 +94,7 @@ function unavailableRedis() {
     read: bypassRead,
     write: unavailable,
     acquireLease: unavailable,
+    consumeTokenBucket: unavailable,
     delete: unavailable,
     compareAndDelete: unavailable,
     snapshot: () => ({

@@ -1,0 +1,34 @@
+P10 Discovery stale cache release
+Date: 2026-08-29
+Status: released
+
+Source and publication
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/39
+- Exact reviewed head: 601cc95e0fb21e998b49afe1e9c39dbea99adf39.
+- Protected run: 33274397440, PASS.
+- Confirmation comment: 5464820688, no major issue found at the exact head.
+- Unresolved review threads before merge: 0.
+- Merge state before merge: CLEAN and MERGEABLE.
+- Squash merge: 6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0 at
+  2026-08-29T21:06:02Z, without protection bypass.
+- Exact-main run: 33275183338, PASS.
+- Exact-main run URL:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33275183338
+
+Protected result
+- Classify change: PASS.
+- Install and source quality: PASS, including the real platform, Catalog,
+  Playback, Engagement, Discovery, Docker-only demo and dependency audit.
+- Documentation and security: PASS.
+- Local platform: PASS.
+- CI required: PASS.
+- Dependency review: skipped as designed for a push event.
+
+Integrity
+The reviewed head and squash commit have identical Git tree
+997b0099daf35f326c3fc17850e985cdeb98c2a1. The exact-main run therefore
+verifies the released source without an intervening implementation change.
+
+Limitations
+This is a repository/local release. No hosted Aster deployment or field SLO is
+claimed.

@@ -24,6 +24,7 @@ import type {
   AsterHttpObservationInput,
   AsterMetricAttributeValue,
   AsterMetricCollectionResult,
+  AsterOperationLimitMetricInput,
   AsterObservationCompletionResult,
   AsterRecordMetricResult,
   AsterStartDependencyObservationResult,
@@ -39,6 +40,10 @@ import {
   ASTER_CACHE_WAITER_BUCKETS,
   ASTER_DISCOVERY_RAIL_KINDS,
   ASTER_DISCOVERY_RAIL_OUTCOMES,
+  ASTER_LIMITED_OPERATIONS,
+  ASTER_OPERATION_LIMITERS,
+  ASTER_OPERATION_LIMIT_OUTCOMES,
+  ASTER_OPERATION_LIMIT_QUEUE_BUCKETS,
 } from "../ports/telemetry-contract.js";
 import { elapsedSeconds } from "./duration.js";
 import { HealthTrackingExporter, type ExportAttemptObserver } from "./health-tracking-exporter.js";
@@ -205,6 +210,39 @@ function parseCacheMetric(input: unknown): AsterCacheMetricInput | undefined {
   });
 }
 
+function parseOperationLimitMetric(input: unknown): AsterOperationLimitMetricInput | undefined {
+  const required = ["limiter", "operation", "outcome", "durationMs"];
+  const value = exactRecord(input, required) ?? exactRecord(input, [...required, "queueBucket"]);
+  if (
+    !value ||
+    !ASTER_OPERATION_LIMITERS.includes(value["limiter"] as never) ||
+    !ASTER_LIMITED_OPERATIONS.includes(value["operation"] as never) ||
+    !ASTER_OPERATION_LIMIT_OUTCOMES.includes(value["outcome"] as never) ||
+    !finite(value["durationMs"], 0, 60_000) ||
+    (Object.hasOwn(value, "queueBucket") &&
+      !ASTER_OPERATION_LIMIT_QUEUE_BUCKETS.includes(value["queueBucket"] as never)) ||
+    (value["limiter"] === "rate" && Object.hasOwn(value, "queueBucket")) ||
+    (value["limiter"] === "concurrency" && value["operation"] !== "search_titles") ||
+    (value["limiter"] === "rate" && value["operation"] === "search_titles")
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    limiter: value["limiter"] as AsterOperationLimitMetricInput["limiter"],
+    operation: value["operation"] as AsterOperationLimitMetricInput["operation"],
+    outcome: value["outcome"] as AsterOperationLimitMetricInput["outcome"],
+    durationMs: value["durationMs"],
+    ...(Object.hasOwn(value, "queueBucket")
+      ? {
+          queueBucket: value["queueBucket"] as Exclude<
+            AsterOperationLimitMetricInput["queueBucket"],
+            undefined
+          >,
+        }
+      : {}),
+  });
+}
+
 function frozenHealth(
   attempts: number,
   successes: number,
@@ -360,6 +398,8 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
   private readonly cacheDuration;
   private readonly cacheOutcomes;
   private readonly cachePayloadBytes;
+  private readonly operationLimitDuration;
+  private readonly operationLimitOutcomes;
   private readonly runtimeCallback: BatchObservableCallback;
   private readonly runtimeObservables: Observable[];
   private activeObservations = 0;
@@ -514,6 +554,34 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           ],
           aggregationCardinalityLimit: options.cardinalityLimit,
         },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.operationLimitDuration.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: { boundaries: [...DEPENDENCY_DURATION_BUCKETS_SECONDS], recordMinMax: true },
+          },
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.limiter",
+              "aster.operation",
+              "aster.outcome",
+              "aster.limit.queue",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.operationLimitOutcomes.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.limiter",
+              "aster.operation",
+              "aster.outcome",
+              "aster.limit.queue",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
       ],
     });
 
@@ -573,6 +641,14 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     this.cachePayloadBytes = meter.createHistogram(
       ASTER_METRIC_CATALOG.cachePayloadBytes.name,
       ASTER_METRIC_CATALOG.cachePayloadBytes,
+    );
+    this.operationLimitDuration = meter.createHistogram(
+      ASTER_METRIC_CATALOG.operationLimitDuration.name,
+      ASTER_METRIC_CATALOG.operationLimitDuration,
+    );
+    this.operationLimitOutcomes = meter.createCounter(
+      ASTER_METRIC_CATALOG.operationLimitOutcomes.name,
+      ASTER_METRIC_CATALOG.operationLimitOutcomes,
     );
 
     const processCpuTime = meter.createObservableCounter(
@@ -828,6 +904,26 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     if (value.payloadBytes !== undefined) {
       this.cachePayloadBytes.record(value.payloadBytes, attributes);
     }
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordOperationLimit(input: AsterOperationLimitMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseOperationLimitMetric(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const attributes = {
+      "aster.limiter": value.limiter,
+      "aster.operation": value.operation,
+      "aster.outcome": value.outcome,
+      ...(value.queueBucket === undefined ? {} : { "aster.limit.queue": value.queueBucket }),
+    };
+    this.operationLimitDuration.record(value.durationMs / 1_000, attributes);
+    this.operationLimitOutcomes.add(1, attributes);
     return Object.freeze({ status: "recorded" });
   }
 

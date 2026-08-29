@@ -22,13 +22,13 @@ Phase 13's final public GraphQL calibration.
 ## Current behavior
 
 Catalog cache-aside is released through main `903f7b4`. Discovery stale serving
-passed PR39 protected run `33274397440`, clean exact-head confirmation and
-squash-merged as `6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0`; its exact-main
-run `33275183338` is the frozen predecessor gate. Existing subgraphs have only
-process-global token buckets and no operation identity partition. Discovery has
-one four-request transport lane, so queued search work can consume the same
-admission used by home rails. The shared Redis adapter has bounded cache and lease
-commands but no atomic rate-decision command.
+is released through PR39, squash `6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0`
+and exact-main run `33275183338`. The candidate implements the bounded Redis
+token-bucket command, Engagement account-operation admission, local degraded
+shield, finite limiter telemetry and the Discovery search-only bulkhead. Focused
+Redis, telemetry, Engagement and Discovery suites pass, and the complete affected
+candidate gate passes 73/73. Real disposable Redis/PostgreSQL and hosted gates
+remain before verification and release.
 
 ## Proposed behavior
 
@@ -102,7 +102,7 @@ settles every waiter before dependency closure.
 | Redis atomic rejection | Return `LIMIT_EXCEEDED` and bounded retry metadata; execute no later owner dependency/write | limiter `rejected` |
 | Wrong-type, malformed, future, non-expiring or excessive-TTL state | Atomically replace only the exact key with one finite current decision | limiter `recovered` and decision |
 | Caller cancellation before a Redis decision | Return cancelled; do not fall back or write | limiter `cancelled` |
-| Local partition capacity exhausted | Redis remains the global authority for existing identities; reject new local admission safely when Redis cannot decide | limiter `local_rejected` or `local_fallback` |
+| Local partition capacity exhausted | Redis remains the global authority for existing identities; reject new local admission safely when Redis cannot decide | limiter `rejected` or Redis decision |
 | Search active slots full with queue available | Wait at most 100 ms with caller cancellation | concurrency `queued` then terminal outcome |
 | Search queue full or wait expires | Reject without running the search source | concurrency `rejected` |
 | Limiter telemetry failure | Preserve the already made admission decision | no behavior change |
@@ -173,7 +173,8 @@ settles every waiter before dependency closure.
   the Phase 10 complete acceptance gate.
 - Raw artifact path: `evidence/phase-10/operation-limiters-*.txt`, Discovery
   release evidence and updated Phase 10 index.
-- Acceptance result: pending implementation.
+- Acceptance result: implementation and the complete local non-Docker candidate
+  gate pass; real disposable dependency and hosted evidence remain pending.
 - Iteration gate: affected package/service builds and focused tests, then scoped
   lint/format.
 - Candidate gate: `pnpm check:changed` plus real Redis atomicity/hot-key and
@@ -200,8 +201,8 @@ runbooks, Phase 10 evidence/index, roadmap and repository memory.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
+- [x] Requirements satisfied in implementation and focused contracts
+- [x] Local non-Docker candidate tests pass
 - [ ] Evidence captured
 - [ ] Documentation current
 - [ ] `.ai/` state updated

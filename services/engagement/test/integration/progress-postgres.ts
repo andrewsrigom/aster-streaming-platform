@@ -7,6 +7,7 @@ import { createPostgresProgressRead } from "../../src/infrastructure/postgres-pr
 import { createProgressQueries } from "../../src/application/read-progress.js";
 import { createPostgresProgress } from "../../src/infrastructure/postgres-progress.js";
 import { createProgressRecorder } from "../../src/application/record-progress.js";
+import { createEngagementOperationLimiter } from "../../src/infrastructure/operation-limiter.js";
 import type { ProgressPorts, ProgressRequest } from "../../src/application/progress-ports.js";
 import {
   DEFAULT_PROGRESS_POLICY,
@@ -216,6 +217,26 @@ try {
     /identity is immutable/u,
   );
   output("engagement_runtime_isolation", { crossOwnerDdlAndRetentionWrites: "rejected" });
+
+  const outage = fixture();
+  const outageLimiter = createEngagementOperationLimiter({
+    environment: "test",
+    digest: (value) => createHash("sha256").update(value).digest("hex"),
+    redis: { consumeTokenBucket: () => Promise.resolve({ status: "unavailable" }) },
+  });
+  const outageRecorder = createProgressRecorder({ ...outage.ports, limiter: outageLimiter });
+  const outageInput = outage.input();
+  const outageAccepted = await outageRecorder.record(outageInput, outage.request);
+  assert.equal(outageAccepted.status, "completed");
+  assert.deepEqual(await outageRecorder.record(outageInput, outage.request), outageAccepted);
+  assert.deepEqual(await counts(outage.profileId), { progress: 1, receipts: 1, outbox: 1 });
+  output("engagement_redis_outage_progress", {
+    localAdmission: "allowed",
+    durableProgress: 1,
+    durableReceipts: 1,
+    durableEvents: 1,
+    exactReplayEffects: 1,
+  });
 
   // Hold both callbacks at the transaction boundary so receipt preflight cannot serialize the test.
   const race = fixture();

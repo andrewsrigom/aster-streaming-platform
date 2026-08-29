@@ -259,6 +259,15 @@ export async function createEngagementSubgraph(options: EngagementSubgraphOption
       options.queries,
       options.watchlist,
       options.fields,
+      (retryAfterMs) => {
+        const bounded =
+          typeof retryAfterMs === "number" && Number.isFinite(retryAfterMs) && retryAfterMs > 0
+            ? Math.min(30, Math.max(1, Math.ceil(retryAfterMs / 1_000)))
+            : 1;
+        if (!response.headersSent && !response.destroyed) {
+          response.set("Retry-After", String(bounded));
+        }
+      },
     );
     contexts.set(request, context);
     const timer = setTimeout(() => {

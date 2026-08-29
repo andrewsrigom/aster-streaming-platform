@@ -148,6 +148,7 @@ jobs:
         timeout-minutes: 20
         run: |
           pnpm engagement:integration
+          pnpm engagement:rate-limit-integration
           pnpm engagement:runtime
       - name: Prove Discovery projection and federated search
         if: needs.classify.outputs.platform == 'true'

@@ -68,6 +68,24 @@ export type AsterRedisWriteResult =
 export type AsterRedisDeleteResult =
   Readonly<{ status: "completed"; deleted: boolean }> | AsterRedisCommandFailure;
 
+export interface AsterRedisTokenBucketPolicy {
+  readonly capacity: number;
+  readonly refillPerSecond: number;
+  readonly cost: number;
+  readonly ttlMs: number;
+}
+
+export type AsterRedisTokenBucketResult =
+  | Readonly<{
+      status: "completed";
+      allowed: boolean;
+      remaining: number;
+      retryAfterMs: number;
+      resetAfterMs: number;
+      recovered: boolean;
+    }>
+  | AsterRedisCommandFailure;
+
 export type AsterRedisWriteMode = "replace" | "if_absent";
 
 export type AsterRedisCloseResult = Readonly<{
@@ -105,6 +123,11 @@ export interface AsterRedisAdapter {
     expectedValue: string,
     signal?: AbortSignal,
   ): Promise<AsterRedisDeleteResult>;
+  consumeTokenBucket(
+    key: string,
+    policy: AsterRedisTokenBucketPolicy,
+    signal?: AbortSignal,
+  ): Promise<AsterRedisTokenBucketResult>;
   snapshot(): AsterRedisSnapshot;
   close(signal?: AbortSignal): Promise<AsterRedisCloseResult>;
   lifecycleHooks(): Readonly<{

@@ -2,6 +2,35 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-29 — Operation admission candidate implementation
+
+### Completed
+
+- Implemented the bounded Redis-server-time token bucket, exact policy/reply
+  validation and atomic recovery of malformed, wrong-type, future, non-expiring
+  and excessive-TTL state.
+- Added Engagement account-operation admission after current owner and receipt
+  replay, a 1,024-partition local outage/hot-key shield, additive
+  `LIMIT_EXCEEDED` results and non-critical Redis lifecycle.
+- Added the Discovery two-active/one-waiter/100-ms search bulkhead without making
+  home rails wait for search capacity, plus finite limiter telemetry.
+- Redis18/18, telemetry12/12, Engagement119/119 and Discovery105/105 pass. The
+  complete non-Docker candidate gate passes 73/73 after correcting one obsolete
+  Catalog Redis mock and strict lint findings.
+- The disposable real Redis/PostgreSQL fixtures are implemented. One local Redis
+  attempt found Docker unavailable, so no repeated Docker/WSL loop was run.
+
+### Evidence
+
+- Local `pnpm check:changed`: 73/73 tasks passed.
+- Generated supergraph: compatibility base `6a2fe3a`, eight artifacts, manifest
+  SHA-256 `57b0081027cf85459de5e0449c552251ac41d116181efdf0cefea8133160e1a0`.
+
+### Next action
+
+Commit the coherent candidate, publish one PR and use hosted CI for the real
+Redis/PostgreSQL gates before confirmation and release.
+
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 
 ### Completed
@@ -2442,23 +2471,23 @@ Execute P00-R08 by adding bounded `.ai/` consistency checks to the normal contri
 
 Confirm the configured GitHub identity and target absence, then create and audit the authorized public repository without claiming settings before they are observed.
 
-## 2026-08-26 — Efficient and secure CI foundation
+**Historical checkpoint — 2026-08-26 — Efficient and secure CI foundation**
 
-### Completed
+**Completed**
 
 - Added one least-privilege GitHub Actions workflow for pull requests, `main` pushes, and manual diagnosis with concurrency cancellation and one stable `CI required` result.
 - Added fail-safe path classification, a dependency-free redacting repository and staged-index secret scanner, a workflow-policy validator, and focused adverse tests.
 - Pinned every external action to a reviewed immutable commit, kept frozen installation authoritative over cache restoration, and added high-severity registry audit, pull-request dependency and license review, and bounded weekly Dependabot groups.
 - Hardened the aggregate decision against unexpected skipped jobs and made source deletions select the complete quality path.
 
-### Evidence
+**Evidence**
 
 - Passed checksum-verified actionlint `1.7.12` with zero workflow error, 13 focused CI-policy/classification tests, 6 secret-scanner tests, and 27 dependency-free governance tests.
 - Passed frozen installation without changing manifests, the forced sixteen-task graph with 52 focused tests in `4.94` seconds of Turbo task time, and the registry audit with no known vulnerability.
 - Verified 127 Markdown documents, 237 local links, zero secret finding, and zero CI-policy violation; hosted workflow and repository protections remain deliberately unclaimed until publication.
 - Raw evidence: `evidence/phase-00/ci-security-foundation.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R07 by adding contribution governance and repository templates before the authorized public repository is created and audited.
 

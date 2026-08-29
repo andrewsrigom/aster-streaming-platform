@@ -104,6 +104,18 @@ export function createWatchlistWriter(ports: WatchlistPorts) {
         if (existing) {
           return existing;
         }
+        const admission = await ports.limiter?.admit(
+          "set_watchlist",
+          owner.value.accountId,
+          signal,
+        );
+        signal.throwIfAborted();
+        if (admission?.status === "rejected") {
+          return { status: "limit_exceeded", retryAfterMs: admission.retryAfterMs };
+        }
+        if (admission?.status === "cancelled" || admission?.status === "unavailable") {
+          return { status: admission.status };
+        }
         let checkedAt = owner.value.checkedAt;
         let expiresAt = owner.value.expiresAt;
         if (input.present) {

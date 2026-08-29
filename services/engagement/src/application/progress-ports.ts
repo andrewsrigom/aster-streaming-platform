@@ -1,5 +1,6 @@
 import type { ProgressPolicy, ProgressState } from "../domain/progress.js";
 import type { ProgressRecordedEvent } from "../domain/progress-event.js";
+import type { EngagementOperationLimiter } from "./operation-limit-ports.js";
 
 export type ProgressResult<T> =
   | Readonly<{ status: "completed"; value: T }>
@@ -12,9 +13,11 @@ export type ProgressResult<T> =
         | "stale"
         | "conflict"
         | "backpressure"
+        | "limit_exceeded"
         | "unavailable"
         | "cancelled"
         | "indeterminate";
+      retryAfterMs?: number;
     }>;
 export interface ProgressKey {
   readonly accountId: string;
@@ -41,6 +44,7 @@ export interface ProgressTransaction {
   appendOutbox(event: ProgressRecordedEvent): Promise<void>;
 }
 export interface ProgressPorts {
+  readonly limiter?: EngagementOperationLimiter;
   readonly identity: {
     authorizeProfile(
       credential: string,

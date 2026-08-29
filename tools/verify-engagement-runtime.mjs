@@ -125,6 +125,7 @@ export function validateEngagementRuntime(source) {
             "    depends_on:\n      engagement-init:\n        condition: service_completed_successfully\n      router-trust-init:\n        condition: service_completed_successfully\n",
             '      ASTER_ENGAGEMENT_LOCAL_ENABLED: "true"\n      ASTER_ENGAGEMENT_HTTP_HOST: 0.0.0.0\n      ASTER_ENGAGEMENT_HTTP_PORT: "3400"\n',
             "      ASTER_ENGAGEMENT_DATABASE_URL: postgresql://aster_engagement_local@postgres:5432/aster\n      ASTER_ENGAGEMENT_DATABASE_PASSWORD: aster-test-only\n",
+            '      ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true"\n      REDIS_URL: redis://redis:6379/0\n',
             '      ASTER_ROUTER_TRUST_ENABLED: "true"\n',
             "    volumes:\n      - engagement-router-trust:/run/aster-router:ro\n      - engagement-identity-trust:/run/aster-engagement-identity:ro\n      - engagement-playback-trust:/run/aster-engagement-playback:ro\n      - engagement-catalog-trust:/run/aster-engagement-catalog:ro\n",
             '          cpus: "1.00"\n          memory: 384M\n          pids: 64\n',
@@ -146,7 +147,6 @@ export function validateEngagementRuntime(source) {
       "network_mode:",
       "cap_add:",
       "${",
-      "redis",
       "      identity:\n",
       "      playback:\n",
       "      catalog:\n",
@@ -154,7 +154,7 @@ export function validateEngagementRuntime(source) {
       "discovery",
       ...(runtime
         ? ["command:", "healthcheck:", "ASTER_ENGAGEMENT_ADMIN", "ASTER_ENGAGEMENT_MIGRATION"]
-        : ["volumes:"]),
+        : ["volumes:", "redis", "ASTER_ENGAGEMENT_RATE_LIMIT"]),
     ];
     if (
       required.some((value) => !block.includes(value)) ||

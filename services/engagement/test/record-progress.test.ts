@@ -206,6 +206,39 @@ test("exact replay survives playback expiry and returns the original result even
   assert.equal(f.state().events.length, 2);
 });
 
+test("operation admission follows owner and replay but precedes Playback and persistence", async () => {
+  const rejected = fixture();
+  let admissions = 0;
+  const recorder = createProgressRecorder({
+    ...rejected.ports,
+    limiter: {
+      admit: (_operation, accountId) => {
+        admissions++;
+        assert.equal(accountId, id(2));
+        return Promise.resolve({ status: "rejected", retryAfterMs: 250 });
+      },
+    },
+  });
+  assert.deepEqual(await recorder.record(input(), rejected.request), {
+    status: "limit_exceeded",
+    retryAfterMs: 250,
+  });
+  assert.equal(admissions, 1);
+  assert.deepEqual(rejected.calls, { identity: 1, playback: 0, receipt: 1, transaction: 0 });
+
+  const replayed = fixture();
+  const first = await replayed.recorder.record(input(), replayed.request);
+  const replayRecorder = createProgressRecorder({
+    ...replayed.ports,
+    limiter: {
+      admit: () => {
+        throw new Error("must not admit replay");
+      },
+    },
+  });
+  assert.deepEqual(await replayRecorder.record(input(), replayed.request), first);
+});
+
 test("same key with changed raw payload conflicts even when positions clamp to the same value", async () => {
   const f = fixture();
   await f.recorder.record(input({ positionMs: 7000 }), f.request);
