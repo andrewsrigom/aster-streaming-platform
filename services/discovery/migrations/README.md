@@ -14,3 +14,9 @@ continues using only migration-2 objects. Its init preflight also accepts marker
 that migration. Valid bootstrap/partial migration states remain supported and a
 four-row read makes marker `4` fail closed. This makes migration-first rollout
 and rollback compatible while the later rails binary requires its new view.
+
+Migration `0003` adds only the security-barrier `discovery.rail_documents` view.
+It joins generation rows to title fences when source version and document digest
+both match, preventing an older generation from borrowing newer metadata. Runtime
+has read-only access; projector and public roles have none. Its down migration
+drops only the view and preserves every fence, generation and search document.

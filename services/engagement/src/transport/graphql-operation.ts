@@ -52,6 +52,7 @@ const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = 
     _service: "Service",
     progressHistory: "PagePayload",
     continueWatching: "PagePayload",
+    homeContinueWatching: "PagePayload",
     watchlist: "WatchlistPage",
   },
   Mutation: { recordProgress: "Payload", setWatchlist: "WatchlistPayload" },

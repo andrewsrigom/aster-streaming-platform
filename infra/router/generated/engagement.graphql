@@ -81,6 +81,7 @@ type ProgressPagePayload {
 type Query {
   progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
+  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
   watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
 }
 

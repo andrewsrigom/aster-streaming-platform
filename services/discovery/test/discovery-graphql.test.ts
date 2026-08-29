@@ -10,7 +10,9 @@ import {
   validate,
   type GraphQLObjectType,
 } from "graphql";
-import { createTitleSearch } from "../src/application/search-titles.js";
+import { createHomeRails } from "../src/application/home-rails.js";
+import type { HomeRailUnitOfWork } from "../src/application/rail-ports.js";
+import { createTitleSearch, type SearchQualitySample } from "../src/application/search-titles.js";
 import type { SearchUnitOfWork } from "../src/application/search-ports.js";
 import { searchCursor } from "../src/domain/search-input.js";
 import {
@@ -25,9 +27,15 @@ const now = 1_700_000_000;
 const generation = id(90);
 export const SEARCH_TITLES =
   "query SearchTitles($query: String!, $locale: String!, $first: Int! = 20, $after: String) { searchTitles(query: $query, locale: $locale, first: $first, after: $after) { code correlationId connection { generation edges { cursor sourceVersion indexedAt visibleUntil node { id } } pageInfo { endCursor hasNextPage } } } }";
+export const HOME_RAILS =
+  "query HomeRails($first: Int! = 10) { homeRails(first: $first) { code correlationId generation generatedAt featured { code rail { key kind genre source oldestIndexedAt freshUntil edges { sourceVersion indexedAt visibleUntil node { id } } } } recentlyAdded { code rail { key kind source edges { node { id } } } } trending { code rail { key kind source edges { node { id } } } } genres { code rails { key kind genre source edges { node { id } } } } } }";
+const ROUTER_HOME_RAILS = HOME_RAILS.replace(
+  "query HomeRails",
+  "query HomePublic__discovery__0",
+).replaceAll("node { id }", "node { __typename id }");
 const variables = { query: "Café", locale: "pt-BR", first: 2, after: null };
 
-function search(stale = false) {
+function search(stale = false, observeSample?: (sample: SearchQualitySample) => void) {
   const transactions: SearchUnitOfWork = {
     async run(work, signal) {
       return signal.aborted
@@ -51,7 +59,28 @@ function search(stale = false) {
           };
     },
   };
-  return createTitleSearch({ transactions });
+  return createTitleSearch({
+    transactions,
+    ...(observeSample ? { observeSample } : {}),
+  });
+}
+
+function home() {
+  const transactions: HomeRailUnitOfWork = {
+    async run(work, signal) {
+      return signal.aborted
+        ? { status: "cancelled" }
+        : {
+            status: "completed",
+            value: await work({
+              state: () => Promise.resolve({ generation, status: "empty" }),
+              fixed: () => Promise.resolve([]),
+              genres: () => Promise.resolve([]),
+            }),
+          };
+    },
+  };
+  return createHomeRails({ transactions });
 }
 
 test("Discovery composes additively and contributes search plus Catalog Title references only", () => {
@@ -72,6 +101,7 @@ test("Discovery composes additively and contributes search plus Catalog Title re
   assert.deepEqual(findBreakingChanges(buildSchema(previous), api), []);
   assert.deepEqual(validate(api, parse(known)), []);
   assert.deepEqual(validate(api, parse(SEARCH_TITLES)), []);
+  assert.deepEqual(validate(api, parse(HOME_RAILS)), []);
   assert.match(result.supergraphSdl, /http:\/\/discovery:3500\/graphql/u);
   assert.equal(api.getType("DiscoverySourceSnapshot"), undefined);
   assert.equal(api.getQueryType()?.getFields()["_discoveryExport"], undefined);
@@ -81,6 +111,56 @@ test("Discovery composes additively and contributes search plus Catalog Title re
   );
 });
 
+test("home resolver exposes explicit empty groups without fabricated titles", async () => {
+  const result = await graphql({
+    schema: createDiscoverySchema(),
+    source: HOME_RAILS,
+    variableValues: { first: 10 },
+    contextValue: createDiscoveryGraphqlContext(
+      search(),
+      home(),
+      () => now,
+      AbortSignal.timeout(1000),
+      id(99),
+    ),
+  });
+  assert.equal(result.errors, undefined);
+  assert.deepEqual(JSON.parse(JSON.stringify(result.data)), {
+    homeRails: {
+      code: "COMPLETED",
+      correlationId: id(99),
+      generation,
+      generatedAt: now,
+      featured: {
+        code: "EMPTY",
+        rail: {
+          key: "featured",
+          kind: "FEATURED",
+          genre: null,
+          source: "FEATURED",
+          oldestIndexedAt: null,
+          freshUntil: null,
+          edges: [],
+        },
+      },
+      recentlyAdded: {
+        code: "EMPTY",
+        rail: {
+          key: "recently-added",
+          kind: "RECENTLY_ADDED",
+          source: "RECENTLY_ADDED",
+          edges: [],
+        },
+      },
+      trending: {
+        code: "EMPTY",
+        rail: { key: "trending", kind: "TRENDING", source: "TRENDING", edges: [] },
+      },
+      genres: { code: "EMPTY", rails: [] },
+    },
+  });
+});
+
 test("search resolver returns bounded Title references and explicit freshness metadata", async () => {
   const result = await graphql({
     schema: createDiscoverySchema(),
@@ -88,6 +168,7 @@ test("search resolver returns bounded Title references and explicit freshness me
     variableValues: variables,
     contextValue: createDiscoveryGraphqlContext(
       search(),
+      home(),
       () => now,
       AbortSignal.timeout(1000),
       id(99),
@@ -124,6 +205,26 @@ test("search resolver returns bounded Title references and explicit freshness me
   });
 });
 
+test("search quality sampling is deterministic from a finite correlation identifier", async () => {
+  const samples: SearchQualitySample[] = [];
+  for (const correlationId of [id(0), id(99)]) {
+    const result = await graphql({
+      schema: createDiscoverySchema(),
+      source: SEARCH_TITLES,
+      variableValues: variables,
+      contextValue: createDiscoveryGraphqlContext(
+        search(false, (sample) => samples.push(sample)),
+        home(),
+        () => now,
+        AbortSignal.timeout(1000),
+        correlationId,
+      ),
+    });
+    assert.equal(result.errors, undefined);
+  }
+  assert.deepEqual(samples, [{ resultCount: 1, topRank: 900_000 }]);
+});
+
 test("stale projection is explicit and a forged context cannot invoke search", async () => {
   const stale = await graphql({
     schema: createDiscoverySchema(),
@@ -131,6 +232,7 @@ test("stale projection is explicit and a forged context cannot invoke search", a
     variableValues: variables,
     contextValue: createDiscoveryGraphqlContext(
       search(true),
+      home(),
       () => now,
       AbortSignal.timeout(1000),
       id(99),
@@ -166,6 +268,9 @@ test("operation guard accepts bounded search/service documents and rejects ampli
       "search_titles",
     ],
     ['query Search { searchTitles(query: "Signal", locale: "en") { code } }', {}, "search_titles"],
+    [HOME_RAILS, { first: 12 }, "home_rails"],
+    [ROUTER_HOME_RAILS, { first: 12 }, "home_rails"],
+    ["query Home { homeRails { code } }", {}, "home_rails"],
     ["query Service { _service { sdl } }", {}, "service_schema"],
   ] as const) {
     assert.deepEqual(inspectDiscoveryOperation({ query, variables: supplied }), {
@@ -191,6 +296,9 @@ test("operation guard accepts bounded search/service documents and rejects ampli
     SEARCH_TITLES.replace("query SearchTitles", "mutation SearchTitles"),
     'query Search { a: searchTitles(query: "a", locale: "en") { code } b: searchTitles(query: "b", locale: "en") { code } }',
     'query Search { searchTitles(query: "Signal", locale: "en", first: 21) { code } }',
+    "query Home { homeRails(first: 13) { code } }",
+    `query Home { homeRails { ${"code ".repeat(97)} } }`,
+    'query Home { homeRails { code } searchTitles(query: "a", locale: "en") { code } }',
     'query Search { searchTitles(query: "Signal", locale: "bad locale") { code } }',
     'query Search { searchTitles(query: "Signal", locale: "en") { connection { edges { node { synopsis } } } } }',
     "query Search { __schema { types { name } } }",

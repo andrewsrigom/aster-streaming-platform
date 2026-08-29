@@ -1,6 +1,10 @@
 # Supergraph Delivery
 
-Phase 04 is released. This package composes Identity, Catalog, Playback, Engagement and the current Discovery search candidate. The separate pinned Apollo Router executes the generated supergraph with private owner credentials and bounded telemetry. [Phase 04 evidence](../../evidence/phase-04/README.md), [Discovery evidence](../../evidence/phase-09/README.md).
+Phase 04 is released. This package composes Identity, Catalog, Playback,
+Engagement and the current Discovery search/home candidate. The separate pinned
+Apollo Router executes the generated supergraph with private owner credentials
+and bounded telemetry. [Phase 04 evidence](../../evidence/phase-04/README.md),
+[Discovery evidence](../../evidence/phase-09/README.md).
 
 ## Commands
 
@@ -14,11 +18,21 @@ pnpm --filter @aster/router test
 
 Both root schema commands first build Identity, Catalog, Playback, Engagement, Discovery and this tooling through declared workspace dependencies. Each owner prints its executable Federation schema in a bounded local child process; no service, PostgreSQL, Docker, GraphOS registry, credential or introspection request is needed. `schema:check` is read-only. `schema:update` explicitly regenerates the eight files under [infra/router/generated](../../infra/router/generated/manifest.json), then verifies them. Commit the resulting artifact set together, not a hand-edited subset.
 
-The generated set contains five subgraph SDLs, the public API SDL, Router-ready supergraph SDL and a format-version-1 manifest with exact tool versions, file hashes, field/entity ownership and 23 known-operation hashes. Routing URLs are internal service names, not public endpoints. Composition uses the existing approved Apollo 2.14.4 and GraphQL 16.14.2 pins; [ADR-0003](../../docs/adr/0003-federation.md) and [ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md) remain applicable.
+The generated set contains five subgraph SDLs, the public API SDL, Router-ready
+supergraph SDL and a format-version-1 manifest with exact tool versions, file
+hashes, field/entity ownership and 25 known-operation hashes. Routing URLs are
+internal service names, not public endpoints. Composition uses the existing
+approved Apollo 2.14.4 and GraphQL 16.14.2 pins; [ADR-0003](../../docs/adr/0003-federation.md)
+and [ADR-0014](../../docs/adr/0014-apollo-federation-license-policy.md) remain applicable.
 
 ## Compatibility and limits
 
-The [known operations](../../infra/router/known-operations.graphql) cover all current root fields, profile commands, Catalog metadata/attribution, bounded Discovery search and mixed entity queries. They are build-time contracts, not a runtime persisted-operation allowlist. An ownership collision, invalid operation, stale output or breaking baseline API rejects the candidate.
+The [known operations](../../infra/router/known-operations.graphql) cover all
+current root fields, profile commands, Catalog metadata/attribution, bounded
+Discovery search, public/personalized home composition and mixed entity queries.
+They are build-time contracts, not a runtime persisted-operation allowlist. An
+ownership collision, invalid operation, stale output or breaking baseline API
+rejects the candidate.
 
 CI compares against the PR base SHA (or previous push SHA), never merely the candidate's regenerated API. Manual runs resolve the merge base with `origin/main`; when that is the candidate itself, they use its first parent. A missing baseline/history or explicit self-comparison fails before the source gate. It reads the previous API and operation file directly from that commit, so deleting or rewriting current fixtures cannot hide a broken existing operation. `ASTER_SCHEMA_BASE` accepts only a full commit SHA; local commands default to local `main`. A pre-supergraph commit with neither file is the initial bootstrap; one missing file is an error. Intentional breaking evolution requires a separate reviewed migration, not bypassing this check.
 

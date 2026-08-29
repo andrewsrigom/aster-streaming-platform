@@ -6,13 +6,14 @@ import {
   type FragmentDefinitionNode,
   type SelectionSetNode,
 } from "graphql";
+import { normalizeHomeRailInput } from "../domain/home-rail.js";
 import { normalizeSearchInput } from "../domain/search-input.js";
 
 export const DISCOVERY_GRAPHQL_LIMITS = Object.freeze({
   bodyBytes: 16_384,
   sourceBytes: 4_096,
   tokens: 512,
-  fields: 64,
+  fields: 96,
   depth: 6,
   aliases: 4,
   cost: 1_024,
@@ -22,14 +23,26 @@ export const DISCOVERY_GRAPHQL_LIMITS = Object.freeze({
   ratePerSecond: 4,
 });
 
-export type DiscoveryOperation = "search_titles" | "service_schema";
+export type DiscoveryOperation = "home_rails" | "search_titles" | "service_schema";
 type Decision =
   | Readonly<{ status: "accepted"; operation: DiscoveryOperation }>
   | Readonly<{ status: "rejected"; code: "INVALID_INPUT" | "LIMIT_EXCEEDED" }>;
-type Scope = "Query" | "Payload" | "Connection" | "Edge" | "PageInfo" | "Title" | "Service";
+type Scope =
+  | "Query"
+  | "Payload"
+  | "Connection"
+  | "Edge"
+  | "PageInfo"
+  | "HomePayload"
+  | "RailResult"
+  | "GenreResult"
+  | "Rail"
+  | "RailEdge"
+  | "Title"
+  | "Service";
 
 const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = {
-  Query: { searchTitles: "Payload", _service: "Service" },
+  Query: { homeRails: "HomePayload", searchTitles: "Payload", _service: "Service" },
   Payload: { code: null, correlationId: null, connection: "Connection" },
   Connection: { generation: null, edges: "Edge", pageInfo: "PageInfo" },
   Edge: {
@@ -40,6 +53,28 @@ const FIELDS: Readonly<Record<Scope, Readonly<Record<string, Scope | null>>>> = 
     visibleUntil: null,
   },
   PageInfo: { endCursor: null, hasNextPage: null },
+  HomePayload: {
+    code: null,
+    correlationId: null,
+    generation: null,
+    generatedAt: null,
+    featured: "RailResult",
+    recentlyAdded: "RailResult",
+    trending: "RailResult",
+    genres: "GenreResult",
+  },
+  RailResult: { code: null, rail: "Rail" },
+  GenreResult: { code: null, rails: "Rail" },
+  Rail: {
+    key: null,
+    kind: null,
+    genre: null,
+    source: null,
+    oldestIndexedAt: null,
+    freshUntil: null,
+    edges: "RailEdge",
+  },
+  RailEdge: { node: "Title", sourceVersion: null, indexedAt: null, visibleUntil: null },
   Title: { id: null },
   Service: { sdl: null },
 };
@@ -49,6 +84,11 @@ const TYPE_NAMES: Readonly<Record<Scope, string>> = {
   Connection: "DiscoverySearchConnection",
   Edge: "DiscoverySearchEdge",
   PageInfo: "DiscoveryPageInfo",
+  HomePayload: "DiscoveryHomePayload",
+  RailResult: "DiscoveryRailResult",
+  GenreResult: "DiscoveryGenreRailResult",
+  Rail: "DiscoveryRail",
+  RailEdge: "DiscoveryRailEdge",
   Title: "Title",
   Service: "_Service",
 };
@@ -211,7 +251,7 @@ export function inspectDiscoveryOperation(body: unknown): Decision {
               throw new Rejected();
             }
             inspectedOperation = "service_schema";
-          } else {
+          } else if (name === "searchTitles") {
             if (
               [...args.keys()].some(
                 (argument) => !["query", "locale", "first", "after"].includes(argument),
@@ -234,6 +274,17 @@ export function inspectDiscoveryOperation(body: unknown): Decision {
             pageSize = normalized.status === "completed" ? normalized.value.first : 20;
             cost += 32;
             inspectedOperation = "search_titles";
+          } else {
+            if ([...args.keys()].some((argument) => argument !== "first")) {
+              throw new Rejected();
+            }
+            const normalized = normalizeHomeRailInput({ first: args.get("first") ?? 10 });
+            if (!normalized) {
+              throw new Rejected();
+            }
+            pageSize = normalized.first;
+            cost += 64;
+            inspectedOperation = "home_rails";
           }
         }
         if (item.selectionSet) {
@@ -245,7 +296,11 @@ export function inspectDiscoveryOperation(body: unknown): Decision {
             child,
             depth + 1,
             ancestors,
-            scope === "Connection" && name === "edges" ? multiplicity * pageSize : multiplicity,
+            (scope === "Connection" || scope === "Rail") && name === "edges"
+              ? multiplicity * pageSize
+              : scope === "GenreResult" && name === "rails"
+                ? multiplicity * 3
+                : multiplicity,
           );
         } else if (child) {
           throw new Rejected();

@@ -106,7 +106,13 @@ Events are facts in past tense. Commands are not published as domain events.
 
 ## Delivery semantics
 
-Phase 08's [released owned delivery](../../services/engagement/EVENT_DELIVERY.md) implements bounded Identity/Catalog/Engagement relays and authenticated Engagement deletion/quarantine/replay. Continue-watching is reconstructed directly from durable progress and current Catalog visibility, not a second event-built store. The current Discovery candidate adds the versioned Catalog title projection below; home rails and Engagement-derived aggregate signals remain planned.
+Phase 08's [released owned delivery](../../services/engagement/EVENT_DELIVERY.md)
+implements bounded Identity/Catalog/Engagement relays and authenticated Engagement
+deletion/quarantine/replay. Continue-watching is reconstructed directly from
+durable progress and current Catalog visibility, not a second event-built store.
+Discovery search and fixed public rails read its versioned Catalog projection;
+personalized home composition still reads Engagement directly and copies no
+profile truth.
 
 The outbox plus broker provides at-least-once delivery.
 
@@ -138,7 +144,12 @@ The domain clamps impossible positions and applies completion rules.
 
 ## Search and home projections
 
-Discovery consumes Catalog publication events as invalidation hints for the implemented search projection. It reads current metadata through a purpose-separated Catalog snapshot/export contract; old events do not become metadata authority. Rail data and approved Engagement-derived aggregate signals remain planned.
+Discovery consumes Catalog publication events as invalidation hints for the
+implemented search/home projection. It reads current metadata through a
+purpose-separated Catalog snapshot/export contract; old events do not become
+metadata authority. The rail view exposes only generation rows matching the
+current fence source version and digest. No Engagement event or personal data is
+added for home rails; future behavior-derived ranking remains planned.
 
 A projection stores:
 

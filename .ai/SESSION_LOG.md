@@ -15,8 +15,29 @@ Append new entries at the top. Keep entries factual and concise.
 - Accepted PR35 confirmation discussion3886054205: the old init migrator now
   tolerates ordered marker3 without owning/applying that script, preserves valid
   bootstrap/partial installation and reads marker4 so it fails closed.
-- Preserved the separate PR34 database-admission correction locally on
-  `feat/p09-home-rails` commit `615a8c7`; no migration3 was applied.
+- Rebased the separate PR34 database-admission correction onto frozen precursor
+  exact8002594 and added real staged-search/rails readiness without applying
+  migration3 to retained data.
+- PR35 exact8002594 passed clean confirmation and protected run33243983340, then
+  squash-merged as main583c835. The dependent rebased onto the identical tree;
+  exact-main run33244657936 passed every required job.
+- PR34 exact0d1a7ef passed protected run33245434181. Remediation confirmation
+  review5057520267 found usable partial responses logged as rejected and stale
+  parallel-fan-out ADR text. Both were corrected together; focused Discovery
+  build,89/89 tests, lint, formatting and final54/54 affected candidate in47.708s pass.
+- Exact8650670 passed protected run33246333963. Final confirmation
+  review5057560831 found only an architecture excerpt with default20 while the
+  authoritative home personalization schema uses10; exactdf08a70 corrected it and
+  protected run33247048014 passed. Closeout review5057633664 then found the genre
+  branch can flatten36 Catalog entities while its transport admitted20. Catalog
+  now accepts36 valid Title representations, rejects37 and retains owner reads of
+  at most20 through its request-scoped DataLoader. Build and230/230 tests pass.
+  The corrected affected candidate passes54/54,38 cached, in55.844s.
+- Published exactdbce479. Closeout review5057751709 found fallback could replace
+  cancelled/indeterminate primary results with recent titles. Cancelled invalidated
+  protected run33248060625. Fallback now applies only to empty/unavailable and a
+  direct response/telemetry regression passes with Discovery build,90/90 tests
+  and the affected54/54 candidate in49.022s.
 
 ### Evidence
 
@@ -33,16 +54,62 @@ Append new entries at the top. Keep entries factual and concise.
   avoiding its remaining heavyweight work. Retained data/runtime stayed untouched.
 - Cancelled superseded PR35 run33243447562 after its blocker arrived, then passed
   the corrected candidate instead of completing heavyweight invalid-head work.
+- Dependent Discovery88/88 passes. Disposable PostgreSQL18.6 proves both readiness
+  profiles on migration3 and cleanup0 in3026ms; the repeated eleven-service runtime
+  passes public/fallback/isolation/restart/logging boundaries and cleanup0 in148002ms.
+- Exact-squash source object IDs match the heavyweight candidate. The first
+  aggregate stopped only on a missing literal P09-R03 resume target; after that
+  memory correction, the final affected candidate passes54/54,39 cached, in48.761s.
 
 ### Next action
 
-Publish the precursor for protected review/release and exact-main CI. Then rebase
-PR34, prove migration3 old/new readiness and complete both blockers.
+Commit and update PR34, then complete one final public-contract confirmation/
+protected release.
+
+## 2026-08-29 — Independent home rails local candidate
+
+### Completed
+
+- Implemented ADR-0036 in the existing Discovery projection: restricted
+  generation/fence-matched rail view, four independently coded rail selections,
+  stable recent fallback and bounded GraphQL contract.
+- Added nullable Engagement-owned `homeContinueWatching`, `HomePublic`/
+  `HomePersonalized` known operations and Router artifacts without copying profile
+  or progress state.
+- Added finite rail duration/outcome/freshness instruments and deterministic
+  search-quality buckets with no text or identifiers.
+- Corrected the SQL transaction guard mismatch by wrapping the genre CTE under
+  SELECT, split expected privilege failures into independent transactions, and
+  raised the finite subgraph field ceiling from64 to96 for Router entity metadata.
+
+### Evidence
+
+- Discovery82/82 and telemetry10/10 tests pass with strict builds/lint.
+- Disposable PostgreSQL18.6 passes migration3, rails, privileges and all prior
+  search/recovery checks; cleanup0.
+- The11-service runtime passes public rails, recent fallback, absent-Engagement
+  partial response, zero Kafka lag, restart, sanitized logs and cleanup0 in155311ms.
+- Initial failed fixtures also cleaned to zero and remain recorded in the Phase09
+  SQL/runtime evidence. No retained demo, media, WSL or unrelated project changed.
+- Five-subgraph schema compatibility and the canonical affected gate pass54/54
+  in1m11.918s. The gate first found repository-memory bounds and four unnecessary
+  exports; both were corrected without changing heavyweight behavior.
+
+### Next action
+
+Commit the coherent candidate, then initial/confirmation review and protected
+P09-R03 release before P09-R10.
 
 ## 2026-08-29 — Discovery federated search candidate
 
 ### Completed
 
+- Released P09-R01 through PR33 exact `fc353c3`, protected CI 33238473742,
+  resolved final confirmation, squash main `0bdcb27` and exact-main CI
+  33239191134.
+- Activated P09-R03 from clean main on `feat/p09-home-rails`. ADR-0036 fixes the
+  owner boundaries, independent rail result model, recent fallback, curated
+  trending semantics, nullable Engagement composition and finite telemetry.
 - Composed the versioned Discovery projection, Catalog event consumer, resumable barrier-gated rebuild and bounded PostgreSQL search into a private Express/Apollo subgraph and the fifth Router owner.
 - Added purpose-separated Router/Catalog trust, strict GraphQL parsing/cost/concurrency controls, generated five-subgraph artifacts, the SearchTitles known operation and an opt-in resource-bounded Compose topology.
 - Added disposable runtime policy, CI execution and safe-reset coverage. Applied a hashed KafkaJS2.2.4 patch that clamps its negative pending-request timer while preserving the existing one-second polling interval and MIT notices.
@@ -60,7 +127,8 @@ PR34, prove migration3 old/new readiness and complete both blockers.
 
 ### Next action
 
-Publish exact16d4921 plus evidence, resolve the two addressed confirmation discussions, require exact-head protected CI/final confirmation, then squash and verify exact main before P09-R03.
+Implement P09-R03 domain/persistence first, then GraphQL owner composition and
+finite telemetry. Run focused gates before real PostgreSQL/runtime evidence.
 
 ## 2026-08-28 — Owned events and recovery checkpoint
 
@@ -2200,9 +2268,9 @@ Execute P00-R02 by initializing local Git policy, the minimal pnpm workspace, a 
 
 Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions from current official compatibility evidence.
 
-## 2026-08-25 — Delivery-plan alignment audit
+**Historical checkpoint — 2026-08-25 — Delivery-plan alignment audit**
 
-### Completed
+**Completed**
 
 - Mapped all 51 durable product requirements to exactly one primary acceptance phase and relevant supporting phases.
 - Corrected the Phase 00 queue so `P00-R01` through `P00-R10` have explicit, ordered work items and dependencies.
@@ -2213,7 +2281,7 @@ Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions fro
 - Added Express 5 as the preferred Phase 01 HTTP-adapter candidate subject to an ADR and compatibility tests; framework types remain outside domain and application code.
 - Added hosted GraphQL schema-registry and supergraph control-plane evaluation to Phase 14 without selecting a vendor.
 
-### Evidence
+**Evidence**
 
 - Checked Markdown structure and internal links with no empty file, missing top-level title, unbalanced fence, or broken internal target.
 - Checked 165 phase requirements across 15 phases; no duplicate, prefix mismatch, or sequence gap was found.
@@ -2222,7 +2290,7 @@ Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions fro
 - Found no unsupported implementation, verification, or release status claim and no `Zone.Identifier` file.
 - Raw audit: `evidence/phase-00/alignment-audit.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R03 by selecting and pinning supported Node.js and pnpm versions from current official compatibility evidence.
 

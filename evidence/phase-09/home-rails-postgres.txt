@@ -1,0 +1,46 @@
+P09-R03 home-rail PostgreSQL checkpoint — 2026-08-29
+
+Environment
+- WSL2 Ubuntu-20.04 on Windows amd64
+- Node.js 24.19.0, pnpm 11.24.0
+- disposable PostgreSQL 18.6 container, UUID-named project
+- command: pnpm discovery:integration
+
+Final result: PASS
+
+{"event":"discovery_migration","postgres":"18.6","version":3,"emptyRollback":true}
+{"event":"discovery_mixed_readiness","migration":3,"stagedSearch":"ready","rails":"ready"}
+{"event":"discovery_relevance","titleBeforeSynopsis":true,"diacriticNormalization":true,"resultCount":2}
+{"event":"discovery_keyset","duplicateAcrossInsert":false,"cursorBoundToGeneration":true}
+{"event":"discovery_home_rails","independentGroups":4,"recentFallback":true,"genreRails":2}
+{"event":"discovery_retirement_fence","sameVersionResurrection":"rejected","newerVersionRepublish":"applied"}
+{"event":"discovery_rebuild","barrierRequired":true,"cursorExpiredAfterPromotion":true,"activeSurvivesPartialNextBuild":true,"retainedGenerations":2,"activeOffsetCarryForward":true,"durableHandledOffset":"12"}
+{"event":"discovery_privileges","deniedStatements":5,"catalogIsolation":true}
+{"event":"discovery_event_recovery","exactMaximumBytes":true,"duplicate":"idempotent","conflictingOffset":"rejected","fullQuarantine":"offset_uncommitted","replay":"exact","directTableAccess":false}
+{"event":"discovery_query_plan","ginIndex":"discovery_search_vector","guardedRollback":true}
+{"event":"discovery_fixture_cleaned","remaining":0,"durationMs":3026}
+
+Findings corrected before the final pass
+- The first rail query used a top-level WITH statement. The shared PostgreSQL
+  transaction guard deliberately admits SELECT/INSERT/UPDATE/DELETE only, so the
+  genre group degraded to unavailable. The equivalent bounded CTE now sits under
+  a top-level SELECT and passes through the same guard.
+- The new role test initially attempted two expected permission failures in one
+  transaction. PostgreSQL correctly left the transaction aborted after the first;
+  each denial now uses an independent transaction.
+- Every failed fixture and the final fixture reported remaining=0. No retained
+  database, media, Docker project or unrelated process was changed.
+
+Proved boundaries
+- migration 0003 rolls up/down when empty and preserves existing projection data;
+- the staged search-only readiness and rails readiness both accept the real
+  migration3 schema using their purpose-separated runtime/projector logins;
+- rail rows join generation/fence only at matching source version and digest;
+- runtime can SELECT the security-barrier view; projector cannot;
+- stable featured/recent/trending/genre order and recent fallback execute against
+  real PostgreSQL;
+- all prior search, retirement, rebuild, quarantine and GIN-plan checks still pass.
+
+Limitations
+- This is a local protocol/SQL checkpoint, not hosted capacity or an SLO.
+- Browser SSR/hydration remains P09-R10.

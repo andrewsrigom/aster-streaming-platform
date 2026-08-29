@@ -2,7 +2,12 @@
 
 ## Purpose
 
-The supergraph gives first-party clients one typed API while preserving domain ownership. Apollo Router currently composes Identity, Catalog, Playback, Engagement and the Discovery search candidate. [Composition and known-operation checks](../../apps/router/README.md) validate all five schemas. [Engagement evidence](../../evidence/phase-08/README.md) records its released owner-authorized paths; [Discovery evidence](../../evidence/phase-09/README.md) records the current local search acceptance without claiming rails or release.
+The supergraph gives first-party clients one typed API while preserving domain
+ownership. Apollo Router composes Identity, Catalog, Playback, Engagement and the
+current Discovery search/home candidate. [Composition and known-operation checks](../../apps/router/README.md)
+validate all five schemas. [Engagement evidence](../../evidence/phase-08/README.md)
+records its released owner-authorized paths; [Discovery evidence](../../evidence/phase-09/README.md)
+records released search and the current locally verified rails candidate.
 
 ## Subgraphs
 
@@ -12,7 +17,7 @@ The supergraph gives first-party clients one typed API while preserving domain o
 | Catalog | public title browse/detail, localized metadata and attribution; editorial operations use the local CLI |
 | Playback | playback-session mutation, playback capability |
 | Engagement | watchlist, progress, history, continue-watching |
-| Discovery | implemented bounded title search; home rails, trending and optional recommendations remain planned |
+| Discovery | released bounded title search; current fixed public rails candidate; optional recommendations remain planned |
 
 ## Entity ownership
 
@@ -52,11 +57,22 @@ extend type Title @key(fields: "id") {
 }
 ```
 
-Discovery search returns nullable Catalog `Title` references plus ranking cursor and projection-freshness metadata rather than duplicating Catalog fields. Nullable references preserve the remainder of a page if Catalog retires a title between the Discovery read and entity resolution.
+Discovery search and home rails return nullable Catalog `Title` references plus
+projection freshness rather than duplicating Catalog fields. Nullable references
+preserve the remainder of a page if Catalog retires a title between the Discovery
+read and entity resolution. Engagement alone owns the nullable
+`homeContinueWatching` root.
+
+The maximum three-genre branch can flatten36 `Title` representations. Catalog's
+federation guard admits that exact finite maximum; its request-scoped DataLoader
+keeps owner reads at the existing20-title batch limit. Ordinary product list limits
+do not change.
 
 ## Query shape
 
-Implemented query surface excerpt; [generated API](../../infra/router/generated/api.graphql) is authoritative. Catalog has no browse filter or search field; Discovery owns search while home rails remain planned.
+Implemented query surface excerpt; [generated API](../../infra/router/generated/api.graphql)
+is authoritative. Catalog has no browse filter or search field; Discovery owns
+search and derived public rail selection.
 
 ```graphql
 type Query {
@@ -67,6 +83,8 @@ type Query {
   continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
   watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
   searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
+  homeRails(first: Int! = 10): DiscoveryHomePayload!
+  homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
 }
 ```
 
@@ -111,6 +129,11 @@ Unbounded collections use keyset pagination.
 Watchlist uses descending (addedAt, entry ID), profile-bound w1 cursors and the same 1–20 page bound. Watchlist and continue-watching both validate current Catalog visibility before lookahead; hidden titles never affect page size or hasNextPage. Watchlist replay/removal do not require Catalog, but always require current Identity ownership. See [watchlist semantics](../../services/engagement/README.md#watchlist). General Title/Profile engagement extensions remain P08-R08, separate from these root operations.
 
 Discovery search uses weighted full-text rank descending and title ID ascending, with first 1–20 and first+1 lookahead. Its s1 cursor is bound to the normalized query, locale and active projection generation. Changed queries, replaced generations and malformed positions are rejected rather than traversing mixed state. Freshness and zero results are explicit. See [Discovery search](../../services/discovery/README.md#public-contract).
+
+Home rails are bounded to twelve references per rail and three genre rails. Fixed
+selections fail independently; featured/curated-trending may explicitly reuse a
+successful recent selection. The personalized sibling remains nullable so an
+Engagement subgraph failure does not null public home data. See [home rails](../../services/discovery/README.md#home-rails).
 
 Rules:
 

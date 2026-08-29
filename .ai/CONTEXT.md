@@ -51,12 +51,13 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 ## Delivery state
 
 Active phase: **Phase 09 — Home Rails and Search**. P09-R01 is released through
-PR33, protected CI33238473742, squash main0bdcb27 and exact-main CI33239191134.
-P09-R03 is active. PR34 confirmation found that migration3 had no readiness
-overlap with the released search binary, so a minimal compatibility precursor is
-being released first from `fix/p09-discovery-schema-compatibility`. It accepts
-only ordered migrations1–2 or1–3 without using new objects. The home-rail branch
-then rebases and repeats affected gates. Retained demo remains Phase07.
+PR33, protected CI33238473742, squash main `0bdcb27` and exact-main CI33239191134.
+P09-R03 is active on dependent `feat/p09-home-rails`, now based on frozen
+compatibility precursor PR35 exact `471c445`. Independent rails, owner-preserving
+personalization, fallback and telemetry are locally verified; confirmation found
+database admission and rollout blockers. Admission is corrected locally; migration3
+and publication wait for precursor exact main and repeated affected gates. Retained
+demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

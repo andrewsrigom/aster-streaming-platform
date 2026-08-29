@@ -3,11 +3,11 @@
   "composerVersion": "2.14.4",
   "graphqlVersion": "16.14.2",
   "files": {
-    "api.graphql": "acf3e4888bb2b279ab0b4d05189863badd5515e5612bd80df054ae0a6e466d20",
-    "supergraph.graphql": "4b4c3bf87b7c6152e2ae2e26ff2bec5a25fe92f181d371ab8d4cae98108c7635",
+    "api.graphql": "0c77c528612e27ac7b9f6b8089deec79e2ee285bbbd6ad0db6996436e5ef2fbd",
+    "supergraph.graphql": "c8a27bbe74f035aed4227149f69d787ef1ee50173597627dea81e6c050ca2456",
     "catalog.graphql": "2c2c9c9d3bce6e7e36eed2994cfe428c8f3d2490908f61cf9423a5e3785bf4fa",
-    "discovery.graphql": "c7c43adea6c46ed95e6e6076cc7c6ff0a2d7278feb9adc06a35c445571aa95ac",
-    "engagement.graphql": "90bf40b4430a3951b21ee2cabddba70e58f6400393f80d3c800d6c39c21b7f74",
+    "discovery.graphql": "ea96038ea766ae165aa72df4448cfc876bfbad50b7102d808a39d384bf2711d6",
+    "engagement.graphql": "97a2f96556a466f1cec37f2593dbb2153b3cd075a757611cbde1a8e9ea50d5bf",
     "identity.graphql": "48bad454871ee9b28e51e1fed48cf0f177d0afe9c9b5478211dee0acb6eb04eb",
     "playback.graphql": "46dead26e0830a8c6f8d8df7c93d5c9f9ca562c00b23652f12f2e4a6d891293a"
   },
@@ -202,12 +202,94 @@
       "routingUrl": "http://discovery:3500/graphql",
       "ownership": [
         {
+          "type": "DiscoveryGenreRailResult",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "rails"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryHomeCode",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryHomePayload",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "correlationId",
+            "featured",
+            "generatedAt",
+            "generation",
+            "genres",
+            "recentlyAdded",
+            "trending"
+          ],
+          "keys": []
+        },
+        {
           "type": "DiscoveryPageInfo",
           "kind": "ObjectTypeDefinition",
           "fields": [
             "endCursor",
             "hasNextPage"
           ],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryRail",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "edges",
+            "freshUntil",
+            "genre",
+            "key",
+            "kind",
+            "oldestIndexedAt",
+            "source"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryRailCode",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryRailEdge",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "indexedAt",
+            "node",
+            "sourceVersion",
+            "visibleUntil"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryRailKind",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryRailResult",
+          "kind": "ObjectTypeDefinition",
+          "fields": [
+            "code",
+            "rail"
+          ],
+          "keys": []
+        },
+        {
+          "type": "DiscoveryRailSource",
+          "kind": "EnumTypeDefinition",
+          "fields": [],
           "keys": []
         },
         {
@@ -252,6 +334,7 @@
           "type": "Query",
           "kind": "ObjectTypeDefinition",
           "fields": [
+            "homeRails",
             "searchTitles"
           ],
           "keys": []
@@ -375,6 +458,7 @@
           "kind": "ObjectTypeDefinition",
           "fields": [
             "continueWatching",
+            "homeContinueWatching",
             "progressHistory",
             "watchlist"
           ],
@@ -731,6 +815,14 @@
     {
       "name": "DemoSignIn",
       "sha256": "f03c4f69957fe92779ca8ea19650e3e9547004560e3e4d0050aa4601b87c095e"
+    },
+    {
+      "name": "HomePersonalized",
+      "sha256": "60f8f5d65494ccb5e750bbbe2005c18ff25d6229d494f5cbaf62b2d40d8143ef"
+    },
+    {
+      "name": "HomePublic",
+      "sha256": "99f6218dfe29ff782970a497076bde7ad61dcfef1cb2d9939d206e8c5688ad57"
     },
     {
       "name": "PlayerProgress",

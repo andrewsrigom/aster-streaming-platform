@@ -79,11 +79,11 @@ test("Catalog composes with the released Identity schema without breaking its AP
   }
 });
 
-test("realistic browse, detail and twenty Title references pass bounded preflight", () => {
+test("realistic browse, detail and the bounded home Title batch pass preflight", () => {
   assert.equal(inspect(browse).status, "accepted");
   assert.equal(
     inspect(entities, {
-      items: Array.from({ length: 20 }, (_, n) => ({ __typename: "Title", id: id(n) })),
+      items: Array.from({ length: 36 }, (_, n) => ({ __typename: "Title", id: id(n) })),
     }).status,
     "accepted",
   );
@@ -156,7 +156,7 @@ test("page, source, tokens, aliases, fields, list expansion and literal/default 
   }
   const item = { __typename: "Title", id: id(1) };
   assert.equal(
-    inspect(entities, { items: Array.from({ length: 21 }, () => item) }).status,
+    inspect(entities, { items: Array.from({ length: 37 }, () => item) }).status,
     "rejected",
   );
   let deep: unknown = "leaf";

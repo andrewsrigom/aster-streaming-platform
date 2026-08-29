@@ -1,0 +1,53 @@
+P09-R03 federated home/runtime checkpoint — 2026-08-29
+
+Environment
+- WSL2 Ubuntu-20.04 on Windows amd64
+- Node.js 24.19.0, pnpm 11.24.0
+- UUID-named disposable Docker Compose project with PostgreSQL, Kafka, Catalog,
+  Discovery and Apollo Router; no retained product data
+- command: pnpm discovery:runtime
+
+Final result: PASS
+
+Final images
+- Catalog: sha256:ddc789912107cf5dc1595a125c040a42e9d659f04d226ff40d002e6d7db6c6e7
+- Discovery: sha256:ecc2eb8e854080b0c9c4ab320995d4648d9dec72fa02dafd74c435762fb8c8fa
+- Router: sha256:1d032903166171e55332e5362186fbb34b9fdf2a8e3cda73a292cdced1c723b5
+
+Final observations
+{"event":"discovery_runtime_started","services":11}
+{"event":"discovery_federated_search","resultCount":1,"zeroResult":"explicit-empty","sourceVersion":5,"freshnessSeconds":300}
+{"event":"discovery_home_runtime","publicRails":4,"recentFallback":true,"ownerPartialResponse":true}
+{"event":"discovery_projection_runtime","projectedTitles":1,"documents":2,"brokerLag":0}
+{"event":"discovery_quarantine_replay","exactRecord":true,"reclaimed":true}
+{"event":"discovery_failure_isolation","routerReady":true,"catalogBrowse":true}
+{"event":"discovery_restart_recovery","generationPreserved":true,"searchRecovered":true}
+{"event":"discovery_runtime_logs","finiteOperations":true,"rawQueryText":false,"secrets":false,"timerWarnings":false}
+{"event":"discovery_runtime_cleaned","remaining":0,"durationMs":148002}
+
+Finding corrected before the final pass
+- The first full HomePublic request was rejected by Discovery's 64-field ceiling:
+  Router correctly adds bounded entity metadata to all possible rail Title
+  references. The finite ceiling is now 96 while source, token, depth, alias,
+  root, page, cost and concurrency limits remain unchanged. A representative
+  Router-generated operation and a 97-field amplification regression test pass.
+- The failed proof cleaned its exact disposable project with remaining=0 in
+  196338 ms. The correction reused no retained data and reran the heavyweight
+  runtime because the public request boundary changed.
+
+Additional metric proof
+- @aster/telemetry: 10/10 tests pass.
+- @aster/discovery: 88/88 tests pass after the admission and staged-readiness
+  remediation.
+- The Discovery metric integration executes real home/search use cases, collects
+  the OpenTelemetry rail duration/outcome/freshness and sampled search bucket
+  instruments, and confirms the only product attributes are finite vocabularies.
+- The repeated eleven-service proof uses one transaction per home request, the
+  five-connection runtime pool and the rails-only readiness checks; all public,
+  isolation, restart, logging and exact-cleanup observations pass unchanged.
+
+Limitations
+- Engagement is deliberately absent to prove nullable partial composition; this
+  does not replace its released owner-authorization tests.
+- This is a local functional/failure checkpoint, not a load result, dashboard,
+  SLO, browser SSR/hydration or hosted release.

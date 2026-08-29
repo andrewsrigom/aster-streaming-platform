@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createTitleSearch } from "../src/application/search-titles.js";
+import { createTitleSearch, type SearchQualitySample } from "../src/application/search-titles.js";
 import type { SearchRow, SearchUnitOfWork } from "../src/application/search-ports.js";
 import { searchCursor } from "../src/domain/search-input.js";
 
@@ -20,7 +20,11 @@ const rows: readonly SearchRow[] = [
   { titleId: id(3), rank: 700000, sourceVersion: 1, indexedAt: now, visibleUntil: now + 50 },
 ];
 
-function fixture(found: readonly SearchRow[] = rows, stale = false) {
+function fixture(
+  found: readonly SearchRow[] = rows,
+  stale = false,
+  observeSample?: (sample: SearchQualitySample) => void,
+) {
   const state = { transactions: 0, searches: 0, input: undefined as unknown };
   const transactions: SearchUnitOfWork = {
     async run(work, signal) {
@@ -41,7 +45,13 @@ function fixture(found: readonly SearchRow[] = rows, stale = false) {
           };
     },
   };
-  return { state, search: createTitleSearch({ transactions }) };
+  return {
+    state,
+    search: createTitleSearch({
+      transactions,
+      ...(observeSample ? { observeSample } : {}),
+    }),
+  };
 }
 
 test("returns a bounded page with query-bound cursors and source freshness", async () => {
@@ -121,4 +131,28 @@ test("invalid time and cancellation do not enter persistence", async () => {
     status: "cancelled",
   });
   assert.equal(cancelled.state.transactions, 0);
+});
+
+test("samples only bounded quality values and isolates telemetry failure", async () => {
+  const samples: SearchQualitySample[] = [];
+  const measured = fixture(rows, false, (sample) => samples.push(sample));
+  const result = await measured.search.execute(input(), now, AbortSignal.timeout(1000), true);
+  assert.equal(result.status, "completed");
+  assert.deepEqual(samples, [{ resultCount: 2, topRank: 900_000 }]);
+  assert.deepEqual(Object.keys(samples[0] ?? {}).sort(), ["resultCount", "topRank"]);
+
+  await measured.search.execute(input(), now, AbortSignal.timeout(1000), false);
+  assert.equal(samples.length, 1);
+
+  const isolated = fixture(rows, false, () => {
+    throw new Error("collector failed");
+  });
+  const isolatedResult = await isolated.search.execute(
+    input(),
+    now,
+    AbortSignal.timeout(1000),
+    true,
+  );
+  assert.equal(isolatedResult.status, "completed");
+  assert.equal(isolatedResult.value.status, "completed");
 });

@@ -44,6 +44,7 @@ const ENGAGEMENT_TYPE_DEFS = parse(`
   type Query {
     progressHistory(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
     continueWatching(profileId: ID!, first: Int! = 20, after: String): ProgressPagePayload!
+    homeContinueWatching(profileId: ID!, first: Int! = 10, after: String): ProgressPagePayload
     watchlist(profileId: ID!, first: Int! = 20, after: String): WatchlistPagePayload!
   }
   type ProgressPayload { code: ProgressCode! correlationId: ID! progress: Progress }
@@ -225,6 +226,7 @@ export function createEngagementSchema() {
       Query: {
         progressHistory: pageResolver("history"),
         continueWatching: pageResolver("continue"),
+        homeContinueWatching: pageResolver("continue"),
         watchlist: async (
           _: unknown,
           args: { profileId: string; first: number; after?: string | null },

@@ -53,9 +53,80 @@ input DeleteProfileInput {
   profileId: ID!
 }
 
+type DiscoveryGenreRailResult {
+  code: DiscoveryRailCode!
+  rails: [DiscoveryRail!]!
+}
+
+enum DiscoveryHomeCode {
+  CANCELLED
+  COMPLETED
+  INDETERMINATE
+  INVALID_INPUT
+  PARTIAL
+  STALE
+  UNAVAILABLE
+}
+
+type DiscoveryHomePayload {
+  code: DiscoveryHomeCode!
+  correlationId: ID!
+  featured: DiscoveryRailResult
+  generatedAt: Float
+  generation: ID
+  genres: DiscoveryGenreRailResult
+  recentlyAdded: DiscoveryRailResult
+  trending: DiscoveryRailResult
+}
+
 type DiscoveryPageInfo {
   endCursor: String
   hasNextPage: Boolean!
+}
+
+type DiscoveryRail {
+  edges: [DiscoveryRailEdge!]!
+  freshUntil: Float
+  genre: String
+  key: ID!
+  kind: DiscoveryRailKind!
+  oldestIndexedAt: Float
+  source: DiscoveryRailSource!
+}
+
+enum DiscoveryRailCode {
+  CANCELLED
+  COMPLETED
+  EMPTY
+  FALLBACK
+  INDETERMINATE
+  UNAVAILABLE
+}
+
+type DiscoveryRailEdge {
+  indexedAt: Float!
+  node: Title
+  sourceVersion: Int!
+  visibleUntil: Float!
+}
+
+enum DiscoveryRailKind {
+  FEATURED
+  GENRE
+  RECENTLY_ADDED
+  TRENDING
+}
+
+type DiscoveryRailResult {
+  code: DiscoveryRailCode!
+  rail: DiscoveryRail
+}
+
+enum DiscoveryRailSource {
+  FEATURED
+  GENRE
+  RECENTLY_ADDED
+  TRENDING
 }
 
 enum DiscoverySearchCode {
@@ -247,6 +318,8 @@ enum ProgressStatus {
 type Query {
   activeProfile(id: ID!): Profile
   continueWatching(after: String, first: Int! = 20, profileId: ID!): ProgressPagePayload!
+  homeContinueWatching(after: String, first: Int! = 10, profileId: ID!): ProgressPagePayload
+  homeRails(first: Int! = 10): DiscoveryHomePayload!
   me: Viewer
   profile(id: ID!): Profile
   profiles: OwnedProfiles!

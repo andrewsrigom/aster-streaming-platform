@@ -6,33 +6,75 @@ Last updated: 2026-08-29
 
 **Phase 09 — Home Rails and Search**
 
-Status: **IN_PROGRESS**, P09-R03 schema-compatibility precursor active on
-`fix/p09-discovery-schema-compatibility` from exact released main `0bdcb27`.
-P09-R01 is released through PR33 and exact-main CI33239191134. Full Phase00–14
-goal stays active.
+Status: **IN_PROGRESS**, P09-R03 dependent work active on
+`feat/p09-home-rails`, rebased on precursor squash main `583c835`. P09-R01 is
+released through PR33 and exact-main CI33239191134. Precursor exact-main
+run33244657936 passed; migration3/publication is unblocked. Full Phase00–14 goal stays active.
 
 ## Verified
 
 Phases 00–08 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. No hosted deployment is claimed.
 
-P08-R01/R06/R07/R08 completed protected release. [Phase 08 evidence](../evidence/phase-08/README.md) records durable progress, history, watchlist and request-scoped fields. [Federated proof](../evidence/phase-08/federated-runtime.txt) covers real owner authorization, replay/conflict, revocation and anonymous Playback continuity. [Entity fields](../evidence/phase-08/engagement-fields.md) retain 98 tests, nine composition tests, real SQL/Docker and 67-task candidate evidence. No unchanged CPU, media or browser repeat is required.
-
 P09-R01/R02/R06/R07 are released. [Search release](../evidence/phase-09/search-release.md)
-records candidate `fc353c3`, protected run33238473742, resolved review, squash
-`0bdcb27` and exact-main run33239191134.
+records candidate `fc353c3`, protected run 33238473742, resolved review, squash
+`0bdcb27` and exact-main run 33239191134. The 70 focused tests, real PostgreSQL,
+11-service Kafka/Router runtime and 73-task candidate remain linked from the
+[Phase 09 index](../evidence/phase-09/README.md).
+
+P09-R03 locally verifies migration 0003, independent featured/recent/
+curated-trending/genre rails, stable recent fallback, nullable Engagement home
+composition and finite OpenTelemetry product instruments. Discovery 89/89,
+telemetry 10/10, PostgreSQL 18.6 and the 11-service Router runtime pass. The
+failed SQL/guard harness attempts and exact cleanup are retained in [home SQL](../evidence/phase-09/home-rails-postgres.txt)
+and [runtime evidence](../evidence/phase-09/home-rails-runtime.txt). Schema
+compatibility and the [54/54 candidate gate](../evidence/phase-09/home-rails-candidate.txt)
+also pass.
 
 ## Current work
 
-The released search runtime remains unchanged. PR34 candidate `7d31678` adds
-home rails, but confirmation discussion3886014606 found no schema version shared
-by released and new binaries. The active precursor makes released search
-readiness accept only ordered markers `1–2` or `1–3` while using only its existing
-objects and privileges. PR35 confirmation discussion3886054205 additionally
-found its init migrator rejected marker3; the corrected preflight now tolerates
-that marker without owning/applying its script and rejects marker4. Corrected
-focused Discovery75/75, strict build, lint and format plus the corrected affected
-42/42 gate pass. Protected confirmation/release remain pending.
+P09-R03 implements the smallest owner-safe rails slice. Discovery reads its
+released projection through a generation/fence-matched restricted view. Each
+rail retains its own result/freshness state; fixed rails fall back only to an
+independently successful recent rail. Engagement remains the sole
+continue-watching owner and contributes a nullable home field. Router acceptance
+preserves public rails while Engagement is absent. No profile truth enters
+Discovery.
+
+PR34 confirmation discussions3886014605/606 found transaction fan-out and no
+old/new schema overlap. Home selections now use one transaction at a time per
+request, with five runtime connections covering four GraphQL admissions plus
+readiness; Discovery83/83 and focused static gates pass. Frozen PR35 accepts only
+ordered markers `1–2` or `1–3` in readiness and its old init preflight without
+using/applying migration3. Its corrected75/75,42/42, protected run33243983340
+and confirmation pass; it merged as583c835 and exact-main CI33244657936 passed.
+The dependent is rebased onto that squash; Discovery88/88, real PostgreSQL
+staged-old/rails-new readiness and the
+repeated eleven-service runtime plus final54/54 candidate pass. Exact affected
+source object IDs stayed unchanged across the squash rebase, so no heavyweight
+proof was duplicated.
 [Compatibility evidence](../evidence/phase-09/home-rails-compatibility.txt).
+
+PR34 exact `0d1a7ef` passed protected run33245434181. Remediation confirmation
+review5057520267 found two additional requirement-relevant issues: `PARTIAL`
+GraphQL responses logged as rejected and ADR-0036 still describing parallel
+fan-out. The local correction classifies partial as degraded, records sequential
+one-transaction selection and passes focused Discovery89/89 plus the final54/54
+affected candidate in47.708s. Its publication update remains.
+
+Exact `8650670` passed protected run33246333963. Final confirmation review5057560831
+found only a stale architecture excerpt defaulting `homeContinueWatching` to20
+while the authoritative schema/generated API use10. The documentation-only
+correction `df08a70` passed protected run33247048014. Closeout review5057633664
+then found that the genre branch can flatten36 valid Catalog entities while the
+transport admitted20. The correction admits exactly36 federation references,
+keeps ordinary lists at20 and uses the existing request-scoped DataLoader to
+split owner reads into batches of at most20. Catalog build and230/230 tests pass.
+The corrected affected candidate passes54/54,38 cached, in55.844s.
+Exact `dbce479` was published and protected run33248060625 started. Closeout
+review5057751709 found fallback could hide `cancelled` or `indeterminate` primary
+outcomes behind a completed recent rail. The run was cancelled as invalidated.
+Fallback is now restricted to the documented `empty` and `unavailable` codes;
+Discovery build,90/90 focused tests and the affected54/54 candidate in49.022s pass.
 
 R11 no longer competes for browser response bodies. Exact request selection waits under the same12-second deadline for application-rendered state; Profiles require an empty collection and progress requires `Progress saved`, followed by owner reads proving resume/completion. Seven observer regressions, Web104/104, the43-task affected candidate, protected CI33228909828, clean exact-head review and exact-main CI33229726626 pass. PR32 merged as6f38ce0. Retained demo is unchanged.
 
@@ -42,14 +84,13 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Home rails remain unreleased while their finite schema precursor completes.
+Home rails remain unreleased while PR34 completes corrected protected review and CI.
 Browser rails/search, SSR/hydration and hosted release remain pending.
 
 ## Next outcome
 
-Publish/merge the P09-R03 schema precursor through protected CI and exact main.
-Complete corrected candidate/confirmation, rebase PR34, prove migration3 with old/new readiness, remediate bounded SQL
-admission, then complete its confirmation/protected release before P09-R10.
+Publish the P09-R03 fallback-contract correction and complete closeout
+confirmation/protected release.
 
 ## Runtime and recovery
 
@@ -63,8 +104,8 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
 
 - The exact earlier SDK/provider seed transport cause remains unproved; the released read-only replay removes that dependency and passes protected/exact-main gates. No blind retry, retained reset or CPU attribution.
 - Retain uncertain claims, pending facts, permanent deletion fences and the event
-  signing key. Migration3 must not run before the finite search compatibility
-  precursor reaches exact main.
+  signing key. Migration3 is allowed only with the released finite search
+  compatibility precursor now verified by exact-main CI33244657936.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
 - Last audit: zero high/critical, one known moderate UUID advisory with inspected Apollo callers unaffected; revisit before hosted release.

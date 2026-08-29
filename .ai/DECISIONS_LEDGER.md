@@ -2,7 +2,17 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
-[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 is released through main0bdcb27. Before migration3, its search readiness gains one finite compatibility stage accepting only ordered markers1–2 or1–3; the old init preflight tolerates marker3 without owning or applying that script.
+[ADR-0036](../docs/adr/0036-independent-home-rails.md) defines fixed-size
+independent public rails, explicit freshness/outcomes, stable recent fallback,
+curated rather than behavioral trending, and nullable Engagement-owned home
+personalization. Four selections execute sequentially so each request reserves at
+most one transaction; usable partial responses log as degraded. The genre branch
+may federate at most36 Catalog Title references; Catalog splits them into owner
+batches of at most20. Fallback applies only to empty/unavailable primary results
+and never hides cancelled/indeterminate outcomes. No profile copy, new service,
+cache or event is introduced.
+
+[ADR-0035](../docs/adr/0035-discovery-projection.md) defines current Catalog snapshots, monotonic version/retirement fences,300-second visibility leases,150-second renewal, serviceable active maintenance, broker position-zero promotion, bounded search/rebuild and UUID-selected local exact quarantine replay. Optional Discovery never gates Router startup. No external search engine or cross-owner SQL. P09-R01 is released through main `0bdcb27`. Its finite migration3 compatibility stage accepts only ordered markers1–2 or1–3; the old init preflight tolerates marker3 without owning or applying that script. PR35 released this precursor as main `583c835` and exact-main CI33244657936 passed.
 
 [ADR-0034](../docs/adr/0034-owned-event-delivery.md) defines owner-local fenced relays, unchanged v1 envelopes, dedicated Identity-event authentication and durable deletion/quarantine/replay. Real recovery required a one-second rebalance wait inside the existing broker deadline and an independent outbound step while inbound consumption recovers. Separate background credentials do not widen request roles; candidate/protected release remains.
 

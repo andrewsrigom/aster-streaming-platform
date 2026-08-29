@@ -1,0 +1,121 @@
+P09-R03 home-rails candidate checkpoint
+Date: 2026-08-29
+Branch: feat/p09-home-rails
+Compatibility base: 583c83500c336e01081b18311782769d1cdd2b3b
+
+Canonical candidate gate
+
+Command: pnpm check:changed
+Result: PASS
+Tasks: 54 successful, 54 total
+Cached: 38
+Duration: 47.708s
+
+The gate covered affected builds, tests, strict type checks, workspace ESLint,
+Prettier, Knip, architecture, platform, documentation, repository memory,
+community, secret scanning, CI policy, staged policy and commit policy. Discovery
+passed 89 tests, telemetry passed 10 tests, Router passed 9 composition and
+compatibility tests, and platform policy passed 67 tests.
+
+Schema compatibility
+
+Command: pnpm schema:check
+Result: PASS
+Subgraphs: 5
+Compatibility base: 0bdcb275dc354a684342cd3ceb19e11aa1dc0d63
+Artifacts: 8
+Manifest SHA-256: 995840e1964065b6e03a39648877f49e99975149978a73162dc893129b0fdc2f
+
+Corrections retained
+
+- The first aggregate attempt failed because HANDOFF lacked its canonical
+  "Do not do yet" section and SESSION_LOG exceeded the 500-heading document
+  ceiling. Repository memory was compacted without discarding historical facts;
+  ai, documentation and formatting checks then passed.
+- The next aggregate attempt found four internal-only rail declarations exported
+  unnecessarily. Their exports were removed; Knip, Discovery typecheck, scoped
+  lint and formatting then passed.
+- No lockfile or dependency version changed, so a new dependency/license audit
+  was not triggered. The all-files secret scan passed.
+- The first post-merge aggregate stopped after41/52 tasks because CURRENT_STATE's
+  next outcome omitted the literal active requirement ID. Restoring `P09-R03`
+  made repository-memory check/test pass; the repeated aggregate then passed
+  all54 tasks without weakening or skipping a gate.
+- Remediation confirmation found usable partial GraphQL responses classified as
+  rejected and stale parallel wording in ADR-0036. The correction maps only
+  `PARTIAL` to degraded, records sequential admission and adds one direct policy
+  regression; Discovery89/89 and the final54/54 affected gate pass.
+
+Heavyweight evidence applicability
+
+The latest source correction changes only the finite structured-log outcome for a
+usable partial response. It does not change migration 0003, rail SQL/view,
+GraphQL response, transaction admission, telemetry metrics, packaging boundaries
+or failure isolation. The direct policy regression and affected build/test gate
+cover the changed behavior; the passing real PostgreSQL and 11-service functional
+evidence remains applicable under the recorded repeat triggers.
+
+The squash rebase preserved the exact affected Git object IDs:
+
+- services/discovery: eb9482d048a2b8c2e17a4055af1ba605e020d0b1
+- services/engagement: 23a84fad39084490397a131ae8b0401bc07bd5e3
+- packages/telemetry: 2bfc3fd89f9ea168610ce0cbb5b0bb51b41f7765
+- infra/router: 907fdf615807072b41b1dff3c47f8f6bcededc64
+- tools/run-discovery-runtime.mjs: 5e214abdff600eed94eb31d5a620feaf20ca316d
+
+Review/release state
+
+Exact0d1a7ef passed protected run33245434181 in17m5s. Remediation confirmation
+review5057520267 then found two requirement-relevant issues: usable `PARTIAL`
+GraphQL responses were logged as rejected, and ADR-0036 still described the
+superseded parallel fan-out. The local correction maps partial responses to
+degraded, documents sequential one-transaction admission and passes Discovery
+build,89/89 tests, scoped lint, formatting and the54/54 affected candidate in
+47.708s. Publication update, confirmation, merge and exact-main CI remain before
+release.
+
+Closeout documentation correction
+
+Exact8650670 passed protected run33246333963, including all required jobs and
+15m30s source/integration acceptance. Final confirmation review5057560831 found
+only that the implemented-query excerpt defaulted `homeContinueWatching` to20
+while the authoritative schema and generated API default it to10. The excerpt now
+uses10. Repository-memory, documentation, schema, formatting and diff checks pass.
+This changes no schema, operation, source, package or runtime byte; the prior
+candidate and protected evidence remain applicable before one closeout publication.
+
+Catalog federation capacity correction
+
+Exactdf08a70 passed protected run33247048014. Closeout review5057633664 found
+that the three genre rails can flatten36 valid Title representations into one
+Catalog federation branch while its transport guard accepted only20. Catalog now
+admits at most36 valid Title representations, rejects37 and leaves ordinary list
+arguments capped at20. Its existing request-scoped DataLoader retains
+maxBatchSize20; a real local HTTP regression proves36 representations resolve in
+two owner reads. Catalog build and230/230 tests, scoped ESLint, formatting and
+diff checks pass. Projection SQL, Router topology, media and retained data are
+unchanged, so their heavyweight evidence remains applicable.
+
+Command: pnpm check:changed
+Result: PASS
+Tasks: 54 successful, 54 total
+Cached: 38
+Duration: 55.844s
+
+Fallback contract correction
+
+Exactdbce479 was published and protected run33248060625 started. Closeout review
+5057751709 found that a completed recent rail could replace `cancelled` or
+`indeterminate` featured/trending outcomes with `FALLBACK`, contradicting the
+written empty/unavailable-only contract and hiding the primary telemetry outcome.
+The invalidated run was cancelled. Fallback now accepts only primary `empty` or
+`unavailable`; a direct regression proves both uncertain outcomes remain explicit
+in the response and metrics. Discovery build and90/90 tests, scoped ESLint,
+formatting and diff checks pass. SQL, transport, Router, media and retained data
+are unchanged.
+
+Command: pnpm check:changed
+Result: PASS
+Tasks: 54 successful, 54 total
+Cached: 38
+Duration: 49.022s

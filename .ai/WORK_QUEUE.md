@@ -3,13 +3,27 @@
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
 P09-R01 is DONE through PR33, protected run33238473742, squash main `0bdcb27`
-and exact-main run33239191134. P09-R03 is the sole IN_PROGRESS item. Its PR34
-confirmation found two blocking boundaries: database fan-out and no migration-3
-readiness overlap. The active minimal precursor stages finite search compatibility
-from main. Its first42/42 affected gate passed; confirmation then exposed the
-init-preflight boundary, now corrected with75/75 focused tests. Complete the
-corrected42/42 candidate before rebasing and completing PR34. Historical stashes are
-superseded.
+and exact-main run33239191134. P09-R03 is the sole IN_PROGRESS item on dependent
+`feat/p09-home-rails`. Rails/fallback/owner composition/telemetry are locally
+verified; confirmation found database-admission and migration-rollout blockers.
+Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
+confirmation and protected CI, then squash-merged as main `583c835`; exact-main
+run33244657936 passed. The dependent is rebased on that squash and ready for its
+PR34 correction. Exact0d1a7ef passed protected run33245434181; remediation review
+found partial-log classification and stale ADR execution wording. Both are fixed
+locally with Discovery89/89 and final54/54 affected candidate in47.708s.
+Exact8650670 passed protected run33246333963; final confirmation found only a
+GraphQL architecture excerpt default20/schema default10 mismatch. Exactdf08a70
+corrected it and passed protected run33247048014. Closeout review then found a
+Catalog federation capacity mismatch: the genre branch can emit36 references
+while Catalog admitted20. The local correction accepts36, rejects37 and retains
+DataLoader owner batches of at most20; focused Catalog build and230/230 pass.
+The corrected affected candidate passes54/54,38 cached, in55.844s.
+Exactdbce479 was published; closeout review5057751709 found fallback could replace
+cancelled/indeterminate primary results. The invalidated protected run33248060625
+was cancelled. The local correction restricts fallback to empty/unavailable and
+passes Discovery build,90/90 focused tests and the affected54/54 candidate in49.022s.
+Historical stashes are superseded.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -69,9 +83,10 @@ P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R
 
 P09-R03 first releases a search-only readiness precursor accepting exactly
 migration markers `1–2` or `1–3`. It does not apply migration3 or query rail
-objects. Its old init preflight tolerates marker3 but still owns only scripts1–2.
-After exact main, PR34 rebases and completes the rail migration,
-owner-composed GraphQL and bounded telemetry. P09-R10 remains the later Web slice.
+objects. After exact main, PR34 rebases and completes the rail migration,
+owner-composed GraphQL and bounded telemetry. It adds no service, profile copy,
+behavioral popularity claim, Redis authority or cross-owner SQL. P09-R10 remains
+the later Web SSR/client and phase-acceptance slice.
 
 Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-R01 includes R02–R05 and atomic R09 intent; its protected/post-merge gates pass. P08-R06 has [protected closeout evidence](../evidence/phase-08/history-visibility.md). Watchlist has [protected closeout evidence](../evidence/phase-08/watchlist.md) under ADR-0032. Entity fields, relay and browser reports follow. No repeated CPU or film experiment.
 

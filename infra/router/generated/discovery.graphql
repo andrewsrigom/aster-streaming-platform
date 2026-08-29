@@ -10,6 +10,39 @@ enum DiscoverySearchCode {
   INDETERMINATE
 }
 
+enum DiscoveryHomeCode {
+  COMPLETED
+  PARTIAL
+  INVALID_INPUT
+  STALE
+  UNAVAILABLE
+  CANCELLED
+  INDETERMINATE
+}
+
+enum DiscoveryRailCode {
+  COMPLETED
+  EMPTY
+  FALLBACK
+  UNAVAILABLE
+  CANCELLED
+  INDETERMINATE
+}
+
+enum DiscoveryRailKind {
+  FEATURED
+  RECENTLY_ADDED
+  TRENDING
+  GENRE
+}
+
+enum DiscoveryRailSource {
+  FEATURED
+  RECENTLY_ADDED
+  TRENDING
+  GENRE
+}
+
 type Title @key(fields: "id") {
   id: ID!
 }
@@ -39,6 +72,45 @@ type DiscoverySearchPayload {
   connection: DiscoverySearchConnection
 }
 
+type DiscoveryRailEdge {
+  node: Title
+  sourceVersion: Int!
+  indexedAt: Float!
+  visibleUntil: Float!
+}
+
+type DiscoveryRail {
+  key: ID!
+  kind: DiscoveryRailKind!
+  genre: String
+  source: DiscoveryRailSource!
+  oldestIndexedAt: Float
+  freshUntil: Float
+  edges: [DiscoveryRailEdge!]!
+}
+
+type DiscoveryRailResult {
+  code: DiscoveryRailCode!
+  rail: DiscoveryRail
+}
+
+type DiscoveryGenreRailResult {
+  code: DiscoveryRailCode!
+  rails: [DiscoveryRail!]!
+}
+
+type DiscoveryHomePayload {
+  code: DiscoveryHomeCode!
+  correlationId: ID!
+  generation: ID
+  generatedAt: Float
+  featured: DiscoveryRailResult
+  recentlyAdded: DiscoveryRailResult
+  trending: DiscoveryRailResult
+  genres: DiscoveryGenreRailResult
+}
+
 type Query {
   searchTitles(query: String!, locale: String!, first: Int! = 20, after: String): DiscoverySearchPayload!
+  homeRails(first: Int! = 10): DiscoveryHomePayload!
 }

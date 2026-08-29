@@ -48,6 +48,8 @@ type RecordProgress = EngagementSubgraphOptions["recorder"]["record"];
 
 const historyQuery =
   "query ProgressHistory($profileId:ID!, $first:Int! = 20, $after:String) { progressHistory(profileId:$profileId, first:$first, after:$after) { code correlationId connection { edges { cursor node { id titleId sequence positionMs durationMs status updatedAt title { __typename id } } } pageInfo { endCursor hasNextPage } } } }";
+const homeContinueQuery =
+  "query HomeContinueWatching($profileId:ID!, $first:Int! = 10) { homeContinueWatching(profileId:$profileId, first:$first) { code correlationId connection { edges { node { titleId positionMs durationMs status title { __typename id } } } pageInfo { hasNextPage } } } }";
 
 const watchlistMutation =
   "mutation SetWatchlist($input: SetWatchlistInput!) { setWatchlist(input: $input) { code correlationId change { id profileId titleId present version updatedAt } } }";
@@ -245,13 +247,20 @@ test("watchlist HTTP non-success and uncertain commits never fabricate acknowled
 
 test("read preflight bounds pages, canonical cursors, list cost and root fan-out", () => {
   const history = { query: historyQuery, variables: { profileId: input.profileId } };
+  const home = { query: homeContinueQuery, variables: { profileId: input.profileId } };
   assert.equal(inspectEngagementOperation(history).status, "accepted");
+  assert.equal(inspectEngagementOperation(home).status, "accepted");
+  assert.equal(
+    String(createEngagementSchema().getQueryType()?.getFields()["homeContinueWatching"]?.type),
+    "ProgressPagePayload",
+  );
   for (const value of [
     { ...history, variables: { profileId: input.profileId, first: 21 } },
     { ...history, variables: { profileId: input.profileId, first: 0 } },
     { ...history, variables: { profileId: input.profileId, after: "e1.continue.invalid" } },
     { ...history, query: historyQuery.replace("code correlationId", "code accountId") },
     { ...history, query: historyQuery.replace("first:$first", "first:1, first:20") },
+    { ...home, variables: { profileId: input.profileId, first: 21 } },
     {
       ...history,
       query:
@@ -310,6 +319,44 @@ test("HTTP history forwards profile authority and emits bounded public state wit
     assert.equal(body.data.progressHistory.code, "COMPLETED");
     assert.equal(body.data.progressHistory.connection.edges[0]?.node.title.id, state.titleId);
     assert.doesNotMatch(response.text, /accountId|playbackSessionId|signature|credential/u);
+    assert.equal(reads, 1);
+  } finally {
+    await f.close();
+  }
+});
+
+test("nullable home continue-watching reuses Engagement owner authorization", async () => {
+  let reads = 0;
+  const f = await fixture(
+    () => {
+      throw new Error("home read must not write");
+    },
+    {
+      page: (kind, value) => {
+        reads++;
+        assert.equal(kind, "continue");
+        assert.deepEqual(value, { profileId: input.profileId, first: 10, after: null });
+        return Promise.resolve({
+          status: "completed",
+          value: {
+            edges: [{ cursor: "home-cursor", node: state }],
+            pageInfo: { endCursor: "home-cursor", hasNextPage: false },
+          },
+        });
+      },
+    },
+  );
+  try {
+    const response = await f.send({
+      query: homeContinueQuery,
+      variables: { profileId: input.profileId },
+    });
+    assert.equal(response.status, 200);
+    const body = JSON.parse(response.text) as {
+      data: { homeContinueWatching: { code: string; connection: { edges: unknown[] } } };
+    };
+    assert.equal(body.data.homeContinueWatching.code, "COMPLETED");
+    assert.equal(body.data.homeContinueWatching.connection.edges.length, 1);
     assert.equal(reads, 1);
   } finally {
     await f.close();

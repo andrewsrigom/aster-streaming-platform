@@ -1,131 +1,178 @@
-# Work Item: Stage Discovery schema compatibility before home rails
+# Work Item: Independent home rails, stable fallbacks and owner composition
 
 - Status: IN_PROGRESS
-- Owner: Discovery read model
+- Owner: Discovery read model; Engagement owns continue-watching; Catalog owns title truth
 - Phase: 09
-- Requirement IDs: P09-R03, P09-R09
+- Requirement IDs: P09-R03, P09-R04, P09-R05, P09-R08, P09-R09
 - Created: 2026-08-29
 - Updated: 2026-08-29
 
 ## Outcome
 
-The released search-only Discovery binary remains ready on its current migration
-set and after the next additive home-rail migration, so migration-first rollout
-and rollback do not create a readiness gap.
+A viewer can request a bounded home model whose public rails fail independently,
+report freshness and use a stable recent fallback. An authenticated home request
+can compose Engagement-owned continue-watching without copying profile or progress
+truth into Discovery.
 
 ## Current behavior
 
-P09-R01 is released in main `0bdcb27` through PR33 and exact-main CI33239191134.
-PR34 candidate `7d31678` proved home rails locally, but confirmation review found
-that the released binary requires exactly migrations `1–2` while the rails binary
-requires exactly `1–3`. No deployment order keeps both versions ready.
+Search is released in main `0bdcb27`. PR34 candidate `7d31678` locally verified
+the initial rails slice, but confirmation found two blockers: four SQL transactions
+per home request exceeded shared admission, and migration3 had no readiness overlap
+with the released binary. The database-admission correction is local. Precursor
+PR35 exact `8002594` passed75/75,42/42, clean confirmation and protected
+run33243983340, then squash-merged as main `583c835`. Exact-main run33244657936
+passed every required job; migration3 publication is now unblocked. PR34 exact
+`0d1a7ef` passed protected run33245434181. Its remediation confirmation found
+that usable partial logs were classified as rejected and ADR-0036 still described
+the superseded parallel admission model; both corrections reached exact
+`8650670` and protected run33246333963 passed. Its final confirmation found one
+architecture excerpt using default20 instead of the authoritative schema default10;
+the documentation-only correction reached exact `df08a70` and protected
+run33247048014 passed. Closeout confirmation then found the three genre rails can
+flatten36 Catalog `Title` representations while its guard allowed20; the bounded
+Catalog federation correction is local.
+Exact `dbce479` then passed the corrected local54/54 candidate. Closeout review
+5057751709 found fallback could replace `cancelled` or `indeterminate` primary
+outcomes despite the written contract allowing only `empty` or `unavailable`;
+the narrow fallback correction is local.
 
 ## Proposed behavior
 
-Release one compatibility precursor from current main. Search readiness accepts
-only ordered markers `1–2` or the single reviewed additive successor `1–3`.
-The local migration preflight preserves its valid bootstrap and partial-current
-states and also tolerates ordered markers `1–3`, while continuing to use and
-apply only the two migration-2-era scripts and objects. Both paths reject gaps,
-rewrites and marker `4`. Merge this precursor before rebasing PR34 and applying
-migration `0003`.
+Add one bounded `homeRails` query to Discovery. It returns separately coded
+featured, recently added, curated trending and at most three genre rails. A failed
+or empty featured/trending selection may reuse only a successfully read recent
+rail and says `FALLBACK`. Curated trending means the Catalog editorial label
+`trending`; it makes no behavioral-popularity claim. Add nullable Engagement
+`homeContinueWatching` through existing owner authorization. Each home request
+uses at most one runtime transaction at a time; four GraphQL admissions plus one
+readiness reservation fit the five-connection runtime pool.
 
 ## Boundaries
 
-- Owning context: Discovery.
-- Affected services/packages: Discovery readiness, tests, migration/ADR docs and
-  Phase 09 evidence/memory.
-- Authoritative data: unchanged Discovery projection derived from Catalog.
-- Read models/caches: PostgreSQL projection; no Redis or new data.
-- Trust boundaries: database migration rows returned to readiness.
-- External dependencies: existing PostgreSQL only.
+- Owning context: Discovery owns rail definitions/order; Engagement owns
+  continue-watching; Catalog owns public title truth.
+- Affected services/packages: Discovery, narrow Engagement and Catalog federation
+  transports, telemetry, Router artifacts and Phase 09 evidence.
+- Authoritative data: Catalog title/publication facts and Engagement progress.
+- Read models/caches: existing versioned Discovery PostgreSQL projection; no Redis.
+- Trust boundaries: public GraphQL input, Router owner credentials, projection rows,
+  migration rows and telemetry labels.
+- External dependencies: existing PostgreSQL, Router/Federation and OpenTelemetry.
 
 ## Invariants
 
-- The search-only binary never queries migration-3 objects.
-- The search-only migrator never applies migration `0003`; it only tolerates its
-  marker after another reviewed image has applied it.
-- Readiness compatibility is finite: only exactly `1–2` and `1–3` pass.
-- Migration preflight additionally preserves valid bootstrap and partial-current
-  states so it can still install migrations `1–2`.
-- A missing, gapped, rewritten or future schema fails readiness closed.
-- Migration `0003` is not applied before this precursor reaches main.
+- Discovery never persists profile, progress or session data.
+- Current Catalog resolves every returned `Title` reference.
+- One rail failure cannot remove an independently completed rail.
+- Results are bounded to twelve titles per rail and three genre rails.
+- Expired projection rows are not served; fallback bypasses no rights/visibility.
+- A home request reserves at most one runtime transaction concurrently.
+- Catalog admits at most36 home entity representations and retains owner batches
+  of at most20 through its request-scoped DataLoader.
+- Migration3 waits for the finite search compatibility precursor on exact main.
+- The old search migrator tolerates marker3 but owns/applies only scripts1–2 and
+  rejects marker4.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Migration rows missing, gapped or future | Readiness unavailable | existing finite dependency/readiness state |
-| Marker `3` present | Search-only binary remains ready using existing objects | existing readiness state |
-| Database unavailable/cancelled | Existing unavailable behavior | existing dependency outcome |
+| Featured/trending unavailable or empty | Use independently completed recent titles as `FALLBACK`; otherwise preserve primary result, including cancelled/indeterminate | rail outcome, duration, fallback count |
+| Genre error | Fixed rails remain; genres report failure | rail outcome and duration |
+| Projection stale | Explicit `STALE`, no edges | freshness and stale outcome |
+| Engagement unavailable | Nullable personalized root fails without nulling public rails | owner/Router outcome |
+| Cancellation/deadline | Stop pending SQL and propagate bounded cancellation | cancelled outcome |
+| Migration mismatch | Readiness unavailable; old search remains ready on staged marker3 | existing readiness outcome |
 
 ## Data and contracts
 
-- Schema/migration: no schema mutation in this precursor.
-- GraphQL: unchanged search contract and artifacts.
-- Events: unchanged Catalog v1 events.
-- Cache: none.
-- Compatibility: released search binary accepts current and one additive successor.
-- Retention/deletion: unchanged.
+- Schema/migration: additive security-barrier `rail_documents` view over matching
+  generation/fence version/digest. Down drops only the view.
+- GraphQL: additive `homeRails` and nullable `homeContinueWatching`.
+- Events: unchanged Catalog and Engagement v1 events.
+- Cache: none; projection lease remains at most300seconds.
+- Compatibility: precursor accepts current/successor markers; rails binary requires
+  marker3 and its restricted view.
+- Retention/deletion: no new personal data; rails follow projection retention.
 
 ## Security and privacy
 
-- Authorization: unchanged role/membership/privilege checks remain mandatory.
-- Input limits: at most four ordered migration rows are read.
-- Sensitive data: no new data or logs.
-- Abuse cases: hostile row accessors are not invoked; unexpected rows fail closed.
+- Authorization: public rails need none; personalization stays in Engagement.
+- Input limits: first1–12, fixed rail/edge result bounds, existing body/parser/depth/
+  alias/cost/deadline/concurrency limits; Catalog entities36, other lists20.
+- Sensitive data: no query/title text, profile ID, credential or media URL in
+  rail/search telemetry.
+- Abuse cases: reject operation substitution, excess fields/aliases and malformed
+  persisted rows before application authority.
 
 ## Implementation steps
 
-1. Extract finite readiness and migrator schema-compatibility predicates with
-   adverse tests.
-2. Document the required two-stage rollout and rollback.
-3. Run the affected candidate gate, one initial review and one confirmation.
-4. Protected squash merge and exact-main CI, then rebase/remediate PR34.
+1. Precursor exact-main run33244657936 passed.
+2. Rebase PR34 and prove migration3 against staged-old and rails-new readiness.
+3. Keep one transaction per home request, five finite runtime connections and an
+   overlapping-request regression.
+4. Repeat affected PostgreSQL/runtime/candidate gates.
+5. Resolve review discussions, confirm the corrected observability/documentation
+   boundary and publish through protected release.
 
 ## Tests
 
-- Domain: not applicable; no domain rule changes.
-- Application: readiness and migration-preflight current/successor/gap/future
-  predicate tests, plus hostile readiness rows.
-- Integration: PR34 repeats real migration-3 mixed-version evidence after rebase.
-- Contract: no GraphQL change; source gate protects existing schema.
-- Browser: not applicable.
-- Performance/failure: no heavyweight runtime change; readiness failure behavior is
-  bounded by focused tests and the later real SQL gate.
+- Domain: input bounds, stable keys/source labels, outcomes and fallback.
+- Application: independent failures, stale/cancelled, maximum rail/edge bounds and two
+  overlapping requests with one transaction each; fallback preserves cancelled
+  and indeterminate primary outcomes.
+- Integration: real PostgreSQL view, privileges, generation match, ordering,
+  expiry, retirement and mixed old/new readiness.
+- Contract: five-subgraph composition, nullability, known operations and cost.
+- Owner batching: Catalog accepts36 valid entity references, rejects37 and splits
+  the accepted maximum into owner reads of at most20.
+- Browser: excluded; P09-R10 owns visible SSR/hydration.
+- Performance/failure: Router proof with rail fault, Engagement isolation and
+  finite metrics; no media/CPU experiment.
 
 ## Evidence
 
-- Commands: Discovery build/tests, scoped lint/format, then `pnpm check:changed`.
-- Raw artifact path: `evidence/phase-09/home-rails-compatibility.txt`.
-- Acceptance result: first candidate passed 73/73 Discovery tests and the 42/42
-  affected gate. Confirmation found the migration-preflight blocker; corrected
-  verification passes Discovery75/75 and the affected42/42 gate; protected
-  release is pending.
-- Iteration gate: strict build, focused node:test, scoped ESLint/Prettier.
-- Candidate gate: canonical affected `pnpm check:changed`.
-- Heavyweight repeat triggers: predicate/test/doc changes do not repeat Docker,
-  media or unchanged search runtime; PR34 must repeat migration-3 SQL/readiness.
-- Review stopping rule: one initial and one confirmation round; reopen only for a
-  requirement, security/data, availability or public-contract blocker.
+- Commands: focused tests during edits; affected `pnpm check:changed` at candidate.
+- Raw artifact path: `evidence/phase-09/home-rails-*.txt`.
+- Acceptance result: initial rails passed Discovery82/82, telemetry10/10, real
+  PostgreSQL/runtime and54/54; admission fix passes Discovery83/83. Precursor
+  correction passes75/75,42/42, protected CI and review. Rebased Discovery88/88, real PostgreSQL mixed
+  readiness and the repeated eleven-service runtime pass; final exact-main rebase
+  preserved exact affected source objects and the54/54 candidate passed. The
+  latest partial-log/ADR correction passes focused Discovery89/89 and the final
+  affected54/54 candidate in47.708s. The Catalog capacity correction passes its
+  build and230/230 focused tests; the corrected affected candidate passes54/54,
+  38 cached, in55.844s. The fallback correction passes Discovery build and90/90
+  focused tests; its corrected affected candidate passes54/54,38 cached, in49.022s.
+- Iteration gate: strict builds, focused node:test and scoped lint.
+- Candidate gate: canonical affected gate and schema compatibility.
+- Heavyweight repeat triggers: mixed-version/view SQL and changed pool/admission
+  repeat PostgreSQL and Router runtime; docs-only closeout carries them forward.
+- Review stopping rule: confirmation produced two P1 blockers and remediation
+  confirmation produced two requirement/documentation P2 blockers. Batch the
+  latter; subsequent confirmations found a public-contract documentation mismatch
+  and then the real Catalog entity-capacity blocker. Its confirmation found one
+  public-contract blocker where fallback hid cancelled/indeterminate outcomes.
+  Correct that narrow boundary and run one final confirmation; reopen only for
+  requirement, security/data, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Restore the prior search binary while schema remains at migration `2`. If this
-precursor is already released it is behavior-compatible with migration `2`; do
-not apply migration `3` until its exact-main gate passes. Preserve all projections,
-fences, quarantine and retained media.
+PR35 exact-main passed; migration3 is old-search compatible.
+Restore prior Router/owner artifacts and drop only the rail view once no rails
+binary uses it. Preserve projections, Catalog/Engagement data, media and credentials.
 
 ## Documentation updates
 
-ADR-0035, Discovery migration guide, Phase 09 release/evidence and repository
-memory.
+ADR-0035/0036, Discovery/Engagement operations, migration guide, Phase 09 evidence
+and repository memory.
 
 ## Completion checklist
 
-- [x] Requirements satisfied
-- [x] Focused tests pass
-- [x] Candidate evidence captured
-- [x] Documentation current
+- [x] Requirements implemented
+- [x] Final fallback-contract candidate pass
+- [x] Affected heavyweight evidence captured
+- [x] Documentation current for dependent work
 - [x] `.ai/` state updated
 - [x] Remaining risks recorded

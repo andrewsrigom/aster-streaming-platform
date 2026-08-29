@@ -6,6 +6,10 @@ export const DEPENDENCY_DURATION_BUCKETS_SECONDS = Object.freeze([
   0.001, 0.0025, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10,
 ]);
 
+export const DISCOVERY_FRESHNESS_BUCKETS_SECONDS = Object.freeze([
+  1, 5, 15, 30, 60, 120, 180, 240, 300,
+]);
+
 export const ASTER_METRIC_CATALOG = Object.freeze({
   httpDuration: Object.freeze({
     name: "http.server.request.duration",
@@ -41,6 +45,26 @@ export const ASTER_METRIC_CATALOG = Object.freeze({
     name: "aster.telemetry.export.attempts",
     description: "Number of telemetry export attempts by bounded result.",
     unit: "{attempt}",
+  }),
+  discoveryRailDuration: Object.freeze({
+    name: "aster.discovery.rail.duration",
+    description: "Duration of one bounded Discovery rail selection.",
+    unit: "s",
+  }),
+  discoveryRailOutcomes: Object.freeze({
+    name: "aster.discovery.rail.outcomes",
+    description: "Number of Discovery rail selections by finite outcome.",
+    unit: "{rail}",
+  }),
+  discoveryRailFreshness: Object.freeze({
+    name: "aster.discovery.rail.freshness",
+    description: "Age of the oldest projected title served by a Discovery rail.",
+    unit: "s",
+  }),
+  discoverySearchQualitySamples: Object.freeze({
+    name: "aster.discovery.search.quality_samples",
+    description: "Deterministically sampled search result-count and top-rank buckets.",
+    unit: "{sample}",
   }),
   processCpuTime: Object.freeze({
     name: "process.cpu.time",

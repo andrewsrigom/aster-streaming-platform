@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { request } from "node:http";
 import { performance } from "node:perf_hooks";
 import { fileURLToPath, URL } from "node:url";
@@ -57,6 +58,15 @@ const operation =
   "query SearchTitles($query:String!,$locale:String!){searchTitles(query:$query,locale:$locale,first:5){code correlationId connection{generation edges{cursor sourceVersion indexedAt visibleUntil node{id localized(locale:$locale){locale title}}} pageInfo{endCursor hasNextPage}}}}";
 const browseOperation =
   "query Browse($first:Int!,$locale:String!){titles(first:$first){edges{node{id localized(locale:$locale){title}}}}}";
+const knownOperations = await readFile(root + "infra/router/known-operations.graphql", "utf8");
+const knownOperation = (name) => {
+  const start = knownOperations.indexOf("query " + name + "(");
+  assert.notEqual(start, -1, "Missing known operation " + name + ".");
+  const next = knownOperations.indexOf("\n\nquery ", start + 1);
+  return knownOperations.slice(start, next === -1 ? undefined : next).trim();
+};
+const homePublicOperation = knownOperation("HomePublic");
+const homePersonalizedOperation = knownOperation("HomePersonalized");
 
 async function executeGraphql(port, payload) {
   const body = Buffer.from(JSON.stringify(payload));
@@ -198,6 +208,42 @@ try {
     zeroResult: "explicit-empty",
     sourceVersion: edge.sourceVersion,
     freshnessSeconds: edge.visibleUntil - edge.indexedAt,
+  });
+
+  const publicHome = await executeGraphql(port, {
+    query: homePublicOperation,
+    operationName: "HomePublic",
+    variables: { first: 1, locale: "en" },
+  });
+  assert.equal(publicHome.status, 200);
+  assert.equal(publicHome.body.errors, undefined);
+  const homePayload = publicHome.body.data?.homeRails;
+  assert.equal(homePayload?.code, "PARTIAL");
+  assert.equal(homePayload?.featured?.code, "FALLBACK");
+  assert.equal(homePayload?.featured?.rail?.source, "RECENTLY_ADDED");
+  assert.equal(homePayload?.featured?.rail?.edges?.length, 1);
+  assert.equal(homePayload?.recentlyAdded?.code, "COMPLETED");
+  assert.equal(homePayload?.trending?.code, "FALLBACK");
+  assert.equal(homePayload?.genres?.code, "COMPLETED");
+  assert.equal(homePayload?.genres?.rails?.[0]?.genre, "experimental");
+
+  const personalizedHome = await executeGraphql(port, {
+    query: homePersonalizedOperation,
+    operationName: "HomePersonalized",
+    variables: {
+      profileId: "00000000-0000-4000-8000-000000090201",
+      first: 1,
+      locale: "en",
+    },
+  });
+  assert.equal(personalizedHome.status, 200);
+  assert.ok(personalizedHome.body.errors?.length > 0);
+  assert.equal(personalizedHome.body.data?.homeRails?.recentlyAdded?.code, "COMPLETED");
+  assert.equal(personalizedHome.body.data?.homeContinueWatching, null);
+  emit("discovery_home_runtime", {
+    publicRails: 4,
+    recentFallback: true,
+    ownerPartialResponse: true,
   });
 
   stage = "state";
