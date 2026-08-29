@@ -16,6 +16,8 @@ import { verifyAcquisitions } from "./acquisition-postgres.js";
 import { verifyProcessing } from "./processing-postgres.js";
 import { verifyAttestation } from "./attestation-postgres.js";
 import { verifyPublicationRollback } from "./rollback-postgres.js";
+import { verifyDiscoverySources } from "./discovery-postgres.js";
+import { migrateLocalCatalog } from "../../src/infrastructure/persistence/local-migrations.js";
 import { catalogTestId as id, provenanceFixture, rightsFixture } from "../rights-fixture.js";
 import type {
   CatalogRightsTransaction,
@@ -409,6 +411,14 @@ async function verify() {
   await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
   await verifyWorkflow(admin, makeDatabase());
   await verifyOperatorCli(admin, port);
+  // Older migration round trips must not be masked by the new read-view dependency.
+  // Discovery's own boundary proof reinstalls this additive view afterwards.
+  await admin.query(
+    await readFile(
+      new URL("../../../migrations/0010-discovery-reads.down.sql", import.meta.url),
+      "utf8",
+    ),
+  );
   await admin.query("GRANT aster_catalog_runtime TO aster_catalog_fixture");
   await verifyPublicationRollback(admin, makeDatabase());
   await verifyPublicCatalog(admin, makeDatabase(), makeDatabase("aster_catalog_reader_fixture"));
@@ -422,9 +432,31 @@ async function verify() {
   await verifyAcquisitions(admin, makeDatabase());
   await verifyProcessing(admin, makeDatabase());
   await verifyAttestation(admin, makeDatabase(), makeDatabase("aster_catalog_attester_local"));
+  await verifyDiscoverySources(
+    admin,
+    makeDatabase("aster_catalog_discovery_reader_local"),
+    makeDatabase("aster_catalog_reader_local"),
+  );
 }
 try {
-  await verify();
+  if (process.argv[3] === "--discovery") {
+    await migrateLocalCatalog(
+      {
+        ASTER_ENVIRONMENT: "local",
+        ASTER_CATALOG_OPERATOR_ENABLED: "true",
+        ASTER_CATALOG_ADMIN_DATABASE_URL: `postgresql://aster@127.0.0.1:${port}/aster`,
+        ASTER_CATALOG_ADMIN_DATABASE_PASSWORD: "aster-test-only",
+      },
+      AbortSignal.timeout(20000),
+    );
+    await verifyDiscoverySources(
+      admin,
+      makeDatabase("aster_catalog_discovery_reader_local"),
+      makeDatabase("aster_catalog_reader_local"),
+    );
+  } else {
+    await verify();
+  }
 } catch (error) {
   output("catalog_integration_failed", {
     name: error instanceof Error ? error.name : "unknown",
@@ -434,7 +466,7 @@ try {
         ? error.stack
             ?.split("\n")
             .filter((line) =>
-              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres|processing-postgres|attestation-postgres|rollback-postgres)\.js/u.test(
+              /(?:rights-postgres|workflow-postgres|operator-cli|public-postgres|generated-publication|media-postgres|acquisition-postgres|processing-postgres|attestation-postgres|rollback-postgres|discovery-postgres)\.js/u.test(
                 line,
               ),
             )

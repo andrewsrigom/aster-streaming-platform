@@ -50,7 +50,7 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 08 — Progress, History, Watchlist, and Continue-Watching**. PR32's ea4c72f seed correction passes local real-storage/candidate evidence and protected run33222164370 proved its full replay, but that run reproduced Chromium response-body disposal in the personalized browser. Event-turn acknowledgement capture passes103 Web tests, types, scoped lint and43/43 affected tasks; protected acceptance remains. Phase09 work is preserved locally at dcc2a13/cf13c15 plus the exact newest stash in HANDOFF. Retained demo stays Phase07; no data migration or film processing is implied.
+Active phase: **Phase 09 — Home Rails and Search**. PR32 is frozen at d2ba88f54dcb82c568b8aa4e286632a044e63799 after103 Web tests, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for CI33223692248, confirmation request5459202276, squash and exact main. The sole local dependent is rebased onto that exact head; no publication before predecessor closeout. Domain and Catalog snapshot work are implemented locally, not a running search API. Retained demo remains Phase07.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

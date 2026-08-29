@@ -10,7 +10,8 @@ import { runGeneratedMediaFixture } from "./run-media-fixture.mjs";
 
 const execute = promisify(execFile);
 assert.ok(
-  process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === "--generated"),
+  process.argv.length === 2 ||
+    (process.argv.length === 3 && ["--generated", "--discovery"].includes(process.argv[2])),
 );
 const generated = process.argv[2] === "--generated" ? await runGeneratedMediaFixture() : undefined;
 if (generated) {
@@ -86,7 +87,11 @@ try {
   }
   const result = await execute(
     process.execPath,
-    ["services/catalog/dist/test/integration/rights-postgres.js", String(port)],
+    [
+      "services/catalog/dist/test/integration/rights-postgres.js",
+      String(port),
+      ...(process.argv[2] === "--discovery" ? ["--discovery"] : []),
+    ],
     {
       cwd: root,
       timeout: 60000,

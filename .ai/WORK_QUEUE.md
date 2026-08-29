@@ -2,7 +2,7 @@
 
 Only one item may be `IN_PROGRESS`; one frozen predecessor may be `WAITING_EXTERNAL`.
 
-P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 proves immutable replay and all earlier integration steps, but Chromium discarded the selected progress body even during its response event. The local correction leaves bodies to the application and requires exact request plus rendered confirmation within12 seconds;104 Web tests, seven observer regressions, types, scoped lint and the43-task affected candidate pass. Protected acceptance remains. P09-R01 is READY, preserved unpublished through6ca3703; historical stashes are superseded and must not be reapplied. Retained Phase07 demo remains intact.
+PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search and is being rebased onto that exact head. Its complete private transport/runtime WIP is stash 01b1dad9bbda289976d137b1a20af9f7cf102add; older stashes must not be reapplied. No publication before predecessor closeout. Retained Phase07 demo remains intact.
 
 | Order | Work item | Requirement | Status |
 |---:|---|---|---|
@@ -51,8 +51,8 @@ P08-R11 is IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 proves immut
 | 43 | Add idempotent owned watchlist with current Catalog visibility | P08-R07 | DONE |
 | 44 | Batch federated Title and Profile engagement fields per request | P08-R08 | DONE |
 | 45 | Relay owner outboxes and verify idempotent consumers, deletion and rebuild | P08-R09 | DONE |
-| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | IN_PROGRESS |
-| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | READY |
+| 46 | Integrate honest player reports and resume, then close Phase 08 | P08-R11 | WAITING_EXTERNAL |
+| 47 | Build versioned Discovery projection, rebuild and bounded published-title search | P09-R01 | IN_PROGRESS |
 | 48 | Compose independent home rails, safe fallbacks and freshness telemetry | P09-R03 | READY |
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | READY |
 
@@ -71,3 +71,4 @@ Phase 07 has [protected release evidence](../evidence/phase-07/release.md). P08-
 - Add newly discovered work only if it belongs to the active phase.
 - Record future-phase ideas under the relevant specification rather than implementing them early.
 - `READY` items after the active item are ordered runway, not authorization to start them concurrently.
+

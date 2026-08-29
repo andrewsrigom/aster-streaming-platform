@@ -2,15 +2,17 @@
 
 ## Resume point
 
-P08-R11 IN_PROGRESS on fix/p08-browser-ack, PR32. Run33225822813 on dc571bd passed every preceding integration/bootstrap boundary and immutable replay, then proved Chromium can discard the selected progress body even inside its response event. The local correction leaves bodies exclusively to the application and requires exact request plus rendered confirmation within12 seconds. Web104/104, seven observer regressions, strict types, scoped lint and the43-task affected candidate pass. Not WAITING_EXTERNAL. P09-R01 is preserved unpublished through6ca3703 on feat/p09-discovery-search; historical stashes are superseded and must not be reapplied. Full Phase00–14 goal remains active.
+PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main.
+
+P09-R01 is the sole unpublished dependent on feat/p09-discovery-search and is being rebased onto that exact head. Domain and Catalog snapshot work pass31 focused tests, scoped lint and real SQL compatibility across2055 synthetic titles. Complete private transport/runtime WIP is preserved in stash 01b1dad9bbda289976d137b1a20af9f7cf102add; older stashes must not be reapplied. No publication before predecessor closeout. Full Phase00–14 goal remains active.
 
 ## Exact next actions
 
-1. Publish the application-owned confirmation correction in existing PR32 and request one refreshed exact-head confirmation. Require protected full startup/browser/replay, expected-head squash and exact main success; no repeat of the unchanged local storage fixture.
-2. Then close Phase08, switch to feat/p09-discovery-search and rebase commit6ca3703 plus its predecessors onto exact main. Do not apply historical stashes. The committed work already includes Catalog snapshots/private transport, persisted versioned projections, weighted PostgreSQL search and the disposable real proof. Continue event/snapshot orchestration, quarantine/replay and GraphQL/runtime; rails/Web later. Reinstall frozen dependencies after workspace changes.
-3. Phase08 audit/release artifacts accompany this correction; no documentation-only pipeline. Existing browser/SQL/Kafka evidence remains supporting. Bootstrap changes require real storage and protected complete replay; no film encode or retained-runtime change.
-4. PR31 initial review was automatic on ready/open; do not request a duplicate initial review on later PRs while that review is running. Its explicit confirmation is complete. No third round without a concrete blocker.
-5. Preserve every historical Phase09 stash without reapplying; commit6ca3703 is authoritative. No retained migration, Docker/WSL restart, global cleanup or film re-encode.
+1. Follow the automatically triggered exact-head PR32 CI and confirmation request5459416204. Squash only if protected acceptance/review pass, then require exact main success. No CI retry or repeated storage experiment.
+2. Finish this rebase, apply stash 01b1dad9bbda289976d137b1a20af9f7cf102add once, and continue from its already-passing private credential/pool/readiness and real PostgreSQL runtime proof. Then implement owned projection/rebuild/search; rails/Web remain later slices.
+3. Before P09 publication rebase onto accepted predecessor main and repeat affected gates. Frozen install is required after workspace changes. Restore no historical stash.
+4. If predecessor review/CI exposes another blocker, preserve dependent WIP before correcting it; failed tests are not WAITING_EXTERNAL.
+5. Preserve retained media/databases/keys and user applications. No retained migration, Docker/WSL restart, global cleanup or film encode.
 
 ## Evidence boundaries
 
@@ -35,3 +37,4 @@ Preserve backup C:/Users/andre/AppData/Local/Temp/aster-p07-runtime-f3750a5a-e6d
 ## Do not do yet
 
 No WSL/Docker restart, global cleanup, unrelated-process action, CPU/memory loop, unchanged heavy proof or retained film encoding. Repository bind-mount integration previously failed: do not retry unchanged. Direct WSL Docker works without host binds. The general reset remains intentionally limited to its old fixed checkpoint; personalized demo cleanup uses its exact project and all three Compose files. No paid resources or invented media rights.
+

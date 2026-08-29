@@ -1,85 +1,80 @@
-# Work Item: Complete browser acknowledgement and immutable demo replay
+# Work Item: Versioned Discovery projection and bounded title search
 
 - Status: IN_PROGRESS
-- Owner: Web acceptance harness and Catalog local bootstrap; Engagement owns durable progress
-- Phase: 08
-- Requirement IDs: P08-R11
+- Owner: Discovery read model; Catalog owns title and publication truth
+- Phase: 09
+- Requirement IDs: P09-R01, P09-R02, P09-R06, P09-R07
 - Created: 2026-08-28
 - Updated: 2026-08-28
 
 ## Outcome
 
-The browser journey observes durable save before navigation, and replay verifies existing immutable media without uploading it again.
+A viewer can search published titles through the supergraph using a bounded, versioned PostgreSQL read model that can be rebuilt after broker retention expires. Retired or disputed titles disappear within the explicit freshness limit.
 
 ## Current behavior
 
-PR31 passed protected CI33217783905 and two clean reviews, then merged as e20a7de. Exact main33218775702 failed only in the personalized browser helper: Network.getResponseBody reported a body unavailable after navigation. The asynchronous waitForResponse predicate can read several bodies concurrently. All preceding source, SQL, Kafka and anonymous-browser stages passed; cleanup succeeded. This failed-test blocker is not WAITING_EXTERNAL.
+PR32 is frozen at d2ba88f54dcb82c568b8aa4e286632a044e63799 after103 Web tests, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for CI33223692248, confirmation request5459202276, squash and exact main. Run33222164370 proved immutable replay and exposed the response-body race corrected by this exact head.
 
-The observer correction at 77eda41 passed both real browser journeys in PR32 run33220547568 and clean initial5458820383/confirmation5458880876 reviews. That run failed later in playable-seed replay: non-retryable streaming request and INITIALIZATION_REJECTED. The initializer conditionally uploads even existing objects before readback; a transport failure can prevent verification. The exact underlying SDK/provider failure is not proved. This reproduced bootstrap blocker remains IN_PROGRESS, not WAITING_EXTERNAL.
+PR32 is frozen at 6c78d2a87853d8b6d0830214be8d434fb76122b9 after104 Web tests, seven observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for its automatically triggered protected CI, exact-head review request5459353777, squash and exact main. Run33223692248 proved immutable replay and every preceding owner/platform boundary, then exposed the Profiles body race corrected by this exact head.
 
-The read-only seed correction at ea4c72f passed source quality, real platform, Catalog generation, Playback and Engagement integration, including immutable seed reuse. Protected run33222164370 then reproduced the browser failure in the first personalized progress acknowledgement: `response.json()` began only after `waitForResponse` resolved, and Chromium had already discarded the resource body. Source job99018340341 otherwise passed through the complete bootstrap; cleanup succeeded. This is the active blocker.
+PR32 is frozen at dc571bd77e08529b8c91ccb53d44b0bf3bfdf089 after105 Web tests, eight observer regressions, strict types, scoped lint and43/43 affected tasks pass. P08-R11 is WAITING_EXTERNAL only for protected CI, exact-head confirmation request5459416204, squash and exact main. Review5056138342's selected-body deadline blocker is corrected by this exact head.
 
-The event-turn progress correction at d2ba88f passed its exact-head confirmation review without findings. Protected run33223692248 passed source, platform, Catalog, Playback, Engagement, immutable replay and service health, then failed before profile creation because the separate initial `Profiles` response body was also read only after UI work. Chromium reported the same discarded-resource error at engagement.spec.ts:47. The correction centralized exact GraphQL response selection and started both profile and progress body reads inside their response event.
-
-Review5056138342 on exact6c78d2a found one P1 deadline regression: selection removed the listener and cleared the timer before `response.json()` settled, so a stalled selected body could defer failure to Playwright's90-second test timeout. The correction keeps the original timer active through body success/failure; the same deadline now covers selection and consumption.
-
-Protected run33225822813 on exact dc571bd passed source quality, the real platform, Catalog, Playback, Engagement, immutable seed replay and health, then failed only in the personalized browser at the first selected progress body. Chromium can discard `Network.getResponseBody` even when the observer calls `response.json()` inside the response event. Reading application-owned bodies from the acceptance observer is therefore the active defect, not a timing gap.
-
-P09 domain, Catalog snapshot, private runtime and persisted projection work is preserved unpublished through6ca3703 on feat/p09-discovery-search. Historical P09 stashes are superseded and must not be reapplied. Retained demo remains Phase07.
+P09-R01 is the sole unpublished dependent on feat/p09-discovery-search, being rebased onto that exact predecessor. Domain and Catalog snapshot/query rules pass31 focused tests. Real SQL passes migration0010, separate-reader privileges, expiry/retirement, bounded global pages and data-preserving view round-trip with2055 synthetic titles; the full Catalog compatibility suite passes. Its complete private transport/runtime WIP remains in stash 01b1dad9bbda289976d137b1a20af9f7cf102add until this rebase completes; older stashes must not be reapplied. No running search API is claimed. No publication before predecessor closeout; rebase/recheck if it changes.
 
 ## Proposed behavior
 
-Select each intended GraphQL request synchronously by endpoint, method and exact request predicate, but leave its body exclusively owned by the application GraphQL client. After a successful selected transport response, require application-rendered confirmation inside the same original12-second deadline. The profile bootstrap renders the empty collection before creating anything. Progress selects the exact title/sample request and accepts `Progress saved` only because production code emits it after a matching `COMPLETED` sequence; subsequent owner reads prove exact resume or completed-history state. Completion supplies the actual near-end media position. Never ignore response errors or weaken durable-save, history, resume or isolation assertions.
+Use the existing PostgreSQL, broker, Node/Express and Federation boundaries. Implement projection rules, Catalog-owned current snapshots/export, owned persistence/rebuild/consumer, then a bounded search subgraph. ADR-0035 defines consistency and freshness. No external search engine, Redis authority, media work or personal recommendation store.
 
-For each generated seed object, use the existing bounded storage HEAD. Existing objects require complete size/SHA256 readback and no PUT; only not_found permits one conditional PUT followed by the same verification. Keep If-None-Match for a competing creator between HEAD and PUT. Other lookup/write failures reject without retry. No data replacement, uncertain-success fallback or shared-adapter rewrite.
 
 ## Boundaries
 
-Affected: apps/web/test, services/catalog/src/infrastructure/fixtures/playable-publisher.ts, its focused tests and the existing real media-origin fixture. Catalog owns media/approval; S3 responses and bytes are untrusted. ADR-0029/0026 retain immutable publication, private originals, rights checks and compensation. No owner, schema, migration, public API, dependency or storage-adapter contract change.
+Catalog owns metadata/visibility and its private read adapter. Discovery owns searchable copies, source versions, projection generations and query ordering. Existing event-delivery/broker adapters transport facts; events are invalidation hints, not publication authority. Public fields return Catalog Title references. Planned paths: services/discovery, narrow services/catalog application/transport/persistence reads, Router artifacts/known operations and opt-in Compose. Web rails remain the later P09-R10 slice.
 
 ## Invariants
 
-Read no browser response body from the observer. A failed selected transport or missing application confirmation fails. Resolve progress only after the exact request and non-optimistic UI confirmation; owner reads still prove position/status. Keep browser deadlines/zero retries and seed45-second/operation5-second budgets. Existing wrong, truncated, oversized or missing bytes reject; HEAD alone never proves integrity. Preserve content types/cache headers, children-before-master order, rights rechecks and publication barrier.
+Only current Catalog snapshots can populate public metadata. Older source versions cannot overwrite newer state; same-version conflicting metadata cannot silently replace it; hidden state cannot become visible at the same version. Preserve retirement fences through replay/rebuild. Public results expire within300seconds, with source-rights expiry as an earlier cap, and never grant media access. Query metadata continues to come from Catalog.
 
 ## Failure behavior
 
-Missing response or rendered confirmation times out; transport/application rejection propagates. Lookup unavailable/cancelled/timed-out does not mean missing. A creation race accepts only completed/already_exists followed by correct readback. Unknown PUT results fail closed. No pipeline retry, host restart or retained-data reset.
+Cancellation/deadlines stop uncommitted work. Unknown commits are replayable through source version. Invalid or conflicting events are durably quarantined before acknowledgement; full bounded quarantine leaves the offset uncommitted. Snapshot failure is unavailable, never a fabricated empty or hidden title. A partial rebuild never replaces the active generation. Discovery failure must not affect Catalog/Playback admission.
 
 ## Data and contracts
 
-No changes. Tests use fictional metadata and existing GraphQL payloads; private traces stay uncommitted.
+Add owned Discovery schema/roles with additive migrations and empty-state-only down migration. Keep Catalog v1 events unchanged. Add purpose-separated private snapshot/export GraphQL reads under the existing owner-read model; do not reuse another consumer's key. No cross-owner SQL. Search queries are normalized and bounded with query-bound keyset cursors. Keep at most two projection generations; retain source-version fences and bounded quarantine/rebuild checkpoints. No personal data or new cache.
 
 ## Security and privacy
 
-Do not record cookies, session data or media grants. Preserve production authorization/cost limits and retained runtime.
+Validate all source/event/query input and exact ownership. Bound metadata, response bytes, page size, concurrency and total traversal. Separate optional Catalog admission from public traffic. No media URLs, rights records, browser credentials or raw search text in telemetry. Reject cursor/query substitution and oversized or malformed documents.
 
 ## Implementation steps
 
-1. Extract synchronous response selection followed by application-owned rendered confirmation.
-2. Prove unrelated-request isolation, confirmation-before-resolution ordering, shared deadline and adverse transport/application confirmation deterministically.
-3. Prove read-only replay, corruption refusal, cancellation and conditional creation races; extend the existing disposable real S3 fixture without encoding media.
-4. Run the affected candidate gate; update the same PR32 with one coherent correction and refreshed boundary review.
-5. Squash after green CI and confirmation; require exact main success before closing Phase08/resuming Phase09.
+1. Pure snapshot/projection/search-input rules and deterministic adverse tests.
+2. Catalog snapshot/export adapter and purpose isolation; real owned SQL evidence.
+3. Discovery persistence, generation rebuild and current-snapshot event consumer; duplicate/retirement/outage/replay evidence.
+4. Search GraphQL, composition/cost limits, opt-in runtime and representative query plans/relevance.
+5. Protected candidate/release, then independent rails and client integration in their queued slices.
 
 ## Tests
 
-Focused tests coordinate completion without arbitrary sleeps. Seven browser observer regressions cover exact request selection, application confirmation ordering, shared deadline and adverse transport/confirmation; the full Web suite passes104 tests with strict types and scoped lint. Existing reporter/client tests prove only a matching parsed `COMPLETED` sequence renders saved. Deterministic seed tests cover read-only replay, single-create/conflict, exact-byte mismatch, unavailable results and cancellation. The existing isolated media-origin test proves real SDK/S3 first creation, replay with zero further writes, hash rejection and immutable metadata. No film/FFmpeg/retained-stack run. Protected Docker-only acceptance must pass its browser journeys and final initialization replay without weakening assertions.
+Domain: bounds, canonicalization, duplicate/stale/conflicting versions, fresh/expired input and retirement fences. Application: cancellation, snapshot failure, invalid event and finite rebuild. Integration: real PostgreSQL constraints/generation switch, Kafka acknowledgement/replay and actual owner isolation. Contract: schema/known operations, page/cost/cursor safety. Browser: no new UI in this slice; existing public browse/playback remains a smoke boundary. Failure: unavailable Catalog/broker/Discovery, expired freshness and incomplete rebuild.
 
 ## Evidence
 
-Iteration gate: focused browser tests, scoped lint and Web types. Candidate gate: canonical check:changed. Preserve run33225822813 and focused output in evidence/phase-08/player-seed-replay.txt. Existing SQL/Kafka/player/storage evidence remains supporting because their inputs do not change; protected full startup/replay remains required. Do not repeat heavy evidence for unrelated prose. The observer ownership correction changes the acceptance boundary and requires one refreshed confirmation review, stopping after concrete blockers are resolved.
+Iteration gate: scoped strict TypeScript, deterministic node:test and changed-file lint. Candidate gate: canonical check:changed and exact-main schema compatibility. Capture raw output, hashes, environment, workload and limitations under evidence/phase-09. Repeat SQL/Kafka/runtime evidence only for changes affecting their semantics, packaging or bootstrap; no unchanged host/media experiment. One initial and one confirmation review; extend only for requirement, security/data, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Revert the invalid correction while retaining the failed gate. Preserve Phase09 branch/stash, media, databases, keys, deletion fences and user applications. No database rollback or delete is needed.
+Disable optional Discovery and restore compatible Router/Catalog artifacts. Retain source data, version fences, quarantine and the prior active index. Never repair a failed rebuild by deleting Catalog or retained demo data. No WSL/Docker restart or global cleanup. Publication is predecessor-first.
 
 ## Documentation updates
 
-Phase08 audit/release evidence, concise state/queue/session/handoff and demo replay procedure at the correction checkpoint. The read-before-create optimization preserves ADR-0029; no architecture change.
+ADR-0035, Discovery operations and contracts, phase evidence, and concise repository memory at candidate/closeout checkpoints.
 
 ## Completion checklist
 
-- [x] Updated regression and affected gates pass (Web104/104, seven observer cases, types, scoped lint and43-task candidate pass)
-- [ ] Protected browser acceptance and reviews pass
-- [ ] Exact main succeeds and Phase08 closes
-- [ ] Phase09 rebased and resumed without lost work
+- [ ] Projection and search implementation satisfies the four requirements
+- [ ] Required tests and real runtime evidence pass
+- [ ] Relevance, freshness and retirement behavior measured
+- [ ] Documentation and memory current
+- [ ] Predecessor and own protected release complete
+

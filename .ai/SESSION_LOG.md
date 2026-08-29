@@ -6,7 +6,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Completed
 
-Current handoff: PR32 observer head77eda41 passed both actual browser journeys and clean reviews, but CI33220547568 failed in final immutable-seed replay. Added bounded presence lookup/full-byte read-only reuse; only absence permits one conditional creation. P08-R11 remains IN_PROGRESS on fix/p08-browser-ack. P09 domain/ADR-0035/21 tests are preserved unpublished at0e31767 plus Catalog snapshot WIP stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32, READY after repair/rebase. Retained demo/media and host processes are unchanged.
+Current handoff: PR32 is frozen at ea4c72f67818b7e2382da1a6c653d6f835aad23c after11 focused tests, real S3 replay/cleanup and43/43 candidate tasks pass. P08-R11 is WAITING_EXTERNAL only for CI33222164370, refreshed review (request5459001648), squash and exact main. The earlier observer-only run33220547568 failed in seed replay; its clean browser reviews do not certify this new runtime boundary. P09-R01 is the sole unpublished dependent on feat/p09-discovery-search. Its domain checkpoint is nowcf13c153bed54312b681b30e6274fc8129543772 after rebasing onto ea4c72f. Stash770430dfd71f7a4eaa477f805f8bcc1c4082cc32 was applied once and memory conflicts reconciled; never reapply it or older stashes. No publication before predecessor closeout; rebase/recheck if it changes. Retained demo/media and host processes are unchanged.
 
 Latest continuation: R11 gained private Apollo validation/lifetime, exact acknowledgement and media sampling/resume binding;28 tests, lint/types and composition pass. Preserved in stash4e83d8455b9f7c7fe73a50d6ecc4194b6906a32c while correcting the second stale migration expectation in PR30. Initial review5457715810 is clean; the Catalog correction passes hosted CI. Fields correction and all full-migrator fixture alignment checks now pass, with one real four-migration SQL proof and exact cleanup. Older1643 checkpoint already restored; never reapply it. Final-head candidate/confirmation/CI remain next.
 
@@ -16,6 +16,8 @@ Closed R08 PR29 and rebased R09 onto d7fa03a363ab979f008500040b0afa62ddec2704; a
 
 ### Evidence
 
+Discovery resumed on cf13c15:31 focused tests and scoped lint pass. Focused PostgreSQL proof passed3 synthetic titles; full Catalog compatibility then exposed only a last-page fixture assumption about unrelated retained titles. Corrected that expectation, reran the affected full SQL suite once: migration1..10, owner/concurrency/media/public GraphQL and source-view checks pass,2055 titles survive view round-trip, cleanup0. [Evidence](../evidence/phase-09/catalog-snapshots.txt). No running Discovery HTTP/search API, retained data change or host experiment.
+
 Current R11 correction: nine seed regressions/two file tests pass; scoped lint passes after fixing test braces/method binding. One existing real media-origin fixture passed first create, read-only replay with zero additional PUTs, corruption refusal, immutable headers and all existing access/compensation checks; exact cleanup reports zero. [Seed evidence](../evidence/phase-08/player-seed-replay.txt) retains the initial red regression and original CI failure. Earlier five observer regressions,26 player tests,14/14 gate and both actual PR32 browser passes remain supporting. No SQL, Compose, dependency, retained-film or host change.
 
 Latest: reporter eleven tests, scoped lint/format and Web types pass. CI33209032494 passed source/shared-platform/generated Catalog checks; standalone Catalog proof expected eight rather than nine migrations and later runtime steps were skipped. [Correction](../evidence/phase-08/events-ci.txt): three tests and scoped checks pass. The first correction gate passed69/70; only this log exceeded500 headings, so same-session checkpoints were consolidated without dropping history or weakening the limit.
@@ -24,7 +26,7 @@ R08 protected/main gates pass. Native pinned tooling and its executable pnpm shi
 
 ### Next action
 
-Current: affected gate passes43/43 (24 cached,1m48.49s); publish the seed correction in PR32, refresh review for its bootstrap boundary, then require protected full demo/replay and exact main success. [Prior protected evidence](../evidence/phase-08/player-release.txt) remains supporting, not a successful main claim. Resume Phase09 after repair/rebase and apply only its exact new stash once. The following prior checkpoint remains historical:
+Current: PR32 ea4c72f is published and waits only for CI33222164370/review request5459001648/merge/exact main. Continue P09 snapshot SQL proof locally on cf13c15; stash770430 applied once, memory conflicts reconciled. Do not publish Discovery before predecessor release or reapply stashes. The following prior checkpoint remains historical:
 
 Publish one locally accepted R09 candidate and require protected CI to execute the corrected supervisor, initial/confirmation review, squash and exact main push. Do not repeat unchanged heavyweight behavior for static corrections. Then R11 player integration; its existing frontend/Apollo/profile paths were inspected while the gate ran, without starting another implementation. Preserve event keys and applied stashes.
 

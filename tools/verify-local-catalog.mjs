@@ -71,7 +71,7 @@ try {
     ]);
   const first = await compose(["run", "--rm", "--no-deps", "catalog-init"], 20000);
   const repeat = await compose(["run", "--rm", "--no-deps", "catalog-init"], 20000);
-  assert.ok(first.includes('"applied":[1,2,3,4,5,6,7,8,9]'));
+  assert.ok(first.includes('"applied":[1,2,3,4,5,6,7,8,9,10]'));
   assert.ok(repeat.includes('"applied":[]'));
   runtime = await compose(
     [
