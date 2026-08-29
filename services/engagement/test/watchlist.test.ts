@@ -137,6 +137,36 @@ test("watchlist admission follows owner and replay but precedes Catalog and pers
   assert.deepEqual(await replayWriter.set(input(), replayed.request), first);
 });
 
+test("concurrent identical watchlist retries consume one admission and replay one effect", async () => {
+  const f = watchlistFixture();
+  const entered = Promise.withResolvers<undefined>();
+  const release = Promise.withResolvers<undefined>();
+  let admissions = 0;
+  const writer = createWatchlistWriter({
+    ...f.ports,
+    limiter: {
+      admit: async () => {
+        admissions++;
+        entered.resolve(undefined);
+        await release.promise;
+        return { status: "allowed" };
+      },
+    },
+  });
+  const attempts = Array.from({ length: 5 }, () => writer.set(input(), f.request));
+  await entered.promise;
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(admissions, 1);
+  release.resolve(undefined);
+  const results = await Promise.all(attempts);
+  assert.ok(results.every((result) => result.status === "completed"));
+  assert.ok(results.every((result) => JSON.stringify(result) === JSON.stringify(results[0])));
+  assert.equal(admissions, 1);
+  assert.equal(f.calls.catalog.length, 1);
+  assert.equal(f.calls.transaction, 1);
+  assert.equal(f.state().events.length, 1);
+});
+
 test("profile-scoped key conflicts across title and action before Catalog access", async () => {
   const f = watchlistFixture();
   assert.equal((await f.writer.set(input(), f.request)).status, "completed");

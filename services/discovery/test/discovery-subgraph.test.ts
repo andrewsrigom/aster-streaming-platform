@@ -231,8 +231,17 @@ test("search bulkhead queues one, rejects excess and preserves home capacity", a
     const queued = f.send();
     await new Promise((resolve) => setImmediate(resolve));
     const excess = await f.send();
-    assert.equal(excess.status, 429);
+    assert.equal(excess.status, 200);
     assert.equal(excess.headers["retry-after"], "1");
+    assert.equal(
+      (excess.json["data"] as { searchTitles: { code: string; connection: unknown } }).searchTitles
+        .code,
+      "LIMIT_EXCEEDED",
+    );
+    assert.equal(
+      (excess.json["data"] as { searchTitles: { connection: unknown } }).searchTitles.connection,
+      null,
+    );
     assert.equal(f.state.calls, 2);
     const homeResult = await f.send({
       query: HOME_RAILS,

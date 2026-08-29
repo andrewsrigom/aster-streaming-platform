@@ -89,6 +89,7 @@ type Query {
 type ProgressPayload {
   code: ProgressCode!
   correlationId: ID!
+  retryAfterMs: Int
   progress: Progress
 }
 
@@ -149,6 +150,7 @@ type WatchlistPagePayload {
 type WatchlistPayload {
   code: WatchlistCode!
   correlationId: ID!
+  retryAfterMs: Int
   change: WatchlistChange
 }
 

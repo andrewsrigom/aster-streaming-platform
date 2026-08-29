@@ -82,6 +82,7 @@ try {
     ["allowed", "allowed", "allowed", "allowed", "rejected"],
   );
   assert.equal(commands, 4);
+  const hotBurstRedisCommands = commands;
 
   assert.deepEqual(await first.close(signal()), { status: "completed" });
   assert.deepEqual(
@@ -98,7 +99,7 @@ try {
       atomicRejected: 20,
       recoveredStates: corruptedKeys.length,
       hotBurstAttempts: burst.length,
-      hotBurstRedisCommands: commands,
+      hotBurstRedisCommands,
       outageDecision: "local_fallback",
     }) + "\n",
   );

@@ -59,7 +59,13 @@ export function createWatchlistIntent(options: {
           options.onCompleted();
         } else {
           publish(
-            ["UNAVAILABLE", "BACKPRESSURE", "CANCELLED", "INDETERMINATE"].includes(result.code)
+            [
+              "UNAVAILABLE",
+              "BACKPRESSURE",
+              "LIMIT_EXCEEDED",
+              "CANCELLED",
+              "INDETERMINATE",
+            ].includes(result.code)
               ? "unconfirmed"
               : "rejected",
           );

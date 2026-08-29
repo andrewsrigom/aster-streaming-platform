@@ -154,10 +154,12 @@ export interface WatchlistOutcome {
     | "NOT_VISIBLE"
     | "CONFLICT"
     | "BACKPRESSURE"
+    | "LIMIT_EXCEEDED"
     | "UNAVAILABLE"
     | "CANCELLED"
     | "INDETERMINATE";
   readonly correlationId: string;
+  readonly retryAfterMs?: number;
   readonly change:
     (ProgressPair & { id: string; present: boolean; version: number; updatedAt: number }) | null;
 }
@@ -169,6 +171,7 @@ export const SET_WATCHLIST: TypedDocumentNode<
     setWatchlist(input: $input) {
       code
       correlationId
+      retryAfterMs
       change {
         id
         profileId
@@ -309,7 +312,11 @@ export function readWatchlistOutcome(value: unknown, input: WatchlistCommand): W
   const data = record(value);
   const code = data["code"];
   const correlationId = identifier(data["correlationId"]);
+  const retryAfterMs = data["retryAfterMs"];
   if (code === "COMPLETED") {
+    if (retryAfterMs !== null && retryAfterMs !== undefined) {
+      throw new Error("Invalid watchlist retry policy.");
+    }
     const change = record(data["change"]);
     if (
       change["profileId"] !== input.profileId ||
@@ -339,11 +346,23 @@ export function readWatchlistOutcome(value: unknown, input: WatchlistCommand): W
       code !== "NOT_VISIBLE" &&
       code !== "CONFLICT" &&
       code !== "BACKPRESSURE" &&
+      code !== "LIMIT_EXCEEDED" &&
       code !== "UNAVAILABLE" &&
       code !== "CANCELLED" &&
       code !== "INDETERMINATE")
   ) {
     throw new Error("Invalid watchlist outcome.");
+  }
+  if (code === "LIMIT_EXCEEDED") {
+    return {
+      code,
+      correlationId,
+      retryAfterMs: integer(retryAfterMs, 1, 30_000),
+      change: null,
+    };
+  }
+  if (retryAfterMs !== null && retryAfterMs !== undefined) {
+    throw new Error("Invalid watchlist retry policy.");
   }
   return { code, correlationId, change: null };
 }

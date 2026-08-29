@@ -15,6 +15,7 @@ import type {
   ProgressRequest,
   ProgressResult,
 } from "./progress-ports.js";
+import { createIdempotencyAdmissionQueue } from "./idempotency-admission.js";
 
 const timestamp = (value: number) =>
   Number.isSafeInteger(value) && value >= 0 && value <= 253_402_300_799;
@@ -101,6 +102,7 @@ function replay(
 }
 
 export function createProgressRecorder(ports: ProgressPorts) {
+  const idempotencyAdmissions = createIdempotencyAdmissionQueue();
   const limits = ports.limits;
   if (
     !Number.isSafeInteger(limits.receiptSeconds) ||
@@ -140,6 +142,7 @@ export function createProgressRecorder(ports: ProgressPorts) {
         ...(request.traceparent === undefined ? {} : { traceparent: request.traceparent }),
       };
       let writing = false;
+      let releaseIdempotency: (() => void) | undefined;
       try {
         const credential = request.credential;
         const owner = await guarded(
@@ -167,6 +170,17 @@ export function createProgressRecorder(ports: ProgressPorts) {
         if (!/^[a-f0-9]{64}$/u.test(digest)) {
           return { status: "unavailable" };
         }
+        const admissionKey = ports.digest(
+          `record_progress\0${owner.value.accountId}\0${input.profileId}\0${input.idempotencyKey}`,
+        );
+        const ordering = await idempotencyAdmissions.acquire(admissionKey, signal);
+        if (ordering.status === "cancelled") {
+          return { status: "cancelled" };
+        }
+        if (ordering.status === "capacity") {
+          return { status: "backpressure" };
+        }
+        releaseIdempotency = ordering.release;
         const existing = await guarded(
           () => ports.receipts.read(key, input.idempotencyKey, signal),
           signal,
@@ -291,6 +305,8 @@ export function createProgressRecorder(ports: ProgressPorts) {
         return {
           status: writing ? "indeterminate" : request.signal.aborted ? "cancelled" : "unavailable",
         };
+      } finally {
+        releaseIdempotency?.();
       }
     },
   });

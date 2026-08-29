@@ -118,6 +118,15 @@ test("fresh progress projection rejects substitution and distinguishes absence f
 
 test("only a matching durable acknowledgement can report a successful save", () => {
   assert.deepEqual(readProgressOutcome(outcome(), input), outcome());
+  const limited = {
+    code: "LIMIT_EXCEEDED",
+    correlationId: id(6),
+    retryAfterMs: 1_000,
+    progress: null,
+  } as const;
+  assert.deepEqual(readProgressOutcome(limited, input), limited);
+  assert.throws(() => readProgressOutcome({ ...limited, retryAfterMs: 0 }, input));
+  assert.throws(() => readProgressOutcome({ ...limited, retryAfterMs: undefined }, input));
   for (const change of [
     { sequence: 7 },
     { positionMs: 14000 },
@@ -133,6 +142,7 @@ test("only a matching durable acknowledgement can report a successful save", () 
     const failure = { code, correlationId: id(6), progress: null };
     assert.deepEqual(readProgressOutcome(failure, input), failure);
     assert.throws(() => readProgressOutcome({ ...outcome(), code }, input));
+    assert.throws(() => readProgressOutcome({ ...failure, retryAfterMs: 1_000 }, input));
   }
 });
 

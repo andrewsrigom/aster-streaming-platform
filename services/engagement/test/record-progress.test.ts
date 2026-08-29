@@ -239,6 +239,36 @@ test("operation admission follows owner and replay but precedes Playback and per
   assert.deepEqual(await replayRecorder.record(input(), replayed.request), first);
 });
 
+test("concurrent identical progress retries consume one admission and replay one effect", async () => {
+  const f = fixture();
+  const entered = Promise.withResolvers<undefined>();
+  const release = Promise.withResolvers<undefined>();
+  let admissions = 0;
+  const recorder = createProgressRecorder({
+    ...f.ports,
+    limiter: {
+      admit: async () => {
+        admissions++;
+        entered.resolve(undefined);
+        await release.promise;
+        return { status: "allowed" };
+      },
+    },
+  });
+  const attempts = Array.from({ length: 5 }, () => recorder.record(input(), f.request));
+  await entered.promise;
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(admissions, 1);
+  release.resolve(undefined);
+  const results = await Promise.all(attempts);
+  assert.ok(results.every((result) => result.status === "completed"));
+  assert.ok(results.every((result) => JSON.stringify(result) === JSON.stringify(results[0])));
+  assert.equal(admissions, 1);
+  assert.equal(f.calls.playback, 1);
+  assert.equal(f.calls.transaction, 1);
+  assert.equal(f.state().events.length, 1);
+});
+
 test("same key with changed raw payload conflicts even when positions clamp to the same value", async () => {
   const f = fixture();
   await f.recorder.record(input({ positionMs: 7000 }), f.request);

@@ -243,18 +243,20 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
     const requestSignal = getExpressRequestAbortSignal(response);
     const searchPermit =
       operation === "search_titles" ? await searchConcurrency.acquire(requestSignal) : undefined;
+    let searchAdmission: DiscoveryGraphqlContext["searchAdmission"] = "admitted";
     if (searchPermit && searchPermit.status !== "acquired") {
       if (searchPermit.status === "rejected") {
         response.set("Retry-After", "1");
-        reject(429, "LIMIT_EXCEEDED");
+        searchAdmission = "limit_exceeded";
       } else {
         reject(503, searchPermit.status === "cancelled" ? "CANCELLED" : "UNAVAILABLE");
+        record();
+        return;
       }
-      record();
-      return;
     }
+    const acquiredSearchPermit = searchPermit?.status === "acquired" ? searchPermit : undefined;
     if (unavailable()) {
-      searchPermit?.release();
+      acquiredSearchPermit?.release();
       reject(503, "UNAVAILABLE");
       record();
       return;
@@ -271,6 +273,7 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
       typeof request.headers["traceparent"] === "string"
         ? request.headers["traceparent"]
         : undefined,
+      searchAdmission,
     );
     contexts.set(request, context);
     const timer = setTimeout(() => {
@@ -290,7 +293,7 @@ export async function createDiscoverySubgraph(options: DiscoverySubgraphOptions)
       contexts.delete(request);
       lane.controllers.delete(controller);
       pending.delete(execution);
-      searchPermit?.release();
+      acquiredSearchPermit?.release();
       record();
     }
   };

@@ -259,6 +259,15 @@ test("watchlist commands and acknowledgements cannot substitute scope or action"
     assert.throws(() => readWatchlistCommand({ ...input, ...patch }, id(1)));
   }
   assert.deepEqual(readWatchlistOutcome(completed(), input), completed());
+  const limited = {
+    code: "LIMIT_EXCEEDED",
+    correlationId: id(6),
+    retryAfterMs: 1_000,
+    change: null,
+  } as const;
+  assert.deepEqual(readWatchlistOutcome(limited, input), limited);
+  assert.throws(() => readWatchlistOutcome({ ...limited, retryAfterMs: 30_001 }, input));
+  assert.throws(() => readWatchlistOutcome({ ...limited, retryAfterMs: undefined }, input));
   for (const patch of [
     { profileId: id(99) },
     { titleId: id(99) },
