@@ -1,10 +1,10 @@
 # Discovery search and home rails
 
-P09-R01, P09-R02, P09-R06 and P09-R07 are released. The current P09-R03
-candidate adds independent home rails and bounded product metrics over the same
-rebuildable PostgreSQL projection. Catalog remains the authority for title
-metadata, publication and rights; Discovery returns federated `Title` references
-so current public metadata is resolved by Catalog.
+Phase 09 search, independent home rails, Web integration and bounded product
+metrics are released. The current Phase 10 candidate adds a bounded optional home
+cache over the same rebuildable PostgreSQL projection. Catalog remains the
+authority for title metadata, publication and rights; Discovery returns federated
+`Title` references so current public metadata is resolved by Catalog.
 
 ## Public contract
 
@@ -52,6 +52,15 @@ Engagement-owned `homeContinueWatching`. If Engagement is unavailable, Router ca
 retain public rails with a partial GraphQL response; Discovery stores no profile
 or progress data.
 
+When `ASTER_DISCOVERY_CACHE_ENABLED=true`, `HomePublic` uses the whole-page cache
+from [ADR-0038](../../docs/adr/0038-bounded-discovery-home-stale-cache.md). A
+fresh hit skips the four PostgreSQL selections. A page can remain eligible as
+stale for at most sixty seconds from capture and never reaches any title's
+`visibleUntil`. Eligible stale data returns `STALE` with rails plus a visible Web
+refresh notice while one bounded background refresh runs. Projection stale with
+no eligible cache page returns the existing null-field `STALE` response. Redis
+loss runs the normal PostgreSQL source and cannot affect Catalog or Playback.
+
 ## Projection and recovery
 
 Catalog v1 publication events are bounded invalidation hints. For each accepted hint, Discovery fetches one current snapshot through its purpose-separated private Catalog operation before writing. Older versions cannot replace newer state, same-version conflicts fail closed, and retirement or rights-expiry fences cannot be resurrected by replay.
@@ -71,6 +80,8 @@ or Playback traffic. No cross-owner SQL or Redis authority is introduced.
 
 Finite OpenTelemetry instruments record rail kind/outcome, selection duration,
 served freshness and deterministically sampled search result/top-rank buckets.
+The optional home cache adds finite fresh/stale/miss, source/refresh,
+coalescing and lease outcomes under the fixed `discovery_rail` family.
 They never label query/title text, title/profile/correlation IDs, credentials or
 media URLs. These measurements are not an SLO or popularity signal.
 
@@ -96,12 +107,16 @@ Rollback stops the optional Discovery overlay and restores compatible Router/Cat
 
 ```sh
 pnpm discovery:integration
+pnpm discovery:cache-integration
 pnpm discovery:runtime
 ```
 
 The first command uses a disposable PostgreSQL 18.6 fixture to prove migrations,
-role isolation, relevance, stable keysets, rail ordering/fallback, generation-fence
-matching, rebuild/event recovery and the GIN plan. The second builds a UUID-named
+role isolation, relevance, stable keysets, rail ordering/fallback,
+generation-fence matching, rebuild/event recovery and the GIN plan. The second
+starts one UUID-named disposable Redis container and proves bounded reads,
+fresh/stale reuse, coordination, outage fallback and exact cleanup. The third
+builds a UUID-named
 disposable Docker project, projects Catalog through Kafka, exercises search and
 home rails through Router, proves nullable Engagement partial response, restart
 recovery, zero lag, sanitized logs and exact cleanup. Product metrics are also

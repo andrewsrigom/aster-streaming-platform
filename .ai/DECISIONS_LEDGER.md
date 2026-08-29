@@ -2,6 +2,13 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0038](../docs/adr/0038-bounded-discovery-home-stale-cache.md) limits the
+Discovery cache to twelve whole public-home variants. A validated snapshot is
+fresh for fifteen seconds plus jitter and may be served explicitly as stale for
+at most sixty seconds, shortened by every title visibility lease. One bounded
+process refresh and a tokenized Redis lease coordinate work; Redis failure uses
+the existing PostgreSQL source and never changes Catalog or Playback authority.
+
 [ADR-0037](../docs/adr/0037-rights-safe-catalog-cache.md) limits the first Phase10
 cache to Catalog public-title entity projections. Every positive reuse follows a
 current PostgreSQL visibility/version fence; browse ordering, rights and Playback

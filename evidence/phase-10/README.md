@@ -1,7 +1,8 @@
 # Phase 10 Evidence Index
 
-Status: local candidate evidence complete; hosted review, protected CI, merge and
-exact-main acceptance remain. No Phase 10 requirement is released yet.
+Status: Catalog predecessor correction is in hosted acceptance. Discovery stale
+cache implementation and focused evidence are local; candidate gates remain. No
+Phase 10 requirement is released yet.
 
 ## Active slice
 
@@ -9,6 +10,11 @@ P10-R01/R02/R03/R05/R06/R07/R10 implements a rights-safe Catalog public-title
 cache. [ADR-0037](../../docs/adr/0037-rights-safe-catalog-cache.md) defines the
 PostgreSQL fence, bounded key/value/TTL contract, negative cache, process
 coalescing, tokenized lease, degraded behavior and finite measurements.
+
+P10-R04 adds a bounded stale-while-revalidate cache to the Discovery public-home
+read model. [ADR-0038](../../docs/adr/0038-bounded-discovery-home-stale-cache.md)
+defines its twelve key variants, 16-KiB envelope, age and visibility bounds,
+background lifecycle, explicit stale client shape and PostgreSQL fallback.
 
 ## Candidate artifacts
 
@@ -20,6 +26,14 @@ coalescing, tokenized lease, degraded behavior and finite measurements.
   metrics and exact cleanup.
 - [Concurrency](catalog-cache-concurrency.txt): cold-key amplification, warm
   reuse, cross-instance lease contention and compare-delete safety.
+- `discovery-swr-contract.txt`: focused Discovery, GraphQL, Web and telemetry
+  contract proof (pending candidate capture).
+- `discovery-swr-redis.txt`: real bounded Redis behavior, stale bursts, lease
+  contention, outage fallback and exact cleanup (pending exact-head capture).
+- `discovery-swr-runtime.txt`: real PostgreSQL/Router runtime and non-critical
+  Redis outage behavior (pending candidate capture).
+- `discovery-swr-browser.txt`: stale rails and visible refresh warning through
+  the Web client (pending candidate capture).
 
 Every artifact records the exact implementation commit, environment, command,
 workload, raw result, interpretation and limitations. They support the local

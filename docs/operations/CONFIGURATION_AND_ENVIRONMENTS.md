@@ -86,6 +86,17 @@ Redis remains non-critical: connection or command failure bypasses to PostgreSQL
 and does not change Catalog readiness. The runtime does not accept cache TTL,
 capacity or key-shape overrides; those reviewed safety bounds are code-owned.
 
+## Discovery home cache runtime
+
+Discovery separately validates `ASTER_DISCOVERY_CACHE_ENABLED` as `true` or
+`false`. Omission or `false` keeps the direct PostgreSQL home path. `true`
+requires the server-only `REDIS_URL` and enables
+[ADR-0038](../adr/0038-bounded-discovery-home-stale-cache.md). Redis readiness is
+observed but non-critical; outage bypasses the cache and does not change
+Discovery admission. TTL, stale age, key variants, value size, coalescing
+capacity and lease deadlines are fixed reviewed code policy, not runtime
+overrides.
+
 ## Configuration classes
 
 ### Build-time public

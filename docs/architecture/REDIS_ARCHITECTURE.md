@@ -66,11 +66,21 @@ locally verified Phase10 candidate; protected release evidence is still pending.
 
 Pattern: stale-while-revalidate.
 
-- Stable editorial rails may serve a bounded stale value.
-- One holder refreshes across instances.
-- If refresh fails and stale data exists within maximum stale age, serve stale and mark degradation.
-- If no acceptable value exists, return a smaller stable fallback.
-- Redis outage causes source read or fallback according to rail type.
+- Scope: one bounded whole-home page for each valid `first` value; search,
+  personalization and Catalog metadata remain uncached
+- Freshness: fifteen seconds plus zero-to-five deterministic jitter
+- Stale bound: at most sixty seconds from capture and never at/after the earliest
+  title visibility expiry
+- Coordination: at most twelve process entries and a two-second tokenized lease;
+  stale callers return immediately while one lifecycle-owned refresh runs
+- Public result: eligible cache fallback uses the existing `STALE` code with page
+  fields; source-projection stale without a cache page keeps null fields
+- Failure: Redis outage or an ineligible value executes the PostgreSQL source;
+  refresh failure cannot extend the stale boundary
+
+[ADR-0038](../adr/0038-bounded-discovery-home-stale-cache.md) defines the exact
+envelope, lifecycle and client-shape contract. It is a local candidate until
+protected release evidence passes.
 
 ## Continue-watching
 

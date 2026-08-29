@@ -120,10 +120,14 @@ function fixture(visibleFor = 300) {
   let wallNow = 1_700_000_000;
   let sourceCalls = 0;
   let beforeSource: ((signal: AbortSignal) => Promise<void>) | undefined;
+  let sourceResult: HomeRailsResult | undefined;
   const source: DiscoveryHomeSource = {
     async execute(_input, at, signal): Promise<HomeRailsResult> {
       sourceCalls += 1;
       await beforeSource?.(signal);
+      if (sourceResult) {
+        return sourceResult;
+      }
       return signal.aborted
         ? { status: "cancelled" }
         : { status: "completed", value: { status: "completed", value: page(at, visibleFor) } };
@@ -149,6 +153,9 @@ function fixture(visibleFor = 300) {
     },
     setBeforeSource(value: ((signal: AbortSignal) => Promise<void>) | undefined) {
       beforeSource = value;
+    },
+    setSourceResult(value: HomeRailsResult | undefined) {
+      sourceResult = value;
     },
   };
 }
@@ -250,6 +257,25 @@ test("concurrent stale callers return one snapshot and start one refresh", async
   release?.();
   await until(() =>
     [...f.cache.values.values()].some((value) => value.includes('"cachedAt":1700000015')),
+  );
+});
+
+test("failed background refresh retains only the still-bounded stale snapshot", async () => {
+  const f = fixture();
+  await f.home.execute({ first: 10 }, 1_700_000_000, AbortSignal.timeout(1_000));
+  f.setNow(1_700_000_015);
+  f.setSourceResult({ status: "unavailable" });
+
+  const stale = await f.home.execute({ first: 10 }, 1_700_000_015, AbortSignal.timeout(1_000));
+
+  assert.equal(stale.status, "completed");
+  assert.equal(stale.value.status, "completed");
+  assert.equal(stale.value.value.status, "stale");
+  await until(() => f.observations.some(({ outcome }) => outcome === "refresh_failed"));
+  assert.equal(f.sourceCalls(), 2);
+  assert.ok([...f.cache.values.values()].some((value) => value.includes('"cachedAt":1700000000')));
+  assert.ok(
+    [...f.cache.values.values()].every((value) => !value.includes('"cachedAt":1700000015')),
   );
 });
 

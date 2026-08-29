@@ -59,7 +59,7 @@ interface CacheOptions {
 
 interface SharedEntry {
   readonly controller: AbortController;
-  readonly promise: Promise<HomeRailsResult>;
+  promise: Promise<HomeRailsResult>;
   waiters: number;
   detached: boolean;
   settled: boolean;
@@ -650,7 +650,13 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
       return undefined;
     }
     const controller = new AbortController();
-    const entry = {} as SharedEntry;
+    const entry: SharedEntry = {
+      controller,
+      promise: Promise.resolve({ status: "unavailable" }),
+      waiters: 0,
+      detached,
+      settled: false,
+    };
     const promise = refresh(
       key,
       first,
@@ -667,7 +673,7 @@ export function createCachedDiscoveryHome(options: Readonly<CacheOptions>) {
         entries.delete(key);
         work.delete(promise);
       });
-    Object.assign(entry, { controller, promise, waiters: 0, detached, settled: false });
+    entry.promise = promise;
     entries.set(key, entry);
     work.add(promise);
     return entry;
