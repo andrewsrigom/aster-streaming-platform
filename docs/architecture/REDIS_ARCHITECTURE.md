@@ -45,8 +45,9 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
   lease released by atomic compare-and-delete; positive projection refreshes and
   cold negative-key owner-fence reads both enter coordination before their
   expensive source operation; fence sharing also requires identical request time
-  and rights-use policy; atomic acquisition replaces only non-string or
-  non-expiring malformed lease keys and preserves valid finite holders
+  and rights-use policy; atomic acquisition replaces non-string, non-expiring or
+  longer-than-policy malformed lease keys and preserves finite holders within
+  the requested coordination window
 - Corruption: the Redis-side read rejects oversized and non-string exact values
   before returning bytes; the client keeps bounded replies binary until strict
   UTF-8 decoding. Invalid encoding is malformed without a connection reset;

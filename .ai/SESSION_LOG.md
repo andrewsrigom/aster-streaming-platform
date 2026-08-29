@@ -46,6 +46,15 @@ Append new entries at the top. Keep entries factual and concise.
   proves rejection, live probe, exact deletion and cleanup 0.
 - Redis 17/17, Catalog 246/246 and affected 73/73 pass with 50 cached in 126.735
   seconds.
+- Exact-head discussion `3887423663` then found that a finite lease with TTL
+  above the requested two-second window remained contended for its full
+  duration. Exact `f014ebe2534f7c151020e46912cf2e7d9161ac81` compares `PTTL`
+  with the requested TTL inside the atomic acquisition script and replaces only
+  longer-lived contamination.
+- Redis17/17 and Catalog246/246 pass. The repeated real Redis fixture seeds a
+  24-hour lease, proves `excessiveTtlLeaseRecovered=true`, owner-token release
+  and cleanup0.
+- The complete affected gate passes 73/73 with 51 cached in 107.438 seconds.
 
 ### Evidence
 
@@ -54,7 +63,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish one PR37 update, resolve discussion `3887360355`, require exact-head
+Publish one PR37 update, resolve discussion `3887423663`, require exact-head
 protected CI and confirmation, then release Catalog and rebase Discovery.
 
 ## 2026-08-29 — Catalog negative-cache age remediation

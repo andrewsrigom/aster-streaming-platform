@@ -47,6 +47,12 @@ local `ce97596` keeps the reply binary through its 16 KiB check and fails fatal
 UTF-8 decoding as malformed without resetting the connection. Redis 17/17,
 Catalog 246/246, real invalid-byte recovery/cleanup and affected 73/73 with 50
 cached in 126.735 seconds pass. Publication and corrected hosted confirmation remain.
+Exact-head discussion `3887423663` then found finite leases with TTL above the
+two-second policy remained contended for their full duration. Exact local
+`f014ebe` recovers those keys atomically. Redis17/17, Catalog246/246 and repeated
+real Redis pass with the seeded 24-hour lease replaced and cleanup0. The complete
+affected gate passes 73/73 with 51 cached in 107.438 seconds; only hosted gates
+remain.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,

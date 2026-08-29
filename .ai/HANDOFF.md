@@ -58,13 +58,20 @@ local `ce97596` uses node-redis binary response mapping, validates the raw 16 Ki
 limit and applies fatal UTF-8 decoding. Redis 17/17, Catalog 246/246, real
 invalid-byte rejection plus live probe/exact deletion/cleanup and affected 73/73
 with 50 cached in 126.735 seconds pass. Publication remains pending.
+Exact-head discussion `3887423663` then found that a finite lease with TTL above
+the requested two-second coordination window remained contended. Exact local
+`f014ebe2534f7c151020e46912cf2e7d9161ac81` atomically replaces excessive TTLs
+while preserving holders within the requested window. Redis17/17, Catalog246/246
+and repeated real Redis pass with `excessiveTtlLeaseRecovered=true` and cleanup0.
+The complete affected gate passes 73/73 with 51 cached in 107.438 seconds. Hosted
+gates remain pending.
 The separate
 `feat/p10-discovery-swr` branch preserves checkpoint423c33d on old predecessor
 b65688b; do not publish it before predecessor release.
 
 ## Exact next actions
 
-1. Commit/publish one PR37 update, reply to and resolve discussion `3887360355`,
+1. Publish one PR37 update, reply to and resolve discussion `3887423663`,
    then obtain corrected confirmation/protected CI before squash merge and
    exact-main acceptance.
 2. Rebase only dependent commits after b65688b onto released squash main, repeat

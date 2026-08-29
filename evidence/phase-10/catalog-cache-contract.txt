@@ -15,6 +15,7 @@ Source
 - Malformed-byte correction: 997ef270ba2fcb5c360c4593c1284fbdd1bb57ab
 - Lease/reattachment correction: d93afbcc8bf87f71dc926c9010c2180820aeccfb
 - Binary-read correction: ce97596794c05bdd5b92fb9a75dde2a9e4be159f
+- Excessive-lease correction: f014ebe2534f7c151020e46912cf2e7d9161ac81
 - Evidence checkpoint follows as documentation only. No implementation byte changed
   after the candidate gates recorded here.
 
@@ -27,9 +28,9 @@ Commands and raw results
 - @aster/redis tests: PASS, 17/17.
 - @aster/telemetry tests: PASS, 11/11.
 - @aster/catalog tests: PASS, 246/246.
-- pnpm check:changed: PASS, 73 successful of 73 total, 50 cached,
-  126.735 seconds Turbo wall time with `TURBO_CONCURRENCY=4` on the latest
-  binary-read correction.
+- pnpm check:changed: PASS, 73 successful of 73 total, 51 cached,
+  107.438 seconds Turbo wall time with `TURBO_CONCURRENCY=4` on the latest
+  excessive-lease correction.
 - An earlier affected attempt hit one unrelated Identity terminal-fallback timing
   assertion under concurrent load. The focused Identity suite then passed147/147
   and the complete affected gate passed; no Identity source changed.
@@ -71,10 +72,11 @@ Workload and covered contract
 - Negative envelopes include cache time. Missing, future and
   older-than-ten-second values are deleted and rechecked against the owner, so a
   missing or excessive Redis expiry cannot extend public absence.
-- Lease acquisition atomically replaces only a wrong-type or non-expiring exact
-  key with the caller token and finite TTL; valid finite holders remain
-  contended. Monotonic attachment counts are separate from active waiters, so
-  mixed-batch cancellation cannot misclassify a later first reattachment.
+- Lease acquisition atomically replaces a wrong-type, non-expiring or
+  longer-than-requested exact key with the caller token and finite TTL; holders
+  within the requested window remain contended. Monotonic attachment counts are
+  separate from active waiters, so mixed-batch cancellation cannot misclassify a
+  later first reattachment.
 - Lua-bounded replies remain bytes through the raw 16 KiB client validation.
   Fatal UTF-8 decoding rejects invalid encoding as malformed without destroying
   the connection; valid control-byte strings still reach envelope classification.
@@ -173,6 +175,15 @@ fixture seeds exactly 16 KiB of invalid bytes, receives malformed, probes the sa
 connection, deletes only the exact key and cleans to zero. The complete affected
 gate passes 73/73 with 50 cached in 126.735 seconds. Corrected hosted acceptance
 remains.
+
+Excessive-lease confirmation
+Exact-head discussion `3887423663` found that finite lease TTLs above the
+requested two-second window still contended for their complete duration.
+Correction `f014ebe` compares the atomic `PTTL` result with the requested lease
+TTL and replaces only longer-lived contamination. Redis 17/17 and Catalog
+246/246 pass. The real fixture seeds a 24-hour lease, acquires the repaired
+two-second lease, releases only its owner token and cleans to zero. The complete
+affected gate passes 73/73 with 51 cached in 107.438 seconds; hosted gates remain.
 
 Limitations
 - Cached task count reflects safe local Turbo reuse; real PostgreSQL and Redis

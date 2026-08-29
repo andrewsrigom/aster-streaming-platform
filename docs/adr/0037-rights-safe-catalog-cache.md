@@ -76,10 +76,11 @@ Across processes, acquire a two-second Redis lease with `SET NX PX` and a random
 loads the authoritative source if necessary. Release uses one atomic Lua
 compare-and-delete operation; a client never deletes another holder's lease.
 Lease acquisition is one bounded atomic operation that also inspects the exact
-key type and remaining expiry. A non-string or non-expiring key is malformed and
-is replaced with the caller's token plus the two-second expiry; a valid finite
-string lease remains contended. This prevents corrupt data from disabling
-coordination permanently without allowing one holder to steal another valid
+key type and remaining expiry. A non-string, non-expiring, or longer-than-policy
+key is malformed and is replaced with the caller's token plus the two-second
+expiry; a valid string lease whose remaining TTL is within that coordination
+window remains contended. This prevents corrupt data from disabling coordination
+well beyond the policy window without allowing one holder to steal another valid
 lease.
 The same lease protocol surrounds a cold negative-key fence read, so an owner
 that confirms absence publishes the short marker before releasing its lease.

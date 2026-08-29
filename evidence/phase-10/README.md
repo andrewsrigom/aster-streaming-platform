@@ -95,3 +95,11 @@ the raw 16 KiB validation and applies fatal UTF-8 decoding. Redis 17/17, Catalog
 246/246 and affected 73/73 pass with 50 cached in 126.735 seconds. The repeated
 real Redis fixture seeds 16 KiB of invalid bytes and proves malformed rejection,
 a live connection probe, exact deletion and cleanup 0. Corrected hosted gates remain.
+
+Exact-head discussion `3887423663` then found that a finite lease TTL above the
+requested two-second policy remained contended for its full duration. Exact
+`f014ebe2534f7c151020e46912cf2e7d9161ac81` compares the atomic remaining TTL
+with that requested window and replaces longer-lived contamination. Redis17/17,
+Catalog246/246 and repeated real Redis pass with a seeded 24-hour lease recovered
+and cleanup0. The complete affected gate passes73/73 with51 cached in107.438
+seconds. Corrected hosted gates remain.

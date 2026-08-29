@@ -23,6 +23,9 @@ Source and environment
 - Binary-read correction: ce97596794c05bdd5b92fb9a75dde2a9e4be159f.
   The fixture was repeated with a 16 KiB invalid UTF-8 Redis value; coordination
   behavior was unchanged.
+- Excessive-lease correction: f014ebe2534f7c151020e46912cf2e7d9161ac81.
+  The fixture was repeated with a preseeded 24-hour lease and recovered it into
+  the requested two-second window.
 - WSL2 Ubuntu-20.04, Linux amd64; 6 logical CPUs; 11,962 MiB memory
 - Node.js 24.19.0; pnpm 11.24.0; Docker Engine 26.0.0
 - One disposable Redis 8.10.0 container capped at 0.5 CPU and 128 MiB
@@ -46,6 +49,7 @@ Measured result
 - Lease contention observed: true.
 - Expired owner recovered: true.
 - Non-expiring owner recovered: true.
+- Excessive-TTL owner recovered: true.
 - Wrong-type owner recovered: true.
 - Catalog-path non-expiring lease recovered: true.
 - Atomic compare-delete safe: true.
@@ -59,8 +63,8 @@ coalescing reduced full source loads to one. A warm call reused the exact
 positive entry. Two independent cache reader instances contended on the same
 positive lease and caused one full source load; two instances checking a cold
 absent ID used one fence read and the resulting short marker. Lease
-expiry/recovery, wrong-type/non-expiring recovery and owner-token compare-delete
-completed the failure boundary.
+expiry/recovery, wrong-type/non-expiring/excessive-TTL recovery and owner-token
+compare-delete completed the failure boundary.
 
 The focused 246-test Catalog suite also synchronizes concurrent requests for
 `[hot,A]` and `[hot,B]`: the hot title appears in one source batch while the new

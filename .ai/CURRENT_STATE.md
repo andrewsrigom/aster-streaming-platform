@@ -100,6 +100,13 @@ fatal UTF-8 decoding without resetting the connection. Redis 17/17, Catalog
 246/246, the real invalid-byte deletion/probe/cleanup fixture and affected 73/73
 gate with 50 cached in 126.735 seconds pass. Publication and corrected
 confirmation remain pending.
+Exact-head discussion `3887423663` then found that a finite but excessive lease
+TTL remained contended beyond the two-second policy. Exact local `f014ebe`
+atomically replaces remaining TTLs above the requested window while preserving
+finite holders inside it. Redis17/17, Catalog246/246 and repeated real Redis pass
+with `excessiveTtlLeaseRecovered=true` and cleanup0. The complete affected gate
+passes 73/73 with 51 cached in 107.438 seconds. Hosted CI and corrected
+confirmation remain pending.
 The local Discovery dependent checkpoint `423c33d` is preserved separately and
 cannot publish until this predecessor releases.
 

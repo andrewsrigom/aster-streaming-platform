@@ -76,6 +76,12 @@ Exact `ce97596794c05bdd5b92fb9a75dde2a9e4be159f` implements that binary transpor
 and fatal decode. Redis 17/17, Catalog 246/246, the real 16 KiB invalid-byte
 fixture and the complete affected gate pass; the connection probe succeeds
 before exact deletion and fixture cleanup reaches zero.
+Exact-head discussion `3887423663` then found that a finite but excessive lease
+TTL remained contended beyond the two-second coordination window. Exact
+`f014ebe2534f7c151020e46912cf2e7d9161ac81` treats a remaining TTL above the
+requested lease TTL as malformed and replaces it in the same atomic script. Redis
+17/17, Catalog 246/246, the real 24-hour seeded-lease recovery and the complete
+affected 73/73 gate pass; corrected hosted gates remain pending.
 
 ## Boundaries
 
@@ -108,7 +114,7 @@ before exact deletion and fixture cleanup reaches zero.
 | Redis timeout/unavailable/capacity rejection | Read PostgreSQL directly | cache outcome `bypass`; Redis dependency outcome |
 | Malformed, oversized, wrong-version or over-age value | Delete the exact key best-effort and rebuild | cache outcome `malformed` |
 | Lease not acquired or expires | Wait once within a finite budget, then source fallback; duplicates are safe | lease outcome `contended` or `lost` |
-| Lease key is wrong-type or has no expiry | Atomically replace only that malformed key with a finite owned lease | lease outcome `acquired` |
+| Lease key is wrong-type, non-expiring or longer than the requested window | Atomically replace only that malformed key with a finite owned lease | lease outcome `acquired` |
 | Caller cancels while sharing refresh | That caller exits; shared work continues only for remaining bounded waiters | coalescing outcome and waiter bucket |
 | PostgreSQL fence/source unavailable | Return existing Catalog unavailable/cancelled result; cached bytes cannot override it | source outcome `unavailable` |
 | Title changes after fence read | Exact source load must match the fence; bounded re-check or miss, never mismatched data | source outcome `fence_changed` |
