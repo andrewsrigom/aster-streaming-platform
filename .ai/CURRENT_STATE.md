@@ -4,7 +4,7 @@ Last updated: 2026-08-30
 
 ## Active phase
 
-**Phase 11 — Resilience and Failure Laboratory**
+**Phase 12 — Observability, SLIs, and SLOs**
 
 Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
@@ -12,13 +12,12 @@ squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
 run `33290477608` passed every required job. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
 squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
-active again on PR44 after exact-head confirmation discussion `3888512532`
-proved that a double-quoted YAML Unicode escape can hide a Router `retry` key
-from the lexical ownership guard. Exact local correction `4becc1a`, tree
-`0a8e215`, parses the bounded policy structurally; focused Router4/4 and the
-complete affected gate73/73 pass. Publication and hosted confirmation remain.
-P12-R01 is paused with its local changes preserved. Full Phase00–14 goal stays
-active.
+frozen `WAITING_EXTERNAL` on PR44 after exact-head confirmation discussion
+`3888512532` proved that a YAML Unicode escape could hide a Router `retry` key.
+Exact correction `4becc1a`, tree `0a8e215`, parses the bounded policy
+structurally; Router4/4, platform67/67 and the affected73/73 gate pass. Only
+protected CI, confirmation and release remain. P12-R01 resumes as the one
+unpublished dependent. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -49,16 +48,16 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P11-R10's confirmation remediation is locally complete at executable source
-`4becc1a`. The exact YAML parser rejects decoded `retry` keys inside
-`traffic_shaping` regardless of block, flow, quote or escape presentation, as
-well as malformed or aliased configuration. Router4/4, platform67/67 and the
-affected73/73 gate pass. Superseded protected run `33293548409` cannot authorize
-the correction; evidence publication, protected CI and one confirmation remain.
+P12-R01 inventories and standardizes current trace boundaries. Existing metrics,
+structured logs, Router-to-owner correlation, validated event `traceparent` and
+bounded exporter failure are the baseline. The missing slice is a
+repository-owned tracing contract and adapter that consistently creates finite,
+privacy-safe server, dependency, event and media spans while driving logger
+context. No hosted backend, dashboard, SLO or product contract is added here.
 
-P12-R01 remains the next item. Its repository-owned tracing contract work is
-preserved locally and resumes only after the P11 correction returns to
-`WAITING_EXTERNAL` or releases.
+P11-R10 remains frozen on PR44 at executable source `4becc1a`; its superseded
+run `33293548409` cannot authorize the structural correction. The dependent may
+advance locally but cannot publish, merge or release first.
 
 P10's first slice defines and implements the Catalog public-title cache boundary.
 PostgreSQL remains the visibility and rights authority; a cache hit may reuse only
@@ -305,16 +304,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R10 game days, bulkhead/fallback/amplification proof and runbook closeout are
-implemented. One retry-ownership confirmation correction is in progress before
-the candidate can be republished; protected release remains.
+P11-R10 game days, bulkhead/fallback/amplification proof, runbook closeout and
+the structural retry-guard correction are implemented and published; protected
+confirmation/release remains.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Correct the PR44 structural YAML retry guard, repeat its affected gates, publish
-the exact correction and obtain protected CI plus one confirmation. Then release
-P11-R10 and resume the preserved P12-R01 work.
+Execute P12-R01 locally while PR44 runs protected CI and one confirmation; do
+not publish the dependent before P11-R10 releases.
 
 ## Runtime and recovery
 

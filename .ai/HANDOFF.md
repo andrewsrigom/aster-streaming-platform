@@ -2,10 +2,10 @@
 
 ## Resume point
 
-P11-R10 is active for one exact-head confirmation correction on PR44. P12-R01
-is paused; its uncommitted trace work is preserved in named stash
-`wip/p12-trace-observability-before-pr44-confirmation-fix` and must resume only
-after this predecessor is coherent again.
+P12-R01 is active as the one unpublished dependent. Its uncommitted trace work
+is preserved in named stash
+`wip/p12-trace-observability-before-pr44-confirmation-fix`; restore it on the
+dependent branch based on the final PR44 head.
 
 Phases 00–10 and P11-R01/R05/R08/R09 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -24,18 +24,19 @@ source `4becc1ab3b0658eecf01bba6b59109b3fcaebe8a`, tree
 `0a8e215439377b095c44b28ed8fc778c1f9a316f`, now parses the 32 KiB-bounded
 policy structurally with declared `yaml@2.9.0`, rejects warnings/aliases and
 detects decoded `retry` keys. Router4/4, platform67/67 and the affected73/73
-gate with50 cached in54.184 seconds pass. Evidence publication, protected
-exact-head CI, confirmation, merge and exact-main verification remain.
+gate with50 cached in54.184 seconds pass. P11-R10 is frozen
+`WAITING_EXTERNAL`; protected exact-head CI, confirmation, merge and exact-main
+verification remain.
 
 ## Exact next actions
 
-1. Commit and push the correction evidence/state to PR44 once.
-2. Resolve discussion `3888512532`, request one exact-head confirmation and wait
-   for protected CI.
-3. Squash merge without bypass, verify exact-main CI, close Phase11 and restore
-   the named P12 stash on its dependent branch.
+1. Push the batched PR44 correction once, resolve discussion `3888512532` and
+   request one exact-head confirmation.
+2. Restore the named P12 stash on the dependent branch and continue locally.
+3. After protected CI and confirmation, squash merge without bypass, verify
+   exact-main CI, close Phase11 and rebase/recheck P12 before publication.
 
-P12-R01 remains next. It owns repository trace context, structured-log
+P12-R01 is active locally. It owns repository trace context, structured-log
 correlation, privacy/cardinality and bounded exporter failure under the current
 OpenTelemetry ADR. Rebase it onto the final PR44/main tree before publication.
 

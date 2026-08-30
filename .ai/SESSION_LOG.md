@@ -83,9 +83,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the single PR44 correction, obtain one exact-head confirmation and its
-protected CI, then squash merge, verify exact-main and resume the preserved
-P12-R01 work.
+Publish the single PR44 correction and resume P12-R01 locally while exact-head
+confirmation and protected CI run. Merge and verify P11 first; do not publish
+the dependent before that release.
 
 ## 2026-08-29 — Operation admission release and resilience start
 
