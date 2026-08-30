@@ -14,10 +14,12 @@ evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
 squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
 frozen `WAITING_EXTERNAL` on PR44 after exact-head confirmation discussion
 `3888512532` proved that a YAML Unicode escape could hide a Router `retry` key.
-Exact correction `4becc1a`, tree `0a8e215`, parses the bounded policy
-structurally; Router4/4, platform67/67 and the affected73/73 gate pass. Only
-protected CI, confirmation and release remain. P12-R01 resumes as the one
-unpublished dependent. Full Phase00–14 goal stays active.
+The first parser-based correction passed locally but failed protected run
+`33294397540` because a dependency-free policy job correctly had no install.
+Final exact correction `402b488`, tree `b381494`, fully decodes YAML quoted-key
+escapes without a dependency; Router4/4, platform67/67 and the affected17/17
+gate pass. Only protected CI, confirmation and release remain. P12-R01 is the
+one unpublished dependent. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -55,9 +57,10 @@ repository-owned tracing contract and adapter that consistently creates finite,
 privacy-safe server, dependency, event and media spans while driving logger
 context. No hosted backend, dashboard, SLO or product contract is added here.
 
-P11-R10 remains frozen on PR44 at executable source `4becc1a`; its superseded
-run `33293548409` cannot authorize the structural correction. The dependent may
-advance locally but cannot publish, merge or release first.
+P11-R10 remains frozen on PR44 at executable source `402b488`. Superseded run
+`33293548409` predates the correction and run `33294397540` exposed the removed
+dependency. The dependent may advance locally but cannot publish, merge or
+release first.
 
 P10's first slice defines and implements the Catalog public-title cache boundary.
 PostgreSQL remains the visibility and rights authority; a cache hit may reuse only

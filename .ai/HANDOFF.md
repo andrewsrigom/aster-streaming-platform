@@ -19,14 +19,15 @@ tree-identical main `bdbe2e0`; exact-main run `33292389504` passed all required
 jobs.
 
 P11-R10 exact-head confirmation discussion `3888512532` found that the lexical
-Router guard did not decode a double-quoted YAML Unicode escape. Exact local
-source `4becc1ab3b0658eecf01bba6b59109b3fcaebe8a`, tree
-`0a8e215439377b095c44b28ed8fc778c1f9a316f`, now parses the 32 KiB-bounded
-policy structurally with declared `yaml@2.9.0`, rejects warnings/aliases and
-detects decoded `retry` keys. Router4/4, platform67/67 and the affected73/73
-gate with50 cached in54.184 seconds pass. P11-R10 is frozen
-`WAITING_EXTERNAL`; protected exact-head CI, confirmation, merge and exact-main
-verification remain.
+Router guard did not decode a double-quoted YAML Unicode escape. The first
+parser-based correction passed locally but protected run `33294397540` exposed
+its dependency in an intentionally dependency-free policy job. Final exact
+source `402b48897f6d679c243093eaf9199c0430aab397`, tree
+`b3814949919b1eeef8e7b0b9a732a86a35d73815`, removes that dependency and fully
+decodes YAML quoted-key escapes within the bounded policy. Router4/4,
+platform67/67 and the affected17/17 gate with five cached in52.918 seconds pass.
+P11-R10 is frozen `WAITING_EXTERNAL`; protected exact-head CI, confirmation,
+merge and exact-main verification remain.
 
 ## Exact next actions
 

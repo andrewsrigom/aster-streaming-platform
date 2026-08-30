@@ -70,6 +70,12 @@ Append new entries at the top. Keep entries factual and concise.
   32 KiB-bounded policy structurally and reject decoded retry keys, malformed
   documents and aliases. Router4/4, platform67/67, lock/static/document/security
   checks and the complete affected gate pass73/73,50 cached,in54.184 seconds.
+- Protected run `33294397540` invalidated that first correction: the
+  dependency-free documentation/platform job correctly could not import the new
+  parser without an install. Final source `402b488`, tree `b381494`, removes the
+  dependency and fully decodes YAML quoted-key escapes while rejecting malformed
+  and alias forms. Router4/4, platform67/67 and the final affected gate pass
+  17/17 tasks with five cached in52.918 seconds.
 
 ### Evidence
 

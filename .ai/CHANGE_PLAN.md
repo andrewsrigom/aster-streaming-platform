@@ -18,8 +18,8 @@ shutdown.
 ## Current behavior
 
 P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at exact executable correction
-`4becc1a`, tree `0a8e215`; Router4/4, platform67/67 and the complete affected
-gate73/73 pass. Phase 12 may advance as the one unpublished dependent, but it
+`402b488`, tree `b381494`; Router4/4, platform67/67 and the complete affected
+gate17/17 pass. Phase 12 may advance as the one unpublished dependent, but it
 cannot publish, merge or release first.
 
 `@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite
