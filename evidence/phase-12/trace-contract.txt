@@ -1,0 +1,50 @@
+# P12-R01/R02 repository trace contract
+
+Status: implemented, focused verification passed, candidate verification pending
+
+Exact source
+
+- Commit: 2cd63a373373751b12127c0b51b91db54be6f844
+- Tree: b2bb86be8657f5804eeef1f8f861e48a983499c2
+- Branch: feat/p12-trace-observability
+- Base: tree-identical PR44 squash main 834bf15a8fe9fb39dc3a807912234efd8ee39dbd
+- Runtime: Node.js 24.19.0, pnpm 11.24.0, WSL Ubuntu-20.04
+
+Implemented contract
+
+- `@aster/telemetry` is the only owner of the OpenTelemetry trace SDK and OTLP
+  trace exporter. Public packages consume repository-owned observation types.
+- Fixed span names are `aster.http.server` and
+  `aster.dependency.operation`; dimensions come only from exported finite sets.
+- Inbound W3C `traceparent` is validated. Invalid or zero context is discarded
+  and a local root is still created.
+- AsyncLocalStorage scopes active context. A synchronous provider gives the
+  current trace/span to the existing redacting structured logger.
+- Active/retained spans default to 128 and accept only 1–512. Retention drops
+  oldest complete spans and reports the finite dropped count.
+- PostgreSQL, Redis, broker, object storage, owner HTTP reads and the media
+  coordinator use the same dependency observation boundary.
+
+Focused command
+
+`pnpm turbo run build --filter=@aster/telemetry --filter=@aster/identity --filter=@aster/engagement --filter=@aster/catalog && pnpm --filter=@aster/telemetry test && node --test services/identity/dist/test/http-server.test.js services/engagement/dist/test/identity-event-handler.test.js services/engagement/dist/test/owner-clients.test.js services/catalog/dist/test/decoder-handoff.test.js`
+
+Result
+
+- build: 12/12 tasks successful in 3.683 seconds, 8 cached;
+- telemetry: 18/18 tests pass in 399.273 ms;
+- representative HTTP/event/owner/media boundaries: 28/28 pass in 2456.791 ms;
+- staged secret scan: zero findings;
+- commit hook: formatting and staged secret scan pass.
+
+Iteration gate history
+
+- first changed gate stopped only on one unformatted changed test;
+- after formatting, the next gate completed 72/73 tasks and reported four
+  lint findings;
+- all four findings were corrected; full workspace ESLint and focused
+  telemetry/Engagement typechecks pass;
+- a clean rebased repeat passed 73/73 tasks with 43 cached in 54.325 seconds;
+- the later Collector assertion's focused fixture test passes 11/11;
+- the exact final source passes 73/73 tasks with 57 cached in 47.814 seconds.
+  No earlier failed gate is represented as passing.

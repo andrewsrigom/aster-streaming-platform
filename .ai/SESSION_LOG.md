@@ -91,6 +91,31 @@ Append new entries at the top. Keep entries factual and concise.
 - Preserved P12-R01 work in stash
   `p12-trace-observability-wip-before-p11-final-review-3`; it remains the one
   unpublished dependent.
+- Implemented repository-owned OpenTelemetry traces and active context behind
+  `@aster/telemetry`, with fixed server/dependency spans, bounded retention,
+  validated W3C parents, one async link and no SDK types outside the owner.
+- Composed all five real HTTP handlers and loggers, child-context owner clients,
+  authenticated event links and one finite `media_worker/process` coordinator
+  boundary without weakening decoder isolation.
+- Added exact `@opentelemetry/exporter-trace-otlp-http@0.221.0`, bounded OTLP
+  metrics/traces, health, queue, timeout, flush and shutdown behavior.
+- P12 source rebased and amended as `2cd63a3`, tree `b2bb86b`, passes
+  telemetry18/18 and the
+  representative HTTP/event/owner/media suite28/28. Full workspace lint,
+  formatting, focused types and staged secret scan pass. The changed gate's
+  formatting/lint findings were corrected. A clean affected repeat passed
+  73/73 tasks with43 cached in54.325 seconds before the fixture assertion was
+  added. Its fixture contract then passed11/11 plus build and lint.
+- The disposable telemetry fixture now reads only the exact owned Collector's
+  bounded sanitized log and requires real `aster.http.server` and
+  `aster.dependency.operation` exports. One local run stopped before creating
+  resources because Docker returned no Linux engine; cleanup reported0. Hosted
+  PR CI must execute the real Collector proof; do not repeat the local failure
+  unchanged.
+- Final source candidate passes73/73 tasks with57 cached in47.814 seconds.
+- P11-R10 passed protected exact-head run `33295744010` and clean confirmation,
+  PR44 squash-merged as tree-identical main `834bf15`, and exact-main run
+  `33296443777` passed every required job. Phase11 is released.
 
 ### Evidence
 
@@ -101,12 +126,13 @@ Append new entries at the top. Keep entries factual and concise.
   gate.
 - `evidence/phase-11/game-days.md`, `bulkhead-saturation.txt` and
   `retry-amplification.txt` record the P11-R10 candidate.
+- `evidence/phase-12/README.md` indexes the exact trace, continuity, exporter
+  failure and cardinality/privacy implementation artifacts.
 
 ### Next action
 
-Publish the single PR44 correction, resolve current discussions and request
-exact-head confirmation. Resume P12-R01 locally while CI runs. Merge and verify
-P11 first; do not publish the dependent before that release.
+Commit the closeout and publish P12-R01 so hosted CI executes the disposable
+Collector candidate; then run the defined initial and confirmation review.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

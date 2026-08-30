@@ -17,21 +17,25 @@ shutdown.
 
 ## Current behavior
 
-P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at exact executable correction
-`aac04c7`, tree `c2a6c93`; Router4/4, platform67/67 and the complete affected
-gate17/17 pass. The guard rejects raw and YAML-decoded configuration expansion inside
-the bounded traffic-shaping policy. Phase 12 may advance as the one unpublished dependent, but it
-cannot publish, merge or release first.
+P11-R10 is released at tree-identical main `834bf15`; exact-main run
+`33296443777` passed every required job. Its exact executable correction
+`aac04c7`, tree `c2a6c93`, passed Router4/4, platform67/67 and the complete
+affected gate17/17. The guard rejects raw and YAML-decoded configuration
+expansion inside the bounded traffic-shaping policy.
 
-`@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite
-dimensions, exporter health and timeout behavior. `@aster/runtime` owns
-structured Pino logs with redaction and optional validated active trace IDs.
-Router runtime evidence proves one authenticated trace ID reaches Identity and
-Catalog logs and the Collector. Owner HTTP servers and PostgreSQL, Redis,
-broker and object-storage adapters expose bounded metric observations. Event
-envelopes preserve a validated `traceparent`. There is no repository-owned
-tracing SDK/export contract that consistently creates parent/child spans across
-all current service, dependency, event and media boundaries.
+Rebased source commit `2cd63a3`, tree `b2bb86b`, implements the repository trace
+contract locally. `@aster/telemetry` now owns bounded OpenTelemetry metrics and
+traces, finite dimensions, active context, OTLP exporter health and timeout
+behavior. All five owner HTTP servers create server spans and drive the existing
+redacting logger context. Fixed owner clients inject child context; authenticated
+Identity consumption links its producer; current database, Redis, broker,
+object-storage and media-coordinator boundaries use finite dependency spans.
+Focused telemetry, representative boundary and disposable-fixture contract
+tests pass, and the final affected candidate gate passes73/73 with57 cached in
+47.814 seconds. The branch remains unpublished and not verified until the hosted
+disposable Collector candidate and protected review/CI pass. The single local
+Collector attempt created no resources because
+Docker reported no Linux engine; it will not be repeated unchanged.
 
 ## Proposed behavior
 

@@ -159,6 +159,13 @@ The separate [retry amplification report](retry-amplification.txt) proves the
 synchronous path is 1 Web attempt x 1 Router attempt x at most 2 attempts by the
 single safe-read service owner.
 
+## Release
+
+Evidence head `fdaeee9` passed protected exact-head run `33295744010` and clean
+confirmation. PR44 squash-merged without bypass as tree-identical main
+`834bf15`; exact-main run `33296443777` passed every required job. The game-day
+and runbook slice is released.
+
 ## Interpretation and limitations
 
 All five named failures have bounded detection, user impact, mitigation,

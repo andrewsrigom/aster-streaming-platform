@@ -1,0 +1,41 @@
+# P12-R09 bounded OTLP exporter behavior
+
+Exact source: 2cd63a373373751b12127c0b51b91db54be6f844
+
+Policy
+
+- only complete bounded HTTP(S) `/v1/metrics` endpoints without credentials,
+  query, fragment, whitespace or control characters are accepted;
+- the trace endpoint is derived only by replacing the final `/v1/metrics` with
+  `/v1/traces`;
+- metrics and traces each use exporter concurrency 1;
+- trace queue size equals `maxActiveSpans` (default 128, maximum 512);
+- trace export batch is at most 32;
+- SDK and repository health wrappers use the configured finite export timeout;
+- flush/shutdown wait for both signals to settle and return a stable result;
+- exporter state never participates in service readiness or product results.
+
+Focused result
+
+`pnpm --filter=@aster/telemetry test`
+
+- 18/18 tests pass in 399.273 ms;
+- two stalled metric/trace export attempts fail within the 120 ms configured
+  budget plus scheduler margin; the complete test settles in 134.893 ms;
+- local export health records attempts/failures without endpoint or error text;
+- a later local receiver accepts both `/v1/metrics` and `/v1/traces`, proving
+  recovery and shared bounded shutdown in 18.922 ms;
+- received JSON contains fixed service/span attributes and none of the token,
+  cookie, request, profile, title or GraphQL-document canaries.
+
+Disposable Collector gate
+
+- the existing owned telemetry fixture already stops, restarts and pauses the
+  pinned Collector while asserting product readiness, bounded flush,
+  cancellation, recovery and degraded finite shutdown;
+- this source additionally reads at most 512 lines/128 KiB from only the exact
+  owned Collector and requires both repository span names without sensitive
+  canaries;
+- one local execution stopped before resource creation because Docker returned
+  an empty operating-system value instead of `linux`; cleanup reported zero;
+- hosted PR CI must execute the fixture before this work item can be verified.

@@ -62,12 +62,11 @@ review, squash main `eed8229` and exact-main run33282217705. P11-R01 is released
 as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is released as main
 `59600ae`; exact-main run33290477608 passed. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
-squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 is
-frozen `WAITING_EXTERNAL` on PR44 at corrected executable source `aac04c7`. Its
-five game days, finite-capacity, fallback/no-amplification evidence and runbooks
-are implemented; review's retry-guard findings are corrected and
-protected confirmation/release remain. P12-R01 is active locally and cannot
-publish before PR44 releases.
+squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 passed
+protected exact-head run33295744010 and clean confirmation, PR44 squash-merged
+as tree-identical main `834bf15`, and exact-main run33296443777 passed every
+required job. Phase11 is released. P12-R01 is active locally and ready for
+publication.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

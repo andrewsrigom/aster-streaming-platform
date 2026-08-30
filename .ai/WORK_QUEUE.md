@@ -68,7 +68,8 @@ Confirmation at `aa5e6af` found discussion3887956537. The local correction adds
 the canonical request digest to shared admission identity, retaining key-only
 local ordering. Engagement126/126 and the corrected73/73 candidate pass.
 Protected run33281516077 verifies its real Redis/PostgreSQL boundaries; PR40 and
-exact-main run33282217705 close the item. P11-R01 is the sole active work item.
+exact-main run33282217705 close the item. P11-R10 is the frozen external
+predecessor; P12-R01 is the sole active unpublished dependent.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
@@ -147,8 +148,15 @@ Historical stashes are superseded.
 | 53 | Register dependency policies and execute bounded retries for safe Catalog reads | P11-R01 | DONE |
 | 54 | Add operation-scoped circuit breakers to safe Catalog reads | P11-R05 | DONE |
 | 55 | Add a private bounded controlled failure-injection laboratory | P11-R08 | DONE |
-| 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | WAITING_EXTERNAL |
+| 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | IN_PROGRESS |
+
+P12-R01 rebased source `2cd63a3`, tree `b2bb86b`, implements the local
+trace/export slice. Telemetry18/18 and representative boundaries28/28 pass.
+The bounded Collector-log fixture contract passes11/11; its one local execution
+created no resources because Docker exposed no Linux engine. Hosted disposable
+Collector execution and protected review/CI remain before `DONE`. The final
+affected candidate gate passes73/73 with57 cached in47.814 seconds.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

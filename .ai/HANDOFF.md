@@ -2,12 +2,14 @@
 
 ## Resume point
 
-P12-R01 is active as the one unpublished dependent. Its uncommitted trace work
-is preserved in named stash
-`p12-trace-observability-wip-before-p11-final-review-3`; restore it on the
-dependent branch based on the final PR44 head.
+P12-R01 is active as the one unpublished dependent on
+`feat/p12-trace-observability`. Source commit
+`2cd63a373373751b12127c0b51b91db54be6f844`, tree
+`b2bb86be8657f5804eeef1f8f861e48a983499c2`, implements the trace/export slice.
+Telemetry18/18 and representative HTTP/event/owner/media tests28/28 pass. The
+old named P12 stashes are historical and must not be restored over this branch.
 
-Phases 00–10 and P11-R01/R05/R08/R09 are released. P11-R08/R09 evidence head
+Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
 `172cdff752d8fae3f25608e10128905778d8e8ba`, passed protected run
 `33291705269` and clean confirmation. Initial review discussion
@@ -30,20 +32,28 @@ next review proved that the marker itself could be YAML-escaped. Final source
 `c2a6c93a85d7c65b2f475cb6694cfde0741c5100`, rejects raw and decoded expansion inside traffic
 shaping. Router4/4, platform67/67 and the affected17/17 gate with five cached in
 48.053 seconds pass.
-P11-R10 is frozen `WAITING_EXTERNAL`; protected exact-head CI, confirmation,
-merge and exact-main verification remain.
+P11-R10 passed protected exact-head CI `33295744010` and clean confirmation.
+PR44 squash-merged as `834bf15a8fe9fb39dc3a807912234efd8ee39dbd`;
+its tree `6ea7760e92a086310be63f79a670bd72d49263e6` equals the reviewed evidence
+tree. Exact-main run `33296443777` passed every required job and releases
+Phase11.
 
 ## Exact next actions
 
-1. Push the batched PR44 correction once, resolve the current review discussions and
-   request one exact-head confirmation.
-2. Restore the named P12 stash on the dependent branch and continue locally.
-3. After protected CI and confirmation, squash merge without bypass, verify
-   exact-main CI, close Phase11 and rebase/recheck P12 before publication.
+1. Commit the P11 closeout and P12 candidate evidence.
+2. Publish the locally green P12 candidate so hosted CI can execute the
+   disposable Collector trace/failure fixture.
+3. Complete the defined initial and confirmation review, merge and exact-main
+   proof.
+4. Complete the Phase12 metrics/SLI/SLO/dashboard/alert/diagnostic items in
+   requirement order after this slice closes.
 
-P12-R01 is active locally. It owns repository trace context, structured-log
+P12-R01 is active locally and already rebased onto PR44 squash main. It owns
+repository trace context, structured-log
 correlation, privacy/cardinality and bounded exporter failure under the current
-OpenTelemetry ADR. Rebase it onto the final PR44/main tree before publication.
+OpenTelemetry ADR. Evidence is indexed under `evidence/phase-12/`. Rebase it
+only if main changes again; current status is implemented, not verified or
+released.
 
 ## Evidence boundaries
 
@@ -52,6 +62,10 @@ broker, Discovery and owner runtimes. Reuse their exact run once. Browser and
 full media evidence may carry forward only if later source-object comparison
 proves the measured boundary unchanged; otherwise run one bounded scenario.
 Shared-host observations are not SLO or capacity claims.
+
+The single local `pnpm integration:telemetry` attempt stopped before resource
+creation because Docker returned an empty operating-system value instead of
+`linux`; cleanup reported zero remaining resources. Do not repeat it unchanged.
 
 ## Execution environment
 

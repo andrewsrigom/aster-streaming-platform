@@ -1,0 +1,45 @@
+# P12-R08 telemetry cardinality and privacy review
+
+Exact source: 2cd63a373373751b12127c0b51b91db54be6f844
+
+Finite trace vocabulary
+
+- span names: 2;
+- span kinds: server or client;
+- HTTP methods: 7;
+- HTTP routes: 3;
+- dependencies: 9;
+- dependency operations: 12;
+- outcomes: 6;
+- attributes per span: at most 8;
+- attribute value length: at most 64;
+- events per span: 0;
+- links per span: at most 1, with no link attributes;
+- active and retained spans: default 128, configured range 1–512.
+
+Forbidden telemetry values
+
+- credentials, cookies and authorization/session values;
+- account, profile, user, title, request, event, trace or span IDs as metric
+  labels or application-defined span attributes;
+- signed media URLs, object keys, source URLs and bucket names;
+- raw GraphQL documents, query text, arbitrary operation names and exception
+  messages.
+
+Automated checks
+
+- hostile/unknown/accessor-backed dimensions reject before an observation;
+- zero/invalid inbound parents do not become attributes;
+- retained trace snapshots accept only the two span names, two kinds and string
+  attributes produced by the contract;
+- OTLP receiver canaries reject token/cookie/request/profile/title/document
+  leakage;
+- event-handler logs exclude traceparent, accountId and profileId;
+- media-worker spans contain only `media_worker`, `process`, boundary and
+  outcome, never acquisition or title identity;
+- the existing metric cardinality ceiling remains 16–512 series per instrument
+  with an overflow series.
+
+Review result: no new sensitive or unbounded application-controlled telemetry
+field is present in the implemented slice. Sampling, backend retention and
+browser/playback collection policy remain P12-R11 and are not claimed here.

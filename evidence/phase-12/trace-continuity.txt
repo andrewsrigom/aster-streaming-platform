@@ -1,0 +1,52 @@
+# P12-R01/R02 trace continuity
+
+Exact source: 2cd63a373373751b12127c0b51b91db54be6f844
+
+Verified representative paths
+
+1. Inbound HTTP
+   - a real Express/Apollo Identity request accepts one validated W3C parent;
+   - `aster.http.server` continues that trace with a new server span;
+   - an asynchronous dependency span is its child;
+   - a structured log emitted inside the child carries that exact trace/span;
+   - query text and sensitive request values are absent.
+
+2. Synchronous owner reads
+   - Engagement runs under its active server span;
+   - the Identity owner client starts a child `identity/read` dependency span;
+   - the injected header carries the child span, not the server span;
+   - collected client/server spans share a trace and explicit parent relation.
+   - Playback and Discovery use the same child-context injection path for their
+     fixed Catalog reads.
+
+3. Asynchronous events
+   - Identity preserves only a validated optional `traceparent` in its signed
+     v1 fact;
+   - Engagement authenticates and validates the event before observation;
+   - broker consumption starts a new local trace with one link to the producer,
+     rather than keeping the producer request span open;
+   - logs do not include event, account or profile identifiers.
+
+4. Media and infrastructure
+   - the Catalog processing coordinator creates one finite
+     `media_worker/process` boundary around handoff, retention and completion;
+   - success, replay and failure map to stable span outcomes;
+   - the isolated decoder still receives no network, credentials or arbitrary
+     inherited telemetry configuration;
+   - existing PostgreSQL, Redis, broker and object-storage observations become
+     children whenever invoked in an active trace scope.
+
+All five subgraph HTTP compositions now run the actual request handler in the
+server trace scope and supply active context to their default logger. All five
+accept the same validated optional OTLP metrics endpoint, from which the fixed
+`/v1/traces` endpoint is derived.
+
+Limitations
+
+- This is representative contract coverage, not a claim that every GraphQL
+  field emits a distinct span.
+- The disposable fixture requires real repository server/dependency span names
+  in the exact owned Collector log. Its local run could not start Docker; hosted
+  PR CI must execute this final continuity proof.
+- No high-cardinality request, user, profile, title, URL or GraphQL document is
+  added to a span.
