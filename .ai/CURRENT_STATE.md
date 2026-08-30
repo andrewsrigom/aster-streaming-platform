@@ -97,7 +97,7 @@ event-loop/V8 instrumentation and local browser QoE are reused. Browser remote
 collection remains explicitly deferred until its P12-R11 sampling, privacy,
 transport and retention policy; no ingestion service is implied.
 
-Source `442ecab`, tree `28d7ba7`, preserves the corrected linked Discovery
+Source `4a0221e`, tree `ffa3ce8`, preserves the corrected linked Discovery
 consumer while adding the finite metrics. Local review corrected future and
 excessive event ages that were being clamped into false samples and assigned
 the explicit non-primary pool roles. PR46 initial review then found that vendor
@@ -108,8 +108,12 @@ finite unavailable outcome/valid age before the connection gate, extends
 product buckets through 300 seconds and requires Node, pool and product metric
 names from the real Collector in protected CI. Telemetry 19/19,
 PostgreSQL 31/31, event delivery 25/25, combined product/consumer 7/7 and the
-affected gate 73/73 with 28 cached in 63.79 seconds pass. One remediation push,
-protected CI and confirmation remain.
+affected gate 73/73 with 28 cached in 63.79 seconds pass. Protected run
+`33302931164` exposed only a diagnostic bug: Fetch did not preserve the Router's
+required Host and received 403 before collecting metrics. The bounded probe now
+uses `node:http` with the explicit reviewed Host; inline syntax, CI policy 33/33
+and platform policy 68/68 pass. One corrective push, protected CI and
+confirmation remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

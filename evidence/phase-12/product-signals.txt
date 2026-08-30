@@ -1,6 +1,6 @@
 # P12-R04 backend product signals
 
-Status: implemented locally on source `442ecab890baab9226287739e676f0d578673352`;
+Status: implemented locally on source `4a0221e09a149ad2d6a488f50ec4956922af1cab`;
 not yet verified or released.
 
 ## Implemented contract

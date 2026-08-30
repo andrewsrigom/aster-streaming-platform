@@ -20,13 +20,16 @@ branch `feat/p12-golden-product-signals`, rebased on exact main `ce66f9c` and
 published as PR46. Its
 change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
 product-result metrics without browser remote collection. Initial review found
-three integrity gaps. Batched source `442ecab`, tree `28d7ba7`, omits invalid
+three integrity gaps. Source `4a0221e`, tree `ffa3ce8`, omits invalid
 event ages, rejects malformed vendor pool snapshots, observes pending outbox
 age before broker connection, covers product durations through 300 seconds and
 adds protected real-Collector assertions. It passes telemetry 19/19,
 PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7 and the
-affected gate 73/73 with 28 cached in 63.79 seconds. The remediation is local and
-not pushed yet.
+affected gate 73/73 with 28 cached in 63.79 seconds. Protected run `33302931164`
+proved the packaged services healthy but the diagnostic Fetch received 403
+because it did not preserve the Router's Host boundary. The probe now uses
+bounded `node:http` with explicit Host; inline syntax, CI policy 33/33 and
+platform policy 68/68 pass. The correction is local and not pushed yet.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree

@@ -18,12 +18,14 @@ production without fabricating broker work.
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 
 P12-R03 and the backend portion of P12-R04 are implemented locally on source
-`442ecab`, tree `28d7ba7`, rebased onto exact main. The affected gate passes
+`4a0221e`, tree `ffa3ce8`, rebased onto exact main. The affected gate passes
 73/73 tasks with 28 cached in 63.79 seconds. Local review corrected future and
 excessive event ages that would otherwise have been clamped into false samples.
 PR46 initial review then corrected malformed vendor pool snapshots, missing
 outbox age before broker connection and insufficient media-duration buckets.
 These signals remain unverified until protected CI and confirmation complete.
+Protected run `33302931164` stopped before collection when diagnostic Fetch did
+not preserve the Router Host; the bounded `node:http` correction awaits rerun.
 Formal SLIs/SLOs, dashboards, alerts, three
 diagnostic exercises, browser sampling/retention and the operational overview
 remain planned.

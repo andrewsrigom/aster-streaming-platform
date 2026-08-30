@@ -70,11 +70,13 @@ protected run `33300561121` and clean confirmation; PR45 squash main `ce66f9c`
 passed exact-main run `33301425220`. P12-R03/R04 backend golden signals are
 rebased on that exact main and published as PR46. Initial review found malformed
 pool counts being sanitized, missing pending-outbox age before connection and
-insufficient product-duration buckets. Batched source `442ecab`, tree `28d7ba7`,
-rejects fabricated samples, preserves outage lag and covers durations through
-300 seconds. Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
-product/consumer 7/7 and the affected 73/73 gate with 28 cached in 63.79 seconds
-pass. One remediation push, protected CI and confirmation remain.
+insufficient product-duration buckets. Source `4a0221e`, tree `ffa3ce8`, retains
+the batched signal remediation and corrects the protected diagnostic to preserve
+the Router's required Host through bounded `node:http`. Telemetry 19/19,
+PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7, affected
+73/73, CI policy 33/33 and platform policy 68/68 pass. Failed run `33302931164`
+did not reach metric collection; one corrective push, protected CI and
+confirmation remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

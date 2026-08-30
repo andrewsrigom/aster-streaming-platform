@@ -6,8 +6,8 @@ verified or released.
 ## Exact candidate
 
 - Predecessor main: `ce66f9c58a64ef49b66d9b2749e9b4b1fef50ec0`
-- Source commit: `442ecab890baab9226287739e676f0d578673352`
-- Source tree: `28d7ba7b504319f730d60d946ad6c57c88f47532`
+- Source commit: `4a0221e09a149ad2d6a488f50ec4956922af1cab`
+- Source tree: `ffa3ce8bb79ffd5ed8c640df40d1cac934fd78e5`
 - Branch: `feat/p12-golden-product-signals`
 - Runtime: Node.js 24.19.0 and pnpm 11.24.0
 - Environment: WSL Ubuntu-20.04, process-local OpenTelemetry reader
@@ -50,6 +50,10 @@ transaction behavior.
   and future/excessive event time does not become an age sample.
 - `pnpm check:changed`: 73/73 tasks pass, 28 cached, in 63.79 seconds after the
   required rebase onto released exact main and review remediation.
+- Protected run `33302931164` built the packaged services healthy but stopped
+  before collection: diagnostic Fetch did not preserve the Router Host and
+  received 403. The bounded `node:http` correction passes inline syntax, CI
+  policy 33/33 and platform policy 68/68 locally; protected proof must rerun.
 - `git diff --check`: pass.
 
 The focused telemetry suite uses a real bounded loopback OTLP/HTTP receiver for

@@ -1,8 +1,8 @@
 # P12-R03/R04 metric cardinality and privacy budget
 
 Status: contract and regression tests pass locally at source
-`442ecab890baab9226287739e676f0d578673352`, tree
-`28d7ba7b504319f730d60d946ad6c57c88f47532`.
+`4a0221e09a149ad2d6a488f50ec4956922af1cab`, tree
+`ffa3ce8bb79ffd5ed8c640df40d1cac934fd78e5`.
 
 ## Finite series budget
 

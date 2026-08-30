@@ -188,6 +188,14 @@ Append new entries at the top. Keep entries factual and concise.
 - Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
   product/consumer 7/7 and the final affected 73/73 gate pass, with 28 cached in
   63.79 seconds. Remediation evidence is local pending one push.
+- Protected run `33302931164` built healthy packaged services but its local-
+  platform job received 403 before metric collection because diagnostic Fetch
+  did not preserve the Router's required Host boundary.
+- Source `4a0221e`, tree `ffa3ce8`, replaces only that diagnostic request with
+  bounded `node:http`, an explicit reviewed Host and a 16 KiB response cap.
+  Inline module syntax, CI policy 33/33, platform policy 68/68, formatting and
+  diff checks pass. The application source is unchanged, so the previous 73/73
+  affected gate remains applicable; one corrective push is pending.
 
 ### Evidence
 
