@@ -161,9 +161,15 @@ found that the live Router histogram omitted the Catalog query's 300 ms bucket.
 Source `fa4f0b8`, tree `519908f`, adds the exact finite Router boundary, rejects
 Router/query threshold drift and makes protected CI require both live
 Router-backed ratios. Exact Router configuration and31/31 focused checks pass;
-the accepted affected repeat passes60/60 with50 cached in49.715 seconds. A first
+an earlier affected repeat passed60/60 with50 cached in49.715 seconds. A first
 repeat was discarded because the untracked upstream verifier archive correctly
-failed repository size policy; that exact temporary file was removed. Protected
+failed repository size policy; that exact temporary file was removed. The Local
+platform job in protected run `33309698941` then proved the Catalog ratio series
+exists and exposed only a diagnostic assumption: a measured zero ratio is valid
+when every live request misses the 300 ms good-event threshold. Source
+`ef78d11`, tree `3c21d78`, accepts finite live ratios from zero through one while
+retaining the separate absent-series rejection. Focused checks pass31/31 and the
+accepted affected gate passes60/60 with45 cached in47.73 seconds. Protected
 runtime acceptance must repeat on the corrected head.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
@@ -424,9 +430,9 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete PR48 P12-R05/R06 protected Router/Prometheus acceptance on the corrected
-head, resolve the 300 ms finding and run the permitted confirmation round, then
-merge and confirm exact main before starting dashboard work.
+Complete PR48 P12-R05/R06 protected Router/Prometheus acceptance on source
+`ef78d11`, resolve the 300 ms finding and run the permitted confirmation round,
+then merge and confirm exact main before starting dashboard work.
 
 ## Runtime and recovery
 

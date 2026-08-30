@@ -4,7 +4,7 @@ Status: **implemented definition; historical compliance unavailable**
 
 Date: 2026-08-30
 
-Source: `fa4f0b84cd82e1c9f53fd1d2ae30b1c447137c5d`, tree `519908f09e5b4b5a42eafe9916acb04ceee42fda`
+Source: `ef78d11d517ec3aa0ab05c9c0e59639f76046f91`, tree `3c21d780ac4205c5033171c463c7b203822ec15f`
 
 Source base: `6dba10e0ec74891af8d4427836381a4190b20376`
 

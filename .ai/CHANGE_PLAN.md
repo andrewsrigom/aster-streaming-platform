@@ -23,10 +23,10 @@ journey SLIs. Prometheus privately scrapes the Router and Collector, evaluates
 nine synthetic-tested rules and retains one disposable hour. The Router view
 exports the exact 300 ms Catalog boundary, and the product histogram exports the
 exact 400 ms progress boundary. Repository validators reject either threshold
-when its runtime bucket is absent. Protected CI passed the earlier supergraph
-ratio but must repeat because the corrected boundary adds a live Catalog-ratio
-assertion. Browser QoE still has zero remote sampling and is not a central
-first-frame SLI.
+when its runtime bucket is absent. Protected CI requires each live ratio series
+and accepts its measured value only in the valid inclusive range from zero to
+one. Browser QoE still has zero remote sampling and is not a central first-frame
+SLI.
 
 ## Proposed behavior
 

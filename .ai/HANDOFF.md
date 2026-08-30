@@ -14,11 +14,16 @@ cross-contract regression. Protected run `33308328939` passed every job at head
 `60c72a7`; confirmation discussion `3889248449` then found the missing 300 ms
 Router bucket. Corrected source `fa4f0b8`, tree `519908f`, adds the exact finite
 boundary, rejects Router/query threshold drift and requires live supergraph plus
-Catalog ratios. Its active plan is `.ai/CHANGE_PLAN.md`.
+Catalog ratios. The Local platform job in protected run `33309698941` proved
+that the Catalog ratio series exists but exposed a diagnostic error: the live
+ratio was legitimately zero and the assertion required a value above zero.
+Source `ef78d11`, tree `3c21d78`, accepts finite ratios in the inclusive range
+from zero to one while the separate series-length assertion still rejects an
+absent result. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Publish the documented 300 ms Router-bucket correction to PR48.
+1. Publish the documented zero-ratio diagnostic correction to PR48.
 2. Let protected CI prove the pinned Router/Prometheus runtime and both live Router-backed ratios.
 3. Reply to and resolve confirmation discussion `3889248449` with exact evidence.
 4. Run the permitted blocker-focused confirmation, squash-merge and verify exact-main CI.
@@ -30,7 +35,7 @@ Catalog ratios. Its active plan is `.ai/CHANGE_PLAN.md`.
 - Exact Apollo Router 2.17.0 configuration validation passes.
 - Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
   excluded and excluded-only workloads.
-- The corrected affected gate passes 60/60 tasks with 50 cached in 49.715 seconds.
+- The corrected affected gate passes 60/60 tasks with 45 cached in 47.73 seconds.
 - Documentation, AI state, formatting, lint, security and `git diff --check` pass.
 
 ## Measurement boundary

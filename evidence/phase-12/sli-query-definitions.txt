@@ -1,6 +1,6 @@
 # P12-R05 executable SLI query evidence
 
-Status: implemented and locally verified at source `fa4f0b8`, tree `519908f`;
+Status: implemented and locally verified at source `ef78d11`, tree `3c21d78`;
 protected Router/Prometheus runtime acceptance and release remain pending.
 
 ## Environment
@@ -45,7 +45,7 @@ node ./tools/verify-local-platform.mjs
 => {"check":"local-platform","status":"ok","violations":0}
 
 CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
-=> 60 tasks passed, 50 cached, 0 failed, 49.715 seconds after the second review correction
+=> 60 tasks passed, 45 cached, 0 failed, 47.73 seconds after the protected-diagnostic correction
 ```
 
 The first optional-platform test run exposed a validator gap: mutating one of
@@ -68,6 +68,13 @@ validator reject a Router/query threshold mismatch and changes protected CI to
 exercise `TitleDetail` and require both live Router-backed ratios. The exact
 Apollo Router 2.17.0 release accepts the corrected configuration; focused policy
 and contract tests pass 31/31.
+
+The Local platform job in protected run `33309698941` exercised `TitleDetail`
+and returned one live Catalog ratio series. Its value was zero because both
+requests exceeded the 300 ms good-event threshold. The diagnostic incorrectly
+required a positive value even though zero is a valid bad SLI measurement.
+Source `ef78d11` accepts a finite value in the inclusive range from zero to one;
+the preceding exact length assertion still rejects an absent series.
 
 The first affected-gate invocation included the downloaded 28 MiB upstream
 Router verifier archive as an untracked repository file, so the secret/size

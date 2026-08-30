@@ -43,6 +43,11 @@ Append new entries at the top. Keep entries factual and concise.
   verifier archive remained untracked in the repository. The exact temporary
   file was removed; repository security/size policy passed on the accepted
   unchanged repeat.
+- The Local platform job in protected run `33309698941` proved one live Catalog
+  ratio series but rejected its legitimate value of zero. Source `ef78d11`, tree
+  `3c21d78`, accepts finite present ratios from zero through one while the
+  separate length assertion still rejects absence. Focused checks pass31/31 and
+  the affected gate passes60/60 with45 cached in47.73 seconds.
 
 ### Evidence
 
@@ -52,7 +57,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the 300 ms correction, repeat protected Router/Prometheus acceptance,
+Publish the zero-ratio diagnostic correction, repeat protected Router/Prometheus acceptance,
 resolve the finding and complete the permitted confirmation/merge/exact-main
 sequence before dashboard work.
 
