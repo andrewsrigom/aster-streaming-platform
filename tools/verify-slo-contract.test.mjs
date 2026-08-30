@@ -45,4 +45,10 @@ test("Router classification and private scrape boundaries are mandatory", () => 
       prometheusConfig: sources.prometheusConfig.replace("router:9091", "router:9092"),
     }).length > 0,
   );
+  assert.ok(
+    validateSloContract({
+      ...sources,
+      metricCatalog: sources.metricCatalog.replace("0.4,", ""),
+    }).length > 0,
+  );
 });

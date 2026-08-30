@@ -939,6 +939,7 @@ test("records finite pool, event-lag, and backend product golden signals", async
   );
   const durationValue = productDuration.points[0]?.value;
   assert.equal(typeof durationValue, "object");
+  assert.ok((durationValue as { boundaries: readonly number[] }).boundaries.includes(0.4));
   assert.deepEqual(
     (durationValue as { boundaries: readonly number[] }).boundaries.slice(-6),
     [30, 60, 120, 180, 240, 300],

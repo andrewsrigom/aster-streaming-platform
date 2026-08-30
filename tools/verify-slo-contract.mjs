@@ -84,6 +84,7 @@ export async function readSloSources(root) {
     routerPolicy: "infra/router/main.rhai",
     prometheusConfig: "infra/compose/prometheus.local.yml",
     prometheusImage: "infra/docker/prometheus.Dockerfile",
+    metricCatalog: "packages/telemetry/src/infrastructure/metric-catalog.ts",
   };
   const sources = Object.fromEntries(
     await Promise.all(
@@ -254,6 +255,17 @@ export function validateSloContract(sources) {
     )
   ) {
     reject("Prometheus image must bake the reviewed SLI rules");
+  }
+  const productBucketBlock =
+    /PRODUCT_DURATION_BUCKETS_SECONDS = Object\.freeze\(\[([\s\S]*?)\]\);/u.exec(
+      sources.metricCatalog ?? "",
+    )?.[1];
+  const productBuckets = new Set((productBucketBlock?.match(/\d+(?:\.\d+)?/gu) ?? []).map(Number));
+  for (const sli of slis.filter((candidate) => candidate?.source?.scrapeJob === "aster-local")) {
+    const latency = record(sli.objective) ? sli.objective.latencySeconds : undefined;
+    if (typeof latency !== "number" || !productBuckets.has(latency)) {
+      reject(`${sli.id} requires a product-duration bucket exported by the runtime`);
+    }
   }
   if (
     !(sources.ruleTests ?? "").includes("excluded-only traffic creates no SLI ratio") ||
