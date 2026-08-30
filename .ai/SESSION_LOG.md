@@ -64,6 +64,13 @@ Append new entries at the top. Keep entries factual and concise.
 - The final corrected complete candidate passes15/15 tasks with3 cached in
   77.929 seconds, including platform73/73, CI policy33/33, documentation, AI
   state, formatting, lint and security.
+- Exact source `c678484`, tree `397ead5`, passed protected run `33317834141` in
+  every job. The Local-platform job built/started the full profile, passed
+  packaged telemetry, Grafana health/data source/exact Playback query/immutable
+  dashboard, optional failure isolation and scoped cleanup. The complete
+  integration/playable lane also passed.
+- Replied to initial review discussions `3889614208` and `3889614213` with the
+  exact correction and protected run, then resolved both threads.
 
 ### Evidence
 
@@ -72,8 +79,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the CI-only assertion correction once, then require protected live
-provisioning and one bounded confirmation.
+Publish the evidence checkpoint and require one bounded exact-head confirmation,
+then squash-merge and verify main before starting P12-R07.
 
 ## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate
 

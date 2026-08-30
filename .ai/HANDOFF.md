@@ -45,12 +45,15 @@ plan is `.ai/CHANGE_PLAN.md`.
   left zero scoped resources. The assertion now accepts whitespace but still
   requires `database=ok`; focused CI policy tests pass23/23 and the corrected
   complete candidate passes15/15 tasks with3 cached in77.929 seconds.
+- Exact source `c678484`, tree `397ead5`, passed protected run `33317834141`:
+  every job passed, including live Grafana provisioning/query/failure isolation
+  and all integration/playable proofs. Discussions `3889614208` and
+  `3889614213` have exact replies and are resolved.
 
 ## Exact next actions
 
-1. Publish the CI assertion correction once.
-2. Resolve both discussions after exact-head protected CI.
-3. Obtain one confirmation, squash-merge, verify exact main, then activate P12-R07 alerts.
+1. Publish the evidence checkpoint and obtain one exact-head confirmation.
+2. Squash-merge, verify exact main, then activate P12-R07 alerts.
 
 ## Execution boundary
 

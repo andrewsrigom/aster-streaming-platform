@@ -1,6 +1,6 @@
 P12-R12 provisioned operational overview
 Date: 2026-08-30
-Status: implemented candidate; protected live-container acceptance pending
+Status: verified candidate; confirmation and merge pending
 
 Requirement
 -----------
@@ -134,6 +134,21 @@ required because the assertion changed. The final corrected complete candidate
 passes15/15 tasks with3 cached in77.929 seconds, including platform73/73, CI
 policy33/33, documentation, AI state, formatting, lint and a zero-finding
 secret scan.
+
+Protected exact-source acceptance
+---------------------------------
+
+Source c6784849e8dac49c39c5683e25ce69cdcde6bfe9, tree
+397ead5b884c8d592671b14c3c314f4a50cd2399, passed every protected job in run
+33317834141. The Local-platform job built and health-gated the full profile,
+passed packaged health/telemetry, verified Grafana health, fixed read-only data
+source, exact encoded `playback_start` query and immutable dashboard, stopped
+only Grafana, proved product platform health remained healthy and removed the
+exact CI project. Source quality, full owner integrations, playable demo,
+documentation, security and the aggregate required decision also passed.
+
+Initial review discussions 3889614208 and 3889614213 received exact correction
+and run evidence and are resolved. One confirmation review and release remain.
 
 Rollback
 --------

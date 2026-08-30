@@ -223,8 +223,11 @@ two-container local probe confirmed health, fixed data source, exact Playback
 query and immutable dashboard; all scoped resources were removed. The bounded
 assertion now tolerates JSON whitespace while requiring `database=ok`. Its
 focused CI policy tests pass23/23. The corrected complete candidate passes15/15
-tasks with3 cached in77.929 seconds. One publication and protected live
-acceptance remain.
+tasks with3 cached in77.929 seconds. Exact source `c678484`, tree `397ead5`, then
+passed every protected job in run `33317834141`, including full-profile Grafana
+health, fixed data source/query/dashboard, optional failure isolation and the
+complete playable/integration suites. Both initial review discussions are
+evidenced and resolved. One exact-head confirmation and merge remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
