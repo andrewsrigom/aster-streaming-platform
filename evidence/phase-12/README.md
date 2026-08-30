@@ -18,9 +18,12 @@ confirmation. PR48 squash main `a99d3d5` retained that tree; exact-main run
 `33314309449` passed every job. P12-R12 evidence head `ba3de93`, tree `73ee596`,
 passed protected run `33318672382` and clean confirmation. PR49 squash main
 `c297d32` retained the reviewed tree; valid exact-main run `33319514232` passed
-every required job. P12-R07 exact correction `8185a81`, tree `51dc011`, passed
-protected run `33323508793`, resolved its initial review and passed the single
-exact-head confirmation. Evidence closeout and release remain.
+every required job. P12-R07 corrected source `8185a81`, evidence head `4b6db71`,
+protected run `33324696622`, clean confirmation, PR50 squash main `633e819` and
+exact-main run `33325544350` release the finite burn-rate alerts. P12-R10 is the
+only active Phase 12 item. Its diagnostic profile and runner are implemented in
+the current worktree; focused source tests pass, while real three-scenario
+Docker acceptance remains pending.
 
 ## Requirement traceability
 
@@ -37,6 +40,7 @@ exact-head confirmation. Evidence closeout and release remain.
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 | P12-R11 | [Browser telemetry](browser-playback-telemetry.txt) records sampling, privacy, transport and retention boundaries |
 | P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and protected/exact-main release proof |
+| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the implemented bounded Tempo profile, exercise contract, current focused evidence and the pending real three-scenario acceptance |
 
 P12-R03's affected gate passed 73/73 tasks with 28 cached in 63.79 seconds.
 Review corrected invalid event ages, malformed pool snapshots, missing outbox
@@ -85,9 +89,8 @@ counter objective idle;27/27 focused checks and the corrected60/60 affected gate
 with50 cached in47.383 seconds pass. Final head `72d5656`, tree `2374279`, passed
 protected run `33313090638` attempt2 and clean confirmation. PR48 squash main
 `a99d3d5` and exact-main run `33314309449` release the SLI/SLO work. Burn-rate
-alerts have verified source `8185a81`, tree `51dc011`, protected run
-`33323508793`, resolved initial review and clean exact-head confirmation;
-evidence closeout/release and three diagnostic exercises remain planned.
+alerts are released through PR50 and exact-main run `33325544350`. Three
+diagnostic exercises remain the sole Phase 12 acceptance gap.
 The operational overview is released through its protected and exact-main
 live-container acceptance.
 
@@ -112,3 +115,7 @@ live-container acceptance.
 - SLI/SLO synthetic ratios prove query behavior only. At-most-three-day local
   retention cannot prove a 28/30-day objective, and no historical compliance result is
   claimed.
+- The P12-R10 source/profile checks do not substitute for real Tempo export,
+  trace search, failure recovery and exact Docker cleanup. One real attempt was
+  interrupted by a Docker Desktop engine failure during build; no scenario
+  acceptance is claimed.

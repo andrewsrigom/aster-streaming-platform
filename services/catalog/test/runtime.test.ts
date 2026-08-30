@@ -3,7 +3,12 @@ import { request as httpRequest } from "node:http";
 import { createServer } from "node:net";
 import { test } from "node:test";
 import { createLocalCatalogDiscoveryTrust, createLocalRouterTrust } from "@aster/http-express";
-import type { AsterPostgresAdapter } from "@aster/postgres";
+import type {
+  AsterPostgresAdapter,
+  AsterPostgresTransaction,
+  AsterPostgresTransactionDecision,
+  AsterPostgresTransactionResult,
+} from "@aster/postgres";
 import type { AsterRedisAdapter } from "@aster/redis";
 import { createAsterLogger } from "@aster/runtime";
 import { createAsterTelemetry } from "@aster/telemetry";
@@ -400,6 +405,73 @@ test("Catalog serves guarded GraphQL, fails readiness on dependency/authority lo
     assert.equal((await service.shutdown()).outcome, "completed");
     assert.equal(state.closed, true);
     assert.equal(service.health().phase, "stopped");
+  } finally {
+    await service.shutdown();
+  }
+});
+
+test("Catalog keeps PostgreSQL observations inside the inbound HTTP trace", async () => {
+  const fixture = fixtureDatabase();
+  const telemetry = createAsterTelemetry({
+    serviceName: "catalog",
+    serviceVersion: "0.0.0",
+    environment: "test",
+  });
+  const database: AsterPostgresAdapter = {
+    ...fixture.database,
+    async transaction<T>(
+      work: (transaction: AsterPostgresTransaction) => Promise<AsterPostgresTransactionDecision<T>>,
+      signal?: AbortSignal,
+    ): Promise<AsterPostgresTransactionResult<T>> {
+      const started = telemetry.startDependencyOperation({
+        dependency: "postgresql",
+        operation: "query",
+      });
+      const result = await fixture.database.transaction(work, signal);
+      if (started.status === "started") {
+        started.observation.complete({
+          outcome: result.status === "committed" ? "success" : "unavailable",
+        });
+      }
+      return result;
+    },
+  };
+  const service = await createCatalogService(
+    { ...environment, ASTER_CATALOG_HTTP_PORT: String(await freePort()) },
+    { database, telemetry },
+  );
+  const inboundTraceId = "a".repeat(32);
+  try {
+    assert.equal(await service.start(), "ready");
+    const response = await fetch("http://127.0.0.1:" + String(service.port()) + "/graphql", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        traceparent: `00-${inboundTraceId}-${"b".repeat(16)}-01`,
+      },
+      body: JSON.stringify({
+        query: "query RuntimeCatalog { titles(first: 1) { edges { node { id } } } }",
+        operationName: "RuntimeCatalog",
+      }),
+      signal: AbortSignal.timeout(2_000),
+    });
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { data: { titles: { edges: [] } } });
+    const traces = await telemetry.collectTraces();
+    assert.equal(traces.status, "collected");
+    const server = traces.traces.find(
+      (span) => span.name === "aster.http.server" && span.attributes["http.route"] === "/graphql",
+    );
+    const dependency = traces.traces.find(
+      (span) =>
+        span.name === "aster.dependency.operation" &&
+        span.attributes["aster.dependency"] === "postgresql" &&
+        span.traceId === inboundTraceId,
+    );
+    assert.ok(server && dependency);
+    assert.equal(server.traceId, inboundTraceId);
+    assert.equal(dependency.traceId, inboundTraceId);
+    assert.equal(dependency.parentSpanId, server.spanId);
   } finally {
     await service.shutdown();
   }

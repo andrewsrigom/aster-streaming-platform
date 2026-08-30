@@ -154,7 +154,8 @@ Historical stashes are superseded.
 | 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | DONE |
 | 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | DONE |
 | 61 | Provision a bounded three-layer operational overview | P12-R12 | DONE |
-| 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | IN_PROGRESS |
+| 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
+| 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -240,9 +241,18 @@ dedicated regression are corrected. Classification/CI tests pass34/34 and the
 final corrected affected gate passes15/15 with11 cached in3.476 seconds.
 Exact correction `8185a81`, tree `51dc011`, passed protected run `33323508793`
 with every required job. Discussion `3889911170` is answered/resolved, and the
-single confirmation comment `5470101517` reports no major issue. Evidence
-closeout, squash merge and exact-main CI remain. Diagnostic exercises stay later
-work.
+single confirmation comment `5470101517` reports no major issue. Evidence head
+`4b6db71` then passed protected run `33324696622`; PR50 squash main `633e819`
+passed exact-main run `33325544350` and releases item62. Item63 starts from that
+exact main on `feat/p12-diagnostic-exercises`. It owns the three trace-led
+failure exercises, the concrete local trace-backend decision and Phase12
+closeout; no Phase13 demand-control work starts early. ADR-0044, bounded Tempo/
+Collector/Grafana configuration, the no-argument UUID-scoped runner,
+proportional CI routing and focused tests are implemented. One real run stopped
+during Docker Desktop image build; no scenario completed and engine loss left
+the exact cleanup query pending. Item63 remains `IN_PROGRESS` until a healthy
+engine passes all three scenarios, zero-resource cleanup, candidate review and
+protected release.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

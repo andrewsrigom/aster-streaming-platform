@@ -134,6 +134,62 @@ synthetic fixture or partial local window into a field reliability claim.
 
 ---
 
+## Runbook: Trace-led local Catalog diagnosis
+
+### Scope
+
+Use this procedure only for the disposable P12-R10 local exercise. It does not
+authorize production failure injection, arbitrary session termination or
+changes to the retained `aster` project. The automated command is:
+
+```bash
+pnpm diagnostics:run
+```
+
+It creates its own UUID-scoped project and accepts no target or flags.
+
+### Diagnose in order
+
+1. Confirm a new `catalog_title_read` population event and its good-event
+   result. Metrics establish impact; they do not prove cause.
+2. Read the bounded Router operation log and take its validated trace ID.
+3. Retrieve that exact trace from Tempo, then require TraceQL search to return
+   the same ID.
+4. Follow only finite boundary attributes: Catalog subgraph, PostgreSQL or
+   Redis dependency, operation, outcome and span status.
+5. Correlate the same trace with sanitized Router/Catalog event categories.
+   Never search by profile, title, request body, SQL, credential or media URL.
+6. Apply only the scenario's scoped recovery and verify a real TitleDetail
+   request, not merely health or telemetry recovery.
+
+### Expected classifications
+
+| Failure | User result | Required diagnosis | Recovery |
+|---|---|---|---|
+| Catalog stopped | failed | Router-to-Catalog trace boundary reports failure | start exact Catalog service; require Catalog health and a completed TitleDetail |
+| PostgreSQL paused after one admitted read blocks | failed | same trace contains a failed Catalog PostgreSQL dependency span | unpause exact PostgreSQL service; terminate only `application_name = 'aster-p12-diagnostic-lock'`; require Catalog health and completed TitleDetail |
+| Redis stopped | completed through PostgreSQL, possibly over latency target | same trace contains failed Redis dependency plus cache-unavailable log | start exact Redis service; require cache-ready log and completed TitleDetail |
+
+Redis degradation is not a failed user SLI when the authoritative PostgreSQL
+fallback succeeds. PostgreSQL failure is not recoverable from Redis because
+publication visibility and rights remain durable-owner decisions.
+
+### Cleanup and escalation
+
+Normal completion removes only the generated project with volumes and verifies
+zero matching containers, networks and volumes. If the engine disappears, keep
+the exact printed UUID and wait for the same local engine to recover before
+inspection. Do not restart WSL, prune Docker, delete by prefix or use the
+retained-data reset to recover this fixture.
+
+Escalate the candidate rather than accepting it when the trace is missing,
+trace/log IDs disagree, a canary appears in telemetry, the SLI source has no
+new population, recovery does not complete by deadline or any scoped resource
+remains. Record the bounded JSON results and cleanup state in
+[`evidence/phase-12/failure-diagnosis.md`](../../evidence/phase-12/failure-diagnosis.md).
+
+---
+
 ## Runbook: Cache stampede or Redis hot key
 
 ### Trigger

@@ -63,18 +63,15 @@ QoE and executable SLI/SLO work are released through PR45–48. PR48 final head
 confirmation and squash main `a99d3d5`; exact-main run `33314309449` passed.
 P12-R12 is released through PR49 reviewed head `ba3de93`, tree `73ee596`,
 protected run `33318672382`, clean confirmation, squash main `c297d32` and valid
-exact-main run `33319514232`. P12-R07 is active on
-`feat/p12-burn-rate-alerts` from that exact main. It owns finite multi-window
-burn-rate rules, firing/recovery proof and alert-linked runbook navigation. Its
-local candidate at source `9fbc2d1`, tree `580f7ab`, packaged Prometheus proof
-and affected gate pass. PR50 run `33322558877` exposed a pre-first-evaluation
-health timing defect; the bounded one-interval acceptance poll is corrected and
-proved locally. Initial review then required observability-only diffs to select
-the platform/promtool job; classifier and regression are corrected. The final
-corrected candidate gate and exact-head protected run `33323508793` pass.
-Discussion `3889911170` is resolved with that evidence, and the single
-confirmation reports no major issue. Evidence closeout, merge, exact-main CI
-and release remain. Diagnostic exercises follow.
+exact-main run `33319514232`. P12-R07 is released through corrected source
+`8185a81`, evidence head `4b6db71`, protected run `33324696622`, PR50 squash
+main `633e819` and exact-main run `33325544350`. P12-R10 is now active on
+`feat/p12-diagnostic-exercises` from that exact main. It owns the concrete
+bounded trace-backend decision, three telemetry-led injected-failure exercises
+and Phase12 closeout. ADR-0044, the bounded Tempo profile, runner, CI selection
+and focused tests are implemented. Real three-scenario Docker acceptance is
+pending after the local engine failed during build; no scenario or cleanup is
+claimed. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

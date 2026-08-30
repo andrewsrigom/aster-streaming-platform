@@ -54,14 +54,12 @@ final head `72d5656`, tree `2374279`, protected run `33313090638` attempt2,
 clean confirmation, squash main `a99d3d5` and exact-main run `33314309449`.
 P12-R12 reviewed head `ba3de93`, tree `73ee596`, passed protected run
 `33318672382` and clean confirmation. PR49 squash main `c297d32` has that tree;
-valid exact-main run `33319514232` passed every required job. P12-R07 burn-rate
-alerts are active from that exact main. Its local candidate now implements the
-finite policy, complete-window guards, seven packaged alert instances and linked
-runbook. Exact Prometheus tests, the isolated packaged proof and the affected
-15/15 gate pass. Exact correction `8185a81`, tree `51dc011`, passed protected
-run `33323508793`, resolved the initial review and received a clean exact-head
-confirmation. Evidence closeout, merge and exact-main CI remain. Full Phase00–14
-goal stays active.
+valid exact-main run `33319514232` passed every required job. P12-R07 corrected
+source `8185a81`, evidence head `4b6db71`, protected run `33324696622`, clean
+confirmation, PR50 squash main `633e819` and exact-main run `33325544350`
+release the finite burn-rate alerts. P12-R10 is active from that exact main on
+`feat/p12-diagnostic-exercises`; it owns three telemetry-led failure diagnoses
+and Phase12 closeout. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -240,8 +238,8 @@ protected run `33318672382` and clean confirmation. PR49 squash main `c297d32`
 retained that tree, and valid exact-main run `33319514232` passed every required
 job; earlier same-SHA run `33319497475` was superseded by concurrency.
 
-P12-R07 is the sole active item on `feat/p12-burn-rate-alerts` from exact main
-`c297d32`. The working-tree candidate implements the reviewed rapid 1h/5m and
+P12-R07 is released. Its candidate from exact main `c297d32` implements the
+reviewed rapid 1h/5m and
 6h/30m pairs for three page-class SLIs and sustained 1d/2h and 3d/6h pairs for
 all four. Complete sampled coverage suppresses fresh/evicted partial windows.
 Prometheus 3.14.0 reports 9 valid SLI rules and 26 valid alert-policy rules; all
@@ -273,8 +271,31 @@ passed every required protected job in run `33323508793`, including exact
 Prometheus rule tests, the 35-rule/seven-alert packaged assertion, all owner
 integrations and the playable demo. Discussion `3889911170` is answered with
 that evidence and resolved. The single exact-head confirmation comment
-`5470101517` reports no major issue. Evidence closeout, merge and exact-main CI
-remain.
+`5470101517` reports no major issue. Evidence head `4b6db71` passed protected
+run `33324696622`; PR50 squash main `633e819` passed exact-main run
+`33325544350` and closes the item.
+
+P12-R10 is the sole active item on `feat/p12-diagnostic-exercises` from exact
+main `633e819`. ADR-0044 and the current worktree implement a diagnostics-only,
+digest-pinned Tempo profile plus one no-argument UUID-scoped runner. It uses the
+released Catalog SLI source, the exact Router trace, privacy-filtered Tempo
+search and correlated bounded logs to diagnose Catalog service loss, a
+PostgreSQL failure after request admission and Redis degradation. Recovery and
+cleanup target only the disposable project. Focused diagnostic/profile tests
+pass11/11, CI/classifier tests pass35/35 and the focused Catalog trace regression
+passes1/1. The post-review affected candidate gate passes73/73 with62 cached in
+13.114 seconds. Initial review corrected execution/cleanup headroom, signal
+handling, listener scope, diagnostic output categories and CI invalidation;
+confirmation found no remaining blocking source issue. Architecture,
+operations, runbooks, licensing and pending evidence are current. A real
+attempt stopped during Docker Desktop image build; no
+scenario completed and the unavailable engine prevented exact scoped-resource
+inspection. Real three-scenario acceptance, protected publication/release and
+Phase12 closeout remain. The normal demo is
+unchanged; Phase13 has not started.
+One post-review read-only WSL check returned `docker-client-unavailable`; no
+restart or repeated probe was attempted. Protected diagnostic CI is the next
+eligible real execution.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -528,14 +549,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P12-R07 evidence closeout/release and three diagnostic exercises remain.
+The implemented P12-R10 candidate still needs one real three-scenario Docker
+acceptance, exact cleanup, candidate/review/release and Phase12 closeout.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish the P12-R07 evidence closeout, pass its protected documentation gate,
-then merge/release the reviewed source before activating the first remaining
-Phase12 diagnostic exercise.
+For P12-R10, recover the local Docker boundary, inspect the exact interrupted
+project, verify the three telemetry-led injected-failure exercises, pass the
+candidate/review/release sequence, close Phase12 and explicitly check Phase13
+prerequisites.
 
 ## Runtime and recovery
 

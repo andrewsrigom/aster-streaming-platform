@@ -1,0 +1,66 @@
+stream_over_http_enabled: true
+multitenancy_enabled: false
+
+server:
+  http_listen_address: 0.0.0.0
+  http_listen_port: 3200
+  http_server_read_timeout: 3s
+  http_server_write_timeout: 3s
+  http_server_idle_timeout: 10s
+  grpc_listen_address: 127.0.0.1
+  grpc_listen_port: 9095
+  grpc_server_max_recv_msg_size: 1048576
+  grpc_server_max_send_msg_size: 1048576
+  log_format: json
+  log_level: warn
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+          max_request_body_size: 1048576
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/blocks
+
+query_frontend:
+  max_retries: 0
+  response_consumers: 1
+  max_outstanding_per_tenant: 64
+  max_batch_size: 1
+  max_query_expression_size_bytes: 4096
+  search:
+    concurrent_jobs: 2
+    default_result_limit: 20
+    max_result_limit: 20
+    default_spans_per_span_set: 5
+    max_spans_per_span_set: 20
+
+querier:
+  max_concurrent_queries: 2
+  trace_by_id:
+    query_timeout: 2s
+  search:
+    query_timeout: 2s
+
+overrides:
+  defaults:
+    ingestion:
+      rate_strategy: local
+      rate_limit_bytes: 1048576
+      burst_size_bytes: 1048576
+      max_traces_per_user: 256
+    global:
+      max_bytes_per_trace: 262144
+    compaction:
+      block_retention: 1h
+
+usage_report:
+  reporting_enabled: false

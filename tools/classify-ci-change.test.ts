@@ -12,7 +12,13 @@ test("classifies Markdown, evidence, skills, and repository memory as documentat
       "skills/testing.md",
       ".ai/CURRENT_STATE.md",
     ]),
-    { changedFiles: 5, full: false, platform: false, reason: "docs-only" },
+    {
+      changedFiles: 5,
+      diagnostics: false,
+      full: false,
+      platform: false,
+      reason: "docs-only",
+    },
   );
 });
 
@@ -20,6 +26,7 @@ test("requires full quality for unrelated source and environment templates", () 
   for (const path of ["tools/check.ts", ".env.example"]) {
     assert.deepEqual(classifyChangedPaths([path]), {
       changedFiles: 1,
+      diagnostics: false,
       full: true,
       platform: false,
       reason: "executable-change",
@@ -102,15 +109,48 @@ test("routes observability rules, contracts and verifier changes through the pla
   ]) {
     assert.deepEqual(
       classifyChangedPaths([path]),
-      { changedFiles: 1, full: true, platform: true, reason: "executable-change" },
+      {
+        changedFiles: 1,
+        diagnostics: false,
+        full: true,
+        platform: true,
+        reason: "executable-change",
+      },
       path,
     );
   }
 });
 
+test("runs the heavyweight diagnostic proof only for paths that can invalidate it", () => {
+  for (const path of [
+    "services/catalog/src/create-service.ts",
+    "packages/http-express/src/local-router-trust.ts",
+    "packages/runtime/src/runtime-logger.ts",
+    "packages/telemetry/src/index.ts",
+    "packages/postgres/src/index.ts",
+    "packages/redis/src/index.ts",
+    "infra/router/router.yaml",
+    "infra/grafana/diagnostics/tempo.yml",
+    "infra/compose/diagnostics.yml",
+    "infra/compose/prometheus.local.yml",
+    "infra/docker/prometheus.Dockerfile",
+    "infra/docker/router.Dockerfile",
+    "infra/observability/slo-rules.yml",
+    "infra/observability/tempo.yml",
+    "tools/run-diagnostic-exercises.mjs",
+  ]) {
+    const result = classifyChangedPaths([path]);
+    assert.equal(result.platform, true, path);
+    assert.equal(result.diagnostics, true, path);
+  }
+  assert.equal(classifyChangedPaths(["apps/web/features/playback/player.tsx"]).diagnostics, false);
+  assert.equal(classifyChangedPaths(["infra/observability/slo-alerts.yml"]).diagnostics, false);
+});
+
 test("fails safe to full quality for an empty diff", () => {
   assert.deepEqual(classifyChangedPaths([]), {
     changedFiles: 0,
+    diagnostics: true,
     full: true,
     platform: true,
     reason: "empty-diff",
@@ -120,6 +160,7 @@ test("fails safe to full quality for an empty diff", () => {
 test("selects the isolated local-platform smoke path", () => {
   assert.deepEqual(classifyChangedPaths(["infra/compose/compose.yml"]), {
     changedFiles: 1,
+    diagnostics: true,
     full: true,
     platform: true,
     reason: "executable-change",

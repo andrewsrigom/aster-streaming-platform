@@ -1,0 +1,14 @@
+# Disposable diagnostics proof. It never publishes the retained demo ports or data.
+services:
+  postgres:
+    volumes: !reset []
+    tmpfs:
+      - /var/lib/postgresql:rw,size=256m
+  router:
+    ports: !override ["127.0.0.1::4000"]
+  prometheus:
+    ports: !override ["127.0.0.1::9090"]
+  grafana:
+    ports: !override ["127.0.0.1::3000"]
+  tempo:
+    ports: !override ["127.0.0.1::3200"]

@@ -66,11 +66,46 @@ Stop the exact profile while preserving PostgreSQL and Prometheus volumes:
 docker compose --project-name aster --file infra/compose/compose.yml --file infra/compose/observability.yml --profile "*" down
 ```
 
+## Disposable trace-led exercise
+
+The P12-R10 candidate adds an automated diagnostic lane without changing the
+retained `aster` project:
+
+```bash
+pnpm diagnostics:run
+```
+
+The command accepts no target or flags. It creates one random
+`aster-p12-diagnostics-<uuid>` project, starts the targeted Catalog diagnostic
+topology on ephemeral IPv4 loopback ports and checks Grafana's immutable
+`aster-tempo` data source.
+It then drives three Catalog title-read scenarios in order:
+
+1. Catalog service unavailable: the SLI source records a failed request and the
+   trace identifies the Router-to-Catalog boundary.
+2. PostgreSQL unavailable during an admitted authoritative read: the request
+   fails and the same trace identifies the Catalog-to-PostgreSQL boundary.
+3. Redis unavailable: PostgreSQL remains authoritative, the request completes
+   and trace/log signals identify cache degradation.
+
+Each result is emitted as one bounded JSON event containing the diagnosis,
+source-counter delta, released five-minute ratio when present and finite
+boundary categories. It contains no GraphQL document, canary ID, credential,
+SQL text or media URL. Recovery is exercised after each failure. Final teardown
+uses only the exact generated project and requires zero matching containers,
+networks and volumes.
+
+This candidate uses Tempo only for disposable trace search. Docker's bounded
+structured logs remain the log source; Loki is not provisioned. The normal
+dashboard at port 3001 and the playable demo do not gain Tempo. Real runtime
+acceptance remains pending until the three scenarios and cleanup pass on a
+working Linux Docker engine.
+
 ## Limits
 
 The dashboard refreshes every 30 seconds. Prometheus keeps at most three days/
 128 MB and limits query duration, concurrency and samples. This is enough to
 demonstrate diagnosis and the burn-alert mechanics locally but cannot establish
 28/30-day reliability. Alert labels do not imply external delivery. Three
-recorded diagnostic exercises and hosted identity/retention remain later
-Phase 12/14 work.
+diagnostic exercises remain P12-R10 acceptance work; hosted identity, durable
+telemetry retention and notification delivery remain Phase 14 work.

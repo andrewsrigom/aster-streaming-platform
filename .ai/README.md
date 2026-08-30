@@ -26,7 +26,10 @@ Navigation to accepted ADRs and unresolved decisions. ADR files remain authorita
 
 ### `SESSION_LOG.md`
 
-Append-only concise record of completed work, evidence, and next action.
+Append-only working window of completed work, evidence, and next action. When it
+approaches a static document bound, preserve the complete immutable snapshot in
+`SESSION_LOG_ARCHIVE.txt` and retain the latest entries here; never discard the
+archive to make a gate pass.
 
 ### `HANDOFF.md`
 

@@ -8,13 +8,15 @@ Local target:
 - OpenTelemetry Collector;
 - Prometheus-compatible metrics store;
 - Tempo-compatible trace store;
-- Loki-compatible log store;
 - Grafana dashboards.
 
-The currently implemented local path is Collector `0.159.0`, Prometheus
-`3.14.0` and the single provisioned Grafana OSS `13.2.0` operational overview.
-Tempo-compatible traces and Loki-compatible log storage remain planned; their
-names here describe the target architecture, not running backends.
+The released local path is Collector `0.159.0`, Prometheus `3.14.0` and the
+single provisioned Grafana OSS `13.2.0` operational overview. The P12-R10
+candidate adds Tempo `3.0.0` only to an explicit disposable diagnostic profile;
+its three-scenario runtime acceptance remains pending. The normal demo retains
+the released stack and resource footprint. A Loki-compatible log store is not
+implemented because no reviewed ingestion, label, retention or deletion path
+exists.
 
 The hosted implementation may use managed backends while preserving OpenTelemetry instrumentation and semantic conventions.
 
@@ -112,9 +114,34 @@ queries, panel questions and recovery behavior are documented in the
 [operational overview](../operations/OPERATIONAL_OVERVIEW.md) and selected by
 [ADR-0042](../adr/0042-bounded-local-operational-overview.md).
 
+## Bounded trace diagnostics candidate
+
+P12-R10 adds a diagnostics-only overlay selected by
+[ADR-0044](../adr/0044-bounded-local-trace-diagnostics.md). It preserves the
+released metric path, exports the already privacy-filtered traces to Tempo and
+provisions one immutable Grafana Tempo data source. Tempo is non-authoritative,
+uses a 128 MiB tmpfs, retains blocks for at most one hour and binds its query API
+only to IPv4 loopback. The Collector has one trace-export consumer, a 128-item
+memory queue, a one-second request deadline and a two-second retry budget.
+
+The automated exercise creates a fresh `aster-p12-diagnostics-<uuid>` project,
+uses ephemeral loopback ports and diagnoses Catalog service loss, an
+authoritative PostgreSQL read failure and Redis degradation. It begins with the
+released Catalog-read SLI source, obtains the Router trace ID, retrieves and
+searches the same trace in Tempo, correlates bounded structured logs, verifies
+recovery and removes only that exact project with its disposable state. Source
+policy and focused tests pass; real three-scenario evidence is not claimed until
+the Docker exercise completes.
+
+No log backend is part of this profile. Size-rotated Docker logs remain the
+correlated log source, which prevents an empty Loki service from being mistaken
+for implemented log ingestion.
+
 ## Logs
 
-Pino-compatible structured logs are emitted to stdout and collected.
+Pino-compatible structured logs are emitted to stdout. Local Compose retains
+them through Docker's bounded rotating log driver; no searchable log backend is
+currently implemented.
 
 Required context:
 

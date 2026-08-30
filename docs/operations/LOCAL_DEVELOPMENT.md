@@ -108,6 +108,7 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | `integration` | Router, Identity, Catalog, Playback, Engagement, Kafka, S3 | 4000 |
 | `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
 | `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
+| `diagnostics:run` candidate | Full profile plus Tempo in a fresh disposable project | ephemeral loopback Router, Prometheus, Grafana and Tempo ports |
 
 Discovery is intentionally absent from the base profiles. Start released search
 and home rails with the event and Discovery overlays:
@@ -161,7 +162,48 @@ for the three-layer diagnostic view. [Dashboard questions, limits and
 recovery](OPERATIONAL_OVERVIEW.md). Alert states link to the
 [critical-journey burn runbook](RUNBOOKS.md#runbook-critical-journey-slo-burn).
 Three-day local data cannot prove a 28/30-day SLO, and no external alert
-delivery, tracing/log backend or historical compliance result is claimed.
+delivery, released tracing/log backend or historical compliance result is
+claimed. The diagnostics-only Tempo candidate below is not part of this
+retained profile.
+
+### Disposable trace-diagnostic candidate
+
+After the pinned repository installation, run the complete P12-R10 exercise
+from POSIX/WSL with a working local Linux Docker engine:
+
+```bash
+pnpm diagnostics:run
+```
+
+The command accepts no arguments, external endpoint or retained project name.
+It validates the Compose model and local engine, creates one UUID-scoped
+`aster-p12-diagnostics-*` project and starts the targeted Catalog diagnostic
+topology plus Tempo. Router, Prometheus, Grafana and Tempo receive random IPv4
+loopback ports; Catalog, Playback and their dependencies remain private.
+PostgreSQL and Tempo use bounded tmpfs state, so this fixture contains no
+retained Aster data.
+
+The runner verifies Tempo readiness, the immutable Grafana data source and the
+released Catalog SLI source before injecting Catalog, PostgreSQL and Redis
+failures. It follows the exact Router trace into the failing or degraded
+boundary, correlates sanitized Router/Catalog logs, restores each service and
+verifies a real TitleDetail recovery request. PostgreSQL injection blocks one
+known fixture read with the exact `aster-p12-diagnostic-lock` application name
+before pausing the disposable database; cleanup terminates only that holder.
+
+The finalizer runs a project-scoped `down --volumes --remove-orphans` and
+requires zero matching containers, networks and volumes. If the Docker engine
+exits or the parent is force-killed before that finalizer completes, retain the
+printed project UUID. After the same engine is healthy, inspect and remove only
+that exact Compose project; never use a prefix deletion, global prune, retained
+`aster` reset or WSL shutdown as diagnostic cleanup.
+
+The source policy and focused tests are implemented. The command is not yet a
+verified acceptance path: the first real attempt reached a Docker Desktop
+engine failure during image build, before any scenario completed, and exact
+cleanup could not be queried while the engine was unavailable. Current status
+and the exact interrupted project are recorded in
+[failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.
 
