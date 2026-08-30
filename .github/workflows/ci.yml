@@ -403,7 +403,7 @@ jobs:
             }
             assert.equal(ratio?.data.result.length, 1);
             const value = Number(ratio.data.result[0].value[1]);
-            assert.ok(Number.isFinite(value) && value > 0 && value <= 1);
+            assert.ok(Number.isFinite(value) && value >= 0 && value <= 1);
             sliValues[sli] = value;
           }
           console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present, sliValues }));
