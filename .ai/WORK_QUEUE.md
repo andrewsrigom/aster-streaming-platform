@@ -280,8 +280,10 @@ cleanup but exposed the runner's direct Tempo host-port lookup as incompatible
 with the accepted internal-only topology. The current correction publishes no
 Tempo port and routes TraceQL through Grafana's UID-scoped proxy; focused tests
 pass 12/12, platform tests pass 87/87 and the affected gate passes 73/73 with 59
-cached in 62.801 seconds. Protected runtime, correction confirmation and release
-remain.
+cached in 62.801 seconds. Corrected source `0288555`, tree `1ceeb20`, passed
+protected run `33338774702`: all three diagnoses/recoveries, exact cleanup,
+source quality, playable demo and aggregate protection passed. Evidence
+publication, correction confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

@@ -83,8 +83,13 @@ Docker correctly omitted that port from its internal-only networks. The current
 correction removes Tempo from the proof overlay's published ports and sends
 bounded TraceQL reads through Grafana's UID-scoped data-source proxy. Focused
 diagnostic/profile tests pass 12/12, platform tests pass 87/87 and the affected
-gate passes 73/73 with 59 cached in 62.801 seconds. Protected runtime and
-exact-head confirmation remain before merge.
+gate passes 73/73 with 59 cached in 62.801 seconds. Corrected source `0288555`,
+tree `1ceeb20`, passed protected run `33338774702`: local-platform job
+`99330472682` diagnosed and recovered all three failures through the isolated
+Grafana-proxied topology and cleaned the exact project; source-quality job
+`99330472705`, the Docker-only playable demo and aggregate job `99332541219`
+also passed. Bounded evidence publication and corrected exact-head confirmation
+remain before merge.
 
 ## Proposed behavior
 
@@ -211,7 +216,10 @@ recovered SLI. Never touch the retained demo or another Docker project.
   dependency fact. The sixth reaches the causal
   PostgreSQL span and proves its deadline path is `cancelled`/`unset`. The
   seventh passes the finite dependency-outcome path for Catalog, PostgreSQL and
-  Redis plus recovery and exact cleanup.
+  Redis plus recovery and exact cleanup. Corrected source `0288555` repeats that
+  complete acceptance with the escaped-document privacy check, dedicated
+  internal networks, required Grafana data-source health and Grafana-proxied
+  TraceQL; protected run `33338774702` and every required job pass.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

@@ -44,8 +44,12 @@ seconds. Protected run `33338133771` then proved exact cleanup but exposed the
 runner's invalid direct Tempo host-port lookup under the internal-only topology.
 The current correction routes TraceQL through Grafana's UID-scoped proxy;
 focused diagnostics pass 12/12, platform tests pass 87/87 and the affected gate
-passes 73/73 with 59 cached in 62.801 seconds. Corrected protected acceptance
-remains.
+passes 73/73 with 59 cached in 62.801 seconds. Corrected source `0288555`, tree
+`1ceeb20`, passed protected run `33338774702`, including all three diagnoses,
+recoveries, exact cleanup, source quality, the Docker-only playable demo and
+aggregate protection. The bounded runtime transcript is
+[protected-run-33338774702.txt](diagnostics/protected-run-33338774702.txt).
+Corrected exact-head confirmation and release remain.
 
 ## Requirement traceability
 

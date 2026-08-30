@@ -103,9 +103,11 @@ service correctly had no direct host port, while the runner still requested
 one. Cleanup was exact. The current correction keeps Tempo unpublished and
 routes bounded TraceQL reads through Grafana's UID-scoped data-source proxy;
 focused diagnostics pass 12/12, platform tests pass 87/87 and the affected gate
-passes 73/73 with 59 cached in 62.801 seconds. Protected runtime, correction
-confirmation, merge, exact-main CI and Phase12 closeout remain. Phase13 has not
-started.
+passes 73/73 with 59 cached in 62.801 seconds. Corrected source `0288555`, tree
+`1ceeb20`, passed protected run `33338774702`, including all three diagnoses,
+recovery, exact cleanup, source quality, the Docker-only playable demo and
+aggregate protection. Evidence publication, corrected confirmation, merge,
+exact-main CI and Phase12 closeout remain. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

@@ -4,6 +4,33 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-30 — Corrected diagnostic protected acceptance
+
+### Completed
+
+- Published Grafana-proxy source `0288555`, tree `1ceeb20`. Protected run
+  `33338774702` passed every required job. Local-platform job `99330472682`
+  diagnosed and recovered Catalog service loss, PostgreSQL loss with outcome
+  `cancelled`, and Redis degradation with read/write outcome `unavailable`.
+  Exact project `aster-p12-diagnostics-3be252e8-469d-4c05-8846-2154bcbbdca1`
+  cleaned to zero resources.
+- Source-quality job `99330472705`, the Docker-only playable demo,
+  documentation/security, dependency review and aggregate job `99332541219`
+  passed. The runtime required Grafana data-source health and queried Tempo only
+  through Grafana's UID-scoped proxy; Tempo remained unpublished and isolated
+  from product networks.
+
+### Evidence
+
+- `evidence/phase-12/diagnostics/protected-run-33338774702.txt` records the
+  exact source, jobs, traces, outcomes and clean teardown.
+
+### Next action
+
+- Publish bounded runtime evidence, resolve the three corrected review threads,
+  obtain one corrected confirmation, merge PR51, verify exact-main CI and close
+  Phase12.
+
 ## 2026-08-30 — Diagnostic candidate implementation and Docker boundary
 
 ### Completed

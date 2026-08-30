@@ -335,8 +335,14 @@ exact diagnostic project was cleaned to zero. The current correction publishes
 no Tempo port and sends bounded TraceQL reads through Grafana's UID-scoped
 data-source proxy; focused diagnostic/profile tests pass 12/12, platform tests
 pass 87/87 and the affected gate passes 73/73 with 59 cached in 62.801 seconds.
-Protected runtime remains. Architecture, operations, runbooks, licensing and
-evidence are current. The
+Corrected source `0288555`, tree `1ceeb20`, passed protected run `33338774702`.
+Local-platform job `99330472682` diagnosed and recovered Catalog, PostgreSQL and
+Redis failures through the isolated topology and cleaned exact project
+`aster-p12-diagnostics-3be252e8-469d-4c05-8846-2154bcbbdca1`. Source-quality
+job `99330472705`, the Docker-only playable demo and aggregate job
+`99332541219` also passed. Bounded evidence publication and corrected
+confirmation remain. Architecture, operations, runbooks and licensing are
+current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
@@ -595,19 +601,17 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The earlier P12-R10 source has supporting three-scenario Docker evidence and
-exact cleanup. The security/acceptance remediation passes its affected gate and
-still needs protected three-scenario acceptance, correction confirmation,
-merge, exact-main CI and Phase12 closeout. Phases13–14 and hosted deployment
-also remain planned.
+P12-R10 corrected protected acceptance passes at source `0288555`. Evidence
+publication, correction confirmation, merge, exact-main CI and Phase12 closeout
+remain. Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, pass and publish the Grafana-proxy correction, pass its protected
-runtime, publish bounded runtime evidence, confirm the three corrected review
-threads, merge after final exact-head protection, verify exact-main CI, close
-Phase12 and check Phase13 prerequisites. Inspect the exact interrupted local
-project only when that same Docker engine becomes reachable.
+For P12-R10, publish bounded evidence for protected run `33338774702`, confirm
+the three corrected review threads, merge after final exact-head protection,
+verify exact-main CI, close Phase12 and check Phase13 prerequisites. Inspect the
+exact interrupted local project only when that same Docker engine becomes
+reachable.
 
 ## Runtime and recovery
 

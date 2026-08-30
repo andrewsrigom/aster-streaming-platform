@@ -48,7 +48,9 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   current correction removes that port and routes TraceQL through Grafana's
   UID-scoped proxy; focused diagnostics pass 12/12, platform tests pass 87/87
   and its affected gate passes 73/73 with 59 cached in 62.801 seconds. Its
-  protected gate remains.
+  corrected source `0288555`, tree `1ceeb20`, passed protected run
+  `33338774702`; local-platform job `99330472682`, source-quality job
+  `99330472705` and aggregate job `99332541219` all passed.
 
 ## Protected runtime finding
 
@@ -89,11 +91,12 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Publish the affected-gate-verified Grafana-proxy correction and require the
-   protected three-scenario lane plus exact cleanup.
-2. Record that run, resolve/confirm the three review threads, merge after final
-   protection, verify exact-main CI and close Phase12. Inspect/remove only the
-   exact interrupted local project when its original engine is reachable.
+1. Publish the bounded evidence for protected run `33338774702` and require its
+   proportional final-head checks.
+2. Resolve the three evidenced review threads, request one corrected
+   confirmation, merge after final protection, verify exact-main CI and close
+   Phase12. Inspect/remove only the exact interrupted local project when its
+   original engine is reachable.
 
 ## Execution boundary
 

@@ -284,7 +284,36 @@ The current correction removes Tempo from the proof overlay's published ports
 and sends its bounded TraceQL reads through Grafana's documented UID-scoped
 data-source proxy. Focused diagnostic/profile tests pass 12/12, platform tests
 pass 87/87 and the affected gate passes 73/73 with 59 cached in 62.801 seconds;
-corrected protected acceptance remains.
+corrected protected acceptance follows below.
+
+## Eighth protected runtime — corrected acceptance
+
+Grafana-proxy source `0288555badad27ec1334e8640dd9984eff021b25`, tree
+`1ceeb203cdeea39460ea69d20feba6f9fcb5de8e`, ran in protected workflow
+`33338774702`. Local-platform job `99330472682` created only project
+`aster-p12-diagnostics-3be252e8-469d-4c05-8846-2154bcbbdca1` and passed the
+complete corrected exercise:
+
+- Catalog trace `de999a112edfa3c2c5b34ca46a559e1b` diagnosed
+  `catalog_service_unavailable`, measured one population/zero good and
+  recovered;
+- PostgreSQL trace `6d8f1878744c36d85a2b1aa666768990` diagnosed
+  `catalog_postgresql_unavailable`, selected causal outcome `cancelled`,
+  measured one population/zero good and recovered;
+- Redis trace `eb50206531a8a8697b3168faf4c5ac92` diagnosed
+  `catalog_redis_degraded`, selected unavailable read/write outcomes, measured
+  one population/one good with latency qualification and recovered.
+
+The runner required Grafana's Tempo data-source health result to be `OK`, sent
+bounded TraceQL requests only through Grafana's UID-scoped proxy and found no
+raw or JSON-escaped GraphQL document canary. Tempo exposed no host port and
+joined only the dedicated internal ingest/query networks. Final cleanup
+reported zero scoped resources. Source-quality job `99330472705`, the
+Docker-only playable demo and aggregate job `99332541219` also passed. The
+bounded transcript is
+[protected-run-33338774702.txt](diagnostics/protected-run-33338774702.txt).
+This is the final corrected protected runtime evidence for P12-R10; exact-head
+confirmation and release remain.
 
 ## Remaining release work
 
@@ -292,10 +321,11 @@ Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the passing Grafana-proxy candidate, then pass one complete protected
-   run with the corrected networks, privacy assertion and Grafana health check;
-3. record that run and confirm/resolve the three discussions above;
-4. pass protected CI at the final evidence head, squash merge PR51 and verify
+2. publish this bounded runtime evidence and pass proportional protected CI at
+   the final evidence head;
+3. confirm/resolve the three discussions above and obtain one corrected
+   exact-head confirmation;
+4. squash merge PR51 and verify
    exact-main CI;
 5. record the released source/tree and close Phase 12.
 
