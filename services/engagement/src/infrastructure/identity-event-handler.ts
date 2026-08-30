@@ -9,11 +9,17 @@ import { createPostgresIdentityEvents } from "./postgres-identity-events.js";
 
 const MAXIMUM_EVENT_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
 
+function eventAgeMs(occurredAtSeconds: number, nowMs: number): number | undefined {
+  const ageMs = nowMs - occurredAtSeconds * 1_000;
+  return Number.isFinite(ageMs) && ageMs >= 0 && ageMs <= MAXIMUM_EVENT_AGE_MS ? ageMs : undefined;
+}
+
 export function createIdentityEventHandler(
   database: AsterPostgresAdapter,
   credential: string,
   logger: Pick<AsterLogger, "info">,
   telemetry: Pick<AsterTelemetry, "startDependencyOperation" | "recordEventDelivery">,
+  clock: () => number = Date.now,
 ): IdentityDeliveryHandler {
   const inspect = createIdentityEventInspector(credential);
   const consumer = createIdentityEventConsumer({
@@ -64,19 +70,16 @@ export function createIdentityEventHandler(
         }
         const deliveryOutcome =
           outcome === "retry" ? "unavailable" : outcome === "quarantined" ? "rejected" : "success";
+        const ageMs =
+          inspection.status === "valid"
+            ? eventAgeMs(inspection.fact.occurredAt, clock())
+            : undefined;
         try {
           telemetry.recordEventDelivery?.({
             owner: "identity",
             stage: "consume",
             outcome: deliveryOutcome,
-            ...(inspection.status === "valid"
-              ? {
-                  ageMs: Math.min(
-                    MAXIMUM_EVENT_AGE_MS,
-                    Math.max(0, Date.now() - inspection.fact.occurredAt * 1_000),
-                  ),
-                }
-              : {}),
+            ...(ageMs === undefined ? {} : { ageMs }),
           });
         } catch {
           /* Optional telemetry cannot change message handling. */

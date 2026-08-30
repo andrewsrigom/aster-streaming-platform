@@ -32,6 +32,7 @@ try {
       localEngagementDatabase(process.env, "runtime"),
       "consumer",
     ),
+    poolRole: "consumer",
     maxConnections: 1,
     connectionTimeoutMs: 500,
     operationTimeoutMs: 1000,

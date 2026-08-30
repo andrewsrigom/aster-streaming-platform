@@ -125,6 +125,20 @@ test("handler acknowledges applied current-owner projections with bounded identi
   assert.doesNotMatch(JSON.stringify(f.logs), /Signal|publicationId|rightsRevision/u);
 });
 
+test("handler keeps delivery outcomes but omits future or excessive event age", async () => {
+  const f = fixture();
+  for (const occurredAt of [
+    new Date((now + 1) * 1_000).toISOString(),
+    new Date((now - 8 * 24 * 60 * 60) * 1_000).toISOString(),
+  ]) {
+    await f.handler(f.record({ ...event, occurredAt }));
+  }
+  assert.deepEqual(f.deliveries, [
+    { owner: "catalog", stage: "consume", outcome: "success" },
+    { owner: "catalog", stage: "consume", outcome: "success" },
+  ]);
+});
+
 test("handler acknowledges durable poison quarantine but keeps unavailable outcomes uncommitted", async () => {
   const poison = fixture();
   await poison.handler(poison.record({ invalid: true }));

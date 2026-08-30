@@ -99,6 +99,7 @@ try {
   database = createAsterPostgresAdapter({
     connectionString,
     telemetry,
+    poolRole: "operator",
     maxConnections: 1,
     connectionTimeoutMs: 1000,
     operationTimeoutMs: 3000,

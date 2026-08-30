@@ -13,6 +13,11 @@ import { inspectCatalogEvent } from "./catalog-event-wire.js";
 
 const MAXIMUM_EVENT_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
 
+function eventAgeMs(occurredAtSeconds: number, nowSeconds: number): number | undefined {
+  const ageMs = (nowSeconds - occurredAtSeconds) * 1_000;
+  return Number.isFinite(ageMs) && ageMs >= 0 && ageMs <= MAXIMUM_EVENT_AGE_MS ? ageMs : undefined;
+}
+
 export function createCatalogEventHandler(
   options: Readonly<{
     source: CatalogSnapshotSource;
@@ -89,19 +94,16 @@ export function createCatalogEventHandler(
         }
         const deliveryOutcome =
           outcome === "retry" ? "unavailable" : outcome === "quarantined" ? "rejected" : "success";
+        const ageMs =
+          inspection.status === "valid"
+            ? eventAgeMs(inspection.fact.occurredAt, options.now())
+            : undefined;
         try {
           options.telemetry.recordEventDelivery?.({
             owner: "catalog",
             stage: "consume",
             outcome: deliveryOutcome,
-            ...(inspection.status === "valid"
-              ? {
-                  ageMs: Math.min(
-                    MAXIMUM_EVENT_AGE_MS,
-                    Math.max(0, (options.now() - inspection.fact.occurredAt) * 1_000),
-                  ),
-                }
-              : {}),
+            ...(ageMs === undefined ? {} : { ageMs }),
           });
         } catch {
           /* Optional telemetry cannot decide broker acknowledgement. */

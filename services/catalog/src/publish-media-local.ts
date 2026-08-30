@@ -81,6 +81,7 @@ try {
   database = createAsterPostgresAdapter({
     connectionString: localCatalogDatabase(process.env, "attester"),
     telemetry,
+    poolRole: "operator",
     maxConnections: 1,
     connectionTimeoutMs: 1000,
     operationTimeoutMs: 3000,

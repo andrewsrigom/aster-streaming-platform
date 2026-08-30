@@ -35,8 +35,9 @@ interface RuntimeOptions {
 
 const MAXIMUM_EVENT_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
 
-function eventAgeMs(occurredAt: string): number {
-  return Math.min(MAXIMUM_EVENT_AGE_MS, Math.max(0, Date.now() - Date.parse(occurredAt)));
+function eventAgeMs(occurredAt: string, nowMs: number): number | undefined {
+  const ageMs = nowMs - Date.parse(occurredAt);
+  return Number.isFinite(ageMs) && ageMs >= 0 && ageMs <= MAXIMUM_EVENT_AGE_MS ? ageMs : undefined;
 }
 
 function publicationOutcome(status: string): AsterObservationOutcome {
@@ -63,6 +64,7 @@ interface RuntimeFactories {
   readonly credential: typeof loadLocalIdentityEventCredential;
   readonly delay: (milliseconds: number, signal: AbortSignal) => Promise<void>;
   readonly random: () => number;
+  readonly now: () => number;
 }
 
 export function localEventDeliveryEnabled(
@@ -147,6 +149,7 @@ export async function createLocalEventDelivery(
       await delay(milliseconds, undefined, { signal });
     },
     random: Math.random,
+    now: Date.now,
     ...overrides,
   };
   const credential = options.owner === "catalog" ? undefined : await factories.credential();
@@ -209,12 +212,13 @@ export async function createLocalEventDelivery(
           },
           signal,
         );
+        const ageMs = eventAgeMs(event.occurredAt, factories.now());
         try {
           options.telemetry.recordEventDelivery?.({
             owner: options.owner,
             stage: "publish",
             outcome: publicationOutcome(result.status),
-            ageMs: eventAgeMs(event.occurredAt),
+            ...(ageMs === undefined ? {} : { ageMs }),
           });
         } catch {
           /* Optional telemetry cannot decide outbox acknowledgement. */

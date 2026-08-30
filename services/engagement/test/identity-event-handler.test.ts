@@ -10,6 +10,7 @@ import type {
 } from "@aster/telemetry";
 import { createIdentityEventHandler } from "../src/infrastructure/identity-event-handler.js";
 import {
+  deletionFact,
   eventCredential,
   identityEnvelope,
   signedIdentityRecord,
@@ -59,7 +60,14 @@ test("links valid identity consumption to the producing trace context", async ()
   };
   const traceparent = `00-${"a".repeat(32)}-${"b".repeat(16)}-01`;
   const record = signedIdentityRecord({ ...identityEnvelope(), trace: { traceparent } });
-  const handler = createIdentityEventHandler(database, eventCredential, logger, telemetry);
+  const nowMs = deletionFact.occurredAt * 1_000;
+  const handler = createIdentityEventHandler(
+    database,
+    eventCredential,
+    logger,
+    telemetry,
+    () => nowMs,
+  );
 
   await handler({
     key: record.key,
@@ -75,10 +83,35 @@ test("links valid identity consumption to the producing trace context", async ()
   ]);
   assert.deepEqual(completed, [{ outcome: "success" }]);
   assert.equal(deliveries.length, 1);
-  assert.deepEqual(
-    { ...(deliveries[0] as Record<string, unknown>), ageMs: undefined },
-    { owner: "identity", stage: "consume", outcome: "success", ageMs: undefined },
-  );
+  assert.deepEqual(deliveries[0], {
+    owner: "identity",
+    stage: "consume",
+    outcome: "success",
+    ageMs: 0,
+  });
   assert.equal(entries.length, 1);
   assert.doesNotMatch(JSON.stringify(entries), /traceparent|accountId|profileId/u);
+
+  for (const occurredAt of [
+    new Date(nowMs + 1_000).toISOString(),
+    new Date(nowMs - 8 * 24 * 60 * 60 * 1_000).toISOString(),
+  ]) {
+    const bounded = signedIdentityRecord({
+      ...identityEnvelope(),
+      occurredAt,
+      trace: { traceparent },
+    });
+    await handler({
+      key: bounded.key,
+      value: bounded.value,
+      headers: bounded.headers,
+      partition: bounded.partition,
+      offset: bounded.offset,
+      signal: new AbortController().signal,
+    });
+  }
+  assert.deepEqual(deliveries.slice(1), [
+    { owner: "identity", stage: "consume", outcome: "success" },
+    { owner: "identity", stage: "consume", outcome: "success" },
+  ]);
 });
