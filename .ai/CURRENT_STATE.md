@@ -218,7 +218,8 @@ saturation. A second adapter delivers the same synthetic event exactly twice.
 Production activation, request-controlled selection, remote binding and
 production-source imports are structurally refused. Focused tests pass10/10;
 the corrected affected candidate passes11/11 tasks in2m14.356s after removing
-unused public surface rejected by the first gate. Review and publication remain.
+unused public surface rejected by the first gate. Exact source `53bb71b` has
+tree `750e003`; review and publication remain.
 
 ## Historical Phase 09 corrections
 

@@ -23,6 +23,9 @@ Append new entries at the top. Keep entries factual and concise.
 - Focused tests pass10/10. The first candidate gate rejected unnecessary public
   exports; their removal preserved behavior. The corrected affected gate passes
   11/11 tasks, two cached, in2m14.356s.
+- Exact source `53bb71b` has tree `750e003`. Its staged secret and formatting
+  hooks passed after the commit command was repeated with the documented pinned
+  Node.js path; the first path-only attempt wrote no commit.
 
 ### Evidence
 

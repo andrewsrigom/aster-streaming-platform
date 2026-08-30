@@ -13,12 +13,13 @@ P11-R08 is active on `feat/p11-failure-injection`, based exactly on that main
 merge. Tools-only loopback HTTP fault injection and synthetic duplicate delivery
 are implemented. Focused tests pass10/10. The corrected affected gate passes
 11/11 tasks in2m14.356s after the first gate rejected unused public exports.
+Exact source `53bb71b0c4579d55e2c446a290577f7e8df8e048` has tree
+`750e0032d29163fe0a38436129e81c0e39c40ef4`.
 
 ## Exact next actions
 
-1. Commit the P11-R08 implementation, then record the exact source hash and
-   candidate evidence in one documentation checkpoint.
-2. Push once, open one PR and collect one complete review.
+1. Commit the exact-source evidence checkpoint, push once and open one PR.
+2. Collect one complete review.
 3. Batch only blocking remediation, request one confirmation and require
    protected exact-head CI.
 4. Squash merge without bypass, verify exact-main CI, then activate the Phase11

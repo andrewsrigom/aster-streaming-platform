@@ -12,7 +12,8 @@ and release pending.
 - Host: WSL Ubuntu-20.04 using ephemeral IPv4 loopback sockets
 - Docker, PostgreSQL, Redis, broker, object storage and retained media: not used
   or changed by this tools-only experiment
-- Exact source commit: pending coherent implementation commit
+- Exact source commit: `53bb71b0c4579d55e2c446a290577f7e8df8e048`
+- Exact source tree: `750e0032d29163fe0a38436129e81c0e39c40ef4`
 - Complete affected gate: 11/11 tasks, 2m14.356s
 
 ## Implemented boundary
@@ -88,6 +89,10 @@ changing behavior. `pnpm check:changed` then passed all 11 affected root tasks
 in 2m14.356s; two tasks were cached. TypeScript, full workspace ESLint,
 formatting, unused-code, architecture, platform tooling, documentation, AI
 memory, community, secret, CI, staged-file and commit-policy checks all passed.
+The exact source commit then passed the staged secret and formatting hooks. The
+first commit invocation had no pinned Node.js on the hook path and wrote no
+commit; repeating it with the documented pinned path created the exact source
+above without changing the index.
 
 ## Interpretation and limits
 
