@@ -94,6 +94,14 @@ event-loop/V8 instrumentation and local browser QoE are reused. Browser remote
 collection remains explicitly deferred until its P12-R11 sampling, privacy,
 transport and retention policy; no ingestion service is implied.
 
+Rebased source `d8a1d45`, tree `bb124de`, preserves the corrected linked
+Discovery consumer while adding the finite metrics. Telemetry19/19,
+PostgreSQL30/30, event delivery23/23, combined product/consumer5/5 and the
+affected gate73/73 with44 cached in58.801 seconds pass. Evidence now records the
+signal catalog, backend outcome mappings and maximum authored series counts.
+The branch remains unpublished and cannot precede PR45; it must rebase onto the
+released exact main and repeat the affected gate before publication.
+
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
 `33293548409` predates the correction and run `33294397540` exposed the removed

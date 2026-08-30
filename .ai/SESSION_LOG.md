@@ -158,6 +158,14 @@ Append new entries at the top. Keep entries factual and concise.
   exact `9a058ee`. Its plan covers finite Node memory, PostgreSQL pool, event
   age/delivery and backend product-result metrics; browser collection waits for
   the explicit P12-R11 policy.
+- Resolved the rebase overlap by retaining both the linked Discovery consumer
+  scope and the finite delivery metric. Rebased source `d8a1d45`, tree
+  `bb124de`, passes Discovery3/3 and the complete affected gate73/73 with44
+  cached in58.801 seconds.
+- Focused golden-signal suites pass: telemetry19/19, PostgreSQL30/30, event
+  delivery23/23 and combined backend product/consumer5/5. Added exact signal,
+  backend-product and cardinality evidence without claiming browser field QoE,
+  SLOs or capacity.
 
 ### Evidence
 
@@ -169,7 +177,8 @@ Append new entries at the top. Keep entries factual and concise.
 - `evidence/phase-11/game-days.md`, `bulkhead-saturation.txt` and
   `retry-amplification.txt` record the P11-R10 candidate.
 - `evidence/phase-12/README.md` indexes the exact trace, continuity, exporter
-  failure and cardinality/privacy implementation artifacts.
+  failure, golden-signal, backend product and cardinality/privacy implementation
+  artifacts.
 
 ### Next action
 

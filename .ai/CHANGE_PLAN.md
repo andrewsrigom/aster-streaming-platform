@@ -28,6 +28,12 @@ pass. Exact-head protected run `33300561121`, confirmation and merge are the
 sole predecessor conditions. This branch is the one allowed dependent, rebased
 on that exact head, and must not publish or merge first.
 
+Source `d8a1d45`, tree `bb124de`, now implements the contract below. Its
+telemetry19/19, PostgreSQL30/30, event delivery23/23, focused product/consumer5/5
+and affected73/73 gates pass. Evidence and architecture documentation are
+current locally. Publication, protected real-Collector CI and review remain
+ordered after the predecessor's exact-main release.
+
 The shared telemetry package already exports HTTP request duration/active work,
 dependency duration/active/outcomes, CPU time/utilization, RSS, uptime, Node
 event-loop metrics, V8 heap metrics, cache decisions, operation admission and
@@ -138,8 +144,8 @@ only gates affected by the changed source.
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
+- [x] `.ai/` state updated
+- [x] Remaining risks recorded

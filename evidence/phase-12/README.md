@@ -19,12 +19,18 @@ verification or release.
 | --- | --- |
 | P12-R01 | [Trace contract](trace-contract.txt) and [continuity](trace-continuity.txt) cover server, owner HTTP, database/Redis/broker/object-storage adapters, async events and the media-worker coordinator |
 | P12-R02 | [Continuity](trace-continuity.txt) proves active request/dependency context reaches structured logs |
+| P12-R03 | [Golden signals](golden-signals.txt) and [cardinality budget](metric-cardinality.txt) cover Node memory, pools, event delivery and current saturation sources |
+| P12-R04 | [Backend product signals](product-signals.txt) cover playback-session, progress, cache and media outcomes while preserving the P12-R11 browser boundary |
 | P12-R08 | [Cardinality and privacy review](cardinality-review.txt) records finite vocabularies, limits and sensitive-data canaries |
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 
-Later Phase 12 requirements remain planned: product/golden-signal completion,
-formal SLIs/SLOs, dashboards, alerts, three diagnostic exercises, sampling and
-retention, and the operational overview.
+P12-R03 and the backend portion of P12-R04 are implemented locally on the sole
+unpublished dependent at source `d8a1d45`. The rebased affected gate passes
+73/73 tasks with 44 cached in 58.801 seconds. These signals remain unverified
+until the predecessor releases, this branch rebases onto exact main, and its own
+review/protected CI completes. Formal SLIs/SLOs, dashboards, alerts, three
+diagnostic exercises, browser sampling/retention and the operational overview
+remain planned.
 
 ## Current limitations
 
@@ -41,3 +47,6 @@ retention, and the operational overview.
   Router boundary, but it does not replace the pending repository-span
   Collector repeat after rebase.
 - No browser source changed. Browser sampling and retention remain P12-R11.
+- The dependent branch is not published and cannot merge before PR45. Its
+  current focused process-local/loopback evidence does not replace its future
+  protected real-Collector run.

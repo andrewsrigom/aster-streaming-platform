@@ -1,0 +1,47 @@
+# P12-R04 backend product signals
+
+Status: implemented locally on source `d8a1d4598df7c3e023bb7ffc47b3d3f5b580f4e1`;
+not yet verified or released.
+
+## Implemented contract
+
+Two finite instruments record duration and outcome:
+
+- `aster.product.operation.duration` in seconds;
+- `aster.product.operation.outcomes` as a counter.
+
+The only operation labels are `playback_session`, `progress_write`,
+`media_processing` and `media_publication`. The only result labels are
+`completed`, `stale`, `conflict`, `not_playable`, `rejected`, `cancelled`,
+`unavailable`, `indeterminate` and `failed`.
+
+Playback session creation and progress acceptance are wrapped at their existing
+application-composition boundary. Every finite owner result maps to one metric
+outcome, while an exception maps to `failed` and is rethrown unchanged. Media
+processing observes claim, retained-candidate and completion outcomes around the
+existing isolated worker span. The one-shot publication CLI configures the
+reviewed OTLP exporter, records its final result and performs a bounded flush
+without changing publication or recovery status.
+
+Existing cache duration/outcome/payload instruments remain the cache-
+effectiveness source; this slice does not duplicate them. Existing local player
+state still measures first frame and rebuffering for the demo, but remote browser
+collection remains explicitly deferred until P12-R11 owns sampling, privacy,
+transport and retention. Therefore this candidate makes no field-QoE claim.
+
+## Verification
+
+- Playback and Engagement product wrappers plus Discovery consumer: 5/5 focused
+  tests pass. Recorder exceptions preserve the original owner result.
+- Catalog's complete package suite passes 246/246 inside the affected gate,
+  including media processing completion/unavailability metric expectations.
+- Telemetry's golden-signal contract test accepts only the finite product
+  vocabulary, rejects non-finite duration and emits no identifier or URL label.
+- Complete affected gate: 73/73 tasks pass, 44 cached, in 58.801 seconds.
+
+## Limits
+
+The metrics describe backend product decisions, not viewer-perceived playback
+quality. No account, profile, title, request, trace, publication, media object,
+GraphQL document or signed URL becomes a metric label. Dashboard queries, SLI
+populations, SLOs and alerts remain P12-R05 through P12-R07/R12.

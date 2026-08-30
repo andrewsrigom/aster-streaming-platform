@@ -16,7 +16,11 @@ must not be restored over this branch.
 P12-R03/R04 backend golden signals are active locally on the sole permitted
 dependent `feat/p12-golden-product-signals`, rebased on exact `9a058ee`. Its
 change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
-product-result metrics without browser remote collection.
+product-result metrics without browser remote collection. Source `d8a1d45`,
+tree `bb124de`, passes telemetry19/19, PostgreSQL30/30, event delivery23/23,
+focused product/consumer5/5 and the affected gate73/73 with44 cached in58.801
+seconds. Evidence and architecture documentation are updated but not committed
+or published yet.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -52,8 +56,9 @@ Phase11.
 1. Wait for PR45 protected run `33300561121`, then request one blocker-focused
    confirmation review; treat only defined blockers.
 2. Squash-merge PR45 without bypass and prove exact main.
-3. Rebase the dependent onto exact main, repeat its affected gate, then finish
-   and publish P12-R03/R04 backend golden signals.
+3. Commit the dependent evidence checkpoint locally; after PR45 exact main,
+   rebase onto it, repeat the affected gate, then publish P12-R03/R04 backend
+   golden signals.
 4. Complete the Phase12 browser policy, SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 

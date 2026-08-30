@@ -1,0 +1,65 @@
+# P12-R03 platform golden signals
+
+Status: implemented locally on the unpublished dependent branch; not yet
+verified or released.
+
+## Exact candidate
+
+- Predecessor evidence head: `e5f93e14785ce9bf43327bb5fd9238e53fcf8656`
+- Source commit: `d8a1d4598df7c3e023bb7ffc47b3d3f5b580f4e1`
+- Branch: `feat/p12-golden-product-signals`
+- Runtime: Node.js 24.19.0 and pnpm 11.24.0
+- Environment: WSL Ubuntu-20.04, process-local OpenTelemetry reader
+- Gate environment: `CI=true`, `NODE_OPTIONS=--max-old-space-size=1536`,
+  `TURBO_CONCURRENCY=4`
+
+The branch was rebased onto the corrected P12-R01 evidence head. The overlapping
+Discovery consumer preserves its producer trace link and active observation
+while recording the new delivery metric.
+
+## Implemented sources
+
+| Operational question | Signal |
+| --- | --- |
+| Are requests slow, failing or saturated? | existing HTTP duration, outcomes and active requests |
+| Is a dependency slow, failing or saturated? | existing dependency duration, outcomes and active operations |
+| Is Node runtime pressure rising? | process CPU time/utilization, RSS, uptime, official event-loop/V8/runtime instruments, plus heap used/total, external and array-buffer bytes |
+| Is a PostgreSQL pool saturated? | latest maximum, total, idle, reserved and vendor-waiting counts by finite pool role and lifecycle state |
+| Are events delayed or failing? | publish/consume outcome and validated age for Identity, Catalog and Engagement owners |
+| Is media-worker work active? | existing `media_worker/process` dependency-active instrument around the isolated coordinator |
+
+The implementation does not invent a worker queue that the current one-at-a-time
+coordinator does not own. Event age is capped at seven days and product duration
+at 300 seconds. PostgreSQL snapshots are recorded at creation, acquisition/
+release and close transitions; observation failure cannot change connection or
+transaction behavior.
+
+## Verification
+
+- `pnpm --filter @aster/telemetry test`: 19/19 pass, including runtime memory,
+  pool, event, product, invalid-input, cardinality-overflow and bounded OTLP
+  exporter coverage.
+- `pnpm --filter @aster/postgres test`: 30/30 pass, including finite pool
+  snapshots, malformed vendor counters and telemetry failure isolation.
+- `pnpm --filter @aster/event-delivery test`: 23/23 pass, including finite relay
+  and consumer roles and publication metrics.
+- Discovery linked-consumer tests: 3/3 pass; owner read, projection, checkpoint,
+  log and delivery metric execute in the active consumer scope.
+- `pnpm check:changed`: 73/73 tasks pass, 44 cached, in 58.801 seconds after the
+  required rebase onto the corrected predecessor.
+- `git diff --check`: pass.
+
+The focused telemetry suite uses a real bounded loopback OTLP/HTTP receiver for
+success and stalled-export behavior. The disposable Docker Collector scenario
+was not repeated locally because the documented host probe still has no Linux
+engine; no resource was created by that earlier failed probe. Protected CI is
+the candidate's remaining real-Collector boundary after publication.
+
+## Interpretation and limits
+
+These signals answer availability, latency and saturation questions for current
+Node processes, dependencies, pools, event delivery and the media coordinator.
+They are diagnostic only: PostgreSQL remains authoritative, metrics do not
+change acknowledgement or retries, and no shared-host result is a capacity or
+SLO claim. Broker in-flight state remains represented by dependency-active and
+delivery outcomes; a separate arbitrary queue label was deliberately not added.

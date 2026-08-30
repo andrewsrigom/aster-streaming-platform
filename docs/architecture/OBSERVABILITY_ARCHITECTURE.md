@@ -140,9 +140,15 @@ No Collector, scrape endpoint, log backend, trace SDK, retention policy, dashboa
 | `aster.cache.payload.size` | `By` | cache family, finite outcome |
 | `aster.operation.limit.duration` | `s` | limiter kind, fixed operation, finite outcome, optional queue bucket |
 | `aster.operation.limit.outcomes` | `{operation}` | limiter kind, fixed operation, finite outcome, optional queue bucket |
+| `aster.postgresql.pool.connections` | `{connection}` | finite pool role, lifecycle state, connection state |
+| `aster.event.delivery.age` | `s` | finite owner, delivery stage, outcome |
+| `aster.event.delivery.outcomes` | `{event}` | finite owner, delivery stage, outcome |
+| `aster.product.operation.duration` | `s` | finite backend product operation, outcome |
+| `aster.product.operation.outcomes` | `{operation}` | finite backend product operation, outcome |
 | `process.cpu.time` | `s` | CPU mode `user` or `system` |
 | `process.cpu.utilization` | `1` | CPU mode `user` or `system` |
 | `process.memory.usage` | `By` | none |
+| `aster.nodejs.memory.usage` | `By` | heap used/total, external or array buffers |
 | `process.uptime` | `s` | none |
 
 HTTP duration uses the OpenTelemetry recommended server boundaries from 5 milliseconds through 10 seconds. Dependency duration uses explicit boundaries from 1 millisecond through 10 seconds. The selected metric reader applies a configurable ceiling from 16 through 512 series per instrument; the default is 128 and the SDK's overflow series absorbs observations beyond it.
@@ -199,6 +205,33 @@ repository health wrappers use finite deadlines. Export health is diagnostic;
 it does not affect readiness or product outcomes. Exact implementation evidence
 and the protected-verification boundary are indexed in
 [`evidence/phase-12/`](../../evidence/phase-12/README.md).
+
+### Implemented Phase 12 golden-signal candidate
+
+P12-R03 and the backend portion of P12-R04 are implemented locally on the sole
+unpublished dependent. Node runtime observation now separates heap used/total,
+external and array-buffer bytes while retaining official event-loop, V8, CPU,
+RSS and uptime instruments. PostgreSQL records maximum, total, idle, reserved
+and waiting snapshots using only five pool roles and three lifecycle states.
+Event relays and consumers record finite outcome and validated age; existing
+dependency-active measurements represent broker and media-worker work without
+inventing an unowned queue.
+
+Playback session creation, progress acceptance, media processing and media
+publication map their existing finite results to product duration/outcome
+metrics. Telemetry failure is isolated from the already-decided result. Existing
+cache instruments remain the effectiveness source. Browser first-frame and
+rebuffer observations are not remotely collected until P12-R11 defines their
+sampling, privacy, transport and retention policy.
+
+The default 128-series per-instrument ceiling remains authoritative. The largest
+new authored family has at most 75 PostgreSQL combinations; event and product
+families each have at most 36. Input uses exact own data properties and bounded
+numbers. Identifiers, URLs, SQL, GraphQL documents, credentials and errors are
+not metric attributes. Current implementation and limits are recorded in the
+[golden-signal evidence](../../evidence/phase-12/golden-signals.txt),
+[product evidence](../../evidence/phase-12/product-signals.txt) and
+[cardinality budget](../../evidence/phase-12/metric-cardinality.txt).
 
 ## SLIs
 
