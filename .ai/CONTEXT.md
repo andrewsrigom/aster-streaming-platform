@@ -71,8 +71,10 @@ and affected gate pass. PR50 run `33322558877` exposed a pre-first-evaluation
 health timing defect; the bounded one-interval acceptance poll is corrected and
 proved locally. Initial review then required observability-only diffs to select
 the platform/promtool job; classifier and regression are corrected. The final
-corrected candidate gate passes; publication, protected acceptance/review/release remain.
-Diagnostic exercises follow.
+corrected candidate gate and exact-head protected run `33323508793` pass.
+Discussion `3889911170` is resolved with that evidence, and the single
+confirmation reports no major issue. Evidence closeout, merge, exact-main CI
+and release remain. Diagnostic exercises follow.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

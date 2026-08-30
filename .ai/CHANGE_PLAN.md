@@ -106,12 +106,13 @@ delivery limits truthfully.
 - Commands: focused Node tests, exact `promtool check rules`, exact `promtool test rules`, affected gate and protected packaged-Prometheus acceptance.
 - Raw artifact path: `evidence/phase-12/slo-burn-rate-alerts.txt` and checked-in rule fixtures.
 - Core feature source: `9fbc2d1`, tree `580f7ab`; evidence head `88a9d02` exposed
-  only pre-first-evaluation CI timing, whose bounded correction is pending its
-  protected acceptance. Initial review discussion
-  `3889911170` also requires observability-only diffs to select platform/promtool;
-  its classifier regression is corrected in the same batch. The final corrected
-  affected gate passes 15/15 tasks with 11 cached in 3.476 seconds, including
-  platform 75/75 and CI policy 34/34.
+  only pre-first-evaluation CI timing. Exact correction `8185a81`, tree
+  `51dc011`, adds the bounded evaluation wait and resolves initial review
+  discussion `3889911170` by routing observability rules/contracts/verifiers
+  through platform/promtool. The final affected gate passes 15/15 tasks with 11
+  cached in 3.476 seconds, including platform 75/75 and CI policy 34/34.
+  Protected run `33323508793` passes every required job at that source; the
+  single confirmation reports no major issue.
 - Acceptance result: all seven alert instances fire only for their paired burn windows, recover through the short window and navigate to the bounded runbook/dashboard.
 - Iteration gate: SLO contract tests plus exact Prometheus rule/test commands.
 - Candidate gate: `pnpm check:changed`, documentation/AI checks, secret scan and `git diff --check`.
@@ -132,7 +133,7 @@ owner-service rollback is required.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
+- [x] Requirements satisfied
 - [x] Tests pass
 - [x] Evidence captured
 - [x] Documentation current

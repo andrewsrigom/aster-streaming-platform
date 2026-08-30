@@ -50,7 +50,15 @@ Append new entries at the top. Keep entries factual and concise.
   classification/CI policy tests pass34/34. The final corrected affected gate
   passes15/15 tasks with11 cached in3.476 seconds, including platform75/75,
   documentation, memory, formatting, lint, typecheck and a zero-finding secret
-  scan. The batched correction is ready for one publication.
+  scan.
+- Exact correction `8185a81`, tree `51dc011`, passed protected run
+  `33323508793`: all six required jobs succeeded, including exact Prometheus
+  rules/tests, packaged35-rule/seven-alert health, owner integrations, playable
+  demo and scoped cleanup. Discussion `3889911170` was answered by
+  `3889992599` with exact evidence and resolved.
+- The single exact-head confirmation completed at `8185a81`; comment
+  `5470101517` reports no major issue. Evidence closeout, squash merge and
+  exact-main CI remain.
 - P12-R05/R06 final head `72d5656`, tree `2374279`, passed protected run
   `33313090638` attempt2 and clean confirmation. PR48 squash main `a99d3d5`
   retained the reviewed tree; exact-main run `33314309449` passed every job.

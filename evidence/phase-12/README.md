@@ -18,7 +18,9 @@ confirmation. PR48 squash main `a99d3d5` retained that tree; exact-main run
 `33314309449` passed every job. P12-R12 evidence head `ba3de93`, tree `73ee596`,
 passed protected run `33318672382` and clean confirmation. PR49 squash main
 `c297d32` retained the reviewed tree; valid exact-main run `33319514232` passed
-every required job. P12-R07 burn-rate alerts are active from that exact main.
+every required job. P12-R07 exact correction `8185a81`, tree `51dc011`, passed
+protected run `33323508793`, resolved its initial review and passed the single
+exact-head confirmation. Evidence closeout and release remain.
 
 ## Requirement traceability
 
@@ -83,8 +85,9 @@ counter objective idle;27/27 focused checks and the corrected60/60 affected gate
 with50 cached in47.383 seconds pass. Final head `72d5656`, tree `2374279`, passed
 protected run `33313090638` attempt2 and clean confirmation. PR48 squash main
 `a99d3d5` and exact-main run `33314309449` release the SLI/SLO work. Burn-rate
-alerts are an implemented local candidate at source `9fbc2d1`, tree `580f7ab`,
-with protected acceptance pending; three diagnostic exercises remain planned.
+alerts have verified source `8185a81`, tree `51dc011`, protected run
+`33323508793`, resolved initial review and clean exact-head confirmation;
+evidence closeout/release and three diagnostic exercises remain planned.
 The operational overview is released through its protected and exact-main
 live-container acceptance.
 
@@ -106,6 +109,6 @@ live-container acceptance.
   measurement cannot establish field availability or latency distributions.
 - Browser telemetry is released, but still has no remote transport or
   field-retention claim.
-- SLI/SLO synthetic ratios prove query behavior only. One-hour local retention
-  cannot prove a 28/30-day objective, and no historical compliance result is
+- SLI/SLO synthetic ratios prove query behavior only. At-most-three-day local
+  retention cannot prove a 28/30-day objective, and no historical compliance result is
   claimed.

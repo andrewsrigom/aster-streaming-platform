@@ -58,8 +58,10 @@ valid exact-main run `33319514232` passed every required job. P12-R07 burn-rate
 alerts are active from that exact main. Its local candidate now implements the
 finite policy, complete-window guards, seven packaged alert instances and linked
 runbook. Exact Prometheus tests, the isolated packaged proof and the affected
-15/15 gate pass; publication, protected acceptance and review remain. Full
-Phase00–14 goal stays active.
+15/15 gate pass. Exact correction `8185a81`, tree `51dc011`, passed protected
+run `33323508793`, resolved the initial review and received a clean exact-head
+confirmation. Evidence closeout, merge and exact-main CI remain. Full Phase00–14
+goal stays active.
 
 ## Verified
 
@@ -265,7 +267,14 @@ that job, with dedicated path regression; combined classification/CI policy
 tests pass34/34. The final corrected affected gate passes15/15 with11 cached in
 3.476 seconds, including platform75/75, documentation, memory, formatting,
 lint, typecheck and a zero-finding secret scan. Publication, protected
-acceptance and review remain.
+acceptance and review were still pending at that checkpoint. Exact correction
+`8185a81`, tree `51dc011`, then
+passed every required protected job in run `33323508793`, including exact
+Prometheus rule tests, the 35-rule/seven-alert packaged assertion, all owner
+integrations and the playable demo. Discussion `3889911170` is answered with
+that evidence and resolved. The single exact-head confirmation comment
+`5470101517` reports no major issue. Evidence closeout, merge and exact-main CI
+remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -519,14 +528,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P12-R07 publication/protected release and three diagnostic exercises remain.
+P12-R07 evidence closeout/release and three diagnostic exercises remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish the coherent P12-R07 candidate, pass protected Prometheus acceptance and
-one clean confirmation, then merge/release it before activating the first
-remaining Phase12 diagnostic exercise.
+Publish the P12-R07 evidence closeout, pass its protected documentation gate,
+then merge/release the reviewed source before activating the first remaining
+Phase12 diagnostic exercise.
 
 ## Runtime and recovery
 

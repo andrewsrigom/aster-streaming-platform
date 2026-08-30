@@ -1,6 +1,6 @@
 P12-R07 multi-window SLO burn-rate alerts
 Date: 2026-08-30
-Status: implemented candidate; protected acceptance and release pending
+Status: verified candidate; release pending
 
 Source
 ------
@@ -8,7 +8,10 @@ Source
 Exact source 9fbc2d1c191ed33f62fe22a4968c67ad305b4d88, tree
 580f7abef4814deb48e1c549ada281fe2f3de736, on feat/p12-burn-rate-alerts. It is
 based exactly on released main c297d32831146c4a9f5fe216cdc06ab3e7403c36,
-tree 73ee596000e70c715e4547885eac8036877755be. The evidence checkpoint is pending.
+tree 73ee596000e70c715e4547885eac8036877755be. Exact verified correction
+8185a8154eebecf83cc8932775ca39bef7783617 has tree
+51dc011abfc3a5c04795038f302341861d1c5ccf. This record is its documentation-only
+evidence closeout and changes no reviewed executable behavior.
 
 Environment
 -----------
@@ -195,6 +198,24 @@ classification. The earlier isolated packaged proof remains applicable because
 the classifier correction changes no image, Prometheus configuration, rule,
 fixture, alert expression or protected API assertion.
 
+Protected acceptance and review closeout
+----------------------------------------
+
+Exact correction 8185a8154eebecf83cc8932775ca39bef7783617, tree
+51dc011abfc3a5c04795038f302341861d1c5ccf, passed protected run 33323508793.
+All six required jobs succeeded. Local platform validated exact rules/tests,
+built the full profile, observed all 35 rules healthy, required seven alert
+instances with no no-traffic firing, checked the three-day coverage guard and
+removed the exact CI project. Source quality passed every owner integration,
+the Docker-only playable demo and dependency audit.
+
+Initial review discussion 3889911170 was answered by 3889992599 with the exact
+source, local gates and protected run, then resolved. The single confirmation
+review completed at the same exact source; comment 5470101517 reports no major
+issue. No additional review round is required by the stopping rule. The
+following evidence-only checkpoint cannot invalidate the reviewed image,
+configuration, rule expressions, fixtures or protected API behavior.
+
 Navigation and response
 -----------------------
 
@@ -218,5 +239,4 @@ Limitations
   person or schedule.
 - No 28/30-day representative dataset exists, so no historical SLO compliance
   result is asserted.
-- Protected packaged-Prometheus rules/alerts API acceptance and exact-head
-  review remain pending.
+- Squash merge, exact-main CI and release remain pending.

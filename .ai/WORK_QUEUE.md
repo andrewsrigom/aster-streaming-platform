@@ -233,13 +233,16 @@ head `88a9d02` opened PR50. Protected run `33322558877` exposed pre-first-
 evaluation health `unknown` after rule syntax/full-profile/telemetry passed; its
 CI project cleaned and the invalidated run was cancelled. The bounded one-
 interval poll passes locally on fresh packaged attempt7/18 seconds. Corrected
-affected gate passes15/15 with3 cached in52.346 seconds. Publication, protected
-acceptance and review remain. Initial review discussion `3889911170` then found
+affected gate passes15/15 with3 cached in52.346 seconds. Initial review
+discussion `3889911170` then found
 observability-only future diffs could skip platform/promtool; classifier and
 dedicated regression are corrected. Classification/CI tests pass34/34 and the
 final corrected affected gate passes15/15 with11 cached in3.476 seconds.
-Publication, protected acceptance and review remain. Diagnostic exercises stay
-later work.
+Exact correction `8185a81`, tree `51dc011`, passed protected run `33323508793`
+with every required job. Discussion `3889911170` is answered/resolved, and the
+single confirmation comment `5470101517` reports no major issue. Evidence
+closeout, squash merge and exact-main CI remain. Diagnostic exercises stay later
+work.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
