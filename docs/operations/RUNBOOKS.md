@@ -155,9 +155,10 @@ It creates its own UUID-scoped project and accepts no target or flags.
 2. Read the bounded Router operation log and take its validated trace ID.
 3. Require recent-store TraceQL search to return that exact trace ID and select
    only the scenario boundary, operation, outcome, status and service fields.
-   For dependencies, match the exact dependency first and validate its selected
-   intrinsic error status or finite failure outcome afterward. Use that matched
-   span set; a recent trace-by-ID read may still be partial.
+   For dependencies, require the exact dependency and intrinsic error status in
+   the query and polling result; a successful or incomplete preview cannot end
+   the wait. Use that matched span set; a recent trace-by-ID read may still be
+   partial.
 4. Follow only finite boundary attributes: Catalog subgraph, PostgreSQL or
    Redis dependency, operation, outcome and span status.
 5. Correlate the same trace with sanitized Router/Catalog event categories.

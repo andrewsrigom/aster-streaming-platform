@@ -185,6 +185,27 @@ intrinsic `status=error` or one of the finite failure outcomes `timeout`,
 Focused diagnostic/profile tests pass 12/12 and the finite dependency-failure
 affected gate passes 73/73 with 60 cached in 53.918 seconds.
 
+## Fifth protected runtime
+
+Finite dependency-failure source `7f5a370c88f4dc016f4db771b682a2b980087004`
+ran in workflow `33335112383`. Local-platform job `99320573969` created only
+project `aster-p12-diagnostics-7747a26f-d49e-4099-a112-1c71f1edd483`.
+Catalog passed with trace `67299d3dc2d9223ea0fe3c3f96f6509b`, the expected
+one-population/zero-good result and recovery.
+
+The PostgreSQL search stopped when any selected dependency fact appeared. None
+of the returned finite facts was failure-marked at classification time, so the
+scenario failed before Redis. PostgreSQL recovery and exact teardown passed.
+The bounded transcript is
+[protected-run-33335112383.txt](diagnostics/protected-run-33335112383.txt).
+
+The correction makes failure part of both boundaries: TraceQL now requires the
+exact dependency and intrinsic `span:status=error`, while the polling predicate
+also requires a parsed finite error status or failure outcome. A successful or
+incomplete dependency preview cannot end the wait.
+Focused diagnostic/profile tests pass 12/12 and the failure-marked TraceQL
+affected gate passes 73/73 with 60 cached in 52.91 seconds.
+
 ## Remaining acceptance
 
 Before release:

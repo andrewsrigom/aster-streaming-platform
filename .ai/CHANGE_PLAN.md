@@ -46,9 +46,13 @@ Protected run `33334497056` then returned the exact selected PostgreSQL
 dependency, but classification ignored its intrinsic error status when optional
 outcome/name projection was absent. The current correction requires exact
 dependency plus either intrinsic error status or one finite failure outcome.
+Protected run `33335112383` then stopped on an earlier selected PostgreSQL fact
+without a failure mark. The current correction requires intrinsic error status
+in the exact TraceQL predicate and keeps polling until parsed facts also contain
+a failure signal.
 
-The finite dependency-failure affected gate passes 73/73 tasks with 60 cached in
-53.918 seconds. The initial review added one global execution budget with cleanup
+The failure-marked TraceQL affected gate passes 73/73 tasks with 60 cached in
+52.91 seconds. The initial review added one global execution budget with cleanup
 headroom, signal-driven cleanup, a proof-only Tempo listener, finite diagnostic
 output categories and complete CI invalidation paths. Source confirmation found
 no remaining blocker. The protected trace-visibility failure triggers the
@@ -177,7 +181,9 @@ recovered SLI. Never touch the retained demo or another Docker project.
   overly restrictive PostgreSQL outcome predicate. Corrected all-scenario
   acceptance remains pending. The fourth reaches classification with the exact
   PostgreSQL dependency but exposes the missing intrinsic-status fallback;
-  corrected all-scenario acceptance remains pending.
+  corrected all-scenario acceptance remains pending. The fifth stops on an
+  earlier non-failure-marked dependency fact; the failure-marked query/poll
+  correction still needs all-scenario acceptance.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

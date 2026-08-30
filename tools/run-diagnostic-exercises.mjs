@@ -174,7 +174,7 @@ export function diagnosticTraceQuery(traceId, scenario) {
   const boundary =
     scenario === "catalog"
       ? 'span.subgraph.name = "catalog" && span:status = error'
-      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}"`;
+      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}" && span:status = error`;
   const selected =
     scenario === "catalog"
       ? "span.subgraph.name, span:name, span:status, resource.service.name"
@@ -222,6 +222,14 @@ export function traceSearchFacts(payload, traceId) {
     }
   }
   return Object.freeze(facts);
+}
+
+export function diagnosticTraceReady(payload, traceId, scenario) {
+  assert.ok(SCENARIOS.includes(scenario), "Diagnostic scenario is invalid.");
+  const facts = traceSearchFacts(payload, traceId);
+  return scenario === "catalog"
+    ? facts.length > 0
+    : hasFailedDependency(facts, scenario === "postgres" ? "postgresql" : "redis");
 }
 
 export function assertTelemetryPrivacy(serialized, canaries) {
@@ -706,7 +714,7 @@ async function tempoSearch(tempoPort, traceId, scenario) {
       assert.ok(Array.isArray(response.value?.traces));
       return response.value;
     },
-    (response) => traceSearchFacts(response, traceId).length > 0,
+    (response) => diagnosticTraceReady(response, traceId, scenario),
     45_000,
   );
 }

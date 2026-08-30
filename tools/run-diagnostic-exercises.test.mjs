@@ -7,6 +7,7 @@ import {
   classifyDiagnosticScenario,
   diagnosticBoundaries,
   diagnosticTraceQuery,
+  diagnosticTraceReady,
   diagnosticTimeout,
   parseJsonLines,
   traceSearchFacts,
@@ -28,7 +29,7 @@ const dependencyFacts = (dependency, outcome) => [
   },
 ];
 
-const selectedSearch = (traceId, dependency, outcome) => ({
+const selectedSearch = (traceId, dependency, outcome, status = "error") => ({
   traces: [
     {
       traceID: traceId,
@@ -42,7 +43,7 @@ const selectedSearch = (traceId, dependency, outcome) => ({
                 { key: "span.aster.operation", value: { stringValue: "query" } },
                 { key: "span.aster.outcome", value: { stringValue: outcome } },
                 { key: "span:name", value: { stringValue: "aster.dependency.operation" } },
-                { key: "span:status", value: { stringValue: "error" } },
+                { key: "span:status", value: { stringValue: status } },
                 { key: "resource.service.name", value: { stringValue: "catalog" } },
                 { key: "private", value: { stringValue: "discarded" } },
               ],
@@ -128,11 +129,11 @@ test("builds exact finite TraceQL queries for each scenario boundary", () => {
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "postgres"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span:status = error } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "redis"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span:status = error } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.throws(() => diagnosticTraceQuery("unsafe", "redis"));
 });
@@ -166,6 +167,19 @@ test("extracts only selected finite facts from a TraceQL boundary result", () =>
     },
   ]);
   assert.deepEqual(traceSearchFacts({ traces: [] }, traceId), []);
+  assert.equal(diagnosticTraceReady(selectedCatalogSearch(traceId), traceId, "catalog"), true);
+  assert.equal(
+    diagnosticTraceReady(
+      selectedSearch(traceId, "postgresql", "success", "ok"),
+      traceId,
+      "postgres",
+    ),
+    false,
+  );
+  assert.equal(
+    diagnosticTraceReady(selectedSearch(traceId, "postgresql", "timeout"), traceId, "postgres"),
+    true,
+  );
 });
 
 test("emits only finite diagnostic boundary categories from untrusted traces", () => {

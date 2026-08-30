@@ -74,6 +74,7 @@ test("rejects an externally selected or broadly destructive runner", () => {
       "const facts = traceSearchFacts(search, traceId);\n    const search = await tempoSearch(ports.tempo, traceId, scenario);",
     ],
     ["| select(", "| unbounded("],
+    ["diagnosticTraceReady(response, traceId, scenario)", "true"],
     ['fact.status === "error"', "false"],
   ]) {
     const changed = { ...valid, runner: valid.runner.replace(before, after) };

@@ -211,8 +211,10 @@ recent trace-by-ID completeness. Run `33333896159` passed Catalog and clean
 recovery/teardown, then showed that PostgreSQL outcome must be checked after
 selecting the exact dependency span. Run `33334497056` then returned that
 selected dependency but exposed the classifier's missing intrinsic-error-status
-fallback. A protected run still must pass all three scenarios. Current status
-and all attempts are recorded in
+fallback. Run `33335112383` then stopped on an earlier dependency fact without a
+failure mark. The current query and polling condition both require intrinsic
+error status. A protected run still must pass all three scenarios. Current
+status and all attempts are recorded in
 [failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.

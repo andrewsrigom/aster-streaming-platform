@@ -302,6 +302,12 @@ projection was absent; PostgreSQL recovered and Redis did not run. The current
 correction requires exact dependency plus either intrinsic error status or one
 finite failure outcome.
 Its aggregate gate passes 73/73 with 60 cached in 53.918 seconds.
+Protected run `33335112383` then passed Catalog diagnosis/recovery and clean
+teardown but stopped on a selected PostgreSQL fact that was not failure-marked;
+PostgreSQL recovered and Redis did not run. The current correction requires
+exact dependency plus intrinsic error status in TraceQL and keeps polling until
+the parsed finite facts also contain a failure signal.
+Its aggregate gate passes 73/73 with 60 cached in 52.91 seconds.
 Initial review corrected execution/cleanup headroom, signal
 handling, listener scope, diagnostic output categories and CI invalidation;
 confirmation found no remaining blocking source issue; the real runtime finding
@@ -574,7 +580,7 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, complete the finite dependency-failure correction, pass the affected gate
+For P12-R10, complete the failure-marked TraceQL correction, pass the affected gate
 and corrected protected three-scenario run, obtain targeted confirmation, close
 Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
 interrupted local project only when that same Docker engine becomes reachable.

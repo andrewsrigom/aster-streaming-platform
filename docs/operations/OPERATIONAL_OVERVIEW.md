@@ -108,7 +108,9 @@ Catalog and clean recovery/teardown but showed that PostgreSQL outcome must be
 validated after exact dependency selection. All three scenarios still must pass
 on a working Linux Docker engine. Run `33334497056` returned the exact
 dependency and exposed the classifier's missing intrinsic-error-status fallback;
-the current correction accepts only error status or a finite failure outcome.
+run `33335112383` then stopped on an earlier dependency fact without a failure
+mark. The current TraceQL query and polling condition both require intrinsic
+error status.
 
 ## Limits
 

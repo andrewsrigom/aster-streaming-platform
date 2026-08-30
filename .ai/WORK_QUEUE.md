@@ -261,8 +261,10 @@ the current correction selects the exact dependency first and validates its
 failure outcome afterward. Run `33334497056` returned that dependency but
 showed the classifier ignored intrinsic error status when its optional
 outcome/name projection was absent. The current correction accepts only exact
-dependency plus error status or a finite failure outcome. Item63 remains
-`IN_PROGRESS` until all three
+dependency plus error status or a finite failure outcome. Run `33335112383`
+then showed polling could stop on an earlier non-failure-marked dependency fact.
+The current correction requires intrinsic error status in both TraceQL and
+polling. Item63 remains `IN_PROGRESS` until all three
 scenarios, zero-resource cleanup, targeted confirmation and protected release
 pass.
 

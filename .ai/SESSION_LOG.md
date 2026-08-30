@@ -37,6 +37,12 @@ full snapshot through the archival checkpoint remains in
   The current correction requires exact dependency plus error status or a finite
   failure outcome.
   Its affected gate passes 73/73 with 60 cached in 53.918 seconds.
+- Failure-status source `7f5a370` and protected run `33335112383` passed Catalog
+  diagnosis/recovery and exact teardown. PostgreSQL recovery passed, but search
+  stopped on a selected dependency fact without a failure mark; Redis did not
+  run. The current correction requires intrinsic error status in both TraceQL
+  and polling readiness. Its affected gate passes 73/73 with 60 cached in 52.91
+  seconds.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof
