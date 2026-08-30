@@ -78,8 +78,11 @@ refined runner classifies the exact finite TraceQL span directly. Run
 `33333896159` passed Catalog and cleanup, then showed that prefiltering the
 PostgreSQL span by outcome was too restrictive. The current correction selects
 the exact dependency span first and still requires a failure outcome in the
-classifier. Real three-scenario acceptance remains pending. Phase13 has not
-started.
+classifier. Run `33334497056` then returned that selected PostgreSQL dependency
+but showed that the classifier ignored its intrinsic error status when the
+optional outcome/name projection was absent. The current correction accepts
+only exact dependency plus intrinsic error status or a finite failure outcome.
+Real three-scenario acceptance remains pending. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

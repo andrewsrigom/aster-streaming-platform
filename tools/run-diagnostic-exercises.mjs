@@ -281,9 +281,8 @@ export function diagnosticBoundaries(facts) {
 function hasFailedDependency(facts, dependency) {
   return facts.some(
     (fact) =>
-      fact.name === "aster.dependency.operation" &&
       fact.attributes["aster.dependency"] === dependency &&
-      FAILURE_OUTCOMES.has(fact.attributes["aster.outcome"]),
+      (fact.status === "error" || FAILURE_OUTCOMES.has(fact.attributes["aster.outcome"])),
   );
 }
 

@@ -11,7 +11,8 @@ Item63 (P12-R10) is the sole `IN_PROGRESS` item on
 `feat/p12-diagnostic-exercises`, based exactly on main `633e819`. Its active
 plan is `.ai/CHANGE_PLAN.md`. Published candidate `e0d1975` is under runtime
 remediation after protected runs `33331974187`, `33332980729` and
-`33333896159`.
+`33333896159`; dependency-first run `33334497056` adds the latest runtime
+finding.
 
 ## Implemented candidate
 
@@ -29,8 +30,8 @@ remediation after protected runs `33331974187`, `33332980729` and
 - The PostgreSQL scenario admits one blocked Catalog read before pausing the
   exact database. Recovery terminates only its named lock holder.
 - Policy/profile tests pass12/12, CI/classifier tests passed35/35 at the
-  published candidate and platform tests pass87/87. The dependency-first
-  TraceQL affected gate passes 73/73 with 60 cached in 64.055 seconds.
+  published candidate and platform tests pass87/87. The finite dependency-
+  failure affected gate passes 73/73 with 60 cached in 53.918 seconds.
   Documentation and pending evidence are current.
 - Initial review corrected the global execution/cleanup budget, signal cleanup,
   listener scope, finite output categories and diagnostic CI invalidation.
@@ -47,7 +48,10 @@ the exact finite TraceQL-selected span directly. Run `33333896159` passed
 Catalog, PostgreSQL recovery and clean teardown, but the PostgreSQL query's
 pre-selection failure-outcome predicate returned no match. The current
 correction selects the exact dependency first and keeps failure-outcome
-validation in the classifier.
+validation in the classifier. Run `33334497056` returned the exact selected
+PostgreSQL dependency, but classification ignored intrinsic error status when
+the optional outcome/name projection was absent. The current correction accepts
+only exact dependency plus error status or a finite failure outcome.
 
 ## External runtime state
 
@@ -61,7 +65,7 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Commit/push the dependency-first TraceQL remediation and let its protected lane execute all three
+1. Commit/push the finite dependency-failure remediation and let its protected lane execute all three
    scenarios. Capture results in `evidence/phase-12/failure-diagnosis.md`.
 2. Obtain one targeted confirmation, merge, verify exact-main CI and close
    Phase12. Inspect/remove only the exact interrupted local project when its

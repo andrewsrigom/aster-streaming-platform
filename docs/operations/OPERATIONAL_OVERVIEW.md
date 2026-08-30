@@ -106,7 +106,9 @@ cleanup while its subsequent V2 read remained incomplete. The refined runner
 uses the finite TraceQL-selected span as evidence. Run `33333896159` passed
 Catalog and clean recovery/teardown but showed that PostgreSQL outcome must be
 validated after exact dependency selection. All three scenarios still must pass
-on a working Linux Docker engine.
+on a working Linux Docker engine. Run `33334497056` returned the exact
+dependency and exposed the classifier's missing intrinsic-error-status fallback;
+the current correction accepts only error status or a finite failure outcome.
 
 ## Limits
 

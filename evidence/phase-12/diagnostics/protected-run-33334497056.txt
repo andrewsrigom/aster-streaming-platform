@@ -1,0 +1,39 @@
+P12-R10 protected diagnostic runtime checkpoint
+Date: 2026-08-30
+Source: e965c92301f1e5b62522bc5ddfe478f7c21558dd
+Workflow run: 33334497056
+Local platform job: 99318920595
+
+project=aster-p12-diagnostics-7d7bac32-5360-4691-806a-5c85d1fc8d5e
+
+catalog:
+traceId=1b58032f6005809db6bc8b4aa43e2007
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=not_emitted_before_classification
+selectedDependencyTraceQL=passed
+classification=failed_to_recognize_selected_error_status
+recovery=passed
+diagnosis=not_completed
+
+redis:
+status=not_run_after_postgresql_failure
+
+cleanup:
+status=clean
+
+result=failure
+cause=the exact dependency search returned a finite span fact, but the
+classifier required the optional selected outcome/name representation and did
+not use the selected intrinsic error status.
+remediation=require the exact dependency plus either intrinsic status=error or
+the finite failure outcomes timeout, unavailable or error.
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

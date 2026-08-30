@@ -209,7 +209,14 @@ test("classifies Catalog, PostgreSQL and Redis failures from telemetry contracts
       scenario: "postgres",
       response: { errors: [{ extensions: { code: "UNAVAILABLE" } }] },
       metricDelta: { population: 1, good: 0 },
-      facts: dependencyFacts("postgresql", "unavailable"),
+      facts: [
+        {
+          service: "unknown",
+          name: "unknown",
+          status: "error",
+          attributes: { "aster.dependency": "postgresql" },
+        },
+      ],
       logs: {
         router: '{"kind":"aster.router.operation"}',
         catalog: '{"event":"aster.catalog.graphql_diagnostic"}',
@@ -249,7 +256,10 @@ test("rejects missing diagnosis signals and private canaries", () => {
       scenario: "postgres",
       response: { errors: [{}] },
       metricDelta: { population: 1, good: 0 },
-      facts: dependencyFacts("postgresql", "success"),
+      facts: dependencyFacts("postgresql", "success").map((fact) => ({
+        ...fact,
+        status: "ok",
+      })),
       logs: {
         router: '{"kind":"aster.router.operation"}',
         catalog: '{"event":"aster.catalog.graphql_diagnostic"}',

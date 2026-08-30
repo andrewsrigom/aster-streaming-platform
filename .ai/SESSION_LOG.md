@@ -30,6 +30,13 @@ full snapshot through the archival checkpoint remains in
   correction selects the dependency first and still rejects a non-failure
   outcome in the classifier. Its affected gate passes 73/73 with 60 cached in
   64.055 seconds.
+- Dependency-first source `e965c92` and protected run `33334497056` passed
+  Catalog diagnosis/recovery and exact teardown. The exact PostgreSQL dependency
+  reached classification, which ignored intrinsic error status when optional
+  outcome/name projection was absent. PostgreSQL recovered; Redis did not run.
+  The current correction requires exact dependency plus error status or a finite
+  failure outcome.
+  Its affected gate passes 73/73 with 60 cached in 53.918 seconds.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof

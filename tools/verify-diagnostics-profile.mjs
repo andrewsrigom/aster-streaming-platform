@@ -302,6 +302,7 @@ function validateRunner(source, violations) {
       "| select(",
       "const search = await tempoSearch(ports.tempo, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
       "traceSearchFacts(search, traceId)",
+      'fact.status === "error"',
       '"aster.dependency"',
       '"aster.outcome"',
       '"aster.catalog.cache_readiness_changed"',

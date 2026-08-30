@@ -258,7 +258,11 @@ incomplete and Redis still did not run. The refined runner classifies the finite
 TraceQL-selected span directly. Run `33333896159` passed Catalog/recovery and
 cleanup but showed that prefiltering PostgreSQL by outcome was too restrictive;
 the current correction selects the exact dependency first and validates its
-failure outcome afterward. Item63 remains `IN_PROGRESS` until all three
+failure outcome afterward. Run `33334497056` returned that dependency but
+showed the classifier ignored intrinsic error status when its optional
+outcome/name projection was absent. The current correction accepts only exact
+dependency plus error status or a finite failure outcome. Item63 remains
+`IN_PROGRESS` until all three
 scenarios, zero-resource cleanup, targeted confirmation and protected release
 pass.
 

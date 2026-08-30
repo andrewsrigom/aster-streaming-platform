@@ -163,6 +163,28 @@ predicate depend on exporter representation of the selected outcome. Focused
 diagnostic/profile tests pass 12/12 and the dependency-first affected gate
 passes 73/73 with 60 cached in 64.055 seconds.
 
+## Fourth protected runtime
+
+Dependency-first source `e965c92301f1e5b62522bc5ddfe478f7c21558dd`
+ran in workflow `33334497056`. Local-platform job `99318920595` created only
+project `aster-p12-diagnostics-7d7bac32-5360-4691-806a-5c85d1fc8d5e`.
+Catalog passed with trace `1b58032f6005809db6bc8b4aa43e2007`, the expected
+one-population/zero-good result and recovery.
+
+The exact PostgreSQL dependency search returned a selected fact and reached the
+classifier. Classification still required the optional outcome/name projection
+and did not use the selected intrinsic error status, so it rejected the fact.
+PostgreSQL recovery and exact teardown passed; Redis did not run. The bounded
+transcript is
+[protected-run-33334497056.txt](diagnostics/protected-run-33334497056.txt).
+
+Tempo's documented search response returns selected spans with intrinsic status
+attributes. The correction therefore requires the exact dependency plus either
+intrinsic `status=error` or one of the finite failure outcomes `timeout`,
+`unavailable` and `error`. A success/unknown-status fact still fails.
+Focused diagnostic/profile tests pass 12/12 and the finite dependency-failure
+affected gate passes 73/73 with 60 cached in 53.918 seconds.
+
 ## Remaining acceptance
 
 Before release:

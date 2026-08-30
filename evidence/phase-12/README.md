@@ -28,7 +28,9 @@ retrieval before Redis. Run `33332980729` proved the exact PostgreSQL TraceQL
 match, recovery and teardown but showed that its subsequent V2 result remained
 incomplete. Run `33333896159` passed Catalog and exact cleanup but showed that
 prefiltering PostgreSQL by failure outcome was too restrictive. The corrected
-dependency-first TraceQL path still needs all-scenario acceptance.
+dependency-first run `33334497056` returned the selected PostgreSQL dependency
+but exposed a missing intrinsic-error-status fallback in classification. The
+finite dependency-failure path still needs all-scenario acceptance.
 
 ## Requirement traceability
 
@@ -127,4 +129,6 @@ live-container acceptance.
   both stop before Redis because trace-by-ID completeness was required. No
   Run `33333896159` proves the selected-span Catalog path and clean recovery,
   then stops at the PostgreSQL pre-selection outcome predicate. No
-  three-scenario acceptance is claimed until the corrected run passes.
+  Run `33334497056` reaches PostgreSQL classification with the exact dependency
+  but exposes the missing intrinsic-status fallback. No three-scenario
+  acceptance is claimed until the corrected run passes.

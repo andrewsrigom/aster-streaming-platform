@@ -42,9 +42,13 @@ exact cleanup, then showed that filtering the PostgreSQL span by failure outcome
 before selection was too restrictive. The current correction selects the exact
 dependency first and retains mandatory failure-outcome validation in the
 classifier.
+Protected run `33334497056` then returned the exact selected PostgreSQL
+dependency, but classification ignored its intrinsic error status when optional
+outcome/name projection was absent. The current correction requires exact
+dependency plus either intrinsic error status or one finite failure outcome.
 
-The dependency-first TraceQL affected gate passes 73/73 tasks with 60 cached in
-64.055 seconds. The initial review added one global execution budget with cleanup
+The finite dependency-failure affected gate passes 73/73 tasks with 60 cached in
+53.918 seconds. The initial review added one global execution budget with cleanup
 headroom, signal-driven cleanup, a proof-only Tempo listener, finite diagnostic
 output categories and complete CI invalidation paths. Source confirmation found
 no remaining blocker. The protected trace-visibility failure triggers the
@@ -171,7 +175,9 @@ recovered SLI. Never touch the retained demo or another Docker project.
   stopped before Redis on trace-by-ID completeness. The third proves the
   selected-span path for Catalog plus recovery/cleanup, then stops at the
   overly restrictive PostgreSQL outcome predicate. Corrected all-scenario
-  acceptance remains pending.
+  acceptance remains pending. The fourth reaches classification with the exact
+  PostgreSQL dependency but exposes the missing intrinsic-status fallback;
+  corrected all-scenario acceptance remains pending.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536
