@@ -8,28 +8,28 @@ at corrected evidence head `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
 `3888409705` found a pending startup/close race. Corrected source `896a3df`
 shares close state, waits for pending bind and proves in a child-process
 regression that no listener leaks. Focused tests pass 11/11 and the affected gate
-passes 11/11 in 49.422s. The discussion is resolved. Exact-head protected run
-`33291705269` and the single confirmation review are running.
+passes 11/11 in 49.422s. The discussion is resolved and exact-head confirmation
+is clean. Protected run `33291705269` is running.
 
 P11-R10 is the one permitted dependent item, active on `feat/p11-game-days`
 rebased exactly onto that corrected head. It owns the remaining
 P11-R06/R07/R10/R11/R12
-evidence: finite capacity, Discovery fallback, retry non-amplification, five
-game days and complete runbooks. No production change is planned unless a named
-experiment demonstrates a requirement blocker.
+evidence. Exact source `3f5ff6a` adds only Web/Router retry-ownership tests and
+the verifier; the five game-day, finite-capacity, fallback/no-amplification and
+runbook artifacts are written. The affected candidate passes 17/17 tasks, two
+cached, in 56.616 seconds. No product runtime changed.
 
 ## Exact next actions
 
-1. Finish mapping each remaining requirement to exact current code, test and
-   evidence; do not mistake historical proof for current applicability.
-2. Use the single PR43 protected run for its current-source Discovery, Redis and
-   broker disposable events after it completes.
-3. Run cheap focused current-source database saturation, fallback/amplification
-   and media process-failure checks.
-4. Record five bounded timelines and update runbooks; run the affected candidate
-   gate.
-5. If PR43 changes again, rebase this branch and repeat only invalidated checks.
-   P11-R10 cannot publish or merge first.
+1. Finish PR43 only after protected run `33291705269` succeeds; squash merge,
+   prove tree equality and require exact-main CI.
+2. Preserve the passing P11-R10 affected candidate; repeat only documentation/
+   memory checks for closeout prose.
+3. Rebase this dependent branch onto the tree-identical P11-R08 squash merge,
+   repeating only invalidated gates.
+4. Publish one coherent P11-R10 candidate, complete one review/confirmation,
+   protected CI, squash merge and exact-main verification.
+5. Close Phase11 and activate Phase12 only after both releases.
 
 ## Evidence boundaries
 

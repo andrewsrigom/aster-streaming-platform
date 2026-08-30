@@ -46,10 +46,26 @@ Do not flush the cache.
 
 ### Trigger
 
-- Redis operation error ratio;
-- connection failures;
-- cache hit collapses;
-- rate limiter enters degraded mode.
+- `aster.catalog.cache_readiness_changed` or
+  `aster.discovery.cache_readiness_changed` becomes degraded;
+- cache outcomes move to `bypass`, `unavailable` or bounded stale serving;
+- operation limiting reports `local_fallback`;
+- source-query pressure rises after cache hits collapse.
+
+### User impact
+
+Catalog and Discovery can become slower and optional home/search data can be
+stale or explicitly degraded. Durable owner state is still PostgreSQL-backed.
+An outage must never turn Redis bytes into publication, rights, identity or
+mutation authority.
+
+### Preconditions and safety
+
+- identify the exact environment, service and cache/limiter family;
+- preserve PostgreSQL capacity before generating cache misses;
+- do not flush Redis, restart every service, widen concurrency or disable an
+  owner-side authorization/rights check;
+- do not treat local limiter fallback as a hosted multi-replica guarantee.
 
 ### Confirm
 
@@ -57,58 +73,149 @@ Do not flush the cache.
 2. distinguish network, authentication, failover, and saturation;
 3. inspect database load caused by bypass;
 4. inspect `catalog_public_title` cache `bypass` and source-load outcomes;
-5. inspect user SLIs.
+5. compare Catalog readiness, Discovery readiness and user-visible result codes.
 
-### Mitigate
+### Immediate mitigation
 
-- rely on Catalog's automatic cache bypass; disable the optional cache on the
-  next controlled restart if repeated reconnect work is harmful;
-- serve bounded stale local data where allowed;
-- reduce optional discovery traffic;
-- enforce local emergency concurrency limits;
-- fail closed for operator-sensitive rate controls;
-- protect PostgreSQL.
+1. rely on the existing bounded Catalog bypass and eligible Discovery stale
+   path;
+2. reduce optional Discovery/search traffic before critical Catalog traffic;
+3. preserve the existing database and source-operation admission limits;
+4. disable an optional cache only through a reviewed controlled restart when
+   repeated reconnect work is itself harmful.
+
+### Diagnose
+
+1. separate connection failure from malformed/wrong-type data, eviction and a
+   hot-key/lease incident;
+2. inspect finite cache outcome, waiter and payload-size buckets without raw
+   keys or user identifiers;
+3. verify owner-fence reads still occur where rights/visibility require them;
+4. verify no durable write was acknowledged from a Redis-only result.
 
 ### Recover
 
-- restore Redis;
-- verify clients reconnect with backoff;
-- confirm Catalog stayed ready and owner-fenced entity reads remained correct;
-- warm only measured critical keys with bounded concurrency;
-- verify durable data was not lost;
-- inspect memory and eviction.
+1. restore the dependency or exact configuration;
+2. let bounded reconnect/backoff complete;
+3. warm only measured critical keys with bounded concurrency;
+4. remove temporary traffic controls after source load stabilizes.
+
+### Verify
+
+- Catalog remains ready and owner-fenced reads return the same durable result;
+- Discovery returns from degraded/stale to current results;
+- cache outcomes and source load return to their prior range;
+- no durable record, receipt, event or rights state was lost or fabricated.
+
+### Rollback
+
+Recreate only the affected optional-cache service with its last reviewed
+configuration. Do not reset PostgreSQL, flush Redis or use a global Compose
+cleanup as rollback.
+
+### Escalation
+
+Escalate if PostgreSQL admission begins rejecting critical owner work, cache
+bypass changes a rights-visible result, reconnect loops consume unbounded
+capacity, or durable mutation behavior differs during the outage.
+
+### Evidence to preserve
+
+- exact source/deployment, outage and recovery timestamps;
+- finite readiness/cache/limiter outcomes and source-query counts;
+- representative sanitized user result before, during and after recovery;
+- exact scoped resource inspection and cleanup result for a game day.
+
+### Follow-up
+
+Revisit TTL, jitter, local-shield and source-admission policy only from measured
+evidence. Phase 12 owns dashboard/SLO links; Phase 14 owns hosted capacity.
 
 ---
 
-## Runbook: Subgraph outage
+## Runbook: Discovery subgraph outage
 
 ### Trigger
 
-- router subgraph fetch failures;
-- breaker opens;
-- affected operation SLI burns.
+- Router `aster.router.fetch` failures identify subgraph `discovery`;
+- `aster.discovery.readiness_changed` becomes unavailable;
+- home/search returns explicit unavailable, partial or fallback outcomes;
+- a Discovery Catalog-read breaker opens.
+
+### User impact
+
+Search and computed home rails can be unavailable or degraded. Public Catalog
+browse, title details and Playback must remain usable. Identity, rights and
+publication checks never use a Discovery fallback.
+
+### Preconditions and safety
+
+- confirm the failing dependency is optional Discovery, not Catalog authority;
+- keep the fixed Router and Catalog deadlines/concurrency limits in place;
+- never relabel an unavailable/indeterminate result as empty success;
+- never use stale or editorial data to bypass rights or authorization.
 
 ### Confirm
 
-1. identify subgraph and operation class;
-2. inspect deployment, health, event loop, memory, and dependencies;
-3. determine whether optional fields can fall back;
-4. inspect query-plan serial dependencies.
+1. identify the exact Discovery operation and Router fetch outcome;
+2. verify Catalog browse directly through the same Router remains successful;
+3. inspect Discovery readiness, PostgreSQL, Redis and broker/projection state;
+4. distinguish an empty rail, bounded fallback, partial result and unavailable
+   projection;
+5. inspect whether one search bulkhead is saturated while home capacity remains.
 
-### Mitigate
+### Immediate mitigation
 
-- roll back recent deployment;
-- activate safe fallback for optional Discovery behavior;
-- reduce concurrency;
-- isolate expensive operations;
-- scale only if saturation is proven.
+1. let public Web expose the existing explicit Catalog/editorial fallback;
+2. reduce or shed search before Catalog/Playback capacity;
+3. roll back only a proven bad Discovery deployment;
+4. leave critical owner checks fail-closed.
+
+### Diagnose
+
+1. correlate Router fetch, Discovery operation and readiness events;
+2. inspect projection generation/freshness and consumer lag without reading
+   event payloads into evidence;
+3. inspect breaker and search bulkhead outcomes;
+4. determine whether Redis loss, broker lag, PostgreSQL failure or the service
+   process is the first failing boundary.
 
 ### Recover
 
-- verify readiness;
-- allow half-open probes;
-- verify query success and latency;
-- confirm fallback rate returns to baseline.
+1. restore the first failed boundary;
+2. allow the operation-scoped half-open probe;
+3. verify the preserved generation and bounded catch-up before normal traffic;
+4. remove temporary search shedding after stable current results.
+
+### Verify
+
+- Catalog browse and Playback remained available throughout;
+- home degradation was explicit and never hid cancelled/indeterminate outcomes;
+- search recovers with the preserved/current generation;
+- Router/Discovery readiness and fallback outcomes return to normal.
+
+### Rollback
+
+Return Discovery to the last reviewed compatible image/schema. Preserve the
+projection and owner events; do not rebuild or delete them merely to clear an
+outage signal.
+
+### Escalation
+
+Escalate if Catalog/Playback are coupled to the outage, a fallback exposes an
+unpublished title, projection generation regresses, or recovery requires an
+owner-data rewrite.
+
+### Evidence to preserve
+
+- exact Router and Discovery versions, timestamps and finite event names;
+- sanitized home/search and Catalog responses during outage/recovery;
+- breaker/bulkhead outcomes, projection generation and cleanup result.
+
+### Follow-up
+
+Record the cause and whether fallback or isolation policy changed. Phase 12
+adds alert/dashboard links; do not invent a field SLO from a game-day duration.
 
 ---
 
@@ -123,6 +230,21 @@ Do not flush the cache.
 - timeouts;
 - replica lag when used.
 
+### User impact
+
+Owner reads/writes can become slow, return bounded unavailable/backpressure
+results or time out. Optional work must shed before critical rights,
+publication, session and durable-save work. Saturation never permits a cache or
+client to acknowledge durable state.
+
+### Preconditions and safety
+
+- identify the owning context and operation class;
+- preserve the current pool, application admission and statement deadlines;
+- do not raise pool size, retry writes, kill arbitrary sessions or run broad
+  maintenance without owner authorization and exact evidence;
+- treat an indeterminate commit as indeterminate, never as rollback.
+
 ### Confirm
 
 1. identify top operations and query fingerprints;
@@ -131,23 +253,62 @@ Do not flush the cache.
 4. inspect cache behavior;
 5. inspect long transactions and event consumers.
 
-### Mitigate
+### Immediate mitigation
 
-- shed optional queries;
-- reduce service concurrency;
-- stop runaway background work;
-- use bounded stale cache where valid;
-- roll back bad query deployment;
-- cancel only verified harmful queries through approved procedure.
+1. shed optional/search/background work using existing admission controls;
+2. retain critical owner traffic within its finite lane;
+3. use bounded stale data only for already eligible non-authoritative reads;
+4. roll back a proven bad query/deployment;
+5. cancel only an exact verified harmful operation through an approved
+   procedure.
+
+### Diagnose
+
+1. compare application rejected/admitted counts with pool reserved/vendor
+   waiting counts;
+2. identify the bounded operation and query fingerprint, not raw user values;
+3. inspect statement/connection timeouts, lock owners and transaction age;
+4. verify retry ownership so an unhealthy database is not receiving multiplied
+   attempts.
 
 Do not blindly increase pool size; it can worsen database contention.
 
 ### Recover
 
-- verify pool wait and query latency;
-- verify invariants and replication;
-- drain backlog gradually;
-- record query plans.
+1. restore the failed database/query boundary;
+2. drain backlog gradually under the same finite admission;
+3. remove temporary shedding only after pool waits and latency stabilize;
+4. record the relevant query plan and deployment change.
+
+### Verify
+
+- overflow is rejected before an unbounded vendor wait and capacity is released;
+- unrelated/critical lanes retain the documented behavior;
+- no uncertain write is automatically retried or reported completed;
+- pool, lock and latency observations return to the prior range.
+
+### Rollback
+
+Roll back the exact query/application release or controlled configuration
+change. Do not restore from backup or resize the pool solely to clear a game-day
+alarm.
+
+### Escalation
+
+Escalate on data-integrity uncertainty, sustained rejection of critical owner
+work, lock chains without a proven safe owner, replica inconsistency or storage
+exhaustion.
+
+### Evidence to preserve
+
+- exact source/deployment and saturation/recovery timestamps;
+- admitted/rejected/reserved/waiting counts and sanitized query fingerprint;
+- invariant checks, rollback decision and final recovery result.
+
+### Follow-up
+
+Tune admission or query behavior only from a representative measured workload.
+Capacity targets and soak/load conclusions belong to Phase 14.
 
 ---
 
@@ -257,6 +418,21 @@ Do not blindly increase pool size; it can worsen database contention.
 - consumer lag;
 - projection freshness SLI.
 
+### User impact
+
+Owner transactions can still commit while outbox facts remain pending; derived
+projections and profile-deletion cleanup can lag. Anonymous browsing/playback
+can remain available. A zero outbox count alone does not prove consumer
+completion.
+
+### Preconditions and safety
+
+- identify the exact owner, topic, partition and environment without copying
+  payloads or signing material;
+- preserve outboxes, broker log, quarantine, offsets and deletion fences;
+- never edit an event, reset offsets broadly, replace a signing key blindly or
+  delete durable state to regain capacity.
+
 ### Confirm
 
 1. distinguish broker outage from consumer failure;
@@ -264,16 +440,150 @@ Do not blindly increase pool size; it can worsen database contention.
 3. identify affected partitions and poison events;
 4. inspect source writes.
 
-### Mitigate
+### Immediate mitigation
 
-- retain outbox and reduce nonessential producers if capacity risk exists;
-- pause failing consumer;
-- quarantine poison event through procedure;
-- serve source or bounded stale projection where designed.
+1. retain owner outboxes and reduce nonessential producers if bounded capacity
+   is at risk;
+2. pause only the failing consumer/partition when repeated poison work would
+   amplify load;
+3. use the existing durable quarantine procedure for an exact invalid record;
+4. serve owner source or eligible bounded stale projections where designed.
+
+### Diagnose
+
+1. compare owner pending age/count, relay lease, publish outcome, partition lag
+   and consumer state;
+2. distinguish broker unavailability, contract/signature rejection, poison
+   data and unavailable owner storage;
+3. verify offsets advance only after durable effect, duplicate recognition or
+   durable quarantine;
+4. inspect downstream saturation before draining backlog.
 
 ### Recover
 
-- drain gradually with bounded concurrency;
-- monitor database and downstream load;
-- verify idempotency and projection versions;
-- reconcile source and projection counts.
+1. restore the broker/consumer dependency or exact topic configuration;
+2. resume with existing bounded concurrency/backoff;
+3. drain gradually while monitoring owner database and downstream admission;
+4. replay only an exact quarantined record after its cause is corrected.
+
+### Verify
+
+- pending facts drain to zero and consumer lag converges to zero;
+- the same broker record delivered twice has one durable effect;
+- durable progress/source state is unchanged and signed deletion recovers;
+- shutdown and exact disposable cleanup leave no owned fixture resources.
+
+### Rollback
+
+Disable the reviewed events overlay and recreate only compatible owner
+processes as documented in `services/engagement/EVENT_DELIVERY.md`. Preserve
+schemas, outboxes, log, quarantine and signing-key volume.
+
+### Escalation
+
+Escalate missing/conflicting signing authority, full quarantine, outbox storage
+risk, unbounded lag after recovery, deletion-fence conflict or any apparent lost
+durable fact.
+
+### Evidence to preserve
+
+- exact source, topic/partition and finite record/correlation identifiers;
+- pending/lag/offset counts, outage/recovery timeline and duplicate-effect count;
+- quarantine decision, owner invariant and scoped cleanup result.
+
+### Follow-up
+
+Record the first failed boundary and backlog drain behavior. Hosted retention,
+replication, ACL/TLS and restore sizing remain Phase 14 work.
+
+---
+
+## Runbook: Media-worker failure
+
+### Trigger
+
+- `aster.catalog.media_failed` or a terminal processing attempt;
+- process timeout, cancellation, output limit or nonzero FFmpeg/validator exit;
+- repeated lease expiry with no completed validated candidate;
+- scratch growth while no owned attempt is progressing.
+
+### User impact
+
+The affected title/version cannot publish a new rendition. Existing validated
+publications remain available. No partial candidate, master playlist or object
+prefix may become public.
+
+### Preconditions and safety
+
+- identify the exact processing request, attempt, rights revision and scratch
+  directory through owner records;
+- confirm the source rights record is still approved before retry/reuse;
+- never delete unknown scratch, overwrite immutable objects, publish a partial
+  bundle or route media bytes through application services;
+- keep worker process, output, time, concurrency and retry bounds unchanged.
+
+### Confirm
+
+1. inspect the finite failure class and processing-attempt audit;
+2. verify Catalog has no active publication/candidate pointer for failed output;
+3. inspect owned process-tree termination and worker slot release;
+4. compare scratch contents with the exact request/attempt ownership record;
+5. distinguish source/download, FFmpeg, validation, storage and rights failure.
+
+### Immediate mitigation
+
+1. stop admitting more work for the affected title/version when a repeat would
+   reproduce a permanent failure;
+2. cancel the exact owned worker/process group when its deadline expires;
+3. preserve the failure audit and verified original;
+4. keep any existing validated publication active unless rights/integrity is
+   uncertain.
+
+### Diagnose
+
+1. inspect bounded sanitized stderr/result classification, never shell-expanded
+   arguments or credentials;
+2. verify checksum, rights revision, recipe/version and immutable-object state;
+3. inspect worker slot, deadline, process group and scratch ownership;
+4. classify retryable only the documented transient failures within attempt
+   capacity.
+
+### Recover
+
+1. correct the first failed dependency/input or restore the compatible worker;
+2. submit one owner-authorized bounded retry when the durable rule permits it;
+3. validate the complete bundle before Catalog publication;
+4. remove only exact stopped/expired disposable scratch through the fenced
+   cleanup procedure.
+
+### Verify
+
+- the failed process group has no live child and its worker slot is released;
+- failure audit remains, no partial publication is visible and prior media is
+  unchanged;
+- a recovered attempt produces a fully validated immutable bundle before
+  publication;
+- exact scratch cleanup reports only owned removals and no active reference.
+
+### Rollback
+
+Keep or restore the previous validated compatible publication. Do not downgrade
+rights state, delete the failure audit or reuse an unverified candidate.
+
+### Escalation
+
+Escalate uncertain media rights, checksum mismatch, immutable-object conflict,
+repeated process-tree leak, active-reference cleanup ambiguity or inability to
+prove that partial output stayed private.
+
+### Evidence to preserve
+
+- exact source/worker image, attempt/failure class and bounded timestamps;
+- process exit/timeout/cancellation outcome, validation report and publication
+  pointer state;
+- scratch ownership/cleanup result without signed URLs or source credentials.
+
+### Follow-up
+
+Correct the worker or pipeline invariant before another attempt. Hosted storage
+budget/lifecycle and large-scale worker capacity remain Phase 14 work.

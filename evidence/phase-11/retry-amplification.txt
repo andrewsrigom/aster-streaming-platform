@@ -1,0 +1,54 @@
+P11-R11 retry amplification checkpoint
+Date: 2026-08-30
+Status: local candidate PASS; protected candidate release pending
+
+Source
+- Frozen predecessor: 371ba55eb7269520b72f41fd813a95aaeab819eb.
+- Retry-ownership source: 3f5ff6a9e91c256053b9fd957486c7450cb07f0b.
+- Source tree: 27cb3ba5e2ac4a60805ebe6afb5b736448f026a7.
+
+Attempt matrix
+| Layer | Automatic attempts for one public safe read | Proof |
+| --- | ---: | --- |
+| Web to Router | 1 | boundedGraphqlFetch failure regression counts exactly one injected fetch |
+| Apollo Router to subgraph | 1 | reviewed router.yaml has no retry policy; source verifier rejects any retry block |
+| Playback to Catalog publication read | at most 2 | first 503/reset then success produces exactly two server calls; permanent/malformed produces one |
+| Discovery to Catalog snapshot read | at most 2 | first 503/reset then success produces exactly two server calls; permanent/malformed produces one |
+
+Commands and results
+- Current Web public-data plus Router-source policy suites: PASS 16/16 in
+  1082.137148 ms.
+- Focused cross-owner/failure command: PASS 68/68 in 4713.043505 ms, including
+  both concrete safe-read clients, their finite admission and their breaker
+  behavior.
+- Focused ESLint, Prettier and git diff --check: PASS.
+- Complete affected candidate: PASS 17/17 tasks, 2 cached, in 56.616 seconds;
+  Web passes 112/112 and the Router policy is included in platform67/67.
+
+Verified composition
+- Public SSR/browser Apollo uses HttpLink plus one bounded fetch. There is no
+  RetryLink. Streaming replay is blocked; only an explicit UI refresh can issue
+  another public request.
+- Router has one three-second request deadline, operation-specific subgraph
+  timeouts and no retry configuration. The repository source contract now fails
+  if a retry block is introduced silently.
+- Only the purpose-separated service client owns the selected safe-read retry.
+  It uses the shared parent deadline, one jittered delay and at most two total
+  attempts. Permanent HTTP, malformed, oversized or invalid owner data gets one
+  attempt and fails closed.
+- Unsafe progress, profile, publication and deletion mutations gain no hidden
+  request retry. Explicit identical-key replay and durable event redelivery are
+  separate idempotent operations, not stacked retries of one HTTP request.
+
+Interpretation
+One user read produces one Web-to-Router call and one Router-to-subgraph call.
+Only the service's fixed safe Catalog read can make a second dependency attempt.
+The path therefore remains 1 x 1 x at-most-2, rather than multiplying retries
+at each layer.
+
+Limitations
+- The check covers the repository's first-party Web, pinned Router configuration
+  and two current safe-read owners. It does not claim behavior for an external
+  proxy, CDN or future hosted gateway.
+- Event-delivery backoff and explicit user retry are intentionally outside this
+  synchronous amplification count and remain separately bounded.

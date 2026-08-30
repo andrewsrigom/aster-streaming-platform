@@ -138,9 +138,9 @@ invalidated scenario.
 
 ## Completion checklist
 
-- [ ] Remaining requirements mapped and current
-- [ ] Five game days pass with cleanup
-- [ ] Fallback, saturation and retry-amplification evidence captured
-- [ ] Runbooks complete and linked
+- [x] Remaining requirements mapped and current
+- [x] Five game days pass with cleanup
+- [x] Fallback, saturation and retry-amplification evidence captured
+- [x] Runbooks complete and linked
 - [ ] Candidate and protected gates pass
 - [ ] Phase 11 release and Phase 12 prerequisites recorded

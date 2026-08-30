@@ -10,8 +10,8 @@ Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
 squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
 run `33290477608` passed every required job. P11-R08 is frozen on PR43 at
-corrected evidence head `371ba55`; its initial finding is resolved and exact-head
-protected run `33291705269` plus confirmation review are running. P11-R10 is
+corrected evidence head `371ba55`; its initial finding is resolved, confirmation
+is clean and exact-head protected run `33291705269` is running. P11-R10 is
 active on `feat/p11-game-days`, rebased exactly onto that corrected head under
 the single dependent-work exception. Full Phase00–14 goal stays active.
 
@@ -227,6 +227,17 @@ waits for pending bind and rejects startup closed during that interval. Focused
 tests pass11/11 and the corrected affected gate passes11/11 in49.422s.
 Confirmation, protected exact-head CI and publication remain.
 
+P11-R10 now maps and executes the five remaining game days. Exact hosted source
+`59600ae` proves Discovery stop/recovery, Redis-absent healthy home, broker
+outage/drain and zero scoped cleanup; source comparison proves later P11-R08
+changes are tools/docs only. Current source `3f5ff6a` adds explicit Web one-call
+and Router no-retry contracts. Focused failure tests pass 68/68, PostgreSQL
+adapter/transaction saturation passes 28/28 and the new Web/Router contracts
+pass 16/16. Bulkhead, fallback, retry-amplification and five game-day artifacts
+plus complete Redis/Discovery/PostgreSQL/broker/media runbooks are recorded.
+The affected candidate passes 17/17 tasks, two cached, in 56.616 seconds.
+Predecessor release and this item's protected release remain.
+
 ## Historical Phase 09 corrections
 
 PR34 confirmation discussions3886014605/606 found transaction fan-out and no
@@ -273,16 +284,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R08/R09 controlled injection is waiting on hosted gates. P11-R10 game days,
-consolidated bulkhead/fallback/amplification proof and runbook closeout are
-active.
+P11-R08/R09 controlled injection is waiting on its final protected gate.
+P11-R10 game days, bulkhead/fallback/amplification proof and runbook closeout are
+implemented as a local candidate; candidate/protected release remains.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Complete P11-R10 by reconciling current-source failure evidence, executing the
-five bounded game days, proving fallback/saturation/no-amplification, updating
-runbooks and closing Phase11 after P11-R08 releases first.
+Pass the P11-R10 affected candidate gate. After P11-R08 releases first, publish,
+review and protect the game-day closeout, then verify exact-main and activate
+Phase12.
 
 ## Runtime and recovery
 

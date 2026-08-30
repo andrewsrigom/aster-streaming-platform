@@ -158,6 +158,9 @@ not a service adapter in a production composition:
 - a source-tree contract prevents apps, services, workers and packages from
   importing the tools-only laboratory.
 
-This laboratory supplies deterministic mechanics for later game days. Redis
-miss/error, event reorder and dependency recovery are still injected through
-their owner-specific game-day harnesses; no production dynamic control exists.
+The Phase 11 game-day candidate combines this laboratory with owner-specific
+harnesses. It records Discovery/Redis outage, broker outage/drain, controlled
+database admission saturation and media process-tree failure, plus an explicit
+Web/Router/service no-amplification matrix. The complete timelines and source
+applicability are in the [Phase 11 game-day report](../../evidence/phase-11/game-days.md).
+No production dynamic control exists.
