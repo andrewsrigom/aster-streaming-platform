@@ -34,15 +34,15 @@ Grafana joins only the `edge` network and reaches Prometheus at its private
 service address. It does not join `platform`. The host listener is
 `127.0.0.1:3001`; no non-loopback publication is allowed. The service runs as
 UID 472 with a read-only root, dropped capabilities, `no-new-privileges`, 0.5
-CPU, 256 MiB memory, 64 PIDs and two bounded tmpfs mounts. Grafana's disposable
+CPU, 384 MiB memory, 128 PIDs and two bounded tmpfs mounts. Grafana's disposable
 SQLite state is not a named volume and never becomes product data.
 
 The local surface enables anonymous Viewer access for at most eight devices,
 disables basic/login-form access and initial administrator creation, and disables
 sign-up, organization creation, external snapshots, plugin administration,
-analytics and update checks. Provisioned resources are non-editable and cannot
-be deleted through the UI. This is a local-demo policy, not a hosted
-authentication design.
+plugin preinstallation/automatic update, analytics and update checks.
+Provisioned resources are non-editable and cannot be deleted through the UI.
+This is a local-demo policy, not a hosted authentication design.
 
 The `Aster Operational Overview` dashboard contains exactly three ordered
 layers:
@@ -82,7 +82,7 @@ privacy review executable.
 
 ### Negative
 
-- The optional profile adds one 256 MiB container and another image pull/build.
+- The optional profile adds one 384 MiB container and another image pull/build.
 - Local anonymous Viewer access is unsuitable for a remotely reachable host.
 - One-hour local data demonstrates mechanics, not 28/30-day SLO compliance.
 

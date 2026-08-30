@@ -460,7 +460,11 @@ The P01-R01 limits are:
 
 On the recorded WSL host, the first local pull completed in `11.79` seconds, clean startup reached health in `9.80` seconds, the PostgreSQL image occupied `302,294,786` bytes, the Redis image occupied `118,619,095` bytes, and the initialized PostgreSQL volume occupied `65.39 MB`. One idle sample observed approximately `37.94 MiB` for PostgreSQL, `6.45 MiB` for Redis, and `1.57 MiB` for status. These values are evidence-scoped observations, not portable requirements.
 
-The optional profiles add Identity 1 CPU/384 MiB/64 PIDs, Kafka 1 CPU/768 MiB/192 PIDs, S3 1 CPU/384 MiB/96 PIDs, Collector 0.5 CPU/128 MiB/64 PIDs and Prometheus 0.5 CPU/256 MiB/64 PIDs. All local service logs rotate at 5 MiB with two files. Media-processing bounds remain Phase 06 work.
+The optional profiles add Identity 1 CPU/384 MiB/64 PIDs, Kafka 1 CPU/768 MiB/192 PIDs, S3 1 CPU/384 MiB/96 PIDs, Collector 0.5 CPU/128 MiB/64 PIDs,
+Prometheus 0.5 CPU/256 MiB/64 PIDs and Grafana 0.5 CPU/384 MiB/128 PIDs.
+Grafana plugin preinstallation and automatic updates are disabled. All local
+service logs rotate at 5 MiB with two files. Media-processing bounds remain
+Phase 06 work.
 
 Developers with limited resources may start a profile containing only dependencies required by the active phase.
 

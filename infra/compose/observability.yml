@@ -134,6 +134,8 @@ services:
       GF_LOG_MODE: console
       GF_NEWS_NEWS_FEED_ENABLED: "false"
       GF_PLUGINS_PLUGIN_ADMIN_ENABLED: "false"
+      GF_PLUGINS_PREINSTALL_AUTO_UPDATE: "false"
+      GF_PLUGINS_PREINSTALL_DISABLED: "true"
       GF_SECURITY_DISABLE_GRAVATAR: "true"
       GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
       GF_SERVER_DOMAIN: 127.0.0.1
@@ -155,8 +157,8 @@ services:
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     cpus: 0.5
-    mem_limit: 256m
-    pids_limit: 64
+    mem_limit: 384m
+    pids_limit: 128
     restart: "no"
     stop_grace_period: 5s
     healthcheck:

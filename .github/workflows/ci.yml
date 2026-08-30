@@ -299,6 +299,12 @@ jobs:
         run: >-
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml
           --profile full up --build --wait --wait-timeout 120
+      - name: Report bounded optional-profile startup failure
+        if: failure()
+        timeout-minutes: 1
+        run: |
+          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full ps --all
+          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full logs --no-color --tail 120 grafana prometheus
       - name: Verify packaged health and real telemetry
         timeout-minutes: 2
         run: |

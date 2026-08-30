@@ -15,21 +15,29 @@ plan is `.ai/CHANGE_PLAN.md`.
 - ADR-0042 selects unmodified, digest-pinned Grafana OSS 13.2.0 and preserves
   its AGPL-3.0-only terms while Aster-authored configuration remains MIT.
 - Grafana publishes only `127.0.0.1:3001`, joins only `edge`, runs as UID472
-  with read-only root, 0.5 CPU,256 MiB,64 PIDs and disposable bounded tmpfs.
+  with read-only root, 0.5 CPU,384 MiB,128 PIDs and disposable bounded tmpfs.
 - Initial admin/basic login, UI writes, plugins, snapshots, analytics and
-  updates are disabled; local anonymous access is Viewer-only/device-bounded.
+  updates are disabled; plugin preinstallation/automatic update are blocked;
+  local anonymous access is Viewer-only/device-bounded.
 - One immutable 15-panel dashboard separates user impact, dependency health
   and runtime saturation with twelve fixed PromQL queries and no variables.
 - Repository checks validate image, Compose, provisioning, queries, reset scope
-  and adverse mutations. The complete candidate gate passes15/15 tasks,
-  including platform73/73 and CI policy33/33.
+  and adverse mutations. The corrected complete candidate gate passes15/15
+  tasks in62.976 seconds, including platform73/73 and CI policy33/33.
 - Protected CI builds the image, verifies Grafana/data source/dashboard health,
   runs a representative released query, stops Grafana and requires product
   platform health to remain healthy.
+- Run `33316483464` exposed the initial64-PID/256-MiB limit and background plugin
+  attempts. A unique local probe reproduced the exit and measured100 startup
+  PIDs,87 healthy PIDs and253.2 MiB. The corrected isolated repeat became healthy
+  with99 PIDs/225.9 MiB, provisioned the read-only data source/dashboard,
+  emitted no plugin-installer/thread failure and left zero scoped resources.
+  Focused39/39, CI policy33/33 and the complete candidate gate pass. One
+  corrective publication and protected run remain.
 
 ## Exact next actions
 
-1. Commit and publish one coherent candidate.
+1. Commit and publish the measured resource correction once.
 2. Use protected CI for the changed live Docker proof.
 3. Perform one complete review and batch only blocking remediation.
 4. Confirm, squash-merge, verify exact main, then activate P12-R07 alerts.

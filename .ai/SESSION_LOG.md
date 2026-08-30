@@ -21,8 +21,21 @@ Append new entries at the top. Keep entries factual and concise.
   prove Grafana loss does not change product platform health.
 - The complete candidate gate passes15/15 tasks in74.899 seconds, including
   platform73/73, CI policy33/33, documentation239/239, AI state, formatting,
-  lint and a zero-finding secret scan. Local Docker was not restarted or
-  retried; protected CI owns the live image proof.
+  lint and a zero-finding secret scan. At initial publication local Docker had
+  not been restarted or retried; protected CI owned the first live image proof.
+- Protected run `33316483464` exposed an actual underprovisioned Grafana
+  boundary:64 PIDs caused bundled plugin `newosproc` exits before health. One
+  exact isolated local reproduction measured100 PIDs during startup,87 after
+  health and253.2/256 MiB, and exposed background plugin installation attempts.
+  The unique probe and its exact resources were fully removed.
+- The correction raises only Grafana to128 PIDs/384 MiB, disables plugin
+  preinstallation and automatic updates, and adds bounded failure logs to CI.
+- The corrected isolated repeat became healthy with99 PIDs/225.9 MiB,
+  provisioned the anonymous read-only data source/dashboard, emitted no plugin-
+  installer/thread failure and left zero scoped containers, volumes or networks.
+- Corrected focused platform/reset tests pass39/39, CI policy passes33/33 and
+  the complete candidate gate passes15/15 tasks in62.976 seconds with one
+  cached task. No heavyweight proof was repeated after that unchanged source.
 
 ### Evidence
 

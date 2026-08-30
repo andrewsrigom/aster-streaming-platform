@@ -201,10 +201,17 @@ read-only Prometheus data source and one 15-panel dashboard, publishes only
 loopback port3001, grants finite anonymous Viewer access, joins only `edge` and
 uses disposable bounded tmpfs state. Fixed queries separate user impact,
 dependency health and runtime saturation. Grafana is absent from product and
-`platform-status` readiness. The complete candidate gate passes15/15 tasks in
-74.899 seconds, including platform73/73, CI policy33/33, documentation, AI state,
-formatting, lint and security. Protected live image/provisioning acceptance
-remains.
+`platform-status` readiness. The initial complete candidate gate passed15/15
+tasks in74.899 seconds. Protected run `33316483464` then exposed an
+underprovisioned64-PID/256-MiB Grafana startup plus attempted background plugin
+installation. One isolated local probe reproduced it and measured100 startup
+PIDs,87 healthy PIDs and253.2 MiB. The correction uses128 PIDs,384 MiB and
+disables plugin preinstallation/automatic update. Its isolated repeat became
+healthy with99 PIDs/225.9 MiB, provisioned the read-only data source/dashboard,
+emitted no plugin-installer/thread failure and left zero scoped resources. The
+corrected complete candidate gate passes15/15 tasks in62.976 seconds, including
+platform73/73, CI policy33/33, documentation, AI state, formatting, lint and
+security. One corrective publication and protected live acceptance remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

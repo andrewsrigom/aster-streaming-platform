@@ -348,6 +348,13 @@ test("operational overview preserves bounded immutable provisioning and three di
       'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "false"',
     ],
     ["compose", "/var/lib/grafana:size=64m", "/var/lib/grafana:size=1g"],
+    ["compose", "mem_limit: 384m", "mem_limit: 256m"],
+    ["compose", "pids_limit: 128", "pids_limit: 64"],
+    [
+      "compose",
+      'GF_PLUGINS_PREINSTALL_DISABLED: "true"',
+      'GF_PLUGINS_PREINSTALL_DISABLED: "false"',
+    ],
     ["datasource", "editable: false", "editable: true"],
     ["datasource", "http://prometheus:9090", "http://127.0.0.1:9090"],
     ["dashboardProvider", "allowUiUpdates: false", "allowUiUpdates: true"],

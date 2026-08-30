@@ -15,8 +15,9 @@ Implemented boundary
   multi-platform digest
   sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b.
 - Grafana is optional, loopback-only on 127.0.0.1:3001, Viewer-only,
-  edge-network-only, non-root, read-only and bounded to 0.5 CPU,256 MiB memory,
-  64 PIDs and 72 MiB total tmpfs.
+  edge-network-only, non-root, read-only and bounded to 0.5 CPU,384 MiB memory,
+  128 PIDs and 72 MiB total tmpfs. Plugin preinstallation and automatic updates
+  are disabled.
 - The Prometheus data source and dashboard are immutable repository
   provisioning. Grafana has no durable named volume and no route to owner
   services, PostgreSQL, Redis, broker or object storage.
@@ -66,16 +67,42 @@ Result:
   repository memory 61 queue items,124 session entries,0 violations
   secret scan 0 findings
 
+Corrected resource-bound candidate:
+  15 passed,0 failed,1 cached,62.976 seconds
+  platform tests 73 passed,0 failed
+  CI-policy tests 33 passed,0 failed
+  documentation 239 documents,2942 headings,1500 links,0 violations
+  repository memory 61 queue items,124 session entries,0 violations
+  secret scan 0 findings
+
 Protected acceptance contract
 -----------------------------
+
+Protected run 33316483464 failed before acceptance because the initial64-PID
+limit was below Grafana13.2 startup demand; the container exited2 while bundled
+plugin processes reported `newosproc`. One isolated local reproduction measured
+100/128 PIDs during startup,87 after health, and253.2/256 MiB under the initial
+memory cap. It also exposed background plugin installation attempts. The
+corrected candidate uses128 PIDs,384 MiB and explicitly disables plugin
+preinstallation/automatic update. No product container or retained Aster data
+was used; the unique probe project was removed with zero containers, volumes or
+networks left.
+
+The corrected isolated start became healthy with99/128 PIDs and225.9/384 MiB.
+Anonymous APIs returned database `ok`, data source UID `aster-prometheus` at
+`http://prometheus:9090` with `readOnly:true`, and the provisioned non-editable
+dashboard UID. Bounded logs contained no `backgroundinstaller`, failed plugin
+install or `newosproc`. The second exact probe also left zero containers,
+volumes and networks.
 
 The changed Local platform job will build the digest-pinned image and wait for
 its health check. It then verifies the anonymous health response, fixed data
 source UID/URL/health, one released SLI population query through the Grafana
 proxy and dashboard UID/read-only state. Finally it stops only Grafana and
 requires the unchanged platform-status container to remain healthy. This
-evidence is planned until a protected exact-head run passes; it is not claimed
-from the unavailable local Docker daemon.
+evidence is planned until a protected exact-head run passes. The isolated local
+proof above supports the corrected resource boundary but does not replace the
+protected full-profile acceptance.
 
 Rollback
 --------

@@ -28,8 +28,9 @@ Add one pinned Grafana OSS 13.2.0 container to the existing observability/full
 profile. Bake a read-only Prometheus data source and a provisioned Aster
 operational-overview dashboard into a repository-owned image. Bind Grafana only
 to `127.0.0.1:3001`, allow finite local anonymous Viewer access, disable writes
-and external update/plugin activity, and verify dashboard structure plus live
-provisioning in protected CI.
+and external update/plugin activity, bound measured startup to 0.5 CPU,384 MiB
+and128 PIDs, and verify dashboard structure plus live provisioning in protected
+CI.
 
 ## Boundaries
 

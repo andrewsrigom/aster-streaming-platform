@@ -367,6 +367,10 @@ export function validateWorkflowPolicy(
       "operational overview acceptance must have a bounded protected step",
     ],
     [
+      /- name: Report bounded optional-profile startup failure\s+if: failure\(\)\s+timeout-minutes: 1\s+run: \|[\s\S]*?--profile full logs --no-color --tail 120 grafana prometheus/u,
+      "optional-profile startup failure must preserve bounded Grafana and Prometheus diagnostics",
+    ],
+    [
       /http:\/\/127\.0\.0\.1:3001\/api\/datasources\/uid\/aster-prometheus\/health/u,
       "protected acceptance must verify the provisioned Prometheus data source",
     ],
