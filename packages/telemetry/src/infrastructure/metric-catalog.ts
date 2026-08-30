@@ -16,6 +16,10 @@ export const EVENT_AGE_BUCKETS_SECONDS = Object.freeze([
   0.1, 0.5, 1, 5, 15, 30, 60, 300, 900, 1_800, 3_600,
 ]);
 
+export const PRODUCT_DURATION_BUCKETS_SECONDS = Object.freeze([
+  0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30, 60, 120, 180, 240, 300,
+]);
+
 export const ASTER_METRIC_CATALOG = Object.freeze({
   httpDuration: Object.freeze({
     name: "http.server.request.duration",

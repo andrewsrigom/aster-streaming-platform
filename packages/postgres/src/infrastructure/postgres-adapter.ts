@@ -363,6 +363,28 @@ function safePoolCount(read: () => number, maximum: number): number {
   }
 }
 
+function metricPoolCounts(
+  pool: AsterPostgresPool,
+  maximum: number,
+): Readonly<{ total: number; idle: number; waiting: number }> | undefined {
+  try {
+    const total = pool.totalCount;
+    const idle = pool.idleCount;
+    const waiting = pool.waitingCount;
+    if (
+      ![total, idle, waiting].every(
+        (value) => Number.isSafeInteger(value) && value >= 0 && value <= maximum,
+      ) ||
+      idle > total
+    ) {
+      return undefined;
+    }
+    return Object.freeze({ total, idle, waiting });
+  } catch {
+    return undefined;
+  }
+}
+
 function isPgQueryTimeout(error: unknown): boolean {
   if (!(error instanceof Error)) {
     return false;
@@ -635,16 +657,19 @@ export function createAsterPostgresAdapterWithPoolFactory(
     if (!options.telemetry.recordPool) {
       return;
     }
-    const current = snapshot();
+    const counts = metricPoolCounts(pool, options.maxConnections);
+    if (!counts) {
+      return;
+    }
     try {
       options.telemetry.recordPool.call(options.telemetry.target, {
         pool: options.poolRole,
-        state: current.state,
+        state,
         maximum: options.maxConnections,
-        total: current.totalConnections,
-        idle: current.idleConnections,
-        reserved: current.reservedSlots,
-        waiting: current.vendorWaitingConnections,
+        total: counts.total,
+        idle: counts.idle,
+        reserved: reservedSlots,
+        waiting: counts.waiting,
       });
     } catch {
       // Metrics remain best effort and cannot change database behavior.

@@ -201,6 +201,26 @@ export async function createLocalEventDelivery(
       async publish(event, signal) {
         const key = Buffer.from(event.aggregate.id),
           value = Buffer.from(JSON.stringify(event));
+        const ageMs = eventAgeMs(event.occurredAt, factories.now());
+        const recordPublication = (status: string): void => {
+          try {
+            options.telemetry.recordEventDelivery?.({
+              owner: options.owner,
+              stage: "publish",
+              outcome: publicationOutcome(status),
+              ...(ageMs === undefined ? {} : { ageMs }),
+            });
+          } catch {
+            /* Optional telemetry cannot decide outbox acknowledgement. */
+          }
+        };
+        if (transport.snapshot().state !== "ready") {
+          const connected = await transport.connect(signal);
+          if (connected.status !== "completed") {
+            recordPublication(connected.status);
+            return "unavailable";
+          }
+        }
         const result = await transport.publish(
           {
             topic: EVENT_TOPICS[options.owner],
@@ -212,17 +232,7 @@ export async function createLocalEventDelivery(
           },
           signal,
         );
-        const ageMs = eventAgeMs(event.occurredAt, factories.now());
-        try {
-          options.telemetry.recordEventDelivery?.({
-            owner: options.owner,
-            stage: "publish",
-            outcome: publicationOutcome(result.status),
-            ...(ageMs === undefined ? {} : { ageMs }),
-          });
-        } catch {
-          /* Optional telemetry cannot decide outbox acknowledgement. */
-        }
+        recordPublication(result.status);
         try {
           options.logger.info({
             event: "aster.events.publication",
@@ -251,14 +261,15 @@ export async function createLocalEventDelivery(
       async step(signal) {
         const deadline = createAsterDeadline({ timeoutMs: 7000, parentSignal: signal });
         try {
+          let consumerAvailable = true;
           if (
+            handler &&
             transport.snapshot().state !== "ready" &&
             (await transport.connect(deadline.signal)).status !== "completed"
           ) {
-            return "unavailable";
+            consumerAvailable = false;
           }
-          let consumerAvailable = true;
-          if (handler && transport.snapshot().consumerState !== "running") {
+          if (handler && consumerAvailable && transport.snapshot().consumerState !== "running") {
             const started = await transport.startConsumer(
               { topic: EVENT_TOPICS.identity, fromBeginning: true, handle: handler },
               deadline.signal,

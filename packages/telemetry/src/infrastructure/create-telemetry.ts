@@ -74,6 +74,7 @@ import {
   DISCOVERY_FRESHNESS_BUCKETS_SECONDS,
   EVENT_AGE_BUCKETS_SECONDS,
   HTTP_DURATION_BUCKETS_SECONDS,
+  PRODUCT_DURATION_BUCKETS_SECONDS,
 } from "./metric-catalog.js";
 import {
   parseDependencyCompletion,
@@ -764,7 +765,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           instrumentName: ASTER_METRIC_CATALOG.productOperationDuration.name,
           aggregation: {
             type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
-            options: { boundaries: [...HTTP_DURATION_BUCKETS_SECONDS], recordMinMax: true },
+            options: { boundaries: [...PRODUCT_DURATION_BUCKETS_SECONDS], recordMinMax: true },
           },
           attributesProcessors: [
             createAllowListAttributesProcessor(["aster.product.operation", "aster.outcome"]),

@@ -933,6 +933,16 @@ test("records finite pool, event-lag, and backend product golden signals", async
       "aster.outcome": "completed",
     },
   );
+  const productDuration = metricByName(
+    collection.metrics,
+    ASTER_METRIC_CATALOG.productOperationDuration.name,
+  );
+  const durationValue = productDuration.points[0]?.value;
+  assert.equal(typeof durationValue, "object");
+  assert.deepEqual(
+    (durationValue as { boundaries: readonly number[] }).boundaries.slice(-6),
+    [30, 60, 120, 180, 240, 300],
+  );
   assert.equal(telemetry.exportHealth().droppedObservations, 3);
   assert.doesNotMatch(
     JSON.stringify([pool.points, eventAge.points, products.points]),

@@ -274,6 +274,34 @@ test("records finite pool snapshots without coupling database behavior to metric
   assert.deepEqual(await degraded.close(), { status: "completed" });
 });
 
+test("omits the whole metric snapshot when a vendor pool counter is malformed", async () => {
+  for (const mutate of [
+    (pool: FakePool) => {
+      pool.totalCount = 3;
+    },
+    (pool: FakePool) => {
+      pool.totalCount = 1;
+      pool.idleCount = 2;
+    },
+    (pool: FakePool) => {
+      Object.defineProperty(pool, "waitingCount", {
+        get: () => {
+          throw new Error("vendor-counter-secret");
+        },
+      });
+    },
+  ]) {
+    const telemetry = new RecordingTelemetry();
+    const pool = new FakePool();
+    mutate(pool);
+    const adapter = createAsterPostgresAdapterWithPoolFactory(options(telemetry), () => pool);
+    assert.deepEqual(telemetry.poolSnapshots, []);
+    assert.equal(adapter.snapshot().state, "open");
+    await adapter.close();
+    assert.deepEqual(telemetry.poolSnapshots, []);
+  }
+});
+
 test("connect and probe reserve one slot, release healthy clients, and emit finite telemetry", async () => {
   const telemetry = new RecordingTelemetry();
   const pool = new FakePool();

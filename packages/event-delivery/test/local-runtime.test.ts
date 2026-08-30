@@ -220,7 +220,7 @@ test("Identity runtime signs exact published bytes after claim commit and before
   runtime.start();
   runtime.start();
   await settled(() => f.waits.length === 1);
-  assert.deepEqual(f.calls, ["connect", "claim", "publish", "ack"]);
+  assert.deepEqual(f.calls, ["claim", "connect", "publish", "ack"]);
   const publication = f.published[0];
   assert.ok(publication);
   const signature = publication.headers?.[IDENTITY_EVENT_SIGNATURE];
@@ -282,6 +282,45 @@ test("publication keeps its outcome but omits future or excessive event age", as
     await runtime.stop();
     await runtime.close(new AbortController().signal);
   }
+});
+test("publication observes pending event age even when broker connection fails", async () => {
+  const f = fixture();
+  const broker = f.factories.broker();
+  const deliveries: unknown[] = [];
+  const runtime = await createLocalEventDelivery(
+    {
+      owner: "identity",
+      connectionString: source("identity"),
+      telemetry: {
+        ...telemetry,
+        recordEventDelivery: (input) => {
+          deliveries.push(input);
+          return { status: "recorded" };
+        },
+      },
+      logger: { info: () => "written" },
+    },
+    {
+      ...f.factories,
+      broker: () => ({
+        ...broker,
+        connect: () => {
+          f.calls.push("connect");
+          return Promise.resolve({ status: "unavailable" });
+        },
+      }),
+    },
+  );
+  runtime.start();
+  await settled(() => f.waits.length === 1);
+  assert.deepEqual(f.calls, ["claim", "connect"]);
+  assert.deepEqual(deliveries, [
+    { owner: "identity", stage: "publish", outcome: "unavailable", ageMs: 0 },
+  ]);
+  assert.equal(f.published.length, 0);
+  assert.equal(f.waits[0], 1000);
+  await runtime.stop();
+  await runtime.close(new AbortController().signal);
 });
 test("Engagement alone creates the narrow consumer pool and earliest-backlog handler; partial setup closes owned pools", async () => {
   const f = fixture();

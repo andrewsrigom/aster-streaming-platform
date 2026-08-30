@@ -302,7 +302,37 @@ jobs:
             return response.json();
           }
           assert.equal((await json('http://127.0.0.1:3100/health/ready')).readiness, 'ready');
-          const required = ['http_server_request_duration_seconds_count', 'aster_dependency_operation_outcomes_total', 'process_cpu_time_seconds_total', 'process_memory_usage_bytes', 'nodejs_eventloop_delay_p99_seconds', 'aster_telemetry_export_attempts_total'];
+          const playbackResponse = await fetch('http://router:4000/graphql', {
+            method: 'POST',
+            signal: AbortSignal.timeout(2000),
+            redirect: 'error',
+            headers: {
+              host: '127.0.0.1:4000',
+              origin: 'http://127.0.0.1:4000',
+              'x-aster-csrf': '1',
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+              query: 'mutation StartPlayback($titleId: ID!) { createPlaybackSession(titleId: $titleId) { code } }',
+              operationName: 'StartPlayback',
+              variables: { titleId: '00000000-0000-4000-8000-000000000001' },
+            }),
+          });
+          assert.equal(playbackResponse.status, 200);
+          const playback = await playbackResponse.json();
+          assert.equal(playback.errors, undefined);
+          assert.equal(playback.data?.createPlaybackSession?.code, 'NOT_PLAYABLE');
+          const required = [
+            'http_server_request_duration_seconds_count',
+            'aster_dependency_operation_outcomes_total',
+            'aster_nodejs_memory_usage_bytes',
+            'aster_postgresql_pool_connections',
+            'aster_product_operation_outcomes_total',
+            'process_cpu_time_seconds_total',
+            'process_memory_usage_bytes',
+            'nodejs_eventloop_delay_p99_seconds',
+            'aster_telemetry_export_attempts_total',
+          ];
           const deadline = Date.now() + 30000;
           let present = [];
           while (Date.now() < deadline) {
