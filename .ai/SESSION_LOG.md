@@ -2,6 +2,42 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-30 — Browser playback telemetry candidate
+
+### Completed
+
+- Released P12-R03/backend P12-R04 through PR46 exact head `95e3a73`, tree
+  `c0eb46a`, protected run `33303267611`, clean confirmation, squash main
+  `2245251` and exact-main run `33304196111`.
+- Activated P12-R11 plus remaining local P12-R04 on
+  `feat/p12-browser-telemetry-policy` from that exact main.
+- Fixed local sampling at 100%, remote sampling at zero, a 64-event
+  player-attempt lifetime and explicit retry/unmount erasure. No browser
+  exporter, ingestion route or server retention exists.
+- Added finite first-frame and rebuffer aggregates. Session failure is excluded
+  from the media-attempt population; pause/seek cancels false stalls and fatal
+  failure closes one active interval before teardown.
+- Focused recorder/adapter tests pass19/19; Web passes116/116; typecheck and
+  scoped ESLint pass. The exact affected candidate passes14/14 with one cached
+  in48.518 seconds. Its prior repeat exposed only the session-log heading ceiling;
+  one oldest checkpoint remains intact as a plain historical record.
+- Documentation passes236 documents,2911 headings and1477 links. Architecture,
+  privacy, retention, SLI-source and repository memory now distinguish local
+  diagnostics from unavailable field telemetry.
+- One Docker availability query found no daemon before creating resources. No
+  retry, WSL/Docker restart, retained-project reset or media rebuild occurred;
+  the changed playable-browser proof remains for protected CI.
+
+### Evidence
+
+- `evidence/phase-12/browser-playback-telemetry.txt`
+- `docs/operations/PLAYBACK_TELEMETRY.md`
+
+### Next action
+
+Commit the coherent candidate, perform one initial review, publish one PR and
+use protected CI for the single changed playable-browser proof.
+
 ## 2026-08-30 — Circuit breakers, failure laboratory and game-day candidate
 
 ### Completed
@@ -2730,9 +2766,9 @@ Execute P00-R10 from a clean public clone, produce the final Phase 00 evidence i
 
 Execute P00-R09 by documenting exact bootstrap, check, demonstration, and cleanup commands without claiming future application commands are implemented.
 
-## 2026-08-26 — Public repository governance
+**Historical: 2026-08-26 — Public repository governance**
 
-### Completed
+**Completed**
 
 - Verified the active GitHub identity and exact target absence, then created the authorized public repository from the reviewed local `main` history without starter files.
 - Observed the first hosted `CI` workflow succeed and confirmed GitHub recognizes the public issue and pull-request templates and initial dependency graph.
@@ -2740,14 +2776,14 @@ Execute P00-R09 by documenting exact bootstrap, check, demonstration, and cleanu
 - Added the active no-bypass `Protect main` ruleset with pull-request, strict aggregate check, review-thread, linear-history, non-fast-forward, and deletion controls.
 - Exercised the protected pull-request path and observed classification, documentation/security, complete source quality, dependency review, and the stable aggregate pass.
 
-### Evidence
+**Evidence**
 
 - Initial hosted run: `32936909301`, success on published commit `4bb0ad47269f5ae9616a0363a599afa655e42ce9`.
 - First protected pull-request run: `32937757207`, success including dependency review.
 - Active ruleset: `21535199`; required check `CI required` from GitHub Actions application `15368`.
 - Raw redacted evidence: `evidence/phase-00/public-repository-governance.txt`.
 
-### Next action
+**Next action**
 
 Execute P00-R08 by adding bounded `.ai/` consistency checks to the normal contribution workflow.
 

@@ -150,7 +150,8 @@ Historical stashes are superseded.
 | 55 | Add a private bounded controlled failure-injection laboratory | P11-R08 | DONE |
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | DONE |
-| 58 | Export platform golden signals and backend product outcomes | P12-R03 | IN_PROGRESS |
+| 58 | Export platform golden signals and backend product outcomes | P12-R03 | DONE |
+| 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -172,9 +173,13 @@ seconds and requires new Node, pool and product metrics in protected real-
 Collector CI. Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
 product/consumer 7/7 and affected 73/73 pass, with 28 cached in 63.79 seconds.
 Protected run `33302931164` stopped before collection because Fetch did not
-preserve the Router Host. The bounded `node:http` correction passes inline
-syntax, CI policy 33/33 and platform policy 68/68. Push once, then complete
-protected CI and confirmation.
+preserve the Router Host. The bounded `node:http` correction produced exact
+head `95e3a73`, tree `c0eb46a`; protected run `33303267611` passed every job,
+including real Collector/Prometheus export and the playable demo. Confirmation
+found no blocker. PR46 squash-merged as tree-identical main `2245251`, and
+exact-main run `33304196111` passed every job. Item58 is released. Item59 starts
+from that exact main and owns the local browser first-frame/rebuffer contract,
+explicit sampling/retention policy and truthful remote-collection boundary.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

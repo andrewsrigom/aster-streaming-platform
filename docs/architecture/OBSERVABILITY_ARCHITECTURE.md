@@ -161,13 +161,12 @@ OTLP endpoints accept only bounded HTTP(S) URLs without embedded credentials. Ex
 
 `forceFlush` and `shutdown` return sanitized bounded results. Concurrent callers share one underlying operation while each caller retains its own cancellation path; canceling one waiter does not cancel or duplicate provider work. An exporter failure absorbed by the OpenTelemetry reader becomes a stable failed flush result. The `lifecycleHooks().flushTelemetry` adapter composes with the released P01-R05 lifecycle and never reflects an exporter error into product behavior or readiness. Runtime observers are disabled before provider shutdown, repeated shutdown is idempotent, and the lifecycle deadline remains authoritative if an exporter does not cooperate.
 
-### Implemented Phase 12 trace candidate
+### Released Phase 12 trace boundary
 
-P12-R01/R02/R08/R09 are implemented through `@aster/telemetry` on PR45; they
-remain unverified until latest exact-head protected CI and confirmation pass. The
-package owns the OpenTelemetry trace SDK and exact-pinned OTLP/HTTP trace
-exporter behind repository types. Application, domain and adapter public
-contracts do not expose SDK types.
+P12-R01/R02/R08/R09 are released through PR45, protected run `33300561121` and
+exact-main run `33301425220`. `@aster/telemetry` owns the OpenTelemetry trace SDK
+and exact-pinned OTLP/HTTP trace exporter behind repository types. Application,
+domain and adapter public contracts do not expose SDK types.
 
 The fixed span vocabulary is:
 
@@ -206,11 +205,12 @@ it does not affect readiness or product outcomes. Exact implementation evidence
 and the protected-verification boundary are indexed in
 [`evidence/phase-12/`](../../evidence/phase-12/README.md).
 
-### Implemented Phase 12 golden-signal candidate
+### Released Phase 12 backend signals
 
-P12-R03 and the backend portion of P12-R04 are implemented locally on the sole
-unpublished dependent. Node runtime observation now separates heap used/total,
-external and array-buffer bytes while retaining official event-loop, V8, CPU,
+P12-R03 and the backend portion of P12-R04 are released through PR46, protected
+run `33303267611` and exact-main run `33304196111`. Node runtime observation
+separates heap used/total, external and array-buffer bytes while retaining
+official event-loop, V8, CPU,
 RSS and uptime instruments. PostgreSQL records maximum, total, idle, reserved
 and waiting snapshots using only five pool roles and three lifecycle states.
 Event relays and consumers record finite outcome and validated age; existing
@@ -226,8 +226,8 @@ publication map their existing finite results to product duration/outcome
 metrics. Product histogram buckets extend through the 300-second media-operation
 ceiling. Telemetry failure is isolated from the already-decided result. Existing
 cache instruments remain the effectiveness source. Browser first-frame and
-rebuffer observations are not remotely collected until P12-R11 defines their
-sampling, privacy, transport and retention policy.
+rebuffer observations follow the separate local policy below and are not
+included in backend product metrics.
 
 The default 128-series per-instrument ceiling remains authoritative. The largest
 new authored family has at most 75 PostgreSQL combinations; event and product
@@ -237,6 +237,21 @@ not metric attributes. Current implementation and limits are recorded in the
 [golden-signal evidence](../../evidence/phase-12/golden-signals.txt),
 [product evidence](../../evidence/phase-12/product-signals.txt) and
 [cardinality budget](../../evidence/phase-12/metric-cardinality.txt).
+
+### Implemented Phase 12 browser QoE candidate
+
+The Web player samples every local attempt into one 64-event memory-only journal
+and finite aggregate. It classifies first frame only from a decoded-frame signal,
+counts completed post-frame rebuffer intervals, excludes pause/seek time and
+erases the recorder on retry or unmount. Reports contain no identifiers, URLs,
+signed media values or arbitrary fields.
+
+Remote browser sample rate is zero. There is no browser exporter, ingestion
+route or server retention, so this candidate makes no field-SLI claim. The
+[browser playback telemetry policy](../operations/PLAYBACK_TELEMETRY.md) records
+measurement definitions, sampling, retention, privacy and future activation
+gates. Focused implementation evidence remains under the Phase12 index until
+the candidate completes protected acceptance.
 
 ## SLIs
 
@@ -250,7 +265,8 @@ Initial critical SLIs:
 - media publication success;
 - continue-watching freshness.
 
-Exact definitions are in `docs/operations/SLIS_SLOS_AND_ALERTS.md`.
+Exact definitions are in
+[SLIs, SLOs, and Alerts](../operations/SLIS_SLOS_AND_ALERTS.md).
 
 ## Dashboards
 

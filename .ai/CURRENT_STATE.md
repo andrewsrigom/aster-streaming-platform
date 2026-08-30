@@ -43,9 +43,12 @@ media runner3/3 and affected gate73/73 with53 cached in53.307 seconds pass.
 Exact-head run `33300561121` passed every required job and the requested
 blocker-focused confirmation reported no major issue. PR45 squash-merged as
 main `ce66f9c58a64ef49b66d9b2749e9b4b1fef50ec0`; exact-main run `33301425220`
-passed every required job and releases P12-R01/R02/R08/R09. P12-R03/R04 backend
-golden signals are active locally on that exact main. Full Phase00–14 goal
-stays active.
+passed every required job and releases P12-R01/R02/R08/R09. PR46 exact head
+`95e3a73`, tree `c0eb46a`, then passed protected run `33303267611` and clean
+confirmation. It squash-merged as tree-identical main `2245251`; exact-main run
+`33304196111` passed every job and releases P12-R03 plus the backend portion of
+P12-R04. The local browser QoE and P12-R11 policy slice is active. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -89,13 +92,12 @@ durable outbox intent. The local candidate gate passes73/73 with53 cached in
 main `ce66f9c` and exact-main run `33301425220` complete its release. No hosted
 backend, dashboard, SLO or product contract is claimed by this slice.
 
-P12-R03/R04 backend metrics are active locally on
-`feat/p12-golden-product-signals`, rebased exactly on released main `ce66f9c`. The
-slice owns finite Node memory, PostgreSQL pool, event age/delivery and backend
-product-result signals. Existing HTTP/dependency golden signals, cache metrics,
-event-loop/V8 instrumentation and local browser QoE are reused. Browser remote
-collection remains explicitly deferred until its P12-R11 sampling, privacy,
-transport and retention policy; no ingestion service is implied.
+P12-R03 and the backend portion of P12-R04 are released through PR46 exact head
+`95e3a73`, tree `c0eb46a`, protected run `33303267611`, clean confirmation,
+squash main `2245251` and exact-main run `33304196111`. The slice exports finite
+Node memory, PostgreSQL pool, event age/delivery and backend product-result
+signals. Existing HTTP/dependency golden signals, cache metrics and
+event-loop/V8 instrumentation remain active.
 
 Source `4a0221e`, tree `ffa3ce8`, preserves the corrected linked Discovery
 consumer while adding the finite metrics. Local review corrected future and
@@ -111,9 +113,27 @@ PostgreSQL 31/31, event delivery 25/25, combined product/consumer 7/7 and the
 affected gate 73/73 with 28 cached in 63.79 seconds pass. Protected run
 `33302931164` exposed only a diagnostic bug: Fetch did not preserve the Router's
 required Host and received 403 before collecting metrics. The bounded probe now
-uses `node:http` with the explicit reviewed Host; inline syntax, CI policy 33/33
-and platform policy 68/68 pass. One corrective push, protected CI and
-confirmation remain.
+uses `node:http` with the explicit reviewed Host. The corrected exact-head and
+exact-main runs both passed the real Collector/Prometheus assertion, all
+protected integrations and Docker playable demo.
+
+P12-R04/R11 browser QoE is active on `feat/p12-browser-telemetry-policy`, based
+exactly on released main `2245251`. The existing player measures session,
+manifest, decoded first frame, rendition, rebuffer, fatal-error and completion
+events in a 64-sample memory-only journal without identifiers or media URLs.
+This slice makes its sampling and lifetime explicit, adds an aggregate
+first-frame/rebuffer result, clears observations on retry/unmount and prevents
+pause/seek time from becoming false rebuffer time. Remote collection remains
+disabled until a separately reviewed trusted ingestion and retention design
+exists; no endpoint or field-QoE claim is implied.
+
+Focused recorder/adapter tests pass19/19 and the complete Web suite passes
+116/116. Typecheck and scoped lint pass. The affected candidate gate passes
+14/14 tasks with one cached in48.518 seconds, including production Web build,
+public-artifact/privacy checks, documentation, architecture, security and AI
+state. One read-only Docker query found no local daemon before resource
+creation, so the changed playable-browser proof remains for protected CI; no
+WSL/Docker restart or repeated host diagnostic was attempted.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -367,14 +387,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 product/golden-signal completion, formal SLIs/SLOs, dashboards, alerts,
-diagnostic exercises, sampling/retention and operational overview remain.
+Phase12 browser QoE acceptance, formal SLIs/SLOs, dashboards, alerts,
+diagnostic exercises and operational overview remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete PR45 protected CI, confirmation, merge and exact-main proof while
-implementing the unpublished dependent P12-R03/R04 backend signal slice.
+Complete P12-R11 and the remaining P12-R04 local browser QoE evidence, then
+define the Phase12 SLIs/SLOs from released signal sources.
 
 ## Runtime and recovery
 

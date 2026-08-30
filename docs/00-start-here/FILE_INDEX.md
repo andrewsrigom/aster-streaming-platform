@@ -210,6 +210,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/operations/HTTP_TRANSPORT.md`](../operations/HTTP_TRANSPORT.md) — HTTP Transport
 - [`docs/operations/INCIDENT_RESPONSE.md`](../operations/INCIDENT_RESPONSE.md) — Incident Response
 - [`docs/operations/LOCAL_DEVELOPMENT.md`](../operations/LOCAL_DEVELOPMENT.md) — Local Development
+- [`docs/operations/PLAYBACK_TELEMETRY.md`](../operations/PLAYBACK_TELEMETRY.md) — Browser Playback Telemetry
 - [`docs/operations/REPOSITORY_GOVERNANCE.md`](../operations/REPOSITORY_GOVERNANCE.md) — Repository Governance
 - [`docs/operations/RELEASE_PROCESS.md`](../operations/RELEASE_PROCESS.md) — Release Process
 - [`docs/operations/RUNBOOKS.md`](../operations/RUNBOOKS.md) — Operational Runbooks

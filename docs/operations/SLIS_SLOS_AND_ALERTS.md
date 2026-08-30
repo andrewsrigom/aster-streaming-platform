@@ -44,9 +44,13 @@ These are initial definitions to implement and calibrate in Phase 12. Numeric ta
 
 **Good:** first frame observed within the target and no fatal error before it.
 
-**Source:** privacy-reviewed browser telemetry.
+**Current source:** the privacy-reviewed local player measurement described in
+[Browser Playback Telemetry](PLAYBACK_TELEMETRY.md). Remote sampling is zero, so
+no population-level series or central aggregation currently exists.
 
-**Target:** calibrated after browser, geography, network, and CDN baselines.
+**Target:** unavailable until a reviewed non-zero field source establishes
+browser, geography, network and CDN baselines. Local/CI samples are not promoted
+into a field objective.
 
 ## SLI 5 — Progress write
 

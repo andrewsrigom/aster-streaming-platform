@@ -11,6 +11,7 @@ import {
 import {
   classifyPlayerFailure,
   createPlaybackExperience,
+  playbackTelemetryPolicy,
 } from "../features/playback/experience.ts";
 import {
   defaultPlayerPreferences,
@@ -235,6 +236,7 @@ test("QoE keeps measured finite samples, deduplicates milestones, caps memory an
   assert.deepEqual(experience.snapshot(), []);
   time = 125;
   experience.record("session_success", { durationMs: 25 });
+  experience.mediaAttempt();
   experience.record("first_frame");
   experience.record("first_frame");
   experience.waiting();
@@ -245,11 +247,20 @@ test("QoE keeps measured finite samples, deduplicates milestones, caps memory an
     { event: "first_frame", atMs: 25 },
     { event: "rebuffer", atMs: 80, durationMs: 55 },
   ]);
+  assert.deepEqual(experience.summary(), {
+    firstFrame: "succeeded",
+    rebufferCount: 1,
+    rebufferDurationMs: 55,
+    eventCount: 3,
+    truncated: false,
+  });
   const details = { height: 240, manifestUrl, sessionId };
   for (let i = 0; i < 100; i++) {
     experience.record("rendition_switch", details);
   }
   assert.equal(experience.snapshot().length, 64);
+  assert.equal(experience.summary().truncated, true);
+  assert.equal(experience.summary().eventCount, playbackTelemetryPolicy.maximumEvents);
   assert.doesNotMatch(JSON.stringify(experience.snapshot()), /http|sessionId|manifestUrl/u);
   experience.snapshot().pop();
   assert.equal(experience.snapshot().length, 64);
@@ -257,4 +268,88 @@ test("QoE keeps measured finite samples, deduplicates milestones, caps memory an
   assert.equal(classifyPlayerFailure("networkError", "fragLoadError"), "network");
   assert.equal(classifyPlayerFailure("mediaError", "bufferAppendError"), "decode");
   assert.equal(classifyPlayerFailure("networkError", "subtitleTrackLoadError"), "caption");
+});
+
+test("QoE policy keeps all attempts local, classifies pre-frame failure and erases on disposal", () => {
+  assert.deepEqual(playbackTelemetryPolicy, {
+    schemaVersion: 1,
+    localAttemptSampleRate: 1,
+    remoteAttemptSampleRate: 0,
+    maximumEvents: 64,
+    retention: "player_attempt",
+  });
+  let time = 10;
+  const experience = createPlaybackExperience(() => time);
+  experience.record("session_success", { durationMs: Number.POSITIVE_INFINITY });
+  experience.mediaAttempt();
+  experience.record("fatal_error", {
+    error: "network",
+    durationMs: -10,
+    height: 99999,
+  });
+  assert.deepEqual(experience.summary(), {
+    firstFrame: "failed",
+    failure: "network",
+    rebufferCount: 0,
+    rebufferDurationMs: 0,
+    eventCount: 2,
+    truncated: false,
+  });
+  experience.record("first_frame", { durationMs: 12 });
+  assert.equal(
+    experience.snapshot().some(({ event }) => event === "first_frame"),
+    false,
+  );
+  experience.dispose();
+  time = 20;
+  experience.record("session_failure", { error: "session" });
+  experience.waiting();
+  experience.playing();
+  assert.deepEqual(experience.snapshot(), []);
+  assert.deepEqual(experience.summary(), {
+    firstFrame: "not_attempted",
+    rebufferCount: 0,
+    rebufferDurationMs: 0,
+    eventCount: 0,
+    truncated: false,
+  });
+});
+
+test("session failure is excluded from the first-frame attempt population", () => {
+  const experience = createPlaybackExperience(() => 10);
+  experience.record("session_failure", { error: "not-playable", durationMs: 2 });
+  experience.record("first_frame", { durationMs: 3 });
+  assert.deepEqual(experience.summary(), {
+    firstFrame: "not_attempted",
+    failure: "not-playable",
+    rebufferCount: 0,
+    rebufferDurationMs: 0,
+    eventCount: 1,
+    truncated: false,
+  });
+});
+
+test("QoE clock failure cannot escape into playback", () => {
+  const experience = createPlaybackExperience(() => {
+    throw new Error("clock unavailable");
+  });
+  assert.doesNotThrow(() => {
+    experience.record("session_success", { durationMs: 1 });
+    experience.mediaAttempt();
+    experience.record("first_frame", { durationMs: 2 });
+    experience.waiting();
+    experience.playing();
+  });
+  assert.equal(experience.summary().firstFrame, "succeeded");
+  assert.equal(experience.summary().rebufferCount, 0);
+
+  let time = 100;
+  const backwards = createPlaybackExperience(() => time);
+  backwards.record("session_success");
+  backwards.mediaAttempt();
+  backwards.record("first_frame", { durationMs: 1 });
+  backwards.waiting();
+  time = 90;
+  backwards.playing();
+  assert.equal(backwards.summary().rebufferCount, 0);
 });

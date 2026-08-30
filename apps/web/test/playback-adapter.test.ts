@@ -59,8 +59,8 @@ function fixture(supported = true) {
   const failures: PlayerFailure[] = [];
   const states: PlayerMediaState[] = [];
   const preferences: unknown[] = [];
-  const experience = createPlaybackExperience();
   let clock = 1000;
+  const experience = createPlaybackExperience(() => clock);
   const instances: FakeHls[] = [];
   class FakeHls {
     static isSupported() {
@@ -218,6 +218,17 @@ test("adaptive media reports actual frame, switches, captions and completion wit
     assert.ok(f.media.frame);
     f.media.frame();
     f.media.dispatchEvent(new Event("waiting"));
+    f.time(1010);
+    f.media.dispatchEvent(new Event("pause"));
+    f.media.dispatchEvent(new Event("playing"));
+    f.media.dispatchEvent(new Event("waiting"));
+    f.time(1020);
+    f.media.seeking = true;
+    f.media.dispatchEvent(new Event("seeking"));
+    f.media.seeking = false;
+    f.media.dispatchEvent(new Event("playing"));
+    f.media.dispatchEvent(new Event("waiting"));
+    f.time(1055);
     f.media.dispatchEvent(new Event("playing"));
     f.media.textTracks.items.push({
       kind: "subtitles",
@@ -236,6 +247,14 @@ test("adaptive media reports actual frame, switches, captions and completion wit
       f.experience.snapshot().map(({ event }) => event),
       ["manifest_loaded", "rendition_switch", "first_frame", "rebuffer", "completion"],
     );
+    assert.deepEqual(f.experience.summary(), {
+      firstFrame: "succeeded",
+      firstFrameDurationMs: f.experience.summary().firstFrameDurationMs,
+      rebufferCount: 1,
+      rebufferDurationMs: 35,
+      eventCount: 5,
+      truncated: false,
+    });
     assert.doesNotMatch(JSON.stringify(f.experience.snapshot()), /https?:|titleId|sessionId/);
   } finally {
     adapter.dispose();
@@ -313,6 +332,34 @@ test("caption errors are visible but finite fatal errors tear down once", () => 
   adapter.dispose();
   assert.deepEqual(f.failures, ["caption", "manifest"]);
   assert.equal(f.hls().destroyed, 1);
+});
+
+test("fatal failure closes one active rebuffer interval before teardown", () => {
+  const f = fixture();
+  const adapter = attachPlayback(f.options);
+  f.hls().emit(Hls.Events.MANIFEST_PARSED);
+  assert.ok(f.media.frame);
+  f.media.frame();
+  f.media.dispatchEvent(new Event("waiting"));
+  f.time(1125);
+  f.hls().emit(Hls.Events.ERROR, {
+    fatal: true,
+    type: "networkError",
+    details: "fragmentLoadError",
+  });
+  adapter.dispose();
+  assert.deepEqual(f.experience.summary(), {
+    firstFrame: "succeeded",
+    firstFrameDurationMs: f.experience.summary().firstFrameDurationMs,
+    rebufferCount: 1,
+    rebufferDurationMs: 125,
+    eventCount: 4,
+    truncated: false,
+  });
+  assert.deepEqual(
+    f.experience.snapshot().map(({ event }) => event),
+    ["manifest_loaded", "first_frame", "rebuffer", "fatal_error"],
+  );
 });
 
 test("an unresponsive origin has a finite startup deadline", (context) => {

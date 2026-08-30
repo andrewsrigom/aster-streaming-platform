@@ -1,7 +1,9 @@
 # P12-R04 backend product signals
 
-Status: implemented locally on source `4a0221e09a149ad2d6a488f50ec4956922af1cab`;
-not yet verified or released.
+Status: released from implementation source
+`4a0221e09a149ad2d6a488f50ec4956922af1cab` through exact evidence head
+`95e3a73`, protected run `33303267611`, PR46 squash main `2245251` and
+successful exact-main run `33304196111`.
 
 ## Implemented contract
 
@@ -26,8 +28,10 @@ without changing publication or recovery status.
 Existing cache duration/outcome/payload instruments remain the cache-
 effectiveness source; this slice does not duplicate them. Existing local player
 state still measures first frame and rebuffering for the demo, but remote browser
-collection remains explicitly deferred until P12-R11 owns sampling, privacy,
-transport and retention. Therefore this candidate makes no field-QoE claim.
+collection was explicitly deferred to P12-R11. The later policy now sets local
+sampling to 100%, remote sampling to zero and retention to one player attempt;
+therefore the released backend slice and current browser candidate make no
+field-QoE claim.
 
 ## Verification
 
