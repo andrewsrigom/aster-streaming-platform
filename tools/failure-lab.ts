@@ -268,6 +268,8 @@ export function createAsterFailureLabHttpAdapter(
   let active = 0;
   let started = false;
   let closed = false;
+  let listenPromise: Promise<void> | undefined;
+  let closePromise: Promise<void> | undefined;
 
   const observation = (event: AsterFailureLabEvent, activation: number): void => {
     observeSafely(options.observe, {
@@ -400,19 +402,24 @@ export function createAsterFailureLabHttpAdapter(
     });
   });
 
-  return {
-    async close(): Promise<void> {
-      if (closed) {
-        return;
+  const close = (): Promise<void> => {
+    if (closePromise !== undefined) {
+      return closePromise;
+    }
+    closed = true;
+    for (const controller of controllers) {
+      controller.abort();
+    }
+    for (const socket of sockets) {
+      socket.destroy();
+    }
+    closePromise = (async () => {
+      try {
+        await listenPromise;
+      } catch {
+        // A failed bind has no listener to close.
       }
-      closed = true;
-      for (const controller of controllers) {
-        controller.abort();
-      }
-      for (const socket of sockets) {
-        socket.destroy();
-      }
-      if (!started || !server.listening) {
+      if (!server.listening) {
         return;
       }
       await new Promise<void>((resolve, reject) => {
@@ -425,39 +432,56 @@ export function createAsterFailureLabHttpAdapter(
         });
         server.closeAllConnections();
       });
-    },
-    async start(): Promise<AsterFailureLabHttpAddress> {
-      if (started || closed) {
-        throw new AsterFailureLabConfigurationError(
-          "state",
-          "Failure-injection adapter can be started exactly once",
-        );
-      }
-      started = true;
-      await new Promise<void>((resolve, reject) => {
-        const onError = (error: Error): void => {
-          reject(error);
-        };
-        server.once("error", onError);
-        server.listen(0, LOOPBACK_HOST, () => {
-          server.removeListener("error", onError);
-          resolve();
-        });
+    })();
+    return closePromise;
+  };
+
+  const isClosed = (): boolean => closed;
+
+  const start = async (): Promise<AsterFailureLabHttpAddress> => {
+    if (started || closed) {
+      throw new AsterFailureLabConfigurationError(
+        "state",
+        "Failure-injection adapter can be started exactly once",
+      );
+    }
+    started = true;
+    listenPromise = new Promise<void>((resolve, reject) => {
+      const onError = (error: Error): void => {
+        reject(error);
+      };
+      server.once("error", onError);
+      server.listen(0, LOOPBACK_HOST, () => {
+        server.removeListener("error", onError);
+        resolve();
       });
-      const address = server.address() as AddressInfo | null;
-      if (address === null || address.address !== LOOPBACK_HOST) {
-        await this.close();
-        throw new AsterFailureLabConfigurationError(
-          "state",
-          "Failure-injection adapter did not bind the required loopback address",
-        );
-      }
-      return Object.freeze({
-        host: LOOPBACK_HOST,
-        origin: `http://${LOOPBACK_HOST}:${address.port}`,
-        port: address.port,
-      });
-    },
+    });
+    await listenPromise;
+    if (isClosed()) {
+      await close();
+      throw new AsterFailureLabConfigurationError(
+        "state",
+        "Failure-injection adapter was closed during startup",
+      );
+    }
+    const address = server.address() as AddressInfo | null;
+    if (address === null || address.address !== LOOPBACK_HOST) {
+      await close();
+      throw new AsterFailureLabConfigurationError(
+        "state",
+        "Failure-injection adapter did not bind the required loopback address",
+      );
+    }
+    return Object.freeze({
+      host: LOOPBACK_HOST,
+      origin: `http://${LOOPBACK_HOST}:${address.port}`,
+      port: address.port,
+    });
+  };
+
+  return {
+    close,
+    start,
   };
 }
 

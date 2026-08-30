@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { glob, readFile, stat } from "node:fs/promises";
 import { request } from "node:http";
 import { resolve } from "node:path";
 import test from "node:test";
 import { setTimeout as wait } from "node:timers/promises";
+import { promisify } from "node:util";
 
 import {
   ASTER_FAILURE_LAB_MAX_BODY_BYTES,
@@ -15,6 +17,8 @@ import {
   type AsterFailureLabHttpOptions,
   type AsterFailureLabObservation,
 } from "./failure-lab.ts";
+
+const execute = promisify(execFile);
 
 interface HttpResult {
   body: string;
@@ -134,6 +138,41 @@ test("laboratory refuses production and invalid or unbounded construction", () =
     (error: unknown) =>
       error instanceof AsterFailureLabConfigurationError && error.issue === "mode",
   );
+});
+
+test("close waits for pending startup and concurrent close calls share complete cleanup", async () => {
+  const moduleUrl = new URL("./failure-lab.ts", import.meta.url).href;
+  const source = `
+    import assert from "node:assert/strict";
+    const module = await import(${JSON.stringify(moduleUrl)});
+    const adapter = module.createAsterFailureLabHttpAdapter({
+      environment: "local",
+      mode: "latency",
+      scenario: "startup-close-race"
+    });
+    const starting = adapter.start();
+    const closing = adapter.close();
+    const closingAgain = adapter.close();
+    const [startResult, closeResult, secondCloseResult] = await Promise.allSettled([
+      starting,
+      closing,
+      closingAgain
+    ]);
+    assert.equal(startResult.status, "rejected");
+    assert.ok(startResult.reason instanceof module.AsterFailureLabConfigurationError);
+    assert.equal(startResult.reason.issue, "state");
+    assert.equal(closeResult.status, "fulfilled");
+    assert.equal(secondCloseResult.status, "fulfilled");
+    await adapter.close();
+    await assert.rejects(adapter.start(), (error) =>
+      error instanceof module.AsterFailureLabConfigurationError && error.issue === "state"
+    );
+    process.stdout.write(JSON.stringify({ cleanup: "complete", listener: "closed" }));
+  `;
+  const result = await execute(process.execPath, ["--input-type=module", "--eval", source], {
+    timeout: 3_000,
+  });
+  assert.deepEqual(JSON.parse(result.stdout), { cleanup: "complete", listener: "closed" });
 });
 
 test("latency is real, visibly tagged and immutable against request or option mutation", async () => {
