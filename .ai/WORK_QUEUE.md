@@ -164,9 +164,10 @@ event delivery23/23, media runner3/3 and affected gate73/73 with53 cached in
 run `33300561121`; blocker-focused confirmation and merge remain. Item58 is the
 sole dependent local work, rebased on that exact head. Its implementation
 previously passed telemetry19/19, PostgreSQL30/30, event delivery23/23, focused
-product/consumer5/5 and affected73/73. Signal, product-outcome and cardinality
-evidence are present. The new exact source and repeated affected gate must be
-recorded after rebase; it cannot publish, merge or release before item57.
+product/consumer5/5 and affected73/73. Exact source `ce9ac1c`, tree `fb0717f`,
+passes the repeated gate with63 cached in49.553 seconds. Signal,
+product-outcome and cardinality evidence are present; it cannot publish, merge
+or release before item57.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

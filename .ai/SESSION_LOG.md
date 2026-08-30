@@ -159,9 +159,9 @@ Append new entries at the top. Keep entries factual and concise.
   age/delivery and backend product-result metrics; browser collection waits for
   the explicit P12-R11 policy.
 - Resolved the rebase overlap by retaining both the linked Discovery consumer
-  scope and the finite delivery metric. Rebased source `d8a1d45`, tree
-  `bb124de`, passes Discovery3/3 and the complete affected gate73/73 with44
-  cached in58.801 seconds.
+  scope and the finite delivery metric. Exact rebased source `ce9ac1c`, tree
+  `fb0717f`, passes Discovery3/3 and the complete affected gate73/73 with63
+  cached in49.553 seconds.
 - Focused golden-signal suites pass: telemetry19/19, PostgreSQL30/30, event
   delivery23/23 and combined backend product/consumer5/5. Added exact signal,
   backend-product and cardinality evidence without claiming browser field QoE,

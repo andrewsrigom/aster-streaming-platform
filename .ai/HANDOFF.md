@@ -16,9 +16,9 @@ must not be restored over this branch.
 P12-R03/R04 backend golden signals are active locally on the sole permitted
 dependent `feat/p12-golden-product-signals`, rebased on exact `9a058ee`. Its
 change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
-product-result metrics without browser remote collection. Source `d8a1d45`,
-tree `bb124de`, passes telemetry19/19, PostgreSQL30/30, event delivery23/23,
-focused product/consumer5/5 and the affected gate73/73 with44 cached in58.801
+product-result metrics without browser remote collection. Source `ce9ac1c`,
+tree `fb0717f`, passes telemetry19/19, PostgreSQL30/30, event delivery23/23,
+focused product/consumer5/5 and the affected gate73/73 with63 cached in49.553
 seconds. Evidence and architecture documentation are updated but not committed
 or published yet.
 

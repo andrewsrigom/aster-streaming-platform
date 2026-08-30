@@ -25,8 +25,8 @@ verification or release.
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 
 P12-R03 and the backend portion of P12-R04 are implemented locally on the sole
-unpublished dependent at source `d8a1d45`. The rebased affected gate passes
-73/73 tasks with 44 cached in 58.801 seconds. These signals remain unverified
+unpublished dependent at source `ce9ac1c`, tree `fb0717f`. The rebased affected
+gate passes 73/73 tasks with 63 cached in 49.553 seconds. These signals remain unverified
 until the predecessor releases, this branch rebases onto exact main, and its own
 review/protected CI completes. Formal SLIs/SLOs, dashboards, alerts, three
 diagnostic exercises, browser sampling/retention and the operational overview

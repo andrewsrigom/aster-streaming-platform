@@ -5,8 +5,9 @@ verified or released.
 
 ## Exact candidate
 
-- Predecessor evidence head: `e5f93e14785ce9bf43327bb5fd9238e53fcf8656`
-- Source commit: `d8a1d4598df7c3e023bb7ffc47b3d3f5b580f4e1`
+- Predecessor evidence head: `9a058eea1c0a5002aae91e4ec20142ac6430231e`
+- Source commit: `ce9ac1c652627d7a98aba27654a617e12e855531`
+- Source tree: `fb0717f14ffe9530d7e5872bbc67e971df9ff0ac`
 - Branch: `feat/p12-golden-product-signals`
 - Runtime: Node.js 24.19.0 and pnpm 11.24.0
 - Environment: WSL Ubuntu-20.04, process-local OpenTelemetry reader
@@ -45,7 +46,7 @@ transaction behavior.
   and consumer roles and publication metrics.
 - Discovery linked-consumer tests: 3/3 pass; owner read, projection, checkpoint,
   log and delivery metric execute in the active consumer scope.
-- `pnpm check:changed`: 73/73 tasks pass, 44 cached, in 58.801 seconds after the
+- `pnpm check:changed`: 73/73 tasks pass, 63 cached, in 49.553 seconds after the
   required rebase onto the corrected predecessor.
 - `git diff --check`: pass.
 
