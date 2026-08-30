@@ -1,0 +1,123 @@
+# P11-R08/R09 private controlled failure injection
+
+Status: corrected local candidate; confirmation, protected exact-head CI and
+release pending.
+
+## Exact environment
+
+- Base: `59600aea669d34ec727c1f243d162608261295aa`
+- Base tree: `d1ed21c23fc17638cb7909e96c5e5a43bcc8cbaf`
+- Branch: `feat/p11-failure-injection`
+- Runtime: Node.js 24.19.0 and pnpm 11.24.0
+- Host: WSL Ubuntu-20.04 using ephemeral IPv4 loopback sockets
+- Docker, PostgreSQL, Redis, broker, object storage and retained media: not used
+  or changed by this tools-only experiment
+- Initial source commit: `53bb71b0c4579d55e2c446a290577f7e8df8e048`
+- Initial source tree: `750e0032d29163fe0a38436129e81c0e39c40ef4`
+- Corrected source commit: `896a3df02a60faeddeb6a6dffc3b2dc7a3714381`
+- Corrected source tree: `9584024a7e96335a3d95da64e3babdc67efca0c2`
+- Corrected complete affected gate: 11/11 tasks, one cached, 49.422s
+
+## Implemented boundary
+
+`tools/failure-lab.ts` provides two development adapters:
+
+1. one HTTP scenario fixed at construction and bound only to `127.0.0.1`;
+2. exactly-two sequential deliveries of the same synthetic event reference.
+
+Both accept only `local` or `integration`. `production` fails before a server or
+delivery exists. No app, service, worker or package imports the tool, and a
+source-tree contract test preserves that structural isolation. There is no
+environment-variable switch, product route, remote bind option or request field
+that selects a fault.
+
+Finite policy bounds:
+
+- delay: 1–10,000 ms;
+- terminal hold: 1–30,000 ms;
+- active saturation slots: 1–16;
+- injected activations: 1–100;
+- configured response: at most 16,384 UTF-8 bytes;
+- selected status: 429, 500, 502, 503 or 504 for the error mode only.
+
+Every response capable of carrying headers includes fixed injection, mode and
+scenario headers. Reset/partial-stream outcomes and duplicate deliveries expose
+the same `aster.failure_injection` tag through finite observations. Observer
+failure is ignored and cannot change the injected result.
+
+## Focused verification
+
+Command:
+
+`pnpm failure-lab:test`
+
+Initial result: 10/10 pass in 728.174 ms after correcting the test harness's
+directory read. The first attempt passed all nine behavior tests but the
+structural scan tried to read a matched directory and failed with `EISDIR`.
+The harness now checks that each glob result is a file before reading; product
+behavior was unchanged.
+
+Verified scenarios:
+
+- invalid production, label, delay, body, status and mode refuse construction;
+- real delayed response remains unsettled before its configured delay;
+- path, query, request headers and post-construction option mutation cannot
+  change the fixed scenario;
+- client cancellation terminates a held timeout and a separate timeout reaches
+  its finite laboratory deadline with tagged 504;
+- selected 502 and malformed JSON remain fixed and tagged;
+- connection reset and partial stream close the exact loopback socket;
+- one saturation slot is admitted while concurrent overflow receives immediate
+  tagged 503 without a queue;
+- later activations exceed a finite budget and are rejected;
+- one synthetic payload reference reaches the handler exactly twice, in order;
+- the exact second handler failure is surfaced while observer failure remains
+  non-authoritative;
+- production source trees contain no import or identifier reference to the
+  tools-only laboratory.
+
+Initial PR43 review discussion `3888409705` reproduced one cleanup race:
+`start()` marked startup pending before `listen()` completed, while an immediate
+`close()` saw no active listener, marked the adapter closed and returned. The
+later bind then stayed live because every subsequent close was a no-op.
+
+Corrected source `896a3df` creates one shared close promise, waits for a pending
+bind to settle, closes all accepted sockets and the listener exactly once, and
+makes a start closed during that interval reject with the finite state error.
+The regression runs this exact ordering in a bounded child process so a future
+leaked listener fails instead of hanging the main test runner. Focused tests now
+pass11/11 in726.650ms; TypeScript, focused ESLint and formatting pass.
+
+Additional focused checks:
+
+- root TypeScript: pass;
+- focused ESLint: initial three `Promise.withResolvers<void>` style findings
+  corrected to the repository's `undefined` convention, then pass;
+- focused Prettier: pass;
+- repository AI state: pass with P11-R08 as the sole active requirement.
+
+The first complete affected gate stopped at `unused:check`: seven constants and
+five types were exported even though the tools-only module had no second
+consumer. The correction removed that unnecessary public surface without
+changing behavior. `pnpm check:changed` then passed all 11 affected root tasks
+in 2m14.356s; two tasks were cached. TypeScript, full workspace ESLint,
+formatting, unused-code, architecture, platform tooling, documentation, AI
+memory, community, secret, CI, staged-file and commit-policy checks all passed.
+The exact source commit then passed the staged secret and formatting hooks. The
+first commit invocation had no pinned Node.js on the hook path and wrote no
+commit; repeating it with the documented pinned path created the exact source
+above without changing the index.
+
+After the review remediation, `pnpm check:changed` passed all 11 affected root
+tasks with one cached in49.422s. No service composition, production import,
+public route, dependency or persistent state changed, so no Docker/media/database
+experiment was invalidated.
+
+## Interpretation and limits
+
+The current candidate makes failure mechanics reproducible without exposing a
+chaos endpoint or production switch. It does not claim a Redis, broker,
+database, media-worker or complete service game day. Those experiments will use
+owner-specific controls and retained product assertions in the next Phase 11
+item. Shared-host timing proves ordering and bounded termination only; it is not
+a latency SLO or capacity benchmark.

@@ -1,15 +1,17 @@
 # Current State
 
-Last updated: 2026-08-29
+Last updated: 2026-08-30
 
 ## Active phase
 
 **Phase 11 — Resilience and Failure Laboratory**
 
-Status: **IN_PROGRESS**. Phase10 is released. P11-R01 is released through
-exact-head review, protected CI, squash main `ebdcb18` and successful exact-main
-run `33285339274`. P11-R05 is active on `feat/p11-circuit-breakers`, based
-exactly on that merge. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
+passed exact-head confirmation and protected run `33289750207`, then PR42
+squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
+run `33290477608` passed every required job. P11-R08 is active on
+`feat/p11-failure-injection`, based exactly on that merge. Full Phase00–14 goal
+stays active.
 
 ## Verified
 
@@ -204,8 +206,24 @@ Playback session or Discovery projection validation rejected it. Superseded run
 passed. Corrected exact source `92452d1` has tree `804c9cd`; it validates and
 copies publication/snapshot identity, freshness, lease and content inside the
 breaker-accounted action. Playback41/41, Discovery109/109 and the corrected
-affected gate pass 53/53 with 39 cached in 52.928 seconds. Confirmation review,
-protected exact-head CI and publication remain.
+affected gate pass 53/53 with 39 cached in 52.928 seconds. Evidence head
+`dfaf47d` passed protected run `33289750207` and clean confirmation. PR42
+squash-merged as tree-identical main `59600ae`; exact-main run `33290477608`
+passed every required job and releases P11-R05.
+
+P11-R08/R09 now implements a tools-only failure laboratory. One immutable
+construction-time HTTP scenario binds only IPv4 loopback and covers latency,
+timeout, reset, selected error, malformed response, partial stream and finite
+saturation. A second adapter delivers the same synthetic event exactly twice.
+Production activation, request-controlled selection, remote binding and
+production-source imports are structurally refused. Initial focused tests passed10/10;
+the corrected affected candidate passes11/11 tasks in2m14.356s after removing
+unused public surface rejected by the first gate. Initial PR43 review discussion
+`3888409705` found that `close()` could race pending `listen()` and leave a
+listener alive. Corrected source `896a3df` shares one complete close promise,
+waits for pending bind and rejects startup closed during that interval. Focused
+tests pass11/11 and the corrected affected gate passes11/11 in49.422s.
+Confirmation, protected exact-head CI and publication remain.
 
 ## Historical Phase 09 corrections
 
@@ -253,15 +271,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R05 review/protected CI/publication remains. Later Phase11 controlled
-injection, game days and runbooks remain planned.
+P11-R08/R09 controlled injection is active. Phase11 game days, consolidated
+bulkhead/fallback/amplification proof and runbook closeout remain planned.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Complete P11-R05: publish the evidenced operation-scoped circuit-breaker
-remediation, resolve the two initial review threads, run one confirmation and
-protected exact-head CI, then merge and verify exact-main CI.
+Publish the evidenced P11-R08 private loopback-only HTTP failure modes,
+exactly-two synthetic duplicate delivery, bounded saturation and structural
+production isolation through one review, protected CI and exact-main release.
 
 ## Runtime and recovery
 

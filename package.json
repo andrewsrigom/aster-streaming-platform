@@ -18,6 +18,7 @@
     "discovery:cache-integration": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-cache-integration.mjs",
     "discovery:runtime": "turbo run build --filter=@aster/discovery && node ./tools/run-discovery-runtime.mjs",
     "engagement:runtime": "turbo run build --filter=@aster/engagement && node ./tools/run-engagement-runtime.mjs",
+    "failure-lab:test": "node --test ./tools/failure-lab.test.ts",
     "playback:runtime": "turbo run build --filter=@aster/playback && node ./tools/run-playback-runtime.mjs",
     "router:demo": "node ./tools/verify-local-router.mjs",
     "router:observability": "node ./tools/verify-router-observability.mjs",
@@ -82,7 +83,7 @@
     "telemetry:check": "turbo run build --filter=@aster/telemetry && pnpm --filter=@aster/telemetry check",
     "telemetry:test": "turbo run test --filter=@aster/telemetry",
     "toolchain:check": "node ./tools/verify-toolchain.mjs",
-    "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs ./tools/run-quality-gate.test.ts",
+    "toolchain:test": "node --test ./tools/verify-toolchain.test.mjs ./tools/clean-foundation.test.mjs ./tools/run-quality-gate.test.ts ./tools/failure-lab.test.ts",
     "typecheck": "tsc --project ./tsconfig.json --noEmit",
     "unused:check": "knip --no-config-hints"
   },
