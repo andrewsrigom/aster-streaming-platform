@@ -7,6 +7,7 @@ import { fileURLToPath, URL } from "node:url";
 
 const execute = promisify(execFile);
 const tool = fileURLToPath(new URL("./run-media-candidate.mjs", import.meta.url));
+const media = fileURLToPath(new URL("../infra/compose/media.yml", import.meta.url));
 test("bounded image preparation precedes the processing deadline and owner startup", async () => {
   const source = await readFile(tool, "utf8");
   const ownerBuild = source.indexOf('await docker([...compose, "build", "media-prepare"], 360000)');
@@ -24,6 +25,18 @@ test("bounded image preparation precedes the processing deadline and owner start
     source.includes('assert.ok(!reuse, "Explicit candidate reuse must not start a decoder.")'),
   );
   assert.ok(source.includes("clearTimeout(deadline)"));
+});
+
+test("actual media coordinator receives the reviewed bounded OTLP endpoint", async () => {
+  const [runnerSource, mediaSource] = await Promise.all([
+    readFile(tool, "utf8"),
+    readFile(media, "utf8"),
+  ]);
+  assert.match(runnerSource, /"infra\/compose\/compose\.yml"[\s\S]*"infra\/compose\/media\.yml"/u);
+  const prepare = mediaSource.split("  media-prepare:")[1]?.split("  media-decoder:")[0];
+  assert.ok(prepare);
+  assert.match(prepare, /ASTER_OTLP_METRICS_ENDPOINT: http:\/\/collector:4318\/v1\/metrics/u);
+  assert.doesNotMatch(prepare, /depends_on:[\s\S]*collector:/u);
 });
 test("media candidate runner refuses wrong targets and remote overrides before Docker", async () => {
   const valid = ["aster-test", "00000000-0000-4000-8000-000000000001"];

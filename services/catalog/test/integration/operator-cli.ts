@@ -169,7 +169,7 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
   assert.equal(result.value.version, 2);
   const log = JSON.parse(created.stderr) as Record<string, unknown>;
   assert.equal(log["event"], "aster.catalog.command_completed");
-  assert.match(String(log["traceId"]), /^[a-f0-9]{32}$/u);
+  assert.equal(log["traceId"], undefined);
   assert.doesNotMatch(
     created.stderr,
     /aster-test-only|postgresql:|example\.invalid|Synthetic creator/u,
@@ -236,6 +236,19 @@ export async function verifyOperatorCli(admin: Pool, port: number): Promise<void
     },
   });
   assert.equal(retired.code, 0, retired.stderr);
+  const retirementLog = JSON.parse(retired.stderr) as Record<string, unknown>;
+  assert.match(String(retirementLog["traceId"]), /^[a-f0-9]{32}$/u);
+  assert.match(String(retirementLog["spanId"]), /^[a-f0-9]{16}$/u);
+  assert.ok(retirementLog["traceFlags"] === 0 || retirementLog["traceFlags"] === 1);
+  const retirementEvent = await admin.query<{ event: Record<string, unknown> }>(
+    "SELECT event FROM catalog.publication_outbox WHERE title_id = $1 AND event_type = 'catalog.title-retired'",
+    [id(1)],
+  );
+  const storedTrace = (retirementEvent.rows[0]?.event["trace"] ?? {}) as Record<string, unknown>;
+  assert.equal(
+    storedTrace["traceparent"],
+    `00-${String(retirementLog["traceId"])}-${String(retirementLog["spanId"])}-0${String(retirementLog["traceFlags"])}`,
+  );
   const staleMedia = await run("operate-local", media);
   assert.equal(staleMedia.code, 1);
   assert.deepEqual(JSON.parse(staleMedia.stdout), { status: "rights_not_approved" });

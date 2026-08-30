@@ -120,6 +120,7 @@ services:
       ASTER_CATALOG_OPERATOR_ENABLED: "true"
       ASTER_MEDIA_ACQUISITION_ENABLED: "true"
       ASTER_MEDIA_PREPARE_DECODER_ENABLED: "true"
+      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
       ASTER_CATALOG_DATABASE_URL: postgresql://aster_catalog_local@postgres:5432/aster
       ASTER_CATALOG_DATABASE_PASSWORD: aster-test-only
     networks: [platform]

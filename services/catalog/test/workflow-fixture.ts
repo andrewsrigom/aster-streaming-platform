@@ -82,7 +82,11 @@ interface State {
   events: CatalogPublicationEvent[];
   activations: CatalogPublicationEvent[];
 }
-export function workflowFixture(actorId = id(3), allowLocalMedia = false) {
+export function workflowFixture(
+  actorId = id(3),
+  allowLocalMedia = false,
+  traceContext?: () => Readonly<{ traceparent: string }> | undefined,
+) {
   let state: State = {
     titles: new Map(),
     rights: [],
@@ -243,6 +247,7 @@ export function workflowFixture(actorId = id(3), allowLocalMedia = false) {
     now: () => time,
     nextId: () => id(sequence++),
     digest: hash,
+    ...(traceContext ? { traceContext } : {}),
   });
   const controller: AbortController = new AbortController();
   const request: CatalogCommandRequest = {

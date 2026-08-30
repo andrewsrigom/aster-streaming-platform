@@ -19,6 +19,7 @@ import type {
   AsterCollectedMetricPoint,
   AsterDependencyCompletion,
   AsterDependencyObservationInput,
+  AsterEventProductionObservationInput,
   AsterDiscoveryRailMetricInput,
   AsterDiscoverySearchSampleInput,
   AsterHttpCompletion,
@@ -29,6 +30,7 @@ import type {
   AsterObservationCompletionResult,
   AsterRecordMetricResult,
   AsterStartDependencyObservationResult,
+  AsterStartEventProductionObservationResult,
   AsterStartHttpObservationResult,
   AsterTelemetry,
   AsterTelemetryExportHealth,
@@ -65,6 +67,7 @@ import {
 import {
   parseDependencyCompletion,
   parseDependencyObservationInput,
+  parseEventProductionObservationInput,
   parseHttpCompletion,
   parseHttpObservationInput,
   validateTelemetryOptions,
@@ -886,6 +889,48 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           };
           this.dependencyDuration.record(duration, completedAttributes);
           this.dependencyOutcomes.add(1, completedAttributes);
+          traceLease?.complete(parsedCompletion.outcome);
+          return Object.freeze({ status: "completed" });
+        },
+        ...(traceLease ? { run: traceLease.run, traceContext: traceLease.context } : {}),
+      }),
+    });
+  }
+
+  startEventProduction(
+    input: AsterEventProductionObservationInput,
+  ): AsterStartEventProductionObservationResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const parsedInput = parseEventProductionObservationInput(input);
+    if (parsedInput === undefined) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    if (!this.acquireObservation()) {
+      return Object.freeze({ status: "rejected", reason: "capacity_exceeded" });
+    }
+
+    const traceLease = this.traces.startEventProduction(parsedInput);
+    let completed = false;
+    return Object.freeze({
+      status: "started",
+      observation: Object.freeze({
+        complete: (completion: AsterDependencyCompletion): AsterObservationCompletionResult => {
+          if (completed) {
+            return Object.freeze({ status: "already_completed" });
+          }
+          if (this.closed) {
+            return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+          }
+          const parsedCompletion = parseDependencyCompletion(completion);
+          if (parsedCompletion === undefined) {
+            this.recordDrop("invalid_completion");
+            return Object.freeze({ status: "rejected", reason: "invalid_completion" });
+          }
+          completed = true;
+          this.releaseObservation();
           traceLease?.complete(parsedCompletion.outcome);
           return Object.freeze({ status: "completed" });
         },

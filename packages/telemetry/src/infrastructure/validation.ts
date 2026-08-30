@@ -8,6 +8,7 @@ import {
   AsterTelemetryConfigurationError,
   type AsterDependencyCompletion,
   type AsterDependencyObservationInput,
+  type AsterEventProductionObservationInput,
   type AsterHttpCompletion,
   type AsterHttpObservationInput,
   type AsterTelemetryOptions,
@@ -387,4 +388,11 @@ export function parseDependencyCompletion(value: unknown): AsterDependencyComple
     return undefined;
   }
   return Object.freeze({ outcome: outcome as AsterDependencyCompletion["outcome"] });
+}
+
+export function parseEventProductionObservationInput(
+  value: unknown,
+): AsterEventProductionObservationInput | undefined {
+  const record = readDataRecord(value, new Set(["owner"]));
+  return record?.["owner"] === "catalog" ? Object.freeze({ owner: "catalog" }) : undefined;
 }

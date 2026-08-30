@@ -207,6 +207,10 @@ export interface AsterDependencyObservationInput {
   readonly linkedTraceparent?: string;
 }
 
+export interface AsterEventProductionObservationInput {
+  readonly owner: "catalog";
+}
+
 export interface AsterDependencyCompletion {
   readonly outcome: AsterObservationOutcome;
 }
@@ -228,6 +232,8 @@ export interface AsterDependencyObservation {
   readonly traceContext?: () => AsterTraceContext;
 }
 
+export type AsterEventProductionObservation = AsterDependencyObservation;
+
 export type AsterStartHttpObservationResult =
   | Readonly<{ status: "started"; observation: AsterHttpObservation }>
   | Readonly<{
@@ -237,6 +243,13 @@ export type AsterStartHttpObservationResult =
 
 export type AsterStartDependencyObservationResult =
   | Readonly<{ status: "started"; observation: AsterDependencyObservation }>
+  | Readonly<{
+      status: "rejected";
+      reason: "invalid_dimension" | "capacity_exceeded" | "telemetry_closed";
+    }>;
+
+export type AsterStartEventProductionObservationResult =
+  | Readonly<{ status: "started"; observation: AsterEventProductionObservation }>
   | Readonly<{
       status: "rejected";
       reason: "invalid_dimension" | "capacity_exceeded" | "telemetry_closed";
@@ -317,8 +330,8 @@ export interface AsterCollectedMetric {
 }
 
 export interface AsterCollectedTrace {
-  readonly name: "aster.dependency.operation" | "aster.http.server";
-  readonly kind: "client" | "server";
+  readonly name: "aster.dependency.operation" | "aster.event.produce" | "aster.http.server";
+  readonly kind: "client" | "consumer" | "producer" | "server";
   readonly traceId: string;
   readonly spanId: string;
   readonly parentSpanId?: string;
@@ -347,6 +360,9 @@ export interface AsterTelemetry {
   startDependencyOperation(
     input: AsterDependencyObservationInput,
   ): AsterStartDependencyObservationResult;
+  startEventProduction(
+    input: AsterEventProductionObservationInput,
+  ): AsterStartEventProductionObservationResult;
   recordDiscoveryRail?(input: AsterDiscoveryRailMetricInput): AsterRecordMetricResult;
   recordDiscoverySearchSample?(input: AsterDiscoverySearchSampleInput): AsterRecordMetricResult;
   recordCacheOperation?(input: AsterCacheMetricInput): AsterRecordMetricResult;

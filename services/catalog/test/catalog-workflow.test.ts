@@ -36,7 +36,8 @@ async function ready(f: ReturnType<typeof workflowFixture>) {
   );
 }
 test("editorial journey writes immutable review, attributed metadata and versioned publication/retirement events", async () => {
-  const f = workflowFixture();
+  const traceparent = `00-${"a".repeat(32)}-${"b".repeat(16)}-01`;
+  const f = workflowFixture(id(3), false, () => ({ traceparent }));
   await ready(f);
   assert.equal((await f.commands.execute("publish", input(4), f.request)).status, "completed");
   assert.equal(f.state().titles.get(id(1))?.state, "PUBLISHED");
@@ -62,6 +63,7 @@ test("editorial journey writes immutable review, attributed metadata and version
   assert.equal(retired.payload.rightsRevision, 3);
   assert.equal(retired.causationId, input(5).mutationId);
   assert.equal(retired.occurredAt, new Date(now * 1000).toISOString());
+  assert.deepEqual(retired.trace, { traceparent });
   assert.doesNotMatch(JSON.stringify(retired), /https:|token|cookie/u);
   assert.equal((await f.commands.execute("reopen", input(6), f.request)).status, "completed");
   assert.equal(
@@ -95,6 +97,20 @@ test("editorial journey writes immutable review, attributed metadata and version
     "completed",
   );
   assert.equal(f.state().titles.get(id(1))?.rightsRevision, 5);
+});
+
+test("invalid or throwing trace context cannot change a durable Catalog event", async () => {
+  for (const traceContext of [
+    () => ({ traceparent: `00-${"0".repeat(32)}-${"b".repeat(16)}-01` }),
+    () => {
+      throw new Error("unavailable trace provider");
+    },
+  ]) {
+    const f = workflowFixture(id(3), false, traceContext);
+    await ready(f);
+    assert.equal((await f.commands.execute("publish", input(4), f.request)).status, "completed");
+    assert.deepEqual(f.state().events[0]?.trace, {});
+  }
 });
 test("missing/copied/foreign/viewer authority cannot enter a transaction; expiry/revocation fail closed", async () => {
   const f = workflowFixture();

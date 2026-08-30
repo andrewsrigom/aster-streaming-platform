@@ -39,6 +39,7 @@ export async function verifyHttpDrain(connectionString: string, redisUrl: string
         return {
           startHttpRequest: (input) => telemetry.startHttpRequest(input),
           startDependencyOperation: (input) => telemetry.startDependencyOperation(input),
+          startEventProduction: (input) => telemetry.startEventProduction(input),
           activeTraceContext: () => telemetry.activeTraceContext(),
           collect: () => telemetry.collect(),
           collectTraces: () => telemetry.collectTraces(),

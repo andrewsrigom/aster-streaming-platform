@@ -13,6 +13,7 @@ import {
   catalogIdentifier,
   catalogRecord,
   catalogTimestamp,
+  catalogTraceparent,
 } from "../domain/values.js";
 import { normalizeCatalogCommand, type CatalogCommand } from "./command-input.js";
 import type {
@@ -35,6 +36,14 @@ const retirement = (kind: CatalogCommandKind): boolean =>
   ["retire", "dispute", "expire"].includes(kind);
 const publishing = (kind: CatalogCommandKind): boolean =>
   ["publish", "replace", "rollback"].includes(kind);
+const eventTrace = (ports: CatalogOperatorPorts): Readonly<{ traceparent?: string }> => {
+  try {
+    const traceparent = ports.traceContext?.()?.traceparent;
+    return Object.freeze(catalogTraceparent(traceparent) ? { traceparent } : {});
+  } catch {
+    return Object.freeze({});
+  }
+};
 const lifecycle = (title: StoredCatalogTitle): CatalogTitleLifecycle => ({
   id: title.id,
   version: title.version,
@@ -360,7 +369,7 @@ export function createCatalogCommands(ports: CatalogOperatorPorts) {
         aggregate: { type: "Title", id: title.id, version: next.title.version },
         correlationId: request.correlationId,
         causationId: command.mutationId,
-        trace: {},
+        trace: eventTrace(ports),
         payload: {
           titleId: title.id,
           publicationId: next.title.publicationId,

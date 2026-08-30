@@ -335,23 +335,32 @@ test("links asynchronous consumption to its producer without making it a child s
     serviceName: "trace-link-test",
     serviceVersion: "1.0.0",
     environment: "test",
-    maxActiveSpans: 4,
+    maxActiveSpans: 6,
   });
-  const producer = telemetry.startHttpRequest({ method: "POST", route: "/graphql" });
-  assert.equal(producer.status, "started");
-  assert.ok(producer.observation.traceContext);
-  const producerContext = producer.observation.traceContext();
-  producer.observation.complete({ outcome: "success", statusCode: 200 });
+  const request = telemetry.startHttpRequest({ method: "POST", route: "/graphql" });
+  assert.equal(request.status, "started");
+  assert.ok(request.observation.run);
+  let producerContext: AsterTraceContext | undefined;
+  request.observation.run(() => {
+    const producer = telemetry.startEventProduction({ owner: "catalog" });
+    assert.equal(producer.status, "started");
+    assert.ok(producer.observation.traceContext);
+    producerContext = producer.observation.traceContext();
+    producer.observation.complete({ outcome: "success" });
+  });
+  assert.ok(producerContext);
+  const exactProducerContext = producerContext;
+  request.observation.complete({ outcome: "success", statusCode: 200 });
 
   const consumer = telemetry.startDependencyOperation({
     dependency: "broker",
     operation: "consume",
-    linkedTraceparent: producerContext.traceparent,
+    linkedTraceparent: exactProducerContext.traceparent,
   });
   assert.equal(consumer.status, "started");
   assert.ok(consumer.observation.traceContext);
   const consumerContext = consumer.observation.traceContext();
-  assert.notEqual(consumerContext.traceId, producerContext.traceId);
+  assert.notEqual(consumerContext.traceId, exactProducerContext.traceId);
   consumer.observation.complete({ outcome: "success" });
 
   const invalidLink = telemetry.startDependencyOperation({
@@ -362,19 +371,59 @@ test("links asynchronous consumption to its producer without making it a child s
   assert.equal(invalidLink.status, "started");
   invalidLink.observation.complete({ outcome: "rejected" });
 
+  const brokerPublish = telemetry.startDependencyOperation({
+    dependency: "broker",
+    operation: "publish",
+  });
+  assert.equal(brokerPublish.status, "started");
+  assert.ok(brokerPublish.observation.traceContext);
+  const brokerPublishContext = brokerPublish.observation.traceContext();
+  brokerPublish.observation.complete({ outcome: "success" });
+
   const collection = await telemetry.collectTraces();
   assert.equal(collection.status, "collected");
+  const produced = collection.traces.find((span) => span.spanId === exactProducerContext.spanId);
+  assert.ok(produced);
+  assert.equal(produced.name, "aster.event.produce");
+  assert.equal(produced.kind, "producer");
+  assert.deepEqual(
+    { ...produced.attributes },
+    {
+      "aster.boundary": "event_producer",
+      "aster.event.owner": "catalog",
+      "aster.outcome": "success",
+    },
+  );
+  assert.equal(produced.parentSpanId, request.observation.traceContext?.().spanId);
   const consumed = collection.traces.find((span) => span.spanId === consumerContext.spanId);
   assert.ok(consumed);
+  assert.equal(consumed.kind, "consumer");
   assert.equal(consumed.parentSpanId, undefined);
   assert.deepEqual(consumed.links, [
-    { traceId: producerContext.traceId, spanId: producerContext.spanId },
+    { traceId: exactProducerContext.traceId, spanId: exactProducerContext.spanId },
   ]);
   const unlinked = collection.traces.find(
-    (span) => span.kind === "client" && span.spanId !== consumerContext.spanId,
+    (span) => span.kind === "consumer" && span.spanId !== consumerContext.spanId,
   );
   assert.ok(unlinked);
   assert.equal(unlinked.links, undefined);
+  const published = collection.traces.find((span) => span.spanId === brokerPublishContext.spanId);
+  assert.ok(published);
+  assert.equal(published.name, "aster.dependency.operation");
+  assert.equal(published.kind, "producer");
+  const metrics = await telemetry.collect();
+  assert.equal(metrics.status, "collected");
+  const dependencyOutcomes = metricByName(
+    metrics.metrics,
+    ASTER_METRIC_CATALOG.dependencyOutcomes.name,
+  );
+  assert.equal(
+    dependencyOutcomes.points.reduce(
+      (total, point) => total + (typeof point.value === "number" ? point.value : 0),
+      0,
+    ),
+    3,
+  );
   await telemetry.shutdown();
 });
 
@@ -437,6 +486,10 @@ test("bounds hostile dimensions and active observation capacity", async () => {
     telemetry.startHttpRequest({ method: "TRACE", route: "/users/secret" } as never),
     { status: "rejected", reason: "invalid_dimension" },
   );
+  assert.deepEqual(telemetry.startEventProduction({ owner: "identity" } as never), {
+    status: "rejected",
+    reason: "invalid_dimension",
+  });
   let invoked = false;
   const proxiedInput = new Proxy(
     { method: "GET", route: "/health/live" },
@@ -472,7 +525,7 @@ test("bounds hostile dimensions and active observation capacity", async () => {
   });
   assert.equal(invoked, false);
   const health = telemetry.exportHealth();
-  assert.equal(health.droppedObservations, 3);
+  assert.equal(health.droppedObservations, 4);
   assert.equal(Object.isFrozen(health), true);
   await telemetry.shutdown();
 });

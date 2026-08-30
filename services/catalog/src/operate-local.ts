@@ -1,7 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
 import { createAsterLogger } from "@aster/runtime";
-import { createAsterTelemetry } from "@aster/telemetry";
+import {
+  createAsterTelemetry,
+  isAsterOtlpMetricsEndpoint,
+  type AsterEventProductionObservation,
+} from "@aster/telemetry";
 import { createCatalogCommands } from "./application/commands.js";
 import { createCatalogMediaRequests } from "./application/request-media.js";
 import { createLocalCatalogOperator } from "./infrastructure/identity/local-operator.js";
@@ -20,22 +24,34 @@ process.once("SIGINT", stop);
 const now = (): number => Math.floor(Date.now() / 1000);
 const started = performance.now();
 const correlationId = randomUUID();
-const traceId = randomUUID().replaceAll("-", "");
-const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
+let database: AsterPostgresAdapter | undefined;
+let failureStatus: "invalid_input" | "unavailable" = "invalid_input";
+const otlpMetricsEndpoint = process.env["ASTER_OTLP_METRICS_ENDPOINT"];
+if (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint)) {
+  throw new Error("Invalid operator telemetry endpoint.");
+}
+const telemetry = createAsterTelemetry({
+  serviceName: "catalog-operator",
+  serviceVersion: "0.0.0",
+  environment: "local",
+  ...(otlpMetricsEndpoint === undefined
+    ? { export: { mode: "none" as const } }
+    : {
+        export: {
+          mode: "otlp-http" as const,
+          endpoint: otlpMetricsEndpoint,
+          intervalMs: 5_000,
+          timeoutMs: 1_000,
+        },
+        shutdownTimeoutMs: 2_000,
+      }),
+});
 const logger = createAsterLogger({
   service: "catalog-operator",
   environment: "local",
   version: "0.0.0",
   destination: process.stderr,
-  traceContextProvider: () => ({ traceId, spanId, traceFlags: 0 }),
-});
-let database: AsterPostgresAdapter | undefined;
-let failureStatus: "invalid_input" | "unavailable" = "invalid_input";
-const telemetry = createAsterTelemetry({
-  serviceName: "catalog-operator",
-  serviceVersion: "0.0.0",
-  environment: "local",
-  export: { mode: "none" },
+  traceContextProvider: () => telemetry.activeTraceContext(),
 });
 try {
   if (process.argv.length !== 2) {
@@ -76,36 +92,71 @@ try {
   if (probe.status !== "rolled_back" || !probe.value) {
     throw new Error("Invalid Catalog runtime privileges.");
   }
+  const operatorDatabase = database;
   const commands = createCatalogCommands({
     authority: operator.authority,
-    transactions: createPostgresCatalogWorkflow(database),
+    transactions: createPostgresCatalogWorkflow(operatorDatabase),
     policy: { commercial: true, allowLocalMedia: true },
     now,
     nextId: randomUUID,
     digest: (text) => createHash("sha256").update(text).digest("hex"),
+    traceContext: () => telemetry.activeTraceContext(),
   });
   const request = { credential: operator.credential, correlationId, signal: controller.signal };
-  const result =
-    command.command === "request-media"
-      ? await createCatalogMediaRequests({
-          authority: operator.authority,
-          transactions: createPostgresCatalogMedia(database),
-          policy: { commercial: true, allowLocalMedia: true },
-          now,
-          digest: (text) => createHash("sha256").update(text).digest("hex"),
-        }).request(command.input, request)
-      : command.command === "inspect"
-        ? await commands.inspect(command.input, request)
-        : await commands.execute(command.command, command.input, request);
+  const emitsEvent = ["publish", "replace", "rollback", "retire", "dispute", "expire"].includes(
+    command.command,
+  );
+  let observation: AsterEventProductionObservation | undefined;
+  if (emitsEvent) {
+    try {
+      const startedObservation = telemetry.startEventProduction({ owner: "catalog" });
+      observation =
+        startedObservation.status === "started" ? startedObservation.observation : undefined;
+    } catch {
+      // Optional telemetry cannot decide the Catalog command.
+    }
+  }
+  const execute = async () => {
+    const result =
+      command.command === "request-media"
+        ? await createCatalogMediaRequests({
+            authority: operator.authority,
+            transactions: createPostgresCatalogMedia(operatorDatabase),
+            policy: { commercial: true, allowLocalMedia: true },
+            now,
+            digest: (text) => createHash("sha256").update(text).digest("hex"),
+          }).request(command.input, request)
+        : command.command === "inspect"
+          ? await commands.inspect(command.input, request)
+          : await commands.execute(command.command, command.input, request);
+    logger.info({
+      event: "aster.catalog.command_completed",
+      operation: command.command,
+      requestId: correlationId,
+      durationMs: performance.now() - started,
+      outcome: result.status === "completed" ? "ok" : "rejected",
+      properties: [["code", result.status]],
+    });
+    return result;
+  };
+  let result;
+  try {
+    result = observation?.run ? await observation.run(execute) : await execute();
+    observation?.complete({
+      outcome:
+        result.status === "completed"
+          ? "success"
+          : result.status === "cancelled"
+            ? "cancelled"
+            : result.status === "unavailable"
+              ? "unavailable"
+              : "rejected",
+    });
+  } catch (error) {
+    observation?.complete({ outcome: "error" });
+    throw error;
+  }
   operator.revoke();
-  logger.info({
-    event: "aster.catalog.command_completed",
-    operation: command.command,
-    requestId: correlationId,
-    durationMs: performance.now() - started,
-    outcome: result.status === "completed" ? "ok" : "rejected",
-    properties: [["code", result.status]],
-  });
   process.stdout.write(JSON.stringify(result) + "\n");
   if (result.status !== "completed") {
     process.exitCode = 1;
@@ -122,6 +173,11 @@ try {
   process.exitCode = 1;
 } finally {
   await database?.close();
+  try {
+    await telemetry.forceFlush(AbortSignal.timeout(1_000));
+  } catch {
+    // Command outcome remains authoritative when export is unavailable.
+  }
   await telemetry.shutdown();
   clearTimeout(deadline);
   process.removeListener("SIGTERM", stop);

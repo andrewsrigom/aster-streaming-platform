@@ -23,6 +23,7 @@ import {
 import type {
   AsterCollectedTrace,
   AsterDependencyObservationInput,
+  AsterEventProductionObservationInput,
   AsterHttpObservationInput,
   AsterObservationOutcome,
   AsterTraceCollectionResult,
@@ -130,7 +131,30 @@ function collectedStatus(code: SpanStatusCode): AsterCollectedTrace["status"] {
 }
 
 function collectedKind(kind: SpanKind): AsterCollectedTrace["kind"] | undefined {
-  return kind === SpanKind.SERVER ? "server" : kind === SpanKind.CLIENT ? "client" : undefined;
+  switch (kind) {
+    case SpanKind.SERVER:
+      return "server";
+    case SpanKind.CLIENT:
+      return "client";
+    case SpanKind.PRODUCER:
+      return "producer";
+    case SpanKind.CONSUMER:
+      return "consumer";
+    case SpanKind.INTERNAL:
+      return undefined;
+  }
+}
+
+function dependencyKind(input: AsterDependencyObservationInput): SpanKind {
+  if (input.dependency === "broker") {
+    if (input.operation === "publish") {
+      return SpanKind.PRODUCER;
+    }
+    if (input.operation === "consume") {
+      return SpanKind.CONSUMER;
+    }
+  }
+  return SpanKind.CLIENT;
 }
 
 function collectedAttributes(span: ReadableSpan): Readonly<Record<string, string>> | undefined {
@@ -236,7 +260,7 @@ export class AsterTraceManager {
   startDependency(input: AsterDependencyObservationInput): AsterTraceLease | undefined {
     return this.start(
       "aster.dependency.operation",
-      SpanKind.CLIENT,
+      dependencyKind(input),
       Object.freeze({
         "aster.boundary": "dependency",
         "aster.dependency": input.dependency,
@@ -244,6 +268,17 @@ export class AsterTraceManager {
       }),
       undefined,
       remoteParent(input.linkedTraceparent),
+    );
+  }
+
+  startEventProduction(input: AsterEventProductionObservationInput): AsterTraceLease | undefined {
+    return this.start(
+      "aster.event.produce",
+      SpanKind.PRODUCER,
+      Object.freeze({
+        "aster.boundary": "event_producer",
+        "aster.event.owner": input.owner,
+      }),
     );
   }
 
@@ -266,7 +301,9 @@ export class AsterTraceManager {
         if (
           kind === undefined ||
           attributes === undefined ||
-          (span.name !== "aster.http.server" && span.name !== "aster.dependency.operation")
+          (span.name !== "aster.http.server" &&
+            span.name !== "aster.dependency.operation" &&
+            span.name !== "aster.event.produce")
         ) {
           return Object.freeze({ status: "failed" });
         }

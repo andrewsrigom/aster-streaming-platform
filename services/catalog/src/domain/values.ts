@@ -53,6 +53,15 @@ export function catalogChecksum(value: unknown): value is string {
   return typeof value === "string" && /^[a-f0-9]{64}$/u.test(value);
 }
 
+export function catalogTraceparent(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    /^00-[a-f0-9]{32}-[a-f0-9]{16}-0[01]$/u.test(value) &&
+    !/^0+$/u.test(value.slice(3, 35)) &&
+    !/^0+$/u.test(value.slice(36, 52))
+  );
+}
+
 export function catalogMediaUrl(value: unknown, kind: "manifest" | "artwork"): value is string {
   if (catalogUrl(value)) {
     return true;
