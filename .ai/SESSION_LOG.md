@@ -65,6 +65,9 @@ Append new entries at the top. Keep entries factual and concise.
   parent budget and establishes that lineage in Playback transport/application.
   Runtime90/90 and Playback38/38 pass; a deterministic 399-ms parent cannot fund
   a 400-ms retry.
+- Committed corrected source `af4951a` with tree `e306bcc`. The complete affected
+  candidate passes53/53 with19 cached in128.838 seconds; exact dependency-policy
+  and retry-timing evidence now records the parent-budget proof.
 
 ### Evidence
 
@@ -80,8 +83,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Run the affected gate, capture the corrected exact source, then publish and
-confirm the parent-budget remediation without adding another retry layer.
+Publish the frozen corrected candidate, resolve/confirm discussion3888100550 and
+require its exact-head protected CI.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

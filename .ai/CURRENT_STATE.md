@@ -179,8 +179,10 @@ signal could cancel but could not reduce retry admission before expiry. The
 local blocking-boundary remediation makes repository child deadlines report the
 minimum monotonic parent budget and establishes that lineage at Playback's
 GraphQL/application boundaries. Runtime90/90 and Playback38/38 pass, including a
-399-ms parent that cannot fund a 400-ms retry. The affected candidate, exact
-evidence, protected CI, resolved thread and confirmation remain.
+399-ms parent that cannot fund a 400-ms retry. Corrected exact source `af4951a`
+has tree `e306bcc`; the affected candidate passes53/53 with19 cached in128.838
+seconds and evidence is updated. Protected CI, resolved thread and confirmation
+remain.
 
 ## Historical Phase 09 corrections
 

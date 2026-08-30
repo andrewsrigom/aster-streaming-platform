@@ -49,11 +49,15 @@ deadline lineage, returns the monotonic minimum parent/child budget, creates tha
 lineage in Playback transport/application, and adds deterministic parent-budget
 tests. Runtime90/90 and Playback38/38 pass.
 
+Corrected exact source `af4951a07f538029e32e855e693bdeb0428ad5b8` has tree
+`e306bcc365782edf157b1448f18fe220831bd43c`. Its affected candidate passes53/53
+with19 cached in128.838 seconds; Phase11 evidence is updated to that source.
+
 ## Exact next actions
 
-1. Run the affected candidate gate for the parent-budget remediation.
-2. Commit code, update exact evidence, then push the frozen head once.
-3. Reply to/resolve discussion3888100550 and run its permitted confirmation.
+1. Commit the corrected evidence/state checkpoint and push the frozen head once.
+2. Reply to/resolve discussion3888100550 and require exact-head protected CI.
+3. Run its permitted confirmation under the recorded stopping rule.
 4. Record release evidence and merge only after exact-head gates pass.
 
 ## Evidence boundaries

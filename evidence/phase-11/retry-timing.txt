@@ -1,10 +1,11 @@
 P11 deadline-bound safe-read timing and failure trace
 Date: 2026-08-29
-Status: verified locally at the exact implementation commit
+Status: verified locally at the corrected exact implementation commit
 
 Source
-- Exact implementation commit: 96e399b11a28e7ea87c7d89d7a2c0df334965b84.
-- Git tree: d66004ce7a92be4e756314d03eadece833edd8a1.
+- Initial implementation commit: 96e399b11a28e7ea87c7d89d7a2c0df334965b84.
+- Parent-budget correction: af4951a07f538029e32e855e693bdeb0428ad5b8.
+- Corrected source tree: e306bcc365782edf157b1448f18fe220831bd43c.
 - Node.js 24.19.0 on WSL2 Linux
   6.18.33.2-microsoft-standard-WSL2 x86_64.
 
@@ -25,13 +26,21 @@ Deterministic runtime trace
   unavailable after 1 attempt and no delay.
 - A delayed scheduler that leaves 349 ms passes the original pre-delay check but
   fails the second gate before attempt 2; result remains 1 attempt.
+- A registered upstream deadline with 399 ms remaining caps a nested 1,000-ms
+  operation deadline. It cannot fund the 50 + 300 + 50 ms retry requirement, so
+  no delay or second attempt starts. Child `remainingMs()` also remains capped
+  when its own clock has more time and aborts at parent exhaustion.
 - Attempt timeout and caller cancellation both start no retry. Cancellation in
   backoff prevents attempt 2. Three configured transient attempts stop exactly
   at the generic ceiling with delays 100 and 200 ms.
-- Runtime focused result: PASS 8/8 in 116.271242 ms. The individual retry,
-  permanent, budget, timeout, cancellation, policy and registry tests all pass.
+- Corrected runtime result: PASS 90/90 in 616.630397 ms. The individual retry,
+  parent-lineage, permanent, budget, timeout, cancellation, policy and registry
+  tests all pass.
 
 Real loopback HTTP trace
+- The individual durations below were captured at initial source `96e399b`; the
+  corrected source changes shared deadline lineage and Playback transport/app
+  propagation, not either Catalog adapter or its classification.
 - Playback 503 -> success: PASS, exactly 2 requests, 19.13012 ms test duration.
 - Playback ECONNRESET -> success: PASS, exactly 2 requests, 19.808216 ms.
 - Playback permanent/protocol scenarios: PASS, exactly 1 request each,
@@ -45,6 +54,9 @@ Real loopback HTTP trace
   16.86762 ms combined test duration.
 - Discovery invalid/concurrent/cancelled work: PASS with no queue.
 - Discovery focused file: PASS 7/7 in 234.955705 ms.
+- Corrected Playback package result at `af4951a`: PASS 38/38 in 3137.806481 ms,
+  including application timeout and shutdown cancellation.
+- Corrected affected candidate: PASS 53/53 tasks, 19 cached, in 128.838 seconds.
 
 Interpretation
 Selected transient reads recover once while remaining inside one logical client

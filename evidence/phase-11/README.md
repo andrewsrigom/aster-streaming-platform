@@ -1,8 +1,8 @@
 # Phase 11 Evidence Index
 
-Status: P11-R01 bounded-safe-read candidate is verified locally at exact source
-`96e399b`; it is not yet reviewed, protected, merged or released. Phase 11 as a
-whole remains in progress.
+Status: P11-R01 bounded-safe-read candidate is verified locally at corrected
+exact source `af4951a`; it is not yet confirmed, protected, merged or released.
+Phase 11 as a whole remains in progress.
 
 ## Current work item
 
