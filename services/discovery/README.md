@@ -1,8 +1,8 @@
 # Discovery search and home rails
 
 Phase 09 search, independent home rails, Web integration and bounded product
-metrics are released. The current Phase 10 candidate adds a bounded optional home
-cache over the same rebuildable PostgreSQL projection. Catalog remains the
+metrics are released. Phase 10 released a bounded optional home cache over the
+same rebuildable PostgreSQL projection. Catalog remains the
 authority for title metadata, publication and rights; Discovery returns federated
 `Title` references so current public metadata is resolved by Catalog.
 
@@ -66,7 +66,7 @@ than suppressing coordination for their retained lifetime.
 
 ## Projection and recovery
 
-Catalog v1 publication events are bounded invalidation hints. For each accepted hint, Discovery fetches one current snapshot through its purpose-separated private Catalog operation before writing. Older versions cannot replace newer state, same-version conflicts fail closed, and retirement or rights-expiry fences cannot be resurrected by replay.
+Catalog v1 publication events are bounded invalidation hints. For each accepted hint, Discovery fetches one current snapshot through its purpose-separated private Catalog operation before writing. That fixed safe read is the sole synchronous retry owner and may make one additional attempt only after a selected transient 502/503/504, `EAI_AGAIN`, `ECONNRESET` or incomplete stream. Both attempts retain the one-operation/no-queue lane and 2,000 ms overall deadline; attempt timeout, permanent/malformed response, Router traffic and writes do not retry. [ADR-0040](../../docs/adr/0040-deadline-bound-safe-read-retries.md) defines the exact 850 ms attempt, response reserve and equal-jitter policy. Older versions cannot replace newer state, same-version conflicts fail closed, and retirement or rights-expiry fences cannot be resurrected by replay.
 
 The active projection stores source version, event provenance, indexed time and a five-minute visibility lease capped by Catalog rights expiry. Expired public rows produce `STALE`, not a fabricated empty success. Consumer progress is stored in the same Discovery transaction before broker acknowledgement. Invalid bounded records enter a finite quarantine; oversized records and full quarantine remain uncommitted.
 

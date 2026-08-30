@@ -36,11 +36,17 @@ Discovery107/107. The affected candidate passes53/53 with19 cached in69.098
 seconds. Exact implementation `96e399b` has tree `d66004c`; evidence is under
 `evidence/phase-11/`.
 
+PR41 initial review at `d5498e0` produced one P2 discussion, `3888089399`: the
+Playback guide contradicted the new safe-read retry. The local batched
+remediation updates Playback and Discovery retry ownership plus stale Phase10
+status in Catalog, Redis architecture and the feature catalog. Runtime behavior
+is unchanged.
+
 ## Exact next actions
 
-1. Commit the evidence checkpoint and publish the coherent candidate once.
-2. Require protected CI and one hosted review at the exact pull-request head.
-3. Batch only blocking remediation, then run one confirmation review.
+1. Run documentation/repository-memory gates and commit the batched review fix.
+2. Push once, reply to/resolve discussion3888089399 and require exact-head CI.
+3. Run one confirmation review under the recorded stopping rule.
 4. Record release evidence and merge only after exact-head gates pass.
 
 ## Evidence boundaries

@@ -54,6 +54,11 @@ Append new entries at the top. Keep entries factual and concise.
 - Committed exact implementation `96e399b` with tree `d66004c`. Its focused
   retry trace passes runtime8/8, Playback6/6 and Discovery7/7; dependency-policy
   and retry-timing artifacts are recorded under `evidence/phase-11/`.
+- Opened PR41 at evidence head `d5498e0`. Initial review discussion3888089399
+  found the Playback guide still said no network retry. The batched remediation
+  documents sole retry ownership in Playback/Discovery and corrects stale
+  Phase10 status in Catalog, Redis architecture and the feature catalog without
+  changing runtime behavior.
 
 ### Evidence
 
@@ -69,8 +74,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish exact P11-R01 evidence, then run protected CI and one review without
-adding retry layers at Router or Apollo Client.
+Publish the documentation remediation, resolve its review thread, then require
+exact-head CI and one confirmation without adding another retry layer.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

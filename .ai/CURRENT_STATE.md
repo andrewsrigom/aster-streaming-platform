@@ -170,7 +170,11 @@ existing concurrency permit. Per-attempt telemetry uses only `catalog`/`read`.
 Runtime88/88, Playback38/38, Discovery107/107 and telemetry12/12 pass. Exact
 implementation `96e399b` has tree `d66004c`; the affected candidate passes53/53
 with19 cached in69.098 seconds. Dependency-policy and retry-timing evidence are
-captured under `evidence/phase-11/`. Review and protected publication remain.
+captured under `evidence/phase-11/`. Initial PR41 review discussion3888089399
+found the Playback README still claimed no network retry. The batched local
+remediation documents sole retry ownership in Playback/Discovery and corrects
+remaining stale Phase10 service/architecture/catalog status. Documentation
+gates, exact-head CI, confirmation and protected publication remain.
 
 ## Historical Phase 09 corrections
 

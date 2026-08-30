@@ -60,7 +60,8 @@ Pattern: cache-aside with a current-owner fence and bounded expiry.
 
 The exact contract and safety trade-off are in
 [ADR-0037](../adr/0037-rights-safe-catalog-cache.md). This section describes the
-locally verified Phase10 candidate; protected release evidence is still pending.
+released Phase10 behavior; protected and exact-main evidence is indexed under
+[`evidence/phase-10`](../../evidence/phase-10/README.md).
 
 ## Discovery rails
 
@@ -82,8 +83,8 @@ Pattern: stale-while-revalidate.
   refresh failure cannot extend the stale boundary
 
 [ADR-0038](../adr/0038-bounded-discovery-home-stale-cache.md) defines the exact
-envelope, lifecycle and client-shape contract. It is a local candidate until
-protected release evidence passes.
+envelope, lifecycle and client-shape contract. Protected and exact-main release
+evidence is indexed under [`evidence/phase-10`](../../evidence/phase-10/README.md).
 
 ## Continue-watching
 
