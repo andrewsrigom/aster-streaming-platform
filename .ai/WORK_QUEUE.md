@@ -288,7 +288,12 @@ and `3890788287` found incomplete stored-trace privacy inspection and missing
 lockfile-only diagnostic invalidation. The local batch checks a bounded stable
 full trace, selects `pnpm-lock.yaml`, passes focused tests 23/23 and passes the
 affected gate 73/73 with 63 cached in 44.855 seconds. Protected acceptance,
-blocking-boundary confirmation and release remain.
+blocking-boundary confirmation and release remain. Published `bf10756` and run
+`33341130651` selected the intended runtime but exposed Tempo's OTLP JSON Base64
+span-ID encoding at the first complete-trace check; cleanup remained exact. The
+local correction converts the hexadecimal expected ID, validates all stored
+spans, passes focused tests 13/13 and passes the affected gate 73/73 with 60
+cached in 54.407 seconds.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

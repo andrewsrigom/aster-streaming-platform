@@ -90,6 +90,8 @@ test("rejects an externally selected or broadly destructive runner", () => {
       "/api/datasources/proxy/uid/aster-tempo/api/v2/traces/${traceId}",
       "/api/v2/traces/${traceId}",
     ],
+    ['Buffer.from(traceId, "hex").toString("base64")', "traceId"],
+    ["      assertStoredTraceMatches(value, traceId);", "      assert.ok(value);"],
     ["| select(", "| unbounded("],
     ["diagnosticTraceReady(response, traceId, scenario)", "true"],
     ["/api/datasources/uid/aster-tempo/health", "/api/health"],

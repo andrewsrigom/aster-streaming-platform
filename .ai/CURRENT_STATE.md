@@ -348,7 +348,14 @@ diagnostic runtime. The local remediation waits for three identical bounded
 full-trace snapshots through Grafana, checks the complete stored trace for raw
 and escaped canaries, and classifies `pnpm-lock.yaml` as diagnostic-changing.
 Focused tests pass 23/23; the affected gate passes 73/73 with 63 cached in
-44.855 seconds. Corrected protected runtime and confirmation remain.
+44.855 seconds. Published `bf10756` selected diagnostics in protected run
+`33341130651`; local-platform job `99336871735` reached the first full-trace
+check and exposed Tempo's OTLP JSON Base64 span-ID representation. The exact
+project cleaned successfully. The current correction converts the hexadecimal
+query ID to Base64, requires all returned span IDs to match, and then checks the
+complete trace for privacy. Focused diagnostic/profile tests pass 13/13 and the
+affected gate passes 73/73 with 60 cached in 54.407 seconds. Corrected protected
+runtime and confirmation remain.
 Architecture, operations, runbooks and licensing are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
@@ -609,8 +616,9 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 ## Not implemented
 
 P12-R10 supporting protected acceptance passes at source `0288555`; the current
-full-trace privacy and lockfile-invalidation remediation still needs protected
-acceptance. Confirmation, merge, exact-main CI and Phase12 closeout remain.
+full-trace privacy and lockfile-invalidation remediation still needs corrected
+protected acceptance after run `33341130651` exposed the OTLP Base64 trace-ID
+representation. Confirmation, merge, exact-main CI and Phase12 closeout remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome

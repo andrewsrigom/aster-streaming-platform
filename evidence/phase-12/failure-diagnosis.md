@@ -328,7 +328,14 @@ TraceQL boundary becomes visible and applies the raw/escaped canary assertion to
 that full stored trace. It also routes `pnpm-lock.yaml` through diagnostic CI
 with an exact single-path test. Focused tests pass 23/23 and the affected gate
 passes 73/73 with 63 cached in 44.855 seconds. Protected runtime acceptance for
-this changed proof remains pending.
+this changed proof remains pending. Published `bf10756` and protected run
+`33341130651` reached the first real complete-trace read. Local-platform job
+`99336871735` failed because Tempo's OTLP JSON spans encode `traceId` as Base64
+bytes, so the hexadecimal request ID is not present verbatim; the exact project
+still cleaned to zero. The local correction converts the expected hexadecimal
+ID to Base64, requires every returned span to match it, and preserves the
+complete serialized privacy assertion. Focused diagnostic/profile tests pass
+13/13 and the affected gate passes 73/73 with 60 cached in 54.407 seconds.
 
 ## Remaining release work
 
@@ -336,7 +343,7 @@ Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the full-trace privacy and lockfile-invalidation remediation and pass
+2. publish the OTLP-ID correction and pass
    its protected three-scenario runtime;
 3. resolve discussions `3890788286`/`3890788287` and obtain the permitted
    blocking-boundary confirmation;

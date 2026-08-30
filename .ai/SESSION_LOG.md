@@ -17,6 +17,12 @@ full snapshot through the archival checkpoint remains in
   canaries. Added lockfile-only diagnostic classification and adverse policy
   coverage. Focused tests pass 23/23; the affected gate passes 73/73 with 63
   cached in 44.855 seconds.
+- Published remediation `bf10756`. Protected run `33341130651` reached the
+  complete-trace check and local-platform job `99336871735` exposed that Tempo
+  represents OTLP JSON span trace IDs as Base64, not the hexadecimal request
+  ID. Exact cleanup passed. The local correction validates every stored span
+  against the Base64 encoding; focused tests pass 13/13 and the affected gate
+  passes 73/73 with 60 cached in 54.407 seconds.
 
 ### Evidence
 
@@ -26,7 +32,7 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the remediation, require protected three-scenario acceptance, resolve
+- Publish the OTLP-ID correction, require protected three-scenario acceptance, resolve
   the two discussions and obtain the permitted blocking-boundary confirmation.
 
 ## 2026-08-30 — Corrected diagnostic protected acceptance

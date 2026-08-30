@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  assertStoredTraceMatches,
   assertTelemetryPrivacy,
   catalogOperationTraceContext,
   classifyDiagnosticScenario,
@@ -329,4 +330,36 @@ test("rejects missing diagnosis signals and private canaries", () => {
   );
   assert.throws(() => assertTelemetryPrivacy(JSON.stringify(storedTrace), [MULTILINE_GRAPHQL]));
   assert.doesNotThrow(() => assertTelemetryPrivacy("bounded sanitized trace", ["missing"]));
+});
+
+test("matches Tempo OTLP JSON trace IDs using their base64 wire encoding", () => {
+  const traceId = "44f093d16ce4a83ecabcca7d9c309427";
+  const storedTrace = {
+    trace: {
+      resourceSpans: [
+        {
+          scopeSpans: [
+            {
+              spans: [
+                {
+                  traceId: Buffer.from(traceId, "hex").toString("base64"),
+                  spanId: "AAAAAAAAAAA=",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  };
+  assert.doesNotThrow(() => assertStoredTraceMatches(storedTrace, traceId));
+  storedTrace.trace.resourceSpans[0].scopeSpans[0].spans[0].traceId = Buffer.from(
+    "a".repeat(32),
+    "hex",
+  ).toString("base64");
+  assert.throws(() => assertStoredTraceMatches(storedTrace, traceId), /mismatched stored trace/u);
+  assert.throws(
+    () => assertStoredTraceMatches({ trace: { resourceSpans: [] } }, traceId),
+    /without spans/u,
+  );
 });

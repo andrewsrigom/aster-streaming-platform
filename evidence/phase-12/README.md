@@ -55,7 +55,13 @@ omitted stored attributes and lockfile-only changes skipped diagnostics. The
 local remediation inspects a bounded stable full trace and adds
 `pnpm-lock.yaml` to diagnostic invalidation. Focused tests pass 23/23 and the
 affected gate passes 73/73 with 63 cached in 44.855 seconds. Corrected protected
-runtime, blocking-boundary confirmation and release remain.
+runtime, blocking-boundary confirmation and release remain. Published
+`bf10756` and protected run `33341130651` reached that real full-trace boundary;
+local-platform job `99336871735` exposed that OTLP JSON encodes span trace IDs
+as Base64 bytes rather than the hexadecimal query ID, while exact cleanup
+passed. The current correction validates every span against the Base64 form and
+passes focused tests 13/13 plus the affected gate 73/73 with 60 cached in
+54.407 seconds.
 
 ## Requirement traceability
 

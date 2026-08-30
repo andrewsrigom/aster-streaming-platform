@@ -58,6 +58,13 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   bounded stable full trace through Grafana, checks all stored attributes and
   adds `pnpm-lock.yaml` to diagnostic invalidation. Focused tests pass 23/23 and
   the affected gate passes 73/73 with 63 cached in 44.855 seconds.
+- Published remediation `bf10756` and protected run `33341130651` reached the
+  first full-trace check. Local-platform job `99336871735` failed because the
+  runner searched the OTLP JSON response for the hexadecimal query ID while
+  Tempo encodes span trace IDs as Base64 bytes; exact cleanup passed. The local
+  correction converts hex to OTLP Base64, validates every stored span, passes
+  focused tests 13/13 and the affected gate 73/73 with 60 cached in 54.407
+  seconds.
 
 ## Protected runtime finding
 

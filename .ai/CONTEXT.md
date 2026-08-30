@@ -113,7 +113,13 @@ invalidate diagnostics. The local batch now waits for a bounded stable full
 trace, checks its complete serialized attributes for privacy, and adds lockfile-
 only diagnostic selection. Focused tests pass 23/23 and the affected gate passes
 73/73 with 63 cached in 44.855 seconds. Corrected protected runtime, confirmation,
-merge, exact-main CI and Phase12 closeout remain. Phase13 has not started.
+merge, exact-main CI and Phase12 closeout remain. Published `bf10756` and
+protected run `33341130651` reached the first complete-trace check, where Tempo
+proved its OTLP JSON span IDs use Base64 rather than the hexadecimal query ID;
+the exact diagnostic project cleaned successfully. The current correction
+converts the expected ID to OTLP Base64, validates every stored span and passes
+focused tests 13/13 plus the affected gate 73/73 with 60 cached in 54.407
+seconds. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

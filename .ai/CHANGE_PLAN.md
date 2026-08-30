@@ -95,6 +95,15 @@ the selected TraceQL result cannot prove privacy for attributes omitted by
 diagnostic exercise. The current remediation batch inspects a bounded, stable
 full trace fetched through Grafana before declaring privacy and routes
 `pnpm-lock.yaml` through the diagnostic gate with adverse coverage.
+Published remediation `bf10756` selected the intended protected diagnostic job
+in run `33341130651`. Local-platform job `99336871735` reached the first real
+stored-trace check, then exposed that Tempo's OTLP JSON response encodes span
+trace IDs as Base64 bytes rather than repeating the hexadecimal request ID.
+Cleanup completed exactly. The current correction decodes the expected
+hexadecimal ID to the OTLP Base64 representation and requires every returned
+span to match it before the complete-trace privacy assertion. Focused
+diagnostic/profile tests pass 13/13 and the affected gate passes 73/73 with 60
+cached in 54.407 seconds. A corrected protected runtime remains required.
 
 ## Proposed behavior
 

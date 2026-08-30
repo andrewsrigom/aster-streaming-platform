@@ -324,6 +324,8 @@ function validateRunner(source, violations) {
       "aster:sli:good:ratio_rate5m{sli=",
       "/api/datasources/proxy/uid/aster-tempo/api/search?",
       "/api/datasources/proxy/uid/aster-tempo/api/v2/traces/${traceId}",
+      'Buffer.from(traceId, "hex").toString("base64")',
+      "      assertStoredTraceMatches(value, traceId);",
       "diagnosticTraceQuery(traceId, scenario)",
       "| select(",
       "diagnosticTraceReady(response, traceId, scenario)",

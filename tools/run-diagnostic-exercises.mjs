@@ -723,6 +723,24 @@ async function tempoSearch(grafanaPort, traceId, scenario) {
   );
 }
 
+export function assertStoredTraceMatches(value, traceId) {
+  assert.match(traceId, /^[a-f0-9]{32}$/u, "Diagnostic trace ID is invalid.");
+  assert.ok(value && typeof value === "object" && !Array.isArray(value));
+  const expectedOtlpTraceId = Buffer.from(traceId, "hex").toString("base64");
+  const resourceSpans = value.trace?.resourceSpans;
+  assert.ok(Array.isArray(resourceSpans), "Tempo did not return an OTLP JSON trace.");
+  const storedTraceIds = resourceSpans.flatMap((resourceSpan) =>
+    (resourceSpan.scopeSpans ?? []).flatMap((scopeSpan) =>
+      (scopeSpan.spans ?? []).map((span) => span.traceId),
+    ),
+  );
+  assert.ok(storedTraceIds.length > 0, "Tempo returned a trace without spans.");
+  assert.ok(
+    storedTraceIds.every((storedTraceId) => storedTraceId === expectedOtlpTraceId),
+    "Tempo returned a mismatched stored trace.",
+  );
+}
+
 async function tempoStoredTrace(grafanaPort, traceId) {
   let previousBody;
   let stableSnapshots = 0;
@@ -738,8 +756,7 @@ async function tempoStoredTrace(grafanaPort, traceId) {
         return undefined;
       }
       const value = JSON.parse(response.body);
-      assert.ok(value && typeof value === "object" && !Array.isArray(value));
-      assert.ok(response.body.includes(traceId), "Tempo returned a mismatched stored trace.");
+      assertStoredTraceMatches(value, traceId);
       stableSnapshots = response.body === previousBody ? stableSnapshots + 1 : 0;
       previousBody = response.body;
       return { stableSnapshots, value };
