@@ -315,18 +315,22 @@ status `unset`; PostgreSQL recovered and Redis did not run. The current
 correction matches only the finite outcomes `timeout`, `cancelled`,
 `unavailable` and `error`. Its aggregate gate passes 73/73 with 60 cached in
 56.093 seconds.
-Initial review corrected execution/cleanup headroom, signal
-handling, listener scope, diagnostic output categories and CI invalidation;
-confirmation found no remaining blocking source issue; the real runtime finding
-now requires one targeted confirmation. Finite-outcome source
+Initial review corrected execution/cleanup headroom, signal handling, listener
+scope, diagnostic output categories and CI invalidation. Finite-outcome source
 `58779b98c991a81617f52894fd34368542a2e365` passed protected run `33336386466`:
 Catalog, PostgreSQL and Redis diagnoses/recoveries, exact project cleanup,
-source quality and aggregate protection all passed. The three-scenario runtime
-acceptance is verified. Architecture, operations, runbooks, licensing and
-evidence are current. The earlier local attempt stopped during Docker Desktop
-image build and could not inspect scoped resources. Targeted confirmation,
-final protected evidence head, merge, exact-main CI and Phase12 closeout remain.
-The normal demo is unchanged; Phase13 has not started.
+source quality and aggregate protection all passed. Targeted confirmation at
+evidence head `ab09592` found three blockers: multiline GraphQL canaries were
+not matched after JSON escaping, Tempo shared product networks, and the runner
+read Grafana provisioning without calling data-source health. The local batch
+checks escaped canaries, places Tempo only on dedicated internal ingest/query
+networks and requires Grafana health `OK`; focused diagnostics pass 12/12. The
+platform suite passes 87/87 and the affected gate passes 73/73 with 59 cached in
+50.323 seconds. The prior runtime remains supporting evidence, but this
+topology/acceptance change requires the protected three-scenario run again.
+Architecture, operations, runbooks, licensing and evidence are current. The
+earlier local attempt stopped during Docker Desktop image build and could not
+inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
 restart or repeated probe was attempted. Protected diagnostic CI is the next
 eligible real execution.
@@ -583,17 +587,19 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The corrected P12-R10 candidate has verified three-scenario Docker acceptance
-and exact cleanup. It still needs targeted confirmation, protected final-head
-release, merge, exact-main CI and Phase12 closeout. Phases13–14 and hosted
-deployment also remain planned.
+The earlier P12-R10 source has supporting three-scenario Docker evidence and
+exact cleanup. The security/acceptance remediation passes its affected gate and
+still needs protected three-scenario acceptance, correction confirmation,
+merge, exact-main CI and Phase12 closeout. Phases13–14 and hosted deployment
+also remain planned.
 
 ## Next outcome
 
-For P12-R10, publish the bounded acceptance evidence, obtain targeted
-confirmation, merge after final exact-head protection, verify exact-main CI,
-close Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
-interrupted local project only when that same Docker engine becomes reachable.
+For P12-R10, publish the verified security-remediation batch, pass its protected
+runtime, publish bounded runtime evidence, confirm the three corrected review
+threads, merge after final exact-head protection, verify exact-main CI, close
+Phase12 and check Phase13 prerequisites. Inspect the exact interrupted local
+project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 

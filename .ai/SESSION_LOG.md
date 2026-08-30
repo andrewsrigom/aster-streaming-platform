@@ -57,6 +57,14 @@ full snapshot through the archival checkpoint remains in
   teardown. Source-quality job `99323989060` and aggregate protection passed.
   P12-R10 runtime acceptance is verified; targeted confirmation and release
   remain.
+- Evidence head `ab09592` repeated the complete local-platform diagnostic path,
+  then targeted confirmation found three blockers: escaped multiline GraphQL
+  privacy canaries, Tempo product-network reachability and missing Grafana
+  data-source health. The local remediation gives Collector/Tempo and
+  Grafana/Tempo separate internal networks, requires health `OK` and adds the
+  escaped-canary adverse assertion. Focused diagnostic/profile tests pass
+  12/12, platform tests pass 87/87 and the affected gate passes 73/73 with 59
+  cached in 50.323 seconds; protected runtime remains.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof

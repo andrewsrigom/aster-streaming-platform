@@ -36,7 +36,11 @@ that the admitted PostgreSQL read can produce causal outcome `cancelled` with
 intrinsic status `unset`. At that point the finite dependency-outcome TraceQL
 path still needed all-scenario acceptance. Finite-outcome source `58779b9` and protected run
 `33336386466` then passed Catalog, PostgreSQL and Redis diagnosis/recovery plus
-exact clean teardown. P12-R10 runtime acceptance is verified.
+exact clean teardown. Targeted confirmation at evidence head `ab09592` then
+found escaped-document privacy, Tempo product-network isolation and Grafana
+data-source-health blockers. Their local remediation passes focused diagnostics
+12/12, platform tests 87/87 and the affected gate 73/73 with 59 cached in 50.323
+seconds; corrected protected acceptance remains.
 
 ## Requirement traceability
 
@@ -53,7 +57,7 @@ exact clean teardown. P12-R10 runtime acceptance is verified.
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 | P12-R11 | [Browser telemetry](browser-playback-telemetry.txt) records sampling, privacy, transport and retention boundaries |
 | P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and protected/exact-main release proof |
-| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the bounded Tempo profile, remediation history and verified protected three-scenario acceptance |
+| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the bounded Tempo profile, remediation history, supporting three-scenario run and current confirmation correction |
 
 P12-R03's affected gate passed 73/73 tasks with 28 cached in 63.79 seconds.
 Review corrected invalid event ages, malformed pool snapshots, missing outbox
@@ -140,4 +144,5 @@ live-container acceptance.
   an earlier dependency fact without a failure mark. Run `33335707261` proves
   the request-deadline failure is `cancelled`/`unset`. Run `33336386466` passes
   the finite causal-outcome path for all three scenarios, all recoveries and
-  exact cleanup.
+  exact cleanup. Confirmation then requires a repeat after its network,
+  data-source-health and escaped-document privacy corrections.

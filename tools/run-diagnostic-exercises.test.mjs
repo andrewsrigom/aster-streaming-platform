@@ -13,6 +13,10 @@ import {
   traceSearchFacts,
 } from "./run-diagnostic-exercises.mjs";
 
+const MULTILINE_GRAPHQL = `query TitleDetail($id: ID!) {
+  title(id: $id) { id }
+}`;
+
 const dependencyFacts = (dependency, outcome) => [
   {
     service: "catalog",
@@ -290,6 +294,11 @@ test("rejects missing diagnosis signals and private canaries", () => {
     }),
   );
   assert.throws(() => assertTelemetryPrivacy("private-canary", ["private-canary"]));
+  assert.throws(() =>
+    assertTelemetryPrivacy(JSON.stringify({ traceAttribute: MULTILINE_GRAPHQL }), [
+      MULTILINE_GRAPHQL,
+    ]),
+  );
   assert.throws(() => assertTelemetryPrivacy("graphql.document", []));
   assert.doesNotThrow(() => assertTelemetryPrivacy("bounded sanitized trace", ["missing"]));
 });

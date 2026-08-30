@@ -116,6 +116,13 @@ TraceQL query and polling condition require the exact dependency plus one of
 PostgreSQL-`cancelled` and Redis-`unavailable` diagnosis, recovery after every
 scenario and exact clean teardown.
 
+The corrected profile keeps Tempo off product networks. Collector exports over
+internal `diagnostics-ingest`; Grafana queries over internal
+`diagnostics-query`. The runner requires Grafana's Tempo data-source health
+endpoint to return `OK` and rejects raw or JSON-escaped GraphQL document
+canaries before any failure exercise is accepted. These targeted-confirmation
+corrections still require protected runtime acceptance.
+
 ## Limits
 
 The dashboard refreshes every 30 seconds. Prometheus keeps at most three days/

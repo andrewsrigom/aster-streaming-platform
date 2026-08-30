@@ -128,7 +128,8 @@ memory queue, a one-second request deadline and a two-second retry budget.
 The automated exercise creates a fresh `aster-p12-diagnostics-<uuid>` project,
 uses ephemeral loopback ports and diagnoses Catalog service loss, an
 authoritative PostgreSQL read failure and Redis degradation. It begins with the
-released Catalog-read SLI source, obtains the Router trace ID, waits for the
+released Catalog-read SLI source, requires the Grafana Tempo data-source health
+endpoint to return `OK`, obtains the Router trace ID, waits for the
 exact scenario boundary through TraceQL with a finite `select`, correlates that
 matched span set with bounded structured logs, verifies recovery and removes
 only that exact project with its disposable state. Source policy and focused
@@ -148,6 +149,13 @@ readiness condition require the exact dependency plus `timeout`, `cancelled`,
 `33336386466` verifies the corrected Docker exercise for Catalog service loss,
 PostgreSQL `cancelled` and Redis `unavailable`, including recovery after each
 scenario and exact clean teardown.
+
+Tempo is not attached to the product `platform` or `edge` networks. The
+Collector reaches it only through internal `diagnostics-ingest`; Grafana reaches
+it only through internal `diagnostics-query`. Product-facing Collector and
+Grafana attachments remain separate, so the trace store has no route to owner
+services, PostgreSQL, Redis, broker or object storage. Privacy assertions reject
+both raw and JSON-escaped multiline GraphQL document canaries.
 
 No log backend is part of this profile. Size-rotated Docker logs remain the
 correlated log source, which prevents an empty Loki service from being mistaken

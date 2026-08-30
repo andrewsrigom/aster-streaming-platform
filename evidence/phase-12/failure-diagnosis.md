@@ -252,19 +252,40 @@ passed. The bounded transcript is
 This verifies P12-R10's three-scenario runtime acceptance at the exact source
 above.
 
+## Targeted confirmation remediation
+
+Evidence head `ab09592` repeated the complete local-platform diagnostic path,
+including all three scenarios and clean teardown. Targeted confirmation then
+identified three blockers:
+
+- discussion `3890373878`: the multiline GraphQL canary had to be checked in
+  its JSON-escaped representation as well as raw text;
+- discussion `3890373881`: Tempo shared product `platform`/`edge` networks and
+  therefore had unintended reachability beyond its telemetry peers;
+- discussion `3890373885`: the runner read the provisioned data-source record
+  but did not require Grafana's Tempo health endpoint to succeed.
+
+The local correction checks the escaped canary, connects Collector/Tempo only
+through internal `diagnostics-ingest`, connects Grafana/Tempo only through
+internal `diagnostics-query`, removes Tempo from product networks and requires
+Grafana data-source status `OK` before telemetry warmup. Focused
+diagnostic/profile tests pass 12/12, platform tests pass 87/87 and the affected
+gate passes 73/73 with 59 cached in 50.323 seconds. Because the topology and
+runtime acceptance changed, run `33336386466` remains supporting behavior
+evidence rather than the final corrected acceptance.
+
 ## Remaining release work
 
 Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. obtain the targeted confirmation required by the runtime-remediation
-   stopping rule;
-3. pass protected CI at the final evidence head, squash merge PR51 and verify
+2. publish the passing affected-gate candidate and pass one complete protected
+   run with the corrected networks, privacy assertion and Grafana health check;
+3. record that run and confirm/resolve the three discussions above;
+4. pass protected CI at the final evidence head, squash merge PR51 and verify
    exact-main CI;
-4. record the released source/tree and close Phase 12.
+5. record the released source/tree and close Phase 12.
 
-The accepted runtime remains supporting evidence for a later documentation-only
-head because such a change cannot alter the exercised profile, runner or
-telemetry contracts. No Phase 12 closeout or released trace-backend claim is
-valid before the remaining release steps pass.
+No Phase 12 closeout or released trace-backend claim is valid before the
+remaining release steps pass.

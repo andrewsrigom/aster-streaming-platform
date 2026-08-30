@@ -39,10 +39,14 @@ it replaces only the Collector and Grafana Dockerfiles with diagnostic variants:
 - Grafana preserves the immutable operational overview, adds one read-only
   Tempo data source and enables transient Explore use for the loopback-only
   anonymous Viewer;
-- Tempo receives OTLP/HTTP on the private `platform` network and serves queries
-  to Grafana through `edge`. The reusable diagnostic overlay publishes no host
-  port; only the disposable proof overlay assigns its API a random IPv4
-  loopback port.
+- the Collector keeps its product-facing `platform` attachment and gains a
+  dedicated internal `diagnostics-ingest` attachment to Tempo;
+- Grafana keeps its Prometheus-facing `edge` attachment and gains a dedicated
+  internal `diagnostics-query` attachment to Tempo;
+- Tempo joins only `diagnostics-ingest` and `diagnostics-query`, so it has no
+  route to product owners, PostgreSQL, Redis, broker or object storage. The
+  reusable diagnostic overlay publishes no host port; only the disposable
+  proof overlay assigns its API a random IPv4 loopback port.
 
 Tempo stores its WAL, live-store work and blocks on a 128 MiB tmpfs. It retains
 blocks for at most one hour, accepts at most 1 MiB/s with a 1 MiB burst, keeps at
@@ -97,7 +101,8 @@ trace/log correlation contract directly.
 - Start the profile only through the documented diagnostic command and a
   disposable UUID-scoped project.
 - Let the runner discover the proof overlay's ephemeral loopback port and query
-  `/ready` before running an exercise.
+  `/ready`, then require Grafana's provisioned Tempo data-source health endpoint
+  to return `OK` before running an exercise.
 - Use Grafana Explore or the fixed bounded diagnostic runner; never widen the
   Tempo listener or copy this anonymous policy to a hosted environment.
 - Pause and unpause the disposable PostgreSQL container for its transient-failure
@@ -107,7 +112,8 @@ trace/log correlation contract directly.
 ### Security and privacy
 
 - The Collector deletes GraphQL operation names/documents and `otel.name`
-  before either debug or Tempo export.
+  before either debug or Tempo export; the exercise checks both raw and
+  JSON-escaped multiline document canaries.
 - Trace attributes remain finite and contain no user, profile, title, request,
   token, cookie, SQL, URL, credential or signed-media value.
 - Tempo and Grafana have no route to owner databases, Redis, broker or object
@@ -141,13 +147,14 @@ would pay an avoidable image/startup/memory cost.
 ## Validation
 
 Repository checks require the exact image digest, diagnostic-only overlay,
-private topology, loopback listener, non-root/read-only service, tmpfs and every
-ingestion/query/export bound. Adverse tests reject mutable images, named storage,
-remote exposure, unbounded TraceQL, privacy-processor removal, infinite retry or
-queueing and use against a non-disposable project. Protected CI starts the real
-profile, checks Tempo and Grafana data-source health, exports and retrieves a
-privacy-safe trace, executes all three failure diagnoses and proves exact
-cleanup.
+two-network least-privilege topology, loopback listener, non-root/read-only
+service, tmpfs and every ingestion/query/export bound. Adverse tests reject
+product-network attachment, mutable images, named storage, remote exposure,
+unbounded TraceQL, privacy-processor removal, infinite retry or queueing and use
+against a non-disposable project. Protected CI starts the real profile, requires
+Tempo readiness and Grafana data-source status `OK`, rejects raw or JSON-escaped
+document canaries, exports and retrieves a privacy-safe trace, executes all
+three failure diagnoses and proves exact cleanup.
 
 ## Revisit triggers
 

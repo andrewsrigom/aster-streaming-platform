@@ -183,11 +183,15 @@ loopback ports; Catalog, Playback and their dependencies remain private.
 PostgreSQL and Tempo use bounded tmpfs state, so this fixture contains no
 retained Aster data.
 
-The runner verifies Tempo readiness, the immutable Grafana data source and the
-released Catalog SLI source before injecting Catalog, PostgreSQL and Redis
-failures. It requires TraceQL to return the exact Router trace ID and selected
+The runner verifies Tempo readiness, requires the immutable Grafana Tempo data
+source health endpoint to return `OK` and verifies the released Catalog SLI
+source before injecting Catalog, PostgreSQL and Redis failures. Collector reaches
+Tempo only through internal `diagnostics-ingest`; Grafana reaches it only
+through internal `diagnostics-query`; Tempo has no product network attachment.
+The runner requires TraceQL to return the exact Router trace ID and selected
 finite boundary fields, correlates that span set with sanitized Router/Catalog
-logs, restores each service and verifies a real TitleDetail recovery request.
+logs, rejects raw and JSON-escaped GraphQL document canaries, restores each
+service and verifies a real TitleDetail recovery request.
 PostgreSQL injection blocks one
 known fixture read with the exact `aster-p12-diagnostic-lock` application name
 before pausing the disposable database; cleanup terminates only that holder.
@@ -217,8 +221,9 @@ the causal PostgreSQL span as `cancelled` with intrinsic status `unset`. The
 current query and polling condition require the exact dependency plus one of
 `timeout`, `cancelled`, `unavailable` or `error`; `success` and `rejected` do
 not end the wait. Protected run `33336386466` passes all three scenarios,
-recovery after each and exact clean teardown. Current status and all attempts
-are recorded in
+recovery after each and exact clean teardown. Targeted confirmation then required
+the network, Grafana-health and escaped-document corrections above; corrected
+protected acceptance remains. Current status and all attempts are recorded in
 [failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.

@@ -235,7 +235,11 @@ export function diagnosticTraceReady(payload, traceId, scenario) {
 export function assertTelemetryPrivacy(serialized, canaries) {
   assert.ok(Buffer.byteLength(serialized) <= 2 * 1024 * 1024, "Telemetry evidence is oversized.");
   for (const canary of canaries) {
-    assert.ok(!serialized.includes(canary), "Telemetry exposed a request canary.");
+    const escapedCanary = JSON.stringify(canary).slice(1, -1);
+    assert.ok(
+      !serialized.includes(canary) && !serialized.includes(escapedCanary),
+      "Telemetry exposed a request canary.",
+    );
   }
   for (const prohibited of [
     "graphql.document",
@@ -896,6 +900,17 @@ export async function runDiagnosticExercises() {
     assert.equal(datasource.status, 200);
     assert.equal(datasource.value?.uid, "aster-tempo");
     assert.equal(datasource.value?.url, "http://tempo:3200");
+    await waitFor(
+      "Grafana Tempo data source health",
+      () =>
+        json(
+          `http://127.0.0.1:${ports.grafana}/api/datasources/uid/aster-tempo/health`,
+          undefined,
+          16_384,
+        ),
+      (response) => response.status === 200 && response.value?.status === "OK",
+      30_000,
+    );
 
     stage = "telemetry-warmup";
     assert.equal((await titleDetail(ports.router, randomUUID())).errors, undefined);

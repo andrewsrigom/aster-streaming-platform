@@ -2,6 +2,7 @@ services:
   collector:
     build:
       dockerfile: infra/docker/collector.diagnostics.Dockerfile
+    networks: !override [platform, diagnostics-ingest]
     depends_on:
       tempo:
         condition: service_started
@@ -12,6 +13,7 @@ services:
     environment:
       GF_EXPLORE_ENABLED: "true"
       GF_USERS_VIEWERS_CAN_EDIT: "true"
+    networks: !override [edge, diagnostics-query]
     depends_on:
       tempo:
         condition: service_started
@@ -29,7 +31,7 @@ services:
     environment:
       GOMEMLIMIT: 320MiB
       GOMAXPROCS: "2"
-    networks: [platform, edge]
+    networks: [diagnostics-ingest, diagnostics-query]
     user: "10001:10001"
     read_only: true
     tmpfs:
@@ -46,3 +48,15 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+networks:
+  diagnostics-ingest:
+    internal: true
+    labels:
+      com.aster.environment: local
+      com.aster.scope: diagnostics-ingest
+  diagnostics-query:
+    internal: true
+    labels:
+      com.aster.environment: local
+      com.aster.scope: diagnostics-query

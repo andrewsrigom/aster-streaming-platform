@@ -84,7 +84,7 @@ function validateCompose(source, proof, violations) {
       "      com.aster.scope: diagnostics\n",
       '    command: ["-target=all", "-config.file=/etc/aster/tempo.yml"]\n',
       "      GOMEMLIMIT: 320MiB\n",
-      "    networks: [platform, edge]\n",
+      "    networks: [diagnostics-ingest, diagnostics-query]\n",
       '    user: "10001:10001"\n',
       "    read_only: true\n",
       "      - /var/tempo:size=128m,uid=10001,gid=10001,mode=0700\n",
@@ -112,22 +112,47 @@ function validateCompose(source, proof, violations) {
       "network_mode:",
       "env_file:",
       "${",
+      "platform",
+      "edge",
     ],
     violations,
     "Tempo service",
   );
-  for (const [name, dockerfile] of [
-    ["collector", "infra/docker/collector.diagnostics.Dockerfile"],
-    ["grafana", "infra/docker/grafana.diagnostics.Dockerfile"],
+  for (const [name, dockerfile, networks] of [
+    [
+      "collector",
+      "infra/docker/collector.diagnostics.Dockerfile",
+      "    networks: !override [platform, diagnostics-ingest]\n",
+    ],
+    [
+      "grafana",
+      "infra/docker/grafana.diagnostics.Dockerfile",
+      "    networks: !override [edge, diagnostics-query]\n",
+    ],
   ]) {
     const block = serviceBlock(source, name);
     requireValues(
       block,
-      [`      dockerfile: ${dockerfile}\n`, "      tempo:\n        condition: service_started\n"],
+      [
+        `      dockerfile: ${dockerfile}\n`,
+        networks,
+        "      tempo:\n        condition: service_started\n",
+      ],
       violations,
       `${name} diagnostic override`,
     );
   }
+  requireValues(
+    source,
+    [
+      "  diagnostics-ingest:\n    internal: true\n",
+      "      com.aster.scope: diagnostics-ingest\n",
+      "  diagnostics-query:\n    internal: true\n",
+      "      com.aster.scope: diagnostics-query\n",
+    ],
+    violations,
+    "diagnostic networks",
+  );
   requireValues(
     proof,
     [
@@ -308,6 +333,9 @@ function validateRunner(source, violations) {
       '"aster.dependency"',
       '"aster.outcome"',
       '"aster.catalog.cache_readiness_changed"',
+      "/api/datasources/uid/aster-tempo/health",
+      'response.value?.status === "OK"',
+      "const escapedCanary = JSON.stringify(canary).slice(1, -1);",
     ],
     violations,
     "diagnostic runner",

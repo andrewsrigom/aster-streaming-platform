@@ -22,7 +22,9 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
 - ADR-0044 selects unmodified digest-pinned Tempo 3.0.0 in monolithic mode for
   one diagnostics-only overlay; the normal demo remains unchanged.
 - Tempo receives only the Collector's already filtered traces and uses bounded
-  tmpfs, retention, ingestion, query and process resources.
+  tmpfs, retention, ingestion, query and process resources. The current local
+  correction removes Tempo from product networks: Collector uses only dedicated
+  `diagnostics-ingest` and Grafana only `diagnostics-query` to reach it.
 - Prometheus remains the metric source. Existing bounded structured container
   logs remain the log source; Loki is not added without a real ingestion and
   retention path.
@@ -37,7 +39,11 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   affected gate passes 73/73 with 60 cached in 56.093 seconds.
 - Initial review corrected the global execution/cleanup budget, signal cleanup,
   listener scope, finite output categories and diagnostic CI invalidation.
-  Confirmation found no remaining blocking source issue.
+  Targeted confirmation at `ab09592` found JSON-escaped document privacy,
+  product-network isolation and Grafana data-source-health blockers. The local
+  batch corrects all three; focused diagnostics pass 12/12, platform tests pass
+  87/87 and the affected gate passes 73/73 with 59 cached in 50.323 seconds. Its
+  protected gate remains.
 
 ## Protected runtime finding
 
@@ -78,11 +84,11 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Commit/push the bounded acceptance evidence and obtain one targeted
-   confirmation at the final exact head.
-2. Merge after protected checks and confirmation pass, verify exact-main CI and
-   close Phase12. Inspect/remove only the exact interrupted local project when
-   its original engine is reachable.
+1. Publish the affected-gate-verified review-remediation batch and require the
+   protected three-scenario lane plus exact cleanup.
+2. Record that run, resolve/confirm the three review threads, merge after final
+   protection, verify exact-main CI and close Phase12. Inspect/remove only the
+   exact interrupted local project when its original engine is reachable.
 
 ## Execution boundary
 

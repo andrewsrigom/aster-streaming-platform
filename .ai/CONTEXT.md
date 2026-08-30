@@ -92,8 +92,14 @@ The current correction matches only `timeout`, `cancelled`, `unavailable` or
 Finite-outcome source `58779b98c991a81617f52894fd34368542a2e365` passed
 protected run `33336386466`: Catalog, PostgreSQL and Redis diagnoses, all three
 recoveries, exact cleanup, source quality and aggregate protection passed. The
-runtime acceptance is verified; targeted confirmation, merge, exact-main CI and
-Phase12 closeout remain. Phase13 has not started.
+runtime behavior is supporting evidence. Targeted confirmation at evidence head
+`ab09592` then found three blockers: JSON-escaped document-canary detection,
+Tempo isolation from product networks and real Grafana data-source health. The
+local remediation adds dedicated ingest/query networks, requires health `OK`
+and covers escaped multiline documents; focused diagnostics pass 12/12. Its
+affected gate passes 73/73 with 59 cached in 50.323 seconds. Protected runtime,
+correction confirmation, merge, exact-main CI and Phase12 closeout remain.
+Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
