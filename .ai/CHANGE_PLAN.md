@@ -17,8 +17,9 @@ shutdown.
 
 ## Current behavior
 
-P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at evidence head `1d378fc`; all
-local implementation, evidence and affected gates pass. Phase 12 may advance as
+P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at corrected executable source
+`ad99ef6`; all local implementation, evidence and affected gates pass. Its
+initial review's two retry-guard findings are corrected. Phase 12 may advance as
 the one unpublished dependent, but it cannot publish, merge or release first.
 
 `@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite

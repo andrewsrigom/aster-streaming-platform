@@ -12,8 +12,9 @@ squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
 run `33290477608` passed every required job. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
 squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
-frozen `WAITING_EXTERNAL` on PR44 at evidence head `1d378fc`; its local
-candidate is complete and only protected CI, review and release remain. P12-R01
+frozen `WAITING_EXTERNAL` on PR44 at corrected executable source `ad99ef6`; its
+local candidate is complete and only protected CI, confirmation and release
+remain. P12-R01
 is the one unpublished dependent and starts the trace/log/privacy/exporter
 boundary. Full Phase00–14 goal stays active.
 
@@ -244,15 +245,16 @@ passed every required job and releases P11-R08/R09.
 
 P11-R10 now maps and executes the five remaining game days. Exact protected
 source `371ba55` proves Discovery stop/recovery, Redis-absent healthy home,
-broker outage/drain and zero scoped cleanup. Current source `60ca6f1` adds
-explicit Web one-call and traffic-shaping-scoped Router no-retry contracts.
+broker outage/drain and zero scoped cleanup. Corrected source `ad99ef6` exercises
+the actual configured Web Apollo chain and rejects block, flow and quoted Router
+retry keys throughout traffic shaping.
 Focused failure tests pass 68/68, PostgreSQL
 adapter/transaction saturation passes 28/28 and the new Web/Router contracts
 pass 16/16. Bulkhead, fallback, retry-amplification and five game-day artifacts
 plus complete Redis/Discovery/PostgreSQL/broker/media runbooks are recorded.
-The corrected affected candidate passes 17/17 tasks, five cached, in 52.224
-seconds. PR44 is published at evidence head `1d378fc`; protected exact-head CI,
-review and release remain.
+Web112/112 and Router4/4 pass. The corrected affected candidate passes 17/17
+tasks, two cached, in 57.471 seconds. PR44 is published; protected exact-head CI,
+confirmation and release remain.
 
 ## Historical Phase 09 corrections
 

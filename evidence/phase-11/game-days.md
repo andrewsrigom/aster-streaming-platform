@@ -2,7 +2,7 @@
 
 Date: 2026-08-30
 
-Status: PR44 evidence head 1d378fc; protected closeout release pending
+Status: PR44 corrected source ad99ef6; protected closeout release pending
 
 ## Source and applicability
 
@@ -13,21 +13,25 @@ Status: PR44 evidence head 1d378fc; protected closeout release pending
 - Protected run:
   [33291705269](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33291705269),
   all required jobs successful.
-- Current executable/test source: `60ca6f1797a1be38553e11408e2c6240dc8c3926`,
-  tree `5ef4360ec910596dffe1ebc8a9b8ca343ce240df`.
+- Current executable/test source: `ad99ef675953d47a7f03161c94468f9292476de0`,
+  tree `999171632a8823886c47b4d7b06a86303c88d3d5`.
 
 The protected runtime executes exact predecessor `371ba55`, including every
 named owner harness. The later game-day diff adds repository memory/evidence,
-operator documentation, a Web test and the Router source verifier/test; it
-changes no app, service, worker, package runtime or Compose source. Current local
-focused checks cover those added contracts.
+operator documentation, Web/Router tests and their source guard. Its only
+product-source change extracts the existing Apollo client composition into the
+factory already used by `GraphqlProvider`; the link order and runtime behavior
+remain unchanged, and the test now exercises that exact chain. No owner service,
+worker, package runtime or Compose behavior changes. Current focused checks
+cover the added contracts.
 
 Environment for hosted scenarios: ephemeral GitHub Actions Ubuntu runner,
 UUID-scoped Compose projects, pinned repository images/dependencies and exact
 project cleanup. Local focused scenarios use WSL Ubuntu-20.04, Node.js 24.19.0
 and pnpm 11.24.0 without Docker or retained state.
 
-The corrected affected candidate passes 17/17 tasks, 5 cached, in 52.224 seconds.
+The final corrected affected candidate passes 17/17 tasks, 2 cached, in 57.471
+seconds.
 It includes Web112/112, platform67/67, all repository documentation/memory,
 strict static checks and the scoped failure-lab/toolchain tests.
 

@@ -4,8 +4,8 @@ Status: local candidate PASS; protected candidate release pending
 
 Source and environment
 - Frozen P11-R08 predecessor: 371ba55eb7269520b72f41fd813a95aaeab819eb.
-- Current executable/test source: 60ca6f1797a1be38553e11408e2c6240dc8c3926.
-- Source tree: 5ef4360ec910596dffe1ebc8a9b8ca343ce240df.
+- Current executable/test source: ad99ef675953d47a7f03161c94468f9292476de0.
+- Source tree: 999171632a8823886c47b4d7b06a86303c88d3d5.
 - WSL Ubuntu-20.04; Node.js 24.19.0; pnpm 11.24.0.
 - CI=true and NODE_OPTIONS=--max-old-space-size=1536.
 - No Docker service, retained data, media or user process was started or changed.
@@ -19,8 +19,8 @@ Commands and raw results
 - After the explicit Web/Router retry-ownership regression was added, the Web
   public-data and Router-source suites passed 16/16 in 1082.137148 ms. ESLint,
   focused Prettier and git diff --check passed.
-- Corrected pnpm check:changed after scoping the Router guard only to traffic
-  shaping: PASS, 17/17 affected tasks, 5 cached, Turbo wall time 52.224 seconds.
+- Final pnpm check:changed after the review corrections: PASS, 17/17 affected
+  tasks, 2 cached, Turbo wall time 57.471 seconds.
   It includes Web112/112, platform67/67, strict TypeScript,
   workspace ESLint, formatting, unused-code, architecture, security,
   documentation and repository-memory checks.

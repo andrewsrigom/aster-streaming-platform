@@ -54,6 +54,13 @@ Append new entries at the top. Keep entries factual and concise.
 - Activated P12-R01 as the one unpublished dependent. Its first slice owns
   finite trace/log context, telemetry privacy/cardinality and exporter failure;
   it adds no hosted backend, dashboard or SLO.
+- PR44 initial review discussions `3888491209`/`3888491214` found two real gaps:
+  the Web attempt test bypassed Apollo link composition and the Router source
+  guard missed flow-style YAML retry keys. Corrected source `ad99ef6`, tree
+  `9991716`, extracts the unchanged configured Apollo client for direct testing
+  and detects block, flow and quoted retry keys inside traffic shaping.
+- Web112/112, Router4/4, strict types/lint/format and the corrected affected gate
+  pass 17/17 tasks with two cached in 57.471 seconds.
 
 ### Evidence
 

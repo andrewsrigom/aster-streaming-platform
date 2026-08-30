@@ -6,30 +6,42 @@ Source
 - Frozen predecessor: 371ba55eb7269520b72f41fd813a95aaeab819eb.
 - Initial retry-ownership source after squash rebase:
   2b72467931b06886095017de69feb2804cbb6ecc.
-- Guard-scope correction/current source:
-  60ca6f1797a1be38553e11408e2c6240dc8c3926.
-- Current source tree: 5ef4360ec910596dffe1ebc8a9b8ca343ce240df.
+- Initial guard-scope correction: 60ca6f1797a1be38553e11408e2c6240dc8c3926.
+- Review correction/current executable source:
+  ad99ef675953d47a7f03161c94468f9292476de0.
+- Current source tree: 999171632a8823886c47b4d7b06a86303c88d3d5.
 
 Attempt matrix
 | Layer | Automatic attempts for one public safe read | Proof |
 | --- | ---: | --- |
-| Web to Router | 1 | boundedGraphqlFetch failure regression counts exactly one injected fetch |
-| Apollo Router to subgraph | 1 | reviewed router.yaml has no retry policy; source verifier rejects any retry block |
+| Web to Router | 1 | configured Apollo browser link chain counts exactly one injected failing fetch |
+| Apollo Router to subgraph | 1 | reviewed router.yaml has no retry policy; source verifier rejects block, flow and quoted retry keys |
 | Playback to Catalog publication read | at most 2 | first 503/reset then success produces exactly two server calls; permanent/malformed produces one |
 | Discovery to Catalog snapshot read | at most 2 | first 503/reset then success produces exactly two server calls; permanent/malformed produces one |
 
 Commands and results
-- Current Web public-data plus Router-source policy suites: PASS 16/16 in
-  1082.137148 ms.
+- Corrected Web suite: PASS 112/112 in 1857.443934 ms; the configured browser
+  chain regression reaches one failing fetch. Router-source policy: PASS 4/4 in
+  97.487892 ms including block, flow and quoted mutations.
 - Focused cross-owner/failure command: PASS 68/68 in 4713.043505 ms, including
   both concrete safe-read clients, their finite admission and their breaker
   behavior.
 - Focused ESLint, Prettier and git diff --check: PASS.
-- Corrected complete affected candidate: PASS 17/17 tasks, 5 cached, in 52.224
-  seconds; Web passes 112/112 and the Router policy is included in platform67/67.
+- Final corrected complete affected candidate: PASS 17/17 tasks, 2 cached, in
+  57.471 seconds; Web passes 112/112 and the Router policy is included in
+  platform67/67.
 - The initial 17/17 gate passed in 56.616 seconds. Local review then narrowed
   the static guard from all Router YAML to the `traffic_shaping` boundary so a
   future unrelated telemetry retry cannot be rejected as request amplification.
+
+PR44 initial review discussions `3888491209` and `3888491214` found that the
+first Web regression called the terminal fetch wrapper instead of the configured
+Apollo link chain, and the line-oriented Router guard missed valid flow-style
+YAML. Source `ad99ef6` extracts the existing Apollo client composition into the
+production factory used by `GraphqlProvider`; the test invokes that exact browser
+chain with one failing Router fetch. The traffic-shaping scanner now detects
+bare, flow and quoted `retry` keys while remaining scoped outside unrelated
+telemetry policy. Both reported bypasses fail their mutation regressions.
 
 Verified composition
 - Public SSR/browser Apollo uses HttpLink plus one bounded fetch. There is no

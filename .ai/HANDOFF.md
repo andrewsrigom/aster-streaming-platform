@@ -17,15 +17,18 @@ passes 11/11 in 49.422s. The discussion is resolved. PR43 squash-merged as
 tree-identical main `bdbe2e0`; exact-main run `33292389504` passed all required
 jobs.
 
-P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at evidence head `1d378fc`, based
-on that tree-identical predecessor merge. It owns the remaining
+P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at corrected executable source
+`ad99ef675953d47a7f03161c94468f9292476de0`, tree
+`999171632a8823886c47b4d7b06a86303c88d3d5`, based on that tree-identical
+predecessor merge. It owns the remaining
 P11-R06/R07/R10/R11/R12
-evidence. Exact current source `60ca6f1` adds only Web/Router retry-ownership
-tests and the traffic-shaping-scoped verifier; the five game-day,
-finite-capacity, fallback/no-amplification and runbook artifacts are written.
-The corrected affected candidate passes 17/17 tasks, five cached, in 52.224
-seconds. No product runtime changed. Only protected exact-head CI, the planned
-review/confirmation, merge and exact-main verification remain.
+evidence. Initial review discussions `3888491209` and `3888491214` found that
+the Web regression bypassed Apollo link composition and the Router guard missed
+flow-style YAML. The correction extracts the existing browser client composition
+without changing behavior, exercises that exact chain and detects block, flow
+and quoted retry keys. Web112/112, Router4/4 and the affected 17/17 gate with two
+cached in 57.471 seconds pass. Only protected exact-head CI, confirmation, merge
+and exact-main verification remain.
 
 ## Exact next actions
 
