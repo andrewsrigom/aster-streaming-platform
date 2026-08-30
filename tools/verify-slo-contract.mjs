@@ -172,14 +172,25 @@ export function validateSloContract(sources) {
     if (!sli.recordingQueries.good.endsWith(` or on() (0 * ${sli.recordingQueries.population})`)) {
       reject(`${sli.id} good-event query must zero-fill only from its present population`);
     }
-    const objectiveSeparator = sli.objectiveQuery.lastIndexOf(" / ");
-    const objectiveNumerator = sli.objectiveQuery.slice(0, objectiveSeparator);
-    const objectiveDenominator = sli.objectiveQuery.slice(objectiveSeparator + 3);
+    const positiveMarker = ") and on() (";
+    const positiveIndex = sli.objectiveQuery.lastIndexOf(positiveMarker);
+    const objectiveRatio =
+      positiveIndex > 0 && sli.objectiveQuery.startsWith("(")
+        ? sli.objectiveQuery.slice(1, positiveIndex)
+        : "";
+    const objectivePositiveFilter =
+      positiveIndex > 0 && sli.objectiveQuery.endsWith(")")
+        ? sli.objectiveQuery.slice(positiveIndex + positiveMarker.length, -1)
+        : "";
+    const objectiveSeparator = objectiveRatio.lastIndexOf(" / ");
+    const objectiveNumerator = objectiveRatio.slice(0, objectiveSeparator);
+    const objectiveDenominator = objectiveRatio.slice(objectiveSeparator + 3);
     if (
       objectiveSeparator < 1 ||
-      !objectiveNumerator.endsWith(` or on() (0 * ${objectiveDenominator}))`)
+      !objectiveNumerator.endsWith(` or on() (0 * ${objectiveDenominator}))`) ||
+      objectivePositiveFilter !== `${objectiveDenominator} > 0`
     ) {
-      reject(`${sli.id} objective query must zero-fill only from its present population`);
+      reject(`${sli.id} objective query must zero-fill from and filter on its positive population`);
     }
     if (!(sources.ruleTests ?? "").includes(sli.objectiveQuery)) {
       reject(`${sli.id} objective query requires a synthetic failure-only assertion`);
@@ -214,7 +225,8 @@ export function validateSloContract(sources) {
   const expectedRatio = {
     record: "aster:sli:good:ratio_rate5m",
     sli: undefined,
-    expression: "aster:sli:good:rate5m / aster:sli:population:rate5m",
+    expression:
+      "(aster:sli:good:rate5m / aster:sli:population:rate5m) and on(sli) (aster:sli:population:rate5m > 0)",
   };
   if (
     JSON.stringify(rules) !== JSON.stringify([...expectedRules, expectedRatio]) ||
@@ -300,9 +312,11 @@ export function validateSloContract(sources) {
   if (
     !(sources.ruleTests ?? "").includes("excluded-only traffic creates no SLI ratio") ||
     !(sources.ruleTests ?? "").includes("failure-only traffic produces zero SLI ratios") ||
+    !(sources.ruleTests ?? "").includes("prior traffic then idle removes five-minute SLI ratios") ||
+    !(sources.ruleTests ?? "").includes("preexisting idle counters produce no objective ratios") ||
     !(sources.ruleTests ?? "").includes("good bad and excluded events retain exact SLI populations")
   ) {
-    reject("synthetic rules must cover good, bad, failure-only and zero-population behavior");
+    reject("synthetic rules must cover good, bad, failure-only, idle and zero-population behavior");
   }
   return violations;
 }

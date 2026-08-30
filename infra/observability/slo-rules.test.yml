@@ -96,26 +96,65 @@ tests:
             value: 0
           - labels: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
             value: 0
-      - expr: '(sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome="completed"}[30d])) or on() (0 * sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d])))) / sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d]))'
+      - expr: '((sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome="completed"}[30d])) or on() (0 * sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d])))) / sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d]))) and on() (sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d])) > 0)'
         eval_time: 5m
         exp_samples:
           - labels: "{}"
             value: 0
-      - expr: '(sum(increase(http_server_request_duration_seconds_bucket{job="aster-router",aster_operation="TitleDetail",aster_outcome="completed",le="0.3"}[28d])) or on() (0 * sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d])))) / sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d]))'
+      - expr: '((sum(increase(http_server_request_duration_seconds_bucket{job="aster-router",aster_operation="TitleDetail",aster_outcome="completed",le="0.3"}[28d])) or on() (0 * sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d])))) / sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d]))) and on() (sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d])) > 0)'
         eval_time: 5m
         exp_samples:
           - labels: "{}"
             value: 0
-      - expr: '(sum(increase(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="playback_session",aster_outcome="completed",le="0.5"}[30d])) or on() (0 * sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d])))) / sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d]))'
+      - expr: '((sum(increase(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="playback_session",aster_outcome="completed",le="0.5"}[30d])) or on() (0 * sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d])))) / sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d]))) and on() (sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d])) > 0)'
         eval_time: 5m
         exp_samples:
           - labels: "{}"
             value: 0
-      - expr: '(sum(increase(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="progress_write",aster_outcome="completed",le="0.4"}[30d])) or on() (0 * sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d])))) / sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d]))'
+      - expr: '((sum(increase(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="progress_write",aster_outcome="completed",le="0.4"}[30d])) or on() (0 * sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d])))) / sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d]))) and on() (sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d])) > 0)'
         eval_time: 5m
         exp_samples:
           - labels: "{}"
             value: 0
+  - name: prior traffic then idle removes five-minute SLI ratios
+    interval: 1m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="Browse",aster_outcome="failed"}'
+        values: "0 60+0x10"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome="failed"}'
+        values: "0 60+0x10"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="unavailable"}'
+        values: "0 60+0x10"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="failed"}'
+        values: "0 60+0x10"
+    promql_expr_test:
+      - expr: "aster:sli:good:ratio_rate5m"
+        eval_time: 10m
+        exp_samples: []
+  - name: preexisting idle counters produce no objective ratios
+    interval: 1m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="Browse",aster_outcome="failed"}'
+        values: "60+0x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome="failed"}'
+        values: "60+0x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="unavailable"}'
+        values: "60+0x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="failed"}'
+        values: "60+0x5"
+    promql_expr_test:
+      - expr: '((sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome="completed"}[30d])) or on() (0 * sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d])))) / sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d]))) and on() (sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[30d])) > 0)'
+        eval_time: 5m
+        exp_samples: []
+      - expr: '((sum(increase(http_server_request_duration_seconds_bucket{job="aster-router",aster_operation="TitleDetail",aster_outcome="completed",le="0.3"}[28d])) or on() (0 * sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d])))) / sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d]))) and on() (sum(increase(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[28d])) > 0)'
+        eval_time: 5m
+        exp_samples: []
+      - expr: '((sum(increase(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="playback_session",aster_outcome="completed",le="0.5"}[30d])) or on() (0 * sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d])))) / sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d]))) and on() (sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[30d])) > 0)'
+        eval_time: 5m
+        exp_samples: []
+      - expr: '((sum(increase(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="progress_write",aster_outcome="completed",le="0.4"}[30d])) or on() (0 * sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d])))) / sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d]))) and on() (sum(increase(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[30d])) > 0)'
+        eval_time: 5m
+        exp_samples: []
   - name: excluded-only traffic creates no SLI ratio
     interval: 1m
     input_series:

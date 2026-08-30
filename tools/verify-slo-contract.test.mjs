@@ -25,7 +25,7 @@ test("recording rules cannot add high-cardinality labels or artificial no-traffi
     validateSloContract({
       ...sources,
       rules: sources.rules.replace(
-        "aster:sli:good:rate5m / aster:sli:population:rate5m",
+        "(aster:sli:good:rate5m / aster:sli:population:rate5m) and on(sli) (aster:sli:population:rate5m > 0)",
         "aster:sli:good:rate5m / aster:sli:population:rate5m or vector(1)",
       ),
     }).length > 0,
@@ -40,6 +40,13 @@ test("recording rules cannot add high-cardinality labels or artificial no-traffi
     .replace(/^\(/u, "")
     .replace(/ or on\(\) \(0 \* .*\)\) \/ /u, " / ");
   assert.ok(validateSloContract({ ...sources, contract: missingObjectiveZero }).length > 0);
+
+  const missingObjectivePositiveFilter = cloneContract();
+  missingObjectivePositiveFilter.slis[0].objectiveQuery =
+    missingObjectivePositiveFilter.slis[0].objectiveQuery.split(") and on() (")[0];
+  assert.ok(
+    validateSloContract({ ...sources, contract: missingObjectivePositiveFilter }).length > 0,
+  );
 });
 
 test("Router classification and private scrape boundaries are mandatory", () => {
