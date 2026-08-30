@@ -3,12 +3,23 @@ global:
   scrape_timeout: 2s
   evaluation_interval: 1m
 
+rule_files:
+  - /etc/aster/slo-rules.yml
+
 scrape_configs:
   - job_name: aster-local
     static_configs:
       - targets: [collector:8889]
     body_size_limit: 1MB
     sample_limit: 2000
+    label_limit: 16
+    label_name_length_limit: 128
+    label_value_length_limit: 256
+  - job_name: aster-router
+    static_configs:
+      - targets: [router:9091]
+    body_size_limit: 1MB
+    sample_limit: 500
     label_limit: 16
     label_name_length_limit: 128
     label_value_length_limit: 256

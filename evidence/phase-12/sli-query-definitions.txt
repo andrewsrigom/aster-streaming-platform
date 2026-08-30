@@ -1,0 +1,99 @@
+# P12-R05 executable SLI query evidence
+
+Status: implemented and locally verified on the dependent working tree; protected
+Router/Prometheus runtime acceptance and release remain pending.
+
+## Environment
+
+- Date: 2026-08-30
+- Host: WSL Ubuntu-20.04
+- Source base: frozen P12-R11 exact head
+  `74780e520b598319ed07988e640dc2ab0b9a7d81`
+- Branch: `feat/p12-sli-slo-definitions`
+- Node.js: 24.19.0
+- pnpm: 11.24.0
+- Apollo Router verifier: upstream v2.17.0 Linux x86_64 release asset,
+  verified against its published `sha256sums.txt`
+- Prometheus verifier: upstream v3.14.0 Linux amd64 release asset, verified
+  against its published `sha256sums.txt`
+
+## Commands and results
+
+```text
+node ./tools/verify-slo-contract.mjs
+=> {"check":"slo-contract","status":"ok","slis":4}
+
+node --test ./tools/verify-slo-contract.test.mjs
+=> 4 passed, 0 failed
+
+pnpm --filter @aster/router test
+=> 10 passed, schema/operation artifacts valid
+
+router config validate infra/router/router.yaml
+=> Configuration at path "infra/router/router.yaml" is valid!
+
+promtool check rules infra/observability/slo-rules.yml
+=> SUCCESS: 9 rules found
+
+promtool test rules infra/observability/slo-rules.test.yml
+=> SUCCESS
+
+node --test ./tools/verify-local-platform.test.mjs
+=> 23 passed, 0 failed
+
+node ./tools/verify-local-platform.mjs
+=> {"check":"local-platform","status":"ok","violations":0}
+```
+
+The first optional-platform test run exposed a validator gap: mutating one of
+two scrape-job label limits still left the other matching occurrence. The
+validator now requires the complete body and label-limit set exactly twice; the
+corrected 23/23 run is the accepted result.
+
+## Synthetic workload
+
+Six one-minute counter samples model:
+
+- successful, failed and deliberately rejected known Router operations;
+- arbitrary operation names collapsed to `other`;
+- Catalog completions above and below 300 ms;
+- Playback completed/unavailable plus excluded not-playable/rejected outcomes;
+- Progress completed/unavailable/not-playable plus excluded stale/conflict/
+  rejected outcomes;
+- a second workload containing only excluded traffic.
+
+Expected and observed recording-rule ratios at five minutes:
+
+| SLI | Population rate | Good rate | Ratio |
+| --- | ---: | ---: | ---: |
+| supergraph | 4.0/s | 2.0/s | 0.5 |
+| catalog title read | 2.0/s | 0.5/s | 0.25 |
+| playback start | 2.0/s | 0.5/s | 0.25 |
+| progress write | 3.0/s | 1.0/s | 0.3333333333333333 |
+
+Excluded-only traffic produces no ratio series. This proves that expected
+rejections and no traffic do not become availability success.
+
+## Raw artifacts
+
+- Contract: `infra/observability/slo-contract.json`
+- Recording rules: `infra/observability/slo-rules.yml`
+- Synthetic rule test: `infra/observability/slo-rules.test.yml`
+- Repository validator: `tools/verify-slo-contract.mjs`
+- Validator tests: `tools/verify-slo-contract.test.mjs`
+
+## Interpretation
+
+The four P12-R05 definitions are executable and agree with their finite metric
+sources. Router metrics retain only a known-operation bucket and one of three
+outcomes. Product queries consume the released finite owner-operation/outcome
+contract. Query arithmetic, exclusions and no-population behavior pass with the
+exact pinned engines.
+
+## Limitations
+
+The workload is synthetic and proves semantics, not latency, capacity or
+historical availability. The local store retains one hour, browser remote
+sampling remains zero, and no 28/30-day dataset exists. Protected CI must still
+prove the baked rules, private Router scrape labels and one live recorded ratio
+in the packaged Docker profile before this candidate can publish.

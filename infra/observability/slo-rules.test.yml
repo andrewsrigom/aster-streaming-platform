@@ -1,0 +1,90 @@
+rule_files:
+  - slo-rules.yml
+
+evaluation_interval: 1m
+
+tests:
+  - name: good bad and excluded events retain exact SLI populations
+    interval: 1m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="Browse",aster_outcome="completed"}'
+        values: "0+60x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="Browse",aster_outcome="failed"}'
+        values: "0+60x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="Browse",aster_outcome="rejected"}'
+        values: "0+600x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="other",aster_outcome="completed"}'
+        values: "0+600x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome="completed"}'
+        values: "0+60x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome="failed"}'
+        values: "0+60x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome="rejected"}'
+        values: "0+600x5"
+      - series: 'http_server_request_duration_seconds_bucket{job="aster-router",aster_operation="TitleDetail",aster_outcome="completed",le="0.3"}'
+        values: "0+30x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="completed"}'
+        values: "0+60x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="unavailable"}'
+        values: "0+60x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="not_playable"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="rejected"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="playback_session",aster_outcome="completed",le="0.5"}'
+        values: "0+30x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="completed"}'
+        values: "0+60x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="unavailable"}'
+        values: "0+60x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="not_playable"}'
+        values: "0+60x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="stale"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="conflict"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="rejected"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="progress_write",aster_outcome="completed",le="0.4"}'
+        values: "0+60x5"
+    promql_expr_test:
+      - expr: 'aster:sli:population:rate5m{sli="supergraph"}'
+        eval_time: 5m
+        exp_samples:
+          - labels: 'aster:sli:population:rate5m{sli="supergraph"}'
+            value: 4
+      - expr: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+        eval_time: 5m
+        exp_samples:
+          - labels: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+            value: 0.5
+      - expr: 'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}'
+        eval_time: 5m
+        exp_samples:
+          - labels: 'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}'
+            value: 0.25
+      - expr: 'aster:sli:good:ratio_rate5m{sli="playback_start"}'
+        eval_time: 5m
+        exp_samples:
+          - labels: 'aster:sli:good:ratio_rate5m{sli="playback_start"}'
+            value: 0.25
+      - expr: 'aster:sli:good:ratio_rate5m{sli="progress_write"}'
+        eval_time: 5m
+        exp_samples:
+          - labels: 'aster:sli:good:ratio_rate5m{sli="progress_write"}'
+            value: 0.3333333333333333
+  - name: excluded-only traffic creates no SLI ratio
+    interval: 1m
+    input_series:
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="Browse",aster_outcome="rejected"}'
+        values: "0+600x5"
+      - series: 'http_server_request_duration_seconds_count{job="aster-router",aster_operation="other",aster_outcome="completed"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome="not_playable"}'
+        values: "0+600x5"
+      - series: 'aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome="stale"}'
+        values: "0+600x5"
+    promql_expr_test:
+      - expr: "aster:sli:good:ratio_rate5m"
+        eval_time: 5m
+        exp_samples: []

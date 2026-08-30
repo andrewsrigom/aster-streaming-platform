@@ -59,7 +59,15 @@ The finite router-trust-init creates five per-owner Router credentials plus five
 
 Core limits are 32 KiB request bodies, 64 headers/16 KiB header bytes, 2000 parser tokens, recursion 32, 512 recursive selections, 256 KiB subgraph responses, eight Router requests and a 64/s process-global burst. Router and normal owner fetch deadlines are three/two seconds; Playback and Engagement have a 2700 ms fetch budget around their 2000/2500 ms application deadlines. Client disconnect cancels owner work. Owner depth/alias/list/cost guards remain active. Native GraphOS-key-protected depth/alias limits are not configured; complete hosted abuse protection belongs to Phase 13. No unsafe mutation retry is added.
 
-The runtime emits JSON operation/fetch events, finite operation buckets and internal Prometheus metrics. The observability overlay exports traces to the private Collector; it removes native arbitrary operation names/documents before the bounded debug exporter. Logs rotate at 5 MiB × 2. This is trace evidence, not a dashboard, SLO or throughput benchmark. A telemetry outage cannot become a product dependency.
+The runtime emits JSON operation/fetch events, finite operation buckets and
+internal Prometheus metrics. The P12-R05 candidate classifies known Router
+responses as `completed`, `rejected` or `failed`, attaches only that outcome and
+the finite operation bucket to the standard duration histogram, and caps the
+instrument at 128 series. The observability overlay exports traces to the
+private Collector and lets Prometheus scrape Router metrics on the private
+platform network; arbitrary operation names/documents remain absent. Logs
+rotate at 5 MiB × 2. Recording rules are SLI mechanics, not a historical SLO or
+throughput benchmark. A telemetry outage cannot become a product dependency.
 
 Host-side checks with the pinned Node toolchain:
 

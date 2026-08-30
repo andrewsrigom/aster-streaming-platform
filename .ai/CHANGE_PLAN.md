@@ -1,135 +1,137 @@
-# Work Item: Phase 12 bounded browser playback telemetry
+# Work Item: Executable Critical-Journey SLIs and Initial SLOs
 
 - Status: IN_PROGRESS
-- Owner: Web Playback
+- Owner: Platform, with Catalog, Playback and Engagement journey owners
 - Phase: 12
-- Requirement IDs: P12-R04, P12-R11
+- Requirement IDs: P12-R05, P12-R06
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-The player produces a deterministic, bounded and privacy-safe local account of
-playback first-frame success and rebuffering. Every local playback attempt is
-measured, observations live only for that player attempt, and retry or unmount
-clears them explicitly. The repository documents that remote browser collection
-is disabled, so no untrusted ingestion endpoint, durable browser record or field
-QoE claim is created implicitly.
+Aster has executable, finite and tested service-level indicator (SLI)
+definitions for supergraph availability, Catalog title reads, playback-session
+creation and progress writes. Each definition names its population, good event,
+exclusions, source, aggregation, owner and rolling objective window. Initial
+service-level objectives (SLOs) and mathematical error budgets are explicit
+without claiming production history that the local one-hour store cannot prove.
 
 ## Current behavior
 
-P12-R03 and the backend portion of P12-R04 are released through PR46 exact head
-`95e3a73`, protected run `33303267611`, clean confirmation, squash main
-`2245251` and exact-main run `33304196111`.
-
-The Web player already records eight finite event kinds in a maximum 64-entry
-memory journal. The adapter measures the first decoded frame and completed
-rebuffer intervals, and the Docker demo proves a real first frame. The journal
-contains only relative bounded numbers and finite error categories. It has no
-network transport or durable storage. Its retention, sampling and future
-activation rules are not yet a complete policy. Disposal relies on garbage
-collection, there is no aggregate first-frame outcome, and a pause or seek that
-follows `waiting` can currently be counted as rebuffer time.
+Released backend product metrics classify playback-session, progress-write,
+media-processing and media-publication outcomes and durations. The Router emits
+finite operation events and a standard request-duration histogram, but
+Prometheus currently scrapes only the Collector and the Router histogram does
+not carry an SLI-safe finite outcome. Existing SLI prose is provisional,
+omits required fields and has no executable query or synthetic correctness test.
+The local browser QoE candidate has zero remote sampling and cannot be a central
+first-frame SLI.
 
 ## Proposed behavior
 
-Freeze one executable policy: sample every local attempt, keep at most 64 events
-for the current attempt, retain nothing after retry/unmount, and sample zero
-attempts for remote export. Add a finite summary that distinguishes pending,
-successful and failed-before-first-frame attempts and reports bounded rebuffer
-count/duration. Make player disposal erase the journal and aggregate. Cancel a
-pending rebuffer on pause or seek and close it before a fatal failure. Display
-the summary with the existing local diagnostic report.
+Classify every known Router response as `completed`, `rejected` or `failed` in
+the existing Rhai boundary and attach only the finite operation/outcome context
+to the standard Router request-duration histogram. Scrape that private endpoint
+with existing Prometheus limits. Add bounded recording rules for population,
+good-event and good-ratio rates over five minutes, then validate the exact
+PromQL with synthetic good, bad and excluded events using the pinned Prometheus
+`promtool`. Publish a machine-readable contract and a truthful initial
+error-budget report for the four required journeys.
 
 ## Boundaries
 
-- Owning context: Playback owns media behavior; Web Playback owns ephemeral browser observations.
-- Affected services/packages: `apps/web` only, plus Phase12 policy/evidence documents.
-- Authoritative data: Playback session and media state remain authoritative; telemetry authorizes nothing.
-- Read models/caches: none.
-- Trust boundaries: untrusted media/browser events enter a finite local recorder; no browser telemetry crosses the network.
-- External dependencies: existing browser media APIs and HLS.js only.
+- Owning context: Platform owns aggregation; Catalog, Playback and Engagement own their journey semantics and remediation.
+- Affected services/packages: Apollo Router configuration/Rhai, local Prometheus configuration/image, platform verification tools and Phase12 documentation/evidence.
+- Authoritative data: product owners and PostgreSQL remain authoritative; metrics authorize no result.
+- Read models/caches: Prometheus recording series are disposable operational projections.
+- Trust boundaries: untrusted GraphQL requests enter Router admission; only known operation buckets and three finite outcomes reach metrics.
+- External dependencies: exact-pinned Apollo Router 2.17.0 and Prometheus 3.14.0 already accepted by ADRs and runtime policy.
 
 ## Invariants
 
-- No account, profile, title, session, request, trace, URL, manifest or signed-media value enters a sample or summary.
-- Remote sampling remains zero and there is no telemetry transport or persistence.
-- First-frame success requires an actual decoded-frame signal; metadata or session success is insufficient.
-- Waiting before first frame, while paused or while seeking is not rebuffering.
-- All counts, durations, event kinds and error kinds are finite and bounded.
-- Measurement failure or disposal cannot change playback, progress, authorization or readiness.
+- No user, account, profile, title, request, trace, URL, document or arbitrary operation name becomes an SLI label.
+- Expected validation, authorization and admission rejections are excluded, not hidden as availability success or failure.
+- Dependency, timeout and unexpected server failures remain in the population and count bad.
+- A zero population does not become artificial 100% availability.
+- Playback `not_playable` and rejected/cancelled requests do not enter the valid published-title attempt population.
+- Progress stale, conflict, rejected and cancelled outcomes remain separately measurable but outside valid current-write population.
+- Browser first-frame remains explicitly unavailable as a field SLO while remote sampling is zero.
+- The one-hour local Prometheus retention proves query mechanics, not a 28/30-day historical objective.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Unsupported or invalid event detail | playback continues | omit the invalid detail or event |
-| More than 64 valid events | playback continues | keep bounded aggregate and mark the journal truncated |
-| Pause/seek during pending wait | preserve media behavior | cancel the pending rebuffer interval |
-| Fatal error during pending wait | preserve existing failure handling | close bounded rebuffer time, then record finite failure |
-| Retry or route unmount | preserve the new/current attempt only | erase prior journal and aggregate synchronously |
-| Future remote transport is configured accidentally | no export path exists | remote sample rate remains zero |
+| Router validation/auth/admission rejection | return the existing sanitized response | finite `rejected`, excluded from SLI population |
+| Router/subgraph timeout or unexpected error | preserve existing failure response | finite `failed`, included as bad |
+| Collector/product signal absent | product work remains unchanged | affected SLI has no sample; no fabricated good event |
+| Router scrape unavailable | product traffic remains independent | Prometheus target down; Router SLI series becomes absent |
+| Rule evaluation has zero population | expose no usable ratio | population/good rates are zero and ratio is non-finite/absent to consumers |
+| Prometheus rule/config malformed | fail image/config/CI validation | candidate cannot publish |
+| Telemetry callback throws | existing product result remains authoritative | owner wrapper already isolates failure |
 
 ## Data and contracts
 
 - Schema/migration: none.
-- GraphQL: none.
+- GraphQL: no schema or response change.
 - Events: none.
 - Cache: none.
-- Compatibility: existing raw local samples remain available under an additive report summary.
-- Retention/deletion: maximum 64 events and aggregates for one live player attempt; explicit erase on retry/unmount; zero server retention.
+- Compatibility: additive Router metric attributes, scrape target, recording series and machine-readable SLO contract.
+- Retention/deletion: rules use the existing disposable one-hour local store; no browser or durable product retention is added.
 
 ## Security and privacy
 
-- Authorization: observations never grant or prove access.
-- Input limits: fixed event/error vocabularies, 64 events, 24-hour duration ceiling, 4320-pixel rendition ceiling and bounded integer aggregate.
-- Sensitive data: report shape cannot accept arbitrary keys; tests reject identifiers and URL canaries.
-- Abuse cases: event floods, extreme clocks/durations, duplicate milestones, pause/seek inflation, late callbacks and accidental remote collection.
+- Authorization: owners continue enforcing authorization; SLO classification cannot bypass or grant access.
+- Input limits: the existing finite operation allowlist collapses every other name to `other`; three outcome values and four SLI IDs are accepted.
+- Sensitive data: queries consume counters/histograms only; raw documents, IDs, errors and signed URLs are prohibited and regression-tested.
+- Abuse cases: arbitrary operation names, validation floods, expected rejection inflation, no-traffic windows, cardinality overflow and malformed rule/config input.
 
 ## Implementation steps
 
-1. Add the executable policy, aggregate result and explicit lifecycle to the playback recorder.
-2. Cancel false rebuffer intervals at adapter pause/seek boundaries and keep fatal intervals finite.
-3. Bind recorder disposal to retry and player unmount; expose the aggregate in the local report.
-4. Add focused state/adapter/browser coverage and privacy/retention canaries.
-5. Publish the sampling, retention, activation and SLI-source policy; capture evidence and update repository memory.
+1. Freeze the P12-R11 predecessor and record this dependent work item.
+2. Add finite Router result classification and standard histogram attributes; cap metric cardinality.
+3. Scrape the private Router metric endpoint and bake versioned SLI recording rules into the existing Prometheus image.
+4. Add the machine-readable SLI/SLO contract and `promtool` synthetic good/bad/exclusion tests.
+5. Verify rule/config policy, actual Router labels and recorded series in protected Docker CI.
+6. Replace provisional prose with exact definitions, error budgets, limitations and evidence.
 
 ## Tests
 
-- Domain: not applicable; no domain rule changes.
-- Application: recorder outcome, bounds, truncation, disposal and privacy tests.
-- Integration: adapter decoded-frame, pause/seek, rebuffer, fatal and late-callback tests.
-- Contract: executable sampling/retention constants match the documented policy.
-- Browser: existing real playable first-frame journey plus local report shape if source changes require it.
-- Performance/failure: bounded event flood and no post-disposal mutation; no capacity claim.
+- Domain: not applicable; no owner decision changes.
+- Application: deterministic contract validator checks four required journeys, finite labels, targets, windows and error-budget arithmetic.
+- Integration: exact Apollo Router config validation plus protected private Router scrape and Prometheus rule loading/evaluation.
+- Contract: pinned `promtool check rules` and `promtool test rules` with good, bad, excluded and mixed events.
+- Browser: not repeated; Web behavior and remote sampling are unchanged.
+- Performance/failure: cardinality ceiling and zero-population semantics; no throughput claim.
 
 ## Evidence
 
-- Commands: focused Web tests/typecheck/lint, affected candidate gate and one browser/demo gate only if changed behavior invalidates prior browser evidence.
-- Raw artifact path: `evidence/phase-12/browser-playback-telemetry.txt` and updated Phase12 index.
-- Acceptance result: local attempts yield bounded first-frame/rebuffer outcomes; lifetime and zero remote export are explicit and enforced.
-- Iteration gate: focused playback state/adapter tests plus Web typecheck and lint.
-- Candidate gate: `pnpm check:changed` plus documentation/AI validation.
-- Heavyweight repeat triggers: run the existing playable browser journey only when recorder/report/adapter behavior changes; do not rebuild media because media bytes and pipeline are unchanged.
-- Review stopping rule: one initial review and one confirmation; extend only for requirement, privacy/security, measurement-integrity, availability or public-contract blockers.
+- Commands: focused Node contract tests, Router tests/schema/config validation, platform policy tests, `promtool` rule checks, affected candidate gate and one protected runtime proof.
+- Raw artifact path: `evidence/phase-12/sli-query-definitions.txt` and `evidence/phase-12/slo-error-budget-report.md`.
+- Acceptance result: all four required SLIs have executable queries whose synthetic outputs match their written population/exclusion/good-event rules.
+- Iteration gate: focused SLO contract test, Router composition tests and platform policy tests.
+- Candidate gate: `pnpm check:changed`, documentation/AI checks, secret scan and `git diff --check`.
+- Heavyweight repeat triggers: repeat the protected Router/Prometheus runtime only if Router context, scrape config, rules, image or CI assertion changes; do not repeat browser/media/rights experiments.
+- Review stopping rule: one initial review and one confirmation; extend only for requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Remove the additive summary/policy and lifecycle calls while retaining the
-released local raw journal. No durable state, schema, object or remote telemetry
-must be migrated or deleted.
+Remove the additive recording rules and Router scrape job, then restore the
+standard Router metric configuration. Prometheus data is disposable and no
+product state, schema, event or media object requires migration.
 
 ## Documentation updates
 
-- Browser playback telemetry policy and Web playback guide.
-- Observability architecture, SLI source boundary and Phase12 evidence index.
+- Formal SLI/SLO definitions and error-budget interpretation.
+- Observability architecture and local operations.
+- Phase12 evidence index and raw query/report artifacts.
 - Repository state, queue, session log and handoff.
 
 ## Completion checklist
 
 - [ ] Requirements satisfied
-- [x] Tests pass
+- [ ] Tests pass
 - [ ] Evidence captured
-- [x] Documentation current
+- [ ] Documentation current
 - [x] `.ai/` state updated
 - [x] Remaining risks recorded

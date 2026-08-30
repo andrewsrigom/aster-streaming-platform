@@ -151,7 +151,8 @@ Historical stashes are superseded.
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | DONE |
 | 58 | Export platform golden signals and backend product outcomes | P12-R03 | DONE |
-| 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | IN_PROGRESS |
+| 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | WAITING_EXTERNAL |
+| 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -180,6 +181,15 @@ found no blocker. PR46 squash-merged as tree-identical main `2245251`, and
 exact-main run `33304196111` passed every job. Item58 is released. Item59 starts
 from that exact main and owns the local browser first-frame/rebuffer contract,
 explicit sampling/retention policy and truthful remote-collection boundary.
+Its exact source `74780e5`, tree `412cc4c`, passes the local 19/19 focused,
+116/116 Web and 14/14 affected gates. PR47 initial review is clean and protected
+run `33305864184` is the only remaining external acceptance before one
+confirmation review and merge. Item59 is therefore frozen in `WAITING_EXTERNAL`.
+Item60 is the sole dependent `IN_PROGRESS` item, based exactly on that head. It
+owns finite Router outcome classification, Prometheus recording rules, formal
+SLI populations and initial SLO/error-budget definitions. It must not publish or
+merge before item59; any predecessor correction requires rebase and affected
+gate repetition.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

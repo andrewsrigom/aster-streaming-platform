@@ -111,6 +111,20 @@ plugins:
   experimental.expose_query_plan: false
 telemetry:
   instrumentation:
+    instruments:
+      default_requirement_level: none
+      router:
+        http.server.active_requests: false
+        http.server.request.body.size: false
+        http.server.response.body.size: false
+        http.server.request.duration:
+          attributes:
+            aster.operation:
+              response_context: aster.operation
+              default: other
+            aster.outcome:
+              response_context: aster.outcome
+              default: failed
     events:
       supergraph:
         aster.router.operation:
@@ -156,6 +170,12 @@ telemetry:
       stdout:
         format: json
     metrics:
+      common:
+        service_name: aster-router
+        cardinality_limit: 128
+        views:
+          - name: http.server.request.duration
+            allowed_attribute_keys: [aster.operation, aster.outcome]
       prometheus:
         enabled: true
         listen: 0.0.0.0:9091

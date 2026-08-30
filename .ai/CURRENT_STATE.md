@@ -47,8 +47,9 @@ passed every required job and releases P12-R01/R02/R08/R09. PR46 exact head
 `95e3a73`, tree `c0eb46a`, then passed protected run `33303267611` and clean
 confirmation. It squash-merged as tree-identical main `2245251`; exact-main run
 `33304196111` passed every job and releases P12-R03 plus the backend portion of
-P12-R04. The local browser QoE and P12-R11 policy slice is active. Full
-Phase00–14 goal stays active.
+P12-R04. The local browser QoE candidate is frozen at exact `74780e5` while
+protected PR47 acceptance completes. The dependent P12-R05/R06 SLI/SLO slice is
+active from that exact head. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -117,8 +118,8 @@ uses `node:http` with the explicit reviewed Host. The corrected exact-head and
 exact-main runs both passed the real Collector/Prometheus assertion, all
 protected integrations and Docker playable demo.
 
-P12-R04/R11 browser QoE is active on `feat/p12-browser-telemetry-policy`, based
-exactly on released main `2245251`. The existing player measures session,
+P12-R04/R11 browser QoE is frozen on exact source `74780e5`, tree `412cc4c`,
+based exactly on released main `2245251`. The player measures session,
 manifest, decoded first frame, rendition, rebuffer, fatal-error and completion
 events in a 64-sample memory-only journal without identifiers or media URLs.
 This slice makes its sampling and lifetime explicit, adds an aggregate
@@ -134,6 +135,16 @@ public-artifact/privacy checks, documentation, architecture, security and AI
 state. One read-only Docker query found no local daemon before resource
 creation, so the changed playable-browser proof remains for protected CI; no
 WSL/Docker restart or repeated host diagnostic was attempted.
+
+PR47 initial review found no blocker. Protected run `33305864184` is active on
+the same exact head; its completed jobs are green and the serial source-quality
+integration job remains in progress. Item59 is `WAITING_EXTERNAL`. The sole
+dependent branch `feat/p12-sli-slo-definitions` starts from exact `74780e5` and
+owns P12-R05/R06. It will define each SLI's population, good event, exclusions,
+source, aggregation, owner and window, plus initial objectives and error budgets
+for supergraph, Catalog title read, playback start and progress write. Browser
+first-frame remains a local diagnostic because remote sampling and retention are
+zero.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -387,14 +398,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 browser QoE acceptance, formal SLIs/SLOs, dashboards, alerts,
-diagnostic exercises and operational overview remain.
+Phase12 browser QoE external acceptance, executable SLIs/SLOs, dashboards,
+alerts, diagnostic exercises and operational overview remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete P12-R11 and the remaining P12-R04 local browser QoE evidence, then
-define the Phase12 SLIs/SLOs from released signal sources.
+Finish PR47 protected acceptance and confirmation without changing its frozen
+head. In parallel, implement and prove P12-R05/R06 locally; publish it only
+after PR47 merges and exact main passes.
 
 ## Runtime and recovery
 

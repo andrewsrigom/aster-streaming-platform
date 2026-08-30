@@ -140,7 +140,16 @@ Use the overlay with `observability` or `full`; the base file alone does not ena
 
 The optional stack reuses the released integration pins: Apache Kafka 4.3.1, VersityGW 1.7.0, Collector 0.159.0 and Prometheus 3.14.0. Kafka is single-node/plaintext, not a production cluster. S3 is local synthetic storage; its upstream root process has all capabilities dropped. Other optional processes inherit upstream non-root users. Collector/Prometheus configs are baked into digest-pinned images, with no host config mounts.
 
-Open [Prometheus](http://127.0.0.1:9090). Queries include `process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds`, `http_server_request_duration_seconds_count` and `aster_dependency_operation_outcomes_total`. Export interval is 5 seconds, timeout 1 second; scrape interval is 5 seconds. Prometheus limits samples, labels, query concurrency/time and retention to 1 hour/128 MB. Retention is not a hard filesystem quota. No dashboard, tracing/log backend or SLO is claimed.
+Open [Prometheus](http://127.0.0.1:9090). Queries include
+`process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds`,
+`http_server_request_duration_seconds_count`,
+`aster_dependency_operation_outcomes_total` and
+`aster:sli:good:ratio_rate5m`. Export interval is 5 seconds, timeout 1 second;
+Collector and private Router scrape intervals are 5 seconds. Prometheus limits
+samples, labels, query concurrency/time and retention to 1 hour/128 MB.
+Retention is not a hard filesystem quota. The SLI rules prove local mechanics;
+one-hour data cannot prove a 28/30-day SLO. No dashboard, alert, tracing/log
+backend or historical compliance result is claimed.
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.
 

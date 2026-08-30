@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "recordingWindow": "5m",
+  "localRetention": "1h",
+  "slis": [
+    {
+      "id": "supergraph",
+      "owner": "Platform",
+      "population": "Known GraphQL operations that complete Router admission and produce either a completed or unexpected-failure outcome.",
+      "goodEvent": "The operation completes without an unexpected GraphQL or transport failure before the three-second Router deadline.",
+      "exclusions": [
+        "unknown operation names collapsed to other",
+        "validation and parse rejection",
+        "authentication or authorization rejection",
+        "rate, concurrency or cost admission rejection"
+      ],
+      "source": {
+        "owner": "Apollo Router",
+        "populationMetric": "http_server_request_duration_seconds_count",
+        "goodMetric": "http_server_request_duration_seconds_count",
+        "scrapeJob": "aster-router"
+      },
+      "aggregation": "Event ratio over a rolling 30-day window; five-minute rates are recorded for operational views.",
+      "objective": {
+        "target": 0.999,
+        "window": "30d",
+        "latencySeconds": 3,
+        "errorBudgetFraction": 0.001
+      },
+      "userImpact": "A bad event means a valid first-party GraphQL operation cannot complete through the public application API.",
+      "recordingQueries": {
+        "population": "sum(rate(http_server_request_duration_seconds_count{job=\"aster-router\",aster_operation!=\"other\",aster_outcome=~\"completed|failed\"}[5m]))",
+        "good": "sum(rate(http_server_request_duration_seconds_count{job=\"aster-router\",aster_operation!=\"other\",aster_outcome=\"completed\"}[5m]))"
+      },
+      "objectiveQuery": "sum(increase(http_server_request_duration_seconds_count{job=\"aster-router\",aster_operation!=\"other\",aster_outcome=\"completed\"}[30d])) / sum(increase(http_server_request_duration_seconds_count{job=\"aster-router\",aster_operation!=\"other\",aster_outcome=~\"completed|failed\"}[30d]))"
+    },
+    {
+      "id": "catalog_title_read",
+      "owner": "Catalog",
+      "population": "Admitted TitleDetail operations that return a completed or unexpected-failure outcome; a correct null for a non-public identifier remains a completed read.",
+      "goodEvent": "The TitleDetail operation completes without an unexpected error in at most 300 milliseconds.",
+      "exclusions": [
+        "unknown or non-TitleDetail operations",
+        "validation and parse rejection",
+        "authentication or authorization rejection",
+        "rate, concurrency or cost admission rejection"
+      ],
+      "source": {
+        "owner": "Apollo Router",
+        "populationMetric": "http_server_request_duration_seconds_count",
+        "goodMetric": "http_server_request_duration_seconds_bucket",
+        "scrapeJob": "aster-router"
+      },
+      "aggregation": "Latency-qualified event ratio over a rolling 28-day window; five-minute rates are recorded for operational views.",
+      "objective": {
+        "target": 0.999,
+        "window": "28d",
+        "latencySeconds": 0.3,
+        "errorBudgetFraction": 0.001
+      },
+      "userImpact": "A bad event delays or prevents a viewer from opening a title detail page with the authoritative public visibility decision.",
+      "recordingQueries": {
+        "population": "sum(rate(http_server_request_duration_seconds_count{job=\"aster-router\",aster_operation=\"TitleDetail\",aster_outcome=~\"completed|failed\"}[5m]))",
+        "good": "sum(rate(http_server_request_duration_seconds_bucket{job=\"aster-router\",aster_operation=\"TitleDetail\",aster_outcome=\"completed\",le=\"0.3\"}[5m]))"
+      },
+      "objectiveQuery": "sum(increase(http_server_request_duration_seconds_bucket{job=\"aster-router\",aster_operation=\"TitleDetail\",aster_outcome=\"completed\",le=\"0.3\"}[28d])) / sum(increase(http_server_request_duration_seconds_count{job=\"aster-router\",aster_operation=\"TitleDetail\",aster_outcome=~\"completed|failed\"}[28d]))"
+    },
+    {
+      "id": "playback_start",
+      "owner": "Playback",
+      "population": "Playback-session attempts for requests that reached the owner as valid published-title candidates and returned completed, unavailable, indeterminate or failed.",
+      "goodEvent": "A usable playback session is completed in at most 500 milliseconds.",
+      "exclusions": [
+        "not-playable title or rights decision",
+        "invalid or admission-rejected request",
+        "client cancellation"
+      ],
+      "source": {
+        "owner": "Playback",
+        "populationMetric": "aster_product_operation_outcomes_total",
+        "goodMetric": "aster_product_operation_duration_seconds_bucket",
+        "scrapeJob": "aster-local"
+      },
+      "aggregation": "Latency-qualified event ratio over a rolling 30-day window; five-minute rates are recorded for operational views.",
+      "objective": {
+        "target": 0.999,
+        "window": "30d",
+        "latencySeconds": 0.5,
+        "errorBudgetFraction": 0.001
+      },
+      "userImpact": "A bad event means an otherwise eligible viewer cannot obtain a timely CDN-compatible playback session.",
+      "recordingQueries": {
+        "population": "sum(rate(aster_product_operation_outcomes_total{job=\"aster-local\",aster_product_operation=\"playback_session\",aster_outcome=~\"completed|unavailable|indeterminate|failed\"}[5m]))",
+        "good": "sum(rate(aster_product_operation_duration_seconds_bucket{job=\"aster-local\",aster_product_operation=\"playback_session\",aster_outcome=\"completed\",le=\"0.5\"}[5m]))"
+      },
+      "objectiveQuery": "sum(increase(aster_product_operation_duration_seconds_bucket{job=\"aster-local\",aster_product_operation=\"playback_session\",aster_outcome=\"completed\",le=\"0.5\"}[30d])) / sum(increase(aster_product_operation_outcomes_total{job=\"aster-local\",aster_product_operation=\"playback_session\",aster_outcome=~\"completed|unavailable|indeterminate|failed\"}[30d]))"
+    },
+    {
+      "id": "progress_write",
+      "owner": "Engagement",
+      "population": "Current valid progress-write attempts that return completed, not-playable, unavailable, indeterminate or failed.",
+      "goodEvent": "The owner accepts the write or recognizes its idempotent duplicate in at most 400 milliseconds.",
+      "exclusions": [
+        "stale sequence",
+        "idempotency conflict",
+        "invalid, unauthenticated, missing-profile or admission-rejected request",
+        "client cancellation"
+      ],
+      "source": {
+        "owner": "Engagement",
+        "populationMetric": "aster_product_operation_outcomes_total",
+        "goodMetric": "aster_product_operation_duration_seconds_bucket",
+        "scrapeJob": "aster-local"
+      },
+      "aggregation": "Latency-qualified event ratio over a rolling 30-day window; five-minute rates are recorded for operational views.",
+      "objective": {
+        "target": 0.9995,
+        "window": "30d",
+        "latencySeconds": 0.4,
+        "errorBudgetFraction": 0.0005
+      },
+      "userImpact": "A bad event means a current valid playback checkpoint is not durably accepted within the interaction budget.",
+      "recordingQueries": {
+        "population": "sum(rate(aster_product_operation_outcomes_total{job=\"aster-local\",aster_product_operation=\"progress_write\",aster_outcome=~\"completed|not_playable|unavailable|indeterminate|failed\"}[5m]))",
+        "good": "sum(rate(aster_product_operation_duration_seconds_bucket{job=\"aster-local\",aster_product_operation=\"progress_write\",aster_outcome=\"completed\",le=\"0.4\"}[5m]))"
+      },
+      "objectiveQuery": "sum(increase(aster_product_operation_duration_seconds_bucket{job=\"aster-local\",aster_product_operation=\"progress_write\",aster_outcome=\"completed\",le=\"0.4\"}[30d])) / sum(increase(aster_product_operation_outcomes_total{job=\"aster-local\",aster_product_operation=\"progress_write\",aster_outcome=~\"completed|not_playable|unavailable|indeterminate|failed\"}[30d]))"
+    }
+  ]
+}

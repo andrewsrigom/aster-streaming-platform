@@ -69,14 +69,22 @@ fn public_response(response) {
         response.headers["set-cookie"] = response.context["aster.session_cookie"];
     }
     let sanitized = [];
+    let rejected = false;
+    let failed = false;
     for error in response.body.errors {
         let code = error.extensions?.code;
         let allowed = ["UNAUTHENTICATED", "FORBIDDEN", "INVALID_INPUT", "UNAVAILABLE", "CANCELLED", "LIMIT_EXCEEDED", "GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED", "SUBGRAPH_ERROR", "SUBREQUEST_HTTP_ERROR", "GATEWAY_TIMEOUT", "REQUEST_TIMEOUT"];
+        if code in ["UNAUTHENTICATED", "FORBIDDEN", "INVALID_INPUT", "LIMIT_EXCEEDED", "GRAPHQL_VALIDATION_FAILED", "GRAPHQL_PARSE_FAILED"] {
+            rejected = true;
+        } else {
+            failed = true;
+        }
         error.message = "GraphQL operation failed.";
         error.extensions = #{code: if code in allowed { code } else { "UNAVAILABLE" }};
         sanitized.push(error);
     }
     response.body.errors = sanitized;
+    response.context["aster.outcome"] = if failed { "failed" } else if rejected { "rejected" } else { "completed" };
 }
 
 fn supergraph_service(service) {
