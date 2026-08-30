@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { parseDocument } from "yaml";
 import { serviceBlock, volumeBlock } from "./verify-optional-platform.mjs";
 
 const routerImage =
@@ -8,46 +7,124 @@ const routerImage =
 const nodeImage =
   "docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df";
 
-function parseRouterConfig(source) {
-  if (source.length === 0 || source.length > 32768) {
-    return null;
-  }
-  try {
-    const document = parseDocument(source, {
-      prettyErrors: false,
-      strict: true,
-      uniqueKeys: true,
-    });
-    if (document.errors.length > 0 || document.warnings.length > 0) {
+const yamlEscapes = new Map([
+  ["0", "\0"],
+  ["a", "\u0007"],
+  ["b", "\b"],
+  ["t", "\t"],
+  ["n", "\n"],
+  ["v", "\v"],
+  ["f", "\f"],
+  ["r", "\r"],
+  ["e", "\u001b"],
+  [" ", " "],
+  ['"', '"'],
+  ["/", "/"],
+  ["\\", "\\"],
+  ["N", "\u0085"],
+  ["_", "\u00a0"],
+  ["L", "\u2028"],
+  ["P", "\u2029"],
+]);
+
+function decodeYamlDoubleQuoted(source, start) {
+  let value = "";
+  for (let index = start + 1; index < source.length; index++) {
+    const character = source[index];
+    if (character === '"') {
+      return { end: index, value };
+    }
+    if (character !== "\\") {
+      value += character;
+      continue;
+    }
+    index++;
+    const escaped = source[index];
+    if (escaped === "\n" || escaped === "\r") {
+      if (escaped === "\r" && source[index + 1] === "\n") {
+        index++;
+      }
+      while (source[index + 1] === " " || source[index + 1] === "\t") {
+        index++;
+      }
+      continue;
+    }
+    const width = escaped === "x" ? 2 : escaped === "u" ? 4 : escaped === "U" ? 8 : 0;
+    if (width > 0) {
+      const digits = source.slice(index + 1, index + width + 1);
+      if (!new RegExp(`^[0-9a-fA-F]{${width}}$`, "u").test(digits)) {
+        return null;
+      }
+      const codePoint = Number.parseInt(digits, 16);
+      if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+        return null;
+      }
+      value += String.fromCodePoint(codePoint);
+      index += width;
+      continue;
+    }
+    const decoded = yamlEscapes.get(escaped);
+    if (decoded === undefined) {
       return null;
     }
-    const value = document.toJS({ mapAsMap: true, maxAliasCount: 0 });
-    return value instanceof Map ? value : null;
-  } catch {
-    return null;
+    value += decoded;
   }
+  return null;
 }
 
-function containsNestedMapKey(value, expected, visited = new Set()) {
-  if (value === null || typeof value !== "object" || visited.has(value)) {
-    return false;
-  }
-  visited.add(value);
-  if (value instanceof Map) {
-    for (const [key, child] of value) {
-      if (
-        typeof key !== "string" ||
-        key === expected ||
-        containsNestedMapKey(child, expected, visited)
-      ) {
+function containsYamlKey(source, expected) {
+  for (let index = 0; index < source.length; index++) {
+    const character = source[index];
+    if (character === "#" && (index === 0 || /\s/u.test(source[index - 1] ?? ""))) {
+      index = source.indexOf("\n", index);
+      if (index === -1) {
+        return false;
+      }
+      continue;
+    }
+    if (character === "&" || character === "*" || character === "?") {
+      return true;
+    }
+    if (character === '"') {
+      const decoded = decodeYamlDoubleQuoted(source, index);
+      if (decoded === null) {
         return true;
       }
+      index = decoded.end;
+      if (decoded.value === expected && /^\s*:/u.test(source.slice(index + 1))) {
+        return true;
+      }
+      continue;
     }
-    return false;
+    if (character === "'") {
+      let value = "";
+      let closed = false;
+      for (index++; index < source.length; index++) {
+        if (source[index] === "'") {
+          if (source[index + 1] === "'") {
+            value += "'";
+            index++;
+            continue;
+          }
+          closed = true;
+          break;
+        }
+        value += source[index];
+      }
+      if (!closed || (value === expected && /^\s*:/u.test(source.slice(index + 1)))) {
+        return true;
+      }
+      continue;
+    }
+    if (
+      source.startsWith(expected, index) &&
+      (index === 0 || /[\s{,]/u.test(source[index - 1] ?? "")) &&
+      /^\s*:/u.test(source.slice(index + expected.length))
+    ) {
+      return true;
+    }
   }
-  return Array.isArray(value)
-    ? value.some((child) => containsNestedMapKey(child, expected, visited))
-    : false;
+  return false;
 }
 
 export function validateRouterRuntime(source) {
@@ -205,12 +282,13 @@ export function validateRouterSources(sources) {
     }
   }
   const config = sources["infra/router/router.yaml"] ?? "";
-  const parsedConfig = parseRouterConfig(config);
-  const trafficShaping = parsedConfig?.get("traffic_shaping");
+  const trafficShaping =
+    /(?:^|\n)traffic_shaping:\n(?<policy>[\s\S]*?)\ninclude_subgraph_errors:/u.exec(config)
+      ?.groups?.["policy"] ?? "";
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
-    !(trafficShaping instanceof Map) ||
-    containsNestedMapKey(trafficShaping, "retry") ||
+    trafficShaping.length === 0 ||
+    containsYamlKey(trafficShaping, "retry") ||
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
   ) {

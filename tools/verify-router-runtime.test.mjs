@@ -101,6 +101,26 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
     ],
     [
       "infra/router/router.yaml",
+      "    concurrency_limit: 8\n",
+      '    concurrency_limit: 8\n    "retr\\x79": { attempts: 2 }\n',
+    ],
+    [
+      "infra/router/router.yaml",
+      "    concurrency_limit: 8\n",
+      '    concurrency_limit: 8\n    "retr\\U00000079": { attempts: 2 }\n',
+    ],
+    [
+      "infra/router/router.yaml",
+      "    concurrency_limit: 8\n",
+      "    concurrency_limit: 8\n    'retry': { attempts: 2 }\n",
+    ],
+    [
+      "infra/router/router.yaml",
+      "    concurrency_limit: 8\n",
+      '    concurrency_limit: 8\n    "retr\\q": { attempts: 2 }\n',
+    ],
+    [
+      "infra/router/router.yaml",
       "traffic_shaping:\n",
       "shared: &shared { timeout: 1s }\ntraffic_shaping:\n  inherited: *shared\n",
     ],
