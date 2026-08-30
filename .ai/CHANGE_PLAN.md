@@ -1,138 +1,106 @@
-# Work Item: Phase 12 trace, correlation, privacy and exporter boundary
+# Work Item: Phase 11 retry-ownership confirmation remediation
 
 - Status: IN_PROGRESS
-- Owner: Platform telemetry; each service transport and dependency adapter owns its spans
-- Phase: 12
-- Requirement IDs: P12-R01, P12-R02, P12-R08, P12-R09
+- Owner: Platform Router policy verification
+- Phase: 11
+- Requirement IDs: P11-R10, P11-R11
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-A current request or event can be followed through every applicable Aster
-boundary using one repository-owned trace and structured-log contract. Names and
-attributes remain finite and privacy-safe, and an absent, slow or failed
-telemetry exporter never changes a product result, readiness or bounded
-shutdown.
+The closeout guard rejects every valid YAML representation of a `retry` key
+inside Apollo Router `traffic_shaping`, so Router cannot silently duplicate the
+service-owned safe-read retry.
 
 ## Current behavior
 
-P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at corrected executable source
-`ad99ef6`; all local implementation, evidence and affected gates pass. Its
-initial review's two retry-guard findings are corrected. Phase 12 may advance as
-the one unpublished dependent, but it cannot publish, merge or release first.
-
-`@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite
-dimensions, exporter health and timeout behavior. `@aster/runtime` owns
-structured Pino logs with redaction and optional validated active trace IDs.
-Router runtime evidence proves one authenticated trace ID reaches Identity and
-Catalog logs and the Collector. Owner HTTP servers and PostgreSQL, Redis,
-broker and object-storage adapters expose bounded metric observations. Event
-envelopes preserve a validated `traceparent`. There is no repository-owned
-tracing SDK/export contract that consistently creates parent/child spans across
-all current service, dependency, event and media boundaries.
+PR44 exact head `b803d74` passes its local candidate and most protected jobs.
+Exact-head confirmation discussion `3888512532` proves that the lexical scanner
+does not decode a double-quoted YAML Unicode escape such as `"retr\\u0079"`.
+The parser therefore accepts a configuration that Apollo Router reads as a
+`retry` mapping. P12-R01 is paused locally until this predecessor is coherent
+again; its uncommitted work is preserved in a named Git stash.
 
 ## Proposed behavior
 
-Add the smallest complete tracing vertical slice behind repository-owned
-declarations: validated inbound/extracted and outbound/injected W3C context,
-finite server/application/dependency/consumer/worker span names and attributes,
-active context for correlated logs, bounded OTLP export, and explicit async
-event links rather than indefinitely open request spans. Integrate it through
-the shared HTTP and dependency adapter boundaries first, then current owner
-event and media execution boundaries. Preserve Router sanitization and do not
-add a hosted backend, dashboard, SLO or public trace identifier.
+Parse the bounded Router YAML with the repository's declared YAML parser,
+reject parse errors and aliases, locate `traffic_shaping` structurally, and
+recursively reject the decoded key `retry` regardless of block, flow, quote or
+escape presentation.
 
 ## Boundaries
 
-- Owning context: Platform owns the telemetry contract; each bounded context owns operation outcome classification.
-- Affected services/packages: `@aster/telemetry`, `@aster/runtime`, shared HTTP, PostgreSQL, Redis, broker and object-storage adapters, owner compositions, event delivery and media worker.
-- Authoritative data: none; telemetry is diagnostic and never authoritative product state.
-- Read models/caches: none.
-- Trust boundaries: browser/Router headers, authenticated private subgraph transport, event envelopes, exporter endpoint and Collector output.
-- External dependencies: accepted OpenTelemetry-compatible SDK/exporter and existing local Collector only.
+- Owning context: Platform.
+- Affected files: Router source verifier, its focused tests, root development dependency and evidence/state.
+- Authoritative data: none.
+- Trust boundaries: repository-controlled Router configuration interpreted by both CI and Apollo Router.
+- External dependencies: exact `yaml` package version already present transitively in the locked toolchain.
 
 ## Invariants
 
-- Domain and application layers import no OpenTelemetry SDK.
-- Public trace, baggage, operation names and arbitrary attributes are untrusted.
-- Metrics never label user, account, profile, title, request or trace IDs.
-- Logs and spans contain no credentials, cookies, personal data, raw GraphQL documents or signed media URLs.
-- Async events link to their producer context and do not keep request spans open.
-- Export work has finite capacity, deadline, cancellation and shutdown behavior.
-- Telemetry failure cannot alter product results, readiness or durable state.
+- Safe Catalog read retries remain service-owned and limited to two attempts.
+- Router and Web perform no automatic retry.
+- The verifier parses at most the existing 32 KiB source limit and rejects malformed or aliased policy input.
+- No production request path or product contract changes.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Telemetry |
+| Failure | Expected behavior | Evidence |
 |---|---|---|
-| Invalid inbound context | discard it and create a bounded local root after transport authentication | finite rejection reason, no hostile value |
-| Exporter absent, slow or failed | product work completes; export fails within its deadline and records bounded local health | export result/drop counters and sanitized log |
-| Span/attribute capacity exceeded | reject or truncate according to the fixed contract without allocating an unbounded queue | bounded drop reason |
-| Event has no valid trace context | consumer creates a local root correlated by finite event context | stable consumer outcome only |
-| Logger cannot obtain active context | write an otherwise valid uncorrelated entry | existing safe logger behavior |
+| Encoded, quoted, flow or block `retry` key | Router source validation fails | focused mutation tests |
+| Malformed or aliased YAML | Router source validation fails closed | focused parser tests |
+| Valid current configuration | validation remains green | platform verifier test |
 
 ## Data and contracts
 
 - Schema/migration: none.
-- GraphQL: no schema change; only authenticated internal W3C propagation remains.
-- Events: existing envelope stays compatible; valid `traceparent` becomes an async link input.
-- Cache: none.
-- Compatibility: existing metric and logger declarations remain source-compatible; tracing types are repository-owned additions.
-- Retention/deletion: no local retained trace backend in this slice; sampling/retention policy remains P12-R11.
+- GraphQL/events/cache: unchanged.
+- Compatibility: current Router YAML remains valid; only retry-ownership bypasses are rejected.
+- Retention/deletion: none.
 
 ## Security and privacy
 
-- Authorization: trace context never grants owner, viewer or operator authority.
-- Input limits: exact W3C format, finite header bytes, finite names/attributes/events/links and bounded exporter batching.
-- Sensitive data: stable enumerations only; automated canaries cover tokens, cookies, IDs, documents and signed URLs.
-- Abuse cases: forged parentage, baggage amplification, user-chosen span names, high-cardinality IDs, exporter backpressure and duplicate completion.
+No request data is parsed. The repository configuration is size-bounded, YAML
+aliases are rejected, and failures expose no credentials or runtime values.
 
 ## Implementation steps
 
-1. Inventory every current boundary and freeze the finite span/attribute vocabulary with privacy tests.
-2. Add repository-owned trace/context/span declarations and a bounded OpenTelemetry adapter in `@aster/telemetry`.
-3. Compose active context with `@aster/runtime` logs and shared inbound HTTP/outbound dependency adapters.
-4. Link owner event consumption and bound media-worker spans without changing event or product contracts.
-5. Prove Router-to-owner trace continuity, async links, redaction/cardinality and exporter outage/recovery.
-6. Record exact evidence and update observability architecture and repository memory.
+1. Declare the exact YAML parser dependency.
+2. Replace lexical key decoding with structural bounded parsing.
+3. Add escaped-key, malformed-document and alias mutation coverage.
+4. Run focused Router/platform, static and affected gates.
+5. Update evidence/state, publish once and request one exact-head confirmation.
 
 ## Tests
 
-- Domain: none; telemetry remains outside domain policy.
-- Application: stable operation outcomes map to finite span status without SDK imports.
-- Integration: real Collector trace export plus stopped/paused exporter recovery and bounded shutdown.
-- Contract: W3C extraction/injection, async links, finite names/attributes and logger correlation.
-- Browser: one sampled navigation/request correlation only if browser source changes.
-- Performance/failure: bounded in-flight spans/export batches and exporter timeout; no capacity claim.
+- Focused: `tools/verify-router-runtime.test.mjs`.
+- Static: scoped ESLint, Prettier and lockfile integrity.
+- Candidate: P11 affected-scope gate from the existing closeout plan.
+- Hosted: protected PR44 gate and one confirmation on the corrected exact head.
 
 ## Evidence
 
-- Commands: focused telemetry/runtime/adapter suites, trace fixture, privacy/cardinality verifier and affected candidate gate.
-- Raw artifact path: `evidence/phase-12/trace-contract.txt`, `trace-continuity.txt`, `exporter-failure.txt` and `cardinality-review.txt`.
-- Acceptance result: every current boundary mapped; representative sync and async paths prove continuity; exporter failure remains isolated.
-- Iteration gate: focused changed-package tests, typecheck, lint and privacy contract.
-- Candidate gate: complete affected-scope gate plus one disposable Collector trace/failure fixture and documentation/AI checks.
-- Heavyweight repeat triggers: trace/export/runtime composition changes repeat only the affected Collector path; prose-only changes repeat documentation/AI/format checks.
-- Review stopping rule: one initial review and one confirmation; only requirement, privacy/security, boundedness, availability, evidence-integrity or public-contract blockers extend it.
+- Raw artifact: `evidence/phase-11/retry-amplification.txt` and release record.
+- Iteration gate: focused Router verifier tests.
+- Candidate gate: the existing P11 affected gate plus dependency/document checks.
+- Heavyweight repeat trigger: Router verifier/tool dependency changes repeat the protected Router/platform gate; unchanged game-day product behavior carries forward.
+- Review stopping rule: this confirmed blocking boundary receives one correction and one exact-head confirmation.
 
 ## Rollback or recovery
 
-Tracing is optional diagnostic infrastructure. Rollback disables the new
-tracer/export composition and retains current metrics/logging; it changes no
-database, event, object or product API. Disposable fixtures remove only their
-exact Collector project resources.
+Revert the parser dependency and structural guard together. This changes no
+runtime state, but Phase 11 cannot release while the lexical bypass remains.
 
 ## Documentation updates
 
-- Observability architecture, telemetry vocabulary and Phase 12 evidence index.
-- Repository state, queue, session log and handoff.
+- Phase 11 retry-amplification evidence and release checkpoint.
+- Repository current state, queue, session log and handoff.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Structural guard and bypass tests pass
+- [x] Affected candidate passes
+- [x] Evidence and repository memory are current
+- [ ] Protected CI and exact-head confirmation pass
+- [ ] PR44 releases before P12 resumes

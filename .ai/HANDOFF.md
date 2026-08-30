@@ -2,9 +2,10 @@
 
 ## Resume point
 
-P12-R01 is active as the one unpublished dependent. It owns finite trace/log
-context, telemetry privacy/cardinality and bounded exporter failure. It cannot
-publish before the P11-R10 predecessor releases.
+P11-R10 is active for one exact-head confirmation correction on PR44. P12-R01
+is paused; its uncommitted trace work is preserved in named stash
+`wip/p12-trace-observability-before-pr44-confirmation-fix` and must resume only
+after this predecessor is coherent again.
 
 Phases 00–10 and P11-R01/R05/R08/R09 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -17,30 +18,26 @@ passes 11/11 in 49.422s. The discussion is resolved. PR43 squash-merged as
 tree-identical main `bdbe2e0`; exact-main run `33292389504` passed all required
 jobs.
 
-P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at corrected executable source
-`ad99ef675953d47a7f03161c94468f9292476de0`, tree
-`999171632a8823886c47b4d7b06a86303c88d3d5`, based on that tree-identical
-predecessor merge. It owns the remaining
-P11-R06/R07/R10/R11/R12
-evidence. Initial review discussions `3888491209` and `3888491214` found that
-the Web regression bypassed Apollo link composition and the Router guard missed
-flow-style YAML. The correction extracts the existing browser client composition
-without changing behavior, exercises that exact chain and detects block, flow
-and quoted retry keys. Web112/112, Router4/4 and the affected 17/17 gate with two
-cached in 57.471 seconds pass. Only protected exact-head CI, confirmation, merge
-and exact-main verification remain.
+P11-R10 exact-head confirmation discussion `3888512532` found that the lexical
+Router guard did not decode a double-quoted YAML Unicode escape. Exact local
+source `4becc1ab3b0658eecf01bba6b59109b3fcaebe8a`, tree
+`0a8e215439377b095c44b28ed8fc778c1f9a316f`, now parses the 32 KiB-bounded
+policy structurally with declared `yaml@2.9.0`, rejects warnings/aliases and
+detects decoded `retry` keys. Router4/4, platform67/67 and the affected73/73
+gate with50 cached in54.184 seconds pass. Evidence publication, protected
+exact-head CI, confirmation, merge and exact-main verification remain.
 
 ## Exact next actions
 
-1. Complete one PR44 review/confirmation and protected exact-head CI.
-2. Squash merge without bypass and verify exact-main CI.
-3. Close Phase11; reconcile the one unpublished Phase12 dependent if it advanced
-   while PR44 waited, then publish only after the predecessor release.
+1. Commit and push the correction evidence/state to PR44 once.
+2. Resolve discussion `3888512532`, request one exact-head confirmation and wait
+   for protected CI.
+3. Squash merge without bypass, verify exact-main CI, close Phase11 and restore
+   the named P12 stash on its dependent branch.
 
-P12-R01 is active as that one unpublished dependent. It owns repository trace
-context, structured-log correlation, privacy/cardinality and bounded exporter
-failure under the current OpenTelemetry ADR. Start from the final PR44 head and
-do not publish it before PR44 releases.
+P12-R01 remains next. It owns repository trace context, structured-log
+correlation, privacy/cardinality and bounded exporter failure under the current
+OpenTelemetry ADR. Rebase it onto the final PR44/main tree before publication.
 
 ## Evidence boundaries
 

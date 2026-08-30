@@ -43,6 +43,25 @@ chain with one failing Router fetch. The traffic-shaping scanner now detects
 bare, flow and quoted `retry` keys while remaining scoped outside unrelated
 telemetry policy. Both reported bypasses fail their mutation regressions.
 
+Exact-head confirmation discussion `3888512532` then proved that the lexical
+decoder treated a valid double-quoted YAML Unicode escape such as
+`"retr\\u0079"` as literal text, while Apollo Router's YAML parser resolves the
+key to `retry`. Exact executable correction
+`4becc1ab3b0658eecf01bba6b59109b3fcaebe8a`, tree
+`0a8e215439377b095c44b28ed8fc778c1f9a316f`, replaces that scanner with
+structural parsing by exact dev dependency `yaml@2.9.0` (ISC, already present in
+the locked toolchain). Parsing remains bounded by the existing 32 KiB source
+limit, rejects malformed documents, warnings and aliases, and recursively
+rejects the decoded `retry` key only inside `traffic_shaping`.
+
+The focused Router suite passes 4/4 in 230.200293 ms with block, flow, quoted,
+Unicode-escaped, alias and malformed mutations. Frozen install, platform source
+verification, AI/document/security checks, scoped ESLint/Prettier and diff
+checks pass. The complete corrected affected candidate passes 73/73 tasks, 50
+cached, in 54.184 seconds; platform passes 67/67 and includes the structural
+guard. Protected run `33293548409` belongs to the superseded head and cannot
+authorize release after this correction.
+
 Verified composition
 - Public SSR/browser Apollo uses HttpLink plus one bounded fetch. There is no
   RetryLink. Streaming replay is blocked; only an explicit UI refresh can issue

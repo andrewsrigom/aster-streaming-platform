@@ -4,7 +4,7 @@ Last updated: 2026-08-30
 
 ## Active phase
 
-**Phase 12 — Observability, SLIs, and SLOs**
+**Phase 11 — Resilience and Failure Laboratory**
 
 Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
@@ -12,11 +12,13 @@ squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
 run `33290477608` passed every required job. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
 squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
-frozen `WAITING_EXTERNAL` on PR44 at corrected executable source `ad99ef6`; its
-local candidate is complete and only protected CI, confirmation and release
-remain. P12-R01
-is the one unpublished dependent and starts the trace/log/privacy/exporter
-boundary. Full Phase00–14 goal stays active.
+active again on PR44 after exact-head confirmation discussion `3888512532`
+proved that a double-quoted YAML Unicode escape can hide a Router `retry` key
+from the lexical ownership guard. Exact local correction `4becc1a`, tree
+`0a8e215`, parses the bounded policy structurally; focused Router4/4 and the
+complete affected gate73/73 pass. Publication and hosted confirmation remain.
+P12-R01 is paused with its local changes preserved. Full Phase00–14 goal stays
+active.
 
 ## Verified
 
@@ -47,15 +49,16 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P12-R01 inventories and standardizes current trace boundaries. Existing metrics,
-structured logs, Router-to-owner correlation, validated event `traceparent` and
-bounded exporter failure are the baseline. The missing slice is a
-repository-owned tracing contract and adapter that consistently creates finite,
-privacy-safe server, dependency, event and media spans while driving logger
-context. No hosted backend, dashboard, SLO or product contract is added here.
+P11-R10's confirmation remediation is locally complete at executable source
+`4becc1a`. The exact YAML parser rejects decoded `retry` keys inside
+`traffic_shaping` regardless of block, flow, quote or escape presentation, as
+well as malformed or aliased configuration. Router4/4, platform67/67 and the
+affected73/73 gate pass. Superseded protected run `33293548409` cannot authorize
+the correction; evidence publication, protected CI and one confirmation remain.
 
-P11-R10 remains frozen on PR44 and must release before this dependent can be
-published, merged or released.
+P12-R01 remains the next item. Its repository-owned tracing contract work is
+preserved locally and resumes only after the P11 correction returns to
+`WAITING_EXTERNAL` or releases.
 
 P10's first slice defines and implements the Catalog public-title cache boundary.
 PostgreSQL remains the visibility and rights authority; a cache hit may reuse only
@@ -303,13 +306,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 ## Not implemented
 
 P11-R10 game days, bulkhead/fallback/amplification proof and runbook closeout are
-implemented and published; protected review/release remains.
+implemented. One retry-ownership confirmation correction is in progress before
+the candidate can be republished; protected release remains.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Execute P12-R01 locally from the frozen PR44 head while its protected gate runs;
-do not publish the dependent before P11-R10 releases.
+Correct the PR44 structural YAML retry guard, repeat its affected gates, publish
+the exact correction and obtain protected CI plus one confirmation. Then release
+P11-R10 and resume the preserved P12-R01 work.
 
 ## Runtime and recovery
 

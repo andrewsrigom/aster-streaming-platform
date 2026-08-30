@@ -61,6 +61,15 @@ Append new entries at the top. Keep entries factual and concise.
   and detects block, flow and quoted retry keys inside traffic shaping.
 - Web112/112, Router4/4, strict types/lint/format and the corrected affected gate
   pass 17/17 tasks with two cached in 57.471 seconds.
+- Exact-head confirmation discussion `3888512532` found that the lexical Router
+  guard did not decode a valid YAML Unicode escape in a quoted `retry` key.
+  Preserved the P12 work in named stash
+  `wip/p12-trace-observability-before-pr44-confirmation-fix` and reactivated
+  P11-R10.
+- Exact source `4becc1a`, tree `0a8e215`, uses declared `yaml@2.9.0` to parse the
+  32 KiB-bounded policy structurally and reject decoded retry keys, malformed
+  documents and aliases. Router4/4, platform67/67, lock/static/document/security
+  checks and the complete affected gate pass73/73,50 cached,in54.184 seconds.
 
 ### Evidence
 
@@ -74,8 +83,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Execute P12-R01 locally while completing PR44 review, protected CI, squash merge
-and exact-main verification. Publish Phase12 only after the predecessor release.
+Publish the single PR44 correction, obtain one exact-head confirmation and its
+protected CI, then squash merge, verify exact-main and resume the preserved
+P12-R01 work.
 
 ## 2026-08-29 — Operation admission release and resilience start
 
