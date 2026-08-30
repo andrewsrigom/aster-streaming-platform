@@ -151,7 +151,8 @@ tests pass 4/4, Router tests 10/10, platform policy 23/23, exact Router 2.17
 configuration validation and Prometheus 3.14 `promtool` rule/synthetic tests
 pass. The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444
 seconds. Browser first-frame remains a local diagnostic because remote sampling
-and retention are zero; protected packaged Router/Prometheus proof remains.
+and retention are zero. PR48 is open; initial review and protected packaged
+Router/Prometheus proof remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -411,9 +412,9 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish the coherent P12-R05/R06 candidate, run its protected Router/Prometheus
-acceptance and blocker-focused review, then merge and confirm exact main before
-starting dashboard work.
+Complete PR48 P12-R05/R06 protected Router/Prometheus acceptance and
+blocker-focused review, then merge and confirm exact main before starting
+dashboard work.
 
 ## Runtime and recovery
 

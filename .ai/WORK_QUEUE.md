@@ -189,7 +189,8 @@ released. Item60 is the sole `IN_PROGRESS` item, rebased directly onto that
 exact main. Source `524ab28`, tree `e442af1`, owns finite Router outcome
 classification, Prometheus recording rules, formal SLI populations and initial
 SLO/error-budget definitions; its post-rebase affected gate passes 49/49 tasks
-with 41 cached in 47.444 seconds.
+with 41 cached in 47.444 seconds. PR48 is open for the protected runtime and
+bounded review sequence.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

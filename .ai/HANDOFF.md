@@ -8,15 +8,16 @@ squash main `6dba10e` and successful exact-main run `33307059156`.
 
 Item60 (P12-R05/R06) is the sole `IN_PROGRESS` item on
 `feat/p12-sli-slo-definitions`. Source `524ab28`, tree `e442af1`, is based
-directly on exact main `6dba10e`. Its active plan is `.ai/CHANGE_PLAN.md`.
+directly on exact main `6dba10e`; evidence checkpoint `d7d1edc` is published on
+PR48. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Commit the evidence/memory closeout without changing source behavior.
-2. Push the coherent branch and open one PR for P12-R05/R06.
-3. Request one initial blocker-focused review and let protected CI prove the pinned Router/Prometheus runtime.
-4. Batch only requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
-5. Run one confirmation review, squash-merge, verify exact-main CI, then activate P12 dashboard work.
+1. Request one initial blocker-focused review on PR48's final head.
+2. Let protected CI prove the pinned Router/Prometheus runtime.
+3. Batch only requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
+4. Run one confirmation review, squash-merge and verify exact-main CI.
+5. Activate P12 dashboard work from clean exact main.
 
 ## Verified candidate
 

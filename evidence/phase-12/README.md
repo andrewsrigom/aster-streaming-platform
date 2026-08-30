@@ -14,6 +14,7 @@ P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
 run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
 same tree; exact-main run `33307059156` passed every job. P12-R05/R06 source
 `524ab28`, tree `e442af1`, is rebased directly onto that exact main.
+PR48 owns its protected runtime and review sequence.
 
 ## Requirement traceability
 

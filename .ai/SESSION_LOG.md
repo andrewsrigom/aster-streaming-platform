@@ -32,9 +32,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish one coherent P12-R05/R06 PR and use protected CI for the changed
-Router/Prometheus runtime, then perform the bounded review/merge/exact-main
-sequence before dashboard work.
+Complete PR48 protected Router/Prometheus runtime acceptance and the bounded
+review/merge/exact-main sequence before dashboard work.
 
 ## 2026-08-30 — Browser playback telemetry candidate
 
