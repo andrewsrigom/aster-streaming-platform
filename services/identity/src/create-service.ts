@@ -183,6 +183,7 @@ export async function createIdentityServiceWithFactories(
         clock,
         identifiers,
         logger,
+        () => telemetry.activeTraceContext(),
       );
       const ownedProduct = product;
       productOwner = ownClose(async () => {

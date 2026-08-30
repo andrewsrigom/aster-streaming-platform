@@ -14,9 +14,6 @@ services:
   engagement:
     environment:
       ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
-  discovery:
-    environment:
-      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
 
   platform-status:
     depends_on:

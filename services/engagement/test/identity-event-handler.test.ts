@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { AsyncLocalStorage } from "node:async_hooks";
 import test from "node:test";
 import type { AsterPostgresAdapter } from "@aster/postgres";
 import type { AsterLogger } from "@aster/runtime";
@@ -17,12 +18,14 @@ import {
 test("links valid identity consumption to the producing trace context", async () => {
   const started: AsterDependencyObservationInput[] = [];
   const completed: AsterDependencyCompletion[] = [];
+  const active = new AsyncLocalStorage<boolean>();
   const telemetry: Pick<AsterTelemetry, "startDependencyOperation"> = {
     startDependencyOperation(input) {
       started.push(input);
       return {
         status: "started",
         observation: {
+          run: (operation) => active.run(true, operation),
           complete(completion) {
             completed.push(completion);
             return { status: "completed" };
@@ -33,6 +36,7 @@ test("links valid identity consumption to the producing trace context", async ()
   };
   const database = {
     async transaction(work: Parameters<AsterPostgresAdapter["transaction"]>[0]) {
+      assert.equal(active.getStore(), true);
       const decision = await work({
         query: () => Promise.resolve({ rowCount: 1, rows: [{ outcome: "applied" }] }),
       });
@@ -42,6 +46,7 @@ test("links valid identity consumption to the producing trace context", async ()
   const entries: unknown[] = [];
   const logger: Pick<AsterLogger, "info"> = {
     info(entry) {
+      assert.equal(active.getStore(), true);
       entries.push(entry);
       return "written";
     },

@@ -17,6 +17,7 @@ import {
   type AsterLocalRouterTrust,
 } from "@aster/http-express";
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
+import type { AsterTraceContext } from "@aster/telemetry";
 
 import type { LocalIdentityConfiguration } from "../infrastructure/identity/local-identity.js";
 
@@ -64,6 +65,7 @@ export interface IdentitySubgraphOptions {
   readonly applications: IdentityGraphqlApplications;
   readonly nowSeconds?: () => number;
   readonly monotonicNow?: () => number;
+  readonly activeTraceContext?: () => AsterTraceContext | undefined;
   readonly onOperation?: (trace: IdentityOperationTrace) => void;
   readonly onDiagnostic?: (code: "graphql_engine_error" | "graphql_engine_warning") => void;
 }
@@ -173,8 +175,10 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
     async (request, response, onError) => {
       const startedAt = now();
       const correlationId = policy.correlationId(request) ?? randomUUID();
-      const traceId = policy.traceId(request) ?? randomUUID().replaceAll("-", "");
-      const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
+      const activeTrace = options.activeTraceContext?.();
+      const traceId =
+        activeTrace?.traceId ?? policy.traceId(request) ?? randomUUID().replaceAll("-", "");
+      const spanId = activeTrace?.spanId ?? randomUUID().replaceAll("-", "").slice(0, 16);
       let operation: IdentityOperation | "rejected" = "rejected";
       let code = "COMPLETED";
       const record = (): void => {
@@ -247,7 +251,7 @@ export async function createIdentitySubgraph(options: IdentitySubgraphOptions) {
           context: {
             correlationId,
             causationId: correlationId,
-            traceparent: `00-${traceId}-${spanId}-01`,
+            traceparent: activeTrace?.traceparent ?? `00-${traceId}-${spanId}-01`,
           },
         },
         {

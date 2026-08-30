@@ -45,30 +45,42 @@ export function createIdentityEventHandler(
       } catch {
         /* Optional telemetry cannot change message handling. */
       }
-      const outcome = await consumer.handle(record, deadline.signal);
-      try {
-        logger.info({
-          event: "aster.engagement.identity_event",
-          ...(inspection.status === "valid"
-            ? { eventId: inspection.fact.eventId, requestId: inspection.fact.correlationId }
-            : {}),
-          outcome: outcome === "retry" ? "degraded" : outcome === "quarantined" ? "rejected" : "ok",
-          properties: [["status", outcome]],
-        });
-        observation?.complete({
-          outcome:
-            outcome === "retry"
-              ? "unavailable"
-              : outcome === "quarantined"
-                ? "rejected"
-                : "success",
-        });
-      } catch {
-        /* No raw event, user identifiers or credentials are logged. */
-      }
-      if (outcome === "retry" || deadline.signal.aborted) {
-        // Throwing keeps the Kafka offset uncommitted; the bounded runtime restarts consumption.
-        throw new Error("Identity event requires retry.");
+      const handle = async (): Promise<void> => {
+        const outcome = await consumer.handle(record, deadline.signal);
+        try {
+          logger.info({
+            event: "aster.engagement.identity_event",
+            ...(inspection.status === "valid"
+              ? { eventId: inspection.fact.eventId, requestId: inspection.fact.correlationId }
+              : {}),
+            outcome:
+              outcome === "retry" ? "degraded" : outcome === "quarantined" ? "rejected" : "ok",
+            properties: [["status", outcome]],
+          });
+        } catch {
+          /* No raw event, user identifiers or credentials are logged. */
+        }
+        try {
+          observation?.complete({
+            outcome:
+              outcome === "retry"
+                ? "unavailable"
+                : outcome === "quarantined"
+                  ? "rejected"
+                  : "success",
+          });
+        } catch {
+          /* Optional telemetry cannot change message handling. */
+        }
+        if (outcome === "retry" || deadline.signal.aborted) {
+          // Throwing keeps the Kafka offset uncommitted; the bounded runtime restarts consumption.
+          throw new Error("Identity event requires retry.");
+        }
+      };
+      if (observation?.run) {
+        await observation.run(handle);
+      } else {
+        await handle();
       }
     } finally {
       deadline.dispose();

@@ -8,6 +8,7 @@ import {
 } from "@aster/http-express";
 import type { AsterPostgresAdapter } from "@aster/postgres";
 import type { AsterClock, AsterIdentifierGenerator, AsterLogger } from "@aster/runtime";
+import type { AsterTraceContext } from "@aster/telemetry";
 
 import { createIdentityProfiles } from "./application/profiles.js";
 import { createIdentitySessions } from "./application/sessions.js";
@@ -23,6 +24,7 @@ export async function createLocalIdentityProduct(
   clock: AsterClock,
   identifiers: AsterIdentifierGenerator,
   logger: AsterLogger,
+  activeTraceContext: () => AsterTraceContext | undefined,
 ) {
   if (!configuration.localDemo) {
     throw new Error("Local Identity product mode is required.");
@@ -43,6 +45,7 @@ export async function createLocalIdentityProduct(
   };
   const graph = await createIdentitySubgraph({
     configuration: local,
+    activeTraceContext,
     nowSeconds: now,
     ...(configuration.localDemo.engagementRead
       ? {

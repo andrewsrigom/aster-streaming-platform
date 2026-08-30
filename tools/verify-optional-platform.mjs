@@ -135,7 +135,7 @@ export function validateObservabilityProfile(sources) {
     return [{ rule: "optional-platform", detail: "malformed or oversized observability input" }];
   }
   const source = sources["observability.yml"] ?? "";
-  for (const service of ["identity", "catalog", "playback", "engagement", "discovery"]) {
+  for (const service of ["identity", "catalog", "playback", "engagement"]) {
     const block = serviceBlock(source, service);
     if (
       block.trim() !==
@@ -146,6 +146,12 @@ export function validateObservabilityProfile(sources) {
         detail: `telemetry must remain optional to ${service} readiness and startup`,
       });
     }
+  }
+  if (serviceBlock(source, "discovery").trim() !== "") {
+    violations.push({
+      rule: "optional-platform",
+      detail: "the base observability overlay cannot define the opt-in Discovery service",
+    });
   }
   for (const [name, memory] of [
     ["collector", "128m"],
