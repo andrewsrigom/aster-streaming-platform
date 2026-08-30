@@ -164,7 +164,8 @@ exact pinned engines.
 ## Limitations
 
 The workload is synthetic and proves semantics, not latency, capacity or
-historical availability. The local store retains one hour, browser remote
-sampling remains zero, and no 28/30-day dataset exists. Protected CI proves the
+historical availability. This SLI release used one-hour local retention;
+ADR-0043 later extends the time ceiling to three days while retaining the
+128 MB cap. Browser remote sampling remains zero, and no 28/30-day dataset exists. Protected CI proves the
 baked rules, private Router scrape labels and both live Router-backed ratios in
 the packaged Docker profile; it does not create historical compliance data.

@@ -52,8 +52,14 @@ confirmation and PR47 squash main `6dba10e`; exact-main run `33307059156`
 passed every job and releases P12-R04/R11. P12-R05/R06 is released through PR48
 final head `72d5656`, tree `2374279`, protected run `33313090638` attempt2,
 clean confirmation, squash main `a99d3d5` and exact-main run `33314309449`.
-P12-R12 operational overview is active from that exact main. Full Phase00–14
-goal stays active.
+P12-R12 reviewed head `ba3de93`, tree `73ee596`, passed protected run
+`33318672382` and clean confirmation. PR49 squash main `c297d32` has that tree;
+valid exact-main run `33319514232` passed every required job. P12-R07 burn-rate
+alerts are active from that exact main. Its local candidate now implements the
+finite policy, complete-window guards, seven packaged alert instances and linked
+runbook. Exact Prometheus tests, the isolated packaged proof and the affected
+15/15 gate pass; publication, protected acceptance and review remain. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -195,7 +201,7 @@ job. The exact-head review found no remaining blocker. PR48 squash-merged as
 main `a99d3d5` with reviewed tree `2374279`; exact-main run `33314309449` passed
 every required job and releases P12-R05/R06.
 
-P12-R12 is active on `feat/p12-operational-overview`. ADR-0042 selects the
+P12-R12 is released. ADR-0042 selects the
 unmodified digest-pinned Grafana OSS 13.2.0 runtime. The local candidate bakes a
 read-only Prometheus data source and one 15-panel dashboard, publishes only
 loopback port3001, grants finite anonymous Viewer access, joins only `edge` and
@@ -227,7 +233,24 @@ tasks with3 cached in77.929 seconds. Exact source `c678484`, tree `397ead5`, the
 passed every protected job in run `33317834141`, including full-profile Grafana
 health, fixed data source/query/dashboard, optional failure isolation and the
 complete playable/integration suites. Both initial review discussions are
-evidenced and resolved. One exact-head confirmation and merge remain.
+evidenced and resolved. Evidence head `ba3de93`, tree `73ee596`, then passed
+protected run `33318672382` and clean confirmation. PR49 squash main `c297d32`
+retained that tree, and valid exact-main run `33319514232` passed every required
+job; earlier same-SHA run `33319497475` was superseded by concurrency.
+
+P12-R07 is the sole active item on `feat/p12-burn-rate-alerts` from exact main
+`c297d32`. The working-tree candidate implements the reviewed rapid 1h/5m and
+6h/30m pairs for three page-class SLIs and sustained 1d/2h and 3d/6h pairs for
+all four. Complete sampled coverage suppresses fresh/evicted partial windows.
+Prometheus 3.14.0 reports 9 valid SLI rules and 26 valid alert-policy rules; all
+synthetic firing, suppression and recovery cases pass. A fresh isolated packaged
+image exposed 35 healthy live rules, seven alert instances, the 3-day coverage
+guard and zero active no-traffic alerts. Focused policy tests pass68/68; the
+affected candidate passes15/15 with3 cached in53.889 seconds, including
+platform75/75 and CI policy33/33. The candidate links to the immutable overview
+and complete runbook. No external receiver or historical compliance claim is in
+scope. Exact source `9fbc2d1`, tree `580f7ab`, contains the coherent feature;
+evidence checkpoint, publication, protected acceptance and review remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -481,14 +504,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 burn-rate alerts, three diagnostic exercises and operational-overview
-protected release remain.
+P12-R07 publication/protected release and three diagnostic exercises remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete P12-R12 documentation/evidence and affected gates, then publish one
-candidate for protected live Grafana provisioning, confirmation and merge.
+Publish the coherent P12-R07 candidate, pass protected Prometheus acceptance and
+one clean confirmation, then merge/release it before activating the first
+remaining Phase12 diagnostic exercise.
 
 ## Runtime and recovery
 

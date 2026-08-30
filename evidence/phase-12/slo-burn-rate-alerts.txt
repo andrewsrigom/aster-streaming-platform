@@ -1,0 +1,179 @@
+P12-R07 multi-window SLO burn-rate alerts
+Date: 2026-08-30
+Status: implemented candidate; protected acceptance and release pending
+
+Source
+------
+
+Exact source 9fbc2d1c191ed33f62fe22a4968c67ad305b4d88, tree
+580f7abef4814deb48e1c549ada281fe2f3de736, on feat/p12-burn-rate-alerts. It is
+based exactly on released main c297d32831146c4a9f5fe216cdc06ab3e7403c36,
+tree 73ee596000e70c715e4547885eac8036877755be. The evidence checkpoint is pending.
+
+Environment
+-----------
+
+- WSL Ubuntu 20.04 on Windows
+- Node.js 24.19.0 and pnpm 11.24.0 from the repository-selected cache
+- Docker Desktop Linux engine
+- Prometheus 3.14.0 image at reviewed multi-platform digest
+  sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0
+
+Requirement and policy
+----------------------
+
+P12-R07 requires multi-window burn-rate or equivalent alerts linked to
+runbooks. ADR-0043 defines:
+
+- rapid page intent for supergraph, Catalog title read and playback start:
+  14.4x over 1h/5m or 6x over 6h/30m;
+- sustained working-hours ticket intent for all four released SLIs:
+  3x over 1d/2h or 1x over 3d/6h;
+- both windows in a pair above the threshold derived from the owning error
+  budget;
+- complete sampled coverage of every requested window before its ratio exists;
+- seven possible alert instances with static owner, response, impact,
+  confirmation, dashboard and runbook metadata;
+- no external receiver or notification-delivery claim.
+
+The local Prometheus time ceiling becomes three days while the 128 MB size cap,
+two-second query timeout, two-query concurrency, 10,000-sample ceiling,
+loopback listener and 256 MiB process limit remain unchanged. The effective
+retention is whichever time/size limit wins.
+
+Focused contract verification
+-----------------------------
+
+Command:
+  node ./tools/verify-slo-contract.mjs
+  node --test ./tools/verify-slo-contract.test.mjs
+
+Result:
+  contract check ok for four SLIs
+  6 passed, 0 failed
+
+The adverse cases reject objective/budget drift, unreviewed burn rates,
+one-window weakening, numeric threshold or coverage-count drift, templated
+annotations, missing runbook queries and a 30-day local-retention expansion.
+
+Exact Prometheus verification
+-----------------------------
+
+Command:
+  docker run --rm --entrypoint /bin/promtool \
+    --volume "$PWD/infra/observability:/etc/aster/observability:ro" \
+    docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0 \
+    check rules /etc/aster/observability/slo-rules.yml \
+    /etc/aster/observability/slo-alerts.yml
+
+Result:
+  slo-rules.yml: SUCCESS, 9 rules
+  slo-alerts.yml: SUCCESS, 26 rules
+
+Command:
+  docker run --rm --entrypoint /bin/promtool \
+    --volume "$PWD/infra/observability:/etc/aster/observability:ro" \
+    docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0 \
+    test rules /etc/aster/observability/slo-alerts.test.yml
+
+Result:
+  SUCCESS
+
+Packaged Prometheus proof
+-------------------------
+
+After the complete-window correction, the repository Prometheus Dockerfile was
+rebuilt as the uniquely named `aster-p12-alert-probe:20260830` image. One
+`aster-p12-alert-probe-20260830` container ran read-only, network-disabled,
+without host ports or dependencies, with the checked-in CPU, memory, PID and
+query limits. Its writable paths were bounded tmpfs mounts.
+
+The container became ready. Inspection proved the exact `3d`/`128MB`,
+2-second, two-concurrent-query and 10,000-sample arguments. The live
+`/api/v1/rules` response reported 35 healthy rules: the nine released SLI rules
+plus 26 alert-policy rules, including seven alert instances. The packaged 3-day
+ratio contained the complete-window `count_over_time >= 864` guard.
+`/api/v1/alerts` returned success with zero active alerts under no traffic.
+
+Two combined shell wrappers failed before creating a valid probe because of
+wrapper variable/syntax errors and cleaned their exact image state. The first
+direct probe then exited 1 because its custom `/prometheus` tmpfs lacked the
+image's `nobody` ownership. Recreating only that disposable container with
+explicit UID/GID/mode corrected the harness; no repository behavior or product
+container changed. Final teardown removed the exact probe container and image
+tag. Post-cleanup queries returned zero matching resources; existing projects
+were untouched.
+
+Workloads and interpretation
+----------------------------
+
+- A 2% one-hour bad ratio fires rapid alerts for the three page-class SLIs and
+  proves progress write does not become an interrupting page.
+- A burned long window followed by clean 5m/30m short windows produces no rapid
+  alert, proving both windows are required.
+- Twenty minutes of total failure creates no alert because neither long window
+  has complete sampled coverage.
+- A rapid alert returns inactive after its five-minute short pair clears while
+  its one-hour history remains burned.
+- A 0.12% three-day bad ratio fires sustained alerts for all four SLIs, including
+  the smaller 0.05% progress-write budget.
+- Sustained alert state returns inactive after the six-hour short window clears
+  while the three-day history remains burned.
+- No traffic and an unreviewed/excluded SLI value create no alert.
+
+Combined focused policy gate
+----------------------------
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+  node --test ./tools/verify-slo-contract.test.mjs \
+  ./tools/verify-local-platform.test.mjs \
+  ./tools/verify-ci-policy.test.ts \
+  ./tools/reset-local-platform.test.mjs
+
+Result:
+  68 passed, 0 failed, 2.994 seconds
+
+Affected candidate gate:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 \
+  pnpm check:changed
+
+Result:
+  15 tasks passed, 3 cached, 53.889 seconds
+  platform tests 75 passed, 0 failed
+  CI policy tests 33 passed, 0 failed
+
+Repository checks:
+  slo-contract ok
+  local-platform ok, 0 violations
+  CI policy ok, 0 violations
+  AI state ok, 62 queue items and active P12-R07
+  documentation ok, 240 documents, 2969 headings, 1508 links
+  formatting, lint, typecheck, unused-code and secret scan ok
+  git diff check ok
+
+Navigation and response
+-----------------------
+
+Every alert links to the immutable operational overview and
+RUNBOOKS.md#runbook-critical-journey-slo-burn. The runbook provides trigger,
+owner/impact mapping, exact rapid/sustained confirmation queries, immediate
+mitigation, diagnosis by SLI, recovery, rollback, escalation and follow-up
+evidence. It explicitly refuses authorization, rights, durability or idempotency
+bypasses.
+
+Limitations
+-----------
+
+- Synthetic time series prove rule behavior, not field reliability, incident
+  notification or operator response time.
+- Five-minute rate integration adds up to one recording-window of boundary
+  smoothing.
+- A fresh store or a store evicted by the 128 MB cap keeps the affected ratio
+  and alert absent until complete sampled coverage exists.
+- The local profile has no Alertmanager, receiver, credential, real on-call
+  person or schedule.
+- No 28/30-day representative dataset exists, so no historical SLO compliance
+  result is asserted.
+- Protected packaged-Prometheus rules/alerts API acceptance and exact-head
+  review remain pending.

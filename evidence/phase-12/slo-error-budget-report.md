@@ -30,9 +30,10 @@ release regardless of remaining budget.
 
 ## Current compliance result
 
-No objective has a historical pass/fail result. The local Prometheus store
-retains one hour and the project has no representative hosted 28/30-day traffic
-window. Reporting `100%`, `0%` or an extrapolated result would be unsupported.
+No objective has a historical pass/fail result. The local Prometheus store is
+capped by three days/128 MB and the project has no representative hosted
+28/30-day traffic window. Reporting `100%`, `0%` or an extrapolated result would
+be unsupported.
 
 The synthetic rule workload intentionally produces ratios below every target:
 
@@ -54,7 +55,7 @@ Before an SLO controls a hosted release, Phase 14 must provide:
 2. representative first-party traffic with controlled synthetic traffic marked
    or excluded before aggregation;
 3. a baseline report and product/owner review of target realism;
-4. P12-R07 burn-rate alerts and linked runbooks proven to fire and recover;
+4. released burn-rate alerts and linked runbooks proven to fire and recover;
 5. dashboards separating user impact, dependency health and saturation;
 6. post-deployment smoke and query verification.
 

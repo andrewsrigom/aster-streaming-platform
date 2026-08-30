@@ -105,6 +105,7 @@ delivery limits truthfully.
 
 - Commands: focused Node tests, exact `promtool check rules`, exact `promtool test rules`, affected gate and protected packaged-Prometheus acceptance.
 - Raw artifact path: `evidence/phase-12/slo-burn-rate-alerts.txt` and checked-in rule fixtures.
+- Frozen source: `9fbc2d1`, tree `580f7ab`; evidence checkpoint and protected acceptance remain.
 - Acceptance result: all seven alert instances fire only for their paired burn windows, recover through the short window and navigate to the bounded runbook/dashboard.
 - Iteration gate: SLO contract tests plus exact Prometheus rule/test commands.
 - Candidate gate: `pnpm check:changed`, documentation/AI checks, secret scan and `git diff --check`.
