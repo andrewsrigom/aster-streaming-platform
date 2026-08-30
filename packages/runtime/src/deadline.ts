@@ -51,6 +51,7 @@ const ABORT_SIGNAL_ABORTED_DESCRIPTOR = Object.getOwnPropertyDescriptor(
   AbortSignal.prototype,
   "aborted",
 );
+const ASTER_DEADLINE_REMAINING = new WeakMap<AbortSignal, () => number>();
 
 const defaultScheduler: AsterDeadlineScheduler = {
   now() {
@@ -238,6 +239,7 @@ function createDeadline(
   const isActive = (): boolean => state === "active";
 
   const parentSignal = options.parentSignal;
+  const parentRemainingMs = parentSignal ? ASTER_DEADLINE_REMAINING.get(parentSignal) : undefined;
   if (parentSignal) {
     if (signalIsAborted(parentSignal)) {
       finish("parent_aborted");
@@ -285,7 +287,7 @@ function createDeadline(
     }
   }
 
-  return Object.freeze({
+  const deadline = Object.freeze({
     dispose(): AsterDeadlineDisposalResult {
       return finish("disposed") ? "disposed" : "unchanged";
     },
@@ -305,11 +307,26 @@ function createDeadline(
         finish("timed_out");
         return 0;
       }
-      lastRemainingMs = Math.min(lastRemainingMs, Math.ceil(remaining));
+      let inheritedRemaining = Number.POSITIVE_INFINITY;
+      if (parentRemainingMs) {
+        try {
+          inheritedRemaining = parentRemainingMs();
+        } catch {
+          finish("parent_aborted");
+          return 0;
+        }
+        if (!Number.isSafeInteger(inheritedRemaining) || inheritedRemaining <= 0) {
+          finish("parent_aborted");
+          return 0;
+        }
+      }
+      lastRemainingMs = Math.min(lastRemainingMs, Math.ceil(remaining), inheritedRemaining);
       return lastRemainingMs;
     },
     signal: controller.signal,
   });
+  ASTER_DEADLINE_REMAINING.set(controller.signal, deadline.remainingMs);
+  return deadline;
 }
 
 export function createAsterDeadline(options: AsterDeadlineOptions): AsterDeadline {

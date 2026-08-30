@@ -6,11 +6,11 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–09 are released locally through protected and exact post-merge CI.
+Phases 00–10 are released locally through protected and exact post-merge CI.
 Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js
 SSR, accessible HLS playback, durable progress/resume, owned library and owner
-event recovery, Discovery search/home and its SSR/private enhancement pass their
-recorded acceptance. Phase10 advanced Redis and concurrency is active. Exact
+event recovery, Discovery search/home, SSR/private enhancement and advanced
+Redis/concurrency pass their recorded acceptance. Phase11 resilience is active. Exact
 progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
@@ -55,14 +55,12 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 10 — Advanced Redis and Concurrency**. Phase09 closed
-through PR36, squash main `ffe8e24` and exact-main CI33254719311. The P10 Catalog
-cache is released through PR37 head `cb86c37`, protected run33270889083, clean
-confirmation, squash main `903f7b4` and exact-main run33272501078. Discovery
-stale-while-revalidate passed PR39 exact `601cc95`, protected run33274397440 and
-clean confirmation, then squash-merged as main `6a2fe3a`; exact-main run
-33275183338 passed. P10-R08 is the sole active item on
-`feat/p10-operation-limiters`.
+Active phase: **Phase 11 — Resilience and Failure Laboratory**. Phase10 closed
+through PR40 exact `6d74873`, protected run33281516077, resolved exact-head
+review, squash main `eed8229` and exact-main run33282217705. P11-R01 is active on
+`feat/p11-dependency-policies`: ADR-0040, the complete dependency registry, the
+shared deadline-bound safe-read executor and Playback/Discovery Catalog
+integrations are implemented locally and passing focused tests.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

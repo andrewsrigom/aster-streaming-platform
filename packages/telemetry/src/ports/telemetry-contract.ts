@@ -27,6 +27,7 @@ export const ASTER_DEPENDENCIES = Object.freeze([
   "redis",
   "broker",
   "object_storage",
+  "catalog",
   "telemetry",
 ] as const);
 

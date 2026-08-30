@@ -4,16 +4,16 @@ Last updated: 2026-08-29
 
 ## Active phase
 
-**Phase 10 — Advanced Redis and Concurrency**
+**Phase 11 — Resilience and Failure Laboratory**
 
-Status: **IN_PROGRESS**. Catalog cache is released on main `903f7b4`. Discovery
-stale-while-revalidate is released on main `6a2fe3a` through exact-main run
-`33275183338`. P10-R08 is active on `feat/p10-operation-limiters`. Full
-Phase00–14 goal stays active.
+Status: **IN_PROGRESS**. Phase10 is released: PR40 exact `6d74873` passed
+protected run33281516077, resolved review, squash-merged without bypass as
+`eed8229`, and exact-main run33282217705 passed the identical tree. P11-R01 is
+active on `feat/p11-dependency-policies`. Full Phase00–14 goal stays active.
 
 ## Verified
 
-Phases 00–09 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. No hosted deployment is claimed.
+Phases 00–10 are released locally through protected and exact post-merge CI. [Phase 08 acceptance](../evidence/phase-08/release.md) covers all twelve requirements, actual browser save/resume/library, event recovery and explicit limitations. [Phase 07 acceptance](../evidence/phase-07/release.md) covers playback; [Phase 06 acceptance](../evidence/phase-06/acceptance.md) and [release](../evidence/phase-06/release.md) retain rights/media evidence. [Phase 10 release](../evidence/phase-10/operation-limiters-release.txt) records the final limiter gate. No hosted deployment is claimed.
 
 P09-R01/R02/R06/R07 are released. [Search release](../evidence/phase-09/search-release.md)
 records candidate `fc353c3`, protected run 33238473742, resolved review, squash
@@ -151,14 +151,38 @@ The local Docker daemon remains unavailable; no repeated daemon/WSL probe is
 authorized or needed.
 
 Confirmation at `aa5e6af` found discussion3887956537: the shared admission identity
-also needs the canonical request digest. The correction binds both Engagement
+also needed the canonical request digest. Exact `6d74873` binds both Engagement
 operations to that digest while preserving key-only local conflict ordering.
-Engagement126/126 passes, including unsaved changed-payload and concurrent
-conflict regressions. The extended real Redis fixture exercises two writers,
-exact retries and distinct payloads without durable receipts. Its protected
-execution remains pending. The corrected candidate passes73/73,56 cached,in48.173
-seconds. Prior protected run33280768684 passed at aa5e6af, including the two-key
-Lua proof and PostgreSQL outage/replica fixtures; it predates the digest correction.
+Engagement126/126 and the corrected73/73 candidate pass. Protected
+run33281516077 verifies the extended two-writer Redis fixture, PostgreSQL outage
+and cross-replica boundary. PR40 squash `eed8229` and exact-main run33282217705
+release P10-R08 and close Phase10.
+
+P11-R01 now accepts ADR-0040 and records nineteen dependency operation classes
+with current criticality, deadlines, retry ownership, capacity, fallback and
+telemetry. `@aster/runtime` implements one framework-free safe-read executor with
+an overall deadline, per-attempt deadline, remaining-budget gate, at most three
+generic attempts, equal-jitter exponential backoff and finite observations. The
+concrete Playback and Discovery policies use two attempts only for HTTP
+502/503/504, EAI_AGAIN, ECONNRESET or incomplete/aborted streams; timeout,
+malformed data, HTTP500, 4xx and local capacity do not retry. Both retain their
+existing concurrency permit. Per-attempt telemetry uses only `catalog`/`read`.
+Runtime88/88, Playback38/38, Discovery107/107 and telemetry12/12 pass. Exact
+implementation `96e399b` has tree `d66004c`; the affected candidate passes53/53
+with19 cached in69.098 seconds. Dependency-policy and retry-timing evidence are
+captured under `evidence/phase-11/`. Initial PR41 review discussion3888089399
+found the Playback README still claimed no network retry. The batched local
+remediation documents sole retry ownership in Playback/Discovery and corrects
+remaining stale Phase10 service/architecture/catalog status. Documentation
+gates pass. Confirmation discussion3888100550 then found that an opaque upstream
+signal could cancel but could not reduce retry admission before expiry. The
+local blocking-boundary remediation makes repository child deadlines report the
+minimum monotonic parent budget and establishes that lineage at Playback's
+GraphQL/application boundaries. Runtime90/90 and Playback38/38 pass, including a
+399-ms parent that cannot fund a 400-ms retry. Corrected exact source `af4951a`
+has tree `e306bcc`; the affected candidate passes53/53 with19 cached in128.838
+seconds and evidence is updated. Protected CI, resolved thread and confirmation
+remain.
 
 ## Historical Phase 09 corrections
 
@@ -206,15 +230,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The request-digest correction's protected gate, confirmation, release
-evidence, merge, exact-main CI and Phase10 closeout remain. Hosted
+P11-R01's review and protected publication remain. Later Phase11 breakers,
+controlled injection, game days and runbooks remain planned. Hosted
 deployment remains Phase14.
 
 ## Next outcome
 
-Publish the request-digest correction with its evidence checkpoint to PR40, run
-protected fixtures and the permitted blocking-boundary confirmation, then release P10-R08
-and mark Phase 10 complete after exact-main gates.
+Complete P11-R01: review and publish the evidenced deadline-bound safe-read
+candidate.
 
 ## Runtime and recovery
 

@@ -15,6 +15,7 @@ async function fixture(respond: (request: IncomingMessage, response: ServerRespo
   assert.ok(address && typeof address === "object");
   const client = createCatalogPublicationClient({
     credential,
+    random: () => 0,
     request: (options, callback) =>
       request({ ...options, hostname: "127.0.0.1", port: address.port }, callback),
   });
@@ -91,9 +92,54 @@ test("owner HTTP client sends the fixed bounded operation and separate credentia
   }
 });
 
-test("owner client fails closed on HTTP errors, redirects, oversized/compressed bodies and malformed envelopes without retry", async () => {
+test("owner client retries one transient status inside its deadline", async () => {
+  let calls = 0;
+  const f = await fixture((_incoming, response) => {
+    calls++;
+    response.setHeader("content-type", "application/json");
+    if (calls === 1) {
+      response.statusCode = 503;
+      response.end('{"errors":[{"message":"temporary"}]}');
+      return;
+    }
+    response.end('{"data":{"_playbackPublications":[null]}}');
+  });
+  try {
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2000)), {
+      status: "completed",
+      value: null,
+    });
+    assert.equal(calls, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test("owner client retries one selected connection reset inside its deadline", async () => {
+  let calls = 0;
+  const f = await fixture((incoming, response) => {
+    calls++;
+    if (calls === 1) {
+      incoming.socket.destroy();
+      return;
+    }
+    response.setHeader("content-type", "application/json");
+    response.end('{"data":{"_playbackPublications":[null]}}');
+  });
+  try {
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2000)), {
+      status: "completed",
+      value: null,
+    });
+    assert.equal(calls, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test("owner client fails closed on permanent HTTP, redirects, oversized/compressed bodies and malformed envelopes without retry", async () => {
   for (const scenario of [
-    "http",
+    "http-permanent",
     "redirect",
     "declared-size",
     "stream-size",
@@ -109,8 +155,8 @@ test("owner client fails closed on HTTP errors, redirects, oversized/compressed 
     const f = await fixture((_incoming, response) => {
       calls++;
       response.setHeader("content-type", scenario === "html" ? "text/html" : "application/json");
-      if (scenario === "http") {
-        response.statusCode = 503;
+      if (scenario === "http-permanent") {
+        response.statusCode = 500;
       }
       if (scenario === "redirect") {
         response.statusCode = 302;

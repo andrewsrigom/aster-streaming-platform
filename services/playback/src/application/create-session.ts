@@ -1,3 +1,4 @@
+import { createAsterDeadline } from "@aster/runtime";
 import { createAnonymousPlaybackSession, playbackIdentifier } from "../domain/session.js";
 import type { PlaybackSessionPorts, PlaybackSessionResult } from "./session-ports.js";
 
@@ -44,7 +45,8 @@ export function createPlaybackSessions(ports: PlaybackSessionPorts) {
       if (!playbackIdentifier(titleId) || !playbackIdentifier(context.correlationId)) {
         return { status: "invalid_input" };
       }
-      const active = AbortSignal.any([context.signal, AbortSignal.timeout(2000)]);
+      const deadline = createAsterDeadline({ parentSignal: context.signal, timeoutMs: 2000 });
+      const active = deadline.signal;
       let inserting = false;
       try {
         const current = await untilAborted(
@@ -89,6 +91,8 @@ export function createPlaybackSessions(ports: PlaybackSessionPorts) {
               ? "cancelled"
               : "unavailable",
         };
+      } finally {
+        deadline.dispose();
       }
     },
   });

@@ -1,0 +1,56 @@
+P10 operation limiter and Phase 10 release
+Date: 2026-08-29
+Status: released
+
+Source and publication
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/40
+- Exact reviewed head: 6d748734e36dad419e6c9f377281a82a121ec917.
+- Reviewed tree: 4282bfeaef6ef3182d3f584a460a86b449da312d.
+- Protected run: 33281516077, PASS.
+- Exact-head confirmation review: 5059476693 / summary comment 5465115124.
+- All six review threads were resolved before merge.
+- Discussion 3887982842 was classified as expected local hot-key policy rather
+  than a blocker: a failed attempt without a receipt is not durable replay. A
+  production-code diagnostic proved four local attempts/Redis calls, then a
+  controlled local limit, followed by refill, one durable effect and zero Redis
+  calls for the committed receipt replay.
+- Squash merge: eed82291c29e43d985cb6b0fa08d8c21be32c133 at
+  2026-08-29T23:58:47Z, without protection bypass.
+- Squash tree: 4282bfeaef6ef3182d3f584a460a86b449da312d.
+- Exact-main run: 33282217705, PASS.
+- Exact-main run URL:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33282217705
+
+Protected candidate result
+- Classify change: PASS.
+- Dependency review: PASS.
+- Documentation and security: PASS.
+- Local platform: PASS.
+- Install and source quality: PASS, including source tests, real Redis and
+  PostgreSQL, all service runtimes and the Docker-only playable demo.
+- CI required: PASS.
+
+Exact-main result
+- Classify change: PASS.
+- Documentation and security: PASS.
+- Local platform: PASS.
+- Install and source quality: PASS, including the real integration and playable
+  demo sequence.
+- CI required: PASS.
+- Dependency review: skipped as designed for a main push.
+
+Integrity and interpretation
+The reviewed head, squash commit and exact-main source have the same Git tree.
+The exact-main run therefore verifies the released implementation without an
+intervening code change. Together with the Catalog cache and Discovery stale
+cache releases, this closes P10-R01 through P10-R12 and Phase 10.
+
+Detailed Redis and PostgreSQL outputs are retained in
+`operation-limiters-redis.txt` and `operation-limiters-postgres.txt`. The focused
+and affected source gates remain in `operation-limiters-contract.txt`.
+
+Limitations
+- This is a repository/local release. No hosted Aster deployment, production
+  capacity, field SLO or arbitrary replica-count claim is made.
+- Phase 13 owns final public GraphQL/identity calibration; Phase 14 owns hosted
+  provider selection and release.

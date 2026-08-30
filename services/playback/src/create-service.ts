@@ -76,6 +76,7 @@ export async function createPlaybackService(
       resources.catalog ??
       createCatalogPublicationClient({
         credential: await loadLocalCatalogPlaybackCredential(),
+        telemetry,
       });
     graph = await createPlaybackSubgraph({
       routerTrust: resources.routerTrust ?? (await loadLocalRouterTrust("playback")),

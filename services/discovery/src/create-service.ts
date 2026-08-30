@@ -147,7 +147,10 @@ export async function createDiscoveryService(
     }
     const source =
       resources.source ??
-      createCatalogSnapshotClient({ credential: await loadLocalCatalogDiscoveryCredential() });
+      createCatalogSnapshotClient({
+        credential: await loadLocalCatalogDiscoveryCredential(),
+        telemetry,
+      });
     broker =
       resources.broker ??
       createAsterKafkaBrokerAdapter({

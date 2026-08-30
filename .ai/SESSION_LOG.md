@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-29 — Operation admission candidate implementation
+## 2026-08-29 — Operation admission release and resilience start
 
 ### Completed
 
@@ -38,6 +38,36 @@ Append new entries at the top. Keep entries factual and concise.
   Engagement126/126 passes, covering unsaved changed payloads across replicas and
   concurrent same-key conflicts after one effect. The extended two-writer real
   Redis fixture awaits hosted execution; no local Docker/WSL probe was repeated.
+- Exact6d74873 passed protected run33281516077, including six Redis commands for
+  two exact retries plus four changed unsaved payloads, one shared rejection and
+  cleanup0. PR40 squash-merged without bypass as `eed8229`; its tree equals the
+  reviewed head. Exact-main run33282217705 passed every required job.
+- Closed Phase10 with Redis, PostgreSQL and release artifacts for P10-R08.
+- Activated P11-R01 from that exact tree. ADR-0040 and the dependency registry
+  name one retry owner per operation class. A shared runtime executor enforces
+  overall/attempt deadlines, remaining-budget admission, at most two concrete
+  attempts and equal jitter. Playback publication and Discovery snapshot/export
+  retry only selected transient Catalog read failures inside existing lanes.
+- Runtime88/88, Playback38/38, Discovery107/107 and telemetry12/12 focused tests
+  pass, including real HTTP 503/reset recovery and permanent non-retry. The
+  affected candidate passes53/53 with19 cached in69.098 seconds.
+- Committed exact implementation `96e399b` with tree `d66004c`. Its focused
+  retry trace passes runtime8/8, Playback6/6 and Discovery7/7; dependency-policy
+  and retry-timing artifacts are recorded under `evidence/phase-11/`.
+- Opened PR41 at evidence head `d5498e0`. Initial review discussion3888089399
+  found the Playback guide still said no network retry. The batched remediation
+  documents sole retry ownership in Playback/Discovery and corrects stale
+  Phase10 status in Catalog, Redis architecture and the feature catalog without
+  changing runtime behavior.
+- Confirmation discussion3888100550 found that an upstream signal could cancel
+  the retry but did not expose its smaller remaining budget before expiry. The
+  local remediation makes child repository deadlines use the monotonic minimum
+  parent budget and establishes that lineage in Playback transport/application.
+  Runtime90/90 and Playback38/38 pass; a deterministic 399-ms parent cannot fund
+  a 400-ms retry.
+- Committed corrected source `af4951a` with tree `e306bcc`. The complete affected
+  candidate passes53/53 with19 cached in128.838 seconds; exact dependency-policy
+  and retry-timing evidence now records the parent-budget proof.
 
 ### Evidence
 
@@ -53,9 +83,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the request-digest correction plus this checkpoint, run protected real
-fixtures, resolve discussion3887956537 and request the permitted
-blocking-boundary confirmation before release.
+Publish the frozen corrected candidate, resolve/confirm discussion3888100550 and
+require its exact-head protected CI.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

@@ -4,12 +4,18 @@
 - Date: 2026-08-28
 - Owners: Discovery and Catalog
 - Requirements: P09-R01, P09-R02, P09-R06, P09-R07
+- Refined by: ADR-0040 for bounded execution of the private Catalog safe read
 
 ## Decision
 
 Implement the already planned Discovery context using the existing PostgreSQL, broker and Node/Federation baseline. Discovery owns a derived search index, never title, profile or playback truth. Keep Catalog v1 events compatible: they contain IDs/version, not metadata, and act as refresh hints. Every applied hint uses a fresh Catalog-owned snapshot. A forged or delayed event cannot itself publish, hide or resurrect a title.
 
 Add purpose-separated private Catalog GraphQL snapshot/export reads, hidden from public composition and enforced at the owner with a distinct credential. Never reuse Engagement/Playback/Router credentials or read Catalog SQL from Discovery. The snapshot exposes only source version, current visibility, publication time and bounded searchable public metadata: at most four localizations, title160/synopsis1024 characters and eight genre/editorial slugs. No rights records, media URLs or personal data. Export at most two titles per page so worst-case UTF-8 fits a64-KiB response. An independent optional lane admits one request without a queue; requests have a two-second deadline and cancellation.
+
+[ADR-0040](0040-deadline-bound-safe-read-retries.md) refines that logical read
+with at most two attempts for selected transient failures. Both attempts remain
+inside the same one-request lane and two-second deadline; projection authority,
+visibility leases and rebuild ordering do not change.
 
 Accept snapshots checked no more than two seconds ago and never in the future. Record source version, source observation, indexed time, projection version and the actual triggering event ID when present; a rebuild has no invented event ID. A public row's visibility lease lasts at most300seconds from source observation, shortened by rights/publication expiry. Start a periodic current-source rebuild when the active generation reaches150seconds, leaving half the maximum lease for bounded renewal; failures retain the active generation and expose stale/unavailable state rather than fabricated results. Queries exclude expired rows and expose unavailable/stale state explicitly. This is bounded discovery staleness, not a playback grant. Current Catalog still resolves public Title metadata. Emergency containment disables optional Discovery and falls back to Catalog; scoped reindex/invalidation follows the same owner checks.
 

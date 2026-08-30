@@ -87,6 +87,19 @@ export type {
   AsterDeadlineOptions,
 } from "./deadline.js";
 export {
+  ASTER_SAFE_READ_MAX_ATTEMPTS,
+  ASTER_SAFE_READ_OBSERVATION_OUTCOMES,
+  AsterSafeReadPolicyError,
+  runAsterSafeRead,
+} from "./safe-read.js";
+export type {
+  AsterSafeReadAttemptResult,
+  AsterSafeReadObservation,
+  AsterSafeReadObservationOutcome,
+  AsterSafeReadPolicy,
+  AsterSafeReadResult,
+} from "./safe-read.js";
+export {
   ASTER_CRITICAL_DEPENDENCY_STATES,
   ASTER_READINESS_CRITICAL_DEPENDENCY_MAX,
   AsterReadinessError,

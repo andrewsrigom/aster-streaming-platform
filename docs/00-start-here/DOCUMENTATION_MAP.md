@@ -32,6 +32,7 @@
 - `docs/architecture/BOUNDED_CONTEXTS.md`
 - `docs/architecture/GRAPHQL_SUPERGRAPH.md`
 - `docs/architecture/DATA_AND_EVENTS.md`
+- `docs/architecture/DEPENDENCY_POLICY_REGISTRY.md`
 - `docs/architecture/REDIS_ARCHITECTURE.md`
 - `docs/architecture/MEDIA_PIPELINE.md`
 - `docs/architecture/FRONTEND_ARCHITECTURE.md`

@@ -4,6 +4,7 @@
 - Date: 2026-08-28
 - Owners: Playback and Catalog
 - Requirements: P07-R01, P07-R02, P07-R03, P07-R09
+- Superseded in part: ADR-0040 replaces only the private Catalog read's `no retry` clause
 
 ## Context
 
@@ -13,7 +14,7 @@ Catalog owns current rights, active publication and validated delivery reference
 
 Keep the supergraph as the public application API. Add a bounded internal Catalog GraphQL publication batch field and its return type with Federation v2 `@inaccessible`; public clients cannot select them. This directive shapes the public schema, not authorization: Catalog additionally requires a separate read-only Playback-to-Catalog credential and the exact fixed operation before resolving the field. Normal Router requests cannot select this owner-only field even at the subgraph. At most twenty title IDs are read in one request, preserving order/nulls and using existing current published/rights/artwork/validation checks. Public Catalog metadata remains unchanged.
 
-The local initializer will create a distinct random 256-bit file credential for that read path, mounted only into Catalog and Playback. It is not either owner's Router credential. Playback also receives its own separate Router-to-Playback credential. Extend existing exact Host/Origin, bounded-header/body, constant-time comparison and private-file protections; reject duplicate credentials, public identity claims and arbitrary operations. Use fixed private Catalog endpoint/operation, bounded response parsing, deadline/cancellation and no retry. No recursive public Router request, cross-context SQL or new intermediary service. Hosted service identity/TLS remains Phase 14.
+The local initializer will create a distinct random 256-bit file credential for that read path, mounted only into Catalog and Playback. It is not either owner's Router credential. Playback also receives its own separate Router-to-Playback credential. Extend existing exact Host/Origin, bounded-header/body, constant-time comparison and private-file protections; reject duplicate credentials, public identity claims and arbitrary operations. Use fixed private Catalog endpoint/operation, bounded response parsing and deadline/cancellation. [ADR-0040](0040-deadline-bound-safe-read-retries.md) now permits one deadline-bound retry only for selected transient failures of this safe read; every trust, rights and mutation rule here remains. No recursive public Router request, cross-context SQL or new intermediary service. Hosted service identity/TLS remains Phase 14.
 
 Playback records an anonymous session only after that owner response passes its own response/URL checks. Session IDs and correlation IDs are generated server-side; a caller cannot supply a manifest, approval or profile identity. The first slice is explicitly anonymous and has no Identity/Engagement/Discovery dependency. Profile binding, when added during Phase 07, must come from Identity verification, never a free-form profile argument.
 

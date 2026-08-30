@@ -1,0 +1,46 @@
+P10 operation limiter durable-boundary evidence
+Date: 2026-08-29
+Status: verified in protected CI
+
+Source
+- Exact pull-request head: 6d748734e36dad419e6c9f377281a82a121ec917.
+- Git tree: 4282bfeaef6ef3182d3f584a460a86b449da312d.
+- Protected run: 33281516077, PASS.
+- Job/step: Install and source quality / Prove Engagement persistence and
+  federated progress.
+- Run URL:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33281516077
+
+Environment
+- GitHub-hosted Ubuntu runner.
+- Node.js 24.19.0 and pnpm 11.24.0.
+- Disposable PostgreSQL 18.6 integration fixture with two Engagement recorder
+  instances and the real owner persistence adapter.
+
+Command
+
+pnpm engagement:integration
+
+Raw results
+
+{"event":"engagement_redis_outage_progress","localAdmission":"allowed","durableProgress":1,"durableReceipts":1,"durableEvents":1,"exactReplayEffects":1}
+{"event":"engagement_synchronized_replay_ordering","duplicateWinners":1,"crossReplicaLimiterCalls":2,"crossReplicaLimiterCharges":1,"effects":1,"stale":"rejected","newerSeekBackward":"accepted"}
+{"event":"engagement_profile_scoped_idempotency","changedTitle":"conflict_before_playback","simultaneousTitles":"one_winner_one_conflict","progress":1,"receipts":1,"events":1}
+{"event":"engagement_fixture_cleaned","verifier":"progress","remaining":0,"durationMs":4496}
+
+Interpretation
+- During Redis loss, the bounded local decision can admit work, but PostgreSQL
+  remains decisive: one progress row, receipt, event and effect are committed.
+  Exact replay does not create a second effect.
+- Two recorder replicas make two shared-limiter calls but one Redis charge; the
+  owner transaction produces one winner and one durable effect.
+- Reusing an idempotency key for a changed title conflicts before later owner
+  work; simultaneous changed commands still produce one winner and one conflict.
+- The rate decision is never an acknowledgement. Receipt, aggregate and outbox
+  atomicity remain PostgreSQL-owned.
+- Cleanup reports zero remaining fixture state.
+
+Limitations
+- The fixture verifies the recorded two-writer race and outage path, not every
+  scheduler ordering, database topology or hosted failover mode.
+

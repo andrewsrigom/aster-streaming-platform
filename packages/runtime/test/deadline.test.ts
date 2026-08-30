@@ -84,6 +84,27 @@ test("remaining budget never increases when a scheduler clock regresses", () => 
   assert.equal(deadline.signal.aborted, true);
 });
 
+test("a child remaining budget never exceeds its registered parent deadline", () => {
+  const parentScheduler = new ControlledScheduler();
+  const childScheduler = new ControlledScheduler();
+  const parent = createAsterDeadlineWithSchedulerForTest({ timeoutMs: 100 }, parentScheduler);
+  const child = createAsterDeadlineWithSchedulerForTest(
+    { parentSignal: parent.signal, timeoutMs: 500 },
+    childScheduler,
+  );
+
+  parentScheduler.advanceBy(40);
+  assert.equal(child.remainingMs(), 60);
+  childScheduler.advanceBy(20);
+  assert.equal(child.remainingMs(), 60);
+
+  parentScheduler.advanceBy(60);
+  assert.equal(child.remainingMs(), 0);
+  assert.equal(parent.signal.aborted, true);
+  assert.equal(child.signal.aborted, true);
+  assert.equal(childScheduler.canceled, true);
+});
+
 test("propagates parent cancellation without copying its reason", () => {
   const scheduler = new ControlledScheduler();
   const parent = new AbortController();

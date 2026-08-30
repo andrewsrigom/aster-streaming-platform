@@ -41,6 +41,19 @@ Each inbound request receives an overall deadline. The router and subgraphs rese
 
 An operation must not begin a retry if the remaining budget cannot support another attempt and response.
 
+Repository deadlines retain their parent lineage. `remainingMs()` is monotonic
+and returns the minimum local/registered-parent budget; expiry or cancellation
+still propagates through `AbortSignal`. Playback establishes this lineage at its
+GraphQL and session-application boundaries, while Discovery event processing
+already passes a repository deadline. A raw signal can cancel a root operation,
+but it does not invent an upstream expiry timestamp.
+
+The implemented first Phase 11 policy uses the shared runtime safe-read executor
+for Playback and Discovery's fixed private Catalog reads. [ADR-0040](../adr/0040-deadline-bound-safe-read-retries.md)
+defines the exact budgets and finite transient classification. The complete
+[dependency policy registry](DEPENDENCY_POLICY_REGISTRY.md) distinguishes current
+controls from later Phase 11 breaker work.
+
 ## Policy matrix
 
 | Dependency | Timeout | Retry | Breaker | Bulkhead | Fallback |

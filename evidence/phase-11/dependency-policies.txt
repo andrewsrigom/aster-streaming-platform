@@ -1,0 +1,62 @@
+P11 dependency policy and safe-read candidate
+Date: 2026-08-29
+Status: verified locally; review and protected publication pending
+
+Source
+- Released base: eed82291c29e43d985cb6b0fa08d8c21be32c133.
+- Initial implementation commit: 96e399b11a28e7ea87c7d89d7a2c0df334965b84.
+- Parent-budget correction: af4951a07f538029e32e855e693bdeb0428ad5b8.
+- Corrected source tree: e306bcc365782edf157b1448f18fe220831bd43c.
+- Branch: feat/p11-dependency-policies.
+
+Environment
+- WSL2 Ubuntu-20.04; Linux 6.18.33.2-microsoft-standard-WSL2 x86_64.
+- 6 logical CPUs.
+- Node.js 24.19.0; pnpm 11.24.0.
+- CI=true, NODE_OPTIONS=--max-old-space-size=1536 and TURBO_CONCURRENCY=4
+  for the complete affected gate.
+
+Commands and raw results
+- pnpm --filter @aster/runtime test
+  PASS: 90/90 in 616.630397 ms. This includes deadline lineage, safe-read and
+  registry verification.
+- pnpm --filter @aster/telemetry test
+  PASS: 12/12 in 360.166293 ms.
+- pnpm check:changed
+  PASS after the parent-budget correction: 53/53 tasks, 19 cached, Turbo wall
+  time 128.838 seconds.
+- pnpm ai:check
+  PASS: 10 files, 53 queue items, 124 session entries, active/target P11-R01.
+- pnpm docs:check
+  PASS: 231 documents, 2,827 headings, 1,415 links, zero violations.
+- pnpm format:check and git diff --check
+  PASS.
+
+Workload and contract
+- The checked-in registry has exactly 19 current dependency-operation rows and
+  11 non-empty columns per row.
+- Every row records role/safety, deadline, attempts/backoff, breaker state,
+  bulkhead/queue, fallback, telemetry, user outcome and retry owner.
+- Router rows name no retry owner. Playback and Discovery name exactly their
+  purpose-separated Catalog clients. Reconnect, durable redelivery and explicit
+  user retry are distinguished from a hidden retry of one request.
+- The shared runtime supports at most three configured attempts; both concrete
+  owner policies configure exactly two.
+- Registered child deadlines expose the monotonic minimum of local and parent
+  budget. Playback creates that lineage at GraphQL and application boundaries.
+
+Interpretation
+The inventory is executable documentation: its row/column and retry-owner
+constraints fail the runtime test if removed or changed inconsistently. The
+affected source gate verifies strict TypeScript, lint, formatting, architecture,
+security, documentation, schema compatibility and all impacted workspace tests
+from the corrected exact source. A deterministic 399-ms parent cannot fund the
+policy's 400-ms delay/attempt/reserve requirement.
+
+Limitations
+- This is local candidate evidence, not protected CI or release evidence.
+- Registry breaker entries explicitly say planned P11; no breaker is claimed.
+- No PostgreSQL, Redis, broker, media or browser behavior changed. Their
+  heavyweight fixtures were not repeated locally.
+- This records policy correctness, not production capacity, tail latency or a
+  hosted service-level objective.

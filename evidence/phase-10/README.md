@@ -1,8 +1,6 @@
 # Phase 10 Evidence Index
 
-Status: Catalog cache and Discovery stale cache are released through protected
-review, squash and exact-main CI. Phase 10 stays open only for the
-operation-limiter closeout.
+Status: Phase 10 is released through protected review, squash and exact-main CI.
 
 ## Active slice
 
@@ -47,12 +45,18 @@ two-active/one-waiter search policy, finite telemetry and durable-state boundary
 - [Operation-limiter contract](operation-limiters-contract.txt): focused suites,
   finite policy boundaries, cross-replica admission correction and the complete
   73/73 local candidate gate.
-- Operation-limiter Redis, PostgreSQL and release artifacts require one protected
-  repeat after the shared Redis admission-marker correction.
+- [Operation-limiter Redis](operation-limiters-redis.txt): real atomic charges,
+  exact retry reuse, changed-payload separation, malformed-state recovery,
+  hot-key shedding, outage fallback and cleanup.
+- [Operation-limiter PostgreSQL](operation-limiters-postgres.txt): two-recorder
+  durable race, Redis-outage progress and exact receipt/event/effect boundaries.
+- [Operation-limiter release](operation-limiters-release.txt): protected exact
+  head, resolved review, identical-tree squash and exact-main CI. This closes
+  P10-R01 through P10-R12.
 
 Every artifact records the exact implementation commit, environment, command,
-workload, raw result, interpretation and limitations. Catalog has release
-evidence; both cache slices now have release evidence.
+workload, raw result, interpretation and limitations. All three Phase 10 slices
+have release evidence.
 
 Initial hosted review comment 3886890023 found one measurement boundary: an
 oversized projection bypassed storage but supplied a payload sample above the

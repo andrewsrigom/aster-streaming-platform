@@ -33,11 +33,11 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Degraded home fallbacks | Discovery | 09 | RELEASED |
 | SSR home rails and search | Web | 09 | RELEASED |
 | Profile-safe home enhancement | Web and Engagement | 09 | RELEASED |
-| Cache-aside and invalidation | Platform | 10 | PLANNED |
-| TTL jitter and stale serving | Platform | 10 | PLANNED |
-| Request coalescing and leases | Platform | 10 | PLANNED |
-| Rate and concurrency limiting | Platform | 10 | PLANNED |
-| Deadlines and bounded retries | Platform | 11 | PLANNED |
+| Cache-aside and invalidation | Platform | 10 | RELEASED |
+| TTL jitter and stale serving | Platform | 10 | RELEASED |
+| Request coalescing and leases | Platform | 10 | RELEASED |
+| Rate and concurrency limiting | Platform | 10 | RELEASED |
+| Deadlines and bounded retries | Platform | 11 | IMPLEMENTED |
 | Circuit breakers and fallbacks | Platform | 11 | PLANNED |
 | Failure-injection controls | Platform | 11 | PLANNED |
 | Distributed traces | Platform | 12 | PLANNED |
@@ -51,7 +51,7 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
 
-Release status through the complete Phase09 Web integration is summarized in
-[current state](../../.ai/CURRENT_STATE.md) and linked phase evidence. Redis
-patterns are the active Phase10 scope. Hosted identity and hosted release remain
-planned.
+Release status through Phase10 is summarized in [current state](../../.ai/CURRENT_STATE.md)
+and linked phase evidence. Phase11 resilience is active; only its first
+deadline/bounded-retry slice is implemented. Hosted identity and hosted release
+remain planned.

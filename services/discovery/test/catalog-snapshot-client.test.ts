@@ -30,6 +30,7 @@ async function fixture(respond: (incoming: IncomingMessage, response: ServerResp
   assert.ok(address && typeof address === "object");
   const client = createCatalogSnapshotClient({
     credential,
+    random: () => 0,
     request: (options, callback) =>
       request({ ...options, hostname: "127.0.0.1", port: address.port }, callback),
   });
@@ -168,9 +169,54 @@ test("Catalog snapshot export fails closed on malformed pagination", async () =>
   }
 });
 
-test("Catalog snapshot client fails closed on transport and envelope violations without retry", async () => {
+test("Catalog snapshot client retries one transient owner status inside its deadline", async () => {
+  let calls = 0;
+  const f = await fixture((_incoming, response) => {
+    calls++;
+    response.setHeader("content-type", "application/json");
+    if (calls === 1) {
+      response.statusCode = 503;
+      response.end('{"errors":[{"message":"temporary"}]}');
+      return;
+    }
+    response.end(JSON.stringify({ data: { _discoverySnapshots: [snapshot] } }));
+  });
+  try {
+    assert.deepEqual(await f.client.current(id(1), id(3), AbortSignal.timeout(3000)), {
+      status: "completed",
+      value: snapshot,
+    });
+    assert.equal(calls, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test("Catalog snapshot client retries one selected connection reset inside its deadline", async () => {
+  let calls = 0;
+  const f = await fixture((incoming, response) => {
+    calls++;
+    if (calls === 1) {
+      incoming.socket.destroy();
+      return;
+    }
+    response.setHeader("content-type", "application/json");
+    response.end(JSON.stringify({ data: { _discoverySnapshots: [null] } }));
+  });
+  try {
+    assert.deepEqual(await f.client.current(id(1), id(3), AbortSignal.timeout(3000)), {
+      status: "completed",
+      value: null,
+    });
+    assert.equal(calls, 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test("Catalog snapshot client fails closed on permanent transport and envelope violations without retry", async () => {
   for (const scenario of [
-    "status",
+    "permanent-status",
     "redirect",
     "declared",
     "stream",
@@ -186,8 +232,8 @@ test("Catalog snapshot client fails closed on transport and envelope violations 
     const f = await fixture((_incoming, response) => {
       calls++;
       response.setHeader("content-type", scenario === "type" ? "text/html" : "application/json");
-      if (scenario === "status") {
-        response.statusCode = 503;
+      if (scenario === "permanent-status") {
+        response.statusCode = 500;
       }
       if (scenario === "redirect") {
         response.statusCode = 302;

@@ -2,6 +2,15 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0040](../docs/adr/0040-deadline-bound-safe-read-retries.md) gives Playback
+and Discovery's fixed, read-only Catalog operations one shared overall-deadline
+executor and at most two attempts for a finite transient set. Equal-jitter
+backoff and the complete next-attempt budget gate prevent deadline overrun;
+attempt timeout is terminal. Both attempts retain the original logical
+concurrency permit, while Web, Router, mutations, authorization and rights writes
+remain without generic retry. The checked-in dependency registry records the
+sole retry owner and current/planned policy for every operation class.
+
 [ADR-0039](../docs/adr/0039-operation-admission-and-redis-degradation.md)
 places Engagement progress/watchlist token buckets after current account
 authorization and idempotent replay. A bounded process-local shield rejects hot
