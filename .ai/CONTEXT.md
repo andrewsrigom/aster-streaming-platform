@@ -57,26 +57,21 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 ## Delivery state
 
 Active phase: **Phase 12 — Observability, SLIs, and SLOs**. Phase10 closed
-through PR40 exact `6d74873`, protected run33281516077, resolved exact-head
-review, squash main `eed8229` and exact-main run33282217705. P11-R01 is released
-as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is released as main
-`59600ae`; exact-main run33290477608 passed. P11-R08/R09 is released through
-evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
-squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 passed
-protected exact-head run33295744010 and clean confirmation, PR44 squash-merged
-as tree-identical main `834bf15`, and exact-main run33296443777 passed every
-required job. Phase11 is released. P12-R01 evidence head `9a058ee` passed
-protected run `33300561121` and clean confirmation; PR45 squash main `ce66f9c`
-passed exact-main run `33301425220`. P12-R03/R04 backend golden signals are
-rebased on that exact main and published as PR46. Initial review found malformed
-pool counts being sanitized, missing pending-outbox age before connection and
-insufficient product-duration buckets. Source `4a0221e`, tree `ffa3ce8`, retains
-the batched signal remediation and corrects the protected diagnostic to preserve
-the Router's required Host through bounded `node:http`. Telemetry 19/19,
-PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7, affected
-73/73, CI policy 33/33 and platform policy 68/68 pass. Failed run `33302931164`
-did not reach metric collection; one corrective push, protected CI and
-confirmation remain.
+through PR40 and Phase11 is released through PR44 main `834bf15`, with every
+required exact-main gate recorded in current state. P12-R01/R02/R08/R09 is
+released through PR45 main `ce66f9c`; backend golden signals are released
+through PR46 main `2245251`; browser QoE and its explicit local-only retention
+boundary are released through PR47 main `6dba10e`. P12-R05/R06 is active on
+PR48. Evidence head `aca4aba` passed protected run `33310118280`, including
+packaged live SLI ratios. Final confirmation then found missing failure-only
+ratios. Source `757f6a0`, tree `e9c7d24`, derives zero only from a present
+population for recording and objective queries; exact `promtool` and27/27
+focused checks plus the affected60/60 gate pass. Its protected run `33311729108`
+passed, but confirmation found an idle `0/0` boundary. Source
+`c4e6a76`, tree `cfc21f6`, filters ratios on positive denominators; exact
+`promtool`,27/27 focused checks and the corrected60/60 affected gate pass.
+Protected acceptance, confirmation, merge and exact-main CI remain before
+dashboard work.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

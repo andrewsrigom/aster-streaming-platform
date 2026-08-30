@@ -1,0 +1,39 @@
+groups:
+  - name: aster-critical-journey-slis
+    interval: 15s
+    limit: 8
+    rules:
+      - record: aster:sli:population:rate5m
+        labels:
+          sli: supergraph
+        expr: sum(rate(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[5m]))
+      - record: aster:sli:good:rate5m
+        labels:
+          sli: supergraph
+        expr: sum(rate(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome="completed"}[5m])) or on() (0 * sum(rate(http_server_request_duration_seconds_count{job="aster-router",aster_operation!="other",aster_outcome=~"completed|failed"}[5m])))
+      - record: aster:sli:population:rate5m
+        labels:
+          sli: catalog_title_read
+        expr: sum(rate(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[5m]))
+      - record: aster:sli:good:rate5m
+        labels:
+          sli: catalog_title_read
+        expr: sum(rate(http_server_request_duration_seconds_bucket{job="aster-router",aster_operation="TitleDetail",aster_outcome="completed",le="0.3"}[5m])) or on() (0 * sum(rate(http_server_request_duration_seconds_count{job="aster-router",aster_operation="TitleDetail",aster_outcome=~"completed|failed"}[5m])))
+      - record: aster:sli:population:rate5m
+        labels:
+          sli: playback_start
+        expr: sum(rate(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[5m]))
+      - record: aster:sli:good:rate5m
+        labels:
+          sli: playback_start
+        expr: sum(rate(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="playback_session",aster_outcome="completed",le="0.5"}[5m])) or on() (0 * sum(rate(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="playback_session",aster_outcome=~"completed|unavailable|indeterminate|failed"}[5m])))
+      - record: aster:sli:population:rate5m
+        labels:
+          sli: progress_write
+        expr: sum(rate(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[5m]))
+      - record: aster:sli:good:rate5m
+        labels:
+          sli: progress_write
+        expr: sum(rate(aster_product_operation_duration_seconds_bucket{job="aster-local",aster_product_operation="progress_write",aster_outcome="completed",le="0.4"}[5m])) or on() (0 * sum(rate(aster_product_operation_outcomes_total{job="aster-local",aster_product_operation="progress_write",aster_outcome=~"completed|not_playable|unavailable|indeterminate|failed"}[5m])))
+      - record: aster:sli:good:ratio_rate5m
+        expr: (aster:sli:good:rate5m / aster:sli:population:rate5m) and on(sli) (aster:sli:population:rate5m > 0)

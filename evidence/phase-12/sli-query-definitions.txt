@@ -1,0 +1,170 @@
+# P12-R05 executable SLI query evidence
+
+Status: implemented and locally verified at source `c4e6a76`, tree `cfc21f6`.
+Failure-only evidence head `0ac7201` passed protected run `33311729108`; the
+idle-window correction's protected acceptance and release remain pending.
+
+## Environment
+
+- Date: 2026-08-30
+- Host: WSL Ubuntu-20.04
+- Source base: tree-identical P12-R11 squash main
+  `6dba10e0ec74891af8d4427836381a4190b20376`
+- Branch: `feat/p12-sli-slo-definitions`
+- Node.js: 24.19.0
+- pnpm: 11.24.0
+- Apollo Router verifier: upstream v2.17.0 Linux x86_64 release asset,
+  verified against its published `sha256sums.txt`
+- Prometheus verifier: upstream v3.14.0 Linux amd64 release asset, verified
+  against its published `sha256sums.txt`
+
+## Commands and results
+
+```text
+node ./tools/verify-slo-contract.mjs
+=> {"check":"slo-contract","status":"ok","slis":4}
+
+node --test ./tools/verify-slo-contract.test.mjs
+=> 4 passed, 0 failed
+
+pnpm --filter @aster/router test
+=> 10 passed, schema/operation artifacts valid
+
+router config validate infra/router/router.yaml
+=> Configuration at path "infra/router/router.yaml" is valid!
+
+promtool check rules infra/observability/slo-rules.yml
+=> SUCCESS: 9 rules found
+
+promtool test rules infra/observability/slo-rules.test.yml
+=> SUCCESS
+
+node --test ./tools/verify-local-platform.test.mjs
+=> 23 passed, 0 failed
+
+node --test ./tools/verify-slo-contract.test.mjs ./tools/verify-local-platform.test.mjs
+=> 27 passed, 0 failed after the failure-only correction
+
+node ./tools/verify-local-platform.mjs
+=> {"check":"local-platform","status":"ok","violations":0}
+
+CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
+=> 60 tasks passed, 50 cached, 0 failed, 49.705 seconds after the failure-only correction
+
+CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
+=> 60 tasks passed, 50 cached, 0 failed, 47.383 seconds after the idle-window correction
+```
+
+The first optional-platform test run exposed a validator gap: mutating one of
+two scrape-job label limits still left the other matching occurrence. The
+validator now requires the complete body and label-limit set exactly twice; the
+corrected 23/23 run is the accepted result.
+
+Initial PR48 review discussion `3889183230` exposed a measurement-integrity
+gap: the progress query used `le="0.4"` while runtime product histograms omitted
+that boundary. Source `0661a81` exports the exact 400 ms bucket, asserts it in
+real telemetry collection and makes this validator reject any local-product SLI
+whose threshold is absent from the runtime catalog. Telemetry tests pass 19/19.
+
+Protected run `33308328939` passed every job at head `60c72a7` and proved a
+live supergraph ratio. Confirmation discussion `3889248449` then exposed the
+second measurement-integrity gap: the Catalog query selected `le="0.3"` while
+the actual Router histogram jumped from 250 to 500 ms. Source `fa4f0b8` adds an
+explicit finite Router view containing the 300 ms boundary, makes the contract
+validator reject a Router/query threshold mismatch and changes protected CI to
+exercise `TitleDetail` and require both live Router-backed ratios. The exact
+Apollo Router 2.17.0 release accepts the corrected configuration; focused policy
+and contract tests pass 31/31.
+
+The Local platform job in protected run `33309698941` exercised `TitleDetail`
+and returned one live Catalog ratio series. Its value was zero because both
+requests exceeded the 300 ms good-event threshold. The diagnostic incorrectly
+required a positive value even though zero is a valid bad SLI measurement.
+Source `ef78d11` accepts a finite value in the inclusive range from zero to one;
+the preceding exact length assertion still rejects an absent series.
+
+Protected run `33310118280` passed every job at evidence head `aca4aba`,
+including the pinned Router/Prometheus packaged-runtime probe, both live
+Router-backed ratio series and the Docker-only playable demo. The review finding
+has an exact-evidence reply and is resolved.
+
+Final confirmation discussion `3889344066` exposed a third measurement-integrity
+gap: when a fresh process or five-minute window contained failures but no
+completed label set, the good-event sum and ratio disappeared instead of
+reporting zero. Source `757f6a0`, tree `e9c7d24`, zero-fills each recording and
+full-window objective numerator only by multiplying the same present population
+by zero. A missing population therefore stays absent. The exact pinned
+Prometheus 3.14.0 rule test proves all four failure-only recording ratios and
+objective queries return zero. Invalidated run `33310999656` was cancelled after
+the review finding.
+
+Protected run `33311729108` passed every required job at head `0ac7201`, but
+confirmation discussion `3889416115` exposed the remaining zero-population edge:
+after an earlier counter stopped changing for the complete query window, the
+present zero denominator produced `0/0` and a `NaN` ratio. Source `c4e6a76`, tree
+`cfc21f6`, filters both recording and objective ratios on their same positive
+denominator. The exact pinned rule test verifies prior-traffic five-minute idle
+and preexisting-counter full-window idle produce no ratio.
+
+The first affected-gate invocation included the downloaded 28 MiB upstream
+Router verifier archive as an untracked repository file, so the secret/size
+policy rejected it before completion. The exact temporary artifact was removed;
+the unchanged accepted repeat is the 60/60 result above.
+
+## Synthetic workload
+
+Six one-minute counter samples model:
+
+- successful, failed and deliberately rejected known Router operations;
+- arbitrary operation names collapsed to `other`;
+- Catalog completions above and below 300 ms;
+- Playback completed/unavailable plus excluded not-playable/rejected outcomes;
+- Progress completed/unavailable/not-playable plus excluded stale/conflict/
+  rejected outcomes;
+- a failure-only workload with no completed input series for any journey;
+- a prior-traffic workload that becomes idle for the full five-minute window;
+- preexisting counters with no increase in the objective window;
+- a second workload containing only excluded traffic.
+
+Expected and observed recording-rule ratios at five minutes:
+
+| SLI | Population rate | Good rate | Ratio |
+| --- | ---: | ---: | ---: |
+| supergraph | 4.0/s | 2.0/s | 0.5 |
+| catalog title read | 2.0/s | 0.5/s | 0.25 |
+| playback start | 2.0/s | 0.5/s | 0.25 |
+| progress write | 3.0/s | 1.0/s | 0.3333333333333333 |
+
+Excluded-only traffic produces no ratio series. This proves that expected
+rejections and no traffic do not become availability success.
+
+Failure-only traffic produces a present zero recording ratio and zero full-
+window objective result for all four journeys. This proves total failure is
+visible without fabricating a no-traffic result.
+
+Prior-traffic and preexisting-counter idle workloads produce no ratio for any
+journey. This proves a zero denominator cannot persist as `NaN`.
+
+## Raw artifacts
+
+- Contract: `infra/observability/slo-contract.json`
+- Recording rules: `infra/observability/slo-rules.yml`
+- Synthetic rule test: `infra/observability/slo-rules.test.yml`
+- Repository validator: `tools/verify-slo-contract.mjs`
+- Validator tests: `tools/verify-slo-contract.test.mjs`
+
+## Interpretation
+
+The four P12-R05 definitions are executable and agree with their finite metric
+sources. Router metrics retain only a known-operation bucket and one of three
+outcomes. Product queries consume the released finite owner-operation/outcome
+contract. Query arithmetic, exclusions and no-population behavior pass with the
+exact pinned engines.
+
+## Limitations
+
+The workload is synthetic and proves semantics, not latency, capacity or
+historical availability. The local store retains one hour, browser remote
+sampling remains zero, and no 28/30-day dataset exists. Protected CI proves the
+baked rules, private Router scrape labels and both live Router-backed ratios in
+the packaged Docker profile; it does not create historical compliance data.

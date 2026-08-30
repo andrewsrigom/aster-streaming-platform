@@ -252,9 +252,13 @@ export function validateObservabilityProfile(sources) {
     [
       "scrape_interval: 5s\n",
       "scrape_timeout: 2s\n",
+      "rule_files:\n  - /etc/aster/slo-rules.yml\n",
       "targets: [collector:8889]",
+      "job_name: aster-router\n",
+      "targets: [router:9091]",
       "body_size_limit: 1MB\n",
       "sample_limit: 2000\n",
+      "sample_limit: 500\n",
       "label_limit: 16\n",
       "label_name_length_limit: 128\n",
       "label_value_length_limit: 256\n",
@@ -262,6 +266,20 @@ export function validateObservabilityProfile(sources) {
     violations,
     "scrape config",
   );
+  const scrape = sources["prometheus.local.yml"] ?? "";
+  for (const value of [
+    "body_size_limit: 1MB\n",
+    "label_limit: 16\n",
+    "label_name_length_limit: 128\n",
+    "label_value_length_limit: 256\n",
+  ]) {
+    if (scrape.split(value).length - 1 !== 2) {
+      violations.push({
+        rule: "optional-platform",
+        detail: `both Prometheus scrape jobs require: ${value.trim()}`,
+      });
+    }
+  }
   rejectValues(source, ["type: bind", "env_file:", "$" + "{"], violations, "observability");
   return violations;
 }

@@ -151,7 +151,8 @@ Historical stashes are superseded.
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | DONE |
 | 58 | Export platform golden signals and backend product outcomes | P12-R03 | DONE |
-| 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | IN_PROGRESS |
+| 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | DONE |
+| 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -180,6 +181,41 @@ found no blocker. PR46 squash-merged as tree-identical main `2245251`, and
 exact-main run `33304196111` passed every job. Item58 is released. Item59 starts
 from that exact main and owns the local browser first-frame/rebuffer contract,
 explicit sampling/retention policy and truthful remote-collection boundary.
+Its exact source `74780e5`, tree `412cc4c`, passes the local 19/19 focused,
+116/116 Web and 14/14 affected gates. Protected run `33305864184` and the
+single exact-head confirmation found no blocker. PR47 squash main `6dba10e`
+has the same tree, and exact-main run `33307059156` passed every job. Item59 is
+released. Item60 is the sole `IN_PROGRESS` item, rebased directly onto that
+exact main. Initial PR48 review discussion `3889183230` found that the progress
+query's 400 ms bucket was absent from runtime metrics. Corrected source
+`0661a81`, tree `d7978e0`, exports that bucket and cross-validates every local
+product SLI threshold against runtime boundaries. Contract4/4, telemetry19/19
+and the affected60/60 gate with14 cached in63.357 seconds pass. PR48 owns the
+remaining protected runtime and bounded confirmation sequence. Protected run
+`33308328939` passed every job at head `60c72a7`, but confirmation discussion
+`3889248449` found the Catalog query's absent 300 ms Router bucket. Source
+`fa4f0b8`, tree `519908f`, adds that exact finite boundary, cross-validates
+Router/query thresholds and requires live supergraph plus Catalog ratios.
+The Local platform job in protected run `33309698941` proved the Catalog series
+exists but incorrectly rejected its legitimate measured value of zero. Source
+`ef78d11`, tree `3c21d78`, accepts finite live ratios in the inclusive range
+zero through one while retaining absent-series rejection. Focused checks
+pass31/31 and the accepted affected gate passes60/60 with45 cached in47.73
+seconds. Evidence head `aca4aba`, tree `8d40140`, passed protected run
+`33310118280`, including the live packaged ratios and every required job.
+Discussion `3889248449` is answered and resolved. Final confirmation discussion
+`3889344066` then found failure-only populations disappearing when no completed
+series had existed. Source `757f6a0`, tree `e9c7d24`, derives zero only from the
+same present population for recording and objective queries. Exact `promtool`
+and27/27 focused checks pass; the corrected affected gate passes60/60 with50
+cached in49.705 seconds. Invalidated run `33310999656` was cancelled. Corrected
+protected run `33311729108` passed every job, but confirmation discussion
+`3889416115` found idle populations could retain `0/0` as `NaN`. Source
+`c4e6a76`, tree `cfc21f6`, filters ratios on positive denominators and adds
+prior-traffic/preexisting-counter idle tests. Exact `promtool` and27/27 focused
+checks pass; the corrected affected gate passes60/60 with50 cached in47.383
+seconds. Protected acceptance, bounded confirmation, merge and exact-main CI
+remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

@@ -1,7 +1,8 @@
 # P12-R03 platform golden signals
 
-Status: implemented locally on the unpublished dependent branch; not yet
-verified or released.
+Status: released through exact head `95e3a73`, tree `c0eb46a`, protected run
+`33303267611`, PR46 squash main `2245251` and successful exact-main run
+`33304196111`.
 
 ## Exact candidate
 
@@ -52,8 +53,9 @@ transaction behavior.
   required rebase onto released exact main and review remediation.
 - Protected run `33302931164` built the packaged services healthy but stopped
   before collection: diagnostic Fetch did not preserve the Router Host and
-  received 403. The bounded `node:http` correction passes inline syntax, CI
-  policy 33/33 and platform policy 68/68 locally; protected proof must rerun.
+  received 403. The bounded `node:http` correction produced exact head
+  `95e3a73`; protected run `33303267611` and exact-main run `33304196111`
+  passed the real Collector/Prometheus check and every required job.
 - `git diff --check`: pass.
 
 The focused telemetry suite uses a real bounded loopback OTLP/HTTP receiver for

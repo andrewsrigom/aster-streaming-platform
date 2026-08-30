@@ -2,6 +2,83 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate
+
+### Completed
+
+- P12-R04/R11 exact source `74780e5`, tree `412cc4c`, passed protected run
+  `33305864184` and the single blocker-focused confirmation. PR47 squash main
+  `6dba10e` retained that tree; exact-main run `33307059156` passed every job,
+  including the changed playable-browser journey.
+- Rebased `feat/p12-sli-slo-definitions` directly onto that exact main. Source
+  `524ab28`, tree `e442af1`, defines four finite machine-readable SLI/SLO
+  contracts for supergraph, Catalog title read, playback start and progress
+  write without claiming historical compliance.
+- Added Router `completed`/`rejected`/`failed` classification, the private
+  bounded Router scrape, nine recording rules and Prometheus synthetic
+  good/bad/excluded/no-population evaluation.
+- Exact Router 2.17.0 configuration validation and Prometheus 3.14.0
+  `promtool` rule/tests pass. Contract tests pass 4/4, Router 10/10 and platform
+  policy 23/23.
+- The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444
+  seconds. Documentation, AI state, formatting, lint, security and diff checks
+  pass. Local Docker was not retried.
+- Initial PR48 review discussion `3889183230` found one measurement-integrity
+  blocker: the progress SLO queried 400 ms while runtime product histograms
+  exported only adjacent 250/500 ms buckets.
+- Corrected source `0661a81`, tree `d7978e0`, exports the exact 400 ms boundary,
+  asserts it in real telemetry collection and makes the SLI validator reject a
+  runtime/query threshold mismatch. Telemetry passes 19/19 and the corrected
+  affected gate passes 60/60 tasks with 14 cached in 63.357 seconds.
+- Protected run `33308328939` passed every job at exact head `60c72a7` and
+  proved the live supergraph ratio. Confirmation discussion `3889248449` found
+  a second measurement-integrity blocker: the live Router histogram omitted the
+  Catalog query's 300 ms bucket.
+- Corrected source `fa4f0b8`, tree `519908f`, adds an explicit finite Router
+  view containing 300 ms, cross-validates Router/query thresholds and changes
+  protected acceptance to require both live Router-backed ratios. Exact Router
+  config and 31/31 focused checks pass; the accepted affected repeat passes
+  60/60 with 50 cached in 49.715 seconds.
+- The first repeat was rejected only because the downloaded 28 MiB upstream
+  verifier archive remained untracked in the repository. The exact temporary
+  file was removed; repository security/size policy passed on the accepted
+  unchanged repeat.
+- The Local platform job in protected run `33309698941` proved one live Catalog
+  ratio series but rejected its legitimate value of zero. Source `ef78d11`, tree
+  `3c21d78`, accepts finite present ratios from zero through one while the
+  separate length assertion still rejects absence. Focused checks pass31/31 and
+  the affected gate passes60/60 with45 cached in47.73 seconds.
+- Evidence head `aca4aba`, tree `8d40140`, passed protected run `33310118280`,
+  including packaged Router/Prometheus acceptance, both live ratio series, every
+  owner integration and the Docker-only playable demo. Discussion `3889248449`
+  is answered with exact evidence and resolved.
+- Final confirmation discussion `3889344066` found that failure-only populations
+  disappeared when no completed label set had ever existed. Source `757f6a0`,
+  tree `e9c7d24`, zero-fills recording and objective numerators only from the
+  same present population. Exact Prometheus rule/tests cover all four failure-
+  only ratios and full-window queries;27/27 focused checks pass. Invalidated run
+  `33310999656` was cancelled after Local platform passed and before source
+  quality completed. The corrected affected gate passes60/60 with50 cached in
+  49.705 seconds.
+- Protected run `33311729108` passed every job at head `0ac7201`. Confirmation
+  discussion `3889416115` then found that a prior population becoming idle could
+  retain `0/0` as `NaN`. Source `c4e6a76`, tree `cfc21f6`, filters recording and
+  objective ratios on positive denominators. Exact Prometheus tests cover prior-
+  traffic five-minute idle and preexisting-counter objective idle;27/27 focused
+  checks pass. The corrected affected gate passes60/60 with50 cached in47.383
+  seconds.
+
+### Evidence
+
+- `evidence/phase-12/browser-playback-telemetry.txt`
+- `evidence/phase-12/sli-query-definitions.txt`
+- `evidence/phase-12/slo-error-budget-report.md`
+
+### Next action
+
+Publish once, pass protected acceptance and close the exact review finding
+before the bounded confirmation/merge/exact-main sequence and dashboard work.
+
 ## 2026-08-30 — Browser playback telemetry candidate
 
 ### Completed
@@ -2744,9 +2821,9 @@ Merge the final-state pull request after its required check passes, confirm the 
 
 Execute P00-R10 from a clean public clone, produce the final Phase 00 evidence index, verify the Phase 01 prerequisites, and close the phase only after the exit gate passes.
 
-## 2026-08-26 — Executable repository-memory workflow
+**Historical checkpoint — 2026-08-26 — Executable repository-memory workflow**
 
-### Completed
+**Completed**
 
 - Added a dependency-free bounded validator for the ten durable `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and reverse-chronological session structure.
 - Added 10 focused tests for valid active and idle state plus missing, oversized, malformed, stale, duplicate, conflicting, invalid-UTF-8, and symbolic inputs.
@@ -2755,14 +2832,14 @@ Execute P00-R10 from a clean public clone, produce the final Phase 00 evidence i
 - Preserved the lightweight staged hook and kept semantic truth and cross-revision append-only review outside the static gate.
 - Verified the new governance path in public pull request 3 with complete source quality, dependency review, and the stable aggregate check.
 
-### Evidence
+**Evidence**
 
 - Passed the actual ten-file state scan, 10 focused tests, 48 dependency-free governance tests, the forced twenty-task graph with 73 focused tests, actionlint `1.7.12`, and high-severity dependency audit.
 - Measured the focused check at `0.57` seconds, focused tests at `0.65` seconds, dependency-free governance path at `0.87` seconds, and forced graph wrapper at `5.85` seconds in the recorded environment.
 - Raw evidence: `evidence/phase-00/ai-state-workflow.txt`.
 - Hosted run `32939956932`: success across every applicable job.
 
-### Next action
+**Next action**
 
 Execute P00-R09 by documenting exact bootstrap, check, demonstration, and cleanup commands without claiming future application commands are implemented.
 

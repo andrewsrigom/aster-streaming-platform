@@ -1,113 +1,166 @@
 # SLIs, SLOs, and Alerts
 
-## Status
+## Status and source of truth
 
-These are initial definitions to implement and calibrate in Phase 12. Numeric targets remain provisional until baseline evidence exists.
+P12-R05/R06 defines four initial critical-journey service-level indicators
+(SLIs) and service-level objectives (SLOs). The executable contract is
+[`slo-contract.json`](../../infra/observability/slo-contract.json), and
+[`slo-rules.yml`](../../infra/observability/slo-rules.yml) records five-minute
+population, good-event and ratio series.
 
-## SLI 1 — Supergraph valid-operation availability
+The targets are initial engineering objectives, not claims about historical
+availability. Local Prometheus retains one hour and cannot prove a 28- or
+30-day result. Phase 14 activates release decisions from these objectives only
+after a hosted store has sufficient retention, representative traffic and a
+reviewed baseline.
 
-**Population:** GraphQL requests that pass authentication and request-shape validation.
+## Evaluation model
 
-**Good:** Response completes within the service deadline without an unexpected server error.
+Every SLI is a ratio:
 
-**Excluded:** deliberate validation, authorization, trusted-operation, rate, and cost rejections. Each exclusion remains separately measured.
+```text
+good events / population events
+```
 
-**Source:** Apollo Router metrics.
+The population excludes only named events that do not represent an admitted
+user attempt. Dependency failures, timeouts and unexpected server failures stay
+in the denominator and count bad. An empty population has no finite ratio;
+queries do not replace no traffic with artificial success. When a population
+exists but the process has never exported a matching good-event series, the good
+numerator is derived as zero from that same present population. A failure-only
+window therefore reports zero instead of disappearing. The ratio is filtered on
+a positive denominator, so a previously active counter that becomes idle does
+not leave a `NaN` sample after its population rate reaches zero.
 
-**Provisional objective:** 99.9% over a rolling 30-day window.
+The five-minute recording series support operational views and later burn-rate
+alerts. The objective query evaluates raw counter increases over the SLO's full
+rolling window. Prometheus evaluates rules every 15 seconds, limits each rule to
+eight output series and scrapes the Router privately with the same body, sample
+and label limits as other local telemetry.
 
-## SLI 2 — Catalog title read
+## Supergraph valid-operation availability
 
-**Population:** requests for existing published title IDs.
+| Field | Definition |
+| --- | --- |
+| Population | Known GraphQL operations that pass Router admission and finish as `completed` or `failed`. |
+| Good event | `completed`: no unexpected GraphQL or transport failure before the three-second Router deadline. |
+| Exclusions | Unknown names collapsed to `other`; parse/validation, authentication/authorization, rate, concurrency and future cost rejections classified as `rejected`. |
+| Source | Router `http_server_request_duration_seconds_count`, scrape job `aster-router`, labels `aster_operation` and `aster_outcome`. |
+| Aggregation | Event ratio over a rolling 30 days; five-minute rates for operational views. |
+| Owner | Platform. |
+| Objective | 99.9%; error budget 0.1%. |
+| User impact | A valid first-party operation cannot complete through the public application API. |
 
-**Good:** correct title response under 300 ms at the router.
+The Rhai response boundary assigns only `completed`, `rejected` or `failed`.
+Any unexpected error wins over a simultaneous expected rejection. Cancellation,
+subgraph failure and timeout are failures when they produce an observable failed
+response. Business payload codes such as `NOT_PLAYABLE` are not Router failures
+when GraphQL transport and execution complete correctly.
 
-**Source:** router operation metrics and Catalog traces.
+## Catalog title-read success and latency
 
-**Provisional objective:** 99.9% success and 95% under 300 ms over 28 days.
+| Field | Definition |
+| --- | --- |
+| Population | Admitted `TitleDetail` operations finishing as `completed` or `failed`. |
+| Good event | `completed` in at most 300 ms. |
+| Exclusions | Other operations and Router `rejected` outcomes. |
+| Source | Router request-duration histogram, scrape job `aster-router`, operation `TitleDetail`. |
+| Aggregation | Latency-qualified event ratio over a rolling 28 days. |
+| Owner | Catalog. |
+| Objective | 99.9%; error budget 0.1%. |
+| User impact | A title detail page cannot obtain a timely authoritative public-visibility result. |
 
-## SLI 3 — Playback-session creation
+A correct `null` for a missing or non-public identifier is a completed Catalog
+read. It does not become a failure merely because no title is visible. The
+first-party/trusted-operation rollout in Phase 13 prevents arbitrary public
+documents from becoming the intended hosted SLO population.
 
-**Population:** valid requests for currently published titles.
+## Playback-session creation
 
-**Good:** usable session returned within 500 ms.
+| Field | Definition |
+| --- | --- |
+| Population | Owner attempts with `completed`, `unavailable`, `indeterminate` or `failed` after a valid published-title candidate reaches Playback. |
+| Good event | A usable session returns as `completed` in at most 500 ms. |
+| Exclusions | `not_playable`, `rejected` and `cancelled`. |
+| Source | `aster_product_operation_outcomes_total` and `aster_product_operation_duration_seconds_bucket`, operation `playback_session`, scrape job `aster-local`. |
+| Aggregation | Latency-qualified event ratio over a rolling 30 days. |
+| Owner | Playback. |
+| Objective | 99.9%; error budget 0.1%. |
+| User impact | An otherwise eligible viewer cannot obtain a timely CDN-compatible playback session. |
 
-**Bad:** timeout, internal error, dependency failure, or unusable delivery reference.
+`not_playable` is an authoritative product decision outside the valid
+published-title attempt population. Dependency and indeterminate outcomes stay
+bad because the viewer did attempt an otherwise eligible start.
 
-**Source:** Playback operation metrics.
+## Progress-write acceptance
 
-**Provisional objective:** 99.9% over 30 days.
+| Field | Definition |
+| --- | --- |
+| Population | Current valid writes with `completed`, `not_playable`, `unavailable`, `indeterminate` or `failed`. |
+| Good event | The owner accepts the write or recognizes its idempotent duplicate as `completed` in at most 400 ms. |
+| Exclusions | `stale`, `conflict`, `rejected` and `cancelled`. |
+| Source | Product outcome and duration metrics, operation `progress_write`, scrape job `aster-local`. |
+| Aggregation | Latency-qualified event ratio over a rolling 30 days. |
+| Owner | Engagement. |
+| Objective | 99.95%; error budget 0.05%. |
+| User impact | A current valid playback checkpoint is not durably accepted within the interaction budget. |
 
-## SLI 4 — Playback first frame
+Stale sequence and idempotency conflict remain separately measured domain
+outcomes. Excluding them from this SLI does not convert them to success or hide
+their rate.
 
-**Population:** sampled player sessions that attempt media load after a successful playback session.
+## Initial error budgets
 
-**Good:** first frame observed within the target and no fatal error before it.
+| SLO | Target | Rolling window | Bad-event budget | Maximum bad events per 100,000 population events |
+| --- | ---: | ---: | ---: | ---: |
+| Supergraph | 99.9% | 30 days | 0.1% | 100 |
+| Catalog title read | 99.9% | 28 days | 0.1% | 100 |
+| Playback start | 99.9% | 30 days | 0.1% | 100 |
+| Progress write | 99.95% | 30 days | 0.05% | 50 |
 
-**Current source:** the privacy-reviewed local player measurement described in
-[Browser Playback Telemetry](PLAYBACK_TELEMETRY.md). Remote sampling is zero, so
-no population-level series or central aggregation currently exists.
+These event budgets guide investigation and release risk; they do not excuse a
+known correctness or security defect. The current report has no historical
+compliance result because no qualifying full-window dataset exists.
 
-**Target:** unavailable until a reviewed non-zero field source establishes
-browser, geography, network and CDN baselines. Local/CI samples are not promoted
-into a field objective.
+## Playback first frame and media publication
 
-## SLI 5 — Progress write
+First-frame and rebuffer measurements remain local diagnostics. Remote browser
+sampling and server retention are zero, so there is no central population,
+percentile or field SLO. See [Browser Playback Telemetry](PLAYBACK_TELEMETRY.md).
 
-**Population:** valid current progress reports.
+Media processing and publication retain finite product outcomes and durations.
+They are operational indicators but are not one of the four initial objectives
+required by P12-R06. A later objective requires representative workflow volume
+and an explicit operator-impact policy.
 
-**Good:** accepted or recognized duplicate within 400 ms.
+## Alert plan
 
-**Separate outcomes:** stale, unauthorized, invalid, and conflict.
+P12-R07 will implement and test multi-window burn-rate alerts from these exact
+SLIs. No alert is claimed by P12-R05/R06. The planned policy is:
 
-**Provisional objective:** 99.95% over 30 days.
+- page for rapid supergraph, Catalog or playback-start budget burn;
+- page for data corruption or unauthorized access independently of error budget;
+- create a working-hours ticket for sustained slow burn;
+- keep cache, projection, queue and telemetry symptoms diagnostic unless they
+  cause user impact or cross an independently actionable safety threshold.
 
-## SLI 6 — Media publication
+Every implemented alert must name an owner, link to a dashboard and runbook,
+state user impact, include confirmation queries and prove both firing and
+recovery with controlled signals.
 
-**Population:** processing attempts that reach technical validation with an approved current rights record.
+## Verification
 
-**Good:** validated immutable package is published or a classified deterministic content failure is returned within workflow bounds.
+The pinned Prometheus 3.14.0 `promtool` checks all nine recording rules and runs
+synthetic good, bad, failure-only, idle, excluded and excluded-only workloads.
+The failure-only workload verifies both five-minute recording ratios and full-
+window objective queries return zero for every journey. Prior-traffic and
+preexisting-counter idle workloads verify both query forms become absent when
+their denominator is zero. The synthetic mixed workload
+produces ratios of 0.5 for supergraph, 0.25 for Catalog, 0.25 for playback start
+and one third for progress writes. Those deliberately failing values prove
+classification and arithmetic; they are not a baseline.
 
-Operational platform failures count as bad.
-
-## Alert strategy
-
-### Page
-
-Use for rapid budget burn or immediate critical user impact:
-
-- playback-session SLO fast burn;
-- supergraph broad failure;
-- catalog authority unavailable with exhausted safe fallback;
-- active publication objects missing;
-- data corruption or unauthorized access;
-- database saturation with rising failures.
-
-### Ticket or working-hours alert
-
-- slow burn;
-- cache hit degradation without user SLO impact;
-- projection lag within safe window but increasing;
-- media queue age;
-- backup warning;
-- elevated noncritical discovery fallback;
-- telemetry drops.
-
-## Alert content
-
-Every alert includes:
-
-- SLO or symptom;
-- environment;
-- current value and threshold;
-- first observed time;
-- user impact;
-- dashboard;
-- trace query;
-- runbook section;
-- owner;
-- recent deployment link.
-
-## Testing
-
-Each alert is tested with synthetic signals or controlled failure. Recovery notification is verified. Alerts that cannot be acted upon are removed or redesigned.
+The repository validator rejects target/error-budget drift, prohibited
+high-cardinality query text, a missing finite Router classification, a missing
+private scrape boundary, a missing population-derived zero numerator, a missing
+positive-denominator filter and attempts to turn no traffic into 100% success.

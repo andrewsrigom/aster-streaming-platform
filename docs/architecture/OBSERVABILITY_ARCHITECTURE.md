@@ -250,20 +250,46 @@ Remote browser sample rate is zero. There is no browser exporter, ingestion
 route or server retention, so this candidate makes no field-SLI claim. The
 [browser playback telemetry policy](../operations/PLAYBACK_TELEMETRY.md) records
 measurement definitions, sampling, retention, privacy and future activation
-gates. Focused implementation evidence remains under the Phase12 index until
-the candidate completes protected acceptance.
+gates. Focused and protected release evidence is recorded under the Phase12
+index.
+
+### Implemented Phase 12 SLI/SLO candidate
+
+The Router classifies each known-operation response into `completed`,
+`rejected` or `failed` after sanitizing its finite error codes. The standard
+request-duration histogram retains only the already bounded operation bucket
+and this three-value outcome; the Router metric cardinality ceiling is 128.
+Prometheus scrapes the private Router endpoint separately from the Collector.
+
+Nine recording rules compute population and good-event five-minute rates for
+supergraph, Catalog title read, playback start and progress write, then derive
+one ratio family with four finite `sli` values. Expected rejections are excluded;
+dependency and unexpected failures remain bad. Empty populations produce no
+finite ratio. Exact definitions, full-window objective queries, owners and budgets are
+in the machine-readable
+[`slo-contract.json`](../../infra/observability/slo-contract.json).
+
+Prometheus 3.14.0 synthetic rule tests cover good, bad, failure-only, idle,
+excluded and excluded-only traffic. Failure-only windows derive a zero numerator
+from the present population; a positive-denominator filter keeps idle and no-
+population windows absent instead of recording `NaN`. The local one-hour store
+proves mechanics only; it has no
+28/30-day history. First-frame remains a local diagnostic because remote browser
+sampling is zero. No dashboard, alert or historical SLO compliance is claimed
+by this slice.
 
 ## SLIs
 
-Initial critical SLIs:
+Initial critical SLO-backed SLIs:
 
 - successful supergraph request ratio;
 - catalog-title read latency and success;
 - playback-session creation success;
-- playback first-frame success;
-- accepted progress write success;
-- media publication success;
-- continue-watching freshness.
+- accepted progress write success.
+
+Playback first frame, media publication and continue-watching freshness remain
+diagnostic indicators until each has a qualifying population, policy and
+representative retained source.
 
 Exact definitions are in
 [SLIs, SLOs, and Alerts](../operations/SLIS_SLOS_AND_ALERTS.md).

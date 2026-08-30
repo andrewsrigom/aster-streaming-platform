@@ -1,6 +1,8 @@
 # P12-R04/R11 browser playback telemetry
 
-Status: implemented locally; candidate and protected acceptance remain pending.
+Status: released through exact source `74780e5`, tree `412cc4c`, protected run
+`33305864184`, clean confirmation, PR47 squash main `6dba10e` and successful
+exact-main run `33307059156`.
 
 ## Contract
 
@@ -59,10 +61,12 @@ with one cached in 48.518 seconds.
 
 One read-only Docker availability query returned no daemon before any project or
 resource was created. The local browser path was not retried and WSL/Docker was
-not restarted; the changed playable-browser proof remains a protected-CI gate.
+not restarted; the changed playable-browser proof was delegated to the now-
+successful protected CI run.
 
-## Pending candidate evidence
+## Release evidence
 
-- one playable browser journey proving the changed report/policy and actual
-  decoded frame without another media transcode;
-- initial review, protected CI and exact-main confirmation.
+- Protected CI proved the changed report/policy and actual decoded frame without
+  another media transcode.
+- The single exact-head confirmation found no blocker, the squash tree matches
+  the reviewed tree and exact-main CI passed every required job.

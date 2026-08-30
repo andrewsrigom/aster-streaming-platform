@@ -47,8 +47,10 @@ passed every required job and releases P12-R01/R02/R08/R09. PR46 exact head
 `95e3a73`, tree `c0eb46a`, then passed protected run `33303267611` and clean
 confirmation. It squash-merged as tree-identical main `2245251`; exact-main run
 `33304196111` passed every job and releases P12-R03 plus the backend portion of
-P12-R04. The local browser QoE and P12-R11 policy slice is active. Full
-Phase00–14 goal stays active.
+P12-R04. Browser QoE source `74780e5` passed protected run `33305864184`, clean
+confirmation and PR47 squash main `6dba10e`; exact-main run `33307059156`
+passed every job and releases P12-R04/R11. P12-R05/R06 is active from that
+exact main. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -117,8 +119,8 @@ uses `node:http` with the explicit reviewed Host. The corrected exact-head and
 exact-main runs both passed the real Collector/Prometheus assertion, all
 protected integrations and Docker playable demo.
 
-P12-R04/R11 browser QoE is active on `feat/p12-browser-telemetry-policy`, based
-exactly on released main `2245251`. The existing player measures session,
+P12-R04/R11 browser QoE is released from exact source `74780e5`, tree `412cc4c`,
+based exactly on released main `2245251`. The player measures session,
 manifest, decoded first frame, rendition, rebuffer, fatal-error and completion
 events in a 64-sample memory-only journal without identifiers or media URLs.
 This slice makes its sampling and lifetime explicit, adds an aggregate
@@ -132,8 +134,59 @@ Focused recorder/adapter tests pass19/19 and the complete Web suite passes
 14/14 tasks with one cached in48.518 seconds, including production Web build,
 public-artifact/privacy checks, documentation, architecture, security and AI
 state. One read-only Docker query found no local daemon before resource
-creation, so the changed playable-browser proof remains for protected CI; no
-WSL/Docker restart or repeated host diagnostic was attempted.
+creation, so the changed playable-browser proof was delegated to protected CI;
+no WSL/Docker restart or repeated host diagnostic was attempted.
+
+Protected run `33305864184` and the single exact-head confirmation found no
+blocker. PR47 squash main `6dba10e` retained the reviewed tree, and exact-main
+run `33307059156` passed every required job, including the changed playable
+browser journey. Item59 is released.
+
+P12-R05/R06 is rebased directly on exact main. Initial PR48 review discussion
+`3889183230` correctly found that the 400 ms progress query selected a histogram
+bucket absent from runtime metrics. Corrected source `0661a81`, tree `d7978e0`,
+adds that exact finite bucket and a cross-contract regression. It defines four
+machine-readable SLI populations, good events, exclusions, sources,
+aggregations, owners and windows plus initial objectives and error budgets. Nine
+Prometheus recording rules use finite Router or released backend product
+metrics; no-traffic windows do not become artificial success. Contract tests
+pass 4/4, telemetry tests 19/19, Router tests 10/10 and platform policy 23/23.
+Exact Router 2.17 configuration validation and Prometheus 3.14 `promtool`
+rule/synthetic tests pass. The corrected affected gate passes 60/60 tasks with
+14 cached in 63.357 seconds. Browser first-frame remains a local diagnostic
+because remote sampling and retention are zero. PR48 protected packaged
+Router/Prometheus run `33308328939` passed every job at head `60c72a7` and
+proved the live supergraph ratio. Confirmation discussion `3889248449` then
+found that the live Router histogram omitted the Catalog query's 300 ms bucket.
+Source `fa4f0b8`, tree `519908f`, adds the exact finite Router boundary, rejects
+Router/query threshold drift and makes protected CI require both live
+Router-backed ratios. Exact Router configuration and31/31 focused checks pass;
+an earlier affected repeat passed60/60 with50 cached in49.715 seconds. A first
+repeat was discarded because the untracked upstream verifier archive correctly
+failed repository size policy; that exact temporary file was removed. The Local
+platform job in protected run `33309698941` then proved the Catalog ratio series
+exists and exposed only a diagnostic assumption: a measured zero ratio is valid
+when every live request misses the 300 ms good-event threshold. Source
+`ef78d11`, tree `3c21d78`, accepts finite live ratios from zero through one while
+retaining the separate absent-series rejection. Focused checks pass31/31 and the
+accepted affected gate passes60/60 with45 cached in47.73 seconds. Evidence head
+`aca4aba`, tree `8d40140`, passed protected run `33310118280`, including the
+packaged Router/Prometheus probe and every required job. Discussion `3889248449`
+is answered with exact evidence and resolved. Final confirmation discussion
+`3889344066` then found that a failure-only window omitted the ratio when its
+good-event label set had never existed. Source `757f6a0`, tree `e9c7d24`, derives
+zero only from the same present population for recording and full-window
+queries. Exact Prometheus rule/tests and27/27 focused contract/platform checks
+pass; excluded-only/no-population queries remain absent. The corrected affected
+gate passes60/60 with50 cached in49.705 seconds. Invalidated run `33310999656`
+was cancelled. Protected run `33311729108` passed every job at head `0ac7201`,
+including exact rules, real telemetry and the playable demo. Confirmation
+discussion `3889416115` then found that an earlier population becoming idle
+could retain a `0/0` `NaN` ratio. Source `c4e6a76`, tree `cfc21f6`, filters every
+recording and objective ratio on a positive denominator. Exact Prometheus tests
+cover prior-traffic and preexisting-counter idle windows;27/27 focused checks
+pass. The corrected affected gate passes60/60 with50 cached in47.383 seconds.
+Protected acceptance remains.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -387,14 +440,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 browser QoE acceptance, formal SLIs/SLOs, dashboards, alerts,
-diagnostic exercises and operational overview remain.
+Phase12 SLI/SLO corrected protected acceptance/release, dashboards, alerts, diagnostic
+exercises and operational overview remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete P12-R11 and the remaining P12-R04 local browser QoE evidence, then
-define the Phase12 SLIs/SLOs from released signal sources.
+Complete the P12-R05/R06 idle-window correction gate, publish one documented
+head and pass protected acceptance. Resolve the exact review finding, perform
+the bounded confirmation, then merge and confirm exact main before dashboard work.
 
 ## Runtime and recovery
 

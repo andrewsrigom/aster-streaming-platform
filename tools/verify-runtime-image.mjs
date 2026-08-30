@@ -105,6 +105,7 @@ const allowedContext = [
   "!infra/router/generated/supergraph.graphql",
   "!infra/compose/collector.integration.yml",
   "!infra/compose/prometheus.local.yml",
+  "!infra/observability/slo-rules.yml",
   "!tools/media/*.mjs",
   "**/node_modules/**",
   "**/dist/**",
@@ -148,7 +149,7 @@ export function validateRuntimeImage(sources) {
   const collector =
     'FROM docker.io/otel/opentelemetry-collector:0.159.0@sha256:7725a7a10c87d8853208bdd4bb3439ad3c0d7b32b4292b9300ac07c8daba14a2\nCOPY infra/compose/collector.integration.yml /etc/aster/collector.yml\nCMD ["--config=/etc/aster/collector.yml"]';
   const prometheus =
-    "FROM docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0\nCOPY infra/compose/prometheus.local.yml /etc/aster/prometheus.yml";
+    "FROM docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0\nCOPY infra/compose/prometheus.local.yml /etc/aster/prometheus.yml\nCOPY infra/observability/slo-rules.yml /etc/aster/slo-rules.yml";
   if (
     sources["infra/docker/collector.Dockerfile"]?.trim() !== collector ||
     sources["infra/docker/prometheus.Dockerfile"]?.trim() !== prometheus

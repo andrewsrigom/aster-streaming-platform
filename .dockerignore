@@ -86,6 +86,7 @@
 !infra/router/generated/supergraph.graphql
 !infra/compose/collector.integration.yml
 !infra/compose/prometheus.local.yml
+!infra/observability/slo-rules.yml
 !tools/media/*.mjs
 **/node_modules/**
 **/dist/**

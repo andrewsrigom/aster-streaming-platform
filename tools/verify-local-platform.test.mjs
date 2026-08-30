@@ -319,6 +319,9 @@ test("optional telemetry retains bounded collection without becoming an Identity
     ],
     ["collector.integration.yml", "key: graphql.document", "key: ignored"],
     ["prometheus.local.yml", "sample_limit: 2000", "sample_limit: 0"],
+    ["prometheus.local.yml", "targets: [router:9091]", "targets: [router:9092]"],
+    ["prometheus.local.yml", "sample_limit: 500", "sample_limit: 0"],
+    ["prometheus.local.yml", "slo-rules.yml", "missing-rules.yml"],
     ["prometheus.local.yml", "label_limit: 16", "label_limit: 0"],
   ]) {
     const changed = { ...observability, [file]: observability[file].replace(before, after) };

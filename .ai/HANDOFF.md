@@ -2,45 +2,65 @@
 
 ## Resume point
 
-P12-R11 and the remaining local-browser portion of P12-R04 are active on
-`feat/p12-browser-telemetry-policy`, based exactly on released main
-`22452518569c979453e9e98f7f9cd52b5b0d416b`.
+Item59 (P12-R04/R11 browser QoE) is released from source `74780e5`, tree
+`412cc4c`, protected run `33305864184`, clean exact-head confirmation, PR47
+squash main `6dba10e` and successful exact-main run `33307059156`.
 
-The player candidate fixes sampling at 100% for local attempts and 0% for remote
-export, retains at most 64 events for one player attempt, adds bounded
-first-frame/rebuffer aggregates and explicitly erases the recorder on retry or
-unmount. Pause/seek cancels a pending rebuffer; fatal failure closes one active
-interval before teardown. The report has no transport, persistence, identifiers,
-URLs or arbitrary labels. The policy is documented in
-`docs/operations/PLAYBACK_TELEMETRY.md`.
-
-Recorder/adapter tests pass 19/19 and the complete Web suite passes 116/116.
-Typecheck and scoped ESLint pass. Documentation validation passes 236 documents,
-2911 headings and 1477 links. The exact affected candidate passes 14/14 tasks
-with one cached in 48.518 seconds. A single Docker availability query found no daemon
-before resource creation; browser, review and protected gates remain.
-
-The predecessor is released. PR46 exact head `95e3a73`, tree `c0eb46a`, passed
-protected run `33303267611` and clean confirmation; squash main `2245251` passed
-exact-main run `33304196111`.
+Item60 (P12-R05/R06) is the sole `IN_PROGRESS` item on
+`feat/p12-sli-slo-definitions`, based directly on exact main `6dba10e`. Initial
+PR48 review discussion `3889183230` found the missing 400 ms runtime histogram
+bucket. Corrected source `0661a81`, tree `d7978e0`, adds the bucket and a
+cross-contract regression. Protected run `33308328939` passed every job at head
+`60c72a7`; confirmation discussion `3889248449` then found the missing 300 ms
+Router bucket. Corrected source `fa4f0b8`, tree `519908f`, adds the exact finite
+boundary, rejects Router/query threshold drift and requires live supergraph plus
+Catalog ratios. The Local platform job in protected run `33309698941` proved
+that the Catalog ratio series exists but exposed a diagnostic error: the live
+ratio was legitimately zero and the assertion required a value above zero.
+Source `ef78d11`, tree `3c21d78`, accepts finite ratios in the inclusive range
+from zero to one while the separate series-length assertion still rejects an
+absent result. Evidence head `aca4aba`, tree `8d40140`, passed protected run
+`33310118280`, including packaged Router/Prometheus acceptance and every required
+job. Discussion `3889248449` has an exact-evidence reply and is resolved. Final
+confirmation discussion `3889344066` then found that failure-only windows
+disappeared when no completed series had ever existed. Source `757f6a0`, tree
+`e9c7d24`, zero-fills recording and objective numerators only from their present
+population and adds failure-only synthetic coverage. Invalidated run
+`33310999656` was cancelled. Protected run `33311729108` passed every job at
+head `0ac7201`, but confirmation discussion `3889416115` found an idle prior
+population could leave `0/0` as `NaN`. Source `c4e6a76`, tree `cfc21f6`, filters
+recording and objective ratios on positive denominators and adds prior-traffic
+and preexisting-counter idle workloads. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Inspect the complete diff and create one coherent candidate commit.
-2. Run one changed playable-browser/report path in protected CI; do not
-   transcode or reset retained media locally.
-3. Complete exact evidence and memory after the protected result.
-4. Run one initial review, batch only blockers, publish one PR and complete
-   protected CI plus one confirmation review.
-5. Squash merge, prove exact main and activate P12-R05/R06 SLI/SLO definitions.
+1. Publish the documented idle-window corrected head.
+2. Pass protected Prometheus/runtime acceptance.
+3. Reply to and resolve discussion `3889416115` with exact evidence.
+4. Run only the blocker-focused confirmation required by the changed measurement boundary.
+5. Squash-merge PR48, verify exact-main CI and activate P12 dashboard work.
 
-## Evidence boundaries
+## Verified candidate
 
-The local report proves instrumentation behavior only. Remote sample rate and
-server retention are zero, so it cannot support a field-SLI, percentile or
-capacity claim. Existing media bytes, publication, sessions and progress are
-unchanged. The changed browser report invalidates only the report/playback
-journey, not FFmpeg, rights, publication or other heavyweight evidence.
+- Contract/platform focused checks pass27/27; Router10/10 and telemetry19/19 remain valid.
+- Exact Apollo Router 2.17.0 configuration validation passes.
+- Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
+  failure-only, idle, excluded and excluded-only workloads.
+- Failure-only recording ratios and full-window objective queries return zero;
+  idle and excluded-only/no-population queries remain absent.
+- The idle-window corrected affected gate passes60/60 tasks with50 cached in
+  47.383 seconds.
+- Protected run `33311729108` supports the prior boundary; corrected source
+  `c4e6a76` still requires protected acceptance.
+- Documentation, AI state, formatting, lint, security and `git diff --check` pass.
+
+## Measurement boundary
+
+The four required central SLIs use finite Router or released backend product
+metrics. Browser first-frame remains diagnostic only because remote sampling and
+server retention are zero. The local Prometheus store retains one hour, so it
+proves query mechanics and synthetic classification, not a historical 28/30-day
+service objective.
 
 ## Execution environment
 
@@ -51,6 +71,6 @@ Use native WSL Git and pinned Node.js 24.19.0/pnpm 11.24.0 from
 
 ## Do not do yet
 
-Do not restart WSL/Docker, repeat host CPU/memory diagnostics, reset the retained
-`aster-p04-development` project or rebuild media merely to verify this browser
-slice. Any disposable runtime must use an exact project name and scoped cleanup.
+Do not restart WSL/Docker, repeat host diagnostics, reset retained projects or
+rebuild media. Protected CI owns the changed Router/Prometheus runtime proof
+while the local daemon is unavailable.
