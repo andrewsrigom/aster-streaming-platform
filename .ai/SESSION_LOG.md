@@ -84,8 +84,12 @@ Append new entries at the top. Keep entries factual and concise.
   `${env.ASTER_ROUTER_RETRY_KEY:-retry}` mutation. Router4/4, platform67/67 and
   the affected gate17/17 with five cached in48.055 seconds pass. Evidence and
   repository memory now point at the exact source.
+- Confirmation then encoded the expansion marker itself as YAML. Exact source
+  `aac04c7`, tree `c2a6c93`, checks decoded keys and covers the reported
+  `\x24{env.ASTER_ROUTER_RETRY_KEY:-retry}` mutation. Router4/4, platform67/67
+  and the affected gate17/17 with five cached in48.053 seconds pass.
 - Preserved P12-R01 work in stash
-  `p12-trace-observability-wip-before-p11-final-review-2`; it remains the one
+  `p12-trace-observability-wip-before-p11-final-review-3`; it remains the one
   unpublished dependent.
 
 ### Evidence

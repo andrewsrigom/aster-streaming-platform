@@ -4,7 +4,7 @@
 
 P12-R01 is active as the one unpublished dependent. Its uncommitted trace work
 is preserved in named stash
-`p12-trace-observability-wip-before-p11-final-review-2`; restore it on the
+`p12-trace-observability-wip-before-p11-final-review-3`; restore it on the
 dependent branch based on the final PR44 head.
 
 Phases 00–10 and P11-R01/R05/R08/R09 are released. P11-R08/R09 evidence head
@@ -24,11 +24,12 @@ parser-based correction passed locally but protected run `33294397540` exposed
 its dependency in an intentionally dependency-free policy job. Final exact
 source `402b48897f6d679c243093eaf9199c0430aab397` removed that dependency and fully
 decoded YAML quoted-key escapes within the bounded policy. Confirmation then
-found that Router configuration expansion could materialize a retry key. Final
-source `473c58444fc02c65ecbfdd3d454d475214fb6c49`, tree
-`f2b0d0bbcfbf239d759836d578e127cc46f9e44a`, rejects expansion inside traffic
+found that Router configuration expansion could materialize a retry key; the
+next review proved that the marker itself could be YAML-escaped. Final source
+`aac04c753e3f1463ff55597a581136947fe7506c`, tree
+`c2a6c93a85d7c65b2f475cb6694cfde0741c5100`, rejects raw and decoded expansion inside traffic
 shaping. Router4/4, platform67/67 and the affected17/17 gate with five cached in
-48.055 seconds pass.
+48.053 seconds pass.
 P11-R10 is frozen `WAITING_EXTERNAL`; protected exact-head CI, confirmation,
 merge and exact-main verification remain.
 

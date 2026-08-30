@@ -2,7 +2,7 @@
 
 Date: 2026-08-30
 
-Status: PR44 corrected source 473c584; protected closeout release pending
+Status: PR44 corrected source aac04c7; protected closeout release pending
 
 ## Source and applicability
 
@@ -13,8 +13,8 @@ Status: PR44 corrected source 473c584; protected closeout release pending
 - Protected run:
   [33291705269](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33291705269),
   all required jobs successful.
-- Current executable/test source: `473c58444fc02c65ecbfdd3d454d475214fb6c49`,
-  tree `f2b0d0bbcfbf239d759836d578e127cc46f9e44a`.
+- Current executable/test source: `aac04c753e3f1463ff55597a581136947fe7506c`,
+  tree `c2a6c93a85d7c65b2f475cb6694cfde0741c5100`.
 
 The protected runtime executes exact predecessor `371ba55`, including every
 named owner harness. The later game-day diff adds repository memory/evidence,
@@ -30,7 +30,7 @@ UUID-scoped Compose projects, pinned repository images/dependencies and exact
 project cleanup. Local focused scenarios use WSL Ubuntu-20.04, Node.js 24.19.0
 and pnpm 11.24.0 without Docker or retained state.
 
-The final corrected affected candidate passes 17/17 tasks, 5 cached, in 48.055
+The final corrected affected candidate passes 17/17 tasks, 5 cached, in 48.053
 seconds.
 It includes Web112/112, platform67/67, all repository documentation/memory,
 strict static checks and the scoped failure-lab/toolchain tests.

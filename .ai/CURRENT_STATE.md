@@ -18,8 +18,9 @@ The first parser-based correction passed locally but failed protected run
 `33294397540` because a dependency-free policy job correctly had no install.
 Correction `402b488`, tree `b381494`, fully decodes YAML quoted-key escapes
 without a dependency. Final confirmation then found that Router configuration
-expansion could still materialize a retry key. Exact source `473c584`, tree
-`f2b0d0b`, rejects expansions inside traffic shaping; Router4/4,
+expansion could still materialize a retry key. A decoded expansion bypass then
+proved that the marker itself could be YAML-escaped. Exact source `aac04c7`, tree
+`c2a6c93`, rejects raw and decoded expansions inside traffic shaping; Router4/4,
 platform67/67 and the affected17/17 gate pass. Only protected CI, confirmation
 and release remain. P12-R01 is the
 one unpublished dependent. Full Phase00–14 goal stays active.
@@ -60,7 +61,7 @@ repository-owned tracing contract and adapter that consistently creates finite,
 privacy-safe server, dependency, event and media spans while driving logger
 context. No hosted backend, dashboard, SLO or product contract is added here.
 
-P11-R10 remains frozen on PR44 at executable source `473c584`. Superseded run
+P11-R10 remains frozen on PR44 at executable source `aac04c7`. Superseded run
 `33293548409` predates the correction and run `33294397540` exposed the removed
 dependency. Confirmation on `1a2c3f2` exposed the now-rejected configuration
 expansion. The dependent may advance locally but cannot publish, merge or
@@ -254,7 +255,7 @@ passed every required job and releases P11-R08/R09.
 
 P11-R10 now maps and executes the five remaining game days. Exact protected
 source `371ba55` proves Discovery stop/recovery, Redis-absent healthy home,
-broker outage/drain and zero scoped cleanup. Exact source `473c584` exercises
+broker outage/drain and zero scoped cleanup. Exact source `aac04c7` exercises
 the actual configured Web Apollo chain and rejects block, flow, escaped and
 configuration-expanded Router retry keys throughout traffic shaping.
 Focused failure tests pass 68/68, PostgreSQL
@@ -262,7 +263,7 @@ adapter/transaction saturation passes 28/28 and the new Web/Router contracts
 pass 16/16. Bulkhead, fallback, retry-amplification and five game-day artifacts
 plus complete Redis/Discovery/PostgreSQL/broker/media runbooks are recorded.
 Web112/112 and Router4/4 pass. The final affected candidate passes 17/17 tasks,
-five cached, in 48.055 seconds. PR44 is published; protected exact-head CI,
+five cached, in 48.053 seconds. PR44 is published; protected exact-head CI,
 confirmation and release remain.
 
 ## Historical Phase 09 corrections
