@@ -135,9 +135,9 @@ is needed. A process restart also resets only the bounded in-memory samples.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
-- [ ] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Requirements satisfied in the local candidate
+- [x] Tests pass for the local candidate
+- [x] Candidate evidence captured
+- [x] Documentation current for the local candidate
+- [x] `.ai/` state updated at the candidate checkpoint
+- [x] Remaining risks recorded; review, protected CI and release remain

@@ -2,8 +2,9 @@
 
 Status: P11-R01 is [released](safe-read-release.txt) through reviewed evidence
 head `6d709b4`, protected run `33284610557`, squash main `ebdcb18` and successful
-exact-main run `33285339274`. Phase 11 as a whole remains in progress; P11-R05
-circuit breakers are the active local work item.
+exact-main run `33285339274`. Phase 11 as a whole remains in progress. P11-R05
+is verified locally at source `d039748`, with review, protected CI and release
+pending.
 
 ## Current work item
 
@@ -17,7 +18,9 @@ work item, and only for their fixed, read-only Catalog operations.
   loopback HTTP 503, reset, permanent-failure and timeout behavior.
 - [Safe-read release](safe-read-release.txt): exact review, protected CI,
   tree-identical squash merge and exact-main proof.
+- [Circuit breakers](circuit-breakers.txt): exact local candidate, focused and
+  affected gates, deterministic transition/call suppression and current limits.
 
-Breaker metrics are implemented locally by the active P11-R05 work item but are
-not yet released. Saturation reports, controlled game-day timelines and updated
+Breaker metrics are verified in the local P11-R05 candidate but are not yet
+released. Saturation reports, controlled game-day timelines and updated
 operational runbooks remain planned later Phase 11 work.

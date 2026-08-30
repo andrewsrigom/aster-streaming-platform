@@ -194,8 +194,11 @@ safe read, so a retry contributes one logical outcome. Playback remains fail
 closed; Discovery creates no fallback data. Finite OpenTelemetry events expose
 results, rejection and transitions. Focused runtime98/98, telemetry13/13,
 Playback40/40 and Discovery108/108 tests pass, including real loopback open
-suppression/recovery and operation isolation. The complete affected candidate,
-evidence, review and publication remain.
+suppression/recovery and operation isolation. Exact source `d039748` has tree
+`b09864d`; its complete affected gate passes 53/53 with 21 cached in 73.623
+seconds. [Candidate evidence](../evidence/phase-11/circuit-breakers.txt) records
+the finite transitions and HTTP-call suppression. Review, protected CI and
+publication remain.
 
 ## Historical Phase 09 corrections
 
@@ -243,15 +246,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R05 candidate/review/publication remains. Later Phase11 controlled
+P11-R05 review/protected CI/publication remains. Later Phase11 controlled
 injection, game days and runbooks remain planned.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Complete P11-R05: run the affected gate, capture breaker evidence, review and
-publish the operation-scoped circuit-breaker candidate after P11-R01 exact-main
-passes.
+Complete P11-R05: publish the evidenced operation-scoped circuit-breaker
+candidate, run the bounded review and protected exact-head CI, then merge and
+verify exact-main CI.
 
 ## Runtime and recovery
 

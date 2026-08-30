@@ -82,6 +82,10 @@ Append new entries at the top. Keep entries factual and concise.
   resilience, failure and service documentation. Runtime98/98, telemetry13/13,
   Playback40/40 and Discovery108/108 pass, including loopback suppression,
   recovery and operation isolation.
+- The first complete affected gate stopped on nine strict lint findings in the
+  new files. They were corrected without weakening a rule; the exact source
+  `d039748` has tree `b09864d` and passes 53/53 tasks with 21 cached in 73.623
+  seconds.
 
 ### Evidence
 
@@ -96,13 +100,13 @@ Append new entries at the top. Keep entries factual and concise.
   SHA-256 `d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303`.
 - `evidence/phase-11/safe-read-release.txt` records the reviewed head/tree,
   resolved findings, protected run, merge equality and exact-main proof.
-- P11-R05 focused iteration commands/counts are recorded above; its complete
-  affected candidate remains the next gate.
+- `evidence/phase-11/circuit-breakers.txt` records the exact P11-R05 source,
+  focused/affected gates, finite transitions, HTTP-call suppression and limits.
 
 ### Next action
 
-Run the complete P11-R05 affected gate, capture breaker evidence and start the
-recorded review cycle.
+Commit the P11-R05 evidence checkpoint, publish one pull request and complete
+the recorded review/protected-release cycle.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 
