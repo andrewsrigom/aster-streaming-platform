@@ -11,6 +11,7 @@ import {
   type PublicTitle,
 } from "../lib/apollo/operations.ts";
 import { publicCachePolicies } from "../lib/apollo/policies.ts";
+import { createPublicApolloClient } from "../lib/apollo/client.ts";
 import { boundedGraphqlFetch } from "../lib/apollo/transport.ts";
 import { projectPublicData } from "../lib/apollo/public-snapshot.ts";
 import { titleMetadata } from "../features/catalog/metadata.ts";
@@ -163,20 +164,33 @@ test("GraphQL transport removes upstream headers/extensions and propagates cance
   assert.equal(received.signal?.aborted, true);
 });
 
-test("public Web transport makes one Router attempt when the request fails", async () => {
+test("configured public Apollo link chain makes one Router attempt when the request fails", async () => {
   let attempts = 0;
-  const transport = boundedGraphqlFetch(() => {
+  const browser = Object.getOwnPropertyDescriptor(globalThis, "window");
+  Object.defineProperty(globalThis, "window", { configurable: true, value: {} });
+  const client = createPublicApolloClient(() => {
     attempts++;
     return Promise.resolve(new Response("unavailable", { status: 503 }));
   });
-  await assert.rejects(
-    transport("http://router.invalid/graphql", {
-      method: "POST",
-      body: JSON.stringify({ operationName: "Browse" }),
-    }),
-    /Catalog is temporarily unavailable/u,
-  );
-  assert.equal(attempts, 1);
+  try {
+    await assert.rejects(
+      client.query({
+        query: BROWSE,
+        variables: browseVariables({}),
+        fetchPolicy: "network-only",
+        context: { asterExplicitRequest: () => true },
+      }),
+      /Catalog is temporarily unavailable/u,
+    );
+    assert.equal(attempts, 1);
+  } finally {
+    client.stop();
+    if (browser) {
+      Object.defineProperty(globalThis, "window", browser);
+    } else {
+      Reflect.deleteProperty(globalThis, "window");
+    }
+  }
 });
 
 test("bad, excessive and failed GraphQL responses do not hydrate as successful data", async () => {

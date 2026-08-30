@@ -7,6 +7,54 @@ const routerImage =
 const nodeImage =
   "docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df";
 
+function containsYamlKey(source, expected) {
+  for (let index = 0; index < source.length; index++) {
+    const character = source[index];
+    if (character === "#") {
+      index = source.indexOf("\n", index);
+      if (index === -1) {
+        return false;
+      }
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      const quote = character;
+      let value = "";
+      let closed = false;
+      for (index++; index < source.length; index++) {
+        const quoted = source[index];
+        if (quoted === quote) {
+          if (quote === "'" && source[index + 1] === "'") {
+            value += "'";
+            index++;
+            continue;
+          }
+          closed = true;
+          break;
+        }
+        if (quote === '"' && quoted === "\\") {
+          value += source[index + 1] ?? "";
+          index++;
+        } else {
+          value += quoted;
+        }
+      }
+      if (closed && value === expected && /^\s*:/u.test(source.slice(index + 1))) {
+        return true;
+      }
+      continue;
+    }
+    if (
+      source.startsWith(expected, index) &&
+      (index === 0 || /[\s{,]/u.test(source[index - 1] ?? "")) &&
+      /^\s*:/u.test(source.slice(index + expected.length))
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function validateRouterRuntime(source) {
   const violations = [];
   for (const name of ["router", "router-trust-init"]) {
@@ -168,7 +216,7 @@ export function validateRouterSources(sources) {
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
     trafficShaping.length === 0 ||
-    /(?:^|\n)\s+retry:/u.test(trafficShaping) ||
+    containsYamlKey(trafficShaping, "retry") ||
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
   ) {

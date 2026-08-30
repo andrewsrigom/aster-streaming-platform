@@ -84,6 +84,16 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
       "    deduplicate_query: false\n",
       "    deduplicate_query: false\n    retry:\n      attempts: 2\n",
     ],
+    [
+      "infra/router/router.yaml",
+      "    playback:\n      timeout: 2700ms\n",
+      "    playback: { timeout: 2700ms, retry: { attempts: 2 } }\n",
+    ],
+    [
+      "infra/router/router.yaml",
+      "    engagement:\n      timeout: 2700ms\n",
+      '    engagement: { timeout: 2700ms, "retry": { attempts: 2 } }\n',
+    ],
     ["infra/router/router.yaml", "/playback/playback.key", "/catalog/catalog.key"],
     ["infra/router/router.yaml", "max_queue_size: 128", "max_queue_size: 12800"],
     ["infra/router/router.yaml", "named: cookie", "matching: .*"],
