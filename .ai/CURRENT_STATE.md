@@ -24,7 +24,7 @@ without a dependency. Final confirmation then found that Router configuration
 expansion could still materialize a retry key. A decoded expansion bypass then
 proved that the marker itself could be YAML-escaped. Exact source `aac04c7`, tree
 `c2a6c93`, rejects raw and decoded expansions inside traffic shaping; Router4/4,
-platform67/67 and the affected17/17 gate pass. P12-R01 is active on PR45.
+platform67/67 and the affected17/17 gate pass. P12-R01 then opened on PR45.
 First evidence head `eddbe17` passed source quality and the real integration
 step in run `33297164589`, but Local platform exposed an invalid base
 observability overlay and initial review found two async trace-continuity
@@ -39,11 +39,13 @@ found the actual media candidate omitted the exporter endpoint and real Catalog
 events lacked active producer context. Source `03abe8a`, tree `b1474c7`, wires
 the exact media path and adds a finite trace-only Catalog producer span without
 false broker telemetry. Telemetry18/18, Catalog247/247, event delivery23/23,
-media runner3/3 and affected gate73/73 with53 cached in53.307 seconds pass. New
-exact-head run `33300561121` and blocker-focused confirmation remain before
-verification. P12-R03/R04 backend golden signals are active as the sole
-unpublished dependent rebased on exact evidence head `9a058ee`. Full
-Phase00–14 goal stays active.
+media runner3/3 and affected gate73/73 with53 cached in53.307 seconds pass.
+Exact-head run `33300561121` passed every required job and the requested
+blocker-focused confirmation reported no major issue. PR45 squash-merged as
+main `ce66f9c58a64ef49b66d9b2749e9b4b1fef50ec0`; exact-main run `33301425220`
+passed every required job and releases P12-R01/R02/R08/R09. P12-R03/R04 backend
+golden signals are active locally on that exact main. Full Phase00–14 goal
+stays active.
 
 ## Verified
 
@@ -74,7 +76,7 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P12-R01 has a corrected candidate at source `03abe8a`, tree `b1474c7`. The
+P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
 event-producer spans, drives logger context, propagates child owner context,
 links async events, bounds the media coordinator and exports metrics/traces
@@ -83,24 +85,26 @@ through finite OTLP queues and deadlines. Evidence is indexed under
 its blocker-focused confirmation found the actual media endpoint and real
 Catalog producer gaps. Both are corrected without claiming broker I/O for
 durable outbox intent. The local candidate gate passes73/73 with53 cached in
-53.307 seconds. New protected CI and blocker-focused confirmation are pending;
-no hosted backend, dashboard, SLO or product contract is claimed by this slice.
+53.307 seconds. Protected run `33300561121`, clean confirmation, PR45 squash
+main `ce66f9c` and exact-main run `33301425220` complete its release. No hosted
+backend, dashboard, SLO or product contract is claimed by this slice.
 
 P12-R03/R04 backend metrics are active locally on
-`feat/p12-golden-product-signals`, rebased exactly on frozen head `9a058ee`. The
+`feat/p12-golden-product-signals`, rebased exactly on released main `ce66f9c`. The
 slice owns finite Node memory, PostgreSQL pool, event age/delivery and backend
 product-result signals. Existing HTTP/dependency golden signals, cache metrics,
 event-loop/V8 instrumentation and local browser QoE are reused. Browser remote
 collection remains explicitly deferred until its P12-R11 sampling, privacy,
 transport and retention policy; no ingestion service is implied.
 
-Rebased source `ce9ac1c`, tree `fb0717f`, preserves the corrected linked
-Discovery consumer while adding the finite metrics. Telemetry19/19,
-PostgreSQL30/30, event delivery23/23, combined product/consumer5/5 and the
-affected gate73/73 with63 cached in49.553 seconds pass. Evidence now records the
-signal catalog, backend outcome mappings and maximum authored series counts.
-The branch remains unpublished and cannot precede PR45; it must rebase onto the
-released exact main and repeat the affected gate before publication.
+Source `2270745`, tree `c98c1c1`, preserves the corrected linked Discovery
+consumer while adding the finite metrics. Local review corrected future and
+excessive event ages that were being clamped into false samples and assigned
+the explicit non-primary pool roles. Telemetry19/19, PostgreSQL30/30, event
+delivery24/24, combined product/consumer7/7 and the affected gate73/73 with52
+cached in52.554 seconds pass. Evidence records the signal catalog, backend
+outcome mappings and maximum authored series counts. The branch is ready for
+one publication, protected real-Collector CI and initial review.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

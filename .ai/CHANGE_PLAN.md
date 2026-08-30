@@ -20,20 +20,19 @@ telemetry ingestion service.
 
 ## Current behavior
 
-P12-R01/R02/R08/R09 evidence head `9a058ee` is frozen on PR45. Source
-`03abe8a`, tree `b1474c7`, wires the actual media exporter path and real Catalog
-event-producer context without false broker telemetry. Telemetry18/18,
-Catalog247/247, event delivery23/23, media runner3/3 and affected73/73 gates
-pass. Exact-head protected run `33300561121`, confirmation and merge are the
-sole predecessor conditions. This branch is the one allowed dependent, rebased
-on that exact head, and must not publish or merge first.
+P12-R01/R02/R08/R09 released through evidence head `9a058ee`, protected run
+`33300561121`, clean confirmation, PR45 squash main `ce66f9c` and successful
+exact-main run `33301425220`.
 
-Source `ce9ac1c`, tree `fb0717f`, now implements the contract below. Its
-telemetry19/19, PostgreSQL30/30, event delivery23/23, focused product/consumer5/5
-and affected73/73 gates pass; the final rebased gate reused 63 valid tasks and
-completed in49.553 seconds. Evidence and architecture documentation are
-current locally. Publication, protected real-Collector CI and review remain
-ordered after the predecessor's exact-main release.
+Source `2270745`, tree `c98c1c1`, now implements the contract below after a
+tree-identical rebase onto that exact main. Local review found that future and
+older-than-seven-day event times were clamped into false edge samples; the
+remediation retains the finite delivery outcome while omitting invalid age and
+assigns explicit operator/projection/consumer pool roles. Telemetry19/19,
+PostgreSQL30/30, event delivery24/24, focused product/consumer7/7 and
+affected73/73 gates pass; the final gate reused 52 valid tasks and completed in
+52.554 seconds. Evidence and architecture documentation are current locally.
+Publication, protected real-Collector CI and review remain.
 
 The shared telemetry package already exports HTTP request duration/active work,
 dependency duration/active/outcomes, CPU time/utilization, RSS, uptime, Node

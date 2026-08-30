@@ -65,13 +65,13 @@ evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
 squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 passed
 protected exact-head run33295744010 and clean confirmation, PR44 squash-merged
 as tree-identical main `834bf15`, and exact-main run33296443777 passed every
-required job. Phase11 is released. P12-R01 corrected evidence head `9a058ee` is
-frozen on PR45 under protected run `33300561121`; blocker-focused confirmation
-and merge follow. P12-R03/R04 backend golden signals are the sole unpublished
-dependent rebased on that exact head. Source `ce9ac1c`, tree `fb0717f`, passes
-its focused suites and the affected73/73 gate with63 cached in49.553 seconds;
-evidence is finalized locally before the required
-post-PR45 exact-main rebase.
+required job. Phase11 is released. P12-R01 evidence head `9a058ee` passed
+protected run `33300561121` and clean confirmation; PR45 squash main `ce66f9c`
+passed exact-main run `33301425220`. P12-R03/R04 backend golden signals are
+rebased on that exact main. Source `2270745`, tree `c98c1c1`, passes telemetry,
+pool, delivery and product suites plus the affected73/73 gate with52 cached in
+52.554 seconds. Local review corrected invalid event-age clamping before the
+branch's first publication.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

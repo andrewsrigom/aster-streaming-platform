@@ -166,6 +166,17 @@ Append new entries at the top. Keep entries factual and concise.
   delivery23/23 and combined backend product/consumer5/5. Added exact signal,
   backend-product and cardinality evidence without claiming browser field QoE,
   SLOs or capacity.
+- Protected run `33300561121` passed evidence head `9a058ee`; the requested
+  blocker-focused confirmation reported no major issue. PR45 squash-merged as
+  main `ce66f9c`, whose exact-main run `33301425220` passed every required job.
+- Rebased the dependent onto tree-identical exact main. Local review found that
+  future and older-than-seven-day event times were clamped into false edge
+  samples. Source `2270745`, tree `c98c1c1`, preserves delivery outcomes while
+  omitting invalid ages and tags operator, projection and consumer pools
+  explicitly.
+- Event delivery24/24 and focused product/consumer7/7 pass. The final affected
+  gate passes73/73 with52 cached in52.554 seconds; the dependent remains
+  unpublished pending its exact evidence checkpoint.
 
 ### Evidence
 

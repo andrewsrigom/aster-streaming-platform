@@ -1,6 +1,6 @@
 # P12-R04 backend product signals
 
-Status: implemented locally on source `ce9ac1c652627d7a98aba27654a617e12e855531`;
+Status: implemented locally on source `2270745b58966313adc52dbb48d70bbc75d41d64`;
 not yet verified or released.
 
 ## Implemented contract
@@ -31,13 +31,13 @@ transport and retention. Therefore this candidate makes no field-QoE claim.
 
 ## Verification
 
-- Playback and Engagement product wrappers plus Discovery consumer: 5/5 focused
+- Playback and Engagement product wrappers plus Discovery and Engagement consumers: 7/7 focused
   tests pass. Recorder exceptions preserve the original owner result.
 - Catalog's complete package suite passes 247/247 inside the affected gate,
   including media processing completion/unavailability metric expectations.
 - Telemetry's golden-signal contract test accepts only the finite product
   vocabulary, rejects non-finite duration and emits no identifier or URL label.
-- Complete affected gate: 73/73 tasks pass, 63 cached, in 49.553 seconds.
+- Complete affected gate: 73/73 tasks pass, 52 cached, in 52.554 seconds.
 
 ## Limits
 

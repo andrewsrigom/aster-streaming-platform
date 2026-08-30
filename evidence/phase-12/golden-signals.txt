@@ -5,16 +5,16 @@ verified or released.
 
 ## Exact candidate
 
-- Predecessor evidence head: `9a058eea1c0a5002aae91e4ec20142ac6430231e`
-- Source commit: `ce9ac1c652627d7a98aba27654a617e12e855531`
-- Source tree: `fb0717f14ffe9530d7e5872bbc67e971df9ff0ac`
+- Predecessor main: `ce66f9c58a64ef49b66d9b2749e9b4b1fef50ec0`
+- Source commit: `2270745b58966313adc52dbb48d70bbc75d41d64`
+- Source tree: `c98c1c17b4b27472d050f71a40ba233061b7a462`
 - Branch: `feat/p12-golden-product-signals`
 - Runtime: Node.js 24.19.0 and pnpm 11.24.0
 - Environment: WSL Ubuntu-20.04, process-local OpenTelemetry reader
 - Gate environment: `CI=true`, `NODE_OPTIONS=--max-old-space-size=1536`,
   `TURBO_CONCURRENCY=4`
 
-The branch was rebased onto the corrected P12-R01 evidence head. The overlapping
+The branch was rebased onto the released P12-R01 exact main. The overlapping
 Discovery consumer preserves its producer trace link and active observation
 while recording the new delivery metric.
 
@@ -30,8 +30,9 @@ while recording the new delivery metric.
 | Is media-worker work active? | existing `media_worker/process` dependency-active instrument around the isolated coordinator |
 
 The implementation does not invent a worker queue that the current one-at-a-time
-coordinator does not own. Event age is capped at seven days and product duration
-at 300 seconds. PostgreSQL snapshots are recorded at creation, acquisition/
+coordinator does not own. Future, invalid or older-than-seven-day event times
+retain their finite delivery outcome but emit no fabricated age; product
+duration is bounded at 300 seconds. PostgreSQL snapshots are recorded at creation, acquisition/
 release and close transitions; observation failure cannot change connection or
 transaction behavior.
 
@@ -42,12 +43,13 @@ transaction behavior.
   exporter coverage.
 - `pnpm --filter @aster/postgres test`: 30/30 pass, including finite pool
   snapshots, malformed vendor counters and telemetry failure isolation.
-- `pnpm --filter @aster/event-delivery test`: 23/23 pass, including finite relay
+- `pnpm --filter @aster/event-delivery test`: 24/24 pass, including finite relay
   and consumer roles and publication metrics.
-- Discovery linked-consumer tests: 3/3 pass; owner read, projection, checkpoint,
-  log and delivery metric execute in the active consumer scope.
-- `pnpm check:changed`: 73/73 tasks pass, 63 cached, in 49.553 seconds after the
-  required rebase onto the corrected predecessor.
+- Product and linked-consumer tests: 7/7 pass; owner read, projection,
+  checkpoint, log and delivery metric execute in the active consumer scope,
+  and future/excessive event time does not become an age sample.
+- `pnpm check:changed`: 73/73 tasks pass, 52 cached, in 52.554 seconds after the
+  required rebase onto released exact main and review remediation.
 - `git diff --check`: pass.
 
 The focused telemetry suite uses a real bounded loopback OTLP/HTTP receiver for

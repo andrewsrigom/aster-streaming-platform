@@ -215,7 +215,9 @@ RSS and uptime instruments. PostgreSQL records maximum, total, idle, reserved
 and waiting snapshots using only five pool roles and three lifecycle states.
 Event relays and consumers record finite outcome and validated age; existing
 dependency-active measurements represent broker and media-worker work without
-inventing an unowned queue.
+inventing an unowned queue. Future, invalid and older-than-seven-day event time
+is omitted rather than clamped into a false age sample; the finite delivery
+outcome is still retained.
 
 Playback session creation, progress acceptance, media processing and media
 publication map their existing finite results to product duration/outcome

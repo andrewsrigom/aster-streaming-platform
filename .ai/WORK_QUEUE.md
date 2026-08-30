@@ -149,7 +149,7 @@ Historical stashes are superseded.
 | 54 | Add operation-scoped circuit breakers to safe Catalog reads | P11-R05 | DONE |
 | 55 | Add a private bounded controlled failure-injection laboratory | P11-R08 | DONE |
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
-| 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | WAITING_EXTERNAL |
+| 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | DONE |
 | 58 | Export platform golden signals and backend product outcomes | P12-R03 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
@@ -160,14 +160,14 @@ and real Catalog events lacked active producer context. The exact media path now
 passes the endpoint, and Catalog uses a finite trace-only producer span without
 recording false broker dependency metrics. Telemetry18/18, Catalog247/247,
 event delivery23/23, media runner3/3 and affected gate73/73 with53 cached in
-53.307 seconds pass. Evidence head `9a058ee` is frozen on PR45 under protected
-run `33300561121`; blocker-focused confirmation and merge remain. Item58 is the
-sole dependent local work, rebased on that exact head. Its implementation
-previously passed telemetry19/19, PostgreSQL30/30, event delivery23/23, focused
-product/consumer5/5 and affected73/73. Exact source `ce9ac1c`, tree `fb0717f`,
-passes the repeated gate with63 cached in49.553 seconds. Signal,
-product-outcome and cardinality evidence are present; it cannot publish, merge
-or release before item57.
+53.307 seconds pass. Evidence head `9a058ee` passed protected run `33300561121`
+and clean confirmation; PR45 squash main `ce66f9c` passed exact-main run
+`33301425220`, so item57 is released. Item58 is rebased on that exact main.
+Source `2270745`, tree `c98c1c1`, corrects invalid event-age clamping and records
+explicit pool roles. Telemetry19/19, PostgreSQL30/30, event delivery24/24,
+focused product/consumer7/7 and affected73/73 pass, with52 cached in52.554
+seconds. Signal, product-outcome and cardinality evidence are ready for one
+publication, protected CI and review.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

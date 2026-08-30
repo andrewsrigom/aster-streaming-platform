@@ -1,8 +1,8 @@
 # P12-R03/R04 metric cardinality and privacy budget
 
 Status: contract and regression tests pass locally at source
-`ce9ac1c652627d7a98aba27654a617e12e855531`, tree
-`fb0717f14ffe9530d7e5872bbc67e971df9ff0ac`.
+`2270745b58966313adc52dbb48d70bbc75d41d64`, tree
+`c98c1c17b4b27472d050f71a40ba233061b7a462`.
 
 ## Finite series budget
 
@@ -29,7 +29,8 @@ and `consume`. Numeric pool values do not become labels.
   observations are rejected without invoking getters;
 - pool counts must be safe integers within maximum 1–128, and idle cannot exceed
   total;
-- event age must be finite, non-negative and no more than seven days;
+- event age must be finite, non-negative and no more than seven days; producers
+  and consumers omit future or excessive age without losing the finite outcome;
 - product duration must be finite, non-negative and no more than 300 seconds;
 - an invalid observation increments only the finite `invalid_dimension` drop
   reason and cannot alter product work.
@@ -52,5 +53,5 @@ belongs in bounded logs and sampled traces, not metrics.
 
 - `@aster/telemetry`: 19/19 tests pass.
 - `@aster/postgres`: 30/30 tests pass.
-- `@aster/event-delivery`: 23/23 tests pass.
-- affected repository gate: 73/73 tasks pass, 63 cached, in 49.553 seconds.
+- `@aster/event-delivery`: 24/24 tests pass.
+- affected repository gate: 73/73 tasks pass, 52 cached, in 52.554 seconds.

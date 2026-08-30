@@ -2,7 +2,7 @@
 
 ## Resume point
 
-P12-R01 is frozen on PR45 from `feat/p12-trace-observability`. Corrected source
+P12-R01 is released from `feat/p12-trace-observability`. Corrected source
 `03abe8ac6d30c34902442367da241e0c295ff122`, tree
 `b1474c7396d3e65b53c29a87b35e32d793ad5ede`, implements the trace/export slice.
 Protected run `33298943743` passed previous exact head `e5f93e1`; blocker-focused
@@ -10,17 +10,20 @@ confirmation discussions `3888781189` and `3888781191` found the actual media
 endpoint and real Catalog producer gaps. Both are corrected with a bounded exact
 media path and trace-only event-producer boundary. Telemetry18/18,
 Catalog247/247, event delivery23/23, media runner3/3 and affected gate73/73 with
-53 cached in53.307 seconds pass. The old named P12 stashes are historical and
-must not be restored over this branch.
+53 cached in53.307 seconds pass. Evidence head `9a058ee` passed protected run
+`33300561121` and clean confirmation; PR45 squash main `ce66f9c` passed
+exact-main run `33301425220`. The old named P12 stashes are historical and must
+not be restored.
 
 P12-R03/R04 backend golden signals are active locally on the sole permitted
-dependent `feat/p12-golden-product-signals`, rebased on exact `9a058ee`. Its
+branch `feat/p12-golden-product-signals`, rebased on exact main `ce66f9c`. Its
 change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
-product-result metrics without browser remote collection. Source `ce9ac1c`,
-tree `fb0717f`, passes telemetry19/19, PostgreSQL30/30, event delivery23/23,
-focused product/consumer5/5 and the affected gate73/73 with63 cached in49.553
-seconds. Evidence and architecture documentation are updated but not committed
-or published yet.
+product-result metrics without browser remote collection. Source `2270745`,
+tree `c98c1c1`, also omits invalid event ages instead of clamping false samples
+and tags non-primary pools explicitly. It passes telemetry19/19,
+PostgreSQL30/30, event delivery24/24, focused product/consumer7/7 and the
+affected gate73/73 with52 cached in52.554 seconds. Evidence and architecture
+documentation are updated locally; the branch is not published yet.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -53,21 +56,18 @@ Phase11.
 
 ## Exact next actions
 
-1. Wait for PR45 protected run `33300561121`, then request one blocker-focused
-   confirmation review; treat only defined blockers.
-2. Squash-merge PR45 without bypass and prove exact main.
-3. Commit the dependent evidence checkpoint locally; after PR45 exact main,
-   rebase onto it, repeat the affected gate, then publish P12-R03/R04 backend
-   golden signals.
+1. Commit the exact dependent evidence checkpoint and publish P12-R03/R04 once.
+2. Await protected real-Collector CI and one initial blocker-focused review;
+   batch only defined remediation.
+3. Complete its confirmation, squash merge and exact-main verification.
 4. Complete the Phase12 browser policy, SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 
-P12-R01 is frozen on PR45 and already based on released Phase11 main. It owns
+P12-R01 is released on main. It owns
 repository trace context, structured-log
 correlation, privacy/cardinality and bounded exporter failure under the current
 OpenTelemetry ADR. Evidence is indexed under `evidence/phase-12/`. Rebase it
-only if main changes again; current status is implemented, not verified or
-released.
+only if its source boundary changes; current status is released.
 
 ## Evidence boundaries
 
@@ -93,6 +93,6 @@ running. Do not restart WSL/Docker or repeat host CPU/memory diagnostics.
 
 ## Do not do yet
 
-Do not publish the dependent branch, add chaos to product routes, invent SLOs,
+Do not add chaos to product routes, invent SLOs,
 repeat the full transcode/demo without an invalidating change, create hosted
 resources or broaden Phase11 into Phase12 observability/Phase14 load testing.
