@@ -1,143 +1,135 @@
-# Work Item: Operation-scoped Catalog circuit breakers
+# Work Item: Private controlled failure-injection laboratory
 
 - Status: IN_PROGRESS
-- Owner: Platform owns the state machine; Playback and Discovery own policy instances and outcomes
+- Owner: Platform owns the laboratory; bounded-context owners retain product failure policy
 - Phase: 11
-- Requirement IDs: P11-R05, P11-R07, P11-R11
-- Created: 2026-08-29
-- Updated: 2026-08-29
+- Requirement IDs: P11-R08, P11-R09
+- Created: 2026-08-30
+- Updated: 2026-08-30
 
 ## Outcome
 
-Playback publication reads and Discovery snapshot/export reads stop repeatedly
-calling an unhealthy Catalog operation after a measured local failure threshold.
-Each dependency/operation class owns an independent closed/open/half-open state,
-permits one recovery probe, emits bounded telemetry and preserves the existing
-rights-safe failure or optional stale-projection behavior.
+Aster has deterministic, bounded development tooling that injects latency,
+timeout, connection reset, selected HTTP error, malformed response, partial
+stream, duplicate event and saturation without adding a production route or
+letting request data select a fault. Every injected outcome is visibly tagged,
+and the laboratory refuses production activation or non-loopback HTTP binding.
 
 ## Current behavior
 
-P11-R01 is released as `ebdcb18` after exact-head review, protected CI and
-successful exact-main run `33285339274`. The fixed owner reads already have parent-bounded deadlines,
-one selected-transient retry and finite concurrency. Repeated failures still
-reach Catalog on every admitted logical call; the registry correctly labels
-their breakers as planned.
+P11-R05 passed its exact-head confirmation and protected CI, then PR42
+squash-merged as main `59600aea669d34ec727c1f243d162608261295aa` with the
+reviewed tree. Exact-main run `33290477608` passed every required job and
+released P11-R05.
+Existing focused tests create ad hoc loopback failures, and prior phases prove
+specific Redis, broker, duplicate-event, saturation and worker failures. There
+is no reusable controlled adapter, common tag or structural guard preventing a
+future failure selector from entering production request composition.
 
 ## Proposed behavior
 
-Add a framework-free runtime circuit breaker using a bounded 30-second rolling
-sample window, minimum throughput four, failure-rate threshold 50%, five-second
-open interval and one half-open probe. A generation fence prevents completions
-from calls admitted before an open transition from mutating the newer state.
-Monotonic time and observation are injected and hostile policy/time/observer
-behavior remains finite.
-
-Create distinct long-lived instances for Playback publication, Discovery
-snapshot and Discovery export. One logical safe-read result contributes one
-breaker result: validated owner completion is success, owner unavailable or
-invalid response is failure, and caller cancellation is ignored. Local input or
-bulkhead rejection occurs before breaker accounting. Open or occupied half-open
-state makes no network attempt.
-
-Record finite breaker state/event metrics. Playback remains fail closed and
-never creates a session without current Catalog authority. Discovery does not
-fabricate owner data; its already-validated active projection remains the only
-optional stale source.
+Add a tools-only TypeScript laboratory with two concrete adapters. A private
+HTTP adapter binds only `127.0.0.1`, accepts one immutable scenario at
+construction and injects bounded wire behavior. A duplicate-delivery adapter
+delivers the same synthetic event exactly twice through an explicitly supplied
+test handler. Both accept only `local` or `integration` environments, expose a
+fixed visible injection tag and finite observations, and reject invalid bounds
+before starting. No service, worker, router or web application imports the tool.
 
 ## Boundaries
 
-- Owning context: Catalog owns publication/snapshot truth; consumers own their local protection policy.
-- Affected services/packages: `packages/runtime`, `packages/telemetry`, Playback and Discovery Catalog clients.
-- Authoritative data: unchanged Catalog publications and snapshots.
-- Read models/caches: existing Discovery projection only; no new cache or copied authority.
-- Trust boundaries: fixed private HTTP responses, cancellation, injected monotonic time and finite telemetry dimensions.
-- External dependencies: existing Node HTTP and OpenTelemetry packages only.
+- Owning context: Platform owns experiment mechanics; each bounded context owns interpretation and fallback.
+- Affected services/packages: repository `tools/` and its policy tests only.
+- Authoritative data: none; adapters use synthetic payloads and never write owner stores.
+- Read models/caches: none.
+- Trust boundaries: construction-time scenario configuration, loopback sockets, synthetic event handler and bounded observer callback.
+- External dependencies: existing Node.js HTTP and test APIs only; no new package, image or hosted resource.
 
 ## Invariants
 
-- Breakers are scoped by dependency and operation class, never global.
-- Breaker admission remains inside the existing logical-operation bulkhead and outside retry attempts.
-- A retry contributes one logical breaker outcome, not one failure per attempt.
-- Open Playback behavior never allows playback, authorization or rights fallback.
-- Discovery can retain only an already-valid projection; breaker rejection creates no data.
-- Exactly one half-open probe runs; other callers reject without a queue.
-- Late completions from an older generation cannot close or reopen newer state.
-- Metric attributes come only from fixed vocabularies and contain no IDs, URLs, queries or credentials.
+- Production activation fails before a listener or delivery is created.
+- HTTP always binds to IPv4 loopback and exposes no fault-selection endpoint.
+- Method, path, query, headers and body cannot change the construction-time mode.
+- Delay, hold time, activation count, response status and body bytes are finite.
+- Timeout and saturation holds have a laboratory-side terminal deadline.
+- Reset and partial-stream scenarios close their exact socket; cleanup closes all retained sockets and timers.
+- Duplicate delivery is exactly two bounded sequential calls with the same payload reference.
+- Observations contain only the fixed injection tag, scenario label, mode, event and finite counters.
+- Observer failure cannot change the injected transport or delivery outcome.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Fewer than four measured calls | Remain closed | finite success/failure events |
-| At least 50% failures in four or more 30-second samples | Transition closed to open | `opened` in `open` state |
-| Call during five-second open interval | Reject without HTTP | `rejected_open` |
-| First call after open interval | Transition to half-open and run one probe | `half_opened` |
-| Concurrent half-open call | Reject without queue or HTTP | `rejected_half_open` |
-| Probe succeeds | Reset samples and close | `closed` |
-| Probe fails or is inconclusive | Reopen for a fresh interval | `reopened` |
-| Caller cancellation | Return cancelled and do not poison closed samples | `ignored` when admitted |
-| Clock/observer/action defect | Remain finite; observer cannot affect product result | bounded failure/rejection |
+| Invalid environment, label or bound | Refuse construction synchronously | typed validation issue |
+| Attempted request-selected mode | Ignore request control and execute fixed scenario | fixed mode/tag observation |
+| Latency | Delay then emit the configured bounded response | started/completed duration |
+| Timeout | Hold until client cancellation or finite lab deadline | cancelled/deadline event |
+| Reset | Destroy the accepted socket without a response | reset event |
+| Selected error | Return an allowlisted status and bounded body | tagged response/error event |
+| Malformed or partial response | Emit fixed invalid bytes or close after prefix | malformed/partial event |
+| Saturation overflow | Hold the finite active set and reject excess immediately | active/rejected counters |
+| Duplicate handler failure | Stop after the failing delivery and expose its index | delivery_failed event |
+| Observer throws | Ignore observer failure and preserve the scenario | product-independent result |
 
 ## Data and contracts
 
 - Schema/migration: none.
-- GraphQL: public and private documents unchanged.
-- Events: none.
-- Cache: none; existing Discovery stale validation is unchanged.
-- Compatibility: additive runtime and telemetry APIs; owner client return unions unchanged.
-- Retention/deletion: bounded in-memory samples only; no durable state.
+- GraphQL: none; the lab can sit behind existing private clients in later experiments.
+- Events: synthetic generic payload only; no broker envelope or owner contract changes.
+- Cache: none.
+- Compatibility: additive repository test tooling; production artifacts and public contracts remain byte-identical.
+- Retention/deletion: in-memory sockets, timers and bounded observations are disposed at laboratory close.
 
 ## Security and privacy
 
-- Authorization: Catalog remains authoritative; breaker rejection never allows access.
-- Input limits: existing identifiers, response bytes, concurrency and deadlines remain.
-- Sensitive data: telemetry has fixed dependency/operation/state/event values only.
-- Abuse cases: open-state callers cannot create a queue or recovery-probe herd.
+- Authorization: no public or private product request route is added.
+- Input limits: fixed label vocabulary shape, body bytes, timing, activations, status allowlist and active capacity.
+- Sensitive data: synthetic payloads only; observations exclude request headers, bodies, URLs, IDs and credentials.
+- Abuse cases: production environment, public bind, request-selected fault, unbounded hang, unbounded queue and observer failure are rejected or contained.
 
 ## Implementation steps
 
-1. Record the state-machine policy in ADR-0041 and update the dependency registry.
-2. Implement and adversely test the bounded runtime breaker.
-3. Add finite circuit-breaker telemetry and contract tests.
-4. Integrate independent Playback publication and Discovery snapshot/export instances.
-5. Prove open rejection, one half-open probe, recovery, operation isolation and unchanged authority behavior.
-6. Run focused and affected gates, capture evidence, review once and publish the coherent candidate.
+1. Implement the private loopback HTTP and duplicate-delivery adapters with typed bounded configuration.
+2. Test every required mode, fixed scenario selection, production refusal, visible tags, cancellation and cleanup.
+3. Add the focused laboratory test to the normal source gate without adding a heavyweight per-commit job.
+4. Document the trust boundary and create exact candidate evidence.
+5. Run focused and affected gates, review once and publish one coherent candidate.
 
 ## Tests
 
-- Domain: rolling-window threshold/pruning and closed/open/half-open transitions.
-- Application: success/failure/ignored accounting, generation fencing and one probe.
-- Integration: real loopback HTTP opens, rejects without a request, recovers and keeps operation scopes independent.
-- Contract: finite telemetry validation/collection and registry values.
-- Browser: not affected; protected Docker gate remains the composition check.
-- Performance/failure: deterministic burst proves failure amplification stops after the threshold.
+- Domain: configuration bounds, finite mode/status/event vocabularies and immutable selection.
+- Application: exactly-two duplicate delivery, ordered observations and handler/observer failures.
+- Integration: real loopback latency, timeout cancellation, reset, error, malformed bytes, partial stream, saturation overflow and cleanup.
+- Contract: production refusal, loopback-only address and fixed visible response/observation tags.
+- Browser: not affected; no route or browser code changes.
+- Performance/failure: coordinated saturation uses barriers rather than timing races and proves bounded active/rejected counts.
 
 ## Evidence
 
-- Commands: runtime/telemetry/client focused builds and tests, then `pnpm check:changed`.
-- Raw artifact path: `evidence/phase-11/circuit-breakers.txt` and updated Phase 11 index.
-- Acceptance result: exact source, measured calls/transitions and collected metric series.
-- Iteration gate: affected package build/tests plus TypeScript, lint and formatting on changed files.
+- Commands: focused Node test, root typecheck/lint/format, then `pnpm check:changed`.
+- Raw artifact path: `evidence/phase-11/failure-injection.txt` and updated Phase 11 index.
+- Acceptance result: exact source, scenario matrix, observed wire/delivery outcomes and structural production isolation.
+- Iteration gate: the new focused test plus TypeScript, ESLint and formatting on changed files.
 - Candidate gate: complete affected-scope gate and repository-memory validators.
-- Heavyweight repeat triggers: wire/admission changes repeat loopback tests; service composition changes are covered by protected Docker CI; no local media or load experiment without affected behavior.
-- Review stopping rule: one complete review and one confirmation; only requirement, authority, availability, security, data or public-contract blockers extend it.
+- Heavyweight repeat triggers: production composition or service imports require protected Docker proof; broker, database, Redis or worker mechanics defer to the game-day item and are not repeated for a tools-only change.
+- Review stopping rule: one complete review and one confirmation; only requirement, injection-isolation, security, availability, data or public-contract blockers extend it.
 
 ## Rollback or recovery
 
-Remove the three local breaker instances and retain safe-read deadlines/retries.
-No schema, durable data, credential, cache, event, media or infrastructure reset
-is needed. A process restart also resets only the bounded in-memory samples.
+Remove the tools-only module, its test and root test-script registration. No
+service restart, schema rollback, durable data cleanup, cache flush, broker
+offset change, media cleanup or credential rotation is required.
 
 ## Documentation updates
 
-- ADR-0041, dependency registry, resilience architecture and failure modes.
-- Playback/Discovery service notes, Phase 11 evidence and repository memory.
+- Phase 11 evidence index, resilience architecture, environment policy, feature catalog and repository memory.
 
 ## Completion checklist
 
 - [x] Requirements satisfied in the local candidate
-- [x] Tests pass for the local candidate
+- [x] Focused and affected tests pass
 - [x] Candidate evidence captured
-- [x] Documentation current for the local candidate
+- [x] Documentation current for the candidate
 - [x] `.ai/` state updated at the candidate checkpoint
-- [x] Remaining risks recorded; review, protected CI and release remain
+- [x] Remaining review, protected CI and release risks recorded

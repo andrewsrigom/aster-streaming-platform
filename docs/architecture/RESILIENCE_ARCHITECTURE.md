@@ -143,16 +143,21 @@ Queue capacity is finite. Overflow produces a controlled error or fallback.
 
 ## Failure injection
 
-Phase 11 adds controlled injection at adapters:
+The Phase 11 laboratory implements construction-time HTTP latency, timeout,
+connection reset, selected status, malformed response, partial stream and
+saturation plus exactly-two synthetic event delivery. It is repository tooling,
+not a service adapter in a production composition:
 
-- fixed and variable latency;
-- timeouts;
-- connection reset;
-- selected status or error;
-- malformed response;
-- partial stream;
-- resource saturation;
-- Redis miss/error;
-- event duplicate and reorder.
+- HTTP binds only `127.0.0.1` and accepts no bind address or public route;
+- only `local` and `integration` are accepted; `production` fails before start;
+- one scenario is copied and fixed at construction, so path, query, headers and
+  body cannot select or change a fault;
+- activation, active work, response bytes, delay and terminal hold are bounded;
+- responses that can carry headers and all observations use the explicit
+  `aster.failure_injection` tag, scenario and finite mode/event vocabularies;
+- a source-tree contract prevents apps, services, workers and packages from
+  importing the tools-only laboratory.
 
-Injection is disabled by default, unavailable in production public paths, and clearly visible in telemetry.
+This laboratory supplies deterministic mechanics for later game days. Redis
+miss/error, event reorder and dependency recovery are still injected through
+their owner-specific game-day harnesses; no production dynamic control exists.

@@ -1,6 +1,7 @@
 # P11-R05 operation-scoped circuit breakers
 
-Status: verified local candidate; review, protected CI and release pending.
+Status: released through exact-head review, protected CI, tree-identical squash
+merge and exact-main CI.
 
 ## Exact candidate
 
@@ -9,6 +10,8 @@ Status: verified local candidate; review, protected CI and release pending.
 - Initial evidence/review head: `f2a0faf5b95d01e389d0a1936c55f0d6bd3e23f5`
 - Corrected source commit: `92452d1ec64d20e87b5a15d678f525fffba67fe6`
 - Corrected source tree: `804c9cd007619553a2c4dc8cf9042a5b18e86b4a`
+- Reviewed evidence head: `dfaf47d55f23e3e0ba04265592af80eb4379b506`
+- Reviewed evidence tree: `d1ed21c23fc17638cb7909e96c5e5a43bcc8cbaf`
 - Branch: `feat/p11-circuit-breakers`
 - Runtime: Node.js 24.19.0 and pnpm 11.24.0
 - Gate environment: `CI=true`, `NODE_OPTIONS=--max-old-space-size=1536`,
@@ -47,6 +50,13 @@ publication or snapshot inside the breaker-accounted action. Owner absence
 remains success; invalid owner data is one logical failure. The corrected
 focused and affected gates above pass without changing retry count or fallback.
 
+Confirmation at exact head `dfaf47d` found no major issue and all review threads
+were resolved. Protected run `33289750207` passed source quality, local platform,
+the Docker-only playable demo, documentation/security and required aggregation.
+PR42 squash-merged without bypass as main
+`59600aea669d34ec727c1f243d162608261295aa`; its tree exactly equals the reviewed
+tree. Exact-main run `33290477608` passed every required job.
+
 ## Deterministic behavior
 
 - Policy: 30-second rolling window, maximum 64 logical outcomes, minimum four
@@ -76,6 +86,5 @@ focused and affected gates above pass without changing retry count or fallback.
 The candidate stops repeated pressure on an unhealthy Catalog operation while
 preserving authority: Playback remains fail closed and Discovery creates no
 owner data. Breaker state is deliberately process-local and resets on restart.
-Threshold calibration, controlled game days, public failure injection and
-operational runbooks remain later Phase 11 work. Hosted CI, review and merge are
-not claimed by this artifact.
+Threshold calibration, controlled game days and operational runbooks remain
+later Phase 11 work. No public failure-injection path exists.

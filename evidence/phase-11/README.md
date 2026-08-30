@@ -3,8 +3,9 @@
 Status: P11-R01 is [released](safe-read-release.txt) through reviewed evidence
 head `6d709b4`, protected run `33284610557`, squash main `ebdcb18` and successful
 exact-main run `33285339274`. Phase 11 as a whole remains in progress. P11-R05
-is corrected and verified locally at source `92452d1`; confirmation review,
-protected exact-head CI and release remain pending.
+passed confirmation and protected run `33289750207`, then PR42 squash-merged as
+main `59600ae` with the reviewed tree; exact-main run `33290477608` passed every
+required job. P11-R08/R09 is implemented locally on that exact base.
 
 ## Current work item
 
@@ -20,7 +21,9 @@ work item, and only for their fixed, read-only Catalog operations.
   tree-identical squash merge and exact-main proof.
 - [Circuit breakers](circuit-breakers.txt): exact local candidate, focused and
   affected gates, deterministic transition/call suppression and current limits.
+- [Failure injection](failure-injection.txt): private scenario matrix,
+  production-isolation contract and focused/candidate gates.
 
-Breaker metrics are verified in the local P11-R05 candidate but are not yet
-released. Saturation reports, controlled game-day timelines and updated
-operational runbooks remain planned later Phase 11 work.
+Breaker metrics and behavior are released. The tools-only failure laboratory is
+implemented and its affected candidate passes. Dependency game-day timelines
+and updated operational runbooks remain planned later Phase 11 work.

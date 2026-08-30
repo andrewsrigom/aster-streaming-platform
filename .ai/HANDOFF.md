@@ -2,53 +2,34 @@
 
 ## Resume point
 
-Phases 00–10 are released. P11-R01 passed exact-head review and protected CI,
-then PR41 squash-merged as main `ebdcb18b344b3f8313575b7cd158f99a77a4026b`.
-Exact-main run `33285339274` passed every required job; P11-R01 is released.
+Phases 00–10 and P11-R01 are released. P11-R05 passed confirmation and protected
+CI at reviewed head `dfaf47d55f23e3e0ba04265592af80eb4379b506`, then PR42
+squash-merged without bypass as main
+`59600aea669d34ec727c1f243d162608261295aa`. The merge tree is exactly the
+reviewed tree `d1ed21c23fc17638cb7909e96c5e5a43bcc8cbaf`. Exact-main run
+`33290477608` passed every required job; P11-R05 is released.
 
-P11-R05 is active on `feat/p11-circuit-breakers`, based exactly on that merge.
-Initial PR42 review at `f2a0faf` found two P1 domain-accounting blockers.
-Corrected source `92452d1ec64d20e87b5a15d678f525fffba67fe6` has tree
-`804c9cd007619553a2c4dc8cf9042a5b18e86b4a`; candidate evidence and current
-repository-memory changes form the pending evidence checkpoint.
-
-Implemented locally:
-
-- `@aster/runtime` owns a 64-sample bounded rolling circuit breaker with
-  closed/open/half-open states, monotonic time, one probe and generation fencing.
-- The fixed policy is 30-second window, four minimum samples, 50% failures and
-  five-second open interval.
-- Playback publication, Discovery snapshot and Discovery export have independent
-  process-local instances outside retries and inside existing bulkheads.
-- One complete safe read records one success/failure/ignored outcome. Local
-  validation/capacity does not poison samples.
-- Open/probe contention makes no Catalog HTTP call. Playback never allows a
-  session; Discovery creates no snapshot or fallback authority.
-- OpenTelemetry records fixed dependency/operation/state/event dimensions only.
-- ADR-0041, the dependency registry, resilience/failure docs and service guides
-  describe implemented behavior and remaining limits.
-
-Focused gates pass: runtime98/98, telemetry13/13, Playback41/41 and
-Discovery109/109. Loopback tests prove open suppression, one half-open recovery
-probe, snapshot/export isolation and invalid publication/snapshot failure
-accounting. The corrected complete affected gate passes 53/53 with 39 cached in
-52.928 seconds. Evidence is recorded in
-`evidence/phase-11/circuit-breakers.txt`.
+P11-R08 is active on `feat/p11-failure-injection`, based exactly on that main
+merge. Tools-only loopback HTTP fault injection and synthetic duplicate delivery
+are implemented. Focused tests pass10/10. The corrected affected gate passes
+11/11 tasks in2m14.356s after the first gate rejected unused public exports.
 
 ## Exact next actions
 
-1. Commit the remediation evidence checkpoint and push PR42 once.
-2. Reply to and resolve both initial P1 threads, then request the single
-   confirmation review at the corrected exact head.
-3. Require protected exact-head CI, squash merge without bypass, verify the
-   exact-main run and then activate the next Phase 11 work item.
+1. Commit the P11-R08 implementation, then record the exact source hash and
+   candidate evidence in one documentation checkpoint.
+2. Push once, open one PR and collect one complete review.
+3. Batch only blocking remediation, request one confirmation and require
+   protected exact-head CI.
+4. Squash merge without bypass, verify exact-main CI, then activate the Phase11
+   game-day/runbook closeout item.
 
 ## Evidence boundaries
 
-The changed wire/admission behavior is covered by ephemeral real Node HTTP
-servers. No PostgreSQL, Redis, broker, media, browser or schema behavior changed.
-Protected CI remains the Docker composition check. Repeat a heavyweight local
-fixture only if later remediation crosses its boundary.
+P11-R05 wire/admission behavior is already covered by real ephemeral Node HTTP
+and protected Docker CI. P11-R08 is tools-only and requires real loopback socket
+tests, not retained Docker, PostgreSQL, Redis, broker, media or browser reruns.
+Those dependency mechanics belong to the following game-day work item.
 
 ## Execution environment
 
@@ -57,12 +38,12 @@ Use native WSL Git and pinned Node24.19.0/pnpm11.24.0 from
 `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4` for the
 candidate gate. Never use a `codex/` branch.
 
-The local Docker daemon remains unavailable and is unnecessary for this slice.
-Do not restart WSL/Docker or repeat host CPU/memory diagnostics.
+The local Docker daemon is unnecessary for this item. Do not restart WSL/Docker
+or repeat host CPU/memory diagnostics.
 
 ## Do not do yet
 
-Do not add public failure injection, game-day tuning, generic mutation retries,
-authorization/rights fallback, Router/Apollo Client retries or Phase13 GraphQL
-calibration inside P11-R05. Other dependency breaker classes need their own
-failure and fallback proof.
+Do not add a product-facing injection endpoint, credentials, public listener,
+runtime fault selector, new infrastructure image or hosted resource. Do not
+claim game-day, fallback, broker/database/Redis/worker recovery or Phase11
+closeout from a tools-only candidate.

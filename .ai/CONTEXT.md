@@ -57,10 +57,11 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 Active phase: **Phase 11 — Resilience and Failure Laboratory**. Phase10 closed
 through PR40 exact `6d74873`, protected run33281516077, resolved exact-head
-review, squash main `eed8229` and exact-main run33282217705. P11-R01 is merged
-as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is active on
-`feat/p11-circuit-breakers`: ADR-0041, the bounded shared breaker, independent
-Playback/Discovery operation scopes and finite telemetry pass focused tests.
+review, squash main `eed8229` and exact-main run33282217705. P11-R01 is released
+as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is released as main
+`59600ae`; exact-main run33290477608 passed. P11-R08 is active on
+`feat/p11-failure-injection` with private loopback-only fault mechanics and
+structural production isolation implemented locally.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

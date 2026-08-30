@@ -162,7 +162,7 @@ Dynamic control needs audit, defaults, validation, and failure behavior.
 - synthetic data;
 - local credentials;
 - verbose diagnostics;
-- controlled failure injection;
+- controlled tools-only failure injection bound to IPv4 loopback;
 - open local observability;
 - no public accessibility.
 
@@ -171,6 +171,7 @@ Dynamic control needs audit, defaults, validation, and failure behavior.
 - automated tests;
 - ephemeral credentials;
 - synthetic data;
+- construction-time tools-only failure scenarios;
 - schema and contract validation;
 - limited retention.
 
@@ -192,6 +193,13 @@ Dynamic control needs audit, defaults, validation, and failure behavior.
 - managed secrets;
 - backup and retention policies;
 - audited changes.
+
+The implemented failure laboratory does not read an environment variable or
+request field and has no product route. Its constructor accepts only the exact
+`local` and `integration` values, and its HTTP listener has no configurable host.
+Production compositions are additionally guarded from importing the tools-only
+module. A future dynamic failure control would require a separate reviewed trust
+model; the current implementation must not be extended into one implicitly.
 
 ## Naming
 

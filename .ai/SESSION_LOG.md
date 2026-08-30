@@ -2,6 +2,41 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-30 — Circuit-breaker release and private failure laboratory
+
+### Completed
+
+- PR42 evidence head `dfaf47d` passed clean confirmation and protected run
+  `33289750207`, then squash-merged without bypass as main `59600ae` with the
+  reviewed tree. Exact-main run `33290477608` passed all required jobs and
+  releases P11-R05.
+- Activated P11-R08/R09 from that exact merge on
+  `feat/p11-failure-injection`.
+- Added a tools-only HTTP lab fixed at construction, bound only to IPv4 loopback
+  and restricted to local/integration. It injects finite latency, timeout,
+  reset, selected error, malformed response, partial stream and saturation.
+- Added exactly-two sequential synthetic event delivery with the same payload
+  reference, fixed visible tags and non-authoritative observations.
+- Added production refusal and a source-tree contract preventing apps,
+  services, workers and packages from importing the lab. No product route,
+  remote bind, request selector, environment switch or durable write exists.
+- Focused tests pass10/10. The first candidate gate rejected unnecessary public
+  exports; their removal preserved behavior. The corrected affected gate passes
+  11/11 tasks, two cached, in2m14.356s.
+
+### Evidence
+
+- `evidence/phase-11/circuit-breakers.txt` records exact review, protected CI,
+  merge-tree equality and exact-main release.
+- `evidence/phase-11/failure-injection.txt` records environment, finite bounds,
+  scenario matrix, production isolation, initial gate failure and corrected
+  gate.
+
+### Next action
+
+Commit the implementation and evidence checkpoint, publish one coherent PR and
+run the recorded review/protected-release cycle before Phase11 game days.
+
 ## 2026-08-29 — Operation admission release and resilience start
 
 ### Completed
@@ -2538,23 +2573,23 @@ Execute P00-R09 by documenting exact bootstrap, check, demonstration, and cleanu
 
 Execute P00-R08 by adding bounded `.ai/` consistency checks to the normal contribution workflow.
 
-## 2026-08-26 — Public contribution governance
+**Historical: 2026-08-26 — Public contribution governance**
 
-### Completed
+**Completed**
 
 - Added active Markdown templates for bug reports, bounded change proposals, and pull requests plus an issue chooser that disables blank contributor issues without inventing labels, assignees, or contact channels.
 - Defined requirement, ownership, failure, security, data, observability, evidence, recovery, documentation, coherent-scope, MIT contribution, and third-party provenance expectations.
 - Added a bounded dependency-free validator for the exact community file set, front matter, required topics, licensing, and safe disclosure; removed the duplicate internal pull-request draft.
 - Integrated community validation into the root Turbo graph and the dependency-free CI governance path, and scoped documentation front-matter support to GitHub issue templates.
 
-### Evidence
+**Evidence**
 
 - Passed 7 community tests, 9 documentation tests, 14 CI-policy and classifier tests, and the actual six-file public contribution scan with zero violation.
 - Passed checksum-verified actionlint `1.7.12`, frozen installation without manifest drift, the forced eighteen-task graph with 61 focused tests, and registry audit with no known vulnerability.
 - Measured the focused community path at `0.23` seconds and the full dependency-free governance path with 36 adverse tests at `0.71` seconds in the recorded environment.
 - Raw evidence: `evidence/phase-00/community-governance.txt`.
 
-### Next action
+**Next action**
 
 Confirm the configured GitHub identity and target absence, then create and audit the authorized public repository without claiming settings before they are observed.
 

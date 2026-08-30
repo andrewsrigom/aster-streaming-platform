@@ -37,9 +37,9 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | TTL jitter and stale serving | Platform | 10 | RELEASED |
 | Request coalescing and leases | Platform | 10 | RELEASED |
 | Rate and concurrency limiting | Platform | 10 | RELEASED |
-| Deadlines and bounded retries | Platform | 11 | IMPLEMENTED |
-| Circuit breakers and fallbacks | Platform | 11 | PLANNED |
-| Failure-injection controls | Platform | 11 | PLANNED |
+| Deadlines and bounded retries | Platform | 11 | RELEASED |
+| Circuit breakers and fallbacks | Platform | 11 | RELEASED |
+| Failure-injection controls | Platform | 11 | IMPLEMENTED |
 | Distributed traces | Platform | 12 | PLANNED |
 | SLI/SLO dashboards and alerts | Platform | 12 | PLANNED |
 | Trusted GraphQL operations | Platform | 13 | PLANNED |
@@ -51,7 +51,8 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
 
-Release status through Phase10 is summarized in [current state](../../.ai/CURRENT_STATE.md)
-and linked phase evidence. Phase11 resilience is active; only its first
-deadline/bounded-retry slice is implemented. Hosted identity and hosted release
-remain planned.
+Release status through Phase10 and P11-R01 is summarized in
+[current state](../../.ai/CURRENT_STATE.md) and linked phase evidence. Phase11
+resilience is active: its circuit breaker is released, and the private failure
+laboratory is implemented locally. Game days, runbook closeout, hosted identity
+and hosted release remain planned.
