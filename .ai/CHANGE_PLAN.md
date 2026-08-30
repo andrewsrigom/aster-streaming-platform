@@ -1,146 +1,137 @@
-# Work Item: Phase 11 failure game days and operational closeout
+# Work Item: Phase 12 trace, correlation, privacy and exporter boundary
 
 - Status: IN_PROGRESS
-- Owner: Platform coordinates evidence; each bounded context owns its failure behavior and recovery
-- Phase: 11
-- Requirement IDs: P11-R06, P11-R07, P11-R10, P11-R11, P11-R12
+- Owner: Platform telemetry; each service transport and dependency adapter owns its spans
+- Phase: 12
+- Requirement IDs: P12-R01, P12-R02, P12-R08, P12-R09
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-Phase 11 closes with current-source evidence that finite bulkheads, safe
-Discovery fallback, single-layer retry ownership and recovery behave as written
-under Discovery outage, Redis outage, broker delay/outage, database saturation
-and media-worker failure. Every scenario has a bounded timeline, user impact,
-detection, mitigation, recovery verification and exact runbook; no test-only
-control becomes a product route or production switch.
+A current request or event can be followed through every applicable Aster
+boundary using one repository-owned trace and structured-log contract. Names and
+attributes remain finite and privacy-safe, and an absent, slow or failed
+telemetry exporter never changes a product result, readiness or bounded
+shutdown.
 
 ## Current behavior
 
-P11-R01, P11-R05 and P11-R08/R09 are released. PR43 evidence head
-`371ba55eb7269520b72f41fd813a95aaeab819eb` passed its clean confirmation and
-protected run `33291705269`, then squash-merged as main `bdbe2e0`; the reviewed
-tree is unchanged and exact-main run `33292389504` passed every required job.
-Its initial startup/close race remains recorded with the correction and 11/11
-affected candidate gate.
+P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at evidence head `1d378fc`; all
+local implementation, evidence and affected gates pass. Phase 12 may advance as
+the one unpublished dependent, but it cannot publish, merge or release first.
 
-Existing current production behavior already has finite request, search,
-owner-read, event-consumer, database-pool and media-processing capacity. Earlier
-acceptance separately proves Web Discovery fallback, Redis degraded reads,
-broker outage/outbox recovery, database admission and media process-tree
-cancellation. Those facts are scattered across phases and were not yet executed
-or reconciled as the named Phase 11 game days with current-source applicability
-and complete operator procedures.
+`@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite
+dimensions, exporter health and timeout behavior. `@aster/runtime` owns
+structured Pino logs with redaction and optional validated active trace IDs.
+Router runtime evidence proves one authenticated trace ID reaches Identity and
+Catalog logs and the Collector. Owner HTTP servers and PostgreSQL, Redis,
+broker and object-storage adapters expose bounded metric observations. Event
+envelopes preserve a validated `traceparent`. There is no repository-owned
+tracing SDK/export contract that consistently creates parent/child spans across
+all current service, dependency, event and media boundaries.
 
 ## Proposed behavior
 
-Do not add production behavior unless a named experiment exposes a requirement
-gap. Consolidate the existing exact controls into five bounded game days. Use
-the current protected PR43 run once for real disposable Discovery, Redis,
-broker and owner-runtime evidence. Repeat only cheap current-source focused
-tests for database load shedding, retry amplification, fallback, duplicate
-delivery and media process cancellation. Carry forward a heavyweight browser or
-media artifact only after proving later source cannot affect its measured
-boundary. Record explicit non-applicability instead of inventing a dashboard,
-SLO or production capacity claim.
+Add the smallest complete tracing vertical slice behind repository-owned
+declarations: validated inbound/extracted and outbound/injected W3C context,
+finite server/application/dependency/consumer/worker span names and attributes,
+active context for correlated logs, bounded OTLP export, and explicit async
+event links rather than indefinitely open request spans. Integrate it through
+the shared HTTP and dependency adapter boundaries first, then current owner
+event and media execution boundaries. Preserve Router sanitization and do not
+add a hosted backend, dashboard, SLO or public trace identifier.
 
 ## Boundaries
 
-- Owning contexts: Discovery owns optional projections/fallback; Catalog, Identity and Engagement own durable writes/outboxes; Media owns worker execution; Platform owns shared policy and runbooks.
-- Affected services/packages: documentation/evidence plus focused existing runtime, Web, Catalog, Discovery, Engagement, event-delivery and media tests.
-- Authoritative data: PostgreSQL owner writes and rights/publication state remain unchanged.
-- Read models/caches: Discovery projection and bounded stale Redis data remain non-authoritative.
-- Trust boundaries: disposable Docker projects, synthetic fixtures, private failure lab, exact GitHub run logs and operator commands.
-- External dependencies: existing pinned PostgreSQL, Redis, Kafka-compatible broker, FFmpeg/media image and GitHub Actions only.
+- Owning context: Platform owns the telemetry contract; each bounded context owns operation outcome classification.
+- Affected services/packages: `@aster/telemetry`, `@aster/runtime`, shared HTTP, PostgreSQL, Redis, broker and object-storage adapters, owner compositions, event delivery and media worker.
+- Authoritative data: none; telemetry is diagnostic and never authoritative product state.
+- Read models/caches: none.
+- Trust boundaries: browser/Router headers, authenticated private subgraph transport, event envelopes, exporter endpoint and Collector output.
+- External dependencies: accepted OpenTelemetry-compatible SDK/exporter and existing local Collector only.
 
 ## Invariants
 
-- Optional failure never weakens identity, authorization, rights or publication checks.
-- No unsafe mutation gains an automatic retry; one operation class has one retry owner.
-- Request, database, consumer and worker admission remain finite; overflow has an explicit result.
-- Redis loss cannot corrupt or acknowledge durable state.
-- Broker delay retains the owner outbox and drains without duplicate durable effects.
-- Media failure publishes no partial output and releases or safely retains only run-owned scratch.
-- Every experiment has a terminal deadline, cleanup scope and recovery assertion.
-- Historical heavyweight evidence is reused only with an explicit unaffected-source proof.
-- Shared-host timings are laboratory observations, not field SLOs or capacity promises.
+- Domain and application layers import no OpenTelemetry SDK.
+- Public trace, baggage, operation names and arbitrary attributes are untrusted.
+- Metrics never label user, account, profile, title, request or trace IDs.
+- Logs and spans contain no credentials, cookies, personal data, raw GraphQL documents or signed media URLs.
+- Async events link to their producer context and do not keep request spans open.
+- Export work has finite capacity, deadline, cancellation and shutdown behavior.
+- Telemetry failure cannot alter product results, readiness or durable state.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Telemetry/evidence |
+| Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Discovery total outage | public Catalog browse/playback remain; home degrades explicitly; recovery restores search | Router/Web result, outage/recovery timeline |
-| Redis outage | owner-fenced reads and writes remain correct under bounded bypass/local shield | degraded readiness, source load and durable result |
-| Broker delay/outage | owner write/outbox continues; consumer lag grows then drains idempotently | outbox/offset/lag and duplicate-effect proof |
-| Database saturation | finite admission rejects overflow before unbounded owner work; unrelated capacity remains | admitted/rejected counts and recovery |
-| Media worker failure | process group is killed, failure audit retained, no public candidate appears, scratch cleanup is bounded | worker exit/failure/cleanup evidence |
-| Transient owner read across layers | exactly one service-owned retry; Web/Router do not amplify | invocation/attempt matrix |
-| Runbook or evidence mismatch | Phase remains open; correct the owner behavior or documentation | failed closeout validator/review |
+| Invalid inbound context | discard it and create a bounded local root after transport authentication | finite rejection reason, no hostile value |
+| Exporter absent, slow or failed | product work completes; export fails within its deadline and records bounded local health | export result/drop counters and sanitized log |
+| Span/attribute capacity exceeded | reject or truncate according to the fixed contract without allocating an unbounded queue | bounded drop reason |
+| Event has no valid trace context | consumer creates a local root correlated by finite event context | stable consumer outcome only |
+| Logger cannot obtain active context | write an otherwise valid uncorrelated entry | existing safe logger behavior |
 
 ## Data and contracts
 
-- Schema/migration: none planned.
-- GraphQL: existing explicit partial, fallback, unavailable and limit results remain unchanged.
-- Events: existing versioned envelopes, owner outboxes, idempotency and quarantine remain unchanged.
-- Cache: existing bounded stale/bypass behavior only; Redis is never promoted to authority.
-- Compatibility: documentation/evidence closeout; production contracts remain unchanged unless a demonstrated blocker requires a separate narrow correction.
-- Retention/deletion: every disposable project uses exact labels/project names and removes only its own containers, networks, volumes and temporary files.
+- Schema/migration: none.
+- GraphQL: no schema change; only authenticated internal W3C propagation remains.
+- Events: existing envelope stays compatible; valid `traceparent` becomes an async link input.
+- Cache: none.
+- Compatibility: existing metric and logger declarations remain source-compatible; tracing types are repository-owned additions.
+- Retention/deletion: no local retained trace backend in this slice; sampling/retention policy remains P12-R11.
 
 ## Security and privacy
 
-- Authorization: fail closed remains in owning services; fallback is public editorial data only.
-- Input limits: existing GraphQL, event, cache, process and failure-lab bounds remain active during experiments.
-- Sensitive data: evidence records finite event names/counts, not tokens, cookies, credentials, profile IDs, raw queries or signed URLs.
-- Abuse cases: public fault selection, unbounded retry, infinite queue, broad Docker cleanup, forged owner state and partial media publication remain prohibited.
+- Authorization: trace context never grants owner, viewer or operator authority.
+- Input limits: exact W3C format, finite header bytes, finite names/attributes/events/links and bounded exporter batching.
+- Sensitive data: stable enumerations only; automated canaries cover tokens, cookies, IDs, documents and signed URLs.
+- Abuse cases: forged parentage, baggage amplification, user-chosen span names, high-cardinality IDs, exporter backpressure and duplicate completion.
 
 ## Implementation steps
 
-1. Map every remaining Phase 11 requirement and required artifact to exact current code/tests/evidence.
-2. Collect the single current protected run's Discovery/Redis/broker events and verify cleanup.
-3. Run focused current-source database saturation, fallback/retry-amplification and media-failure checks.
-4. Write five game-day timelines, fallback/amplification/saturation reports and explicit carry-forward reasoning.
-5. Expand runbooks with trigger, impact, confirm, mitigate, diagnose, recover, verify, rollback, escalation and follow-up evidence.
-6. Run documentation/traceability and affected candidate gates, review once and close the phase only after protected release.
+1. Inventory every current boundary and freeze the finite span/attribute vocabulary with privacy tests.
+2. Add repository-owned trace/context/span declarations and a bounded OpenTelemetry adapter in `@aster/telemetry`.
+3. Compose active context with `@aster/runtime` logs and shared inbound HTTP/outbound dependency adapters.
+4. Link owner event consumption and bound media-worker spans without changing event or product contracts.
+5. Prove Router-to-owner trace continuity, async links, redaction/cardinality and exporter outage/recovery.
+6. Record exact evidence and update observability architecture and repository memory.
 
 ## Tests
 
-- Domain: safe fallback classification, retry safety and media failure classification already owned by focused suites.
-- Application: bulkhead overflow, duplicate event/idempotency, cancellation and outbox recovery.
-- Integration: current protected disposable PostgreSQL, Redis, broker and service runtimes plus exact cleanup.
-- Contract: Router/Web no-automatic-retry ownership and explicit GraphQL degraded/limit outcomes.
-- Browser: carry forward Discovery outage only if relevant Web/Router behavior is source-equivalent; otherwise repeat the one bounded scenario.
-- Performance/failure: database admission and worker process-group cancellation; no throughput/SLO claim.
+- Domain: none; telemetry remains outside domain policy.
+- Application: stable operation outcomes map to finite span status without SDK imports.
+- Integration: real Collector trace export plus stopped/paused exporter recovery and bounded shutdown.
+- Contract: W3C extraction/injection, async links, finite names/attributes and logger correlation.
+- Browser: one sampled navigation/request correlation only if browser source changes.
+- Performance/failure: bounded in-flight spans/export batches and exporter timeout; no capacity claim.
 
 ## Evidence
 
-- Commands: exact protected run log extraction, focused owner tests, repository documentation/AI checks, then `pnpm check:changed`.
-- Raw artifact path: `evidence/phase-11/game-days.md`, `bulkhead-saturation.txt`, `retry-amplification.txt`, existing Phase 11 artifacts and updated runbooks.
-- Acceptance result: five bounded timelines, explicit fallback examples, attempt matrix, cleanup and recovery facts at exact commits/runs.
-- Iteration gate: the cheapest focused current-owner test and documentation validator for each mapped scenario.
-- Candidate gate: complete affected-scope gate plus Phase 11 traceability, repository-memory and runbook links.
-- Heavyweight repeat triggers: runtime code affecting a named scenario repeats that exact disposable experiment; unchanged browser/media behavior may carry forward only with source-object proof; prose-only corrections repeat documentation/AI/format gates.
-- Review stopping rule: one complete review and one confirmation; only requirement, authority/security/data invariant, availability, recovery, evidence-integrity or public-contract blockers extend it.
+- Commands: focused telemetry/runtime/adapter suites, trace fixture, privacy/cardinality verifier and affected candidate gate.
+- Raw artifact path: `evidence/phase-12/trace-contract.txt`, `trace-continuity.txt`, `exporter-failure.txt` and `cardinality-review.txt`.
+- Acceptance result: every current boundary mapped; representative sync and async paths prove continuity; exporter failure remains isolated.
+- Iteration gate: focused changed-package tests, typecheck, lint and privacy contract.
+- Candidate gate: complete affected-scope gate plus one disposable Collector trace/failure fixture and documentation/AI checks.
+- Heavyweight repeat triggers: trace/export/runtime composition changes repeat only the affected Collector path; prose-only changes repeat documentation/AI/format checks.
+- Review stopping rule: one initial review and one confirmation; only requirement, privacy/security, boundedness, availability, evidence-integrity or public-contract blockers extend it.
 
 ## Rollback or recovery
 
-Documentation/evidence changes revert without product state. Any disposable
-experiment removes only its exact project resources. If an experiment exposes a
-product defect, keep Phase 11 open, record the failed run and implement the
-smallest owner correction with its affected gate before repeating only the
-invalidated scenario.
+Tracing is optional diagnostic infrastructure. Rollback disables the new
+tracer/export composition and retains current metrics/logging; it changes no
+database, event, object or product API. Disposable fixtures remove only their
+exact Collector project resources.
 
 ## Documentation updates
 
-- Phase 11 evidence index and release record.
-- Operational runbooks, resilience/failure architecture, feature/status matrix and repository memory.
+- Observability architecture, telemetry vocabulary and Phase 12 evidence index.
+- Repository state, queue, session log and handoff.
 
 ## Completion checklist
 
-- [x] Remaining requirements mapped and current
-- [x] Five game days pass with cleanup
-- [x] Fallback, saturation and retry-amplification evidence captured
-- [x] Runbooks complete and linked
-- [x] Local candidate gate passes
-- [ ] Protected closeout gate passes
-- [ ] Phase 11 release and Phase 12 prerequisites recorded
+- [ ] Requirements satisfied
+- [ ] Tests pass
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

@@ -55,6 +55,6 @@ linked by those artifacts. No requirement is marked non-applicable.
   timelines, source applicability, recovery and exact cleanup.
 
 Breaker metrics, behavior and the tools-only failure laboratory are released.
-The five game days, saturation,
-fallback/no-amplification proof and complete operator procedures are implemented
-on the dependent candidate. Candidate/protected gates and release remain.
+The five game days, saturation, fallback/no-amplification proof and complete
+operator procedures are published on PR44 at evidence head `1d378fc`. The local
+candidate gate passes; protected exact-head review/CI and release remain.

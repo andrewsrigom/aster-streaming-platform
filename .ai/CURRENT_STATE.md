@@ -4,7 +4,7 @@ Last updated: 2026-08-30
 
 ## Active phase
 
-**Phase 11 — Resilience and Failure Laboratory**
+**Phase 12 — Observability, SLIs, and SLOs**
 
 Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
@@ -12,8 +12,10 @@ squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
 run `33290477608` passed every required job. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
 squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
-active on `feat/p11-game-days`, rebased onto that tree-identical merge. Full
-Phase00–14 goal stays active.
+frozen `WAITING_EXTERNAL` on PR44 at evidence head `1d378fc`; its local
+candidate is complete and only protected CI, review and release remain. P12-R01
+is the one unpublished dependent and starts the trace/log/privacy/exporter
+boundary. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -43,6 +45,16 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 46/46 candidate gates.
 
 ## Current work
+
+P12-R01 inventories and standardizes current trace boundaries. Existing metrics,
+structured logs, Router-to-owner correlation, validated event `traceparent` and
+bounded exporter failure are the baseline. The missing slice is a
+repository-owned tracing contract and adapter that consistently creates finite,
+privacy-safe server, dependency, event and media spans while driving logger
+context. No hosted backend, dashboard, SLO or product contract is added here.
+
+P11-R10 remains frozen on PR44 and must release before this dependent can be
+published, merged or released.
 
 P10's first slice defines and implements the Catalog public-title cache boundary.
 PostgreSQL remains the visibility and rights authority; a cache hit may reuse only
@@ -239,7 +251,8 @@ adapter/transaction saturation passes 28/28 and the new Web/Router contracts
 pass 16/16. Bulkhead, fallback, retry-amplification and five game-day artifacts
 plus complete Redis/Discovery/PostgreSQL/broker/media runbooks are recorded.
 The corrected affected candidate passes 17/17 tasks, five cached, in 52.224
-seconds. This item's publication, review and protected release remain.
+seconds. PR44 is published at evidence head `1d378fc`; protected exact-head CI,
+review and release remain.
 
 ## Historical Phase 09 corrections
 
@@ -288,13 +301,13 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 ## Not implemented
 
 P11-R10 game days, bulkhead/fallback/amplification proof and runbook closeout are
-implemented as a local candidate; candidate/protected release remains.
+implemented and published; protected review/release remains.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish, review and protect the P11-R10 game-day closeout, then verify exact-main
-and activate Phase12.
+Execute P12-R01 locally from the frozen PR44 head while its protected gate runs;
+do not publish the dependent before P11-R10 releases.
 
 ## Runtime and recovery
 

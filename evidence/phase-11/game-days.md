@@ -2,7 +2,7 @@
 
 Date: 2026-08-30
 
-Status: candidate evidence; protected closeout release pending
+Status: PR44 evidence head 1d378fc; protected closeout release pending
 
 ## Source and applicability
 

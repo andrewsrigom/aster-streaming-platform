@@ -10,7 +10,8 @@ Phases 00–10 are released locally through protected and exact post-merge CI.
 Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js
 SSR, accessible HLS playback, durable progress/resume, owned library and owner
 event recovery, Discovery search/home, SSR/private enhancement and advanced
-Redis/concurrency pass their recorded acceptance. Phase11 resilience is active. Exact
+Redis/concurrency pass their recorded acceptance. Phase11 closeout is externally
+gated and Phase12 observability is active as its unpublished dependent. Exact
 progress lives in `.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
@@ -55,17 +56,17 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 11 — Resilience and Failure Laboratory**. Phase10 closed
+Active phase: **Phase 12 — Observability, SLIs, and SLOs**. Phase10 closed
 through PR40 exact `6d74873`, protected run33281516077, resolved exact-head
 review, squash main `eed8229` and exact-main run33282217705. P11-R01 is released
 as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is released as main
 `59600ae`; exact-main run33290477608 passed. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
 squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 is
-active on `feat/p11-game-days`, rebased onto that tree-identical merge. Its five
-game days, finite-capacity,
-fallback/no-amplification evidence and runbooks are implemented locally; the
-candidate/protected closeout remains.
+frozen `WAITING_EXTERNAL` on PR44 at evidence head `1d378fc`. Its five game
+days, finite-capacity, fallback/no-amplification evidence and runbooks are
+implemented; protected review and release remain. P12-R01 is active locally and
+cannot publish before PR44 releases.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

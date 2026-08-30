@@ -48,6 +48,12 @@ Append new entries at the top. Keep entries factual and concise.
   with unrelated future telemetry policy. Corrected source `60ca6f1`, tree
   `5ef4360`, passes 17/17 with five cached in 52.224 seconds; Web112/112 and
   platform67/67 include the enforcement.
+- Final documentation, repository-memory, formatting and diff checks pass.
+  Published PR44 at evidence head `1d378fc`; P11-R10 is `WAITING_EXTERNAL` only
+  for protected exact-head CI, review, merge and exact-main verification.
+- Activated P12-R01 as the one unpublished dependent. Its first slice owns
+  finite trace/log context, telemetry privacy/cardinality and exporter failure;
+  it adds no hosted backend, dashboard or SLO.
 
 ### Evidence
 
@@ -61,8 +67,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the rebased P11-R10 closeout through review, protected CI and exact-main
-verification, then close Phase11 and activate Phase12.
+Execute P12-R01 locally while completing PR44 review, protected CI, squash merge
+and exact-main verification. Publish Phase12 only after the predecessor release.
 
 ## 2026-08-29 — Operation admission release and resilience start
 
