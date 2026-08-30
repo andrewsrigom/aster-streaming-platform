@@ -1,0 +1,49 @@
+P10 operation limiter real Redis evidence
+Date: 2026-08-29
+Status: verified in protected CI
+
+Source
+- Exact pull-request head: 6d748734e36dad419e6c9f377281a82a121ec917.
+- Git tree: 4282bfeaef6ef3182d3f584a460a86b449da312d.
+- Protected run: 33281516077, PASS.
+- Job/step: Install and source quality / Prove Engagement persistence and
+  federated progress.
+- Run URL:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33281516077
+
+Environment
+- GitHub-hosted Ubuntu runner.
+- Node.js 24.19.0 and pnpm 11.24.0.
+- Disposable Redis 8.10.0-alpine fixture created by the bounded integration
+  harness. The fixture removes only its exact owned resources.
+
+Command
+
+pnpm engagement:rate-limit-integration
+
+Raw result
+
+{"event":"engagement_operation_limiter_redis_verified","concurrentCallers":24,"atomicAllowed":4,"atomicRejected":20,"duplicateCallers":24,"duplicateCharges":1,"duplicateReuses":23,"unsavedRequestCommands":6,"changedPayloads":4,"changedPayloadRejected":1,"recoveredStates":5,"hotBurstAttempts":5,"hotBurstRedisCommands":4,"outageDecision":"local_fallback"}
+{"event":"engagement_rate_fixture_cleaned","remaining":0,"durationMs":1737}
+
+Interpretation
+- Twenty-four independent attempts consume exactly four available watchlist
+  tokens and reject twenty atomically.
+- Twenty-four identical cross-instance admissions produce one shared charge and
+  twenty-three finite marker reuses.
+- Two production writers plus exact unsaved retries and changed payloads issue
+  six Redis commands. The canonical request digest separates changed payloads;
+  one is rejected by the shared bucket instead of reusing another request's
+  admission.
+- Five malformed/wrong-expiry state forms recover within the exact key policy.
+- Five hot local attempts emit four Redis commands, proving local shedding before
+  the shared dependency.
+- Redis outage uses the documented finite local fallback; Redis still does not
+  authorize a durable effect.
+- Cleanup reports zero remaining fixture resources.
+
+Limitations
+- This proves atomic behavior for the recorded workload and Redis version, not
+  arbitrary replica count, production throughput or a hosted Redis provider.
+- Phase 13 owns final edge identity and workload calibration.
+
