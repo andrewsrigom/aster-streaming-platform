@@ -142,17 +142,20 @@ blocker. PR47 squash main `6dba10e` retained the reviewed tree, and exact-main
 run `33307059156` passed every required job, including the changed playable
 browser journey. Item59 is released.
 
-P12-R05/R06 source `524ab28`, tree `e442af1`, is rebased directly on that exact
-main. It defines four machine-readable SLI populations, good events, exclusions,
-sources, aggregations, owners and windows plus initial objectives and error
-budgets. Nine Prometheus recording rules use finite Router or released backend
-product metrics; no-traffic windows do not become artificial success. Contract
-tests pass 4/4, Router tests 10/10, platform policy 23/23, exact Router 2.17
-configuration validation and Prometheus 3.14 `promtool` rule/synthetic tests
-pass. The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444
-seconds. Browser first-frame remains a local diagnostic because remote sampling
-and retention are zero. PR48 is open; initial review and protected packaged
-Router/Prometheus proof remain.
+P12-R05/R06 is rebased directly on exact main. Initial PR48 review discussion
+`3889183230` correctly found that the 400 ms progress query selected a histogram
+bucket absent from runtime metrics. Corrected source `0661a81`, tree `d7978e0`,
+adds that exact finite bucket and a cross-contract regression. It defines four
+machine-readable SLI populations, good events, exclusions, sources,
+aggregations, owners and windows plus initial objectives and error budgets. Nine
+Prometheus recording rules use finite Router or released backend product
+metrics; no-traffic windows do not become artificial success. Contract tests
+pass 4/4, telemetry tests 19/19, Router tests 10/10 and platform policy 23/23.
+Exact Router 2.17 configuration validation and Prometheus 3.14 `promtool`
+rule/synthetic tests pass. The corrected affected gate passes 60/60 tasks with
+14 cached in 63.357 seconds. Browser first-frame remains a local diagnostic
+because remote sampling and retention are zero. PR48 protected packaged
+Router/Prometheus proof remains.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

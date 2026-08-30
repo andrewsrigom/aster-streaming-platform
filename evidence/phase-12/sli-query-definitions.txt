@@ -1,6 +1,6 @@
 # P12-R05 executable SLI query evidence
 
-Status: implemented and locally verified at source `524ab28`, tree `e442af1`;
+Status: implemented and locally verified at source `0661a81`, tree `d7978e0`;
 protected Router/Prometheus runtime acceptance and release remain pending.
 
 ## Environment
@@ -45,13 +45,19 @@ node ./tools/verify-local-platform.mjs
 => {"check":"local-platform","status":"ok","violations":0}
 
 CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
-=> 49 tasks passed, 41 cached, 0 failed, 47.444 seconds after rebase
+=> 60 tasks passed, 14 cached, 0 failed, 63.357 seconds after review correction
 ```
 
 The first optional-platform test run exposed a validator gap: mutating one of
 two scrape-job label limits still left the other matching occurrence. The
 validator now requires the complete body and label-limit set exactly twice; the
 corrected 23/23 run is the accepted result.
+
+Initial PR48 review discussion `3889183230` exposed a measurement-integrity
+gap: the progress query used `le="0.4"` while runtime product histograms omitted
+that boundary. Source `0661a81` exports the exact 400 ms bucket, asserts it in
+real telemetry collection and makes this validator reject any local-product SLI
+whose threshold is absent from the runtime catalog. Telemetry tests pass 19/19.
 
 ## Synthetic workload
 

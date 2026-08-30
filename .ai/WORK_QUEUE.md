@@ -186,11 +186,12 @@ Its exact source `74780e5`, tree `412cc4c`, passes the local 19/19 focused,
 single exact-head confirmation found no blocker. PR47 squash main `6dba10e`
 has the same tree, and exact-main run `33307059156` passed every job. Item59 is
 released. Item60 is the sole `IN_PROGRESS` item, rebased directly onto that
-exact main. Source `524ab28`, tree `e442af1`, owns finite Router outcome
-classification, Prometheus recording rules, formal SLI populations and initial
-SLO/error-budget definitions; its post-rebase affected gate passes 49/49 tasks
-with 41 cached in 47.444 seconds. PR48 is open for the protected runtime and
-bounded review sequence.
+exact main. Initial PR48 review discussion `3889183230` found that the progress
+query's 400 ms bucket was absent from runtime metrics. Corrected source
+`0661a81`, tree `d7978e0`, exports that bucket and cross-validates every local
+product SLI threshold against runtime boundaries. Contract4/4, telemetry19/19
+and the affected60/60 gate with14 cached in63.357 seconds pass. PR48 owns the
+remaining protected runtime and bounded confirmation sequence.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

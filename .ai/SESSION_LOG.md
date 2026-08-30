@@ -23,6 +23,13 @@ Append new entries at the top. Keep entries factual and concise.
 - The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444
   seconds. Documentation, AI state, formatting, lint, security and diff checks
   pass. Local Docker was not retried.
+- Initial PR48 review discussion `3889183230` found one measurement-integrity
+  blocker: the progress SLO queried 400 ms while runtime product histograms
+  exported only adjacent 250/500 ms buckets.
+- Corrected source `0661a81`, tree `d7978e0`, exports the exact 400 ms boundary,
+  asserts it in real telemetry collection and makes the SLI validator reject a
+  runtime/query threshold mismatch. Telemetry passes 19/19 and the corrected
+  affected gate passes 60/60 tasks with 14 cached in 63.357 seconds.
 
 ### Evidence
 

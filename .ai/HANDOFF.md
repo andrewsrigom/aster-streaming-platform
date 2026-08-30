@@ -7,25 +7,26 @@ Item59 (P12-R04/R11 browser QoE) is released from source `74780e5`, tree
 squash main `6dba10e` and successful exact-main run `33307059156`.
 
 Item60 (P12-R05/R06) is the sole `IN_PROGRESS` item on
-`feat/p12-sli-slo-definitions`. Source `524ab28`, tree `e442af1`, is based
-directly on exact main `6dba10e`; evidence checkpoint `d7d1edc` is published on
-PR48. Its active plan is `.ai/CHANGE_PLAN.md`.
+`feat/p12-sli-slo-definitions`, based directly on exact main `6dba10e`. Initial
+PR48 review discussion `3889183230` found the missing 400 ms runtime histogram
+bucket. Corrected source `0661a81`, tree `d7978e0`, adds the bucket and a
+cross-contract regression. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Request one initial blocker-focused review on PR48's final head.
-2. Let protected CI prove the pinned Router/Prometheus runtime.
-3. Batch only requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
+1. Publish the documented 400 ms bucket correction to PR48.
+2. Let protected CI prove the pinned Router/Prometheus runtime and real recorded series.
+3. Resolve the addressed initial-review discussion with exact evidence.
 4. Run one confirmation review, squash-merge and verify exact-main CI.
 5. Activate P12 dashboard work from clean exact main.
 
 ## Verified candidate
 
-- Four contract tests, ten Router tests and 23 platform-policy tests pass.
+- Four contract, 19 telemetry, ten Router and 23 platform-policy tests pass.
 - Exact Apollo Router 2.17.0 configuration validation passes.
 - Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
   excluded and excluded-only workloads.
-- The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444 seconds.
+- The corrected affected gate passes 60/60 tasks with 14 cached in 63.357 seconds.
 - Documentation, AI state, formatting, lint, security and `git diff --check` pass.
 
 ## Measurement boundary
