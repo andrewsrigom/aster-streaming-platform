@@ -94,6 +94,17 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
       "    engagement:\n      timeout: 2700ms\n",
       '    engagement: { timeout: 2700ms, "retry": { attempts: 2 } }\n',
     ],
+    [
+      "infra/router/router.yaml",
+      "    concurrency_limit: 8\n",
+      '    concurrency_limit: 8\n    "retr\\u0079": { attempts: 2 }\n',
+    ],
+    [
+      "infra/router/router.yaml",
+      "traffic_shaping:\n",
+      "shared: &shared { timeout: 1s }\ntraffic_shaping:\n  inherited: *shared\n",
+    ],
+    ["infra/router/router.yaml", "traffic_shaping:\n", "traffic_shaping: [\n"],
     ["infra/router/router.yaml", "/playback/playback.key", "/catalog/catalog.key"],
     ["infra/router/router.yaml", "max_queue_size: 128", "max_queue_size: 12800"],
     ["infra/router/router.yaml", "named: cookie", "matching: .*"],
