@@ -9,9 +9,11 @@ Last updated: 2026-08-30
 Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
 squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
-run `33290477608` passed every required job. P11-R08 is active on
-`feat/p11-failure-injection`, based exactly on that merge. Full Phase00–14 goal
-stays active.
+run `33290477608` passed every required job. P11-R08 is frozen on PR43 at
+corrected evidence head `371ba55`; its initial finding is resolved and exact-head
+protected run `33291705269` plus confirmation review are running. P11-R10 is
+active on `feat/p11-game-days`, rebased exactly onto that corrected head under
+the single dependent-work exception. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -271,15 +273,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R08/R09 controlled injection is active. Phase11 game days, consolidated
-bulkhead/fallback/amplification proof and runbook closeout remain planned.
+P11-R08/R09 controlled injection is waiting on hosted gates. P11-R10 game days,
+consolidated bulkhead/fallback/amplification proof and runbook closeout are
+active.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish the evidenced P11-R08 private loopback-only HTTP failure modes,
-exactly-two synthetic duplicate delivery, bounded saturation and structural
-production isolation through one review, protected CI and exact-main release.
+Complete P11-R10 by reconciling current-source failure evidence, executing the
+five bounded game days, proving fallback/saturation/no-amplification, updating
+runbooks and closing Phase11 after P11-R08 releases first.
 
 ## Runtime and recovery
 
