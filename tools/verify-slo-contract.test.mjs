@@ -75,3 +75,53 @@ test("Router classification and private scrape boundaries are mandatory", () => 
     }).length > 0,
   );
 });
+
+test("burn alert windows, thresholds and paired evaluation cannot drift", () => {
+  const changedPolicy = cloneContract();
+  changedPolicy.alertPolicy.classes[0].windows[0].burnRate = 10;
+  assert.ok(validateSloContract({ ...sources, contract: changedPolicy }).length > 0);
+
+  assert.ok(
+    validateSloContract({
+      ...sources,
+      alertRules: sources.alertRules.replace("and on(sli)", "or on(sli)"),
+    }).length > 0,
+  );
+  assert.ok(
+    validateSloContract({
+      ...sources,
+      alertRules: sources.alertRules.replace("0.0144", "0.00144"),
+    }).length > 0,
+  );
+  assert.ok(
+    validateSloContract({
+      ...sources,
+      alertRules: sources.alertRules.replace(
+        "count_over_time(aster:sli:population:rate5m[1h:5m]) >= 12",
+        "count_over_time(aster:sli:population:rate5m[1h:5m]) >= 1",
+      ),
+    }).length > 0,
+  );
+});
+
+test("burn alerts require static owned navigation and bounded local retention", () => {
+  const changedRetention = cloneContract();
+  changedRetention.localRetention.time = "30d";
+  assert.ok(validateSloContract({ ...sources, contract: changedRetention }).length > 0);
+
+  assert.ok(
+    validateSloContract({
+      ...sources,
+      alertRules: sources.alertRules.replace(
+        'summary: "Rapid SLO burn for supergraph"',
+        'summary: "{{ $labels.unreviewed }}"',
+      ),
+    }).length > 0,
+  );
+  assert.ok(
+    validateSloContract({
+      ...sources,
+      runbooks: sources.runbooks.replace("aster:sli:error:ratio_rate3d", "missing:ratio"),
+    }).length > 0,
+  );
+});

@@ -1,126 +1,131 @@
-# Work Item: Provisioned Operational Overview
+# Work Item: Multi-window SLO Burn-rate Alerts
 
 - Status: IN_PROGRESS
 - Owner: Platform
 - Phase: 12
-- Requirement IDs: P12-R12
+- Requirement IDs: P12-R07
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-Aster has one version-controlled operational overview that separates user
-impact, dependency health and runtime saturation. An evaluator can start the
-bounded local observability profile, open the loopback-only dashboard without
-hosted credentials and trace every panel to a released metric and an operational
-question.
+Aster evaluates every released critical-journey SLO with finite multi-window
+burn-rate alerts. Rapid burn is classified for paging, sustained burn is
+classified for a working-hours ticket, and every alert names its owner, user
+impact, exact confirmation query, operational overview and runbook. Synthetic
+Prometheus tests prove firing, non-firing and recovery without claiming an
+external notification route or historical SLO compliance.
 
 ## Current behavior
 
-Prometheus 3.14.0 receives bounded Collector and Router metrics, retains one
-hour and exposes four executable SLI ratios. PR48 squash main `a99d3d5`, tree
-`2374279`, and exact-main run `33314309449` release P12-R05/R06. No dashboard
-backend or implemented dashboard is currently claimed.
+PR49 reviewed head `ba3de93`, tree `73ee596`, passed protected run
+`33318672382` and clean confirmation. Its tree-identical squash main `c297d32`
+passed valid exact-main run `33319514232`, releasing P12-R12. This candidate now
+adds complete-window rapid/sustained rules, exact firing/recovery fixtures and a
+three-day/128 MB bounded local store. A fresh packaged image reports 35 healthy
+rules, seven alert instances and no active no-traffic alerts. No external
+Alertmanager route exists.
 
 ## Proposed behavior
 
-Add one pinned Grafana OSS 13.2.0 container to the existing observability/full
-profile. Bake a read-only Prometheus data source and a provisioned Aster
-operational-overview dashboard into a repository-owned image. Bind Grafana only
-to `127.0.0.1:3001`, allow finite local anonymous Viewer access, disable writes
-and external update/plugin activity, bound measured startup to 0.5 CPU,384 MiB
-and128 PIDs, and verify dashboard structure plus live provisioning in protected
-CI.
+Add one reviewed alert-policy contract and one Prometheus alert-rule file. For
+each of the four existing SLIs, a rapid alert combines the standard 14.4x
+one-hour/five-minute and 6x six-hour/thirty-minute pairs; a sustained alert
+combines the 3x one-day/two-hour and 1x three-day/six-hour pairs. Extend the
+disposable local time ceiling to three days while preserving the 128 MB size
+ceiling and every query/resource bound. Load the rules locally, test them with
+synthetic counters, expose no receiver, and document warm-up, retention and
+delivery limits truthfully.
 
 ## Boundaries
 
-- Owning context: Platform owns the disposable operational projection; product contexts own the emitted facts.
-- Affected services/packages: observability Compose overlay, Grafana image/provisioning, platform validators, CI and operations documentation.
-- Authoritative data: PostgreSQL and product owners remain authoritative; dashboard output grants no product decision.
-- Read models/caches: Grafana reads only the disposable one-hour Prometheus projection and uses disposable local SQLite state.
-- Trust boundaries: a local browser reaches loopback Grafana; Grafana proxies bounded PromQL to private Prometheus on the edge network.
-- External dependencies: official Grafana OSS `13.2.0`, pinned by multi-platform digest and governed by AGPL-3.0-only terms.
+- Owning context: Platform owns alert evaluation; each SLI retains its existing product-context owner.
+- Affected services/packages: Prometheus image/configuration, SLO contract and validators, CI, runbooks and observability documentation.
+- Authoritative data: owner metrics remain derived observations; alerts grant no product or release authority.
+- Read models/caches: disposable Prometheus TSDB, bounded by three days or 128 MB, whichever is reached first.
+- Trust boundaries: checked-in rules consume only finite aggregate metrics; annotations expose no identifiers, credentials or signed URLs.
+- External dependencies: existing digest-pinned Prometheus 3.14.0 only; no Alertmanager, hosted receiver or credential is added.
 
 ## Invariants
 
-- Grafana is optional and cannot affect product readiness or serving.
-- The overview has explicit user-impact, dependency-health and saturation sections.
-- Every data panel uses a released finite metric and answers a documented operational question.
-- No identifier, credential, signed URL, raw GraphQL document or arbitrary label enters a query or dashboard variable.
-- Local anonymous access is Viewer-only, loopback-only and bounded; provisioned resources are not UI-editable.
-- Grafana can reach Prometheus but not PostgreSQL, Redis, broker, storage or owner services.
-- Empty/no-traffic SLI results remain empty and never become synthetic success.
-- User-impact panels use the released SLO IDs and current instant values; an
-  older non-empty sample cannot mask a currently absent recording.
+- Alert arithmetic derives the threshold from each reviewed SLO error budget.
+- Both long and short windows must burn above the same threshold.
+- Empty, excluded-only and idle populations do not alert.
+- Every alert has one finite SLI, owner, severity, route class, user impact,
+  confirmation query, dashboard URL and runbook URL.
+- No user, account, profile, title, request, trace, document or URL value becomes a metric label.
+- `page` and `ticket` are routing intent only until a reviewed receiver exists.
+- Local retention and synthetic tests do not become a 28/30-day compliance claim.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Grafana unavailable | product and Prometheus remain healthy | dashboard readiness fails without changing product readiness |
-| Prometheus unavailable | dashboard panels show no data | Grafana data-source health/query failure only |
-| Empty SLI population | panel reports no data | no fabricated ratio or compliance result |
-| Invalid provisioning/dashboard JSON | image/runtime verification fails | candidate cannot publish |
-| Expensive or unbounded panel query | repository validator rejects it | candidate cannot publish |
-| Browser attempts non-loopback access or mutation | no host exposure; Viewer cannot save provisioned resources | request denied or unreachable |
+| No qualifying traffic | no alert vector exists | SLI population and ratio remain absent |
+| One window burns but its paired window does not | alert remains inactive | long/short confirmation queries show the mismatch |
+| Burn stops in the short window | alert recovers without waiting for the long window to drain | Prometheus alert state returns inactive |
+| Prometheus or rules fail to load | optional observability profile is unhealthy; product owners remain unaffected | bounded Prometheus logs and health failure |
+| Local history is younger or smaller than a requested window | ratio and alert stay absent; operator checks store age/retention before action | runbook records warm-up and TSDB checks |
+| External notification route is absent | alert remains visible in Prometheus only | documentation explicitly states no delivery claim |
 
 ## Data and contracts
 
-- Schema/migration: none; Grafana state is disposable tmpfs.
+- Schema/migration: none.
 - GraphQL: none.
 - Events: none.
 - Cache: none.
-- Compatibility: additive local port `3001`, service `grafana`, dashboard UID and Prometheus data-source UID.
-- Retention/deletion: Grafana state disappears with the container; Prometheus retains the existing one-hour bounded volume.
+- Compatibility: additive alert rule file and alert-policy object; existing SLI names, objectives and recording series stay unchanged.
+- Retention/deletion: disposable Prometheus history is capped by three days and 128 MB; normal profile teardown preserves it and explicit local reset removes it.
 
 ## Security and privacy
 
-- Authorization: anonymous local access has Viewer role only; there is no hosted or operator authorization claim.
-- Input limits: no dashboard variables; fixed PromQL, refresh interval and panel/query counts; Prometheus keeps its query limits.
-- Sensitive data: only already-reviewed finite aggregate metrics are queried; dashboard JSON contains no credentials or personal data.
-- Abuse cases: arbitrary proxy queries, host exposure, UI mutation, plugin download, unbounded refresh, data-source substitution and network reach expansion.
+- Authorization: no new product endpoint or operator privilege; Prometheus remains loopback-only.
+- Input limits: exactly four SLI values, two alert classes, four reviewed window pairs and seven alert instances.
+- Sensitive data: annotations contain only static repository URLs, finite owner/SLI names and reviewed user-impact text.
+- Abuse cases: threshold drift, one-window alerts, arbitrary label/template expansion, unbounded queries, missing runbook links and implied external delivery are rejected.
 
 ## Implementation steps
 
-1. Record ADR-0042 for the bounded local Grafana topology, license and rollback.
-2. Add the pinned image, immutable provisioning and three-section overview.
-3. Extend platform/reset/CI validators with adverse dashboard and isolation checks.
-4. Verify static structure, official image configuration and protected live provisioning.
-5. Update operations, architecture, evidence and repository memory.
+1. Record the alert/retention decision and executable policy in ADR-0043 and the SLO contract.
+2. Add finite per-SLI alert rules, load them in Prometheus and preserve resource/query boundaries.
+3. Add contract/adverse tests plus Prometheus firing, recovery, idle and excluded-only fixtures.
+4. Link alerts to one complete critical-journey burn runbook and the operational overview.
+5. Capture focused/candidate evidence and update repository memory before publication.
 
 ## Tests
 
-- Domain: not applicable; no product rule changes.
-- Application: not applicable; dashboard is an operational projection.
-- Integration: Compose validates and protected CI starts Grafana, verifies health, data source, dashboard UID and representative live queries.
-- Contract: repository validator checks finite panels, SLO-contract IDs, instant user-impact values, released metric names, fixed data source, section coverage, links and no prohibited labels.
-- Browser: one loopback HTTP/dashboard API acceptance; no product browser journey changes.
-- Performance/failure: finite resources, refresh/query bounds, Prometheus absence and Grafana failure do not affect product health.
+- Domain: not applicable; product decisions do not change.
+- Application: not applicable; alert evaluation is an operational projection.
+- Integration: Prometheus 3.14.0 checks and loads both rule files; protected CI queries the packaged rules/alerts API.
+- Contract: validator enforces exact SLIs, owners, windows, burn rates, thresholds, annotations, links, finite labels and retention bounds.
+- Browser: not applicable; dashboard/runbook navigation is checked as a documentation/URL contract.
+- Performance/failure: synthetic good, bad, failure-only, idle, excluded-only, paired-window firing and short-window recovery cases.
 
 ## Evidence
 
-- Commands: dashboard/platform focused tests, Compose render, image metadata, affected gate and protected live Grafana/Prometheus proof.
-- Raw artifact path: `evidence/phase-12/operational-overview.txt` and version-controlled dashboard JSON.
-- Acceptance result: the provisioned overview distinguishes all three required operational layers with live released metrics.
-- Iteration gate: dashboard contract validator and optional-platform tests.
+- Commands: focused Node tests, exact `promtool check rules`, exact `promtool test rules`, affected gate and protected packaged-Prometheus acceptance.
+- Raw artifact path: `evidence/phase-12/slo-burn-rate-alerts.txt` and checked-in rule fixtures.
+- Acceptance result: all seven alert instances fire only for their paired burn windows, recover through the short window and navigate to the bounded runbook/dashboard.
+- Iteration gate: SLO contract tests plus exact Prometheus rule/test commands.
 - Candidate gate: `pnpm check:changed`, documentation/AI checks, secret scan and `git diff --check`.
-- Heavyweight repeat triggers: repeat live Docker provisioning only when image, Compose, provisioning, dashboard query, network or CI assertion changes.
-- Review stopping rule: one initial review and one confirmation; extend only for requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
+- Heavyweight repeat triggers: repeat packaged Prometheus only when the image, loaded files, configuration, alert expression or protected API assertion changes.
+- Review stopping rule: one initial review and one confirmation; extend only for requirement, threshold/measurement integrity, privacy/security, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Remove the additive Grafana service/image/provisioning and restore the prior
-observability overlay. No product state or Prometheus history requires migration.
+Remove the additive alert file/policy, restore one-hour retention and rebuild the
+disposable Prometheus image. No schema, product data, credential, media or
+owner-service rollback is required.
 
 ## Documentation updates
 
-- ADR-0042, observability architecture, local development and operational overview guide.
-- Phase12 evidence index and dashboard artifact evidence.
+- ADR-0043, SLI/SLO alert policy, critical-journey burn runbook and observability architecture.
+- Phase12 evidence index and alert evidence.
 - Repository state, queue, session log, decisions ledger and handoff.
 
 ## Completion checklist
 
-- [x] Requirements satisfied
+- [ ] Requirements satisfied
 - [x] Tests pass
 - [x] Evidence captured
 - [x] Documentation current

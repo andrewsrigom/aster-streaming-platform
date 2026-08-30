@@ -331,6 +331,14 @@ export function validateWorkflowPolicy(
       "local-platform job must pull immutable images",
     ],
     [
+      /check rules \/etc\/aster\/observability\/slo-rules\.yml \/etc\/aster\/observability\/slo-alerts\.yml/u,
+      "protected Prometheus validation must check both SLI and alert rules",
+    ],
+    [
+      /test rules \/etc\/aster\/observability\/slo-alerts\.test\.yml/u,
+      "protected Prometheus validation must prove alert firing and recovery",
+    ],
+    [
       /docker compose --file "\$COMPOSE_FILE" up\s+--wait --wait-timeout 120 platform-status/u,
       "local-platform job must run the bounded health-gated status target",
     ],
@@ -385,6 +393,46 @@ export function validateWorkflowPolicy(
     [
       /http:\/\/127\.0\.0\.1:3001\/api\/dashboards\/uid\/aster-operational-overview/u,
       "protected acceptance must verify the provisioned dashboard UID",
+    ],
+    [
+      /http:\/\/127\.0\.0\.1:9090\/api\/v1\/rules/u,
+      "protected acceptance must query every packaged Prometheus rule",
+    ],
+    [
+      /assert\.equal\(rules\.length, 35\)/u,
+      "protected acceptance must require every packaged SLI and alert-policy rule",
+    ],
+    [
+      /assert\.match\(threeDayRatio\.query, \/count_over_time\\\(aster:sli:population:rate5m\\\[3d:5m\\\]\\\) >= 864\/\)/u,
+      "protected acceptance must require the complete three-day sampled window",
+    ],
+    [
+      /name === 'AsterCriticalJourneySloRapidBurn'/u,
+      "protected acceptance must require the rapid burn rule",
+    ],
+    [
+      /name === 'AsterCriticalJourneySloSustainedBurn'/u,
+      "protected acceptance must require the sustained burn rule",
+    ],
+    [
+      /assert\.equal\(alertRules\.length, 7\)/u,
+      "protected acceptance must require exactly seven finite alert instances",
+    ],
+    [
+      /assert\.equal\(rule\.health, 'ok'\)/u,
+      "protected acceptance must require every packaged alert rule to evaluate cleanly",
+    ],
+    [
+      /assert\.equal\(rule\.keepFiringFor, 0\)/u,
+      "protected acceptance must reject hidden alert recovery delay",
+    ],
+    [
+      /http:\/\/127\.0\.0\.1:9090\/api\/v1\/alerts/u,
+      "protected acceptance must query packaged Prometheus alert state",
+    ],
+    [
+      /assert\.equal\(payload\.data\.alerts\.length, 0\)/u,
+      "protected acceptance must reject active alerts without qualifying traffic",
     ],
     [
       /--profile full stop --timeout 5 grafana/u,

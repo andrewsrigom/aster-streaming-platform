@@ -9,10 +9,10 @@ P12-R05/R06 defines four initial critical-journey service-level indicators
 population, good-event and ratio series.
 
 The targets are initial engineering objectives, not claims about historical
-availability. Local Prometheus retains one hour and cannot prove a 28- or
-30-day result. Phase 14 activates release decisions from these objectives only
-after a hosted store has sufficient retention, representative traffic and a
-reviewed baseline.
+availability. Local Prometheus retains at most three days/128 MB and cannot
+prove a 28- or 30-day result. Phase 14 activates release decisions from these
+objectives only after a hosted store has sufficient retention, representative
+traffic and a reviewed baseline.
 
 ## Evaluation model
 
@@ -32,16 +32,16 @@ window therefore reports zero instead of disappearing. The ratio is filtered on
 a positive denominator, so a previously active counter that becomes idle does
 not leave a `NaN` sample after its population rate reaches zero.
 
-The five-minute recording series support operational views and later burn-rate
+The five-minute recording series support operational views and burn-rate
 alerts. The objective query evaluates raw counter increases over the SLO's full
-rolling window. Prometheus evaluates rules every 15 seconds, limits each rule to
-eight output series and scrapes the Router privately with the same body, sample
-and label limits as other local telemetry.
+rolling window. Prometheus evaluates SLI rules every 15 seconds, limits each
+rule to eight output series and scrapes the Router privately with the same body,
+sample and label limits as other local telemetry.
 
 The released ratios and measured populations feed the provisioned
 [operational overview](OPERATIONAL_OVERVIEW.md). That dashboard is a current
-diagnostic view, not an SLO compliance report. Burn-rate alert rules remain a
-separate P12-R07 delivery.
+diagnostic view, not an SLO compliance report. The P12-R07 alert rules integrate
+these rates into finite windows without changing their population semantics.
 
 ## Supergraph valid-operation availability
 
@@ -138,24 +138,49 @@ They are operational indicators but are not one of the four initial objectives
 required by P12-R06. A later objective requires representative workflow volume
 and an explicit operator-impact policy.
 
-## Alert plan
+## Burn-rate alert policy
 
-P12-R07 will implement and test multi-window burn-rate alerts from these exact
-SLIs. No alert is claimed by P12-R05/R06. The planned policy is:
+[`slo-alerts.yml`](../../infra/observability/slo-alerts.yml) evaluates every
+released SLI with the policy in ADR-0043:
 
-- page for rapid supergraph, Catalog or playback-start budget burn;
-- page for data corruption or unauthorized access independently of error budget;
-- create a working-hours ticket for sustained slow burn;
-- keep cache, projection, queue and telemetry symptoms diagnostic unless they
-  cause user impact or cross an independently actionable safety threshold.
+| Alert class | Long window | Short window | Burn rate | Response label |
+|---|---:|---:|---:|---|
+| Rapid | 1 hour | 5 minutes | 14.4x | `page` |
+| Rapid | 6 hours | 30 minutes | 6x | `page` |
+| Sustained | 1 day | 2 hours | 3x | `ticket` |
+| Sustained | 3 days | 6 hours | 1x | `ticket` |
 
-Every implemented alert must name an owner, link to a dashboard and runbook,
-state user impact, include confirmation queries and prove both firing and
-recovery with controlled signals.
+For each pair, both error ratios must exceed the same burn-rate multiple of that
+SLI's error-budget fraction. The rapid pairs produce
+`AsterCriticalJourneySloRapidBurn` for supergraph, Catalog title read and
+playback start. Sustained pairs produce
+`AsterCriticalJourneySloSustainedBurn` for all four SLIs. Progress loss does not
+interrupt active viewing, so it creates a sustained working-hours ticket rather
+than a rapid page. Current, excluded-only and idle populations retain the
+released semantics and do not become artificial alerts.
+
+Long-window ratios use population-weighted averages of the reviewed five-minute
+good and population rates, sampled every five minutes. This bounds query work
+and introduces at most one recording-window of boundary smoothing. The local
+store keeps at most three days or 128 MB, whichever limit is reached first. A
+fresh or size-evicted store keeps a window and its alerts absent until complete
+sampled coverage exists.
+
+Every alert includes owner, user impact, finite confirmation query, operational
+overview URL and the [critical-journey burn runbook](RUNBOOKS.md#runbook-critical-journey-slo-burn).
+The `page` and `ticket` values classify response intent only: no Alertmanager,
+external receiver, credential or delivery claim exists locally. Data corruption,
+unauthorized access and rights violations remain independently actionable
+security incidents; no SLO alert is fabricated for them without a reviewed
+signal and hosted response path.
+
+Cache, projection, queue and telemetry symptoms remain diagnostic unless they
+cause one of these user-impact ratios to burn or cross a separately reviewed
+safety threshold.
 
 ## Verification
 
-The pinned Prometheus 3.14.0 `promtool` checks all nine recording rules and runs
+The pinned Prometheus 3.14.0 `promtool` checks all SLI and alert rules and runs
 synthetic good, bad, failure-only, idle, excluded and excluded-only workloads.
 The failure-only workload verifies both five-minute recording ratios and full-
 window objective queries return zero for every journey. Prior-traffic and
@@ -169,3 +194,8 @@ The repository validator rejects target/error-budget drift, prohibited
 high-cardinality query text, a missing finite Router classification, a missing
 private scrape boundary, a missing population-derived zero numerator, a missing
 positive-denominator filter and attempts to turn no traffic into 100% success.
+It also derives every alert threshold from the reviewed budget, requires both
+windows, enforces exact owners/links/retention and rejects templated annotations,
+unreviewed labels or hidden alert delays. Alert fixtures prove rapid firing for
+the three page-class SLIs, sustained firing for all four, incomplete-history and
+paired-window suppression, and short-window recovery.

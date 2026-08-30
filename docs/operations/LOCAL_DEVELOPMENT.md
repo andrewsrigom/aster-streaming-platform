@@ -153,13 +153,15 @@ Open [Prometheus](http://127.0.0.1:9090). Queries include
 `aster_dependency_operation_outcomes_total` and
 `aster:sli:good:ratio_rate5m`. Export interval is 5 seconds, timeout 1 second;
 Collector and private Router scrape intervals are 5 seconds. Prometheus limits
-samples, labels, query concurrency/time and retention to 1 hour/128 MB.
-Retention is not a hard filesystem quota. The SLI rules prove local mechanics;
+samples, labels and query concurrency/time. Its disposable history is capped by
+3 days and 128 MB, whichever limit wins; the size setting is not a hard
+filesystem quota. The SLI and burn-rate rules prove local mechanics;
 open the [provisioned Grafana overview](http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview)
 for the three-layer diagnostic view. [Dashboard questions, limits and
-recovery](OPERATIONAL_OVERVIEW.md).
-One-hour data cannot prove a 28/30-day SLO. No alert, tracing/log backend or
-historical compliance result is claimed.
+recovery](OPERATIONAL_OVERVIEW.md). Alert states link to the
+[critical-journey burn runbook](RUNBOOKS.md#runbook-critical-journey-slo-burn).
+Three-day local data cannot prove a 28/30-day SLO, and no external alert
+delivery, tracing/log backend or historical compliance result is claimed.
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.
 

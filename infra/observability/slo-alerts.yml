@@ -1,0 +1,148 @@
+groups:
+  - name: aster-critical-journey-slo-burn
+    interval: 1m
+    limit: 83
+    rules:
+      - record: aster:sli:error:ratio_rate5m
+        expr: (1 - (aster:sli:good:rate5m / aster:sli:population:rate5m)) and on(sli) (aster:sli:population:rate5m > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[5m:1m]) >= 5)
+      - record: aster:sli:good:avg_rate30m
+        expr: avg_over_time(aster:sli:good:rate5m[30m:5m])
+      - record: aster:sli:population:avg_rate30m
+        expr: avg_over_time(aster:sli:population:rate5m[30m:5m])
+      - record: aster:sli:error:ratio_rate30m
+        expr: (1 - (aster:sli:good:avg_rate30m / aster:sli:population:avg_rate30m)) and on(sli) (aster:sli:population:avg_rate30m > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[30m:5m]) >= 6)
+      - record: aster:sli:good:avg_rate1h
+        expr: avg_over_time(aster:sli:good:rate5m[1h:5m])
+      - record: aster:sli:population:avg_rate1h
+        expr: avg_over_time(aster:sli:population:rate5m[1h:5m])
+      - record: aster:sli:error:ratio_rate1h
+        expr: (1 - (aster:sli:good:avg_rate1h / aster:sli:population:avg_rate1h)) and on(sli) (aster:sli:population:avg_rate1h > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[1h:5m]) >= 12)
+      - record: aster:sli:good:avg_rate2h
+        expr: avg_over_time(aster:sli:good:rate5m[2h:5m])
+      - record: aster:sli:population:avg_rate2h
+        expr: avg_over_time(aster:sli:population:rate5m[2h:5m])
+      - record: aster:sli:error:ratio_rate2h
+        expr: (1 - (aster:sli:good:avg_rate2h / aster:sli:population:avg_rate2h)) and on(sli) (aster:sli:population:avg_rate2h > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[2h:5m]) >= 24)
+      - record: aster:sli:good:avg_rate6h
+        expr: avg_over_time(aster:sli:good:rate5m[6h:5m])
+      - record: aster:sli:population:avg_rate6h
+        expr: avg_over_time(aster:sli:population:rate5m[6h:5m])
+      - record: aster:sli:error:ratio_rate6h
+        expr: (1 - (aster:sli:good:avg_rate6h / aster:sli:population:avg_rate6h)) and on(sli) (aster:sli:population:avg_rate6h > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[6h:5m]) >= 72)
+      - record: aster:sli:good:avg_rate1d
+        expr: avg_over_time(aster:sli:good:rate5m[1d:5m])
+      - record: aster:sli:population:avg_rate1d
+        expr: avg_over_time(aster:sli:population:rate5m[1d:5m])
+      - record: aster:sli:error:ratio_rate1d
+        expr: (1 - (aster:sli:good:avg_rate1d / aster:sli:population:avg_rate1d)) and on(sli) (aster:sli:population:avg_rate1d > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[1d:5m]) >= 288)
+      - record: aster:sli:good:avg_rate3d
+        expr: avg_over_time(aster:sli:good:rate5m[3d:5m])
+      - record: aster:sli:population:avg_rate3d
+        expr: avg_over_time(aster:sli:population:rate5m[3d:5m])
+      - record: aster:sli:error:ratio_rate3d
+        expr: (1 - (aster:sli:good:avg_rate3d / aster:sli:population:avg_rate3d)) and on(sli) (aster:sli:population:avg_rate3d > 0) and on(sli) (count_over_time(aster:sli:population:rate5m[3d:5m]) >= 864)
+      - alert: AsterCriticalJourneySloRapidBurn
+        expr: ((aster:sli:error:ratio_rate1h{sli="supergraph"} > 0.0144) and on(sli) (aster:sli:error:ratio_rate5m{sli="supergraph"} > 0.0144)) or on(sli) ((aster:sli:error:ratio_rate6h{sli="supergraph"} > 0.006) and on(sli) (aster:sli:error:ratio_rate30m{sli="supergraph"} > 0.006))
+        labels:
+          owner: Platform
+          response: immediate
+          severity: page
+          sli: supergraph
+        annotations:
+          summary: "Rapid SLO burn for supergraph"
+          description: "Both long and short error-rate windows exceed a reviewed rapid-burn threshold."
+          user_impact: "A bad event means a valid first-party GraphQL operation cannot complete through the public application API."
+          policy: "14.4x over 1h/5m or 6x over 6h/30m"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"
+      - alert: AsterCriticalJourneySloSustainedBurn
+        expr: ((aster:sli:error:ratio_rate1d{sli="supergraph"} > 0.003) and on(sli) (aster:sli:error:ratio_rate2h{sli="supergraph"} > 0.003)) or on(sli) ((aster:sli:error:ratio_rate3d{sli="supergraph"} > 0.001) and on(sli) (aster:sli:error:ratio_rate6h{sli="supergraph"} > 0.001))
+        labels:
+          owner: Platform
+          response: working_hours
+          severity: ticket
+          sli: supergraph
+        annotations:
+          summary: "Sustained SLO burn for supergraph"
+          description: "Both long and short error-rate windows exceed a reviewed sustained-burn threshold."
+          user_impact: "A bad event means a valid first-party GraphQL operation cannot complete through the public application API."
+          policy: "3x over 1d/2h or 1x over 3d/6h"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"
+      - alert: AsterCriticalJourneySloRapidBurn
+        expr: ((aster:sli:error:ratio_rate1h{sli="catalog_title_read"} > 0.0144) and on(sli) (aster:sli:error:ratio_rate5m{sli="catalog_title_read"} > 0.0144)) or on(sli) ((aster:sli:error:ratio_rate6h{sli="catalog_title_read"} > 0.006) and on(sli) (aster:sli:error:ratio_rate30m{sli="catalog_title_read"} > 0.006))
+        labels:
+          owner: Catalog
+          response: immediate
+          severity: page
+          sli: catalog_title_read
+        annotations:
+          summary: "Rapid SLO burn for catalog_title_read"
+          description: "Both long and short error-rate windows exceed a reviewed rapid-burn threshold."
+          user_impact: "A bad event delays or prevents a viewer from opening a title detail page with the authoritative public visibility decision."
+          policy: "14.4x over 1h/5m or 6x over 6h/30m"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"
+      - alert: AsterCriticalJourneySloSustainedBurn
+        expr: ((aster:sli:error:ratio_rate1d{sli="catalog_title_read"} > 0.003) and on(sli) (aster:sli:error:ratio_rate2h{sli="catalog_title_read"} > 0.003)) or on(sli) ((aster:sli:error:ratio_rate3d{sli="catalog_title_read"} > 0.001) and on(sli) (aster:sli:error:ratio_rate6h{sli="catalog_title_read"} > 0.001))
+        labels:
+          owner: Catalog
+          response: working_hours
+          severity: ticket
+          sli: catalog_title_read
+        annotations:
+          summary: "Sustained SLO burn for catalog_title_read"
+          description: "Both long and short error-rate windows exceed a reviewed sustained-burn threshold."
+          user_impact: "A bad event delays or prevents a viewer from opening a title detail page with the authoritative public visibility decision."
+          policy: "3x over 1d/2h or 1x over 3d/6h"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"
+      - alert: AsterCriticalJourneySloRapidBurn
+        expr: ((aster:sli:error:ratio_rate1h{sli="playback_start"} > 0.0144) and on(sli) (aster:sli:error:ratio_rate5m{sli="playback_start"} > 0.0144)) or on(sli) ((aster:sli:error:ratio_rate6h{sli="playback_start"} > 0.006) and on(sli) (aster:sli:error:ratio_rate30m{sli="playback_start"} > 0.006))
+        labels:
+          owner: Playback
+          response: immediate
+          severity: page
+          sli: playback_start
+        annotations:
+          summary: "Rapid SLO burn for playback_start"
+          description: "Both long and short error-rate windows exceed a reviewed rapid-burn threshold."
+          user_impact: "A bad event means an otherwise eligible viewer cannot obtain a timely CDN-compatible playback session."
+          policy: "14.4x over 1h/5m or 6x over 6h/30m"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="playback_start"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"
+      - alert: AsterCriticalJourneySloSustainedBurn
+        expr: ((aster:sli:error:ratio_rate1d{sli="playback_start"} > 0.003) and on(sli) (aster:sli:error:ratio_rate2h{sli="playback_start"} > 0.003)) or on(sli) ((aster:sli:error:ratio_rate3d{sli="playback_start"} > 0.001) and on(sli) (aster:sli:error:ratio_rate6h{sli="playback_start"} > 0.001))
+        labels:
+          owner: Playback
+          response: working_hours
+          severity: ticket
+          sli: playback_start
+        annotations:
+          summary: "Sustained SLO burn for playback_start"
+          description: "Both long and short error-rate windows exceed a reviewed sustained-burn threshold."
+          user_impact: "A bad event means an otherwise eligible viewer cannot obtain a timely CDN-compatible playback session."
+          policy: "3x over 1d/2h or 1x over 3d/6h"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="playback_start"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"
+      - alert: AsterCriticalJourneySloSustainedBurn
+        expr: ((aster:sli:error:ratio_rate1d{sli="progress_write"} > 0.0015) and on(sli) (aster:sli:error:ratio_rate2h{sli="progress_write"} > 0.0015)) or on(sli) ((aster:sli:error:ratio_rate3d{sli="progress_write"} > 0.0005) and on(sli) (aster:sli:error:ratio_rate6h{sli="progress_write"} > 0.0005))
+        labels:
+          owner: Engagement
+          response: working_hours
+          severity: ticket
+          sli: progress_write
+        annotations:
+          summary: "Sustained SLO burn for progress_write"
+          description: "Both long and short error-rate windows exceed a reviewed sustained-burn threshold."
+          user_impact: "A bad event means a current valid playback checkpoint is not durably accepted within the interaction budget."
+          policy: "3x over 1d/2h or 1x over 3d/6h"
+          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="progress_write"}'
+          dashboard_url: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview"
+          runbook_url: "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn"

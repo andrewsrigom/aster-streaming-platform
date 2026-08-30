@@ -47,6 +47,59 @@ const EXPECTED_SOURCES = Object.freeze({
   }),
 });
 
+const EXPECTED_ALERT_POLICY = Object.freeze({
+  evaluationInterval: "1m",
+  integrationResolution: "5m",
+  coverageResolution: "1m",
+  requireCompleteWindows: true,
+  dashboardUrl: "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview",
+  runbookUrl:
+    "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn",
+  classes: Object.freeze([
+    Object.freeze({
+      id: "rapid",
+      alert: "AsterCriticalJourneySloRapidBurn",
+      severity: "page",
+      response: "immediate",
+      sliIds: Object.freeze(["supergraph", "catalog_title_read", "playback_start"]),
+      description: "Both long and short error-rate windows exceed a reviewed rapid-burn threshold.",
+      windows: Object.freeze([
+        Object.freeze({ long: "1h", short: "5m", burnRate: 14.4 }),
+        Object.freeze({ long: "6h", short: "30m", burnRate: 6 }),
+      ]),
+    }),
+    Object.freeze({
+      id: "sustained",
+      alert: "AsterCriticalJourneySloSustainedBurn",
+      severity: "ticket",
+      response: "working_hours",
+      sliIds: Object.freeze([
+        "supergraph",
+        "catalog_title_read",
+        "playback_start",
+        "progress_write",
+      ]),
+      description:
+        "Both long and short error-rate windows exceed a reviewed sustained-burn threshold.",
+      windows: Object.freeze([
+        Object.freeze({ long: "1d", short: "2h", burnRate: 3 }),
+        Object.freeze({ long: "3d", short: "6h", burnRate: 1 }),
+      ]),
+    }),
+  ]),
+});
+
+const ALERT_WINDOWS = Object.freeze(["5m", "30m", "1h", "2h", "6h", "1d", "3d"]);
+const COMPLETE_WINDOW_SAMPLES = Object.freeze({
+  "5m": 5,
+  "30m": 6,
+  "1h": 12,
+  "2h": 24,
+  "6h": 72,
+  "1d": 288,
+  "3d": 864,
+});
+
 const FORBIDDEN_QUERY_TEXT = Object.freeze([
   "user_id",
   "account_id",
@@ -75,16 +128,93 @@ function parsedRules(source) {
   ].map((match) => ({ record: match[1], sli: match[2], expression: match[3] }));
 }
 
+function alertThreshold(errorBudgetFraction, burnRate) {
+  return (errorBudgetFraction * burnRate).toFixed(10).replace(/0+$/u, "").replace(/\.$/u, "");
+}
+
+function errorRatioMetric(window) {
+  return `aster:sli:error:ratio_rate${window}`;
+}
+
+function completeWindowExpression(window, policy) {
+  const resolution = window === "5m" ? policy.coverageResolution : policy.integrationResolution;
+  return `count_over_time(aster:sli:population:rate5m[${window}:${resolution}]) >= ${COMPLETE_WINDOW_SAMPLES[window]}`;
+}
+
+export function renderSloAlertRules(contract) {
+  const policy = contract.alertPolicy;
+  const lines = [
+    "groups:",
+    "  - name: aster-critical-journey-slo-burn",
+    `    interval: ${policy.evaluationInterval}`,
+    "    limit: 83",
+    "    rules:",
+    "      - record: aster:sli:error:ratio_rate5m",
+    `        expr: (1 - (aster:sli:good:rate5m / aster:sli:population:rate5m)) and on(sli) (aster:sli:population:rate5m > 0) and on(sli) (${completeWindowExpression("5m", policy)})`,
+  ];
+  for (const window of ALERT_WINDOWS.slice(1)) {
+    const good = `aster:sli:good:avg_rate${window}`;
+    const population = `aster:sli:population:avg_rate${window}`;
+    lines.push(
+      `      - record: ${good}`,
+      `        expr: avg_over_time(aster:sli:good:rate5m[${window}:${policy.integrationResolution}])`,
+      `      - record: ${population}`,
+      `        expr: avg_over_time(aster:sli:population:rate5m[${window}:${policy.integrationResolution}])`,
+      `      - record: ${errorRatioMetric(window)}`,
+      `        expr: (1 - (${good} / ${population})) and on(sli) (${population} > 0) and on(sli) (${completeWindowExpression(window, policy)})`,
+    );
+  }
+  for (const sli of contract.slis) {
+    for (const alertClass of policy.classes) {
+      if (!alertClass.sliIds.includes(sli.id)) {
+        continue;
+      }
+      const expression = alertClass.windows
+        .map(({ long, short, burnRate }) => {
+          const threshold = alertThreshold(sli.objective.errorBudgetFraction, burnRate);
+          return `((${errorRatioMetric(long)}{sli="${sli.id}"} > ${threshold}) and on(sli) (${errorRatioMetric(short)}{sli="${sli.id}"} > ${threshold}))`;
+        })
+        .join(" or on(sli) ");
+      const policyText = alertClass.windows
+        .map(({ long, short, burnRate }) => `${burnRate}x over ${long}/${short}`)
+        .join(" or ");
+      const summary = `${alertClass.id === "rapid" ? "Rapid" : "Sustained"} SLO burn for ${sli.id}`;
+      lines.push(
+        `      - alert: ${alertClass.alert}`,
+        `        expr: ${expression}`,
+        "        labels:",
+        `          owner: ${sli.owner}`,
+        `          response: ${alertClass.response}`,
+        `          severity: ${alertClass.severity}`,
+        `          sli: ${sli.id}`,
+        "        annotations:",
+        `          summary: ${JSON.stringify(summary)}`,
+        `          description: ${JSON.stringify(alertClass.description)}`,
+        `          user_impact: ${JSON.stringify(sli.userImpact)}`,
+        `          policy: ${JSON.stringify(policyText)}`,
+        `          confirmation_query: 'aster:sli:good:ratio_rate5m{sli="${sli.id}"}'`,
+        `          dashboard_url: ${JSON.stringify(policy.dashboardUrl)}`,
+        `          runbook_url: ${JSON.stringify(policy.runbookUrl)}`,
+      );
+    }
+  }
+  return `${lines.join("\n")}\n`;
+}
+
 export async function readSloSources(root) {
   const paths = {
     contract: "infra/observability/slo-contract.json",
     rules: "infra/observability/slo-rules.yml",
     ruleTests: "infra/observability/slo-rules.test.yml",
+    alertRules: "infra/observability/slo-alerts.yml",
+    alertRuleTests: "infra/observability/slo-alerts.test.yml",
     routerConfig: "infra/router/router.yaml",
     routerPolicy: "infra/router/main.rhai",
     prometheusConfig: "infra/compose/prometheus.local.yml",
     prometheusImage: "infra/docker/prometheus.Dockerfile",
+    observabilityCompose: "infra/compose/observability.yml",
     metricCatalog: "packages/telemetry/src/infrastructure/metric-catalog.ts",
+    runbooks: "docs/operations/RUNBOOKS.md",
   };
   const sources = Object.fromEntries(
     await Promise.all(
@@ -104,8 +234,16 @@ export function validateSloContract(sources) {
   if (!record(contract) || contract.schemaVersion !== 1) {
     return [{ rule: "slo-contract", detail: "contract must use schema version 1" }];
   }
-  if (contract.recordingWindow !== "5m" || contract.localRetention !== "1h") {
+  if (
+    contract.recordingWindow !== "5m" ||
+    !record(contract.localRetention) ||
+    contract.localRetention.time !== "3d" ||
+    contract.localRetention.size !== "128MB"
+  ) {
     reject("recording and local-retention boundaries must remain explicit");
+  }
+  if (JSON.stringify(contract.alertPolicy) !== JSON.stringify(EXPECTED_ALERT_POLICY)) {
+    reject("multi-window alert policy must retain the reviewed finite classes and links");
   }
   const slis = Array.isArray(contract.slis) ? contract.slis : [];
   if (slis.length !== 4 || new Set(slis.map((sli) => sli?.id)).size !== 4) {
@@ -235,6 +373,41 @@ export function validateSloContract(sources) {
   ) {
     reject("recording rules must exactly implement the finite contract without no-traffic success");
   }
+  if (
+    JSON.stringify(contract.alertPolicy) === JSON.stringify(EXPECTED_ALERT_POLICY) &&
+    (sources.alertRules ?? "") !== renderSloAlertRules(contract)
+  ) {
+    reject("alert rules must exactly implement the reviewed multi-window policy");
+  }
+  const alertText = (sources.alertRules ?? "").toLowerCase();
+  for (const forbidden of FORBIDDEN_QUERY_TEXT) {
+    if (alertText.includes(forbidden)) {
+      reject(`alert rules contain prohibited high-cardinality text: ${forbidden}`);
+    }
+  }
+  if (/\{\{|\bfor:|keep_firing_for:/u.test(sources.alertRules ?? "")) {
+    reject("alerts must use static bounded annotations and dual windows without hidden delay");
+  }
+  for (const required of [
+    "rapid burn fires for three page SLOs and excludes progress paging",
+    "rapid burn requires the paired short windows",
+    "incomplete long windows create no alert",
+    "rapid burn recovers through the short window",
+    "sustained burn fires for all four SLOs",
+    "sustained burn recovers through the short window",
+    "no traffic or excluded traffic creates no alert",
+  ]) {
+    if (!(sources.alertRuleTests ?? "").includes(required)) {
+      reject(`synthetic alert rules missing: ${required}`);
+    }
+  }
+  if (
+    !(sources.runbooks ?? "").includes("## Runbook: Critical-journey SLO burn") ||
+    !(sources.runbooks ?? "").includes("aster:sli:error:ratio_rate1h") ||
+    !(sources.runbooks ?? "").includes("aster:sli:error:ratio_rate3d")
+  ) {
+    reject("burn alerts require a navigable runbook with rapid and sustained confirmation queries");
+  }
 
   const routerConfig = sources.routerConfig ?? "";
   for (const required of [
@@ -281,7 +454,7 @@ export function validateSloContract(sources) {
 
   const prometheus = sources.prometheusConfig ?? "";
   for (const required of [
-    "rule_files:\n  - /etc/aster/slo-rules.yml\n",
+    "rule_files:\n  - /etc/aster/slo-rules.yml\n  - /etc/aster/slo-alerts.yml\n",
     "job_name: aster-router\n",
     "targets: [router:9091]",
     "sample_limit: 500\n",
@@ -293,10 +466,19 @@ export function validateSloContract(sources) {
   }
   if (
     !(sources.prometheusImage ?? "").includes(
-      "COPY infra/observability/slo-rules.yml /etc/aster/slo-rules.yml",
+      "COPY infra/observability/slo-rules.yml /etc/aster/slo-rules.yml\nCOPY infra/observability/slo-alerts.yml /etc/aster/slo-alerts.yml",
     )
   ) {
-    reject("Prometheus image must bake the reviewed SLI rules");
+    reject("Prometheus image must bake the reviewed SLI and alert rules");
+  }
+  for (const required of [
+    "--storage.tsdb.retention.time=3d\n",
+    "--storage.tsdb.retention.size=128MB\n",
+    "--query.max-samples=10000\n",
+  ]) {
+    if (!(sources.observabilityCompose ?? "").includes(required)) {
+      reject(`Prometheus alert runtime boundary missing: ${required.trim()}`);
+    }
   }
   const productBucketBlock =
     /PRODUCT_DURATION_BUCKETS_SECONDS = Object\.freeze\(\[([\s\S]*?)\]\);/u.exec(

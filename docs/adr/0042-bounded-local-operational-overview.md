@@ -5,7 +5,7 @@
 - Owners: Platform
 - Related requirements: P12-R12
 - Supersedes: none
-- Superseded by: none
+- Superseded by: ADR-0043 for the local Prometheus time ceiling only
 
 ## Context
 
@@ -55,8 +55,9 @@ layers:
 Each data panel has one fixed Prometheus query and an explicit diagnostic question.
 The dashboard has no variables, identifiers, raw GraphQL documents, signed URLs
 or arbitrary label input. Refresh is 30 seconds; Prometheus retains its existing
-query, sample, concurrency and one-hour retention limits. A zero population
-remains no data rather than synthetic success.
+query, sample, concurrency and bounded retention limits. A zero population
+remains no data rather than synthetic success. ADR-0043 later extends only the
+local time ceiling to three days while preserving the 128 MB size ceiling.
 
 Grafana health is part of the optional profile start and protected dashboard
 acceptance, but not `platform-status` or any product readiness path. Grafana or
@@ -84,7 +85,7 @@ privacy review executable.
 
 - The optional profile adds one 384 MiB container and another image pull/build.
 - Local anonymous Viewer access is unsuitable for a remotely reachable host.
-- One-hour local data demonstrates mechanics, not 28/30-day SLO compliance.
+- Bounded local data demonstrates mechanics, not 28/30-day SLO compliance.
 
 ### Operational
 

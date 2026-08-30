@@ -1,0 +1,242 @@
+rule_files:
+  - slo-alerts.yml
+
+evaluation_interval: 1m
+
+tests:
+  - name: rapid burn fires for three page SLOs and excludes progress paging
+    interval: 1m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="supergraph"}'
+        values: "1+0x60"
+      - series: 'aster:sli:good:rate5m{sli="supergraph"}'
+        values: "0.98+0x60"
+      - series: 'aster:sli:population:rate5m{sli="catalog_title_read"}'
+        values: "1+0x60"
+      - series: 'aster:sli:good:rate5m{sli="catalog_title_read"}'
+        values: "0.98+0x60"
+      - series: 'aster:sli:population:rate5m{sli="playback_start"}'
+        values: "1+0x60"
+      - series: 'aster:sli:good:rate5m{sli="playback_start"}'
+        values: "0.98+0x60"
+      - series: 'aster:sli:population:rate5m{sli="progress_write"}'
+        values: "1+0x60"
+      - series: 'aster:sli:good:rate5m{sli="progress_write"}'
+        values: "0.98+0x60"
+    alert_rule_test:
+      - eval_time: 1h
+        alertname: AsterCriticalJourneySloRapidBurn
+        exp_alerts:
+          - exp_labels:
+              owner: Platform
+              response: immediate
+              severity: page
+              sli: supergraph
+            exp_annotations:
+              summary: Rapid SLO burn for supergraph
+              description: Both long and short error-rate windows exceed a reviewed rapid-burn threshold.
+              user_impact: A bad event means a valid first-party GraphQL operation cannot complete through the public application API.
+              policy: 14.4x over 1h/5m or 6x over 6h/30m
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+          - exp_labels:
+              owner: Catalog
+              response: immediate
+              severity: page
+              sli: catalog_title_read
+            exp_annotations:
+              summary: Rapid SLO burn for catalog_title_read
+              description: Both long and short error-rate windows exceed a reviewed rapid-burn threshold.
+              user_impact: A bad event delays or prevents a viewer from opening a title detail page with the authoritative public visibility decision.
+              policy: 14.4x over 1h/5m or 6x over 6h/30m
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+          - exp_labels:
+              owner: Playback
+              response: immediate
+              severity: page
+              sli: playback_start
+            exp_annotations:
+              summary: Rapid SLO burn for playback_start
+              description: Both long and short error-rate windows exceed a reviewed rapid-burn threshold.
+              user_impact: A bad event means an otherwise eligible viewer cannot obtain a timely CDN-compatible playback session.
+              policy: 14.4x over 1h/5m or 6x over 6h/30m
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="playback_start"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+
+  - name: rapid burn requires the paired short windows
+    interval: 1m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="supergraph"}'
+        values: "1+0x60"
+      - series: 'aster:sli:good:rate5m{sli="supergraph"}'
+        values: "0.96+0x29 1+0x31"
+    alert_rule_test:
+      - eval_time: 1h
+        alertname: AsterCriticalJourneySloRapidBurn
+        exp_alerts: []
+
+  - name: incomplete long windows create no alert
+    interval: 1m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="supergraph"}'
+        values: "1+0x20"
+      - series: 'aster:sli:good:rate5m{sli="supergraph"}'
+        values: "0+0x20"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: AsterCriticalJourneySloRapidBurn
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: AsterCriticalJourneySloSustainedBurn
+        exp_alerts: []
+
+  - name: rapid burn recovers through the short window
+    interval: 1m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="supergraph"}'
+        values: "1+0x100"
+      - series: 'aster:sli:good:rate5m{sli="supergraph"}'
+        values: "0.98+0x60 1+0x40"
+    alert_rule_test:
+      - eval_time: 1h
+        alertname: AsterCriticalJourneySloRapidBurn
+        exp_alerts:
+          - exp_labels:
+              owner: Platform
+              response: immediate
+              severity: page
+              sli: supergraph
+            exp_annotations:
+              summary: Rapid SLO burn for supergraph
+              description: Both long and short error-rate windows exceed a reviewed rapid-burn threshold.
+              user_impact: A bad event means a valid first-party GraphQL operation cannot complete through the public application API.
+              policy: 14.4x over 1h/5m or 6x over 6h/30m
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+      - eval_time: 1h6m
+        alertname: AsterCriticalJourneySloRapidBurn
+        exp_alerts: []
+
+  - name: sustained burn fires for all four SLOs
+    interval: 5m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="supergraph"}'
+        values: "1+0x864"
+      - series: 'aster:sli:good:rate5m{sli="supergraph"}'
+        values: "0.9988+0x864"
+      - series: 'aster:sli:population:rate5m{sli="catalog_title_read"}'
+        values: "1+0x864"
+      - series: 'aster:sli:good:rate5m{sli="catalog_title_read"}'
+        values: "0.9988+0x864"
+      - series: 'aster:sli:population:rate5m{sli="playback_start"}'
+        values: "1+0x864"
+      - series: 'aster:sli:good:rate5m{sli="playback_start"}'
+        values: "0.9988+0x864"
+      - series: 'aster:sli:population:rate5m{sli="progress_write"}'
+        values: "1+0x864"
+      - series: 'aster:sli:good:rate5m{sli="progress_write"}'
+        values: "0.9988+0x864"
+    alert_rule_test:
+      - eval_time: 3d
+        alertname: AsterCriticalJourneySloSustainedBurn
+        exp_alerts:
+          - exp_labels:
+              owner: Platform
+              response: working_hours
+              severity: ticket
+              sli: supergraph
+            exp_annotations:
+              summary: Sustained SLO burn for supergraph
+              description: Both long and short error-rate windows exceed a reviewed sustained-burn threshold.
+              user_impact: A bad event means a valid first-party GraphQL operation cannot complete through the public application API.
+              policy: 3x over 1d/2h or 1x over 3d/6h
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+          - exp_labels:
+              owner: Catalog
+              response: working_hours
+              severity: ticket
+              sli: catalog_title_read
+            exp_annotations:
+              summary: Sustained SLO burn for catalog_title_read
+              description: Both long and short error-rate windows exceed a reviewed sustained-burn threshold.
+              user_impact: A bad event delays or prevents a viewer from opening a title detail page with the authoritative public visibility decision.
+              policy: 3x over 1d/2h or 1x over 3d/6h
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+          - exp_labels:
+              owner: Playback
+              response: working_hours
+              severity: ticket
+              sli: playback_start
+            exp_annotations:
+              summary: Sustained SLO burn for playback_start
+              description: Both long and short error-rate windows exceed a reviewed sustained-burn threshold.
+              user_impact: A bad event means an otherwise eligible viewer cannot obtain a timely CDN-compatible playback session.
+              policy: 3x over 1d/2h or 1x over 3d/6h
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="playback_start"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+          - exp_labels:
+              owner: Engagement
+              response: working_hours
+              severity: ticket
+              sli: progress_write
+            exp_annotations:
+              summary: Sustained SLO burn for progress_write
+              description: Both long and short error-rate windows exceed a reviewed sustained-burn threshold.
+              user_impact: A bad event means a current valid playback checkpoint is not durably accepted within the interaction budget.
+              policy: 3x over 1d/2h or 1x over 3d/6h
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="progress_write"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+
+  - name: sustained burn recovers through the short window
+    interval: 5m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="supergraph"}'
+        values: "1+0x940"
+      - series: 'aster:sli:good:rate5m{sli="supergraph"}'
+        values: "0.9988+0x864 1+0x76"
+    alert_rule_test:
+      - eval_time: 3d
+        alertname: AsterCriticalJourneySloSustainedBurn
+        exp_alerts:
+          - exp_labels:
+              owner: Platform
+              response: working_hours
+              severity: ticket
+              sli: supergraph
+            exp_annotations:
+              summary: Sustained SLO burn for supergraph
+              description: Both long and short error-rate windows exceed a reviewed sustained-burn threshold.
+              user_impact: A bad event means a valid first-party GraphQL operation cannot complete through the public application API.
+              policy: 3x over 1d/2h or 1x over 3d/6h
+              confirmation_query: 'aster:sli:good:ratio_rate5m{sli="supergraph"}'
+              dashboard_url: http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview
+              runbook_url: https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn
+      - eval_time: 3d6h5m
+        alertname: AsterCriticalJourneySloSustainedBurn
+        exp_alerts: []
+
+  - name: no traffic or excluded traffic creates no alert
+    interval: 1m
+    input_series:
+      - series: 'aster:sli:population:rate5m{sli="excluded"}'
+        values: "1+0x60"
+      - series: 'aster:sli:good:rate5m{sli="excluded"}'
+        values: "0+0x60"
+    alert_rule_test:
+      - eval_time: 1h
+        alertname: AsterCriticalJourneySloRapidBurn
+        exp_alerts: []
+      - eval_time: 1h
+        alertname: AsterCriticalJourneySloSustainedBurn
+        exp_alerts: []

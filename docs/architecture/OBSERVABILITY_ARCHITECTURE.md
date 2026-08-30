@@ -268,7 +268,7 @@ measurement definitions, sampling, retention, privacy and future activation
 gates. Focused and protected release evidence is recorded under the Phase12
 index.
 
-### Implemented Phase 12 SLI/SLO candidate
+### Implemented Phase 12 SLI/SLO and burn-alert contract
 
 The Router classifies each known-operation response into `completed`,
 `rejected` or `failed` after sanitizing its finite error codes. The standard
@@ -287,11 +287,18 @@ in the machine-readable
 Prometheus 3.14.0 synthetic rule tests cover good, bad, failure-only, idle,
 excluded and excluded-only traffic. Failure-only windows derive a zero numerator
 from the present population; a positive-denominator filter keeps idle and no-
-population windows absent instead of recording `NaN`. The local one-hour store
-proves mechanics only; it has no
-28/30-day history. First-frame remains a local diagnostic because remote browser
-sampling is zero. No dashboard, alert or historical SLO compliance is claimed
-by this slice.
+population windows absent instead of recording `NaN`.
+
+ADR-0043 integrates those finite good/population rates over the standard rapid
+1h/5m and 6h/30m pairs and sustained 1d/2h and 3d/6h pairs. Both windows must
+exceed the same burn-rate multiple of the owning SLO's error budget. Seven
+possible alert instances retain static owner, response, user-impact, dashboard,
+confirmation and runbook metadata. The optional local store is capped by three
+days and 128 MB; ratios and alerts require complete sampled window coverage, so
+fresh or size-evicted history stays absent. Alert state is local Prometheus
+output only—no Alertmanager delivery or historical
+28/30-day compliance is claimed. First-frame remains a local diagnostic because
+remote browser sampling is zero.
 
 ## SLIs
 

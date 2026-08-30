@@ -2,6 +2,14 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0043](../docs/adr/0043-multi-window-slo-burn-alerts.md) evaluates rapid
+14.4x 1h/5m and 6x 6h/30m pairs plus sustained 3x 1d/2h and 1x 3d/6h pairs for
+each released SLI. Both windows must burn above the threshold derived from the
+owning error budget, and incomplete sampled windows remain absent. Exactly seven
+alert instances carry finite owner, response, impact, dashboard, confirmation
+and runbook metadata. Local Prometheus keeps at most three days/128 MB and
+exposes state without claiming external delivery or 28/30-day compliance.
+
 [ADR-0042](../docs/adr/0042-bounded-local-operational-overview.md) adds one
 digest-pinned Grafana OSS 13.2.0 operational overview to the optional local
 observability profile. It is loopback-only, Viewer-only, immutable,

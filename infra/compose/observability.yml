@@ -70,7 +70,7 @@ services:
     command:
       - --config.file=/etc/aster/prometheus.yml
       - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=1h
+      - --storage.tsdb.retention.time=3d
       - --storage.tsdb.retention.size=128MB
       - --storage.tsdb.wal-segment-size=10MB
       - --query.timeout=2s

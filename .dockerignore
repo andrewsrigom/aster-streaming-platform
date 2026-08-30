@@ -88,6 +88,7 @@
 !infra/compose/collector.integration.yml
 !infra/compose/prometheus.local.yml
 !infra/observability/slo-rules.yml
+!infra/observability/slo-alerts.yml
 !infra/grafana/provisioning/**/*.yml
 !infra/grafana/dashboards/*.json
 !tools/media/*.mjs

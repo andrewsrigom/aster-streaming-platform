@@ -195,7 +195,7 @@ export function validateObservabilityProfile(sources) {
       "    networks: [platform, edge]\n",
       "      - prometheus-data:/prometheus\n",
       "GOMEMLIMIT: 192MiB\n",
-      "--storage.tsdb.retention.time=1h\n",
+      "--storage.tsdb.retention.time=3d\n",
       "--storage.tsdb.retention.size=128MB\n",
       "--storage.tsdb.wal-segment-size=10MB\n",
       "--query.timeout=2s\n",
@@ -252,7 +252,7 @@ export function validateObservabilityProfile(sources) {
     [
       "scrape_interval: 5s\n",
       "scrape_timeout: 2s\n",
-      "rule_files:\n  - /etc/aster/slo-rules.yml\n",
+      "rule_files:\n  - /etc/aster/slo-rules.yml\n  - /etc/aster/slo-alerts.yml\n",
       "targets: [collector:8889]",
       "job_name: aster-router\n",
       "targets: [router:9091]",

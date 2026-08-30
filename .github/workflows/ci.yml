@@ -279,11 +279,15 @@ jobs:
           docker run --rm --entrypoint /bin/promtool \
             --volume "$GITHUB_WORKSPACE/infra/observability:/etc/aster/observability:ro" \
             docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0 \
-            check rules /etc/aster/observability/slo-rules.yml
+            check rules /etc/aster/observability/slo-rules.yml /etc/aster/observability/slo-alerts.yml
           docker run --rm --entrypoint /bin/promtool \
             --volume "$GITHUB_WORKSPACE/infra/observability:/etc/aster/observability:ro" \
             docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0 \
             test rules /etc/aster/observability/slo-rules.test.yml
+          docker run --rm --entrypoint /bin/promtool \
+            --volume "$GITHUB_WORKSPACE/infra/observability:/etc/aster/observability:ro" \
+            docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0 \
+            test rules /etc/aster/observability/slo-alerts.test.yml
       - name: Start health-gated local platform
         run: >-
           docker compose --file "$COMPOSE_FILE" up
@@ -429,6 +433,36 @@ jobs:
           grafana_dashboard=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/dashboards/uid/aster-operational-overview)
           grep -Fq '"uid":"aster-operational-overview"' <<< "$grafana_dashboard"
           grep -Fq '"editable":false' <<< "$grafana_dashboard"
+          prometheus_rules=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:9090/api/v1/rules)
+          PROMETHEUS_RULES="$prometheus_rules" node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const payload = JSON.parse(process.env.PROMETHEUS_RULES);
+          assert.equal(payload.status, 'success');
+          const rules = payload.data.groups.flatMap((group) => group.rules);
+          for (const rule of rules) {
+            assert.equal(rule.health, 'ok');
+          }
+          assert.equal(rules.length, 35);
+          const threeDayRatio = rules.find(({ name }) => name === 'aster:sli:error:ratio_rate3d');
+          assert.ok(threeDayRatio);
+          assert.match(threeDayRatio.query, /count_over_time\(aster:sli:population:rate5m\[3d:5m\]\) >= 864/);
+          const alertRules = rules.filter(({ type }) => type === 'alerting');
+          assert.equal(alertRules.length, 7);
+          assert.equal(alertRules.filter(({ name }) => name === 'AsterCriticalJourneySloRapidBurn').length, 3);
+          assert.equal(alertRules.filter(({ name }) => name === 'AsterCriticalJourneySloSustainedBurn').length, 4);
+          for (const rule of alertRules) {
+            assert.equal(rule.duration, 0);
+            assert.equal(rule.keepFiringFor, 0);
+            assert.equal(rule.annotations.runbook_url, 'https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn');
+          }
+          NODE
+          prometheus_alerts=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:9090/api/v1/alerts)
+          PROMETHEUS_ALERTS="$prometheus_alerts" node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const payload = JSON.parse(process.env.PROMETHEUS_ALERTS);
+          assert.equal(payload.status, 'success');
+          assert.equal(payload.data.alerts.length, 0);
+          NODE
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full stop --timeout 5 grafana
           platform_status_id=$(docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full ps --quiet platform-status)
           test "$(docker inspect --format '{{.State.Health.Status}}' "$platform_status_id")" = healthy
