@@ -30,6 +30,16 @@ test("recording rules cannot add high-cardinality labels or artificial no-traffi
       ),
     }).length > 0,
   );
+  const missingRecordingZero = cloneContract();
+  missingRecordingZero.slis[0].recordingQueries.good =
+    missingRecordingZero.slis[0].recordingQueries.good.split(" or on()")[0];
+  assert.ok(validateSloContract({ ...sources, contract: missingRecordingZero }).length > 0);
+
+  const missingObjectiveZero = cloneContract();
+  missingObjectiveZero.slis[0].objectiveQuery = missingObjectiveZero.slis[0].objectiveQuery
+    .replace(/^\(/u, "")
+    .replace(/ or on\(\) \(0 \* .*\)\) \/ /u, " / ");
+  assert.ok(validateSloContract({ ...sources, contract: missingObjectiveZero }).length > 0);
 });
 
 test("Router classification and private scrape boundaries are mandatory", () => {

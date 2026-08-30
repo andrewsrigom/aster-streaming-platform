@@ -169,6 +169,21 @@ export function validateSloContract(sources) {
       reject(`${sli.id} lacks executable recording or objective-window queries`);
       continue;
     }
+    if (!sli.recordingQueries.good.endsWith(` or on() (0 * ${sli.recordingQueries.population})`)) {
+      reject(`${sli.id} good-event query must zero-fill only from its present population`);
+    }
+    const objectiveSeparator = sli.objectiveQuery.lastIndexOf(" / ");
+    const objectiveNumerator = sli.objectiveQuery.slice(0, objectiveSeparator);
+    const objectiveDenominator = sli.objectiveQuery.slice(objectiveSeparator + 3);
+    if (
+      objectiveSeparator < 1 ||
+      !objectiveNumerator.endsWith(` or on() (0 * ${objectiveDenominator}))`)
+    ) {
+      reject(`${sli.id} objective query must zero-fill only from its present population`);
+    }
+    if (!(sources.ruleTests ?? "").includes(sli.objectiveQuery)) {
+      reject(`${sli.id} objective query requires a synthetic failure-only assertion`);
+    }
     const queryText = [
       sli.recordingQueries.population,
       sli.recordingQueries.good,
@@ -284,9 +299,10 @@ export function validateSloContract(sources) {
   }
   if (
     !(sources.ruleTests ?? "").includes("excluded-only traffic creates no SLI ratio") ||
+    !(sources.ruleTests ?? "").includes("failure-only traffic produces zero SLI ratios") ||
     !(sources.ruleTests ?? "").includes("good bad and excluded events retain exact SLI populations")
   ) {
-    reject("synthetic rules must cover good, bad, excluded and zero-population behavior");
+    reject("synthetic rules must cover good, bad, failure-only and zero-population behavior");
   }
   return violations;
 }
