@@ -54,19 +54,21 @@ P10-R04 is DONE. PR39 exact `601cc95` passed protected run `33274397440` and cle
 confirmation, squash-merged without bypass as main `6a2fe3a`, and exact-main run
 `33275183338` passed. Its Discovery103/103, affected73/73, real Redis, browser,
 eleven-service outage and release evidence remain linked under
-`evidence/phase-10`. P10-R08 is the sole `IN_PROGRESS` item on
-`feat/p10-operation-limiters`, based exactly on that release. Initial PR40
+`evidence/phase-10`. P10-R08 is DONE through PR40 exact `6d74873`, protected
+run33281516077, resolved exact-head review, squash main `eed8229` and exact-main
+run33282217705. Initial PR40
 run33277368515 passed; exactade7379 corrects its three initial review blockers.
 Protected run33279111820 passed exact041c75e; confirmation discussion3887901456
 then found duplicate token charges across Engagement replicas. Exact c5ea7c8
 atomically deduplicates the finite shared admission marker. Redis18/18,
-Engagement124/124 and affected73/73 pass; one protected real-dependency repeat
-and the permitted blocking-boundary confirmation remain before merge.
+Engagement124/124 and affected73/73 pass; the later request-digest correction and
+protected release supersede this checkpoint.
 
 Confirmation at `aa5e6af` found discussion3887956537. The local correction adds
 the canonical request digest to shared admission identity, retaining key-only
-local ordering. Engagement126/126 and the corrected73/73 candidate pass. Hosted
-gates and one blocking-boundary confirmation remain before P10-R08 can close.
+local ordering. Engagement126/126 and the corrected73/73 candidate pass.
+Protected run33281516077 verifies its real Redis/PostgreSQL boundaries; PR40 and
+exact-main run33282217705 close the item. P11-R01 is the sole active work item.
 
 Rails/fallback/owner composition/telemetry confirmation found database-admission and migration-rollout blockers.
 Admission is corrected. Precursor PR35 exact `8002594` passed75/75,42/42,
@@ -141,7 +143,8 @@ Historical stashes are superseded.
 | 49 | Integrate public SSR rails/search and private profile enhancement; close Phase 09 | P09-R10 | DONE |
 | 50 | Implement rights-safe Catalog cache-aside, jitter, coalescing, lease and metrics | P10-R01 | DONE |
 | 51 | Implement bounded Discovery stale-while-revalidate and refresh fallback | P10-R04 | DONE |
-| 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | IN_PROGRESS |
+| 52 | Add operation limiters and prove outage, atomicity and hot-key behavior; close Phase 10 | P10-R08 | DONE |
+| 53 | Register dependency policies and execute bounded retries for safe Catalog reads | P11-R01 | IN_PROGRESS |
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

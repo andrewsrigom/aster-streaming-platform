@@ -2,68 +2,67 @@
 
 ## Resume point
 
-Phases 00–09 are released locally. P10 Catalog cache-aside is released through
-main `903f7b4` and exact-main run `33272501078`.
+Phases 00–10 are released locally. PR40 exact
+`6d748734e36dad419e6c9f377281a82a121ec917` passed protected run33281516077,
+resolved review and squash-merged without bypass as
+`eed82291c29e43d985cb6b0fa08d8c21be32c133`. Both commits have tree
+`4282bfeaef6ef3182d3f584a460a86b449da312d`; exact-main run33282217705 passed.
+Phase10 release evidence is under `evidence/phase-10/`.
 
-P10 Discovery stale-while-revalidate passed PR39 exact `601cc95`, protected run
-`33274397440`, clean confirmation and squash-merged without bypass as main
-`6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0`. Exact-main run
-`33275183338` passed. P10-R08 is the sole `IN_PROGRESS` item on
-`feat/p10-operation-limiters`, based on that exact release.
+P11-R01 is active on `feat/p11-dependency-policies`, based on that exact release.
+The worktree intentionally contains the current Phase11 candidate and repository
+memory changes.
 
-The active plan implements an atomic Redis-server-time token bucket for
-Engagement progress/watchlist after current owner authorization and idempotent
-replay, with bounded local fallback/hot-key shielding. Discovery search receives
-two active slots, one waiter and a 100 ms queue bound. P10-R08 also owns the real
-atomicity, outage, cardinality and hot-key evidence and closes Phase 10.
+Implemented locally:
 
-PR40 initial protected run `33277368515` passed at exact `6719bda`. Its three P2
-findings are corrected together at exact `ade7379`: same-key serialization before
-receipt/rate admission, portable Engagement `retryAfterMs`, and portable
-Discovery `LIMIT_EXCEEDED`. Focused Engagement123/123, Discovery105/105 and
-Web111/111 pass. The corrected complete candidate passes73/73,48 cached,in73.641
-seconds. Protected run33279111820 passed all required jobs and real fixtures at
-exact041c75e. Confirmation discussion3887901456 then found duplicate token
-charges when identical retries reach different Engagement replicas. Exact
-c5ea7c8 adds a finite atomic v2 admission marker to the shared bucket decision;
-Redis18/18, Engagement124/124, scoped static checks and affected73/73 pass,44
-cached,in61.854 seconds. Confirmation at `aa5e6af` then found discussion3887956537.
-The local correction binds shared admission to the canonical request digest, but
-keeps local ordering key-only for receipt conflict detection. Engagement126/126
-passes. The extended two-writer Redis fixture tests exact retry reuse and
-changed-payload competition even when no receipt is written; execution is pending.
-The corrected candidate passes73/73,56 cached,in48.173 seconds. Prior protected
-run33280768684 passed at aa5e6af; it predates this digest correction.
+- ADR-0040 replaces only ADR-0027's one-attempt clause for the fixed safe read.
+- `DEPENDENCY_POLICY_REGISTRY.md` covers nineteen current operation classes and
+  distinguishes application retry, reconnect, durable redelivery and user retry.
+- `@aster/runtime` owns an overall-deadline safe-read executor, per-attempt
+  deadlines, remaining-budget admission, equal jitter, finite attempts and
+  finite observations.
+- Playback publication reads use 1,500/650/100-ms budgets and max two attempts.
+- Discovery snapshot/export reads use 2,000/850/100-ms budgets and max two
+  attempts.
+- Only HTTP502/503/504, EAI_AGAIN, ECONNRESET and incomplete/aborted streams are
+  transient. Timeout is terminal. HTTP500, 4xx, redirects, invalid headers/body,
+  malformed owner data and local capacity do not retry.
+- Both logical operations retain the existing concurrency permit. Web and Router
+  still do not retry these operations.
+- Per-attempt metrics use finite `catalog`/`read` attributes.
+
+Focused gates pass: runtime88/88, telemetry12/12, Playback38/38 and
+Discovery107/107. The affected candidate passes53/53 with19 cached in69.098
+seconds.
 
 ## Exact next actions
 
-1. Commit the accepted request-digest candidate/checkpoint and push PR40 once.
-2. Require protected CI to repeat the real Redis/PostgreSQL fixtures at the exact
-   head; Discovery/browser/media carry forward because their boundaries did not
-   change.
-3. Reply to and resolve discussion3887956537, then request the permitted
-   blocking-boundary confirmation.
-4. Capture release evidence, squash-merge, confirm exact-main CI and close Phase10.
+1. Commit the reviewed implementation checkpoint and record its exact source.
+2. Capture `evidence/phase-11/dependency-policies.txt` and retry timing evidence.
+3. Complete one hosted review, batch only blocking remediation, then confirmation.
+4. Publish the coherent candidate and require protected CI at its exact head.
 
 ## Evidence boundaries
 
-Discovery's existing real Redis, browser and eleven-service outage artifacts stay
-valid because P10-R08 changes neither its cache bytes nor stale public shape.
-Repeat them only if that boundary changes. Redis script/key/policy changes repeat
-the limiter atomicity/hot-key fixture. Engagement owner/result placement repeats
-the durable Redis-outage fixture. Search admission changes repeat its concurrency
-proof. Unchanged media/player evidence does not repeat.
+The real local HTTP tests cover the changed wire/cleanup path through ephemeral
+Node servers. Router configuration, PostgreSQL, Redis, broker, media and browser
+behavior did not change, so their heavyweight evidence does not repeat unless a
+later change crosses that boundary. Protected CI will still execute its required
+repository runtime lanes.
 
 ## Execution environment
 
-Use native WSL Git and pinned Node 24.19.0/pnpm 11.24.0 from
+Use native WSL Git and pinned Node24.19.0/pnpm11.24.0 from
 `/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Use
 `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4` and bounded
 deadlines. Never create or use `codex/` branches.
 
+The local Docker daemon remains unavailable and is unnecessary for this
+candidate. Do not restart WSL/Docker or repeat host CPU/memory diagnostics.
+
 ## Do not do yet
 
-Do not add Phase11 retries/circuits or Phase13 trusted-operation/public-proxy
-calibration. Do not make Redis durable or critical readiness, expose raw account
-identity in keys/telemetry, scan/flush Redis, repeat unchanged media/browser/CPU
-work, restart WSL/Docker globally, or alter unrelated retained projects/data.
+Do not add circuit breakers, public failure injection, game-day tuning or Phase13
+GraphQL calibration inside P11-R01. Do not retry unsafe writes, authorization,
+rights/publication decisions or unknown transaction outcomes. Do not add Router
+or Apollo Client retry, a new service, package or infrastructure dependency.

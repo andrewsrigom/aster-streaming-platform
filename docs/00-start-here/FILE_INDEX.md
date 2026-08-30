@@ -143,6 +143,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/architecture/BOUNDED_CONTEXTS.md`](../architecture/BOUNDED_CONTEXTS.md) — Bounded Contexts
 - [`docs/architecture/CAPACITY_AND_EVOLUTION.md`](../architecture/CAPACITY_AND_EVOLUTION.md) — Capacity and Evolution
 - [`docs/architecture/DATA_AND_EVENTS.md`](../architecture/DATA_AND_EVENTS.md) — Data and Events
+- [`docs/architecture/DEPENDENCY_POLICY_REGISTRY.md`](../architecture/DEPENDENCY_POLICY_REGISTRY.md) — Dependency Policy Registry
 - [`docs/architecture/DEPLOYMENT_ARCHITECTURE.md`](../architecture/DEPLOYMENT_ARCHITECTURE.md) — Deployment Architecture
 - [`docs/architecture/FAILURE_MODES.md`](../architecture/FAILURE_MODES.md) — Failure Modes
 - [`docs/architecture/FRONTEND_ARCHITECTURE.md`](../architecture/FRONTEND_ARCHITECTURE.md) — Frontend Architecture

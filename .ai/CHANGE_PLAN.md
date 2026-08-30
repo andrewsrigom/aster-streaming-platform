@@ -1,263 +1,148 @@
-# Work Item: Operation admission and Phase 10 closeout
+# Work Item: Dependency policy registry and bounded safe reads
 
 - Status: IN_PROGRESS
-- Owner: Engagement owns viewer-write rate policy; Discovery owns search concurrency; Platform owns the bounded Redis command
-- Phase: 10
-- Requirement IDs: P10-R08, P10-R09, P10-R10, P10-R11, P10-R12
+- Owner: Platform owns reusable execution; Playback and Discovery own their Catalog reads
+- Phase: 11
+- Requirement IDs: P11-R01, P11-R02, P11-R03, P11-R04, P11-R06, P11-R11
 - Created: 2026-08-29
 - Updated: 2026-08-29
 
 ## Outcome
 
-Repeated viewer writes are admitted by an operation-specific token bucket after
-current owner authorization. One account cannot multiply capacity by changing
-profiles, and multiple service instances share one atomic Redis decision. Redis
-loss falls back to a bounded process-local bucket, so accepted progress remains a
-PostgreSQL transaction and Redis never acknowledges a durable mutation. Discovery
-search receives a separate two-active/one-waiter bulkhead so expensive searches
-cannot consume all home-rail capacity. Measured atomicity, outage and hot-key
-evidence closes Phase 10 without implementing Phase 11 retry/circuit policies or
-Phase 13's final public GraphQL calibration.
+A checked-in registry states criticality, idempotency, deadline, attempts,
+backoff, breaker, concurrency, fallback, telemetry and user outcome for every
+current dependency operation class. One reusable runtime policy proves the
+deadline/retry rules on two concrete, read-only Catalog clients without changing
+authorization, rights, durable writes or Router retries.
 
 ## Current behavior
 
-Catalog cache-aside is released through main `903f7b4`. Discovery stale serving
-is released through PR39, squash `6a2fe3a8f55dd4c655f962d62d4ba017f5716cf0`
-and exact-main run `33275183338`. The candidate implements the bounded Redis
-token-bucket command, Engagement account-operation admission, local degraded
-shield, finite limiter telemetry and the Discovery search-only bulkhead. Focused
-Redis, telemetry, Engagement and Discovery suites pass, and the initial complete
-affected candidate gate passed 73/73. Protected run `33277368515` passed the real
-Redis/PostgreSQL fixtures at exact `6719bda`. Its initial review found three public
-contract blockers: concurrent identical retries could spend multiple tokens, and
-Engagement/Discovery limit responses depended on private subgraph HTTP behavior.
-Exact `ade7379` serializes same-key work before receipt/admission and exposes the
-two limit decisions in portable GraphQL payloads. Engagement123/123,
-Discovery105/105 and Web111/111 pass after the batched remediation; the corrected
-complete candidate passes 73/73 with 48 cached in 73.641 seconds. Protected run
-`33279111820` then passed every required job at exact `041c75e`, including the
-corrected real Redis/PostgreSQL fixtures. Its confirmation review found one
-remaining replica boundary: process-local same-key ordering cannot prevent two
-Engagement replicas from charging the shared bucket before PostgreSQL receipt
-serialization. Exact `c5ea7c8` adds one finite atomic v2 admission marker to the
-shared bucket decision. Redis18/18, Engagement124/124, scoped static checks and
-the corrected affected gate pass 73/73 with 44 cached in 61.854 seconds. The
-Redis script/key changed, so the protected real-dependency repeat and permitted
-blocking-boundary confirmation remain before release. The completed confirmation
-at `aa5e6af` found discussion3887956537: the shared admission identity omits the
-request digest, so different unsuccessful attempts can reuse the same marker.
-Bind the shared identity to the existing canonical request digest while keeping
-local ordering keyed only by the authorized idempotency identity. Verify both
-operations, concurrent conflict detection and the real Redis two-replica path.
-The correction passes Engagement126/126 and the complete affected73/73 gate,
-56 cached,in48.173 seconds. Run33280768684 passed at the prior exactaa5e6af,
-including the two-key Lua proof, but cannot prove the changed application digest.
+Phase 10 is released as `eed8229`; exact-main run `33282217705` passed. This
+branch is based on that exact released tree. Requests already propagate
+AbortSignal cancellation, Router/subgraph timeouts are nested, dependency clients
+have attempt deadlines and finite concurrency, broker/relay retries are bounded,
+and unsafe or indeterminate writes are not retried. Owner HTTP read policies are
+distributed across code and ADRs and currently make one attempt.
 
 ## Proposed behavior
 
-Add one Redis-server-time token-bucket command with a small deterministic Lua
-script. It validates the exact bucket and admission keys plus bounded integer
-policy. A first allowed idempotency admission atomically consumes one token and
-records a finite marker; another replica presenting the same admission digest
-reuses that decision without another charge. Independent admission digests still
-compete for the account-operation bucket. The command atomically recovers
-missing, malformed, wrong-type or non-expiring limiter state, sets finite TTLs
-and returns only allowed/rejected, remaining capacity, retry-after, recovery and
-deduplication state. Vendor timeout, abort, malformed reply and capacity behavior
-stay inside the existing adapter deadline and cancellation contract.
+Accept ADR-0040 to supersede only ADR-0027's one-attempt clause for the fixed,
+read-only Playback Catalog operation and to refine ADR-0035's equivalent
+Discovery execution policy. Every existing authority and trust decision remains.
 
-Engagement wraps `record_progress` and `set_watchlist` after Identity has returned
-current account/profile authority. A process-local queue serializes the same
-authorized account/profile/idempotency key before receipt inspection and rate
-admission, with at most 1,024 active keys and 31 waiters per key. The first caller
-can spend one token; concurrent identical callers then observe its receipt rather
-than multiplying token use or durable effects. Keys partition by
-environment, exact operation and a SHA-256 pseudonym of the authorized account.
-The companion admission key contains only a SHA-256 digest of the authorized
-account/profile/idempotency identity plus the canonical request digest and expires
-with the bucket policy. Changed payloads are separate rate attempts even when an
-earlier attempt wrote no durable receipt; exact retries still deduplicate.
-Policies are twelve-token/four-per-second progress and four-token/one-per-second
-watchlist buckets. A bounded 1,024-partition process-local shield applies the same
-policy before Redis. It rejects a local hot burst without a Redis command; if
-Redis is unavailable after local admission, the local result is the explicit
-degraded decision. Successful Redis rejection remains authoritative. Idempotent
-replays do not spend another token. A limit result performs no durable write and
-returns `LIMIT_EXCEEDED` with bounded `retryAfterMs` in the public GraphQL payload;
-the private subgraph header is supplemental only.
+Inventory each existing PostgreSQL, Redis, broker, object-storage, owner HTTP,
+media-process and Web/Router operation class in one registry. Distinguish
+application attempts from vendor connection recovery and asynchronous outbox
+delivery. Preserve one retry layer: Apollo Client and Router do not retry these
+subgraph reads.
 
-Discovery adds a local search-only bulkhead after operation validation: two
-active searches, one queued caller, 100 ms maximum queue wait and independent
-cancellation. Overflow or wait expiry is an explicit bounded rejection; home
-rails and schema reads do not enter that lane. Search rejection returns HTTP 200
-with `DiscoverySearchCode.LIMIT_EXCEEDED` and no source result, so Apollo Router
-preserves the outcome. Shutdown closes admission and settles every waiter before
-dependency closure.
+Add a framework-free runtime safe-read executor with one overall deadline. It
+admits at most two attempts, never starts attempt two unless the remaining budget
+covers its ceiling plus response reserve, and applies equal-jitter exponential
+backoff from an injected random source. Only an explicit transient classification
+from a safe read can retry. Cancellation, validation, authorization, not-found,
+malformed response, permanent HTTP status, unknown transaction outcome and local
+capacity never retry.
+
+Apply it first to Playback's current-publication read and Discovery's Catalog
+snapshot/export reads. Preserve fixed endpoints, operations, credentials,
+response bounds and outer concurrency lanes. A retry remains inside one admitted
+operation and cannot increase active callers.
 
 ## Boundaries
 
-- Owning context: Engagement owns write admission after owner authorization;
-  Discovery owns search admission; Platform owns only the Redis primitive and
-  finite telemetry vocabulary.
-- Affected services/packages: `packages/redis`, `packages/telemetry`,
-  `services/engagement`, `services/discovery`, Compose, operations and Phase 10
-  evidence.
-- Authoritative data: Engagement PostgreSQL remains progress/watchlist truth;
-  Identity remains account/profile authority; Discovery PostgreSQL remains search
-  truth. Redis and local limiter state are disposable.
-- Read models/caches: no cache schema or read model changes.
-- Trust boundaries: GraphQL operation/input, current Identity owner response,
-  account pseudonym, Redis key/state/reply, server time, queue admission,
-  cancellation and shutdown.
-- External dependencies: existing pinned Redis 8.10.0 and PostgreSQL 18.6; no new
-  package or service.
+- Catalog remains publication/snapshot authority; Playback and Discovery own only
+  their use of results; Platform owns generic execution.
+- Affected code: `packages/runtime`, the two Catalog HTTP clients, focused tests,
+  resilience architecture/registry and Phase 11 evidence.
+- Authoritative data, persistence, cache and event contracts are unchanged.
+- Trust boundaries: fixed private HTTP responses, abort signals, Node transport
+  errors, status classification, injected clock/randomness and finite telemetry.
+- Existing Node 24 HTTP is the only external dependency; no package or service.
 
 ## Invariants
 
-- Only a current Identity-authorized account selects the distributed partition;
-  untrusted profile IDs or cookies do not select it directly.
-- Idempotent receipt replay precedes limiting and cannot be converted into a new
-  write by Redis behavior.
-- Concurrent work for one authorized idempotency key is serialized before receipt
-  inspection, so one in-process burst cannot charge one token per identical retry.
-- Across Engagement replicas, one atomic Redis marker makes the same authorized
-  idempotency admission charge at most once during the bounded execution window;
-  PostgreSQL receipt and aggregate locks remain the durable effect authority.
-- Redis acceptance never authorizes, commits or acknowledges progress/watchlist;
-  PostgreSQL owner checks and transactions remain decisive.
-- Redis loss may multiply the documented local capacity by healthy process count,
-  but cannot become unlimited inside one process or corrupt durable state.
-- Limiter keys and telemetry contain no credential, account/profile ID, query,
-  correlation ID or unbounded dimension.
-- Search has two active slots, one finite waiter and a bounded wait; home rails do
-  not use or wait for that bulkhead.
-- Phase 10 supplies reusable behavior and representative policy only. Phase 13
-  still owns trusted proxy identity, public/router placement and workload-based
-  GraphQL calibration.
+- Original caller cancellation and one operation deadline bound every attempt,
+  wait, parse and cleanup.
+- Only safe Catalog reads retry; no mutation, SQL write or publication does.
+- Malformed or semantically invalid owner data never becomes transient success.
+- One retry does not escape the existing client concurrency lane.
+- Authorization and rights failures have no fallback to allow.
+- Telemetry uses fixed values, never URLs, IDs, credentials, queries or errors.
+- Router, Apollo Client and the downstream client do not retry the same operation.
 
 ## Failure behavior
 
-| Failure | Expected behavior | Telemetry |
-|---|---|---|
-| Redis timeout, disconnect, unavailable or command capacity | Continue only if the local bucket admitted; durable owner path remains unchanged | limiter `local_fallback` plus Redis dependency outcome |
-| Redis atomic rejection | Return `LIMIT_EXCEEDED` and bounded retry metadata; execute no later owner dependency/write | limiter `rejected` |
-| Same-key mutation already in flight | Wait in the bounded local idempotency lane, then replay/conflict before another rate decision | existing finite owner/result outcomes |
-| Same-key mutation reaches another replica before receipt commit | Reuse the finite atomic Redis admission marker without another token charge; PostgreSQL serializes the durable receipt/effect | limiter allowed outcome with bounded Redis dependency telemetry |
-| Idempotency lane capacity exhausted or waiter limit reached | Return `BACKPRESSURE` before receipt/limiter/dependency work | no unbounded queue |
-| Wrong-type, malformed, future, non-expiring or excessive-TTL state | Atomically replace only the exact key with one finite current decision | limiter `recovered` and decision |
-| Caller cancellation before a Redis decision | Return cancelled; do not fall back or write | limiter `cancelled` |
-| Local partition capacity exhausted | Redis remains the global authority for existing identities; reject new local admission safely when Redis cannot decide | limiter `rejected` or Redis decision |
-| Search active slots full with queue available | Wait at most 100 ms with caller cancellation | concurrency `queued` then terminal outcome |
-| Search queue full or wait expires | Return a public `LIMIT_EXCEEDED` payload without running the search source | concurrency `rejected` |
-| Limiter telemetry failure | Preserve the already made admission decision | no behavior change |
-| Redis outage during real progress traffic | Existing local bucket bounds admission; PostgreSQL transaction/idempotency still determines success | outage artifact and durable row/receipt counts |
+| Failure | Result |
+|---|---|
+| Caller abort | Cancel immediately; no new attempt |
+| Overall budget exhausted | Existing unavailable or cancelled result |
+| Selected reset or transient 502/503/504 | Retry once only if budget permits |
+| Attempt timeout | Destroy transport and stop; never overlap attempts |
+| 4xx, redirect, invalid headers/body/envelope | Permanent unavailable; no retry |
+| Local concurrency full | Existing controlled rejection; no retry |
+| Random, clock or observation failure | Fail closed without unbounded work |
 
 ## Data and contracts
 
-- Schema/migration: no PostgreSQL migration.
-- GraphQL: additive `LIMIT_EXCEEDED` values for Engagement mutation payload enums
-  and `DiscoverySearchCode`; additive nullable `retryAfterMs` on both Engagement
-  mutation payloads. First-party persisted operations select the retry field.
-  Private `Retry-After` headers are supplemental and not required through Router.
-- Events: unchanged; rejected attempts append no outbox event.
-- Cache: no cache changes. Limiter v2 keys use separate bounded bucket and
-  admission families under
-  `aster:{environment}:engagement:rate:v2:{operation}:{accountDigest}` without
-  literal Redis Cluster hash-tag braces; both values are compact, versioned and
-  expire after the policy TTL. Superseded v1 bucket keys expire naturally.
-- Compatibility: older clients already treat non-completed mutation codes as
-  failures; generated supergraph/manifest are regenerated additively.
-- Retention/deletion: Redis limiter state expires automatically; local state is
-  bounded and evicted after inactivity. No scan, flush or durable deletion.
+- PostgreSQL, event and cache schemas: unchanged.
+- GraphQL/public operations: byte-compatible.
+- Runtime contract: additive generic types and executor.
+- Client return unions remain unchanged; no durable data or new background queue.
 
 ## Security and privacy
 
-- Authorization: limiter placement follows successful current owner validation;
-  it never substitutes for authorization.
-- Input limits: two fixed operation names, fixed policies, 256-byte Redis key,
-  bounded integer replies, 1,024 local partitions, 1,024 active idempotency keys
-  with 31 waiters each, two active searches and one waiter.
-- Sensitive data: SHA-256 account pseudonym exists only in a short-lived Redis
-  key/local map and is never logged or labeled; credentials and raw IDs are absent.
-- Abuse cases: rotating profile IDs cannot create capacity; malformed Redis state
-  is atomically fenced; hot callers are rejected locally before repeated Redis
-  commands; queue flooding has finite memory and wait.
+Retry classification is finite and owned by the transport adapter. No caller can
+select endpoint, operation, attempts, timing or classification. Credential
+separation, exact Host/Origin, response bounds and cancellation remain. Retries
+never add or broaden a cookie or service credential.
 
 ## Implementation steps
 
-1. Record the identity, algorithm, failure and hot-key choices in ADR-0039.
-2. Add and unit-test the bounded atomic Redis token-bucket command, including
-   cross-client idempotency admission deduplication.
-3. Add finite operation-limit telemetry and a bounded local token-bucket shield.
-4. Apply rate admission after owner/idempotency checks to Engagement progress and
-   watchlist writes; compose optional non-critical Redis lifecycle.
-5. Add the Discovery search bulkhead and preserve independent home admission.
-6. Regenerate/verify Federation artifacts and focused transport/application tests.
-7. Run real Redis atomicity/hot-key/outage and real durable-progress evidence.
-8. Run the affected candidate gate, one complete review round, batch blockers,
-   confirm, release and close Phase 10.
+1. Record ADR-0040, the dependency-operation registry and retry-layer ownership.
+2. Add the deterministic, cancellable safe-read executor and adverse tests.
+3. Integrate Playback publication and Discovery snapshot/export reads.
+4. Prove transient retry, permanent non-retry, deadline exhaustion, cancellation,
+   finite concurrency and no Router/client amplification.
+5. Run focused gates, affected candidate, review and protected evidence.
 
 ## Tests
 
-- Domain/application: policy validation, account/operation partition, independent
-  refill, five concurrent same-key progress/watchlist retries consuming one
-  admission/effect, bounded/cancellable idempotency queues, rejection before later
-  dependencies and Redis-failure local fallback.
-- Adapter: atomic allow/reject boundary, same-admission deduplication across two
-  clients, distinct-admission charging, server time, malformed/wrong-type state,
-  reply validation, timeout, cancellation and command capacity.
-- Integration: real Redis concurrent same-key/two-instance atomicity, hot-key
-  command reduction, TTL/cardinality and exact cleanup; real PostgreSQL progress
-  succeeds and remains idempotent while Redis is absent.
-- Contract: additive Federation composition/generated artifacts, portable
-  Engagement retry/search-limit payloads and finite metric labels.
-- Browser: repeat the affected hosted journey because the corrected public
-  mutation/search response handling changed; unchanged media encoding is carried
-  forward.
-- Performance/failure: two-active/one-waiter search barrier, overflow, wait expiry,
-  cancellation, home isolation, Redis outage and measured hot burst.
+- Runtime: invalid policy, transient then success, permanent stop, cancellation,
+  insufficient budget, equal-jitter bounds and attempt ceiling.
+- Clients: reset/503 then success; 4xx/malformed/no-capacity no retry; timeout
+  cleanup; existing response and credential assertions unchanged.
+- Contract: registry covers every operation class and each retry layer has one owner.
+- Integration: one controlled owner failure over real HTTP; no Docker repeat
+  unless runtime composition changes.
 
 ## Evidence
 
-- Commands: focused Redis/telemetry/Engagement/Discovery tests and strict static
-  checks; disposable real Redis and PostgreSQL fixtures; `pnpm check:changed` and
-  the Phase 10 complete acceptance gate.
-- Raw artifact path: `evidence/phase-10/operation-limiters-*.txt`, Discovery
-  release evidence and updated Phase 10 index.
-- Acceptance result: prior protected run33280768684 passed the two-key Lua and
-  real durable fixtures at aa5e6af. The request-digest correction passes focused
-  Engagement126/126 and affected73/73. Its extended two-writer Redis fixture still
-  requires protected execution.
-- Iteration gate: affected package/service builds and focused tests, then scoped
-  lint/format.
-- Candidate gate: `pnpm check:changed` plus real Redis atomicity/hot-key and
-  Engagement PostgreSQL outage fixtures.
-- Heavyweight repeat triggers: Redis script/reply/key or local policy changes
-  repeat Redis evidence; owner placement/result or Engagement composition changes
-  repeat durable outage evidence; search admission changes repeat concurrency
-  proof. Unchanged media, player and browser assets do not repeat.
-- Review stopping rule: the complete initial review and first confirmation are
-  collected. Discussion3887956537 is a new blocking rate-identity boundary, so
-  one confirmation of the request-digest remediation is permitted; no speculative
-  extra round follows.
+- Iteration: Runtime and affected client build/tests plus scoped static checks.
+- Candidate: `pnpm check:changed` and the policy-registry verifier.
+- Heavyweight repeat triggers: HTTP wire/cleanup changes repeat focused real-HTTP
+  tests; Router retry/timeout changes repeat composition/browser runtime; no
+  PostgreSQL, Redis, broker, media or demo repeat without affected behavior.
+- Review stopping rule: one complete review, batched blocker remediation and one
+  confirmation; speculative tuning waits for game-day evidence.
+- Raw paths: `evidence/phase-11/dependency-policies.txt` and retry timing trace.
 
 ## Rollback or recovery
 
-Disable distributed Engagement limiting, retaining the compatible local shield,
-or restore the prior Engagement/Discovery artifacts. Let limiter keys expire; do
-not scan or flush Redis. No PostgreSQL rollback, event replay, profile change,
-media action or retained-project reset is required.
+Restore the two clients to one attempt and retain the registry as current-state
+documentation. No migration, cache deletion, event replay, media action,
+credential rotation or infrastructure reset is required.
 
 ## Documentation updates
 
-ADR-0039, Redis/GraphQL architecture, Engagement and Discovery service docs,
-runbooks, Phase 10 evidence/index, roadmap and repository memory.
+Dependency policy registry, resilience architecture, affected client docs, Phase
+11 evidence/index and repository memory.
 
 ## Completion checklist
 
-- [x] Requirements satisfied in implementation and focused contracts
-- [x] Local non-Docker candidate tests pass
+- [ ] Requirements satisfied in implementation and focused contracts
+- [x] Local candidate tests pass
 - [ ] Evidence captured
 - [x] Documentation current
-- [ ] `.ai/` state updated
+- [x] `.ai/` state updated
 - [ ] Remaining risks recorded
