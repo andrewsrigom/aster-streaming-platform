@@ -62,8 +62,8 @@ publication, Discovery snapshot and Discovery export safe reads.
 |---|---|---|---|---|---|
 | PostgreSQL read | bounded query and request budget | only selected transient connection failures | generally pool/instance level alert, not business fallback | pool size and query concurrency | cache or error depending on path |
 | PostgreSQL write | bounded | only when transaction outcome is known or idempotent | no blind retry loop | pool | error |
-| Redis read | short | at most one transient reconnect-aware retry | per capability | client pool and call concurrency | source read or stale |
-| Subgraph call | less than upstream budget | safe queries only | per dependency/operation | router traffic shaping | partial/fallback where schema allows |
+| Redis read | short | one command; reconnect never replays an ambiguous command | per capability | client pool and call concurrency | source read or stale |
+| Subgraph call | less than upstream budget | none at Web/Router; only a purpose-separated service owner may retry its selected safe Catalog read | per dependency/operation | router traffic shaping | partial/fallback where schema allows |
 | Object metadata | bounded | idempotent reads | per storage operation | concurrency limit | reject playback if publication cannot be trusted |
 | Media download | long task deadline plus progress timeout | range-resumable and bounded | source-host scoped | worker queue | failed attempt |
 | FFmpeg | recipe-specific hard deadline | only classified failures | not applicable | worker slots | failed attempt |
@@ -158,6 +158,9 @@ not a service adapter in a production composition:
 - a source-tree contract prevents apps, services, workers and packages from
   importing the tools-only laboratory.
 
-This laboratory supplies deterministic mechanics for later game days. Redis
-miss/error, event reorder and dependency recovery are still injected through
-their owner-specific game-day harnesses; no production dynamic control exists.
+The Phase 11 game-day candidate combines this laboratory with owner-specific
+harnesses. It records Discovery/Redis outage, broker outage/drain, controlled
+database admission saturation and media process-tree failure, plus an explicit
+Web/Router/service no-amplification matrix. The complete timelines and source
+applicability are in the [Phase 11 game-day report](../../evidence/phase-11/game-days.md).
+No production dynamic control exists.

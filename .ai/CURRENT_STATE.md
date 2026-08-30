@@ -4,14 +4,26 @@ Last updated: 2026-08-30
 
 ## Active phase
 
-**Phase 11 — Resilience and Failure Laboratory**
+**Phase 12 — Observability, SLIs, and SLOs**
 
 Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
 squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
-run `33290477608` passed every required job. P11-R08 is active on
-`feat/p11-failure-injection`, based exactly on that merge. Full Phase00–14 goal
-stays active.
+run `33290477608` passed every required job. P11-R08/R09 is released through
+evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
+squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
+frozen `WAITING_EXTERNAL` on PR44 after exact-head confirmation discussion
+`3888512532` proved that a YAML Unicode escape could hide a Router `retry` key.
+The first parser-based correction passed locally but failed protected run
+`33294397540` because a dependency-free policy job correctly had no install.
+Correction `402b488`, tree `b381494`, fully decodes YAML quoted-key escapes
+without a dependency. Final confirmation then found that Router configuration
+expansion could still materialize a retry key. A decoded expansion bypass then
+proved that the marker itself could be YAML-escaped. Exact source `aac04c7`, tree
+`c2a6c93`, rejects raw and decoded expansions inside traffic shaping; Router4/4,
+platform67/67 and the affected17/17 gate pass. Only protected CI, confirmation
+and release remain. P12-R01 is the
+one unpublished dependent. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -41,6 +53,19 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 46/46 candidate gates.
 
 ## Current work
+
+P12-R01 inventories and standardizes current trace boundaries. Existing metrics,
+structured logs, Router-to-owner correlation, validated event `traceparent` and
+bounded exporter failure are the baseline. The missing slice is a
+repository-owned tracing contract and adapter that consistently creates finite,
+privacy-safe server, dependency, event and media spans while driving logger
+context. No hosted backend, dashboard, SLO or product contract is added here.
+
+P11-R10 remains frozen on PR44 at executable source `aac04c7`. Superseded run
+`33293548409` predates the correction and run `33294397540` exposed the removed
+dependency. Confirmation on `1a2c3f2` exposed the now-rejected configuration
+expansion. The dependent may advance locally but cannot publish, merge or
+release first.
 
 P10's first slice defines and implements the Catalog public-title cache boundary.
 PostgreSQL remains the visibility and rights authority; a cache hit may reuse only
@@ -223,7 +248,23 @@ unused public surface rejected by the first gate. Initial PR43 review discussion
 listener alive. Corrected source `896a3df` shares one complete close promise,
 waits for pending bind and rejects startup closed during that interval. Focused
 tests pass11/11 and the corrected affected gate passes11/11 in49.422s.
-Confirmation, protected exact-head CI and publication remain.
+Evidence head `371ba55` passed clean confirmation and protected run
+`33291705269`. PR43 squash-merged without bypass as tree-identical main
+`bdbe2e0481ebb36c6d9be65502ecf8673bc7514e`; exact-main run `33292389504`
+passed every required job and releases P11-R08/R09.
+
+P11-R10 now maps and executes the five remaining game days. Exact protected
+source `371ba55` proves Discovery stop/recovery, Redis-absent healthy home,
+broker outage/drain and zero scoped cleanup. Exact source `aac04c7` exercises
+the actual configured Web Apollo chain and rejects block, flow, escaped and
+configuration-expanded Router retry keys throughout traffic shaping.
+Focused failure tests pass 68/68, PostgreSQL
+adapter/transaction saturation passes 28/28 and the new Web/Router contracts
+pass 16/16. Bulkhead, fallback, retry-amplification and five game-day artifacts
+plus complete Redis/Discovery/PostgreSQL/broker/media runbooks are recorded.
+Web112/112 and Router4/4 pass. The final affected candidate passes 17/17 tasks,
+five cached, in 48.053 seconds. PR44 is published; protected exact-head CI,
+confirmation and release remain.
 
 ## Historical Phase 09 corrections
 
@@ -271,15 +312,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R08/R09 controlled injection is active. Phase11 game days, consolidated
-bulkhead/fallback/amplification proof and runbook closeout remain planned.
+P11-R10 game days, bulkhead/fallback/amplification proof, runbook closeout and
+the structural retry-guard correction are implemented and published; protected
+confirmation/release remains.
 Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Publish the evidenced P11-R08 private loopback-only HTTP failure modes,
-exactly-two synthetic duplicate delivery, bounded saturation and structural
-production isolation through one review, protected CI and exact-main release.
+Execute P12-R01 locally while PR44 runs protected CI and one confirmation; do
+not publish the dependent before P11-R10 releases.
 
 ## Runtime and recovery
 

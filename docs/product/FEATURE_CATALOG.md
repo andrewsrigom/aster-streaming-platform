@@ -40,6 +40,7 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Deadlines and bounded retries | Platform | 11 | RELEASED |
 | Circuit breakers and fallbacks | Platform | 11 | RELEASED |
 | Failure-injection controls | Platform | 11 | IMPLEMENTED |
+| Resilience game days and runbooks | Platform | 11 | IMPLEMENTED |
 | Distributed traces | Platform | 12 | PLANNED |
 | SLI/SLO dashboards and alerts | Platform | 12 | PLANNED |
 | Trusted GraphQL operations | Platform | 13 | PLANNED |
@@ -51,8 +52,8 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Scheduled live channel | Playback | Extension | PLANNED |
 | Subscription entitlements | Identity and Playback | Extension | PLANNED |
 
-Release status through Phase10 and P11-R01 is summarized in
+Release status through Phase10 and the released Phase11 slices is summarized in
 [current state](../../.ai/CURRENT_STATE.md) and linked phase evidence. Phase11
 resilience is active: its circuit breaker is released, and the private failure
-laboratory is implemented locally. Game days, runbook closeout, hosted identity
-and hosted release remain planned.
+laboratory plus five game days/runbooks are implemented as candidates. Their
+protected release, hosted identity and hosted release remain planned.

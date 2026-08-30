@@ -2,7 +2,7 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-30 — Circuit-breaker release and private failure laboratory
+## 2026-08-30 — Circuit breakers, failure laboratory and game-day candidate
 
 ### Completed
 
@@ -32,6 +32,65 @@ Append new entries at the top. Keep entries factual and concise.
   A bounded child-process regression proves the racing start rejects and no
   listener remains. Focused tests pass11/11; the corrected affected gate passes
   11/11 tasks, one cached, in49.422s.
+- Rebased the one permitted dependent `feat/p11-game-days` onto corrected PR43
+  head `371ba55`. The initial discussion was resolved; confirmation and protected
+  run `33291705269` passed. PR43 squash-merged as tree-identical main `bdbe2e0`,
+  and exact-main run `33292389504` passed every required job.
+- Added Web one-Router-attempt and Router no-retry-policy regressions. Rebased
+  source `2b72467`, tree `27cb3ba`, passes 16/16 focused tests plus static checks.
+- Current focused resilience tests pass 68/68; PostgreSQL finite-pool/
+  transaction tests pass 28/28. Reconciled protected run `33290477608` with the
+  unchanged product runtime for Redis, Discovery, broker and media failures.
+- Recorded five bounded game days, finite admission, the 1 x 1 x at-most-2
+  retry matrix and complete Redis/Discovery/PostgreSQL/broker/media runbooks.
+- The initial affected candidate passes 17/17 tasks in 56.616 seconds. Local
+  review then scoped the Router guard to traffic shaping, avoiding interference
+  with unrelated future telemetry policy. Corrected source `60ca6f1`, tree
+  `5ef4360`, passes 17/17 with five cached in 52.224 seconds; Web112/112 and
+  platform67/67 include the enforcement.
+- Final documentation, repository-memory, formatting and diff checks pass.
+  Published PR44 at evidence head `1d378fc`; P11-R10 is `WAITING_EXTERNAL` only
+  for protected exact-head CI, review, merge and exact-main verification.
+- Activated P12-R01 as the one unpublished dependent. Its first slice owns
+  finite trace/log context, telemetry privacy/cardinality and exporter failure;
+  it adds no hosted backend, dashboard or SLO.
+- PR44 initial review discussions `3888491209`/`3888491214` found two real gaps:
+  the Web attempt test bypassed Apollo link composition and the Router source
+  guard missed flow-style YAML retry keys. Corrected source `ad99ef6`, tree
+  `9991716`, extracts the unchanged configured Apollo client for direct testing
+  and detects block, flow and quoted retry keys inside traffic shaping.
+- Web112/112, Router4/4, strict types/lint/format and the corrected affected gate
+  pass 17/17 tasks with two cached in 57.471 seconds.
+- Exact-head confirmation discussion `3888512532` found that the lexical Router
+  guard did not decode a valid YAML Unicode escape in a quoted `retry` key.
+  Preserved the P12 work in named stash
+  `wip/p12-trace-observability-before-pr44-confirmation-fix` and reactivated
+  P11-R10.
+- Exact source `4becc1a`, tree `0a8e215`, uses declared `yaml@2.9.0` to parse the
+  32 KiB-bounded policy structurally and reject decoded retry keys, malformed
+  documents and aliases. Router4/4, platform67/67, lock/static/document/security
+  checks and the complete affected gate pass73/73,50 cached,in54.184 seconds.
+- Protected run `33294397540` invalidated that first correction: the
+  dependency-free documentation/platform job correctly could not import the new
+  parser without an install. Final source `402b488`, tree `b381494`, removes the
+  dependency and fully decodes YAML quoted-key escapes while rejecting malformed
+  and alias forms. Router4/4, platform67/67 and the final affected gate pass
+  17/17 tasks with five cached in52.918 seconds.
+- PR44 run `33294599297` passed its available policy, dependency and platform
+  jobs while source quality continued. Confirmation found two stale evidence
+  pointers and a Router configuration-expansion bypass for retry ownership.
+- Exact source `473c584`, tree `f2b0d0b`, rejects expansion only inside the
+  bounded traffic-shaping policy and covers the reported
+  `${env.ASTER_ROUTER_RETRY_KEY:-retry}` mutation. Router4/4, platform67/67 and
+  the affected gate17/17 with five cached in48.055 seconds pass. Evidence and
+  repository memory now point at the exact source.
+- Confirmation then encoded the expansion marker itself as YAML. Exact source
+  `aac04c7`, tree `c2a6c93`, checks decoded keys and covers the reported
+  `\x24{env.ASTER_ROUTER_RETRY_KEY:-retry}` mutation. Router4/4, platform67/67
+  and the affected gate17/17 with five cached in48.053 seconds pass.
+- Preserved P12-R01 work in stash
+  `p12-trace-observability-wip-before-p11-final-review-3`; it remains the one
+  unpublished dependent.
 
 ### Evidence
 
@@ -40,11 +99,14 @@ Append new entries at the top. Keep entries factual and concise.
 - `evidence/phase-11/failure-injection.txt` records environment, finite bounds,
   scenario matrix, production isolation, initial gate failure and corrected
   gate.
+- `evidence/phase-11/game-days.md`, `bulkhead-saturation.txt` and
+  `retry-amplification.txt` record the P11-R10 candidate.
 
 ### Next action
 
-Commit/push the PR43 remediation evidence once, resolve the initial discussion,
-request one confirmation and complete protected release before Phase11 game days.
+Publish the single PR44 correction, resolve current discussions and request
+exact-head confirmation. Resume P12-R01 locally while CI runs. Merge and verify
+P11 first; do not publish the dependent before that release.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

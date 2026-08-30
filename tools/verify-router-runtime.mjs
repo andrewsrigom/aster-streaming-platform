@@ -7,6 +7,129 @@ const routerImage =
 const nodeImage =
   "docker.io/library/node:24.19.0-bookworm-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df";
 
+const yamlEscapes = new Map([
+  ["0", "\0"],
+  ["a", "\u0007"],
+  ["b", "\b"],
+  ["t", "\t"],
+  ["n", "\n"],
+  ["v", "\v"],
+  ["f", "\f"],
+  ["r", "\r"],
+  ["e", "\u001b"],
+  [" ", " "],
+  ['"', '"'],
+  ["/", "/"],
+  ["\\", "\\"],
+  ["N", "\u0085"],
+  ["_", "\u00a0"],
+  ["L", "\u2028"],
+  ["P", "\u2029"],
+]);
+
+function decodeYamlDoubleQuoted(source, start) {
+  let value = "";
+  for (let index = start + 1; index < source.length; index++) {
+    const character = source[index];
+    if (character === '"') {
+      return { end: index, value };
+    }
+    if (character !== "\\") {
+      value += character;
+      continue;
+    }
+    index++;
+    const escaped = source[index];
+    if (escaped === "\n" || escaped === "\r") {
+      if (escaped === "\r" && source[index + 1] === "\n") {
+        index++;
+      }
+      while (source[index + 1] === " " || source[index + 1] === "\t") {
+        index++;
+      }
+      continue;
+    }
+    const width = escaped === "x" ? 2 : escaped === "u" ? 4 : escaped === "U" ? 8 : 0;
+    if (width > 0) {
+      const digits = source.slice(index + 1, index + width + 1);
+      if (!new RegExp(`^[0-9a-fA-F]{${width}}$`, "u").test(digits)) {
+        return null;
+      }
+      const codePoint = Number.parseInt(digits, 16);
+      if (codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) {
+        return null;
+      }
+      value += String.fromCodePoint(codePoint);
+      index += width;
+      continue;
+    }
+    const decoded = yamlEscapes.get(escaped);
+    if (decoded === undefined) {
+      return null;
+    }
+    value += decoded;
+  }
+  return null;
+}
+
+function containsYamlKey(source, expected) {
+  for (let index = 0; index < source.length; index++) {
+    const character = source[index];
+    if (character === "#" && (index === 0 || /\s/u.test(source[index - 1] ?? ""))) {
+      index = source.indexOf("\n", index);
+      if (index === -1) {
+        return false;
+      }
+      continue;
+    }
+    if (character === "&" || character === "*" || character === "?") {
+      return true;
+    }
+    if (character === '"') {
+      const decoded = decodeYamlDoubleQuoted(source, index);
+      if (decoded === null) {
+        return true;
+      }
+      index = decoded.end;
+      if (
+        (decoded.value === expected || decoded.value.includes("${")) &&
+        /^\s*:/u.test(source.slice(index + 1))
+      ) {
+        return true;
+      }
+      continue;
+    }
+    if (character === "'") {
+      let value = "";
+      let closed = false;
+      for (index++; index < source.length; index++) {
+        if (source[index] === "'") {
+          if (source[index + 1] === "'") {
+            value += "'";
+            index++;
+            continue;
+          }
+          closed = true;
+          break;
+        }
+        value += source[index];
+      }
+      if (!closed || (value === expected && /^\s*:/u.test(source.slice(index + 1)))) {
+        return true;
+      }
+      continue;
+    }
+    if (
+      source.startsWith(expected, index) &&
+      (index === 0 || /[\s{,]/u.test(source[index - 1] ?? "")) &&
+      /^\s*:/u.test(source.slice(index + expected.length))
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function validateRouterRuntime(source) {
   const violations = [];
   for (const name of ["router", "router-trust-init"]) {
@@ -162,14 +285,21 @@ export function validateRouterSources(sources) {
     }
   }
   const config = sources["infra/router/router.yaml"] ?? "";
+  const trafficShaping =
+    /(?:^|\n)traffic_shaping:\n(?<policy>[\s\S]*?)\ninclude_subgraph_errors:/u.exec(config)
+      ?.groups?.["policy"] ?? "";
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
+    trafficShaping.length === 0 ||
+    trafficShaping.includes("${") ||
+    containsYamlKey(trafficShaping, "retry") ||
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
   ) {
     violations.push({
       rule: "router-source",
-      detail: "Router cannot propagate arbitrary headers or activate key-protected limits",
+      detail:
+        "Router cannot propagate arbitrary headers, activate key-protected limits or own retries",
     });
   }
   return violations;

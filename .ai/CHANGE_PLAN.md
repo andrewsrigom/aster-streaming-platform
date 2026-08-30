@@ -1,136 +1,139 @@
-# Work Item: Private controlled failure-injection laboratory
+# Work Item: Phase 12 trace, correlation, privacy and exporter boundary
 
 - Status: IN_PROGRESS
-- Owner: Platform owns the laboratory; bounded-context owners retain product failure policy
-- Phase: 11
-- Requirement IDs: P11-R08, P11-R09
+- Owner: Platform telemetry; each service transport and dependency adapter owns its spans
+- Phase: 12
+- Requirement IDs: P12-R01, P12-R02, P12-R08, P12-R09
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-Aster has deterministic, bounded development tooling that injects latency,
-timeout, connection reset, selected HTTP error, malformed response, partial
-stream, duplicate event and saturation without adding a production route or
-letting request data select a fault. Every injected outcome is visibly tagged,
-and the laboratory refuses production activation or non-loopback HTTP binding.
+A current request or event can be followed through every applicable Aster
+boundary using one repository-owned trace and structured-log contract. Names and
+attributes remain finite and privacy-safe, and an absent, slow or failed
+telemetry exporter never changes a product result, readiness or bounded
+shutdown.
 
 ## Current behavior
 
-P11-R05 passed its exact-head confirmation and protected CI, then PR42
-squash-merged as main `59600aea669d34ec727c1f243d162608261295aa` with the
-reviewed tree. Exact-main run `33290477608` passed every required job and
-released P11-R05.
-Existing focused tests create ad hoc loopback failures, and prior phases prove
-specific Redis, broker, duplicate-event, saturation and worker failures. There
-is no reusable controlled adapter, common tag or structural guard preventing a
-future failure selector from entering production request composition.
+P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at exact executable correction
+`aac04c7`, tree `c2a6c93`; Router4/4, platform67/67 and the complete affected
+gate17/17 pass. The guard rejects raw and YAML-decoded configuration expansion inside
+the bounded traffic-shaping policy. Phase 12 may advance as the one unpublished dependent, but it
+cannot publish, merge or release first.
+
+`@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite
+dimensions, exporter health and timeout behavior. `@aster/runtime` owns
+structured Pino logs with redaction and optional validated active trace IDs.
+Router runtime evidence proves one authenticated trace ID reaches Identity and
+Catalog logs and the Collector. Owner HTTP servers and PostgreSQL, Redis,
+broker and object-storage adapters expose bounded metric observations. Event
+envelopes preserve a validated `traceparent`. There is no repository-owned
+tracing SDK/export contract that consistently creates parent/child spans across
+all current service, dependency, event and media boundaries.
 
 ## Proposed behavior
 
-Add a tools-only TypeScript laboratory with two concrete adapters. A private
-HTTP adapter binds only `127.0.0.1`, accepts one immutable scenario at
-construction and injects bounded wire behavior. A duplicate-delivery adapter
-delivers the same synthetic event exactly twice through an explicitly supplied
-test handler. Both accept only `local` or `integration` environments, expose a
-fixed visible injection tag and finite observations, and reject invalid bounds
-before starting. No service, worker, router or web application imports the tool.
+Add the smallest complete tracing vertical slice behind repository-owned
+declarations: validated inbound/extracted and outbound/injected W3C context,
+finite server/application/dependency/consumer/worker span names and attributes,
+active context for correlated logs, bounded OTLP export, and explicit async
+event links rather than indefinitely open request spans. Integrate it through
+the shared HTTP and dependency adapter boundaries first, then current owner
+event and media execution boundaries. Preserve Router sanitization and do not
+add a hosted backend, dashboard, SLO or public trace identifier.
 
 ## Boundaries
 
-- Owning context: Platform owns experiment mechanics; each bounded context owns interpretation and fallback.
-- Affected services/packages: repository `tools/` and its policy tests only.
-- Authoritative data: none; adapters use synthetic payloads and never write owner stores.
+- Owning context: Platform owns the telemetry contract; each bounded context owns operation outcome classification.
+- Affected services/packages: `@aster/telemetry`, `@aster/runtime`, shared HTTP, PostgreSQL, Redis, broker and object-storage adapters, owner compositions, event delivery and media worker.
+- Authoritative data: none; telemetry is diagnostic and never authoritative product state.
 - Read models/caches: none.
-- Trust boundaries: construction-time scenario configuration, loopback sockets, synthetic event handler and bounded observer callback.
-- External dependencies: existing Node.js HTTP and test APIs only; no new package, image or hosted resource.
+- Trust boundaries: browser/Router headers, authenticated private subgraph transport, event envelopes, exporter endpoint and Collector output.
+- External dependencies: accepted OpenTelemetry-compatible SDK/exporter and existing local Collector only.
 
 ## Invariants
 
-- Production activation fails before a listener or delivery is created.
-- HTTP always binds to IPv4 loopback and exposes no fault-selection endpoint.
-- Method, path, query, headers and body cannot change the construction-time mode.
-- Delay, hold time, activation count, response status and body bytes are finite.
-- Timeout and saturation holds have a laboratory-side terminal deadline.
-- Reset and partial-stream scenarios close their exact socket; cleanup closes all retained sockets and timers.
-- Duplicate delivery is exactly two bounded sequential calls with the same payload reference.
-- Observations contain only the fixed injection tag, scenario label, mode, event and finite counters.
-- Observer failure cannot change the injected transport or delivery outcome.
+- Domain and application layers import no OpenTelemetry SDK.
+- Public trace, baggage, operation names and arbitrary attributes are untrusted.
+- Metrics never label user, account, profile, title, request or trace IDs.
+- Logs and spans contain no credentials, cookies, personal data, raw GraphQL documents or signed media URLs.
+- Async events link to their producer context and do not keep request spans open.
+- Export work has finite capacity, deadline, cancellation and shutdown behavior.
+- Telemetry failure cannot alter product results, readiness or durable state.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Invalid environment, label or bound | Refuse construction synchronously | typed validation issue |
-| Attempted request-selected mode | Ignore request control and execute fixed scenario | fixed mode/tag observation |
-| Latency | Delay then emit the configured bounded response | started/completed duration |
-| Timeout | Hold until client cancellation or finite lab deadline | cancelled/deadline event |
-| Reset | Destroy the accepted socket without a response | reset event |
-| Selected error | Return an allowlisted status and bounded body | tagged response/error event |
-| Malformed or partial response | Emit fixed invalid bytes or close after prefix | malformed/partial event |
-| Saturation overflow | Hold the finite active set and reject excess immediately | active/rejected counters |
-| Duplicate handler failure | Stop after the failing delivery and expose its index | delivery_failed event |
-| Observer throws | Ignore observer failure and preserve the scenario | product-independent result |
+| Invalid inbound context | discard it and create a bounded local root after transport authentication | finite rejection reason, no hostile value |
+| Exporter absent, slow or failed | product work completes; export fails within its deadline and records bounded local health | export result/drop counters and sanitized log |
+| Span/attribute capacity exceeded | reject or truncate according to the fixed contract without allocating an unbounded queue | bounded drop reason |
+| Event has no valid trace context | consumer creates a local root correlated by finite event context | stable consumer outcome only |
+| Logger cannot obtain active context | write an otherwise valid uncorrelated entry | existing safe logger behavior |
 
 ## Data and contracts
 
 - Schema/migration: none.
-- GraphQL: none; the lab can sit behind existing private clients in later experiments.
-- Events: synthetic generic payload only; no broker envelope or owner contract changes.
+- GraphQL: no schema change; only authenticated internal W3C propagation remains.
+- Events: existing envelope stays compatible; valid `traceparent` becomes an async link input.
 - Cache: none.
-- Compatibility: additive repository test tooling; production artifacts and public contracts remain byte-identical.
-- Retention/deletion: in-memory sockets, timers and bounded observations are disposed at laboratory close.
+- Compatibility: existing metric and logger declarations remain source-compatible; tracing types are repository-owned additions.
+- Retention/deletion: no local retained trace backend in this slice; sampling/retention policy remains P12-R11.
 
 ## Security and privacy
 
-- Authorization: no public or private product request route is added.
-- Input limits: fixed label vocabulary shape, body bytes, timing, activations, status allowlist and active capacity.
-- Sensitive data: synthetic payloads only; observations exclude request headers, bodies, URLs, IDs and credentials.
-- Abuse cases: production environment, public bind, request-selected fault, unbounded hang, unbounded queue and observer failure are rejected or contained.
+- Authorization: trace context never grants owner, viewer or operator authority.
+- Input limits: exact W3C format, finite header bytes, finite names/attributes/events/links and bounded exporter batching.
+- Sensitive data: stable enumerations only; automated canaries cover tokens, cookies, IDs, documents and signed URLs.
+- Abuse cases: forged parentage, baggage amplification, user-chosen span names, high-cardinality IDs, exporter backpressure and duplicate completion.
 
 ## Implementation steps
 
-1. Implement the private loopback HTTP and duplicate-delivery adapters with typed bounded configuration.
-2. Test every required mode, fixed scenario selection, production refusal, visible tags, cancellation and cleanup.
-3. Add the focused laboratory test to the normal source gate without adding a heavyweight per-commit job.
-4. Document the trust boundary and create exact candidate evidence.
-5. Run focused and affected gates, review once and publish one coherent candidate.
+1. Inventory every current boundary and freeze the finite span/attribute vocabulary with privacy tests.
+2. Add repository-owned trace/context/span declarations and a bounded OpenTelemetry adapter in `@aster/telemetry`.
+3. Compose active context with `@aster/runtime` logs and shared inbound HTTP/outbound dependency adapters.
+4. Link owner event consumption and bound media-worker spans without changing event or product contracts.
+5. Prove Router-to-owner trace continuity, async links, redaction/cardinality and exporter outage/recovery.
+6. Record exact evidence and update observability architecture and repository memory.
 
 ## Tests
 
-- Domain: configuration bounds, finite mode/status/event vocabularies and immutable selection.
-- Application: exactly-two duplicate delivery, ordered observations and handler/observer failures.
-- Integration: real loopback latency, timeout cancellation, reset, error, malformed bytes, partial stream, saturation overflow and cleanup.
-- Contract: production refusal, loopback-only address and fixed visible response/observation tags.
-- Browser: not affected; no route or browser code changes.
-- Performance/failure: coordinated saturation uses barriers rather than timing races and proves bounded active/rejected counts.
+- Domain: none; telemetry remains outside domain policy.
+- Application: stable operation outcomes map to finite span status without SDK imports.
+- Integration: real Collector trace export plus stopped/paused exporter recovery and bounded shutdown.
+- Contract: W3C extraction/injection, async links, finite names/attributes and logger correlation.
+- Browser: one sampled navigation/request correlation only if browser source changes.
+- Performance/failure: bounded in-flight spans/export batches and exporter timeout; no capacity claim.
 
 ## Evidence
 
-- Commands: focused Node test, root typecheck/lint/format, then `pnpm check:changed`.
-- Raw artifact path: `evidence/phase-11/failure-injection.txt` and updated Phase 11 index.
-- Acceptance result: corrected source `896a3df`, tree `9584024`, scenario matrix,
-  observed wire/delivery outcomes and structural production isolation.
-- Iteration gate: the new focused test plus TypeScript, ESLint and formatting on changed files.
-- Candidate gate: complete affected-scope gate and repository-memory validators.
-- Heavyweight repeat triggers: production composition or service imports require protected Docker proof; broker, database, Redis or worker mechanics defer to the game-day item and are not repeated for a tools-only change.
-- Review stopping rule: one complete review and one confirmation; only requirement, injection-isolation, security, availability, data or public-contract blockers extend it.
+- Commands: focused telemetry/runtime/adapter suites, trace fixture, privacy/cardinality verifier and affected candidate gate.
+- Raw artifact path: `evidence/phase-12/trace-contract.txt`, `trace-continuity.txt`, `exporter-failure.txt` and `cardinality-review.txt`.
+- Acceptance result: every current boundary mapped; representative sync and async paths prove continuity; exporter failure remains isolated.
+- Iteration gate: focused changed-package tests, typecheck, lint and privacy contract.
+- Candidate gate: complete affected-scope gate plus one disposable Collector trace/failure fixture and documentation/AI checks.
+- Heavyweight repeat triggers: trace/export/runtime composition changes repeat only the affected Collector path; prose-only changes repeat documentation/AI/format checks.
+- Review stopping rule: one initial review and one confirmation; only requirement, privacy/security, boundedness, availability, evidence-integrity or public-contract blockers extend it.
 
 ## Rollback or recovery
 
-Remove the tools-only module, its test and root test-script registration. No
-service restart, schema rollback, durable data cleanup, cache flush, broker
-offset change, media cleanup or credential rotation is required.
+Tracing is optional diagnostic infrastructure. Rollback disables the new
+tracer/export composition and retains current metrics/logging; it changes no
+database, event, object or product API. Disposable fixtures remove only their
+exact Collector project resources.
 
 ## Documentation updates
 
-- Phase 11 evidence index, resilience architecture, environment policy, feature catalog and repository memory.
+- Observability architecture, telemetry vocabulary and Phase 12 evidence index.
+- Repository state, queue, session log and handoff.
 
 ## Completion checklist
 
-- [x] Requirements satisfied in the local candidate
-- [x] Focused and affected tests pass
-- [x] Candidate evidence captured
-- [x] Documentation current for the candidate
-- [x] `.ai/` state updated at the candidate checkpoint
-- [x] Remaining review, protected CI and release risks recorded
+- [ ] Requirements satisfied
+- [ ] Tests pass
+- [ ] Evidence captured
+- [ ] Documentation current
+- [ ] `.ai/` state updated
+- [ ] Remaining risks recorded

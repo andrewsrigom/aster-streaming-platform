@@ -1,0 +1,71 @@
+P11-R06 finite admission and saturation checkpoint
+Date: 2026-08-30
+Status: local candidate PASS; protected candidate release pending
+
+Source and environment
+- Frozen P11-R08 predecessor: 371ba55eb7269520b72f41fd813a95aaeab819eb.
+- Current executable/test source: aac04c753e3f1463ff55597a581136947fe7506c.
+- Source tree: c2a6c93a85d7c65b2f475cb6694cfde0741c5100.
+- WSL Ubuntu-20.04; Node.js 24.19.0; pnpm 11.24.0.
+- CI=true and NODE_OPTIONS=--max-old-space-size=1536.
+- No Docker service, retained data, media or user process was started or changed.
+
+Commands and raw results
+- One focused Node command ran current compiled Discovery, Catalog, Playback and
+  media tests plus current Web TypeScript tests. PASS: 68/68 in 4713.043505 ms.
+- node --test packages/postgres/dist/test/postgres-adapter.test.js
+  packages/postgres/dist/test/postgres-transaction.test.js
+  PASS: 28/28 in 460.935404 ms.
+- After the explicit Web/Router retry-ownership regression was added, the Web
+  public-data and Router-source suites passed 16/16 in 1082.137148 ms. ESLint,
+  focused Prettier and git diff --check passed.
+- Final pnpm check:changed after the review corrections: PASS, 17/17 affected
+  tasks, 5 cached, Turbo wall time 48.053 seconds.
+  It includes Web112/112, platform67/67, strict TypeScript,
+  workspace ESLint, formatting, unused-code, architecture, security,
+  documentation and repository-memory checks.
+- Protected exact-head run 33291705269 passes every required job. Its source
+  suite repeats PostgreSQL abandoned-acquisition release in 34.327613 ms,
+  Discovery search overflow/isolation in 174.031853 ms and media process-group
+  termination in 2082.534791 ms.
+
+Observed saturation behavior
+- Discovery search admits two active calls and one FIFO waiter for at most 100
+  ms. The fourth concurrent call returns LIMIT_EXCEEDED without reaching owner
+  work. Releasing the first permit admits the waiter; active/waiting return to
+  zero. Home rails remain successful while the search lane is full.
+- Catalog GraphQL admits eight active requests. The ninth returns bounded HTTP
+  503 without entering owner work. Shutdown aborts the eight and later requests
+  remain rejected. Its independent process-global rate lane allows 64 calls,
+  returns HTTP 429 on overflow and refills at the next measured interval.
+- The PostgreSQL adapter configured with one connection reserves the stalled
+  acquisition. Caller cancellation returns aborted, but capacity remains
+  reserved until the late acquisition is destroyed. A concurrent call returns
+  {status: rejected, reason: capacity_exceeded}; reserved slots then return to
+  zero. No request enters the vendor waiting queue beyond the configured bound.
+- Web server transport admits sixteen active Router sockets. The seventeenth is
+  rejected immediately. Cancelling the sixteen releases all capacity and the
+  next request succeeds.
+- Discovery's Catalog snapshot client admits one live call with no queue;
+  Playback's Catalog publication client admits four. Overflow is unavailable,
+  cancellation settles every admitted call and later capacity is reusable.
+- Media process execution has a finite time/output boundary. A timed-out parent
+  and its spawned child are terminated as one owned process group; the test
+  observes only a gone or zombie child before deleting its exact temporary file.
+- Each owner event-delivery loop has one active step and no internal work queue;
+  repeated start does not release another worker, stop cancels the active signal
+  and bounded backoff never records cancellation as success. The media decoder
+  is likewise one finite one-shot job, not a resident unbounded queue.
+
+Interpretation
+Finite application and adapter admission prevents a slow optional search,
+database acquisition, owner HTTP dependency, Web socket or media process from
+creating an unbounded queue. Explicit overflow and cancellation preserve
+independent capacity. Redis remains non-authoritative and PostgreSQL remains the
+durable owner.
+
+Limitations
+- This is controlled saturation, not a production throughput or SLO result.
+- The PostgreSQL scenario stalls the repository adapter's pool acquisition; it
+  does not overload a shared real database host.
+- Hosted representative load, soak and capacity tuning belong to Phase 14.

@@ -2,36 +2,56 @@
 
 ## Resume point
 
-Phases 00–10 and P11-R01 are released. P11-R05 passed confirmation and protected
-CI at reviewed head `dfaf47d55f23e3e0ba04265592af80eb4379b506`, then PR42
-squash-merged without bypass as main
-`59600aea669d34ec727c1f243d162608261295aa`. The merge tree is exactly the
-reviewed tree `d1ed21c23fc17638cb7909e96c5e5a43bcc8cbaf`. Exact-main run
-`33290477608` passed every required job; P11-R05 is released.
+P12-R01 is active as the one unpublished dependent. Its uncommitted trace work
+is preserved in named stash
+`p12-trace-observability-wip-before-p11-final-review-3`; restore it on the
+dependent branch based on the final PR44 head.
 
-P11-R08 is active on `feat/p11-failure-injection`, based exactly on that main
-merge. Tools-only loopback HTTP fault injection and synthetic duplicate delivery
-are implemented. Initial PR43 review discussion `3888409705` found a pending
-startup/close race. Corrected source
-`896a3df02a60faeddeb6a6dffc3b2dc7a3714381` has tree
-`9584024a7e96335a3d95da64e3babdc67efca0c2`; one shared close promise waits for
-pending bind, closes the listener and makes the racing start reject. Focused
-tests pass11/11 and the corrected affected gate passes11/11 in49.422s.
+Phases 00–10 and P11-R01/R05/R08/R09 are released. P11-R08/R09 evidence head
+`371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
+`172cdff752d8fae3f25608e10128905778d8e8ba`, passed protected run
+`33291705269` and clean confirmation. Initial review discussion
+`3888409705` found a pending startup/close race. Corrected source `896a3df`
+shares close state, waits for pending bind and proves in a child-process
+regression that no listener leaks. Focused tests pass 11/11 and the affected gate
+passes 11/11 in 49.422s. The discussion is resolved. PR43 squash-merged as
+tree-identical main `bdbe2e0`; exact-main run `33292389504` passed all required
+jobs.
+
+P11-R10 exact-head confirmation discussion `3888512532` found that the lexical
+Router guard did not decode a double-quoted YAML Unicode escape. The first
+parser-based correction passed locally but protected run `33294397540` exposed
+its dependency in an intentionally dependency-free policy job. Final exact
+source `402b48897f6d679c243093eaf9199c0430aab397` removed that dependency and fully
+decoded YAML quoted-key escapes within the bounded policy. Confirmation then
+found that Router configuration expansion could materialize a retry key; the
+next review proved that the marker itself could be YAML-escaped. Final source
+`aac04c753e3f1463ff55597a581136947fe7506c`, tree
+`c2a6c93a85d7c65b2f475cb6694cfde0741c5100`, rejects raw and decoded expansion inside traffic
+shaping. Router4/4, platform67/67 and the affected17/17 gate with five cached in
+48.053 seconds pass.
+P11-R10 is frozen `WAITING_EXTERNAL`; protected exact-head CI, confirmation,
+merge and exact-main verification remain.
 
 ## Exact next actions
 
-1. Commit the corrected evidence checkpoint and push PR43 once.
-2. Reply to and resolve the initial discussion, then request one confirmation.
-3. Require protected exact-head CI.
-4. Squash merge without bypass, verify exact-main CI, then activate the Phase11
-   game-day/runbook closeout item.
+1. Push the batched PR44 correction once, resolve the current review discussions and
+   request one exact-head confirmation.
+2. Restore the named P12 stash on the dependent branch and continue locally.
+3. After protected CI and confirmation, squash merge without bypass, verify
+   exact-main CI, close Phase11 and rebase/recheck P12 before publication.
+
+P12-R01 is active locally. It owns repository trace context, structured-log
+correlation, privacy/cardinality and bounded exporter failure under the current
+OpenTelemetry ADR. Rebase it onto the final PR44/main tree before publication.
 
 ## Evidence boundaries
 
-P11-R05 wire/admission behavior is already covered by real ephemeral Node HTTP
-and protected Docker CI. P11-R08 is tools-only and requires real loopback socket
-tests, not retained Docker, PostgreSQL, Redis, broker, media or browser reruns.
-Those dependency mechanics belong to the following game-day work item.
+Existing current protected workflows already execute real PostgreSQL, Redis,
+broker, Discovery and owner runtimes. Reuse their exact run once. Browser and
+full media evidence may carry forward only if later source-object comparison
+proves the measured boundary unchanged; otherwise run one bounded scenario.
+Shared-host observations are not SLO or capacity claims.
 
 ## Execution environment
 
@@ -40,12 +60,11 @@ Use native WSL Git and pinned Node24.19.0/pnpm11.24.0 from
 `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4` for the
 candidate gate. Never use a `codex/` branch.
 
-The local Docker daemon is unnecessary for this item. Do not restart WSL/Docker
-or repeat host CPU/memory diagnostics.
+The local Docker daemon is unnecessary while exact hosted runtime evidence is
+running. Do not restart WSL/Docker or repeat host CPU/memory diagnostics.
 
 ## Do not do yet
 
-Do not add a product-facing injection endpoint, credentials, public listener,
-runtime fault selector, new infrastructure image or hosted resource. Do not
-claim game-day, fallback, broker/database/Redis/worker recovery or Phase11
-closeout from a tools-only candidate.
+Do not publish the dependent branch, add chaos to product routes, invent SLOs,
+repeat the full transcode/demo without an invalidating change, create hosted
+resources or broaden Phase11 into Phase12 observability/Phase14 load testing.

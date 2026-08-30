@@ -1,0 +1,108 @@
+P11-R11 retry amplification checkpoint
+Date: 2026-08-30
+Status: local candidate PASS; protected candidate release pending
+
+Source
+- Frozen predecessor: 371ba55eb7269520b72f41fd813a95aaeab819eb.
+- Initial retry-ownership source after squash rebase:
+  2b72467931b06886095017de69feb2804cbb6ecc.
+- Initial guard-scope correction: 60ca6f1797a1be38553e11408e2c6240dc8c3926.
+- Initial review correction:
+  ad99ef675953d47a7f03161c94468f9292476de0.
+- Current executable source: aac04c753e3f1463ff55597a581136947fe7506c.
+- Current source tree: c2a6c93a85d7c65b2f475cb6694cfde0741c5100.
+
+Attempt matrix
+| Layer | Automatic attempts for one public safe read | Proof |
+| --- | ---: | --- |
+| Web to Router | 1 | configured Apollo browser link chain counts exactly one injected failing fetch |
+| Apollo Router to subgraph | 1 | reviewed router.yaml has no retry policy; source verifier rejects block, flow and quoted retry keys |
+| Playback to Catalog publication read | at most 2 | first 503/reset then success produces exactly two server calls; permanent/malformed produces one |
+| Discovery to Catalog snapshot read | at most 2 | first 503/reset then success produces exactly two server calls; permanent/malformed produces one |
+
+Commands and results
+- Corrected Web suite: PASS 112/112 in 1857.443934 ms; the configured browser
+  chain regression reaches one failing fetch. Router-source policy: PASS 4/4 in
+  97.487892 ms including block, flow and quoted mutations.
+- Focused cross-owner/failure command: PASS 68/68 in 4713.043505 ms, including
+  both concrete safe-read clients, their finite admission and their breaker
+  behavior.
+- Focused ESLint, Prettier and git diff --check: PASS.
+- Initial review-corrected affected candidate: PASS 17/17 tasks, 2 cached, in
+  57.471 seconds; Web passes 112/112 and the Router policy is included in
+  platform67/67.
+- The initial 17/17 gate passed in 56.616 seconds. Local review then narrowed
+  the static guard from all Router YAML to the `traffic_shaping` boundary so a
+  future unrelated telemetry retry cannot be rejected as request amplification.
+
+PR44 initial review discussions `3888491209` and `3888491214` found that the
+first Web regression called the terminal fetch wrapper instead of the configured
+Apollo link chain, and the line-oriented Router guard missed valid flow-style
+YAML. Source `ad99ef6` extracts the existing Apollo client composition into the
+production factory used by `GraphqlProvider`; the test invokes that exact browser
+chain with one failing Router fetch. The traffic-shaping scanner now detects
+bare, flow and quoted `retry` keys while remaining scoped outside unrelated
+telemetry policy. Both reported bypasses fail their mutation regressions.
+
+Exact-head confirmation discussion `3888512532` then proved that the lexical
+decoder treated a valid double-quoted YAML Unicode escape such as
+`"retr\\u0079"` as literal text, while Apollo Router resolves the key to
+`retry`. The first local correction `4becc1a` used a declared YAML parser and
+passed its 73/73 candidate, but protected run `33294397540` correctly failed the
+dependency-free documentation/platform job because that job intentionally does
+not install packages. This candidate is invalidated and is not release evidence.
+
+Dependency-free escape correction
+`402b48897f6d679c243093eaf9199c0430aab397`, tree
+`b3814949919b1eeef8e7b0b9a732a86a35d73815`, removes the dependency and fully
+decodes YAML 1.2 double-quoted escapes, including fixed-width `x`, `u` and `U`
+Unicode forms and escaped line breaks. It retains single-quoted and plain key
+detection, fails closed on malformed escapes or quotes and rejects explicit-key,
+anchor and alias syntax inside the 32 KiB-bounded `traffic_shaping` policy.
+
+The focused Router suite passes 4/4 in 106.436037 ms with block, flow, single-
+and double-quoted, `x`/`u`/`U`-escaped, malformed, alias and invalid-escape
+mutations. Dependency-free platform source verification, scoped ESLint,
+Prettier and diff checks pass. The final affected candidate passes 17/17 tasks,
+five cached, in 52.918 seconds; platform passes 67/67 and includes the guard.
+
+Final confirmation then proved that a Router configuration expansion such as
+`${env.ASTER_ROUTER_RETRY_KEY:-retry}` could materialize the forbidden key.
+Source `473c584`, tree `f2b0d0b`, rejects raw expansion inside the bounded
+traffic-shaping policy while leaving unrelated Router telemetry expansion
+unchanged. Router passes 4/4, platform 67/67 and the complete affected gate
+passes 17/17 tasks, five cached, in 48.055 seconds.
+
+Confirmation then encoded the expansion marker itself as YAML (`\x24{...}`),
+which bypassed the raw-source check. Final source `aac04c7`, tree `c2a6c93`,
+checks decoded double-quoted keys for expansion before Router startup. Router
+passes 4/4, platform 67/67 and the complete affected gate passes 17/17 tasks,
+five cached, in 48.053 seconds.
+
+Verified composition
+- Public SSR/browser Apollo uses HttpLink plus one bounded fetch. There is no
+  RetryLink. Streaming replay is blocked; only an explicit UI refresh can issue
+  another public request.
+- Router has one three-second request deadline, operation-specific subgraph
+  timeouts and no retry configuration. The repository source contract now fails
+  if a retry block is introduced silently.
+- Only the purpose-separated service client owns the selected safe-read retry.
+  It uses the shared parent deadline, one jittered delay and at most two total
+  attempts. Permanent HTTP, malformed, oversized or invalid owner data gets one
+  attempt and fails closed.
+- Unsafe progress, profile, publication and deletion mutations gain no hidden
+  request retry. Explicit identical-key replay and durable event redelivery are
+  separate idempotent operations, not stacked retries of one HTTP request.
+
+Interpretation
+One user read produces one Web-to-Router call and one Router-to-subgraph call.
+Only the service's fixed safe Catalog read can make a second dependency attempt.
+The path therefore remains 1 x 1 x at-most-2, rather than multiplying retries
+at each layer.
+
+Limitations
+- The check covers the repository's first-party Web, pinned Router configuration
+  and two current safe-read owners. It does not claim behavior for an external
+  proxy, CDN or future hosted gateway.
+- Event-delivery backoff and explicit user retry are intentionally outside this
+  synchronous amplification count and remain separately bounded.
