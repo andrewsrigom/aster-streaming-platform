@@ -157,11 +157,11 @@ OTLP endpoints accept only bounded HTTP(S) URLs without embedded credentials. Ex
 
 ### Implemented Phase 12 trace candidate
 
-P12-R01/R02/R08/R09 are implemented locally through `@aster/telemetry`; they
-remain unpublished until their Phase 11 predecessor releases and the dependent
-candidate is rebased and verified. The package owns the OpenTelemetry trace SDK
-and exact-pinned OTLP/HTTP trace exporter behind repository types. Application,
-domain and adapter public contracts do not expose SDK types.
+P12-R01/R02/R08/R09 are implemented through `@aster/telemetry` on PR45; they
+remain unverified until corrected protected CI and confirmation pass. The
+package owns the OpenTelemetry trace SDK and exact-pinned OTLP/HTTP trace
+exporter behind repository types. Application, domain and adapter public
+contracts do not expose SDK types.
 
 The fixed span vocabulary is:
 
@@ -174,8 +174,9 @@ Every subgraph runs its real HTTP handler in an asynchronous server-span scope
 and supplies that active context to the existing redacting logger. Owner HTTP
 clients inject their child dependency context. PostgreSQL, Redis, broker and
 object-storage adapters reuse the same finite dependency contract. Identity
-events preserve one validated producer `traceparent`; authenticated Engagement
-consumption starts a local trace with one producer link. Catalog represents the
+events preserve the active validated producer `traceparent`; authenticated
+Engagement consumption starts a local trace with one producer link and executes
+its durable work and log inside that scope. Catalog represents the
 network-isolated decoder handoff with one finite `media_worker/process` boundary
 without passing credentials or arbitrary telemetry configuration into the
 worker.
@@ -186,7 +187,7 @@ attributes and one link, and span events are disabled. Export concurrency is
 one per signal, trace batches contain at most 32 spans, and both SDK and
 repository health wrappers use finite deadlines. Export health is diagnostic;
 it does not affect readiness or product outcomes. Exact implementation evidence
-and the remaining Collector limitation are indexed in
+and the protected-verification boundary are indexed in
 [`evidence/phase-12/`](../../evidence/phase-12/README.md).
 
 ## SLIs

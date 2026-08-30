@@ -2,12 +2,13 @@
 
 ## Resume point
 
-P12-R01 is active as the one unpublished dependent on
-`feat/p12-trace-observability`. Source commit
-`2cd63a373373751b12127c0b51b91db54be6f844`, tree
-`b2bb86be8657f5804eeef1f8f861e48a983499c2`, implements the trace/export slice.
-Telemetry18/18 and representative HTTP/event/owner/media tests28/28 pass. The
-old named P12 stashes are historical and must not be restored over this branch.
+P12-R01 is active on PR45 from `feat/p12-trace-observability`. Corrected source
+`82e9a616c39fc2159a54e8dba66fb82e71eb15af`, tree
+`a6a1081f33d6e95326ae92c8817d072c0fdb1093`, implements the trace/export slice
+and corrects all three first-candidate blockers. Focused owner tests pass11/11,
+platform policy23/23, daemonless Compose rendering and the affected gate73/73
+with51 cached in55.776 seconds pass. The old named P12 stashes are historical
+and must not be restored over this branch.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -40,15 +41,14 @@ Phase11.
 
 ## Exact next actions
 
-1. Commit the P11 closeout and P12 candidate evidence.
-2. Publish the locally green P12 candidate so hosted CI can execute the
-   disposable Collector trace/failure fixture.
-3. Complete the defined initial and confirmation review, merge and exact-main
-   proof.
+1. Commit and publish the corrected P12 evidence head once.
+2. Resolve initial review discussions `3888669316` and `3888669317`, request
+   the one confirmation review and require protected exact-head CI.
+3. Squash-merge PR45 without bypass and prove exact main.
 4. Complete the Phase12 metrics/SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 
-P12-R01 is active locally and already rebased onto PR44 squash main. It owns
+P12-R01 is active on PR45 and already based on released Phase11 main. It owns
 repository trace context, structured-log
 correlation, privacy/cardinality and bounded exporter failure under the current
 OpenTelemetry ADR. Evidence is indexed under `evidence/phase-12/`. Rebase it

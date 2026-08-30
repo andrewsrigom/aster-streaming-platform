@@ -23,7 +23,7 @@ P11-R10 is released at tree-identical main `834bf15`; exact-main run
 affected gate17/17. The guard rejects raw and YAML-decoded configuration
 expansion inside the bounded traffic-shaping policy.
 
-Rebased source commit `2cd63a3`, tree `b2bb86b`, implements the repository trace
+Corrected source commit `82e9a61`, tree `a6a1081`, implements the repository trace
 contract locally. `@aster/telemetry` now owns bounded OpenTelemetry metrics and
 traces, finite dimensions, active context, OTLP exporter health and timeout
 behavior. All five owner HTTP servers create server spans and drive the existing
@@ -31,11 +31,26 @@ redacting logger context. Fixed owner clients inject child context; authenticate
 Identity consumption links its producer; current database, Redis, broker,
 object-storage and media-coordinator boundaries use finite dependency spans.
 Focused telemetry, representative boundary and disposable-fixture contract
-tests pass, and the final affected candidate gate passes73/73 with57 cached in
-47.814 seconds. The branch remains unpublished and not verified until the hosted
-disposable Collector candidate and protected review/CI pass. The single local
+tests pass, and the corrected affected candidate gate passes 73/73 with 51
+cached in 55.776 seconds. The branch is published as PR45 and remains unverified
+until corrected protected review/CI pass. The single local
 Collector attempt created no resources because
 Docker reported no Linux engine; it will not be repeated unchanged.
+
+First evidence head `eddbe17` opened PR45. Its hosted source-quality job
+proved the real Collector integration, including the repository server and
+dependency spans. The initial review found two trace-continuity defects: the
+Engagement consumer executed durable work outside its linked observation, and
+the Identity producer emitted a synthetic parent instead of its active span.
+Protected run `33297164589` also found that the base observability overlay
+incorrectly defined the opt-in Discovery service, making the Docker-only full
+profile invalid. The three blockers are corrected together locally: consumer
+work and logs now execute inside the observation, Identity uses the active real
+trace context, and the base overlay configures only services present in the
+base Compose model. Focused tests pass 11/11, the platform policy test passes
+23/23, daemonless Compose rendering passes, and the corrected affected gate
+passes 73/73 with 51 cached in 55.776 seconds. A new exact source and protected
+candidate remain to be published and verified.
 
 ## Proposed behavior
 

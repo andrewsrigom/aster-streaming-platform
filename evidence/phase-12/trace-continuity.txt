@@ -1,6 +1,6 @@
 # P12-R01/R02 trace continuity
 
-Exact source: 2cd63a373373751b12127c0b51b91db54be6f844
+Exact source: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
 
 Verified representative paths
 
@@ -20,11 +20,15 @@ Verified representative paths
      fixed Catalog reads.
 
 3. Asynchronous events
-   - Identity preserves only a validated optional `traceparent` in its signed
+   - Identity preserves its active real request `traceparent`, or a bounded
+     fallback only when invoked without a telemetry composition, in its signed
      v1 fact;
    - Engagement authenticates and validates the event before observation;
    - broker consumption starts a new local trace with one link to the producer,
      rather than keeping the producer request span open;
+   - durable consumer work and its structured log execute inside that linked
+     observation, so nested database spans and log context share the consumer
+     trace;
    - logs do not include event, account or profile identifiers.
 
 4. Media and infrastructure
@@ -45,8 +49,8 @@ Limitations
 
 - This is representative contract coverage, not a claim that every GraphQL
   field emits a distinct span.
-- The disposable fixture requires real repository server/dependency span names
-  in the exact owned Collector log. Its local run could not start Docker; hosted
-  PR CI must execute this final continuity proof.
+- The first PR candidate's real integration step passed with the disposable
+  Collector. The corrected trace-context source still requires protected
+  exact-head execution and confirmation before verification.
 - No high-cardinality request, user, profile, title, URL or GraphQL document is
   added to a span.

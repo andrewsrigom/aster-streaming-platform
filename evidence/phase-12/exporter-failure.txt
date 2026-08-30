@@ -1,6 +1,6 @@
 # P12-R09 bounded OTLP exporter behavior
 
-Exact source: 2cd63a373373751b12127c0b51b91db54be6f844
+Exact source: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
 
 Policy
 
@@ -38,4 +38,9 @@ Disposable Collector gate
   canaries;
 - one local execution stopped before resource creation because Docker returned
   an empty operating-system value instead of `linux`; cleanup reported zero;
-- hosted PR CI must execute the fixture before this work item can be verified.
+- PR45 run `33297164589` passed the real integration step, which includes the
+  telemetry scenario and exact Collector log assertions, at first evidence head
+  `eddbe17`;
+- the later remediation does not change exporter capacity, deadlines, fixture
+  ownership or log bounds, but protected CI must repeat on the corrected exact
+  evidence head before this work item is verified.

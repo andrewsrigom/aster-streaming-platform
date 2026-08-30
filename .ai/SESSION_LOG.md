@@ -116,6 +116,17 @@ Append new entries at the top. Keep entries factual and concise.
 - P11-R10 passed protected exact-head run `33295744010` and clean confirmation,
   PR44 squash-merged as tree-identical main `834bf15`, and exact-main run
   `33296443777` passed every required job. Phase11 is released.
+- Published P12-R01 as PR45 at first evidence head `eddbe17`. Run
+  `33297164589` passed source quality and the real integration step, including
+  the disposable Collector scenario, but Local platform rejected the base
+  observability overlay because it defined opt-in Discovery without its overlay.
+- Initial review discussions `3888669316` and `3888669317` found that Engagement
+  durable consumption executed outside its linked observation and Identity
+  emitted a synthetic event parent instead of its active request span.
+- Corrected source `82e9a61`, tree `a6a1081`, batches all three remediations.
+  Focused owner tests pass11/11, optional-platform policy23/23, daemonless
+  Compose rendering and the corrected affected gate73/73 with51 cached in
+  55.776 seconds pass.
 
 ### Evidence
 
@@ -131,8 +142,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the closeout and publish P12-R01 so hosted CI executes the disposable
-Collector candidate; then run the defined initial and confirmation review.
+Publish the corrected P12-R01 evidence head once, resolve the initial threads,
+then require protected exact-head CI and the one confirmation review.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

@@ -24,14 +24,16 @@ without a dependency. Final confirmation then found that Router configuration
 expansion could still materialize a retry key. A decoded expansion bypass then
 proved that the marker itself could be YAML-escaped. Exact source `aac04c7`, tree
 `c2a6c93`, rejects raw and decoded expansions inside traffic shaping; Router4/4,
-platform67/67 and the affected17/17 gate pass. P12-R01 is the one unpublished
-dependent and is rebased on the squash main. Its exact local source `2cd63a3`,
-tree `b2bb86b`, implements bounded server/dependency traces,
-active log context, owner propagation, async event links, the media-worker
-coordinator boundary and OTLP failure isolation. Telemetry18/18 and the
-representative HTTP/event/owner/media suite28/28 and final affected gate73/73
-pass. Hosted disposable Collector execution remains before verification. Full
-Phase00–14 goal stays active.
+platform67/67 and the affected17/17 gate pass. P12-R01 is active on PR45.
+First evidence head `eddbe17` passed source quality and the real integration
+step in run `33297164589`, but Local platform exposed an invalid base
+observability overlay and initial review found two async trace-continuity
+defects. Corrected source `82e9a61`, tree `a6a1081`, keeps Engagement durable
+work inside its linked observation, propagates the active Identity producer
+span and limits the base overlay to its present services. Focused owner tests
+pass11/11, platform policy23/23, daemonless Compose rendering and the corrected
+affected gate73/73 with51 cached in55.776 seconds pass. Corrected protected CI
+and confirmation remain before verification. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -62,15 +64,16 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P12-R01 has an implemented rebased local candidate at source `2cd63a3`. The
+P12-R01 has a corrected candidate at source `82e9a61`, tree `a6a1081`. The
 repository-owned adapter creates finite privacy-safe server and dependency
 spans, drives logger context, propagates child owner context, links async events,
 bounds the media coordinator and exports metrics/traces through finite OTLP
-queues and deadlines. Evidence is indexed under `evidence/phase-12/`. The real
-Collector proof is encoded in the disposable telemetry fixture, but its single
-local run stopped before creation because Docker reported no Linux engine; the
-fixture reported zero remaining resources. The final candidate gate passes
-73/73 with57 cached in47.814 seconds. Hosted CI is still pending; no hosted backend,
+queues and deadlines. Evidence is indexed under `evidence/phase-12/`. First
+hosted run `33297164589` passed the real Collector scenario but failed Local
+platform because the observability overlay defined opt-in Discovery without its
+base overlay; source `82e9a61` corrects that and both initial-review continuity
+findings. Its local candidate gate passes73/73 with51 cached in55.776 seconds.
+Corrected protected CI and confirmation are pending; no hosted backend,
 dashboard, SLO or product contract is claimed by this slice.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
@@ -331,7 +334,7 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish P12-R01, then require hosted disposable Collector execution, protected
+Publish the corrected P12-R01 evidence head, then require protected
 CI and the defined initial/confirmation review before merge.
 
 ## Runtime and recovery

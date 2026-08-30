@@ -1,11 +1,11 @@
 # P12-R01/R02 repository trace contract
 
-Status: implemented, focused verification passed, candidate verification pending
+Status: corrected implementation, local candidate verification passed, protected verification pending
 
 Exact source
 
-- Commit: 2cd63a373373751b12127c0b51b91db54be6f844
-- Tree: b2bb86be8657f5804eeef1f8f861e48a983499c2
+- Commit: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
+- Tree: a6a1081f33d6e95326ae92c8817d072c0fdb1093
 - Branch: feat/p12-trace-observability
 - Base: tree-identical PR44 squash main 834bf15a8fe9fb39dc3a807912234efd8ee39dbd
 - Runtime: Node.js 24.19.0, pnpm 11.24.0, WSL Ubuntu-20.04
@@ -48,3 +48,21 @@ Iteration gate history
 - the later Collector assertion's focused fixture test passes 11/11;
 - the exact final source passes 73/73 tasks with 57 cached in 47.814 seconds.
   No earlier failed gate is represented as passing.
+
+Initial protected candidate and remediation
+
+- PR 45 first published evidence head `eddbe1763358cb9f6645957efe57577d3c74df8f`
+  passed source quality and the real integration step in run `33297164589`;
+- its Local platform job exposed an invalid base observability overlay: it
+  defined the opt-in Discovery service without the Discovery overlay;
+- initial review discussions `3888669316` and `3888669317` found that the
+  Engagement consumer ran durable work outside its linked observation and the
+  Identity producer emitted a synthetic rather than active parent;
+- corrected source `82e9a61` keeps consumer work and logs inside the linked
+  scope, publishes the active Identity trace context and limits the base
+  observability overlay to its four present subgraphs;
+- corrected focused owner tests pass 11/11, optional-platform policy passes
+  23/23, daemonless full-profile Compose rendering passes, and the corrected
+  affected gate passes 73/73 with 51 cached in 55.776 seconds;
+- a protected run and confirmation review on the corrected evidence head remain
+  required. The failed first candidate is not represented as verified.

@@ -151,12 +151,13 @@ Historical stashes are superseded.
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | IN_PROGRESS |
 
-P12-R01 rebased source `2cd63a3`, tree `b2bb86b`, implements the local
-trace/export slice. Telemetry18/18 and representative boundaries28/28 pass.
-The bounded Collector-log fixture contract passes11/11; its one local execution
-created no resources because Docker exposed no Linux engine. Hosted disposable
-Collector execution and protected review/CI remain before `DONE`. The final
-affected candidate gate passes73/73 with57 cached in47.814 seconds.
+P12-R01 corrected source `82e9a61`, tree `a6a1081`, implements the trace/export
+slice. First PR45 run `33297164589` passed source quality and real integration,
+but Local platform exposed an invalid optional-service overlay and initial
+review found two async continuity defects. The three blockers are corrected
+together. Focused owner tests pass11/11, platform policy23/23, daemonless
+Compose rendering and the corrected affected gate73/73 with51 cached in55.776
+seconds pass. Corrected protected CI and confirmation remain before `DONE`.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
