@@ -371,7 +371,7 @@ export function validateWorkflowPolicy(
       "Docker-only demo must verify both live Router-backed SLI ratios",
     ],
     [
-      /- name: Verify provisioned operational overview and optional failure isolation\s+timeout-minutes: 1\s+run: \|/u,
+      /- name: Verify provisioned operational overview and optional failure isolation\s+timeout-minutes: 2\s+run: \|/u,
       "operational overview acceptance must have a bounded protected step",
     ],
     [
@@ -397,6 +397,14 @@ export function validateWorkflowPolicy(
     [
       /http:\/\/127\.0\.0\.1:9090\/api\/v1\/rules/u,
       "protected acceptance must query every packaged Prometheus rule",
+    ],
+    [
+      /for attempt in \{1\.\.20\}; do[\s\S]*?rules\.every\(\(\{ health \}\) => health === 'ok'\)[\s\S]*?sleep 3\s*\n\s*done/u,
+      "protected acceptance must wait finitely for the first alert-group evaluation",
+    ],
+    [
+      /done\s+prometheus_rules=\$\(curl --fail --silent --show-error --max-time 3 http:\/\/127\.0\.0\.1:9090\/api\/v1\/rules\)\s+PROMETHEUS_RULES=/u,
+      "protected acceptance must re-read rules after the finite evaluation wait",
     ],
     [
       /assert\.equal\(rules\.length, 35\)/u,

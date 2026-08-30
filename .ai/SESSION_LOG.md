@@ -30,6 +30,27 @@ Append new entries at the top. Keep entries factual and concise.
   zero-finding secret scan.
 - Exact source `9fbc2d1`, tree `580f7ab`, records the coherent alert feature;
   the evidence checkpoint and protected publication remain.
+- Evidence head `88a9d02` opened PR50. Protected run `33322558877` passed rule
+  syntax/tests, full-profile startup and real telemetry but read one-minute alert
+  rules before their first evaluation, so one health value remained `unknown`.
+  Scoped cleanup passed and the invalidated run was cancelled after the decisive
+  failure.
+- The CI acceptance now waits every3 seconds for at most one complete evaluation
+  interval, tolerates incomplete startup responses, re-reads once and preserves
+  every strict35-rule/seven-alert assertion. A fresh isolated image became fully
+  healthy on attempt7/18 seconds; focused CI policy tests pass23/23 and cleanup
+  left zero scoped resources.
+- The corrected affected gate passes15/15 tasks with3 cached in52.346 seconds,
+  including platform75/75, CI policy33/33, documentation, memory, formatting,
+  lint, typecheck and a zero-finding secret scan.
+- Initial review discussion `3889911170` found that future rule/fixture/contract-
+  only diffs could skip the platform job and exact Prometheus fixture. The
+  classifier now routes every `infra/observability/` path and the SLO
+  verifier/tests to platform; a dedicated five-path regression plus all
+  classification/CI policy tests pass34/34. The final corrected affected gate
+  passes15/15 tasks with11 cached in3.476 seconds, including platform75/75,
+  documentation, memory, formatting, lint, typecheck and a zero-finding secret
+  scan. The batched correction is ready for one publication.
 - P12-R05/R06 final head `72d5656`, tree `2374279`, passed protected run
   `33313090638` attempt2 and clean confirmation. PR48 squash main `a99d3d5`
   retained the reviewed tree; exact-main run `33314309449` passed every job.

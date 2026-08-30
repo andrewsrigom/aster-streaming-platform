@@ -229,7 +229,16 @@ rules, Prometheus firing/recovery proof and alert-linked runbook navigation. The
 local candidate now passes exact 9/26-rule Prometheus validation, all synthetic
 cases, a fresh 35-rule packaged proof and the affected15/15 gate with3 cached in
 53.889 seconds. Exact source `9fbc2d1`, tree `580f7ab`, is committed; evidence
-publication, protected acceptance and review remain. Diagnostic exercises stay
+head `88a9d02` opened PR50. Protected run `33322558877` exposed pre-first-
+evaluation health `unknown` after rule syntax/full-profile/telemetry passed; its
+CI project cleaned and the invalidated run was cancelled. The bounded one-
+interval poll passes locally on fresh packaged attempt7/18 seconds. Corrected
+affected gate passes15/15 with3 cached in52.346 seconds. Publication, protected
+acceptance and review remain. Initial review discussion `3889911170` then found
+observability-only future diffs could skip platform/promtool; classifier and
+dedicated regression are corrected. Classification/CI tests pass34/34 and the
+final corrected affected gate passes15/15 with11 cached in3.476 seconds.
+Publication, protected acceptance and review remain. Diagnostic exercises stay
 later work.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.

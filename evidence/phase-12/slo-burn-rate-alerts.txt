@@ -152,6 +152,49 @@ Repository checks:
   formatting, lint, typecheck, unused-code and secret scan ok
   git diff check ok
 
+Protected attempt and correction
+--------------------------------
+
+Protected run 33322558877 reached the packaged Prometheus/Grafana acceptance at
+exact head 88a9d02. Rule syntax/tests, full-profile build/start and real
+telemetry passed. The new all-rule assertion then found one rule health value
+`unknown`: the one-minute alert group had not completed its first evaluation.
+This was an acceptance-timing defect, not an unhealthy expression. The job
+removed its exact CI Compose project successfully. The run was cancelled after
+that decisive failure instead of continuing unrelated heavyweight lanes.
+
+The correction polls the rules API every three seconds for at most one complete
+evaluation interval, tolerates a temporarily unavailable/incomplete response,
+re-reads the API after the finite wait and then applies the unchanged strict
+35-rule, seven-alert, health, coverage, annotation and empty-alert assertions.
+A fresh isolated packaged image required seven attempts/18 seconds before all
+rules reported `ok`; the final strict assertion passed and exact cleanup again
+left zero probe resources. Focused CI policy tests pass 23/23. The corrected
+affected candidate gate passes 15/15 tasks with 3 cached in 52.346 seconds.
+
+Initial review discussion 3889911170 found that a later rule/fixture/contract-
+only change could miss the platform job and therefore skip exact `promtool`
+execution. The correction classifies every `infra/observability/` path plus the
+SLO verifier and its tests as platform work. A dedicated regression proves all
+five representative paths select full quality plus the platform job. Combined
+classification/CI policy tests pass 33/33. The earlier 52.346-second gate is
+invalidated only by this classification correction and is repeated below before
+publication.
+
+Final corrected affected candidate:
+
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
+  15/15 tasks passed; 11 cached; 3.476 seconds
+  platform policy/tests 75/75
+  CI classification/policy tests 34/34
+  documentation, repository memory, formatting, lint and typecheck ok
+  full secret scan findings 0
+
+This repeat covers the finite evaluation poll and the corrected platform-job
+classification. The earlier isolated packaged proof remains applicable because
+the classifier correction changes no image, Prometheus configuration, rule,
+fixture, alert expression or protected API assertion.
+
 Navigation and response
 -----------------------
 

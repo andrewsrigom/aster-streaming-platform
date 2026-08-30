@@ -250,7 +250,22 @@ affected candidate passes15/15 with3 cached in53.889 seconds, including
 platform75/75 and CI policy33/33. The candidate links to the immutable overview
 and complete runbook. No external receiver or historical compliance claim is in
 scope. Exact source `9fbc2d1`, tree `580f7ab`, contains the coherent feature;
-evidence checkpoint, publication, protected acceptance and review remain.
+evidence head `88a9d02` opened PR50. Protected run `33322558877` passed rule
+syntax/tests, full-profile startup and telemetry but queried rule health before
+the one-minute alert group completed its first evaluation, returning `unknown`.
+The exact CI project was removed and the invalidated run cancelled after the
+decisive failure. A bounded 3-second poll over one complete evaluation interval,
+followed by a fresh strict read, is corrected locally; a fresh packaged image
+needed seven attempts/18 seconds and then passed all 35/7 assertions. Focused CI
+policy tests pass23/23; the corrected affected gate passes15/15 with3 cached in
+52.346 seconds. Initial review discussion `3889911170` then found that a future
+observability-rule-only change could skip the platform/promtool job. The
+classifier now routes all `infra/observability/` plus the SLO verifier/tests to
+that job, with dedicated path regression; combined classification/CI policy
+tests pass34/34. The final corrected affected gate passes15/15 with11 cached in
+3.476 seconds, including platform75/75, documentation, memory, formatting,
+lint, typecheck and a zero-finding secret scan. Publication, protected
+acceptance and review remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

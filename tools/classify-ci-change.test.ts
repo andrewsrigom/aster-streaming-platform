@@ -92,6 +92,22 @@ test("selects real integration for adapters, runtime, bootstrap and shared depen
   assert.equal(classifyChangedPaths(["apps/web/PLAYBACK.md"]).platform, false);
 });
 
+test("routes observability rules, contracts and verifier changes through the platform job", () => {
+  for (const path of [
+    "infra/observability/slo-alerts.yml",
+    "infra/observability/slo-alerts.test.yml",
+    "infra/observability/slo-contract.json",
+    "tools/verify-slo-contract.mjs",
+    "tools/verify-slo-contract.test.mjs",
+  ]) {
+    assert.deepEqual(
+      classifyChangedPaths([path]),
+      { changedFiles: 1, full: true, platform: true, reason: "executable-change" },
+      path,
+    );
+  }
+});
+
 test("fails safe to full quality for an empty diff", () => {
   assert.deepEqual(classifyChangedPaths([]), {
     changedFiles: 0,

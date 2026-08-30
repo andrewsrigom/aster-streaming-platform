@@ -10,7 +10,7 @@ same-SHA run `33319497475` was superseded by concurrency.
 Item62 (P12-R07) is the sole `IN_PROGRESS` item on
 `feat/p12-burn-rate-alerts`, based exactly on main `c297d32`. Its active plan is
 `.ai/CHANGE_PLAN.md`. Exact source is `9fbc2d1`, tree `580f7ab`; the evidence
-checkpoint is the only local commit still pending.
+head `88a9d02` opened PR50.
 
 ## Implemented candidate
 
@@ -29,11 +29,18 @@ checkpoint is the only local commit still pending.
   cached in53.889 seconds, including platform75/75 and CI policy33/33.
 - Every alert links to the operational overview and complete burn runbook. No
   Alertmanager delivery or field SLO compliance is claimed.
+- Protected run `33322558877` exposed only pre-first-evaluation health
+  `unknown`. The corrected finite poll passed against a fresh packaged image on
+  attempt7/18 seconds; the corrected affected gate passes15/15 with3 cached in
+  52.346 seconds. Publication remains.
+- Initial review discussion `3889911170` found observability-only future diffs
+  could skip platform/promtool. The classifier and dedicated five-path
+  regression are corrected; classification/CI tests pass34/34. The final
+  corrected affected gate passes15/15 with11 cached in3.476 seconds.
 
 ## Exact next actions
 
-1. Review the final diff, create the coherent source/evidence commits and publish
-   one PR.
+1. Record the exact correction source/evidence and push once to PR50.
 2. Pass protected CI, handle only blocking initial-review findings, then run one
    clean exact-head confirmation.
 3. Squash merge, confirm exact-main CI and activate the first remaining Phase12

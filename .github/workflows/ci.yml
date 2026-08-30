@@ -419,7 +419,7 @@ jobs:
           console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present, sliValues }));
           NODE
       - name: Verify provisioned operational overview and optional failure isolation
-        timeout-minutes: 1
+        timeout-minutes: 2
         run: |
           grafana_health=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/health)
           grep -Eq '"database"[[:space:]]*:[[:space:]]*"ok"' <<< "$grafana_health"
@@ -433,6 +433,24 @@ jobs:
           grafana_dashboard=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/dashboards/uid/aster-operational-overview)
           grep -Fq '"uid":"aster-operational-overview"' <<< "$grafana_dashboard"
           grep -Fq '"editable":false' <<< "$grafana_dashboard"
+          prometheus_rules=''
+          for attempt in {1..20}; do
+            if prometheus_rules=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:9090/api/v1/rules); then
+              if PROMETHEUS_RULES="$prometheus_rules" node --input-type=module <<'NODE'
+          try {
+          const payload = JSON.parse(process.env.PROMETHEUS_RULES);
+          const rules = payload.data.groups.flatMap((group) => group.rules);
+          process.exit(payload.status === 'success' && rules.length === 35 && rules.every(({ health }) => health === 'ok') ? 0 : 1);
+          } catch {
+            process.exit(1);
+          }
+          NODE
+              then
+                break
+              fi
+            fi
+            sleep 3
+          done
           prometheus_rules=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:9090/api/v1/rules)
           PROMETHEUS_RULES="$prometheus_rules" node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';

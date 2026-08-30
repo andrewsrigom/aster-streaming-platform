@@ -67,8 +67,12 @@ exact-main run `33319514232`. P12-R07 is active on
 `feat/p12-burn-rate-alerts` from that exact main. It owns finite multi-window
 burn-rate rules, firing/recovery proof and alert-linked runbook navigation. Its
 local candidate at source `9fbc2d1`, tree `580f7ab`, packaged Prometheus proof
-and affected gate pass; evidence publication, protected acceptance/review/release
-remain. Diagnostic exercises follow.
+and affected gate pass. PR50 run `33322558877` exposed a pre-first-evaluation
+health timing defect; the bounded one-interval acceptance poll is corrected and
+proved locally. Initial review then required observability-only diffs to select
+the platform/promtool job; classifier and regression are corrected. The final
+corrected candidate gate passes; publication, protected acceptance/review/release remain.
+Diagnostic exercises follow.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

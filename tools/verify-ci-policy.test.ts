@@ -249,7 +249,7 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
     ["assert.deepEqual(present, required)", "assert.ok(present)"],
     ["'supergraph', 'catalog_title_read'", "'supergraph'"],
     [
-      "timeout-minutes: 1\n        run: |\n          grafana_health=",
+      "timeout-minutes: 2\n        run: |\n          grafana_health=",
       "timeout-minutes: 20\n        run: |\n          grafana_health=",
     ],
     [
@@ -272,7 +272,10 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
     ["api/dashboards/uid/aster-operational-overview", "api/dashboards/uid/unreviewed"],
     ["slo-alerts.yml", "missing-alerts.yml"],
     ["slo-alerts.test.yml", "missing-alerts.test.yml"],
-    ["api/v1/rules", "api/v1/targets"],
+    ["for attempt in {1..20}; do", "while true; do"],
+    ["fi\n            sleep 3\n          done", "fi\n            sleep 300\n          done"],
+    ["rules.every(({ health }) => health === 'ok')", "rules.length > 0"],
+    ["done\n          prometheus_rules=$(curl", "done\n          stale_rules=$(curl"],
     ["assert.equal(rules.length, 35)", "assert.ok(rules.length > 0)"],
     ["assert.match(threeDayRatio.query", "assert.ok(threeDayRatio.query"],
     ["AsterCriticalJourneySloRapidBurn", "UnreviewedRapidBurn"],
