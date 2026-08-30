@@ -15,8 +15,12 @@ run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
 same tree; exact-main run `33307059156` passed every job. P12-R05/R06 final head
 `72d5656`, tree `2374279`, passed protected run `33313090638` attempt2 and clean
 confirmation. PR48 squash main `a99d3d5` retained that tree; exact-main run
-`33314309449` passed every job. P12-R12 operational-overview work is active from
-that exact main.
+`33314309449` passed every job. P12-R12 evidence head `ba3de93`, tree `73ee596`,
+passed protected run `33318672382` and clean confirmation. PR49 squash main
+`c297d32` retained the reviewed tree; valid exact-main run `33319514232` passed
+every required job. P12-R07 exact correction `8185a81`, tree `51dc011`, passed
+protected run `33323508793`, resolved its initial review and passed the single
+exact-head confirmation. Evidence closeout and release remain.
 
 ## Requirement traceability
 
@@ -28,10 +32,11 @@ that exact main.
 | P12-R04 | [Backend product signals](product-signals.txt) cover playback-session, progress, cache and media outcomes; [browser telemetry](browser-playback-telemetry.txt) covers local first-frame/rebuffer measurement |
 | P12-R05 | [SLI query definitions](sli-query-definitions.txt) record executable population/good/exclusion semantics and pinned synthetic rule results |
 | P12-R06 | [Initial SLO and error-budget report](slo-error-budget-report.md) records targets, owners, windows, budgets, activation gates and the absence of historical compliance data |
+| P12-R07 | [Burn-rate alerts](slo-burn-rate-alerts.txt) record finite rapid/sustained policy, exact Prometheus firing/recovery tests, runbook navigation and current candidate limits |
 | P12-R08 | [Cardinality and privacy review](cardinality-review.txt) records finite vocabularies, limits and sensitive-data canaries |
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 | P12-R11 | [Browser telemetry](browser-playback-telemetry.txt) records sampling, privacy, transport and retention boundaries |
-| P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and pending protected live proof |
+| P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and protected/exact-main release proof |
 
 P12-R03's affected gate passed 73/73 tasks with 28 cached in 63.79 seconds.
 Review corrected invalid event ages, malformed pool snapshots, missing outbox
@@ -80,8 +85,11 @@ counter objective idle;27/27 focused checks and the corrected60/60 affected gate
 with50 cached in47.383 seconds pass. Final head `72d5656`, tree `2374279`, passed
 protected run `33313090638` attempt2 and clean confirmation. PR48 squash main
 `a99d3d5` and exact-main run `33314309449` release the SLI/SLO work. Burn-rate
-alerts and three diagnostic exercises remain planned. The operational overview
-is an implemented candidate with protected live-container acceptance pending.
+alerts have verified source `8185a81`, tree `51dc011`, protected run
+`33323508793`, resolved initial review and clean exact-head confirmation;
+evidence closeout/release and three diagnostic exercises remain planned.
+The operational overview is released through its protected and exact-main
+live-container acceptance.
 
 ## Current limitations
 
@@ -101,6 +109,6 @@ is an implemented candidate with protected live-container acceptance pending.
   measurement cannot establish field availability or latency distributions.
 - Browser telemetry is released, but still has no remote transport or
   field-retention claim.
-- SLI/SLO synthetic ratios prove query behavior only. One-hour local retention
-  cannot prove a 28/30-day objective, and no historical compliance result is
+- SLI/SLO synthetic ratios prove query behavior only. At-most-three-day local
+  retention cannot prove a 28/30-day objective, and no historical compliance result is
   claimed.

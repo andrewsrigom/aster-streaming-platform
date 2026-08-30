@@ -1,6 +1,6 @@
 P12-R12 provisioned operational overview
 Date: 2026-08-30
-Status: verified candidate; confirmation and merge pending
+Status: released
 
 Requirement
 -----------
@@ -148,7 +148,19 @@ exact CI project. Source quality, full owner integrations, playable demo,
 documentation, security and the aggregate required decision also passed.
 
 Initial review discussions 3889614208 and 3889614213 received exact correction
-and run evidence and are resolved. One confirmation review and release remain.
+and run evidence and are resolved. The release below supersedes this candidate
+checkpoint.
+
+Release
+-------
+
+Evidence head ba3de93, tree 73ee596, passed protected run 33318672382 and the
+single clean exact-head confirmation. PR49 squash-merged without bypass as main
+c297d32 with the identical reviewed tree. Valid exact-main run 33319514232
+passed every required job, including the packaged Grafana/Prometheus acceptance,
+full integrations and playable demo. Earlier same-SHA run 33319497475 was
+cancelled by workflow concurrency after a replacement started; it is not release
+evidence.
 
 Rollback
 --------

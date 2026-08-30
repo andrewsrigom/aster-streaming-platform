@@ -1,7 +1,60 @@
 {
   "schemaVersion": 1,
   "recordingWindow": "5m",
-  "localRetention": "1h",
+  "localRetention": {
+    "time": "3d",
+    "size": "128MB"
+  },
+  "alertPolicy": {
+    "evaluationInterval": "1m",
+    "integrationResolution": "5m",
+    "coverageResolution": "1m",
+    "requireCompleteWindows": true,
+    "dashboardUrl": "http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview",
+    "runbookUrl": "https://github.com/andrewsrigom/aster-streaming-platform/blob/main/docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn",
+    "classes": [
+      {
+        "id": "rapid",
+        "alert": "AsterCriticalJourneySloRapidBurn",
+        "severity": "page",
+        "response": "immediate",
+        "sliIds": ["supergraph", "catalog_title_read", "playback_start"],
+        "description": "Both long and short error-rate windows exceed a reviewed rapid-burn threshold.",
+        "windows": [
+          {
+            "long": "1h",
+            "short": "5m",
+            "burnRate": 14.4
+          },
+          {
+            "long": "6h",
+            "short": "30m",
+            "burnRate": 6
+          }
+        ]
+      },
+      {
+        "id": "sustained",
+        "alert": "AsterCriticalJourneySloSustainedBurn",
+        "severity": "ticket",
+        "response": "working_hours",
+        "sliIds": ["supergraph", "catalog_title_read", "playback_start", "progress_write"],
+        "description": "Both long and short error-rate windows exceed a reviewed sustained-burn threshold.",
+        "windows": [
+          {
+            "long": "1d",
+            "short": "2h",
+            "burnRate": 3
+          },
+          {
+            "long": "3d",
+            "short": "6h",
+            "burnRate": 1
+          }
+        ]
+      }
+    ]
+  },
   "slis": [
     {
       "id": "supergraph",

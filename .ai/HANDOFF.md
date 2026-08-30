@@ -2,58 +2,52 @@
 
 ## Resume point
 
-Item60 (P12-R05/R06) is released. PR48 final head `72d5656`, tree `2374279`,
-passed protected run `33313090638` attempt2 and clean confirmation. Squash main
-is `a99d3d5`; exact-main run `33314309449` passed every required job.
+Item61 (P12-R12) is released. PR49 reviewed head `ba3de93`, tree `73ee596`,
+passed protected run `33318672382` and clean confirmation. Squash main is
+`c297d32`; valid exact-main run `33319514232` passed every required job. Earlier
+same-SHA run `33319497475` was superseded by concurrency.
 
-Item61 (P12-R12) is the sole `IN_PROGRESS` item on
-`feat/p12-operational-overview`, based exactly on main `a99d3d5`. Its active
-plan is `.ai/CHANGE_PLAN.md`.
+Item62 (P12-R07) is the sole `IN_PROGRESS` item on
+`feat/p12-burn-rate-alerts`, based exactly on main `c297d32`. Its active plan is
+`.ai/CHANGE_PLAN.md`. Exact source is `9fbc2d1`, tree `580f7ab`; the evidence
+head `88a9d02` opened PR50. Exact correction is `8185a81`, tree `51dc011`.
 
 ## Implemented candidate
 
-- ADR-0042 selects unmodified, digest-pinned Grafana OSS 13.2.0 and preserves
-  its AGPL-3.0-only terms while Aster-authored configuration remains MIT.
-- Grafana publishes only `127.0.0.1:3001`, joins only `edge`, runs as UID472
-  with read-only root, 0.5 CPU,384 MiB,128 PIDs and disposable bounded tmpfs.
-- Initial admin/basic login, UI writes, plugins, snapshots, analytics and
-  updates are disabled; plugin preinstallation/automatic update are blocked;
-  local anonymous access is Viewer-only/device-bounded.
-- One immutable 15-panel dashboard separates user impact, dependency health
-  and runtime saturation with twelve fixed PromQL queries and no variables.
-- Repository checks validate image, Compose, provisioning, queries, reset scope
-  and adverse mutations. The resource-corrected complete candidate gate passed
-  15/15 tasks in62.976 seconds, including platform73/73 and CI policy33/33.
-- Protected CI builds the image, verifies Grafana/data source/dashboard health,
-  runs a representative released query, stops Grafana and requires product
-  platform health to remain healthy.
-- Run `33316483464` exposed the initial64-PID/256-MiB limit and background plugin
-  attempts. A unique local probe reproduced the exit and measured100 startup
-  PIDs,87 healthy PIDs and253.2 MiB. The corrected isolated repeat became healthy
-  with99 PIDs/225.9 MiB, provisioned the read-only data source/dashboard,
-  emitted no plugin-installer/thread failure and left zero scoped resources.
-  Initial review discussions `3889614208` and `3889614213` found the dashboard
-  used `playback_session` instead of released SLI `playback_start` and range
-  stats could retain an old non-empty ratio. The batched correction cross-checks
-  SLO IDs and makes all four ratios instant queries. Focused39/39 and combined
-  CI/platform/reset62/62 pass; the corrected complete candidate passes15/15
-  tasks with2 cached in81.29 seconds.
-- Protected run `33317459549` built the corrected full profile and passed
-  packaged telemetry. The overview step failed only because its health assertion
-  required compact JSON while Grafana13 returns formatted valid JSON. A unique
-  Prometheus/Grafana probe confirmed all five APIs/query/dashboard contracts and
-  left zero scoped resources. The assertion now accepts whitespace but still
-  requires `database=ok`; focused CI policy tests pass23/23 and the corrected
-  complete candidate passes15/15 tasks with3 cached in77.929 seconds.
-- Exact source `c678484`, tree `397ead5`, passed protected run `33317834141`:
-  every job passed, including live Grafana provisioning/query/failure isolation
-  and all integration/playable proofs. Discussions `3889614208` and
-  `3889614213` have exact replies and are resolved.
+- ADR-0043, the executable SLO contract and exact Prometheus rules define rapid
+  14.4x 1h/5m plus 6x 6h/30m pairs for three page-class SLIs and sustained 3x
+  1d/2h plus 1x 3d/6h pairs for all four.
+- Complete sampled-window guards suppress fresh, partial or size-evicted
+  history. The local time ceiling is three days while the 128 MB size cap and
+  query/resource bounds remain.
+- Prometheus 3.14.0 validates 9 SLI rules plus 26 alert-policy rules. Synthetic
+  fixtures prove firing, paired-window/non-traffic/incomplete-history
+  suppression and short-window recovery.
+- A fresh isolated packaged image reported 35 healthy rules, seven alert
+  instances, the exact 3-day coverage guard and zero active no-traffic alerts.
+- Focused policy tests pass68/68. The affected candidate passes15/15 tasks with3
+  cached in53.889 seconds, including platform75/75 and CI policy33/33.
+- Every alert links to the operational overview and complete burn runbook. No
+  Alertmanager delivery or field SLO compliance is claimed.
+- Protected run `33322558877` exposed only pre-first-evaluation health
+  `unknown`. The corrected finite poll passed against a fresh packaged image on
+  attempt7/18 seconds; the corrected affected gate passes15/15 with3 cached in
+  52.346 seconds.
+- Initial review discussion `3889911170` found observability-only future diffs
+  could skip platform/promtool. The classifier and dedicated five-path
+  regression are corrected; classification/CI tests pass34/34. The final
+  corrected affected gate passes15/15 with11 cached in3.476 seconds.
+- Protected run `33323508793` passes every exact-head job, including the
+  packaged 35-rule/seven-alert assertion, owner integrations and playable demo.
+  Discussion `3889911170` is answered and resolved. Confirmation comment
+  `5470101517` reports no major issue at `8185a81`.
 
 ## Exact next actions
 
-1. Publish the evidence checkpoint and obtain one exact-head confirmation.
-2. Squash-merge, verify exact main, then activate P12-R07 alerts.
+1. Commit and publish the evidence closeout to PR50, then pass its protected
+   documentation gate.
+2. Squash merge, confirm exact-main CI and activate the first remaining Phase12
+   diagnostic exercise from clean main.
 
 ## Execution boundary
 
@@ -64,5 +58,7 @@ Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
 
 ## Do not do yet
 
-Do not restart WSL/Docker, reset retained projects, repeat host diagnostics or
-rebuild media. Protected CI owns the changed live-image proof.
+Do not add Alertmanager, hosted receivers, credentials or a historical SLO
+claim. Do not restart WSL/Docker, reset retained projects or repeat host
+diagnostics. The packaged proof is current; repeat it only if image,
+configuration, rules or protected API assertions change.

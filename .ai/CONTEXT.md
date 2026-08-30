@@ -61,9 +61,20 @@ through PR44 main `834bf15`. P12 trace/privacy/export, backend signals, browser
 QoE and executable SLI/SLO work are released through PR45–48. PR48 final head
 `72d5656`, tree `2374279`, passed protected run `33313090638` attempt2, clean
 confirmation and squash main `a99d3d5`; exact-main run `33314309449` passed.
-P12-R12 is active on `feat/p12-operational-overview` from that exact main. It
-owns one bounded local Grafana overview for user impact, dependency health and
-runtime saturation. Alerts and diagnostic exercises follow.
+P12-R12 is released through PR49 reviewed head `ba3de93`, tree `73ee596`,
+protected run `33318672382`, clean confirmation, squash main `c297d32` and valid
+exact-main run `33319514232`. P12-R07 is active on
+`feat/p12-burn-rate-alerts` from that exact main. It owns finite multi-window
+burn-rate rules, firing/recovery proof and alert-linked runbook navigation. Its
+local candidate at source `9fbc2d1`, tree `580f7ab`, packaged Prometheus proof
+and affected gate pass. PR50 run `33322558877` exposed a pre-first-evaluation
+health timing defect; the bounded one-interval acceptance poll is corrected and
+proved locally. Initial review then required observability-only diffs to select
+the platform/promtool job; classifier and regression are corrected. The final
+corrected candidate gate and exact-head protected run `33323508793` pass.
+Discussion `3889911170` is resolved with that evidence, and the single
+confirmation reports no major issue. Evidence closeout, merge, exact-main CI
+and release remain. Diagnostic exercises follow.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

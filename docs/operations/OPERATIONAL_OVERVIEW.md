@@ -68,8 +68,9 @@ docker compose --project-name aster --file infra/compose/compose.yml --file infr
 
 ## Limits
 
-The dashboard refreshes every 30 seconds. Prometheus keeps one hour/128 MB and
-limits query duration, concurrency and samples. This is enough to demonstrate
-diagnosis locally but cannot establish 28/30-day reliability. Burn-rate alerts,
-three recorded diagnostic exercises and hosted identity/retention remain later
+The dashboard refreshes every 30 seconds. Prometheus keeps at most three days/
+128 MB and limits query duration, concurrency and samples. This is enough to
+demonstrate diagnosis and the burn-alert mechanics locally but cannot establish
+28/30-day reliability. Alert labels do not imply external delivery. Three
+recorded diagnostic exercises and hosted identity/retention remain later
 Phase 12/14 work.

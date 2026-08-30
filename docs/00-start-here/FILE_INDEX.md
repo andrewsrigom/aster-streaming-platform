@@ -172,6 +172,7 @@ This index lists repository governance artifacts and every Markdown source in th
 - [`docs/adr/0010-content-rights.md`](../adr/0010-content-rights.md) — ADR-0010: Make Rights Verification a Publication Invariant
 - [`docs/adr/0011-express-http-adapter.md`](../adr/0011-express-http-adapter.md) — ADR-0011: Use Express 5 behind a Bounded HTTP Adapter
 - [`docs/adr/0042-bounded-local-operational-overview.md`](../adr/0042-bounded-local-operational-overview.md) — ADR-0042: Provision a bounded local operational overview
+- [`docs/adr/0043-multi-window-slo-burn-alerts.md`](../adr/0043-multi-window-slo-burn-alerts.md) — ADR-0043: Evaluate finite multi-window SLO burn-rate alerts
 
 ## docs/specs
 

@@ -2,10 +2,63 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
-## 2026-08-30 — SLI/SLO release and operational-overview candidate
+## 2026-08-30 — Operational-overview release and burn-alert activation
 
 ### Completed
 
+- P12-R12 evidence head `ba3de93`, tree `73ee596`, passed protected run
+  `33318672382` and clean exact-head confirmation. PR49 squash main `c297d32`
+  retained the reviewed tree; valid exact-main run `33319514232` passed every
+  required job. Earlier same-SHA run `33319497475` was superseded by concurrency.
+- Activated P12-R07 on `feat/p12-burn-rate-alerts` from that exact main and
+  recorded the finite multi-window alert, runbook, retention and verification
+  boundaries in the active plan.
+- Added ADR-0043, the executable alert policy, 19 bounded helper recordings and
+  seven finite rapid/sustained alert instances. Complete sampled-window guards
+  keep partial local history absent; the three-day time ceiling retains the
+  existing 128 MB size and query/resource limits.
+- Added exact Prometheus firing, paired-window, incomplete-history, recovery,
+  idle and excluded-only fixtures plus contract/adverse validators. Prometheus
+  3.14.0 validates 9 SLI and 26 alert-policy rules; all synthetic tests pass.
+- Added the complete critical-journey burn runbook and protected packaged API
+  assertions. A fresh isolated packaged image returned 35 healthy rules, seven
+  alert instances, the exact 3-day coverage guard and zero active no-traffic
+  alerts; its exact container/image state was removed.
+- Focused policy tests pass68/68 in2.994 seconds. The affected candidate passes
+  15/15 tasks with3 cached in53.889 seconds, including platform75/75, CI
+  policy33/33, documentation, AI state, formatting, lint, typecheck and a
+  zero-finding secret scan.
+- Exact source `9fbc2d1`, tree `580f7ab`, records the coherent alert feature;
+  the evidence checkpoint and protected publication remain.
+- Evidence head `88a9d02` opened PR50. Protected run `33322558877` passed rule
+  syntax/tests, full-profile startup and real telemetry but read one-minute alert
+  rules before their first evaluation, so one health value remained `unknown`.
+  Scoped cleanup passed and the invalidated run was cancelled after the decisive
+  failure.
+- The CI acceptance now waits every3 seconds for at most one complete evaluation
+  interval, tolerates incomplete startup responses, re-reads once and preserves
+  every strict35-rule/seven-alert assertion. A fresh isolated image became fully
+  healthy on attempt7/18 seconds; focused CI policy tests pass23/23 and cleanup
+  left zero scoped resources.
+- The corrected affected gate passes15/15 tasks with3 cached in52.346 seconds,
+  including platform75/75, CI policy33/33, documentation, memory, formatting,
+  lint, typecheck and a zero-finding secret scan.
+- Initial review discussion `3889911170` found that future rule/fixture/contract-
+  only diffs could skip the platform job and exact Prometheus fixture. The
+  classifier now routes every `infra/observability/` path and the SLO
+  verifier/tests to platform; a dedicated five-path regression plus all
+  classification/CI policy tests pass34/34. The final corrected affected gate
+  passes15/15 tasks with11 cached in3.476 seconds, including platform75/75,
+  documentation, memory, formatting, lint, typecheck and a zero-finding secret
+  scan.
+- Exact correction `8185a81`, tree `51dc011`, passed protected run
+  `33323508793`: all six required jobs succeeded, including exact Prometheus
+  rules/tests, packaged35-rule/seven-alert health, owner integrations, playable
+  demo and scoped cleanup. Discussion `3889911170` was answered by
+  `3889992599` with exact evidence and resolved.
+- The single exact-head confirmation completed at `8185a81`; comment
+  `5470101517` reports no major issue. Evidence closeout, squash merge and
+  exact-main CI remain.
 - P12-R05/R06 final head `72d5656`, tree `2374279`, passed protected run
   `33313090638` attempt2 and clean confirmation. PR48 squash main `a99d3d5`
   retained the reviewed tree; exact-main run `33314309449` passed every job.
@@ -75,12 +128,14 @@ Append new entries at the top. Keep entries factual and concise.
 ### Evidence
 
 - `evidence/phase-12/operational-overview.txt`
+- `evidence/phase-12/slo-burn-rate-alerts.txt`
 - `docs/operations/OPERATIONAL_OVERVIEW.md`
+- `docs/operations/RUNBOOKS.md#runbook-critical-journey-slo-burn`
 
 ### Next action
 
-Publish the evidence checkpoint and require one bounded exact-head confirmation,
-then squash-merge and verify main before starting P12-R07.
+Publish the coherent burn-alert candidate, pass protected Prometheus acceptance
+and clean confirmation, then merge/release it before the next Phase12 exercise.
 
 ## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate
 

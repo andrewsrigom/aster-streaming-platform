@@ -4,7 +4,133 @@ These runbooks are starting procedures. Start diagnosis with the provisioned
 [operational overview](OPERATIONAL_OVERVIEW.md): user impact establishes the
 affected journey, dependency health narrows the failing boundary and runtime
 saturation distinguishes CPU, memory, event-loop or PostgreSQL pool pressure.
-Alert-specific links remain P12-R07 work.
+The critical-journey burn alerts link directly to the first runbook below.
+
+---
+
+## Runbook: Critical-journey SLO burn
+
+### Trigger
+
+- `AsterCriticalJourneySloRapidBurn`: one rapid long/short pair exceeds 14.4x
+  over 1 hour/5 minutes or 6x over 6 hours/30 minutes;
+- `AsterCriticalJourneySloSustainedBurn`: one sustained pair exceeds 3x over
+  1 day/2 hours or 1x over 3 days/6 hours.
+
+Both windows in a pair must exceed the threshold derived from the affected
+SLI's error budget. `page` means immediate response intent and `ticket` means a
+working-hours response intent. The local profile has no Alertmanager receiver,
+so those labels do not claim that a notification was delivered.
+
+### User impact and owner
+
+| SLI | Owner | Impact |
+|---|---|---|
+| `supergraph` | Platform | A valid first-party GraphQL operation cannot complete through the public API. |
+| `catalog_title_read` | Catalog | A viewer cannot obtain a timely authoritative title-detail visibility result. |
+| `playback_start` | Playback | An otherwise eligible viewer cannot obtain a timely playback session. |
+| `progress_write` | Engagement | A current playback checkpoint is not durably accepted inside the interaction budget. |
+
+### Confirm
+
+Replace `<sli>` only with one value from the table. Start with the current SLI
+and measured population in Prometheus or the linked operational overview:
+
+```promql
+aster:sli:good:ratio_rate5m{sli="<sli>"}
+```
+
+```promql
+aster:sli:population:rate5m{sli="<sli>"}
+```
+
+For a rapid alert, inspect both pairs rather than only the alert value:
+
+```promql
+aster:sli:error:ratio_rate1h{sli="<sli>"}
+aster:sli:error:ratio_rate5m{sli="<sli>"}
+aster:sli:error:ratio_rate6h{sli="<sli>"}
+aster:sli:error:ratio_rate30m{sli="<sli>"}
+```
+
+For a sustained alert, inspect:
+
+```promql
+aster:sli:error:ratio_rate1d{sli="<sli>"}
+aster:sli:error:ratio_rate2h{sli="<sli>"}
+aster:sli:error:ratio_rate3d{sli="<sli>"}
+aster:sli:error:ratio_rate6h{sli="<sli>"}
+```
+
+Confirm that Prometheus has enough retained history for the requested window.
+The local store is capped by three days and 128 MB, whichever is reached first;
+a fresh or size-evicted store cannot establish a complete long-window result.
+Inspect bounded local TSDB status when needed:
+
+```bash
+curl --fail --silent --show-error --max-time 3 http://127.0.0.1:9090/api/v1/status/tsdb
+```
+
+### Immediate mitigation
+
+1. Identify the affected SLI and whether current population is still non-zero.
+2. Use the overview's dependency and saturation layers to locate the first
+   failing boundary; do not infer cause from the SLO alert alone.
+3. Stop or roll back the latest relevant change when it aligns with onset and
+   the documented release rollback is safer than forward repair.
+4. Reduce optional work or isolate an unhealthy dependency through an already
+   verified fallback. Never bypass authorization, rights checks, durable-write
+   ownership or idempotency to improve a ratio.
+5. Preserve timestamps, exact queries, deployed revisions and sanitized logs.
+
+### Diagnose
+
+- `supergraph`: separate Router rejection from unexpected failure, then inspect
+  subgraph/dependency outcome and latency without treating expected admission
+  rejection as bad traffic.
+- `catalog_title_read`: check Router TitleDetail latency, Catalog PostgreSQL,
+  cache degradation and circuit state; PostgreSQL remains visibility authority.
+- `playback_start`: check publication read, session persistence, manifest
+  availability and owner timeouts; `not_playable` remains excluded and must not
+  be converted to success.
+- `progress_write`: check owner authorization, PostgreSQL admission, limiter and
+  dependency outcomes; do not replay writes without their original idempotency
+  identity.
+
+Use traces and sanitized logs only after metrics identify the boundary. The SLI
+label is finite; never add a profile, title, request or trace identifier to the
+alert query.
+
+### Recovery verification
+
+1. Confirm the current five-minute population and good ratio are present when
+   qualifying traffic exists.
+2. Confirm the applicable short error window falls below its threshold; both
+   alert names must return inactive from `/api/v1/alerts` after the active burn
+   stops.
+3. Exercise one real affected journey and its owner-side result without using a
+   synthetic success metric.
+4. Verify product health independently. Prometheus recovery is not product
+   recovery, and product health does not prove the alert rule loaded.
+
+### Rollback and escalation
+
+Rollback follows the change that caused user impact, not the alert rule. If the
+rule itself is invalid, restore the last reviewed SLO/alert files and restart
+only the optional observability profile; do not delete product volumes.
+
+Escalate immediate intent to the affected owner plus Platform when rapid burn
+persists or crosses owners. Escalate suspected corruption, unauthorized access
+or rights violation through the security/rights incident path independently of
+error budget. The local repository does not define a real person, schedule or
+external receiver; Phase 14 must supply those before hosted notification.
+
+### Follow-up evidence
+
+Record the SLI, class, pair, exact threshold, first/last firing time, retained
+history, user impact, diagnosis, mitigation, recovery query, relevant revision
+and whether the alert detected the issue before another signal. Do not turn a
+synthetic fixture or partial local window into a field reliability claim.
 
 ---
 
@@ -219,8 +345,8 @@ owner-data rewrite.
 ### Follow-up
 
 Record the cause and whether fallback or isolation policy changed. Use the
-current operational overview for finite local evidence; P12-R07 adds alert
-links. Do not invent a field SLO from a game-day duration.
+current operational overview and linked burn runbook for finite local evidence.
+Do not invent a field SLO from a game-day duration.
 
 ---
 

@@ -314,7 +314,7 @@ test("optional telemetry retains bounded collection without becoming an Identity
     ["observability.yml", "ASTER_OTLP_METRICS_ENDPOINT:", "UNREVIEWED_ENDPOINT:"],
     ["observability.yml", "127.0.0.1:9090:9090", "0.0.0.0:9090:9090"],
     ["observability.yml", "mem_limit: 128m", "mem_limit: 4g"],
-    ["observability.yml", "retention.time=1h", "retention.time=30d"],
+    ["observability.yml", "retention.time=3d", "retention.time=30d"],
     ["observability.yml", "condition: service_healthy", "condition: service_started"],
     ["observability.yml", "--post-data=", "--data="],
     ["collector.integration.yml", "enabled: false", "enabled: true"],
@@ -329,6 +329,7 @@ test("optional telemetry retains bounded collection without becoming an Identity
     ["prometheus.local.yml", "targets: [router:9091]", "targets: [router:9092]"],
     ["prometheus.local.yml", "sample_limit: 500", "sample_limit: 0"],
     ["prometheus.local.yml", "slo-rules.yml", "missing-rules.yml"],
+    ["prometheus.local.yml", "slo-alerts.yml", "missing-alerts.yml"],
     ["prometheus.local.yml", "label_limit: 16", "label_limit: 0"],
   ]) {
     const changed = { ...observability, [file]: observability[file].replace(before, after) };
