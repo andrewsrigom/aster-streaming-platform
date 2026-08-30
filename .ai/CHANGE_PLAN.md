@@ -23,8 +23,8 @@ P12-R01 through P12-R09 and P12-R11/R12 are released. PR50 reviewed correction
 `633e819` and exact-main run `33325544350` release P12-R07. The normal optional
 observability profile exports bounded traces only to the Collector debug output,
 exports metrics to Prometheus and exposes the immutable Grafana overview. The
-released Phase 11 game days prove failure behavior, but no searchable trace
-backend or trace-led three-scenario diagnostic acceptance exists.
+released Phase 11 game days prove failure behavior; the base release did not yet
+contain a searchable trace backend or trace-led three-scenario acceptance.
 
 Published source `e0d1975` implements ADR-0044, the bounded
 Tempo/Collector/Grafana profile, policy/adverse tests, exact scenario
@@ -36,12 +36,11 @@ visibility of the required PostgreSQL span; Redis did not run. Correction
 run `33332980729` proved that match plus recovery/cleanup, but the subsequent V2
 read was still incomplete and Redis did not run. The refined runner classifies
 the exact TraceQL-selected finite span instead of requiring recent trace-by-ID
-completeness. Focused diagnostics pass12/12. The three-scenario acceptance is
-not verified. Protected run `33333896159` passed Catalog diagnosis/recovery and
-exact cleanup, then showed that filtering the PostgreSQL span by failure outcome
-before selection was too restrictive. The current correction selects the exact
-dependency first and retains mandatory failure-outcome validation in the
-classifier.
+completeness. Focused diagnostics pass12/12. Protected run `33333896159` passed
+Catalog diagnosis/recovery and exact cleanup, then showed that filtering the
+PostgreSQL span by failure outcome before selection was too restrictive. The
+current correction selects the exact dependency first and retains mandatory
+failure-outcome validation in the classifier.
 Protected run `33334497056` then returned the exact selected PostgreSQL
 dependency, but classification ignored its intrinsic error status when optional
 outcome/name projection was absent. The current correction requires exact
@@ -57,13 +56,21 @@ intrinsic status `unset`. The current correction queries and classifies only the
 finite causal outcomes `timeout`, `cancelled`, `unavailable` and `error`; it
 still excludes `success` and `rejected`.
 
+Finite-outcome source `58779b98c991a81617f52894fd34368542a2e365` passed
+protected run `33336386466`. Local-platform job `99323989054` diagnosed and
+recovered Catalog service loss, PostgreSQL loss with causal outcome `cancelled`
+and Redis degradation with causal outcome `unavailable`, then proved clean
+zero-resource teardown. Source-quality job `99323989060` and aggregate `CI
+required` passed. The three-scenario runtime acceptance is verified at that
+exact source.
+
 The finite-outcome correction's affected gate passes 73/73 tasks with 60 cached
-in 56.093 seconds. The initial review added one global execution budget with cleanup
-headroom, signal-driven cleanup, a proof-only Tempo listener, finite diagnostic
-output categories and complete CI invalidation paths. Source confirmation found
-no remaining blocker. The protected trace-visibility failure triggers the
-stopping-rule exception and requires one targeted confirmation after its
-correction. Real runtime acceptance remains pending.
+in 56.093 seconds. The initial review added one global execution budget with
+cleanup headroom, signal-driven cleanup, a proof-only Tempo listener, finite
+diagnostic output categories and complete CI invalidation paths. Source
+confirmation found no remaining blocker. The protected trace-visibility
+remediation triggers the stopping-rule exception and requires one targeted
+confirmation before merge.
 
 ## Proposed behavior
 
@@ -184,14 +191,13 @@ recovered SLI. Never touch the retained demo or another Docker project.
   cleanup. The second also proves exact PostgreSQL TraceQL selection, but both
   stopped before Redis on trace-by-ID completeness. The third proves the
   selected-span path for Catalog plus recovery/cleanup, then stops at the
-  overly restrictive PostgreSQL outcome predicate. Corrected all-scenario
-  acceptance remains pending. The fourth reaches classification with the exact
-  PostgreSQL dependency but exposes the missing intrinsic-status fallback;
-  corrected all-scenario acceptance remains pending. The fifth stops on an
-  earlier non-failure-marked dependency fact. The sixth reaches the causal
-  PostgreSQL span and proves its deadline path is `cancelled`/`unset`; the
-  finite dependency-outcome query/poll correction still needs all-scenario
-  acceptance.
+  overly restrictive PostgreSQL outcome predicate. The fourth reaches
+  classification with the exact PostgreSQL dependency but exposes the missing
+  intrinsic-status fallback. The fifth stops on an earlier non-failure-marked
+  dependency fact. The sixth reaches the causal
+  PostgreSQL span and proves its deadline path is `cancelled`/`unset`. The
+  seventh passes the finite dependency-outcome path for Catalog, PostgreSQL and
+  Redis plus recovery and exact cleanup.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

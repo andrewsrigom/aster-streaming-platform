@@ -228,18 +228,43 @@ preserves exact trace/dependency correlation while respecting the released
 cancellation semantics. Focused diagnostic/profile tests pass 12/12 and the
 affected gate passes 73/73 with 60 cached in 56.093 seconds.
 
-## Remaining acceptance
+## Seventh protected runtime — accepted
+
+Finite-outcome source `58779b98c991a81617f52894fd34368542a2e365` ran in
+workflow `33336386466`. Local-platform job `99323989054` created only project
+`aster-p12-diagnostics-41589061-7eb4-451b-b726-92f157ceda2b` and passed the
+complete three-scenario exercise:
+
+- Catalog trace `b85d10cf690ce6bc773fe0a99f75dc77` diagnosed
+  `catalog_service_unavailable`, measured one population/zero good and
+  recovered;
+- PostgreSQL trace `c0ab6f7d53b2478cbeb52bb5716f9e81` diagnosed
+  `catalog_postgresql_unavailable`, selected causal outcome `cancelled`,
+  measured one population/zero good and recovered;
+- Redis trace `7ea995a0eab0453fcdbb20219a7c77a9` diagnosed
+  `catalog_redis_degraded`, selected causal outcome `unavailable`, measured one
+  population/one good with latency qualification and recovered.
+
+The finalizer reported clean zero-resource teardown for the exact generated
+project. Source-quality job `99323989060` and aggregate `CI required` also
+passed. The bounded transcript is
+[protected-run-33336386466.txt](diagnostics/protected-run-33336386466.txt).
+This verifies P12-R10's three-scenario runtime acceptance at the exact source
+above.
+
+## Remaining release work
 
 Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. run one complete corrected `pnpm diagnostics:run` execution through the
-   protected diagnostic CI lane or a healthy local engine;
-3. record its three bounded scenario JSON events and clean finalizer result;
-4. retain the passing affected candidate gate and run protected CI;
-5. replace this pending status with the measured results, exact source/tree and
-   release evidence.
+2. obtain the targeted confirmation required by the runtime-remediation
+   stopping rule;
+3. pass protected CI at the final evidence head, squash merge PR51 and verify
+   exact-main CI;
+4. record the released source/tree and close Phase 12.
 
-No Phase 12 closeout or released trace-backend claim is valid before those
-steps pass.
+The accepted runtime remains supporting evidence for a later documentation-only
+head because such a change cannot alter the exercised profile, runner or
+telemetry contracts. No Phase 12 closeout or released trace-backend claim is
+valid before the remaining release steps pass.

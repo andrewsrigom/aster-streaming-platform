@@ -33,8 +33,10 @@ but exposed a missing intrinsic-error-status fallback in classification. The
 finite dependency-failure run `33335112383` then stopped on an earlier selected
 dependency without a failure mark. Failure-marked run `33335707261` then proved
 that the admitted PostgreSQL read can produce causal outcome `cancelled` with
-intrinsic status `unset`. The finite dependency-outcome TraceQL path still needs
-all-scenario acceptance.
+intrinsic status `unset`. At that point the finite dependency-outcome TraceQL
+path still needed all-scenario acceptance. Finite-outcome source `58779b9` and protected run
+`33336386466` then passed Catalog, PostgreSQL and Redis diagnosis/recovery plus
+exact clean teardown. P12-R10 runtime acceptance is verified.
 
 ## Requirement traceability
 
@@ -51,7 +53,7 @@ all-scenario acceptance.
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 | P12-R11 | [Browser telemetry](browser-playback-telemetry.txt) records sampling, privacy, transport and retention boundaries |
 | P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and protected/exact-main release proof |
-| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the implemented bounded Tempo profile, first protected runtime finding, correction and pending three-scenario acceptance |
+| P12-R10 | [Failure diagnosis](failure-diagnosis.md) records the bounded Tempo profile, remediation history and verified protected three-scenario acceptance |
 
 P12-R03's affected gate passed 73/73 tasks with 28 cached in 63.79 seconds.
 Review corrected invalid event ages, malformed pool snapshots, missing outbox
@@ -136,5 +138,6 @@ live-container acceptance.
   Run `33334497056` reaches PostgreSQL classification with the exact dependency
   but exposes the missing intrinsic-status fallback. Run `33335112383` stops on
   an earlier dependency fact without a failure mark. Run `33335707261` proves
-  the request-deadline failure is `cancelled`/`unset`. No three-scenario
-  acceptance is claimed until the finite causal-outcome query/poll passes.
+  the request-deadline failure is `cancelled`/`unset`. Run `33336386466` passes
+  the finite causal-outcome path for all three scenarios, all recoveries and
+  exact cleanup.

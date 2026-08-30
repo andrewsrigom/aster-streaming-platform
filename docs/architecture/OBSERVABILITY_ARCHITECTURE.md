@@ -13,7 +13,8 @@ Local target:
 The released local path is Collector `0.159.0`, Prometheus `3.14.0` and the
 single provisioned Grafana OSS `13.2.0` operational overview. The P12-R10
 candidate adds Tempo `3.0.0` only to an explicit disposable diagnostic profile;
-its three-scenario runtime acceptance remains pending. The normal demo retains
+protected run `33336386466` verifies its three-scenario runtime acceptance and
+exact cleanup. The normal demo retains
 the released stack and resource footprint. A Loki-compatible log store is not
 implemented because no reviewed ingestion, label, retention or deletion path
 exists.
@@ -143,8 +144,10 @@ polling must not stop on an earlier non-failure-marked dependency fact. The
 sixth showed that the request deadline can record the causal PostgreSQL span as
 outcome `cancelled` with intrinsic status `unset`. The current query and
 readiness condition require the exact dependency plus `timeout`, `cancelled`,
-`unavailable` or `error`, and exclude `success`/`rejected`. Real three-scenario
-evidence is not claimed until the corrected Docker exercise completes.
+`unavailable` or `error`, and exclude `success`/`rejected`. Protected run
+`33336386466` verifies the corrected Docker exercise for Catalog service loss,
+PostgreSQL `cancelled` and Redis `unavailable`, including recovery after each
+scenario and exact clean teardown.
 
 No log backend is part of this profile. Size-rotated Docker logs remain the
 correlated log source, which prevents an empty Loki service from being mistaken

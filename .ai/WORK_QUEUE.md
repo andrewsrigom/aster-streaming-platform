@@ -267,10 +267,11 @@ The current correction requires intrinsic error status in both TraceQL and
 polling. Run `33335707261` then showed the request deadline can produce causal
 outcome `cancelled` with status `unset`. The current correction matches only the
 finite outcomes `timeout`, `cancelled`, `unavailable` or `error`; its affected
-gate passes 73/73 with 60 cached in 56.093 seconds. Item63 remains
-`IN_PROGRESS` until all three
-scenarios, zero-resource cleanup, targeted confirmation and protected release
-pass.
+gate passes 73/73 with 60 cached in 56.093 seconds. Finite-outcome source
+`58779b9` and protected run `33336386466` then passed all three diagnoses and
+recoveries, exact zero-resource cleanup, source quality and aggregate
+protection. Item63 remains `IN_PROGRESS` until targeted confirmation and
+protected release pass.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

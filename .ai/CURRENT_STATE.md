@@ -318,12 +318,15 @@ correction matches only the finite outcomes `timeout`, `cancelled`,
 Initial review corrected execution/cleanup headroom, signal
 handling, listener scope, diagnostic output categories and CI invalidation;
 confirmation found no remaining blocking source issue; the real runtime finding
-now requires one targeted confirmation. Architecture, operations, runbooks,
-licensing and pending evidence are current. The earlier local attempt stopped
-during Docker Desktop image build and could not inspect scoped resources. Real
-three-scenario acceptance, corrected protected release and
-Phase12 closeout remain. The normal demo is
-unchanged; Phase13 has not started.
+now requires one targeted confirmation. Finite-outcome source
+`58779b98c991a81617f52894fd34368542a2e365` passed protected run `33336386466`:
+Catalog, PostgreSQL and Redis diagnoses/recoveries, exact project cleanup,
+source quality and aggregate protection all passed. The three-scenario runtime
+acceptance is verified. Architecture, operations, runbooks, licensing and
+evidence are current. The earlier local attempt stopped during Docker Desktop
+image build and could not inspect scoped resources. Targeted confirmation,
+final protected evidence head, merge, exact-main CI and Phase12 closeout remain.
+The normal demo is unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
 restart or repeated probe was attempted. Protected diagnostic CI is the next
 eligible real execution.
@@ -580,16 +583,16 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The corrected P12-R10 candidate still needs one passing three-scenario Docker
-acceptance, candidate/review/release and Phase12 closeout. Exact cleanup already
-passed for the first protected project but must pass again with the correction.
-Phases13–14 and hosted deployment also remain planned.
+The corrected P12-R10 candidate has verified three-scenario Docker acceptance
+and exact cleanup. It still needs targeted confirmation, protected final-head
+release, merge, exact-main CI and Phase12 closeout. Phases13–14 and hosted
+deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, complete the finite dependency-outcome correction, pass the affected gate
-and corrected protected three-scenario run, obtain targeted confirmation, close
-Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
+For P12-R10, publish the bounded acceptance evidence, obtain targeted
+confirmation, merge after final exact-head protection, verify exact-main CI,
+close Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
 interrupted local project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery

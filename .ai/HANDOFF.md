@@ -15,6 +15,7 @@ remediation after protected runs `33331974187`, `33332980729` and
 finding, followed by failure-marked run `33335112383`.
 Failure-marked source `20110ec` and run `33335707261` add the current
 `cancelled`/`unset` runtime finding.
+Finite-outcome source `58779b9` passes protected run `33336386466`.
 
 ## Implemented candidate
 
@@ -60,6 +61,10 @@ telemetry intentionally records that causal span as `aster.outcome="cancelled"`
 with intrinsic status `unset`. The current correction requires the exact
 dependency plus one finite causal outcome: `timeout`, `cancelled`, `unavailable`
 or `error`. It never accepts `success` or `rejected`.
+Run `33336386466` then passed all three diagnoses and recoveries: Catalog
+service loss, PostgreSQL outcome `cancelled` and Redis outcome `unavailable`.
+Exact project cleanup, source quality and aggregate protection passed. Runtime
+acceptance is verified at source `58779b9`.
 
 ## External runtime state
 
@@ -73,11 +78,11 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Validate, commit and push the finite dependency-outcome remediation; let its
-   protected lane execute all three scenarios and capture the bounded results.
-2. Obtain one targeted confirmation, merge, verify exact-main CI and close
-   Phase12. Inspect/remove only the exact interrupted local project when its
-   original engine is reachable.
+1. Commit/push the bounded acceptance evidence and obtain one targeted
+   confirmation at the final exact head.
+2. Merge after protected checks and confirmation pass, verify exact-main CI and
+   close Phase12. Inspect/remove only the exact interrupted local project when
+   its original engine is reachable.
 
 ## Execution boundary
 

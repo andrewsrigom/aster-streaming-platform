@@ -216,8 +216,9 @@ failure mark. Run `33335707261` then showed that the request deadline records
 the causal PostgreSQL span as `cancelled` with intrinsic status `unset`. The
 current query and polling condition require the exact dependency plus one of
 `timeout`, `cancelled`, `unavailable` or `error`; `success` and `rejected` do
-not end the wait. A protected run still must pass all three scenarios. Current
-status and all attempts are recorded in
+not end the wait. Protected run `33336386466` passes all three scenarios,
+recovery after each and exact clean teardown. Current status and all attempts
+are recorded in
 [failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.

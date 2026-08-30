@@ -51,6 +51,12 @@ full snapshot through the archival checkpoint remains in
   or `error` for the exact dependency and still rejects `success`/`rejected`.
   Focused tests pass 12/12 and its affected gate passes 73/73 with 60 cached in
   56.093 seconds.
+- Finite-outcome source `58779b9` passed protected run `33336386466`.
+  Local-platform job `99323989054` diagnosed and recovered Catalog service loss,
+  PostgreSQL `cancelled` and Redis `unavailable`, then proved exact clean
+  teardown. Source-quality job `99323989060` and aggregate protection passed.
+  P12-R10 runtime acceptance is verified; targeted confirmation and release
+  remain.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof

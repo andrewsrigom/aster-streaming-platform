@@ -89,7 +89,11 @@ Run `33335707261` then proved that the request deadline can yield dependency
 outcome `cancelled`, whose released telemetry status is intentionally `unset`.
 The current correction matches only `timeout`, `cancelled`, `unavailable` or
 `error`, never success/rejected.
-Real three-scenario acceptance remains pending. Phase13 has not started.
+Finite-outcome source `58779b98c991a81617f52894fd34368542a2e365` passed
+protected run `33336386466`: Catalog, PostgreSQL and Redis diagnoses, all three
+recoveries, exact cleanup, source quality and aggregate protection passed. The
+runtime acceptance is verified; targeted confirmation, merge, exact-main CI and
+Phase12 closeout remain. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
