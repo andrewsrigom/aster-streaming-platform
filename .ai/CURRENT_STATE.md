@@ -155,7 +155,16 @@ Exact Router 2.17 configuration validation and Prometheus 3.14 `promtool`
 rule/synthetic tests pass. The corrected affected gate passes 60/60 tasks with
 14 cached in 63.357 seconds. Browser first-frame remains a local diagnostic
 because remote sampling and retention are zero. PR48 protected packaged
-Router/Prometheus proof remains.
+Router/Prometheus run `33308328939` passed every job at head `60c72a7` and
+proved the live supergraph ratio. Confirmation discussion `3889248449` then
+found that the live Router histogram omitted the Catalog query's 300 ms bucket.
+Source `fa4f0b8`, tree `519908f`, adds the exact finite Router boundary, rejects
+Router/query threshold drift and makes protected CI require both live
+Router-backed ratios. Exact Router configuration and31/31 focused checks pass;
+the accepted affected repeat passes60/60 with50 cached in49.715 seconds. A first
+repeat was discarded because the untracked upstream verifier archive correctly
+failed repository size policy; that exact temporary file was removed. Protected
+runtime acceptance must repeat on the corrected head.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -415,9 +424,9 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete PR48 P12-R05/R06 protected Router/Prometheus acceptance and
-blocker-focused review, then merge and confirm exact main before starting
-dashboard work.
+Complete PR48 P12-R05/R06 protected Router/Prometheus acceptance on the corrected
+head, resolve the 300 ms finding and run the permitted confirmation round, then
+merge and confirm exact main before starting dashboard work.
 
 ## Runtime and recovery
 

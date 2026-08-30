@@ -13,7 +13,7 @@ squash main `2245251` and successful exact-main run `33304196111`.
 P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
 run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
 same tree; exact-main run `33307059156` passed every job. P12-R05/R06 corrected
-source `0661a81`, tree `d7978e0`, is rebased directly onto that exact main.
+source `fa4f0b8`, tree `519908f`, is rebased directly onto that exact main.
 PR48 owns its protected runtime and confirmation sequence.
 
 ## Requirement traceability
@@ -50,7 +50,13 @@ gap. Exact upstream Router 2.17.0 configuration validation passes. Prometheus
 3.14.0 `promtool` accepts all nine rules and its good/bad/excluded synthetic
 workloads. Initial review discussion `3889183230` found and corrected the absent
 runtime 400 ms progress bucket; telemetry19/19 and the corrected60/60 affected
-gate pass. Protected packaged-runtime acceptance remains. Dashboards, alerts,
+gate passed. Protected run `33308328939` then passed at head `60c72a7`, but
+confirmation discussion `3889248449` found the absent 300 ms Router bucket.
+Source `fa4f0b8` adds the exact finite boundary, cross-validates Router thresholds
+and requires live supergraph plus Catalog ratios. Router configuration and
+31/31 focused checks pass; the accepted affected repeat passes60/60 with50
+cached in49.715 seconds. Protected packaged-runtime acceptance must repeat.
+Dashboards, alerts,
 three diagnostic exercises and the operational overview remain planned.
 
 ## Current limitations

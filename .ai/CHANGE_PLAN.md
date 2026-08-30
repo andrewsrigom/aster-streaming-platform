@@ -18,13 +18,14 @@ without claiming production history that the local one-hour store cannot prove.
 
 ## Current behavior
 
-Released backend product metrics classify playback-session, progress-write,
-media-processing and media-publication outcomes and durations. The Router emits
-finite operation events and a standard request-duration histogram, but
-Prometheus currently scrapes only the Collector and the Router histogram does
-not carry an SLI-safe finite outcome. Existing SLI prose is provisional,
-omits required fields and has no executable query or synthetic correctness test.
-The local browser QoE candidate has zero remote sampling and cannot be a central
+The candidate classifies released backend and Router outcomes into four finite
+journey SLIs. Prometheus privately scrapes the Router and Collector, evaluates
+nine synthetic-tested rules and retains one disposable hour. The Router view
+exports the exact 300 ms Catalog boundary, and the product histogram exports the
+exact 400 ms progress boundary. Repository validators reject either threshold
+when its runtime bucket is absent. Protected CI passed the earlier supergraph
+ratio but must repeat because the corrected boundary adds a live Catalog-ratio
+assertion. Browser QoE still has zero remote sampling and is not a central
 first-frame SLI.
 
 ## Proposed behavior
@@ -92,7 +93,7 @@ error-budget report for the four required journeys.
 2. Add finite Router result classification and standard histogram attributes; cap metric cardinality.
 3. Scrape the private Router metric endpoint and bake versioned SLI recording rules into the existing Prometheus image.
 4. Add the machine-readable SLI/SLO contract and `promtool` synthetic good/bad/exclusion tests.
-5. Verify rule/config policy, actual Router labels and recorded series in protected Docker CI.
+5. Verify rule/config policy, actual Router labels and both supergraph and Catalog recorded series in protected Docker CI.
 6. Replace provisional prose with exact definitions, error budgets, limitations and evidence.
 
 ## Tests

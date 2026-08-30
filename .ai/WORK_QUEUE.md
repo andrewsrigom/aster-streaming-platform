@@ -191,7 +191,13 @@ query's 400 ms bucket was absent from runtime metrics. Corrected source
 `0661a81`, tree `d7978e0`, exports that bucket and cross-validates every local
 product SLI threshold against runtime boundaries. Contract4/4, telemetry19/19
 and the affected60/60 gate with14 cached in63.357 seconds pass. PR48 owns the
-remaining protected runtime and bounded confirmation sequence.
+remaining protected runtime and bounded confirmation sequence. Protected run
+`33308328939` passed every job at head `60c72a7`, but confirmation discussion
+`3889248449` found the Catalog query's absent 300 ms Router bucket. Source
+`fa4f0b8`, tree `519908f`, adds that exact finite boundary, cross-validates
+Router/query thresholds and requires live supergraph plus Catalog ratios.
+Focused checks pass31/31 and the accepted affected repeat passes60/60 with50
+cached in49.715 seconds. Corrected protected acceptance remains.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

@@ -1,6 +1,6 @@
 # P12-R05 executable SLI query evidence
 
-Status: implemented and locally verified at source `0661a81`, tree `d7978e0`;
+Status: implemented and locally verified at source `fa4f0b8`, tree `519908f`;
 protected Router/Prometheus runtime acceptance and release remain pending.
 
 ## Environment
@@ -45,7 +45,7 @@ node ./tools/verify-local-platform.mjs
 => {"check":"local-platform","status":"ok","violations":0}
 
 CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
-=> 60 tasks passed, 14 cached, 0 failed, 63.357 seconds after review correction
+=> 60 tasks passed, 50 cached, 0 failed, 49.715 seconds after the second review correction
 ```
 
 The first optional-platform test run exposed a validator gap: mutating one of
@@ -58,6 +58,21 @@ gap: the progress query used `le="0.4"` while runtime product histograms omitted
 that boundary. Source `0661a81` exports the exact 400 ms bucket, asserts it in
 real telemetry collection and makes this validator reject any local-product SLI
 whose threshold is absent from the runtime catalog. Telemetry tests pass 19/19.
+
+Protected run `33308328939` passed every job at head `60c72a7` and proved a
+live supergraph ratio. Confirmation discussion `3889248449` then exposed the
+second measurement-integrity gap: the Catalog query selected `le="0.3"` while
+the actual Router histogram jumped from 250 to 500 ms. Source `fa4f0b8` adds an
+explicit finite Router view containing the 300 ms boundary, makes the contract
+validator reject a Router/query threshold mismatch and changes protected CI to
+exercise `TitleDetail` and require both live Router-backed ratios. The exact
+Apollo Router 2.17.0 release accepts the corrected configuration; focused policy
+and contract tests pass 31/31.
+
+The first affected-gate invocation included the downloaded 28 MiB upstream
+Router verifier archive as an untracked repository file, so the secret/size
+policy rejected it before completion. The exact temporary artifact was removed;
+the unchanged accepted repeat is the 60/60 result above.
 
 ## Synthetic workload
 
@@ -104,5 +119,5 @@ exact pinned engines.
 The workload is synthetic and proves semantics, not latency, capacity or
 historical availability. The local store retains one hour, browser remote
 sampling remains zero, and no 28/30-day dataset exists. Protected CI must still
-prove the baked rules, private Router scrape labels and one live recorded ratio
-in the packaged Docker profile before this candidate can publish.
+prove the baked rules, private Router scrape labels and both live Router-backed
+ratios in the packaged Docker profile before this candidate can publish.

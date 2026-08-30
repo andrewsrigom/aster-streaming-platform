@@ -63,7 +63,9 @@ The runtime emits JSON operation/fetch events, finite operation buckets and
 internal Prometheus metrics. The P12-R05 candidate classifies known Router
 responses as `completed`, `rejected` or `failed`, attaches only that outcome and
 the finite operation bucket to the standard duration histogram, and caps the
-instrument at 128 series. The observability overlay exports traces to the
+instrument at 128 series. Its explicit finite histogram boundaries include the
+300 ms Catalog-title-read objective; repository policy rejects a query/runtime
+bucket mismatch. The observability overlay exports traces to the
 private Collector and lets Prometheus scrape Router metrics on the private
 platform network; arbitrary operation names/documents remain absent. Logs
 rotate at 5 MiB × 2. Recording rules are SLI mechanics, not a historical SLO or

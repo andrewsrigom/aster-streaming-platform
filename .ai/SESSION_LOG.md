@@ -30,6 +30,19 @@ Append new entries at the top. Keep entries factual and concise.
   asserts it in real telemetry collection and makes the SLI validator reject a
   runtime/query threshold mismatch. Telemetry passes 19/19 and the corrected
   affected gate passes 60/60 tasks with 14 cached in 63.357 seconds.
+- Protected run `33308328939` passed every job at exact head `60c72a7` and
+  proved the live supergraph ratio. Confirmation discussion `3889248449` found
+  a second measurement-integrity blocker: the live Router histogram omitted the
+  Catalog query's 300 ms bucket.
+- Corrected source `fa4f0b8`, tree `519908f`, adds an explicit finite Router
+  view containing 300 ms, cross-validates Router/query thresholds and changes
+  protected acceptance to require both live Router-backed ratios. Exact Router
+  config and 31/31 focused checks pass; the accepted affected repeat passes
+  60/60 with 50 cached in 49.715 seconds.
+- The first repeat was rejected only because the downloaded 28 MiB upstream
+  verifier archive remained untracked in the repository. The exact temporary
+  file was removed; repository security/size policy passed on the accepted
+  unchanged repeat.
 
 ### Evidence
 
@@ -39,8 +52,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Complete PR48 protected Router/Prometheus runtime acceptance and the bounded
-review/merge/exact-main sequence before dashboard work.
+Publish the 300 ms correction, repeat protected Router/Prometheus acceptance,
+resolve the finding and complete the permitted confirmation/merge/exact-main
+sequence before dashboard work.
 
 ## 2026-08-30 — Browser playback telemetry candidate
 
