@@ -1,8 +1,8 @@
 # P12-R05 executable SLI query evidence
 
-Status: implemented and locally verified at source `757f6a0`, tree `e9c7d24`.
-Earlier evidence head `aca4aba`, tree `8d40140`, passed protected run
-`33310118280`; corrected protected acceptance and release remain pending.
+Status: implemented and locally verified at source `c4e6a76`, tree `cfc21f6`.
+Failure-only evidence head `0ac7201` passed protected run `33311729108`; the
+idle-window correction's protected acceptance and release remain pending.
 
 ## Environment
 
@@ -50,6 +50,9 @@ node ./tools/verify-local-platform.mjs
 
 CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
 => 60 tasks passed, 50 cached, 0 failed, 49.705 seconds after the failure-only correction
+
+CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
+=> 60 tasks passed, 50 cached, 0 failed, 47.383 seconds after the idle-window correction
 ```
 
 The first optional-platform test run exposed a validator gap: mutating one of
@@ -95,6 +98,14 @@ Prometheus 3.14.0 rule test proves all four failure-only recording ratios and
 objective queries return zero. Invalidated run `33310999656` was cancelled after
 the review finding.
 
+Protected run `33311729108` passed every required job at head `0ac7201`, but
+confirmation discussion `3889416115` exposed the remaining zero-population edge:
+after an earlier counter stopped changing for the complete query window, the
+present zero denominator produced `0/0` and a `NaN` ratio. Source `c4e6a76`, tree
+`cfc21f6`, filters both recording and objective ratios on their same positive
+denominator. The exact pinned rule test verifies prior-traffic five-minute idle
+and preexisting-counter full-window idle produce no ratio.
+
 The first affected-gate invocation included the downloaded 28 MiB upstream
 Router verifier archive as an untracked repository file, so the secret/size
 policy rejected it before completion. The exact temporary artifact was removed;
@@ -111,6 +122,8 @@ Six one-minute counter samples model:
 - Progress completed/unavailable/not-playable plus excluded stale/conflict/
   rejected outcomes;
 - a failure-only workload with no completed input series for any journey;
+- a prior-traffic workload that becomes idle for the full five-minute window;
+- preexisting counters with no increase in the objective window;
 - a second workload containing only excluded traffic.
 
 Expected and observed recording-rule ratios at five minutes:
@@ -128,6 +141,9 @@ rejections and no traffic do not become availability success.
 Failure-only traffic produces a present zero recording ratio and zero full-
 window objective result for all four journeys. This proves total failure is
 visible without fabricating a no-traffic result.
+
+Prior-traffic and preexisting-counter idle workloads produce no ratio for any
+journey. This proves a zero denominator cannot persist as `NaN`.
 
 ## Raw artifacts
 

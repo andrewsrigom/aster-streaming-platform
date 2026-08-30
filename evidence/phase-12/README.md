@@ -13,10 +13,10 @@ squash main `2245251` and successful exact-main run `33304196111`.
 P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
 run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
 same tree; exact-main run `33307059156` passed every job. P12-R05/R06 corrected
-source `757f6a0`, tree `e9c7d24`, is rebased directly onto that exact main.
-Earlier evidence head `aca4aba`, tree `8d40140`, passed protected run
-`33310118280`; the failure-only correction still requires protected acceptance.
-PR48 owns its bounded confirmation and release sequence.
+source `c4e6a76`, tree `cfc21f6`, is rebased directly onto that exact main.
+Failure-only evidence head `0ac7201` passed protected run `33311729108`; the
+idle-window correction still requires protected acceptance. PR48 owns its
+bounded confirmation and release sequence.
 
 ## Requirement traceability
 
@@ -71,8 +71,13 @@ and objective queries. Exact `promtool` tests prove all four failure-only ratios
 and full-window queries return zero while excluded-only/no-population remains
 absent;27/27 focused checks and the affected60/60 gate with50 cached in49.705
 seconds pass. Invalidated run `33310999656` was cancelled. Corrected protected
-acceptance remains. Dashboards, alerts,
-three diagnostic exercises and the operational overview remain planned.
+run `33311729108` passed every job, but confirmation discussion `3889416115`
+found idle populations could retain `0/0` as `NaN`. Source `c4e6a76`, tree
+`cfc21f6`, filters recording and objective ratios on positive denominators.
+Exact `promtool` tests cover prior-traffic five-minute idle and preexisting-
+counter objective idle;27/27 focused checks and the corrected60/60 affected gate
+with50 cached in47.383 seconds pass. Protected acceptance remains. Dashboards,
+alerts, three diagnostic exercises and the operational overview remain planned.
 
 ## Current limitations
 

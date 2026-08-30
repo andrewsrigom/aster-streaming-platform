@@ -60,6 +60,13 @@ Append new entries at the top. Keep entries factual and concise.
   `33310999656` was cancelled after Local platform passed and before source
   quality completed. The corrected affected gate passes60/60 with50 cached in
   49.705 seconds.
+- Protected run `33311729108` passed every job at head `0ac7201`. Confirmation
+  discussion `3889416115` then found that a prior population becoming idle could
+  retain `0/0` as `NaN`. Source `c4e6a76`, tree `cfc21f6`, filters recording and
+  objective ratios on positive denominators. Exact Prometheus tests cover prior-
+  traffic five-minute idle and preexisting-counter objective idle;27/27 focused
+  checks pass. The corrected affected gate passes60/60 with50 cached in47.383
+  seconds.
 
 ### Evidence
 
@@ -69,9 +76,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Complete the corrected affected gate, publish once, pass protected acceptance
-and close the exact review finding before the bounded confirmation/merge/exact-
-main sequence and dashboard work.
+Publish once, pass protected acceptance and close the exact review finding
+before the bounded confirmation/merge/exact-main sequence and dashboard work.
 
 ## 2026-08-30 — Browser playback telemetry candidate
 

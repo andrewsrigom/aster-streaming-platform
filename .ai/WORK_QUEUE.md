@@ -209,7 +209,13 @@ series had existed. Source `757f6a0`, tree `e9c7d24`, derives zero only from the
 same present population for recording and objective queries. Exact `promtool`
 and27/27 focused checks pass; the corrected affected gate passes60/60 with50
 cached in49.705 seconds. Invalidated run `33310999656` was cancelled. Corrected
-protected gate, bounded confirmation, merge and exact-main CI remain.
+protected run `33311729108` passed every job, but confirmation discussion
+`3889416115` found idle populations could retain `0/0` as `NaN`. Source
+`c4e6a76`, tree `cfc21f6`, filters ratios on positive denominators and adds
+prior-traffic/preexisting-counter idle tests. Exact `promtool` and27/27 focused
+checks pass; the corrected affected gate passes60/60 with50 cached in47.383
+seconds. Protected acceptance, bounded confirmation, merge and exact-main CI
+remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

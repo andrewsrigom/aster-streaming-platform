@@ -29,8 +29,12 @@ one. Protected run `33310118280` passes that packaged runtime at evidence head
 `aca4aba`. Final confirmation then found that a failure-only window omitted its
 ratio when no completed label set had ever existed. Source `757f6a0`, tree
 `e9c7d24`, derives zero only from a present population for recording and full-
-window queries and adds a pinned failure-only workload. Browser QoE still has
-zero remote sampling and is not a central first-frame SLI.
+window queries and adds a pinned failure-only workload. Protected run
+`33311729108` passed that correction, but confirmation discussion `3889416115`
+found a prior population could become zero and leave `0/0` as `NaN`. Source
+`c4e6a76`, tree `cfc21f6`, filters recording and objective ratios on a positive
+denominator and adds idle-counter workloads. Browser QoE still has zero remote
+sampling and is not a central first-frame SLI.
 
 ## Proposed behavior
 
@@ -60,6 +64,8 @@ error-budget report for the four required journeys.
 - A zero population does not become artificial 100% availability.
 - A present failure-only population produces a zero good-event ratio rather than
   an absent series.
+- A zero denominator produces no ratio, including after a previously active
+  counter becomes idle.
 - Playback `not_playable` and rejected/cancelled requests do not enter the valid published-title attempt population.
 - Progress stale, conflict, rejected and cancelled outcomes remain separately measurable but outside valid current-write population.
 - Browser first-frame remains explicitly unavailable as a field SLO while remote sampling is zero.
@@ -75,6 +81,7 @@ error-budget report for the four required journeys.
 | Router scrape unavailable | product traffic remains independent | Prometheus target down; Router SLI series becomes absent |
 | Rule evaluation has zero population | expose no usable ratio | population, good and ratio series remain absent |
 | Rule evaluation has population but no good series | expose a zero ratio | derive zero only from the same present population |
+| Prior population becomes idle | expose no ratio | filter on a positive denominator; never retain `NaN` |
 | Prometheus rule/config malformed | fail image/config/CI validation | candidate cannot publish |
 | Telemetry callback throws | existing product result remains authoritative | owner wrapper already isolates failure |
 

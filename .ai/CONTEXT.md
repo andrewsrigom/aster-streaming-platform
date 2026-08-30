@@ -66,8 +66,12 @@ PR48. Evidence head `aca4aba` passed protected run `33310118280`, including
 packaged live SLI ratios. Final confirmation then found missing failure-only
 ratios. Source `757f6a0`, tree `e9c7d24`, derives zero only from a present
 population for recording and objective queries; exact `promtool` and27/27
-focused checks plus the affected60/60 gate pass. Corrected protected acceptance,
-confirmation, merge and exact-main CI remain before dashboard work.
+focused checks plus the affected60/60 gate pass. Its protected run `33311729108`
+passed, but confirmation found an idle `0/0` boundary. Source
+`c4e6a76`, tree `cfc21f6`, filters ratios on positive denominators; exact
+`promtool`,27/27 focused checks and the corrected60/60 affected gate pass.
+Protected acceptance, confirmation, merge and exact-main CI remain before
+dashboard work.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

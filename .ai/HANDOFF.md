@@ -26,13 +26,17 @@ confirmation discussion `3889344066` then found that failure-only windows
 disappeared when no completed series had ever existed. Source `757f6a0`, tree
 `e9c7d24`, zero-fills recording and objective numerators only from their present
 population and adds failure-only synthetic coverage. Invalidated run
-`33310999656` was cancelled. Its active plan is `.ai/CHANGE_PLAN.md`.
+`33310999656` was cancelled. Protected run `33311729108` passed every job at
+head `0ac7201`, but confirmation discussion `3889416115` found an idle prior
+population could leave `0/0` as `NaN`. Source `c4e6a76`, tree `cfc21f6`, filters
+recording and objective ratios on positive denominators and adds prior-traffic
+and preexisting-counter idle workloads. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Complete the corrected affected gate and publish one documented head.
+1. Publish the documented idle-window corrected head.
 2. Pass protected Prometheus/runtime acceptance.
-3. Reply to and resolve discussion `3889344066` with exact evidence.
+3. Reply to and resolve discussion `3889416115` with exact evidence.
 4. Run only the blocker-focused confirmation required by the changed measurement boundary.
 5. Squash-merge PR48, verify exact-main CI and activate P12 dashboard work.
 
@@ -41,12 +45,13 @@ population and adds failure-only synthetic coverage. Invalidated run
 - Contract/platform focused checks pass27/27; Router10/10 and telemetry19/19 remain valid.
 - Exact Apollo Router 2.17.0 configuration validation passes.
 - Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
-  failure-only, excluded and excluded-only workloads.
+  failure-only, idle, excluded and excluded-only workloads.
 - Failure-only recording ratios and full-window objective queries return zero;
-  excluded-only/no-population queries remain absent.
-- The failure-only corrected affected gate passes60/60 tasks with50 cached in49.705 seconds.
-- Protected run `33310118280` supports the prior boundary; corrected source
-  `757f6a0` still requires protected acceptance.
+  idle and excluded-only/no-population queries remain absent.
+- The idle-window corrected affected gate passes60/60 tasks with50 cached in
+  47.383 seconds.
+- Protected run `33311729108` supports the prior boundary; corrected source
+  `c4e6a76` still requires protected acceptance.
 - Documentation, AI state, formatting, lint, security and `git diff --check` pass.
 
 ## Measurement boundary

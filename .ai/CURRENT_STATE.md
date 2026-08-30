@@ -179,7 +179,14 @@ zero only from the same present population for recording and full-window
 queries. Exact Prometheus rule/tests and27/27 focused contract/platform checks
 pass; excluded-only/no-population queries remain absent. The corrected affected
 gate passes60/60 with50 cached in49.705 seconds. Invalidated run `33310999656`
-was cancelled. Corrected protected acceptance remains.
+was cancelled. Protected run `33311729108` passed every job at head `0ac7201`,
+including exact rules, real telemetry and the playable demo. Confirmation
+discussion `3889416115` then found that an earlier population becoming idle
+could retain a `0/0` `NaN` ratio. Source `c4e6a76`, tree `cfc21f6`, filters every
+recording and objective ratio on a positive denominator. Exact Prometheus tests
+cover prior-traffic and preexisting-counter idle windows;27/27 focused checks
+pass. The corrected affected gate passes60/60 with50 cached in47.383 seconds.
+Protected acceptance remains.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -439,7 +446,7 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete the P12-R05/R06 failure-only correction gate, publish one documented
+Complete the P12-R05/R06 idle-window correction gate, publish one documented
 head and pass protected acceptance. Resolve the exact review finding, perform
 the bounded confirmation, then merge and confirm exact main before dashboard work.
 
