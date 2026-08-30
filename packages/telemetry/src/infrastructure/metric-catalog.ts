@@ -12,6 +12,10 @@ export const DISCOVERY_FRESHNESS_BUCKETS_SECONDS = Object.freeze([
 
 export const CACHE_PAYLOAD_BUCKETS_BYTES = Object.freeze([256, 1_024, 4_096, 8_192, 16_384]);
 
+export const EVENT_AGE_BUCKETS_SECONDS = Object.freeze([
+  0.1, 0.5, 1, 5, 15, 30, 60, 300, 900, 1_800, 3_600,
+]);
+
 export const ASTER_METRIC_CATALOG = Object.freeze({
   httpDuration: Object.freeze({
     name: "http.server.request.duration",
@@ -98,6 +102,31 @@ export const ASTER_METRIC_CATALOG = Object.freeze({
     description: "Number of circuit-breaker results and state transitions by finite policy scope.",
     unit: "{event}",
   }),
+  postgresPoolConnections: Object.freeze({
+    name: "aster.postgresql.pool.connections",
+    description: "Latest bounded PostgreSQL pool connection and capacity snapshot.",
+    unit: "{connection}",
+  }),
+  eventDeliveryAge: Object.freeze({
+    name: "aster.event.delivery.age",
+    description: "Age of a validated event at a finite delivery boundary.",
+    unit: "s",
+  }),
+  eventDeliveryOutcomes: Object.freeze({
+    name: "aster.event.delivery.outcomes",
+    description: "Number of event delivery boundary results by finite owner and stage.",
+    unit: "{event}",
+  }),
+  productOperationDuration: Object.freeze({
+    name: "aster.product.operation.duration",
+    description: "Duration of a finite backend product operation.",
+    unit: "s",
+  }),
+  productOperationOutcomes: Object.freeze({
+    name: "aster.product.operation.outcomes",
+    description: "Number of finite backend product operation results.",
+    unit: "{operation}",
+  }),
   processCpuTime: Object.freeze({
     name: "process.cpu.time",
     description: "Total CPU seconds broken down by CPU mode.",
@@ -111,6 +140,11 @@ export const ASTER_METRIC_CATALOG = Object.freeze({
   processMemoryUsage: Object.freeze({
     name: "process.memory.usage",
     description: "Physical memory used by the process.",
+    unit: "By",
+  }),
+  nodeMemoryUsage: Object.freeze({
+    name: "aster.nodejs.memory.usage",
+    description: "Node.js heap, external and array-buffer memory by finite type.",
     unit: "By",
   }),
   processUptime: Object.freeze({

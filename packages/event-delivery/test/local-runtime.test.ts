@@ -68,6 +68,7 @@ test("local activation and derived credentials cannot select hosted or foreign o
 
 function fixture(event = profileEvent()) {
   const urls: string[] = [],
+    poolRoles: Array<string | undefined> = [],
     calls: string[] = [],
     waits: number[] = [];
   const published: AsterKafkaPublishInput[] = [],
@@ -163,8 +164,9 @@ function fixture(event = profileEvent()) {
     }),
   };
   const factories = {
-    database: (options: { readonly connectionString: string }) => {
+    database: (options: { readonly connectionString: string; readonly poolRole?: string }) => {
       urls.push(options.connectionString);
+      poolRoles.push(options.poolRole);
       return database;
     },
     broker: () => broker,
@@ -185,6 +187,7 @@ function fixture(event = profileEvent()) {
   return {
     factories,
     urls,
+    poolRoles,
     calls,
     waits,
     published,
@@ -197,11 +200,18 @@ function fixture(event = profileEvent()) {
 }
 test("Identity runtime signs exact published bytes after claim commit and before acknowledgement; stop owns all resources", async () => {
   const f = fixture();
+  const deliveries: unknown[] = [];
   const runtime = await createLocalEventDelivery(
     {
       owner: "identity",
       connectionString: source("identity"),
-      telemetry,
+      telemetry: {
+        ...telemetry,
+        recordEventDelivery: (input) => {
+          deliveries.push(input);
+          return { status: "recorded" };
+        },
+      },
       logger: { info: () => "written" },
     },
     f.factories,
@@ -224,6 +234,16 @@ test("Identity runtime signs exact published bytes after claim commit and before
     true,
   );
   assert.equal(new URL(f.urls[0] ?? "").username, "aster_identity_relay_local");
+  assert.deepEqual(f.poolRoles, ["relay"]);
+  assert.equal(deliveries.length, 1);
+  assert.deepEqual(
+    { ...(deliveries[0] as Record<string, unknown>), ageMs: undefined },
+    { owner: "identity", stage: "publish", outcome: "success", ageMs: undefined },
+  );
+  assert.ok(Number((deliveries[0] as Record<string, unknown>)["ageMs"]) >= 0);
+  assert.ok(
+    Number((deliveries[0] as Record<string, unknown>)["ageMs"]) <= 7 * 24 * 60 * 60 * 1_000,
+  );
   f.advance();
   await settled(() => f.waits.length === 2);
   assert.equal(f.waits[1], 1000);
@@ -254,6 +274,7 @@ test("Engagement alone creates the narrow consumer pool and earliest-backlog han
     f.urls.map((url) => new URL(url).username),
     ["aster_engagement_relay_local", "aster_engagement_consumer_local"],
   );
+  assert.deepEqual(f.poolRoles, ["relay", "consumer"]);
   assert.equal(f.consumers[0]?.topic, EVENT_TOPICS.identity);
   assert.equal(f.consumers[0].fromBeginning, true);
   await runtime.stop();

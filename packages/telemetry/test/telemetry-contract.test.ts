@@ -14,6 +14,12 @@ import {
   ASTER_HTTP_ROUTES,
   ASTER_METRIC_CATALOG,
   ASTER_OBSERVATION_OUTCOMES,
+  ASTER_POSTGRES_POOL_ROLES,
+  ASTER_POSTGRES_POOL_STATES,
+  ASTER_EVENT_OWNERS,
+  ASTER_EVENT_STAGES,
+  ASTER_PRODUCT_OPERATIONS,
+  ASTER_PRODUCT_OUTCOMES,
   ASTER_TELEMETRY_ENVIRONMENTS,
   AsterTelemetryConfigurationError,
   createAsterTelemetry,
@@ -128,6 +134,12 @@ test("freezes the public finite vocabularies", () => {
     ASTER_CIRCUIT_BREAKER_OPERATIONS,
     ASTER_CIRCUIT_BREAKER_STATES,
     ASTER_CIRCUIT_BREAKER_EVENTS,
+    ASTER_POSTGRES_POOL_ROLES,
+    ASTER_POSTGRES_POOL_STATES,
+    ASTER_EVENT_OWNERS,
+    ASTER_EVENT_STAGES,
+    ASTER_PRODUCT_OPERATIONS,
+    ASTER_PRODUCT_OUTCOMES,
   ]) {
     assert.equal(Object.isFrozen(vocabulary), true);
   }
@@ -209,6 +221,11 @@ test("records bounded HTTP, dependency, process, and runtime metrics", async () 
     assert.ok((point.value as number) >= 0 && (point.value as number) <= 1);
   }
   metricByName(collection.metrics, ASTER_METRIC_CATALOG.processMemoryUsage.name);
+  const nodeMemory = metricByName(collection.metrics, ASTER_METRIC_CATALOG.nodeMemoryUsage.name);
+  assert.deepEqual(
+    nodeMemory.points.map((point) => point.attributes["aster.nodejs.memory.type"]).sort(),
+    ["array_buffers", "external", "heap_total", "heap_used"],
+  );
   metricByName(collection.metrics, ASTER_METRIC_CATALOG.processUptime.name);
   assert.ok(collection.metrics.some((metric) => metric.name.startsWith("nodejs.eventloop.")));
   assert.ok(collection.metrics.some((metric) => metric.name.startsWith("v8js.memory.heap.")));
@@ -823,6 +840,107 @@ test("records only finite circuit-breaker scope and state events", async () => {
   await telemetry.shutdown();
 });
 
+test("records finite pool, event-lag, and backend product golden signals", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "golden-signal-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+  });
+  const recordPool = telemetry.recordPostgresPool?.bind(telemetry);
+  const recordEvent = telemetry.recordEventDelivery?.bind(telemetry);
+  const recordProduct = telemetry.recordProductOperation?.bind(telemetry);
+  assert.ok(recordPool && recordEvent && recordProduct);
+
+  assert.deepEqual(
+    recordPool({
+      pool: "primary",
+      state: "open",
+      maximum: 4,
+      total: 3,
+      idle: 1,
+      reserved: 2,
+      waiting: 0,
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    recordEvent({ owner: "identity", stage: "consume", outcome: "success", ageMs: 250 }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    recordProduct({ operation: "playback_session", outcome: "completed", durationMs: 125 }),
+    { status: "recorded" },
+  );
+
+  assert.deepEqual(
+    recordPool({
+      pool: "private-secret",
+      state: "open",
+      maximum: 4,
+      total: 5,
+      idle: 1,
+      reserved: 0,
+      waiting: 0,
+    } as never),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+  assert.deepEqual(
+    recordEvent({
+      owner: "identity",
+      stage: "consume",
+      outcome: "success",
+      ageMs: 7 * 24 * 60 * 60 * 1_000 + 1,
+    }),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+  assert.deepEqual(
+    recordProduct({
+      operation: "playback_session",
+      outcome: "completed",
+      durationMs: Number.POSITIVE_INFINITY,
+    }),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+
+  const collection = await telemetry.collect();
+  assert.equal(collection.status, "collected");
+  const pool = metricByName(collection.metrics, ASTER_METRIC_CATALOG.postgresPoolConnections.name);
+  assert.equal(pool.points.length, 5);
+  assert.ok(
+    pool.points.every(
+      (point) =>
+        point.attributes["aster.postgresql.pool"] === "primary" &&
+        point.attributes["aster.postgresql.pool.state"] === "open",
+    ),
+  );
+  const eventAge = metricByName(collection.metrics, ASTER_METRIC_CATALOG.eventDeliveryAge.name);
+  assert.deepEqual(
+    { ...eventAge.points[0]?.attributes },
+    {
+      "aster.event.owner": "identity",
+      "aster.event.stage": "consume",
+      "aster.outcome": "success",
+    },
+  );
+  const products = metricByName(
+    collection.metrics,
+    ASTER_METRIC_CATALOG.productOperationOutcomes.name,
+  );
+  assert.deepEqual(
+    { ...products.points[0]?.attributes },
+    {
+      "aster.product.operation": "playback_session",
+      "aster.outcome": "completed",
+    },
+  );
+  assert.equal(telemetry.exportHealth().droppedObservations, 3);
+  assert.doesNotMatch(
+    JSON.stringify([pool.points, eventAge.points, products.points]),
+    /private-secret|profile-id|title-id|request-id|trace-id|https?:|select /iu,
+  );
+  await telemetry.shutdown();
+});
+
 test("aggregates finite series beyond the configured cardinality ceiling", async () => {
   const telemetry = createAsterTelemetry({
     serviceName: "cardinality-test",
@@ -1043,7 +1161,6 @@ test("keeps the generated public declaration free of infrastructure types", asyn
     "@opentelemetry/",
     "express",
     "apollo",
-    "postgres",
     "redis",
     "kafka",
     "object-storage",

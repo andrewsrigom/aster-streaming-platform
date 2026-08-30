@@ -4,7 +4,11 @@ import { spawnSync } from "node:child_process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import type { AsterDependencyObservationInput, AsterObservationOutcome } from "@aster/telemetry";
+import type {
+  AsterDependencyObservationInput,
+  AsterObservationOutcome,
+  AsterPostgresPoolMetricInput,
+} from "@aster/telemetry";
 
 import {
   AsterPostgresConfigurationError,
@@ -47,6 +51,8 @@ class RecordingTelemetry implements AsterPostgresTelemetry {
     input: AsterDependencyObservationInput;
     outcome?: AsterObservationOutcome;
   }> = [];
+  readonly poolSnapshots: AsterPostgresPoolMetricInput[] = [];
+  throwOnPoolRecord = false;
 
   startDependencyOperation(input: AsterDependencyObservationInput) {
     const attempt: (typeof this.attempts)[number] = { input };
@@ -60,6 +66,14 @@ class RecordingTelemetry implements AsterPostgresTelemetry {
         },
       },
     };
+  }
+
+  recordPostgresPool(input: AsterPostgresPoolMetricInput) {
+    if (this.throwOnPoolRecord) {
+      throw new Error("telemetry-unavailable");
+    }
+    this.poolSnapshots.push(input);
+    return { status: "recorded" as const };
   }
 }
 
@@ -167,6 +181,7 @@ test("validates bounded options before constructing a pool without leaking input
     hostileOptions,
     options(telemetry, { connectionString: "postgresql://aster@127.0.0.1/aster\nsecret" }),
     options(telemetry, { maxConnections: 33 }),
+    options(telemetry, { poolRole: "private-secret" as never }),
   ]) {
     assert.throws(
       () =>
@@ -211,6 +226,52 @@ test("passes finite connection and server timeout policy to pg", () => {
     query_timeout: 100,
     statement_timeout: 100,
   });
+});
+
+test("records finite pool snapshots without coupling database behavior to metrics", async () => {
+  const telemetry = new RecordingTelemetry();
+  const pool = new FakePool();
+  pool.totalCount = 1;
+  pool.idleCount = 1;
+  const client = new FakeClient(() => Promise.resolve({ rowCount: 1, rows: [] }));
+  pool.connections.push(() => Promise.resolve(client));
+  const adapter = createAsterPostgresAdapterWithPoolFactory(
+    options(telemetry, { poolRole: "projection" }),
+    () => pool,
+  );
+
+  assert.deepEqual(telemetry.poolSnapshots[0], {
+    pool: "projection",
+    state: "open",
+    maximum: 2,
+    total: 1,
+    idle: 1,
+    reserved: 0,
+    waiting: 0,
+  });
+  assert.deepEqual(await adapter.connect(), { status: "completed" });
+  assert.deepEqual(
+    telemetry.poolSnapshots.map((snapshot) => [snapshot.state, snapshot.reserved]),
+    [
+      ["open", 0],
+      ["open", 1],
+      ["open", 0],
+    ],
+  );
+  assert.deepEqual(await adapter.close(), { status: "completed" });
+  assert.deepEqual(
+    telemetry.poolSnapshots.slice(-2).map((snapshot) => snapshot.state),
+    ["closing", "closed"],
+  );
+
+  const degradedTelemetry = new RecordingTelemetry();
+  degradedTelemetry.throwOnPoolRecord = true;
+  const degradedPool = new FakePool();
+  const degraded = createAsterPostgresAdapterWithPoolFactory(
+    options(degradedTelemetry),
+    () => degradedPool,
+  );
+  assert.deepEqual(await degraded.close(), { status: "completed" });
 });
 
 test("connect and probe reserve one slot, release healthy clients, and emit finite telemetry", async () => {

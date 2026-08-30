@@ -26,6 +26,9 @@ import type {
   AsterHttpObservationInput,
   AsterMetricAttributeValue,
   AsterMetricCollectionResult,
+  AsterPostgresPoolMetricInput,
+  AsterEventDeliveryMetricInput,
+  AsterProductMetricInput,
   AsterOperationLimitMetricInput,
   AsterObservationCompletionResult,
   AsterRecordMetricResult,
@@ -52,6 +55,13 @@ import {
   ASTER_OPERATION_LIMITERS,
   ASTER_OPERATION_LIMIT_OUTCOMES,
   ASTER_OPERATION_LIMIT_QUEUE_BUCKETS,
+  ASTER_POSTGRES_POOL_ROLES,
+  ASTER_POSTGRES_POOL_STATES,
+  ASTER_EVENT_OWNERS,
+  ASTER_EVENT_STAGES,
+  ASTER_OBSERVATION_OUTCOMES,
+  ASTER_PRODUCT_OPERATIONS,
+  ASTER_PRODUCT_OUTCOMES,
 } from "../ports/telemetry-contract.js";
 import { elapsedSeconds } from "./duration.js";
 import { HealthTrackingExporter, type ExportAttemptObserver } from "./health-tracking-exporter.js";
@@ -62,6 +72,7 @@ import {
   CACHE_PAYLOAD_BUCKETS_BYTES,
   DEPENDENCY_DURATION_BUCKETS_SECONDS,
   DISCOVERY_FRESHNESS_BUCKETS_SECONDS,
+  EVENT_AGE_BUCKETS_SECONDS,
   HTTP_DURATION_BUCKETS_SECONDS,
 } from "./metric-catalog.js";
 import {
@@ -90,6 +101,7 @@ interface RuntimeClock {
   cpuUsage(): NodeJS.CpuUsage;
   uptimeSeconds(): number;
   rssBytes(): number;
+  memoryUsage(): NodeJS.MemoryUsage;
   availableParallelism(): number;
 }
 
@@ -98,6 +110,7 @@ const SYSTEM_CLOCK: RuntimeClock = Object.freeze({
   cpuUsage: () => process.cpuUsage(),
   uptimeSeconds: () => process.uptime(),
   rssBytes: () => process.memoryUsage.rss(),
+  memoryUsage: () => process.memoryUsage(),
   availableParallelism: () => Math.max(1, availableParallelism()),
 });
 
@@ -272,6 +285,78 @@ function parseCircuitBreakerMetric(input: unknown): AsterCircuitBreakerMetricInp
   });
 }
 
+function parsePostgresPoolMetric(input: unknown): AsterPostgresPoolMetricInput | undefined {
+  const value = exactRecord(input, [
+    "pool",
+    "state",
+    "maximum",
+    "total",
+    "idle",
+    "reserved",
+    "waiting",
+  ]);
+  if (
+    !value ||
+    !ASTER_POSTGRES_POOL_ROLES.includes(value["pool"] as never) ||
+    !ASTER_POSTGRES_POOL_STATES.includes(value["state"] as never) ||
+    !Number.isSafeInteger(value["maximum"]) ||
+    !finite(value["maximum"], 1, 128) ||
+    !["total", "idle", "reserved", "waiting"].every(
+      (key) =>
+        Number.isSafeInteger(value[key]) && finite(value[key], 0, value["maximum"] as number),
+    ) ||
+    (value["idle"] as number) > (value["total"] as number)
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    pool: value["pool"] as AsterPostgresPoolMetricInput["pool"],
+    state: value["state"] as AsterPostgresPoolMetricInput["state"],
+    maximum: value["maximum"],
+    total: value["total"] as number,
+    idle: value["idle"] as number,
+    reserved: value["reserved"] as number,
+    waiting: value["waiting"] as number,
+  });
+}
+
+function parseEventDeliveryMetric(input: unknown): AsterEventDeliveryMetricInput | undefined {
+  const required = ["owner", "stage", "outcome"];
+  const value = exactRecord(input, required) ?? exactRecord(input, [...required, "ageMs"]);
+  if (
+    !value ||
+    !ASTER_EVENT_OWNERS.includes(value["owner"] as never) ||
+    !ASTER_EVENT_STAGES.includes(value["stage"] as never) ||
+    !ASTER_OBSERVATION_OUTCOMES.includes(value["outcome"] as never) ||
+    (Object.hasOwn(value, "ageMs") && !finite(value["ageMs"], 0, 7 * 24 * 60 * 60 * 1_000))
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    owner: value["owner"] as AsterEventDeliveryMetricInput["owner"],
+    stage: value["stage"] as AsterEventDeliveryMetricInput["stage"],
+    outcome: value["outcome"] as AsterEventDeliveryMetricInput["outcome"],
+    ...(Object.hasOwn(value, "ageMs") ? { ageMs: value["ageMs"] as number } : {}),
+  });
+}
+
+function parseProductMetric(input: unknown): AsterProductMetricInput | undefined {
+  const value = exactRecord(input, ["operation", "outcome", "durationMs"]);
+  if (
+    !value ||
+    !ASTER_PRODUCT_OPERATIONS.includes(value["operation"] as never) ||
+    !ASTER_PRODUCT_OUTCOMES.includes(value["outcome"] as never) ||
+    !finite(value["durationMs"], 0, 300_000)
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    operation: value["operation"] as AsterProductMetricInput["operation"],
+    outcome: value["outcome"] as AsterProductMetricInput["outcome"],
+    durationMs: value["durationMs"],
+  });
+}
+
 function frozenHealth(
   attempts: number,
   successes: number,
@@ -438,6 +523,11 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
   private readonly operationLimitDuration;
   private readonly operationLimitOutcomes;
   private readonly circuitBreakerEvents;
+  private readonly postgresPoolConnections;
+  private readonly eventDeliveryAge;
+  private readonly eventDeliveryOutcomes;
+  private readonly productOperationDuration;
+  private readonly productOperationOutcomes;
   private readonly runtimeCallback: BatchObservableCallback;
   private readonly runtimeObservables: Observable[];
   private activeObservations = 0;
@@ -633,6 +723,66 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           ],
           aggregationCardinalityLimit: options.cardinalityLimit,
         },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.postgresPoolConnections.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.postgresql.pool",
+              "aster.postgresql.pool.state",
+              "aster.postgresql.connection.state",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.eventDeliveryAge.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: { boundaries: [...EVENT_AGE_BUCKETS_SECONDS], recordMinMax: true },
+          },
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.event.owner",
+              "aster.event.stage",
+              "aster.outcome",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.eventDeliveryOutcomes.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.event.owner",
+              "aster.event.stage",
+              "aster.outcome",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.productOperationDuration.name,
+          aggregation: {
+            type: AggregationType.EXPLICIT_BUCKET_HISTOGRAM,
+            options: { boundaries: [...HTTP_DURATION_BUCKETS_SECONDS], recordMinMax: true },
+          },
+          attributesProcessors: [
+            createAllowListAttributesProcessor(["aster.product.operation", "aster.outcome"]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.productOperationOutcomes.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor(["aster.product.operation", "aster.outcome"]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.nodeMemoryUsage.name,
+          attributesProcessors: [createAllowListAttributesProcessor(["aster.nodejs.memory.type"])],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
       ],
     });
 
@@ -705,6 +855,26 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       ASTER_METRIC_CATALOG.circuitBreakerEvents.name,
       ASTER_METRIC_CATALOG.circuitBreakerEvents,
     );
+    this.postgresPoolConnections = meter.createGauge(
+      ASTER_METRIC_CATALOG.postgresPoolConnections.name,
+      ASTER_METRIC_CATALOG.postgresPoolConnections,
+    );
+    this.eventDeliveryAge = meter.createHistogram(
+      ASTER_METRIC_CATALOG.eventDeliveryAge.name,
+      ASTER_METRIC_CATALOG.eventDeliveryAge,
+    );
+    this.eventDeliveryOutcomes = meter.createCounter(
+      ASTER_METRIC_CATALOG.eventDeliveryOutcomes.name,
+      ASTER_METRIC_CATALOG.eventDeliveryOutcomes,
+    );
+    this.productOperationDuration = meter.createHistogram(
+      ASTER_METRIC_CATALOG.productOperationDuration.name,
+      ASTER_METRIC_CATALOG.productOperationDuration,
+    );
+    this.productOperationOutcomes = meter.createCounter(
+      ASTER_METRIC_CATALOG.productOperationOutcomes.name,
+      ASTER_METRIC_CATALOG.productOperationOutcomes,
+    );
 
     const processCpuTime = meter.createObservableCounter(
       ASTER_METRIC_CATALOG.processCpuTime.name,
@@ -718,6 +888,10 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       ASTER_METRIC_CATALOG.processMemoryUsage.name,
       ASTER_METRIC_CATALOG.processMemoryUsage,
     );
+    const nodeMemoryUsage = meter.createObservableGauge(
+      ASTER_METRIC_CATALOG.nodeMemoryUsage.name,
+      ASTER_METRIC_CATALOG.nodeMemoryUsage,
+    );
     const processUptime = meter.createObservableGauge(
       ASTER_METRIC_CATALOG.processUptime.name,
       ASTER_METRIC_CATALOG.processUptime,
@@ -726,6 +900,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       processCpuTime,
       processCpuUtilization,
       processMemoryUsage,
+      nodeMemoryUsage,
       processUptime,
     ];
 
@@ -762,6 +937,19 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           });
         }
         observableResult.observe(processMemoryUsage, this.clock.rssBytes());
+        const memory = this.clock.memoryUsage();
+        observableResult.observe(nodeMemoryUsage, memory.heapUsed, {
+          "aster.nodejs.memory.type": "heap_used",
+        });
+        observableResult.observe(nodeMemoryUsage, memory.heapTotal, {
+          "aster.nodejs.memory.type": "heap_total",
+        });
+        observableResult.observe(nodeMemoryUsage, memory.external, {
+          "aster.nodejs.memory.type": "external",
+        });
+        observableResult.observe(nodeMemoryUsage, memory.arrayBuffers, {
+          "aster.nodejs.memory.type": "array_buffers",
+        });
         observableResult.observe(processUptime, this.clock.uptimeSeconds());
         priorCpu = currentCpu;
         priorTime = currentTime;
@@ -1045,6 +1233,73 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       "aster.circuit_breaker.state": value.state,
       "aster.circuit_breaker.event": value.event,
     });
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordPostgresPool(input: AsterPostgresPoolMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parsePostgresPoolMetric(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const attributes = {
+      "aster.postgresql.pool": value.pool,
+      "aster.postgresql.pool.state": value.state,
+    };
+    for (const [state, count] of [
+      ["maximum", value.maximum],
+      ["total", value.total],
+      ["idle", value.idle],
+      ["reserved", value.reserved],
+      ["waiting", value.waiting],
+    ] as const) {
+      this.postgresPoolConnections.record(count, {
+        ...attributes,
+        "aster.postgresql.connection.state": state,
+      });
+    }
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordEventDelivery(input: AsterEventDeliveryMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseEventDeliveryMetric(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const attributes = {
+      "aster.event.owner": value.owner,
+      "aster.event.stage": value.stage,
+      "aster.outcome": value.outcome,
+    };
+    this.eventDeliveryOutcomes.add(1, attributes);
+    if (value.ageMs !== undefined) {
+      this.eventDeliveryAge.record(value.ageMs / 1_000, attributes);
+    }
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordProductOperation(input: AsterProductMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseProductMetric(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    const attributes = {
+      "aster.product.operation": value.operation,
+      "aster.outcome": value.outcome,
+    };
+    this.productOperationDuration.record(value.durationMs / 1_000, attributes);
+    this.productOperationOutcomes.add(1, attributes);
     return Object.freeze({ status: "recorded" });
   }
 

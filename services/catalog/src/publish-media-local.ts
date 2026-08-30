@@ -4,7 +4,11 @@ import {
   createAsterObjectStorageAdapter,
   type AsterObjectStorageAdapter,
 } from "@aster/object-storage-s3";
-import { createAsterTelemetry } from "@aster/telemetry";
+import {
+  createAsterTelemetry,
+  isAsterOtlpMetricsEndpoint,
+  type AsterProductOutcome,
+} from "@aster/telemetry";
 import { normalizeCatalogCommand } from "./application/command-input.js";
 import { readOperatorInput } from "./transport/operator-input.js";
 import { localCatalogDatabase } from "./infrastructure/identity/local-configuration.js";
@@ -35,16 +39,32 @@ const stop = (): void => {
 const deadline = setTimeout(stop, 300000);
 process.once("SIGTERM", stop);
 process.once("SIGINT", stop);
+const otlpMetricsEndpoint = process.env["ASTER_OTLP_METRICS_ENDPOINT"];
+if (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint)) {
+  throw new Error("Invalid publication telemetry endpoint");
+}
 const telemetry = createAsterTelemetry({
   serviceName: "catalog-media-attester",
   serviceVersion: "0.0.0",
   environment: "local",
-  export: { mode: "none" },
+  ...(otlpMetricsEndpoint === undefined
+    ? { export: { mode: "none" as const } }
+    : {
+        export: {
+          mode: "otlp-http" as const,
+          endpoint: otlpMetricsEndpoint,
+          intervalMs: 5_000,
+          timeoutMs: 1_000,
+        },
+        shutdownTimeoutMs: 2_000,
+      }),
 });
 let database: AsterPostgresAdapter | undefined;
 const storage: AsterObjectStorageAdapter[] = [];
 const correlationId = randomUUID();
 const started = performance.now();
+let recordsPublication = false;
+let productOutcome: AsterProductOutcome = "failed";
 try {
   const [mode, titleId, version, hlsAttemptId, artworkAttemptId] = process.argv.slice(2);
   if (
@@ -57,6 +77,7 @@ try {
   ) {
     throw new Error("Invalid publication command");
   }
+  recordsPublication = mode === "attest";
   database = createAsterPostgresAdapter({
     connectionString: localCatalogDatabase(process.env, "attester"),
     telemetry,
@@ -196,8 +217,16 @@ try {
         editorialActivation: false,
       }) + "\n",
     );
+    productOutcome = "completed";
   }
 } catch (error) {
+  productOutcome = controller.signal.aborted
+    ? "cancelled"
+    : error instanceof PublicationAccessRecoveryError
+      ? "indeterminate"
+      : error instanceof MediaProcessingError
+        ? "rejected"
+        : "unavailable";
   process.stdout.write(
     JSON.stringify({
       event: "media_publication_failed",
@@ -212,6 +241,18 @@ try {
   );
   process.exitCode = 1;
 } finally {
+  if (recordsPublication) {
+    try {
+      telemetry.recordProductOperation?.({
+        operation: "media_publication",
+        outcome: productOutcome,
+        durationMs: Math.min(300_000, Math.max(0, performance.now() - started)),
+      });
+      await telemetry.forceFlush(AbortSignal.timeout(1_000));
+    } catch {
+      // Publication completion and recovery status remain authoritative.
+    }
+  }
   await Promise.allSettled(storage.map((client) => client.close()));
   await database?.close();
   await telemetry.shutdown();

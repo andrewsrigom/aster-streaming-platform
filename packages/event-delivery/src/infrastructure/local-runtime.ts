@@ -9,7 +9,7 @@ import {
 } from "@aster/broker-kafka";
 import { createAsterPostgresAdapter, type AsterPostgresAdapter } from "@aster/postgres";
 import { createAsterDeadline, type AsterLogger } from "@aster/runtime";
-import type { AsterTelemetry } from "@aster/telemetry";
+import type { AsterObservationOutcome, AsterTelemetry } from "@aster/telemetry";
 import { createDeliveryLoop } from "../application/delivery-loop.js";
 import { createOutboxRelay, type RelayStep } from "../application/relay.js";
 import { EVENT_TOPICS, type EventOwner } from "../domain/envelope.js";
@@ -25,12 +25,36 @@ export type IdentityDeliveryHandler = (record: AsterKafkaConsumedRecord) => Prom
 interface RuntimeOptions {
   readonly owner: EventOwner;
   readonly connectionString: string;
-  readonly telemetry: Pick<AsterTelemetry, "startDependencyOperation">;
+  readonly telemetry: Pick<AsterTelemetry, "startDependencyOperation" | "recordEventDelivery">;
   readonly logger: Pick<AsterLogger, "info">;
   readonly identityConsumer?: (
     database: AsterPostgresAdapter,
     credential: string,
   ) => IdentityDeliveryHandler;
+}
+
+const MAXIMUM_EVENT_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
+
+function eventAgeMs(occurredAt: string): number {
+  return Math.min(MAXIMUM_EVENT_AGE_MS, Math.max(0, Date.now() - Date.parse(occurredAt)));
+}
+
+function publicationOutcome(status: string): AsterObservationOutcome {
+  switch (status) {
+    case "completed":
+      return "success";
+    case "timed_out":
+      return "timeout";
+    case "aborted":
+      return "cancelled";
+    case "rejected":
+      return "rejected";
+    case "delivery_ambiguous":
+    case "unavailable":
+      return "unavailable";
+    default:
+      return "error";
+  }
 }
 // Trusted test seams are not configurable through environment or broker payloads.
 interface RuntimeFactories {
@@ -130,10 +154,11 @@ export async function createLocalEventDelivery(
   const databases: AsterPostgresAdapter[] = [];
   let broker: AsterKafkaBrokerAdapter | undefined;
   try {
-    const database = (connectionString: string) => {
+    const database = (connectionString: string, poolRole: "relay" | "consumer") => {
       const result = factories.database({
         connectionString,
         telemetry: options.telemetry,
+        poolRole,
         maxConnections: 1,
         connectionTimeoutMs: 500,
         statementTimeoutMs: 900,
@@ -143,11 +168,14 @@ export async function createLocalEventDelivery(
       databases.push(result);
       return result;
     };
-    const outbox = createPostgresOutbox(options.owner, database(relayUrl));
+    const outbox = createPostgresOutbox(options.owner, database(relayUrl, "relay"));
     const handler =
       options.identityConsumer && credential
         ? options.identityConsumer(
-            database(localEventDatabase(options.owner, options.connectionString, "consumer")),
+            database(
+              localEventDatabase(options.owner, options.connectionString, "consumer"),
+              "consumer",
+            ),
             credential,
           )
         : undefined;
@@ -181,6 +209,16 @@ export async function createLocalEventDelivery(
           },
           signal,
         );
+        try {
+          options.telemetry.recordEventDelivery?.({
+            owner: options.owner,
+            stage: "publish",
+            outcome: publicationOutcome(result.status),
+            ageMs: eventAgeMs(event.occurredAt),
+          });
+        } catch {
+          /* Optional telemetry cannot decide outbox acknowledgement. */
+        }
         try {
           options.logger.info({
             event: "aster.events.publication",

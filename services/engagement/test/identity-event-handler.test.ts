@@ -18,8 +18,9 @@ import {
 test("links valid identity consumption to the producing trace context", async () => {
   const started: AsterDependencyObservationInput[] = [];
   const completed: AsterDependencyCompletion[] = [];
+  const deliveries: unknown[] = [];
   const active = new AsyncLocalStorage<boolean>();
-  const telemetry: Pick<AsterTelemetry, "startDependencyOperation"> = {
+  const telemetry: Pick<AsterTelemetry, "startDependencyOperation" | "recordEventDelivery"> = {
     startDependencyOperation(input) {
       started.push(input);
       return {
@@ -32,6 +33,11 @@ test("links valid identity consumption to the producing trace context", async ()
           },
         },
       };
+    },
+    recordEventDelivery(input) {
+      assert.equal(active.getStore(), true);
+      deliveries.push(input);
+      return { status: "recorded" };
     },
   };
   const database = {
@@ -68,6 +74,11 @@ test("links valid identity consumption to the producing trace context", async ()
     { dependency: "broker", operation: "consume", linkedTraceparent: traceparent },
   ]);
   assert.deepEqual(completed, [{ outcome: "success" }]);
+  assert.equal(deliveries.length, 1);
+  assert.deepEqual(
+    { ...(deliveries[0] as Record<string, unknown>), ageMs: undefined },
+    { owner: "identity", stage: "consume", outcome: "success", ageMs: undefined },
+  );
   assert.equal(entries.length, 1);
   assert.doesNotMatch(JSON.stringify(entries), /traceparent|accountId|profileId/u);
 });

@@ -11,6 +11,8 @@ import { createCatalogEventConsumer } from "../application/consume-catalog-event
 import type { createProjectionRebuilder } from "../application/rebuild-projection.js";
 import { inspectCatalogEvent } from "./catalog-event-wire.js";
 
+const MAXIMUM_EVENT_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
+
 export function createCatalogEventHandler(
   options: Readonly<{
     source: CatalogSnapshotSource;
@@ -18,7 +20,7 @@ export function createCatalogEventHandler(
     store: CatalogEventStore;
     now: () => number;
     logger: Pick<AsterLogger, "info">;
-    telemetry: Pick<AsterTelemetry, "startDependencyOperation">;
+    telemetry: Pick<AsterTelemetry, "startDependencyOperation" | "recordEventDelivery">;
     recordHandled: ReturnType<typeof createProjectionRebuilder>["recordHandled"];
   }>,
 ): (record: AsterKafkaConsumedRecord) => Promise<void> {
@@ -85,15 +87,27 @@ export function createCatalogEventHandler(
         } catch {
           /* No event bytes, title metadata or credentials are logged. */
         }
+        const deliveryOutcome =
+          outcome === "retry" ? "unavailable" : outcome === "quarantined" ? "rejected" : "success";
         try {
-          observation?.complete({
-            outcome:
-              outcome === "retry"
-                ? "unavailable"
-                : outcome === "quarantined"
-                  ? "rejected"
-                  : "success",
+          options.telemetry.recordEventDelivery?.({
+            owner: "catalog",
+            stage: "consume",
+            outcome: deliveryOutcome,
+            ...(inspection.status === "valid"
+              ? {
+                  ageMs: Math.min(
+                    MAXIMUM_EVENT_AGE_MS,
+                    Math.max(0, (options.now() - inspection.fact.occurredAt) * 1_000),
+                  ),
+                }
+              : {}),
           });
+        } catch {
+          /* Optional telemetry cannot decide broker acknowledgement. */
+        }
+        try {
+          observation?.complete({ outcome: deliveryOutcome });
         } catch {
           /* Optional telemetry cannot decide broker acknowledgement. */
         }

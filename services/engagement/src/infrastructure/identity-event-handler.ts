@@ -7,11 +7,13 @@ import { createIdentityEventConsumer } from "../application/consume-identity-eve
 import { createIdentityEventInspector } from "./identity-event-wire.js";
 import { createPostgresIdentityEvents } from "./postgres-identity-events.js";
 
+const MAXIMUM_EVENT_AGE_MS = 7 * 24 * 60 * 60 * 1_000;
+
 export function createIdentityEventHandler(
   database: AsterPostgresAdapter,
   credential: string,
   logger: Pick<AsterLogger, "info">,
-  telemetry: Pick<AsterTelemetry, "startDependencyOperation">,
+  telemetry: Pick<AsterTelemetry, "startDependencyOperation" | "recordEventDelivery">,
 ): IdentityDeliveryHandler {
   const inspect = createIdentityEventInspector(credential);
   const consumer = createIdentityEventConsumer({
@@ -60,15 +62,27 @@ export function createIdentityEventHandler(
         } catch {
           /* No raw event, user identifiers or credentials are logged. */
         }
+        const deliveryOutcome =
+          outcome === "retry" ? "unavailable" : outcome === "quarantined" ? "rejected" : "success";
         try {
-          observation?.complete({
-            outcome:
-              outcome === "retry"
-                ? "unavailable"
-                : outcome === "quarantined"
-                  ? "rejected"
-                  : "success",
+          telemetry.recordEventDelivery?.({
+            owner: "identity",
+            stage: "consume",
+            outcome: deliveryOutcome,
+            ...(inspection.status === "valid"
+              ? {
+                  ageMs: Math.min(
+                    MAXIMUM_EVENT_AGE_MS,
+                    Math.max(0, Date.now() - inspection.fact.occurredAt * 1_000),
+                  ),
+                }
+              : {}),
           });
+        } catch {
+          /* Optional telemetry cannot change message handling. */
+        }
+        try {
+          observation?.complete({ outcome: deliveryOutcome });
         } catch {
           /* Optional telemetry cannot change message handling. */
         }
