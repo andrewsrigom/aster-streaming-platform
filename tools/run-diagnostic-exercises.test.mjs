@@ -129,11 +129,11 @@ test("builds exact finite TraceQL queries for each scenario boundary", () => {
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "postgres"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span:status = error } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span.aster.outcome =~ "timeout|cancelled|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "redis"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span:status = error } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span.aster.outcome =~ "timeout|cancelled|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.throws(() => diagnosticTraceQuery("unsafe", "redis"));
 });
@@ -178,6 +178,14 @@ test("extracts only selected finite facts from a TraceQL boundary result", () =>
   );
   assert.equal(
     diagnosticTraceReady(selectedSearch(traceId, "postgresql", "timeout"), traceId, "postgres"),
+    true,
+  );
+  assert.equal(
+    diagnosticTraceReady(
+      selectedSearch(traceId, "postgresql", "cancelled", "unset"),
+      traceId,
+      "postgres",
+    ),
     true,
   );
 });

@@ -206,6 +206,28 @@ incomplete dependency preview cannot end the wait.
 Focused diagnostic/profile tests pass 12/12 and the failure-marked TraceQL
 affected gate passes 73/73 with 60 cached in 52.91 seconds.
 
+## Sixth protected runtime
+
+Failure-marked source `20110ec3fad5a47646bd26133c71d62e8f0e71ac` ran in
+workflow `33335707261`. Local-platform job `99322173557` created only project
+`aster-p12-diagnostics-f47c4035-ce5b-4fd5-a66c-a19a48900f75`. Catalog passed
+with trace `1997ca9650ca0d5910756e4f2cf5fe16`, the expected
+one-population/zero-good result and recovery.
+
+PostgreSQL trace `f698c255d53862db915c287d18737fdd` did not match an
+intrinsic-error-status query within 45 seconds. The request deadline can cancel
+the admitted database operation before its own timeout; Aster's telemetry
+contract intentionally maps `cancelled` to intrinsic status `unset`.
+PostgreSQL recovery and exact teardown passed; Redis did not run. The bounded
+transcript is
+[protected-run-33335707261.txt](diagnostics/protected-run-33335707261.txt).
+
+The correction matches only the finite causal outcomes `timeout`, `cancelled`,
+`unavailable` and `error`; `success` and `rejected` cannot end polling. This
+preserves exact trace/dependency correlation while respecting the released
+cancellation semantics. Focused diagnostic/profile tests pass 12/12 and the
+affected gate passes 73/73 with 60 cached in 56.093 seconds.
+
 ## Remaining acceptance
 
 Before release:

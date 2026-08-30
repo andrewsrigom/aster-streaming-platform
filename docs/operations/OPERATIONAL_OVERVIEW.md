@@ -109,8 +109,11 @@ validated after exact dependency selection. All three scenarios still must pass
 on a working Linux Docker engine. Run `33334497056` returned the exact
 dependency and exposed the classifier's missing intrinsic-error-status fallback;
 run `33335112383` then stopped on an earlier dependency fact without a failure
-mark. The current TraceQL query and polling condition both require intrinsic
-error status.
+mark. Run `33335707261` showed that the request deadline records the causal
+PostgreSQL span as `cancelled` with intrinsic status `unset`. The current
+TraceQL query and polling condition require the exact dependency plus one of
+`timeout`, `cancelled`, `unavailable` or `error`, excluding
+`success`/`rejected`.
 
 ## Limits
 

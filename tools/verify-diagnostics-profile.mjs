@@ -301,6 +301,7 @@ function validateRunner(source, violations) {
       "diagnosticTraceQuery(traceId, scenario)",
       "| select(",
       "diagnosticTraceReady(response, traceId, scenario)",
+      '"timeout|cancelled|unavailable|error"',
       "const search = await tempoSearch(ports.tempo, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
       "traceSearchFacts(search, traceId)",
       'fact.status === "error"',

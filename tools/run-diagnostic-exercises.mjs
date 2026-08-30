@@ -25,7 +25,7 @@ const COMPOSE_FILES = Object.freeze([
   "infra/compose/diagnostics.yml",
   "infra/compose/diagnostics-proof.yml",
 ]);
-const FAILURE_OUTCOMES = new Set(["error", "timeout", "unavailable"]);
+const FAILURE_OUTCOMES = new Set(["error", "timeout", "cancelled", "unavailable"]);
 const DEPENDENCY_OPERATIONS = new Set([
   "connect",
   "probe",
@@ -174,7 +174,7 @@ export function diagnosticTraceQuery(traceId, scenario) {
   const boundary =
     scenario === "catalog"
       ? 'span.subgraph.name = "catalog" && span:status = error'
-      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}" && span:status = error`;
+      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}" && span.aster.outcome =~ "timeout|cancelled|unavailable|error"`;
   const selected =
     scenario === "catalog"
       ? "span.subgraph.name, span:name, span:status, resource.service.name"

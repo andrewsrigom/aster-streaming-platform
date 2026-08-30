@@ -13,6 +13,8 @@ plan is `.ai/CHANGE_PLAN.md`. Published candidate `e0d1975` is under runtime
 remediation after protected runs `33331974187`, `33332980729` and
 `33333896159`; dependency-first run `33334497056` adds the latest runtime
 finding, followed by failure-marked run `33335112383`.
+Failure-marked source `20110ec` and run `33335707261` add the current
+`cancelled`/`unset` runtime finding.
 
 ## Implemented candidate
 
@@ -30,9 +32,8 @@ finding, followed by failure-marked run `33335112383`.
 - The PostgreSQL scenario admits one blocked Catalog read before pausing the
   exact database. Recovery terminates only its named lock holder.
 - Policy/profile tests pass12/12, CI/classifier tests passed35/35 at the
-  published candidate and platform tests pass87/87. The failure-marked TraceQL
-  affected gate passes 73/73 with 60 cached in 52.91 seconds.
-  Documentation and pending evidence are current.
+  published candidate and platform tests pass87/87. The finite-outcome
+  affected gate passes 73/73 with 60 cached in 56.093 seconds.
 - Initial review corrected the global execution/cleanup budget, signal cleanup,
   listener scope, finite output categories and diagnostic CI invalidation.
   Confirmation found no remaining blocking source issue.
@@ -53,8 +54,12 @@ PostgreSQL dependency, but classification ignored intrinsic error status when
 the optional outcome/name projection was absent. The current correction accepts
 only exact dependency plus error status or a finite failure outcome.
 Run `33335112383` then stopped on an earlier non-failure-marked dependency fact.
-The current correction requires intrinsic error status in the exact TraceQL
-predicate and keeps polling until the parsed facts also contain failure.
+Run `33335707261` required intrinsic error status and therefore timed out after
+the admitted PostgreSQL read was cancelled by the request deadline. Internal
+telemetry intentionally records that causal span as `aster.outcome="cancelled"`
+with intrinsic status `unset`. The current correction requires the exact
+dependency plus one finite causal outcome: `timeout`, `cancelled`, `unavailable`
+or `error`. It never accepts `success` or `rejected`.
 
 ## External runtime state
 
@@ -68,8 +73,8 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Commit/push the failure-marked TraceQL remediation and let its protected lane execute all three
-   scenarios. Capture results in `evidence/phase-12/failure-diagnosis.md`.
+1. Validate, commit and push the finite dependency-outcome remediation; let its
+   protected lane execute all three scenarios and capture the bounded results.
 2. Obtain one targeted confirmation, merge, verify exact-main CI and close
    Phase12. Inspect/remove only the exact interrupted local project when its
    original engine is reachable.

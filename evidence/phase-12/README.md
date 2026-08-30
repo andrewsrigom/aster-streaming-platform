@@ -31,7 +31,9 @@ prefiltering PostgreSQL by failure outcome was too restrictive. The corrected
 dependency-first run `33334497056` returned the selected PostgreSQL dependency
 but exposed a missing intrinsic-error-status fallback in classification. The
 finite dependency-failure run `33335112383` then stopped on an earlier selected
-dependency without a failure mark. The failure-marked TraceQL path still needs
+dependency without a failure mark. Failure-marked run `33335707261` then proved
+that the admitted PostgreSQL read can produce causal outcome `cancelled` with
+intrinsic status `unset`. The finite dependency-outcome TraceQL path still needs
 all-scenario acceptance.
 
 ## Requirement traceability
@@ -133,5 +135,6 @@ live-container acceptance.
   then stops at the PostgreSQL pre-selection outcome predicate.
   Run `33334497056` reaches PostgreSQL classification with the exact dependency
   but exposes the missing intrinsic-status fallback. Run `33335112383` stops on
-  an earlier dependency fact without a failure mark. No three-scenario
-  acceptance is claimed until the failure-marked query/poll passes.
+  an earlier dependency fact without a failure mark. Run `33335707261` proves
+  the request-deadline failure is `cancelled`/`unset`. No three-scenario
+  acceptance is claimed until the finite causal-outcome query/poll passes.

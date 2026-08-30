@@ -264,7 +264,11 @@ outcome/name projection was absent. The current correction accepts only exact
 dependency plus error status or a finite failure outcome. Run `33335112383`
 then showed polling could stop on an earlier non-failure-marked dependency fact.
 The current correction requires intrinsic error status in both TraceQL and
-polling. Item63 remains `IN_PROGRESS` until all three
+polling. Run `33335707261` then showed the request deadline can produce causal
+outcome `cancelled` with status `unset`. The current correction matches only the
+finite outcomes `timeout`, `cancelled`, `unavailable` or `error`; its affected
+gate passes 73/73 with 60 cached in 56.093 seconds. Item63 remains
+`IN_PROGRESS` until all three
 scenarios, zero-resource cleanup, targeted confirmation and protected release
 pass.
 

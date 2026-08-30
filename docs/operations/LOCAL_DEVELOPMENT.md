@@ -212,8 +212,11 @@ recovery/teardown, then showed that PostgreSQL outcome must be checked after
 selecting the exact dependency span. Run `33334497056` then returned that
 selected dependency but exposed the classifier's missing intrinsic-error-status
 fallback. Run `33335112383` then stopped on an earlier dependency fact without a
-failure mark. The current query and polling condition both require intrinsic
-error status. A protected run still must pass all three scenarios. Current
+failure mark. Run `33335707261` then showed that the request deadline records
+the causal PostgreSQL span as `cancelled` with intrinsic status `unset`. The
+current query and polling condition require the exact dependency plus one of
+`timeout`, `cancelled`, `unavailable` or `error`; `success` and `rejected` do
+not end the wait. A protected run still must pass all three scenarios. Current
 status and all attempts are recorded in
 [failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 

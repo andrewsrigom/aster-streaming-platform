@@ -43,6 +43,14 @@ full snapshot through the archival checkpoint remains in
   run. The current correction requires intrinsic error status in both TraceQL
   and polling readiness. Its affected gate passes 73/73 with 60 cached in 52.91
   seconds.
+- Failure-marked source `20110ec` and protected run `33335707261` passed Catalog
+  diagnosis/recovery, PostgreSQL recovery and exact teardown. The PostgreSQL
+  search timed out because the admitted read's request deadline records the
+  causal dependency as `cancelled` with intrinsic status `unset`; Redis did not
+  run. The current correction admits only `timeout`, `cancelled`, `unavailable`
+  or `error` for the exact dependency and still rejects `success`/`rejected`.
+  Focused tests pass 12/12 and its affected gate passes 73/73 with 60 cached in
+  56.093 seconds.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof

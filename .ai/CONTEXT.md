@@ -85,6 +85,10 @@ only exact dependency plus intrinsic error status or a finite failure outcome.
 Run `33335112383` then showed the search still stopped on an earlier
 non-failure-marked dependency fact. The current correction requires intrinsic
 error status in the exact TraceQL predicate and in the polling readiness check.
+Run `33335707261` then proved that the request deadline can yield dependency
+outcome `cancelled`, whose released telemetry status is intentionally `unset`.
+The current correction matches only `timeout`, `cancelled`, `unavailable` or
+`error`, never success/rejected.
 Real three-scenario acceptance remains pending. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.

@@ -140,9 +140,11 @@ the exact dependency span rather than in the TraceQL match predicate. A fourth
 run returned that dependency and showed classification must accept its intrinsic
 error status when optional selected attributes are absent. A fifth run showed
 polling must not stop on an earlier non-failure-marked dependency fact. The
-current query and readiness condition both require intrinsic error status. Real
-three-scenario evidence is not claimed until the corrected Docker exercise
-completes.
+sixth showed that the request deadline can record the causal PostgreSQL span as
+outcome `cancelled` with intrinsic status `unset`. The current query and
+readiness condition require the exact dependency plus `timeout`, `cancelled`,
+`unavailable` or `error`, and exclude `success`/`rejected`. Real three-scenario
+evidence is not claimed until the corrected Docker exercise completes.
 
 No log backend is part of this profile. Size-rotated Docker logs remain the
 correlated log source, which prevents an empty Loki service from being mistaken

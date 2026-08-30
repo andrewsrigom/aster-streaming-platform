@@ -75,6 +75,7 @@ test("rejects an externally selected or broadly destructive runner", () => {
     ],
     ["| select(", "| unbounded("],
     ["diagnosticTraceReady(response, traceId, scenario)", "true"],
+    ['"timeout|cancelled|unavailable|error"', '"timeout|unavailable|error"'],
     ['fact.status === "error"', "false"],
   ]) {
     const changed = { ...valid, runner: valid.runner.replace(before, after) };
