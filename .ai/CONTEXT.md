@@ -62,12 +62,12 @@ required exact-main gate recorded in current state. P12-R01/R02/R08/R09 is
 released through PR45 main `ce66f9c`; backend golden signals are released
 through PR46 main `2245251`; browser QoE and its explicit local-only retention
 boundary are released through PR47 main `6dba10e`. P12-R05/R06 is active on
-PR48. Source `ef78d11`, tree `3c21d78`, defines four executable critical-journey
-SLIs and accepts a present live ratio across its complete valid zero-to-one
-range. Its focused checks pass31/31 and affected gate passes60/60 with45 cached
-in47.73 seconds. Evidence head `aca4aba` passed protected run `33310118280`,
-including packaged live SLI ratios. Evidence-only closeout, final confirmation,
-merge and exact-main CI remain before dashboard work.
+PR48. Evidence head `aca4aba` passed protected run `33310118280`, including
+packaged live SLI ratios. Final confirmation then found missing failure-only
+ratios. Source `757f6a0`, tree `e9c7d24`, derives zero only from a present
+population for recording and objective queries; exact `promtool` and27/27
+focused checks plus the affected60/60 gate pass. Corrected protected acceptance,
+confirmation, merge and exact-main CI remain before dashboard work.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

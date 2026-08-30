@@ -25,7 +25,10 @@ good events / population events
 The population excludes only named events that do not represent an admitted
 user attempt. Dependency failures, timeouts and unexpected server failures stay
 in the denominator and count bad. An empty population has no finite ratio;
-queries do not replace no traffic with artificial success.
+queries do not replace no traffic with artificial success. When a population
+exists but the process has never exported a matching good-event series, the good
+numerator is derived as zero from that same present population. A failure-only
+window therefore reports zero instead of disappearing.
 
 The five-minute recording series support operational views and later burn-rate
 alerts. The objective query evaluates raw counter increases over the SLO's full
@@ -146,11 +149,14 @@ recovery with controlled signals.
 ## Verification
 
 The pinned Prometheus 3.14.0 `promtool` checks all nine recording rules and runs
-synthetic good, bad, excluded and excluded-only workloads. The synthetic mixed
-workload produces ratios of 0.5 for supergraph, 0.25 for Catalog, 0.25 for
-playback start and one third for progress writes. Those deliberately failing
-values prove classification and arithmetic; they are not a baseline.
+synthetic good, bad, failure-only, excluded and excluded-only workloads. The
+failure-only workload verifies both five-minute recording ratios and full-window
+objective queries return zero for every journey. The synthetic mixed workload
+produces ratios of 0.5 for supergraph, 0.25 for Catalog, 0.25 for playback start
+and one third for progress writes. Those deliberately failing values prove
+classification and arithmetic; they are not a baseline.
 
 The repository validator rejects target/error-budget drift, prohibited
 high-cardinality query text, a missing finite Router classification, a missing
-private scrape boundary and attempts to turn no traffic into 100% success.
+private scrape boundary, a missing population-derived zero numerator and attempts
+to turn no traffic into 100% success.

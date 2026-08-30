@@ -1,7 +1,8 @@
 # P12-R05 executable SLI query evidence
 
-Status: verified at source `ef78d11`, tree `3c21d78`, and evidence head
-`aca4aba`, tree `8d40140`; release remains pending final confirmation and merge.
+Status: implemented and locally verified at source `757f6a0`, tree `e9c7d24`.
+Earlier evidence head `aca4aba`, tree `8d40140`, passed protected run
+`33310118280`; corrected protected acceptance and release remain pending.
 
 ## Environment
 
@@ -41,11 +42,14 @@ promtool test rules infra/observability/slo-rules.test.yml
 node --test ./tools/verify-local-platform.test.mjs
 => 23 passed, 0 failed
 
+node --test ./tools/verify-slo-contract.test.mjs ./tools/verify-local-platform.test.mjs
+=> 27 passed, 0 failed after the failure-only correction
+
 node ./tools/verify-local-platform.mjs
 => {"check":"local-platform","status":"ok","violations":0}
 
 CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
-=> 60 tasks passed, 45 cached, 0 failed, 47.73 seconds after the protected-diagnostic correction
+=> 60 tasks passed, 50 cached, 0 failed, 49.705 seconds after the failure-only correction
 ```
 
 The first optional-platform test run exposed a validator gap: mutating one of
@@ -81,6 +85,16 @@ including the pinned Router/Prometheus packaged-runtime probe, both live
 Router-backed ratio series and the Docker-only playable demo. The review finding
 has an exact-evidence reply and is resolved.
 
+Final confirmation discussion `3889344066` exposed a third measurement-integrity
+gap: when a fresh process or five-minute window contained failures but no
+completed label set, the good-event sum and ratio disappeared instead of
+reporting zero. Source `757f6a0`, tree `e9c7d24`, zero-fills each recording and
+full-window objective numerator only by multiplying the same present population
+by zero. A missing population therefore stays absent. The exact pinned
+Prometheus 3.14.0 rule test proves all four failure-only recording ratios and
+objective queries return zero. Invalidated run `33310999656` was cancelled after
+the review finding.
+
 The first affected-gate invocation included the downloaded 28 MiB upstream
 Router verifier archive as an untracked repository file, so the secret/size
 policy rejected it before completion. The exact temporary artifact was removed;
@@ -96,6 +110,7 @@ Six one-minute counter samples model:
 - Playback completed/unavailable plus excluded not-playable/rejected outcomes;
 - Progress completed/unavailable/not-playable plus excluded stale/conflict/
   rejected outcomes;
+- a failure-only workload with no completed input series for any journey;
 - a second workload containing only excluded traffic.
 
 Expected and observed recording-rule ratios at five minutes:
@@ -109,6 +124,10 @@ Expected and observed recording-rule ratios at five minutes:
 
 Excluded-only traffic produces no ratio series. This proves that expected
 rejections and no traffic do not become availability success.
+
+Failure-only traffic produces a present zero recording ratio and zero full-
+window objective result for all four journeys. This proves total failure is
+visible without fabricating a no-traffic result.
 
 ## Raw artifacts
 

@@ -52,6 +52,14 @@ Append new entries at the top. Keep entries factual and concise.
   including packaged Router/Prometheus acceptance, both live ratio series, every
   owner integration and the Docker-only playable demo. Discussion `3889248449`
   is answered with exact evidence and resolved.
+- Final confirmation discussion `3889344066` found that failure-only populations
+  disappeared when no completed label set had ever existed. Source `757f6a0`,
+  tree `e9c7d24`, zero-fills recording and objective numerators only from the
+  same present population. Exact Prometheus rule/tests cover all four failure-
+  only ratios and full-window queries;27/27 focused checks pass. Invalidated run
+  `33310999656` was cancelled after Local platform passed and before source
+  quality completed. The corrected affected gate passes60/60 with50 cached in
+  49.705 seconds.
 
 ### Evidence
 
@@ -61,9 +69,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the evidence-only closeout head, pass its applicable protected gate and
-complete the permitted confirmation/merge/exact-main sequence before dashboard
-work.
+Complete the corrected affected gate, publish once, pass protected acceptance
+and close the exact review finding before the bounded confirmation/merge/exact-
+main sequence and dashboard work.
 
 ## 2026-08-30 — Browser playback telemetry candidate
 

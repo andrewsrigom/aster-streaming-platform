@@ -13,9 +13,10 @@ squash main `2245251` and successful exact-main run `33304196111`.
 P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
 run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
 same tree; exact-main run `33307059156` passed every job. P12-R05/R06 corrected
-source `ef78d11`, tree `3c21d78`, is rebased directly onto that exact main.
-Evidence head `aca4aba`, tree `8d40140`, passed protected run `33310118280`.
-PR48 owns its final confirmation and release sequence.
+source `757f6a0`, tree `e9c7d24`, is rebased directly onto that exact main.
+Earlier evidence head `aca4aba`, tree `8d40140`, passed protected run
+`33310118280`; the failure-only correction still requires protected acceptance.
+PR48 owns its bounded confirmation and release sequence.
 
 ## Requirement traceability
 
@@ -48,7 +49,7 @@ The dependent SLI/SLO candidate defines four machine-readable objectives and
 nine Prometheus recording rules. Repository checks pass 4/4, Router checks
 10/10 and platform policy passes 23/23 after correcting a two-job validator
 gap. Exact upstream Router 2.17.0 configuration validation passes. Prometheus
-3.14.0 `promtool` accepts all nine rules and its good/bad/excluded synthetic
+3.14.0 `promtool` accepts all nine rules and its good/bad/failure-only/excluded synthetic
 workloads. Initial review discussion `3889183230` found and corrected the absent
 runtime 400 ms progress bucket; telemetry19/19 and the corrected60/60 affected
 gate passed. Protected run `33308328939` then passed at head `60c72a7`, but
@@ -63,7 +64,14 @@ The accepted affected gate passes60/60 with45 cached in47.73 seconds. Protected
 run `33310118280` passed every job at evidence head `aca4aba`, including both
 live Router-backed ratios and the Docker-only playable demo. Discussion
 `3889248449` is answered and resolved. Final confirmation and release remain.
-Dashboards, alerts,
+Final confirmation discussion `3889344066` found that a failure-only population
+lost its ratio when no completed series had ever existed. Source `757f6a0`, tree
+`e9c7d24`, derives zero only from the same present population for all recording
+and objective queries. Exact `promtool` tests prove all four failure-only ratios
+and full-window queries return zero while excluded-only/no-population remains
+absent;27/27 focused checks and the affected60/60 gate with50 cached in49.705
+seconds pass. Invalidated run `33310999656` was cancelled. Corrected protected
+acceptance remains. Dashboards, alerts,
 three diagnostic exercises and the operational overview remain planned.
 
 ## Current limitations

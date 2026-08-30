@@ -172,8 +172,14 @@ retaining the separate absent-series rejection. Focused checks pass31/31 and the
 accepted affected gate passes60/60 with45 cached in47.73 seconds. Evidence head
 `aca4aba`, tree `8d40140`, passed protected run `33310118280`, including the
 packaged Router/Prometheus probe and every required job. Discussion `3889248449`
-is answered with exact evidence and resolved. An evidence-only closeout head,
-its applicable protected gate and the permitted final confirmation remain.
+is answered with exact evidence and resolved. Final confirmation discussion
+`3889344066` then found that a failure-only window omitted the ratio when its
+good-event label set had never existed. Source `757f6a0`, tree `e9c7d24`, derives
+zero only from the same present population for recording and full-window
+queries. Exact Prometheus rule/tests and27/27 focused contract/platform checks
+pass; excluded-only/no-population queries remain absent. The corrected affected
+gate passes60/60 with50 cached in49.705 seconds. Invalidated run `33310999656`
+was cancelled. Corrected protected acceptance remains.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -427,15 +433,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 SLI/SLO final confirmation/release, dashboards, alerts, diagnostic
+Phase12 SLI/SLO corrected protected acceptance/release, dashboards, alerts, diagnostic
 exercises and operational overview remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish the P12-R05/R06 PR48 evidence-only closeout head, pass its applicable
-protected gate and run the permitted confirmation round. Then merge and confirm
-exact main before starting dashboard work.
+Complete the P12-R05/R06 failure-only correction gate, publish one documented
+head and pass protected acceptance. Resolve the exact review finding, perform
+the bounded confirmation, then merge and confirm exact main before dashboard work.
 
 ## Runtime and recovery
 

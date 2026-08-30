@@ -26,8 +26,11 @@ exact 400 ms progress boundary. Repository validators reject either threshold
 when its runtime bucket is absent. Protected CI requires each live ratio series
 and accepts its measured value only in the valid inclusive range from zero to
 one. Protected run `33310118280` passes that packaged runtime at evidence head
-`aca4aba`. Browser QoE still has zero remote sampling and is not a central
-first-frame SLI.
+`aca4aba`. Final confirmation then found that a failure-only window omitted its
+ratio when no completed label set had ever existed. Source `757f6a0`, tree
+`e9c7d24`, derives zero only from a present population for recording and full-
+window queries and adds a pinned failure-only workload. Browser QoE still has
+zero remote sampling and is not a central first-frame SLI.
 
 ## Proposed behavior
 
@@ -55,6 +58,8 @@ error-budget report for the four required journeys.
 - Expected validation, authorization and admission rejections are excluded, not hidden as availability success or failure.
 - Dependency, timeout and unexpected server failures remain in the population and count bad.
 - A zero population does not become artificial 100% availability.
+- A present failure-only population produces a zero good-event ratio rather than
+  an absent series.
 - Playback `not_playable` and rejected/cancelled requests do not enter the valid published-title attempt population.
 - Progress stale, conflict, rejected and cancelled outcomes remain separately measurable but outside valid current-write population.
 - Browser first-frame remains explicitly unavailable as a field SLO while remote sampling is zero.
@@ -68,7 +73,8 @@ error-budget report for the four required journeys.
 | Router/subgraph timeout or unexpected error | preserve existing failure response | finite `failed`, included as bad |
 | Collector/product signal absent | product work remains unchanged | affected SLI has no sample; no fabricated good event |
 | Router scrape unavailable | product traffic remains independent | Prometheus target down; Router SLI series becomes absent |
-| Rule evaluation has zero population | expose no usable ratio | population/good rates are zero and ratio is non-finite/absent to consumers |
+| Rule evaluation has zero population | expose no usable ratio | population, good and ratio series remain absent |
+| Rule evaluation has population but no good series | expose a zero ratio | derive zero only from the same present population |
 | Prometheus rule/config malformed | fail image/config/CI validation | candidate cannot publish |
 | Telemetry callback throws | existing product result remains authoritative | owner wrapper already isolates failure |
 

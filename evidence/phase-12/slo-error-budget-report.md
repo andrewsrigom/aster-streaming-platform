@@ -4,14 +4,15 @@ Status: **implemented definition; historical compliance unavailable**
 
 Date: 2026-08-30
 
-Source: `ef78d11d517ec3aa0ab05c9c0e59639f76046f91`, tree `3c21d780ac4205c5033171c463c7b203822ec15f`
+Source: `757f6a01c09b503ca3dee2e4070d55c13ccb31f3`, tree `e9c7d2482f8ac3bac09041e43cf6a5a3ead9950a`
 
 Source base: `6dba10e0ec74891af8d4427836381a4190b20376`
 
 Environment: WSL Ubuntu-20.04, Prometheus 3.14.0 `promtool` synthetic evaluation
 
 Runtime verification: protected run `33310118280` passed at evidence head
-`aca4aba6e60b62d9ac0d28d23bdca9ea4da2788c`.
+`aca4aba6e60b62d9ac0d28d23bdca9ea4da2788c`. The later failure-only correction
+is locally verified and still requires protected acceptance.
 
 ## Objectives
 

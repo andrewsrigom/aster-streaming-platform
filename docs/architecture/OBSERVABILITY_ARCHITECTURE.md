@@ -269,8 +269,10 @@ finite ratio. Exact definitions, full-window objective queries, owners and budge
 in the machine-readable
 [`slo-contract.json`](../../infra/observability/slo-contract.json).
 
-Prometheus 3.14.0 synthetic rule tests cover good, bad, excluded and
-excluded-only traffic. The local one-hour store proves mechanics only; it has no
+Prometheus 3.14.0 synthetic rule tests cover good, bad, failure-only, excluded
+and excluded-only traffic. Failure-only windows derive a zero numerator from the
+present population; no-population windows remain absent. The local one-hour
+store proves mechanics only; it has no
 28/30-day history. First-frame remains a local diagnostic because remote browser
 sampling is zero. No dashboard, alert or historical SLO compliance is claimed
 by this slice.

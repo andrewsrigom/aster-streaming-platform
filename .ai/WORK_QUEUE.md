@@ -203,8 +203,13 @@ zero through one while retaining absent-series rejection. Focused checks
 pass31/31 and the accepted affected gate passes60/60 with45 cached in47.73
 seconds. Evidence head `aca4aba`, tree `8d40140`, passed protected run
 `33310118280`, including the live packaged ratios and every required job.
-Discussion `3889248449` is answered and resolved. Evidence-only protected closeout,
-final confirmation, merge and exact-main CI remain.
+Discussion `3889248449` is answered and resolved. Final confirmation discussion
+`3889344066` then found failure-only populations disappearing when no completed
+series had existed. Source `757f6a0`, tree `e9c7d24`, derives zero only from the
+same present population for recording and objective queries. Exact `promtool`
+and27/27 focused checks pass; the corrected affected gate passes60/60 with50
+cached in49.705 seconds. Invalidated run `33310999656` was cancelled. Corrected
+protected gate, bounded confirmation, merge and exact-main CI remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

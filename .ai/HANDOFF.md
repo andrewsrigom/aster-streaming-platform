@@ -21,24 +21,32 @@ Source `ef78d11`, tree `3c21d78`, accepts finite ratios in the inclusive range
 from zero to one while the separate series-length assertion still rejects an
 absent result. Evidence head `aca4aba`, tree `8d40140`, passed protected run
 `33310118280`, including packaged Router/Prometheus acceptance and every required
-job. Discussion `3889248449` has an exact-evidence reply and is resolved. Its
-active plan is `.ai/CHANGE_PLAN.md`.
+job. Discussion `3889248449` has an exact-evidence reply and is resolved. Final
+confirmation discussion `3889344066` then found that failure-only windows
+disappeared when no completed series had ever existed. Source `757f6a0`, tree
+`e9c7d24`, zero-fills recording and objective numerators only from their present
+population and adds failure-only synthetic coverage. Invalidated run
+`33310999656` was cancelled. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Publish the evidence-only closeout head and pass its applicable protected gate.
-2. Run the permitted blocker-focused confirmation on that exact final head.
-3. Squash-merge PR48 and verify exact-main CI.
-4. Activate P12 dashboard work from clean exact main.
+1. Complete the corrected affected gate and publish one documented head.
+2. Pass protected Prometheus/runtime acceptance.
+3. Reply to and resolve discussion `3889344066` with exact evidence.
+4. Run only the blocker-focused confirmation required by the changed measurement boundary.
+5. Squash-merge PR48, verify exact-main CI and activate P12 dashboard work.
 
 ## Verified candidate
 
-- Four contract plus Router/CI policy focused checks pass 31/31; telemetry19/19 remains valid.
+- Contract/platform focused checks pass27/27; Router10/10 and telemetry19/19 remain valid.
 - Exact Apollo Router 2.17.0 configuration validation passes.
 - Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
-  excluded and excluded-only workloads.
-- The corrected affected gate passes 60/60 tasks with 45 cached in 47.73 seconds.
-- Protected run `33310118280` passes every job, including packaged live SLI ratios.
+  failure-only, excluded and excluded-only workloads.
+- Failure-only recording ratios and full-window objective queries return zero;
+  excluded-only/no-population queries remain absent.
+- The failure-only corrected affected gate passes60/60 tasks with50 cached in49.705 seconds.
+- Protected run `33310118280` supports the prior boundary; corrected source
+  `757f6a0` still requires protected acceptance.
 - Documentation, AI state, formatting, lint, security and `git diff --check` pass.
 
 ## Measurement boundary
