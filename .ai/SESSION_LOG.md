@@ -48,6 +48,10 @@ Append new entries at the top. Keep entries factual and concise.
   `3c21d78`, accepts finite present ratios from zero through one while the
   separate length assertion still rejects absence. Focused checks pass31/31 and
   the affected gate passes60/60 with45 cached in47.73 seconds.
+- Evidence head `aca4aba`, tree `8d40140`, passed protected run `33310118280`,
+  including packaged Router/Prometheus acceptance, both live ratio series, every
+  owner integration and the Docker-only playable demo. Discussion `3889248449`
+  is answered with exact evidence and resolved.
 
 ### Evidence
 
@@ -57,9 +61,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the zero-ratio diagnostic correction, repeat protected Router/Prometheus acceptance,
-resolve the finding and complete the permitted confirmation/merge/exact-main
-sequence before dashboard work.
+Publish the evidence-only closeout head, pass its applicable protected gate and
+complete the permitted confirmation/merge/exact-main sequence before dashboard
+work.
 
 ## 2026-08-30 — Browser playback telemetry candidate
 

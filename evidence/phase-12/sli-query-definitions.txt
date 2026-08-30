@@ -1,7 +1,7 @@
 # P12-R05 executable SLI query evidence
 
-Status: implemented and locally verified at source `ef78d11`, tree `3c21d78`;
-protected Router/Prometheus runtime acceptance and release remain pending.
+Status: verified at source `ef78d11`, tree `3c21d78`, and evidence head
+`aca4aba`, tree `8d40140`; release remains pending final confirmation and merge.
 
 ## Environment
 
@@ -76,6 +76,11 @@ required a positive value even though zero is a valid bad SLI measurement.
 Source `ef78d11` accepts a finite value in the inclusive range from zero to one;
 the preceding exact length assertion still rejects an absent series.
 
+Protected run `33310118280` passed every job at evidence head `aca4aba`,
+including the pinned Router/Prometheus packaged-runtime probe, both live
+Router-backed ratio series and the Docker-only playable demo. The review finding
+has an exact-evidence reply and is resolved.
+
 The first affected-gate invocation included the downloaded 28 MiB upstream
 Router verifier archive as an untracked repository file, so the secret/size
 policy rejected it before completion. The exact temporary artifact was removed;
@@ -125,6 +130,6 @@ exact pinned engines.
 
 The workload is synthetic and proves semantics, not latency, capacity or
 historical availability. The local store retains one hour, browser remote
-sampling remains zero, and no 28/30-day dataset exists. Protected CI must still
-prove the baked rules, private Router scrape labels and both live Router-backed
-ratios in the packaged Docker profile before this candidate can publish.
+sampling remains zero, and no 28/30-day dataset exists. Protected CI proves the
+baked rules, private Router scrape labels and both live Router-backed ratios in
+the packaged Docker profile; it does not create historical compliance data.

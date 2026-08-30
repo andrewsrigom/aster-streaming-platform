@@ -201,7 +201,10 @@ exists but incorrectly rejected its legitimate measured value of zero. Source
 `ef78d11`, tree `3c21d78`, accepts finite live ratios in the inclusive range
 zero through one while retaining absent-series rejection. Focused checks
 pass31/31 and the accepted affected gate passes60/60 with45 cached in47.73
-seconds. Corrected protected acceptance remains.
+seconds. Evidence head `aca4aba`, tree `8d40140`, passed protected run
+`33310118280`, including the live packaged ratios and every required job.
+Discussion `3889248449` is answered and resolved. Evidence-only protected closeout,
+final confirmation, merge and exact-main CI remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

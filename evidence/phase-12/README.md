@@ -14,7 +14,8 @@ P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
 run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
 same tree; exact-main run `33307059156` passed every job. P12-R05/R06 corrected
 source `ef78d11`, tree `3c21d78`, is rebased directly onto that exact main.
-PR48 owns its protected runtime and confirmation sequence.
+Evidence head `aca4aba`, tree `8d40140`, passed protected run `33310118280`.
+PR48 owns its final confirmation and release sequence.
 
 ## Requirement traceability
 
@@ -59,7 +60,10 @@ proved that the Catalog ratio series exists, then incorrectly rejected its valid
 measured value of zero. Source `ef78d11`, tree `3c21d78`, accepts finite present
 ratios from zero through one and retains the separate absent-series rejection.
 The accepted affected gate passes60/60 with45 cached in47.73 seconds. Protected
-packaged-runtime acceptance must repeat. Dashboards, alerts,
+run `33310118280` passed every job at evidence head `aca4aba`, including both
+live Router-backed ratios and the Docker-only playable demo. Discussion
+`3889248449` is answered and resolved. Final confirmation and release remain.
+Dashboards, alerts,
 three diagnostic exercises and the operational overview remain planned.
 
 ## Current limitations

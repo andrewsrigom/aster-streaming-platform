@@ -25,8 +25,9 @@ exports the exact 300 ms Catalog boundary, and the product histogram exports the
 exact 400 ms progress boundary. Repository validators reject either threshold
 when its runtime bucket is absent. Protected CI requires each live ratio series
 and accepts its measured value only in the valid inclusive range from zero to
-one. Browser QoE still has zero remote sampling and is not a central first-frame
-SLI.
+one. Protected run `33310118280` passes that packaged runtime at evidence head
+`aca4aba`. Browser QoE still has zero remote sampling and is not a central
+first-frame SLI.
 
 ## Proposed behavior
 

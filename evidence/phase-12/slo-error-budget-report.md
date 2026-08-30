@@ -10,6 +10,9 @@ Source base: `6dba10e0ec74891af8d4427836381a4190b20376`
 
 Environment: WSL Ubuntu-20.04, Prometheus 3.14.0 `promtool` synthetic evaluation
 
+Runtime verification: protected run `33310118280` passed at evidence head
+`aca4aba6e60b62d9ac0d28d23bdca9ea4da2788c`.
+
 ## Objectives
 
 | Journey | Owner | Target | Window | Good-event latency | Error budget | Bad events per 100,000 |

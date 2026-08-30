@@ -169,8 +169,11 @@ exists and exposed only a diagnostic assumption: a measured zero ratio is valid
 when every live request misses the 300 ms good-event threshold. Source
 `ef78d11`, tree `3c21d78`, accepts finite live ratios from zero through one while
 retaining the separate absent-series rejection. Focused checks pass31/31 and the
-accepted affected gate passes60/60 with45 cached in47.73 seconds. Protected
-runtime acceptance must repeat on the corrected head.
+accepted affected gate passes60/60 with45 cached in47.73 seconds. Evidence head
+`aca4aba`, tree `8d40140`, passed protected run `33310118280`, including the
+packaged Router/Prometheus probe and every required job. Discussion `3889248449`
+is answered with exact evidence and resolved. An evidence-only closeout head,
+its applicable protected gate and the permitted final confirmation remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -424,15 +427,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 executable SLI/SLO runtime acceptance, dashboards, alerts, diagnostic
+Phase12 SLI/SLO final confirmation/release, dashboards, alerts, diagnostic
 exercises and operational overview remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete PR48 P12-R05/R06 protected Router/Prometheus acceptance on source
-`ef78d11`, resolve the 300 ms finding and run the permitted confirmation round,
-then merge and confirm exact main before starting dashboard work.
+Publish the P12-R05/R06 PR48 evidence-only closeout head, pass its applicable
+protected gate and run the permitted confirmation round. Then merge and confirm
+exact main before starting dashboard work.
 
 ## Runtime and recovery
 

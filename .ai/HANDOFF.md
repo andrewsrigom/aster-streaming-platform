@@ -19,15 +19,17 @@ that the Catalog ratio series exists but exposed a diagnostic error: the live
 ratio was legitimately zero and the assertion required a value above zero.
 Source `ef78d11`, tree `3c21d78`, accepts finite ratios in the inclusive range
 from zero to one while the separate series-length assertion still rejects an
-absent result. Its active plan is `.ai/CHANGE_PLAN.md`.
+absent result. Evidence head `aca4aba`, tree `8d40140`, passed protected run
+`33310118280`, including packaged Router/Prometheus acceptance and every required
+job. Discussion `3889248449` has an exact-evidence reply and is resolved. Its
+active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Publish the documented zero-ratio diagnostic correction to PR48.
-2. Let protected CI prove the pinned Router/Prometheus runtime and both live Router-backed ratios.
-3. Reply to and resolve confirmation discussion `3889248449` with exact evidence.
-4. Run the permitted blocker-focused confirmation, squash-merge and verify exact-main CI.
-5. Activate P12 dashboard work from clean exact main.
+1. Publish the evidence-only closeout head and pass its applicable protected gate.
+2. Run the permitted blocker-focused confirmation on that exact final head.
+3. Squash-merge PR48 and verify exact-main CI.
+4. Activate P12 dashboard work from clean exact main.
 
 ## Verified candidate
 
@@ -36,6 +38,7 @@ absent result. Its active plan is `.ai/CHANGE_PLAN.md`.
 - Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
   excluded and excluded-only workloads.
 - The corrected affected gate passes 60/60 tasks with 45 cached in 47.73 seconds.
+- Protected run `33310118280` passes every job, including packaged live SLI ratios.
 - Documentation, AI state, formatting, lint, security and `git diff --check` pass.
 
 ## Measurement boundary
