@@ -703,13 +703,13 @@ async function catalogOperationEvent(since, expectedTraceId) {
   return { context, source };
 }
 
-async function tempoSearch(tempoPort, traceId, scenario) {
+async function tempoSearch(grafanaPort, traceId, scenario) {
   const query = diagnosticTraceQuery(traceId, scenario);
   return waitFor(
     `TraceQL search for ${traceId}`,
     async () => {
       const response = await json(
-        `http://127.0.0.1:${tempoPort}/api/search?` +
+        `http://127.0.0.1:${grafanaPort}/api/datasources/proxy/uid/aster-tempo/api/search?` +
           new URLSearchParams({ q: query, limit: "20" }),
         undefined,
         256 * 1024,
@@ -788,7 +788,7 @@ async function exercise(scenario, ports) {
     const traceId = router.event.trace_id;
     const catalogOperation =
       scenario === "catalog" ? undefined : await catalogOperationEvent(since, traceId);
-    const search = await tempoSearch(ports.tempo, traceId, scenario);
+    const search = await tempoSearch(ports.grafana, traceId, scenario);
     const facts = traceSearchFacts(search, traceId);
     const measured = await waitMetricDelta(ports.prometheus, before);
     const catalogLogs = catalogOperation?.source ?? "";
@@ -881,14 +881,7 @@ export async function runDiagnosticExercises() {
       router: await hostPort("router", 4000),
       prometheus: await hostPort("prometheus", 9090),
       grafana: await hostPort("grafana", 3000),
-      tempo: await hostPort("tempo", 3200),
     };
-    await waitFor(
-      "Tempo readiness",
-      () => boundedResponse(`http://127.0.0.1:${ports.tempo}/ready`, undefined, 4096),
-      (response) => response.status === 200,
-      30_000,
-    );
     const grafana = await json(`http://127.0.0.1:${ports.grafana}/api/health`, undefined, 16_384);
     assert.equal(grafana.status, 200);
     assert.equal(grafana.value?.database, "ok");

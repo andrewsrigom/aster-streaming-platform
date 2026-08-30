@@ -118,10 +118,11 @@ scenario and exact clean teardown.
 
 The corrected profile keeps Tempo off product networks. Collector exports over
 internal `diagnostics-ingest`; Grafana queries over internal
-`diagnostics-query`. The runner requires Grafana's Tempo data-source health
-endpoint to return `OK` and rejects raw or JSON-escaped GraphQL document
-canaries before any failure exercise is accepted. These targeted-confirmation
-corrections still require protected runtime acceptance.
+`diagnostics-query`. Tempo publishes no host port; the runner requires Grafana's
+Tempo data-source health endpoint to return `OK` and sends bounded TraceQL reads
+through Grafana's UID-scoped proxy. It rejects raw or JSON-escaped GraphQL
+document canaries before any failure exercise is accepted. These
+targeted-confirmation corrections still require protected runtime acceptance.
 
 ## Limits
 

@@ -98,8 +98,14 @@ Tempo isolation from product networks and real Grafana data-source health. The
 local remediation adds dedicated ingest/query networks, requires health `OK`
 and covers escaped multiline documents; focused diagnostics pass 12/12. Its
 affected gate passes 73/73 with 59 cached in 50.323 seconds. Protected runtime,
-correction confirmation, merge, exact-main CI and Phase12 closeout remain.
-Phase13 has not started.
+run `33338133771` then exposed one exact integration defect: the isolated Tempo
+service correctly had no direct host port, while the runner still requested
+one. Cleanup was exact. The current correction keeps Tempo unpublished and
+routes bounded TraceQL reads through Grafana's UID-scoped data-source proxy;
+focused diagnostics pass 12/12, platform tests pass 87/87 and the affected gate
+passes 73/73 with 59 cached in 62.801 seconds. Protected runtime, correction
+confirmation, merge, exact-main CI and Phase12 closeout remain. Phase13 has not
+started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

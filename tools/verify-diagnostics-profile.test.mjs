@@ -30,7 +30,11 @@ test("accepts only internally generated UUID-scoped diagnostic projects", () => 
 
 test("rejects weakened storage, network, resource, retention and exporter bounds", () => {
   for (const [file, before, after] of [
-    ["proof", 'ports: !override ["127.0.0.1::3200"]', 'ports: !override ["0.0.0.0::3200"]'],
+    [
+      "proof",
+      '  grafana:\n    ports: !override ["127.0.0.1::3000"]',
+      '  grafana:\n    ports: !override ["127.0.0.1::3000"]\n  tempo:\n    ports: !override ["127.0.0.1::3200"]',
+    ],
     ["compose", "mem_limit: 384m", "mem_limit: 4g"],
     ["compose", "/var/tempo:size=128m", "/var/tempo:size=1g"],
     ["compose", "networks: [diagnostics-ingest, diagnostics-query]", "networks: [platform, edge]"],
@@ -78,9 +82,10 @@ test("rejects an externally selected or broadly destructive runner", () => {
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity;",
     ],
     [
-      "const search = await tempoSearch(ports.tempo, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
-      "const facts = traceSearchFacts(search, traceId);\n    const search = await tempoSearch(ports.tempo, traceId, scenario);",
+      "const search = await tempoSearch(ports.grafana, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
+      "const facts = traceSearchFacts(search, traceId);\n    const search = await tempoSearch(ports.grafana, traceId, scenario);",
     ],
+    ["/api/datasources/proxy/uid/aster-tempo/api/search?", "/api/search?"],
     ["| select(", "| unbounded("],
     ["diagnosticTraceReady(response, traceId, scenario)", "true"],
     ["/api/datasources/uid/aster-tempo/health", "/api/health"],

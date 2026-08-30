@@ -161,17 +161,17 @@ function validateCompose(source, proof, violations) {
       '    ports: !override ["127.0.0.1::4000"]\n',
       '    ports: !override ["127.0.0.1::9090"]\n',
       '    ports: !override ["127.0.0.1::3000"]\n',
-      '    ports: !override ["127.0.0.1::3200"]\n',
     ],
     violations,
     "disposable proof",
   );
   rejectValues(
     proof,
-    ["0.0.0.0", "postgres-data:", "prometheus-data:", "type: bind", "${"],
+    ["0.0.0.0", "127.0.0.1::3200", "postgres-data:", "prometheus-data:", "type: bind", "${"],
     violations,
     "disposable proof",
   );
+  rejectValues(serviceBlock(proof, "tempo"), ["ports:"], violations, "Tempo proof override");
 }
 
 function validateTempo(source, violations) {
@@ -322,12 +322,12 @@ function validateRunner(source, violations) {
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE application_name = 'aster-p12-diagnostic-lock';",
       "label=com.docker.compose.project=${project}",
       "aster:sli:good:ratio_rate5m{sli=",
-      "/api/search?",
+      "/api/datasources/proxy/uid/aster-tempo/api/search?",
       "diagnosticTraceQuery(traceId, scenario)",
       "| select(",
       "diagnosticTraceReady(response, traceId, scenario)",
       '"timeout|cancelled|unavailable|error"',
-      "const search = await tempoSearch(ports.tempo, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
+      "const search = await tempoSearch(ports.grafana, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
       "traceSearchFacts(search, traceId)",
       'fact.status === "error"',
       '"aster.dependency"',
@@ -348,6 +348,9 @@ function validateRunner(source, violations) {
       "wsl --shutdown",
       "COMPOSE_PROJECT_NAME",
       "--profile=*",
+      'hostPort("tempo", 3200)',
+      "ports.tempo",
+      "127.0.0.1:3200",
     ],
     violations,
     "diagnostic runner",

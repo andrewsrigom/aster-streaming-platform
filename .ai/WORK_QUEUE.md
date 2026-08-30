@@ -275,7 +275,13 @@ targeted confirmation found escaped-document privacy, Tempo product-network
 reachability and missing Grafana data-source-health blockers. The local batch
 corrects all three and passes focused diagnostics 12/12, platform tests 87/87
 and the affected gate 73/73 with 59 cached in 50.323 seconds. Item63 remains
-`IN_PROGRESS` until protected runtime, correction confirmation and release pass.
+`IN_PROGRESS`. Published `00dfc26` and run `33338133771` then proved exact
+cleanup but exposed the runner's direct Tempo host-port lookup as incompatible
+with the accepted internal-only topology. The current correction publishes no
+Tempo port and routes TraceQL through Grafana's UID-scoped proxy; focused tests
+pass 12/12, platform tests pass 87/87 and the affected gate passes 73/73 with 59
+cached in 62.801 seconds. Protected runtime, correction confirmation and release
+remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

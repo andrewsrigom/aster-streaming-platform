@@ -40,7 +40,12 @@ exact clean teardown. Targeted confirmation at evidence head `ab09592` then
 found escaped-document privacy, Tempo product-network isolation and Grafana
 data-source-health blockers. Their local remediation passes focused diagnostics
 12/12, platform tests 87/87 and the affected gate 73/73 with 59 cached in 50.323
-seconds; corrected protected acceptance remains.
+seconds. Protected run `33338133771` then proved exact cleanup but exposed the
+runner's invalid direct Tempo host-port lookup under the internal-only topology.
+The current correction routes TraceQL through Grafana's UID-scoped proxy;
+focused diagnostics pass 12/12, platform tests pass 87/87 and the affected gate
+passes 73/73 with 59 cached in 62.801 seconds. Corrected protected acceptance
+remains.
 
 ## Requirement traceability
 

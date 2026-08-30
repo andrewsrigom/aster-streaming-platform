@@ -108,7 +108,7 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | `integration` | Router, Identity, Catalog, Playback, Engagement, Kafka, S3 | 4000 |
 | `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
 | `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
-| `diagnostics:run` candidate | Full profile plus Tempo in a fresh disposable project | ephemeral loopback Router, Prometheus, Grafana and Tempo ports |
+| `diagnostics:run` candidate | Full profile plus Tempo in a fresh disposable project | ephemeral loopback Router, Prometheus and Grafana ports; Tempo only through Grafana proxy |
 
 Discovery is intentionally absent from the base profiles. Start released search
 and home rails with the event and Discovery overlays:
@@ -178,20 +178,22 @@ pnpm diagnostics:run
 The command accepts no arguments, external endpoint or retained project name.
 It validates the Compose model and local engine, creates one UUID-scoped
 `aster-p12-diagnostics-*` project and starts the targeted Catalog diagnostic
-topology plus Tempo. Router, Prometheus, Grafana and Tempo receive random IPv4
-loopback ports; Catalog, Playback and their dependencies remain private.
+topology plus Tempo. Router, Prometheus and Grafana receive random IPv4
+loopback ports; Tempo publishes no host port, while Catalog, Playback and their
+dependencies remain private.
 PostgreSQL and Tempo use bounded tmpfs state, so this fixture contains no
 retained Aster data.
 
-The runner verifies Tempo readiness, requires the immutable Grafana Tempo data
-source health endpoint to return `OK` and verifies the released Catalog SLI
-source before injecting Catalog, PostgreSQL and Redis failures. Collector reaches
-Tempo only through internal `diagnostics-ingest`; Grafana reaches it only
-through internal `diagnostics-query`; Tempo has no product network attachment.
-The runner requires TraceQL to return the exact Router trace ID and selected
-finite boundary fields, correlates that span set with sanitized Router/Catalog
-logs, rejects raw and JSON-escaped GraphQL document canaries, restores each
-service and verifies a real TitleDetail recovery request.
+The runner requires the immutable Grafana Tempo data-source health endpoint to
+return `OK` and verifies the released Catalog SLI source before injecting
+Catalog, PostgreSQL and Redis failures. Collector reaches Tempo only through
+internal `diagnostics-ingest`; Grafana reaches it only through internal
+`diagnostics-query`; Tempo has no product network attachment. The runner sends
+bounded TraceQL reads through Grafana's UID-scoped data-source proxy, requires
+the exact Router trace ID and selected finite boundary fields, correlates that
+span set with sanitized Router/Catalog logs, rejects raw and JSON-escaped
+GraphQL document canaries, restores each service and verifies a real
+TitleDetail recovery request.
 PostgreSQL injection blocks one
 known fixture read with the exact `aster-p12-diagnostic-lock` application name
 before pausing the disposable database; cleanup terminates only that holder.

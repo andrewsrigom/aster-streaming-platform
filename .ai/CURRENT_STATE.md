@@ -328,7 +328,15 @@ networks and requires Grafana health `OK`; focused diagnostics pass 12/12. The
 platform suite passes 87/87 and the affected gate passes 73/73 with 59 cached in
 50.323 seconds. The prior runtime remains supporting evidence, but this
 topology/acceptance change requires the protected three-scenario run again.
-Architecture, operations, runbooks, licensing and evidence are current. The
+Published source `00dfc26` and protected run `33338133771` then started the
+isolated profile but failed at startup because the runner requested a direct
+Tempo host port that its internal-only networks correctly do not provide. The
+exact diagnostic project was cleaned to zero. The current correction publishes
+no Tempo port and sends bounded TraceQL reads through Grafana's UID-scoped
+data-source proxy; focused diagnostic/profile tests pass 12/12, platform tests
+pass 87/87 and the affected gate passes 73/73 with 59 cached in 62.801 seconds.
+Protected runtime remains. Architecture, operations, runbooks, licensing and
+evidence are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
@@ -595,7 +603,7 @@ also remain planned.
 
 ## Next outcome
 
-For P12-R10, publish the verified security-remediation batch, pass its protected
+For P12-R10, pass and publish the Grafana-proxy correction, pass its protected
 runtime, publish bounded runtime evidence, confirm the three corrected review
 threads, merge after final exact-head protection, verify exact-main CI, close
 Phase12 and check Phase13 prerequisites. Inspect the exact interrupted local

@@ -67,14 +67,23 @@ exact source.
 The finite-outcome correction's affected gate passes 73/73 tasks with 60 cached
 in 56.093 seconds. The initial review added one global execution budget with
 cleanup headroom, signal-driven cleanup, a proof-only Tempo listener, finite
-diagnostic output categories and complete CI invalidation paths. Targeted
+diagnostic output categories and complete CI invalidation paths. The isolated
+topology later supersedes that listener with Grafana-proxied query access.
+Targeted
 confirmation at evidence head `ab09592` completed with three blocking findings:
 compare the multiline GraphQL document against its JSON-escaped form, remove
 Tempo from product `platform`/`edge` networks through dedicated ingest and query
 networks, and require Grafana's Tempo data-source health endpoint to return
 `OK`. They are one security/acceptance remediation batch. The next candidate
 passes focused diagnostic/profile tests 12/12, platform tests 87/87 and the
-affected gate 73/73 with 59 cached in 50.323 seconds. Protected runtime and
+affected gate 73/73 with 59 cached in 50.323 seconds. Published source `00dfc26`
+and protected run `33338133771` then proved the isolated Compose model starts
+and cleans exactly, but the runner still requested a direct Tempo host port;
+Docker correctly omitted that port from its internal-only networks. The current
+correction removes Tempo from the proof overlay's published ports and sends
+bounded TraceQL reads through Grafana's UID-scoped data-source proxy. Focused
+diagnostic/profile tests pass 12/12, platform tests pass 87/87 and the affected
+gate passes 73/73 with 59 cached in 62.801 seconds. Protected runtime and
 exact-head confirmation remain before merge.
 
 ## Proposed behavior

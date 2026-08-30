@@ -65,6 +65,14 @@ full snapshot through the archival checkpoint remains in
   escaped-canary adverse assertion. Focused diagnostic/profile tests pass
   12/12, platform tests pass 87/87 and the affected gate passes 73/73 with 59
   cached in 50.323 seconds; protected runtime remains.
+- Published source `00dfc26`; protected run `33338133771`, local-platform job
+  `99328689464`, started the isolated profile but failed before scenarios because
+  the runner requested a direct Tempo port absent from its internal-only
+  networks. Project `aster-p12-diagnostics-3d2bcce1-521b-465b-a34a-31aec3f8c56d`
+  cleaned to zero. The current correction removes Tempo's proof port and sends
+  TraceQL through Grafana's UID-scoped data-source proxy. Focused
+  diagnostic/profile tests pass 12/12, platform tests pass 87/87 and the
+  affected gate passes 73/73 with 59 cached in 62.801 seconds.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof
@@ -80,9 +88,9 @@ full snapshot through the archival checkpoint remains in
   Diagnostic/profile tests pass 11/11; CI/classifier tests pass 35/35; focused
   Catalog continuity passes 1/1.
 - Initial review corrected the global execution/cleanup budget, signal-driven
-  cleanup, proof-only Tempo listener, finite output categories and complete
-  diagnostic CI invalidation. Confirmation found no remaining blocking source
-  issue.
+  cleanup, proof-only Tempo query boundary, finite output categories and
+  complete diagnostic CI invalidation. Confirmation found no remaining
+  blocking source issue.
 - The post-review affected candidate passes 73/73 tasks with 62 cached in
   13.114 seconds.
 - Updated architecture, operations, runbooks, licensing, decision ledger and

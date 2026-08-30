@@ -274,13 +274,25 @@ gate passes 73/73 with 59 cached in 50.323 seconds. Because the topology and
 runtime acceptance changed, run `33336386466` remains supporting behavior
 evidence rather than the final corrected acceptance.
 
+Published source `00dfc26` ran in protected workflow `33338133771`, local job
+`99328689464`. The isolated Compose topology started, but the runner failed at
+startup when `docker compose port tempo 3200` found no published port. This is
+the intended consequence of Tempo joining only internal networks, not a reason
+to restore product or external reachability. The runner cleaned exact project
+`aster-p12-diagnostics-3d2bcce1-521b-465b-a34a-31aec3f8c56d` to zero resources.
+The current correction removes Tempo from the proof overlay's published ports
+and sends its bounded TraceQL reads through Grafana's documented UID-scoped
+data-source proxy. Focused diagnostic/profile tests pass 12/12, platform tests
+pass 87/87 and the affected gate passes 73/73 with 59 cached in 62.801 seconds;
+corrected protected acceptance remains.
+
 ## Remaining release work
 
 Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the passing affected-gate candidate and pass one complete protected
+2. publish the passing Grafana-proxy candidate, then pass one complete protected
    run with the corrected networks, privacy assertion and Grafana health check;
 3. record that run and confirm/resolve the three discussions above;
 4. pass protected CI at the final evidence head, squash merge PR51 and verify

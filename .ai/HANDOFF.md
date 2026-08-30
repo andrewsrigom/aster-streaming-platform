@@ -43,6 +43,11 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   product-network isolation and Grafana data-source-health blockers. The local
   batch corrects all three; focused diagnostics pass 12/12, platform tests pass
   87/87 and the affected gate passes 73/73 with 59 cached in 50.323 seconds. Its
+  first protected run `33338133771` proved exact cleanup but exposed a direct
+  Tempo host-port lookup incompatible with the new internal-only topology. The
+  current correction removes that port and routes TraceQL through Grafana's
+  UID-scoped proxy; focused diagnostics pass 12/12, platform tests pass 87/87
+  and its affected gate passes 73/73 with 59 cached in 62.801 seconds. Its
   protected gate remains.
 
 ## Protected runtime finding
@@ -84,7 +89,7 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Publish the affected-gate-verified review-remediation batch and require the
+1. Publish the affected-gate-verified Grafana-proxy correction and require the
    protected three-scenario lane plus exact cleanup.
 2. Record that run, resolve/confirm the three review threads, merge after final
    protection, verify exact-main CI and close Phase12. Inspect/remove only the
