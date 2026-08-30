@@ -91,7 +91,10 @@ function containsYamlKey(source, expected) {
         return true;
       }
       index = decoded.end;
-      if (decoded.value === expected && /^\s*:/u.test(source.slice(index + 1))) {
+      if (
+        (decoded.value === expected || decoded.value.includes("${")) &&
+        /^\s*:/u.test(source.slice(index + 1))
+      ) {
         return true;
       }
       continue;
