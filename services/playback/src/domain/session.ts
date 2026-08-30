@@ -11,6 +11,15 @@ export interface PlaybackSession {
   readonly correlationId: string;
 }
 
+export interface PlaybackPublication {
+  readonly titleId: string;
+  readonly publicationId: string;
+  readonly titleVersion: number;
+  readonly manifestUrl: string;
+  readonly checkedAt: number;
+  readonly validUntil: number | null;
+}
+
 const MAX_TIMESTAMP = 253_402_300_799;
 const SESSION_SECONDS = 900;
 const MAX_SNAPSHOT_AGE_SECONDS = 2;
@@ -81,6 +90,46 @@ function deliveryUrl(value: unknown, allowLocalMedia: boolean): value is string 
   }
 }
 
+/** Validate and copy the complete Catalog publication before it can count as an owner success. */
+export function normalizePlaybackPublication(
+  value: unknown,
+  context: Readonly<{ titleId: string; now: number; allowLocalMedia: boolean }>,
+): PlaybackPublication | undefined {
+  const current = publicationRecord(value);
+  if (!current || !playbackIdentifier(context.titleId) || !timestamp(context.now)) {
+    return undefined;
+  }
+  const titleId = current["titleId"];
+  const publicationId = current["publicationId"];
+  const version = current["titleVersion"];
+  const checkedAt = current["checkedAt"];
+  const validUntil = current["validUntil"];
+  const manifestUrl = current["manifestUrl"];
+  if (
+    titleId !== context.titleId ||
+    !playbackIdentifier(publicationId) ||
+    typeof version !== "number" ||
+    !Number.isSafeInteger(version) ||
+    version < 1 ||
+    version > 2_147_483_647 ||
+    !timestamp(checkedAt) ||
+    checkedAt > context.now ||
+    context.now - checkedAt > MAX_SNAPSHOT_AGE_SECONDS ||
+    (validUntil !== null && (!timestamp(validUntil) || validUntil <= context.now)) ||
+    !deliveryUrl(manifestUrl, context.allowLocalMedia)
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    titleId,
+    publicationId,
+    titleVersion: version,
+    manifestUrl,
+    checkedAt,
+    validUntil,
+  });
+}
+
 /** The application supplies an owner-read snapshot; browser input cannot supply this authority. */
 export function createAnonymousPlaybackSession(
   input: Readonly<{
@@ -92,9 +141,7 @@ export function createAnonymousPlaybackSession(
     allowLocalMedia: boolean;
   }>,
 ): PlaybackSession | undefined {
-  const current = publicationRecord(input.publication);
   if (
-    !current ||
     !playbackIdentifier(input.id) ||
     !playbackIdentifier(input.titleId) ||
     !playbackIdentifier(input.correlationId) ||
@@ -102,30 +149,17 @@ export function createAnonymousPlaybackSession(
   ) {
     return undefined;
   }
-  const titleId = current["titleId"];
-  const publicationId = current["publicationId"];
-  const version = current["titleVersion"];
-  const checkedAt = current["checkedAt"];
-  const validUntil = current["validUntil"];
-  const manifestUrl = current["manifestUrl"];
-  if (
-    titleId !== input.titleId ||
-    !playbackIdentifier(publicationId) ||
-    typeof version !== "number" ||
-    !Number.isSafeInteger(version) ||
-    version < 1 ||
-    version > 2_147_483_647 ||
-    !timestamp(checkedAt) ||
-    checkedAt > input.now ||
-    input.now - checkedAt > MAX_SNAPSHOT_AGE_SECONDS ||
-    (validUntil !== null && (!timestamp(validUntil) || validUntil <= input.now)) ||
-    !deliveryUrl(manifestUrl, input.allowLocalMedia)
-  ) {
+  const current = normalizePlaybackPublication(input.publication, {
+    titleId: input.titleId,
+    now: input.now,
+    allowLocalMedia: input.allowLocalMedia,
+  });
+  if (!current) {
     return undefined;
   }
   const expiresAt = Math.min(
     input.now + SESSION_SECONDS,
-    validUntil ?? MAX_TIMESTAMP,
+    current.validUntil ?? MAX_TIMESTAMP,
     MAX_TIMESTAMP,
   );
   if (expiresAt <= input.now) {
@@ -133,11 +167,11 @@ export function createAnonymousPlaybackSession(
   }
   return Object.freeze({
     id: input.id,
-    titleId,
-    publicationId,
-    catalogVersion: version,
-    catalogCheckedAt: checkedAt,
-    manifestUrl,
+    titleId: current.titleId,
+    publicationId: current.publicationId,
+    catalogVersion: current.titleVersion,
+    catalogCheckedAt: current.checkedAt,
+    manifestUrl: current.manifestUrl,
     profileId: null,
     createdAt: input.now,
     expiresAt,

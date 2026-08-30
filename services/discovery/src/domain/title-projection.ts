@@ -10,7 +10,7 @@ interface SearchMetadata {
   readonly releaseYear: number | null;
   readonly publishedAt: number;
 }
-interface CatalogSnapshot {
+export interface CatalogSnapshot {
   readonly titleId: string;
   readonly sourceVersion: number;
   readonly observedAt: number;
@@ -199,6 +199,20 @@ function snapshot(value: unknown): CatalogSnapshot | undefined {
   });
 }
 
+export function normalizeCurrentCatalogSnapshot(
+  value: unknown,
+  now: number,
+): CatalogSnapshot | undefined {
+  const source = snapshot(value);
+  return !source ||
+    !integer(now, 0, MAX_TIME) ||
+    source.observedAt > now ||
+    now - source.observedAt > 2 ||
+    (source.visibleUntil !== null && source.visibleUntil <= now)
+    ? undefined
+    : source;
+}
+
 export function normalizeTitleProjection(value: unknown): TitleProjection | undefined {
   try {
     const input = record(value, [
@@ -246,13 +260,8 @@ export function reconcileTitleProjection(
     if (!integer(context.now, 0, MAX_TIME)) {
       return { status: "invalid_input" };
     }
-    const source = snapshot(incoming);
-    if (
-      !source ||
-      source.observedAt > context.now ||
-      context.now - source.observedAt > 2 ||
-      (source.visibleUntil !== null && source.visibleUntil <= context.now)
-    ) {
+    const source = normalizeCurrentCatalogSnapshot(incoming, context.now);
+    if (!source) {
       return { status: "invalid_input" };
     }
     const event =

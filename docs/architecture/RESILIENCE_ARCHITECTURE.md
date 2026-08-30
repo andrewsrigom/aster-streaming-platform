@@ -52,7 +52,9 @@ The implemented first Phase 11 policy uses the shared runtime safe-read executor
 for Playback and Discovery's fixed private Catalog reads. [ADR-0040](../adr/0040-deadline-bound-safe-read-retries.md)
 defines the exact budgets and finite transient classification. The complete
 [dependency policy registry](DEPENDENCY_POLICY_REGISTRY.md) distinguishes current
-controls from later Phase 11 breaker work.
+controls from later Phase 11 work. [ADR-0041](../adr/0041-operation-scoped-circuit-breakers.md)
+adds the first operation-scoped breakers around the complete logical Playback
+publication, Discovery snapshot and Discovery export safe reads.
 
 ## Policy matrix
 
@@ -93,17 +95,29 @@ Unsafe to retry blindly:
 
 ## Circuit breakers
 
-Breakers are scoped so one failing operation does not block unrelated dependency use.
+The implemented breakers are scoped so one failing operation does not block
+unrelated dependency use. They use a 30-second/64-result rolling window, four
+minimum samples, a 50% failure threshold, a five-second open interval and one
+half-open probe. Generation fencing prevents late completions from an older
+closed state from changing a newer state. Restart resets this process-local
+protection; it is not durable authority.
 
-State changes emit:
+An HTTP/GraphQL completion is not automatically a breaker success. Playback
+publication and Discovery snapshot/export reads first apply their complete
+domain shape, identity, freshness and lease checks inside the breaker-accounted
+action. Invalid owner data therefore contributes one logical failure and cannot
+keep a circuit closed while downstream behavior repeatedly fails closed.
+
+The finite event metric emits:
 
 - dependency;
 - operation class;
-- previous and new state;
-- sampled failure category;
-- open duration.
+- current state;
+- result, rejection or transition event.
 
-Metrics do not label by raw URL or identifier.
+Policy values stay in the registry/ADR. Metrics do not label by raw URL,
+identifier, error, sample count or credential. Other dependency classes remain
+planned until their own failure signal and fallback are proved.
 
 ## Bulkheads
 

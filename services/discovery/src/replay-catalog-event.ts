@@ -38,6 +38,7 @@ try {
     inspect: inspectCatalogEvent,
     source: createCatalogSnapshotClient({
       credential: await loadLocalCatalogDiscoveryCredential(),
+      now: () => Math.floor(Date.now() / 1_000),
     }),
     projector: createTitleProjector({
       transactions: createPostgresProjectionUnitOfWork(database),

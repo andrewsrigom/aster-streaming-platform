@@ -68,6 +68,34 @@ Append new entries at the top. Keep entries factual and concise.
 - Committed corrected source `af4951a` with tree `e306bcc`. The complete affected
   candidate passes53/53 with19 cached in128.838 seconds; exact dependency-policy
   and retry-timing evidence now records the parent-budget proof.
+- Evidence head `6d709b4` passed protected run33284610557 and clean exact-head
+  confirmation. PR41 squash-merged as tree-identical main `ebdcb18`; exact-main
+  run33285339274 passed every required job and releases P11-R01.
+- Activated P11-R05 on `feat/p11-circuit-breakers` from that exact merge.
+  ADR-0041 adds a framework-free bounded rolling breaker with
+  closed/open/half-open states, one probe, monotonic clock, hostile-policy
+  validation, generation fencing and finite observations.
+- Playback publication, Discovery snapshot and Discovery export use independent
+  instances around complete safe reads. Open/probe contention makes no owner
+  HTTP call; Playback remains fail closed and Discovery creates no authority.
+- Added finite OpenTelemetry breaker dimensions and updated the dependency,
+  resilience, failure and service documentation. Runtime98/98, telemetry13/13,
+  Playback40/40 and Discovery108/108 pass, including loopback suppression,
+  recovery and operation isolation.
+- The first complete affected gate stopped on nine strict lint findings in the
+  new files. They were corrected without weakening a rule; the exact source
+  `d039748` has tree `b09864d` and passes 53/53 tasks with 21 cached in 73.623
+  seconds.
+- PR42 initial review at `f2a0faf` found two P1 blockers: a valid GraphQL
+  envelope with malformed, stale or mismatched publication/snapshot data could
+  count as breaker success before downstream domain validation rejected it.
+  Superseded protected run `33286458648` was cancelled after local-platform and
+  documentation jobs passed because the source was invalidated.
+- Corrected exact source `92452d1` with tree `804c9cd` validates and copies the
+  full owner-domain result inside the breaker action while retaining absence as
+  success. Playback41/41 and Discovery109/109 prove invalid-domain failures open
+  their exact circuits and suppress the following HTTP call. The corrected
+  affected gate passes53/53,39 cached,in52.928 seconds.
 
 ### Evidence
 
@@ -80,11 +108,15 @@ Append new entries at the top. Keep entries factual and concise.
   atomicity and PostgreSQL outage/replica proof; the new digest still needs CI.
 - Generated supergraph: compatibility base `6a2fe3a`, eight artifacts, manifest
   SHA-256 `d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303`.
+- `evidence/phase-11/safe-read-release.txt` records the reviewed head/tree,
+  resolved findings, protected run, merge equality and exact-main proof.
+- `evidence/phase-11/circuit-breakers.txt` records the exact P11-R05 source,
+  focused/affected gates, finite transitions, HTTP-call suppression and limits.
 
 ### Next action
 
-Publish the frozen corrected candidate, resolve/confirm discussion3888100550 and
-require its exact-head protected CI.
+Commit and push the PR42 remediation evidence, resolve both initial threads,
+then complete one confirmation and the protected-release cycle.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

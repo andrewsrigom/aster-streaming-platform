@@ -3,11 +3,23 @@ import { randomBytes } from "node:crypto";
 import { once } from "node:events";
 import { createServer, request, type IncomingMessage, type ServerResponse } from "node:http";
 import test from "node:test";
+import { createAsterCircuitBreaker } from "@aster/runtime";
+import type { AsterCircuitBreakerMetricInput } from "@aster/telemetry";
 import { createCatalogPublicationClient } from "../src/infrastructure/catalog-publication-client.js";
 
 const id = "00000000-0000-4000-8000-000000000001";
 const credential = randomBytes(32).toString("hex");
-async function fixture(respond: (request: IncomingMessage, response: ServerResponse) => void) {
+type FixtureOptions = Partial<
+  Pick<
+    Parameters<typeof createCatalogPublicationClient>[0],
+    "allowLocalMedia" | "circuitBreaker" | "now" | "telemetry"
+  >
+>;
+
+async function fixture(
+  respond: (request: IncomingMessage, response: ServerResponse) => void,
+  options: FixtureOptions = {},
+) {
   const server = createServer(respond);
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -15,9 +27,12 @@ async function fixture(respond: (request: IncomingMessage, response: ServerRespo
   assert.ok(address && typeof address === "object");
   const client = createCatalogPublicationClient({
     credential,
+    now: () => 1,
+    allowLocalMedia: false,
     random: () => 0,
     request: (options, callback) =>
       request({ ...options, hostname: "127.0.0.1", port: address.port }, callback),
+    ...options,
   });
   return {
     client,
@@ -267,3 +282,165 @@ test(
     }
   },
 );
+
+test("owner client stops calls while open and admits one successful recovery probe", async () => {
+  let current = 0;
+  let calls = 0;
+  let probeResponse: ServerResponse | undefined;
+  const probeEntered = Promise.withResolvers<undefined>();
+  const breaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 2,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => current,
+  });
+  const f = await fixture(
+    (_incoming, response) => {
+      calls++;
+      response.setHeader("content-type", "application/json");
+      if (calls <= 2) {
+        response.statusCode = 500;
+        response.end('{"errors":[{"message":"unavailable"}]}');
+        return;
+      }
+      if (calls === 3) {
+        probeResponse = response;
+        probeEntered.resolve(undefined);
+        return;
+      }
+      response.end('{"data":{"_playbackPublications":[null]}}');
+    },
+    { circuitBreaker: breaker },
+  );
+  try {
+    for (let index = 0; index < 2; index++) {
+      assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+        status: "unavailable",
+      });
+    }
+    assert.equal(breaker.snapshot().state, "open");
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+      status: "unavailable",
+    });
+    assert.equal(calls, 2);
+
+    current = 100;
+    const probe = f.client.currentPublication(id, AbortSignal.timeout(2_000));
+    await probeEntered.promise;
+    assert.equal(breaker.snapshot().state, "half_open");
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+      status: "unavailable",
+    });
+    assert.equal(calls, 3);
+    assert.ok(probeResponse);
+    probeResponse.end('{"data":{"_playbackPublications":[null]}}');
+    assert.deepEqual(await probe, { status: "completed", value: null });
+    assert.equal(breaker.snapshot().state, "closed");
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+      status: "completed",
+      value: null,
+    });
+    assert.equal(calls, 4);
+  } finally {
+    await f.close();
+  }
+});
+
+test("invalid owner publications count as failures and open before another HTTP call", async () => {
+  let calls = 0;
+  const breaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 3,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => 0,
+  });
+  const publications = [
+    {
+      titleId: id.replace(/1$/u, "2"),
+      publicationId: id,
+      titleVersion: 1,
+      manifestUrl: "https://example.invalid/master.m3u8",
+      checkedAt: 4,
+      validUntil: null,
+    },
+    {
+      titleId: id,
+      publicationId: id,
+      titleVersion: 1,
+      manifestUrl: "https://example.invalid/master.m3u8",
+      checkedAt: 1,
+      validUntil: null,
+    },
+    {
+      titleId: id,
+      publicationId: id,
+      titleVersion: 1,
+      manifestUrl: "javascript:invalid",
+      checkedAt: 4,
+      validUntil: null,
+    },
+  ];
+  const f = await fixture(
+    (_incoming, response) => {
+      const publication = publications[calls];
+      calls++;
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ data: { _playbackPublications: [publication] } }));
+    },
+    { circuitBreaker: breaker, now: () => 4 },
+  );
+  try {
+    for (let index = 0; index < publications.length; index++) {
+      assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+        status: "unavailable",
+      });
+    }
+    assert.equal(breaker.snapshot().state, "open");
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+      status: "unavailable",
+    });
+    assert.equal(calls, 3);
+  } finally {
+    await f.close();
+  }
+});
+
+test("default publication breaker emits finite telemetry and suppresses the fifth failed call", async () => {
+  let calls = 0;
+  const events: AsterCircuitBreakerMetricInput[] = [];
+  const f = await fixture(
+    (_incoming, response) => {
+      calls++;
+      response.statusCode = 500;
+      response.setHeader("content-type", "application/json");
+      response.end('{"errors":[{"message":"unavailable"}]}');
+    },
+    {
+      telemetry: {
+        startDependencyOperation: () => ({
+          status: "rejected",
+          reason: "telemetry_closed",
+        }),
+        recordCircuitBreaker: (input) => {
+          events.push(input);
+          return { status: "recorded" };
+        },
+      },
+    },
+  );
+  try {
+    for (let index = 0; index < 5; index++) {
+      assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+        status: "unavailable",
+      });
+    }
+    assert.equal(calls, 4);
+    assert.ok(events.some((event) => event.event === "opened" && event.state === "open"));
+    assert.ok(events.some((event) => event.event === "rejected_open"));
+    assert.ok(events.every((event) => event.operation === "playback_publication"));
+  } finally {
+    await f.close();
+  }
+});

@@ -118,6 +118,27 @@ export const ASTER_OPERATION_LIMIT_OUTCOMES = Object.freeze([
 
 export const ASTER_OPERATION_LIMIT_QUEUE_BUCKETS = Object.freeze(["none", "one"] as const);
 
+export const ASTER_CIRCUIT_BREAKER_OPERATIONS = Object.freeze([
+  "playback_publication",
+  "discovery_snapshot",
+  "discovery_export",
+] as const);
+
+export const ASTER_CIRCUIT_BREAKER_STATES = Object.freeze(["closed", "open", "half_open"] as const);
+
+export const ASTER_CIRCUIT_BREAKER_EVENTS = Object.freeze([
+  "success",
+  "failure",
+  "ignored",
+  "ignored_stale",
+  "opened",
+  "rejected_open",
+  "half_opened",
+  "rejected_half_open",
+  "closed",
+  "reopened",
+] as const);
+
 export type AsterTelemetryEnvironment = (typeof ASTER_TELEMETRY_ENVIRONMENTS)[number];
 export type AsterHttpMethod = (typeof ASTER_HTTP_METHODS)[number];
 export type AsterHttpRoute = (typeof ASTER_HTTP_ROUTES)[number];
@@ -133,6 +154,9 @@ export type AsterOperationLimiter = (typeof ASTER_OPERATION_LIMITERS)[number];
 export type AsterLimitedOperation = (typeof ASTER_LIMITED_OPERATIONS)[number];
 export type AsterOperationLimitOutcome = (typeof ASTER_OPERATION_LIMIT_OUTCOMES)[number];
 export type AsterOperationLimitQueueBucket = (typeof ASTER_OPERATION_LIMIT_QUEUE_BUCKETS)[number];
+export type AsterCircuitBreakerOperation = (typeof ASTER_CIRCUIT_BREAKER_OPERATIONS)[number];
+export type AsterCircuitBreakerState = (typeof ASTER_CIRCUIT_BREAKER_STATES)[number];
+export type AsterCircuitBreakerEvent = (typeof ASTER_CIRCUIT_BREAKER_EVENTS)[number];
 
 export type AsterTelemetryExportOptions =
   | Readonly<{ mode: "none" }>
@@ -240,6 +264,13 @@ export interface AsterOperationLimitMetricInput {
   readonly queueBucket?: AsterOperationLimitQueueBucket;
 }
 
+export interface AsterCircuitBreakerMetricInput {
+  readonly dependency: "catalog";
+  readonly operation: AsterCircuitBreakerOperation;
+  readonly state: AsterCircuitBreakerState;
+  readonly event: AsterCircuitBreakerEvent;
+}
+
 export type AsterRecordMetricResult =
   | Readonly<{ status: "recorded" }>
   | Readonly<{ status: "rejected"; reason: "invalid_dimension" | "telemetry_closed" }>;
@@ -281,6 +312,7 @@ export interface AsterTelemetry {
   recordDiscoverySearchSample?(input: AsterDiscoverySearchSampleInput): AsterRecordMetricResult;
   recordCacheOperation?(input: AsterCacheMetricInput): AsterRecordMetricResult;
   recordOperationLimit?(input: AsterOperationLimitMetricInput): AsterRecordMetricResult;
+  recordCircuitBreaker?(input: AsterCircuitBreakerMetricInput): AsterRecordMetricResult;
   collect(): Promise<AsterMetricCollectionResult>;
   exportHealth(): AsterTelemetryExportHealth;
   forceFlush(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;

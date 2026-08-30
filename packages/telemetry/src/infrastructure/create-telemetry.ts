@@ -14,6 +14,7 @@ import {
 } from "@opentelemetry/sdk-metrics";
 import type {
   AsterCacheMetricInput,
+  AsterCircuitBreakerMetricInput,
   AsterCollectedMetric,
   AsterCollectedMetricPoint,
   AsterDependencyCompletion,
@@ -38,6 +39,9 @@ import {
   ASTER_CACHE_FAMILIES,
   ASTER_CACHE_OUTCOMES,
   ASTER_CACHE_WAITER_BUCKETS,
+  ASTER_CIRCUIT_BREAKER_EVENTS,
+  ASTER_CIRCUIT_BREAKER_OPERATIONS,
+  ASTER_CIRCUIT_BREAKER_STATES,
   ASTER_DISCOVERY_RAIL_KINDS,
   ASTER_DISCOVERY_RAIL_OUTCOMES,
   ASTER_LIMITED_OPERATIONS,
@@ -243,6 +247,25 @@ function parseOperationLimitMetric(input: unknown): AsterOperationLimitMetricInp
   });
 }
 
+function parseCircuitBreakerMetric(input: unknown): AsterCircuitBreakerMetricInput | undefined {
+  const value = exactRecord(input, ["dependency", "operation", "state", "event"]);
+  if (
+    !value ||
+    value["dependency"] !== "catalog" ||
+    !ASTER_CIRCUIT_BREAKER_OPERATIONS.includes(value["operation"] as never) ||
+    !ASTER_CIRCUIT_BREAKER_STATES.includes(value["state"] as never) ||
+    !ASTER_CIRCUIT_BREAKER_EVENTS.includes(value["event"] as never)
+  ) {
+    return undefined;
+  }
+  return Object.freeze({
+    dependency: "catalog",
+    operation: value["operation"] as AsterCircuitBreakerMetricInput["operation"],
+    state: value["state"] as AsterCircuitBreakerMetricInput["state"],
+    event: value["event"] as AsterCircuitBreakerMetricInput["event"],
+  });
+}
+
 function frozenHealth(
   attempts: number,
   successes: number,
@@ -400,6 +423,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
   private readonly cachePayloadBytes;
   private readonly operationLimitDuration;
   private readonly operationLimitOutcomes;
+  private readonly circuitBreakerEvents;
   private readonly runtimeCallback: BatchObservableCallback;
   private readonly runtimeObservables: Observable[];
   private activeObservations = 0;
@@ -582,6 +606,18 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           ],
           aggregationCardinalityLimit: options.cardinalityLimit,
         },
+        {
+          instrumentName: ASTER_METRIC_CATALOG.circuitBreakerEvents.name,
+          attributesProcessors: [
+            createAllowListAttributesProcessor([
+              "aster.dependency",
+              "aster.circuit_breaker.operation",
+              "aster.circuit_breaker.state",
+              "aster.circuit_breaker.event",
+            ]),
+          ],
+          aggregationCardinalityLimit: options.cardinalityLimit,
+        },
       ],
     });
 
@@ -649,6 +685,10 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     this.operationLimitOutcomes = meter.createCounter(
       ASTER_METRIC_CATALOG.operationLimitOutcomes.name,
       ASTER_METRIC_CATALOG.operationLimitOutcomes,
+    );
+    this.circuitBreakerEvents = meter.createCounter(
+      ASTER_METRIC_CATALOG.circuitBreakerEvents.name,
+      ASTER_METRIC_CATALOG.circuitBreakerEvents,
     );
 
     const processCpuTime = meter.createObservableCounter(
@@ -924,6 +964,24 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     };
     this.operationLimitDuration.record(value.durationMs / 1_000, attributes);
     this.operationLimitOutcomes.add(1, attributes);
+    return Object.freeze({ status: "recorded" });
+  }
+
+  recordCircuitBreaker(input: AsterCircuitBreakerMetricInput): AsterRecordMetricResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const value = parseCircuitBreakerMetric(input);
+    if (!value) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    this.circuitBreakerEvents.add(1, {
+      "aster.dependency": value.dependency,
+      "aster.circuit_breaker.operation": value.operation,
+      "aster.circuit_breaker.state": value.state,
+      "aster.circuit_breaker.event": value.event,
+    });
     return Object.freeze({ status: "recorded" });
   }
 

@@ -1,21 +1,26 @@
 import { request, type ClientRequest, type IncomingMessage, type RequestOptions } from "node:http";
 import {
+  createAsterCircuitBreaker,
   runAsterSafeRead,
+  type AsterCircuitBreaker,
+  type AsterCircuitBreakerObservation,
   type AsterSafeReadAttemptResult,
   type AsterSafeReadObservation,
 } from "@aster/runtime";
 import type {
   AsterDependencyObservation,
+  AsterCircuitBreakerOperation,
   AsterObservationOutcome,
   AsterTelemetry,
 } from "@aster/telemetry";
 import type { PublicationLookup } from "../application/session-ports.js";
-import { playbackIdentifier } from "../domain/session.js";
+import { normalizePlaybackPublication, playbackIdentifier } from "../domain/session.js";
 
 const OPERATION =
   "query PlaybackPublications($ids: [ID!]!) { _playbackPublications(ids: $ids) { titleId publicationId titleVersion manifestUrl checkedAt validUntil } }";
 const MAX_RESPONSE_BYTES = 8192;
 const RETRYABLE_STATUS = new Set([502, 503, 504]);
+const BREAKER_OPERATION: AsterCircuitBreakerOperation = "playback_publication";
 
 type CatalogRequest = (
   options: RequestOptions,
@@ -67,20 +72,49 @@ function completeCatalogObservation(
   }
 }
 
+function recordCircuitBreaker(
+  telemetry: Pick<AsterTelemetry, "recordCircuitBreaker"> | undefined,
+  observation: AsterCircuitBreakerObservation,
+): void {
+  try {
+    telemetry?.recordCircuitBreaker?.({
+      dependency: "catalog",
+      operation: BREAKER_OPERATION,
+      ...observation,
+    });
+  } catch {
+    // Optional telemetry cannot decide a Catalog read.
+  }
+}
+
 /** Fixed owner endpoint and operation with one deadline-bound safe-read retry layer. */
 export function createCatalogPublicationClient(
   options: Readonly<{
     credential: string;
+    now: () => number;
+    allowLocalMedia: boolean;
     request?: CatalogRequest;
     random?: () => number;
     observe?: (observation: AsterSafeReadObservation) => void;
-    telemetry?: Pick<AsterTelemetry, "startDependencyOperation">;
+    circuitBreaker?: AsterCircuitBreaker;
+    telemetry?: Pick<AsterTelemetry, "startDependencyOperation" | "recordCircuitBreaker">;
   }>,
 ) {
   if (!/^[a-f0-9]{64}$/u.test(options.credential)) {
     throw new Error("Invalid Catalog read credential.");
   }
   const send = options.request ?? request;
+  const circuitBreaker =
+    options.circuitBreaker ??
+    createAsterCircuitBreaker({
+      samplingWindowMs: 30_000,
+      minimumThroughput: 4,
+      failureRateThresholdPercentage: 50,
+      openDurationMs: 5_000,
+      observe: (observation) => {
+        recordCircuitBreaker(options.telemetry, observation);
+      },
+    });
   let inFlight = 0;
   return Object.freeze({
     async currentPublication(
@@ -104,174 +138,206 @@ export function createCatalogPublicationClient(
       }
       inFlight += 1;
       try {
-        const result = await runAsterSafeRead<unknown>(
-          {
-            operationTimeoutMs: 1500,
-            attemptTimeoutMs: 650,
-            responseReserveMs: 100,
-            maxAttempts: 2,
-            baseBackoffMs: 25,
-            maxBackoffMs: 25,
-            random: options.random ?? Math.random,
-            ...(options.observe ? { observe: options.observe } : {}),
-          },
-          signal,
-          (attemptSignal): Promise<AsterSafeReadAttemptResult<unknown>> =>
-            new Promise((resolve) => {
-              let outgoing: ClientRequest | undefined;
-              let incoming: IncomingMessage | undefined;
-              let settled = false;
-              const observation = startCatalogObservation(options.telemetry);
-              const finish = (
-                attemptResult: AsterSafeReadAttemptResult<unknown>,
-                outcome: AsterObservationOutcome,
-              ): void => {
-                if (settled) {
+        const execution = await circuitBreaker.execute(signal, async (breakerSignal) => {
+          const result = await runAsterSafeRead<unknown>(
+            {
+              operationTimeoutMs: 1500,
+              attemptTimeoutMs: 650,
+              responseReserveMs: 100,
+              maxAttempts: 2,
+              baseBackoffMs: 25,
+              maxBackoffMs: 25,
+              random: options.random ?? Math.random,
+              ...(options.observe ? { observe: options.observe } : {}),
+            },
+            breakerSignal,
+            (attemptSignal): Promise<AsterSafeReadAttemptResult<unknown>> =>
+              new Promise((resolve) => {
+                let outgoing: ClientRequest | undefined;
+                let incoming: IncomingMessage | undefined;
+                let settled = false;
+                const observation = startCatalogObservation(options.telemetry);
+                const finish = (
+                  attemptResult: AsterSafeReadAttemptResult<unknown>,
+                  outcome: AsterObservationOutcome,
+                ): void => {
+                  if (settled) {
+                    return;
+                  }
+                  settled = true;
+                  attemptSignal.removeEventListener("abort", cancelled);
+                  incoming?.destroy();
+                  outgoing?.destroy();
+                  completeCatalogObservation(observation, outcome);
+                  resolve(attemptResult);
+                };
+                const permanent = (outcome: AsterObservationOutcome = "rejected"): void => {
+                  finish({ status: "permanent" }, outcome);
+                };
+                const cancelled = (): void => {
+                  finish({ status: "cancelled" }, signal.aborted ? "cancelled" : "timeout");
+                };
+                attemptSignal.addEventListener("abort", cancelled, { once: true });
+                if (attemptSignal.aborted) {
+                  cancelled();
                   return;
                 }
-                settled = true;
-                attemptSignal.removeEventListener("abort", cancelled);
-                incoming?.destroy();
-                outgoing?.destroy();
-                completeCatalogObservation(observation, outcome);
-                resolve(attemptResult);
-              };
-              const permanent = (outcome: AsterObservationOutcome = "rejected"): void => {
-                finish({ status: "permanent" }, outcome);
-              };
-              const cancelled = (): void => {
-                finish({ status: "cancelled" }, signal.aborted ? "cancelled" : "timeout");
-              };
-              attemptSignal.addEventListener("abort", cancelled, { once: true });
-              if (attemptSignal.aborted) {
-                cancelled();
-                return;
-              }
-              const payload = JSON.stringify({
-                query: OPERATION,
-                operationName: "PlaybackPublications",
-                variables: { ids: [titleId] },
-              });
-              try {
-                outgoing = send(
-                  {
-                    protocol: "http:",
-                    hostname: "catalog",
-                    port: 3200,
-                    path: "/graphql",
-                    method: "POST",
-                    agent: false,
-                    signal: attemptSignal,
-                    maxHeaderSize: 8192,
-                    headers: {
-                      ...(traceparent ? { traceparent } : {}),
-                      host: "catalog:3200",
-                      origin: "http://playback:3300",
-                      "x-aster-csrf": "1",
-                      "x-aster-playback-credential": options.credential,
-                      "content-type": "application/json",
-                      accept: "application/json",
-                      "content-length": Buffer.byteLength(payload),
-                      connection: "close",
+                const payload = JSON.stringify({
+                  query: OPERATION,
+                  operationName: "PlaybackPublications",
+                  variables: { ids: [titleId] },
+                });
+                try {
+                  outgoing = send(
+                    {
+                      protocol: "http:",
+                      hostname: "catalog",
+                      port: 3200,
+                      path: "/graphql",
+                      method: "POST",
+                      agent: false,
+                      signal: attemptSignal,
+                      maxHeaderSize: 8192,
+                      headers: {
+                        ...(traceparent ? { traceparent } : {}),
+                        host: "catalog:3200",
+                        origin: "http://playback:3300",
+                        "x-aster-csrf": "1",
+                        "x-aster-playback-credential": options.credential,
+                        "content-type": "application/json",
+                        accept: "application/json",
+                        "content-length": Buffer.byteLength(payload),
+                        connection: "close",
+                      },
                     },
-                  },
-                  (response) => {
-                    incoming = response;
-                    incoming.once("error", (error) => {
-                      finish(
-                        { status: retryableTransportError(error) ? "transient" : "permanent" },
-                        "unavailable",
-                      );
-                    });
-                    incoming.once("aborted", () => {
-                      finish({ status: "transient" }, "unavailable");
-                    });
-                    const contentType = response.headers["content-type"]?.split(";", 1)[0]?.trim();
-                    const declaredBytes = response.headers["content-length"];
-                    if (RETRYABLE_STATUS.has(response.statusCode ?? 0)) {
-                      finish({ status: "transient" }, "unavailable");
-                      return;
-                    }
-                    if (
-                      settled ||
-                      attemptSignal.aborted ||
-                      response.statusCode !== 200 ||
-                      !["application/json", "application/graphql-response+json"].includes(
-                        contentType ?? "",
-                      ) ||
-                      response.headers["content-encoding"] !== undefined ||
-                      (declaredBytes !== undefined &&
-                        (!/^[0-9]{1,5}$/u.test(declaredBytes) ||
-                          Number(declaredBytes) > MAX_RESPONSE_BYTES))
-                    ) {
-                      permanent(
-                        response.statusCode && response.statusCode >= 500
-                          ? "unavailable"
-                          : "rejected",
-                      );
-                      return;
-                    }
-                    const chunks: Buffer[] = [];
-                    let bytes = 0;
-                    response.on("data", (chunk: Buffer) => {
-                      bytes += chunk.length;
-                      if (bytes > MAX_RESPONSE_BYTES) {
-                        permanent();
-                        return;
-                      }
-                      chunks.push(chunk);
-                    });
-                    response.once("end", () => {
-                      if (attemptSignal.aborted) {
-                        cancelled();
-                        return;
-                      }
-                      if (!response.complete) {
+                    (response) => {
+                      incoming = response;
+                      incoming.once("error", (error) => {
+                        finish(
+                          { status: retryableTransportError(error) ? "transient" : "permanent" },
+                          "unavailable",
+                        );
+                      });
+                      incoming.once("aborted", () => {
+                        finish({ status: "transient" }, "unavailable");
+                      });
+                      const contentType = response.headers["content-type"]
+                        ?.split(";", 1)[0]
+                        ?.trim();
+                      const declaredBytes = response.headers["content-length"];
+                      if (RETRYABLE_STATUS.has(response.statusCode ?? 0)) {
                         finish({ status: "transient" }, "unavailable");
                         return;
                       }
-                      try {
-                        const value: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8"));
-                        if (
-                          !onlyField(value, "data") ||
-                          !onlyField(value["data"], "_playbackPublications")
-                        ) {
-                          permanent();
-                          return;
-                        }
-                        const publications: unknown = value["data"]["_playbackPublications"];
-                        if (!Array.isArray(publications) || publications.length !== 1) {
-                          permanent();
-                          return;
-                        }
-                        finish(
-                          { status: "completed", value: publications[0] as unknown },
-                          "success",
+                      if (
+                        settled ||
+                        attemptSignal.aborted ||
+                        response.statusCode !== 200 ||
+                        !["application/json", "application/graphql-response+json"].includes(
+                          contentType ?? "",
+                        ) ||
+                        response.headers["content-encoding"] !== undefined ||
+                        (declaredBytes !== undefined &&
+                          (!/^[0-9]{1,5}$/u.test(declaredBytes) ||
+                            Number(declaredBytes) > MAX_RESPONSE_BYTES))
+                      ) {
+                        permanent(
+                          response.statusCode && response.statusCode >= 500
+                            ? "unavailable"
+                            : "rejected",
                         );
-                      } catch {
-                        permanent();
+                        return;
                       }
-                    });
-                  },
-                );
-                outgoing.once("error", (error) => {
+                      const chunks: Buffer[] = [];
+                      let bytes = 0;
+                      response.on("data", (chunk: Buffer) => {
+                        bytes += chunk.length;
+                        if (bytes > MAX_RESPONSE_BYTES) {
+                          permanent();
+                          return;
+                        }
+                        chunks.push(chunk);
+                      });
+                      response.once("end", () => {
+                        if (attemptSignal.aborted) {
+                          cancelled();
+                          return;
+                        }
+                        if (!response.complete) {
+                          finish({ status: "transient" }, "unavailable");
+                          return;
+                        }
+                        try {
+                          const value: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+                          if (
+                            !onlyField(value, "data") ||
+                            !onlyField(value["data"], "_playbackPublications")
+                          ) {
+                            permanent();
+                            return;
+                          }
+                          const publications: unknown = value["data"]["_playbackPublications"];
+                          if (!Array.isArray(publications) || publications.length !== 1) {
+                            permanent();
+                            return;
+                          }
+                          const publication: unknown = publications[0];
+                          const validated =
+                            publication === null
+                              ? null
+                              : normalizePlaybackPublication(publication, {
+                                  titleId,
+                                  now: options.now(),
+                                  allowLocalMedia: options.allowLocalMedia,
+                                });
+                          if (publication !== null && !validated) {
+                            permanent();
+                            return;
+                          }
+                          finish({ status: "completed", value: validated }, "success");
+                        } catch {
+                          permanent();
+                        }
+                      });
+                    },
+                  );
+                  outgoing.once("error", (error) => {
+                    finish(
+                      { status: retryableTransportError(error) ? "transient" : "permanent" },
+                      "unavailable",
+                    );
+                  });
+                  outgoing.end(payload);
+                } catch (error) {
                   finish(
                     { status: retryableTransportError(error) ? "transient" : "permanent" },
                     "unavailable",
                   );
-                });
-                outgoing.end(payload);
-              } catch (error) {
-                finish(
-                  { status: retryableTransportError(error) ? "transient" : "permanent" },
-                  "unavailable",
-                );
-              }
-            }),
-        );
-        return result.status === "completed"
-          ? { status: "completed", value: result.value }
-          : { status: result.status };
+                }
+              }),
+          );
+          const value: PublicationLookup =
+            result.status === "completed"
+              ? { status: "completed", value: result.value }
+              : { status: result.status };
+          return {
+            outcome:
+              result.status === "completed"
+                ? "success"
+                : result.status === "cancelled"
+                  ? "ignored"
+                  : "failure",
+            value,
+          } as const;
+        });
+        return execution.status === "completed"
+          ? execution.value
+          : {
+              status:
+                execution.status === "rejected" && execution.reason === "cancelled"
+                  ? "cancelled"
+                  : "unavailable",
+            };
       } finally {
         inFlight -= 1;
       }

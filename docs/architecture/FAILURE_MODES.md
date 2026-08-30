@@ -5,6 +5,7 @@
 | Failure | User impact | System behavior | Evidence | Primary response |
 |---|---|---|---|---|
 | Catalog PostgreSQL unavailable | uncached title and browse fail | cache may serve bounded stale public data; writes fail | DB errors, cache serve mode, SLI | restore DB or fail over |
+| Private Catalog owner read repeatedly fails or returns invalid domain data | new playback fails closed; Discovery refresh/rebuild pauses | transport, protocol and complete owner-domain validation contribute to the operation-scoped breaker; Playback has no allow fallback; existing valid Discovery projection may remain | dependency outcomes and finite breaker events | restore Catalog/trust/data, then allow one half-open probe |
 | Redis unavailable | higher latency, reduced personalization or rate-limit precision | bypass cache; preserve durable writes; activate local safety bounds | Redis error ratio, DB load | isolate Redis, protect DB |
 | Discovery subgraph unavailable | personalized rails missing | return editorial fallback | router traces, degradation metric | open breaker, recover subgraph |
 | Engagement unavailable | progress/watchlist unavailable | playback continues; UI reports save state honestly | mutation errors, SLI | recover service; do not fake save |
@@ -30,7 +31,7 @@
 - short Redis timeouts;
 - no retry loops at every layer;
 - deadline propagation;
-- breaker and bulkhead per dependency;
+- operation-scoped breaker on implemented private Catalog reads and finite bulkheads;
 - stale data only where semantically safe;
 - separate worker and request compute;
 - finite queues;

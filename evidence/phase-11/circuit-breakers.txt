@@ -1,0 +1,81 @@
+# P11-R05 operation-scoped circuit breakers
+
+Status: verified local candidate; review, protected CI and release pending.
+
+## Exact candidate
+
+- Base: `ebdcb18b344b3f8313575b7cd158f99a77a4026b`
+- Initial source commit: `d03974866a3a0f4a94f3e521bc3d3dc86b531940`
+- Initial evidence/review head: `f2a0faf5b95d01e389d0a1936c55f0d6bd3e23f5`
+- Corrected source commit: `92452d1ec64d20e87b5a15d678f525fffba67fe6`
+- Corrected source tree: `804c9cd007619553a2c4dc8cf9042a5b18e86b4a`
+- Branch: `feat/p11-circuit-breakers`
+- Runtime: Node.js 24.19.0 and pnpm 11.24.0
+- Gate environment: `CI=true`, `NODE_OPTIONS=--max-old-space-size=1536`,
+  `TURBO_CONCURRENCY=4`
+- Docker was not restarted and no retained runtime or media state changed.
+
+## Verification
+
+The corrected exact source commit passed:
+
+- `@aster/runtime`: 98/98 tests, including rolling-window pruning, the 64-result
+  bound, one half-open probe, reopening, generation fencing, cancellation and
+  hostile clock/policy/observer behavior;
+- `@aster/telemetry`: 13/13 tests, including fixed breaker dimensions and
+  rejection of unknown values;
+- Playback: 41/41 tests, including fail-closed open rejection, recovery and
+  invalid publication accounting;
+- Discovery: 109/109 tests, including independent snapshot/export breakers and
+  invalid snapshot accounting;
+- `pnpm check:changed`: 53/53 tasks, 39 cached, in 52.928 seconds;
+- repository AI, documentation, formatting and diff checks at the candidate
+  checkpoint.
+
+The first affected gate stopped only on nine lint findings in the new files.
+They were corrected without weakening rules: unsafe invocation was typed as
+`unknown`, promise-returning test actions became explicit and observer bodies
+became block statements. The complete affected gate then passed.
+
+Initial review at `f2a0faf` found two P1 availability/authority blockers:
+Playback and Discovery could accept a valid GraphQL envelope, count it as a
+breaker success and only then reject malformed, stale or mismatched domain data
+downstream. Superseded protected run `33286458648` was cancelled after its local
+platform and documentation jobs passed because the reviewed source was
+invalidated. Corrected source `92452d1` validates and copies the complete
+publication or snapshot inside the breaker-accounted action. Owner absence
+remains success; invalid owner data is one logical failure. The corrected
+focused and affected gates above pass without changing retry count or fallback.
+
+## Deterministic behavior
+
+- Policy: 30-second rolling window, maximum 64 logical outcomes, minimum four
+  samples, 50% failure threshold and five-second open interval.
+- Playback loopback: owner failures opened the breaker; the following logical
+  call was rejected without HTTP. After cooldown, exactly one held half-open
+  probe reached Catalog while a concurrent call was rejected; success closed
+  the breaker and the next call completed normally.
+- The default Playback policy opened after four failed owner requests and
+  suppressed the fifth logical call.
+- Three invalid Playback publications (mismatched identity, stale observation
+  and invalid delivery URL) opened the focused breaker; the next call made no
+  HTTP request.
+- Discovery snapshot failures opened only the snapshot breaker; an independent
+  export operation still reached Catalog and completed.
+- Mismatched, stale and malformed Discovery snapshots opened only the snapshot
+  breaker. A malformed export snapshot opened only the export breaker, and each
+  following call was suppressed without HTTP.
+- A complete safe read, including its bounded retry, contributes one outcome.
+  Caller cancellation is ignored; malformed, unavailable, timeout and permanent
+  owner failures count as failures.
+- Telemetry emitted only the fixed dependency, operation, state and event
+  vocabularies defined by the contract.
+
+## Interpretation and limits
+
+The candidate stops repeated pressure on an unhealthy Catalog operation while
+preserving authority: Playback remains fail closed and Discovery creates no
+owner data. Breaker state is deliberately process-local and resets on restart.
+Threshold calibration, controlled game days, public failure injection and
+operational runbooks remain later Phase 11 work. Hosted CI, review and merge are
+not claimed by this artifact.

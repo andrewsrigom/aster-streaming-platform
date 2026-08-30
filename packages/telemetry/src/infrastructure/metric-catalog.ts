@@ -93,6 +93,11 @@ export const ASTER_METRIC_CATALOG = Object.freeze({
     description: "Number of operation admission decisions by finite policy and outcome.",
     unit: "{decision}",
   }),
+  circuitBreakerEvents: Object.freeze({
+    name: "aster.resilience.circuit_breaker.events",
+    description: "Number of circuit-breaker results and state transitions by finite policy scope.",
+    unit: "{event}",
+  }),
   processCpuTime: Object.freeze({
     name: "process.cpu.time",
     description: "Total CPU seconds broken down by CPU mode.",

@@ -1,150 +1,143 @@
-# Work Item: Dependency policy registry and bounded safe reads
+# Work Item: Operation-scoped Catalog circuit breakers
 
 - Status: IN_PROGRESS
-- Owner: Platform owns reusable execution; Playback and Discovery own their Catalog reads
+- Owner: Platform owns the state machine; Playback and Discovery own policy instances and outcomes
 - Phase: 11
-- Requirement IDs: P11-R01, P11-R02, P11-R03, P11-R04, P11-R06, P11-R11
+- Requirement IDs: P11-R05, P11-R07, P11-R11
 - Created: 2026-08-29
 - Updated: 2026-08-29
 
 ## Outcome
 
-A checked-in registry states criticality, idempotency, deadline, attempts,
-backoff, breaker, concurrency, fallback, telemetry and user outcome for every
-current dependency operation class. One reusable runtime policy proves the
-deadline/retry rules on two concrete, read-only Catalog clients without changing
-authorization, rights, durable writes or Router retries.
+Playback publication reads and Discovery snapshot/export reads stop repeatedly
+calling an unhealthy Catalog operation after a measured local failure threshold.
+Each dependency/operation class owns an independent closed/open/half-open state,
+permits one recovery probe, emits bounded telemetry and preserves the existing
+rights-safe failure or optional stale-projection behavior.
 
 ## Current behavior
 
-Phase 10 is released as `eed8229`; exact-main run `33282217705` passed. This
-branch is based on that exact released tree. Requests already propagate
-AbortSignal cancellation, Router/subgraph timeouts are nested, dependency clients
-have attempt deadlines and finite concurrency, broker/relay retries are bounded,
-and unsafe or indeterminate writes are not retried. Owner HTTP read policies are
-distributed across code and ADRs and currently make one attempt.
+P11-R01 is released as `ebdcb18` after exact-head review, protected CI and
+successful exact-main run `33285339274`. The fixed owner reads already have parent-bounded deadlines,
+one selected-transient retry and finite concurrency. Repeated failures still
+reach Catalog on every admitted logical call; the registry correctly labels
+their breakers as planned.
 
 ## Proposed behavior
 
-Accept ADR-0040 to supersede only ADR-0027's one-attempt clause for the fixed,
-read-only Playback Catalog operation and to refine ADR-0035's equivalent
-Discovery execution policy. Every existing authority and trust decision remains.
+Add a framework-free runtime circuit breaker using a bounded 30-second rolling
+sample window, minimum throughput four, failure-rate threshold 50%, five-second
+open interval and one half-open probe. A generation fence prevents completions
+from calls admitted before an open transition from mutating the newer state.
+Monotonic time and observation are injected and hostile policy/time/observer
+behavior remains finite.
 
-Inventory each existing PostgreSQL, Redis, broker, object-storage, owner HTTP,
-media-process and Web/Router operation class in one registry. Distinguish
-application attempts from vendor connection recovery and asynchronous outbox
-delivery. Preserve one retry layer: Apollo Client and Router do not retry these
-subgraph reads.
+Create distinct long-lived instances for Playback publication, Discovery
+snapshot and Discovery export. One logical safe-read result contributes one
+breaker result: validated owner completion is success, owner unavailable or
+invalid response is failure, and caller cancellation is ignored. Local input or
+bulkhead rejection occurs before breaker accounting. Open or occupied half-open
+state makes no network attempt.
 
-Add a framework-free runtime safe-read executor with one overall deadline. It
-admits at most two attempts, never starts attempt two unless the remaining budget
-covers its ceiling plus response reserve, and applies equal-jitter exponential
-backoff from an injected random source. Only an explicit transient classification
-from a safe read can retry. Cancellation, validation, authorization, not-found,
-malformed response, permanent HTTP status, unknown transaction outcome and local
-capacity never retry.
-
-Apply it first to Playback's current-publication read and Discovery's Catalog
-snapshot/export reads. Preserve fixed endpoints, operations, credentials,
-response bounds and outer concurrency lanes. A retry remains inside one admitted
-operation and cannot increase active callers.
+Record finite breaker state/event metrics. Playback remains fail closed and
+never creates a session without current Catalog authority. Discovery does not
+fabricate owner data; its already-validated active projection remains the only
+optional stale source.
 
 ## Boundaries
 
-- Catalog remains publication/snapshot authority; Playback and Discovery own only
-  their use of results; Platform owns generic execution.
-- Affected code: `packages/runtime`, the two Catalog HTTP clients, focused tests,
-  resilience architecture/registry and Phase 11 evidence.
-- Authoritative data, persistence, cache and event contracts are unchanged.
-- Trust boundaries: fixed private HTTP responses, abort signals, Node transport
-  errors, status classification, injected clock/randomness and finite telemetry.
-- Existing Node 24 HTTP is the only external dependency; no package or service.
+- Owning context: Catalog owns publication/snapshot truth; consumers own their local protection policy.
+- Affected services/packages: `packages/runtime`, `packages/telemetry`, Playback and Discovery Catalog clients.
+- Authoritative data: unchanged Catalog publications and snapshots.
+- Read models/caches: existing Discovery projection only; no new cache or copied authority.
+- Trust boundaries: fixed private HTTP responses, cancellation, injected monotonic time and finite telemetry dimensions.
+- External dependencies: existing Node HTTP and OpenTelemetry packages only.
 
 ## Invariants
 
-- Original caller cancellation and one operation deadline bound every attempt,
-  wait, parse and cleanup.
-- A child deadline exposes the monotonic minimum of its own budget and every
-  registered parent budget; retry admission never relies on cancellation alone.
-- Only safe Catalog reads retry; no mutation, SQL write or publication does.
-- Malformed or semantically invalid owner data never becomes transient success.
-- One retry does not escape the existing client concurrency lane.
-- Authorization and rights failures have no fallback to allow.
-- Telemetry uses fixed values, never URLs, IDs, credentials, queries or errors.
-- Router, Apollo Client and the downstream client do not retry the same operation.
+- Breakers are scoped by dependency and operation class, never global.
+- Breaker admission remains inside the existing logical-operation bulkhead and outside retry attempts.
+- A retry contributes one logical breaker outcome, not one failure per attempt.
+- Open Playback behavior never allows playback, authorization or rights fallback.
+- Discovery can retain only an already-valid projection; breaker rejection creates no data.
+- Exactly one half-open probe runs; other callers reject without a queue.
+- Late completions from an older generation cannot close or reopen newer state.
+- Metric attributes come only from fixed vocabularies and contain no IDs, URLs, queries or credentials.
 
 ## Failure behavior
 
-| Failure | Result |
-|---|---|
-| Caller abort | Cancel immediately; no new attempt |
-| Overall budget exhausted | Existing unavailable or cancelled result |
-| Selected reset or transient 502/503/504 | Retry once only if budget permits |
-| Attempt timeout | Destroy transport and stop; never overlap attempts |
-| 4xx, redirect, invalid headers/body/envelope | Permanent unavailable; no retry |
-| Local concurrency full | Existing controlled rejection; no retry |
-| Random, clock or observation failure | Fail closed without unbounded work |
+| Failure | Expected behavior | Telemetry |
+|---|---|---|
+| Fewer than four measured calls | Remain closed | finite success/failure events |
+| At least 50% failures in four or more 30-second samples | Transition closed to open | `opened` in `open` state |
+| Call during five-second open interval | Reject without HTTP | `rejected_open` |
+| First call after open interval | Transition to half-open and run one probe | `half_opened` |
+| Concurrent half-open call | Reject without queue or HTTP | `rejected_half_open` |
+| Probe succeeds | Reset samples and close | `closed` |
+| Probe fails or is inconclusive | Reopen for a fresh interval | `reopened` |
+| Caller cancellation | Return cancelled and do not poison closed samples | `ignored` when admitted |
+| Clock/observer/action defect | Remain finite; observer cannot affect product result | bounded failure/rejection |
 
 ## Data and contracts
 
-- PostgreSQL, event and cache schemas: unchanged.
-- GraphQL/public operations: byte-compatible.
-- Runtime contract: additive generic types and executor.
-- Client return unions remain unchanged; no durable data or new background queue.
+- Schema/migration: none.
+- GraphQL: public and private documents unchanged.
+- Events: none.
+- Cache: none; existing Discovery stale validation is unchanged.
+- Compatibility: additive runtime and telemetry APIs; owner client return unions unchanged.
+- Retention/deletion: bounded in-memory samples only; no durable state.
 
 ## Security and privacy
 
-Retry classification is finite and owned by the transport adapter. No caller can
-select endpoint, operation, attempts, timing or classification. Credential
-separation, exact Host/Origin, response bounds and cancellation remain. Retries
-never add or broaden a cookie or service credential.
+- Authorization: Catalog remains authoritative; breaker rejection never allows access.
+- Input limits: existing identifiers, response bytes, concurrency and deadlines remain.
+- Sensitive data: telemetry has fixed dependency/operation/state/event values only.
+- Abuse cases: open-state callers cannot create a queue or recovery-probe herd.
 
 ## Implementation steps
 
-1. Record ADR-0040, the dependency-operation registry and retry-layer ownership.
-2. Add the deterministic, cancellable safe-read executor and adverse tests.
-3. Integrate Playback publication and Discovery snapshot/export reads.
-4. Prove transient retry, permanent non-retry, deadline exhaustion, cancellation,
-   finite concurrency and no Router/client amplification.
-5. Run focused gates, affected candidate, review and protected evidence.
+1. Record the state-machine policy in ADR-0041 and update the dependency registry.
+2. Implement and adversely test the bounded runtime breaker.
+3. Add finite circuit-breaker telemetry and contract tests.
+4. Integrate independent Playback publication and Discovery snapshot/export instances.
+5. Prove open rejection, one half-open probe, recovery, operation isolation and unchanged authority behavior.
+6. Run focused and affected gates, capture evidence, review once and publish the coherent candidate.
 
 ## Tests
 
-- Runtime: invalid policy, transient then success, permanent stop, cancellation,
-  insufficient budget, equal-jitter bounds and attempt ceiling.
-- Clients: reset/503 then success; 4xx/malformed/no-capacity no retry; timeout
-  cleanup; existing response and credential assertions unchanged.
-- Contract: registry covers every operation class and each retry layer has one owner.
-- Integration: one controlled owner failure over real HTTP; no Docker repeat
-  unless runtime composition changes.
+- Domain: rolling-window threshold/pruning and closed/open/half-open transitions.
+- Application: success/failure/ignored accounting, generation fencing and one probe.
+- Integration: real loopback HTTP opens, rejects without a request, recovers and keeps operation scopes independent.
+- Contract: finite telemetry validation/collection and registry values.
+- Browser: not affected; protected Docker gate remains the composition check.
+- Performance/failure: deterministic burst proves failure amplification stops after the threshold.
 
 ## Evidence
 
-- Iteration: Runtime and affected client build/tests plus scoped static checks.
-- Candidate: `pnpm check:changed` and the policy-registry verifier.
-- Heavyweight repeat triggers: HTTP wire/cleanup changes repeat focused real-HTTP
-  tests; Router retry/timeout changes repeat composition/browser runtime; no
-  PostgreSQL, Redis, broker, media or demo repeat without affected behavior.
-- Review stopping rule: one complete review, batched blocker remediation and one
-  confirmation; speculative tuning waits for game-day evidence.
-- Raw paths: `evidence/phase-11/dependency-policies.txt` and retry timing trace.
+- Commands: runtime/telemetry/client focused builds and tests, then `pnpm check:changed`.
+- Raw artifact path: `evidence/phase-11/circuit-breakers.txt` and updated Phase 11 index.
+- Acceptance result: exact source, measured calls/transitions and collected metric series.
+- Iteration gate: affected package build/tests plus TypeScript, lint and formatting on changed files.
+- Candidate gate: complete affected-scope gate and repository-memory validators.
+- Heavyweight repeat triggers: wire/admission changes repeat loopback tests; service composition changes are covered by protected Docker CI; no local media or load experiment without affected behavior.
+- Review stopping rule: one complete review and one confirmation; only requirement, authority, availability, security, data or public-contract blockers extend it.
 
 ## Rollback or recovery
 
-Restore the two clients to one attempt and retain the registry as current-state
-documentation. No migration, cache deletion, event replay, media action,
-credential rotation or infrastructure reset is required.
+Remove the three local breaker instances and retain safe-read deadlines/retries.
+No schema, durable data, credential, cache, event, media or infrastructure reset
+is needed. A process restart also resets only the bounded in-memory samples.
 
 ## Documentation updates
 
-Dependency policy registry, resilience architecture, affected client docs, Phase
-11 evidence/index and repository memory.
+- ADR-0041, dependency registry, resilience architecture and failure modes.
+- Playback/Discovery service notes, Phase 11 evidence and repository memory.
 
 ## Completion checklist
 
-- [x] Requirements satisfied in implementation and focused contracts
-- [x] Local candidate tests pass
-- [x] Evidence captured
-- [x] Documentation current
-- [x] `.ai/` state updated
-- [x] Remaining risks recorded
+- [x] Requirements satisfied in the local candidate
+- [x] Tests pass for the local candidate
+- [x] Candidate evidence captured
+- [x] Documentation current for the local candidate
+- [x] `.ai/` state updated at the candidate checkpoint
+- [x] Remaining risks recorded; review, protected CI and release remain
