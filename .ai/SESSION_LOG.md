@@ -86,6 +86,16 @@ Append new entries at the top. Keep entries factual and concise.
   new files. They were corrected without weakening a rule; the exact source
   `d039748` has tree `b09864d` and passes 53/53 tasks with 21 cached in 73.623
   seconds.
+- PR42 initial review at `f2a0faf` found two P1 blockers: a valid GraphQL
+  envelope with malformed, stale or mismatched publication/snapshot data could
+  count as breaker success before downstream domain validation rejected it.
+  Superseded protected run `33286458648` was cancelled after local-platform and
+  documentation jobs passed because the source was invalidated.
+- Corrected exact source `92452d1` with tree `804c9cd` validates and copies the
+  full owner-domain result inside the breaker action while retaining absence as
+  success. Playback41/41 and Discovery109/109 prove invalid-domain failures open
+  their exact circuits and suppress the following HTTP call. The corrected
+  affected gate passes53/53,39 cached,in52.928 seconds.
 
 ### Evidence
 
@@ -105,8 +115,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the P11-R05 evidence checkpoint, publish one pull request and complete
-the recorded review/protected-release cycle.
+Commit and push the PR42 remediation evidence, resolve both initial threads,
+then complete one confirmation and the protected-release cycle.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

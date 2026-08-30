@@ -197,8 +197,15 @@ Playback40/40 and Discovery108/108 tests pass, including real loopback open
 suppression/recovery and operation isolation. Exact source `d039748` has tree
 `b09864d`; its complete affected gate passes 53/53 with 21 cached in 73.623
 seconds. [Candidate evidence](../evidence/phase-11/circuit-breakers.txt) records
-the finite transitions and HTTP-call suppression. Review, protected CI and
-publication remain.
+the finite transitions and HTTP-call suppression. Initial PR42 review then found
+two P1 blockers: domain-invalid owner data could count as breaker success before
+Playback session or Discovery projection validation rejected it. Superseded run
+`33286458648` was cancelled after its local-platform and documentation jobs
+passed. Corrected exact source `92452d1` has tree `804c9cd`; it validates and
+copies publication/snapshot identity, freshness, lease and content inside the
+breaker-accounted action. Playback41/41, Discovery109/109 and the corrected
+affected gate pass 53/53 with 39 cached in 52.928 seconds. Confirmation review,
+protected exact-head CI and publication remain.
 
 ## Historical Phase 09 corrections
 
@@ -253,8 +260,8 @@ Hosted deployment remains Phase14.
 ## Next outcome
 
 Complete P11-R05: publish the evidenced operation-scoped circuit-breaker
-candidate, run the bounded review and protected exact-head CI, then merge and
-verify exact-main CI.
+remediation, resolve the two initial review threads, run one confirmation and
+protected exact-head CI, then merge and verify exact-main CI.
 
 ## Runtime and recovery
 

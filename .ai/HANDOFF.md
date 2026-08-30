@@ -7,8 +7,9 @@ then PR41 squash-merged as main `ebdcb18b344b3f8313575b7cd158f99a77a4026b`.
 Exact-main run `33285339274` passed every required job; P11-R01 is released.
 
 P11-R05 is active on `feat/p11-circuit-breakers`, based exactly on that merge.
-Source `d03974866a3a0f4a94f3e521bc3d3dc86b531940` has tree
-`b09864d87029b454657843eaff603b317ba5e5e3`; candidate evidence and current
+Initial PR42 review at `f2a0faf` found two P1 domain-accounting blockers.
+Corrected source `92452d1ec64d20e87b5a15d678f525fffba67fe6` has tree
+`804c9cd007619553a2c4dc8cf9042a5b18e86b4a`; candidate evidence and current
 repository-memory changes form the pending evidence checkpoint.
 
 Implemented locally:
@@ -27,17 +28,18 @@ Implemented locally:
 - ADR-0041, the dependency registry, resilience/failure docs and service guides
   describe implemented behavior and remaining limits.
 
-Focused gates pass: runtime98/98, telemetry13/13, Playback40/40 and
-Discovery108/108. Loopback tests prove open suppression, one half-open recovery
-probe and snapshot/export isolation. The complete affected gate passes 53/53
-with 21 cached in 73.623 seconds. Evidence is recorded in
+Focused gates pass: runtime98/98, telemetry13/13, Playback41/41 and
+Discovery109/109. Loopback tests prove open suppression, one half-open recovery
+probe, snapshot/export isolation and invalid publication/snapshot failure
+accounting. The corrected complete affected gate passes 53/53 with 39 cached in
+52.928 seconds. Evidence is recorded in
 `evidence/phase-11/circuit-breakers.txt`.
 
 ## Exact next actions
 
-1. Commit the evidence checkpoint and publish one P11-R05 pull request.
-2. Run one complete review, batch only blocking remediation and perform one
-   confirmation when required.
+1. Commit the remediation evidence checkpoint and push PR42 once.
+2. Reply to and resolve both initial P1 threads, then request the single
+   confirmation review at the corrected exact head.
 3. Require protected exact-head CI, squash merge without bypass, verify the
    exact-main run and then activate the next Phase 11 work item.
 

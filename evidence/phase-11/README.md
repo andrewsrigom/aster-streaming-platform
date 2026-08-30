@@ -3,8 +3,8 @@
 Status: P11-R01 is [released](safe-read-release.txt) through reviewed evidence
 head `6d709b4`, protected run `33284610557`, squash main `ebdcb18` and successful
 exact-main run `33285339274`. Phase 11 as a whole remains in progress. P11-R05
-is verified locally at source `d039748`, with review, protected CI and release
-pending.
+is corrected and verified locally at source `92452d1`; confirmation review,
+protected exact-head CI and release remain pending.
 
 ## Current work item
 
