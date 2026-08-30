@@ -276,21 +276,24 @@ run `33324696622`; PR50 squash main `633e819` passed exact-main run
 `33325544350` and closes the item.
 
 P12-R10 is the sole active item on `feat/p12-diagnostic-exercises` from exact
-main `633e819`. ADR-0044 and the current worktree implement a diagnostics-only,
+main `633e819`. ADR-0044 and published candidate `e0d1975` implement a diagnostics-only,
 digest-pinned Tempo profile plus one no-argument UUID-scoped runner. It uses the
 released Catalog SLI source, the exact Router trace, privacy-filtered Tempo
 search and correlated bounded logs to diagnose Catalog service loss, a
 PostgreSQL failure after request admission and Redis degradation. Recovery and
-cleanup target only the disposable project. Focused diagnostic/profile tests
-pass11/11, CI/classifier tests pass35/35 and the focused Catalog trace regression
-passes1/1. The post-review affected candidate gate passes73/73 with62 cached in
-13.114 seconds. Initial review corrected execution/cleanup headroom, signal
+cleanup target only the disposable project. Protected run `33331974187` passed
+Catalog diagnosis, PostgreSQL recovery and exact cleanup, then failed because
+V1 trace retrieval preceded query visibility of the required PostgreSQL span;
+Redis did not run. The correction waits on exact-boundary TraceQL then reads
+Tempo V2. Focused diagnostic/profile tests pass12/12, platform tests pass87/87
+and the corrected aggregate gate passes73/73 with59 cached in51.067 seconds,
+including Catalog248/248. Initial review corrected execution/cleanup headroom, signal
 handling, listener scope, diagnostic output categories and CI invalidation;
-confirmation found no remaining blocking source issue. Architecture,
-operations, runbooks, licensing and pending evidence are current. A real
-attempt stopped during Docker Desktop image build; no
-scenario completed and the unavailable engine prevented exact scoped-resource
-inspection. Real three-scenario acceptance, protected publication/release and
+confirmation found no remaining blocking source issue; the real runtime finding
+now requires one targeted confirmation. Architecture, operations, runbooks,
+licensing and pending evidence are current. The earlier local attempt stopped
+during Docker Desktop image build and could not inspect scoped resources. Real
+three-scenario acceptance, corrected protected release and
 Phase12 closeout remain. The normal demo is
 unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
@@ -549,16 +552,17 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-The implemented P12-R10 candidate still needs one real three-scenario Docker
-acceptance, exact cleanup, candidate/review/release and Phase12 closeout.
+The corrected P12-R10 candidate still needs one passing three-scenario Docker
+acceptance, candidate/review/release and Phase12 closeout. Exact cleanup already
+passed for the first protected project but must pass again with the correction.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, recover the local Docker boundary, inspect the exact interrupted
-project, verify the three telemetry-led injected-failure exercises, pass the
-candidate/review/release sequence, close Phase12 and explicitly check Phase13
-prerequisites.
+For P12-R10, complete the TraceQL/Tempo V2 correction, pass the affected gate
+and corrected protected three-scenario run, obtain targeted confirmation, close
+Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
+interrupted local project only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 

@@ -248,11 +248,13 @@ exact main on `feat/p12-diagnostic-exercises`. It owns the three trace-led
 failure exercises, the concrete local trace-backend decision and Phase12
 closeout; no Phase13 demand-control work starts early. ADR-0044, bounded Tempo/
 Collector/Grafana configuration, the no-argument UUID-scoped runner,
-proportional CI routing and focused tests are implemented. One real run stopped
-during Docker Desktop image build; no scenario completed and engine loss left
-the exact cleanup query pending. Item63 remains `IN_PROGRESS` until a healthy
-engine passes all three scenarios, zero-resource cleanup, candidate review and
-protected release.
+proportional CI routing and focused tests are implemented. One local run stopped
+during Docker Desktop image build. Published candidate `e0d1975` then passed
+Catalog diagnosis, PostgreSQL recovery and clean teardown in protected run
+`33331974187`, but its V1 trace read preceded dependency-span visibility and
+Redis did not run. The correction uses exact-boundary TraceQL then Tempo V2.
+Item63 remains `IN_PROGRESS` until all three scenarios, zero-resource cleanup,
+targeted confirmation and protected release pass.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

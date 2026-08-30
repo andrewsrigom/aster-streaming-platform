@@ -69,9 +69,11 @@ main `633e819` and exact-main run `33325544350`. P12-R10 is now active on
 `feat/p12-diagnostic-exercises` from that exact main. It owns the concrete
 bounded trace-backend decision, three telemetry-led injected-failure exercises
 and Phase12 closeout. ADR-0044, the bounded Tempo profile, runner, CI selection
-and focused tests are implemented. Real three-scenario Docker acceptance is
-pending after the local engine failed during build; no scenario or cleanup is
-claimed. Phase13 has not started.
+and focused tests are implemented. Protected run `33331974187` passed Catalog
+diagnosis, PostgreSQL recovery and exact cleanup, then exposed premature V1
+trace retrieval before the dependency boundary was query-visible; Redis did
+not run. The corrected runner uses exact-boundary TraceQL followed by Tempo V2.
+Real three-scenario acceptance remains pending. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

@@ -450,13 +450,14 @@ test("Catalog keeps PostgreSQL observations inside the inbound HTTP trace", asyn
         traceparent: `00-${inboundTraceId}-${"b".repeat(16)}-01`,
       },
       body: JSON.stringify({
-        query: "query RuntimeCatalog { titles(first: 1) { edges { node { id } } } }",
+        query: "query RuntimeCatalog($id: ID!) { title(id: $id) { id } }",
         operationName: "RuntimeCatalog",
+        variables: { id: "00000000-0000-4000-8000-000000000099" },
       }),
       signal: AbortSignal.timeout(2_000),
     });
     assert.equal(response.status, 200);
-    assert.deepEqual(await response.json(), { data: { titles: { edges: [] } } });
+    assert.deepEqual(await response.json(), { data: { title: null } });
     const traces = await telemetry.collectTraces();
     assert.equal(traces.status, "collected");
     const server = traces.traces.find(

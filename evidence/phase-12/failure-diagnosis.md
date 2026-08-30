@@ -1,6 +1,6 @@
 # P12-R10 Trace-led Failure Diagnosis Evidence
 
-Status: **implemented; real runtime acceptance pending**
+Status: **implemented; protected runtime remediation in progress**
 
 ## Acceptance contract
 
@@ -43,7 +43,7 @@ Current focused results on 2026-08-30:
 
 ```text
 node --test tools/run-diagnostic-exercises.test.mjs tools/verify-diagnostics-profile.test.mjs
-11 passed, 0 failed
+12 passed, 0 failed
 
 node tools/verify-ci-policy.ts
 status ok
@@ -55,7 +55,7 @@ node --test --test-name-pattern='keeps PostgreSQL observations' services/catalog
 1 passed, 0 failed (non-matching tests skipped)
 
 CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
-73 tasks passed, 62 cached, 0 failed, 13.114 seconds
+73 tasks passed, 59 cached, 0 failed, 51.067 seconds (corrected candidate)
 ```
 
 These checks prove source policy and focused behavior only. They do not prove a
@@ -66,9 +66,11 @@ execution budget with two minutes reserved for cleanup, SIGINT/SIGTERM cleanup,
 a proof-only Tempo host listener, finite categories for emitted trace facts and
 complete diagnostic CI invalidation paths. It also shortened the PostgreSQL
 barrier poll and allowed the documented Tempo flush interval. The single
-confirmation review found no remaining requirement, telemetry-integrity,
-privacy, availability, cleanup or public-contract blocker. This review does not
-replace the pending real runtime acceptance.
+source confirmation review found no remaining requirement, telemetry-integrity,
+privacy, availability, cleanup or public-contract blocker. The first protected
+runtime subsequently exposed a trace-visibility blocker, which activates the
+written stopping-rule exception and does not rewrite that earlier source review
+as runtime acceptance.
 
 ## Interrupted real attempt
 
@@ -92,14 +94,41 @@ After the post-review candidate gate, one bounded read-only WSL check returned
 was attempted. The protected diagnostic CI lane therefore owns the next real
 execution; its result must not be described as local-host acceptance.
 
+## First protected runtime
+
+Published source `e0d197507f8627349c747b3ebc6400f1265cf1e9` ran in protected
+workflow `33331974187`. Local-platform job `99311978785` created only project
+`aster-p12-diagnostics-508ea1e9-6421-4497-a538-aaa9951b8af9`.
+The Catalog scenario passed with trace
+`79b8bc23b20f97208fb71159a32fea44`, diagnosis
+`catalog_service_unavailable`, population delta one and good delta zero.
+
+The admitted PostgreSQL request and scoped recovery both ran. Collector output
+contained a failed `postgresql/query/timeout` dependency span, but the runner's
+Tempo V1 trace-by-ID poll did not see that boundary within 30 seconds for trace
+`18e610d67847ed530e6830d61f43b568`. Redis therefore did not run. The runner
+and workflow finalizers both reported clean project teardown. This is a failed
+acceptance with proven recovery and cleanup, not a passed diagnostic run.
+
+The bounded transcript is
+[protected-run-33331974187.txt](diagnostics/protected-run-33331974187.txt).
+The correction now waits for the exact scenario boundary through recent-store
+TraceQL before retrieving the trace through Tempo's V2 OTLP JSON endpoint. The
+V2 wrapper, exact finite queries and actual Catalog `title(id)` DataLoader path
+have focused regressions. A new protected run must prove all three scenarios.
+
+The corrected local candidate passes diagnostic/profile tests 12/12, platform
+tests 87/87, the full Catalog suite 248/248 inside the aggregate gate and all
+73 affected tasks with 59 cached in 51.067 seconds.
+
 ## Remaining acceptance
 
-When the same Docker engine is healthy:
+Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. run one complete `pnpm diagnostics:run` execution locally or through the
-   protected diagnostic CI lane;
+2. run one complete corrected `pnpm diagnostics:run` execution through the
+   protected diagnostic CI lane or a healthy local engine;
 3. record its three bounded scenario JSON events and clean finalizer result;
 4. retain the passing affected candidate gate and run protected CI;
 5. replace this pending status with the measured results, exact source/tree and

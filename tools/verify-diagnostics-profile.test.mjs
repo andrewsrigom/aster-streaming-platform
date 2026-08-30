@@ -69,6 +69,10 @@ test("rejects an externally selected or broadly destructive runner", () => {
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE application_name = 'aster-p12-diagnostic-lock';",
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity;",
     ],
+    [
+      "await tempoSearch(ports.tempo, traceId, scenario);\n    const trace = await tempoTrace(ports.tempo, traceId, scenario);",
+      "const trace = await tempoTrace(ports.tempo, traceId, scenario);\n    await tempoSearch(ports.tempo, traceId, scenario);",
+    ],
   ]) {
     const changed = { ...valid, runner: valid.runner.replace(before, after) };
     assert.ok(validateDiagnosticsProfile(changed).length > 0, before);

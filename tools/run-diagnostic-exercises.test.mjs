@@ -6,6 +6,7 @@ import {
   catalogOperationTraceContext,
   classifyDiagnosticScenario,
   diagnosticBoundaries,
+  diagnosticTraceQuery,
   diagnosticTimeout,
   parseJsonLines,
   traceFacts,
@@ -95,6 +96,24 @@ test("extracts finite service, span and dependency facts", () => {
       },
     },
   ]);
+});
+
+test("unwraps Tempo V2 traces and waits for the scenario boundary", () => {
+  const traceId = "a".repeat(32);
+  assert.equal(traceFacts({ trace: trace("postgresql", "timeout") }).length, 1);
+  assert.equal(
+    diagnosticTraceQuery(traceId, "catalog"),
+    `{ trace:id = "${traceId}" && span.subgraph.name = "catalog" }`,
+  );
+  assert.equal(
+    diagnosticTraceQuery(traceId, "postgres"),
+    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" }`,
+  );
+  assert.equal(
+    diagnosticTraceQuery(traceId, "redis"),
+    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" }`,
+  );
+  assert.throws(() => diagnosticTraceQuery("unsafe", "redis"));
 });
 
 test("emits only finite diagnostic boundary categories from untrusted traces", () => {

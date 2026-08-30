@@ -8,7 +8,9 @@ Tempo 3.0.0 in one disposable diagnostics-only profile. The Collector exports
 privacy-filtered traces through one bounded queue and deadline; Tempo stores at
 most one hour on a 128 MiB tmpfs and exposes only ephemeral loopback query
 access. Existing bounded Docker logs provide correlation. Loki remains deferred
-until a real ingestion, label, retention and deletion contract exists.
+until a real ingestion, label, retention and deletion contract exists. Runtime
+diagnostics wait for the exact TraceQL scenario boundary before the stable Tempo
+V2 OTLP JSON trace read so a recent partial trace cannot satisfy acceptance.
 
 [ADR-0043](../docs/adr/0043-multi-window-slo-burn-alerts.md) evaluates rapid
 14.4x 1h/5m and 6x 6h/30m pairs plus sustained 3x 1d/2h and 1x 3d/6h pairs for

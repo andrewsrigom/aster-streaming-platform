@@ -98,8 +98,11 @@ networks and volumes.
 This candidate uses Tempo only for disposable trace search. Docker's bounded
 structured logs remain the log source; Loki is not provisioned. The normal
 dashboard at port 3001 and the playable demo do not gain Tempo. Real runtime
-acceptance remains pending until the three scenarios and cleanup pass on a
-working Linux Docker engine.
+acceptance remains pending. Protected run `33331974187` passed Catalog
+diagnosis, PostgreSQL recovery and clean teardown, but its V1 trace read preceded
+the PostgreSQL boundary's query visibility and Redis did not run. The corrected
+runner waits on an exact TraceQL boundary before a Tempo V2 trace read; all three
+scenarios still must pass on a working Linux Docker engine.
 
 ## Limits
 

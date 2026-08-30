@@ -8,6 +8,16 @@ full snapshot through the archival checkpoint remains in
 
 ### Completed
 
+- Published candidate `e0d1975` in PR51. Protected run `33331974187` passed
+  Catalog diagnosis, PostgreSQL recovery and exact project cleanup, then failed
+  because V1 trace retrieval preceded visibility of the required dependency
+  span; Redis did not run.
+- Corrected the query path to wait on exact scenario-boundary TraceQL before
+  Tempo V2 retrieval and strengthened the real Catalog `title(id)` DataLoader
+  continuity regression. Focused diagnostics pass12/12, platform tests pass87/87
+  and the corrected affected gate passes73/73 with59 cached in51.067 seconds,
+  including Catalog248/248; corrected protected acceptance is pending.
+
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof
   overlay absent from the retained demo.

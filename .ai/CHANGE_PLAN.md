@@ -26,20 +26,24 @@ exports metrics to Prometheus and exposes the immutable Grafana overview. The
 released Phase 11 game days prove failure behavior, but no searchable trace
 backend or trace-led three-scenario diagnostic acceptance exists.
 
-The current worktree implements ADR-0044, the bounded Tempo/Collector/Grafana
-profile, policy/adverse tests, exact scenario orchestration, proportional CI and
-the focused Catalog database-trace regression. Focused diagnostics pass11/11 and
-CI/classifier checks pass35/35. The first real execution stopped during Docker
-Desktop image build before any scenario; engine unavailability prevented the
-exact cleanup query. Therefore the code is implemented but the three-scenario
+Published source `e0d1975` implements ADR-0044, the bounded
+Tempo/Collector/Grafana profile, policy/adverse tests, exact scenario
+orchestration, proportional CI and the focused Catalog database-trace
+regression. Protected run `33331974187` passed Catalog diagnosis, PostgreSQL
+recovery and exact cleanup, then failed because V1 trace-by-ID polling preceded
+visibility of the required PostgreSQL span; Redis did not run. The correction
+waits for the exact scenario boundary through recent-store TraceQL before
+polling Tempo V2 OTLP JSON. Focused diagnostics pass12/12 and the actual
+`title(id)` DataLoader runtime regression passes6/6. The three-scenario
 acceptance is not verified.
 
-The post-review affected candidate gate passes73/73 tasks with62 cached in13.114
+The corrected affected candidate gate passes73/73 tasks with59 cached in51.067
 seconds. The initial review added one global execution budget with cleanup
 headroom, signal-driven cleanup, a proof-only Tempo listener, finite diagnostic
-output categories and complete CI invalidation paths. Confirmation found no
-remaining requirement, telemetry-integrity, privacy, availability, cleanup or
-public-contract blocker. Real runtime acceptance remains pending.
+output categories and complete CI invalidation paths. Source confirmation found
+no remaining blocker. The protected trace-visibility failure triggers the
+stopping-rule exception and requires one targeted confirmation after its
+correction. Real runtime acceptance remains pending.
 
 ## Proposed behavior
 
@@ -140,7 +144,7 @@ recovered SLI. Never touch the retained demo or another Docker project.
 - Application: diagnostic result classification rejects missing, ambiguous,
   oversized, sensitive or mismatched signals.
 - Integration: real Tempo/Collector/Prometheus/Grafana health, OTLP export,
-  trace search, trace-by-ID and data-source checks.
+  exact-boundary TraceQL search, V2 trace-by-ID and data-source checks.
 - Contract: Compose/runtime image pins, exact topology, bounded resources,
   retention, query vocabulary, privacy and cleanup.
 - Browser: existing playable demo remains protected; optional trace navigation
@@ -155,8 +159,10 @@ recovered SLI. Never touch the retained demo or another Docker project.
   protected CI acceptance.
 - Raw artifact path: `evidence/phase-12/failure-diagnosis.md` plus bounded raw
   JSON/text artifacts under `evidence/phase-12/diagnostics/`.
-- Acceptance result: source implementation and focused evidence pass; real
-  profile measurement, recovery and exact cleanup remain pending.
+- Acceptance result: source implementation and focused evidence pass. The first
+  protected runtime proves Catalog diagnosis, PostgreSQL recovery and exact
+  cleanup, but failed trace visibility before Redis; corrected all-scenario
+  acceptance remains pending.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

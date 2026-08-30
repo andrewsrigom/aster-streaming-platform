@@ -170,10 +170,11 @@ export function catalogOperationTraceContext(source, expectedTraceId) {
 
 export function traceFacts(payload) {
   const facts = [];
-  const resourceSpans = Array.isArray(payload?.batches)
-    ? payload.batches
-    : Array.isArray(payload?.resourceSpans)
-      ? payload.resourceSpans
+  const trace = payload?.trace ?? payload;
+  const resourceSpans = Array.isArray(trace?.batches)
+    ? trace.batches
+    : Array.isArray(trace?.resourceSpans)
+      ? trace.resourceSpans
       : [];
   for (const resourceSpan of resourceSpans) {
     const resourceAttributes = attributes(resourceSpan?.resource?.attributes);
@@ -204,6 +205,16 @@ export function traceFacts(payload) {
     }
   }
   return Object.freeze(facts);
+}
+
+export function diagnosticTraceQuery(traceId, scenario) {
+  assert.match(traceId, /^[a-f0-9]{32}$/u, "Diagnostic trace ID is invalid.");
+  assert.ok(SCENARIOS.includes(scenario), "Diagnostic scenario is invalid.");
+  const boundary =
+    scenario === "catalog"
+      ? 'span.subgraph.name = "catalog"'
+      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}"`;
+  return `{ trace:id = "${traceId}" && ${boundary} }`;
 }
 
 export function assertTelemetryPrivacy(serialized, canaries) {
@@ -680,7 +691,7 @@ async function tempoTrace(tempoPort, traceId, scenario) {
       `Tempo trace ${traceId}`,
       async () => {
         const response = await boundedResponse(
-          `http://127.0.0.1:${tempoPort}/api/traces/` + traceId,
+          `http://127.0.0.1:${tempoPort}/api/v2/traces/` + traceId,
           undefined,
           1024 * 1024,
         );
@@ -706,8 +717,8 @@ async function tempoTrace(tempoPort, traceId, scenario) {
   }
 }
 
-async function tempoSearch(tempoPort, traceId) {
-  const query = `{ trace:id = "${traceId}" }`;
+async function tempoSearch(tempoPort, traceId, scenario) {
+  const query = diagnosticTraceQuery(traceId, scenario);
   return waitFor(
     `TraceQL search for ${traceId}`,
     async () => {
@@ -792,9 +803,9 @@ async function exercise(scenario, ports) {
     const traceId = router.event.trace_id;
     const catalogOperation =
       scenario === "catalog" ? undefined : await catalogOperationEvent(since, traceId);
+    await tempoSearch(ports.tempo, traceId, scenario);
     const trace = await tempoTrace(ports.tempo, traceId, scenario);
     const facts = traceFacts(trace);
-    await tempoSearch(ports.tempo, traceId);
     const measured = await waitMetricDelta(ports.prometheus, before);
     const catalogLogs = catalogOperation?.source ?? "";
     const cacheLogs = scenario === "redis" ? await waitCacheLog("unavailable", since) : "";
