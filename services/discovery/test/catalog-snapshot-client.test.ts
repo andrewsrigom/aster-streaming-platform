@@ -23,9 +23,11 @@ const snapshot = {
   },
 };
 
-type FixtureOptions = Pick<
-  Parameters<typeof createCatalogSnapshotClient>[0],
-  "snapshotCircuitBreaker" | "exportCircuitBreaker" | "telemetry"
+type FixtureOptions = Partial<
+  Pick<
+    Parameters<typeof createCatalogSnapshotClient>[0],
+    "exportCircuitBreaker" | "now" | "snapshotCircuitBreaker" | "telemetry"
+  >
 >;
 
 async function fixture(
@@ -39,6 +41,7 @@ async function fixture(
   assert.ok(address && typeof address === "object");
   const client = createCatalogSnapshotClient({
     credential,
+    now: () => 1_700_000_000,
     random: () => 0,
     request: (options, callback) =>
       request({ ...options, hostname: "127.0.0.1", port: address.port }, callback),
@@ -373,6 +376,86 @@ test("Catalog snapshot and export breakers isolate their operation classes", asy
     });
     assert.equal(exportCalls, 1);
     assert.equal(exportBreaker.snapshot().state, "closed");
+  } finally {
+    await f.close();
+  }
+});
+
+test("invalid owner snapshot contents fail and open their exact operation breakers", async () => {
+  let snapshotCalls = 0;
+  let exportCalls = 0;
+  const snapshotBreaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 3,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => 0,
+  });
+  const exportBreaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 1,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => 0,
+  });
+  const invalidSnapshots = [
+    { ...snapshot, titleId: id(2) },
+    { ...snapshot, observedAt: 1_699_999_997, visibleUntil: 1_700_000_297 },
+    { ...snapshot, document: { ...snapshot.document, localizations: [] } },
+  ];
+  const f = await fixture(
+    (incoming, response) => {
+      const chunks: Buffer[] = [];
+      incoming.on("data", (chunk: Buffer) => chunks.push(chunk));
+      incoming.on("end", () => {
+        const body = JSON.parse(Buffer.concat(chunks).toString("utf8")) as {
+          operationName: string;
+        };
+        response.setHeader("content-type", "application/json");
+        if (body.operationName === "DiscoverySnapshots") {
+          const value = invalidSnapshots[snapshotCalls];
+          snapshotCalls++;
+          response.end(JSON.stringify({ data: { _discoverySnapshots: [value] } }));
+          return;
+        }
+        exportCalls++;
+        response.end(
+          JSON.stringify({
+            data: {
+              _discoveryExport: {
+                snapshots: [
+                  { ...snapshot, document: { ...snapshot.document, defaultLocale: "pt" } },
+                ],
+                endCursor: id(1),
+                hasNextPage: false,
+              },
+            },
+          }),
+        );
+      });
+    },
+    { snapshotCircuitBreaker: snapshotBreaker, exportCircuitBreaker: exportBreaker },
+  );
+  try {
+    for (let index = 0; index < invalidSnapshots.length; index++) {
+      assert.deepEqual(await f.client.current(id(1), id(3), AbortSignal.timeout(3_000)), {
+        status: "unavailable",
+      });
+    }
+    assert.equal(snapshotBreaker.snapshot().state, "open");
+    assert.deepEqual(await f.client.current(id(1), id(3), AbortSignal.timeout(3_000)), {
+      status: "unavailable",
+    });
+    assert.equal(snapshotCalls, 3);
+
+    assert.deepEqual(await f.client.exportPage(null, id(3), AbortSignal.timeout(3_000)), {
+      status: "unavailable",
+    });
+    assert.equal(exportBreaker.snapshot().state, "open");
+    assert.deepEqual(await f.client.exportPage(null, id(3), AbortSignal.timeout(3_000)), {
+      status: "unavailable",
+    });
+    assert.equal(exportCalls, 1);
   } finally {
     await f.close();
   }

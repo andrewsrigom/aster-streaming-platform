@@ -14,7 +14,7 @@ import type {
   AsterTelemetry,
 } from "@aster/telemetry";
 import type { PublicationLookup } from "../application/session-ports.js";
-import { playbackIdentifier } from "../domain/session.js";
+import { normalizePlaybackPublication, playbackIdentifier } from "../domain/session.js";
 
 const OPERATION =
   "query PlaybackPublications($ids: [ID!]!) { _playbackPublications(ids: $ids) { titleId publicationId titleVersion manifestUrl checkedAt validUntil } }";
@@ -91,6 +91,8 @@ function recordCircuitBreaker(
 export function createCatalogPublicationClient(
   options: Readonly<{
     credential: string;
+    now: () => number;
+    allowLocalMedia: boolean;
     request?: CatalogRequest;
     random?: () => number;
     observe?: (observation: AsterSafeReadObservation) => void;
@@ -279,10 +281,20 @@ export function createCatalogPublicationClient(
                             permanent();
                             return;
                           }
-                          finish(
-                            { status: "completed", value: publications[0] as unknown },
-                            "success",
-                          );
+                          const publication: unknown = publications[0];
+                          const validated =
+                            publication === null
+                              ? null
+                              : normalizePlaybackPublication(publication, {
+                                  titleId,
+                                  now: options.now(),
+                                  allowLocalMedia: options.allowLocalMedia,
+                                });
+                          if (publication !== null && !validated) {
+                            permanent();
+                            return;
+                          }
+                          finish({ status: "completed", value: validated }, "success");
                         } catch {
                           permanent();
                         }

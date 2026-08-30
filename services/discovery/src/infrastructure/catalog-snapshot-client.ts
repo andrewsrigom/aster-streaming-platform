@@ -19,7 +19,11 @@ import type {
   CatalogSnapshotExportSource,
 } from "../application/rebuild-ports.js";
 import type { ProjectionStoreResult } from "../application/projection-ports.js";
-import { discoveryIdentifier } from "../domain/title-projection.js";
+import {
+  discoveryIdentifier,
+  normalizeCurrentCatalogSnapshot,
+  type CatalogSnapshot,
+} from "../domain/title-projection.js";
 
 const SNAPSHOTS_OPERATION =
   "query DiscoverySnapshots($ids: [ID!]!) { _discoverySnapshots(ids: $ids) { titleId sourceVersion observedAt visibleUntil document { defaultLocale localizations { locale title synopsis } genres editorialLabels releaseYear publishedAt } } }";
@@ -97,23 +101,41 @@ function exact(value: unknown, fields: readonly string[]): Record<string, unknow
     : undefined;
 }
 
-function parseCurrent(body: unknown): ParseResult<unknown> {
+function parseCurrent(
+  body: unknown,
+  expectedTitleId: string,
+  now: number,
+): ParseResult<CatalogSnapshot | null> {
   const root = exact(body, ["data"]);
   const data = root && exact(root["data"], ["_discoverySnapshots"]);
   const snapshots = data?.["_discoverySnapshots"];
   const entry = Array.isArray(snapshots)
     ? Object.getOwnPropertyDescriptor(snapshots, "0")
     : undefined;
-  return Array.isArray(snapshots) &&
+  if (!(
+    Array.isArray(snapshots) &&
     snapshots.length === 1 &&
     Reflect.ownKeys(snapshots).length === 2 &&
     entry &&
     "value" in entry
-    ? { valid: true, value: entry.value as unknown }
+  )) {
+    return { valid: false };
+  }
+  const value: unknown = entry.value;
+  if (value === null) {
+    return { valid: true, value: null };
+  }
+  const normalized = normalizeCurrentCatalogSnapshot(value, now);
+  return normalized?.titleId === expectedTitleId
+    ? { valid: true, value: normalized }
     : { valid: false };
 }
 
-function parseExport(body: unknown, after: string | null): ParseResult<CatalogSnapshotExportPage> {
+function parseExport(
+  body: unknown,
+  after: string | null,
+  now: number,
+): ParseResult<CatalogSnapshotExportPage> {
   const root = exact(body, ["data"]);
   const data = root && exact(root["data"], ["_discoveryExport"]);
   const page = data && exact(data["_discoveryExport"], ["snapshots", "endCursor", "hasNextPage"]);
@@ -133,16 +155,10 @@ function parseExport(body: unknown, after: string | null): ParseResult<CatalogSn
   let previous = after;
   for (let index = 0; index < snapshots.length; index++) {
     const entry = Object.getOwnPropertyDescriptor(snapshots, String(index));
-    const snapshot = entry && "value" in entry ? (entry.value as unknown) : undefined;
-    const title = exact(snapshot, [
-      "titleId",
-      "sourceVersion",
-      "observedAt",
-      "visibleUntil",
-      "document",
-    ]);
-    const titleId = title?.["titleId"];
-    if (!discoveryIdentifier(titleId) || (previous !== null && titleId <= previous)) {
+    const value = entry && "value" in entry ? (entry.value as unknown) : undefined;
+    const snapshot = normalizeCurrentCatalogSnapshot(value, now);
+    const titleId = snapshot?.titleId;
+    if (!snapshot || !discoveryIdentifier(titleId) || (previous !== null && titleId <= previous)) {
       return { valid: false };
     }
     previous = titleId;
@@ -166,6 +182,7 @@ function parseExport(body: unknown, after: string | null): ParseResult<CatalogSn
 export function createCatalogSnapshotClient(
   options: Readonly<{
     credential: string;
+    now: () => number;
     request?: CatalogRequest;
     random?: () => number;
     observe?: (observation: AsterSafeReadObservation) => void;
@@ -417,14 +434,14 @@ export function createCatalogSnapshotClient(
             { ids: [titleId] },
             correlationId,
             signal,
-            parseCurrent,
+            (body) => parseCurrent(body, titleId, options.now()),
           )
         : Promise.resolve({ status: "unavailable" } as const);
     },
     exportPage(after: string | null, correlationId: string, signal: AbortSignal) {
       return after === null || discoveryIdentifier(after)
         ? execute("DiscoveryExport", EXPORT_OPERATION, { after }, correlationId, signal, (body) =>
-            parseExport(body, after),
+            parseExport(body, after, options.now()),
           )
         : Promise.resolve({ status: "unavailable" } as const);
     },

@@ -9,9 +9,11 @@ import { createCatalogPublicationClient } from "../src/infrastructure/catalog-pu
 
 const id = "00000000-0000-4000-8000-000000000001";
 const credential = randomBytes(32).toString("hex");
-type FixtureOptions = Pick<
-  Parameters<typeof createCatalogPublicationClient>[0],
-  "circuitBreaker" | "telemetry"
+type FixtureOptions = Partial<
+  Pick<
+    Parameters<typeof createCatalogPublicationClient>[0],
+    "allowLocalMedia" | "circuitBreaker" | "now" | "telemetry"
+  >
 >;
 
 async function fixture(
@@ -25,6 +27,8 @@ async function fixture(
   assert.ok(address && typeof address === "object");
   const client = createCatalogPublicationClient({
     credential,
+    now: () => 1,
+    allowLocalMedia: false,
     random: () => 0,
     request: (options, callback) =>
       request({ ...options, hostname: "127.0.0.1", port: address.port }, callback),
@@ -338,6 +342,66 @@ test("owner client stops calls while open and admits one successful recovery pro
       value: null,
     });
     assert.equal(calls, 4);
+  } finally {
+    await f.close();
+  }
+});
+
+test("invalid owner publications count as failures and open before another HTTP call", async () => {
+  let calls = 0;
+  const breaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 3,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => 0,
+  });
+  const publications = [
+    {
+      titleId: id.replace(/1$/u, "2"),
+      publicationId: id,
+      titleVersion: 1,
+      manifestUrl: "https://example.invalid/master.m3u8",
+      checkedAt: 4,
+      validUntil: null,
+    },
+    {
+      titleId: id,
+      publicationId: id,
+      titleVersion: 1,
+      manifestUrl: "https://example.invalid/master.m3u8",
+      checkedAt: 1,
+      validUntil: null,
+    },
+    {
+      titleId: id,
+      publicationId: id,
+      titleVersion: 1,
+      manifestUrl: "javascript:invalid",
+      checkedAt: 4,
+      validUntil: null,
+    },
+  ];
+  const f = await fixture(
+    (_incoming, response) => {
+      const publication = publications[calls];
+      calls++;
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ data: { _playbackPublications: [publication] } }));
+    },
+    { circuitBreaker: breaker, now: () => 4 },
+  );
+  try {
+    for (let index = 0; index < publications.length; index++) {
+      assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+        status: "unavailable",
+      });
+    }
+    assert.equal(breaker.snapshot().state, "open");
+    assert.deepEqual(await f.client.currentPublication(id, AbortSignal.timeout(2_000)), {
+      status: "unavailable",
+    });
+    assert.equal(calls, 3);
   } finally {
     await f.close();
   }

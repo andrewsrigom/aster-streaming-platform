@@ -102,6 +102,12 @@ half-open probe. Generation fencing prevents late completions from an older
 closed state from changing a newer state. Restart resets this process-local
 protection; it is not durable authority.
 
+An HTTP/GraphQL completion is not automatically a breaker success. Playback
+publication and Discovery snapshot/export reads first apply their complete
+domain shape, identity, freshness and lease checks inside the breaker-accounted
+action. Invalid owner data therefore contributes one logical failure and cannot
+keep a circuit closed while downstream behavior repeatedly fails closed.
+
 The finite event metric emits:
 
 - dependency;

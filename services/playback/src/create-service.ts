@@ -76,6 +76,8 @@ export async function createPlaybackService(
       resources.catalog ??
       createCatalogPublicationClient({
         credential: await loadLocalCatalogPlaybackCredential(),
+        now: () => Math.floor(Date.now() / 1000),
+        allowLocalMedia: true,
         telemetry,
       });
     graph = await createPlaybackSubgraph({
