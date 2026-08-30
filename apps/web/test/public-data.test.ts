@@ -163,6 +163,22 @@ test("GraphQL transport removes upstream headers/extensions and propagates cance
   assert.equal(received.signal?.aborted, true);
 });
 
+test("public Web transport makes one Router attempt when the request fails", async () => {
+  let attempts = 0;
+  const transport = boundedGraphqlFetch(() => {
+    attempts++;
+    return Promise.resolve(new Response("unavailable", { status: 503 }));
+  });
+  await assert.rejects(
+    transport("http://router.invalid/graphql", {
+      method: "POST",
+      body: JSON.stringify({ operationName: "Browse" }),
+    }),
+    /Catalog is temporarily unavailable/u,
+  );
+  assert.equal(attempts, 1);
+});
+
 test("bad, excessive and failed GraphQL responses do not hydrate as successful data", async () => {
   for (const response of [
     new Response("private failure", { status: 503 }),

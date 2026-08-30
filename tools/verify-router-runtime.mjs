@@ -164,12 +164,14 @@ export function validateRouterSources(sources) {
   const config = sources["infra/router/router.yaml"] ?? "";
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
+    /(?:^|\n)\s+retry:/u.test(config) ||
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
   ) {
     violations.push({
       rule: "router-source",
-      detail: "Router cannot propagate arbitrary headers or activate key-protected limits",
+      detail:
+        "Router cannot propagate arbitrary headers, activate key-protected limits or own retries",
     });
   }
   return violations;

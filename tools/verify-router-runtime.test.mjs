@@ -79,6 +79,11 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
     ["infra/router/router.yaml", "required_headers: [x-aster-csrf]", "required_headers: []"],
     ["infra/router/router.yaml", "timeout: 2s", "timeout: 200s"],
     ["infra/router/router.yaml", "timeout: 2700ms", "timeout: 4s"],
+    [
+      "infra/router/router.yaml",
+      "    deduplicate_query: false\n",
+      "    deduplicate_query: false\n    retry:\n      attempts: 2\n",
+    ],
     ["infra/router/router.yaml", "/playback/playback.key", "/catalog/catalog.key"],
     ["infra/router/router.yaml", "max_queue_size: 128", "max_queue_size: 12800"],
     ["infra/router/router.yaml", "named: cookie", "matching: .*"],
