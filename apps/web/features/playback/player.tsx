@@ -33,6 +33,7 @@ import { attachPlayback, type PlaybackAdapter, type PlayerMediaState } from "./a
 import {
   createPlaybackExperience,
   failureMessage,
+  playbackTelemetryPolicy,
   type PlaybackExperience,
   type PlayerFailure,
 } from "./experience";
@@ -247,6 +248,7 @@ function Controls({
 
 function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerClient }) {
   const inFlight = useRef(false);
+  const experienceRef = useRef<PlaybackExperience | null>(null);
   const [createSession, { data, loading, reset }] = useMutation(START_PLAYBACK, {
     client: runtime.client,
     fetchPolicy: "no-cache",
@@ -262,6 +264,13 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
       setFailure(value);
     }
   }, []);
+  useEffect(
+    () => () => {
+      experienceRef.current?.dispose();
+      experienceRef.current = null;
+    },
+    [],
+  );
   const begin = async () => {
     if (inFlight.current) {
       return;
@@ -271,22 +280,32 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
     setFailure(null);
     setCaptionWarning(false);
     setReport(null);
+    experienceRef.current?.dispose();
     const measurement = createPlaybackExperience();
+    experienceRef.current = measurement;
     const started = performance.now();
     setExperience(measurement);
     try {
       const result = await createSession({ variables: { titleId } });
-      const completed = result.data?.createPlaybackSession.code === "COMPLETED";
+      const resultCode = result.data?.createPlaybackSession.code;
+      const completed = resultCode === "COMPLETED";
+      const error: PlayerFailure | undefined = completed
+        ? undefined
+        : resultCode === "NOT_PLAYABLE"
+          ? "not-playable"
+          : "session";
       measurement.record(completed ? "session_success" : "session_failure", {
         durationMs: performance.now() - started,
+        ...(error ? { error } : {}),
       });
       if (!completed) {
-        setFailure(
-          result.data?.createPlaybackSession.code === "NOT_PLAYABLE" ? "not-playable" : "session",
-        );
+        setFailure(error ?? "session");
       }
     } catch {
-      measurement.record("session_failure", { durationMs: performance.now() - started });
+      measurement.record("session_failure", {
+        durationMs: performance.now() - started,
+        error: "session",
+      });
       setFailure("session");
     } finally {
       inFlight.current = false;
@@ -334,14 +353,25 @@ function SessionPlayer({ titleId, runtime }: { titleId: string; runtime: PlayerC
           <button
             className={buttonVariants({ variant: "outline" })}
             onClick={() => {
-              setReport(JSON.stringify(experience.snapshot(), null, 2));
+              setReport(
+                JSON.stringify(
+                  {
+                    policy: playbackTelemetryPolicy,
+                    summary: experience.summary(),
+                    events: experience.snapshot(),
+                  },
+                  null,
+                  2,
+                ),
+              );
             }}
           >
             Show local playback measurements
           </button>
           <p className="text-xs text-muted-foreground">
-            These playback measurements keep up to 64 events in memory only, without identifiers or
-            media URLs. Saved viewing progress is separate and requires a selected profile.
+            Every local attempt keeps up to 64 events until retry or page exit. Nothing is sent or
+            stored, and identifiers and media URLs are excluded. Saved viewing progress is separate
+            and requires a selected profile.
           </p>
           {report !== null ? (
             <pre
@@ -385,7 +415,7 @@ export default function Player({ titleId }: { titleId: string }) {
   return (
     <Provider store={store}>
       {runtime ? (
-        <SessionPlayer titleId={titleId} runtime={runtime} />
+        <SessionPlayer key={titleId} titleId={titleId} runtime={runtime} />
       ) : (
         <p role="status">Preparing player…</p>
       )}

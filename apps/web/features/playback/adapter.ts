@@ -78,6 +78,7 @@ export function attachPlayback(options: {
     clearTimeout(expiryTimer);
     clearTimeout(loadTimer);
     clearTimeout(stallTimer);
+    experience.cancelWaiting();
     if (frameCallback !== undefined) {
       media.cancelVideoFrameCallback(frameCallback);
     }
@@ -194,6 +195,7 @@ export function attachPlayback(options: {
   } else if (!live()) {
     // An expired session never attaches a source, even if a background timer was throttled.
   } else {
+    experience.mediaAttempt();
     expiryTimer = setTimeout(
       () => {
         fail("expired");
@@ -216,8 +218,16 @@ export function attachPlayback(options: {
         return;
       }
       clearTimeout(stallTimer);
+      stallTimer = undefined;
       experience.playing();
     });
+    const cancelPendingRebuffer = () => {
+      clearTimeout(stallTimer);
+      stallTimer = undefined;
+      experience.cancelWaiting();
+    };
+    listen(media, "pause", cancelPendingRebuffer);
+    listen(media, "seeking", cancelPendingRebuffer);
     listen(media, "waiting", () => {
       if (!live() || media.paused || media.seeking) {
         return;
@@ -228,11 +238,10 @@ export function attachPlayback(options: {
         fail("network");
       }, 22000);
     });
-    listen(media, "pause", () => {
-      clearTimeout(stallTimer);
-    });
     listen(media, "ended", () => {
       clearTimeout(stallTimer);
+      stallTimer = undefined;
+      experience.cancelWaiting();
       if (live()) {
         experience.record("completion");
       }

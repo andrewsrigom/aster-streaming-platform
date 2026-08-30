@@ -1,0 +1,68 @@
+# P12-R04/R11 browser playback telemetry
+
+Status: implemented locally; candidate and protected acceptance remain pending.
+
+## Contract
+
+- Local attempt sampling is 100%; remote attempt sampling is 0%.
+- One player attempt retains at most 64 finite events and one bounded summary in
+  JavaScript memory only.
+- Retry and player unmount synchronously erase the recorder; late mutations are
+  ignored.
+- First-frame success requires a decoded-frame callback or the bounded advancing
+  media-time fallback.
+- Rebuffering starts only after first frame, excludes pause/seek and ends on
+  playing or fatal failure.
+- The report contains no account, profile, title, session, request, trace,
+  publication or media identifiers; no URL, token, cookie, manifest, arbitrary
+  label or error message is accepted.
+- No browser exporter, ingestion route, durable storage or server retention is
+  present. This evidence makes no field-SLI or capacity claim.
+
+## Focused verification
+
+With pinned Node.js 24.19.0 and pnpm 11.24.0:
+
+```text
+node --test test/playback-state.test.ts test/playback-adapter.test.ts
+19 tests, 19 pass, 0 fail
+
+pnpm --filter @aster/web test
+116 tests, 116 pass, 0 fail
+
+pnpm --filter @aster/web typecheck
+Next route types generated; TypeScript exited 0
+
+pnpm exec eslint <six changed Web source/test files>
+exit 0
+
+CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
+14 tasks, 14 pass, 1 cached, 48.518 seconds
+```
+
+The tests cover finite sampling constants, first-frame success/failure, one
+completed rebuffer, pause/seek exclusion, fatal rebuffer completion, journal
+overflow, invalid detail/clock behavior, privacy canaries, explicit disposal and
+post-disposal no-op behavior. Session creation failure is explicitly excluded
+from the first-frame population instead of becoming a false media failure.
+
+Documentation validation passes 236 documents, 2911 headings and 1477 links.
+AI-state, architecture, security, formatting, unused-code and production Web
+build/public-artifact checks pass inside the affected gate.
+
+After the final measurement correction, the first candidate repeat stopped at
+the repository's 500-heading documentation ceiling when the new structured
+session entry was added. No source failure was hidden. One oldest formal
+checkpoint remains intact as a plain historical record, reducing parser
+headings without removing evidence. The corrected exact gate passes 14/14 tasks
+with one cached in 48.518 seconds.
+
+One read-only Docker availability query returned no daemon before any project or
+resource was created. The local browser path was not retried and WSL/Docker was
+not restarted; the changed playable-browser proof remains a protected-CI gate.
+
+## Pending candidate evidence
+
+- one playable browser journey proving the changed report/policy and actual
+  decoded frame without another media transcode;
+- initial review, protected CI and exact-main confirmation.

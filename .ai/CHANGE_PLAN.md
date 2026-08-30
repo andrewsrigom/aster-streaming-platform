@@ -1,161 +1,135 @@
-# Work Item: Phase 12 platform and product golden signals
+# Work Item: Phase 12 bounded browser playback telemetry
 
 - Status: IN_PROGRESS
-- Owner: Platform telemetry; PostgreSQL, event-delivery, Playback, Engagement and Catalog own their observations
+- Owner: Web Playback
 - Phase: 12
-- Requirement IDs: P12-R03, P12-R04
+- Requirement IDs: P12-R04, P12-R11
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-Every current Node service exports enough finite, privacy-safe signals to answer
-whether serving, dependencies, runtime resources, database pools, event delivery
-and backend product outcomes are healthy or saturated. Playback-session creation,
-progress acceptance, cache effectiveness, media processing and publication have
-explicit product-result metrics. Browser first-frame and rebuffer observations
-remain local and bounded until their sampling, transport and retention policy is
-owned by the following P12-R11 slice; this item does not silently create a field
-telemetry ingestion service.
+The player produces a deterministic, bounded and privacy-safe local account of
+playback first-frame success and rebuffering. Every local playback attempt is
+measured, observations live only for that player attempt, and retry or unmount
+clears them explicitly. The repository documents that remote browser collection
+is disabled, so no untrusted ingestion endpoint, durable browser record or field
+QoE claim is created implicitly.
 
 ## Current behavior
 
-P12-R01/R02/R08/R09 released through evidence head `9a058ee`, protected run
-`33300561121`, clean confirmation, PR45 squash main `ce66f9c` and successful
-exact-main run `33301425220`.
+P12-R03 and the backend portion of P12-R04 are released through PR46 exact head
+`95e3a73`, protected run `33303267611`, clean confirmation, squash main
+`2245251` and exact-main run `33304196111`.
 
-Source `4a0221e`, tree `ffa3ce8`, now implements the contract below after a
-tree-identical rebase onto that exact main. Local review found that future and
-older-than-seven-day event times were clamped into false edge samples; the
-remediation retains the finite delivery outcome while omitting invalid age and
-assigns explicit operator/projection/consumer pool roles. PR46 initial review
-then found fabricated vendor pool counts, missing outbox age before broker
-connection and product buckets ending at ten seconds. The batched remediation
-rejects malformed pool snapshots, observes a claimed fact before the connection
-gate, extends product buckets through 300 seconds and makes protected CI require
-new Node, pool and product signals from the real Collector. Telemetry 19/19,
-PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7 and
-affected 73/73 gates pass; the final gate reused 28 valid tasks and completed in
-63.79 seconds. Protected run `33302931164` then proved the packaged services
-healthy but exposed that the new diagnostic used Fetch, which did not preserve
-the Router's required Host boundary and received 403 before signal collection.
-The bounded diagnostic now uses `node:http` with the explicit reviewed Host;
-inline syntax, CI policy 33/33 and platform policy 68/68 pass. Application code
-did not change, so the prior affected gate remains applicable. One corrective
-push, protected real-Collector CI and confirmation remain.
-
-The shared telemetry package already exports HTTP request duration/active work,
-dependency duration/active/outcomes, CPU time/utilization, RSS, uptime, Node
-event-loop metrics, V8 heap metrics, cache decisions, operation admission and
-circuit-breaker events. PostgreSQL exposes an in-process bounded pool snapshot,
-broker adapters expose bounded in-flight snapshots, event envelopes contain a
-validated occurrence time, Playback and Engagement return finite owner results,
-the media coordinator already owns its worker dependency span, and the
-publication CLI records bounded structured evidence. The missing contract is a
-complete, named connection from those sources to pool, queue/lag, memory detail
-and product-outcome metrics.
+The Web player already records eight finite event kinds in a maximum 64-entry
+memory journal. The adapter measures the first decoded frame and completed
+rebuffer intervals, and the Docker demo proves a real first frame. The journal
+contains only relative bounded numbers and finite error categories. It has no
+network transport or durable storage. Its retention, sampling and future
+activation rules are not yet a complete policy. Disposal relies on garbage
+collection, there is no aggregate first-frame outcome, and a pause or seek that
+follows `waiting` can currently be counted as rebuffer time.
 
 ## Proposed behavior
 
-Extend `@aster/telemetry` with one finite golden-signal vocabulary and no new
-backend: detailed Node memory gauges; PostgreSQL pool-state gauges; event age,
-delivery outcome and active-work gauges; and backend product outcome/duration
-metrics. Record snapshots at existing adapter and owner completion boundaries.
-Reuse HTTP/dependency active instruments for request and media-worker saturation,
-and reuse the existing cache metrics for effectiveness. Invalid, excessive or
-accessor-backed observations fail closed and cannot alter product behavior.
+Freeze one executable policy: sample every local attempt, keep at most 64 events
+for the current attempt, retain nothing after retry/unmount, and sample zero
+attempts for remote export. Add a finite summary that distinguishes pending,
+successful and failed-before-first-frame attempts and reports bounded rebuffer
+count/duration. Make player disposal erase the journal and aggregate. Cancel a
+pending rebuffer on pause or seek and close it before a fatal failure. Display
+the summary with the existing local diagnostic report.
 
 ## Boundaries
 
-- Owning context: Platform owns the metric contract; each owner classifies its finite product outcome.
-- Affected services/packages: `@aster/telemetry`, `@aster/postgres`, `@aster/event-delivery`, Playback, Engagement, Catalog media execution/publication and current owner compositions.
-- Authoritative data: none; metrics are diagnostic and never authorize or persist product state.
-- Read models/caches: existing cache observations only; no cache behavior changes.
-- Trust boundaries: process/runtime readings, pool/vendor counters, signed event envelopes, GraphQL owner results, media subprocess results and OTLP export.
-- External dependencies: existing OpenTelemetry SDK/Collector and current adapters only.
+- Owning context: Playback owns media behavior; Web Playback owns ephemeral browser observations.
+- Affected services/packages: `apps/web` only, plus Phase12 policy/evidence documents.
+- Authoritative data: Playback session and media state remain authoritative; telemetry authorizes nothing.
+- Read models/caches: none.
+- Trust boundaries: untrusted media/browser events enter a finite local recorder; no browser telemetry crosses the network.
+- External dependencies: existing browser media APIs and HLS.js only.
 
 ## Invariants
 
-- Domain and application layers do not import telemetry SDKs.
-- Metric labels are finite enums and never contain account, profile, title, event, request, trace, publication or media identifiers.
-- Event time is an untrusted numeric observation: invalid, future or excessive age is rejected, not exported as an arbitrary value.
-- Metrics never change an owner result, retry, acknowledgement, readiness or shutdown decision.
-- PostgreSQL and broker snapshots are bounded to configured capacity and expose no endpoint, SQL, group, topic or credential.
-- Browser QoE is not remotely collected before the P12-R11 policy and acceptance gate.
+- No account, profile, title, session, request, trace, URL, manifest or signed-media value enters a sample or summary.
+- Remote sampling remains zero and there is no telemetry transport or persistence.
+- First-frame success requires an actual decoded-frame signal; metadata or session success is insufficient.
+- Waiting before first frame, while paused or while seeking is not rebuffering.
+- All counts, durations, event kinds and error kinds are finite and bounded.
+- Measurement failure or disposal cannot change playback, progress, authorization or readiness.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Runtime or vendor snapshot throws | serving continues with no fabricated sample | one bounded dropped-observation reason |
-| Pool/vendor count is malformed or exceeds policy | reject the whole sample | finite invalid-dimension drop |
-| Event timestamp is invalid, future or outside the retained window | event business handling follows owner rules | no age sample; finite rejection only |
-| Product recorder rejects or throws | preserve the already-decided owner result | finite dropped-observation reason |
-| Exporter is absent, slow or failed | product and lifecycle behavior remain as P12-R09 | existing bounded exporter health |
-| Dependent predecessor changes | stop publication, rebase onto corrected predecessor and repeat affected gates | record superseded source honestly |
+| Unsupported or invalid event detail | playback continues | omit the invalid detail or event |
+| More than 64 valid events | playback continues | keep bounded aggregate and mark the journal truncated |
+| Pause/seek during pending wait | preserve media behavior | cancel the pending rebuffer interval |
+| Fatal error during pending wait | preserve existing failure handling | close bounded rebuffer time, then record finite failure |
+| Retry or route unmount | preserve the new/current attempt only | erase prior journal and aggregate synchronously |
+| Future remote transport is configured accidentally | no export path exists | remote sample rate remains zero |
 
 ## Data and contracts
 
 - Schema/migration: none.
-- GraphQL: no schema or response change.
-- Events: no envelope or delivery-guarantee change; only validated occurrence time is observed.
-- Cache: no key, TTL, authority or degraded-mode change.
-- Compatibility: additive repository telemetry methods and metric names; existing optional recorder seams remain valid.
-- Retention/deletion: no local time-series retention change; browser sampling/retention remains P12-R11.
+- GraphQL: none.
+- Events: none.
+- Cache: none.
+- Compatibility: existing raw local samples remain available under an additive report summary.
+- Retention/deletion: maximum 64 events and aggregates for one live player attempt; explicit erase on retry/unmount; zero server retention.
 
 ## Security and privacy
 
-- Authorization: telemetry never grants authority and records only an outcome after current owner checks.
-- Input limits: finite enums, non-negative safe counts, bounded durations/ages and fixed maximum metric series.
-- Sensitive data: automated canaries reject identifiers, URLs, SQL, GraphQL documents, credentials and vendor errors.
-- Abuse cases: forged event clocks, extreme pool counters, hostile recorder objects, metric-cardinality amplification and exporter backpressure.
+- Authorization: observations never grant or prove access.
+- Input limits: fixed event/error vocabularies, 64 events, 24-hour duration ceiling, 4320-pixel rendition ceiling and bounded integer aggregate.
+- Sensitive data: report shape cannot accept arbitrary keys; tests reject identifiers and URL canaries.
+- Abuse cases: event floods, extreme clocks/durations, duplicate milestones, pause/seek inflation, late callbacks and accidental remote collection.
 
 ## Implementation steps
 
-1. Freeze the metric names, finite dimensions, numeric limits and series budget with contract tests.
-2. Complete Node memory detail and PostgreSQL pool observations without retaining vendor objects after close.
-3. Add bounded event delivery age/outcome/active observations at current relay and consumer boundaries.
-4. Record Playback session, Engagement progress, media processing/publication outcomes and reuse the existing cache contract.
-5. Prove service composition, telemetry failure isolation, cardinality/privacy and Collector export.
-6. Update observability architecture, signal catalog, evidence and repository memory.
+1. Add the executable policy, aggregate result and explicit lifecycle to the playback recorder.
+2. Cancel false rebuffer intervals at adapter pause/seek boundaries and keep fatal intervals finite.
+3. Bind recorder disposal to retry and player unmount; expose the aggregate in the local report.
+4. Add focused state/adapter/browser coverage and privacy/retention canaries.
+5. Publish the sampling, retention, activation and SLI-source policy; capture evidence and update repository memory.
 
 ## Tests
 
-- Domain: unchanged; owner results remain the source classification.
-- Application: product wrappers map every finite result without altering it.
-- Integration: real Collector receives the new finite names from representative Playback/Engagement/Catalog paths.
-- Contract: memory, pool, event and product input validation, finite labels, units and series ceilings.
-- Browser: carry forward local first-frame/rebuffer behavior only when source comparison proves it unchanged; no remote collection claim.
-- Performance/failure: snapshot/recorder exceptions and stopped exporter remain bounded; no capacity claim without a later load experiment.
+- Domain: not applicable; no domain rule changes.
+- Application: recorder outcome, bounds, truncation, disposal and privacy tests.
+- Integration: adapter decoded-frame, pause/seek, rebuffer, fatal and late-callback tests.
+- Contract: executable sampling/retention constants match the documented policy.
+- Browser: existing real playable first-frame journey plus local report shape if source changes require it.
+- Performance/failure: bounded event flood and no post-disposal mutation; no capacity claim.
 
 ## Evidence
 
-- Commands: focused telemetry/PostgreSQL/event/owner suites, representative Collector fixture and complete affected gate.
-- Raw artifact path: `evidence/phase-12/golden-signals.txt`, `product-signals.txt`, `metric-cardinality.txt` and updated index.
-- Acceptance result: every P12-R03 source and backend P12-R04 outcome maps to an implemented finite signal or an explicit next-slice boundary.
-- Iteration gate: focused changed-package build/tests, lint and metric-contract privacy checks.
-- Candidate gate: `pnpm check:changed` plus one disposable Collector representative export and documentation/AI checks.
-- Heavyweight repeat triggers: metric/export composition changes repeat only the representative Collector path; browser/media pipelines repeat only if their source or contract changes.
-- Review stopping rule: one initial review and one confirmation; only requirement, privacy/security, boundedness, availability, evidence-integrity or public-contract blockers extend it.
+- Commands: focused Web tests/typecheck/lint, affected candidate gate and one browser/demo gate only if changed behavior invalidates prior browser evidence.
+- Raw artifact path: `evidence/phase-12/browser-playback-telemetry.txt` and updated Phase12 index.
+- Acceptance result: local attempts yield bounded first-frame/rebuffer outcomes; lifetime and zero remote export are explicit and enforced.
+- Iteration gate: focused playback state/adapter tests plus Web typecheck and lint.
+- Candidate gate: `pnpm check:changed` plus documentation/AI validation.
+- Heavyweight repeat triggers: run the existing playable browser journey only when recorder/report/adapter behavior changes; do not rebuild media because media bytes and pipeline are unchanged.
+- Review stopping rule: one initial review and one confirmation; extend only for requirement, privacy/security, measurement-integrity, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Remove the additive recorders and registrations while retaining P12-R01 traces
-and existing metrics. No database, event, cache, media object or public API needs
-migration. If the predecessor changes, rebase this unpublished branch and rerun
-only gates affected by the changed source.
+Remove the additive summary/policy and lifecycle calls while retaining the
+released local raw journal. No durable state, schema, object or remote telemetry
+must be migrated or deleted.
 
 ## Documentation updates
 
-- Observability architecture and finite signal catalog.
-- Phase 12 evidence index and signal artifacts.
+- Browser playback telemetry policy and Web playback guide.
+- Observability architecture, SLI source boundary and Phase12 evidence index.
 - Repository state, queue, session log and handoff.
 
 ## Completion checklist
 
 - [ ] Requirements satisfied
 - [x] Tests pass
-- [x] Evidence captured
+- [ ] Evidence captured
 - [x] Documentation current
 - [x] `.ai/` state updated
 - [x] Remaining risks recorded

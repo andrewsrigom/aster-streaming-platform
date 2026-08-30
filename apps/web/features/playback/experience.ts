@@ -57,17 +57,56 @@ export interface ExperienceSample {
   error?: PlayerFailure;
 }
 
+const maximumDurationMs = 86_400_000;
+export const playbackTelemetryPolicy = Object.freeze({
+  schemaVersion: 1,
+  localAttemptSampleRate: 1,
+  remoteAttemptSampleRate: 0,
+  maximumEvents: 64,
+  retention: "player_attempt" as const,
+});
+
+export interface PlaybackExperienceSummary {
+  firstFrame: "not_attempted" | "pending" | "succeeded" | "failed";
+  firstFrameDurationMs?: number;
+  failure?: PlayerFailure;
+  rebufferCount: number;
+  rebufferDurationMs: number;
+  eventCount: number;
+  truncated: boolean;
+}
+
 export function createPlaybackExperience(now: () => number = () => performance.now()) {
-  const started = now();
+  const readClock = () => {
+    try {
+      const value = now();
+      return Number.isFinite(value) ? value : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  const started = readClock() ?? 0;
   const samples: ExperienceSample[] = [];
   const once = new Set<ExperienceEvent>();
   let rebufferAt: number | undefined;
-  const elapsed = () => Math.min(86_400_000, Math.max(0, Math.round(now() - started)));
+  let disposed = false;
+  let firstFrame: PlaybackExperienceSummary["firstFrame"] = "not_attempted";
+  let sessionFailed = false;
+  let firstFrameDurationMs: number | undefined;
+  let failure: PlayerFailure | undefined;
+  let rebufferCount = 0;
+  let rebufferDurationMs = 0;
+  let truncated = false;
+  const boundedDuration = (value: number) =>
+    Number.isFinite(value)
+      ? Math.min(maximumDurationMs, Math.max(0, Math.round(value)))
+      : undefined;
+  const elapsed = () => boundedDuration((readClock() ?? started) - started) ?? 0;
   const record = (
     event: ExperienceEvent,
     detail: Omit<ExperienceSample, "event" | "atMs"> = {},
   ) => {
-    if (!experienceEvents.includes(event) || samples.length >= 64) {
+    if (disposed || !experienceEvents.includes(event)) {
       return;
     }
     if (
@@ -83,11 +122,25 @@ export function createPlaybackExperience(now: () => number = () => performance.n
       if (once.has(event)) {
         return;
       }
+      if (event === "first_frame" && firstFrame !== "pending") {
+        return;
+      }
       once.add(event);
     }
+    if (event === "fatal_error" && rebufferAt !== undefined) {
+      const rebufferStarted = rebufferAt;
+      rebufferAt = undefined;
+      const rebufferEnded = readClock();
+      if (rebufferEnded !== undefined && rebufferEnded >= rebufferStarted) {
+        record("rebuffer", { durationMs: rebufferEnded - rebufferStarted });
+      }
+    }
     const sample: ExperienceSample = { event, atMs: elapsed() };
-    if (typeof detail.durationMs === "number" && Number.isFinite(detail.durationMs)) {
-      sample.durationMs = Math.min(86_400_000, Math.max(0, Math.round(detail.durationMs)));
+    if (typeof detail.durationMs === "number") {
+      const durationMs = boundedDuration(detail.durationMs);
+      if (durationMs !== undefined) {
+        sample.durationMs = durationMs;
+      }
     }
     if (
       typeof detail.height === "number" &&
@@ -100,22 +153,89 @@ export function createPlaybackExperience(now: () => number = () => performance.n
     if (detail.error && playerFailures.includes(detail.error)) {
       sample.error = detail.error;
     }
+    if (event === "first_frame" && firstFrame === "pending") {
+      firstFrame = "succeeded";
+      firstFrameDurationMs = sample.durationMs;
+    } else if (event === "session_failure" && firstFrame === "not_attempted") {
+      sessionFailed = true;
+      failure = sample.error ?? "session";
+    } else if (event === "fatal_error" && firstFrame === "pending") {
+      firstFrame = "failed";
+      failure = sample.error ?? "fatal";
+    } else if (event === "rebuffer") {
+      rebufferCount = Math.min(playbackTelemetryPolicy.maximumEvents, rebufferCount + 1);
+      rebufferDurationMs = Math.min(
+        maximumDurationMs,
+        rebufferDurationMs + (sample.durationMs ?? 0),
+      );
+    }
+    if (samples.length >= playbackTelemetryPolicy.maximumEvents) {
+      truncated = true;
+      return;
+    }
     samples.push(Object.freeze(sample));
   };
   return {
     record,
+    mediaAttempt() {
+      if (!disposed && !sessionFailed && firstFrame === "not_attempted") {
+        firstFrame = "pending";
+      }
+    },
     waiting() {
-      if (once.has("first_frame") && rebufferAt === undefined) {
-        rebufferAt = now();
+      if (!disposed && firstFrame === "succeeded" && rebufferAt === undefined) {
+        rebufferAt = readClock();
       }
     },
     playing() {
-      if (rebufferAt !== undefined) {
-        record("rebuffer", { durationMs: now() - rebufferAt });
-        rebufferAt = undefined;
+      const rebufferStarted = rebufferAt;
+      rebufferAt = undefined;
+      const rebufferEnded = readClock();
+      if (
+        !disposed &&
+        rebufferStarted !== undefined &&
+        rebufferEnded !== undefined &&
+        rebufferEnded >= rebufferStarted
+      ) {
+        record("rebuffer", { durationMs: rebufferEnded - rebufferStarted });
       }
     },
+    cancelWaiting() {
+      rebufferAt = undefined;
+    },
     snapshot: () => samples.map((sample) => ({ ...sample })),
+    summary(): PlaybackExperienceSummary {
+      const result: PlaybackExperienceSummary = {
+        firstFrame,
+        rebufferCount,
+        rebufferDurationMs,
+        eventCount: samples.length,
+        truncated,
+      };
+      if (firstFrameDurationMs !== undefined) {
+        result.firstFrameDurationMs = firstFrameDurationMs;
+      }
+      if (failure !== undefined) {
+        result.failure = failure;
+      }
+      return result;
+    },
+    dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      samples.length = 0;
+      once.clear();
+      rebufferAt = undefined;
+      firstFrame = "not_attempted";
+      sessionFailed = false;
+      firstFrameDurationMs = undefined;
+      failure = undefined;
+      rebufferCount = 0;
+      rebufferDurationMs = 0;
+      truncated = false;
+    },
   };
 }
 export type PlaybackExperience = ReturnType<typeof createPlaybackExperience>;

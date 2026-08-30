@@ -1,6 +1,6 @@
 # Playable local demo
 
-The anonymous playable demo is released locally through [Phase 07 acceptance](../../evidence/phase-07/release.md). Personalized player/library integration passes [local browser/Docker acceptance](../../evidence/phase-08/player-demo.md); protected release remains pending. No hosted deployment or cross-device certification is implied.
+The anonymous playable demo is released through [Phase 07 acceptance](../../evidence/phase-07/release.md). Personalized player/library integration is released through [Phase 08 acceptance](../../evidence/phase-08/release.md). No hosted deployment or cross-device certification is implied.
 
 ## Start
 
@@ -30,7 +30,16 @@ Redux stores only bounded local preferences: volume, mute, speed, caption visibi
 
 HLS loads use bounded timeouts, retries, buffers and a stall deadline. Expiry, navigation and fatal failure cancel and dispose the player. A caption failure is reported without stopping otherwise playable video. No automatic fatal-recovery loop is used.
 
-**Show local playback measurements** exposes at most 64 in-memory events. `atMs` is relative to explicit start; first-frame `durationMs` starts when the media adapter attaches. The first decoded frame is measured where supported, with a documented media-event fallback. The report has no title/session identifiers, media URLs, cookies or tokens and is not sent remotely. These local observations are not a production SLO or a host benchmark. Durable progress is separate and requires the opt-in below.
+**Show local playback measurements** exposes a finite summary and at most 64
+in-memory events. `atMs` is relative to explicit start; first-frame `durationMs`
+starts when the media adapter attaches. The first decoded frame is measured
+where supported, with a media-time fallback. Rebuffering begins only after that
+frame; pause and seek cancel a pending interval. Retry or page exit erases the
+attempt. The report has no title/session identifiers, media URLs, cookies or
+tokens and is not sent or stored remotely. These local observations are not a
+production SLO or host benchmark. The complete [sampling, retention and SLI
+boundary](../../docs/operations/PLAYBACK_TELEMETRY.md) is explicit. Durable
+progress is separate and requires the opt-in below.
 
 ## Personalized demo
 

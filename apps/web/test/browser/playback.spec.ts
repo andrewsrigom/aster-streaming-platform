@@ -32,7 +32,11 @@ async function measurements(page: Page) {
   await page.getByRole("button", { name: "Show local playback measurements", exact: true }).click();
   const raw = await page.locator('pre[aria-label="Local playback measurements"]').innerText();
   expect(raw).not.toMatch(/https?:|titleId|sessionId|manifestUrl|token|cookie/u);
-  return JSON.parse(raw) as { event: string; atMs: number; durationMs?: number; height?: number }[];
+  return JSON.parse(raw) as {
+    policy: { localAttemptSampleRate: number; remoteAttemptSampleRate: number };
+    summary: { firstFrame: string; rebufferCount: number; rebufferDurationMs: number };
+    events: { event: string; atMs: number; durationMs?: number; height?: number }[];
+  };
 }
 async function jsonEvidence(info: TestInfo, name: string, value: unknown) {
   await info.attach(name, {
@@ -129,14 +133,22 @@ test("watch metadata is SSR-only until explicit session creation; real media byp
   await page.getByRole("button", { name: "Start playback", exact: true }).press("Enter");
   await expect.poll(async () => (await mediaState(page)).time).toBeGreaterThan(0);
   await expect
-    .poll(async () => (await measurements(page)).some(({ event }) => event === "first_frame"))
+    .poll(async () =>
+      (await measurements(page)).events.some(({ event }) => event === "first_frame"),
+    )
     .toBe(true);
   expect(operations).toEqual(["StartPlayback"]);
   expect(requests.some(({ kind }) => kind === "segment")).toBe(true);
   expect(requests.every(({ origin }) => origin === "http://127.0.0.1:9001")).toBe(true);
   expect(errors).toEqual([]);
+  const report = await measurements(page);
+  expect(report.policy).toMatchObject({
+    localAttemptSampleRate: 1,
+    remoteAttemptSampleRate: 0,
+  });
+  expect(report.summary.firstFrame).toBe("succeeded");
   await jsonEvidence(info, "direct-media-waterfall", requests);
-  await jsonEvidence(info, "playback-experience", await measurements(page));
+  await jsonEvidence(info, "playback-experience", report);
   await page.screenshot({ path: info.outputPath("player.png"), fullPage: true });
 });
 
