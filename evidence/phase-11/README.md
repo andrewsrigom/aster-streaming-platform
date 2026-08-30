@@ -5,7 +5,9 @@ head `6d709b4`, protected run `33284610557`, squash main `ebdcb18` and successfu
 exact-main run `33285339274`. Phase 11 as a whole remains in progress. P11-R05
 passed confirmation and protected run `33289750207`, then PR42 squash-merged as
 main `59600ae` with the reviewed tree; exact-main run `33290477608` passed every
-required job. P11-R08/R09 is implemented locally on that exact base.
+required job. P11-R08/R09 is corrected locally at source `896a3df` after one
+initial review cleanup finding; confirmation, protected exact-head CI and release
+remain.
 
 ## Current work item
 

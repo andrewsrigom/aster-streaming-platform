@@ -216,10 +216,14 @@ construction-time HTTP scenario binds only IPv4 loopback and covers latency,
 timeout, reset, selected error, malformed response, partial stream and finite
 saturation. A second adapter delivers the same synthetic event exactly twice.
 Production activation, request-controlled selection, remote binding and
-production-source imports are structurally refused. Focused tests pass10/10;
+production-source imports are structurally refused. Initial focused tests passed10/10;
 the corrected affected candidate passes11/11 tasks in2m14.356s after removing
-unused public surface rejected by the first gate. Exact source `53bb71b` has
-tree `750e003`; review and publication remain.
+unused public surface rejected by the first gate. Initial PR43 review discussion
+`3888409705` found that `close()` could race pending `listen()` and leave a
+listener alive. Corrected source `896a3df` shares one complete close promise,
+waits for pending bind and rejects startup closed during that interval. Focused
+tests pass11/11 and the corrected affected gate passes11/11 in49.422s.
+Confirmation, protected exact-head CI and publication remain.
 
 ## Historical Phase 09 corrections
 

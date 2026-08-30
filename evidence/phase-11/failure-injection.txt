@@ -1,7 +1,7 @@
 # P11-R08/R09 private controlled failure injection
 
-Status: implemented local candidate; complete affected gate, review, protected CI
-and release pending.
+Status: corrected local candidate; confirmation, protected exact-head CI and
+release pending.
 
 ## Exact environment
 
@@ -12,9 +12,11 @@ and release pending.
 - Host: WSL Ubuntu-20.04 using ephemeral IPv4 loopback sockets
 - Docker, PostgreSQL, Redis, broker, object storage and retained media: not used
   or changed by this tools-only experiment
-- Exact source commit: `53bb71b0c4579d55e2c446a290577f7e8df8e048`
-- Exact source tree: `750e0032d29163fe0a38436129e81c0e39c40ef4`
-- Complete affected gate: 11/11 tasks, 2m14.356s
+- Initial source commit: `53bb71b0c4579d55e2c446a290577f7e8df8e048`
+- Initial source tree: `750e0032d29163fe0a38436129e81c0e39c40ef4`
+- Corrected source commit: `896a3df02a60faeddeb6a6dffc3b2dc7a3714381`
+- Corrected source tree: `9584024a7e96335a3d95da64e3babdc67efca0c2`
+- Corrected complete affected gate: 11/11 tasks, one cached, 49.422s
 
 ## Implemented boundary
 
@@ -49,7 +51,7 @@ Command:
 
 `pnpm failure-lab:test`
 
-Result: 10/10 pass in 728.174 ms after correcting the initial test harness's
+Initial result: 10/10 pass in 728.174 ms after correcting the test harness's
 directory read. The first attempt passed all nine behavior tests but the
 structural scan tried to read a matched directory and failed with `EISDIR`.
 The harness now checks that each glob result is a file before reading; product
@@ -74,6 +76,18 @@ Verified scenarios:
 - production source trees contain no import or identifier reference to the
   tools-only laboratory.
 
+Initial PR43 review discussion `3888409705` reproduced one cleanup race:
+`start()` marked startup pending before `listen()` completed, while an immediate
+`close()` saw no active listener, marked the adapter closed and returned. The
+later bind then stayed live because every subsequent close was a no-op.
+
+Corrected source `896a3df` creates one shared close promise, waits for a pending
+bind to settle, closes all accepted sockets and the listener exactly once, and
+makes a start closed during that interval reject with the finite state error.
+The regression runs this exact ordering in a bounded child process so a future
+leaked listener fails instead of hanging the main test runner. Focused tests now
+pass11/11 in726.650ms; TypeScript, focused ESLint and formatting pass.
+
 Additional focused checks:
 
 - root TypeScript: pass;
@@ -93,6 +107,11 @@ The exact source commit then passed the staged secret and formatting hooks. The
 first commit invocation had no pinned Node.js on the hook path and wrote no
 commit; repeating it with the documented pinned path created the exact source
 above without changing the index.
+
+After the review remediation, `pnpm check:changed` passed all 11 affected root
+tasks with one cached in49.422s. No service composition, production import,
+public route, dependency or persistent state changed, so no Docker/media/database
+experiment was invalidated.
 
 ## Interpretation and limits
 

@@ -26,6 +26,12 @@ Append new entries at the top. Keep entries factual and concise.
 - Exact source `53bb71b` has tree `750e003`. Its staged secret and formatting
   hooks passed after the commit command was repeated with the documented pinned
   Node.js path; the first path-only attempt wrote no commit.
+- Initial PR43 review discussion `3888409705` reproduced a startup/close race
+  that could leave a listener alive. Corrected source `896a3df`, tree `9584024`,
+  shares one complete close promise and waits for pending bind before cleanup.
+  A bounded child-process regression proves the racing start rejects and no
+  listener remains. Focused tests pass11/11; the corrected affected gate passes
+  11/11 tasks, one cached, in49.422s.
 
 ### Evidence
 
@@ -37,8 +43,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit the implementation and evidence checkpoint, publish one coherent PR and
-run the recorded review/protected-release cycle before Phase11 game days.
+Commit/push the PR43 remediation evidence once, resolve the initial discussion,
+request one confirmation and complete protected release before Phase11 game days.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

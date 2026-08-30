@@ -109,7 +109,7 @@ before starting. No service, worker, router or web application imports the tool.
 
 - Commands: focused Node test, root typecheck/lint/format, then `pnpm check:changed`.
 - Raw artifact path: `evidence/phase-11/failure-injection.txt` and updated Phase 11 index.
-- Acceptance result: source `53bb71b`, tree `750e003`, scenario matrix,
+- Acceptance result: corrected source `896a3df`, tree `9584024`, scenario matrix,
   observed wire/delivery outcomes and structural production isolation.
 - Iteration gate: the new focused test plus TypeScript, ESLint and formatting on changed files.
 - Candidate gate: complete affected-scope gate and repository-memory validators.
