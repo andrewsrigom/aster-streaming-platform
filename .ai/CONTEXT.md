@@ -59,10 +59,11 @@ Active phase: **Phase 11 — Resilience and Failure Laboratory**. Phase10 closed
 through PR40 exact `6d74873`, protected run33281516077, resolved exact-head
 review, squash main `eed8229` and exact-main run33282217705. P11-R01 is released
 as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is released as main
-`59600ae`; exact-main run33290477608 passed. P11-R08 is frozen on PR43 at
-corrected evidence head `371ba55`; confirmation is clean and exact-head protected
-run33291705269 is running. P11-R10 is active on `feat/p11-game-days`, rebased
-exactly onto that head. Its five game days, finite-capacity,
+`59600ae`; exact-main run33290477608 passed. P11-R08/R09 is released through
+evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
+squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 is
+active on `feat/p11-game-days`, rebased onto that tree-identical merge. Its five
+game days, finite-capacity,
 fallback/no-amplification evidence and runbooks are implemented locally; the
 candidate/protected closeout remains.
 

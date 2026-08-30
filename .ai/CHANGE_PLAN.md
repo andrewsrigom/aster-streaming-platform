@@ -18,13 +18,12 @@ control becomes a product route or production switch.
 
 ## Current behavior
 
-P11-R01 and P11-R05 are released. P11-R08/R09 is frozen at corrected evidence
-head `371ba55eb7269520b72f41fd813a95aaeab819eb` on PR43. Initial review found a
-startup/close race; source `896a3df` corrected it, focused tests pass 11/11 and
-the affected candidate gate passes 11/11. The discussion is resolved, exact-head
-protected run `33291705269` and the single confirmation review are running. The
-item provides private deterministic failure mechanics and is the one allowed
-`WAITING_EXTERNAL` predecessor.
+P11-R01, P11-R05 and P11-R08/R09 are released. PR43 evidence head
+`371ba55eb7269520b72f41fd813a95aaeab819eb` passed its clean confirmation and
+protected run `33291705269`, then squash-merged as main `bdbe2e0`; the reviewed
+tree is unchanged and exact-main run `33292389504` passed every required job.
+Its initial startup/close race remains recorded with the correction and 11/11
+affected candidate gate.
 
 Existing current production behavior already has finite request, search,
 owner-read, event-consumer, database-pool and media-processing capacity. Earlier
@@ -142,5 +141,6 @@ invalidated scenario.
 - [x] Five game days pass with cleanup
 - [x] Fallback, saturation and retry-amplification evidence captured
 - [x] Runbooks complete and linked
-- [ ] Candidate and protected gates pass
+- [x] Local candidate gate passes
+- [ ] Protected closeout gate passes
 - [ ] Phase 11 release and Phase 12 prerequisites recorded

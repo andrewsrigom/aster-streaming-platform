@@ -62,8 +62,8 @@ publication, Discovery snapshot and Discovery export safe reads.
 |---|---|---|---|---|---|
 | PostgreSQL read | bounded query and request budget | only selected transient connection failures | generally pool/instance level alert, not business fallback | pool size and query concurrency | cache or error depending on path |
 | PostgreSQL write | bounded | only when transaction outcome is known or idempotent | no blind retry loop | pool | error |
-| Redis read | short | at most one transient reconnect-aware retry | per capability | client pool and call concurrency | source read or stale |
-| Subgraph call | less than upstream budget | safe queries only | per dependency/operation | router traffic shaping | partial/fallback where schema allows |
+| Redis read | short | one command; reconnect never replays an ambiguous command | per capability | client pool and call concurrency | source read or stale |
+| Subgraph call | less than upstream budget | none at Web/Router; only a purpose-separated service owner may retry its selected safe Catalog read | per dependency/operation | router traffic shaping | partial/fallback where schema allows |
 | Object metadata | bounded | idempotent reads | per storage operation | concurrency limit | reject playback if publication cannot be trusted |
 | Media download | long task deadline plus progress timeout | range-resumable and bounded | source-host scoped | worker queue | failed attempt |
 | FFmpeg | recipe-specific hard deadline | only classified failures | not applicable | worker slots | failed attempt |

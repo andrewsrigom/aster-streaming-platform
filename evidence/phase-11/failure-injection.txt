@@ -1,7 +1,6 @@
 # P11-R08/R09 private controlled failure injection
 
-Status: corrected candidate; exact-head confirmation clean, protected CI and
-release pending.
+Status: released through protected and exact-main CI
 
 ## Exact environment
 
@@ -17,6 +16,10 @@ release pending.
 - Corrected source commit: `896a3df02a60faeddeb6a6dffc3b2dc7a3714381`
 - Corrected source tree: `9584024a7e96335a3d95da64e3babdc67efca0c2`
 - Corrected complete affected gate: 11/11 tasks, one cached, 49.422s
+- Evidence head: 371ba55eb7269520b72f41fd813a95aaeab819eb
+- Protected run: 33291705269, all required jobs successful
+- Squash main: bdbe2e0481ebb36c6d9be65502ecf8673bc7514e
+- Exact-main run: 33292389504, all required jobs successful
 
 ## Implemented boundary
 
@@ -112,6 +115,14 @@ After the review remediation, `pnpm check:changed` passed all 11 affected root
 tasks with one cached in49.422s. No service composition, production import,
 public route, dependency or persistent state changed, so no Docker/media/database
 experiment was invalidated.
+
+The resolved discussion received one clean exact-head confirmation. Protected
+run `33291705269` passed every required job at evidence head `371ba55`. PR43 then
+squash-merged without bypass as `bdbe2e0`; its tree
+`172cdff752d8fae3f25608e10128905778d8e8ba` equals the reviewed tree. Exact-main
+run `33292389504` passed documentation/security, source quality, the local
+platform, every disposable owner/runtime proof and the Docker-only playable
+demo.
 
 The initial discussion is resolved and the single confirmation at exact evidence
 head `371ba55eb7269520b72f41fd813a95aaeab819eb` reports no remaining major issue.

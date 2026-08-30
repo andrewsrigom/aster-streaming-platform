@@ -33,17 +33,21 @@ Append new entries at the top. Keep entries factual and concise.
   listener remains. Focused tests pass11/11; the corrected affected gate passes
   11/11 tasks, one cached, in49.422s.
 - Rebased the one permitted dependent `feat/p11-game-days` onto corrected PR43
-  head `371ba55`. The initial discussion is resolved, confirmation is clean and
-  protected run `33291705269` remains the predecessor release gate.
-- Added Web one-Router-attempt and Router no-retry-policy regressions. Exact
-  source `3f5ff6a`, tree `27cb3ba`, passes 16/16 focused tests plus static checks.
+  head `371ba55`. The initial discussion was resolved; confirmation and protected
+  run `33291705269` passed. PR43 squash-merged as tree-identical main `bdbe2e0`,
+  and exact-main run `33292389504` passed every required job.
+- Added Web one-Router-attempt and Router no-retry-policy regressions. Rebased
+  source `2b72467`, tree `27cb3ba`, passes 16/16 focused tests plus static checks.
 - Current focused resilience tests pass 68/68; PostgreSQL finite-pool/
   transaction tests pass 28/28. Reconciled protected run `33290477608` with the
   unchanged product runtime for Redis, Discovery, broker and media failures.
 - Recorded five bounded game days, finite admission, the 1 x 1 x at-most-2
   retry matrix and complete Redis/Discovery/PostgreSQL/broker/media runbooks.
-- The affected candidate passes 17/17 tasks, two cached, in 56.616 seconds;
-  Web112/112 and platform67/67 include the new enforcement.
+- The initial affected candidate passes 17/17 tasks in 56.616 seconds. Local
+  review then scoped the Router guard to traffic shaping, avoiding interference
+  with unrelated future telemetry policy. Corrected source `60ca6f1`, tree
+  `5ef4360`, passes 17/17 with five cached in 52.224 seconds; Web112/112 and
+  platform67/67 include the enforcement.
 
 ### Evidence
 
@@ -57,8 +61,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Pass the P11-R10 affected candidate gate, release PR43 first, then publish the
-rebased closeout through review, protected CI and exact-main verification.
+Publish the rebased P11-R10 closeout through review, protected CI and exact-main
+verification, then close Phase11 and activate Phase12.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

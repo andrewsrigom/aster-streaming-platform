@@ -1,32 +1,33 @@
 # Phase 11 resilience game days
 
-Date: 2026-08-30  
+Date: 2026-08-30
+
 Status: candidate evidence; protected closeout release pending
 
 ## Source and applicability
 
-- Product-runtime source: main `59600aea669d34ec727c1f243d162608261295aa`.
-- Complete protected exact-main run:
-  [33290477608](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33290477608),
+- Released product-runtime base: main
+  `59600aea669d34ec727c1f243d162608261295aa`.
+- Exact protected failure-lab/game-day runtime head:
+  `371ba55eb7269520b72f41fd813a95aaeab819eb`.
+- Protected run:
+  [33291705269](https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33291705269),
   all required jobs successful.
-- Frozen failure-lab predecessor: `371ba55eb7269520b72f41fd813a95aaeab819eb`.
-- Current game-day source: `3f5ff6a9e91c256053b9fd957486c7450cb07f0b`,
-  tree `27cb3ba5e2ac4a60805ebe6afb5b736448f026a7`.
+- Current executable/test source: `60ca6f1797a1be38553e11408e2c6240dc8c3926`,
+  tree `5ef4360ec910596dffe1ebc8a9b8ca343ce240df`.
 
-The diff from `59600ae` to `371ba55` contains repository memory, resilience
-documentation/evidence, one package script and `tools/failure-lab*`; it changes
-no app, service, worker, package runtime or Compose source. The diff from
-`371ba55` to `3f5ff6a` adds repository memory, a Web test and the Router source
-verifier/test; it also changes no product runtime. The hosted runtime events at
-`59600ae` therefore execute the exact current product behavior. Current-source
-focused checks below cover the added contracts.
+The protected runtime executes exact predecessor `371ba55`, including every
+named owner harness. The later game-day diff adds repository memory/evidence,
+operator documentation, a Web test and the Router source verifier/test; it
+changes no app, service, worker, package runtime or Compose source. Current local
+focused checks cover those added contracts.
 
 Environment for hosted scenarios: ephemeral GitHub Actions Ubuntu runner,
 UUID-scoped Compose projects, pinned repository images/dependencies and exact
 project cleanup. Local focused scenarios use WSL Ubuntu-20.04, Node.js 24.19.0
 and pnpm 11.24.0 without Docker or retained state.
 
-The complete affected candidate passes 17/17 tasks, 2 cached, in 56.616 seconds.
+The corrected affected candidate passes 17/17 tasks, 5 cached, in 52.224 seconds.
 It includes Web112/112, platform67/67, all repository documentation/memory,
 strict static checks and the scoped failure-lab/toolchain tests.
 
@@ -35,18 +36,18 @@ strict static checks and the scoped failure-lab/toolchain tests.
 Trigger: stop the disposable Discovery service after federated home/search are
 healthy.
 
-Timeline from protected run `33290477608`, source-quality job `99201128434`:
+Timeline from protected run `33291705269`, source-quality job `99204404114`:
 
-1. `03:45:20Z`: public home is already available while its optional Redis is
+1. `04:19:10Z`: public home is already available while its optional Redis is
    absent.
-2. `03:45:25Z`: Discovery is unavailable; Router remains ready and Catalog
+2. `04:19:15Z`: Discovery is unavailable; Router remains ready and Catalog
    browse returns successfully.
 3. Public Web/browser behavior is the explicit degraded/fallback result; focused
    home tests prove fallback applies only to empty/unavailable outcomes and
    cannot hide cancelled or indeterminate primary results.
-4. `03:45:54Z`: Discovery restarts; the projection generation is preserved and
+4. `04:19:44Z`: Discovery restarts; the projection generation is preserved and
    search recovers.
-5. `03:45:56Z`: exact fixture cleanup reports `remaining: 0`.
+5. `04:19:46Z`: exact fixture cleanup reports `remaining: 0` after 117723 ms.
 
 User impact: home/search degrade; Catalog browse and Playback authority remain
 available. Detection, mitigation, recovery and verification are in the
@@ -57,7 +58,7 @@ available. Detection, mitigation, recovery and verification are in the
 Trigger: start Discovery configured for its optional cache without starting the
 disposable Redis service.
 
-Observed protected result at `03:45:20Z`:
+Observed protected result at `04:19:10Z`:
 
 ```json
 {"event":"discovery_cache_outage_runtime","redisStarted":false,"discoveryHealthy":true,"publicHomeServed":true}
@@ -80,18 +81,18 @@ data, never fabricated durable state. Procedure:
 Trigger: after owner backlogs/consumers are healthy, stop the disposable broker,
 commit a real progress write, then restart the same broker.
 
-Timeline from protected run `33290477608`:
+Timeline from protected run `33291705269`:
 
-1. `03:43:39Z`: quarantine is durable, offsets are committed through the end and
+1. `04:17:28Z`: quarantine is durable, offsets are committed through the end and
    lag is zero.
-2. `03:43:41Z`: broker is stopped. Progress still commits, anonymous Playback
+2. `04:17:29Z`: broker is stopped. Progress still commits, anonymous Playback
    remains available and the pending fact is retained.
-3. `03:43:54Z`: broker returns. Pending facts drain to zero, durable progress is
+3. `04:17:42Z`: broker returns. Pending facts drain to zero, durable progress is
    unchanged, background delivery completes and signed deletion consumption
    recovers.
 4. Earlier in the same runtime the same record is delivered twice with one
    durable effect.
-5. `03:43:57Z`: exact fixture cleanup reports `remaining: 0` and the retained
+5. `04:17:45Z`: exact fixture cleanup reports `remaining: 0` and the retained
    runtime was not touched.
 
 Procedure:
@@ -129,8 +130,7 @@ Observed result:
 - Local current-source process-tree test passes in 2029.140597 ms. The parent
   and child are terminated as one process group; exact temporary state is
   removed in `finally`.
-- The same protected test passes at current product runtime source in
-  2060.614353 ms.
+- The same exact-head protected test passes in 2082.534791 ms.
 - Current focused Catalog execution proves rights revocation cancels a pending
   download and retains failure audit. The protected source suite also proves
   processing cancellation retains its classified audit, corrupt reuse does not
