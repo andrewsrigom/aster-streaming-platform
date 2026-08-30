@@ -37,20 +37,18 @@ process.once("SIGTERM", stop);
 process.once("SIGINT", stop);
 const now = () => Math.floor(Date.now() / 1000);
 const correlationId = randomUUID();
-const traceId = randomUUID().replaceAll("-", "");
-const spanId = randomUUID().replaceAll("-", "").slice(0, 16);
-const logger = createAsterLogger({
-  service: "catalog-acquisition",
-  environment: "local",
-  version: "0.0.0",
-  destination: process.stderr,
-  traceContextProvider: () => ({ traceId, spanId, traceFlags: 0 }),
-});
 const telemetry = createAsterTelemetry({
   serviceName: "catalog-acquisition",
   serviceVersion: "0.0.0",
   environment: "local",
   export: { mode: "none" },
+});
+const logger = createAsterLogger({
+  service: "catalog-acquisition",
+  environment: "local",
+  version: "0.0.0",
+  destination: process.stderr,
+  traceContextProvider: () => telemetry.activeTraceContext(),
 });
 let database: AsterPostgresAdapter | undefined;
 let storage: AsterObjectStorageAdapter | undefined;
@@ -150,6 +148,7 @@ try {
         }),
         acquisitions,
         storage,
+        telemetry,
         ...(selector ? { selector } : {}),
         onReady: () =>
           process.stdout.write(

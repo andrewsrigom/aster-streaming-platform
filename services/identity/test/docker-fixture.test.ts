@@ -116,6 +116,11 @@ function dockerModel(profile: FixtureProfile = "core") {
       };
       return result("");
     }
+    if (args[0] === "logs") {
+      assert.deepEqual(args.slice(0, 3), ["logs", "--tail", "512"]);
+      assert.ok(resources["container"]?.some((item) => item["Id"] === args[3]));
+      return result("Name: aster.http.server https://private.example/path aster-test-only");
+    }
     const kind = args[0];
     assert.ok(kind === "container" || kind === "network" || kind === "volume");
     const owned = resources[kind] ?? [];
@@ -256,6 +261,12 @@ test("telemetry fixture allows only exact read-only config mounts and its two vo
   await model.fixture.start();
   assert.equal(model.fixture.hasService("collector"), true);
   assert.equal(model.fixture.hasService("broker"), false);
+  assert.equal(
+    await model.fixture.logs("collector"),
+    "Name: aster.http.server [fixture endpoint] [fixture credential]",
+  );
+  await assert.rejects(model.fixture.logs("collector", 0), /bounded range/);
+  await assert.rejects(model.fixture.logs("broker"), /outside this fixture profile/);
   const collector = model.resources()["container"]?.[2];
   assert.ok(collector);
   const mounts = collector["Mounts"] as Record<string, unknown>[];

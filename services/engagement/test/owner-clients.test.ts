@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { once } from "node:events";
 import { createServer, request, type IncomingMessage, type ServerResponse } from "node:http";
 import test from "node:test";
+import { createAsterTelemetry } from "@aster/telemetry";
 import { createProgressOwnerClients } from "../src/infrastructure/owner-clients.js";
 
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
@@ -40,7 +41,10 @@ const catalog = {
     { titleId: id(6), visible: false },
   ],
 };
-async function fixture(respond: (incoming: IncomingMessage, response: ServerResponse) => void) {
+async function fixture(
+  respond: (incoming: IncomingMessage, response: ServerResponse) => void,
+  options: Partial<Pick<Parameters<typeof createProgressOwnerClients>[0], "telemetry">> = {},
+) {
   const server = createServer(respond);
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -62,6 +66,7 @@ async function fixture(respond: (incoming: IncomingMessage, response: ServerResp
       );
       return request({ ...options, hostname: "127.0.0.1", port: address.port }, callback);
     },
+    ...options,
   });
   return {
     clients,
@@ -80,6 +85,56 @@ async function fixture(respond: (incoming: IncomingMessage, response: ServerResp
     },
   };
 }
+
+test("owner reads propagate a child dependency context from the active server span", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "engagement-owner-client-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+    maxActiveSpans: 4,
+  });
+  let propagatedTraceparent: string | undefined;
+  const f = await fixture(
+    (incoming, response) => {
+      const header = incoming.headers["traceparent"];
+      propagatedTraceparent = Array.isArray(header) ? header[0] : header;
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ data: { _engagementProfile: identity } }));
+    },
+    { telemetry },
+  );
+  const server = telemetry.startHttpRequest({
+    method: "POST",
+    route: "/graphql",
+    traceparent: context().traceparent,
+  });
+  assert.equal(server.status, "started");
+  assert.ok(server.observation.run);
+  assert.ok(server.observation.traceContext);
+  const serverContext = server.observation.traceContext();
+  try {
+    const operation = server.observation.run(() =>
+      f.clients.identity.authorizeProfile(token, id(3), context()),
+    );
+    assert.equal((await operation).status, "completed");
+    assert.match(propagatedTraceparent ?? "", /^00-[a-f0-9]{32}-[a-f0-9]{16}-01$/u);
+    assert.notEqual(propagatedTraceparent, serverContext.traceparent);
+    assert.equal(propagatedTraceparent?.slice(3, 35), serverContext.traceId);
+    server.observation.complete({ outcome: "success", statusCode: 200 });
+
+    const traces = await telemetry.collectTraces();
+    assert.equal(traces.status, "collected");
+    const parent = traces.traces.find((span) => span.kind === "server");
+    const child = traces.traces.find((span) => span.kind === "client");
+    assert.ok(parent && child);
+    assert.equal(child.parentSpanId, parent.spanId);
+    assert.equal(child.traceId, parent.traceId);
+    assert.equal(child.attributes["aster.dependency"], "identity");
+  } finally {
+    await f.close();
+    await telemetry.shutdown();
+  }
+});
 
 test("owner clients send separate fixed operations; only Identity receives the browser credential", async () => {
   const f = await fixture((incoming, response) => {

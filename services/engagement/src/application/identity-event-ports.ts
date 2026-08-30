@@ -14,6 +14,7 @@ export interface IdentityFact {
   readonly occurredAt: number;
   readonly deleted: boolean;
   readonly correlationId: string;
+  readonly traceparent?: string;
 }
 type IdentityPoisonReason = "signature" | "envelope" | "identity_conflict";
 export type IdentityEventInspection =

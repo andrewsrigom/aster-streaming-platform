@@ -1,4 +1,9 @@
 import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
+import type {
+  AsterDependencyObservation,
+  AsterObservationOutcome,
+  AsterTelemetry,
+} from "@aster/telemetry";
 import type { createCatalogAcquisitions } from "../../application/acquire-media.js";
 import type { createCatalogProcessing } from "../../application/process-media.js";
 import type { CatalogCommandRequest } from "../../application/operator-ports.js";
@@ -18,6 +23,7 @@ export async function runMediaProcessing(
     storage: Pick<AsterObjectStorageAdapter, "read" | "write">;
     selector?: CandidateSelector;
     onReady: () => void;
+    telemetry?: Pick<AsterTelemetry, "startDependencyOperation">;
   }>,
 ): Promise<CatalogStoreResult<Readonly<{ attempt: ProcessingAttempt; reused: boolean }>>> {
   const claimed = await ports.processing.claim(acquisitionId, request);
@@ -34,6 +40,16 @@ export async function runMediaProcessing(
     : {
         original: () => ports.processing.check(attempt.id, request),
       };
+  let observation: AsterDependencyObservation | undefined;
+  try {
+    const started = ports.telemetry?.startDependencyOperation({
+      dependency: "media_worker",
+      operation: "process",
+    });
+    observation = started?.status === "started" ? started.observation : undefined;
+  } catch {
+    // Optional telemetry cannot decide media processing.
+  }
   async function failed(failure: ProcessingFailure) {
     if (!reused) {
       // Cancellation still gets one short audit transaction; a dead process is recovered by its lease.
@@ -43,86 +59,118 @@ export async function runMediaProcessing(
       });
     }
   }
-  try {
-    if (
-      ports.selector &&
-      attempt.candidate &&
-      (ports.selector.manifestHash !== attempt.candidate.prefix.split("/")[2] ||
-        ports.selector.reportChecksum !== attempt.candidate.reportChecksum)
-    ) {
-      throw new MediaProcessingError("INVALID_OUTPUT", "Conflicting completed candidate selector");
-    }
-    const selector = attempt.candidate
-      ? {
-          manifestHash: attempt.candidate.prefix.split("/")[2] ?? "",
-          reportChecksum: attempt.candidate.reportChecksum,
+  const processCandidate = async (): Promise<
+    CatalogStoreResult<Readonly<{ attempt: ProcessingAttempt; reused: boolean }>>
+  > => {
+    try {
+      if (
+        ports.selector &&
+        attempt.candidate &&
+        (ports.selector.manifestHash !== attempt.candidate.prefix.split("/")[2] ||
+          ports.selector.reportChecksum !== attempt.candidate.reportChecksum)
+      ) {
+        throw new MediaProcessingError(
+          "INVALID_OUTPUT",
+          "Conflicting completed candidate selector",
+        );
+      }
+      const selector = attempt.candidate
+        ? {
+            manifestHash: attempt.candidate.prefix.split("/")[2] ?? "",
+            reportChecksum: attempt.candidate.reportChecksum,
+          }
+        : ports.selector;
+      let candidate;
+      if (selector) {
+        candidate = await reuseDecoderCandidate(
+          acquisitionId,
+          selector,
+          request,
+          guarded,
+          ports.storage,
+          attempt.recipeVersion,
+        );
+      } else {
+        const ready = await prepareDecoder(
+          acquisitionId,
+          "/decoder-input",
+          request,
+          guarded,
+          ports.storage,
+        );
+        if (ready.status !== "completed") {
+          await failed(
+            ready.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
+          );
+          return ready;
         }
-      : ports.selector;
-    let candidate;
-    if (selector) {
-      candidate = await reuseDecoderCandidate(
-        acquisitionId,
-        selector,
-        request,
-        guarded,
-        ports.storage,
-        attempt.recipeVersion,
-      );
-    } else {
-      const ready = await prepareDecoder(
-        acquisitionId,
-        "/decoder-input",
-        request,
-        guarded,
-        ports.storage,
-      );
-      if (ready.status !== "completed") {
-        await failed(
-          ready.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
+        ports.onReady();
+        const retained = await awaitDecoderCandidate(
+          acquisitionId,
+          request,
+          guarded,
+          ports.storage,
+          attempt.recipeVersion,
         );
-        return ready;
+        if (retained.status !== "completed") {
+          await failed(
+            retained.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
+          );
+          return retained;
+        }
+        candidate = retained.value;
       }
-      ports.onReady();
-      const retained = await awaitDecoderCandidate(
-        acquisitionId,
-        request,
-        guarded,
-        ports.storage,
-        attempt.recipeVersion,
-      );
-      if (retained.status !== "completed") {
+      if (reused) {
+        if (JSON.stringify(candidate) !== JSON.stringify(attempt.candidate)) {
+          throw new MediaProcessingError("INVALID_OUTPUT", "Retained candidate identity changed");
+        }
+        return { status: "completed", value: { attempt, reused: true } };
+      }
+      const completed = await ports.processing.complete(attempt.id, candidate, request);
+      if (completed.status !== "completed") {
         await failed(
-          retained.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
+          completed.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
         );
-        return retained;
+        return completed;
       }
-      candidate = retained.value;
-    }
-    if (reused) {
-      if (JSON.stringify(candidate) !== JSON.stringify(attempt.candidate)) {
-        throw new MediaProcessingError("INVALID_OUTPUT", "Retained candidate identity changed");
-      }
-      return { status: "completed", value: { attempt, reused: true } };
-    }
-    const completed = await ports.processing.complete(attempt.id, candidate, request);
-    if (completed.status !== "completed") {
+      return {
+        status: "completed",
+        value: { attempt: completed.value, reused: selector !== undefined },
+      };
+    } catch (error) {
       await failed(
-        completed.status === "rights_not_approved" ? "RIGHTS_REVOKED" : "CONTROL_UNAVAILABLE",
+        request.signal.aborted
+          ? "CANCELLED"
+          : error instanceof MediaProcessingError
+            ? error.failure
+            : "INTERNAL_FAILURE",
       );
-      return completed;
+      return { status: request.signal.aborted ? "cancelled" : "unavailable" } as const;
     }
-    return {
-      status: "completed",
-      value: { attempt: completed.value, reused: selector !== undefined },
-    };
+  };
+  let result: CatalogStoreResult<Readonly<{ attempt: ProcessingAttempt; reused: boolean }>>;
+  try {
+    result = await (observation?.run ? observation.run(processCandidate) : processCandidate());
   } catch (error) {
-    await failed(
-      request.signal.aborted
-        ? "CANCELLED"
-        : error instanceof MediaProcessingError
-          ? error.failure
-          : "INTERNAL_FAILURE",
-    );
-    return { status: request.signal.aborted ? "cancelled" : "unavailable" };
+    try {
+      observation?.complete({ outcome: "error" });
+    } catch {
+      // Optional telemetry cannot change the thrown storage/audit failure.
+    }
+    throw error;
   }
+  const outcome: AsterObservationOutcome =
+    result.status === "completed"
+      ? "success"
+      : result.status === "cancelled"
+        ? "cancelled"
+        : result.status === "unavailable"
+          ? "unavailable"
+          : "rejected";
+  try {
+    observation?.complete({ outcome });
+  } catch {
+    // Optional telemetry cannot change the durable result.
+  }
+  return result;
 }

@@ -5,6 +5,18 @@ services:
   identity:
     environment:
       ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
+  catalog:
+    environment:
+      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
+  playback:
+    environment:
+      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
+  engagement:
+    environment:
+      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
+  discovery:
+    environment:
+      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics
 
   platform-status:
     depends_on:

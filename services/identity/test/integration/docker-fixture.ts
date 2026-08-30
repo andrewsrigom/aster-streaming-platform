@@ -452,6 +452,18 @@ export class DockerFixture {
     }
   }
 
+  async logs(service: FixtureService, tail = 512): Promise<string> {
+    assert.ok(
+      Number.isSafeInteger(tail) && tail >= 1 && tail <= 2_000,
+      "Fixture log tail is outside the bounded range",
+    );
+    const container = await this.container(service);
+    return safeDiagnostic(
+      await this.docker(["logs", "--tail", String(tail), container.id]),
+      128 * 1_024,
+    );
+  }
+
   async sampleResources(): Promise<ReadonlyArray<Record<string, unknown>>> {
     const samples: Array<Record<string, unknown>> = [];
     const dataPaths: Readonly<Record<FixtureService, string | undefined>> = {

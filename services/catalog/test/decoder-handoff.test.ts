@@ -7,6 +7,7 @@ import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import test from "node:test";
 import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
+import { createAsterTelemetry } from "@aster/telemetry";
 import type { createCatalogAcquisitions } from "../src/application/acquire-media.js";
 import type { createCatalogProcessing } from "../src/application/process-media.js";
 import {
@@ -310,6 +311,12 @@ test("refuses symlinked candidate payload", async () => {
 
 test("adopts an existing candidate and replays without encoding, uploads or filesystem preparation", async () => {
   await fixture(async (f) => {
+    const telemetry = createAsterTelemetry({
+      serviceName: "catalog-media-worker-test",
+      serviceVersion: "1.0.0",
+      environment: "test",
+      maxActiveSpans: 8,
+    });
     const stored = await retainDecoderCandidate(
       id(9),
       f.directory,
@@ -366,6 +373,7 @@ test("adopts an existing candidate and replays without encoding, uploads or file
       processing,
       acquisitions: f.acquisitions,
       storage: f.storage,
+      telemetry,
       onReady: () => {
         throw new Error("Must not start the decoder");
       },
@@ -384,6 +392,19 @@ test("adopts an existing candidate and replays without encoding, uploads or file
     assert.equal(completions, 1);
     assert.equal(f.writes(), writes);
     assert.deepEqual(await readdir(f.root), ["candidate"]);
+    const traces = await telemetry.collectTraces();
+    assert.equal(traces.status, "collected");
+    const workerSpans = traces.traces.filter(
+      (span) => span.attributes["aster.dependency"] === "media_worker",
+    );
+    assert.equal(workerSpans.length, 3);
+    assert.deepEqual(
+      workerSpans.map((span) => span.status),
+      ["ok", "ok", "error"],
+    );
+    assert.ok(workerSpans.every((span) => span.attributes["aster.operation"] === "process"));
+    assert.doesNotMatch(JSON.stringify(workerSpans), new RegExp(id(9), "u"));
+    await telemetry.shutdown();
   });
 });
 test("processing cancellation retains a classified failure with a separate bounded audit signal", async () => {

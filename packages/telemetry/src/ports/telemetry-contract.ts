@@ -27,7 +27,10 @@ export const ASTER_DEPENDENCIES = Object.freeze([
   "redis",
   "broker",
   "object_storage",
+  "identity",
   "catalog",
+  "playback",
+  "media_worker",
   "telemetry",
 ] as const);
 
@@ -43,6 +46,7 @@ export const ASTER_DEPENDENCY_OPERATIONS = Object.freeze([
   "delete",
   "export",
   "flush",
+  "process",
 ] as const);
 
 export const ASTER_OBSERVATION_OUTCOMES = Object.freeze([
@@ -175,12 +179,21 @@ export interface AsterTelemetryOptions {
   readonly monitoringPrecisionMs?: number;
   readonly shutdownTimeoutMs?: number;
   readonly maxActiveObservations?: number;
+  readonly maxActiveSpans?: number;
   readonly cardinalityLimit?: number;
+}
+
+export interface AsterTraceContext {
+  readonly traceId: string;
+  readonly spanId: string;
+  readonly traceFlags: 0 | 1;
+  readonly traceparent: string;
 }
 
 export interface AsterHttpObservationInput {
   readonly method: AsterHttpMethod;
   readonly route: AsterHttpRoute;
+  readonly traceparent?: string;
 }
 
 export interface AsterHttpCompletion {
@@ -191,6 +204,7 @@ export interface AsterHttpCompletion {
 export interface AsterDependencyObservationInput {
   readonly dependency: AsterDependency;
   readonly operation: AsterDependencyOperation;
+  readonly linkedTraceparent?: string;
 }
 
 export interface AsterDependencyCompletion {
@@ -204,10 +218,14 @@ export type AsterObservationCompletionResult =
 
 export interface AsterHttpObservation {
   complete(completion: AsterHttpCompletion): AsterObservationCompletionResult;
+  readonly run?: <T>(operation: () => T) => T;
+  readonly traceContext?: () => AsterTraceContext;
 }
 
 export interface AsterDependencyObservation {
   complete(completion: AsterDependencyCompletion): AsterObservationCompletionResult;
+  readonly run?: <T>(operation: () => T) => T;
+  readonly traceContext?: () => AsterTraceContext;
 }
 
 export type AsterStartHttpObservationResult =
@@ -298,6 +316,27 @@ export interface AsterCollectedMetric {
   readonly points: readonly AsterCollectedMetricPoint[];
 }
 
+export interface AsterCollectedTrace {
+  readonly name: "aster.dependency.operation" | "aster.http.server";
+  readonly kind: "client" | "server";
+  readonly traceId: string;
+  readonly spanId: string;
+  readonly parentSpanId?: string;
+  readonly links?: readonly Readonly<{ traceId: string; spanId: string }>[];
+  readonly traceFlags: 0 | 1;
+  readonly status: "error" | "ok" | "unset";
+  readonly attributes: Readonly<Record<string, string>>;
+}
+
+export type AsterTraceCollectionResult =
+  | Readonly<{
+      status: "collected";
+      traces: readonly AsterCollectedTrace[];
+      droppedSpans: number;
+    }>
+  | Readonly<{ status: "unavailable"; reason: "telemetry_closed" }>
+  | Readonly<{ status: "failed" }>;
+
 export type AsterMetricCollectionResult =
   | Readonly<{ status: "collected"; metrics: readonly AsterCollectedMetric[] }>
   | Readonly<{ status: "unavailable"; reason: "remote_export" | "telemetry_closed" }>
@@ -314,6 +353,8 @@ export interface AsterTelemetry {
   recordOperationLimit?(input: AsterOperationLimitMetricInput): AsterRecordMetricResult;
   recordCircuitBreaker?(input: AsterCircuitBreakerMetricInput): AsterRecordMetricResult;
   collect(): Promise<AsterMetricCollectionResult>;
+  activeTraceContext(): AsterTraceContext | undefined;
+  collectTraces(): Promise<AsterTraceCollectionResult>;
   exportHealth(): AsterTelemetryExportHealth;
   forceFlush(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;
   shutdown(signal?: AbortSignal): Promise<AsterTelemetryOperationResult>;

@@ -25,11 +25,15 @@ function countDataPoints(resourceMetrics: ResourceMetrics): number {
 }
 
 export class HealthTrackingExporter implements PushMetricExporter {
+  private readonly healthTimeoutMs: number;
+
   constructor(
     private readonly delegate: PushMetricExporter,
-    private readonly timeoutMs: number,
+    timeoutMs: number,
     private readonly observer: ExportAttemptObserver,
-  ) {}
+  ) {
+    this.healthTimeoutMs = Math.max(1, timeoutMs - Math.min(10, Math.floor(timeoutMs / 5)));
+  }
 
   export(metrics: ResourceMetrics, resultCallback: ExportResultCallback): void {
     const dropped = countDataPoints(metrics);
@@ -41,7 +45,7 @@ export class HealthTrackingExporter implements PushMetricExporter {
       settled = true;
       this.observer.failure(dropped);
       resultCallback({ code: 1 });
-    }, this.timeoutMs);
+    }, this.healthTimeoutMs);
     timeout.unref();
 
     const complete: ExportResultCallback = (result) => {

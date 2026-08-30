@@ -29,11 +29,15 @@ export function createIdentityEventHandler(
     };
     const deadline = createAsterDeadline({ timeoutMs: 2000, parentSignal: signal });
     let observation: AsterDependencyObservation | undefined;
+    const inspection = inspect(record);
     try {
       try {
         const metric = telemetry.startDependencyOperation({
           dependency: "broker",
           operation: "consume",
+          ...(inspection.status === "valid" && inspection.fact.traceparent !== undefined
+            ? { linkedTraceparent: inspection.fact.traceparent }
+            : {}),
         });
         if (metric.status === "started") {
           observation = metric.observation;
@@ -43,7 +47,6 @@ export function createIdentityEventHandler(
       }
       const outcome = await consumer.handle(record, deadline.signal);
       try {
-        const inspection = inspect(record);
         logger.info({
           event: "aster.engagement.identity_event",
           ...(inspection.status === "valid"

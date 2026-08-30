@@ -161,6 +161,21 @@ async function worker(mode: string): Promise<void> {
     `${mode} worker failed; natural exit required`,
   );
   assert.ok(captured.includes('"event":"natural_exit"'), "Worker left no natural-exit evidence");
+  if (mode === "telemetry") {
+    const collectorLogs = await fixture.logs("collector");
+    assert.match(collectorLogs, /aster\.http\.server/u);
+    assert.match(collectorLogs, /aster\.dependency\.operation/u);
+    assert.doesNotMatch(
+      collectorLogs,
+      /aster-test-only|postgresql:\/\/|redis:\/\/|authorization|set-cookie|graphql\.document/iu,
+    );
+    output({
+      event: "collector_trace_round_trip",
+      outcome: "passed",
+      spanNames: ["aster.http.server", "aster.dependency.operation"],
+      boundedLogBytes: Buffer.byteLength(collectorLogs),
+    });
+  }
 }
 
 try {

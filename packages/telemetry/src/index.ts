@@ -20,6 +20,7 @@ export {
   AsterTelemetryConfigurationError,
   type AsterCollectedMetric,
   type AsterCollectedMetricPoint,
+  type AsterCollectedTrace,
   type AsterDependency,
   type AsterCacheFamily,
   type AsterCacheMetricInput,
@@ -60,6 +61,9 @@ export {
   type AsterTelemetryExportOptions,
   type AsterTelemetryOperationResult,
   type AsterTelemetryOptions,
+  type AsterTraceCollectionResult,
+  type AsterTraceContext,
 } from "./ports/telemetry-contract.js";
 export { ASTER_METRIC_CATALOG } from "./infrastructure/metric-catalog.js";
+export { isAsterOtlpMetricsEndpoint } from "./ports/otlp-endpoint.js";
 export { createTelemetry as createAsterTelemetry } from "./infrastructure/create-telemetry.js";

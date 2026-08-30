@@ -95,6 +95,13 @@ test("Playback runtime requires explicit local activation, fixed owner credentia
   assert.equal(playbackRuntimeConfiguration(environment).port, 3300);
   assert.equal(playbackRuntimeConfiguration(environment).engagementRead, false);
   assert.equal(
+    playbackRuntimeConfiguration({
+      ...environment,
+      ASTER_OTLP_METRICS_ENDPOINT: "http://collector:4318/v1/metrics",
+    }).otlpMetricsEndpoint,
+    "http://collector:4318/v1/metrics",
+  );
+  assert.equal(
     playbackRuntimeConfiguration({ ...environment, ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED: "true" })
       .engagementRead,
     true,
@@ -118,6 +125,7 @@ test("Playback runtime requires explicit local activation, fixed owner credentia
     { ASTER_PLAYBACK_HTTP_PORT: "80" },
     { ASTER_PLAYBACK_HTTP_PORT: "65536" },
     { ASTER_PLAYBACK_HTTP_PORT: "3300.0" },
+    { ASTER_OTLP_METRICS_ENDPOINT: "http://collector:4318/v1/metrics?token=private" },
   ]) {
     assert.throws(() => playbackRuntimeConfiguration({ ...environment, ...change }));
   }

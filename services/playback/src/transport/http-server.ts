@@ -6,6 +6,7 @@ import {
   ASTER_HTTP_METHODS,
   ASTER_HTTP_ROUTES,
   type AsterHttpMethod,
+  type AsterHttpObservation,
   type AsterHttpRoute,
   type AsterTelemetry,
 } from "@aster/telemetry";
@@ -30,22 +31,25 @@ function observeRequest(
   request: IncomingMessage,
   response: ServerResponse,
   telemetry: Pick<AsterTelemetry, "startHttpRequest">,
-): void {
+): AsterHttpObservation | undefined {
   const method = request.method;
   const route = request.url?.split("?", 1)[0];
   if (
     !ASTER_HTTP_METHODS.some((value) => value === method) ||
     !ASTER_HTTP_ROUTES.some((value) => value === route)
   ) {
-    return;
+    return undefined;
   }
   try {
     const started = telemetry.startHttpRequest({
       method: method as AsterHttpMethod,
       route: route as AsterHttpRoute,
+      ...(typeof request.headers["traceparent"] === "string"
+        ? { traceparent: request.headers["traceparent"] }
+        : {}),
     });
     if (started.status !== "started") {
-      return;
+      return undefined;
     }
     const complete = (): void => {
       response.off("finish", complete);
@@ -67,8 +71,10 @@ function observeRequest(
     };
     response.once("finish", complete);
     response.once("close", complete);
+    return started.observation;
   } catch {
     // The HTTP boundary remains available when instrumentation fails.
+    return undefined;
   }
 }
 
@@ -89,8 +95,15 @@ export function createPlaybackHttpServer(options: PlaybackHttpServerOptions): Pl
       connectionsCheckingInterval: 1_000,
     },
     (request, response) => {
-      observeRequest(request, response, options.telemetry);
-      adapter.requestListener(request, response);
+      const observation = observeRequest(request, response, options.telemetry);
+      const serve = (): void => {
+        adapter.requestListener(request, response);
+      };
+      if (observation?.run) {
+        observation.run(serve);
+      } else {
+        serve();
+      }
     },
   );
   server.maxConnections = 128;

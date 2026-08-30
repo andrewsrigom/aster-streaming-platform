@@ -1,3 +1,5 @@
+import { isAsterOtlpMetricsEndpoint } from "@aster/telemetry";
+
 const RUNTIME_FIELDS = new Set([
   "ASTER_ENGAGEMENT_LOCAL_ENABLED",
   "ASTER_ENGAGEMENT_HTTP_HOST",
@@ -68,6 +70,7 @@ export function engagementRuntimeConfiguration(
   const port = environment["ASTER_ENGAGEMENT_HTTP_PORT"] ?? "3400";
   const distributedRateLimit = environment["ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED"];
   const redisUrl = environment["REDIS_URL"];
+  const otlpMetricsEndpoint = environment["ASTER_OTLP_METRICS_ENDPOINT"];
   if (
     (host !== "127.0.0.1" && host !== "0.0.0.0") ||
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
@@ -77,7 +80,8 @@ export function engagementRuntimeConfiguration(
       distributedRateLimit !== "true" &&
       distributedRateLimit !== "false") ||
     (distributedRateLimit === "true" && (typeof redisUrl !== "string" || redisUrl.length === 0)) ||
-    environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true"
+    environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true" ||
+    (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint))
   ) {
     throw new Error("Invalid protected Engagement listener configuration.");
   }
@@ -90,6 +94,7 @@ export function engagementRuntimeConfiguration(
       environment["ASTER_EVENTS_ENABLED"],
       environment["ASTER_ENVIRONMENT"],
     ),
+    ...(otlpMetricsEndpoint === undefined ? {} : { otlpMetricsEndpoint }),
   };
   return distributedRateLimit === "true"
     ? Object.freeze({ ...base, distributedRateLimit: true as const, redisUrl: redisUrl as string })
