@@ -100,6 +100,24 @@ export type {
   AsterSafeReadResult,
 } from "./safe-read.js";
 export {
+  ASTER_CIRCUIT_BREAKER_EVENTS,
+  ASTER_CIRCUIT_BREAKER_MAX_SAMPLES,
+  ASTER_CIRCUIT_BREAKER_STATES,
+  AsterCircuitBreakerPolicyError,
+  createAsterCircuitBreaker,
+} from "./circuit-breaker.js";
+export type {
+  AsterCircuitBreaker,
+  AsterCircuitBreakerActionResult,
+  AsterCircuitBreakerEvent,
+  AsterCircuitBreakerExecutionResult,
+  AsterCircuitBreakerObservation,
+  AsterCircuitBreakerOutcome,
+  AsterCircuitBreakerPolicy,
+  AsterCircuitBreakerSnapshot,
+  AsterCircuitBreakerState,
+} from "./circuit-breaker.js";
+export {
   ASTER_CRITICAL_DEPENDENCY_STATES,
   ASTER_READINESS_CRITICAL_DEPENDENCY_MAX,
   AsterReadinessError,

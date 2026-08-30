@@ -1,6 +1,6 @@
 P11 dependency policy and safe-read candidate
 Date: 2026-08-29
-Status: verified locally; review and protected publication pending
+Status: released through PR41 and exact-main CI
 
 Source
 - Released base: eed82291c29e43d985cb6b0fa08d8c21be32c133.
@@ -54,9 +54,9 @@ from the corrected exact source. A deterministic 399-ms parent cannot fund the
 policy's 400-ms delay/attempt/reserve requirement.
 
 Limitations
-- This is local candidate evidence, not protected CI or release evidence.
+- Release proof is recorded separately in safe-read-release.txt.
 - Registry breaker entries explicitly say planned P11; no breaker is claimed.
-- No PostgreSQL, Redis, broker, media or browser behavior changed. Their
+- No PostgreSQL, Redis, broker, media or browser behavior changed locally. Their
   heavyweight fixtures were not repeated locally.
 - This records policy correctness, not production capacity, tail latency or a
   hosted service-level objective.

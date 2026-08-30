@@ -70,6 +70,7 @@ Limitations
   SLOs. Deterministic delay assertions establish policy math independently of
   scheduler noise.
 - The loopback fixture proves Node HTTP cleanup and classification on one local
-  environment. Protected CI remains required at the published exact head.
+  environment. Protected exact-head and exact-main CI later passed as recorded
+  in safe-read-release.txt.
 - Router and Apollo Client retain one attempt; this candidate introduces no
   mutation retry, circuit breaker or production failure-injection endpoint.

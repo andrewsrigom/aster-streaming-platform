@@ -4,6 +4,9 @@ import { createServer } from "node:http";
 import { test } from "node:test";
 import {
   ASTER_DEPENDENCIES,
+  ASTER_CIRCUIT_BREAKER_EVENTS,
+  ASTER_CIRCUIT_BREAKER_OPERATIONS,
+  ASTER_CIRCUIT_BREAKER_STATES,
   ASTER_DEPENDENCY_OPERATIONS,
   ASTER_DISCOVERY_RAIL_KINDS,
   ASTER_DISCOVERY_RAIL_OUTCOMES,
@@ -89,6 +92,9 @@ test("freezes the public finite vocabularies", () => {
     ASTER_OBSERVATION_OUTCOMES,
     ASTER_DISCOVERY_RAIL_KINDS,
     ASTER_DISCOVERY_RAIL_OUTCOMES,
+    ASTER_CIRCUIT_BREAKER_OPERATIONS,
+    ASTER_CIRCUIT_BREAKER_STATES,
+    ASTER_CIRCUIT_BREAKER_EVENTS,
   ]) {
     assert.equal(Object.isFrozen(vocabulary), true);
   }
@@ -452,6 +458,75 @@ test("records only finite operation-limit policy dimensions", async () => {
         "aster.operation": "search_titles",
         "aster.outcome": "queued",
         "aster.limit.queue": "one",
+      },
+    ],
+  );
+  assert.equal(telemetry.exportHealth().droppedObservations, 2);
+  await telemetry.shutdown();
+});
+
+test("records only finite circuit-breaker scope and state events", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "circuit-breaker-metric-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+  });
+  const record = telemetry.recordCircuitBreaker?.bind(telemetry);
+  assert.ok(record);
+  assert.deepEqual(
+    record({
+      dependency: "catalog",
+      operation: "playback_publication",
+      state: "open",
+      event: "opened",
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    record({
+      dependency: "catalog",
+      operation: "discovery_export",
+      state: "half_open",
+      event: "half_opened",
+    }),
+    { status: "recorded" },
+  );
+  assert.deepEqual(
+    record({
+      dependency: "catalog",
+      operation: "unknown",
+      state: "open",
+      event: "opened",
+    } as never),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+  assert.deepEqual(
+    record({
+      dependency: "redis",
+      operation: "discovery_snapshot",
+      state: "open",
+      event: "opened",
+    } as never),
+    { status: "rejected", reason: "invalid_dimension" },
+  );
+
+  const collection = await telemetry.collect();
+  assert.equal(collection.status, "collected");
+  const events = metricByName(collection.metrics, ASTER_METRIC_CATALOG.circuitBreakerEvents.name);
+  assert.deepEqual(
+    events.points.map((point) => ({ ...point.attributes })),
+    [
+      {
+        "aster.dependency": "catalog",
+        "aster.circuit_breaker.operation": "playback_publication",
+        "aster.circuit_breaker.state": "open",
+        "aster.circuit_breaker.event": "opened",
+      },
+      {
+        "aster.dependency": "catalog",
+        "aster.circuit_breaker.operation": "discovery_export",
+        "aster.circuit_breaker.state": "half_open",
+        "aster.circuit_breaker.event": "half_opened",
       },
     ],
   );

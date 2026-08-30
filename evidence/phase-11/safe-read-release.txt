@@ -1,0 +1,48 @@
+P11-R01 dependency policy and safe-read release
+Date: 2026-08-29 America/Sao_Paulo
+Status: released work item; Phase 11 remains in progress
+
+Reviewed candidate
+- Corrected source commit: af4951a07f538029e32e855e693bdeb0428ad5b8.
+- Evidence head: 6d709b4c48e6808771a75a6f7d943944ecf58622.
+- Reviewed tree: e0d8662c03377d56d9bb4847dd84bccd8ebab614.
+- Initial review discussion 3888089399 corrected contradictory Playback retry
+  documentation and was resolved.
+- Confirmation discussion 3888100550 corrected missing upstream remaining-budget
+  propagation and was resolved.
+- Final exact-head confirmation comment 5465895198 found no major issue.
+
+Protected publication
+- Pull request: https://github.com/andrewsrigom/aster-streaming-platform/pull/41
+- Protected exact-head run: 33284610557, success at exact 6d709b4.
+- Required source, documentation/security, local-platform and aggregation jobs
+  passed, including the protected Docker demo lane.
+- PR41 squash-merged without bypass at 2026-08-30T01:17:43Z as
+  ebdcb18b344b3f8313575b7cd158f99a77a4026b.
+- Merge tree: e0d8662c03377d56d9bb4847dd84bccd8ebab614,
+  byte-identical to the reviewed evidence head tree.
+- Exact-main run 33285339274 passed at exact merge ebdcb18, including every
+  required job. No post-review source drift exists.
+
+Acceptance
+- P11-R01: nineteen current dependency operation classes record criticality,
+  deadline, retry, breaker state, bulkhead, fallback, telemetry and user outcome.
+- P11-R02: registered child deadlines expose the minimum parent/local remaining
+  budget, and a smaller upstream deadline prevents an unaffordable retry.
+- P11-R03/R04: only selected transient safe reads retry, at most once in the two
+  concrete policies, with equal-jitter exponential backoff.
+- P11-R06: retries retain existing finite Playback/Discovery logical-operation
+  permits and create no queue or overlapping attempt.
+- P11-R11: Web and Router retain one attempt; one owner client is the only
+  synchronous retry layer.
+
+Supporting evidence
+- dependency-policies.txt records the corrected focused and 53/53 affected gate.
+- retry-timing.txt records deterministic budget/jitter and real loopback HTTP
+  503, reset, permanent, timeout and cancellation behavior.
+
+Limitations
+- This releases P11-R01 only, not the complete Phase 11 exit gate.
+- Circuit breakers, controlled injection, game days and runbook closeout remain
+  later Phase 11 work.
+- Results are local/protected laboratory evidence, not hosted capacity or SLOs.

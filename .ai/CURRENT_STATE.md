@@ -6,10 +6,10 @@ Last updated: 2026-08-29
 
 **Phase 11 — Resilience and Failure Laboratory**
 
-Status: **IN_PROGRESS**. Phase10 is released: PR40 exact `6d74873` passed
-protected run33281516077, resolved review, squash-merged without bypass as
-`eed8229`, and exact-main run33282217705 passed the identical tree. P11-R01 is
-active on `feat/p11-dependency-policies`. Full Phase00–14 goal stays active.
+Status: **IN_PROGRESS**. Phase10 is released. P11-R01 is released through
+exact-head review, protected CI, squash main `ebdcb18` and successful exact-main
+run `33285339274`. P11-R05 is active on `feat/p11-circuit-breakers`, based
+exactly on that merge. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -158,7 +158,7 @@ run33281516077 verifies the extended two-writer Redis fixture, PostgreSQL outage
 and cross-replica boundary. PR40 squash `eed8229` and exact-main run33282217705
 release P10-R08 and close Phase10.
 
-P11-R01 now accepts ADR-0040 and records nineteen dependency operation classes
+P11-R01 accepts ADR-0040 and records nineteen dependency operation classes
 with current criticality, deadlines, retry ownership, capacity, fallback and
 telemetry. `@aster/runtime` implements one framework-free safe-read executor with
 an overall deadline, per-attempt deadline, remaining-budget gate, at most three
@@ -181,8 +181,21 @@ minimum monotonic parent budget and establishes that lineage at Playback's
 GraphQL/application boundaries. Runtime90/90 and Playback38/38 pass, including a
 399-ms parent that cannot fund a 400-ms retry. Corrected exact source `af4951a`
 has tree `e306bcc`; the affected candidate passes53/53 with19 cached in128.838
-seconds and evidence is updated. Protected CI, resolved thread and confirmation
-remain.
+seconds and evidence is updated. Evidence head `6d709b4` passed protected run
+`33284610557` and exact-head confirmation found no major issue. PR41
+squash-merged as `ebdcb18` with the identical reviewed tree; exact-main run
+`33285339274` passed every required job. [Release evidence](../evidence/phase-11/safe-read-release.txt).
+
+P11-R05 now accepts ADR-0041. A shared runtime breaker has a bounded 30-second,
+64-result window, four minimum samples, 50% threshold, five-second open state,
+one half-open probe and generation fencing. Playback publication, Discovery
+snapshot and Discovery export use independent instances around one complete
+safe read, so a retry contributes one logical outcome. Playback remains fail
+closed; Discovery creates no fallback data. Finite OpenTelemetry events expose
+results, rejection and transitions. Focused runtime98/98, telemetry13/13,
+Playback40/40 and Discovery108/108 tests pass, including real loopback open
+suppression/recovery and operation isolation. The complete affected candidate,
+evidence, review and publication remain.
 
 ## Historical Phase 09 corrections
 
@@ -230,14 +243,15 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R01's review and protected publication remain. Later Phase11 breakers,
-controlled injection, game days and runbooks remain planned. Hosted
-deployment remains Phase14.
+P11-R05 candidate/review/publication remains. Later Phase11 controlled
+injection, game days and runbooks remain planned.
+Hosted deployment remains Phase14.
 
 ## Next outcome
 
-Complete P11-R01: review and publish the evidenced deadline-bound safe-read
-candidate.
+Complete P11-R05: run the affected gate, capture breaker evidence, review and
+publish the operation-scoped circuit-breaker candidate after P11-R01 exact-main
+passes.
 
 ## Runtime and recovery
 

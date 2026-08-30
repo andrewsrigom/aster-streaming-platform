@@ -68,6 +68,20 @@ Append new entries at the top. Keep entries factual and concise.
 - Committed corrected source `af4951a` with tree `e306bcc`. The complete affected
   candidate passes53/53 with19 cached in128.838 seconds; exact dependency-policy
   and retry-timing evidence now records the parent-budget proof.
+- Evidence head `6d709b4` passed protected run33284610557 and clean exact-head
+  confirmation. PR41 squash-merged as tree-identical main `ebdcb18`; exact-main
+  run33285339274 passed every required job and releases P11-R01.
+- Activated P11-R05 on `feat/p11-circuit-breakers` from that exact merge.
+  ADR-0041 adds a framework-free bounded rolling breaker with
+  closed/open/half-open states, one probe, monotonic clock, hostile-policy
+  validation, generation fencing and finite observations.
+- Playback publication, Discovery snapshot and Discovery export use independent
+  instances around complete safe reads. Open/probe contention makes no owner
+  HTTP call; Playback remains fail closed and Discovery creates no authority.
+- Added finite OpenTelemetry breaker dimensions and updated the dependency,
+  resilience, failure and service documentation. Runtime98/98, telemetry13/13,
+  Playback40/40 and Discovery108/108 pass, including loopback suppression,
+  recovery and operation isolation.
 
 ### Evidence
 
@@ -80,11 +94,15 @@ Append new entries at the top. Keep entries factual and concise.
   atomicity and PostgreSQL outage/replica proof; the new digest still needs CI.
 - Generated supergraph: compatibility base `6a2fe3a`, eight artifacts, manifest
   SHA-256 `d8106bef01146af5faa152bd615cd3e9837fe9305a97b86110992bcc4406e303`.
+- `evidence/phase-11/safe-read-release.txt` records the reviewed head/tree,
+  resolved findings, protected run, merge equality and exact-main proof.
+- P11-R05 focused iteration commands/counts are recorded above; its complete
+  affected candidate remains the next gate.
 
 ### Next action
 
-Publish the frozen corrected candidate, resolve/confirm discussion3888100550 and
-require its exact-head protected CI.
+Run the complete P11-R05 affected gate, capture breaker evidence and start the
+recorded review cycle.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

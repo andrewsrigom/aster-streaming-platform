@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { once } from "node:events";
 import { createServer, request, type IncomingMessage, type ServerResponse } from "node:http";
 import test from "node:test";
+import { createAsterCircuitBreaker } from "@aster/runtime";
 import { createCatalogSnapshotClient } from "../src/infrastructure/catalog-snapshot-client.js";
 
 const id = (value: number) => `00000000-0000-4000-8000-${String(value).padStart(12, "0")}`;
@@ -22,7 +23,15 @@ const snapshot = {
   },
 };
 
-async function fixture(respond: (incoming: IncomingMessage, response: ServerResponse) => void) {
+type FixtureOptions = Pick<
+  Parameters<typeof createCatalogSnapshotClient>[0],
+  "snapshotCircuitBreaker" | "exportCircuitBreaker" | "telemetry"
+>;
+
+async function fixture(
+  respond: (incoming: IncomingMessage, response: ServerResponse) => void,
+  options: FixtureOptions = {},
+) {
   const server = createServer(respond);
   server.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -33,6 +42,7 @@ async function fixture(respond: (incoming: IncomingMessage, response: ServerResp
     random: () => 0,
     request: (options, callback) =>
       request({ ...options, hostname: "127.0.0.1", port: address.port }, callback),
+    ...options,
   });
   return {
     client,
@@ -303,6 +313,67 @@ test("Catalog snapshot client rejects invalid, concurrent and cancelled work wit
     assert.equal(calls, 1);
   } finally {
     controller.abort();
+    await f.close();
+  }
+});
+
+test("Catalog snapshot and export breakers isolate their operation classes", async () => {
+  let snapshotCalls = 0;
+  let exportCalls = 0;
+  const snapshotBreaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 1,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => 0,
+  });
+  const exportBreaker = createAsterCircuitBreaker({
+    samplingWindowMs: 1_000,
+    minimumThroughput: 1,
+    failureRateThresholdPercentage: 100,
+    openDurationMs: 100,
+    now: () => 0,
+  });
+  const f = await fixture(
+    (incoming, response) => {
+      const chunks: Buffer[] = [];
+      incoming.on("data", (chunk: Buffer) => chunks.push(chunk));
+      incoming.on("end", () => {
+        const body = JSON.parse(Buffer.concat(chunks).toString("utf8")) as {
+          operationName: string;
+        };
+        response.setHeader("content-type", "application/json");
+        if (body.operationName === "DiscoverySnapshots") {
+          snapshotCalls++;
+          response.statusCode = 500;
+          response.end('{"errors":[{"message":"unavailable"}]}');
+          return;
+        }
+        exportCalls++;
+        response.end(
+          '{"data":{"_discoveryExport":{"snapshots":[],"endCursor":null,"hasNextPage":false}}}',
+        );
+      });
+    },
+    { snapshotCircuitBreaker: snapshotBreaker, exportCircuitBreaker: exportBreaker },
+  );
+  try {
+    assert.deepEqual(await f.client.current(id(1), id(3), AbortSignal.timeout(3_000)), {
+      status: "unavailable",
+    });
+    assert.equal(snapshotBreaker.snapshot().state, "open");
+    assert.deepEqual(await f.client.current(id(1), id(3), AbortSignal.timeout(3_000)), {
+      status: "unavailable",
+    });
+    assert.equal(snapshotCalls, 1);
+
+    assert.deepEqual(await f.client.exportPage(null, id(3), AbortSignal.timeout(3_000)), {
+      status: "completed",
+      value: { snapshots: [], endCursor: null, hasNextPage: false },
+    });
+    assert.equal(exportCalls, 1);
+    assert.equal(exportBreaker.snapshot().state, "closed");
+  } finally {
     await f.close();
   }
 });

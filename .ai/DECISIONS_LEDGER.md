@@ -2,6 +2,15 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0041](../docs/adr/0041-operation-scoped-circuit-breakers.md) adds separate
+process-local breakers for Playback publication, Discovery snapshot and
+Discovery export Catalog reads. Each samples at most 64 logical calls over 30
+seconds, requires four samples and 50% failures, opens for five seconds and
+admits one half-open probe. Breaker accounting wraps the complete safe read, so
+one retry is one logical outcome. Generation fencing ignores late completions;
+finite metrics expose results and transitions. Playback remains fail closed and
+Discovery can use only its independently valid active projection.
+
 [ADR-0040](../docs/adr/0040-deadline-bound-safe-read-retries.md) gives Playback
 and Discovery's fixed, read-only Catalog operations one shared overall-deadline
 executor and at most two attempts for a finite transient set. Equal-jitter
