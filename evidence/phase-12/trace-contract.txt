@@ -1,6 +1,6 @@
 # P12-R01/R02 repository trace contract
 
-Status: corrected implementation, local candidate verification passed, protected verification pending
+Status: released through protected and exact-main verification
 
 Exact source
 
@@ -89,5 +89,11 @@ Initial protected candidate and remediation
 - source `03abe8a`, tree `b1474c7`, wires the exact media path and adds a
   trace-only Catalog event-producer boundary without a false broker metric;
 - telemetry 18/18, Catalog 247/247, event delivery 23/23, media runner 3/3 and
-  the affected gate 73/73 with 53 cached in 53.307 seconds pass. Exact-head CI
-  and one blocker-focused confirmation remain required.
+  the affected gate 73/73 with 53 cached in 53.307 seconds pass;
+- protected run `33300561121` passed every required job at evidence head
+  `9a058eea1c0a5002aae91e4ec20142ac6430231e`;
+- the requested blocker-focused confirmation reviewed that exact head and
+  reported no major issue;
+- PR45 squash-merged as main `ce66f9c58a64ef49b66d9b2749e9b4b1fef50ec0`;
+  its tree equals the reviewed evidence tree, and exact-main run `33301425220`
+  passed every required job.

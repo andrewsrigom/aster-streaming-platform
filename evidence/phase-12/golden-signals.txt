@@ -1,0 +1,73 @@
+# P12-R03 platform golden signals
+
+Status: implemented locally on the unpublished dependent branch; not yet
+verified or released.
+
+## Exact candidate
+
+- Predecessor main: `ce66f9c58a64ef49b66d9b2749e9b4b1fef50ec0`
+- Source commit: `4a0221e09a149ad2d6a488f50ec4956922af1cab`
+- Source tree: `ffa3ce8bb79ffd5ed8c640df40d1cac934fd78e5`
+- Branch: `feat/p12-golden-product-signals`
+- Runtime: Node.js 24.19.0 and pnpm 11.24.0
+- Environment: WSL Ubuntu-20.04, process-local OpenTelemetry reader
+- Gate environment: `CI=true`, `NODE_OPTIONS=--max-old-space-size=1536`,
+  `TURBO_CONCURRENCY=4`
+
+The branch was rebased onto the released P12-R01 exact main. The overlapping
+Discovery consumer preserves its producer trace link and active observation
+while recording the new delivery metric.
+
+## Implemented sources
+
+| Operational question | Signal |
+| --- | --- |
+| Are requests slow, failing or saturated? | existing HTTP duration, outcomes and active requests |
+| Is a dependency slow, failing or saturated? | existing dependency duration, outcomes and active operations |
+| Is Node runtime pressure rising? | process CPU time/utilization, RSS, uptime, official event-loop/V8/runtime instruments, plus heap used/total, external and array-buffer bytes |
+| Is a PostgreSQL pool saturated? | latest maximum, total, idle, reserved and vendor-waiting counts by finite pool role and lifecycle state |
+| Are events delayed or failing? | publish/consume outcome and validated age for Identity, Catalog and Engagement owners |
+| Is media-worker work active? | existing `media_worker/process` dependency-active instrument around the isolated coordinator |
+
+The implementation does not invent a worker queue that the current one-at-a-time
+coordinator does not own. Future, invalid or older-than-seven-day event times
+retain their finite delivery outcome but emit no fabricated age; product
+duration is bounded at 300 seconds. PostgreSQL snapshots are recorded at creation, acquisition/
+release and close transitions; observation failure cannot change connection or
+transaction behavior.
+
+## Verification
+
+- `pnpm --filter @aster/telemetry test`: 19/19 pass, including runtime memory,
+  pool, event, product, invalid-input, cardinality-overflow and bounded OTLP
+  exporter coverage.
+- `pnpm --filter @aster/postgres test`: 31/31 pass; malformed, excessive,
+  inconsistent or throwing vendor counters omit the whole metric snapshot.
+- `pnpm --filter @aster/event-delivery test`: 25/25 pass, including finite relay
+  and consumer roles, connection-outage lag and publication metrics.
+- Product and linked-consumer tests: 7/7 pass; owner read, projection,
+  checkpoint, log and delivery metric execute in the active consumer scope,
+  and future/excessive event time does not become an age sample.
+- `pnpm check:changed`: 73/73 tasks pass, 28 cached, in 63.79 seconds after the
+  required rebase onto released exact main and review remediation.
+- Protected run `33302931164` built the packaged services healthy but stopped
+  before collection: diagnostic Fetch did not preserve the Router Host and
+  received 403. The bounded `node:http` correction passes inline syntax, CI
+  policy 33/33 and platform policy 68/68 locally; protected proof must rerun.
+- `git diff --check`: pass.
+
+The focused telemetry suite uses a real bounded loopback OTLP/HTTP receiver for
+success and stalled-export behavior. The disposable Docker Collector scenario
+was not repeated locally because the documented host probe still has no Linux
+engine; no resource was created by that earlier failed probe. Protected CI now
+requires the new Node memory, PostgreSQL pool and playback product metric names
+from the real Collector/Prometheus path.
+
+## Interpretation and limits
+
+These signals answer availability, latency and saturation questions for current
+Node processes, dependencies, pools, event delivery and the media coordinator.
+They are diagnostic only: PostgreSQL remains authoritative, metrics do not
+change acknowledgement or retries, and no shared-host result is a capacity or
+SLO claim. Broker in-flight state remains represented by dependency-active and
+delivery outcomes; a separate arbitrary queue label was deliberately not added.

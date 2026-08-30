@@ -143,6 +143,38 @@ export const ASTER_CIRCUIT_BREAKER_EVENTS = Object.freeze([
   "reopened",
 ] as const);
 
+export const ASTER_POSTGRES_POOL_ROLES = Object.freeze([
+  "primary",
+  "projection",
+  "relay",
+  "consumer",
+  "operator",
+] as const);
+
+export const ASTER_POSTGRES_POOL_STATES = Object.freeze(["open", "closing", "closed"] as const);
+
+export const ASTER_EVENT_OWNERS = Object.freeze(["identity", "catalog", "engagement"] as const);
+export const ASTER_EVENT_STAGES = Object.freeze(["publish", "consume"] as const);
+
+export const ASTER_PRODUCT_OPERATIONS = Object.freeze([
+  "playback_session",
+  "progress_write",
+  "media_processing",
+  "media_publication",
+] as const);
+
+export const ASTER_PRODUCT_OUTCOMES = Object.freeze([
+  "completed",
+  "stale",
+  "conflict",
+  "not_playable",
+  "rejected",
+  "cancelled",
+  "unavailable",
+  "indeterminate",
+  "failed",
+] as const);
+
 export type AsterTelemetryEnvironment = (typeof ASTER_TELEMETRY_ENVIRONMENTS)[number];
 export type AsterHttpMethod = (typeof ASTER_HTTP_METHODS)[number];
 export type AsterHttpRoute = (typeof ASTER_HTTP_ROUTES)[number];
@@ -161,6 +193,12 @@ export type AsterOperationLimitQueueBucket = (typeof ASTER_OPERATION_LIMIT_QUEUE
 export type AsterCircuitBreakerOperation = (typeof ASTER_CIRCUIT_BREAKER_OPERATIONS)[number];
 export type AsterCircuitBreakerState = (typeof ASTER_CIRCUIT_BREAKER_STATES)[number];
 export type AsterCircuitBreakerEvent = (typeof ASTER_CIRCUIT_BREAKER_EVENTS)[number];
+export type AsterPostgresPoolRole = (typeof ASTER_POSTGRES_POOL_ROLES)[number];
+export type AsterPostgresPoolState = (typeof ASTER_POSTGRES_POOL_STATES)[number];
+export type AsterEventOwner = (typeof ASTER_EVENT_OWNERS)[number];
+export type AsterEventStage = (typeof ASTER_EVENT_STAGES)[number];
+export type AsterProductOperation = (typeof ASTER_PRODUCT_OPERATIONS)[number];
+export type AsterProductOutcome = (typeof ASTER_PRODUCT_OUTCOMES)[number];
 
 export type AsterTelemetryExportOptions =
   | Readonly<{ mode: "none" }>
@@ -302,6 +340,29 @@ export interface AsterCircuitBreakerMetricInput {
   readonly event: AsterCircuitBreakerEvent;
 }
 
+export interface AsterPostgresPoolMetricInput {
+  readonly pool: AsterPostgresPoolRole;
+  readonly state: AsterPostgresPoolState;
+  readonly maximum: number;
+  readonly total: number;
+  readonly idle: number;
+  readonly reserved: number;
+  readonly waiting: number;
+}
+
+export interface AsterEventDeliveryMetricInput {
+  readonly owner: AsterEventOwner;
+  readonly stage: AsterEventStage;
+  readonly outcome: AsterObservationOutcome;
+  readonly ageMs?: number;
+}
+
+export interface AsterProductMetricInput {
+  readonly operation: AsterProductOperation;
+  readonly outcome: AsterProductOutcome;
+  readonly durationMs: number;
+}
+
 export type AsterRecordMetricResult =
   | Readonly<{ status: "recorded" }>
   | Readonly<{ status: "rejected"; reason: "invalid_dimension" | "telemetry_closed" }>;
@@ -368,6 +429,9 @@ export interface AsterTelemetry {
   recordCacheOperation?(input: AsterCacheMetricInput): AsterRecordMetricResult;
   recordOperationLimit?(input: AsterOperationLimitMetricInput): AsterRecordMetricResult;
   recordCircuitBreaker?(input: AsterCircuitBreakerMetricInput): AsterRecordMetricResult;
+  recordPostgresPool?(input: AsterPostgresPoolMetricInput): AsterRecordMetricResult;
+  recordEventDelivery?(input: AsterEventDeliveryMetricInput): AsterRecordMetricResult;
+  recordProductOperation?(input: AsterProductMetricInput): AsterRecordMetricResult;
   collect(): Promise<AsterMetricCollectionResult>;
   activeTraceContext(): AsterTraceContext | undefined;
   collectTraces(): Promise<AsterTraceCollectionResult>;

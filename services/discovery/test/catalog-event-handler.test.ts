@@ -41,6 +41,7 @@ function fixture() {
   const observations: string[] = [];
   const started: AsterDependencyObservationInput[] = [];
   const active = new AsyncLocalStorage<boolean>();
+  const deliveries: unknown[] = [];
   const state = {
     source: { status: "completed", value: snapshot } as const,
     projection: {
@@ -87,6 +88,11 @@ function fixture() {
           },
         };
       },
+      recordEventDelivery: (input) => {
+        assert.equal(active.getStore(), true);
+        deliveries.push(input);
+        return { status: "recorded" };
+      },
     },
     recordHandled: () => {
       assert.equal(active.getStore(), true);
@@ -101,7 +107,7 @@ function fixture() {
     offset: "42",
     signal: AbortSignal.timeout(1000),
   });
-  return { handler, record, state, logs, observations, started };
+  return { handler, record, state, logs, observations, started, deliveries };
 }
 
 test("handler acknowledges applied current-owner projections with bounded identifiers only", async () => {
@@ -111,20 +117,43 @@ test("handler acknowledges applied current-owner projections with bounded identi
     { dependency: "broker", operation: "consume", linkedTraceparent: traceparent },
   ]);
   assert.deepEqual(f.observations, ["success"]);
+  assert.deepEqual(f.deliveries, [
+    { owner: "catalog", stage: "consume", outcome: "success", ageMs: 0 },
+  ]);
   assert.match(JSON.stringify(f.logs), /aster\.discovery\.catalog_event/u);
   assert.match(JSON.stringify(f.logs), new RegExp(id(2), "u"));
   assert.doesNotMatch(JSON.stringify(f.logs), /Signal|publicationId|rightsRevision/u);
+});
+
+test("handler keeps delivery outcomes but omits future or excessive event age", async () => {
+  const f = fixture();
+  for (const occurredAt of [
+    new Date((now + 1) * 1_000).toISOString(),
+    new Date((now - 8 * 24 * 60 * 60) * 1_000).toISOString(),
+  ]) {
+    await f.handler(f.record({ ...event, occurredAt }));
+  }
+  assert.deepEqual(f.deliveries, [
+    { owner: "catalog", stage: "consume", outcome: "success" },
+    { owner: "catalog", stage: "consume", outcome: "success" },
+  ]);
 });
 
 test("handler acknowledges durable poison quarantine but keeps unavailable outcomes uncommitted", async () => {
   const poison = fixture();
   await poison.handler(poison.record({ invalid: true }));
   assert.deepEqual(poison.observations, ["rejected"]);
+  assert.deepEqual(poison.deliveries, [
+    { owner: "catalog", stage: "consume", outcome: "rejected" },
+  ]);
 
   const unavailable = fixture();
   unavailable.state.projection = { status: "unavailable" };
   await assert.rejects(unavailable.handler(unavailable.record()), /requires retry/u);
   assert.deepEqual(unavailable.observations, ["unavailable"]);
+  assert.deepEqual(unavailable.deliveries, [
+    { owner: "catalog", stage: "consume", outcome: "unavailable", ageMs: 0 },
+  ]);
 
   const checkpoint = fixture();
   checkpoint.state.handled = { status: "unavailable" };

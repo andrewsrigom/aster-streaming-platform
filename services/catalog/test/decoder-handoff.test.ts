@@ -7,7 +7,7 @@ import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import test from "node:test";
 import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
-import { createAsterTelemetry } from "@aster/telemetry";
+import { ASTER_METRIC_CATALOG, createAsterTelemetry } from "@aster/telemetry";
 import type { createCatalogAcquisitions } from "../src/application/acquire-media.js";
 import type { createCatalogProcessing } from "../src/application/process-media.js";
 import {
@@ -404,6 +404,25 @@ test("adopts an existing candidate and replays without encoding, uploads or file
     );
     assert.ok(workerSpans.every((span) => span.attributes["aster.operation"] === "process"));
     assert.doesNotMatch(JSON.stringify(workerSpans), new RegExp(id(9), "u"));
+    const metrics = await telemetry.collect();
+    assert.equal(metrics.status, "collected");
+    const productOutcomes = metrics.metrics.find(
+      (metric) => metric.name === ASTER_METRIC_CATALOG.productOperationOutcomes.name,
+    );
+    assert.ok(productOutcomes);
+    assert.deepEqual(
+      productOutcomes.points
+        .map((point) => [
+          point.attributes["aster.product.operation"],
+          point.attributes["aster.outcome"],
+          point.value,
+        ])
+        .sort(),
+      [
+        ["media_processing", "completed", 2],
+        ["media_processing", "unavailable", 1],
+      ],
+    );
     await telemetry.shutdown();
   });
 });

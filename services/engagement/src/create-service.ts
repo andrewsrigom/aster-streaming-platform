@@ -33,6 +33,7 @@ import { createProgressOwnerClients } from "./infrastructure/owner-clients.js";
 import { engagementRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { probeEngagementStore } from "./infrastructure/store-readiness.js";
 import { createIdentityEventHandler } from "./infrastructure/identity-event-handler.js";
+import { observeProgressRecorder } from "./infrastructure/product-metrics.js";
 import { createEngagementOperationLimiter } from "./infrastructure/operation-limiter.js";
 import { createEngagementSubgraph } from "./transport/engagement-subgraph.js";
 import { createEngagementHttpServer, type EngagementHttpServer } from "./transport/http-server.js";
@@ -161,16 +162,19 @@ export async function createEngagementService(
         writer: createWatchlistWriter(watchlistPorts),
         queries: createWatchlistQueries(watchlistPorts),
       },
-      recorder: createProgressRecorder({
-        ...owners,
-        ...createPostgresProgress(database),
-        now: () => Math.floor(Date.now() / 1000),
-        nextId: randomUUID,
-        digest: (value) => createHash("sha256").update(value).digest("hex"),
-        policy: DEFAULT_PROGRESS_POLICY,
-        limits: { receiptSeconds: 3600, maximumReceipts: 1024, maximumOutbox: 1024 },
-        limiter,
-      }),
+      recorder: observeProgressRecorder(
+        createProgressRecorder({
+          ...owners,
+          ...createPostgresProgress(database),
+          now: () => Math.floor(Date.now() / 1000),
+          nextId: randomUUID,
+          digest: (value) => createHash("sha256").update(value).digest("hex"),
+          policy: DEFAULT_PROGRESS_POLICY,
+          limits: { receiptSeconds: 3600, maximumReceipts: 1024, maximumOutbox: 1024 },
+          limiter,
+        }),
+        telemetry,
+      ),
       queries: createProgressQueries({
         identity: owners.identity,
         catalog: owners.catalog,

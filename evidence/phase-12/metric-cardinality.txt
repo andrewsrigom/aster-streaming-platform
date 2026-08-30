@@ -1,0 +1,57 @@
+# P12-R03/R04 metric cardinality and privacy budget
+
+Status: contract and regression tests pass locally at source
+`4a0221e09a149ad2d6a488f50ec4956922af1cab`, tree
+`ffa3ce8bb79ffd5ed8c640df40d1cac934fd78e5`.
+
+## Finite series budget
+
+The OpenTelemetry SDK limit remains configurable from 16 to 512 series per
+instrument and defaults to 128. Overflow is aggregated into the SDK's explicit
+overflow series rather than creating unbounded labels.
+
+| Instrument family | Finite dimensions | Maximum authored combinations |
+| --- | --- | ---: |
+| Node memory | four memory types | 4 |
+| PostgreSQL pool | five roles x three lifecycle states x five connection states | 75 |
+| Event outcome | three owners x two stages x six outcomes | 36 |
+| Event age | same finite outcome dimensions | 36 |
+| Product outcome | four operations x nine outcomes | 36 |
+| Product duration | same finite product dimensions | 36 |
+
+Pool roles are `primary`, `projection`, `relay`, `consumer` and `operator`.
+Event owners are `identity`, `catalog` and `engagement`; stages are `publish`
+and `consume`. Numeric pool values do not become labels.
+
+## Boundary validation
+
+- exact own data properties are required; unknown keys and accessor-backed
+  observations are rejected without invoking getters;
+- pool counts must be safe integers within maximum 1–128, and idle cannot exceed
+  total;
+- event age must be finite, non-negative and no more than seven days; producers
+  and consumers omit future or excessive age without losing the finite outcome;
+- product duration must be finite, non-negative and no more than 300 seconds;
+- an invalid observation increments only the finite `invalid_dimension` drop
+  reason and cannot alter product work.
+
+The contract test injects a private-looking pool label, excessive event age and
+infinite product duration. All three are rejected, the drop count increases by
+three, and collected points contain none of the canaries
+`private-secret`, `profile-id`, `title-id`, `request-id`, `trace-id`, HTTP URLs
+or SQL text. A separate test drives more HTTP combinations than a 16-series
+limit and observes the explicit overflow series.
+
+## Prohibited labels
+
+Account, profile, title, event, request, trace, publication and media identifiers;
+credentials; endpoints; full URLs; SQL; GraphQL documents; exception messages;
+and signed media URLs are absent from the new metric attributes. Correlation
+belongs in bounded logs and sampled traces, not metrics.
+
+## Evidence
+
+- `@aster/telemetry`: 19/19 tests pass.
+- `@aster/postgres`: 31/31 tests pass.
+- `@aster/event-delivery`: 25/25 tests pass.
+- affected repository gate: 73/73 tasks pass, 28 cached, in 63.79 seconds.

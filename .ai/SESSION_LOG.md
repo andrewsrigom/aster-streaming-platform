@@ -151,6 +151,51 @@ Append new entries at the top. Keep entries factual and concise.
   The first affected gate exposed only one full-interface Identity fixture that
   needed the additive method forwarding; after amendment, the complete affected
   gate passes73/73 with53 cached in53.307 seconds.
+- Published evidence head `9a058ee` once, resolved both fresh confirmation
+  threads, and started protected run `33300561121` without requesting another
+  review before CI. Froze that coherent candidate as `WAITING_EXTERNAL`.
+- Rebased the sole unpublished dependent `feat/p12-golden-product-signals` onto
+  exact `9a058ee`. Its plan covers finite Node memory, PostgreSQL pool, event
+  age/delivery and backend product-result metrics; browser collection waits for
+  the explicit P12-R11 policy.
+- Resolved the rebase overlap by retaining both the linked Discovery consumer
+  scope and the finite delivery metric. Exact rebased source `ce9ac1c`, tree
+  `fb0717f`, passes Discovery3/3 and the complete affected gate73/73 with63
+  cached in49.553 seconds.
+- Focused golden-signal suites pass: telemetry19/19, PostgreSQL30/30, event
+  delivery23/23 and combined backend product/consumer5/5. Added exact signal,
+  backend-product and cardinality evidence without claiming browser field QoE,
+  SLOs or capacity.
+- Protected run `33300561121` passed evidence head `9a058ee`; the requested
+  blocker-focused confirmation reported no major issue. PR45 squash-merged as
+  main `ce66f9c`, whose exact-main run `33301425220` passed every required job.
+- Rebased the dependent onto tree-identical exact main. Local review found that
+  future and older-than-seven-day event times were clamped into false edge
+  samples. Source `2270745`, tree `c98c1c1`, preserves delivery outcomes while
+  omitting invalid ages and tags operator, projection and consumer pools
+  explicitly.
+- Event delivery24/24 and focused product/consumer7/7 pass. The final affected
+  gate passes73/73 with52 cached in52.554 seconds; the dependent remains
+  unpublished pending its exact evidence checkpoint.
+- Published PR46 at evidence head `992b0c8`. Initial review `5060367013` and
+  discussions `3888910931`/`3888910934` found three signal-integrity gaps:
+  sanitized malformed pool counters, no pending-outbox age before broker
+  connection and product histogram buckets ending at ten seconds.
+- Batched source `442ecab`, tree `28d7ba7`, rejects the whole malformed pool
+  metric, claims/observes a pending fact before its connection gate, covers
+  product durations through 300 seconds and makes protected CI require new
+  Node, pool and product metrics from the real Collector.
+- Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
+  product/consumer 7/7 and the final affected 73/73 gate pass, with 28 cached in
+  63.79 seconds. Remediation evidence is local pending one push.
+- Protected run `33302931164` built healthy packaged services but its local-
+  platform job received 403 before metric collection because diagnostic Fetch
+  did not preserve the Router's required Host boundary.
+- Source `4a0221e`, tree `ffa3ce8`, replaces only that diagnostic request with
+  bounded `node:http`, an explicit reviewed Host and a 16 KiB response cap.
+  Inline module syntax, CI policy 33/33, platform policy 68/68, formatting and
+  diff checks pass. The application source is unchanged, so the previous 73/73
+  affected gate remains applicable; one corrective push is pending.
 
 ### Evidence
 
@@ -162,13 +207,13 @@ Append new entries at the top. Keep entries factual and concise.
 - `evidence/phase-11/game-days.md`, `bulkhead-saturation.txt` and
   `retry-amplification.txt` record the P11-R10 candidate.
 - `evidence/phase-12/README.md` indexes the exact trace, continuity, exporter
-  failure and cardinality/privacy implementation artifacts.
+  failure, golden-signal, backend product and cardinality/privacy implementation
+  artifacts.
 
 ### Next action
 
-Publish the latest P12-R01 evidence head once, resolve confirmation discussions
-`3888781189` and `3888781191`, require protected exact-head CI, then request one
-blocker-focused confirmation review.
+Finish PR45 protected CI/blocker-focused confirmation/merge while continuing
+the unpublished P12-R03/R04 backend golden-signal dependent.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

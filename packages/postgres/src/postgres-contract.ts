@@ -1,6 +1,7 @@
-import type { AsterTelemetry } from "@aster/telemetry";
+import type { AsterPostgresPoolRole, AsterTelemetry } from "@aster/telemetry";
 
 export const ASTER_POSTGRES_DEFAULTS = Object.freeze({
+  poolRole: "primary" as const,
   maxConnections: 10,
   connectionTimeoutMs: 3_000,
   idleTimeoutMs: 10_000,
@@ -13,6 +14,7 @@ export type AsterPostgresConfigurationOption =
   | "<options>"
   | "connectionString"
   | "telemetry"
+  | "poolRole"
   | "maxConnections"
   | "connectionTimeoutMs"
   | "idleTimeoutMs"
@@ -25,11 +27,15 @@ export type AsterPostgresConfigurationIssue = Readonly<{
   reason: "missing" | "invalid" | "unknown" | "internal";
 }>;
 
-export type AsterPostgresTelemetry = Pick<AsterTelemetry, "startDependencyOperation">;
+export type AsterPostgresTelemetry = Pick<
+  AsterTelemetry,
+  "startDependencyOperation" | "recordPostgresPool"
+>;
 
 export interface AsterPostgresOptions {
   readonly connectionString: string;
   readonly telemetry: AsterPostgresTelemetry;
+  readonly poolRole?: AsterPostgresPoolRole;
   readonly maxConnections?: number;
   readonly connectionTimeoutMs?: number;
   readonly idleTimeoutMs?: number;

@@ -66,8 +66,9 @@ test("local activation and derived credentials cannot select hosted or foreign o
   assert.throws(() => localEventDatabase("catalog", source("catalog"), "consumer"));
 });
 
-function fixture(event = profileEvent()) {
+function fixture(event = profileEvent(), nowMs = Date.parse(event.occurredAt)) {
   const urls: string[] = [],
+    poolRoles: Array<string | undefined> = [],
     calls: string[] = [],
     waits: number[] = [];
   const published: AsterKafkaPublishInput[] = [],
@@ -163,13 +164,15 @@ function fixture(event = profileEvent()) {
     }),
   };
   const factories = {
-    database: (options: { readonly connectionString: string }) => {
+    database: (options: { readonly connectionString: string; readonly poolRole?: string }) => {
       urls.push(options.connectionString);
+      poolRoles.push(options.poolRole);
       return database;
     },
     broker: () => broker,
     credential: () => Promise.resolve("12".repeat(32)),
     random: () => 0,
+    now: () => nowMs,
     delay: (ms: number, signal: AbortSignal) =>
       new Promise<void>((resolve) => {
         waits.push(ms);
@@ -185,6 +188,7 @@ function fixture(event = profileEvent()) {
   return {
     factories,
     urls,
+    poolRoles,
     calls,
     waits,
     published,
@@ -197,11 +201,18 @@ function fixture(event = profileEvent()) {
 }
 test("Identity runtime signs exact published bytes after claim commit and before acknowledgement; stop owns all resources", async () => {
   const f = fixture();
+  const deliveries: unknown[] = [];
   const runtime = await createLocalEventDelivery(
     {
       owner: "identity",
       connectionString: source("identity"),
-      telemetry,
+      telemetry: {
+        ...telemetry,
+        recordEventDelivery: (input) => {
+          deliveries.push(input);
+          return { status: "recorded" };
+        },
+      },
       logger: { info: () => "written" },
     },
     f.factories,
@@ -209,7 +220,7 @@ test("Identity runtime signs exact published bytes after claim commit and before
   runtime.start();
   runtime.start();
   await settled(() => f.waits.length === 1);
-  assert.deepEqual(f.calls, ["connect", "claim", "publish", "ack"]);
+  assert.deepEqual(f.calls, ["claim", "connect", "publish", "ack"]);
   const publication = f.published[0];
   assert.ok(publication);
   const signature = publication.headers?.[IDENTITY_EVENT_SIGNATURE];
@@ -224,6 +235,14 @@ test("Identity runtime signs exact published bytes after claim commit and before
     true,
   );
   assert.equal(new URL(f.urls[0] ?? "").username, "aster_identity_relay_local");
+  assert.deepEqual(f.poolRoles, ["relay"]);
+  assert.equal(deliveries.length, 1);
+  assert.deepEqual(deliveries[0], {
+    owner: "identity",
+    stage: "publish",
+    outcome: "success",
+    ageMs: 0,
+  });
   f.advance();
   await settled(() => f.waits.length === 2);
   assert.equal(f.waits[1], 1000);
@@ -232,6 +251,76 @@ test("Identity runtime signs exact published bytes after claim commit and before
   runtime.start();
   assert.deepEqual(f.calls.slice(-3), ["consumer_stop", "broker_close", "db_close"]);
   assert.equal(f.published.length, 1);
+});
+test("publication keeps its outcome but omits future or excessive event age", async () => {
+  const original = profileEvent();
+  const nowMs = Date.parse(original.occurredAt);
+  for (const occurredAt of [
+    new Date(nowMs + 1_000).toISOString(),
+    new Date(nowMs - 8 * 24 * 60 * 60 * 1_000).toISOString(),
+  ]) {
+    const f = fixture({ ...original, occurredAt }, nowMs);
+    const deliveries: unknown[] = [];
+    const runtime = await createLocalEventDelivery(
+      {
+        owner: "identity",
+        connectionString: source("identity"),
+        telemetry: {
+          ...telemetry,
+          recordEventDelivery: (input) => {
+            deliveries.push(input);
+            return { status: "recorded" };
+          },
+        },
+        logger: { info: () => "written" },
+      },
+      f.factories,
+    );
+    runtime.start();
+    await settled(() => f.waits.length === 1);
+    assert.deepEqual(deliveries, [{ owner: "identity", stage: "publish", outcome: "success" }]);
+    await runtime.stop();
+    await runtime.close(new AbortController().signal);
+  }
+});
+test("publication observes pending event age even when broker connection fails", async () => {
+  const f = fixture();
+  const broker = f.factories.broker();
+  const deliveries: unknown[] = [];
+  const runtime = await createLocalEventDelivery(
+    {
+      owner: "identity",
+      connectionString: source("identity"),
+      telemetry: {
+        ...telemetry,
+        recordEventDelivery: (input) => {
+          deliveries.push(input);
+          return { status: "recorded" };
+        },
+      },
+      logger: { info: () => "written" },
+    },
+    {
+      ...f.factories,
+      broker: () => ({
+        ...broker,
+        connect: () => {
+          f.calls.push("connect");
+          return Promise.resolve({ status: "unavailable" });
+        },
+      }),
+    },
+  );
+  runtime.start();
+  await settled(() => f.waits.length === 1);
+  assert.deepEqual(f.calls, ["claim", "connect"]);
+  assert.deepEqual(deliveries, [
+    { owner: "identity", stage: "publish", outcome: "unavailable", ageMs: 0 },
+  ]);
+  assert.equal(f.published.length, 0);
+  assert.equal(f.waits[0], 1000);
+  await runtime.stop();
+  await runtime.close(new AbortController().signal);
 });
 test("Engagement alone creates the narrow consumer pool and earliest-backlog handler; partial setup closes owned pools", async () => {
   const f = fixture();
@@ -254,6 +343,7 @@ test("Engagement alone creates the narrow consumer pool and earliest-backlog han
     f.urls.map((url) => new URL(url).username),
     ["aster_engagement_relay_local", "aster_engagement_consumer_local"],
   );
+  assert.deepEqual(f.poolRoles, ["relay", "consumer"]);
   assert.equal(f.consumers[0]?.topic, EVENT_TOPICS.identity);
   assert.equal(f.consumers[0].fromBeginning, true);
   await runtime.stop();

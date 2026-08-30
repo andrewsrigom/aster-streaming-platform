@@ -25,6 +25,7 @@ import type { PlaybackSessionPorts } from "./application/session-ports.js";
 import { playbackRuntimeConfiguration } from "./infrastructure/runtime-configuration.js";
 import { createPostgresPlaybackSessions } from "./infrastructure/postgres-sessions.js";
 import { createCatalogPublicationClient } from "./infrastructure/catalog-publication-client.js";
+import { observePlaybackSessions } from "./infrastructure/product-metrics.js";
 import { probePlaybackStore } from "./infrastructure/store-readiness.js";
 import { createPlaybackSubgraph } from "./transport/playback-subgraph.js";
 import { createPlaybackHttpServer, type PlaybackHttpServer } from "./transport/http-server.js";
@@ -112,13 +113,16 @@ export async function createPlaybackService(
             },
           }
         : {}),
-      sessions: createPlaybackSessions({
-        catalog,
-        sessions: createPostgresPlaybackSessions(database),
-        now: () => Math.floor(Date.now() / 1000),
-        nextId: randomUUID,
-        allowLocalMedia: true,
-      }),
+      sessions: observePlaybackSessions(
+        createPlaybackSessions({
+          catalog,
+          sessions: createPostgresPlaybackSessions(database),
+          now: () => Math.floor(Date.now() / 1000),
+          nextId: randomUUID,
+          allowLocalMedia: true,
+        }),
+        telemetry,
+      ),
       onOperation: (trace) => {
         logger.info({
           event: "aster.playback.graphql_completed",

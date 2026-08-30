@@ -1,5 +1,6 @@
 import { Pool, type PoolConfig } from "pg";
 
+import { ASTER_POSTGRES_POOL_ROLES } from "@aster/telemetry";
 import type {
   AsterDependencyObservation,
   AsterDependencyOperation,
@@ -25,13 +26,14 @@ import {
 import { executeTransaction } from "./postgres-transaction.js";
 import { waitFor } from "./postgres-wait.js";
 
-const MAXIMUM_OPTION_COUNT = 8;
+const MAXIMUM_OPTION_COUNT = 9;
 const MAXIMUM_CONNECTION_STRING_LENGTH = 2_048;
 const MAXIMUM_CONNECTIONS = 32;
 const MAXIMUM_TIMEOUT_MS = 300_000;
 const KNOWN_OPTIONS = new Set([
   "connectionString",
   "telemetry",
+  "poolRole",
   "maxConnections",
   "connectionTimeoutMs",
   "idleTimeoutMs",
@@ -63,7 +65,9 @@ type ValidatedOptions = Readonly<{
   telemetry: Readonly<{
     target: AsterPostgresTelemetry;
     start: AsterPostgresTelemetry["startDependencyOperation"];
+    recordPool: NonNullable<AsterPostgresTelemetry["recordPostgresPool"]> | undefined;
   }>;
+  poolRole: (typeof ASTER_POSTGRES_POOL_ROLES)[number];
   maxConnections: number;
   connectionTimeoutMs: number;
   idleTimeoutMs: number;
@@ -158,22 +162,35 @@ function telemetryBinding(value: unknown): ValidatedOptions["telemetry"] | undef
     return undefined;
   }
   try {
-    let owner: object | null = value;
-    for (let depth = 0; depth < 4 && owner; depth += 1) {
-      const method = Object.getOwnPropertyDescriptor(owner, "startDependencyOperation");
-      if (method) {
-        if ("get" in method || typeof method.value !== "function") {
-          return undefined;
+    const findMethod = (name: "startDependencyOperation" | "recordPostgresPool"): unknown => {
+      let owner: object | null = value;
+      for (let depth = 0; depth < 4 && owner; depth += 1) {
+        const method = Object.getOwnPropertyDescriptor(owner, name);
+        if (method) {
+          if ("get" in method) {
+            return null;
+          }
+          const candidate: unknown = method.value;
+          return typeof candidate === "function" ? candidate : null;
         }
-        return Object.freeze({
-          target: value as AsterPostgresTelemetry,
-          start: method.value as AsterPostgresTelemetry["startDependencyOperation"],
-        });
+        const prototype: unknown = Object.getPrototypeOf(owner);
+        owner = typeof prototype === "object" ? prototype : null;
       }
-      const prototype: unknown = Object.getPrototypeOf(owner);
-      owner = typeof prototype === "object" ? prototype : null;
+      return undefined;
+    };
+    const start = findMethod("startDependencyOperation");
+    const recordPool = findMethod("recordPostgresPool");
+    if (typeof start !== "function" || recordPool === null) {
+      return undefined;
     }
-    return undefined;
+    return Object.freeze({
+      target: value as AsterPostgresTelemetry,
+      start: start as AsterPostgresTelemetry["startDependencyOperation"],
+      recordPool:
+        typeof recordPool === "function"
+          ? (recordPool as NonNullable<AsterPostgresTelemetry["recordPostgresPool"]>)
+          : undefined,
+    });
   } catch {
     return undefined;
   }
@@ -208,6 +225,7 @@ function validateOptions(input: unknown): ValidatedOptions {
 
     const connectionString = ownDataValue(input, "connectionString");
     const telemetry = ownDataValue(input, "telemetry");
+    const poolRole = ownDataValue(input, "poolRole") ?? ASTER_POSTGRES_DEFAULTS.poolRole;
     const boundTelemetry = telemetryBinding(telemetry);
     if (!validConnectionString(connectionString)) {
       issues.push(
@@ -216,6 +234,9 @@ function validateOptions(input: unknown): ValidatedOptions {
     }
     if (!boundTelemetry) {
       issues.push(issue("telemetry", telemetry === undefined ? "missing" : "invalid"));
+    }
+    if (!ASTER_POSTGRES_POOL_ROLES.includes(poolRole as never)) {
+      issues.push(issue("poolRole", "invalid"));
     }
 
     const maxConnections = boundedInteger(
@@ -267,6 +288,7 @@ function validateOptions(input: unknown): ValidatedOptions {
     return Object.freeze({
       connectionString: connectionString as string,
       telemetry: boundTelemetry as ValidatedOptions["telemetry"],
+      poolRole: poolRole as ValidatedOptions["poolRole"],
       maxConnections: maxConnections as number,
       connectionTimeoutMs: connectionTimeoutMs as number,
       idleTimeoutMs: idleTimeoutMs as number,
@@ -341,6 +363,28 @@ function safePoolCount(read: () => number, maximum: number): number {
   }
 }
 
+function metricPoolCounts(
+  pool: AsterPostgresPool,
+  maximum: number,
+): Readonly<{ total: number; idle: number; waiting: number }> | undefined {
+  try {
+    const total = pool.totalCount;
+    const idle = pool.idleCount;
+    const waiting = pool.waitingCount;
+    if (
+      ![total, idle, waiting].every(
+        (value) => Number.isSafeInteger(value) && value >= 0 && value <= maximum,
+      ) ||
+      idle > total
+    ) {
+      return undefined;
+    }
+    return Object.freeze({ total, idle, waiting });
+  } catch {
+    return undefined;
+  }
+}
+
 function isPgQueryTimeout(error: unknown): boolean {
   if (!(error instanceof Error)) {
     return false;
@@ -411,6 +455,7 @@ export function createAsterPostgresAdapterWithPoolFactory(
   const activeOperations = new Set<Promise<void>>();
   const backgroundAcquisitions = new Set<Promise<void>>();
   const isOpen = (): boolean => state === "open";
+  let recordPoolSnapshot = (): void => undefined;
 
   const run = async (
     operation: "connect" | "probe" | "query",
@@ -449,11 +494,13 @@ export function createAsterPostgresAdapterWithPoolFactory(
       }
 
       reservedSlots += 1;
+      recordPoolSnapshot();
       let slotReleased = false;
       const releaseSlot = (): void => {
         if (!slotReleased) {
           slotReleased = true;
           reservedSlots -= 1;
+          recordPoolSnapshot();
         }
       };
 
@@ -606,11 +653,35 @@ export function createAsterPostgresAdapterWithPoolFactory(
       reservedSlots,
     });
 
+  recordPoolSnapshot = (): void => {
+    if (!options.telemetry.recordPool) {
+      return;
+    }
+    const counts = metricPoolCounts(pool, options.maxConnections);
+    if (!counts) {
+      return;
+    }
+    try {
+      options.telemetry.recordPool.call(options.telemetry.target, {
+        pool: options.poolRole,
+        state,
+        maximum: options.maxConnections,
+        total: counts.total,
+        idle: counts.idle,
+        reserved: reservedSlots,
+        waiting: counts.waiting,
+      });
+    } catch {
+      // Metrics remain best effort and cannot change database behavior.
+    }
+  };
+
   const startClose = (): Promise<AsterPostgresCloseResult> => {
     if (closeWork) {
       return closeWork;
     }
     state = "closing";
+    recordPoolSnapshot();
     const rawClose = (async (): Promise<void> => {
       for (const destroy of [...activeDestroyers]) {
         try {
@@ -622,6 +693,7 @@ export function createAsterPostgresAdapterWithPoolFactory(
       await Promise.allSettled([...activeOperations, ...backgroundAcquisitions]);
       await pool.end();
       state = "closed";
+      recordPoolSnapshot();
     })();
     closeWork = waitFor(rawClose, undefined, options.closeTimeoutMs).then((result) => {
       switch (result.status) {
@@ -666,6 +738,8 @@ export function createAsterPostgresAdapterWithPoolFactory(
       }
     },
   });
+
+  recordPoolSnapshot();
 
   return Object.freeze({
     connect: (signal?: AbortSignal) => run("connect", signal),

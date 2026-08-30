@@ -294,6 +294,7 @@ jobs:
         run: |
           docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full exec -T identity node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
+          import { request } from 'node:http';
           import { setTimeout } from 'node:timers/promises';
           assert.equal(process.getuid(), 1000);
           async function json(url) {
@@ -302,7 +303,54 @@ jobs:
             return response.json();
           }
           assert.equal((await json('http://127.0.0.1:3100/health/ready')).readiness, 'ready');
-          const required = ['http_server_request_duration_seconds_count', 'aster_dependency_operation_outcomes_total', 'process_cpu_time_seconds_total', 'process_memory_usage_bytes', 'nodejs_eventloop_delay_p99_seconds', 'aster_telemetry_export_attempts_total'];
+          const playbackBody = JSON.stringify({
+              query: 'mutation StartPlayback($titleId: ID!) { createPlaybackSession(titleId: $titleId) { code } }',
+              operationName: 'StartPlayback',
+              variables: { titleId: '00000000-0000-4000-8000-000000000001' },
+          });
+          const playbackResponse = await new Promise((resolve, reject) => {
+            const outgoing = request('http://router:4000/graphql', {
+              method: 'POST',
+              signal: AbortSignal.timeout(2000),
+              headers: {
+                host: '127.0.0.1:4000',
+                origin: 'http://127.0.0.1:4000',
+                'x-aster-csrf': '1',
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(playbackBody),
+                connection: 'close',
+              },
+            }, incoming => {
+              let text = '';
+              incoming.setEncoding('utf8');
+              incoming.on('data', chunk => {
+                if (text.length + chunk.length > 16384) {
+                  incoming.destroy(new Error('GraphQL response exceeded 16 KiB.'));
+                  return;
+                }
+                text += chunk;
+              });
+              incoming.on('error', reject);
+              incoming.on('end', () => resolve({ status: incoming.statusCode, text }));
+            });
+            outgoing.on('error', reject);
+            outgoing.end(playbackBody);
+          });
+          assert.equal(playbackResponse.status, 200);
+          const playback = JSON.parse(playbackResponse.text);
+          assert.equal(playback.errors, undefined);
+          assert.equal(playback.data?.createPlaybackSession?.code, 'NOT_PLAYABLE');
+          const required = [
+            'http_server_request_duration_seconds_count',
+            'aster_dependency_operation_outcomes_total',
+            'aster_nodejs_memory_usage_bytes',
+            'aster_postgresql_pool_connections',
+            'aster_product_operation_outcomes_total',
+            'process_cpu_time_seconds_total',
+            'process_memory_usage_bytes',
+            'nodejs_eventloop_delay_p99_seconds',
+            'aster_telemetry_export_attempts_total',
+          ];
           const deadline = Date.now() + 30000;
           let present = [];
           while (Date.now() < deadline) {

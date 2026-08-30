@@ -59,8 +59,8 @@ Limitations
 
 - This is representative contract coverage, not a claim that every GraphQL
   field emits a distinct span.
-- Protected run `33298943743` passed the previous exact head. The latest exact
-  media-path and real Catalog-producer corrections still require protected
-  exact-head execution and blocker-focused confirmation before verification.
+- Protected run `33300561121`, clean blocker-focused confirmation, PR45 squash
+  main `ce66f9c` and exact-main run `33301425220` verify the latest media-path
+  and real Catalog-producer corrections.
 - No high-cardinality request, user, profile, title, URL or GraphQL document is
   added to a span.

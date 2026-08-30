@@ -126,6 +126,7 @@ export async function createDiscoveryService(
       createAsterPostgresAdapter({
         connectionString: config.projectorConnectionString,
         telemetry,
+        poolRole: "projection",
         maxConnections: 2,
         connectionTimeoutMs: 1_000,
         statementTimeoutMs: 1_200,

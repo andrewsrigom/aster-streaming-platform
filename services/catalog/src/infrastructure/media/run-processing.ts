@@ -2,6 +2,7 @@ import type { AsterObjectStorageAdapter } from "@aster/object-storage-s3";
 import type {
   AsterDependencyObservation,
   AsterObservationOutcome,
+  AsterProductOutcome,
   AsterTelemetry,
 } from "@aster/telemetry";
 import type { createCatalogAcquisitions } from "../../application/acquire-media.js";
@@ -23,15 +24,51 @@ export async function runMediaProcessing(
     storage: Pick<AsterObjectStorageAdapter, "read" | "write">;
     selector?: CandidateSelector;
     onReady: () => void;
-    telemetry?: Pick<AsterTelemetry, "startDependencyOperation">;
+    telemetry?: Pick<AsterTelemetry, "startDependencyOperation" | "recordProductOperation">;
   }>,
 ): Promise<CatalogStoreResult<Readonly<{ attempt: ProcessingAttempt; reused: boolean }>>> {
-  const claimed = await ports.processing.claim(acquisitionId, request);
+  const startedAt = performance.now();
+  const productOutcome = (status: string): AsterProductOutcome => {
+    switch (status) {
+      case "completed":
+        return "completed";
+      case "conflict":
+        return "conflict";
+      case "cancelled":
+        return "cancelled";
+      case "indeterminate":
+        return "indeterminate";
+      case "unavailable":
+        return "unavailable";
+      default:
+        return "rejected";
+    }
+  };
+  const recordProduct = (outcome: AsterProductOutcome): void => {
+    try {
+      ports.telemetry?.recordProductOperation?.({
+        operation: "media_processing",
+        outcome,
+        durationMs: Math.min(300_000, Math.max(0, performance.now() - startedAt)),
+      });
+    } catch {
+      // Product telemetry cannot change media processing.
+    }
+  };
+  let claimed: Awaited<ReturnType<typeof ports.processing.claim>>;
+  try {
+    claimed = await ports.processing.claim(acquisitionId, request);
+  } catch (error) {
+    recordProduct("failed");
+    throw error;
+  }
   if (claimed.status !== "completed") {
+    recordProduct(productOutcome(claimed.status));
     return claimed;
   }
   const attempt = claimed.value;
   if (attempt.status === "FAILED") {
+    recordProduct("rejected");
     return { status: "invalid_transition" };
   }
   const reused = attempt.status === "SUCCEEDED";
@@ -157,6 +194,7 @@ export async function runMediaProcessing(
     } catch {
       // Optional telemetry cannot change the thrown storage/audit failure.
     }
+    recordProduct("failed");
     throw error;
   }
   const outcome: AsterObservationOutcome =
@@ -172,5 +210,6 @@ export async function runMediaProcessing(
   } catch {
     // Optional telemetry cannot change the durable result.
   }
+  recordProduct(productOutcome(result.status));
   return result;
 }

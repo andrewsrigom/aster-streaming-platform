@@ -2,7 +2,7 @@
 
 ## Resume point
 
-P12-R01 is active on PR45 from `feat/p12-trace-observability`. Corrected source
+P12-R01 is released from `feat/p12-trace-observability`. Corrected source
 `03abe8ac6d30c34902442367da241e0c295ff122`, tree
 `b1474c7396d3e65b53c29a87b35e32d793ad5ede`, implements the trace/export slice.
 Protected run `33298943743` passed previous exact head `e5f93e1`; blocker-focused
@@ -10,8 +10,26 @@ confirmation discussions `3888781189` and `3888781191` found the actual media
 endpoint and real Catalog producer gaps. Both are corrected with a bounded exact
 media path and trace-only event-producer boundary. Telemetry18/18,
 Catalog247/247, event delivery23/23, media runner3/3 and affected gate73/73 with
-53 cached in53.307 seconds pass. The old named P12 stashes are historical and
-must not be restored over this branch.
+53 cached in53.307 seconds pass. Evidence head `9a058ee` passed protected run
+`33300561121` and clean confirmation; PR45 squash main `ce66f9c` passed
+exact-main run `33301425220`. The old named P12 stashes are historical and must
+not be restored.
+
+P12-R03/R04 backend golden signals are active locally on the sole permitted
+branch `feat/p12-golden-product-signals`, rebased on exact main `ce66f9c` and
+published as PR46. Its
+change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
+product-result metrics without browser remote collection. Initial review found
+three integrity gaps. Source `4a0221e`, tree `ffa3ce8`, omits invalid
+event ages, rejects malformed vendor pool snapshots, observes pending outbox
+age before broker connection, covers product durations through 300 seconds and
+adds protected real-Collector assertions. It passes telemetry 19/19,
+PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7 and the
+affected gate 73/73 with 28 cached in 63.79 seconds. Protected run `33302931164`
+proved the packaged services healthy but the diagnostic Fetch received 403
+because it did not preserve the Router's Host boundary. The probe now uses
+bounded `node:http` with explicit Host; inline syntax, CI policy 33/33 and
+platform policy 68/68 pass. The correction is local and not pushed yet.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -44,21 +62,18 @@ Phase11.
 
 ## Exact next actions
 
-1. Commit and publish the corrected P12 evidence head once.
-2. Resolve confirmation discussions `3888781189` and `3888781191`, require
-   protected exact-head CI, then request one blocker-focused confirmation.
-3. Squash-merge PR45 without bypass and prove exact main.
-4. Rebase the parked local P12-R03/R04 branch onto exact main and repeat its
-   affected gate before publication.
-5. Complete the Phase12 metrics/SLI/SLO/dashboard/alert/diagnostic items in
+1. Commit the exact remediation evidence and push PR46 once.
+2. Await protected real-Collector CI, resolve the three initial findings and
+   request one blocker-focused confirmation.
+3. Squash merge and prove exact main after clean confirmation.
+4. Complete the Phase12 browser policy, SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 
-P12-R01 is active on PR45 and already based on released Phase11 main. It owns
+P12-R01 is released on main. It owns
 repository trace context, structured-log
 correlation, privacy/cardinality and bounded exporter failure under the current
 OpenTelemetry ADR. Evidence is indexed under `evidence/phase-12/`. Rebase it
-only if main changes again; current status is implemented, not verified or
-released.
+only if its source boundary changes; current status is released.
 
 ## Evidence boundaries
 
@@ -84,6 +99,6 @@ running. Do not restart WSL/Docker or repeat host CPU/memory diagnostics.
 
 ## Do not do yet
 
-Do not publish the dependent branch, add chaos to product routes, invent SLOs,
+Do not add chaos to product routes, invent SLOs,
 repeat the full transcode/demo without an invalidating change, create hosted
 resources or broaden Phase11 into Phase12 observability/Phase14 load testing.

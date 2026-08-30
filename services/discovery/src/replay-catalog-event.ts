@@ -26,6 +26,7 @@ try {
   }
   database = createAsterPostgresAdapter({
     connectionString: localDiscoveryDatabase(process.env, "projector"),
+    poolRole: "projection",
     maxConnections: 1,
     connectionTimeoutMs: 500,
     operationTimeoutMs: 1500,
