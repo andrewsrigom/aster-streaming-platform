@@ -288,6 +288,7 @@ export function validateRouterSources(sources) {
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
     trafficShaping.length === 0 ||
+    trafficShaping.includes("${") ||
     containsYamlKey(trafficShaping, "retry") ||
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
