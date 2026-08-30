@@ -248,6 +248,33 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
     ["assert.equal(process.getuid(), 1000)", "assert.ok(true)"],
     ["assert.deepEqual(present, required)", "assert.ok(present)"],
     ["'supergraph', 'catalog_title_read'", "'supergraph'"],
+    [
+      "timeout-minutes: 1\n        run: |\n          grafana_health=",
+      "timeout-minutes: 20\n        run: |\n          grafana_health=",
+    ],
+    [
+      "--profile full logs --no-color --tail 120 grafana prometheus",
+      "--profile full logs grafana prometheus",
+    ],
+    ["api/datasources/uid/aster-prometheus/health", "api/datasources/uid/unreviewed/health"],
+    [
+      `grep -Eq '"database"[[:space:]]*:[[:space:]]*"ok"' <<< "$grafana_health"`,
+      `grep -Fq '"database":"ok"' <<< "$grafana_health"`,
+    ],
+    [
+      "api/datasources/proxy/uid/aster-prometheus/api/v1/query",
+      "api/datasources/proxy/uid/unreviewed/api/v1/query",
+    ],
+    [
+      "ratio_rate5m%7Bsli%3D%22playback_start%22%7D",
+      "ratio_rate5m%7Bsli%3D%22playback_session%22%7D",
+    ],
+    ["api/dashboards/uid/aster-operational-overview", "api/dashboards/uid/unreviewed"],
+    ["--profile full stop --timeout 5 grafana", "--profile full stop grafana"],
+    [
+      `test "$(docker inspect --format '{{.State.Health.Status}}' "$platform_status_id")" = healthy`,
+      `test "$(docker inspect --format '{{.State.Health.Status}}' "$platform_status_id")" = running`,
+    ],
     ['--profile "*" down --volumes', "down --volumes"],
   ] as const) {
     assert.ok(

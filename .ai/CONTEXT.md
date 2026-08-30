@@ -6,13 +6,13 @@ Aster is a video-on-demand platform for openly licensed films. Its initial value
 
 ## Current implementation state
 
-Phases 00–10 are released locally through protected and exact post-merge CI.
+Phases 00–11 are released locally through protected and exact post-merge CI.
 Guarded sessions/profiles, rights-aware Catalog, Apollo Router, public Next.js
 SSR, accessible HLS playback, durable progress/resume, owned library and owner
 event recovery, Discovery search/home, SSR/private enhancement and advanced
-Redis/concurrency pass their recorded acceptance. Phase11 closeout is externally
-gated and Phase12 observability is active as its unpublished dependent. Exact
-progress lives in `.ai/CURRENT_STATE.md`.
+Redis/concurrency, bounded resilience and failure game days pass their recorded
+acceptance. Phase12 observability is active. Exact progress lives in
+`.ai/CURRENT_STATE.md`.
 
 ## Fixed boundaries
 
@@ -56,22 +56,14 @@ Repository tool versions are selected and pinned in Phase 00. Application, conta
 
 ## Delivery state
 
-Active phase: **Phase 12 — Observability, SLIs, and SLOs**. Phase10 closed
-through PR40 and Phase11 is released through PR44 main `834bf15`, with every
-required exact-main gate recorded in current state. P12-R01/R02/R08/R09 is
-released through PR45 main `ce66f9c`; backend golden signals are released
-through PR46 main `2245251`; browser QoE and its explicit local-only retention
-boundary are released through PR47 main `6dba10e`. P12-R05/R06 is active on
-PR48. Evidence head `aca4aba` passed protected run `33310118280`, including
-packaged live SLI ratios. Final confirmation then found missing failure-only
-ratios. Source `757f6a0`, tree `e9c7d24`, derives zero only from a present
-population for recording and objective queries; exact `promtool` and27/27
-focused checks plus the affected60/60 gate pass. Its protected run `33311729108`
-passed, but confirmation found an idle `0/0` boundary. Source
-`c4e6a76`, tree `cfc21f6`, filters ratios on positive denominators; exact
-`promtool`,27/27 focused checks and the corrected60/60 affected gate pass.
-Protected acceptance, confirmation, merge and exact-main CI remain before
-dashboard work.
+Active phase: **Phase 12 — Observability, SLIs, and SLOs**. Phase11 is released
+through PR44 main `834bf15`. P12 trace/privacy/export, backend signals, browser
+QoE and executable SLI/SLO work are released through PR45–48. PR48 final head
+`72d5656`, tree `2374279`, passed protected run `33313090638` attempt2, clean
+confirmation and squash main `a99d3d5`; exact-main run `33314309449` passed.
+P12-R12 is active on `feat/p12-operational-overview` from that exact main. It
+owns one bounded local Grafana overview for user impact, dependency health and
+runtime saturation. Alerts and diagnostic exercises follow.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

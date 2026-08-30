@@ -61,6 +61,7 @@
 ### Operate the system
 
 - `docs/operations/LOCAL_DEVELOPMENT.md`
+- `docs/operations/OPERATIONAL_OVERVIEW.md`
 - `docs/operations/REPOSITORY_GOVERNANCE.md`
 - `docs/operations/CONFIGURATION_AND_ENVIRONMENTS.md`
 - `docs/operations/RUNTIME_LOGGING.md`

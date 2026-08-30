@@ -106,8 +106,8 @@ If localhost fails, inspect `ps --all`, Router/owner logs and port 4000. An inte
 | no profile / core target | none | none |
 | `runtime` | Router, Identity, Catalog, Playback, Engagement | 4000 |
 | `integration` | Router, Identity, Catalog, Playback, Engagement, Kafka, S3 | 4000 |
-| `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus | 4000, 9090 |
-| `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus | 4000, 9090 |
+| `observability` + overlay | Router, Identity, Catalog, Playback, Engagement, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
+| `full` + overlay | Router, Identity, Catalog, Playback, Engagement, Kafka, S3, Collector, Prometheus, Grafana | 3001, 4000, 9090 |
 
 Discovery is intentionally absent from the base profiles. Start released search
 and home rails with the event and Discovery overlays:
@@ -138,7 +138,14 @@ docker compose --project-name aster --file infra/compose/compose.yml --file infr
 
 Use the overlay with `observability` or `full`; the base file alone does not enable export. Switching to a smaller profile does not stop previously enabled services: use the all-profile `down` command first, which preserves data. Do not supply arbitrary overlays to the local reset.
 
-The optional stack reuses the released integration pins: Apache Kafka 4.3.1, VersityGW 1.7.0, Collector 0.159.0 and Prometheus 3.14.0. Kafka is single-node/plaintext, not a production cluster. S3 is local synthetic storage; its upstream root process has all capabilities dropped. Other optional processes inherit upstream non-root users. Collector/Prometheus configs are baked into digest-pinned images, with no host config mounts.
+The optional stack reuses the released integration pins: Apache Kafka 4.3.1,
+VersityGW 1.7.0, Collector 0.159.0, Prometheus 3.14.0 and Grafana OSS 13.2.0.
+Kafka is single-node/plaintext, not a production cluster. S3 is local synthetic
+storage; its upstream root process has all capabilities dropped. Other optional
+processes inherit upstream non-root users. Collector, Prometheus and Grafana
+configs are baked into digest-pinned images, with no host config mounts. Grafana
+is an additive loopback-only Viewer surface with disposable state and only the
+edge network; it is never product readiness or authority.
 
 Open [Prometheus](http://127.0.0.1:9090). Queries include
 `process_memory_usage_bytes`, `nodejs_eventloop_delay_p99_seconds`,
@@ -148,8 +155,11 @@ Open [Prometheus](http://127.0.0.1:9090). Queries include
 Collector and private Router scrape intervals are 5 seconds. Prometheus limits
 samples, labels, query concurrency/time and retention to 1 hour/128 MB.
 Retention is not a hard filesystem quota. The SLI rules prove local mechanics;
-one-hour data cannot prove a 28/30-day SLO. No dashboard, alert, tracing/log
-backend or historical compliance result is claimed.
+open the [provisioned Grafana overview](http://127.0.0.1:3001/d/aster-operational-overview/aster-operational-overview)
+for the three-layer diagnostic view. [Dashboard questions, limits and
+recovery](OPERATIONAL_OVERVIEW.md).
+One-hour data cannot prove a 28/30-day SLO. No alert, tracing/log backend or
+historical compliance result is claimed.
 
 Local full-profile evidence proves real HTTP/dependency/CPU/memory/event-loop/export metrics, Collector loss with Identity still live/ready, explicit unhealthy telemetry status and recovery. Failed exports reappear under `aster_export_result="failure"` after recovery. Collector-down shutdown completed naturally in 4223 ms including the Docker stop call, exit 143, with degraded telemetry delivery rather than a false flush success.
 
@@ -368,7 +378,19 @@ The configured GitHub governance job runs repository-memory, documentation, publ
 
 ## Local endpoints
 
-The core intentionally publishes no host port. PostgreSQL, Redis, initializer and status communicate through the internal `platform` network. Normal runtime publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200, Playback 3300, Engagement 3400 and optional Discovery 3500 remain private, with `/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics overlay alone exposes Identity/Catalog on loopback and disables private trust; it is not the federated topology. The Web overlay publishes 3000 and observability publishes Prometheus 9090. PostgreSQL, Redis, broker, private storage and Collector have no host ports. [Discovery operations](../../services/discovery/README.md), [Playback operations](../../services/playback/README.md) and [Catalog verification](../../services/catalog/README.md#docker-runtime-and-technical-media) describe the scoped checks.
+The core intentionally publishes no host port. PostgreSQL, Redis, initializer
+and status communicate through the internal `platform` network. Normal runtime
+publishes only Router on `127.0.0.1:4000`; Identity 3100, Catalog 3200, Playback
+3300, Engagement 3400 and optional Discovery 3500 remain private, with
+`/graphql`, `/health/live` and `/health/ready`. The standalone diagnostics
+overlay alone exposes Identity/Catalog on loopback and disables private trust;
+it is not the federated topology. The Web overlay publishes 3000;
+observability publishes Grafana 3001 and Prometheus 9090, all on loopback.
+PostgreSQL, Redis, broker, private storage and Collector have no host ports.
+[Discovery operations](../../services/discovery/README.md), [Playback
+operations](../../services/playback/README.md) and [Catalog
+verification](../../services/catalog/README.md#docker-runtime-and-technical-media)
+describe the scoped checks.
 
 Later phases record ports only when a user-facing or operator-facing endpoint exists. Expected categories include:
 
@@ -438,7 +460,11 @@ The P01-R01 limits are:
 
 On the recorded WSL host, the first local pull completed in `11.79` seconds, clean startup reached health in `9.80` seconds, the PostgreSQL image occupied `302,294,786` bytes, the Redis image occupied `118,619,095` bytes, and the initialized PostgreSQL volume occupied `65.39 MB`. One idle sample observed approximately `37.94 MiB` for PostgreSQL, `6.45 MiB` for Redis, and `1.57 MiB` for status. These values are evidence-scoped observations, not portable requirements.
 
-The optional profiles add Identity 1 CPU/384 MiB/64 PIDs, Kafka 1 CPU/768 MiB/192 PIDs, S3 1 CPU/384 MiB/96 PIDs, Collector 0.5 CPU/128 MiB/64 PIDs and Prometheus 0.5 CPU/256 MiB/64 PIDs. All local service logs rotate at 5 MiB with two files. Media-processing bounds remain Phase 06 work.
+The optional profiles add Identity 1 CPU/384 MiB/64 PIDs, Kafka 1 CPU/768 MiB/192 PIDs, S3 1 CPU/384 MiB/96 PIDs, Collector 0.5 CPU/128 MiB/64 PIDs,
+Prometheus 0.5 CPU/256 MiB/64 PIDs and Grafana 0.5 CPU/384 MiB/128 PIDs.
+Grafana plugin preinstallation and automatic updates are disabled. All local
+service logs rotate at 5 MiB with two files. Media-processing bounds remain
+Phase 06 work.
 
 Developers with limited resources may start a profile containing only dependencies required by the active phase.
 

@@ -1,6 +1,10 @@
 # Operational Runbooks
 
-These runbooks are starting procedures. Phase 12 links exact dashboard, query, and command references after telemetry exists.
+These runbooks are starting procedures. Start diagnosis with the provisioned
+[operational overview](OPERATIONAL_OVERVIEW.md): user impact establishes the
+affected journey, dependency health narrows the failing boundary and runtime
+saturation distinguishes CPU, memory, event-loop or PostgreSQL pool pressure.
+Alert-specific links remain P12-R07 work.
 
 ---
 
@@ -214,8 +218,9 @@ owner-data rewrite.
 
 ### Follow-up
 
-Record the cause and whether fallback or isolation policy changed. Phase 12
-adds alert/dashboard links; do not invent a field SLO from a game-day duration.
+Record the cause and whether fallback or isolation policy changed. Use the
+current operational overview for finite local evidence; P12-R07 adds alert
+links. Do not invent a field SLO from a game-day duration.
 
 ---
 

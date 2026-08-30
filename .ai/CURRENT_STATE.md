@@ -49,8 +49,11 @@ confirmation. It squash-merged as tree-identical main `2245251`; exact-main run
 `33304196111` passed every job and releases P12-R03 plus the backend portion of
 P12-R04. Browser QoE source `74780e5` passed protected run `33305864184`, clean
 confirmation and PR47 squash main `6dba10e`; exact-main run `33307059156`
-passed every job and releases P12-R04/R11. P12-R05/R06 is active from that
-exact main. Full Phase00–14 goal stays active.
+passed every job and releases P12-R04/R11. P12-R05/R06 is released through PR48
+final head `72d5656`, tree `2374279`, protected run `33313090638` attempt2,
+clean confirmation, squash main `a99d3d5` and exact-main run `33314309449`.
+P12-R12 operational overview is active from that exact main. Full Phase00–14
+goal stays active.
 
 ## Verified
 
@@ -186,7 +189,45 @@ could retain a `0/0` `NaN` ratio. Source `c4e6a76`, tree `cfc21f6`, filters ever
 recording and objective ratio on a positive denominator. Exact Prometheus tests
 cover prior-traffic and preexisting-counter idle windows;27/27 focused checks
 pass. The corrected affected gate passes60/60 with50 cached in47.383 seconds.
-Protected acceptance remains.
+Protected run `33313090638` attempt1 reached an external BuildKit EOF before the
+profile build; rerunning only failed jobs as attempt2 passed every exact-head
+job. The exact-head review found no remaining blocker. PR48 squash-merged as
+main `a99d3d5` with reviewed tree `2374279`; exact-main run `33314309449` passed
+every required job and releases P12-R05/R06.
+
+P12-R12 is active on `feat/p12-operational-overview`. ADR-0042 selects the
+unmodified digest-pinned Grafana OSS 13.2.0 runtime. The local candidate bakes a
+read-only Prometheus data source and one 15-panel dashboard, publishes only
+loopback port3001, grants finite anonymous Viewer access, joins only `edge` and
+uses disposable bounded tmpfs state. Fixed queries separate user impact,
+dependency health and runtime saturation. Grafana is absent from product and
+`platform-status` readiness. The initial complete candidate gate passed15/15
+tasks in74.899 seconds. Protected run `33316483464` then exposed an
+underprovisioned64-PID/256-MiB Grafana startup plus attempted background plugin
+installation. One isolated local probe reproduced it and measured100 startup
+PIDs,87 healthy PIDs and253.2 MiB. The correction uses128 PIDs,384 MiB and
+disables plugin preinstallation/automatic update. Its isolated repeat became
+healthy with99 PIDs/225.9 MiB, provisioned the read-only data source/dashboard,
+emitted no plugin-installer/thread failure and left zero scoped resources. The
+resource-corrected complete candidate gate passed15/15 tasks in62.976 seconds.
+Initial review discussions `3889614208` and `3889614213` then found a mismatched
+Playback SLI label and stale `lastNotNull` range semantics. The batched local
+correction uses released `playback_start`, cross-checks all four dashboard IDs
+against the SLO contract and makes their ratio queries current-instant only.
+Focused dashboard/platform tests pass39/39; combined focused CI/platform/reset
+tests pass62/62. The corrected complete candidate passes15/15 tasks with2 cached
+in81.29 seconds. Protected run `33317459549` then built the corrected full
+profile and passed packaged telemetry but exposed a CI-only exact-string defect:
+Grafana13 formats `/api/health` as valid whitespace-bearing JSON. A unique
+two-container local probe confirmed health, fixed data source, exact Playback
+query and immutable dashboard; all scoped resources were removed. The bounded
+assertion now tolerates JSON whitespace while requiring `database=ok`. Its
+focused CI policy tests pass23/23. The corrected complete candidate passes15/15
+tasks with3 cached in77.929 seconds. Exact source `c678484`, tree `397ead5`, then
+passed every protected job in run `33317834141`, including full-profile Grafana
+health, fixed data source/query/dashboard, optional failure isolation and the
+complete playable/integration suites. Both initial review discussions are
+evidenced and resolved. One exact-head confirmation and merge remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -440,15 +481,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 SLI/SLO corrected protected acceptance/release, dashboards, alerts, diagnostic
-exercises and operational overview remain.
+Phase12 burn-rate alerts, three diagnostic exercises and operational-overview
+protected release remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete the P12-R05/R06 idle-window correction gate, publish one documented
-head and pass protected acceptance. Resolve the exact review finding, perform
-the bounded confirmation, then merge and confirm exact main before dashboard work.
+Complete P12-R12 documentation/evidence and affected gates, then publish one
+candidate for protected live Grafana provisioning, confirmation and merge.
 
 ## Runtime and recovery
 

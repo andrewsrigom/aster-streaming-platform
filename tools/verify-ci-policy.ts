@@ -363,6 +363,38 @@ export function validateWorkflowPolicy(
       "Docker-only demo must verify both live Router-backed SLI ratios",
     ],
     [
+      /- name: Verify provisioned operational overview and optional failure isolation\s+timeout-minutes: 1\s+run: \|/u,
+      "operational overview acceptance must have a bounded protected step",
+    ],
+    [
+      /- name: Report bounded optional-profile startup failure\s+if: failure\(\)\s+timeout-minutes: 1\s+run: \|[\s\S]*?--profile full logs --no-color --tail 120 grafana prometheus/u,
+      "optional-profile startup failure must preserve bounded Grafana and Prometheus diagnostics",
+    ],
+    [
+      /http:\/\/127\.0\.0\.1:3001\/api\/datasources\/uid\/aster-prometheus\/health/u,
+      "protected acceptance must verify the provisioned Prometheus data source",
+    ],
+    [
+      /grep -Eq '"database"\[\[:space:\]\]\*:\[\[:space:\]\]\*"ok"' <<< "\$grafana_health"/u,
+      "Grafana health acceptance must tolerate valid JSON whitespace without weakening the value",
+    ],
+    [
+      /api\/datasources\/proxy\/uid\/aster-prometheus\/api\/v1\/query\?query=aster%3Asli%3Agood%3Aratio_rate5m%7Bsli%3D%22playback_start%22%7D/u,
+      "protected acceptance must execute the released Playback SLI through Grafana",
+    ],
+    [
+      /http:\/\/127\.0\.0\.1:3001\/api\/dashboards\/uid\/aster-operational-overview/u,
+      "protected acceptance must verify the provisioned dashboard UID",
+    ],
+    [
+      /--profile full stop --timeout 5 grafana/u,
+      "protected acceptance must stop only Grafana inside a finite timeout",
+    ],
+    [
+      /test "\$\(docker inspect --format '\{\{\.State\.Health\.Status\}\}' "\$platform_status_id"\)" = healthy/u,
+      "Grafana loss must leave product platform health healthy",
+    ],
+    [
       /^\s*allow-licenses: *0BSD, Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, Elastic-2\.0, ISC, MIT, MITNFA *$/mu,
       "dependency review must enforce the reviewed license set",
     ],

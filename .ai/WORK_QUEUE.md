@@ -152,7 +152,8 @@ Historical stashes are superseded.
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | DONE |
 | 58 | Export platform golden signals and backend product outcomes | P12-R03 | DONE |
 | 59 | Define bounded browser playback telemetry and complete local QoE measurement | P12-R11 | DONE |
-| 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | IN_PROGRESS |
+| 60 | Define executable SLIs, initial SLOs and error budgets | P12-R05 | DONE |
+| 61 | Provision a bounded three-layer operational overview | P12-R12 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -214,8 +215,13 @@ protected run `33311729108` passed every job, but confirmation discussion
 `c4e6a76`, tree `cfc21f6`, filters ratios on positive denominators and adds
 prior-traffic/preexisting-counter idle tests. Exact `promtool` and27/27 focused
 checks pass; the corrected affected gate passes60/60 with50 cached in47.383
-seconds. Protected acceptance, bounded confirmation, merge and exact-main CI
-remain.
+seconds. Final head `72d5656`, tree `2374279`, passed protected run
+`33313090638` attempt2 and clean confirmation. PR48 squash main `a99d3d5` has
+the reviewed tree; exact-main run `33314309449` passed every required job and
+releases item60. Item61 starts from that exact main on
+`feat/p12-operational-overview`. It owns the bounded Grafana image,
+version-controlled three-layer dashboard, isolation/provisioning checks and
+operational guide. Alerts and diagnostic exercises remain later items.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

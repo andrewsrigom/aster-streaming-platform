@@ -92,7 +92,7 @@ if [ "$1" = "compose" ]; then
     exit 0
   fi
   if [ "$1" = "config" ] && [ "$2" = "--services" ]; then
-    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init playback playback-init engagement engagement-init broker storage collector prometheus router router-trust-init web
+    printf '%s\\n' redis postgres platform-init platform-status identity identity-init catalog catalog-init playback playback-init engagement engagement-init broker storage collector prometheus grafana router router-trust-init web
     if [ "$FAKE_DOCKER_SCENARIO" = "unexpected-service" ]; then
       printf '%s\\n' unreviewed
     fi
@@ -158,6 +158,7 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
             broker) printf '%s\\n' 'volume|aster_broker-data|/var/lib/kafka/data' ;;
             storage) printf '%s\\n' 'volume|aster_storage-data|/data' ;;
             prometheus) printf '%s\\n' 'volume|aster_prometheus-data|/prometheus' ;;
+            grafana) printf '%s\\n' 'tmpfs||/tmp' 'tmpfs||/var/lib/grafana' ;;
             *) printf '%s\\n' 'volume|aster_postgres-data|/var/lib/postgresql' ;;
           esac
           ;;
@@ -171,7 +172,7 @@ if [ "$1" = "container" ] && [ "$2" = "inspect" ]; then
         printf '%s\\n' aster_edge aster_platform
       elif [ "$FAKE_DOCKER_SERVICE" = "router-trust-init" ]; then
         printf '%s\\n' none
-      elif [ "$FAKE_DOCKER_SERVICE" = "web" ]; then
+      elif [ "$FAKE_DOCKER_SERVICE" = "web" ] || [ "$FAKE_DOCKER_SERVICE" = "grafana" ]; then
         printf '%s\\n' aster_edge
       else
         printf '%s\\n' aster_platform
@@ -525,6 +526,7 @@ test("accepts exact optional service mounts and ordered Compose provenance", asy
     "storage",
     "collector",
     "prometheus",
+    "grafana",
     "identity-init",
     "catalog",
     "catalog-init",

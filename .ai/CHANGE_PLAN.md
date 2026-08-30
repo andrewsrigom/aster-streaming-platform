@@ -1,146 +1,122 @@
-# Work Item: Executable Critical-Journey SLIs and Initial SLOs
+# Work Item: Provisioned Operational Overview
 
 - Status: IN_PROGRESS
-- Owner: Platform, with Catalog, Playback and Engagement journey owners
+- Owner: Platform
 - Phase: 12
-- Requirement IDs: P12-R05, P12-R06
+- Requirement IDs: P12-R12
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-Aster has executable, finite and tested service-level indicator (SLI)
-definitions for supergraph availability, Catalog title reads, playback-session
-creation and progress writes. Each definition names its population, good event,
-exclusions, source, aggregation, owner and rolling objective window. Initial
-service-level objectives (SLOs) and mathematical error budgets are explicit
-without claiming production history that the local one-hour store cannot prove.
+Aster has one version-controlled operational overview that separates user
+impact, dependency health and runtime saturation. An evaluator can start the
+bounded local observability profile, open the loopback-only dashboard without
+hosted credentials and trace every panel to a released metric and an operational
+question.
 
 ## Current behavior
 
-The candidate classifies released backend and Router outcomes into four finite
-journey SLIs. Prometheus privately scrapes the Router and Collector, evaluates
-nine synthetic-tested rules and retains one disposable hour. The Router view
-exports the exact 300 ms Catalog boundary, and the product histogram exports the
-exact 400 ms progress boundary. Repository validators reject either threshold
-when its runtime bucket is absent. Protected CI requires each live ratio series
-and accepts its measured value only in the valid inclusive range from zero to
-one. Protected run `33310118280` passes that packaged runtime at evidence head
-`aca4aba`. Final confirmation then found that a failure-only window omitted its
-ratio when no completed label set had ever existed. Source `757f6a0`, tree
-`e9c7d24`, derives zero only from a present population for recording and full-
-window queries and adds a pinned failure-only workload. Protected run
-`33311729108` passed that correction, but confirmation discussion `3889416115`
-found a prior population could become zero and leave `0/0` as `NaN`. Source
-`c4e6a76`, tree `cfc21f6`, filters recording and objective ratios on a positive
-denominator and adds idle-counter workloads. Browser QoE still has zero remote
-sampling and is not a central first-frame SLI.
+Prometheus 3.14.0 receives bounded Collector and Router metrics, retains one
+hour and exposes four executable SLI ratios. PR48 squash main `a99d3d5`, tree
+`2374279`, and exact-main run `33314309449` release P12-R05/R06. No dashboard
+backend or implemented dashboard is currently claimed.
 
 ## Proposed behavior
 
-Classify every known Router response as `completed`, `rejected` or `failed` in
-the existing Rhai boundary and attach only the finite operation/outcome context
-to the standard Router request-duration histogram. Scrape that private endpoint
-with existing Prometheus limits. Add bounded recording rules for population,
-good-event and good-ratio rates over five minutes, then validate the exact
-PromQL with synthetic good, bad and excluded events using the pinned Prometheus
-`promtool`. Publish a machine-readable contract and a truthful initial
-error-budget report for the four required journeys.
+Add one pinned Grafana OSS 13.2.0 container to the existing observability/full
+profile. Bake a read-only Prometheus data source and a provisioned Aster
+operational-overview dashboard into a repository-owned image. Bind Grafana only
+to `127.0.0.1:3001`, allow finite local anonymous Viewer access, disable writes
+and external update/plugin activity, bound measured startup to 0.5 CPU,384 MiB
+and128 PIDs, and verify dashboard structure plus live provisioning in protected
+CI.
 
 ## Boundaries
 
-- Owning context: Platform owns aggregation; Catalog, Playback and Engagement own their journey semantics and remediation.
-- Affected services/packages: Apollo Router configuration/Rhai, local Prometheus configuration/image, platform verification tools and Phase12 documentation/evidence.
-- Authoritative data: product owners and PostgreSQL remain authoritative; metrics authorize no result.
-- Read models/caches: Prometheus recording series are disposable operational projections.
-- Trust boundaries: untrusted GraphQL requests enter Router admission; only known operation buckets and three finite outcomes reach metrics.
-- External dependencies: exact-pinned Apollo Router 2.17.0 and Prometheus 3.14.0 already accepted by ADRs and runtime policy.
+- Owning context: Platform owns the disposable operational projection; product contexts own the emitted facts.
+- Affected services/packages: observability Compose overlay, Grafana image/provisioning, platform validators, CI and operations documentation.
+- Authoritative data: PostgreSQL and product owners remain authoritative; dashboard output grants no product decision.
+- Read models/caches: Grafana reads only the disposable one-hour Prometheus projection and uses disposable local SQLite state.
+- Trust boundaries: a local browser reaches loopback Grafana; Grafana proxies bounded PromQL to private Prometheus on the edge network.
+- External dependencies: official Grafana OSS `13.2.0`, pinned by multi-platform digest and governed by AGPL-3.0-only terms.
 
 ## Invariants
 
-- No user, account, profile, title, request, trace, URL, document or arbitrary operation name becomes an SLI label.
-- Expected validation, authorization and admission rejections are excluded, not hidden as availability success or failure.
-- Dependency, timeout and unexpected server failures remain in the population and count bad.
-- A zero population does not become artificial 100% availability.
-- A present failure-only population produces a zero good-event ratio rather than
-  an absent series.
-- A zero denominator produces no ratio, including after a previously active
-  counter becomes idle.
-- Playback `not_playable` and rejected/cancelled requests do not enter the valid published-title attempt population.
-- Progress stale, conflict, rejected and cancelled outcomes remain separately measurable but outside valid current-write population.
-- Browser first-frame remains explicitly unavailable as a field SLO while remote sampling is zero.
-- The one-hour local Prometheus retention proves query mechanics, not a 28/30-day historical objective.
+- Grafana is optional and cannot affect product readiness or serving.
+- The overview has explicit user-impact, dependency-health and saturation sections.
+- Every data panel uses a released finite metric and answers a documented operational question.
+- No identifier, credential, signed URL, raw GraphQL document or arbitrary label enters a query or dashboard variable.
+- Local anonymous access is Viewer-only, loopback-only and bounded; provisioned resources are not UI-editable.
+- Grafana can reach Prometheus but not PostgreSQL, Redis, broker, storage or owner services.
+- Empty/no-traffic SLI results remain empty and never become synthetic success.
+- User-impact panels use the released SLO IDs and current instant values; an
+  older non-empty sample cannot mask a currently absent recording.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Router validation/auth/admission rejection | return the existing sanitized response | finite `rejected`, excluded from SLI population |
-| Router/subgraph timeout or unexpected error | preserve existing failure response | finite `failed`, included as bad |
-| Collector/product signal absent | product work remains unchanged | affected SLI has no sample; no fabricated good event |
-| Router scrape unavailable | product traffic remains independent | Prometheus target down; Router SLI series becomes absent |
-| Rule evaluation has zero population | expose no usable ratio | population, good and ratio series remain absent |
-| Rule evaluation has population but no good series | expose a zero ratio | derive zero only from the same present population |
-| Prior population becomes idle | expose no ratio | filter on a positive denominator; never retain `NaN` |
-| Prometheus rule/config malformed | fail image/config/CI validation | candidate cannot publish |
-| Telemetry callback throws | existing product result remains authoritative | owner wrapper already isolates failure |
+| Grafana unavailable | product and Prometheus remain healthy | dashboard readiness fails without changing product readiness |
+| Prometheus unavailable | dashboard panels show no data | Grafana data-source health/query failure only |
+| Empty SLI population | panel reports no data | no fabricated ratio or compliance result |
+| Invalid provisioning/dashboard JSON | image/runtime verification fails | candidate cannot publish |
+| Expensive or unbounded panel query | repository validator rejects it | candidate cannot publish |
+| Browser attempts non-loopback access or mutation | no host exposure; Viewer cannot save provisioned resources | request denied or unreachable |
 
 ## Data and contracts
 
-- Schema/migration: none.
-- GraphQL: no schema or response change.
+- Schema/migration: none; Grafana state is disposable tmpfs.
+- GraphQL: none.
 - Events: none.
 - Cache: none.
-- Compatibility: additive Router metric attributes, scrape target, recording series and machine-readable SLO contract.
-- Retention/deletion: rules use the existing disposable one-hour local store; no browser or durable product retention is added.
+- Compatibility: additive local port `3001`, service `grafana`, dashboard UID and Prometheus data-source UID.
+- Retention/deletion: Grafana state disappears with the container; Prometheus retains the existing one-hour bounded volume.
 
 ## Security and privacy
 
-- Authorization: owners continue enforcing authorization; SLO classification cannot bypass or grant access.
-- Input limits: the existing finite operation allowlist collapses every other name to `other`; three outcome values and four SLI IDs are accepted.
-- Sensitive data: queries consume counters/histograms only; raw documents, IDs, errors and signed URLs are prohibited and regression-tested.
-- Abuse cases: arbitrary operation names, validation floods, expected rejection inflation, no-traffic windows, cardinality overflow and malformed rule/config input.
+- Authorization: anonymous local access has Viewer role only; there is no hosted or operator authorization claim.
+- Input limits: no dashboard variables; fixed PromQL, refresh interval and panel/query counts; Prometheus keeps its query limits.
+- Sensitive data: only already-reviewed finite aggregate metrics are queried; dashboard JSON contains no credentials or personal data.
+- Abuse cases: arbitrary proxy queries, host exposure, UI mutation, plugin download, unbounded refresh, data-source substitution and network reach expansion.
 
 ## Implementation steps
 
-1. Freeze the P12-R11 predecessor and record this dependent work item.
-2. Add finite Router result classification and standard histogram attributes; cap metric cardinality.
-3. Scrape the private Router metric endpoint and bake versioned SLI recording rules into the existing Prometheus image.
-4. Add the machine-readable SLI/SLO contract and `promtool` synthetic good/bad/exclusion tests.
-5. Verify rule/config policy, actual Router labels and both supergraph and Catalog recorded series in protected Docker CI.
-6. Replace provisional prose with exact definitions, error budgets, limitations and evidence.
+1. Record ADR-0042 for the bounded local Grafana topology, license and rollback.
+2. Add the pinned image, immutable provisioning and three-section overview.
+3. Extend platform/reset/CI validators with adverse dashboard and isolation checks.
+4. Verify static structure, official image configuration and protected live provisioning.
+5. Update operations, architecture, evidence and repository memory.
 
 ## Tests
 
-- Domain: not applicable; no owner decision changes.
-- Application: deterministic contract validator checks four required journeys, finite labels, targets, windows and error-budget arithmetic.
-- Integration: exact Apollo Router config validation plus protected private Router scrape and Prometheus rule loading/evaluation.
-- Contract: pinned `promtool check rules` and `promtool test rules` with good, bad, excluded and mixed events.
-- Browser: not repeated; Web behavior and remote sampling are unchanged.
-- Performance/failure: cardinality ceiling and zero-population semantics; no throughput claim.
+- Domain: not applicable; no product rule changes.
+- Application: not applicable; dashboard is an operational projection.
+- Integration: Compose validates and protected CI starts Grafana, verifies health, data source, dashboard UID and representative live queries.
+- Contract: repository validator checks finite panels, SLO-contract IDs, instant user-impact values, released metric names, fixed data source, section coverage, links and no prohibited labels.
+- Browser: one loopback HTTP/dashboard API acceptance; no product browser journey changes.
+- Performance/failure: finite resources, refresh/query bounds, Prometheus absence and Grafana failure do not affect product health.
 
 ## Evidence
 
-- Commands: focused Node contract tests, Router tests/schema/config validation, platform policy tests, `promtool` rule checks, affected candidate gate and one protected runtime proof.
-- Raw artifact path: `evidence/phase-12/sli-query-definitions.txt` and `evidence/phase-12/slo-error-budget-report.md`.
-- Acceptance result: all four required SLIs have executable queries whose synthetic outputs match their written population/exclusion/good-event rules.
-- Iteration gate: focused SLO contract test, Router composition tests and platform policy tests.
+- Commands: dashboard/platform focused tests, Compose render, image metadata, affected gate and protected live Grafana/Prometheus proof.
+- Raw artifact path: `evidence/phase-12/operational-overview.txt` and version-controlled dashboard JSON.
+- Acceptance result: the provisioned overview distinguishes all three required operational layers with live released metrics.
+- Iteration gate: dashboard contract validator and optional-platform tests.
 - Candidate gate: `pnpm check:changed`, documentation/AI checks, secret scan and `git diff --check`.
-- Heavyweight repeat triggers: repeat the protected Router/Prometheus runtime only if Router context, scrape config, rules, image or CI assertion changes; do not repeat browser/media/rights experiments.
+- Heavyweight repeat triggers: repeat live Docker provisioning only when image, Compose, provisioning, dashboard query, network or CI assertion changes.
 - Review stopping rule: one initial review and one confirmation; extend only for requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
 
 ## Rollback or recovery
 
-Remove the additive recording rules and Router scrape job, then restore the
-standard Router metric configuration. Prometheus data is disposable and no
-product state, schema, event or media object requires migration.
+Remove the additive Grafana service/image/provisioning and restore the prior
+observability overlay. No product state or Prometheus history requires migration.
 
 ## Documentation updates
 
-- Formal SLI/SLO definitions and error-budget interpretation.
-- Observability architecture and local operations.
-- Phase12 evidence index and raw query/report artifacts.
-- Repository state, queue, session log and handoff.
+- ADR-0042, observability architecture, local development and operational overview guide.
+- Phase12 evidence index and dashboard artifact evidence.
+- Repository state, queue, session log, decisions ledger and handoff.
 
 ## Completion checklist
 

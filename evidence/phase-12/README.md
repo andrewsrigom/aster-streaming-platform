@@ -12,11 +12,11 @@ squash main `2245251` and successful exact-main run `33304196111`.
 
 P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
 run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
-same tree; exact-main run `33307059156` passed every job. P12-R05/R06 corrected
-source `c4e6a76`, tree `cfc21f6`, is rebased directly onto that exact main.
-Failure-only evidence head `0ac7201` passed protected run `33311729108`; the
-idle-window correction still requires protected acceptance. PR48 owns its
-bounded confirmation and release sequence.
+same tree; exact-main run `33307059156` passed every job. P12-R05/R06 final head
+`72d5656`, tree `2374279`, passed protected run `33313090638` attempt2 and clean
+confirmation. PR48 squash main `a99d3d5` retained that tree; exact-main run
+`33314309449` passed every job. P12-R12 operational-overview work is active from
+that exact main.
 
 ## Requirement traceability
 
@@ -31,6 +31,7 @@ bounded confirmation and release sequence.
 | P12-R08 | [Cardinality and privacy review](cardinality-review.txt) records finite vocabularies, limits and sensitive-data canaries |
 | P12-R09 | [Exporter failure](exporter-failure.txt) records bounded queue, deadline, failure and recovery behavior |
 | P12-R11 | [Browser telemetry](browser-playback-telemetry.txt) records sampling, privacy, transport and retention boundaries |
+| P12-R12 | [Operational overview](operational-overview.txt) records the bounded Grafana topology, immutable three-layer dashboard, adverse checks and pending protected live proof |
 
 P12-R03's affected gate passed 73/73 tasks with 28 cached in 63.79 seconds.
 Review corrected invalid event ages, malformed pool snapshots, missing outbox
@@ -76,8 +77,11 @@ found idle populations could retain `0/0` as `NaN`. Source `c4e6a76`, tree
 `cfc21f6`, filters recording and objective ratios on positive denominators.
 Exact `promtool` tests cover prior-traffic five-minute idle and preexisting-
 counter objective idle;27/27 focused checks and the corrected60/60 affected gate
-with50 cached in47.383 seconds pass. Protected acceptance remains. Dashboards,
-alerts, three diagnostic exercises and the operational overview remain planned.
+with50 cached in47.383 seconds pass. Final head `72d5656`, tree `2374279`, passed
+protected run `33313090638` attempt2 and clean confirmation. PR48 squash main
+`a99d3d5` and exact-main run `33314309449` release the SLI/SLO work. Burn-rate
+alerts and three diagnostic exercises remain planned. The operational overview
+is an implemented candidate with protected live-container acceptance pending.
 
 ## Current limitations
 

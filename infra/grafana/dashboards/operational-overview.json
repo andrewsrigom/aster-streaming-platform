@@ -1,0 +1,455 @@
+{
+  "annotations": { "list": [] },
+  "description": "Aster local operational overview: user impact, dependency health, and runtime saturation.",
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "panels": [],
+      "title": "User impact",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "What fraction of valid supergraph requests completed successfully during the last five minutes? Empty traffic remains no data.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.999 }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 1 },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "aster:sli:good:ratio_rate5m{sli=\"supergraph\"}",
+          "instant": true,
+          "legendFormat": "supergraph",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Supergraph success ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "What fraction of Catalog title-detail reads completed within 300 ms during the last five minutes? Empty traffic remains no data.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.99 }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 1 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "aster:sli:good:ratio_rate5m{sli=\"catalog_title_read\"}",
+          "instant": true,
+          "legendFormat": "catalog title read",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Catalog read latency ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "What fraction of playable-session attempts completed within 500 ms during the last five minutes? Empty traffic remains no data.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.99 }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 1 },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "aster:sli:good:ratio_rate5m{sli=\"playback_start\"}",
+          "instant": true,
+          "legendFormat": "playback session",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Playback session ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "What fraction of authoritative progress writes completed within 400 ms during the last five minutes? Empty traffic remains no data.",
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 0.99 }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 1 },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "aster:sli:good:ratio_rate5m{sli=\"progress_write\"}",
+          "instant": true,
+          "legendFormat": "progress write",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Progress write ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Is each SLI backed by current request volume, or is an apparent gap simply no traffic?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "reqps" }, "overrides": [] },
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 6 },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "aster:sli:population:rate5m",
+          "instant": false,
+          "legendFormat": "{{sli}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "SLI measured population",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 13 },
+      "id": 7,
+      "panels": [],
+      "title": "Dependency health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Which bounded dependency operation and outcome is changing request health?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "ops" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 14 },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (aster_dependency, aster_operation, aster_outcome) (rate(aster_dependency_operation_outcomes_total[5m]))",
+          "instant": false,
+          "legendFormat": "{{aster_dependency}} / {{aster_operation}} / {{aster_outcome}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Dependency outcome rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Which dependency operation has elevated p95 latency?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "s" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 14 },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.95, sum by (le, aster_dependency, aster_operation) (rate(aster_dependency_operation_duration_seconds_bucket[5m])))",
+          "instant": false,
+          "legendFormat": "{{aster_dependency}} / {{aster_operation}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Dependency p95 latency",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Are active dependency operations accumulating before user-visible failures appear?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 14 },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (aster_dependency, aster_operation) (aster_dependency_operation_active)",
+          "instant": false,
+          "legendFormat": "{{aster_dependency}} / {{aster_operation}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Active dependency operations",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 },
+      "id": 11,
+      "panels": [],
+      "title": "Runtime saturation",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Is any instrumented Aster process approaching its available CPU?",
+      "fieldConfig": { "defaults": { "max": 1, "min": 0, "unit": "percentunit" }, "overrides": [] },
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 23 },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(sum without (cpu_mode) (process_cpu_utilization_ratio))",
+          "instant": false,
+          "legendFormat": "peak process",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Peak process CPU",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Is any instrumented Aster process retaining unusual resident memory?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "bytes" }, "overrides": [] },
+      "gridPos": { "h": 7, "w": 6, "x": 6, "y": 23 },
+      "id": 13,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(process_memory_usage_bytes)",
+          "instant": false,
+          "legendFormat": "peak process",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Peak process memory",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Is Node.js event-loop delay indicating runtime saturation?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "s" }, "overrides": [] },
+      "gridPos": { "h": 7, "w": 6, "x": 12, "y": 23 },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "max(nodejs_eventloop_delay_p99_seconds)",
+          "instant": false,
+          "legendFormat": "peak process",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Peak event-loop p99",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "aster-prometheus" },
+      "description": "Are PostgreSQL connection pools consuming their bounded capacity?",
+      "fieldConfig": { "defaults": { "min": 0, "unit": "short" }, "overrides": [] },
+      "gridPos": { "h": 7, "w": 6, "x": 18, "y": 23 },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": ["lastNotNull", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "desc" }
+      },
+      "pluginVersion": "13.2.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum by (aster_postgresql_pool, aster_postgresql_pool_state, aster_postgresql_connection_state) (aster_postgresql_pool_connections)",
+          "instant": false,
+          "legendFormat": "{{aster_postgresql_pool}} / {{aster_postgresql_pool_state}} / {{aster_postgresql_connection_state}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "PostgreSQL pool state",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": ["aster", "operations", "local"],
+  "templating": { "list": [] },
+  "time": { "from": "now-30m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Aster Operational Overview",
+  "uid": "aster-operational-overview",
+  "version": 1,
+  "weekStart": ""
+}

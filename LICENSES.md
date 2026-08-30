@@ -30,8 +30,9 @@ P01-R01 references unmodified Docker Official Images by exact digest. These runt
 |---|---|---|---|
 | PostgreSQL | `postgres:18.6-alpine3.23` | PostgreSQL License | [PostgreSQL source and license](https://www.postgresql.org/about/licence/) and [Docker Official Image](https://hub.docker.com/_/postgres) |
 | Redis Open Source | `redis:8.10.0-alpine` | AGPLv3 option from the Redis 8 tri-license; image is used unmodified as a separate local service | [Redis licensing](https://redis.io/legal/licenses/), [Redis source](https://github.com/redis/redis/tree/8.10.0), and [Docker Official Image](https://hub.docker.com/_/redis) |
+| Grafana OSS | `grafana/grafana:13.2.0` | AGPL-3.0-only; the official image is used unmodified as a separate local service and Aster adds only MIT configuration | [Grafana licensing](https://grafana.com/licensing/), [source and release](https://github.com/grafana/grafana/releases/tag/v13.2.0), and [Docker installation](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/) |
 
-The Compose file records immutable multi-platform digests. Operators and distributors remain responsible for complying with the selected third-party terms. Any future modification, redistribution, or hosted offering involving these runtimes requires a new license review; this record is not legal advice.
+The Compose files and repository-owned child images record immutable multi-platform digests. Operators and distributors remain responsible for complying with the selected third-party terms. Any future modification, redistribution, or hosted offering involving these runtimes requires a new license review; this record is not legal advice.
 
 ## Media assets
 

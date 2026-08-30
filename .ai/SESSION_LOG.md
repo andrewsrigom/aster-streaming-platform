@@ -2,6 +2,86 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-30 — SLI/SLO release and operational-overview candidate
+
+### Completed
+
+- P12-R05/R06 final head `72d5656`, tree `2374279`, passed protected run
+  `33313090638` attempt2 and clean confirmation. PR48 squash main `a99d3d5`
+  retained the reviewed tree; exact-main run `33314309449` passed every job.
+- Activated P12-R12 on `feat/p12-operational-overview` from that exact main.
+- Added ADR-0042 and digest-pinned Grafana OSS13.2.0 with loopback-only Viewer
+  access, `edge`-only reach, immutable provisioning, disposable state and finite
+  CPU/memory/PID/query/refresh bounds.
+- Added one 15-panel operational overview with ordered user-impact, dependency-
+  health and runtime-saturation layers, twelve fixed PromQL queries, explicit
+  panel questions and no variables or sensitive labels.
+- Extended runtime-image, optional-platform, reset and CI contracts. Protected
+  CI will verify live health/data source/dashboard, execute a released query and
+  prove Grafana loss does not change product platform health.
+- The complete candidate gate passes15/15 tasks in74.899 seconds, including
+  platform73/73, CI policy33/33, documentation239/239, AI state, formatting,
+  lint and a zero-finding secret scan. At initial publication local Docker had
+  not been restarted or retried; protected CI owned the first live image proof.
+- Protected run `33316483464` exposed an actual underprovisioned Grafana
+  boundary:64 PIDs caused bundled plugin `newosproc` exits before health. One
+  exact isolated local reproduction measured100 PIDs during startup,87 after
+  health and253.2/256 MiB, and exposed background plugin installation attempts.
+  The unique probe and its exact resources were fully removed.
+- The correction raises only Grafana to128 PIDs/384 MiB, disables plugin
+  preinstallation and automatic updates, and adds bounded failure logs to CI.
+- The corrected isolated repeat became healthy with99 PIDs/225.9 MiB,
+  provisioned the anonymous read-only data source/dashboard, emitted no plugin-
+  installer/thread failure and left zero scoped containers, volumes or networks.
+- Corrected focused platform/reset tests pass39/39, CI policy passes33/33 and
+  the complete candidate gate passes15/15 tasks in62.976 seconds with one
+  cached task. No heavyweight proof was repeated after that unchanged source.
+- Published resource correction `e5f0df2`; superseded run `33316483464` was
+  cancelled instead of consuming more hosted capacity after its decisive
+  Local-platform failure.
+- Initial review discussions `3889614208` and `3889614213` found two real
+  user-impact defects: Playback selected unpublished SLI label
+  `playback_session`, and range stats could display a historical value after
+  the current ratio disappeared. The batched correction selects released
+  `playback_start`, derives the expected panel selectors from the SLO contract,
+  requires instant ratio queries and protects both boundaries with adverse
+  tests. Focused operational/platform/reset tests pass39/39.
+- Combined focused CI/platform/reset tests pass62/62. The corrected complete
+  candidate passes15/15 tasks with2 cached in81.29 seconds, including
+  platform73/73, CI policy33/33, documentation, AI state, formatting, lint and
+  security.
+- Published review correction `508375f`, tree `39a464f`. Protected run
+  `33317459549` built the corrected full profile and passed packaged telemetry;
+  the overview step failed immediately because its first assertion required
+  compact `{"database":"ok"}` while Grafana13 returns equivalent formatted JSON.
+  No product or dashboard defect was found.
+- One uniquely named Prometheus/Grafana probe returned database `ok`, the fixed
+  read-only data source, healthy data-source API, successful exact
+  `playback_start` query and immutable dashboard. Its exact two containers,
+  fourteen volumes and two networks were removed to zero. The CI assertion now
+  tolerates JSON whitespace while retaining the exact value; focused CI policy
+  tests pass23/23.
+- The final corrected complete candidate passes15/15 tasks with3 cached in
+  77.929 seconds, including platform73/73, CI policy33/33, documentation, AI
+  state, formatting, lint and security.
+- Exact source `c678484`, tree `397ead5`, passed protected run `33317834141` in
+  every job. The Local-platform job built/started the full profile, passed
+  packaged telemetry, Grafana health/data source/exact Playback query/immutable
+  dashboard, optional failure isolation and scoped cleanup. The complete
+  integration/playable lane also passed.
+- Replied to initial review discussions `3889614208` and `3889614213` with the
+  exact correction and protected run, then resolved both threads.
+
+### Evidence
+
+- `evidence/phase-12/operational-overview.txt`
+- `docs/operations/OPERATIONAL_OVERVIEW.md`
+
+### Next action
+
+Publish the evidence checkpoint and require one bounded exact-head confirmation,
+then squash-merge and verify main before starting P12-R07.
+
 ## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate
 
 ### Completed
@@ -2800,9 +2880,9 @@ After final branch integration is confirmed, create a new active plan for P01-R0
 
 Merge the final-state pull request after its required check passes, confirm the post-merge `main` workflow, remove only the two validated temporary clone roots, and then select P01-R01.
 
-## 2026-08-26 — Executable developer command contract
+**2026-08-26 — Executable developer command contract**
 
-### Completed
+**Completed**
 
 - Added the exact public clone, pinned bootstrap, proportionate checks, complete gate, registry audit, current checkpoint, and cleanup commands to the root README.
 - Added dependency-free `clean:foundation` with a fixed `.turbo` and `node_modules` allowlist, regular repository-marker checks, no CLI path input, bounded diagnostics, and five adverse tests.
@@ -2810,14 +2890,14 @@ Merge the final-state pull request after its required check passes, confirm the 
 - Executed a real project cleanup, verified only ignored generated paths disappeared, restored 110 packages through the frozen bootstrap with zero download from the warm store, and reran the complete gate without cache.
 - Verified the command contract in public pull request 4 with complete source quality, dependency review, and the stable aggregate check.
 
-### Evidence
+**Evidence**
 
 - Passed 12 toolchain and cleanup tests, the 20-task graph with 78 focused tests, documentation over 129 documents and 280 local links, the redacting secret scan, and high-severity registry audit.
 - Measured real cleanup at `0.66` seconds, post-clean frozen installation at `0.78` seconds, and the uncached complete gate wrapper at `6.13` seconds in the recorded environment.
 - Raw evidence: `evidence/phase-00/developer-command-contract.txt`.
 - Hosted run `32942138591`: success across every applicable job.
 
-### Next action
+**Next action**
 
 Execute P00-R10 from a clean public clone, produce the final Phase 00 evidence index, verify the Phase 01 prerequisites, and close the phase only after the exit gate passes.
 

@@ -1,0 +1,157 @@
+P12-R12 provisioned operational overview
+Date: 2026-08-30
+Status: verified candidate; confirmation and merge pending
+
+Requirement
+-----------
+
+P12-R12 requires an operational overview that distinguishes user impact,
+dependency health and saturation.
+
+Implemented boundary
+--------------------
+
+- ADR-0042 selects the unmodified official Grafana OSS 13.2.0 image at
+  multi-platform digest
+  sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b.
+- Grafana is optional, loopback-only on 127.0.0.1:3001, Viewer-only,
+  edge-network-only, non-root, read-only and bounded to 0.5 CPU,384 MiB memory,
+  128 PIDs and 72 MiB total tmpfs. Plugin preinstallation and automatic updates
+  are disabled.
+- The Prometheus data source and dashboard are immutable repository
+  provisioning. Grafana has no durable named volume and no route to owner
+  services, PostgreSQL, Redis, broker or object storage.
+- The dashboard contains 15 panels: three ordered section rows and twelve data
+  panels. Twelve fixed queries cover four SLI ratios, their measured
+  populations, dependency outcomes/p95/active work, CPU, memory, event-loop p99
+  and PostgreSQL pool state.
+- There are no dashboard variables, raw GraphQL documents, identifiers,
+  credentials, signed URLs or user-controlled queries. Empty SLI traffic remains
+  no data.
+- Grafana is not a dependency of platform-status or product readiness.
+
+Local checks
+------------
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 node --test
+  ./tools/verify-local-platform.test.mjs
+  ./tools/reset-local-platform.test.mjs
+
+Result:
+  39 passed,0 failed,2.728 seconds
+
+The adverse cases reject non-loopback publication, platform-network access,
+administrator anonymous role, initial admin creation, oversized writable state,
+editable provisioning, local-host data source substitution, one-second refresh,
+variables, unreviewed metrics and a changed image digest. Reset tests accept the
+new exact service, edge attachment and only its two reviewed tmpfs mounts.
+
+Command:
+  node ./tools/verify-operational-overview.mjs
+  node ./tools/verify-local-platform.mjs
+
+Result:
+  operational-overview ok,15 panels
+  local-platform ok,0 violations
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4
+  pnpm check:changed
+
+Result:
+  15 passed,0 failed,3 cached,74.899 seconds
+  platform tests 73 passed,0 failed
+  CI-policy tests 33 passed,0 failed
+  documentation 239 documents,2942 headings,1500 links,0 violations
+  repository memory 61 queue items,124 session entries,0 violations
+  secret scan 0 findings
+
+Corrected resource-bound candidate:
+  15 passed,0 failed,1 cached,62.976 seconds
+  platform tests 73 passed,0 failed
+  CI-policy tests 33 passed,0 failed
+  documentation 239 documents,2942 headings,1500 links,0 violations
+  repository memory 61 queue items,124 session entries,0 violations
+  secret scan 0 findings
+
+Protected acceptance contract
+-----------------------------
+
+Protected run 33316483464 failed before acceptance because the initial64-PID
+limit was below Grafana13.2 startup demand; the container exited2 while bundled
+plugin processes reported `newosproc`. One isolated local reproduction measured
+100/128 PIDs during startup,87 after health, and253.2/256 MiB under the initial
+memory cap. It also exposed background plugin installation attempts. The
+corrected candidate uses128 PIDs,384 MiB and explicitly disables plugin
+preinstallation/automatic update. No product container or retained Aster data
+was used; the unique probe project was removed with zero containers, volumes or
+networks left.
+
+The corrected isolated start became healthy with99/128 PIDs and225.9/384 MiB.
+Anonymous APIs returned database `ok`, data source UID `aster-prometheus` at
+`http://prometheus:9090` with `readOnly:true`, and the provisioned non-editable
+dashboard UID. Bounded logs contained no `backgroundinstaller`, failed plugin
+install or `newosproc`. The second exact probe also left zero containers,
+volumes and networks.
+
+The changed Local platform job will build the digest-pinned image and wait for
+its health check. It then verifies the anonymous health response, fixed data
+source UID/URL/health, one released SLI population query through the Grafana
+proxy and dashboard UID/read-only state. Finally it stops only Grafana and
+requires the unchanged platform-status container to remain healthy. This
+evidence is planned until a protected exact-head run passes. The isolated local
+proof above supports the corrected resource boundary but does not replace the
+protected full-profile acceptance.
+
+Initial review correction
+-------------------------
+
+Discussions 3889614208 and 3889614213 found that the Playback stat selected
+`playback_session` although the released recording label is `playback_start`,
+and that range-query `lastNotNull` reduction could show an old ratio after the
+current five-minute recording disappeared. The batched correction derives the
+four expected selectors from `slo-contract.json`, uses instant/no-range queries
+for every user-impact stat and protects label, contract-ID and query-mode
+mutations. Focused operational/platform/reset tests pass39/39. The protected
+Grafana proxy check now executes the exact encoded `playback_start` selector.
+Combined focused CI/platform/reset tests pass62/62. The complete corrected
+candidate passes15/15 tasks with2 cached in81.29 seconds, including
+platform73/73, CI policy33/33, documentation, AI state, formatting, lint and a
+zero-finding secret scan. Protected exact-head acceptance remains.
+
+Protected run 33317459549 built and health-gated the corrected full profile,
+passed packaged health/telemetry and then failed the first overview assertion.
+Grafana13 returned valid formatted JSON with `"database": "ok"`; the CI check
+incorrectly required compact `"database":"ok"`. This is an acceptance-harness
+defect, not a product failure. A uniquely named two-container probe confirmed
+database health, fixed read-only data source/health, successful exact
+`playback_start` query and immutable dashboard. Teardown removed its two
+containers, fourteen volumes and two networks; exact-name postconditions were
+empty. The CI assertion now tolerates JSON whitespace while still requiring the
+exact key/value, and adverse CI policy tests pass23/23. A protected repeat is
+required because the assertion changed. The final corrected complete candidate
+passes15/15 tasks with3 cached in77.929 seconds, including platform73/73, CI
+policy33/33, documentation, AI state, formatting, lint and a zero-finding
+secret scan.
+
+Protected exact-source acceptance
+---------------------------------
+
+Source c6784849e8dac49c39c5683e25ce69cdcde6bfe9, tree
+397ead5b884c8d592671b14c3c314f4a50cd2399, passed every protected job in run
+33317834141. The Local-platform job built and health-gated the full profile,
+passed packaged health/telemetry, verified Grafana health, fixed read-only data
+source, exact encoded `playback_start` query and immutable dashboard, stopped
+only Grafana, proved product platform health remained healthy and removed the
+exact CI project. Source quality, full owner integrations, playable demo,
+documentation, security and the aggregate required decision also passed.
+
+Initial review discussions 3889614208 and 3889614213 received exact correction
+and run evidence and are resolved. One confirmation review and release remain.
+
+Rollback
+--------
+
+Remove the additive Grafana service, child image and provisioning. There is no
+schema, product data, credential, media or Prometheus-history migration.

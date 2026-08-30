@@ -96,6 +96,7 @@ const allowedContext = [
   "!infra/docker/media-fixture.Dockerfile",
   "!infra/docker/collector.Dockerfile",
   "!infra/docker/prometheus.Dockerfile",
+  "!infra/docker/grafana.Dockerfile",
   "!infra/docker/router.Dockerfile",
   "!infra/docker/router-trust.Dockerfile",
   "!infra/router/router.yaml",
@@ -106,6 +107,8 @@ const allowedContext = [
   "!infra/compose/collector.integration.yml",
   "!infra/compose/prometheus.local.yml",
   "!infra/observability/slo-rules.yml",
+  "!infra/grafana/provisioning/**/*.yml",
+  "!infra/grafana/dashboards/*.json",
   "!tools/media/*.mjs",
   "**/node_modules/**",
   "**/dist/**",
@@ -130,6 +133,7 @@ export async function readRuntimeImageSources(root) {
     "infra/compose/playable.yml",
     "infra/docker/collector.Dockerfile",
     "infra/docker/prometheus.Dockerfile",
+    "infra/docker/grafana.Dockerfile",
     ".dockerignore",
     ...productionPackages.map((path) => `${path}/package.json`),
   ];
@@ -150,9 +154,12 @@ export function validateRuntimeImage(sources) {
     'FROM docker.io/otel/opentelemetry-collector:0.159.0@sha256:7725a7a10c87d8853208bdd4bb3439ad3c0d7b32b4292b9300ac07c8daba14a2\nCOPY infra/compose/collector.integration.yml /etc/aster/collector.yml\nCMD ["--config=/etc/aster/collector.yml"]';
   const prometheus =
     "FROM docker.io/prom/prometheus:v3.14.0@sha256:5ce7540c3c00ef4ab0c9d2c995c6a5b9c421f44b4a115d97a2c7af3b1c21cbb0\nCOPY infra/compose/prometheus.local.yml /etc/aster/prometheus.yml\nCOPY infra/observability/slo-rules.yml /etc/aster/slo-rules.yml";
+  const grafana =
+    "FROM docker.io/grafana/grafana:13.2.0@sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b\nCOPY --chown=472:0 infra/grafana/provisioning /etc/grafana/provisioning\nCOPY --chown=472:0 infra/grafana/dashboards /etc/grafana/provisioning/dashboards-json\nUSER 472";
   if (
     sources["infra/docker/collector.Dockerfile"]?.trim() !== collector ||
-    sources["infra/docker/prometheus.Dockerfile"]?.trim() !== prometheus
+    sources["infra/docker/prometheus.Dockerfile"]?.trim() !== prometheus ||
+    sources["infra/docker/grafana.Dockerfile"]?.trim() !== grafana
   ) {
     reject("telemetry images must retain reviewed base pins and baked public configuration only");
   }
