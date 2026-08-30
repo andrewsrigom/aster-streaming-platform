@@ -65,8 +65,10 @@ evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
 squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 passed
 protected exact-head run33295744010 and clean confirmation, PR44 squash-merged
 as tree-identical main `834bf15`, and exact-main run33296443777 passed every
-required job. Phase11 is released. P12-R01 is active on PR45; its corrected
-evidence head is ready for one publication.
+required job. Phase11 is released. P12-R01 corrected evidence head `9a058ee` is
+frozen on PR45 under protected run `33300561121`; blocker-focused confirmation
+and merge follow. P12-R03/R04 backend golden signals are the sole unpublished
+dependent rebased on that exact head.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

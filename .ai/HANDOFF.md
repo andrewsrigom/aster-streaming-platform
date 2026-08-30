@@ -2,7 +2,7 @@
 
 ## Resume point
 
-P12-R01 is active on PR45 from `feat/p12-trace-observability`. Corrected source
+P12-R01 is frozen on PR45 from `feat/p12-trace-observability`. Corrected source
 `03abe8ac6d30c34902442367da241e0c295ff122`, tree
 `b1474c7396d3e65b53c29a87b35e32d793ad5ede`, implements the trace/export slice.
 Protected run `33298943743` passed previous exact head `e5f93e1`; blocker-focused
@@ -12,6 +12,11 @@ media path and trace-only event-producer boundary. Telemetry18/18,
 Catalog247/247, event delivery23/23, media runner3/3 and affected gate73/73 with
 53 cached in53.307 seconds pass. The old named P12 stashes are historical and
 must not be restored over this branch.
+
+P12-R03/R04 backend golden signals are active locally on the sole permitted
+dependent `feat/p12-golden-product-signals`, rebased on exact `9a058ee`. Its
+change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
+product-result metrics without browser remote collection.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -44,16 +49,15 @@ Phase11.
 
 ## Exact next actions
 
-1. Commit and publish the corrected P12 evidence head once.
-2. Resolve confirmation discussions `3888781189` and `3888781191`, require
-   protected exact-head CI, then request one blocker-focused confirmation.
-3. Squash-merge PR45 without bypass and prove exact main.
-4. Rebase the parked local P12-R03/R04 branch onto exact main and repeat its
-   affected gate before publication.
-5. Complete the Phase12 metrics/SLI/SLO/dashboard/alert/diagnostic items in
+1. Wait for PR45 protected run `33300561121`, then request one blocker-focused
+   confirmation review; treat only defined blockers.
+2. Squash-merge PR45 without bypass and prove exact main.
+3. Rebase the dependent onto exact main, repeat its affected gate, then finish
+   and publish P12-R03/R04 backend golden signals.
+4. Complete the Phase12 browser policy, SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 
-P12-R01 is active on PR45 and already based on released Phase11 main. It owns
+P12-R01 is frozen on PR45 and already based on released Phase11 main. It owns
 repository trace context, structured-log
 correlation, privacy/cardinality and bounded exporter failure under the current
 OpenTelemetry ADR. Evidence is indexed under `evidence/phase-12/`. Rebase it

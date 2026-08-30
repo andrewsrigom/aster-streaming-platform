@@ -1,164 +1,138 @@
-# Work Item: Phase 12 trace, correlation, privacy and exporter boundary
+# Work Item: Phase 12 platform and product golden signals
 
 - Status: IN_PROGRESS
-- Owner: Platform telemetry; each service transport and dependency adapter owns its spans
+- Owner: Platform telemetry; PostgreSQL, event-delivery, Playback, Engagement and Catalog own their observations
 - Phase: 12
-- Requirement IDs: P12-R01, P12-R02, P12-R08, P12-R09
+- Requirement IDs: P12-R03, P12-R04
 - Created: 2026-08-30
 - Updated: 2026-08-30
 
 ## Outcome
 
-A current request or event can be followed through every applicable Aster
-boundary using one repository-owned trace and structured-log contract. Names and
-attributes remain finite and privacy-safe, and an absent, slow or failed
-telemetry exporter never changes a product result, readiness or bounded
-shutdown.
+Every current Node service exports enough finite, privacy-safe signals to answer
+whether serving, dependencies, runtime resources, database pools, event delivery
+and backend product outcomes are healthy or saturated. Playback-session creation,
+progress acceptance, cache effectiveness, media processing and publication have
+explicit product-result metrics. Browser first-frame and rebuffer observations
+remain local and bounded until their sampling, transport and retention policy is
+owned by the following P12-R11 slice; this item does not silently create a field
+telemetry ingestion service.
 
 ## Current behavior
 
-P11-R10 is released at tree-identical main `834bf15`; exact-main run
-`33296443777` passed every required job. Its exact executable correction
-`aac04c7`, tree `c2a6c93`, passed Router4/4, platform67/67 and the complete
-affected gate17/17. The guard rejects raw and YAML-decoded configuration
-expansion inside the bounded traffic-shaping policy.
+P12-R01/R02/R08/R09 evidence head `9a058ee` is frozen on PR45. Source
+`03abe8a`, tree `b1474c7`, wires the actual media exporter path and real Catalog
+event-producer context without false broker telemetry. Telemetry18/18,
+Catalog247/247, event delivery23/23, media runner3/3 and affected73/73 gates
+pass. Exact-head protected run `33300561121`, confirmation and merge are the
+sole predecessor conditions. This branch is the one allowed dependent, rebased
+on that exact head, and must not publish or merge first.
 
-Corrected source commit `03abe8a`, tree `b1474c7`, implements the repository trace
-contract locally. `@aster/telemetry` now owns bounded OpenTelemetry metrics and
-traces, finite dimensions, active context, OTLP exporter health and timeout
-behavior. All five owner HTTP servers create server spans and drive the existing
-redacting logger context. Fixed owner clients inject child context; authenticated
-Identity consumption links its producer; current database, Redis, broker,
-object-storage and media-coordinator boundaries use finite dependency spans.
-The real Catalog operator adds a trace-only producer boundary around durable
-event intent; the actual relay remains the owner of broker publish telemetry.
-Focused telemetry, Catalog, event and media-runner tests pass, and the latest
-affected candidate gate passes 73/73 with 53 cached in 53.307 seconds. The
-branch is published as PR45 and remains unverified until new exact-head
-protected review/CI pass. The single local
-Collector attempt created no resources because
-Docker reported no Linux engine; it will not be repeated unchanged.
-
-First evidence head `eddbe17` opened PR45. Its hosted source-quality job
-proved the real Collector integration, including the repository server and
-dependency spans. The initial review found two trace-continuity defects: the
-Engagement consumer executed durable work outside its linked observation, and
-the Identity producer emitted a synthetic parent instead of its active span.
-Protected run `33297164589` also found that the base observability overlay
-incorrectly defined the opt-in Discovery service, making the Docker-only full
-profile invalid. The three blockers are corrected together locally: consumer
-work and logs now execute inside the observation, Identity uses the active real
-trace context, and the base overlay configures only services present in the
-base Compose model. Focused tests pass 11/11, the platform policy test passes
-23/23, daemonless Compose rendering passes, and the corrected affected gate
-passes 73/73 with 51 cached in 55.776 seconds. Protected run `33297684108`
-passed all jobs. Confirmation then found that the one-shot media coordinator
-discarded its spans and Discovery Catalog handling ran outside its consumer
-observation. Source `a2015d9` configures and finally flushes the bounded worker
-exporter, preserves an optional validated Catalog producer link, and scopes
-Discovery durable work/logging inside the linked observation. Protected run
-`33298943743` passed every job at exact head `e5f93e1`. Its blocker-focused
-confirmation discussions `3888781189` and `3888781191` then found that the
-actual media candidate did not pass the exporter endpoint and real Catalog
-events still had no active producer context. Source `03abe8a` corrects both
-without inventing broker I/O. Telemetry18/18, Catalog247/247, event delivery
-23/23, media runner3/3 and the affected gate73/73 with53 cached in53.307 seconds
-pass. New exact-head CI and one blocker-focused confirmation remain.
+The shared telemetry package already exports HTTP request duration/active work,
+dependency duration/active/outcomes, CPU time/utilization, RSS, uptime, Node
+event-loop metrics, V8 heap metrics, cache decisions, operation admission and
+circuit-breaker events. PostgreSQL exposes an in-process bounded pool snapshot,
+broker adapters expose bounded in-flight snapshots, event envelopes contain a
+validated occurrence time, Playback and Engagement return finite owner results,
+the media coordinator already owns its worker dependency span, and the
+publication CLI records bounded structured evidence. The missing contract is a
+complete, named connection from those sources to pool, queue/lag, memory detail
+and product-outcome metrics.
 
 ## Proposed behavior
 
-Add the smallest complete tracing vertical slice behind repository-owned
-declarations: validated inbound/extracted and outbound/injected W3C context,
-finite server/application/dependency/consumer/worker span names and attributes,
-active context for correlated logs, bounded OTLP export, and explicit async
-event links rather than indefinitely open request spans. Integrate it through
-the shared HTTP and dependency adapter boundaries first, then current owner
-event and media execution boundaries. Preserve Router sanitization and do not
-add a hosted backend, dashboard, SLO or public trace identifier.
+Extend `@aster/telemetry` with one finite golden-signal vocabulary and no new
+backend: detailed Node memory gauges; PostgreSQL pool-state gauges; event age,
+delivery outcome and active-work gauges; and backend product outcome/duration
+metrics. Record snapshots at existing adapter and owner completion boundaries.
+Reuse HTTP/dependency active instruments for request and media-worker saturation,
+and reuse the existing cache metrics for effectiveness. Invalid, excessive or
+accessor-backed observations fail closed and cannot alter product behavior.
 
 ## Boundaries
 
-- Owning context: Platform owns the telemetry contract; each bounded context owns operation outcome classification.
-- Affected services/packages: `@aster/telemetry`, `@aster/runtime`, shared HTTP, PostgreSQL, Redis, broker and object-storage adapters, owner compositions, event delivery and media worker.
-- Authoritative data: none; telemetry is diagnostic and never authoritative product state.
-- Read models/caches: none.
-- Trust boundaries: browser/Router headers, authenticated private subgraph transport, event envelopes, exporter endpoint and Collector output.
-- External dependencies: accepted OpenTelemetry-compatible SDK/exporter and existing local Collector only.
+- Owning context: Platform owns the metric contract; each owner classifies its finite product outcome.
+- Affected services/packages: `@aster/telemetry`, `@aster/postgres`, `@aster/event-delivery`, Playback, Engagement, Catalog media execution/publication and current owner compositions.
+- Authoritative data: none; metrics are diagnostic and never authorize or persist product state.
+- Read models/caches: existing cache observations only; no cache behavior changes.
+- Trust boundaries: process/runtime readings, pool/vendor counters, signed event envelopes, GraphQL owner results, media subprocess results and OTLP export.
+- External dependencies: existing OpenTelemetry SDK/Collector and current adapters only.
 
 ## Invariants
 
-- Domain and application layers import no OpenTelemetry SDK.
-- Public trace, baggage, operation names and arbitrary attributes are untrusted.
-- Metrics never label user, account, profile, title, request or trace IDs.
-- Logs and spans contain no credentials, cookies, personal data, raw GraphQL documents or signed media URLs.
-- Async events link to their producer context and do not keep request spans open.
-- Export work has finite capacity, deadline, cancellation and shutdown behavior.
-- Telemetry failure cannot alter product results, readiness or durable state.
+- Domain and application layers do not import telemetry SDKs.
+- Metric labels are finite enums and never contain account, profile, title, event, request, trace, publication or media identifiers.
+- Event time is an untrusted numeric observation: invalid, future or excessive age is rejected, not exported as an arbitrary value.
+- Metrics never change an owner result, retry, acknowledgement, readiness or shutdown decision.
+- PostgreSQL and broker snapshots are bounded to configured capacity and expose no endpoint, SQL, group, topic or credential.
+- Browser QoE is not remotely collected before the P12-R11 policy and acceptance gate.
 
 ## Failure behavior
 
 | Failure | Expected behavior | Telemetry |
 |---|---|---|
-| Invalid inbound context | discard it and create a bounded local root after transport authentication | finite rejection reason, no hostile value |
-| Exporter absent, slow or failed | product work completes; export fails within its deadline and records bounded local health | export result/drop counters and sanitized log |
-| Span/attribute capacity exceeded | reject or truncate according to the fixed contract without allocating an unbounded queue | bounded drop reason |
-| Event has no valid trace context | consumer creates a local root correlated by finite event context | stable consumer outcome only |
-| Logger cannot obtain active context | write an otherwise valid uncorrelated entry | existing safe logger behavior |
+| Runtime or vendor snapshot throws | serving continues with no fabricated sample | one bounded dropped-observation reason |
+| Pool/vendor count is malformed or exceeds policy | reject the whole sample | finite invalid-dimension drop |
+| Event timestamp is invalid, future or outside the retained window | event business handling follows owner rules | no age sample; finite rejection only |
+| Product recorder rejects or throws | preserve the already-decided owner result | finite dropped-observation reason |
+| Exporter is absent, slow or failed | product and lifecycle behavior remain as P12-R09 | existing bounded exporter health |
+| Dependent predecessor changes | stop publication, rebase onto corrected predecessor and repeat affected gates | record superseded source honestly |
 
 ## Data and contracts
 
 - Schema/migration: none.
-- GraphQL: no schema change; only authenticated internal W3C propagation remains.
-- Events: existing envelope stays compatible; valid `traceparent` becomes an async link input.
-- Cache: none.
-- Compatibility: existing metric and logger declarations remain source-compatible; tracing types are repository-owned additions.
-- Retention/deletion: no local retained trace backend in this slice; sampling/retention policy remains P12-R11.
+- GraphQL: no schema or response change.
+- Events: no envelope or delivery-guarantee change; only validated occurrence time is observed.
+- Cache: no key, TTL, authority or degraded-mode change.
+- Compatibility: additive repository telemetry methods and metric names; existing optional recorder seams remain valid.
+- Retention/deletion: no local time-series retention change; browser sampling/retention remains P12-R11.
 
 ## Security and privacy
 
-- Authorization: trace context never grants owner, viewer or operator authority.
-- Input limits: exact W3C format, finite header bytes, finite names/attributes/events/links and bounded exporter batching.
-- Sensitive data: stable enumerations only; automated canaries cover tokens, cookies, IDs, documents and signed URLs.
-- Abuse cases: forged parentage, baggage amplification, user-chosen span names, high-cardinality IDs, exporter backpressure and duplicate completion.
+- Authorization: telemetry never grants authority and records only an outcome after current owner checks.
+- Input limits: finite enums, non-negative safe counts, bounded durations/ages and fixed maximum metric series.
+- Sensitive data: automated canaries reject identifiers, URLs, SQL, GraphQL documents, credentials and vendor errors.
+- Abuse cases: forged event clocks, extreme pool counters, hostile recorder objects, metric-cardinality amplification and exporter backpressure.
 
 ## Implementation steps
 
-1. Inventory every current boundary and freeze the finite span/attribute vocabulary with privacy tests.
-2. Add repository-owned trace/context/span declarations and a bounded OpenTelemetry adapter in `@aster/telemetry`.
-3. Compose active context with `@aster/runtime` logs and shared inbound HTTP/outbound dependency adapters.
-4. Link owner event consumption and bound media-worker spans without changing event or product contracts.
-5. Prove Router-to-owner trace continuity, async links, redaction/cardinality and exporter outage/recovery.
-6. Record exact evidence and update observability architecture and repository memory.
+1. Freeze the metric names, finite dimensions, numeric limits and series budget with contract tests.
+2. Complete Node memory detail and PostgreSQL pool observations without retaining vendor objects after close.
+3. Add bounded event delivery age/outcome/active observations at current relay and consumer boundaries.
+4. Record Playback session, Engagement progress, media processing/publication outcomes and reuse the existing cache contract.
+5. Prove service composition, telemetry failure isolation, cardinality/privacy and Collector export.
+6. Update observability architecture, signal catalog, evidence and repository memory.
 
 ## Tests
 
-- Domain: none; telemetry remains outside domain policy.
-- Application: stable operation outcomes map to finite span status without SDK imports.
-- Integration: real Collector trace export plus stopped/paused exporter recovery and bounded shutdown.
-- Contract: W3C extraction/injection, async links, finite names/attributes and logger correlation.
-- Browser: one sampled navigation/request correlation only if browser source changes.
-- Performance/failure: bounded in-flight spans/export batches and exporter timeout; no capacity claim.
+- Domain: unchanged; owner results remain the source classification.
+- Application: product wrappers map every finite result without altering it.
+- Integration: real Collector receives the new finite names from representative Playback/Engagement/Catalog paths.
+- Contract: memory, pool, event and product input validation, finite labels, units and series ceilings.
+- Browser: carry forward local first-frame/rebuffer behavior only when source comparison proves it unchanged; no remote collection claim.
+- Performance/failure: snapshot/recorder exceptions and stopped exporter remain bounded; no capacity claim without a later load experiment.
 
 ## Evidence
 
-- Commands: focused telemetry/runtime/adapter suites, trace fixture, privacy/cardinality verifier and affected candidate gate.
-- Raw artifact path: `evidence/phase-12/trace-contract.txt`, `trace-continuity.txt`, `exporter-failure.txt` and `cardinality-review.txt`.
-- Acceptance result: every current boundary mapped; representative sync and async paths prove continuity; exporter failure remains isolated.
-- Iteration gate: focused changed-package tests, typecheck, lint and privacy contract.
-- Candidate gate: complete affected-scope gate plus one disposable Collector trace/failure fixture and documentation/AI checks.
-- Heavyweight repeat triggers: trace/export/runtime composition changes repeat only the affected Collector path; prose-only changes repeat documentation/AI/format checks.
+- Commands: focused telemetry/PostgreSQL/event/owner suites, representative Collector fixture and complete affected gate.
+- Raw artifact path: `evidence/phase-12/golden-signals.txt`, `product-signals.txt`, `metric-cardinality.txt` and updated index.
+- Acceptance result: every P12-R03 source and backend P12-R04 outcome maps to an implemented finite signal or an explicit next-slice boundary.
+- Iteration gate: focused changed-package build/tests, lint and metric-contract privacy checks.
+- Candidate gate: `pnpm check:changed` plus one disposable Collector representative export and documentation/AI checks.
+- Heavyweight repeat triggers: metric/export composition changes repeat only the representative Collector path; browser/media pipelines repeat only if their source or contract changes.
 - Review stopping rule: one initial review and one confirmation; only requirement, privacy/security, boundedness, availability, evidence-integrity or public-contract blockers extend it.
 
 ## Rollback or recovery
 
-Tracing is optional diagnostic infrastructure. Rollback disables the new
-tracer/export composition and retains current metrics/logging; it changes no
-database, event, object or product API. Disposable fixtures remove only their
-exact Collector project resources.
+Remove the additive recorders and registrations while retaining P12-R01 traces
+and existing metrics. No database, event, cache, media object or public API needs
+migration. If the predecessor changes, rebase this unpublished branch and rerun
+only gates affected by the changed source.
 
 ## Documentation updates
 
-- Observability architecture, telemetry vocabulary and Phase 12 evidence index.
+- Observability architecture and finite signal catalog.
+- Phase 12 evidence index and signal artifacts.
 - Repository state, queue, session log and handoff.
 
 ## Completion checklist

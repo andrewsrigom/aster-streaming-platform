@@ -40,7 +40,9 @@ events lacked active producer context. Source `03abe8a`, tree `b1474c7`, wires
 the exact media path and adds a finite trace-only Catalog producer span without
 false broker telemetry. Telemetry18/18, Catalog247/247, event delivery23/23,
 media runner3/3 and affected gate73/73 with53 cached in53.307 seconds pass. New
-exact-head CI and blocker-focused confirmation remain before verification. Full
+exact-head run `33300561121` and blocker-focused confirmation remain before
+verification. P12-R03/R04 backend golden signals are active as the sole
+unpublished dependent rebased on exact evidence head `9a058ee`. Full
 Phase00–14 goal stays active.
 
 ## Verified
@@ -83,6 +85,14 @@ Catalog producer gaps. Both are corrected without claiming broker I/O for
 durable outbox intent. The local candidate gate passes73/73 with53 cached in
 53.307 seconds. New protected CI and blocker-focused confirmation are pending;
 no hosted backend, dashboard, SLO or product contract is claimed by this slice.
+
+P12-R03/R04 backend metrics are active locally on
+`feat/p12-golden-product-signals`, rebased exactly on frozen head `9a058ee`. The
+slice owns finite Node memory, PostgreSQL pool, event age/delivery and backend
+product-result signals. Existing HTTP/dependency golden signals, cache metrics,
+event-loop/V8 instrumentation and local browser QoE are reused. Browser remote
+collection remains explicitly deferred until its P12-R11 sampling, privacy,
+transport and retention policy; no ingestion service is implied.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -342,8 +352,8 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Publish the corrected P12-R01 evidence head, then require protected
-CI and the defined initial/confirmation review before merge.
+Complete PR45 protected CI, confirmation, merge and exact-main proof while
+implementing the unpublished dependent P12-R03/R04 backend signal slice.
 
 ## Runtime and recovery
 

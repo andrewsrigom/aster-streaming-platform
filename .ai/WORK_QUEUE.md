@@ -149,7 +149,8 @@ Historical stashes are superseded.
 | 54 | Add operation-scoped circuit breakers to safe Catalog reads | P11-R05 | DONE |
 | 55 | Add a private bounded controlled failure-injection laboratory | P11-R08 | DONE |
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
-| 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | IN_PROGRESS |
+| 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | WAITING_EXTERNAL |
+| 58 | Export platform golden signals and backend product outcomes | P12-R03 | IN_PROGRESS |
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -159,8 +160,10 @@ and real Catalog events lacked active producer context. The exact media path now
 passes the endpoint, and Catalog uses a finite trace-only producer span without
 recording false broker dependency metrics. Telemetry18/18, Catalog247/247,
 event delivery23/23, media runner3/3 and affected gate73/73 with53 cached in
-53.307 seconds pass. New protected CI and blocker-focused confirmation remain
-before `DONE`.
+53.307 seconds pass. Evidence head `9a058ee` is frozen on PR45 under protected
+run `33300561121`; blocker-focused confirmation and merge remain. Item58 is the
+sole dependent local work, rebased on that exact head. It must rebase and repeat
+affected gates if item57 changes, and it cannot publish, merge or release first.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

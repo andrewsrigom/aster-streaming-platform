@@ -151,6 +151,13 @@ Append new entries at the top. Keep entries factual and concise.
   The first affected gate exposed only one full-interface Identity fixture that
   needed the additive method forwarding; after amendment, the complete affected
   gate passes73/73 with53 cached in53.307 seconds.
+- Published evidence head `9a058ee` once, resolved both fresh confirmation
+  threads, and started protected run `33300561121` without requesting another
+  review before CI. Froze that coherent candidate as `WAITING_EXTERNAL`.
+- Rebased the sole unpublished dependent `feat/p12-golden-product-signals` onto
+  exact `9a058ee`. Its plan covers finite Node memory, PostgreSQL pool, event
+  age/delivery and backend product-result metrics; browser collection waits for
+  the explicit P12-R11 policy.
 
 ### Evidence
 
@@ -166,9 +173,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the latest P12-R01 evidence head once, resolve confirmation discussions
-`3888781189` and `3888781191`, require protected exact-head CI, then request one
-blocker-focused confirmation review.
+Finish PR45 protected CI/blocker-focused confirmation/merge while continuing
+the unpublished P12-R03/R04 backend golden-signal dependent.
 
 ## 2026-08-29 — Operation admission release and resilience start
 
