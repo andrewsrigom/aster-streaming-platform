@@ -10,7 +10,7 @@ exact-main run `33325544350` passed every required job.
 Item63 (P12-R10) is the sole `IN_PROGRESS` item on
 `feat/p12-diagnostic-exercises`, based exactly on main `633e819`. Its active
 plan is `.ai/CHANGE_PLAN.md`. Published candidate `e0d1975` is under runtime
-remediation after protected run `33331974187`.
+remediation after protected runs `33331974187` and `33332980729`.
 
 ## Implemented candidate
 
@@ -28,8 +28,8 @@ remediation after protected run `33331974187`.
 - The PostgreSQL scenario admits one blocked Catalog read before pausing the
   exact database. Recovery terminates only its named lock holder.
 - Policy/profile tests pass12/12, CI/classifier tests passed35/35 at the
-  published candidate and platform tests pass87/87. The corrected affected gate
-  passes73/73 with59 cached in51.067 seconds, including Catalog248/248.
+  published candidate and platform tests pass87/87. The refined selected-
+  TraceQL affected gate passes 73/73 with 60 cached in 63.796 seconds.
   Documentation and pending evidence are current.
 - Initial review corrected the global execution/cleanup budget, signal cleanup,
   listener scope, finite output categories and diagnostic CI invalidation.
@@ -39,8 +39,10 @@ remediation after protected run `33331974187`.
 
 Run `33331974187` passed Catalog diagnosis, PostgreSQL recovery and exact clean
 teardown. Its PostgreSQL trace-by-ID poll ran before the required span became
-query-visible; Redis did not run. The correction polls exact-boundary TraceQL
-first, uses Tempo V2 OTLP JSON and strengthens the actual DataLoader regression.
+query-visible; Redis did not run. Correction `b732be2` and run `33332980729`
+then proved the exact PostgreSQL TraceQL match plus recovery/cleanup, but its V2
+read remained incomplete and Redis still did not run. The refined runner uses
+the exact finite TraceQL-selected span directly.
 
 ## External runtime state
 
@@ -54,11 +56,9 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Finish focused/static checks for the TraceQL/Tempo V2 correction and run the
-   affected candidate gate.
-2. Commit/push one remediation and let its protected lane execute all three
+1. Commit/push the selected-TraceQL remediation and let its protected lane execute all three
    scenarios. Capture results in `evidence/phase-12/failure-diagnosis.md`.
-3. Obtain one targeted confirmation, merge, verify exact-main CI and close
+2. Obtain one targeted confirmation, merge, verify exact-main CI and close
    Phase12. Inspect/remove only the exact interrupted local project when its
    original engine is reachable.
 

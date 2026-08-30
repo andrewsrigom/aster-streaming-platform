@@ -112,14 +112,34 @@ acceptance with proven recovery and cleanup, not a passed diagnostic run.
 
 The bounded transcript is
 [protected-run-33331974187.txt](diagnostics/protected-run-33331974187.txt).
-The correction now waits for the exact scenario boundary through recent-store
-TraceQL before retrieving the trace through Tempo's V2 OTLP JSON endpoint. The
-V2 wrapper, exact finite queries and actual Catalog `title(id)` DataLoader path
-have focused regressions. A new protected run must prove all three scenarios.
+The first correction waits for the exact scenario boundary through recent-store
+TraceQL before a Tempo V2 read. Exact finite queries and the actual Catalog
+`title(id)` DataLoader path have focused regressions.
 
 The corrected local candidate passes diagnostic/profile tests 12/12, platform
 tests 87/87, the full Catalog suite 248/248 inside the aggregate gate and all
 73 affected tasks with 59 cached in 51.067 seconds.
+
+## Second protected runtime
+
+Corrected source `b732be2773be2f7153166bb5cbe0fbea05cda5dc` ran in
+workflow `33332980729`. Local-platform job `99314814021` created only project
+`aster-p12-diagnostics-a55e436f-ae61-4f8c-a882-141418397304`.
+Catalog again passed with trace `1a1398fe98eaf4e847ab9a1f704b71a2` and
+the expected one-population/zero-good result.
+
+For PostgreSQL trace `99e0a5052407fb076b462cb8203a201b`, the exact TraceQL
+query completed before the runner entered its subsequent V2 poll. That V2 poll
+still did not return the required recent boundary within 30 seconds. PostgreSQL
+recovery and exact teardown passed; Redis did not run. The bounded transcript is
+[protected-run-33332980729.txt](diagnostics/protected-run-33332980729.txt).
+
+The refined runner now uses the exact TraceQL result's finite selected fields as
+the boundary evidence. This preserves trace-ID correlation and rejects missing
+dependency/outcome/status fields without assuming that a recent trace-by-ID read
+is already complete. Focused diagnostic/profile tests pass 12/12 and the
+refined affected gate passes 73/73 with 60 cached in 63.796 seconds. A third
+protected run must still prove all scenarios and cleanup.
 
 ## Remaining acceptance
 

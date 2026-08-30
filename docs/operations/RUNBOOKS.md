@@ -153,8 +153,9 @@ It creates its own UUID-scoped project and accepts no target or flags.
 1. Confirm a new `catalog_title_read` population event and its good-event
    result. Metrics establish impact; they do not prove cause.
 2. Read the bounded Router operation log and take its validated trace ID.
-3. Require recent-store TraceQL search to find the exact scenario boundary in
-   that trace, then retrieve the complete OTLP JSON through Tempo V2.
+3. Require recent-store TraceQL search to return that exact trace ID and select
+   only the scenario boundary, operation, outcome, status and service fields.
+   Use that matched span set; a recent trace-by-ID read may still be partial.
 4. Follow only finite boundary attributes: Catalog subgraph, PostgreSQL or
    Redis dependency, operation, outcome and span status.
 5. Correlate the same trace with sanitized Router/Catalog event categories.

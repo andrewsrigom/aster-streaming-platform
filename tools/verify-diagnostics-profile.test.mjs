@@ -70,9 +70,10 @@ test("rejects an externally selected or broadly destructive runner", () => {
       "SELECT pg_terminate_backend(pid) FROM pg_stat_activity;",
     ],
     [
-      "await tempoSearch(ports.tempo, traceId, scenario);\n    const trace = await tempoTrace(ports.tempo, traceId, scenario);",
-      "const trace = await tempoTrace(ports.tempo, traceId, scenario);\n    await tempoSearch(ports.tempo, traceId, scenario);",
+      "const search = await tempoSearch(ports.tempo, traceId, scenario);\n    const facts = traceSearchFacts(search, traceId);",
+      "const facts = traceSearchFacts(search, traceId);\n    const search = await tempoSearch(ports.tempo, traceId, scenario);",
     ],
+    ["| select(", "| unbounded("],
   ]) {
     const changed = { ...valid, runner: valid.runner.replace(before, after) };
     assert.ok(validateDiagnosticsProfile(changed).length > 0, before);

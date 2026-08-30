@@ -128,13 +128,14 @@ The automated exercise creates a fresh `aster-p12-diagnostics-<uuid>` project,
 uses ephemeral loopback ports and diagnoses Catalog service loss, an
 authoritative PostgreSQL read failure and Redis degradation. It begins with the
 released Catalog-read SLI source, obtains the Router trace ID, waits for the
-exact scenario boundary through TraceQL, retrieves the same trace through the
-Tempo V2 API, correlates bounded structured logs, verifies recovery and removes
+exact scenario boundary through TraceQL with a finite `select`, correlates that
+matched span set with bounded structured logs, verifies recovery and removes
 only that exact project with its disposable state. Source policy and focused
-tests pass. The first protected run proved Catalog diagnosis, PostgreSQL
-recovery and clean teardown but exposed premature V1 trace retrieval; real
-three-scenario evidence is not claimed until the corrected Docker exercise
-completes.
+tests pass. Two protected runs proved Catalog diagnosis, PostgreSQL recovery and
+clean teardown; the second also proved the exact PostgreSQL TraceQL match while
+showing that recent trace-by-ID completeness is not a valid acceptance
+precondition. Real three-scenario evidence is not claimed until the refined
+Docker exercise completes.
 
 No log backend is part of this profile. Size-rotated Docker logs remain the
 correlated log source, which prevents an empty Loki service from being mistaken

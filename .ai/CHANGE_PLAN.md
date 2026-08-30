@@ -31,14 +31,16 @@ Tempo/Collector/Grafana profile, policy/adverse tests, exact scenario
 orchestration, proportional CI and the focused Catalog database-trace
 regression. Protected run `33331974187` passed Catalog diagnosis, PostgreSQL
 recovery and exact cleanup, then failed because V1 trace-by-ID polling preceded
-visibility of the required PostgreSQL span; Redis did not run. The correction
-waits for the exact scenario boundary through recent-store TraceQL before
-polling Tempo V2 OTLP JSON. Focused diagnostics pass12/12 and the actual
-`title(id)` DataLoader runtime regression passes6/6. The three-scenario
-acceptance is not verified.
+visibility of the required PostgreSQL span; Redis did not run. Correction
+`b732be2` waited for the exact scenario boundary through TraceQL, and protected
+run `33332980729` proved that match plus recovery/cleanup, but the subsequent V2
+read was still incomplete and Redis did not run. The refined runner classifies
+the exact TraceQL-selected finite span instead of requiring recent trace-by-ID
+completeness. Focused diagnostics pass12/12. The three-scenario acceptance is
+not verified.
 
-The corrected affected candidate gate passes73/73 tasks with59 cached in51.067
-seconds. The initial review added one global execution budget with cleanup
+The refined selected-TraceQL affected gate passes 73/73 tasks with 60 cached in
+63.796 seconds. The initial review added one global execution budget with cleanup
 headroom, signal-driven cleanup, a proof-only Tempo listener, finite diagnostic
 output categories and complete CI invalidation paths. Source confirmation found
 no remaining blocker. The protected trace-visibility failure triggers the
@@ -144,7 +146,7 @@ recovered SLI. Never touch the retained demo or another Docker project.
 - Application: diagnostic result classification rejects missing, ambiguous,
   oversized, sensitive or mismatched signals.
 - Integration: real Tempo/Collector/Prometheus/Grafana health, OTLP export,
-  exact-boundary TraceQL search, V2 trace-by-ID and data-source checks.
+  exact-ID/boundary TraceQL selection and data-source checks.
 - Contract: Compose/runtime image pins, exact topology, bounded resources,
   retention, query vocabulary, privacy and cleanup.
 - Browser: existing playable demo remains protected; optional trace navigation
@@ -161,7 +163,8 @@ recovered SLI. Never touch the retained demo or another Docker project.
   JSON/text artifacts under `evidence/phase-12/diagnostics/`.
 - Acceptance result: source implementation and focused evidence pass. The first
   protected runtime proves Catalog diagnosis, PostgreSQL recovery and exact
-  cleanup, but failed trace visibility before Redis; corrected all-scenario
+  cleanup. The second also proves exact PostgreSQL TraceQL selection, but both
+  stopped before Redis on trace-by-ID completeness; refined all-scenario
   acceptance remains pending.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.

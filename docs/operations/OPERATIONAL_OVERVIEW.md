@@ -100,9 +100,11 @@ structured logs remain the log source; Loki is not provisioned. The normal
 dashboard at port 3001 and the playable demo do not gain Tempo. Real runtime
 acceptance remains pending. Protected run `33331974187` passed Catalog
 diagnosis, PostgreSQL recovery and clean teardown, but its V1 trace read preceded
-the PostgreSQL boundary's query visibility and Redis did not run. The corrected
-runner waits on an exact TraceQL boundary before a Tempo V2 trace read; all three
-scenarios still must pass on a working Linux Docker engine.
+the PostgreSQL boundary's query visibility and Redis did not run. Run
+`33332980729` then proved the exact PostgreSQL TraceQL boundary, recovery and
+cleanup while its subsequent V2 read remained incomplete. The refined runner
+uses the finite TraceQL-selected span as evidence; all three scenarios still
+must pass on a working Linux Docker engine.
 
 ## Limits
 

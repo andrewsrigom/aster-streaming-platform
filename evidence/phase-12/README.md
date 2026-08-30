@@ -24,8 +24,9 @@ exact-main run `33325544350` release the finite burn-rate alerts. P12-R10 is the
 only active Phase 12 item. Its diagnostic profile and runner are implemented in
 the current worktree. Protected run `33331974187` passed Catalog diagnosis,
 PostgreSQL recovery and clean teardown, then failed on premature V1 trace
-retrieval before Redis. The exact-boundary TraceQL/Tempo V2 correction still
-needs all-scenario acceptance.
+retrieval before Redis. Run `33332980729` proved the exact PostgreSQL TraceQL
+match, recovery and teardown but showed that its subsequent V2 result remained
+incomplete. The refined selected-TraceQL path still needs all-scenario acceptance.
 
 ## Requirement traceability
 
@@ -119,6 +120,7 @@ live-container acceptance.
   claimed.
 - The P12-R10 source/profile checks do not substitute for real Tempo export,
   trace search, failure recovery and exact Docker cleanup. Protected run
-  `33331974187` proves Catalog diagnosis, PostgreSQL recovery and clean teardown,
-  but fails trace visibility before Redis; no three-scenario acceptance is
-  claimed until the corrected run passes.
+  `33331974187` proves Catalog diagnosis, PostgreSQL recovery and clean teardown.
+  Run `33332980729` additionally proves the exact PostgreSQL TraceQL match, but
+  both stop before Redis because trace-by-ID completeness was required. No
+  three-scenario acceptance is claimed until the refined run passes.

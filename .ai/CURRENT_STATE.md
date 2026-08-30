@@ -283,11 +283,13 @@ search and correlated bounded logs to diagnose Catalog service loss, a
 PostgreSQL failure after request admission and Redis degradation. Recovery and
 cleanup target only the disposable project. Protected run `33331974187` passed
 Catalog diagnosis, PostgreSQL recovery and exact cleanup, then failed because
-V1 trace retrieval preceded query visibility of the required PostgreSQL span;
-Redis did not run. The correction waits on exact-boundary TraceQL then reads
-Tempo V2. Focused diagnostic/profile tests pass12/12, platform tests pass87/87
-and the corrected aggregate gate passes73/73 with59 cached in51.067 seconds,
-including Catalog248/248. Initial review corrected execution/cleanup headroom, signal
+V1 trace retrieval preceded query visibility of the required PostgreSQL span.
+Correction `b732be2` and run `33332980729` proved the exact PostgreSQL TraceQL
+match plus recovery/cleanup, but the subsequent V2 read remained incomplete;
+Redis still did not run. The refined runner uses the exact finite TraceQL span
+directly. Focused diagnostic/profile tests pass12/12, platform tests pass87/87
+and the refined aggregate gate passes 73/73 with 60 cached in 63.796 seconds.
+Initial review corrected execution/cleanup headroom, signal
 handling, listener scope, diagnostic output categories and CI invalidation;
 confirmation found no remaining blocking source issue; the real runtime finding
 now requires one targeted confirmation. Architecture, operations, runbooks,
@@ -559,7 +561,7 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, complete the TraceQL/Tempo V2 correction, pass the affected gate
+For P12-R10, complete the selected-TraceQL correction, pass the affected gate
 and corrected protected three-scenario run, obtain targeted confirmation, close
 Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
 interrupted local project only when that same Docker engine becomes reachable.

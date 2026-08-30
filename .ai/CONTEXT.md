@@ -71,9 +71,11 @@ bounded trace-backend decision, three telemetry-led injected-failure exercises
 and Phase12 closeout. ADR-0044, the bounded Tempo profile, runner, CI selection
 and focused tests are implemented. Protected run `33331974187` passed Catalog
 diagnosis, PostgreSQL recovery and exact cleanup, then exposed premature V1
-trace retrieval before the dependency boundary was query-visible; Redis did
-not run. The corrected runner uses exact-boundary TraceQL followed by Tempo V2.
-Real three-scenario acceptance remains pending. Phase13 has not started.
+trace retrieval before the dependency boundary was query-visible. Corrected run
+`33332980729` proved the exact PostgreSQL TraceQL match plus recovery/cleanup,
+but its subsequent V2 read remained incomplete; Redis still did not run. The
+refined runner classifies the exact finite TraceQL span directly. Real
+three-scenario acceptance remains pending. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

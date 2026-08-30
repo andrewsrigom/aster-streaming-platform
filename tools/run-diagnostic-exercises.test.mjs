@@ -9,25 +9,65 @@ import {
   diagnosticTraceQuery,
   diagnosticTimeout,
   parseJsonLines,
-  traceFacts,
+  traceSearchFacts,
 } from "./run-diagnostic-exercises.mjs";
 
-const trace = (dependency, outcome) => ({
-  resourceSpans: [
+const dependencyFacts = (dependency, outcome) => [
+  {
+    service: "catalog",
+    name: "aster.dependency.operation",
+    traceId: "1".repeat(32),
+    spanId: "2".repeat(16),
+    parentSpanId: "",
+    status: "error",
+    attributes: {
+      "aster.dependency": dependency,
+      "aster.operation": "query",
+      "aster.outcome": outcome,
+    },
+  },
+];
+
+const selectedSearch = (traceId, dependency, outcome) => ({
+  traces: [
     {
-      resource: { attributes: [{ key: "service.name", value: { stringValue: "aster-catalog" } }] },
-      scopeSpans: [
+      traceID: traceId,
+      spanSets: [
         {
           spans: [
             {
-              traceId: "1".repeat(32),
-              spanId: "2".repeat(16),
-              name: "aster.dependency.operation",
-              status: { code: "STATUS_CODE_ERROR" },
+              spanID: "b".repeat(16),
               attributes: [
-                { key: "aster.dependency", value: { stringValue: dependency } },
-                { key: "aster.operation", value: { stringValue: "query" } },
-                { key: "aster.outcome", value: { stringValue: outcome } },
+                { key: "span.aster.dependency", value: { stringValue: dependency } },
+                { key: "span.aster.operation", value: { stringValue: "query" } },
+                { key: "span.aster.outcome", value: { stringValue: outcome } },
+                { key: "span:name", value: { stringValue: "aster.dependency.operation" } },
+                { key: "span:status", value: { stringValue: "error" } },
+                { key: "resource.service.name", value: { stringValue: "catalog" } },
+                { key: "private", value: { stringValue: "discarded" } },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+});
+
+const selectedCatalogSearch = (traceId) => ({
+  traces: [
+    {
+      traceID: traceId,
+      spanSets: [
+        {
+          spans: [
+            {
+              spanID: "c".repeat(16),
+              attributes: [
+                { key: "span.subgraph.name", value: { stringValue: "catalog" } },
+                { key: "span:name", value: { stringValue: "router.catalog_subgraph" } },
+                { key: "span:status", value: { stringValue: "error" } },
+                { key: "resource.service.name", value: { stringValue: "aster-router" } },
               ],
             },
           ],
@@ -80,40 +120,52 @@ test("requires Catalog operation logs to expose declared and consistent active t
   );
 });
 
-test("extracts finite service, span and dependency facts", () => {
-  assert.deepEqual(traceFacts(trace("postgresql", "unavailable")), [
-    {
-      service: "aster-catalog",
-      name: "aster.dependency.operation",
-      traceId: "1".repeat(32),
-      spanId: "2".repeat(16),
-      parentSpanId: "",
-      status: "status_code_error",
-      attributes: {
-        "aster.dependency": "postgresql",
-        "aster.operation": "query",
-        "aster.outcome": "unavailable",
-      },
-    },
-  ]);
-});
-
-test("unwraps Tempo V2 traces and waits for the scenario boundary", () => {
+test("builds exact finite TraceQL queries for each scenario boundary", () => {
   const traceId = "a".repeat(32);
-  assert.equal(traceFacts({ trace: trace("postgresql", "timeout") }).length, 1);
   assert.equal(
     diagnosticTraceQuery(traceId, "catalog"),
-    `{ trace:id = "${traceId}" && span.subgraph.name = "catalog" }`,
+    `{ trace:id = "${traceId}" && span.subgraph.name = "catalog" && span:status = error } | select(span.subgraph.name, span:name, span:status, resource.service.name)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "postgres"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" }`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span.aster.outcome =~ "timeout|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "redis"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" }`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span.aster.outcome =~ "timeout|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.throws(() => diagnosticTraceQuery("unsafe", "redis"));
+});
+
+test("extracts only selected finite facts from a TraceQL boundary result", () => {
+  const traceId = "a".repeat(32);
+  assert.deepEqual(traceSearchFacts(selectedSearch(traceId, "postgresql", "timeout"), traceId), [
+    {
+      service: "catalog",
+      name: "aster.dependency.operation",
+      traceId,
+      spanId: "b".repeat(16),
+      parentSpanId: "",
+      status: "error",
+      attributes: {
+        "aster.dependency": "postgresql",
+        "aster.operation": "query",
+        "aster.outcome": "timeout",
+      },
+    },
+  ]);
+  assert.deepEqual(traceSearchFacts(selectedCatalogSearch(traceId), traceId), [
+    {
+      service: "aster-router",
+      name: "router.catalog_subgraph",
+      traceId,
+      spanId: "c".repeat(16),
+      parentSpanId: "",
+      status: "error",
+      attributes: { "subgraph.name": "catalog" },
+    },
+  ]);
+  assert.deepEqual(traceSearchFacts({ traces: [] }, traceId), []);
 });
 
 test("emits only finite diagnostic boundary categories from untrusted traces", () => {
@@ -141,14 +193,7 @@ test("emits only finite diagnostic boundary categories from untrusted traces", (
 });
 
 test("classifies Catalog, PostgreSQL and Redis failures from telemetry contracts", () => {
-  const catalogFacts = [
-    {
-      service: "aster-router",
-      name: "subgraph",
-      status: "status_code_error",
-      attributes: { "subgraph.name": "catalog" },
-    },
-  ];
+  const catalogFacts = traceSearchFacts(selectedCatalogSearch("a".repeat(32)), "a".repeat(32));
   assert.deepEqual(
     classifyDiagnosticScenario({
       scenario: "catalog",
@@ -164,7 +209,7 @@ test("classifies Catalog, PostgreSQL and Redis failures from telemetry contracts
       scenario: "postgres",
       response: { errors: [{ extensions: { code: "UNAVAILABLE" } }] },
       metricDelta: { population: 1, good: 0 },
-      facts: traceFacts(trace("postgresql", "unavailable")),
+      facts: dependencyFacts("postgresql", "unavailable"),
       logs: {
         router: '{"kind":"aster.router.operation"}',
         catalog: '{"event":"aster.catalog.graphql_diagnostic"}',
@@ -178,7 +223,7 @@ test("classifies Catalog, PostgreSQL and Redis failures from telemetry contracts
       scenario: "redis",
       response: { data: { title: null } },
       metricDelta: { population: 1, good: 1 },
-      facts: traceFacts(trace("redis", "unavailable")),
+      facts: dependencyFacts("redis", "unavailable"),
       logs: {
         router: '{"kind":"aster.router.operation"}',
         catalog: '{"event":"aster.catalog.graphql_completed"}',

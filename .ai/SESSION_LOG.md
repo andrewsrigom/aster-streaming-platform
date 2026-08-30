@@ -17,6 +17,12 @@ full snapshot through the archival checkpoint remains in
   continuity regression. Focused diagnostics pass12/12, platform tests pass87/87
   and the corrected affected gate passes73/73 with59 cached in51.067 seconds,
   including Catalog248/248; corrected protected acceptance is pending.
+- Corrected source `b732be2` in protected run `33332980729` proved the exact
+  PostgreSQL TraceQL boundary, recovery and clean teardown. Its subsequent V2
+  read remained incomplete, so Redis did not run. The refined runner now uses
+  only the exact TraceQL-selected finite span as causal evidence; focused
+  diagnostic/profile tests pass12/12, platform tests pass87/87 and its affected
+  gate passes 73/73 with 60 cached in 63.796 seconds.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof

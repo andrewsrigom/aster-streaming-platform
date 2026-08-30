@@ -168,53 +168,60 @@ export function catalogOperationTraceContext(source, expectedTraceId) {
   return Object.freeze({ declaredTraceId, activeTraceId });
 }
 
-export function traceFacts(payload) {
-  const facts = [];
-  const trace = payload?.trace ?? payload;
-  const resourceSpans = Array.isArray(trace?.batches)
-    ? trace.batches
-    : Array.isArray(trace?.resourceSpans)
-      ? trace.resourceSpans
-      : [];
-  for (const resourceSpan of resourceSpans) {
-    const resourceAttributes = attributes(resourceSpan?.resource?.attributes);
-    const service = resourceAttributes["service.name"] ?? "unknown";
-    const scopes = Array.isArray(resourceSpan?.scopeSpans)
-      ? resourceSpan.scopeSpans
-      : Array.isArray(resourceSpan?.instrumentationLibrarySpans)
-        ? resourceSpan.instrumentationLibrarySpans
-        : [];
-    for (const scope of scopes) {
-      for (const span of Array.isArray(scope?.spans) ? scope.spans : []) {
-        const spanAttributes = attributes(span?.attributes);
-        facts.push(
-          Object.freeze({
-            service,
-            name: typeof span?.name === "string" ? span.name : "unknown",
-            traceId: typeof span?.traceId === "string" ? span.traceId : "",
-            spanId: typeof span?.spanId === "string" ? span.spanId : "",
-            parentSpanId: typeof span?.parentSpanId === "string" ? span.parentSpanId : "",
-            status:
-              typeof span?.status?.code === "string"
-                ? span.status.code.toLowerCase()
-                : String(span?.status?.code ?? "unset").toLowerCase(),
-            attributes: Object.freeze(spanAttributes),
-          }),
-        );
-      }
-    }
-  }
-  return Object.freeze(facts);
-}
-
 export function diagnosticTraceQuery(traceId, scenario) {
   assert.match(traceId, /^[a-f0-9]{32}$/u, "Diagnostic trace ID is invalid.");
   assert.ok(SCENARIOS.includes(scenario), "Diagnostic scenario is invalid.");
   const boundary =
     scenario === "catalog"
-      ? 'span.subgraph.name = "catalog"'
-      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}"`;
-  return `{ trace:id = "${traceId}" && ${boundary} }`;
+      ? 'span.subgraph.name = "catalog" && span:status = error'
+      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}" && span.aster.outcome =~ "timeout|unavailable|error"`;
+  const selected =
+    scenario === "catalog"
+      ? "span.subgraph.name, span:name, span:status, resource.service.name"
+      : "span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name";
+  return `{ trace:id = "${traceId}" && ${boundary} } | select(${selected})`;
+}
+
+export function traceSearchFacts(payload, traceId) {
+  assert.match(traceId, /^[a-f0-9]{32}$/u, "Diagnostic trace ID is invalid.");
+  const trace = Array.isArray(payload?.traces)
+    ? payload.traces.find(
+        (candidate) => candidate?.traceID === traceId || candidate?.traceId === traceId,
+      )
+    : undefined;
+  const facts = [];
+  for (const spanSet of Array.isArray(trace?.spanSets) ? trace.spanSets : []) {
+    for (const span of Array.isArray(spanSet?.spans) ? spanSet.spans : []) {
+      const selected = attributes(span?.attributes);
+      const selectedValue = (...names) => names.map((name) => selected[name]).find(Boolean);
+      const normalized = Object.freeze({
+        ...(selectedValue("span.subgraph.name", "subgraph.name")
+          ? { "subgraph.name": selectedValue("span.subgraph.name", "subgraph.name") }
+          : {}),
+        ...(selectedValue("span.aster.dependency", "aster.dependency")
+          ? { "aster.dependency": selectedValue("span.aster.dependency", "aster.dependency") }
+          : {}),
+        ...(selectedValue("span.aster.operation", "aster.operation")
+          ? { "aster.operation": selectedValue("span.aster.operation", "aster.operation") }
+          : {}),
+        ...(selectedValue("span.aster.outcome", "aster.outcome")
+          ? { "aster.outcome": selectedValue("span.aster.outcome", "aster.outcome") }
+          : {}),
+      });
+      facts.push(
+        Object.freeze({
+          service: selectedValue("resource.service.name", "service.name") ?? "unknown",
+          name: selectedValue("span:name", "name") ?? "unknown",
+          traceId,
+          spanId: typeof span?.spanID === "string" ? span.spanID : "",
+          parentSpanId: "",
+          status: (selectedValue("span:status", "status") ?? "unset").toLowerCase(),
+          attributes: normalized,
+        }),
+      );
+    }
+  }
+  return Object.freeze(facts);
 }
 
 export function assertTelemetryPrivacy(serialized, canaries) {
@@ -685,38 +692,6 @@ async function catalogOperationEvent(since, expectedTraceId) {
   return { context, source };
 }
 
-async function tempoTrace(tempoPort, traceId, scenario) {
-  try {
-    return await waitFor(
-      `Tempo trace ${traceId}`,
-      async () => {
-        const response = await boundedResponse(
-          `http://127.0.0.1:${tempoPort}/api/v2/traces/` + traceId,
-          undefined,
-          1024 * 1024,
-        );
-        return response.status === 200 ? JSON.parse(response.body) : undefined;
-      },
-      (value) => {
-        const facts = traceFacts(value);
-        return scenario === "catalog"
-          ? facts.some((fact) => fact.attributes["subgraph.name"] === "catalog")
-          : hasFailedDependency(facts, scenario === "postgres" ? "postgresql" : "redis");
-      },
-      30_000,
-    );
-  } catch (error) {
-    const [collector, tempo] = await Promise.all([
-      logs("collector", new Date(Date.now() - 60_000).toISOString()),
-      logs("tempo", new Date(Date.now() - 60_000).toISOString()),
-    ]);
-    throw new Error(
-      `Tempo trace unavailable. collector=${collector.slice(-6000)} tempo=${tempo.slice(-6000)}`,
-      { cause: error },
-    );
-  }
-}
-
 async function tempoSearch(tempoPort, traceId, scenario) {
   const query = diagnosticTraceQuery(traceId, scenario);
   return waitFor(
@@ -732,8 +707,7 @@ async function tempoSearch(tempoPort, traceId, scenario) {
       assert.ok(Array.isArray(response.value?.traces));
       return response.value;
     },
-    (response) =>
-      response.traces.some((trace) => trace.traceID === traceId || trace.traceId === traceId),
+    (response) => traceSearchFacts(response, traceId).length > 0,
     45_000,
   );
 }
@@ -803,13 +777,17 @@ async function exercise(scenario, ports) {
     const traceId = router.event.trace_id;
     const catalogOperation =
       scenario === "catalog" ? undefined : await catalogOperationEvent(since, traceId);
-    await tempoSearch(ports.tempo, traceId, scenario);
-    const trace = await tempoTrace(ports.tempo, traceId, scenario);
-    const facts = traceFacts(trace);
+    const search = await tempoSearch(ports.tempo, traceId, scenario);
+    const facts = traceSearchFacts(search, traceId);
     const measured = await waitMetricDelta(ports.prometheus, before);
     const catalogLogs = catalogOperation?.source ?? "";
     const cacheLogs = scenario === "redis" ? await waitCacheLog("unavailable", since) : "";
-    const serialized = JSON.stringify({ trace, router: router.source, catalogLogs, cacheLogs });
+    const serialized = JSON.stringify({
+      search,
+      router: router.source,
+      catalogLogs,
+      cacheLogs,
+    });
     assertTelemetryPrivacy(serialized, [canary, TITLE_DETAIL]);
     const diagnosis = classifyDiagnosticScenario({
       scenario,

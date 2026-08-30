@@ -252,9 +252,12 @@ proportional CI routing and focused tests are implemented. One local run stopped
 during Docker Desktop image build. Published candidate `e0d1975` then passed
 Catalog diagnosis, PostgreSQL recovery and clean teardown in protected run
 `33331974187`, but its V1 trace read preceded dependency-span visibility and
-Redis did not run. The correction uses exact-boundary TraceQL then Tempo V2.
-Item63 remains `IN_PROGRESS` until all three scenarios, zero-resource cleanup,
-targeted confirmation and protected release pass.
+Redis did not run. Correction `b732be2` then proved the exact PostgreSQL TraceQL
+match, recovery and cleanup in run `33332980729`, but its V2 read remained
+incomplete and Redis still did not run. The refined runner classifies the finite
+TraceQL-selected span directly. Item63 remains `IN_PROGRESS` until all three
+scenarios, zero-resource cleanup, targeted confirmation and protected release
+pass.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
