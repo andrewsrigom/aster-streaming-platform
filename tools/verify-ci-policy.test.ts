@@ -258,6 +258,10 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
     ],
     ["api/datasources/uid/aster-prometheus/health", "api/datasources/uid/unreviewed/health"],
     [
+      `grep -Eq '"database"[[:space:]]*:[[:space:]]*"ok"' <<< "$grafana_health"`,
+      `grep -Fq '"database":"ok"' <<< "$grafana_health"`,
+    ],
+    [
       "api/datasources/proxy/uid/aster-prometheus/api/v1/query",
       "api/datasources/proxy/uid/unreviewed/api/v1/query",
     ],

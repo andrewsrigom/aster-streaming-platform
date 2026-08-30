@@ -38,10 +38,17 @@ plan is `.ai/CHANGE_PLAN.md`.
   SLO IDs and makes all four ratios instant queries. Focused39/39 and combined
   CI/platform/reset62/62 pass; the corrected complete candidate passes15/15
   tasks with2 cached in81.29 seconds.
+- Protected run `33317459549` built the corrected full profile and passed
+  packaged telemetry. The overview step failed only because its health assertion
+  required compact JSON while Grafana13 returns formatted valid JSON. A unique
+  Prometheus/Grafana probe confirmed all five APIs/query/dashboard contracts and
+  left zero scoped resources. The assertion now accepts whitespace but still
+  requires `database=ok`; focused CI policy tests pass23/23 and the corrected
+  complete candidate passes15/15 tasks with3 cached in77.929 seconds.
 
 ## Exact next actions
 
-1. Commit and publish the batched review correction once.
+1. Publish the CI assertion correction once.
 2. Resolve both discussions after exact-head protected CI.
 3. Obtain one confirmation, squash-merge, verify exact main, then activate P12-R07 alerts.
 

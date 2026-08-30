@@ -120,6 +120,21 @@ candidate passes15/15 tasks with2 cached in81.29 seconds, including
 platform73/73, CI policy33/33, documentation, AI state, formatting, lint and a
 zero-finding secret scan. Protected exact-head acceptance remains.
 
+Protected run 33317459549 built and health-gated the corrected full profile,
+passed packaged health/telemetry and then failed the first overview assertion.
+Grafana13 returned valid formatted JSON with `"database": "ok"`; the CI check
+incorrectly required compact `"database":"ok"`. This is an acceptance-harness
+defect, not a product failure. A uniquely named two-container probe confirmed
+database health, fixed read-only data source/health, successful exact
+`playback_start` query and immutable dashboard. Teardown removed its two
+containers, fourteen volumes and two networks; exact-name postconditions were
+empty. The CI assertion now tolerates JSON whitespace while still requiring the
+exact key/value, and adverse CI policy tests pass23/23. A protected repeat is
+required because the assertion changed. The final corrected complete candidate
+passes15/15 tasks with3 cached in77.929 seconds, including platform73/73, CI
+policy33/33, documentation, AI state, formatting, lint and a zero-finding
+secret scan.
+
 Rollback
 --------
 

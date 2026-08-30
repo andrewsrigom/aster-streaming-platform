@@ -50,6 +50,20 @@ Append new entries at the top. Keep entries factual and concise.
   candidate passes15/15 tasks with2 cached in81.29 seconds, including
   platform73/73, CI policy33/33, documentation, AI state, formatting, lint and
   security.
+- Published review correction `508375f`, tree `39a464f`. Protected run
+  `33317459549` built the corrected full profile and passed packaged telemetry;
+  the overview step failed immediately because its first assertion required
+  compact `{"database":"ok"}` while Grafana13 returns equivalent formatted JSON.
+  No product or dashboard defect was found.
+- One uniquely named Prometheus/Grafana probe returned database `ok`, the fixed
+  read-only data source, healthy data-source API, successful exact
+  `playback_start` query and immutable dashboard. Its exact two containers,
+  fourteen volumes and two networks were removed to zero. The CI assertion now
+  tolerates JSON whitespace while retaining the exact value; focused CI policy
+  tests pass23/23.
+- The final corrected complete candidate passes15/15 tasks with3 cached in
+  77.929 seconds, including platform73/73, CI policy33/33, documentation, AI
+  state, formatting, lint and security.
 
 ### Evidence
 
@@ -58,7 +72,7 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the batched review correction once, then require protected live
+Publish the CI-only assertion correction once, then require protected live
 provisioning and one bounded confirmation.
 
 ## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate

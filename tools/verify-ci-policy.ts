@@ -375,6 +375,10 @@ export function validateWorkflowPolicy(
       "protected acceptance must verify the provisioned Prometheus data source",
     ],
     [
+      /grep -Eq '"database"\[\[:space:\]\]\*:\[\[:space:\]\]\*"ok"' <<< "\$grafana_health"/u,
+      "Grafana health acceptance must tolerate valid JSON whitespace without weakening the value",
+    ],
+    [
       /api\/datasources\/proxy\/uid\/aster-prometheus\/api\/v1\/query\?query=aster%3Asli%3Agood%3Aratio_rate5m%7Bsli%3D%22playback_start%22%7D/u,
       "protected acceptance must execute the released Playback SLI through Grafana",
     ],

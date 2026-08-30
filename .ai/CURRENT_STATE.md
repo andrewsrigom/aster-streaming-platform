@@ -216,7 +216,15 @@ correction uses released `playback_start`, cross-checks all four dashboard IDs
 against the SLO contract and makes their ratio queries current-instant only.
 Focused dashboard/platform tests pass39/39; combined focused CI/platform/reset
 tests pass62/62. The corrected complete candidate passes15/15 tasks with2 cached
-in81.29 seconds. One publication and protected live acceptance remain.
+in81.29 seconds. Protected run `33317459549` then built the corrected full
+profile and passed packaged telemetry but exposed a CI-only exact-string defect:
+Grafana13 formats `/api/health` as valid whitespace-bearing JSON. A unique
+two-container local probe confirmed health, fixed data source, exact Playback
+query and immutable dashboard; all scoped resources were removed. The bounded
+assertion now tolerates JSON whitespace while requiring `database=ok`. Its
+focused CI policy tests pass23/23. The corrected complete candidate passes15/15
+tasks with3 cached in77.929 seconds. One publication and protected live
+acceptance remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
