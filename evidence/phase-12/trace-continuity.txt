@@ -1,6 +1,6 @@
 # P12-R01/R02 trace continuity
 
-Exact source: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
+Exact source: a2015d94a0f3e2042595ead06df90b72d672ff1c
 
 Verified representative paths
 
@@ -30,6 +30,9 @@ Verified representative paths
      observation, so nested database spans and log context share the consumer
      trace;
    - logs do not include event, account or profile identifiers.
+   - Catalog events accept the same optional validated producer context;
+   - Discovery scopes owner reads, projection persistence, checkpointing and
+     its structured log inside the linked consumer observation.
 
 4. Media and infrastructure
    - the Catalog processing coordinator creates one finite
@@ -37,6 +40,8 @@ Verified representative paths
    - success, replay and failure map to stable span outcomes;
    - the isolated decoder still receives no network, credentials or arbitrary
      inherited telemetry configuration;
+   - the one-shot coordinator accepts only the validated local OTLP endpoint
+     and performs one bounded final flush before telemetry shutdown;
    - existing PostgreSQL, Redis, broker and object-storage observations become
      children whenever invoked in an active trace scope.
 
@@ -49,8 +54,8 @@ Limitations
 
 - This is representative contract coverage, not a claim that every GraphQL
   field emits a distinct span.
-- The first PR candidate's real integration step passed with the disposable
-  Collector. The corrected trace-context source still requires protected
-  exact-head execution and confirmation before verification.
+- Earlier PR candidates passed the disposable Collector. The latest Discovery
+  and one-shot coordinator corrections still require protected exact-head
+  execution and blocker-focused confirmation before verification.
 - No high-cardinality request, user, profile, title, URL or GraphQL document is
   added to a span.

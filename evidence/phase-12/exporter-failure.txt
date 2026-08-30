@@ -1,6 +1,6 @@
 # P12-R09 bounded OTLP exporter behavior
 
-Exact source: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
+Exact source: a2015d94a0f3e2042595ead06df90b72d672ff1c
 
 Policy
 
@@ -41,6 +41,9 @@ Disposable Collector gate
 - PR45 run `33297164589` passed the real integration step, which includes the
   telemetry scenario and exact Collector log assertions, at first evidence head
   `eddbe17`;
+- corrected run `33297684108` repeated that real integration successfully;
+- the one-shot Catalog coordinator now consumes the same validated overlay
+  endpoint and performs a final flush bounded to one second before shutdown;
 - the later remediation does not change exporter capacity, deadlines, fixture
   ownership or log bounds, but protected CI must repeat on the corrected exact
   evidence head before this work item is verified.

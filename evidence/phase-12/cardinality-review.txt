@@ -1,6 +1,6 @@
 # P12-R08 telemetry cardinality and privacy review
 
-Exact source: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
+Exact source: a2015d94a0f3e2042595ead06df90b72d672ff1c
 
 Finite trace vocabulary
 

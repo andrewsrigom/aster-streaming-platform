@@ -3,12 +3,13 @@
 ## Resume point
 
 P12-R01 is active on PR45 from `feat/p12-trace-observability`. Corrected source
-`82e9a616c39fc2159a54e8dba66fb82e71eb15af`, tree
-`a6a1081f33d6e95326ae92c8817d072c0fdb1093`, implements the trace/export slice
-and corrects all three first-candidate blockers. Focused owner tests pass11/11,
-platform policy23/23, daemonless Compose rendering and the affected gate73/73
-with51 cached in55.776 seconds pass. The old named P12 stashes are historical
-and must not be restored over this branch.
+`a2015d94a0f3e2042595ead06df90b72d672ff1c`, tree
+`51aaa291b075f0dd14c6095e312e80bae0a5d472`, implements the trace/export slice.
+Protected run `33297684108` passed every job before confirmation discussions
+`3888694669` and `3888694673` found discarded one-shot media spans and unscoped
+Discovery consumption. Both are corrected. Event delivery23/23, focused
+Discovery3/3 and affected gate73/73 with44 cached in54.527 seconds pass. The old
+named P12 stashes are historical and must not be restored over this branch.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -42,10 +43,12 @@ Phase11.
 ## Exact next actions
 
 1. Commit and publish the corrected P12 evidence head once.
-2. Resolve initial review discussions `3888669316` and `3888669317`, request
-   the one confirmation review and require protected exact-head CI.
+2. Resolve confirmation discussions `3888694669` and `3888694673`, require
+   protected exact-head CI, then request one blocker-focused confirmation.
 3. Squash-merge PR45 without bypass and prove exact main.
-4. Complete the Phase12 metrics/SLI/SLO/dashboard/alert/diagnostic items in
+4. Rebase the parked local P12-R03/R04 branch onto exact main and repeat its
+   affected gate before publication.
+5. Complete the Phase12 metrics/SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 
 P12-R01 is active on PR45 and already based on released Phase11 main. It owns

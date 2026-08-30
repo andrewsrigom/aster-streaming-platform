@@ -23,7 +23,7 @@ P11-R10 is released at tree-identical main `834bf15`; exact-main run
 affected gate17/17. The guard rejects raw and YAML-decoded configuration
 expansion inside the bounded traffic-shaping policy.
 
-Corrected source commit `82e9a61`, tree `a6a1081`, implements the repository trace
+Corrected source commit `a2015d9`, tree `51aaa29`, implements the repository trace
 contract locally. `@aster/telemetry` now owns bounded OpenTelemetry metrics and
 traces, finite dimensions, active context, OTLP exporter health and timeout
 behavior. All five owner HTTP servers create server spans and drive the existing
@@ -31,9 +31,9 @@ redacting logger context. Fixed owner clients inject child context; authenticate
 Identity consumption links its producer; current database, Redis, broker,
 object-storage and media-coordinator boundaries use finite dependency spans.
 Focused telemetry, representative boundary and disposable-fixture contract
-tests pass, and the corrected affected candidate gate passes 73/73 with 51
-cached in 55.776 seconds. The branch is published as PR45 and remains unverified
-until corrected protected review/CI pass. The single local
+tests pass, and the latest affected candidate gate passes 73/73 with 44 cached
+in 54.527 seconds. The branch is published as PR45 and remains unverified until
+new exact-head protected review/CI pass. The single local
 Collector attempt created no resources because
 Docker reported no Linux engine; it will not be repeated unchanged.
 
@@ -49,8 +49,15 @@ work and logs now execute inside the observation, Identity uses the active real
 trace context, and the base overlay configures only services present in the
 base Compose model. Focused tests pass 11/11, the platform policy test passes
 23/23, daemonless Compose rendering passes, and the corrected affected gate
-passes 73/73 with 51 cached in 55.776 seconds. A new exact source and protected
-candidate remain to be published and verified.
+passes 73/73 with 51 cached in 55.776 seconds. Protected run `33297684108`
+passed all jobs. Confirmation then found that the one-shot media coordinator
+discarded its spans and Discovery Catalog handling ran outside its consumer
+observation. Source `a2015d9` configures and finally flushes the bounded worker
+exporter, preserves an optional validated Catalog producer link, and scopes
+Discovery durable work/logging inside the linked observation. Event delivery
+passes 23/23, focused Discovery passes 3/3 and the affected gate passes 73/73
+with 44 cached in 54.527 seconds. A new exact-head candidate and one
+blocker-focused confirmation remain to be published and verified.
 
 ## Proposed behavior
 

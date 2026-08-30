@@ -158,7 +158,7 @@ OTLP endpoints accept only bounded HTTP(S) URLs without embedded credentials. Ex
 ### Implemented Phase 12 trace candidate
 
 P12-R01/R02/R08/R09 are implemented through `@aster/telemetry` on PR45; they
-remain unverified until corrected protected CI and confirmation pass. The
+remain unverified until latest exact-head protected CI and confirmation pass. The
 package owns the OpenTelemetry trace SDK and exact-pinned OTLP/HTTP trace
 exporter behind repository types. Application, domain and adapter public
 contracts do not expose SDK types.
@@ -176,10 +176,14 @@ clients inject their child dependency context. PostgreSQL, Redis, broker and
 object-storage adapters reuse the same finite dependency contract. Identity
 events preserve the active validated producer `traceparent`; authenticated
 Engagement consumption starts a local trace with one producer link and executes
-its durable work and log inside that scope. Catalog represents the
-network-isolated decoder handoff with one finite `media_worker/process` boundary
-without passing credentials or arbitrary telemetry configuration into the
-worker.
+its durable work and log inside that scope. Catalog events may preserve the same
+validated optional producer context; Discovery owner reads, projection writes,
+checkpointing and logs execute inside that linked consumer observation. Catalog
+represents the network-isolated decoder handoff with one finite
+`media_worker/process` boundary without passing credentials or arbitrary
+telemetry configuration into the worker. Its one-shot coordinator uses the
+reviewed OTLP endpoint and a bounded final flush, so the boundary is exported
+before process shutdown when observability is enabled.
 
 The default active/retained trace capacity is 128 and the accepted range is
 1–512. Span values are capped at 64 characters, spans contain at most eight

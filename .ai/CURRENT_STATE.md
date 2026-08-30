@@ -28,12 +28,16 @@ platform67/67 and the affected17/17 gate pass. P12-R01 is active on PR45.
 First evidence head `eddbe17` passed source quality and the real integration
 step in run `33297164589`, but Local platform exposed an invalid base
 observability overlay and initial review found two async trace-continuity
-defects. Corrected source `82e9a61`, tree `a6a1081`, keeps Engagement durable
-work inside its linked observation, propagates the active Identity producer
-span and limits the base overlay to its present services. Focused owner tests
-pass11/11, platform policy23/23, daemonless Compose rendering and the corrected
-affected gate73/73 with51 cached in55.776 seconds pass. Corrected protected CI
-and confirmation remain before verification. Full Phase00–14 goal stays active.
+defects. Corrected source `82e9a61`, tree `a6a1081`, fixed those three blockers,
+and protected run `33297684108` passed every required job. Confirmation then
+found discussions `3888694669` and `3888694673`: the one-shot media coordinator
+discarded its spans, and Discovery Catalog consumption executed outside its
+consumer observation without an optional producer link. Source `a2015d9`, tree
+`51aaa29`, configures and flushes the bounded coordinator exporter and scopes
+Discovery owner reads, projection, checkpoint and log inside a linked
+observation. Event delivery23/23, focused Discovery3/3 and affected gate73/73
+with44 cached in54.527 seconds pass. New exact-head CI and blocker-focused
+confirmation remain before verification. Full Phase00–14 goal stays active.
 
 ## Verified
 
@@ -64,16 +68,18 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P12-R01 has a corrected candidate at source `82e9a61`, tree `a6a1081`. The
+P12-R01 has a corrected candidate at source `a2015d9`, tree `51aaa29`. The
 repository-owned adapter creates finite privacy-safe server and dependency
 spans, drives logger context, propagates child owner context, links async events,
 bounds the media coordinator and exports metrics/traces through finite OTLP
 queues and deadlines. Evidence is indexed under `evidence/phase-12/`. First
 hosted run `33297164589` passed the real Collector scenario but failed Local
 platform because the observability overlay defined opt-in Discovery without its
-base overlay; source `82e9a61` corrects that and both initial-review continuity
-findings. Its local candidate gate passes73/73 with51 cached in55.776 seconds.
-Corrected protected CI and confirmation are pending; no hosted backend,
+base overlay; source `82e9a61` corrected that and both initial-review continuity
+findings, and run `33297684108` passed. Confirmation exposed the remaining
+one-shot exporter and Discovery consumer boundaries. Source `a2015d9` corrects
+both; its local candidate gate passes73/73 with44 cached in54.527 seconds. New
+protected CI and blocker-focused confirmation are pending; no hosted backend,
 dashboard, SLO or product contract is claimed by this slice.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main

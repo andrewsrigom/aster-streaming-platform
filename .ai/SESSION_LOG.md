@@ -127,6 +127,17 @@ Append new entries at the top. Keep entries factual and concise.
   Focused owner tests pass11/11, optional-platform policy23/23, daemonless
   Compose rendering and the corrected affected gate73/73 with51 cached in
   55.776 seconds pass.
+- Protected run `33297684108` passed every required job at evidence head
+  `5385d54`, including the real Collector integration and Local platform.
+- Confirmation discussions `3888694669` and `3888694673` found two remaining
+  boundaries: one-shot media processing discarded its spans at shutdown, and
+  Discovery Catalog consumption ran durable work/logging outside its span and
+  could not preserve a validated producer link.
+- Source `a2015d9`, tree `51aaa29`, configures the one-shot coordinator from the
+  reviewed OTLP endpoint with a one-second final flush, accepts the additive
+  optional Catalog trace context, and scopes Discovery handling inside the
+  linked observation. Event delivery23/23, focused Discovery3/3 and affected
+  gate73/73 with44 cached in54.527 seconds pass.
 
 ### Evidence
 
@@ -142,8 +153,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the corrected P12-R01 evidence head once, resolve the initial threads,
-then require protected exact-head CI and the one confirmation review.
+Publish the latest P12-R01 evidence head once, resolve confirmation discussions
+`3888694669` and `3888694673`, require protected exact-head CI, then request one
+blocker-focused confirmation review.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

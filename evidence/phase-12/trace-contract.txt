@@ -4,8 +4,8 @@ Status: corrected implementation, local candidate verification passed, protected
 
 Exact source
 
-- Commit: 82e9a616c39fc2159a54e8dba66fb82e71eb15af
-- Tree: a6a1081f33d6e95326ae92c8817d072c0fdb1093
+- Commit: a2015d94a0f3e2042595ead06df90b72d672ff1c
+- Tree: 51aaa291b075f0dd14c6095e312e80bae0a5d472
 - Branch: feat/p12-trace-observability
 - Base: tree-identical PR44 squash main 834bf15a8fe9fb39dc3a807912234efd8ee39dbd
 - Runtime: Node.js 24.19.0, pnpm 11.24.0, WSL Ubuntu-20.04
@@ -24,6 +24,11 @@ Implemented contract
   oldest complete spans and reports the finite dropped count.
 - PostgreSQL, Redis, broker, object storage, owner HTTP reads and the media
   coordinator use the same dependency observation boundary.
+- Identity and Catalog facts may carry one validated producer context;
+  Engagement and Discovery execute durable consumer work and logs inside the
+  corresponding linked observation.
+- The one-shot media coordinator configures the same bounded OTLP exporter from
+  the reviewed local endpoint and performs one bounded final flush.
 
 Focused command
 
@@ -64,5 +69,12 @@ Initial protected candidate and remediation
 - corrected focused owner tests pass 11/11, optional-platform policy passes
   23/23, daemonless full-profile Compose rendering passes, and the corrected
   affected gate passes 73/73 with 51 cached in 55.776 seconds;
-- a protected run and confirmation review on the corrected evidence head remain
-  required. The failed first candidate is not represented as verified.
+- corrected protected run `33297684108` passed all required jobs, but
+  confirmation discussions `3888694669` and `3888694673` found the discarded
+  one-shot worker spans and unscoped Discovery consumer;
+- source `a2015d9`, tree `51aaa29`, configures/flushed the coordinator exporter,
+  preserves an optional validated Catalog producer link, and scopes Discovery
+  handling inside the consumer span;
+- Event delivery 23/23, focused Discovery 3/3 and the affected gate 73/73 with
+  44 cached in 54.527 seconds pass. A new protected run and blocker-focused
+  confirmation remain required.
