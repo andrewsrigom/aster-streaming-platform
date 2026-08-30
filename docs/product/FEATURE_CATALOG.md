@@ -42,7 +42,8 @@ Status values: `PLANNED`, `IMPLEMENTED`, `VERIFIED`, `RELEASED`.
 | Failure-injection controls | Platform | 11 | IMPLEMENTED |
 | Resilience game days and runbooks | Platform | 11 | IMPLEMENTED |
 | Distributed traces | Platform | 12 | PLANNED |
-| SLI/SLO dashboards and alerts | Platform | 12 | PLANNED |
+| SLI/SLO operational dashboard | Platform | 12 | IMPLEMENTED |
+| Multi-window SLO alerts | Platform | 12 | PLANNED |
 | Trusted GraphQL operations | Platform | 13 | PLANNED |
 | Cost, depth, alias, and parser limits | Platform | 13 | PLANNED |
 | DataLoader and N+1 benchmark | Platform | 13 | PLANNED |

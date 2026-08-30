@@ -11,6 +11,11 @@ Local target:
 - Loki-compatible log store;
 - Grafana dashboards.
 
+The currently implemented local path is Collector `0.159.0`, Prometheus
+`3.14.0` and the single provisioned Grafana OSS `13.2.0` operational overview.
+Tempo-compatible traces and Loki-compatible log storage remain planned; their
+names here describe the target architecture, not running backends.
+
 The hosted implementation may use managed backends while preserving OpenTelemetry instrumentation and semantic conventions.
 
 ## Correlation
@@ -96,6 +101,16 @@ Per cache family:
 - operation duration;
 - payload size sample;
 - Redis error.
+
+## Provisioned operational overview
+
+P12-R12 adds one optional, version-controlled view that separates user impact,
+dependency health and runtime saturation. Grafana reads only Prometheus over the
+edge network, uses disposable local state and does not join the private platform
+network. It is not part of product or `platform-status` readiness. The fixed
+queries, panel questions and recovery behavior are documented in the
+[operational overview](../operations/OPERATIONAL_OVERVIEW.md) and selected by
+[ADR-0042](../adr/0042-bounded-local-operational-overview.md).
 
 ## Logs
 

@@ -38,6 +38,11 @@ rolling window. Prometheus evaluates rules every 15 seconds, limits each rule to
 eight output series and scrapes the Router privately with the same body, sample
 and label limits as other local telemetry.
 
+The released ratios and measured populations feed the provisioned
+[operational overview](OPERATIONAL_OVERVIEW.md). That dashboard is a current
+diagnostic view, not an SLO compliance report. Burn-rate alert rules remain a
+separate P12-R07 delivery.
+
 ## Supergraph valid-operation availability
 
 | Field | Definition |

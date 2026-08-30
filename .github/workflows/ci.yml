@@ -408,6 +408,24 @@ jobs:
           }
           console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present, sliValues }));
           NODE
+      - name: Verify provisioned operational overview and optional failure isolation
+        timeout-minutes: 1
+        run: |
+          grafana_health=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/health)
+          printf '%s' "$grafana_health" | grep -q '"database":"ok"'
+          grafana_datasource=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/datasources/uid/aster-prometheus)
+          printf '%s' "$grafana_datasource" | grep -q '"uid":"aster-prometheus"'
+          printf '%s' "$grafana_datasource" | grep -q '"url":"http://prometheus:9090"'
+          grafana_datasource_health=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/datasources/uid/aster-prometheus/health)
+          printf '%s' "$grafana_datasource_health" | grep -q '"status":"OK"'
+          grafana_query=$(curl --fail --silent --show-error --max-time 3 'http://127.0.0.1:3001/api/datasources/proxy/uid/aster-prometheus/api/v1/query?query=aster%3Asli%3Apopulation%3Arate5m')
+          printf '%s' "$grafana_query" | grep -q '"status":"success"'
+          grafana_dashboard=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/dashboards/uid/aster-operational-overview)
+          printf '%s' "$grafana_dashboard" | grep -q '"uid":"aster-operational-overview"'
+          printf '%s' "$grafana_dashboard" | grep -q '"editable":false'
+          docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full stop --timeout 5 grafana
+          platform_status_id=$(docker compose --file "$COMPOSE_FILE" --file infra/compose/observability.yml --profile full ps --quiet platform-status)
+          test "$(docker inspect --format '{{.State.Health.Status}}' "$platform_status_id")" = healthy
       - name: Verify local Identity product API
         timeout-minutes: 1
         run: >-

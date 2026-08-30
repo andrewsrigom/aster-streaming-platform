@@ -26,6 +26,10 @@ import {
   validateIntegrationServices,
   validateObservabilityProfile,
 } from "./verify-optional-platform.mjs";
+import {
+  readOperationalOverviewSources,
+  validateOperationalOverview,
+} from "./verify-operational-overview.mjs";
 
 const MAX_COMPOSE_BYTES = 100_000;
 const MAX_RESET_BYTES = 50_000;
@@ -489,6 +493,7 @@ export async function runLocalPlatformCheck(path = composePath) {
       localDevelopment,
       runtimeImage,
       observability,
+      operationalOverview,
       router,
       discovery,
     ] = await Promise.all([
@@ -498,6 +503,7 @@ export async function runLocalPlatformCheck(path = composePath) {
       readFile(localDevelopmentPath, "utf8"),
       readRuntimeImageSources(repositoryRoot),
       readObservabilitySources(repositoryRoot),
+      readOperationalOverviewSources(repositoryRoot),
       readRouterSources(repositoryRoot),
       readDiscoveryRuntimeSources(repositoryRoot),
     ]);
@@ -509,6 +515,7 @@ export async function runLocalPlatformCheck(path = composePath) {
       ...validateLocalReset(reset),
       ...validateRuntimeImage(runtimeImage),
       ...validateObservabilityProfile(observability),
+      ...validateOperationalOverview(operationalOverview),
       ...validateRouterSources(router),
       ...validateDiscoveryRuntime(discovery),
       ...validatePublicPlatformCommands([

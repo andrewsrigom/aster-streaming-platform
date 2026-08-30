@@ -11,6 +11,10 @@ import {
   BROKER_IMAGE,
   STORAGE_IMAGE,
 } from "./verify-optional-platform.mjs";
+import {
+  readOperationalOverviewSources,
+  validateOperationalOverview,
+} from "./verify-operational-overview.mjs";
 
 import {
   POSTGRES_IMAGE,
@@ -35,6 +39,9 @@ const validReset = await readFile(resetPath, "utf8");
 const readmeSource = await readFile(readmePath, "utf8");
 const localDevelopmentSource = await readFile(localDevelopmentPath, "utf8");
 const observability = await readObservabilitySources(resolve(import.meta.dirname, ".."));
+const operationalOverview = await readOperationalOverviewSources(
+  resolve(import.meta.dirname, ".."),
+);
 const runtimeImage = await readRuntimeImageSources(resolve(import.meta.dirname, ".."));
 
 test("Web demo rejects private credentials, mounts, public ports and unbounded runtime", () => {
@@ -326,6 +333,35 @@ test("optional telemetry retains bounded collection without becoming an Identity
   ]) {
     const changed = { ...observability, [file]: observability[file].replace(before, after) };
     assert.ok(validateObservabilityProfile(changed).length > 0, before);
+  }
+});
+
+test("operational overview preserves bounded immutable provisioning and three diagnostic layers", () => {
+  assert.deepEqual(validateOperationalOverview(operationalOverview), []);
+  for (const [file, before, after] of [
+    ["compose", "127.0.0.1:3001:3000", "0.0.0.0:3001:3000"],
+    ["compose", "networks: [edge]", "networks: [edge, platform]"],
+    ["compose", "GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer", "GF_AUTH_ANONYMOUS_ORG_ROLE: Admin"],
+    [
+      "compose",
+      'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"',
+      'GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "false"',
+    ],
+    ["compose", "/var/lib/grafana:size=64m", "/var/lib/grafana:size=1g"],
+    ["datasource", "editable: false", "editable: true"],
+    ["datasource", "http://prometheus:9090", "http://127.0.0.1:9090"],
+    ["dashboardProvider", "allowUiUpdates: false", "allowUiUpdates: true"],
+    ["dashboard", '"refresh": "30s"', '"refresh": "1s"'],
+    ["dashboard", '"x": 18,', '"x": 12,'],
+    ["dashboard", '"templating": { "list": [] }', '"templating": { "list": [{"name":"service"}] }'],
+    ["dashboard", "process_memory_usage_bytes", "unreviewed_metric"],
+    ["dockerfile", "@sha256:", "@changed:"],
+  ]) {
+    const changed = {
+      ...operationalOverview,
+      [file]: operationalOverview[file].replace(before, after),
+    };
+    assert.ok(validateOperationalOverview(changed).length > 0, `${file}: ${before}`);
   }
 });
 

@@ -1,0 +1,84 @@
+P12-R12 provisioned operational overview
+Date: 2026-08-30
+Status: implemented candidate; protected live-container acceptance pending
+
+Requirement
+-----------
+
+P12-R12 requires an operational overview that distinguishes user impact,
+dependency health and saturation.
+
+Implemented boundary
+--------------------
+
+- ADR-0042 selects the unmodified official Grafana OSS 13.2.0 image at
+  multi-platform digest
+  sha256:3fd54ae1214669f8355f065ec9f6445d5279a3d77095ab048ca045685272429b.
+- Grafana is optional, loopback-only on 127.0.0.1:3001, Viewer-only,
+  edge-network-only, non-root, read-only and bounded to 0.5 CPU,256 MiB memory,
+  64 PIDs and 72 MiB total tmpfs.
+- The Prometheus data source and dashboard are immutable repository
+  provisioning. Grafana has no durable named volume and no route to owner
+  services, PostgreSQL, Redis, broker or object storage.
+- The dashboard contains 15 panels: three ordered section rows and twelve data
+  panels. Twelve fixed queries cover four SLI ratios, their measured
+  populations, dependency outcomes/p95/active work, CPU, memory, event-loop p99
+  and PostgreSQL pool state.
+- There are no dashboard variables, raw GraphQL documents, identifiers,
+  credentials, signed URLs or user-controlled queries. Empty SLI traffic remains
+  no data.
+- Grafana is not a dependency of platform-status or product readiness.
+
+Local checks
+------------
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 node --test
+  ./tools/verify-local-platform.test.mjs
+  ./tools/reset-local-platform.test.mjs
+
+Result:
+  39 passed,0 failed,2.728 seconds
+
+The adverse cases reject non-loopback publication, platform-network access,
+administrator anonymous role, initial admin creation, oversized writable state,
+editable provisioning, local-host data source substitution, one-second refresh,
+variables, unreviewed metrics and a changed image digest. Reset tests accept the
+new exact service, edge attachment and only its two reviewed tmpfs mounts.
+
+Command:
+  node ./tools/verify-operational-overview.mjs
+  node ./tools/verify-local-platform.mjs
+
+Result:
+  operational-overview ok,15 panels
+  local-platform ok,0 violations
+
+Command:
+  CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4
+  pnpm check:changed
+
+Result:
+  15 passed,0 failed,3 cached,74.899 seconds
+  platform tests 73 passed,0 failed
+  CI-policy tests 33 passed,0 failed
+  documentation 239 documents,2942 headings,1500 links,0 violations
+  repository memory 61 queue items,124 session entries,0 violations
+  secret scan 0 findings
+
+Protected acceptance contract
+-----------------------------
+
+The changed Local platform job will build the digest-pinned image and wait for
+its health check. It then verifies the anonymous health response, fixed data
+source UID/URL/health, one released SLI population query through the Grafana
+proxy and dashboard UID/read-only state. Finally it stops only Grafana and
+requires the unchanged platform-status container to remain healthy. This
+evidence is planned until a protected exact-head run passes; it is not claimed
+from the unavailable local Docker daemon.
+
+Rollback
+--------
+
+Remove the additive Grafana service, child image and provisioning. There is no
+schema, product data, credential, media or Prometheus-history migration.

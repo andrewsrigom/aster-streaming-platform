@@ -2,6 +2,14 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0042](../docs/adr/0042-bounded-local-operational-overview.md) adds one
+digest-pinned Grafana OSS 13.2.0 operational overview to the optional local
+observability profile. It is loopback-only, Viewer-only, immutable,
+resource-bounded and disposable; Grafana reaches Prometheus over `edge` but no
+product owner or durable dependency. Fixed panels distinguish user impact,
+dependency health and runtime saturation. Grafana failure never changes product
+readiness. Aster remains MIT while the unmodified runtime retains AGPL-3.0-only.
+
 [ADR-0041](../docs/adr/0041-operation-scoped-circuit-breakers.md) adds separate
 process-local breakers for Playback publication, Discovery snapshot and
 Discovery export Catalog reads. Each samples at most 64 logical calls over 30
@@ -186,7 +194,7 @@ Resolved Phase 02 persistence selection: retain pg 8.23.0, explicit parameterize
 
 | Decision | Resolution phase | Required evidence | Safe behavior before resolution | Blocks |
 |---|---:|---|---|---|
-| Additional observability backends | 12 | A concrete dashboard/trace requirement, bounded resources and verified operation before adding Grafana/Tempo/Loki | Phase 01 finite profiles and Collector/Prometheus are released; no product dashboard or capacity guarantee is claimed | Phase 12 observability |
+| Additional trace/log backends | 12 | A concrete diagnostic requirement, bounded resources and verified operation before adding Tempo/Loki | Collector, Prometheus and the bounded Grafana overview are selected; no trace/log backend or capacity guarantee is claimed | Phase 12 diagnostic exercises |
 | Player-control component strategy | 07 | HLS.js and React compatibility, SSR boundary, captions, quality, keyboard and screen-reader behavior, browser coverage, bundle impact, maintenance, customization ownership, and license | Native media controls remain the early technical fallback; Media Chrome is the preferred candidate | Phase 07 verification |
 | Hosted compute and deployment controller | 14 | Capacity, operational fit, cost, rollback, and artifact requirements | Local and integration environments only | Hosted release |
 | Hosted PostgreSQL provider | 14 | Version support, backup/restore, connection limits, observability, migration, and cost | PostgreSQL-compatible ports and local containers | Hosted release |

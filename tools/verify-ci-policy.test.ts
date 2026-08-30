@@ -248,6 +248,21 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
     ["assert.equal(process.getuid(), 1000)", "assert.ok(true)"],
     ["assert.deepEqual(present, required)", "assert.ok(present)"],
     ["'supergraph', 'catalog_title_read'", "'supergraph'"],
+    [
+      "timeout-minutes: 1\n        run: |\n          grafana_health=",
+      "timeout-minutes: 20\n        run: |\n          grafana_health=",
+    ],
+    ["api/datasources/uid/aster-prometheus/health", "api/datasources/uid/unreviewed/health"],
+    [
+      "api/datasources/proxy/uid/aster-prometheus/api/v1/query",
+      "api/datasources/proxy/uid/unreviewed/api/v1/query",
+    ],
+    ["api/dashboards/uid/aster-operational-overview", "api/dashboards/uid/unreviewed"],
+    ["--profile full stop --timeout 5 grafana", "--profile full stop grafana"],
+    [
+      `test "$(docker inspect --format '{{.State.Health.Status}}' "$platform_status_id")" = healthy`,
+      `test "$(docker inspect --format '{{.State.Health.Status}}' "$platform_status_id")" = running`,
+    ],
     ['--profile "*" down --volumes', "down --volumes"],
   ] as const) {
     assert.ok(

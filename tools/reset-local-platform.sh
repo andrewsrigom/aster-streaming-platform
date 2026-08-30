@@ -99,6 +99,7 @@ catalog-init
 collector
 engagement
 engagement-init
+grafana
 identity
 identity-init
 platform-init
@@ -203,7 +204,7 @@ for container_id in $container_ids; do
     *) fail "container $container_name has an incomplete or unexpected environment and scope label pair" ;;
   esac
   case "$container_service" in
-    identity | identity-init | catalog | catalog-init | playback | playback-init | engagement | engagement-init | broker | storage | collector | prometheus | router | router-trust-init | web)
+    identity | identity-init | catalog | catalog-init | playback | playback-init | engagement | engagement-init | broker | storage | collector | prometheus | grafana | router | router-trust-init | web)
       [ "$container_environment|$container_scope" = 'local|platform' ] || fail 'runtime and optional services require current ownership labels'
       ;;
     platform-init | platform-status | postgres | redis) ;;
@@ -220,6 +221,8 @@ for container_id in $container_ids; do
   case "$container_service|$container_mounts" in
     'postgres|volume|aster_postgres-data|/var/lib/postgresql' | 'redis|' | 'identity|' | 'identity-init|' | 'catalog|' | 'catalog-init|' | 'platform-init|' | 'platform-status|' | 'platform-init|tmpfs||/tmp' | 'platform-status|tmpfs||/tmp') ;;
     'broker|volume|aster_broker-data|/var/lib/kafka/data' | 'storage|volume|aster_storage-data|/data' | 'prometheus|volume|aster_prometheus-data|/prometheus' | 'collector|') ;;
+    'grafana|tmpfs||/tmp
+tmpfs||/var/lib/grafana') ;;
     'web|' | 'web|tmpfs||/app/apps/web/.next/cache') ;;
     'identity|volume|aster_identity-router-trust|/run/aster-router' | 'catalog|volume|aster_catalog-router-trust|/run/aster-router') ;;
     'playback-init|' | 'engagement-init|') ;;
@@ -301,7 +304,7 @@ volume|aster_identity-router-trust|/run/aster-router/identity') ;;
   fi
   case "$container_service|$container_networks" in
     'router-trust-init|none') ;;
-    'web|aster_edge') ;;
+    'web|aster_edge' | 'grafana|aster_edge') ;;
     *\| | *\|aster_platform | 'router|aster_edge
 aster_platform' | 'identity|aster_edge
 aster_platform' | 'catalog|aster_edge

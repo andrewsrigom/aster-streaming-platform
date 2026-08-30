@@ -363,6 +363,30 @@ export function validateWorkflowPolicy(
       "Docker-only demo must verify both live Router-backed SLI ratios",
     ],
     [
+      /- name: Verify provisioned operational overview and optional failure isolation\s+timeout-minutes: 1\s+run: \|/u,
+      "operational overview acceptance must have a bounded protected step",
+    ],
+    [
+      /http:\/\/127\.0\.0\.1:3001\/api\/datasources\/uid\/aster-prometheus\/health/u,
+      "protected acceptance must verify the provisioned Prometheus data source",
+    ],
+    [
+      /api\/datasources\/proxy\/uid\/aster-prometheus\/api\/v1\/query\?query=aster%3Asli%3Apopulation%3Arate5m/u,
+      "protected acceptance must execute a released metric through Grafana",
+    ],
+    [
+      /http:\/\/127\.0\.0\.1:3001\/api\/dashboards\/uid\/aster-operational-overview/u,
+      "protected acceptance must verify the provisioned dashboard UID",
+    ],
+    [
+      /--profile full stop --timeout 5 grafana/u,
+      "protected acceptance must stop only Grafana inside a finite timeout",
+    ],
+    [
+      /test "\$\(docker inspect --format '\{\{\.State\.Health\.Status\}\}' "\$platform_status_id"\)" = healthy/u,
+      "Grafana loss must leave product platform health healthy",
+    ],
+    [
       /^\s*allow-licenses: *0BSD, Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, Elastic-2\.0, ISC, MIT, MITNFA *$/mu,
       "dependency review must enforce the reviewed license set",
     ],

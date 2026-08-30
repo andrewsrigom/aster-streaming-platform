@@ -49,8 +49,11 @@ confirmation. It squash-merged as tree-identical main `2245251`; exact-main run
 `33304196111` passed every job and releases P12-R03 plus the backend portion of
 P12-R04. Browser QoE source `74780e5` passed protected run `33305864184`, clean
 confirmation and PR47 squash main `6dba10e`; exact-main run `33307059156`
-passed every job and releases P12-R04/R11. P12-R05/R06 is active from that
-exact main. Full Phase00–14 goal stays active.
+passed every job and releases P12-R04/R11. P12-R05/R06 is released through PR48
+final head `72d5656`, tree `2374279`, protected run `33313090638` attempt2,
+clean confirmation, squash main `a99d3d5` and exact-main run `33314309449`.
+P12-R12 operational overview is active from that exact main. Full Phase00–14
+goal stays active.
 
 ## Verified
 
@@ -186,7 +189,22 @@ could retain a `0/0` `NaN` ratio. Source `c4e6a76`, tree `cfc21f6`, filters ever
 recording and objective ratio on a positive denominator. Exact Prometheus tests
 cover prior-traffic and preexisting-counter idle windows;27/27 focused checks
 pass. The corrected affected gate passes60/60 with50 cached in47.383 seconds.
-Protected acceptance remains.
+Protected run `33313090638` attempt1 reached an external BuildKit EOF before the
+profile build; rerunning only failed jobs as attempt2 passed every exact-head
+job. The exact-head review found no remaining blocker. PR48 squash-merged as
+main `a99d3d5` with reviewed tree `2374279`; exact-main run `33314309449` passed
+every required job and releases P12-R05/R06.
+
+P12-R12 is active on `feat/p12-operational-overview`. ADR-0042 selects the
+unmodified digest-pinned Grafana OSS 13.2.0 runtime. The local candidate bakes a
+read-only Prometheus data source and one 15-panel dashboard, publishes only
+loopback port3001, grants finite anonymous Viewer access, joins only `edge` and
+uses disposable bounded tmpfs state. Fixed queries separate user impact,
+dependency health and runtime saturation. Grafana is absent from product and
+`platform-status` readiness. The complete candidate gate passes15/15 tasks in
+74.899 seconds, including platform73/73, CI policy33/33, documentation, AI state,
+formatting, lint and security. Protected live image/provisioning acceptance
+remains.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run
@@ -440,15 +458,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-Phase12 SLI/SLO corrected protected acceptance/release, dashboards, alerts, diagnostic
-exercises and operational overview remain.
+Phase12 burn-rate alerts, three diagnostic exercises and operational-overview
+protected release remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Complete the P12-R05/R06 idle-window correction gate, publish one documented
-head and pass protected acceptance. Resolve the exact review finding, perform
-the bounded confirmation, then merge and confirm exact main before dashboard work.
+Complete P12-R12 documentation/evidence and affected gates, then publish one
+candidate for protected live Grafana provisioning, confirmation and merge.
 
 ## Runtime and recovery
 
