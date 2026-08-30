@@ -37,10 +37,14 @@ run `33332980729` proved that match plus recovery/cleanup, but the subsequent V2
 read was still incomplete and Redis did not run. The refined runner classifies
 the exact TraceQL-selected finite span instead of requiring recent trace-by-ID
 completeness. Focused diagnostics pass12/12. The three-scenario acceptance is
-not verified.
+not verified. Protected run `33333896159` passed Catalog diagnosis/recovery and
+exact cleanup, then showed that filtering the PostgreSQL span by failure outcome
+before selection was too restrictive. The current correction selects the exact
+dependency first and retains mandatory failure-outcome validation in the
+classifier.
 
-The refined selected-TraceQL affected gate passes 73/73 tasks with 60 cached in
-63.796 seconds. The initial review added one global execution budget with cleanup
+The dependency-first TraceQL affected gate passes 73/73 tasks with 60 cached in
+64.055 seconds. The initial review added one global execution budget with cleanup
 headroom, signal-driven cleanup, a proof-only Tempo listener, finite diagnostic
 output categories and complete CI invalidation paths. Source confirmation found
 no remaining blocker. The protected trace-visibility failure triggers the
@@ -164,7 +168,9 @@ recovered SLI. Never touch the retained demo or another Docker project.
 - Acceptance result: source implementation and focused evidence pass. The first
   protected runtime proves Catalog diagnosis, PostgreSQL recovery and exact
   cleanup. The second also proves exact PostgreSQL TraceQL selection, but both
-  stopped before Redis on trace-by-ID completeness; refined all-scenario
+  stopped before Redis on trace-by-ID completeness. The third proves the
+  selected-span path for Catalog plus recovery/cleanup, then stops at the
+  overly restrictive PostgreSQL outcome predicate. Corrected all-scenario
   acceptance remains pending.
 - Iteration gate: diagnostic configuration/policy tests plus exact Tempo
   configuration validation and focused runner unit tests.

@@ -128,11 +128,11 @@ test("builds exact finite TraceQL queries for each scenario boundary", () => {
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "postgres"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" && span.aster.outcome =~ "timeout|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "postgresql" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.equal(
     diagnosticTraceQuery(traceId, "redis"),
-    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" && span.aster.outcome =~ "timeout|unavailable|error" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
+    `{ trace:id = "${traceId}" && span.aster.dependency = "redis" } | select(span.aster.dependency, span.aster.operation, span.aster.outcome, span:name, span:status, resource.service.name)`,
   );
   assert.throws(() => diagnosticTraceQuery("unsafe", "redis"));
 });
@@ -242,6 +242,19 @@ test("rejects missing diagnosis signals and private canaries", () => {
       metricDelta: { population: 1, good: 0 },
       facts: [],
       logs: { router: "router", catalog: "catalog", cache: "" },
+    }),
+  );
+  assert.throws(() =>
+    classifyDiagnosticScenario({
+      scenario: "postgres",
+      response: { errors: [{}] },
+      metricDelta: { population: 1, good: 0 },
+      facts: dependencyFacts("postgresql", "success"),
+      logs: {
+        router: '{"kind":"aster.router.operation"}',
+        catalog: '{"event":"aster.catalog.graphql_diagnostic"}',
+        cache: "",
+      },
     }),
   );
   assert.throws(() => assertTelemetryPrivacy("private-canary", ["private-canary"]));

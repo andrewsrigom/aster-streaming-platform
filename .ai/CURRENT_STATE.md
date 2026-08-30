@@ -289,6 +289,12 @@ match plus recovery/cleanup, but the subsequent V2 read remained incomplete;
 Redis still did not run. The refined runner uses the exact finite TraceQL span
 directly. Focused diagnostic/profile tests pass12/12, platform tests pass87/87
 and the refined aggregate gate passes 73/73 with 60 cached in 63.796 seconds.
+Protected run `33333896159` then passed Catalog diagnosis/recovery and clean
+teardown, but its PostgreSQL TraceQL predicate filtered on failure outcome
+before selection and timed out; PostgreSQL recovered and Redis did not run. The
+current correction selects the exact dependency span and leaves the mandatory
+failure-outcome check in the classifier. Its aggregate gate passes 73/73 with
+60 cached in 64.055 seconds.
 Initial review corrected execution/cleanup headroom, signal
 handling, listener scope, diagnostic output categories and CI invalidation;
 confirmation found no remaining blocking source issue; the real runtime finding
@@ -561,7 +567,7 @@ Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, complete the selected-TraceQL correction, pass the affected gate
+For P12-R10, complete the dependency-first TraceQL correction, pass the affected gate
 and corrected protected three-scenario run, obtain targeted confirmation, close
 Phase12 and explicitly check Phase13 prerequisites. Inspect the exact
 interrupted local project only when that same Docker engine becomes reachable.

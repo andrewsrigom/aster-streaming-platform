@@ -74,8 +74,12 @@ diagnosis, PostgreSQL recovery and exact cleanup, then exposed premature V1
 trace retrieval before the dependency boundary was query-visible. Corrected run
 `33332980729` proved the exact PostgreSQL TraceQL match plus recovery/cleanup,
 but its subsequent V2 read remained incomplete; Redis still did not run. The
-refined runner classifies the exact finite TraceQL span directly. Real
-three-scenario acceptance remains pending. Phase13 has not started.
+refined runner classifies the exact finite TraceQL span directly. Run
+`33333896159` passed Catalog and cleanup, then showed that prefiltering the
+PostgreSQL span by outcome was too restrictive. The current correction selects
+the exact dependency span first and still requires a failure outcome in the
+classifier. Real three-scenario acceptance remains pending. Phase13 has not
+started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

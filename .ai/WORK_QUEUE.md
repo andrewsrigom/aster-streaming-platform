@@ -255,7 +255,10 @@ Catalog diagnosis, PostgreSQL recovery and clean teardown in protected run
 Redis did not run. Correction `b732be2` then proved the exact PostgreSQL TraceQL
 match, recovery and cleanup in run `33332980729`, but its V2 read remained
 incomplete and Redis still did not run. The refined runner classifies the finite
-TraceQL-selected span directly. Item63 remains `IN_PROGRESS` until all three
+TraceQL-selected span directly. Run `33333896159` passed Catalog/recovery and
+cleanup but showed that prefiltering PostgreSQL by outcome was too restrictive;
+the current correction selects the exact dependency first and validates its
+failure outcome afterward. Item63 remains `IN_PROGRESS` until all three
 scenarios, zero-resource cleanup, targeted confirmation and protected release
 pass.
 

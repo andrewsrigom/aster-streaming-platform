@@ -174,7 +174,7 @@ export function diagnosticTraceQuery(traceId, scenario) {
   const boundary =
     scenario === "catalog"
       ? 'span.subgraph.name = "catalog" && span:status = error'
-      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}" && span.aster.outcome =~ "timeout|unavailable|error"`;
+      : `span.aster.dependency = "${scenario === "postgres" ? "postgresql" : "redis"}"`;
   const selected =
     scenario === "catalog"
       ? "span.subgraph.name, span:name, span:status, resource.service.name"

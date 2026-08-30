@@ -1,0 +1,38 @@
+P12-R10 protected diagnostic runtime checkpoint
+Date: 2026-08-30
+Source: 817dbd690d5eddf8b6fffa00cfc42bf31edb6d4d
+Workflow run: 33333896159
+Local platform job: 99317260738
+
+project=aster-p12-diagnostics-17ba5e1d-f5ea-47bf-a60e-77ec77e2427d
+
+catalog:
+traceId=a65a69f7175b1ab9287aa35e90c3ac32
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=71e676892aa2cd91c0626af7e939fbb8
+selectedTraceQL=timed_out_after_45s
+recovery=passed
+diagnosis=not_completed
+
+redis:
+status=not_run_after_postgresql_failure
+
+cleanup:
+status=clean
+
+result=failure
+cause=the TraceQL predicate combined the exact trace and PostgreSQL dependency
+with a failure-outcome value before selection; the runtime did not return a
+matching span within the deadline.
+remediation=select the exact dependency span first, then require its finite
+outcome to be timeout, unavailable or error in the existing classifier.
+
+This bounded transcript contains no request body, SQL, credentials, signed URL,
+title/profile identifier or product data. The GitHub job log remains the
+authoritative raw execution record.

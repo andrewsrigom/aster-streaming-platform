@@ -26,7 +26,9 @@ the current worktree. Protected run `33331974187` passed Catalog diagnosis,
 PostgreSQL recovery and clean teardown, then failed on premature V1 trace
 retrieval before Redis. Run `33332980729` proved the exact PostgreSQL TraceQL
 match, recovery and teardown but showed that its subsequent V2 result remained
-incomplete. The refined selected-TraceQL path still needs all-scenario acceptance.
+incomplete. Run `33333896159` passed Catalog and exact cleanup but showed that
+prefiltering PostgreSQL by failure outcome was too restrictive. The corrected
+dependency-first TraceQL path still needs all-scenario acceptance.
 
 ## Requirement traceability
 
@@ -123,4 +125,6 @@ live-container acceptance.
   `33331974187` proves Catalog diagnosis, PostgreSQL recovery and clean teardown.
   Run `33332980729` additionally proves the exact PostgreSQL TraceQL match, but
   both stop before Redis because trace-by-ID completeness was required. No
-  three-scenario acceptance is claimed until the refined run passes.
+  Run `33333896159` proves the selected-span Catalog path and clean recovery,
+  then stops at the PostgreSQL pre-selection outcome predicate. No
+  three-scenario acceptance is claimed until the corrected run passes.

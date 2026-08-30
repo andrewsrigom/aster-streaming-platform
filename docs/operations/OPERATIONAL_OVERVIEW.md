@@ -103,8 +103,10 @@ diagnosis, PostgreSQL recovery and clean teardown, but its V1 trace read precede
 the PostgreSQL boundary's query visibility and Redis did not run. Run
 `33332980729` then proved the exact PostgreSQL TraceQL boundary, recovery and
 cleanup while its subsequent V2 read remained incomplete. The refined runner
-uses the finite TraceQL-selected span as evidence; all three scenarios still
-must pass on a working Linux Docker engine.
+uses the finite TraceQL-selected span as evidence. Run `33333896159` passed
+Catalog and clean recovery/teardown but showed that PostgreSQL outcome must be
+validated after exact dependency selection. All three scenarios still must pass
+on a working Linux Docker engine.
 
 ## Limits
 

@@ -23,6 +23,13 @@ full snapshot through the archival checkpoint remains in
   only the exact TraceQL-selected finite span as causal evidence; focused
   diagnostic/profile tests pass12/12, platform tests pass87/87 and its affected
   gate passes 73/73 with 60 cached in 63.796 seconds.
+- Published selected-span source `817dbd6`. Protected run `33333896159` passed
+  Catalog diagnosis/recovery and exact teardown, then timed out because the
+  PostgreSQL TraceQL predicate required a failure outcome before selecting the
+  exact dependency span. PostgreSQL recovered; Redis did not run. The current
+  correction selects the dependency first and still rejects a non-failure
+  outcome in the classifier. Its affected gate passes 73/73 with 60 cached in
+  64.055 seconds.
 
 - Added ADR-0044, digest-pinned Tempo 3.0.0, bounded diagnostic Collector and
   Grafana variants, an immutable Tempo data source and a disposable proof

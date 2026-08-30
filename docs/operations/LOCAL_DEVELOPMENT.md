@@ -207,7 +207,9 @@ query-visible; Redis did not run. Corrected run `33332980729` proved that exact
 PostgreSQL TraceQL boundary and clean recovery/teardown, but the subsequent V2
 read still did not return the recent boundary before its deadline. The refined
 runner uses the exact TraceQL-selected span as evidence instead of assuming
-recent trace-by-ID completeness. A protected run still must pass all three
+recent trace-by-ID completeness. Run `33333896159` passed Catalog and clean
+recovery/teardown, then showed that PostgreSQL outcome must be checked after
+selecting the exact dependency span. A protected run still must pass all three
 scenarios. Current status and all attempts are recorded in
 [failure-diagnosis evidence](../../evidence/phase-12/failure-diagnosis.md).
 

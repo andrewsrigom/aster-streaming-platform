@@ -139,7 +139,29 @@ the boundary evidence. This preserves trace-ID correlation and rejects missing
 dependency/outcome/status fields without assuming that a recent trace-by-ID read
 is already complete. Focused diagnostic/profile tests pass 12/12 and the
 refined affected gate passes 73/73 with 60 cached in 63.796 seconds. A third
-protected run must still prove all scenarios and cleanup.
+protected run still had to prove all scenarios and cleanup.
+
+## Third protected runtime
+
+Selected-TraceQL source `817dbd690d5eddf8b6fffa00cfc42bf31edb6d4d`
+ran in workflow `33333896159`. Local-platform job `99317260738` created only
+project `aster-p12-diagnostics-17ba5e1d-f5ea-47bf-a60e-77ec77e2427d`.
+Catalog passed with trace `a65a69f7175b1ab9287aa35e90c3ac32`, the expected
+one-population/zero-good result and recovery.
+
+The PostgreSQL request used trace `71e676892aa2cd91c0626af7e939fbb8`.
+Its TraceQL query combined exact trace and dependency identity with a
+failure-outcome predicate before selection and returned no match within 45
+seconds. PostgreSQL recovery and exact teardown passed; Redis did not run. The
+bounded transcript is
+[protected-run-33333896159.txt](diagnostics/protected-run-33333896159.txt).
+
+The correction keeps the exact trace/dependency query and finite `select`, then
+requires `timeout`, `unavailable` or `error` in the existing classifier. Thus a
+non-failed dependency span still fails acceptance without making the search
+predicate depend on exporter representation of the selected outcome. Focused
+diagnostic/profile tests pass 12/12 and the dependency-first affected gate
+passes 73/73 with 60 cached in 64.055 seconds.
 
 ## Remaining acceptance
 
