@@ -2,6 +2,40 @@
 
 Append new entries at the top. Keep entries factual and concise.
 
+## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate
+
+### Completed
+
+- P12-R04/R11 exact source `74780e5`, tree `412cc4c`, passed protected run
+  `33305864184` and the single blocker-focused confirmation. PR47 squash main
+  `6dba10e` retained that tree; exact-main run `33307059156` passed every job,
+  including the changed playable-browser journey.
+- Rebased `feat/p12-sli-slo-definitions` directly onto that exact main. Source
+  `524ab28`, tree `e442af1`, defines four finite machine-readable SLI/SLO
+  contracts for supergraph, Catalog title read, playback start and progress
+  write without claiming historical compliance.
+- Added Router `completed`/`rejected`/`failed` classification, the private
+  bounded Router scrape, nine recording rules and Prometheus synthetic
+  good/bad/excluded/no-population evaluation.
+- Exact Router 2.17.0 configuration validation and Prometheus 3.14.0
+  `promtool` rule/tests pass. Contract tests pass 4/4, Router 10/10 and platform
+  policy 23/23.
+- The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444
+  seconds. Documentation, AI state, formatting, lint, security and diff checks
+  pass. Local Docker was not retried.
+
+### Evidence
+
+- `evidence/phase-12/browser-playback-telemetry.txt`
+- `evidence/phase-12/sli-query-definitions.txt`
+- `evidence/phase-12/slo-error-budget-report.md`
+
+### Next action
+
+Publish one coherent P12-R05/R06 PR and use protected CI for the changed
+Router/Prometheus runtime, then perform the bounded review/merge/exact-main
+sequence before dashboard work.
+
 ## 2026-08-30 — Browser playback telemetry candidate
 
 ### Completed
@@ -2744,9 +2778,9 @@ Merge the final-state pull request after its required check passes, confirm the 
 
 Execute P00-R10 from a clean public clone, produce the final Phase 00 evidence index, verify the Phase 01 prerequisites, and close the phase only after the exit gate passes.
 
-## 2026-08-26 — Executable repository-memory workflow
+**Historical checkpoint — 2026-08-26 — Executable repository-memory workflow**
 
-### Completed
+**Completed**
 
 - Added a dependency-free bounded validator for the ten durable `.ai/` files, queue order and live blockers, active-plan and phase binding, current-state and handoff targets, and reverse-chronological session structure.
 - Added 10 focused tests for valid active and idle state plus missing, oversized, malformed, stale, duplicate, conflicting, invalid-UTF-8, and symbolic inputs.
@@ -2755,14 +2789,14 @@ Execute P00-R10 from a clean public clone, produce the final Phase 00 evidence i
 - Preserved the lightweight staged hook and kept semantic truth and cross-revision append-only review outside the static gate.
 - Verified the new governance path in public pull request 3 with complete source quality, dependency review, and the stable aggregate check.
 
-### Evidence
+**Evidence**
 
 - Passed the actual ten-file state scan, 10 focused tests, 48 dependency-free governance tests, the forced twenty-task graph with 73 focused tests, actionlint `1.7.12`, and high-severity dependency audit.
 - Measured the focused check at `0.57` seconds, focused tests at `0.65` seconds, dependency-free governance path at `0.87` seconds, and forced graph wrapper at `5.85` seconds in the recorded environment.
 - Raw evidence: `evidence/phase-00/ai-state-workflow.txt`.
 - Hosted run `32939956932`: success across every applicable job.
 
-### Next action
+**Next action**
 
 Execute P00-R09 by documenting exact bootstrap, check, demonstration, and cleanup commands without claiming future application commands are implemented.
 

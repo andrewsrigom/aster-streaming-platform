@@ -24,8 +24,8 @@ good events / population events
 
 The population excludes only named events that do not represent an admitted
 user attempt. Dependency failures, timeouts and unexpected server failures stay
-in the denominator and count bad. An empty population has no ratio; queries do
-not replace no traffic with artificial success.
+in the denominator and count bad. An empty population has no finite ratio;
+queries do not replace no traffic with artificial success.
 
 The five-minute recording series support operational views and later burn-rate
 alerts. The objective query evaluates raw counter increases over the SLO's full

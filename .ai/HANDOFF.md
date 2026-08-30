@@ -2,23 +2,30 @@
 
 ## Resume point
 
-Item59 (P12-R04/R11 browser QoE) is frozen in `WAITING_EXTERNAL` at exact
-source `74780e520b598319ed07988e640dc2ab0b9a7d81`, tree
-`412cc4ce8d8abb61447cc37421280308201ed9cd`. PR47 initial review is clean;
-protected run `33305864184` is still executing its serial source-quality
-integrations. Local focused19/19, Web116/116 and affected14/14 gates pass.
+Item59 (P12-R04/R11 browser QoE) is released from source `74780e5`, tree
+`412cc4c`, protected run `33305864184`, clean exact-head confirmation, PR47
+squash main `6dba10e` and successful exact-main run `33307059156`.
 
-Item60 (P12-R05/R06) is the sole dependent `IN_PROGRESS` item on
-`feat/p12-sli-slo-definitions`, based exactly on that frozen head. Its active
-plan is `.ai/CHANGE_PLAN.md`. Do not publish or merge this branch before PR47.
+Item60 (P12-R05/R06) is the sole `IN_PROGRESS` item on
+`feat/p12-sli-slo-definitions`. Source `524ab28`, tree `e442af1`, is based
+directly on exact main `6dba10e`. Its active plan is `.ai/CHANGE_PLAN.md`.
 
 ## Exact next actions
 
-1. Continue finite Router outcome and Prometheus SLI-rule implementation locally.
-2. When run `33305864184` passes, request exactly one blocker-focused PR47 confirmation review.
-3. If clean, squash-merge PR47, verify exact-main CI, rebase this dependent branch onto that squash and repeat only affected gates.
-4. Complete P12-R05/R06 contract/rule/evidence work, run candidate gates and publish one coherent PR.
-5. If PR47 changes, rebase first and invalidate any affected dependent evidence.
+1. Commit the evidence/memory closeout without changing source behavior.
+2. Push the coherent branch and open one PR for P12-R05/R06.
+3. Request one initial blocker-focused review and let protected CI prove the pinned Router/Prometheus runtime.
+4. Batch only requirement, security/privacy, measurement-integrity, availability or public-contract blockers.
+5. Run one confirmation review, squash-merge, verify exact-main CI, then activate P12 dashboard work.
+
+## Verified candidate
+
+- Four contract tests, ten Router tests and 23 platform-policy tests pass.
+- Exact Apollo Router 2.17.0 configuration validation passes.
+- Prometheus 3.14.0 `promtool` accepts nine rules and the synthetic good, bad,
+  excluded and excluded-only workloads.
+- The post-rebase affected gate passes 49/49 tasks with 41 cached in 47.444 seconds.
+- Documentation, AI state, formatting, lint, security and `git diff --check` pass.
 
 ## Measurement boundary
 
@@ -37,6 +44,6 @@ Use native WSL Git and pinned Node.js 24.19.0/pnpm 11.24.0 from
 
 ## Do not do yet
 
-Do not publish the dependent branch, restart WSL/Docker, repeat host diagnostics,
-reset retained projects or rebuild media. Protected CI owns the changed
-Router/Prometheus runtime proof while the local daemon is unavailable.
+Do not restart WSL/Docker, repeat host diagnostics, reset retained projects or
+rebuild media. Protected CI owns the changed Router/Prometheus runtime proof
+while the local daemon is unavailable.

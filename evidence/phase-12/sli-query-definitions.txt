@@ -1,14 +1,14 @@
 # P12-R05 executable SLI query evidence
 
-Status: implemented and locally verified on the dependent working tree; protected
-Router/Prometheus runtime acceptance and release remain pending.
+Status: implemented and locally verified at source `524ab28`, tree `e442af1`;
+protected Router/Prometheus runtime acceptance and release remain pending.
 
 ## Environment
 
 - Date: 2026-08-30
 - Host: WSL Ubuntu-20.04
-- Source base: frozen P12-R11 exact head
-  `74780e520b598319ed07988e640dc2ab0b9a7d81`
+- Source base: tree-identical P12-R11 squash main
+  `6dba10e0ec74891af8d4427836381a4190b20376`
 - Branch: `feat/p12-sli-slo-definitions`
 - Node.js: 24.19.0
 - pnpm: 11.24.0
@@ -43,6 +43,9 @@ node --test ./tools/verify-local-platform.test.mjs
 
 node ./tools/verify-local-platform.mjs
 => {"check":"local-platform","status":"ok","violations":0}
+
+CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4 pnpm check:changed
+=> 49 tasks passed, 41 cached, 0 failed, 47.444 seconds after rebase
 ```
 
 The first optional-platform test run exposed a validator gap: mutating one of

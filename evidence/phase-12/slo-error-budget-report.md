@@ -2,8 +2,12 @@
 
 Status: **implemented definition; historical compliance unavailable**
 
-Date: 2026-08-30  
-Source base: `74780e520b598319ed07988e640dc2ab0b9a7d81`  
+Date: 2026-08-30
+
+Source: `524ab2824b67697610e7a77b6702c635dd06a3ce`, tree `e442af182d00e211049b940a635edab75fd3ebdf`
+
+Source base: `6dba10e0ec74891af8d4427836381a4190b20376`
+
 Environment: WSL Ubuntu-20.04, Prometheus 3.14.0 `promtool` synthetic evaluation
 
 ## Objectives

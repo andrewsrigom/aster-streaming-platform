@@ -129,9 +129,9 @@ product state, schema, event or media object requires migration.
 
 ## Completion checklist
 
-- [ ] Requirements satisfied
-- [ ] Tests pass
-- [ ] Evidence captured
-- [ ] Documentation current
+- [x] Requirements satisfied
+- [x] Tests pass
+- [x] Evidence captured
+- [x] Documentation current
 - [x] `.ai/` state updated
 - [x] Remaining risks recorded

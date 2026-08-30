@@ -250,8 +250,8 @@ Remote browser sample rate is zero. There is no browser exporter, ingestion
 route or server retention, so this candidate makes no field-SLI claim. The
 [browser playback telemetry policy](../operations/PLAYBACK_TELEMETRY.md) records
 measurement definitions, sampling, retention, privacy and future activation
-gates. Focused implementation evidence remains under the Phase12 index until
-the candidate completes protected acceptance.
+gates. Focused and protected release evidence is recorded under the Phase12
+index.
 
 ### Implemented Phase 12 SLI/SLO candidate
 
@@ -265,7 +265,7 @@ Nine recording rules compute population and good-event five-minute rates for
 supergraph, Catalog title read, playback start and progress write, then derive
 one ratio family with four finite `sli` values. Expected rejections are excluded;
 dependency and unexpected failures remain bad. Empty populations produce no
-ratio. Exact definitions, full-window objective queries, owners and budgets are
+finite ratio. Exact definitions, full-window objective queries, owners and budgets are
 in the machine-readable
 [`slo-contract.json`](../../infra/observability/slo-contract.json).
 

@@ -11,8 +11,9 @@ P12-R03 and the backend portion of P12-R04 are released from exact head
 squash main `2245251` and successful exact-main run `33304196111`.
 
 P12-R04/R11 browser QoE exact head `74780e5`, tree `412cc4c`, passed protected
-run `33305864184`; one exact-head confirmation review and release remain.
-P12-R05/R06 is the sole local dependent candidate from that frozen head.
+run `33305864184` and clean confirmation. PR47 squash main `6dba10e` has the
+same tree; exact-main run `33307059156` passed every job. P12-R05/R06 source
+`524ab28`, tree `e442af1`, is rebased directly onto that exact main.
 
 ## Requirement traceability
 
@@ -39,7 +40,7 @@ The P12-R04/R11 browser candidate samples every local attempt into one bounded
 memory-only report, explicitly erases it on retry/unmount and keeps remote
 sampling at zero. Recorder/adapter tests pass 19/19, Web tests pass 116/116 and
 the exact affected candidate passes 14/14 in 48.518 seconds. Protected run
-`33305864184` passed every required job; exact-head confirmation remains.
+`33305864184`, exact-head confirmation and exact-main run `33307059156` passed.
 
 The dependent SLI/SLO candidate defines four machine-readable objectives and
 nine Prometheus recording rules. Repository checks pass 4/4, Router checks
@@ -65,8 +66,8 @@ three diagnostic exercises and the operational overview remain planned.
   repeat.
 - Browser telemetry has no remote transport or server retention. Local/CI
   measurement cannot establish field availability or latency distributions.
-- The browser candidate is not yet published. Its focused evidence does not
-  replace playable-browser, protected and exact-main acceptance.
+- Browser telemetry is released, but still has no remote transport or
+  field-retention claim.
 - SLI/SLO synthetic ratios prove query behavior only. One-hour local retention
   cannot prove a 28/30-day objective, and no historical compliance result is
   claimed.
