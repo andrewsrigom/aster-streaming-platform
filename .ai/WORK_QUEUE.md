@@ -163,11 +163,15 @@ event delivery23/23, media runner3/3 and affected gate73/73 with53 cached in
 53.307 seconds pass. Evidence head `9a058ee` passed protected run `33300561121`
 and clean confirmation; PR45 squash main `ce66f9c` passed exact-main run
 `33301425220`, so item57 is released. Item58 is rebased on that exact main.
-Source `2270745`, tree `c98c1c1`, corrects invalid event-age clamping and records
-explicit pool roles. Telemetry19/19, PostgreSQL30/30, event delivery24/24,
-focused product/consumer7/7 and affected73/73 pass, with52 cached in52.554
-seconds. Signal, product-outcome and cardinality evidence are ready for one
-publication, protected CI and review.
+PR46 initial review found three signal-integrity gaps after source `2270745`:
+fabricated vendor pool counts, missing pending-outbox age before broker
+connection and product duration buckets ending at ten seconds. Batched source
+`442ecab`, tree `28d7ba7`, rejects malformed pool snapshots, observes the
+claimed fact before the connection gate, extends product buckets through 300
+seconds and requires new Node, pool and product metrics in protected real-
+Collector CI. Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
+product/consumer 7/7 and affected 73/73 pass, with 28 cached in 63.79 seconds. Push
+the remediation once, then complete protected CI and confirmation.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

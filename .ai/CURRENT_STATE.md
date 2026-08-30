@@ -97,14 +97,19 @@ event-loop/V8 instrumentation and local browser QoE are reused. Browser remote
 collection remains explicitly deferred until its P12-R11 sampling, privacy,
 transport and retention policy; no ingestion service is implied.
 
-Source `2270745`, tree `c98c1c1`, preserves the corrected linked Discovery
+Source `442ecab`, tree `28d7ba7`, preserves the corrected linked Discovery
 consumer while adding the finite metrics. Local review corrected future and
 excessive event ages that were being clamped into false samples and assigned
-the explicit non-primary pool roles. Telemetry19/19, PostgreSQL30/30, event
-delivery24/24, combined product/consumer7/7 and the affected gate73/73 with52
-cached in52.554 seconds pass. Evidence records the signal catalog, backend
-outcome mappings and maximum authored series counts. The branch is ready for
-one publication, protected real-Collector CI and initial review.
+the explicit non-primary pool roles. PR46 initial review then found that vendor
+pool counters were sanitized into valid-looking metrics, outbox age was absent
+before broker connection and product buckets ended at ten seconds. The batched
+remediation rejects the whole malformed pool sample, records the claimed fact's
+finite unavailable outcome/valid age before the connection gate, extends
+product buckets through 300 seconds and requires Node, pool and product metric
+names from the real Collector in protected CI. Telemetry 19/19,
+PostgreSQL 31/31, event delivery 25/25, combined product/consumer 7/7 and the
+affected gate 73/73 with 28 cached in 63.79 seconds pass. One remediation push,
+protected CI and confirmation remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

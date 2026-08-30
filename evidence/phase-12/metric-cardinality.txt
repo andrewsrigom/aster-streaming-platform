@@ -1,8 +1,8 @@
 # P12-R03/R04 metric cardinality and privacy budget
 
 Status: contract and regression tests pass locally at source
-`2270745b58966313adc52dbb48d70bbc75d41d64`, tree
-`c98c1c17b4b27472d050f71a40ba233061b7a462`.
+`442ecab890baab9226287739e676f0d578673352`, tree
+`28d7ba7b504319f730d60d946ad6c57c88f47532`.
 
 ## Finite series budget
 
@@ -52,6 +52,6 @@ belongs in bounded logs and sampled traces, not metrics.
 ## Evidence
 
 - `@aster/telemetry`: 19/19 tests pass.
-- `@aster/postgres`: 30/30 tests pass.
-- `@aster/event-delivery`: 24/24 tests pass.
-- affected repository gate: 73/73 tasks pass, 52 cached, in 52.554 seconds.
+- `@aster/postgres`: 31/31 tests pass.
+- `@aster/event-delivery`: 25/25 tests pass.
+- affected repository gate: 73/73 tasks pass, 28 cached, in 63.79 seconds.

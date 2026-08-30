@@ -217,11 +217,14 @@ Event relays and consumers record finite outcome and validated age; existing
 dependency-active measurements represent broker and media-worker work without
 inventing an unowned queue. Future, invalid and older-than-seven-day event time
 is omitted rather than clamped into a false age sample; the finite delivery
-outcome is still retained.
+outcome is still retained. A relay observes the claimed pending fact before its
+broker connection gate, so a connection outage retains finite outcome and age
+instead of hiding accumulating lag.
 
 Playback session creation, progress acceptance, media processing and media
 publication map their existing finite results to product duration/outcome
-metrics. Telemetry failure is isolated from the already-decided result. Existing
+metrics. Product histogram buckets extend through the 300-second media-operation
+ceiling. Telemetry failure is isolated from the already-decided result. Existing
 cache instruments remain the effectiveness source. Browser first-frame and
 rebuffer observations are not remotely collected until P12-R11 defines their
 sampling, privacy, transport and retention policy.

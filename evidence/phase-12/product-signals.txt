@@ -1,6 +1,6 @@
 # P12-R04 backend product signals
 
-Status: implemented locally on source `2270745b58966313adc52dbb48d70bbc75d41d64`;
+Status: implemented locally on source `442ecab890baab9226287739e676f0d578673352`;
 not yet verified or released.
 
 ## Implemented contract
@@ -37,7 +37,9 @@ transport and retention. Therefore this candidate makes no field-QoE claim.
   including media processing completion/unavailability metric expectations.
 - Telemetry's golden-signal contract test accepts only the finite product
   vocabulary, rejects non-finite duration and emits no identifier or URL label.
-- Complete affected gate: 73/73 tasks pass, 52 cached, in 52.554 seconds.
+- Product histogram buckets cover backend latency from 5 ms through the
+  supported 300-second media-operation ceiling.
+- Complete affected gate: 73/73 tasks pass, 28 cached, in 63.79 seconds.
 
 ## Limits
 

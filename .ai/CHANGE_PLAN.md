@@ -24,15 +24,20 @@ P12-R01/R02/R08/R09 released through evidence head `9a058ee`, protected run
 `33300561121`, clean confirmation, PR45 squash main `ce66f9c` and successful
 exact-main run `33301425220`.
 
-Source `2270745`, tree `c98c1c1`, now implements the contract below after a
+Source `442ecab`, tree `28d7ba7`, now implements the contract below after a
 tree-identical rebase onto that exact main. Local review found that future and
 older-than-seven-day event times were clamped into false edge samples; the
 remediation retains the finite delivery outcome while omitting invalid age and
-assigns explicit operator/projection/consumer pool roles. Telemetry19/19,
-PostgreSQL30/30, event delivery24/24, focused product/consumer7/7 and
-affected73/73 gates pass; the final gate reused 52 valid tasks and completed in
-52.554 seconds. Evidence and architecture documentation are current locally.
-Publication, protected real-Collector CI and review remain.
+assigns explicit operator/projection/consumer pool roles. PR46 initial review
+then found fabricated vendor pool counts, missing outbox age before broker
+connection and product buckets ending at ten seconds. The batched remediation
+rejects malformed pool snapshots, observes a claimed fact before the connection
+gate, extends product buckets through 300 seconds and makes protected CI require
+new Node, pool and product signals from the real Collector. Telemetry 19/19,
+PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7 and
+affected 73/73 gates pass; the final gate reused 28 valid tasks and completed in
+63.79 seconds. Evidence and architecture documentation are current locally.
+One remediation push, protected real-Collector CI and confirmation remain.
 
 The shared telemetry package already exports HTTP request duration/active work,
 dependency duration/active/outcomes, CPU time/utilization, RSS, uptime, Node

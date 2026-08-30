@@ -16,14 +16,17 @@ exact-main run `33301425220`. The old named P12 stashes are historical and must
 not be restored.
 
 P12-R03/R04 backend golden signals are active locally on the sole permitted
-branch `feat/p12-golden-product-signals`, rebased on exact main `ce66f9c`. Its
+branch `feat/p12-golden-product-signals`, rebased on exact main `ce66f9c` and
+published as PR46. Its
 change plan owns Node memory, PostgreSQL pool, event age/delivery and backend
-product-result metrics without browser remote collection. Source `2270745`,
-tree `c98c1c1`, also omits invalid event ages instead of clamping false samples
-and tags non-primary pools explicitly. It passes telemetry19/19,
-PostgreSQL30/30, event delivery24/24, focused product/consumer7/7 and the
-affected gate73/73 with52 cached in52.554 seconds. Evidence and architecture
-documentation are updated locally; the branch is not published yet.
+product-result metrics without browser remote collection. Initial review found
+three integrity gaps. Batched source `442ecab`, tree `28d7ba7`, omits invalid
+event ages, rejects malformed vendor pool snapshots, observes pending outbox
+age before broker connection, covers product durations through 300 seconds and
+adds protected real-Collector assertions. It passes telemetry 19/19,
+PostgreSQL 31/31, event delivery 25/25, focused product/consumer 7/7 and the
+affected gate 73/73 with 28 cached in 63.79 seconds. The remediation is local and
+not pushed yet.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -56,10 +59,10 @@ Phase11.
 
 ## Exact next actions
 
-1. Commit the exact dependent evidence checkpoint and publish P12-R03/R04 once.
-2. Await protected real-Collector CI and one initial blocker-focused review;
-   batch only defined remediation.
-3. Complete its confirmation, squash merge and exact-main verification.
+1. Commit the exact remediation evidence and push PR46 once.
+2. Await protected real-Collector CI, resolve the three initial findings and
+   request one blocker-focused confirmation.
+3. Squash merge and prove exact main after clean confirmation.
 4. Complete the Phase12 browser policy, SLI/SLO/dashboard/alert/diagnostic items in
    requirement order after this slice closes.
 

@@ -177,6 +177,17 @@ Append new entries at the top. Keep entries factual and concise.
 - Event delivery24/24 and focused product/consumer7/7 pass. The final affected
   gate passes73/73 with52 cached in52.554 seconds; the dependent remains
   unpublished pending its exact evidence checkpoint.
+- Published PR46 at evidence head `992b0c8`. Initial review `5060367013` and
+  discussions `3888910931`/`3888910934` found three signal-integrity gaps:
+  sanitized malformed pool counters, no pending-outbox age before broker
+  connection and product histogram buckets ending at ten seconds.
+- Batched source `442ecab`, tree `28d7ba7`, rejects the whole malformed pool
+  metric, claims/observes a pending fact before its connection gate, covers
+  product durations through 300 seconds and makes protected CI require new
+  Node, pool and product metrics from the real Collector.
+- Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
+  product/consumer 7/7 and the final affected 73/73 gate pass, with 28 cached in
+  63.79 seconds. Remediation evidence is local pending one push.
 
 ### Evidence
 

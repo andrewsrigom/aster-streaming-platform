@@ -68,10 +68,13 @@ as tree-identical main `834bf15`, and exact-main run33296443777 passed every
 required job. Phase11 is released. P12-R01 evidence head `9a058ee` passed
 protected run `33300561121` and clean confirmation; PR45 squash main `ce66f9c`
 passed exact-main run `33301425220`. P12-R03/R04 backend golden signals are
-rebased on that exact main. Source `2270745`, tree `c98c1c1`, passes telemetry,
-pool, delivery and product suites plus the affected73/73 gate with52 cached in
-52.554 seconds. Local review corrected invalid event-age clamping before the
-branch's first publication.
+rebased on that exact main and published as PR46. Initial review found malformed
+pool counts being sanitized, missing pending-outbox age before connection and
+insufficient product-duration buckets. Batched source `442ecab`, tree `28d7ba7`,
+rejects fabricated samples, preserves outage lag and covers durations through
+300 seconds. Telemetry 19/19, PostgreSQL 31/31, event delivery 25/25, focused
+product/consumer 7/7 and the affected 73/73 gate with 28 cached in 63.79 seconds
+pass. One remediation push, protected CI and confirmation remain.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
