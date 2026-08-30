@@ -48,6 +48,12 @@ test("Router classification and private scrape boundaries are mandatory", () => 
   assert.ok(
     validateSloContract({
       ...sources,
+      routerConfig: sources.routerConfig.replace("0.3,", ""),
+    }).length > 0,
+  );
+  assert.ok(
+    validateSloContract({
+      ...sources,
       metricCatalog: sources.metricCatalog.replace("0.4,", ""),
     }).length > 0,
   );

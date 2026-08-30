@@ -225,6 +225,21 @@ export function validateSloContract(sources) {
   if (/graphql\.operation\.name|graphql\.document/u.test(routerConfig)) {
     reject("Router SLI metrics cannot retain arbitrary operation names or documents");
   }
+  const routerBucketBlock =
+    /name: http\.server\.request\.duration\n\s+aggregation:\n\s+histogram:\n\s+buckets: \[([^\]]+)\]/u.exec(
+      routerConfig,
+    )?.[1];
+  const routerBuckets = new Set((routerBucketBlock?.match(/\d+(?:\.\d+)?/gu) ?? []).map(Number));
+  for (const sli of slis.filter(
+    (candidate) =>
+      candidate?.source?.scrapeJob === "aster-router" &&
+      candidate?.source?.goodMetric?.endsWith("_bucket"),
+  )) {
+    const latency = record(sli.objective) ? sli.objective.latencySeconds : undefined;
+    if (typeof latency !== "number" || !routerBuckets.has(latency)) {
+      reject(`${sli.id} requires a Router-duration bucket exported by the runtime`);
+    }
+  }
 
   const routerPolicy = sources.routerPolicy ?? "";
   for (const required of [

@@ -359,6 +359,10 @@ export function validateWorkflowPolicy(
     ],
     [/assert.deepEqual\(present, required\)/u, "Docker-only demo must require every metric family"],
     [
+      /for \(const sli of \['supergraph', 'catalog_title_read'\]\)/u,
+      "Docker-only demo must verify both live Router-backed SLI ratios",
+    ],
+    [
       /^\s*allow-licenses: *0BSD, Apache-2\.0, BSD-2-Clause, BSD-3-Clause, BlueOak-1\.0\.0, Elastic-2\.0, ISC, MIT, MITNFA *$/mu,
       "dependency review must enforce the reviewed license set",
     ],

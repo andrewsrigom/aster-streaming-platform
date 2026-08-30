@@ -247,6 +247,7 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
     ["timeout-minutes: 10", "timeout-minutes: 60"],
     ["assert.equal(process.getuid(), 1000)", "assert.ok(true)"],
     ["assert.deepEqual(present, required)", "assert.ok(present)"],
+    ["'supergraph', 'catalog_title_read'", "'supergraph'"],
     ['--profile "*" down --volumes', "down --volumes"],
   ] as const) {
     assert.ok(

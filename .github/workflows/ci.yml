@@ -318,7 +318,12 @@ jobs:
               operationName: 'StartPlayback',
               variables: { titleId: '00000000-0000-4000-8000-000000000001' },
           });
-          async function startPlayback() {
+          const titleBody = JSON.stringify({
+              query: 'query TitleDetail($id: ID!) { title(id: $id) { id } }',
+              operationName: 'TitleDetail',
+              variables: { id: '00000000-0000-4000-8000-000000000001' },
+          });
+          async function callGraphql(body) {
             return new Promise((resolve, reject) => {
               const outgoing = request('http://router:4000/graphql', {
                 method: 'POST',
@@ -328,7 +333,7 @@ jobs:
                   origin: 'http://127.0.0.1:4000',
                   'x-aster-csrf': '1',
                   'content-type': 'application/json',
-                  'content-length': Buffer.byteLength(playbackBody),
+                  'content-length': Buffer.byteLength(body),
                   connection: 'close',
                 },
               }, incoming => {
@@ -345,16 +350,22 @@ jobs:
                 incoming.on('end', () => resolve({ status: incoming.statusCode, text }));
               });
               outgoing.on('error', reject);
-              outgoing.end(playbackBody);
+              outgoing.end(body);
             });
           }
-          const playbackResponse = await startPlayback();
+          const playbackResponse = await callGraphql(playbackBody);
           assert.equal(playbackResponse.status, 200);
           const playback = JSON.parse(playbackResponse.text);
           assert.equal(playback.errors, undefined);
           assert.equal(playback.data?.createPlaybackSession?.code, 'NOT_PLAYABLE');
+          const titleResponse = await callGraphql(titleBody);
+          assert.equal(titleResponse.status, 200);
+          const title = JSON.parse(titleResponse.text);
+          assert.equal(title.errors, undefined);
+          assert.equal(title.data?.title, null);
           await setTimeout(6000);
-          assert.equal((await startPlayback()).status, 200);
+          assert.equal((await callGraphql(playbackBody)).status, 200);
+          assert.equal((await callGraphql(titleBody)).status, 200);
           const required = [
             'http_server_request_duration_seconds_count',
             'aster_dependency_operation_outcomes_total',
@@ -379,13 +390,23 @@ jobs:
             await setTimeout(500);
           }
           assert.deepEqual(present, required);
-          const query = encodeURIComponent('aster:sli:good:ratio_rate5m{sli="supergraph"}');
-          const ratio = await json('http://prometheus:9090/api/v1/query?query=' + query);
-          assert.equal(ratio.status, 'success');
-          assert.equal(ratio.data.result.length, 1);
-          const value = Number(ratio.data.result[0].value[1]);
-          assert.ok(Number.isFinite(value) && value > 0 && value <= 1);
-          console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present, supergraphSli: value }));
+          const sliValues = {};
+          for (const sli of ['supergraph', 'catalog_title_read']) {
+            const query = encodeURIComponent(`aster:sli:good:ratio_rate5m{sli="${sli}"}`);
+            const ratioDeadline = Date.now() + 45000;
+            let ratio;
+            while (Date.now() < ratioDeadline) {
+              ratio = await json('http://prometheus:9090/api/v1/query?query=' + query);
+              assert.equal(ratio.status, 'success');
+              if (ratio.data.result.length === 1) break;
+              await setTimeout(500);
+            }
+            assert.equal(ratio?.data.result.length, 1);
+            const value = Number(ratio.data.result[0].value[1]);
+            assert.ok(Number.isFinite(value) && value > 0 && value <= 1);
+            sliValues[sli] = value;
+          }
+          console.log(JSON.stringify({ check: 'docker-only-demo', status: 'ok', uid: process.getuid(), metrics: present, sliValues }));
           NODE
       - name: Verify local Identity product API
         timeout-minutes: 1
