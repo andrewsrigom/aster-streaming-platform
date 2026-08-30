@@ -162,9 +162,13 @@ export function validateRouterSources(sources) {
     }
   }
   const config = sources["infra/router/router.yaml"] ?? "";
+  const trafficShaping =
+    /(?:^|\n)traffic_shaping:\n(?<policy>[\s\S]*?)\ninclude_subgraph_errors:/u.exec(config)
+      ?.groups?.["policy"] ?? "";
   if (
     /max_depth:|max_aliases:|max_root_fields:|APOLLO_KEY|APOLLO_GRAPH_REF|matching:/.test(config) ||
-    /(?:^|\n)\s+retry:/u.test(config) ||
+    trafficShaping.length === 0 ||
+    /(?:^|\n)\s+retry:/u.test(trafficShaping) ||
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config)
   ) {
