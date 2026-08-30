@@ -1,0 +1,74 @@
+P12-R10 complete stored-trace protected diagnostic acceptance
+Date: 2026-08-30
+Source: cf87b8c43539cc324c1432211a1e7a478c07e928
+Tree: 30ccdf90713022b1c771c53a846119f7a065b681
+Workflow run: 33341630994
+Local platform job: 99338255936
+Source quality job: 99338255932
+Documentation and security job: 99338255943
+Dependency review job: 99338239593
+Aggregate job: 99340328371
+
+command=node ./tools/run-diagnostic-exercises.mjs
+environment=GitHub-hosted Ubuntu runner; disposable Docker Compose topology
+project=aster-p12-diagnostics-0ffe9c37-4215-4a56-a435-c4b1d94d555c
+
+catalog:
+traceId=7d4dc73b71088538fb82167332d244f4
+diagnosis=catalog_service_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+recovery=passed
+
+postgresql:
+traceId=e5760512bd10727479c4f9b62d25f01c
+diagnosis=catalog_postgresql_unavailable
+userOutcome=failed
+populationDelta=1
+goodDelta=0
+releasedRatio=0.496682743567844
+dependencyOutcome=cancelled
+recovery=passed
+
+redis:
+traceId=ab405c0276af07cc0c2f7e3d64e7b4c3
+diagnosis=catalog_redis_degraded
+userOutcome=latency_qualified
+populationDelta=1
+goodDelta=1
+releasedRatio=0.7490451079693513
+dependencyReadOutcome=unavailable
+dependencyWriteOutcome=unavailable
+recovery=passed
+
+stored-trace:
+endpoint=Grafana UID-scoped Tempo V2 proxy
+traceIdEncoding=OTLP JSON Base64
+stableSnapshots=3
+allSpanTraceIdsMatched=true
+rawAndEscapedCanariesAbsent=true
+
+cleanup:
+status=clean
+
+protected jobs:
+local-platform=passed
+source-quality=passed
+documentation-security=passed
+dependency-review=passed
+ci-required=passed
+
+result=success
+
+Interpretation: the corrected full-trace proof followed each released SLI event
+to the exact stored trace, validated every OTLP span against the requested trace
+ID, inspected the complete serialized trace for privacy canaries, diagnosed all
+three required failure boundaries, recovered them and removed only its scoped
+project.
+
+Limitations: this proves the bounded local/CI topology at the exact source and
+tree above. It does not claim hosted retention, production traffic or a hosted
+release. This transcript intentionally excludes request bodies, SQL, credentials,
+signed URLs and product identifiers. The immutable GitHub job log is the
+authoritative raw execution record.

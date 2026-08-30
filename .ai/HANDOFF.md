@@ -65,6 +65,13 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   correction converts hex to OTLP Base64, validates every stored span, passes
   focused tests 13/13 and the affected gate 73/73 with 60 cached in 54.407
   seconds.
+- Corrected source `cf87b8c`, tree `30ccdf9`, passed protected run
+  `33341630994`. Local-platform job `99338255936` proved full stored-trace
+  privacy, all three diagnoses/recoveries and exact cleanup. Source quality
+  `99338255932`, documentation/security `99338255943`, dependency review
+  `99338239593` and aggregate `99340328371` also passed. Publish the bounded
+  transcript, resolve the two discussions and request only the permitted
+  confirmation after final exact-head protection.
 
 ## Protected runtime finding
 

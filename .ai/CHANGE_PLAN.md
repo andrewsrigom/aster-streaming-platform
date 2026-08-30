@@ -104,6 +104,12 @@ hexadecimal ID to the OTLP Base64 representation and requires every returned
 span to match it before the complete-trace privacy assertion. Focused
 diagnostic/profile tests pass 13/13 and the affected gate passes 73/73 with 60
 cached in 54.407 seconds. A corrected protected runtime remains required.
+Corrected source `cf87b8c`, tree `30ccdf9`, passed protected run `33341630994`.
+Local-platform job `99338255936` validated the full stored OTLP trace, diagnosed
+and recovered all three required failures, and cleaned its exact project.
+Source-quality job `99338255932`, documentation/security job `99338255943`,
+dependency review `99338239593` and aggregate `99340328371` also passed. Final
+evidence publication, discussion resolution and permitted confirmation remain.
 
 ## Proposed behavior
 

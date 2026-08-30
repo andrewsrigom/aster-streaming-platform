@@ -119,7 +119,11 @@ proved its OTLP JSON span IDs use Base64 rather than the hexadecimal query ID;
 the exact diagnostic project cleaned successfully. The current correction
 converts the expected ID to OTLP Base64, validates every stored span and passes
 focused tests 13/13 plus the affected gate 73/73 with 60 cached in 54.407
-seconds. Phase13 has not started.
+seconds. Corrected source `cf87b8c`, tree `30ccdf9`, then passed protected run
+`33341630994`: the full stored-trace privacy proof, all three diagnoses and
+recoveries, exact cleanup, complete source quality, Docker-only playable demo
+and aggregate protection passed. Evidence publication, discussion resolution,
+confirmation, merge and exact-main CI remain. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

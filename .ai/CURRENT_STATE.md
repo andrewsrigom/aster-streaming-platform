@@ -355,7 +355,12 @@ project cleaned successfully. The current correction converts the hexadecimal
 query ID to Base64, requires all returned span IDs to match, and then checks the
 complete trace for privacy. Focused diagnostic/profile tests pass 13/13 and the
 affected gate passes 73/73 with 60 cached in 54.407 seconds. Corrected protected
-runtime and confirmation remain.
+runtime source `cf87b8c`, tree `30ccdf9`, passed run `33341630994`.
+Local-platform job `99338255936` proved complete stored-trace privacy, all three
+diagnoses/recoveries and exact cleanup; source quality `99338255932`,
+documentation/security `99338255943`, dependency review `99338239593` and
+aggregate `99340328371` also passed. Final evidence publication and confirmation
+remain.
 Architecture, operations, runbooks and licensing are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
@@ -616,9 +621,9 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 ## Not implemented
 
 P12-R10 supporting protected acceptance passes at source `0288555`; the current
-full-trace privacy and lockfile-invalidation remediation still needs corrected
-protected acceptance after run `33341130651` exposed the OTLP Base64 trace-ID
-representation. Confirmation, merge, exact-main CI and Phase12 closeout remain.
+full-trace privacy and lockfile-invalidation remediation passes protected run
+`33341630994` at source `cf87b8c`. Final evidence publication, confirmation,
+merge, exact-main CI and Phase12 closeout remain.
 Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome

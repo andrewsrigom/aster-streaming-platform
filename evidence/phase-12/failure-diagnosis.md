@@ -337,14 +337,37 @@ ID to Base64, requires every returned span to match it, and preserves the
 complete serialized privacy assertion. Focused diagnostic/profile tests pass
 13/13 and the affected gate passes 73/73 with 60 cached in 54.407 seconds.
 
+## Ninth protected runtime — complete stored-trace acceptance
+
+Corrected source `cf87b8c43539cc324c1432211a1e7a478c07e928`, tree
+`30ccdf90713022b1c771c53a846119f7a065b681`, passed protected workflow
+`33341630994`. Local-platform job `99338255936` created only project
+`aster-p12-diagnostics-0ffe9c37-4215-4a56-a435-c4b1d94d555c`, validated every
+stored OTLP span against the Base64 representation of its hexadecimal trace ID,
+and checked the complete stable trace for raw and escaped privacy canaries. It
+then diagnosed and recovered:
+
+- Catalog trace `7d4dc73b71088538fb82167332d244f4` as
+  `catalog_service_unavailable`, with one population and zero good;
+- PostgreSQL trace `e5760512bd10727479c4f9b62d25f01c` as
+  `catalog_postgresql_unavailable`, with causal outcome `cancelled`, one
+  population and zero good;
+- Redis trace `ab405c0276af07cc0c2f7e3d64e7b4c3` as
+  `catalog_redis_degraded`, with unavailable reads/writes, one population and
+  one latency-qualified good.
+
+Cleanup reported zero scoped resources. Source-quality job `99338255932`,
+documentation/security job `99338255943`, dependency review `99338239593` and
+aggregate `99340328371` passed. The bounded transcript is
+[protected-run-33341630994.txt](diagnostics/protected-run-33341630994.txt).
+
 ## Remaining release work
 
 Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish the OTLP-ID correction and pass
-   its protected three-scenario runtime;
+2. publish the final protected evidence and pass exact-head protection;
 3. resolve discussions `3890788286`/`3890788287` and obtain the permitted
    blocking-boundary confirmation;
 4. squash merge PR51 and verify

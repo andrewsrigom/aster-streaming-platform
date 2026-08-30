@@ -293,7 +293,11 @@ blocking-boundary confirmation and release remain. Published `bf10756` and run
 span-ID encoding at the first complete-trace check; cleanup remained exact. The
 local correction converts the hexadecimal expected ID, validates all stored
 spans, passes focused tests 13/13 and passes the affected gate 73/73 with 60
-cached in 54.407 seconds.
+cached in 54.407 seconds. Corrected source `cf87b8c`, tree `30ccdf9`, passed
+protected run `33341630994`, including complete stored-trace privacy, all three
+diagnoses/recoveries, exact cleanup, source quality, the Docker-only playable
+demo and aggregate protection. Final evidence publication, confirmation and
+release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

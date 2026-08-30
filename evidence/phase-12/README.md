@@ -61,7 +61,11 @@ local-platform job `99336871735` exposed that OTLP JSON encodes span trace IDs
 as Base64 bytes rather than the hexadecimal query ID, while exact cleanup
 passed. The current correction validates every span against the Base64 form and
 passes focused tests 13/13 plus the affected gate 73/73 with 60 cached in
-54.407 seconds.
+54.407 seconds. Corrected source `cf87b8c`, tree `30ccdf9`, passed protected
+run `33341630994`; the [bounded transcript](diagnostics/protected-run-33341630994.txt)
+records the complete stored-trace proof, all three diagnoses/recoveries, exact
+cleanup and every protected job. Final evidence publication, confirmation and
+release remain.
 
 ## Requirement traceability
 

@@ -23,6 +23,11 @@ full snapshot through the archival checkpoint remains in
   ID. Exact cleanup passed. The local correction validates every stored span
   against the Base64 encoding; focused tests pass 13/13 and the affected gate
   passes 73/73 with 60 cached in 54.407 seconds.
+- Corrected source `cf87b8c`, tree `30ccdf9`, passed protected run
+  `33341630994`. The full stored-trace privacy check, three required diagnoses
+  and recoveries, exact cleanup, source quality, Docker-only playable demo and
+  aggregate protection all passed. Bounded transcript:
+  `evidence/phase-12/diagnostics/protected-run-33341630994.txt`.
 
 ### Evidence
 
@@ -32,8 +37,8 @@ full snapshot through the archival checkpoint remains in
 
 ### Next action
 
-- Publish the OTLP-ID correction, require protected three-scenario acceptance, resolve
-  the two discussions and obtain the permitted blocking-boundary confirmation.
+- Publish final evidence, resolve the two discussions and obtain the permitted
+  blocking-boundary confirmation after exact-head protection.
 
 ## 2026-08-30 — Corrected diagnostic protected acceptance
 
