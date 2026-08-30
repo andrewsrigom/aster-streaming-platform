@@ -42,11 +42,18 @@ remediation updates Playback and Discovery retry ownership plus stale Phase10
 status in Catalog, Redis architecture and the feature catalog. Runtime behavior
 is unchanged.
 
+Confirmation discussion `3888100550` found a new blocking boundary at
+`2543581`: a smaller upstream deadline could abort work but its remaining budget
+was not visible to the retry gate. The local remediation registers repository
+deadline lineage, returns the monotonic minimum parent/child budget, creates that
+lineage in Playback transport/application, and adds deterministic parent-budget
+tests. Runtime90/90 and Playback38/38 pass.
+
 ## Exact next actions
 
-1. Run documentation/repository-memory gates and commit the batched review fix.
-2. Push once, reply to/resolve discussion3888089399 and require exact-head CI.
-3. Run one confirmation review under the recorded stopping rule.
+1. Run the affected candidate gate for the parent-budget remediation.
+2. Commit code, update exact evidence, then push the frozen head once.
+3. Reply to/resolve discussion3888100550 and run its permitted confirmation.
 4. Record release evidence and merge only after exact-head gates pass.
 
 ## Evidence boundaries

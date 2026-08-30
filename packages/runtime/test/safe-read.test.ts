@@ -11,7 +11,11 @@ import {
   type AsterSafeReadPolicy,
 } from "../src/index.js";
 import { runAsterSafeReadWithRuntimeForTest } from "../src/safe-read.js";
-import type { AsterDeadline, AsterDeadlineOptions } from "../src/deadline.js";
+import {
+  createAsterDeadlineWithSchedulerForTest,
+  type AsterDeadline,
+  type AsterDeadlineOptions,
+} from "../src/deadline.js";
 
 function policy(overrides: Partial<AsterSafeReadPolicy> = {}): AsterSafeReadPolicy {
   return {
@@ -203,6 +207,36 @@ test("safe read refuses retry when the remaining deadline cannot cover delay, at
     attempt: 1,
     outcome: "budget_exhausted",
   });
+});
+
+test("safe read uses the propagated parent deadline as its retry budget", async () => {
+  const scheduler = {
+    now: () => 0,
+    schedule: () => () => undefined,
+  };
+  const parent = createAsterDeadlineWithSchedulerForTest({ timeoutMs: 399 }, scheduler);
+  const delays: number[] = [];
+  let calls = 0;
+  const result = await runAsterSafeReadWithRuntimeForTest(
+    policy(),
+    parent.signal,
+    () => {
+      calls += 1;
+      return Promise.resolve({ status: "transient" });
+    },
+    {
+      createDeadline: (options) => createAsterDeadlineWithSchedulerForTest(options, scheduler),
+      delay: (milliseconds) => {
+        delays.push(milliseconds);
+        return Promise.resolve("elapsed");
+      },
+    },
+  );
+
+  assert.deepEqual(result, { status: "unavailable", attempts: 1 });
+  assert.equal(calls, 1);
+  assert.deepEqual(delays, []);
+  parent.dispose();
 });
 
 test("safe read does not retry an attempt timeout or caller cancellation", async () => {

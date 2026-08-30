@@ -174,7 +174,13 @@ captured under `evidence/phase-11/`. Initial PR41 review discussion3888089399
 found the Playback README still claimed no network retry. The batched local
 remediation documents sole retry ownership in Playback/Discovery and corrects
 remaining stale Phase10 service/architecture/catalog status. Documentation
-gates, exact-head CI, confirmation and protected publication remain.
+gates pass. Confirmation discussion3888100550 then found that an opaque upstream
+signal could cancel but could not reduce retry admission before expiry. The
+local blocking-boundary remediation makes repository child deadlines report the
+minimum monotonic parent budget and establishes that lineage at Playback's
+GraphQL/application boundaries. Runtime90/90 and Playback38/38 pass, including a
+399-ms parent that cannot fund a 400-ms retry. The affected candidate, exact
+evidence, protected CI, resolved thread and confirmation remain.
 
 ## Historical Phase 09 corrections
 

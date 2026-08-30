@@ -29,6 +29,17 @@ delay, the complete next-attempt ceiling and a response reserve. Caller
 cancellation bounds attempts and backoff. An attempt timeout is terminal: the
 transport is aborted and no overlapping attempt starts.
 
+Nested request budgets use the repository deadline lineage, not an opaque chain
+of independent `AbortSignal.timeout` values. A child deadline reports the minimum
+of its own monotonic budget and every registered parent deadline. Playback
+creates that lineage at the GraphQL transport and application boundaries before
+the Catalog client creates its local operation deadline. Discovery event work
+already receives a repository deadline; a rebuild with no earlier request budget
+uses the Catalog operation deadline as its root. The retry gate reads this
+minimum both before and after backoff, so an upstream deadline under pressure
+cannot fund a new downstream attempt merely because the client has a larger
+local ceiling.
+
 Use equal-jitter exponential backoff: half of the capped exponential delay plus
 a bounded random half. The random source is injected at client construction.
 Invalid randomness, policy or attempt output fails closed. Observation uses only

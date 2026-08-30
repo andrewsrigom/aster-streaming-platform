@@ -59,6 +59,12 @@ Append new entries at the top. Keep entries factual and concise.
   documents sole retry ownership in Playback/Discovery and corrects stale
   Phase10 status in Catalog, Redis architecture and the feature catalog without
   changing runtime behavior.
+- Confirmation discussion3888100550 found that an upstream signal could cancel
+  the retry but did not expose its smaller remaining budget before expiry. The
+  local remediation makes child repository deadlines use the monotonic minimum
+  parent budget and establishes that lineage in Playback transport/application.
+  Runtime90/90 and Playback38/38 pass; a deterministic 399-ms parent cannot fund
+  a 400-ms retry.
 
 ### Evidence
 
@@ -74,8 +80,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the documentation remediation, resolve its review thread, then require
-exact-head CI and one confirmation without adding another retry layer.
+Run the affected gate, capture the corrected exact source, then publish and
+confirm the parent-budget remediation without adding another retry layer.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

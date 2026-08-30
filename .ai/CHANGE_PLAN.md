@@ -64,6 +64,8 @@ operation and cannot increase active callers.
 
 - Original caller cancellation and one operation deadline bound every attempt,
   wait, parse and cleanup.
+- A child deadline exposes the monotonic minimum of its own budget and every
+  registered parent budget; retry admission never relies on cancellation alone.
 - Only safe Catalog reads retry; no mutation, SQL write or publication does.
 - Malformed or semantically invalid owner data never becomes transient success.
 - One retry does not escape the existing client concurrency lane.

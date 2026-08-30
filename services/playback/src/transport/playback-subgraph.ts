@@ -16,6 +16,7 @@ import {
   type AsterExpressGraphqlMiddleware,
   type AsterLocalRouterTrust,
 } from "@aster/http-express";
+import { createAsterDeadline } from "@aster/runtime";
 import { GraphQLError, type GraphQLFormattedError } from "graphql";
 
 import type { PlaybackSessions } from "../application/create-session.js";
@@ -243,7 +244,15 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
     operation = decision.operation;
     const controller = new AbortController();
     lane.controllers.add(controller);
-    const signal = AbortSignal.any([getExpressRequestAbortSignal(response), controller.signal]);
+    const parentSignal = AbortSignal.any([
+      getExpressRequestAbortSignal(response),
+      controller.signal,
+    ]);
+    const deadline = createAsterDeadline({
+      parentSignal,
+      timeoutMs: PLAYBACK_GRAPHQL_LIMITS.deadlineMs,
+    });
+    const signal = deadline.signal;
     const context = createPlaybackGraphqlContext(
       options.sessions,
       signal,
@@ -254,11 +263,12 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
       engagementContext ? options.engagement?.inspector : undefined,
     );
     contexts.set(request, context);
-    const timer = setTimeout(() => {
-      controller.abort();
-      reject(503, "CANCELLED");
-    }, PLAYBACK_GRAPHQL_LIMITS.deadlineMs);
-    timer.unref();
+    const deadlineReached = (): void => {
+      if (!parentSignal.aborted) {
+        reject(503, "CANCELLED");
+      }
+    };
+    signal.addEventListener("abort", deadlineReached, { once: true });
     const execution = Promise.resolve().then(() => apollo(request, response, onError));
     pending.add(execution);
     try {
@@ -267,7 +277,8 @@ export async function createPlaybackSubgraph(options: PlaybackSubgraphOptions) {
     } catch {
       reject(503, signal.aborted ? "CANCELLED" : "UNAVAILABLE");
     } finally {
-      clearTimeout(timer);
+      signal.removeEventListener("abort", deadlineReached);
+      deadline.dispose();
       contexts.delete(request);
       lane.controllers.delete(controller);
       pending.delete(execution);
