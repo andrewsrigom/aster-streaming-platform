@@ -1,16 +1,17 @@
 # Phase 12 Evidence Index
 
-Status: P12-R01/R02/R08/R09 are corrected at source commit `a2015d9`, tree
-`51aaa29`, on PR45. Corrected protected run `33297684108` passed every required
-job, including the formerly failing Local platform job. Confirmation review
-then found two remaining operational boundaries: the one-shot media coordinator
-discarded its spans and Discovery Catalog consumption did not scope durable work
-or preserve an optional validated producer link. The source now configures the
-bounded OTLP exporter and final flush for the coordinator, and runs Discovery
-handling/logging inside the linked consumer observation. Event delivery passes
-23/23, the focused Discovery handler passes 3/3, and the affected gate passes
-73/73 with 44 cached in 54.527 seconds. A new exact-head protected run and the
-single blocker-focused confirmation remain before verification or release.
+Status: P12-R01/R02/R08/R09 are corrected at source commit `03abe8a`, tree
+`b1474c7`, on PR45. Protected run `33298943743` passed every required job at the
+previous exact head. Its blocker-focused confirmation found that the actual
+base-plus-media candidate path did not pass the OTLP endpoint to the one-shot
+coordinator and real Catalog publication/retirement events still lacked an
+active producer context. The corrected source wires that exact media path and
+uses a finite event-producer span around the real Catalog operator transaction,
+without fabricating a broker dependency. Telemetry passes 18/18, Catalog
+247/247, event delivery 23/23, the media runner 3/3, and the complete affected
+gate 73/73 with 53 cached in 53.307 seconds. New exact-head protected CI and one
+blocker-focused confirmation of these two corrections remain before
+verification or release.
 
 ## Requirement traceability
 

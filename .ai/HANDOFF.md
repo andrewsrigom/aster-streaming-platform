@@ -3,13 +3,15 @@
 ## Resume point
 
 P12-R01 is active on PR45 from `feat/p12-trace-observability`. Corrected source
-`a2015d94a0f3e2042595ead06df90b72d672ff1c`, tree
-`51aaa291b075f0dd14c6095e312e80bae0a5d472`, implements the trace/export slice.
-Protected run `33297684108` passed every job before confirmation discussions
-`3888694669` and `3888694673` found discarded one-shot media spans and unscoped
-Discovery consumption. Both are corrected. Event delivery23/23, focused
-Discovery3/3 and affected gate73/73 with44 cached in54.527 seconds pass. The old
-named P12 stashes are historical and must not be restored over this branch.
+`03abe8ac6d30c34902442367da241e0c295ff122`, tree
+`b1474c7396d3e65b53c29a87b35e32d793ad5ede`, implements the trace/export slice.
+Protected run `33298943743` passed previous exact head `e5f93e1`; blocker-focused
+confirmation discussions `3888781189` and `3888781191` found the actual media
+endpoint and real Catalog producer gaps. Both are corrected with a bounded exact
+media path and trace-only event-producer boundary. Telemetry18/18,
+Catalog247/247, event delivery23/23, media runner3/3 and affected gate73/73 with
+53 cached in53.307 seconds pass. The old named P12 stashes are historical and
+must not be restored over this branch.
 
 Phases00–11 are released. P11-R08/R09 evidence head
 `371ba55eb7269520b72f41fd813a95aaeab819eb`, tree
@@ -43,7 +45,7 @@ Phase11.
 ## Exact next actions
 
 1. Commit and publish the corrected P12 evidence head once.
-2. Resolve confirmation discussions `3888694669` and `3888694673`, require
+2. Resolve confirmation discussions `3888781189` and `3888781191`, require
    protected exact-head CI, then request one blocker-focused confirmation.
 3. Squash-merge PR45 without bypass and prove exact main.
 4. Rebase the parked local P12-R03/R04 branch onto exact main and repeat its

@@ -32,12 +32,16 @@ defects. Corrected source `82e9a61`, tree `a6a1081`, fixed those three blockers,
 and protected run `33297684108` passed every required job. Confirmation then
 found discussions `3888694669` and `3888694673`: the one-shot media coordinator
 discarded its spans, and Discovery Catalog consumption executed outside its
-consumer observation without an optional producer link. Source `a2015d9`, tree
-`51aaa29`, configures and flushes the bounded coordinator exporter and scopes
-Discovery owner reads, projection, checkpoint and log inside a linked
-observation. Event delivery23/23, focused Discovery3/3 and affected gate73/73
-with44 cached in54.527 seconds pass. New exact-head CI and blocker-focused
-confirmation remain before verification. Full Phase00–14 goal stays active.
+consumer observation without an optional producer link. Source `a2015d9`
+corrected both, and protected run `33298943743` passed exact head `e5f93e1`.
+Blocker-focused confirmation discussions `3888781189` and `3888781191` then
+found the actual media candidate omitted the exporter endpoint and real Catalog
+events lacked active producer context. Source `03abe8a`, tree `b1474c7`, wires
+the exact media path and adds a finite trace-only Catalog producer span without
+false broker telemetry. Telemetry18/18, Catalog247/247, event delivery23/23,
+media runner3/3 and affected gate73/73 with53 cached in53.307 seconds pass. New
+exact-head CI and blocker-focused confirmation remain before verification. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -68,19 +72,17 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P12-R01 has a corrected candidate at source `a2015d9`, tree `51aaa29`. The
-repository-owned adapter creates finite privacy-safe server and dependency
-spans, drives logger context, propagates child owner context, links async events,
-bounds the media coordinator and exports metrics/traces through finite OTLP
-queues and deadlines. Evidence is indexed under `evidence/phase-12/`. First
-hosted run `33297164589` passed the real Collector scenario but failed Local
-platform because the observability overlay defined opt-in Discovery without its
-base overlay; source `82e9a61` corrected that and both initial-review continuity
-findings, and run `33297684108` passed. Confirmation exposed the remaining
-one-shot exporter and Discovery consumer boundaries. Source `a2015d9` corrects
-both; its local candidate gate passes73/73 with44 cached in54.527 seconds. New
-protected CI and blocker-focused confirmation are pending; no hosted backend,
-dashboard, SLO or product contract is claimed by this slice.
+P12-R01 has a corrected candidate at source `03abe8a`, tree `b1474c7`. The
+repository-owned adapter creates finite privacy-safe server, dependency and
+event-producer spans, drives logger context, propagates child owner context,
+links async events, bounds the media coordinator and exports metrics/traces
+through finite OTLP queues and deadlines. Evidence is indexed under
+`evidence/phase-12/`. Protected run `33298943743` passed the previous exact head;
+its blocker-focused confirmation found the actual media endpoint and real
+Catalog producer gaps. Both are corrected without claiming broker I/O for
+durable outbox intent. The local candidate gate passes73/73 with53 cached in
+53.307 seconds. New protected CI and blocker-focused confirmation are pending;
+no hosted backend, dashboard, SLO or product contract is claimed by this slice.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

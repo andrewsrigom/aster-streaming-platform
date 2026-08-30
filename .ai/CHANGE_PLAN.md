@@ -23,17 +23,19 @@ P11-R10 is released at tree-identical main `834bf15`; exact-main run
 affected gate17/17. The guard rejects raw and YAML-decoded configuration
 expansion inside the bounded traffic-shaping policy.
 
-Corrected source commit `a2015d9`, tree `51aaa29`, implements the repository trace
+Corrected source commit `03abe8a`, tree `b1474c7`, implements the repository trace
 contract locally. `@aster/telemetry` now owns bounded OpenTelemetry metrics and
 traces, finite dimensions, active context, OTLP exporter health and timeout
 behavior. All five owner HTTP servers create server spans and drive the existing
 redacting logger context. Fixed owner clients inject child context; authenticated
 Identity consumption links its producer; current database, Redis, broker,
 object-storage and media-coordinator boundaries use finite dependency spans.
-Focused telemetry, representative boundary and disposable-fixture contract
-tests pass, and the latest affected candidate gate passes 73/73 with 44 cached
-in 54.527 seconds. The branch is published as PR45 and remains unverified until
-new exact-head protected review/CI pass. The single local
+The real Catalog operator adds a trace-only producer boundary around durable
+event intent; the actual relay remains the owner of broker publish telemetry.
+Focused telemetry, Catalog, event and media-runner tests pass, and the latest
+affected candidate gate passes 73/73 with 53 cached in 53.307 seconds. The
+branch is published as PR45 and remains unverified until new exact-head
+protected review/CI pass. The single local
 Collector attempt created no resources because
 Docker reported no Linux engine; it will not be repeated unchanged.
 
@@ -54,10 +56,14 @@ passed all jobs. Confirmation then found that the one-shot media coordinator
 discarded its spans and Discovery Catalog handling ran outside its consumer
 observation. Source `a2015d9` configures and finally flushes the bounded worker
 exporter, preserves an optional validated Catalog producer link, and scopes
-Discovery durable work/logging inside the linked observation. Event delivery
-passes 23/23, focused Discovery passes 3/3 and the affected gate passes 73/73
-with 44 cached in 54.527 seconds. A new exact-head candidate and one
-blocker-focused confirmation remain to be published and verified.
+Discovery durable work/logging inside the linked observation. Protected run
+`33298943743` passed every job at exact head `e5f93e1`. Its blocker-focused
+confirmation discussions `3888781189` and `3888781191` then found that the
+actual media candidate did not pass the exporter endpoint and real Catalog
+events still had no active producer context. Source `03abe8a` corrects both
+without inventing broker I/O. Telemetry18/18, Catalog247/247, event delivery
+23/23, media runner3/3 and the affected gate73/73 with53 cached in53.307 seconds
+pass. New exact-head CI and one blocker-focused confirmation remain.
 
 ## Proposed behavior
 

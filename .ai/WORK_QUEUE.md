@@ -151,14 +151,16 @@ Historical stashes are superseded.
 | 56 | Run failure game days, update runbooks and close Phase 11 | P11-R10 | DONE |
 | 57 | Standardize trace/log context, telemetry privacy and bounded exporter failure | P12-R01 | IN_PROGRESS |
 
-P12-R01 corrected source `a2015d9`, tree `51aaa29`, implements the trace/export
-slice. Protected run `33297684108` passed all jobs after the first remediation.
-Confirmation discussions `3888694669` and `3888694673` exposed discarded
-one-shot media spans and unscoped Discovery consumption. The coordinator now
-uses the bounded exporter/final flush, and Discovery runs durable handling and
-logs inside its optionally linked consumer observation. Event delivery23/23,
-focused Discovery3/3 and affected gate73/73 with44 cached in54.527 seconds pass.
-New protected CI and blocker-focused confirmation remain before `DONE`.
+P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
+slice. Protected run `33298943743` passed every job at previous exact head
+`e5f93e1`. Blocker-focused confirmation discussions `3888781189` and
+`3888781191` found that the actual media candidate omitted its exporter endpoint
+and real Catalog events lacked active producer context. The exact media path now
+passes the endpoint, and Catalog uses a finite trace-only producer span without
+recording false broker dependency metrics. Telemetry18/18, Catalog247/247,
+event delivery23/23, media runner3/3 and affected gate73/73 with53 cached in
+53.307 seconds pass. New protected CI and blocker-focused confirmation remain
+before `DONE`.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

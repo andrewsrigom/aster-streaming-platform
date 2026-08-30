@@ -1,11 +1,11 @@
 # P12-R08 telemetry cardinality and privacy review
 
-Exact source: a2015d94a0f3e2042595ead06df90b72d672ff1c
+Exact source: 03abe8ac6d30c34902442367da241e0c295ff122
 
 Finite trace vocabulary
 
-- span names: 2;
-- span kinds: server or client;
+- span names: 3;
+- span kinds: server, client, producer or consumer;
 - HTTP methods: 7;
 - HTTP routes: 3;
 - dependencies: 9;
@@ -30,7 +30,7 @@ Automated checks
 
 - hostile/unknown/accessor-backed dimensions reject before an observation;
 - zero/invalid inbound parents do not become attributes;
-- retained trace snapshots accept only the two span names, two kinds and string
+- retained trace snapshots accept only the three span names, four kinds and string
   attributes produced by the contract;
 - OTLP receiver canaries reject token/cookie/request/profile/title/document
   leakage;

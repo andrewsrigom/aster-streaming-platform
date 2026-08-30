@@ -138,6 +138,19 @@ Append new entries at the top. Keep entries factual and concise.
   optional Catalog trace context, and scopes Discovery handling inside the
   linked observation. Event delivery23/23, focused Discovery3/3 and affected
   gate73/73 with44 cached in54.527 seconds pass.
+- Protected run `33298943743` passed every job at exact head `e5f93e1`.
+  Blocker-focused confirmation discussions `3888781189` and `3888781191` found
+  that the actual base-plus-media candidate omitted the one-shot exporter
+  endpoint and real Catalog publication/retirement events still lacked active
+  producer context.
+- Exact source `03abe8a`, tree `b1474c7`, passes the exporter endpoint through
+  the real media path and gives the local Catalog operator a finite trace-only
+  `aster.event.produce` scope. Durable outbox intent no longer pretends a broker
+  dependency; the later relay retains actual Kafka publish telemetry.
+- Telemetry18/18, Catalog247/247, event delivery23/23 and media runner3/3 pass.
+  The first affected gate exposed only one full-interface Identity fixture that
+  needed the additive method forwarding; after amendment, the complete affected
+  gate passes73/73 with53 cached in53.307 seconds.
 
 ### Evidence
 
@@ -154,7 +167,7 @@ Append new entries at the top. Keep entries factual and concise.
 ### Next action
 
 Publish the latest P12-R01 evidence head once, resolve confirmation discussions
-`3888694669` and `3888694673`, require protected exact-head CI, then request one
+`3888781189` and `3888781191`, require protected exact-head CI, then request one
 blocker-focused confirmation review.
 
 ## 2026-08-29 — Operation admission release and resilience start

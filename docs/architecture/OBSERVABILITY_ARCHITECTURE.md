@@ -168,7 +168,8 @@ The fixed span vocabulary is:
 | Span | Kind | Attributes |
 | --- | --- | --- |
 | `aster.http.server` | server | boundary, finite method, finite route, outcome |
-| `aster.dependency.operation` | client | boundary, finite dependency, finite operation, outcome |
+| `aster.dependency.operation` | client; producer/consumer for actual broker publish/consume | boundary, finite dependency, finite operation, outcome |
+| `aster.event.produce` | producer | boundary, fixed owner, outcome |
 
 Every subgraph runs its real HTTP handler in an asynchronous server-span scope
 and supplies that active context to the existing redacting logger. Owner HTTP
@@ -177,13 +178,18 @@ object-storage adapters reuse the same finite dependency contract. Identity
 events preserve the active validated producer `traceparent`; authenticated
 Engagement consumption starts a local trace with one producer link and executes
 its durable work and log inside that scope. Catalog events may preserve the same
-validated optional producer context; Discovery owner reads, projection writes,
-checkpointing and logs execute inside that linked consumer observation. Catalog
-represents the network-isolated decoder handoff with one finite
+validated optional producer context. The local Catalog operator creates a
+finite producer span around commands that can append a durable event; this span
+does not record a broker dependency because the transaction writes only an
+outbox intent. The later relay's actual Kafka send retains the broker publish
+dependency span. Discovery owner reads, projection writes, checkpointing and
+logs execute inside that linked consumer observation. Catalog represents the
+network-isolated decoder handoff with one finite
 `media_worker/process` boundary without passing credentials or arbitrary
 telemetry configuration into the worker. Its one-shot coordinator uses the
-reviewed OTLP endpoint and a bounded final flush, so the boundary is exported
-before process shutdown when observability is enabled.
+reviewed OTLP endpoint from the actual base-plus-media Compose path and a
+bounded final flush, so the boundary is exported before process shutdown when
+observability is enabled.
 
 The default active/retained trace capacity is 128 and the accepted range is
 1–512. Span values are capped at 64 characters, spans contain at most eight

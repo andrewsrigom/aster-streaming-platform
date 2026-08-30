@@ -4,8 +4,8 @@ Status: corrected implementation, local candidate verification passed, protected
 
 Exact source
 
-- Commit: a2015d94a0f3e2042595ead06df90b72d672ff1c
-- Tree: 51aaa291b075f0dd14c6095e312e80bae0a5d472
+- Commit: 03abe8ac6d30c34902442367da241e0c295ff122
+- Tree: b1474c7396d3e65b53c29a87b35e32d793ad5ede
 - Branch: feat/p12-trace-observability
 - Base: tree-identical PR44 squash main 834bf15a8fe9fb39dc3a807912234efd8ee39dbd
 - Runtime: Node.js 24.19.0, pnpm 11.24.0, WSL Ubuntu-20.04
@@ -14,8 +14,8 @@ Implemented contract
 
 - `@aster/telemetry` is the only owner of the OpenTelemetry trace SDK and OTLP
   trace exporter. Public packages consume repository-owned observation types.
-- Fixed span names are `aster.http.server` and
-  `aster.dependency.operation`; dimensions come only from exported finite sets.
+- Fixed span names are `aster.http.server`, `aster.dependency.operation` and
+  `aster.event.produce`; dimensions come only from exported finite sets.
 - Inbound W3C `traceparent` is validated. Invalid or zero context is discarded
   and a local root is still created.
 - AsyncLocalStorage scopes active context. A synchronous provider gives the
@@ -27,8 +27,12 @@ Implemented contract
 - Identity and Catalog facts may carry one validated producer context;
   Engagement and Discovery execute durable consumer work and logs inside the
   corresponding linked observation.
+- The real Catalog operator scopes its durable event transaction inside a
+  finite producer span. This records no dependency metric; the relay records a
+  broker dependency only when it actually sends to Kafka.
 - The one-shot media coordinator configures the same bounded OTLP exporter from
-  the reviewed local endpoint and performs one bounded final flush.
+  the reviewed local endpoint in the actual base-plus-media Compose path and
+  performs one bounded final flush.
 
 Focused command
 
@@ -77,4 +81,13 @@ Initial protected candidate and remediation
   handling inside the consumer span;
 - Event delivery 23/23, focused Discovery 3/3 and the affected gate 73/73 with
   44 cached in 54.527 seconds pass. A new protected run and blocker-focused
-  confirmation remain required.
+  confirmation were required at that checkpoint;
+- protected run `33298943743` passed every job at exact head `e5f93e1`;
+- blocker-focused confirmation discussions `3888781189` and `3888781191` found
+  that the actual media candidate path omitted the exporter endpoint and real
+  Catalog events still had no active producer context;
+- source `03abe8a`, tree `b1474c7`, wires the exact media path and adds a
+  trace-only Catalog event-producer boundary without a false broker metric;
+- telemetry 18/18, Catalog 247/247, event delivery 23/23, media runner 3/3 and
+  the affected gate 73/73 with 53 cached in 53.307 seconds pass. Exact-head CI
+  and one blocker-focused confirmation remain required.

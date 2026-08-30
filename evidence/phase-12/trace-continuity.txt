@@ -1,6 +1,6 @@
 # P12-R01/R02 trace continuity
 
-Exact source: a2015d94a0f3e2042595ead06df90b72d672ff1c
+Exact source: 03abe8ac6d30c34902442367da241e0c295ff122
 
 Verified representative paths
 
@@ -31,6 +31,10 @@ Verified representative paths
      trace;
    - logs do not include event, account or profile identifiers.
    - Catalog events accept the same optional validated producer context;
+   - the real local Catalog operator creates a finite `aster.event.produce`
+     span and persists its active context with publication/retirement facts;
+   - this transaction does not emit a false broker dependency metric; the
+     actual outbox relay owns the later Kafka publish dependency;
    - Discovery scopes owner reads, projection persistence, checkpointing and
      its structured log inside the linked consumer observation.
 
@@ -40,8 +44,9 @@ Verified representative paths
    - success, replay and failure map to stable span outcomes;
    - the isolated decoder still receives no network, credentials or arbitrary
      inherited telemetry configuration;
-   - the one-shot coordinator accepts only the validated local OTLP endpoint
-     and performs one bounded final flush before telemetry shutdown;
+   - the actual base-plus-media candidate path supplies the one-shot
+     coordinator only the validated local OTLP endpoint and performs one
+     bounded final flush before telemetry shutdown;
    - existing PostgreSQL, Redis, broker and object-storage observations become
      children whenever invoked in an active trace scope.
 
@@ -54,8 +59,8 @@ Limitations
 
 - This is representative contract coverage, not a claim that every GraphQL
   field emits a distinct span.
-- Earlier PR candidates passed the disposable Collector. The latest Discovery
-  and one-shot coordinator corrections still require protected exact-head
-  execution and blocker-focused confirmation before verification.
+- Protected run `33298943743` passed the previous exact head. The latest exact
+  media-path and real Catalog-producer corrections still require protected
+  exact-head execution and blocker-focused confirmation before verification.
 - No high-cardinality request, user, profile, title, URL or GraphQL document is
   added to a span.
