@@ -66,15 +66,17 @@ test("composes real health HTTP, controlled recovery, local metrics, clock/IDs a
   const service = await createIdentityServiceWithFactories(configurationEntries, {
     clock: () => createAsterFixedClock(Date.parse("2026-08-27T00:00:00.000Z")),
     identifiers: () => createAsterDeterministicIdentifierGenerator(["startup-1"]),
-    logger: (options) =>
-      createAsterLogger({
+    logger: (options) => {
+      assert.equal(typeof options.traceContextProvider, "function");
+      return createAsterLogger({
         ...options,
         destination: {
           write: (line) => {
             logs.push(line);
           },
         },
-      }),
+      });
+    },
     postgresql: () => postgresql,
     redis: () => redis,
     telemetry: (options) => {

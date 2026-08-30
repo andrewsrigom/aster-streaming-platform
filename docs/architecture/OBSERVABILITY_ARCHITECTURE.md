@@ -155,6 +155,51 @@ OTLP endpoints accept only bounded HTTP(S) URLs without embedded credentials. Ex
 
 `forceFlush` and `shutdown` return sanitized bounded results. Concurrent callers share one underlying operation while each caller retains its own cancellation path; canceling one waiter does not cancel or duplicate provider work. An exporter failure absorbed by the OpenTelemetry reader becomes a stable failed flush result. The `lifecycleHooks().flushTelemetry` adapter composes with the released P01-R05 lifecycle and never reflects an exporter error into product behavior or readiness. Runtime observers are disabled before provider shutdown, repeated shutdown is idempotent, and the lifecycle deadline remains authoritative if an exporter does not cooperate.
 
+### Implemented Phase 12 trace candidate
+
+P12-R01/R02/R08/R09 are implemented through `@aster/telemetry` on PR45; they
+remain unverified until latest exact-head protected CI and confirmation pass. The
+package owns the OpenTelemetry trace SDK and exact-pinned OTLP/HTTP trace
+exporter behind repository types. Application, domain and adapter public
+contracts do not expose SDK types.
+
+The fixed span vocabulary is:
+
+| Span | Kind | Attributes |
+| --- | --- | --- |
+| `aster.http.server` | server | boundary, finite method, finite route, outcome |
+| `aster.dependency.operation` | client; producer/consumer for actual broker publish/consume | boundary, finite dependency, finite operation, outcome |
+| `aster.event.produce` | producer | boundary, fixed owner, outcome |
+
+Every subgraph runs its real HTTP handler in an asynchronous server-span scope
+and supplies that active context to the existing redacting logger. Owner HTTP
+clients inject their child dependency context. PostgreSQL, Redis, broker and
+object-storage adapters reuse the same finite dependency contract. Identity
+events preserve the active validated producer `traceparent`; authenticated
+Engagement consumption starts a local trace with one producer link and executes
+its durable work and log inside that scope. Catalog events may preserve the same
+validated optional producer context. The local Catalog operator creates a
+finite producer span around commands that can append a durable event; this span
+does not record a broker dependency because the transaction writes only an
+outbox intent. The later relay's actual Kafka send retains the broker publish
+dependency span. Discovery owner reads, projection writes, checkpointing and
+logs execute inside that linked consumer observation. Catalog represents the
+network-isolated decoder handoff with one finite
+`media_worker/process` boundary without passing credentials or arbitrary
+telemetry configuration into the worker. Its one-shot coordinator uses the
+reviewed OTLP endpoint from the actual base-plus-media Compose path and a
+bounded final flush, so the boundary is exported before process shutdown when
+observability is enabled.
+
+The default active/retained trace capacity is 128 and the accepted range is
+1–512. Span values are capped at 64 characters, spans contain at most eight
+attributes and one link, and span events are disabled. Export concurrency is
+one per signal, trace batches contain at most 32 spans, and both SDK and
+repository health wrappers use finite deadlines. Export health is diagnostic;
+it does not affect readiness or product outcomes. Exact implementation evidence
+and the protected-verification boundary are indexed in
+[`evidence/phase-12/`](../../evidence/phase-12/README.md).
+
 ## SLIs
 
 Initial critical SLIs:

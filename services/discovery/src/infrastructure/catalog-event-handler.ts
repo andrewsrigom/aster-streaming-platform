@@ -40,11 +40,15 @@ export function createCatalogEventHandler(
     };
     const deadline = createAsterDeadline({ timeoutMs: 5000, parentSignal: signal });
     let observation: AsterDependencyObservation | undefined;
+    const inspection = inspectCatalogEvent(record);
     try {
       try {
         const metric = options.telemetry.startDependencyOperation({
           dependency: "broker",
           operation: "consume",
+          ...(inspection.status === "valid" && inspection.fact.traceparent !== undefined
+            ? { linkedTraceparent: inspection.fact.traceparent }
+            : {}),
         });
         if (metric.status === "started") {
           observation = metric.observation;
@@ -52,49 +56,56 @@ export function createCatalogEventHandler(
       } catch {
         /* Optional telemetry cannot decide broker acknowledgement. */
       }
-      let outcome = await consumer.handle(record, deadline.signal);
-      if (outcome !== "retry") {
-        try {
-          const next = (BigInt(offset) + 1n).toString();
-          const progress = await options.recordHandled(
-            { partition, offset: next },
-            deadline.signal,
-          );
-          if (progress.status !== "completed" || progress.value !== "checkpointed") {
+      const handle = async (): Promise<void> => {
+        let outcome = await consumer.handle(record, deadline.signal);
+        if (outcome !== "retry") {
+          try {
+            const next = (BigInt(offset) + 1n).toString();
+            const progress = await options.recordHandled(
+              { partition, offset: next },
+              deadline.signal,
+            );
+            if (progress.status !== "completed" || progress.value !== "checkpointed") {
+              outcome = "retry";
+            }
+          } catch {
             outcome = "retry";
           }
-        } catch {
-          outcome = "retry";
         }
-      }
-      const inspection = inspectCatalogEvent(record);
-      try {
-        options.logger.info({
-          event: "aster.discovery.catalog_event",
-          ...(inspection.status === "valid"
-            ? { eventId: inspection.fact.eventId, requestId: inspection.fact.correlationId }
-            : {}),
-          outcome: outcome === "retry" ? "degraded" : outcome === "quarantined" ? "rejected" : "ok",
-          properties: [["status", outcome]],
-        });
-      } catch {
-        /* No event bytes, title metadata or credentials are logged. */
-      }
-      try {
-        observation?.complete({
-          outcome:
-            outcome === "retry"
-              ? "unavailable"
-              : outcome === "quarantined"
-                ? "rejected"
-                : "success",
-        });
-      } catch {
-        /* Optional telemetry cannot decide broker acknowledgement. */
-      }
-      if (outcome === "retry" || deadline.signal.aborted) {
-        // Throwing leaves this Kafka offset uncommitted for bounded redelivery.
-        throw new Error("Catalog event requires retry.");
+        try {
+          options.logger.info({
+            event: "aster.discovery.catalog_event",
+            ...(inspection.status === "valid"
+              ? { eventId: inspection.fact.eventId, requestId: inspection.fact.correlationId }
+              : {}),
+            outcome:
+              outcome === "retry" ? "degraded" : outcome === "quarantined" ? "rejected" : "ok",
+            properties: [["status", outcome]],
+          });
+        } catch {
+          /* No event bytes, title metadata or credentials are logged. */
+        }
+        try {
+          observation?.complete({
+            outcome:
+              outcome === "retry"
+                ? "unavailable"
+                : outcome === "quarantined"
+                  ? "rejected"
+                  : "success",
+          });
+        } catch {
+          /* Optional telemetry cannot decide broker acknowledgement. */
+        }
+        if (outcome === "retry" || deadline.signal.aborted) {
+          // Throwing leaves this Kafka offset uncommitted for bounded redelivery.
+          throw new Error("Catalog event requires retry.");
+        }
+      };
+      if (observation?.run) {
+        await observation.run(handle);
+      } else {
+        await handle();
       }
     } finally {
       deadline.dispose();

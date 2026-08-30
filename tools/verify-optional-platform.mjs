@@ -135,14 +135,22 @@ export function validateObservabilityProfile(sources) {
     return [{ rule: "optional-platform", detail: "malformed or oversized observability input" }];
   }
   const source = sources["observability.yml"] ?? "";
-  const identity = serviceBlock(source, "identity");
-  if (
-    identity.trim() !==
-    "identity:\n    environment:\n      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics"
-  ) {
+  for (const service of ["identity", "catalog", "playback", "engagement"]) {
+    const block = serviceBlock(source, service);
+    if (
+      block.trim() !==
+      `${service}:\n    environment:\n      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics`
+    ) {
+      violations.push({
+        rule: "optional-platform",
+        detail: `telemetry must remain optional to ${service} readiness and startup`,
+      });
+    }
+  }
+  if (serviceBlock(source, "discovery").trim() !== "") {
     violations.push({
       rule: "optional-platform",
-      detail: "telemetry must remain optional to Identity readiness and startup",
+      detail: "the base observability overlay cannot define the opt-in Discovery service",
     });
   }
   for (const [name, memory] of [

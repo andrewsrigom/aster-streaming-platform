@@ -43,15 +43,31 @@ export async function createPlaybackService(
   resources: RuntimeResources = {},
 ) {
   const config = playbackRuntimeConfiguration(environment);
-  const logger =
-    resources.logger ??
-    createAsterLogger({ service: "playback", version: "0.0.0", environment: "local" });
   const telemetry =
     resources.telemetry ??
     createAsterTelemetry({
       serviceName: "playback",
       serviceVersion: "0.0.0",
       environment: "local",
+      ...(config.otlpMetricsEndpoint === undefined
+        ? {}
+        : {
+            export: {
+              mode: "otlp-http" as const,
+              endpoint: config.otlpMetricsEndpoint,
+              intervalMs: 5_000,
+              timeoutMs: 1_000,
+            },
+            shutdownTimeoutMs: 2_000,
+          }),
+    });
+  const logger =
+    resources.logger ??
+    createAsterLogger({
+      service: "playback",
+      version: "0.0.0",
+      environment: "local",
+      traceContextProvider: () => telemetry.activeTraceContext(),
     });
   let database: AsterPostgresAdapter;
   try {

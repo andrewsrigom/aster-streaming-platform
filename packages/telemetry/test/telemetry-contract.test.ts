@@ -18,6 +18,7 @@ import {
   AsterTelemetryConfigurationError,
   createAsterTelemetry,
   type AsterCollectedMetric,
+  type AsterTraceContext,
 } from "../src/index.js";
 import { elapsedSeconds } from "../src/infrastructure/duration.js";
 
@@ -80,6 +81,38 @@ test("rejects accessors and unknown configuration without invoking them", () => 
       return true;
     },
   );
+});
+
+test("rejects unsafe export endpoints and out-of-range trace capacity", () => {
+  for (const endpoint of [
+    "http://collector:4318/v1/traces",
+    "http://collector:4318/v1/metrics?token=private",
+    "http://user@collector:4318/v1/metrics",
+    " http://collector:4318/v1/metrics",
+  ]) {
+    assert.throws(
+      () =>
+        createAsterTelemetry({
+          serviceName: "invalid-export-test",
+          serviceVersion: "1.0.0",
+          environment: "test",
+          export: { mode: "otlp-http", endpoint, intervalMs: 1_000, timeoutMs: 50 },
+        }),
+      AsterTelemetryConfigurationError,
+    );
+  }
+  for (const maxActiveSpans of [0, 513]) {
+    assert.throws(
+      () =>
+        createAsterTelemetry({
+          serviceName: "invalid-span-capacity-test",
+          serviceVersion: "1.0.0",
+          environment: "test",
+          maxActiveSpans,
+        }),
+      AsterTelemetryConfigurationError,
+    );
+  }
 });
 
 test("freezes the public finite vocabularies", () => {
@@ -189,6 +222,258 @@ test("records bounded HTTP, dependency, process, and runtime metrics", async () 
   });
 });
 
+test("creates finite parented traces and exposes active context to correlated logs", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "trace-contract-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+    export: { mode: "none" },
+    maxActiveSpans: 8,
+  });
+
+  const inboundTraceId = "a".repeat(32);
+  const inboundSpanId = "b".repeat(16);
+  const request = telemetry.startHttpRequest({
+    method: "POST",
+    route: "/graphql",
+    traceparent: `00-${inboundTraceId}-${inboundSpanId}-01`,
+  });
+  assert.equal(request.status, "started");
+  assert.ok(request.observation.run);
+  assert.ok(request.observation.traceContext);
+  const requestContext = request.observation.traceContext();
+  assert.equal(requestContext.traceId, inboundTraceId);
+  assert.match(requestContext.spanId, /^(?!0{16}$)[a-f0-9]{16}$/u);
+  assert.equal(
+    requestContext.traceparent,
+    `00-${requestContext.traceId}-${requestContext.spanId}-01`,
+  );
+  assert.equal(telemetry.activeTraceContext(), undefined);
+
+  let dependencyContext: AsterTraceContext | undefined;
+  await request.observation.run(async () => {
+    await Promise.resolve();
+    assert.deepEqual(telemetry.activeTraceContext(), requestContext);
+    const dependency = telemetry.startDependencyOperation({
+      dependency: "postgresql",
+      operation: "query",
+    });
+    assert.equal(dependency.status, "started");
+    assert.ok(dependency.observation.traceContext);
+    dependencyContext = dependency.observation.traceContext();
+    assert.equal(dependencyContext.traceId, requestContext.traceId);
+    assert.notEqual(dependencyContext.spanId, requestContext.spanId);
+    assert.deepEqual(dependency.observation.complete({ outcome: "timeout" }), {
+      status: "completed",
+    });
+  });
+  assert.equal(telemetry.activeTraceContext(), undefined);
+  assert.deepEqual(request.observation.complete({ outcome: "success", statusCode: 200 }), {
+    status: "completed",
+  });
+
+  const collection = await telemetry.collectTraces();
+  assert.equal(collection.status, "collected");
+  assert.equal(collection.traces.length, 2);
+  assert.equal(collection.droppedSpans, 0);
+  const server = collection.traces.find((span) => span.kind === "server");
+  const dependency = collection.traces.find((span) => span.kind === "client");
+  assert.ok(server && dependency && dependencyContext);
+  assert.equal(server.name, "aster.http.server");
+  assert.equal(server.status, "ok");
+  assert.deepEqual(
+    { ...server.attributes },
+    {
+      "aster.boundary": "http_server",
+      "aster.outcome": "success",
+      "http.request.method": "POST",
+      "http.route": "/graphql",
+    },
+  );
+  assert.equal(dependency.traceId, server.traceId);
+  assert.equal(server.parentSpanId, inboundSpanId);
+  assert.equal(dependency.parentSpanId, server.spanId);
+  assert.equal(dependency.status, "error");
+  assert.deepEqual(
+    { ...dependency.attributes },
+    {
+      "aster.boundary": "dependency",
+      "aster.dependency": "postgresql",
+      "aster.operation": "query",
+      "aster.outcome": "timeout",
+    },
+  );
+  assert.doesNotMatch(JSON.stringify(collection), /request_id|trace_id|profile|title|token/u);
+  await telemetry.shutdown();
+});
+
+test("discards invalid inbound trace context without losing the HTTP observation", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "trace-input-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+    maxActiveSpans: 2,
+  });
+  const request = telemetry.startHttpRequest({
+    method: "GET",
+    route: "/health/live",
+    traceparent: `00-${"0".repeat(32)}-${"b".repeat(16)}-01`,
+  });
+  assert.equal(request.status, "started");
+  assert.ok(request.observation.traceContext);
+  assert.notEqual(request.observation.traceContext().traceId, "0".repeat(32));
+  request.observation.complete({ outcome: "success", statusCode: 200 });
+  const collection = await telemetry.collectTraces();
+  assert.equal(collection.status, "collected");
+  assert.equal(collection.traces.length, 1);
+  assert.equal(collection.traces[0]?.parentSpanId, undefined);
+  await telemetry.shutdown();
+});
+
+test("links asynchronous consumption to its producer without making it a child span", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "trace-link-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+    maxActiveSpans: 6,
+  });
+  const request = telemetry.startHttpRequest({ method: "POST", route: "/graphql" });
+  assert.equal(request.status, "started");
+  assert.ok(request.observation.run);
+  let producerContext: AsterTraceContext | undefined;
+  request.observation.run(() => {
+    const producer = telemetry.startEventProduction({ owner: "catalog" });
+    assert.equal(producer.status, "started");
+    assert.ok(producer.observation.traceContext);
+    producerContext = producer.observation.traceContext();
+    producer.observation.complete({ outcome: "success" });
+  });
+  assert.ok(producerContext);
+  const exactProducerContext = producerContext;
+  request.observation.complete({ outcome: "success", statusCode: 200 });
+
+  const consumer = telemetry.startDependencyOperation({
+    dependency: "broker",
+    operation: "consume",
+    linkedTraceparent: exactProducerContext.traceparent,
+  });
+  assert.equal(consumer.status, "started");
+  assert.ok(consumer.observation.traceContext);
+  const consumerContext = consumer.observation.traceContext();
+  assert.notEqual(consumerContext.traceId, exactProducerContext.traceId);
+  consumer.observation.complete({ outcome: "success" });
+
+  const invalidLink = telemetry.startDependencyOperation({
+    dependency: "broker",
+    operation: "consume",
+    linkedTraceparent: `00-${"0".repeat(32)}-${"b".repeat(16)}-01`,
+  });
+  assert.equal(invalidLink.status, "started");
+  invalidLink.observation.complete({ outcome: "rejected" });
+
+  const brokerPublish = telemetry.startDependencyOperation({
+    dependency: "broker",
+    operation: "publish",
+  });
+  assert.equal(brokerPublish.status, "started");
+  assert.ok(brokerPublish.observation.traceContext);
+  const brokerPublishContext = brokerPublish.observation.traceContext();
+  brokerPublish.observation.complete({ outcome: "success" });
+
+  const collection = await telemetry.collectTraces();
+  assert.equal(collection.status, "collected");
+  const produced = collection.traces.find((span) => span.spanId === exactProducerContext.spanId);
+  assert.ok(produced);
+  assert.equal(produced.name, "aster.event.produce");
+  assert.equal(produced.kind, "producer");
+  assert.deepEqual(
+    { ...produced.attributes },
+    {
+      "aster.boundary": "event_producer",
+      "aster.event.owner": "catalog",
+      "aster.outcome": "success",
+    },
+  );
+  assert.equal(produced.parentSpanId, request.observation.traceContext?.().spanId);
+  const consumed = collection.traces.find((span) => span.spanId === consumerContext.spanId);
+  assert.ok(consumed);
+  assert.equal(consumed.kind, "consumer");
+  assert.equal(consumed.parentSpanId, undefined);
+  assert.deepEqual(consumed.links, [
+    { traceId: exactProducerContext.traceId, spanId: exactProducerContext.spanId },
+  ]);
+  const unlinked = collection.traces.find(
+    (span) => span.kind === "consumer" && span.spanId !== consumerContext.spanId,
+  );
+  assert.ok(unlinked);
+  assert.equal(unlinked.links, undefined);
+  const published = collection.traces.find((span) => span.spanId === brokerPublishContext.spanId);
+  assert.ok(published);
+  assert.equal(published.name, "aster.dependency.operation");
+  assert.equal(published.kind, "producer");
+  const metrics = await telemetry.collect();
+  assert.equal(metrics.status, "collected");
+  const dependencyOutcomes = metricByName(
+    metrics.metrics,
+    ASTER_METRIC_CATALOG.dependencyOutcomes.name,
+  );
+  assert.equal(
+    dependencyOutcomes.points.reduce(
+      (total, point) => total + (typeof point.value === "number" ? point.value : 0),
+      0,
+    ),
+    3,
+  );
+  await telemetry.shutdown();
+});
+
+test("bounds active and retained spans without changing metric observations", async () => {
+  const telemetry = createAsterTelemetry({
+    serviceName: "trace-capacity-test",
+    serviceVersion: "1.0.0",
+    environment: "test",
+    export: { mode: "none" },
+    maxActiveObservations: 4,
+    maxActiveSpans: 2,
+  });
+
+  const first = telemetry.startHttpRequest({ method: "GET", route: "/health/live" });
+  const second = telemetry.startHttpRequest({ method: "GET", route: "/health/ready" });
+  const third = telemetry.startDependencyOperation({ dependency: "redis", operation: "probe" });
+  assert.equal(first.status, "started");
+  assert.equal(second.status, "started");
+  assert.equal(third.status, "started");
+  assert.ok(first.observation.traceContext);
+  assert.ok(second.observation.traceContext);
+  assert.equal(third.observation.traceContext, undefined);
+  assert.deepEqual(third.observation.complete({ outcome: "success" }), { status: "completed" });
+  assert.deepEqual(first.observation.complete({ outcome: "success", statusCode: 200 }), {
+    status: "completed",
+  });
+  assert.deepEqual(second.observation.complete({ outcome: "success", statusCode: 200 }), {
+    status: "completed",
+  });
+
+  for (let index = 0; index < 3; index++) {
+    const observation = telemetry.startDependencyOperation({
+      dependency: "redis",
+      operation: "query",
+    });
+    assert.equal(observation.status, "started");
+    observation.observation.complete({ outcome: "success" });
+  }
+  const traces = await telemetry.collectTraces();
+  assert.equal(traces.status, "collected");
+  assert.equal(traces.traces.length, 2);
+  assert.equal(traces.droppedSpans, 4);
+  assert.ok(traces.traces.every((span) => span.name === "aster.dependency.operation"));
+  await telemetry.shutdown();
+  assert.deepEqual(await telemetry.collectTraces(), {
+    status: "unavailable",
+    reason: "telemetry_closed",
+  });
+});
+
 test("bounds hostile dimensions and active observation capacity", async () => {
   const telemetry = createAsterTelemetry({
     serviceName: "bounds-test",
@@ -201,6 +486,10 @@ test("bounds hostile dimensions and active observation capacity", async () => {
     telemetry.startHttpRequest({ method: "TRACE", route: "/users/secret" } as never),
     { status: "rejected", reason: "invalid_dimension" },
   );
+  assert.deepEqual(telemetry.startEventProduction({ owner: "identity" } as never), {
+    status: "rejected",
+    reason: "invalid_dimension",
+  });
   let invoked = false;
   const proxiedInput = new Proxy(
     { method: "GET", route: "/health/live" },
@@ -236,7 +525,7 @@ test("bounds hostile dimensions and active observation capacity", async () => {
   });
   assert.equal(invoked, false);
   const health = telemetry.exportHealth();
-  assert.equal(health.droppedObservations, 3);
+  assert.equal(health.droppedObservations, 4);
   assert.equal(Object.isFrozen(health), true);
   await telemetry.shutdown();
 });
@@ -616,9 +905,9 @@ test("bounds a stalled OTLP exporter and records export health", async () => {
   assert.ok(performance.now() - started < 1_000);
   assert.deepEqual(await telemetry.collect(), { status: "unavailable", reason: "remote_export" });
   assert.deepEqual(telemetry.exportHealth(), {
-    attempts: 1,
+    attempts: 2,
     successes: 0,
-    failures: 1,
+    failures: 2,
     droppedObservations: telemetry.exportHealth().droppedObservations,
     lastResult: "failure",
   });
@@ -638,12 +927,19 @@ test("bounds a stalled OTLP exporter and records export health", async () => {
 });
 
 test("exports successfully and shares concurrent bounded shutdown", async () => {
-  let receivedRequests = 0;
+  const received: Array<Readonly<{ body: string; contentType: string; path: string }>> = [];
   const server = createServer((request, response) => {
-    receivedRequests += 1;
-    request.resume();
-    response.statusCode = 200;
-    response.end();
+    const chunks: Buffer[] = [];
+    request.on("data", (chunk: Buffer) => chunks.push(chunk));
+    request.on("end", () => {
+      received.push({
+        body: Buffer.concat(chunks).toString("utf8"),
+        contentType: request.headers["content-type"] ?? "",
+        path: request.url ?? "",
+      });
+      response.statusCode = 200;
+      response.end();
+    });
   });
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
@@ -666,6 +962,12 @@ test("exports successfully and shares concurrent bounded shutdown", async () => 
     },
     shutdownTimeoutMs: 500,
   });
+  const dependency = telemetry.startDependencyOperation({
+    dependency: "postgresql",
+    operation: "query",
+  });
+  assert.equal(dependency.status, "started");
+  dependency.observation.complete({ outcome: "success" });
 
   const firstFlush = telemetry.forceFlush();
   const secondFlush = telemetry.forceFlush();
@@ -673,10 +975,26 @@ test("exports successfully and shares concurrent bounded shutdown", async () => 
     { status: "completed" },
     { status: "completed" },
   ]);
-  assert.equal(receivedRequests, 1);
+  assert.deepEqual(received.map((request) => request.path).sort(), ["/v1/metrics", "/v1/traces"]);
+  assert.ok(received.every((request) => request.contentType === "application/json"));
+  const traceRequest = received.find((request) => request.path === "/v1/traces");
+  assert.ok(traceRequest);
+  const tracePayload: unknown = JSON.parse(traceRequest.body);
+  const serializedTrace = JSON.stringify(tracePayload);
+  for (const expected of [
+    "service.name",
+    "export-success-test",
+    "aster.dependency.operation",
+    "postgresql",
+    "query",
+    "success",
+  ]) {
+    assert.match(serializedTrace, new RegExp(expected, "u"));
+  }
+  assert.doesNotMatch(serializedTrace, /token|cookie|request_id|profile|title|graphql.document/u);
   assert.deepEqual(telemetry.exportHealth(), {
-    attempts: 1,
-    successes: 1,
+    attempts: 2,
+    successes: 2,
     failures: 0,
     droppedObservations: 0,
     lastResult: "success",

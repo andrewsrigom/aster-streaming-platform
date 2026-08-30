@@ -1,5 +1,6 @@
 import { localCatalogDatabase } from "./identity/local-configuration.js";
 import { localEventDeliveryEnabled } from "@aster/event-delivery";
+import { isAsterOtlpMetricsEndpoint } from "@aster/telemetry";
 
 const fields = new Set([
   "ASTER_ENVIRONMENT",
@@ -32,6 +33,7 @@ export function catalogRuntimeConfiguration(
   const discoveryRead = environment["ASTER_CATALOG_DISCOVERY_READ_ENABLED"];
   const cacheEnabled = environment["ASTER_CATALOG_CACHE_ENABLED"];
   const redisUrl = environment["REDIS_URL"];
+  const otlpMetricsEndpoint = environment["ASTER_OTLP_METRICS_ENDPOINT"];
   const discoveryDatabaseConfigured =
     environment["ASTER_CATALOG_DISCOVERY_READER_DATABASE_URL"] !== undefined ||
     environment["ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD"] !== undefined;
@@ -49,7 +51,8 @@ export function catalogRuntimeConfiguration(
     (cacheEnabled !== undefined && cacheEnabled !== "true" && cacheEnabled !== "false") ||
     (cacheEnabled === "true" && (typeof redisUrl !== "string" || redisUrl.length === 0)) ||
     (discoveryRead === "true" && routerTrust !== "true") ||
-    (discoveryRead !== "true" && discoveryDatabaseConfigured)
+    (discoveryRead !== "true" && discoveryDatabaseConfigured) ||
+    (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint))
   ) {
     throw new Error("Invalid Catalog listener configuration.");
   }
@@ -68,6 +71,7 @@ export function catalogRuntimeConfiguration(
     ...(engagementRead === "true" ? { engagementRead: true as const } : {}),
     discoveryRead: false as const,
     cache: false as const,
+    ...(otlpMetricsEndpoint === undefined ? {} : { otlpMetricsEndpoint }),
   };
   const cache =
     cacheEnabled === "true"

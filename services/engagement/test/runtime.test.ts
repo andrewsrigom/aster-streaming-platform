@@ -158,6 +158,13 @@ test("Engagement runtime requires explicit local activation, fixed owner credent
     },
     { port: 3400, distributedRateLimit: false },
   );
+  assert.equal(
+    engagementRuntimeConfiguration({
+      ...environment,
+      ASTER_OTLP_METRICS_ENDPOINT: "http://collector:4318/v1/metrics",
+    }).otlpMetricsEndpoint,
+    "http://collector:4318/v1/metrics",
+  );
   assert.deepEqual(
     engagementRuntimeConfiguration({
       ...environment,
@@ -191,6 +198,7 @@ test("Engagement runtime requires explicit local activation, fixed owner credent
     { ASTER_ENGAGEMENT_HTTP_PORT: "3400.0" },
     { ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "sometimes" },
     { ASTER_ENGAGEMENT_RATE_LIMIT_ENABLED: "true", REDIS_URL: "" },
+    { ASTER_OTLP_METRICS_ENDPOINT: "http://user@collector:4318/v1/metrics" },
   ]) {
     assert.throws(() => engagementRuntimeConfiguration({ ...environment, ...change }));
   }

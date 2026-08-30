@@ -2,13 +2,16 @@
 
 Status: P11-R01 is [released](safe-read-release.txt) through reviewed evidence
 head `6d709b4`, protected run `33284610557`, squash main `ebdcb18` and successful
-exact-main run `33285339274`. Phase 11 as a whole remains in progress. P11-R05
+exact-main run `33285339274`. P11-R05
 passed confirmation and protected run `33289750207`, then PR42 squash-merged as
 main `59600ae` with the reviewed tree; exact-main run `33290477608` passed every
 required job. P11-R08/R09 evidence head `371ba55` passed protected run
 `33291705269` and clean confirmation after one resolved cleanup finding. PR43
 squash-merged as tree-identical main `bdbe2e0`; exact-main run `33292389504`
-passed every required job and releases the private failure laboratory.
+passed every required job and releases the private failure laboratory. P11-R10
+evidence head `fdaeee9` passed protected run `33295744010` and clean
+confirmation. PR44 squash-merged as tree-identical main `834bf15`; exact-main
+run `33296443777` passed every required job and releases Phase11.
 
 ## Current work item
 
@@ -56,7 +59,9 @@ linked by those artifacts. No requirement is marked non-applicable.
 
 Breaker metrics, behavior and the tools-only failure laboratory are released.
 The five game days, saturation, fallback/no-amplification proof and complete
-operator procedures are published on PR44. Initial review's two retry-guard
+operator procedures are released through PR44. Initial review's two retry-guard
 findings and confirmation bypasses are corrected at executable source
 `aac04c7`, tree `c2a6c93`. Its local Router4/4, platform67/67 and affected17/17
-candidate gates pass. Protected exact-head confirmation/CI and release remain.
+candidate gates pass. Protected exact-head run `33295744010`, clean confirmation,
+tree-identical squash main `834bf15` and exact-main run `33296443777` close the
+phase.

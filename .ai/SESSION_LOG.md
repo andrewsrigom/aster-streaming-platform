@@ -91,6 +91,66 @@ Append new entries at the top. Keep entries factual and concise.
 - Preserved P12-R01 work in stash
   `p12-trace-observability-wip-before-p11-final-review-3`; it remains the one
   unpublished dependent.
+- Implemented repository-owned OpenTelemetry traces and active context behind
+  `@aster/telemetry`, with fixed server/dependency spans, bounded retention,
+  validated W3C parents, one async link and no SDK types outside the owner.
+- Composed all five real HTTP handlers and loggers, child-context owner clients,
+  authenticated event links and one finite `media_worker/process` coordinator
+  boundary without weakening decoder isolation.
+- Added exact `@opentelemetry/exporter-trace-otlp-http@0.221.0`, bounded OTLP
+  metrics/traces, health, queue, timeout, flush and shutdown behavior.
+- P12 source rebased and amended as `2cd63a3`, tree `b2bb86b`, passes
+  telemetry18/18 and the
+  representative HTTP/event/owner/media suite28/28. Full workspace lint,
+  formatting, focused types and staged secret scan pass. The changed gate's
+  formatting/lint findings were corrected. A clean affected repeat passed
+  73/73 tasks with43 cached in54.325 seconds before the fixture assertion was
+  added. Its fixture contract then passed11/11 plus build and lint.
+- The disposable telemetry fixture now reads only the exact owned Collector's
+  bounded sanitized log and requires real `aster.http.server` and
+  `aster.dependency.operation` exports. One local run stopped before creating
+  resources because Docker returned no Linux engine; cleanup reported0. Hosted
+  PR CI must execute the real Collector proof; do not repeat the local failure
+  unchanged.
+- Final source candidate passes73/73 tasks with57 cached in47.814 seconds.
+- P11-R10 passed protected exact-head run `33295744010` and clean confirmation,
+  PR44 squash-merged as tree-identical main `834bf15`, and exact-main run
+  `33296443777` passed every required job. Phase11 is released.
+- Published P12-R01 as PR45 at first evidence head `eddbe17`. Run
+  `33297164589` passed source quality and the real integration step, including
+  the disposable Collector scenario, but Local platform rejected the base
+  observability overlay because it defined opt-in Discovery without its overlay.
+- Initial review discussions `3888669316` and `3888669317` found that Engagement
+  durable consumption executed outside its linked observation and Identity
+  emitted a synthetic event parent instead of its active request span.
+- Corrected source `82e9a61`, tree `a6a1081`, batches all three remediations.
+  Focused owner tests pass11/11, optional-platform policy23/23, daemonless
+  Compose rendering and the corrected affected gate73/73 with51 cached in
+  55.776 seconds pass.
+- Protected run `33297684108` passed every required job at evidence head
+  `5385d54`, including the real Collector integration and Local platform.
+- Confirmation discussions `3888694669` and `3888694673` found two remaining
+  boundaries: one-shot media processing discarded its spans at shutdown, and
+  Discovery Catalog consumption ran durable work/logging outside its span and
+  could not preserve a validated producer link.
+- Source `a2015d9`, tree `51aaa29`, configures the one-shot coordinator from the
+  reviewed OTLP endpoint with a one-second final flush, accepts the additive
+  optional Catalog trace context, and scopes Discovery handling inside the
+  linked observation. Event delivery23/23, focused Discovery3/3 and affected
+  gate73/73 with44 cached in54.527 seconds pass.
+- Protected run `33298943743` passed every job at exact head `e5f93e1`.
+  Blocker-focused confirmation discussions `3888781189` and `3888781191` found
+  that the actual base-plus-media candidate omitted the one-shot exporter
+  endpoint and real Catalog publication/retirement events still lacked active
+  producer context.
+- Exact source `03abe8a`, tree `b1474c7`, passes the exporter endpoint through
+  the real media path and gives the local Catalog operator a finite trace-only
+  `aster.event.produce` scope. Durable outbox intent no longer pretends a broker
+  dependency; the later relay retains actual Kafka publish telemetry.
+- Telemetry18/18, Catalog247/247, event delivery23/23 and media runner3/3 pass.
+  The first affected gate exposed only one full-interface Identity fixture that
+  needed the additive method forwarding; after amendment, the complete affected
+  gate passes73/73 with53 cached in53.307 seconds.
 
 ### Evidence
 
@@ -101,12 +161,14 @@ Append new entries at the top. Keep entries factual and concise.
   gate.
 - `evidence/phase-11/game-days.md`, `bulkhead-saturation.txt` and
   `retry-amplification.txt` record the P11-R10 candidate.
+- `evidence/phase-12/README.md` indexes the exact trace, continuity, exporter
+  failure and cardinality/privacy implementation artifacts.
 
 ### Next action
 
-Publish the single PR44 correction, resolve current discussions and request
-exact-head confirmation. Resume P12-R01 locally while CI runs. Merge and verify
-P11 first; do not publish the dependent before that release.
+Publish the latest P12-R01 evidence head once, resolve confirmation discussions
+`3888781189` and `3888781191`, require protected exact-head CI, then request one
+blocker-focused confirmation review.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

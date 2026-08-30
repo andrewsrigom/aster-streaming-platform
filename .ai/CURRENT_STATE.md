@@ -6,13 +6,16 @@ Last updated: 2026-08-30
 
 **Phase 12 — Observability, SLIs, and SLOs**
 
-Status: **IN_PROGRESS**. Phase10, P11-R01 and P11-R05 are released. P11-R05
+Status: **IN_PROGRESS**. Phases00–11 are released. P11-R05
 passed exact-head confirmation and protected run `33289750207`, then PR42
 squash-merged as main `59600aea669d34ec727c1f243d162608261295aa`; exact-main
 run `33290477608` passed every required job. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run `33291705269`, PR43
-squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10 is
-frozen `WAITING_EXTERNAL` on PR44 after exact-head confirmation discussion
+squash main `bdbe2e0` and successful exact-main run `33292389504`. P11-R10
+passed exact-head CI `33295744010` and clean confirmation at evidence head
+`fdaeee9`, then PR44 squash-merged as tree-identical main `834bf15`. Exact-main
+run `33296443777` passed every required job and releases Phase11. Its review history
+included confirmation discussion
 `3888512532` proved that a YAML Unicode escape could hide a Router `retry` key.
 The first parser-based correction passed locally but failed protected run
 `33294397540` because a dependency-free policy job correctly had no install.
@@ -21,9 +24,24 @@ without a dependency. Final confirmation then found that Router configuration
 expansion could still materialize a retry key. A decoded expansion bypass then
 proved that the marker itself could be YAML-escaped. Exact source `aac04c7`, tree
 `c2a6c93`, rejects raw and decoded expansions inside traffic shaping; Router4/4,
-platform67/67 and the affected17/17 gate pass. Only protected CI, confirmation
-and release remain. P12-R01 is the
-one unpublished dependent. Full Phase00–14 goal stays active.
+platform67/67 and the affected17/17 gate pass. P12-R01 is active on PR45.
+First evidence head `eddbe17` passed source quality and the real integration
+step in run `33297164589`, but Local platform exposed an invalid base
+observability overlay and initial review found two async trace-continuity
+defects. Corrected source `82e9a61`, tree `a6a1081`, fixed those three blockers,
+and protected run `33297684108` passed every required job. Confirmation then
+found discussions `3888694669` and `3888694673`: the one-shot media coordinator
+discarded its spans, and Discovery Catalog consumption executed outside its
+consumer observation without an optional producer link. Source `a2015d9`
+corrected both, and protected run `33298943743` passed exact head `e5f93e1`.
+Blocker-focused confirmation discussions `3888781189` and `3888781191` then
+found the actual media candidate omitted the exporter endpoint and real Catalog
+events lacked active producer context. Source `03abe8a`, tree `b1474c7`, wires
+the exact media path and adds a finite trace-only Catalog producer span without
+false broker telemetry. Telemetry18/18, Catalog247/247, event delivery23/23,
+media runner3/3 and affected gate73/73 with53 cached in53.307 seconds pass. New
+exact-head CI and blocker-focused confirmation remain before verification. Full
+Phase00–14 goal stays active.
 
 ## Verified
 
@@ -54,18 +72,23 @@ and Catalog/Playback isolation pass their recorded Web110/110, browser8/8 and
 
 ## Current work
 
-P12-R01 inventories and standardizes current trace boundaries. Existing metrics,
-structured logs, Router-to-owner correlation, validated event `traceparent` and
-bounded exporter failure are the baseline. The missing slice is a
-repository-owned tracing contract and adapter that consistently creates finite,
-privacy-safe server, dependency, event and media spans while driving logger
-context. No hosted backend, dashboard, SLO or product contract is added here.
+P12-R01 has a corrected candidate at source `03abe8a`, tree `b1474c7`. The
+repository-owned adapter creates finite privacy-safe server, dependency and
+event-producer spans, drives logger context, propagates child owner context,
+links async events, bounds the media coordinator and exports metrics/traces
+through finite OTLP queues and deadlines. Evidence is indexed under
+`evidence/phase-12/`. Protected run `33298943743` passed the previous exact head;
+its blocker-focused confirmation found the actual media endpoint and real
+Catalog producer gaps. Both are corrected without claiming broker I/O for
+durable outbox intent. The local candidate gate passes73/73 with53 cached in
+53.307 seconds. New protected CI and blocker-focused confirmation are pending;
+no hosted backend, dashboard, SLO or product contract is claimed by this slice.
 
-P11-R10 remains frozen on PR44 at executable source `aac04c7`. Superseded run
+P11-R10 is released at tree-identical main `834bf15` and successful exact-main
+run `33296443777`. Superseded run
 `33293548409` predates the correction and run `33294397540` exposed the removed
 dependency. Confirmation on `1a2c3f2` exposed the now-rejected configuration
-expansion. The dependent may advance locally but cannot publish, merge or
-release first.
+expansion.
 
 P10's first slice defines and implements the Catalog public-title cache boundary.
 PostgreSQL remains the visibility and rights authority; a cache hit may reuse only
@@ -263,8 +286,9 @@ adapter/transaction saturation passes 28/28 and the new Web/Router contracts
 pass 16/16. Bulkhead, fallback, retry-amplification and five game-day artifacts
 plus complete Redis/Discovery/PostgreSQL/broker/media runbooks are recorded.
 Web112/112 and Router4/4 pass. The final affected candidate passes 17/17 tasks,
-five cached, in 48.053 seconds. PR44 is published; protected exact-head CI,
-confirmation and release remain.
+five cached, in 48.053 seconds. Protected exact-head run `33295744010`, clean
+confirmation, tree-identical squash main `834bf15` and exact-main run
+`33296443777` release P11-R10 and Phase11.
 
 ## Historical Phase 09 corrections
 
@@ -312,15 +336,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R10 game days, bulkhead/fallback/amplification proof, runbook closeout and
-the structural retry-guard correction are implemented and published; protected
-confirmation/release remains.
-Hosted deployment remains Phase14.
+Phase12 product/golden-signal completion, formal SLIs/SLOs, dashboards, alerts,
+diagnostic exercises, sampling/retention and operational overview remain.
+Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-Execute P12-R01 locally while PR44 runs protected CI and one confirmation; do
-not publish the dependent before P11-R10 releases.
+Publish the corrected P12-R01 evidence head, then require protected
+CI and the defined initial/confirmation review before merge.
 
 ## Runtime and recovery
 

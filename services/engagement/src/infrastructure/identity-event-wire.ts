@@ -100,6 +100,9 @@ export function createIdentityEventInspector(credential: string) {
           occurredAt: Date.parse(event.occurredAt) / 1000,
           deleted: event.eventType === "identity.profile-deleted",
           correlationId: event.correlationId,
+          ...(event.trace.traceparent === undefined
+            ? {}
+            : { traceparent: event.trace.traceparent }),
         }),
       };
     } catch {

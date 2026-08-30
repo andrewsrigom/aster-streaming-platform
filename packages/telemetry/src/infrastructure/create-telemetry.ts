@@ -19,6 +19,7 @@ import type {
   AsterCollectedMetricPoint,
   AsterDependencyCompletion,
   AsterDependencyObservationInput,
+  AsterEventProductionObservationInput,
   AsterDiscoveryRailMetricInput,
   AsterDiscoverySearchSampleInput,
   AsterHttpCompletion,
@@ -29,11 +30,14 @@ import type {
   AsterObservationCompletionResult,
   AsterRecordMetricResult,
   AsterStartDependencyObservationResult,
+  AsterStartEventProductionObservationResult,
   AsterStartHttpObservationResult,
   AsterTelemetry,
   AsterTelemetryExportHealth,
   AsterTelemetryOperationResult,
   AsterTelemetryOptions,
+  AsterTraceCollectionResult,
+  AsterTraceContext,
 } from "../ports/telemetry-contract.js";
 import {
   ASTER_CACHE_FAMILIES,
@@ -52,6 +56,7 @@ import {
 import { elapsedSeconds } from "./duration.js";
 import { HealthTrackingExporter, type ExportAttemptObserver } from "./health-tracking-exporter.js";
 import { ManualMetricReader } from "./manual-metric-reader.js";
+import { AsterTraceManager } from "./trace-manager.js";
 import {
   ASTER_METRIC_CATALOG,
   CACHE_PAYLOAD_BUCKETS_BYTES,
@@ -62,6 +67,7 @@ import {
 import {
   parseDependencyCompletion,
   parseDependencyObservationInput,
+  parseEventProductionObservationInput,
   parseHttpCompletion,
   parseHttpObservationInput,
   validateTelemetryOptions,
@@ -400,8 +406,16 @@ function joinOperation(
   });
 }
 
+async function settleTelemetryOperations(operations: readonly Promise<void>[]): Promise<void> {
+  const results = await Promise.allSettled(operations);
+  if (results.some((result) => result.status === "rejected")) {
+    throw new Error("Telemetry operation failed.");
+  }
+}
+
 class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObserver {
   private readonly provider: MeterProvider;
+  private readonly traces: AsterTraceManager;
   private readonly runtimeInstrumentation: RuntimeNodeInstrumentation;
   private readonly manualReader: ManualMetricReader | undefined;
   private readonly shutdownTimeoutMs: number;
@@ -441,6 +455,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     this.shutdownTimeoutMs = options.shutdownTimeoutMs;
     this.maxActiveObservations = options.maxActiveObservations;
     this.clock = systemClock();
+    this.traces = new AsterTraceManager(options, this);
 
     const resource = resourceFromAttributes({
       "service.name": options.serviceName,
@@ -784,6 +799,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       "http.route": parsedInput.route,
     });
     this.httpActive.add(1, activeAttributes);
+    const traceLease = this.traces.startHttp(parsedInput);
     let completed = false;
     return Object.freeze({
       status: "started",
@@ -813,8 +829,10 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
             "http.response.status_class": statusClass(parsedCompletion.statusCode),
             "aster.outcome": parsedCompletion.outcome,
           });
+          traceLease?.complete(parsedCompletion.outcome);
           return Object.freeze({ status: "completed" });
         },
+        ...(traceLease ? { run: traceLease.run, traceContext: traceLease.context } : {}),
       }),
     });
   }
@@ -840,6 +858,7 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
       "aster.operation": parsedInput.operation,
     });
     this.dependencyActive.add(1, activeAttributes);
+    const traceLease = this.traces.startDependency(parsedInput);
     let completed = false;
     return Object.freeze({
       status: "started",
@@ -870,8 +889,52 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
           };
           this.dependencyDuration.record(duration, completedAttributes);
           this.dependencyOutcomes.add(1, completedAttributes);
+          traceLease?.complete(parsedCompletion.outcome);
           return Object.freeze({ status: "completed" });
         },
+        ...(traceLease ? { run: traceLease.run, traceContext: traceLease.context } : {}),
+      }),
+    });
+  }
+
+  startEventProduction(
+    input: AsterEventProductionObservationInput,
+  ): AsterStartEventProductionObservationResult {
+    if (this.closed) {
+      return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+    }
+    const parsedInput = parseEventProductionObservationInput(input);
+    if (parsedInput === undefined) {
+      this.recordDrop("invalid_dimension");
+      return Object.freeze({ status: "rejected", reason: "invalid_dimension" });
+    }
+    if (!this.acquireObservation()) {
+      return Object.freeze({ status: "rejected", reason: "capacity_exceeded" });
+    }
+
+    const traceLease = this.traces.startEventProduction(parsedInput);
+    let completed = false;
+    return Object.freeze({
+      status: "started",
+      observation: Object.freeze({
+        complete: (completion: AsterDependencyCompletion): AsterObservationCompletionResult => {
+          if (completed) {
+            return Object.freeze({ status: "already_completed" });
+          }
+          if (this.closed) {
+            return Object.freeze({ status: "rejected", reason: "telemetry_closed" });
+          }
+          const parsedCompletion = parseDependencyCompletion(completion);
+          if (parsedCompletion === undefined) {
+            this.recordDrop("invalid_completion");
+            return Object.freeze({ status: "rejected", reason: "invalid_completion" });
+          }
+          completed = true;
+          this.releaseObservation();
+          traceLease?.complete(parsedCompletion.outcome);
+          return Object.freeze({ status: "completed" });
+        },
+        ...(traceLease ? { run: traceLease.run, traceContext: traceLease.context } : {}),
       }),
     });
   }
@@ -1005,6 +1068,14 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     }
   }
 
+  activeTraceContext(): AsterTraceContext | undefined {
+    return this.traces.activeContext();
+  }
+
+  collectTraces(): Promise<AsterTraceCollectionResult> {
+    return this.traces.collect();
+  }
+
   exportHealth(): AsterTelemetryExportHealth {
     return frozenHealth(
       this.exportAttemptCount,
@@ -1027,7 +1098,10 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     }
     const failuresBeforeFlush = this.exportFailureCount;
     const currentOperation = boundedOperation(
-      this.provider.forceFlush({ timeoutMillis: this.shutdownTimeoutMs }),
+      settleTelemetryOperations([
+        this.provider.forceFlush({ timeoutMillis: this.shutdownTimeoutMs }),
+        this.traces.forceFlush(),
+      ]),
       this.shutdownTimeoutMs,
     ).then((result): AsterTelemetryOperationResult => {
       if (result.status === "completed" && this.exportFailureCount > failuresBeforeFlush) {
@@ -1058,7 +1132,10 @@ class AsterTelemetryImplementation implements AsterTelemetry, ExportAttemptObser
     this.closed = true;
     this.runtimeInstrumentation.disable();
     const currentOperation = boundedOperation(
-      this.provider.shutdown({ timeoutMillis: this.shutdownTimeoutMs }),
+      settleTelemetryOperations([
+        this.provider.shutdown({ timeoutMillis: this.shutdownTimeoutMs }),
+        this.traces.shutdown(),
+      ]),
       this.shutdownTimeoutMs,
     );
     this.shutdownOperation = currentOperation.then((result) => {

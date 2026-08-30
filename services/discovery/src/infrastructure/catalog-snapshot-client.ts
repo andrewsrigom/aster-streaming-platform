@@ -78,6 +78,16 @@ function completeCatalogObservation(
   }
 }
 
+function outgoingTraceparent(
+  observation: AsterDependencyObservation | undefined,
+): string | undefined {
+  try {
+    return observation?.traceContext?.().traceparent;
+  } catch {
+    return undefined;
+  }
+}
+
 function recordCircuitBreaker(
   telemetry: Pick<AsterTelemetry, "recordCircuitBreaker"> | undefined,
   operation: AsterCircuitBreakerOperation,
@@ -262,6 +272,7 @@ export function createCatalogSnapshotClient(
                 let incoming: IncomingMessage | undefined;
                 let settled = false;
                 const observation = startCatalogObservation(options.telemetry);
+                const traceparent = outgoingTraceparent(observation);
                 const finish = (
                   attemptResult: AsterSafeReadAttemptResult<T>,
                   outcome: AsterObservationOutcome,
@@ -300,6 +311,7 @@ export function createCatalogSnapshotClient(
                       signal: attemptSignal,
                       maxHeaderSize: 8192,
                       headers: {
+                        ...(traceparent ? { traceparent } : {}),
                         host: "catalog:3200",
                         origin: "http://discovery:3500",
                         "x-aster-csrf": "1",

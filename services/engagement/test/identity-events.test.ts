@@ -129,6 +129,10 @@ test("signature is checked before JSON and binds key, payload and environment", 
   const inspect = createIdentityEventInspector(eventCredential);
   const record = signedIdentityRecord();
   assert.equal(inspect(record).status, "valid");
+  const traceparent = `00-${"a".repeat(32)}-${"b".repeat(16)}-01`;
+  const traced = inspect(signedIdentityRecord({ ...identityEnvelope(), trace: { traceparent } }));
+  assert.equal(traced.status, "valid");
+  assert.equal(traced.fact.traceparent, traceparent);
   for (const changed of [
     { ...record, key: Buffer.from(eventId(9)) },
     { ...record, value: Buffer.from("invalid json") },

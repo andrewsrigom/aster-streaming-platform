@@ -5,6 +5,11 @@ import type {
   ProgressRequest,
   ProgressResult,
 } from "../application/progress-ports.js";
+import type {
+  AsterDependencyObservation,
+  AsterObservationOutcome,
+  AsterTelemetry,
+} from "@aster/telemetry";
 import { progressIdentifier } from "../domain/progress.js";
 
 type Owner = "identity" | "playback" | "catalog";
@@ -74,6 +79,48 @@ function outcome(value: unknown): ProgressResult<never> {
   }
 }
 
+function startOwnerObservation(
+  telemetry: Pick<AsterTelemetry, "startDependencyOperation"> | undefined,
+  owner: Owner,
+): AsterDependencyObservation | undefined {
+  try {
+    const started = telemetry?.startDependencyOperation({ dependency: owner, operation: "read" });
+    return started?.status === "started" ? started.observation : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function completeOwnerObservation(
+  observation: AsterDependencyObservation | undefined,
+  result: ProgressResult<unknown>,
+): void {
+  const outcome: AsterObservationOutcome =
+    result.status === "cancelled"
+      ? "cancelled"
+      : result.status === "unavailable"
+        ? "unavailable"
+        : result.status === "backpressure" || result.status === "invalid_input"
+          ? "rejected"
+          : "success";
+  try {
+    observation?.complete({ outcome });
+  } catch {
+    // Optional telemetry cannot decide an owner read.
+  }
+}
+
+function outgoingTraceparent(
+  observation: AsterDependencyObservation | undefined,
+  fallback: string | undefined,
+): string | undefined {
+  try {
+    return observation?.traceContext?.().traceparent ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 /** Fixed owner reads; no endpoint, headers, redirects or retries from application input. */
 export function createProgressOwnerClients(
   options: Readonly<{
@@ -81,6 +128,7 @@ export function createProgressOwnerClients(
     playbackCredential: string;
     catalogCredential: string;
     request?: Send;
+    telemetry?: Pick<AsterTelemetry, "startDependencyOperation">;
   }>,
 ): Pick<ProgressPorts, "identity" | "playback"> & Readonly<{ catalog: ProgressCatalog }> {
   if (
@@ -128,6 +176,8 @@ export function createProgressOwnerClients(
     active[owner]++;
     const contract = CONTRACTS[owner];
     const signal = AbortSignal.any([context.signal, AbortSignal.timeout(2000)]);
+    const observation = startOwnerObservation(options.telemetry, owner);
+    const traceparent = outgoingTraceparent(observation, context.traceparent);
     try {
       return await new Promise((resolve) => {
         let outgoing: ClientRequest | undefined;
@@ -141,6 +191,7 @@ export function createProgressOwnerClients(
           signal.removeEventListener("abort", fail);
           incoming?.destroy();
           outgoing?.destroy();
+          completeOwnerObservation(observation, value);
           resolve(value);
         };
         const fail = () => {
@@ -173,7 +224,7 @@ export function createProgressOwnerClients(
                 "x-aster-csrf": "1",
                 "x-aster-engagement-credential": credentials[owner],
                 "x-aster-correlation-id": context.correlationId,
-                ...(context.traceparent ? { traceparent: context.traceparent } : {}),
+                ...(traceparent ? { traceparent } : {}),
                 ...(owner === "identity" && credential
                   ? { cookie: `aster_local_session=${credential}` }
                   : {}),

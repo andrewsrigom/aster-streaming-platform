@@ -77,15 +77,31 @@ export async function createDiscoveryService(
   resources: RuntimeResources = {},
 ) {
   const config = discoveryRuntimeConfiguration(environment);
-  const logger =
-    resources.logger ??
-    createAsterLogger({ service: "discovery", version: "0.0.0", environment: "local" });
   const telemetry =
     resources.telemetry ??
     createAsterTelemetry({
       serviceName: "discovery",
       serviceVersion: "0.0.0",
       environment: "local",
+      ...(config.otlpMetricsEndpoint === undefined
+        ? {}
+        : {
+            export: {
+              mode: "otlp-http" as const,
+              endpoint: config.otlpMetricsEndpoint,
+              intervalMs: 5_000,
+              timeoutMs: 1_000,
+            },
+            shutdownTimeoutMs: 2_000,
+          }),
+    });
+  const logger =
+    resources.logger ??
+    createAsterLogger({
+      service: "discovery",
+      version: "0.0.0",
+      environment: "local",
+      traceContextProvider: () => telemetry.activeTraceContext(),
     });
   const databases: AsterPostgresAdapter[] = [];
   let runtimeDatabase: AsterPostgresAdapter;

@@ -53,15 +53,31 @@ export async function createEngagementService(
   resources: RuntimeResources = {},
 ) {
   const config = engagementRuntimeConfiguration(environment);
-  const logger =
-    resources.logger ??
-    createAsterLogger({ service: "engagement", version: "0.0.0", environment: "local" });
   const telemetry =
     resources.telemetry ??
     createAsterTelemetry({
       serviceName: "engagement",
       serviceVersion: "0.0.0",
       environment: "local",
+      ...(config.otlpMetricsEndpoint === undefined
+        ? {}
+        : {
+            export: {
+              mode: "otlp-http" as const,
+              endpoint: config.otlpMetricsEndpoint,
+              intervalMs: 5_000,
+              timeoutMs: 1_000,
+            },
+            shutdownTimeoutMs: 2_000,
+          }),
+    });
+  const logger =
+    resources.logger ??
+    createAsterLogger({
+      service: "engagement",
+      version: "0.0.0",
+      environment: "local",
+      traceContextProvider: () => telemetry.activeTraceContext(),
     });
   let database: AsterPostgresAdapter;
   try {
@@ -122,6 +138,7 @@ export async function createEngagementService(
         identityCredential: await loadLocalEngagementReadCredential("identity"),
         playbackCredential: await loadLocalEngagementReadCredential("playback"),
         catalogCredential: await loadLocalEngagementReadCredential("catalog"),
+        telemetry,
       });
     const watchlistPorts = {
       identity: owners.identity,

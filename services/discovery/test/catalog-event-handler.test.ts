@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
+import { AsyncLocalStorage } from "node:async_hooks";
 import test from "node:test";
+import type { AsterDependencyObservationInput } from "@aster/telemetry";
 import type { CatalogEventProjector } from "../src/application/catalog-event-ports.js";
 import { createCatalogEventHandler } from "../src/infrastructure/catalog-event-handler.js";
 
 const id = (value: number) => `00000000-0000-4000-8000-${String(value).padStart(12, "0")}`;
 const encoder = new TextEncoder();
 const now = 1_700_000_000;
+const traceparent = `00-${"a".repeat(32)}-${"b".repeat(16)}-01`;
 const event = {
   eventId: id(2),
   eventType: "catalog.title-published",
@@ -15,7 +18,7 @@ const event = {
   aggregate: { type: "Title", id: id(1), version: 7 },
   correlationId: id(3),
   causationId: id(4),
-  trace: {},
+  trace: { traceparent },
   payload: { titleId: id(1), publicationId: id(5), rightsRevision: 2 },
 };
 const snapshot = {
@@ -36,6 +39,8 @@ const snapshot = {
 function fixture() {
   const logs: unknown[] = [];
   const observations: string[] = [];
+  const started: AsterDependencyObservationInput[] = [];
+  const active = new AsyncLocalStorage<boolean>();
   const state = {
     source: { status: "completed", value: snapshot } as const,
     projection: {
@@ -49,7 +54,12 @@ function fixture() {
   };
   const handler = createCatalogEventHandler({
     now: () => now,
-    source: { current: () => Promise.resolve(state.source) },
+    source: {
+      current: () => {
+        assert.equal(active.getStore(), true);
+        return Promise.resolve(state.source);
+      },
+    },
     projector: { apply: () => Promise.resolve(state.projection) },
     store: {
       quarantine: () => Promise.resolve(state.quarantine),
@@ -58,22 +68,30 @@ function fixture() {
     },
     logger: {
       info: (entry) => {
+        assert.equal(active.getStore(), true);
         logs.push(entry);
         return "written";
       },
     },
     telemetry: {
-      startDependencyOperation: () => ({
-        status: "started",
-        observation: {
-          complete: ({ outcome }) => {
-            observations.push(outcome);
-            return { status: "completed" };
+      startDependencyOperation: (input) => {
+        started.push(input);
+        return {
+          status: "started",
+          observation: {
+            run: (operation) => active.run(true, operation),
+            complete: ({ outcome }) => {
+              observations.push(outcome);
+              return { status: "completed" };
+            },
           },
-        },
-      }),
+        };
+      },
     },
-    recordHandled: () => Promise.resolve(state.handled),
+    recordHandled: () => {
+      assert.equal(active.getStore(), true);
+      return Promise.resolve(state.handled);
+    },
   });
   const record = (value: unknown = event) => ({
     key: encoder.encode(id(1)),
@@ -83,12 +101,15 @@ function fixture() {
     offset: "42",
     signal: AbortSignal.timeout(1000),
   });
-  return { handler, record, state, logs, observations };
+  return { handler, record, state, logs, observations, started };
 }
 
 test("handler acknowledges applied current-owner projections with bounded identifiers only", async () => {
   const f = fixture();
   await f.handler(f.record());
+  assert.deepEqual(f.started, [
+    { dependency: "broker", operation: "consume", linkedTraceparent: traceparent },
+  ]);
   assert.deepEqual(f.observations, ["success"]);
   assert.match(JSON.stringify(f.logs), /aster\.discovery\.catalog_event/u);
   assert.match(JSON.stringify(f.logs), new RegExp(id(2), "u"));

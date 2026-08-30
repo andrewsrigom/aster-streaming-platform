@@ -58,12 +58,32 @@ export async function createCatalogService(
   resources: RuntimeResources = {},
 ) {
   const config = catalogRuntimeConfiguration(environment);
-  const logger =
-    resources.logger ??
-    createAsterLogger({ service: "catalog", version: "0.0.0", environment: "local" });
   const telemetry =
     resources.telemetry ??
-    createAsterTelemetry({ serviceName: "catalog", serviceVersion: "0.0.0", environment: "local" });
+    createAsterTelemetry({
+      serviceName: "catalog",
+      serviceVersion: "0.0.0",
+      environment: "local",
+      ...(config.otlpMetricsEndpoint === undefined
+        ? {}
+        : {
+            export: {
+              mode: "otlp-http" as const,
+              endpoint: config.otlpMetricsEndpoint,
+              intervalMs: 5_000,
+              timeoutMs: 1_000,
+            },
+            shutdownTimeoutMs: 2_000,
+          }),
+    });
+  const logger =
+    resources.logger ??
+    createAsterLogger({
+      service: "catalog",
+      version: "0.0.0",
+      environment: "local",
+      traceContextProvider: () => telemetry.activeTraceContext(),
+    });
   let database: AsterPostgresAdapter;
   try {
     database =

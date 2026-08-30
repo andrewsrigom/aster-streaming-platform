@@ -63,7 +63,7 @@ export interface CatalogPublicationEvent {
   readonly aggregate: Readonly<{ type: "Title"; id: string; version: number }>;
   readonly correlationId: string;
   readonly causationId: string;
-  readonly trace: Readonly<Record<string, never>>;
+  readonly trace: Readonly<{ traceparent?: string }>;
   readonly payload: Readonly<{
     titleId: string;
     publicationId: string | null;
@@ -103,4 +103,5 @@ export interface CatalogOperatorPorts {
   readonly now: () => number;
   readonly nextId: () => string;
   readonly digest: (text: string) => string;
+  readonly traceContext?: () => Readonly<{ traceparent: string }> | undefined;
 }

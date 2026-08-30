@@ -285,6 +285,24 @@ test("local Identity initialization stays finite, isolated and separate from the
 
 test("optional telemetry retains bounded collection without becoming an Identity dependency", () => {
   assert.deepEqual(validateObservabilityProfile(observability), []);
+  for (const service of ["identity", "catalog", "playback", "engagement"]) {
+    const changed = {
+      ...observability,
+      "observability.yml": observability["observability.yml"].replace(
+        `  ${service}:\n    environment:\n      ASTER_OTLP_METRICS_ENDPOINT:`,
+        `  ${service}:\n    environment:\n      UNREVIEWED_ENDPOINT:`,
+      ),
+    };
+    assert.ok(validateObservabilityProfile(changed).length > 0, service);
+  }
+  const discoveryOverlay = {
+    ...observability,
+    "observability.yml": observability["observability.yml"].replace(
+      "  platform-status:",
+      "  discovery:\n    environment:\n      ASTER_OTLP_METRICS_ENDPOINT: http://collector:4318/v1/metrics\n\n  platform-status:",
+    ),
+  };
+  assert.ok(validateObservabilityProfile(discoveryOverlay).length > 0, "discovery overlay");
   for (const [file, before, after] of [
     ["observability.yml", "ASTER_OTLP_METRICS_ENDPOINT:", "UNREVIEWED_ENDPOINT:"],
     ["observability.yml", "127.0.0.1:9090:9090", "0.0.0.0:9090:9090"],

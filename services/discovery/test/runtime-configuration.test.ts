@@ -35,6 +35,13 @@ test("runtime configuration keeps read and projector credentials purpose-separat
   assert.equal(config.cache, true);
   assert.equal(config.redisUrl, "redis://redis:6379/0");
   assert.equal(
+    discoveryRuntimeConfiguration({
+      ...runtime,
+      ASTER_OTLP_METRICS_ENDPOINT: "http://collector:4318/v1/metrics",
+    }).otlpMetricsEndpoint,
+    "http://collector:4318/v1/metrics",
+  );
+  assert.equal(
     new URL(
       localDiscoveryDatabase(
         {
@@ -66,6 +73,7 @@ test("runtime rejects disabled trust/events, foreign endpoints and unsupported k
         "postgresql://aster_discovery_projector_local@example.com:5432/aster",
     },
     { ASTER_DISCOVERY_UNKNOWN: "true" },
+    { ASTER_OTLP_METRICS_ENDPOINT: " http://collector:4318/v1/metrics" },
   ]) {
     assert.throws(() => discoveryRuntimeConfiguration({ ...runtime, ...changed }));
   }

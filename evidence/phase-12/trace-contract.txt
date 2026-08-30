@@ -1,0 +1,93 @@
+# P12-R01/R02 repository trace contract
+
+Status: corrected implementation, local candidate verification passed, protected verification pending
+
+Exact source
+
+- Commit: 03abe8ac6d30c34902442367da241e0c295ff122
+- Tree: b1474c7396d3e65b53c29a87b35e32d793ad5ede
+- Branch: feat/p12-trace-observability
+- Base: tree-identical PR44 squash main 834bf15a8fe9fb39dc3a807912234efd8ee39dbd
+- Runtime: Node.js 24.19.0, pnpm 11.24.0, WSL Ubuntu-20.04
+
+Implemented contract
+
+- `@aster/telemetry` is the only owner of the OpenTelemetry trace SDK and OTLP
+  trace exporter. Public packages consume repository-owned observation types.
+- Fixed span names are `aster.http.server`, `aster.dependency.operation` and
+  `aster.event.produce`; dimensions come only from exported finite sets.
+- Inbound W3C `traceparent` is validated. Invalid or zero context is discarded
+  and a local root is still created.
+- AsyncLocalStorage scopes active context. A synchronous provider gives the
+  current trace/span to the existing redacting structured logger.
+- Active/retained spans default to 128 and accept only 1–512. Retention drops
+  oldest complete spans and reports the finite dropped count.
+- PostgreSQL, Redis, broker, object storage, owner HTTP reads and the media
+  coordinator use the same dependency observation boundary.
+- Identity and Catalog facts may carry one validated producer context;
+  Engagement and Discovery execute durable consumer work and logs inside the
+  corresponding linked observation.
+- The real Catalog operator scopes its durable event transaction inside a
+  finite producer span. This records no dependency metric; the relay records a
+  broker dependency only when it actually sends to Kafka.
+- The one-shot media coordinator configures the same bounded OTLP exporter from
+  the reviewed local endpoint in the actual base-plus-media Compose path and
+  performs one bounded final flush.
+
+Focused command
+
+`pnpm turbo run build --filter=@aster/telemetry --filter=@aster/identity --filter=@aster/engagement --filter=@aster/catalog && pnpm --filter=@aster/telemetry test && node --test services/identity/dist/test/http-server.test.js services/engagement/dist/test/identity-event-handler.test.js services/engagement/dist/test/owner-clients.test.js services/catalog/dist/test/decoder-handoff.test.js`
+
+Result
+
+- build: 12/12 tasks successful in 3.683 seconds, 8 cached;
+- telemetry: 18/18 tests pass in 399.273 ms;
+- representative HTTP/event/owner/media boundaries: 28/28 pass in 2456.791 ms;
+- staged secret scan: zero findings;
+- commit hook: formatting and staged secret scan pass.
+
+Iteration gate history
+
+- first changed gate stopped only on one unformatted changed test;
+- after formatting, the next gate completed 72/73 tasks and reported four
+  lint findings;
+- all four findings were corrected; full workspace ESLint and focused
+  telemetry/Engagement typechecks pass;
+- a clean rebased repeat passed 73/73 tasks with 43 cached in 54.325 seconds;
+- the later Collector assertion's focused fixture test passes 11/11;
+- the exact final source passes 73/73 tasks with 57 cached in 47.814 seconds.
+  No earlier failed gate is represented as passing.
+
+Initial protected candidate and remediation
+
+- PR 45 first published evidence head `eddbe1763358cb9f6645957efe57577d3c74df8f`
+  passed source quality and the real integration step in run `33297164589`;
+- its Local platform job exposed an invalid base observability overlay: it
+  defined the opt-in Discovery service without the Discovery overlay;
+- initial review discussions `3888669316` and `3888669317` found that the
+  Engagement consumer ran durable work outside its linked observation and the
+  Identity producer emitted a synthetic rather than active parent;
+- corrected source `82e9a61` keeps consumer work and logs inside the linked
+  scope, publishes the active Identity trace context and limits the base
+  observability overlay to its four present subgraphs;
+- corrected focused owner tests pass 11/11, optional-platform policy passes
+  23/23, daemonless full-profile Compose rendering passes, and the corrected
+  affected gate passes 73/73 with 51 cached in 55.776 seconds;
+- corrected protected run `33297684108` passed all required jobs, but
+  confirmation discussions `3888694669` and `3888694673` found the discarded
+  one-shot worker spans and unscoped Discovery consumer;
+- source `a2015d9`, tree `51aaa29`, configures/flushed the coordinator exporter,
+  preserves an optional validated Catalog producer link, and scopes Discovery
+  handling inside the consumer span;
+- Event delivery 23/23, focused Discovery 3/3 and the affected gate 73/73 with
+  44 cached in 54.527 seconds pass. A new protected run and blocker-focused
+  confirmation were required at that checkpoint;
+- protected run `33298943743` passed every job at exact head `e5f93e1`;
+- blocker-focused confirmation discussions `3888781189` and `3888781191` found
+  that the actual media candidate path omitted the exporter endpoint and real
+  Catalog events still had no active producer context;
+- source `03abe8a`, tree `b1474c7`, wires the exact media path and adds a
+  trace-only Catalog event-producer boundary without a false broker metric;
+- telemetry 18/18, Catalog 247/247, event delivery 23/23, media runner 3/3 and
+  the affected gate 73/73 with 53 cached in 53.307 seconds pass. Exact-head CI
+  and one blocker-focused confirmation remain required.

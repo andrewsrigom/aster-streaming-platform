@@ -116,6 +116,13 @@ function unavailableRedis() {
 
 test("Catalog runtime configuration rejects hosted, privileged and malformed local settings", () => {
   assert.equal(catalogRuntimeConfiguration(environment).port, 3200);
+  assert.equal(
+    catalogRuntimeConfiguration({
+      ...environment,
+      ASTER_OTLP_METRICS_ENDPOINT: "http://collector:4318/v1/metrics",
+    }).otlpMetricsEndpoint,
+    "http://collector:4318/v1/metrics",
+  );
   for (const change of [
     { ASTER_ENVIRONMENT: "production" },
     { ASTER_CATALOG_LOCAL_ENABLED: "false" },
@@ -145,6 +152,7 @@ test("Catalog runtime configuration rejects hosted, privileged and malformed loc
       ASTER_CATALOG_DISCOVERY_READER_DATABASE_PASSWORD: "aster-test-only",
     },
     { ASTER_CATALOG_READER_DATABASE_PASSWORD: "" },
+    { ASTER_OTLP_METRICS_ENDPOINT: "http://collector:4318/v1/traces" },
   ]) {
     assert.throws(() => catalogRuntimeConfiguration({ ...environment, ...change }));
   }

@@ -8,10 +8,12 @@ import {
   AsterTelemetryConfigurationError,
   type AsterDependencyCompletion,
   type AsterDependencyObservationInput,
+  type AsterEventProductionObservationInput,
   type AsterHttpCompletion,
   type AsterHttpObservationInput,
   type AsterTelemetryOptions,
 } from "../ports/telemetry-contract.js";
+import { isAsterOtlpMetricsEndpoint } from "../ports/otlp-endpoint.js";
 
 const TOP_LEVEL_KEYS = new Set([
   "serviceName",
@@ -21,12 +23,14 @@ const TOP_LEVEL_KEYS = new Set([
   "monitoringPrecisionMs",
   "shutdownTimeoutMs",
   "maxActiveObservations",
+  "maxActiveSpans",
   "cardinalityLimit",
 ]);
 const EXPORT_NONE_KEYS = new Set(["mode"]);
 const EXPORT_OTLP_KEYS = new Set(["mode", "endpoint", "intervalMs", "timeoutMs"]);
 const SERVICE_NAME_PATTERN = /^[a-z][a-z0-9-]{0,63}$/u;
 const SERVICE_VERSION_PATTERN = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,63}$/u;
+const TRACEPARENT_PATTERN = /^00-[a-f0-9]{32}-[a-f0-9]{16}-0[01]$/u;
 const MAX_CONFIGURATION_ISSUES = 16;
 
 export interface ValidatedTelemetryOptions {
@@ -44,6 +48,7 @@ export interface ValidatedTelemetryOptions {
   readonly monitoringPrecisionMs: number;
   readonly shutdownTimeoutMs: number;
   readonly maxActiveObservations: number;
+  readonly maxActiveSpans: number;
   readonly cardinalityLimit: number;
 }
 
@@ -174,6 +179,14 @@ export function validateTelemetryOptions(
     "options.maxActiveObservations",
     issues,
   );
+  const maxActiveSpans = boundedInteger(
+    record["maxActiveSpans"],
+    128,
+    1,
+    512,
+    "options.maxActiveSpans",
+    issues,
+  );
   const cardinalityLimit = boundedInteger(
     record["cardinalityLimit"],
     128,
@@ -205,21 +218,11 @@ export function validateTelemetryOptions(
       exportOptions = Object.freeze({ mode: "none" });
     } else if (exportRecord["mode"] === "otlp-http") {
       const endpoint = exportRecord["endpoint"];
-      if (typeof endpoint !== "string" || endpoint.length > 2_048) {
-        addIssue(issues, "options.export.endpoint must be a URL up to 2048 characters.");
-      } else {
-        try {
-          const parsed = new URL(endpoint);
-          if (
-            (parsed.protocol !== "http:" && parsed.protocol !== "https:") ||
-            parsed.username ||
-            parsed.password
-          ) {
-            addIssue(issues, "options.export.endpoint must be an HTTP(S) URL without credentials.");
-          }
-        } catch {
-          addIssue(issues, "options.export.endpoint must be a valid URL.");
-        }
+      if (!isAsterOtlpMetricsEndpoint(endpoint)) {
+        addIssue(
+          issues,
+          "options.export.endpoint must be a complete HTTP(S) metrics URL without credentials or parameters.",
+        );
       }
       const intervalMs = boundedInteger(
         exportRecord["intervalMs"],
@@ -263,6 +266,7 @@ export function validateTelemetryOptions(
     monitoringPrecisionMs,
     shutdownTimeoutMs,
     maxActiveObservations,
+    maxActiveSpans,
     cardinalityLimit,
   });
 }
@@ -300,12 +304,13 @@ function readDataRecord(
 }
 
 export function parseHttpObservationInput(value: unknown): AsterHttpObservationInput | undefined {
-  const record = readDataRecord(value, new Set(["method", "route"]));
+  const record = readDataRecord(value, new Set(["method", "route", "traceparent"]));
   if (record === undefined) {
     return undefined;
   }
   const method = record["method"];
   const route = record["route"];
+  const traceparent = validTraceparent(record["traceparent"]);
   if (
     !ASTER_HTTP_METHODS.includes(method as never) ||
     !ASTER_HTTP_ROUTES.includes(route as never)
@@ -315,7 +320,17 @@ export function parseHttpObservationInput(value: unknown): AsterHttpObservationI
   return Object.freeze({
     method: method as AsterHttpObservationInput["method"],
     route: route as AsterHttpObservationInput["route"],
+    ...(traceparent ? { traceparent } : {}),
   });
+}
+
+function validTraceparent(value: unknown): string | undefined {
+  return typeof value === "string" &&
+    TRACEPARENT_PATTERN.test(value) &&
+    value.slice(3, 35) !== "0".repeat(32) &&
+    value.slice(36, 52) !== "0".repeat(16)
+    ? value
+    : undefined;
 }
 
 export function parseHttpCompletion(value: unknown): AsterHttpCompletion | undefined {
@@ -342,7 +357,7 @@ export function parseHttpCompletion(value: unknown): AsterHttpCompletion | undef
 export function parseDependencyObservationInput(
   value: unknown,
 ): AsterDependencyObservationInput | undefined {
-  const record = readDataRecord(value, new Set(["dependency", "operation"]));
+  const record = readDataRecord(value, new Set(["dependency", "operation", "linkedTraceparent"]));
   if (record === undefined) {
     return undefined;
   }
@@ -357,6 +372,9 @@ export function parseDependencyObservationInput(
   return Object.freeze({
     dependency: dependency as AsterDependencyObservationInput["dependency"],
     operation: operation as AsterDependencyObservationInput["operation"],
+    ...(validTraceparent(record["linkedTraceparent"]) === undefined
+      ? {}
+      : { linkedTraceparent: record["linkedTraceparent"] as string }),
   });
 }
 
@@ -370,4 +388,11 @@ export function parseDependencyCompletion(value: unknown): AsterDependencyComple
     return undefined;
   }
   return Object.freeze({ outcome: outcome as AsterDependencyCompletion["outcome"] });
+}
+
+export function parseEventProductionObservationInput(
+  value: unknown,
+): AsterEventProductionObservationInput | undefined {
+  const record = readDataRecord(value, new Set(["owner"]));
+  return record?.["owner"] === "catalog" ? Object.freeze({ owner: "catalog" }) : undefined;
 }

@@ -20,6 +20,7 @@ export {
   AsterTelemetryConfigurationError,
   type AsterCollectedMetric,
   type AsterCollectedMetricPoint,
+  type AsterCollectedTrace,
   type AsterDependency,
   type AsterCacheFamily,
   type AsterCacheMetricInput,
@@ -33,6 +34,8 @@ export {
   type AsterDependencyObservation,
   type AsterDependencyObservationInput,
   type AsterDependencyOperation,
+  type AsterEventProductionObservationInput,
+  type AsterEventProductionObservation,
   type AsterDiscoveryRailKind,
   type AsterDiscoveryRailMetricInput,
   type AsterDiscoveryRailOutcome,
@@ -53,6 +56,7 @@ export {
   type AsterOperationLimitQueueBucket,
   type AsterRecordMetricResult,
   type AsterStartDependencyObservationResult,
+  type AsterStartEventProductionObservationResult,
   type AsterStartHttpObservationResult,
   type AsterTelemetry,
   type AsterTelemetryEnvironment,
@@ -60,6 +64,9 @@ export {
   type AsterTelemetryExportOptions,
   type AsterTelemetryOperationResult,
   type AsterTelemetryOptions,
+  type AsterTraceCollectionResult,
+  type AsterTraceContext,
 } from "./ports/telemetry-contract.js";
 export { ASTER_METRIC_CATALOG } from "./infrastructure/metric-catalog.js";
+export { isAsterOtlpMetricsEndpoint } from "./ports/otlp-endpoint.js";
 export { createTelemetry as createAsterTelemetry } from "./infrastructure/create-telemetry.js";

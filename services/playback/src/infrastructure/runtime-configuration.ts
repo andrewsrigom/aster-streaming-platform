@@ -1,3 +1,5 @@
+import { isAsterOtlpMetricsEndpoint } from "@aster/telemetry";
+
 const RUNTIME_FIELDS = new Set([
   "ASTER_PLAYBACK_LOCAL_ENABLED",
   "ASTER_PLAYBACK_HTTP_HOST",
@@ -65,13 +67,15 @@ export function playbackRuntimeConfiguration(
   }
   const host = environment["ASTER_PLAYBACK_HTTP_HOST"] ?? "127.0.0.1";
   const port = environment["ASTER_PLAYBACK_HTTP_PORT"] ?? "3300";
+  const otlpMetricsEndpoint = environment["ASTER_OTLP_METRICS_ENDPOINT"];
   if (
     (host !== "127.0.0.1" && host !== "0.0.0.0") ||
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
     Number(port) < 1024 ||
     Number(port) > 65535 ||
     environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true" ||
-    ![undefined, "false", "true"].includes(environment["ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED"])
+    ![undefined, "false", "true"].includes(environment["ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED"]) ||
+    (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint))
   ) {
     throw new Error("Invalid protected Playback listener configuration.");
   }
@@ -80,5 +84,6 @@ export function playbackRuntimeConfiguration(
     port: Number(port),
     connectionString: localPlaybackDatabase(environment, "runtime"),
     engagementRead: environment["ASTER_PLAYBACK_ENGAGEMENT_READ_ENABLED"] === "true",
+    ...(otlpMetricsEndpoint === undefined ? {} : { otlpMetricsEndpoint }),
   });
 }

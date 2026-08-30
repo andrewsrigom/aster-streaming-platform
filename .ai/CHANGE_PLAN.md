@@ -17,21 +17,53 @@ shutdown.
 
 ## Current behavior
 
-P11-R10 is frozen `WAITING_EXTERNAL` on PR44 at exact executable correction
-`aac04c7`, tree `c2a6c93`; Router4/4, platform67/67 and the complete affected
-gate17/17 pass. The guard rejects raw and YAML-decoded configuration expansion inside
-the bounded traffic-shaping policy. Phase 12 may advance as the one unpublished dependent, but it
-cannot publish, merge or release first.
+P11-R10 is released at tree-identical main `834bf15`; exact-main run
+`33296443777` passed every required job. Its exact executable correction
+`aac04c7`, tree `c2a6c93`, passed Router4/4, platform67/67 and the complete
+affected gate17/17. The guard rejects raw and YAML-decoded configuration
+expansion inside the bounded traffic-shaping policy.
 
-`@aster/telemetry` currently owns bounded OpenTelemetry metrics, finite
-dimensions, exporter health and timeout behavior. `@aster/runtime` owns
-structured Pino logs with redaction and optional validated active trace IDs.
-Router runtime evidence proves one authenticated trace ID reaches Identity and
-Catalog logs and the Collector. Owner HTTP servers and PostgreSQL, Redis,
-broker and object-storage adapters expose bounded metric observations. Event
-envelopes preserve a validated `traceparent`. There is no repository-owned
-tracing SDK/export contract that consistently creates parent/child spans across
-all current service, dependency, event and media boundaries.
+Corrected source commit `03abe8a`, tree `b1474c7`, implements the repository trace
+contract locally. `@aster/telemetry` now owns bounded OpenTelemetry metrics and
+traces, finite dimensions, active context, OTLP exporter health and timeout
+behavior. All five owner HTTP servers create server spans and drive the existing
+redacting logger context. Fixed owner clients inject child context; authenticated
+Identity consumption links its producer; current database, Redis, broker,
+object-storage and media-coordinator boundaries use finite dependency spans.
+The real Catalog operator adds a trace-only producer boundary around durable
+event intent; the actual relay remains the owner of broker publish telemetry.
+Focused telemetry, Catalog, event and media-runner tests pass, and the latest
+affected candidate gate passes 73/73 with 53 cached in 53.307 seconds. The
+branch is published as PR45 and remains unverified until new exact-head
+protected review/CI pass. The single local
+Collector attempt created no resources because
+Docker reported no Linux engine; it will not be repeated unchanged.
+
+First evidence head `eddbe17` opened PR45. Its hosted source-quality job
+proved the real Collector integration, including the repository server and
+dependency spans. The initial review found two trace-continuity defects: the
+Engagement consumer executed durable work outside its linked observation, and
+the Identity producer emitted a synthetic parent instead of its active span.
+Protected run `33297164589` also found that the base observability overlay
+incorrectly defined the opt-in Discovery service, making the Docker-only full
+profile invalid. The three blockers are corrected together locally: consumer
+work and logs now execute inside the observation, Identity uses the active real
+trace context, and the base overlay configures only services present in the
+base Compose model. Focused tests pass 11/11, the platform policy test passes
+23/23, daemonless Compose rendering passes, and the corrected affected gate
+passes 73/73 with 51 cached in 55.776 seconds. Protected run `33297684108`
+passed all jobs. Confirmation then found that the one-shot media coordinator
+discarded its spans and Discovery Catalog handling ran outside its consumer
+observation. Source `a2015d9` configures and finally flushes the bounded worker
+exporter, preserves an optional validated Catalog producer link, and scopes
+Discovery durable work/logging inside the linked observation. Protected run
+`33298943743` passed every job at exact head `e5f93e1`. Its blocker-focused
+confirmation discussions `3888781189` and `3888781191` then found that the
+actual media candidate did not pass the exporter endpoint and real Catalog
+events still had no active producer context. Source `03abe8a` corrects both
+without inventing broker I/O. Telemetry18/18, Catalog247/247, event delivery
+23/23, media runner3/3 and the affected gate73/73 with53 cached in53.307 seconds
+pass. New exact-head CI and one blocker-focused confirmation remain.
 
 ## Proposed behavior
 

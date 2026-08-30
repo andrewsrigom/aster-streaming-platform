@@ -182,9 +182,6 @@ export function normalizeEvent(owner: EventOwner, value: unknown): EventEnvelope
     ) {
       return undefined;
     }
-    if (owner === "catalog" && Reflect.ownKeys(trace).length !== 0) {
-      return undefined;
-    }
     return Object.freeze({
       ...value,
       aggregate: Object.freeze({ ...aggregate }),

@@ -140,11 +140,6 @@ export async function createIdentityServiceWithFactories(
   try {
     const clock = factories.clock();
     const identifiers = factories.identifiers();
-    const logger = factories.logger({
-      service: configuration.serviceName,
-      version: SERVICE_VERSION,
-      environment: configuration.environment,
-    });
     const telemetry = factories.telemetry({
       serviceName: configuration.serviceName,
       serviceVersion: SERVICE_VERSION,
@@ -163,6 +158,12 @@ export async function createIdentityServiceWithFactories(
     });
     const telemetryOwner = ownClose((signal) => telemetry.shutdown(signal));
     owners.push(telemetryOwner);
+    const logger = factories.logger({
+      service: configuration.serviceName,
+      version: SERVICE_VERSION,
+      environment: configuration.environment,
+      traceContextProvider: () => telemetry.activeTraceContext(),
+    });
     const postgresql = factories.postgresql({
       connectionString: configuration.databaseUrl,
       telemetry,
@@ -182,6 +183,7 @@ export async function createIdentityServiceWithFactories(
         clock,
         identifiers,
         logger,
+        () => telemetry.activeTraceContext(),
       );
       const ownedProduct = product;
       productOwner = ownClose(async () => {

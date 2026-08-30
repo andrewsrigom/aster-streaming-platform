@@ -12,6 +12,7 @@ import {
   catalogRecord,
   catalogText,
   catalogTimestamp,
+  catalogTraceparent,
   catalogVersion,
 } from "../../domain/values.js";
 import {
@@ -287,6 +288,7 @@ function repositories(tx: AsterPostgresTransaction): CatalogWorkflowTransaction 
       const aggregateType: unknown = event.aggregate.type;
       const schemaVersion: unknown = event.schemaVersion;
       const producer: unknown = event.producer;
+      const trace = catalogRecord(event.trace, []) ?? catalogRecord(event.trace, ["traceparent"]);
       for (const id of [
         event.eventId,
         event.aggregate.id,
@@ -305,7 +307,8 @@ function repositories(tx: AsterPostgresTransaction): CatalogWorkflowTransaction 
         producer !== "catalog" ||
         !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.000Z$/u.test(event.occurredAt) ||
         !Number.isFinite(Date.parse(event.occurredAt)) ||
-        !catalogRecord(event.trace, []) ||
+        !trace ||
+        (trace["traceparent"] !== undefined && !catalogTraceparent(trace["traceparent"])) ||
         (event.payload.publicationId !== null && !catalogIdentifier(event.payload.publicationId)) ||
         (event.payload.rightsRevision !== null && !catalogVersion(event.payload.rightsRevision))
       ) {

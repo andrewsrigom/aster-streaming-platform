@@ -5,6 +5,7 @@ import test from "node:test";
 import { setTimeout as delay } from "node:timers/promises";
 
 import { createExpressHttpAdapter, createLocalEngagementReadTrust } from "@aster/http-express";
+import type { AsterTraceContext } from "@aster/telemetry";
 import { IDENTITY_ENGAGEMENT_OPERATION } from "../src/transport/engagement-operation.js";
 
 import type { ProfileRequest } from "../src/application/profile-ports.js";
@@ -93,7 +94,11 @@ function applications() {
   return { app, calls };
 }
 
-async function fixture(monotonicNow?: () => number, engagementKey?: string) {
+async function fixture(
+  monotonicNow?: () => number,
+  engagementKey?: string,
+  activeTrace?: AsterTraceContext,
+) {
   const adapter = createExpressHttpAdapter();
   const http = createServer({ maxHeaderSize: 16_384 }, adapter.requestListener);
   http.listen(0, "127.0.0.1");
@@ -108,6 +113,7 @@ async function fixture(monotonicNow?: () => number, engagementKey?: string) {
   const graph = await createIdentitySubgraph({
     configuration: { environment: "local", localDemoEnabled: true, publicOrigin: origin },
     applications: controlled.app,
+    ...(activeTrace ? { activeTraceContext: () => activeTrace } : {}),
     ...(engagementKey
       ? { engagementTrust: createLocalEngagementReadTrust("identity", engagementKey) }
       : {}),
@@ -386,7 +392,13 @@ test("malformed or non-entity representations return validation errors before ow
 });
 
 test("profile mutations forward retry/version inputs, credential, cancellation and generated event context", async () => {
-  const fx = await fixture();
+  const activeTrace = {
+    traceId: "a".repeat(32),
+    spanId: "b".repeat(16),
+    traceFlags: 1,
+    traceparent: `00-${"a".repeat(32)}-${"b".repeat(16)}-01`,
+  } as const satisfies AsterTraceContext;
+  const fx = await fixture(undefined, undefined, activeTrace);
   try {
     for (const action of ["create", "update", "delete"] as const) {
       const input = {
@@ -410,7 +422,7 @@ test("profile mutations forward retry/version inputs, credential, cancellation a
       assert.equal(call.request?.credential, TOKEN_A);
       assert.equal(call.request.signal.aborted, false);
       assert.equal(call.request.context.correlationId, result.headers.get("x-request-id"));
-      assert.match(call.request.context.traceparent ?? "", /^00-[a-f0-9]{32}-[a-f0-9]{16}-01$/u);
+      assert.equal(call.request.context.traceparent, activeTrace.traceparent);
     }
     const selected = await fx.send(
       "mutation Select($id:ID!) { selectProfile(id:$id) { code profile { id } } }",

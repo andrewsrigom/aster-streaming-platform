@@ -1,4 +1,5 @@
 import { localEventDeliveryEnabled } from "@aster/event-delivery";
+import { isAsterOtlpMetricsEndpoint } from "@aster/telemetry";
 
 const RUNTIME_FIELDS = new Set([
   "ASTER_DISCOVERY_LOCAL_ENABLED",
@@ -82,6 +83,7 @@ export function discoveryRuntimeConfiguration(
   const port = environment["ASTER_DISCOVERY_HTTP_PORT"] ?? "3500";
   const cacheEnabled = environment["ASTER_DISCOVERY_CACHE_ENABLED"];
   const redisUrl = environment["REDIS_URL"];
+  const otlpMetricsEndpoint = environment["ASTER_OTLP_METRICS_ENDPOINT"];
   if (
     (host !== "127.0.0.1" && host !== "0.0.0.0") ||
     !/^[1-9][0-9]{3,4}$/u.test(port) ||
@@ -90,6 +92,7 @@ export function discoveryRuntimeConfiguration(
     (cacheEnabled !== undefined && cacheEnabled !== "true" && cacheEnabled !== "false") ||
     (cacheEnabled === "true" && (typeof redisUrl !== "string" || redisUrl.length === 0)) ||
     environment["ASTER_ROUTER_TRUST_ENABLED"] !== "true" ||
+    (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint)) ||
     !localEventDeliveryEnabled(
       environment["ASTER_EVENTS_ENABLED"],
       environment["ASTER_ENVIRONMENT"],
@@ -104,6 +107,7 @@ export function discoveryRuntimeConfiguration(
     port: Number(port),
     connectionString: localDiscoveryDatabase(environment, "runtime"),
     projectorConnectionString: localDiscoveryDatabase(environment, "projector"),
+    ...(otlpMetricsEndpoint === undefined ? {} : { otlpMetricsEndpoint }),
   };
   return cacheEnabled === "true"
     ? Object.freeze({ ...base, cache: true as const, redisUrl: redisUrl as string })
