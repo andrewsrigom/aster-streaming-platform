@@ -5,7 +5,7 @@ import {
   type AsterObjectStorageAdapter,
 } from "@aster/object-storage-s3";
 import { createAsterLogger } from "@aster/runtime";
-import { createAsterTelemetry } from "@aster/telemetry";
+import { createAsterTelemetry, isAsterOtlpMetricsEndpoint } from "@aster/telemetry";
 import { createCatalogAcquisitions } from "./application/acquire-media.js";
 import { catalogChecksum, catalogIdentifier } from "./domain/values.js";
 import { createLocalCatalogOperator } from "./infrastructure/identity/local-operator.js";
@@ -37,11 +37,25 @@ process.once("SIGTERM", stop);
 process.once("SIGINT", stop);
 const now = () => Math.floor(Date.now() / 1000);
 const correlationId = randomUUID();
+const otlpMetricsEndpoint = process.env["ASTER_OTLP_METRICS_ENDPOINT"];
+if (otlpMetricsEndpoint !== undefined && !isAsterOtlpMetricsEndpoint(otlpMetricsEndpoint)) {
+  throw new Error("Invalid acquisition telemetry endpoint.");
+}
 const telemetry = createAsterTelemetry({
   serviceName: "catalog-acquisition",
   serviceVersion: "0.0.0",
   environment: "local",
-  export: { mode: "none" },
+  ...(otlpMetricsEndpoint === undefined
+    ? { export: { mode: "none" as const } }
+    : {
+        export: {
+          mode: "otlp-http" as const,
+          endpoint: otlpMetricsEndpoint,
+          intervalMs: 5_000,
+          timeoutMs: 1_000,
+        },
+        shutdownTimeoutMs: 2_000,
+      }),
 });
 const logger = createAsterLogger({
   service: "catalog-acquisition",
@@ -206,6 +220,7 @@ try {
   operator?.revoke();
   await storage?.close();
   await database?.close();
+  await telemetry.forceFlush(AbortSignal.timeout(1_000));
   await telemetry.shutdown();
   clearTimeout(deadline);
   process.removeListener("SIGTERM", stop);

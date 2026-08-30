@@ -78,6 +78,7 @@ export function inspectCatalogEvent(input: CatalogEventRecord): CatalogEventInsp
         occurredAt: Date.parse(event.occurredAt) / 1000,
         eventType: event.eventType as "catalog.title-published" | "catalog.title-retired",
         correlationId: event.correlationId,
+        ...(event.trace.traceparent === undefined ? {} : { traceparent: event.trace.traceparent }),
       }),
     };
   } catch {

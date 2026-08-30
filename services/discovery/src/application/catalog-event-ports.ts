@@ -17,6 +17,7 @@ export interface CatalogEventFact {
   readonly occurredAt: number;
   readonly eventType: "catalog.title-published" | "catalog.title-retired";
   readonly correlationId: string;
+  readonly traceparent?: string;
 }
 
 export type CatalogPoisonReason =
