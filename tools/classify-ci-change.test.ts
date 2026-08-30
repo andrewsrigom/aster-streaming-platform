@@ -137,6 +137,7 @@ test("runs the heavyweight diagnostic proof only for paths that can invalidate i
     "infra/docker/router.Dockerfile",
     "infra/observability/slo-rules.yml",
     "infra/observability/tempo.yml",
+    "pnpm-lock.yaml",
     "tools/run-diagnostic-exercises.mjs",
   ]) {
     const result = classifyChangedPaths([path]);

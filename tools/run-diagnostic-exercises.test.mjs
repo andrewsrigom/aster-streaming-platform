@@ -300,5 +300,33 @@ test("rejects missing diagnosis signals and private canaries", () => {
     ]),
   );
   assert.throws(() => assertTelemetryPrivacy("graphql.document", []));
+  const storedTrace = {
+    trace: {
+      resourceSpans: [
+        {
+          scopeSpans: [
+            {
+              spans: [
+                {
+                  attributes: [
+                    {
+                      key: "private.attribute",
+                      value: { stringValue: MULTILINE_GRAPHQL },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  };
+  assert.doesNotThrow(() =>
+    assertTelemetryPrivacy(JSON.stringify(selectedSearch("a".repeat(32), "redis", "unavailable")), [
+      MULTILINE_GRAPHQL,
+    ]),
+  );
+  assert.throws(() => assertTelemetryPrivacy(JSON.stringify(storedTrace), [MULTILINE_GRAPHQL]));
   assert.doesNotThrow(() => assertTelemetryPrivacy("bounded sanitized trace", ["missing"]));
 });

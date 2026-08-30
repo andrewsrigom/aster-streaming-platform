@@ -282,8 +282,13 @@ Tempo port and routes TraceQL through Grafana's UID-scoped proxy; focused tests
 pass 12/12, platform tests pass 87/87 and the affected gate passes 73/73 with 59
 cached in 62.801 seconds. Corrected source `0288555`, tree `1ceeb20`, passed
 protected run `33338774702`: all three diagnoses/recoveries, exact cleanup,
-source quality, playable demo and aggregate protection passed. Evidence
-publication, correction confirmation and release remain.
+source quality, playable demo and aggregate protection passed. Evidence head
+`3aca9e5` passed run `33339712525`, but confirmation discussions `3890788286`
+and `3890788287` found incomplete stored-trace privacy inspection and missing
+lockfile-only diagnostic invalidation. The local batch checks a bounded stable
+full trace, selects `pnpm-lock.yaml`, passes focused tests 23/23 and passes the
+affected gate 73/73 with 63 cached in 44.855 seconds. Protected acceptance,
+blocking-boundary confirmation and release remain.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 

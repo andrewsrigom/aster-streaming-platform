@@ -106,8 +106,14 @@ focused diagnostics pass 12/12, platform tests pass 87/87 and the affected gate
 passes 73/73 with 59 cached in 62.801 seconds. Corrected source `0288555`, tree
 `1ceeb20`, passed protected run `33338774702`, including all three diagnoses,
 recovery, exact cleanup, source quality, the Docker-only playable demo and
-aggregate protection. Evidence publication, corrected confirmation, merge,
-exact-main CI and Phase12 closeout remain. Phase13 has not started.
+aggregate protection. Evidence head `3aca9e5` passed protected run
+`33339712525`; exact-head confirmation then found that selected TraceQL output
+did not inspect omitted stored attributes and `pnpm-lock.yaml` did not
+invalidate diagnostics. The local batch now waits for a bounded stable full
+trace, checks its complete serialized attributes for privacy, and adds lockfile-
+only diagnostic selection. Focused tests pass 23/23 and the affected gate passes
+73/73 with 63 cached in 44.855 seconds. Corrected protected runtime, confirmation,
+merge, exact-main CI and Phase12 closeout remain. Phase13 has not started.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

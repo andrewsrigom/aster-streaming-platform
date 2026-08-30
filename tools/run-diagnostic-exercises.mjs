@@ -723,6 +723,34 @@ async function tempoSearch(grafanaPort, traceId, scenario) {
   );
 }
 
+async function tempoStoredTrace(grafanaPort, traceId) {
+  let previousBody;
+  let stableSnapshots = 0;
+  const stored = await waitFor(
+    `complete Tempo trace ${traceId}`,
+    async () => {
+      const response = await boundedResponse(
+        `http://127.0.0.1:${grafanaPort}/api/datasources/proxy/uid/aster-tempo/api/v2/traces/${traceId}`,
+        undefined,
+        1024 * 1024,
+      );
+      if (response.status !== 200) {
+        return undefined;
+      }
+      const value = JSON.parse(response.body);
+      assert.ok(value && typeof value === "object" && !Array.isArray(value));
+      assert.ok(response.body.includes(traceId), "Tempo returned a mismatched stored trace.");
+      stableSnapshots = response.body === previousBody ? stableSnapshots + 1 : 0;
+      previousBody = response.body;
+      return { stableSnapshots, value };
+    },
+    (value) => value?.stableSnapshots >= 2,
+    45_000,
+    1_000,
+  );
+  return stored.value;
+}
+
 async function waitCacheLog(state, since) {
   return waitFor(
     `Catalog cache ${state} log`,
@@ -790,16 +818,19 @@ async function exercise(scenario, ports) {
       scenario === "catalog" ? undefined : await catalogOperationEvent(since, traceId);
     const search = await tempoSearch(ports.grafana, traceId, scenario);
     const facts = traceSearchFacts(search, traceId);
+    const storedTrace = await tempoStoredTrace(ports.grafana, traceId);
     const measured = await waitMetricDelta(ports.prometheus, before);
     const catalogLogs = catalogOperation?.source ?? "";
     const cacheLogs = scenario === "redis" ? await waitCacheLog("unavailable", since) : "";
+    const canaries = [canary, TITLE_DETAIL];
+    assertTelemetryPrivacy(JSON.stringify(storedTrace), canaries);
     const serialized = JSON.stringify({
       search,
       router: router.source,
       catalogLogs,
       cacheLogs,
     });
-    assertTelemetryPrivacy(serialized, [canary, TITLE_DETAIL]);
+    assertTelemetryPrivacy(serialized, canaries);
     const diagnosis = classifyDiagnosticScenario({
       scenario,
       response,

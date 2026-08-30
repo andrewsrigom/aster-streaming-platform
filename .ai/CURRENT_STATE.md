@@ -340,9 +340,16 @@ Local-platform job `99330472682` diagnosed and recovered Catalog, PostgreSQL and
 Redis failures through the isolated topology and cleaned exact project
 `aster-p12-diagnostics-3be252e8-469d-4c05-8846-2154bcbbdca1`. Source-quality
 job `99330472705`, the Docker-only playable demo and aggregate job
-`99332541219` also passed. Bounded evidence publication and corrected
-confirmation remain. Architecture, operations, runbooks and licensing are
-current. The
+`99332541219` also passed. Evidence head `3aca9e5` passed protected run
+`33339712525`. Its exact-head confirmation discussions `3890788286` and
+`3890788287` found two remaining proof gaps: privacy inspected only the
+TraceQL-selected fields, and a lockfile-only dependency change skipped the
+diagnostic runtime. The local remediation waits for three identical bounded
+full-trace snapshots through Grafana, checks the complete stored trace for raw
+and escaped canaries, and classifies `pnpm-lock.yaml` as diagnostic-changing.
+Focused tests pass 23/23; the affected gate passes 73/73 with 63 cached in
+44.855 seconds. Corrected protected runtime and confirmation remain.
+Architecture, operations, runbooks and licensing are current. The
 earlier local attempt stopped during Docker Desktop image build and could not
 inspect scoped resources. The normal demo is unchanged; Phase13 has not started.
 One post-review read-only WSL check returned `docker-client-unavailable`; no
@@ -601,17 +608,19 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P12-R10 corrected protected acceptance passes at source `0288555`. Evidence
-publication, correction confirmation, merge, exact-main CI and Phase12 closeout
-remain. Phases13–14 and hosted deployment also remain planned.
+P12-R10 supporting protected acceptance passes at source `0288555`; the current
+full-trace privacy and lockfile-invalidation remediation still needs protected
+acceptance. Confirmation, merge, exact-main CI and Phase12 closeout remain.
+Phases13–14 and hosted deployment also remain planned.
 
 ## Next outcome
 
-For P12-R10, publish bounded evidence for protected run `33338774702`, confirm
-the three corrected review threads, merge after final exact-head protection,
-verify exact-main CI, close Phase12 and check Phase13 prerequisites. Inspect the
-exact interrupted local project only when that same Docker engine becomes
-reachable.
+For P12-R10, publish the full-trace privacy and lockfile-invalidation remediation,
+pass its protected three-scenario runtime, resolve discussions `3890788286` and
+`3890788287`, obtain the permitted blocking-boundary confirmation, merge after
+final exact-head protection, verify exact-main CI, close Phase12 and check
+Phase13 prerequisites. Inspect the exact interrupted local project only when
+that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 

@@ -49,7 +49,13 @@ passes 73/73 with 59 cached in 62.801 seconds. Corrected source `0288555`, tree
 recoveries, exact cleanup, source quality, the Docker-only playable demo and
 aggregate protection. The bounded runtime transcript is
 [protected-run-33338774702.txt](diagnostics/protected-run-33338774702.txt).
-Corrected exact-head confirmation and release remain.
+Evidence head `3aca9e5` passed protected run `33339712525`; exact-head
+confirmation then found that selected TraceQL fields did not prove privacy for
+omitted stored attributes and lockfile-only changes skipped diagnostics. The
+local remediation inspects a bounded stable full trace and adds
+`pnpm-lock.yaml` to diagnostic invalidation. Focused tests pass 23/23 and the
+affected gate passes 73/73 with 63 cached in 44.855 seconds. Corrected protected
+runtime, blocking-boundary confirmation and release remain.
 
 ## Requirement traceability
 

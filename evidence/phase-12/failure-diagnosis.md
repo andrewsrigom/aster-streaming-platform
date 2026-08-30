@@ -312,8 +312,23 @@ reported zero scoped resources. Source-quality job `99330472705`, the
 Docker-only playable demo and aggregate job `99332541219` also passed. The
 bounded transcript is
 [protected-run-33338774702.txt](diagnostics/protected-run-33338774702.txt).
-This is the final corrected protected runtime evidence for P12-R10; exact-head
-confirmation and release remain.
+This remains supporting three-scenario behavior evidence. Evidence head
+`3aca9e5` passed protected run `33339712525`, but exact-head confirmation found
+two proof gaps:
+
+- discussion `3890788286`: `select(...)` removes unselected stored attributes
+  before the privacy assertion, so the runner did not inspect the complete
+  stored trace;
+- discussion `3890788287`: a lockfile-only dependency change did not select the
+  diagnostic runtime even though the Catalog image installs that lockfile.
+
+The local remediation fetches the complete trace through Grafana's UID-scoped
+Tempo V2 proxy, requires three identical bounded snapshots after the causal
+TraceQL boundary becomes visible and applies the raw/escaped canary assertion to
+that full stored trace. It also routes `pnpm-lock.yaml` through diagnostic CI
+with an exact single-path test. Focused tests pass 23/23 and the affected gate
+passes 73/73 with 63 cached in 44.855 seconds. Protected runtime acceptance for
+this changed proof remains pending.
 
 ## Remaining release work
 
@@ -321,10 +336,10 @@ Before release:
 
 1. inspect and, if present, remove only the exact interrupted project above
    when that same local engine is reachable;
-2. publish this bounded runtime evidence and pass proportional protected CI at
-   the final evidence head;
-3. confirm/resolve the three discussions above and obtain one corrected
-   exact-head confirmation;
+2. publish the full-trace privacy and lockfile-invalidation remediation and pass
+   its protected three-scenario runtime;
+3. resolve discussions `3890788286`/`3890788287` and obtain the permitted
+   blocking-boundary confirmation;
 4. squash merge PR51 and verify
    exact-main CI;
 5. record the released source/tree and close Phase 12.

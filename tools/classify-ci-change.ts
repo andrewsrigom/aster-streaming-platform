@@ -92,6 +92,7 @@ const DIAGNOSTIC_FILES = new Set([
   ".github/workflows/ci.yml",
   ".dockerignore",
   "package.json",
+  "pnpm-lock.yaml",
   "turbo.json",
   "tools/classify-ci-change.ts",
   "tools/classify-ci-change.test.ts",

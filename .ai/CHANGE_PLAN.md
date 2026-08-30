@@ -88,8 +88,13 @@ tree `1ceeb20`, passed protected run `33338774702`: local-platform job
 `99330472682` diagnosed and recovered all three failures through the isolated
 Grafana-proxied topology and cleaned the exact project; source-quality job
 `99330472705`, the Docker-only playable demo and aggregate job `99332541219`
-also passed. Bounded evidence publication and corrected exact-head confirmation
-remain before merge.
+also passed. Evidence head `3aca9e5` then passed every protected job in run
+`33339712525`. Corrected exact-head confirmation found two blocking proof gaps:
+the selected TraceQL result cannot prove privacy for attributes omitted by
+`select(...)`, and a lockfile-only dependency change does not invalidate the
+diagnostic exercise. The current remediation batch inspects a bounded, stable
+full trace fetched through Grafana before declaring privacy and routes
+`pnpm-lock.yaml` through the diagnostic gate with adverse coverage.
 
 ## Proposed behavior
 

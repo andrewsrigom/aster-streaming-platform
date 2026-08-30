@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-30 — Full-trace privacy and diagnostic invalidation correction
+
+### Completed
+
+- Evidence head `3aca9e5` passed protected run `33339712525`. Exact-head
+  confirmation discussions `3890788286` and `3890788287` found that the
+  selected TraceQL response omitted attributes from the privacy proof and that
+  `pnpm-lock.yaml` did not invalidate diagnostic runtime acceptance.
+- Added a bounded Grafana-proxied Tempo V2 read that requires three identical
+  full-trace snapshots before checking every stored attribute for raw/escaped
+  canaries. Added lockfile-only diagnostic classification and adverse policy
+  coverage. Focused tests pass 23/23; the affected gate passes 73/73 with 63
+  cached in 44.855 seconds.
+
+### Evidence
+
+- `node --test ./tools/classify-ci-change.test.ts ./tools/run-diagnostic-exercises.test.mjs ./tools/verify-diagnostics-profile.test.mjs`
+  passes 23/23; `pnpm check:changed` passes 73/73 with 63 cached in 44.855
+  seconds.
+
+### Next action
+
+- Publish the remediation, require protected three-scenario acceptance, resolve
+  the two discussions and obtain the permitted blocking-boundary confirmation.
+
 ## 2026-08-30 — Corrected diagnostic protected acceptance
 
 ### Completed

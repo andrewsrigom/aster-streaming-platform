@@ -51,6 +51,13 @@ Finite-outcome source `58779b9` passes protected run `33336386466`.
   corrected source `0288555`, tree `1ceeb20`, passed protected run
   `33338774702`; local-platform job `99330472682`, source-quality job
   `99330472705` and aggregate job `99332541219` all passed.
+- Evidence head `3aca9e5` passed protected run `33339712525`. Exact-head
+  confirmation discussions `3890788286`/`3890788287` found that selected
+  TraceQL fields were insufficient for stored-trace privacy proof and that
+  lockfile-only changes skipped diagnostics. The local batch waits for a
+  bounded stable full trace through Grafana, checks all stored attributes and
+  adds `pnpm-lock.yaml` to diagnostic invalidation. Focused tests pass 23/23 and
+  the affected gate passes 73/73 with 63 cached in 44.855 seconds.
 
 ## Protected runtime finding
 
@@ -91,12 +98,12 @@ restart, cleanup or repeated probe followed.
 
 ## Exact next actions
 
-1. Publish the bounded evidence for protected run `33338774702` and require its
-   proportional final-head checks.
-2. Resolve the three evidenced review threads, request one corrected
-   confirmation, merge after final protection, verify exact-main CI and close
-   Phase12. Inspect/remove only the exact interrupted local project when its
-   original engine is reachable.
+1. Publish the full-trace privacy and lockfile-invalidation remediation, then
+   require the protected three-scenario runtime.
+2. Resolve discussions `3890788286`/`3890788287`, obtain the permitted
+   blocking-boundary confirmation, merge after final protection, verify
+   exact-main CI and close Phase12. Inspect/remove only the exact interrupted
+   local project when its original engine is reachable.
 
 ## Execution boundary
 

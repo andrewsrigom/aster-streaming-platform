@@ -86,11 +86,19 @@ test("rejects an externally selected or broadly destructive runner", () => {
       "const facts = traceSearchFacts(search, traceId);\n    const search = await tempoSearch(ports.grafana, traceId, scenario);",
     ],
     ["/api/datasources/proxy/uid/aster-tempo/api/search?", "/api/search?"],
+    [
+      "/api/datasources/proxy/uid/aster-tempo/api/v2/traces/${traceId}",
+      "/api/v2/traces/${traceId}",
+    ],
     ["| select(", "| unbounded("],
     ["diagnosticTraceReady(response, traceId, scenario)", "true"],
     ["/api/datasources/uid/aster-tempo/health", "/api/health"],
     ['response.value?.status === "OK"', "response.status === 200"],
     ["const escapedCanary = JSON.stringify(canary).slice(1, -1);", "const escapedCanary = canary;"],
+    [
+      "assertTelemetryPrivacy(JSON.stringify(storedTrace), canaries);",
+      "assertTelemetryPrivacy(JSON.stringify(search), canaries);",
+    ],
     ['"timeout|cancelled|unavailable|error"', '"timeout|unavailable|error"'],
     ['fact.status === "error"', "false"],
   ]) {
