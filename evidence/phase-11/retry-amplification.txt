@@ -7,9 +7,10 @@ Source
 - Initial retry-ownership source after squash rebase:
   2b72467931b06886095017de69feb2804cbb6ecc.
 - Initial guard-scope correction: 60ca6f1797a1be38553e11408e2c6240dc8c3926.
-- Review correction/current executable source:
+- Initial review correction:
   ad99ef675953d47a7f03161c94468f9292476de0.
-- Current source tree: 999171632a8823886c47b4d7b06a86303c88d3d5.
+- Current executable source: 473c58444fc02c65ecbfdd3d454d475214fb6c49.
+- Current source tree: f2b0d0bbcfbf239d759836d578e127cc46f9e44a.
 
 Attempt matrix
 | Layer | Automatic attempts for one public safe read | Proof |
@@ -27,7 +28,7 @@ Commands and results
   both concrete safe-read clients, their finite admission and their breaker
   behavior.
 - Focused ESLint, Prettier and git diff --check: PASS.
-- Final corrected complete affected candidate: PASS 17/17 tasks, 2 cached, in
+- Initial review-corrected affected candidate: PASS 17/17 tasks, 2 cached, in
   57.471 seconds; Web passes 112/112 and the Router policy is included in
   platform67/67.
 - The initial 17/17 gate passed in 56.616 seconds. Local review then narrowed
@@ -51,7 +52,7 @@ passed its 73/73 candidate, but protected run `33294397540` correctly failed the
 dependency-free documentation/platform job because that job intentionally does
 not install packages. This candidate is invalidated and is not release evidence.
 
-Final executable correction
+Dependency-free escape correction
 `402b48897f6d679c243093eaf9199c0430aab397`, tree
 `b3814949919b1eeef8e7b0b9a732a86a35d73815`, removes the dependency and fully
 decodes YAML 1.2 double-quoted escapes, including fixed-width `x`, `u` and `U`
@@ -64,6 +65,13 @@ and double-quoted, `x`/`u`/`U`-escaped, malformed, alias and invalid-escape
 mutations. Dependency-free platform source verification, scoped ESLint,
 Prettier and diff checks pass. The final affected candidate passes 17/17 tasks,
 five cached, in 52.918 seconds; platform passes 67/67 and includes the guard.
+
+Final confirmation then proved that a Router configuration expansion such as
+`${env.ASTER_ROUTER_RETRY_KEY:-retry}` could materialize the forbidden key.
+Source `473c584`, tree `f2b0d0b`, rejects any expansion inside the bounded
+traffic-shaping policy while leaving unrelated Router telemetry expansion
+unchanged. Router passes 4/4, platform 67/67 and the complete affected gate
+passes 17/17 tasks, five cached, in 48.055 seconds.
 
 Verified composition
 - Public SSR/browser Apollo uses HttpLink plus one bounded fetch. There is no

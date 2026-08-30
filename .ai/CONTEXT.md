@@ -63,9 +63,9 @@ as `ebdcb18`; exact-main run33285339274 passed. P11-R05 is released as main
 `59600ae`; exact-main run33290477608 passed. P11-R08/R09 is released through
 evidence head `371ba55`, clean confirmation, protected run33291705269, PR43
 squash main `bdbe2e0` and successful exact-main run33292389504. P11-R10 is
-frozen `WAITING_EXTERNAL` on PR44 at corrected executable source `ad99ef6`. Its
+frozen `WAITING_EXTERNAL` on PR44 at corrected executable source `473c584`. Its
 five game days, finite-capacity, fallback/no-amplification evidence and runbooks
-are implemented; initial review's two retry-guard findings are corrected and
+are implemented; review's retry-guard findings are corrected and
 protected confirmation/release remain. P12-R01 is active locally and cannot
 publish before PR44 releases.
 

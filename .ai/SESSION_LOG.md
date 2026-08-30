@@ -76,6 +76,17 @@ Append new entries at the top. Keep entries factual and concise.
   dependency and fully decodes YAML quoted-key escapes while rejecting malformed
   and alias forms. Router4/4, platform67/67 and the final affected gate pass
   17/17 tasks with five cached in52.918 seconds.
+- PR44 run `33294599297` passed its available policy, dependency and platform
+  jobs while source quality continued. Confirmation found two stale evidence
+  pointers and a Router configuration-expansion bypass for retry ownership.
+- Exact source `473c584`, tree `f2b0d0b`, rejects expansion only inside the
+  bounded traffic-shaping policy and covers the reported
+  `${env.ASTER_ROUTER_RETRY_KEY:-retry}` mutation. Router4/4, platform67/67 and
+  the affected gate17/17 with five cached in48.055 seconds pass. Evidence and
+  repository memory now point at the exact source.
+- Preserved P12-R01 work in stash
+  `p12-trace-observability-wip-before-p11-final-review-2`; it remains the one
+  unpublished dependent.
 
 ### Evidence
 
@@ -89,9 +100,9 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Publish the single PR44 correction and resume P12-R01 locally while exact-head
-confirmation and protected CI run. Merge and verify P11 first; do not publish
-the dependent before that release.
+Publish the single PR44 correction, resolve current discussions and request
+exact-head confirmation. Resume P12-R01 locally while CI runs. Merge and verify
+P11 first; do not publish the dependent before that release.
 
 ## 2026-08-29 — Operation admission release and resilience start
 

@@ -57,5 +57,6 @@ linked by those artifacts. No requirement is marked non-applicable.
 Breaker metrics, behavior and the tools-only failure laboratory are released.
 The five game days, saturation, fallback/no-amplification proof and complete
 operator procedures are published on PR44. Initial review's two retry-guard
-findings are corrected at executable source `ad99ef6`; its local candidate gate
-passes. Protected exact-head confirmation/CI and release remain.
+findings and confirmation bypasses are corrected at executable source
+`473c584`, tree `f2b0d0b`. Its local Router4/4, platform67/67 and affected17/17
+candidate gates pass. Protected exact-head confirmation/CI and release remain.

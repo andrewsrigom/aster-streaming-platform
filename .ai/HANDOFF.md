@@ -4,7 +4,7 @@
 
 P12-R01 is active as the one unpublished dependent. Its uncommitted trace work
 is preserved in named stash
-`wip/p12-trace-observability-before-pr44-confirmation-fix`; restore it on the
+`p12-trace-observability-wip-before-p11-final-review-2`; restore it on the
 dependent branch based on the final PR44 head.
 
 Phases 00–10 and P11-R01/R05/R08/R09 are released. P11-R08/R09 evidence head
@@ -22,16 +22,19 @@ P11-R10 exact-head confirmation discussion `3888512532` found that the lexical
 Router guard did not decode a double-quoted YAML Unicode escape. The first
 parser-based correction passed locally but protected run `33294397540` exposed
 its dependency in an intentionally dependency-free policy job. Final exact
-source `402b48897f6d679c243093eaf9199c0430aab397`, tree
-`b3814949919b1eeef8e7b0b9a732a86a35d73815`, removes that dependency and fully
-decodes YAML quoted-key escapes within the bounded policy. Router4/4,
-platform67/67 and the affected17/17 gate with five cached in52.918 seconds pass.
+source `402b48897f6d679c243093eaf9199c0430aab397` removed that dependency and fully
+decoded YAML quoted-key escapes within the bounded policy. Confirmation then
+found that Router configuration expansion could materialize a retry key. Final
+source `473c58444fc02c65ecbfdd3d454d475214fb6c49`, tree
+`f2b0d0bbcfbf239d759836d578e127cc46f9e44a`, rejects expansion inside traffic
+shaping. Router4/4, platform67/67 and the affected17/17 gate with five cached in
+48.055 seconds pass.
 P11-R10 is frozen `WAITING_EXTERNAL`; protected exact-head CI, confirmation,
 merge and exact-main verification remain.
 
 ## Exact next actions
 
-1. Push the batched PR44 correction once, resolve discussion `3888512532` and
+1. Push the batched PR44 correction once, resolve the current review discussions and
    request one exact-head confirmation.
 2. Restore the named P12 stash on the dependent branch and continue locally.
 3. After protected CI and confirmation, squash merge without bypass, verify
