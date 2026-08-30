@@ -261,6 +261,10 @@ test("rejects missing or unbounded Docker-only build and metric verification", a
       "api/datasources/proxy/uid/aster-prometheus/api/v1/query",
       "api/datasources/proxy/uid/unreviewed/api/v1/query",
     ],
+    [
+      "ratio_rate5m%7Bsli%3D%22playback_start%22%7D",
+      "ratio_rate5m%7Bsli%3D%22playback_session%22%7D",
+    ],
     ["api/dashboards/uid/aster-operational-overview", "api/dashboards/uid/unreviewed"],
     ["--profile full stop --timeout 5 grafana", "--profile full stop grafana"],
     [

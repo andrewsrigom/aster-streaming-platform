@@ -51,9 +51,9 @@
         {
           "editorMode": "code",
           "expr": "aster:sli:good:ratio_rate5m{sli=\"supergraph\"}",
-          "instant": false,
+          "instant": true,
           "legendFormat": "supergraph",
-          "range": true,
+          "range": false,
           "refId": "A"
         }
       ],
@@ -95,9 +95,9 @@
         {
           "editorMode": "code",
           "expr": "aster:sli:good:ratio_rate5m{sli=\"catalog_title_read\"}",
-          "instant": false,
+          "instant": true,
           "legendFormat": "catalog title read",
-          "range": true,
+          "range": false,
           "refId": "A"
         }
       ],
@@ -138,10 +138,10 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "aster:sli:good:ratio_rate5m{sli=\"playback_session\"}",
-          "instant": false,
+          "expr": "aster:sli:good:ratio_rate5m{sli=\"playback_start\"}",
+          "instant": true,
           "legendFormat": "playback session",
-          "range": true,
+          "range": false,
           "refId": "A"
         }
       ],
@@ -183,9 +183,9 @@
         {
           "editorMode": "code",
           "expr": "aster:sli:good:ratio_rate5m{sli=\"progress_write\"}",
-          "instant": false,
+          "instant": true,
           "legendFormat": "progress write",
-          "range": true,
+          "range": false,
           "refId": "A"
         }
       ],

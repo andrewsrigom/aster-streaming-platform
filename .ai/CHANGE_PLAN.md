@@ -50,6 +50,8 @@ CI.
 - Local anonymous access is Viewer-only, loopback-only and bounded; provisioned resources are not UI-editable.
 - Grafana can reach Prometheus but not PostgreSQL, Redis, broker, storage or owner services.
 - Empty/no-traffic SLI results remain empty and never become synthetic success.
+- User-impact panels use the released SLO IDs and current instant values; an
+  older non-empty sample cannot mask a currently absent recording.
 
 ## Failure behavior
 
@@ -91,7 +93,7 @@ CI.
 - Domain: not applicable; no product rule changes.
 - Application: not applicable; dashboard is an operational projection.
 - Integration: Compose validates and protected CI starts Grafana, verifies health, data source, dashboard UID and representative live queries.
-- Contract: repository validator checks finite panels, released metric names, fixed data source, section coverage, links and no prohibited labels.
+- Contract: repository validator checks finite panels, SLO-contract IDs, instant user-impact values, released metric names, fixed data source, section coverage, links and no prohibited labels.
 - Browser: one loopback HTTP/dashboard API acceptance; no product browser journey changes.
 - Performance/failure: finite resources, refresh/query bounds, Prometheus absence and Grafana failure do not affect product health.
 

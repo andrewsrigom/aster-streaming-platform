@@ -375,8 +375,8 @@ export function validateWorkflowPolicy(
       "protected acceptance must verify the provisioned Prometheus data source",
     ],
     [
-      /api\/datasources\/proxy\/uid\/aster-prometheus\/api\/v1\/query\?query=aster%3Asli%3Apopulation%3Arate5m/u,
-      "protected acceptance must execute a released metric through Grafana",
+      /api\/datasources\/proxy\/uid\/aster-prometheus\/api\/v1\/query\?query=aster%3Asli%3Agood%3Aratio_rate5m%7Bsli%3D%22playback_start%22%7D/u,
+      "protected acceptance must execute the released Playback SLI through Grafana",
     ],
     [
       /http:\/\/127\.0\.0\.1:3001\/api\/dashboards\/uid\/aster-operational-overview/u,

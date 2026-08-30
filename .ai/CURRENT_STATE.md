@@ -209,9 +209,14 @@ PIDs,87 healthy PIDs and253.2 MiB. The correction uses128 PIDs,384 MiB and
 disables plugin preinstallation/automatic update. Its isolated repeat became
 healthy with99 PIDs/225.9 MiB, provisioned the read-only data source/dashboard,
 emitted no plugin-installer/thread failure and left zero scoped resources. The
-corrected complete candidate gate passes15/15 tasks in62.976 seconds, including
-platform73/73, CI policy33/33, documentation, AI state, formatting, lint and
-security. One corrective publication and protected live acceptance remain.
+resource-corrected complete candidate gate passed15/15 tasks in62.976 seconds.
+Initial review discussions `3889614208` and `3889614213` then found a mismatched
+Playback SLI label and stale `lastNotNull` range semantics. The batched local
+correction uses released `playback_start`, cross-checks all four dashboard IDs
+against the SLO contract and makes their ratio queries current-instant only.
+Focused dashboard/platform tests pass39/39; combined focused CI/platform/reset
+tests pass62/62. The corrected complete candidate passes15/15 tasks with2 cached
+in81.29 seconds. One publication and protected live acceptance remain.
 
 P11-R10 is released at tree-identical main `834bf15` and successful exact-main
 run `33296443777`. Superseded run

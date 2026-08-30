@@ -14,13 +14,17 @@ const sourcePaths = Object.freeze({
   dashboardProvider: "infra/grafana/provisioning/dashboards/provider.yml",
   datasource: "infra/grafana/provisioning/datasources/prometheus.yml",
   dockerfile: "infra/docker/grafana.Dockerfile",
+  sloContract: "infra/observability/slo-contract.json",
 });
 
+const userImpactSliIds = Object.freeze([
+  "supergraph",
+  "catalog_title_read",
+  "playback_start",
+  "progress_write",
+]);
 const queries = Object.freeze([
-  'aster:sli:good:ratio_rate5m{sli="supergraph"}',
-  'aster:sli:good:ratio_rate5m{sli="catalog_title_read"}',
-  'aster:sli:good:ratio_rate5m{sli="playback_session"}',
-  'aster:sli:good:ratio_rate5m{sli="progress_write"}',
+  ...userImpactSliIds.map((sli) => `aster:sli:good:ratio_rate5m{sli="${sli}"}`),
   "aster:sli:population:rate5m",
   "sum by (aster_dependency, aster_operation, aster_outcome) (rate(aster_dependency_operation_outcomes_total[5m]))",
   "histogram_quantile(0.95, sum by (le, aster_dependency, aster_operation) (rate(aster_dependency_operation_duration_seconds_bucket[5m])))",
@@ -180,13 +184,27 @@ function validateProvisioning(sources, violations) {
   );
 }
 
-function validateDashboard(source, violations) {
+function validateDashboard(source, sloContractSource, violations) {
   let dashboard;
+  let sloContract;
   try {
     dashboard = JSON.parse(source);
+    sloContract = JSON.parse(sloContractSource);
   } catch {
-    violations.push({ rule: "operational-overview", detail: "dashboard JSON is invalid" });
+    violations.push({
+      rule: "operational-overview",
+      detail: "dashboard or SLO contract JSON is invalid",
+    });
     return;
+  }
+  if (
+    !Array.isArray(sloContract?.slis) ||
+    JSON.stringify(sloContract.slis.map((sli) => sli?.id)) !== JSON.stringify(userImpactSliIds)
+  ) {
+    violations.push({
+      rule: "operational-overview",
+      detail: "user-impact panels must follow the released SLO contract IDs and order",
+    });
   }
   if (
     dashboard === null ||
@@ -267,6 +285,7 @@ function validateDashboard(source, violations) {
   for (const panel of dataPanels) {
     const targets = Array.isArray(panel?.targets) ? panel.targets : [];
     const grid = panel?.gridPos;
+    const isCurrentSliStat = panel?.type === "stat" && panel?.id >= 2 && panel.id <= 5;
     if (
       typeof panel?.title !== "string" ||
       panel.title.length < 5 ||
@@ -277,8 +296,8 @@ function validateDashboard(source, violations) {
       JSON.stringify(panel?.datasource) !== '{"type":"prometheus","uid":"aster-prometheus"}' ||
       targets.length !== 1 ||
       targets[0]?.editorMode !== "code" ||
-      targets[0]?.range !== true ||
-      targets[0]?.instant !== false ||
+      targets[0]?.range !== !isCurrentSliStat ||
+      targets[0]?.instant !== isCurrentSliStat ||
       !Number.isInteger(grid?.x) ||
       !Number.isInteger(grid?.y) ||
       !Number.isInteger(grid?.w) ||
@@ -330,6 +349,7 @@ export function validateOperationalOverview(sources) {
     dashboardProvider: 4_096,
     datasource: 4_096,
     dockerfile: 4_096,
+    sloContract: 32_768,
   };
   for (const [name, limit] of Object.entries(limits)) {
     const source = sources[name] ?? "";
@@ -346,7 +366,7 @@ export function validateOperationalOverview(sources) {
   validateDockerfile(sources.dockerfile, violations);
   validateCompose(sources.compose, violations);
   validateProvisioning(sources, violations);
-  validateDashboard(sources.dashboard, violations);
+  validateDashboard(sources.dashboard, sources.sloContract, violations);
   return violations;
 }
 

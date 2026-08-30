@@ -424,7 +424,7 @@ jobs:
           printf '%s' "$grafana_datasource" | grep -q '"url":"http://prometheus:9090"'
           grafana_datasource_health=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/datasources/uid/aster-prometheus/health)
           printf '%s' "$grafana_datasource_health" | grep -q '"status":"OK"'
-          grafana_query=$(curl --fail --silent --show-error --max-time 3 'http://127.0.0.1:3001/api/datasources/proxy/uid/aster-prometheus/api/v1/query?query=aster%3Asli%3Apopulation%3Arate5m')
+          grafana_query=$(curl --fail --silent --show-error --max-time 3 'http://127.0.0.1:3001/api/datasources/proxy/uid/aster-prometheus/api/v1/query?query=aster%3Asli%3Agood%3Aratio_rate5m%7Bsli%3D%22playback_start%22%7D')
           printf '%s' "$grafana_query" | grep -q '"status":"success"'
           grafana_dashboard=$(curl --fail --silent --show-error --max-time 3 http://127.0.0.1:3001/api/dashboards/uid/aster-operational-overview)
           printf '%s' "$grafana_dashboard" | grep -q '"uid":"aster-operational-overview"'

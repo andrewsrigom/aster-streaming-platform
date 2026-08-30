@@ -104,6 +104,22 @@ evidence is planned until a protected exact-head run passes. The isolated local
 proof above supports the corrected resource boundary but does not replace the
 protected full-profile acceptance.
 
+Initial review correction
+-------------------------
+
+Discussions 3889614208 and 3889614213 found that the Playback stat selected
+`playback_session` although the released recording label is `playback_start`,
+and that range-query `lastNotNull` reduction could show an old ratio after the
+current five-minute recording disappeared. The batched correction derives the
+four expected selectors from `slo-contract.json`, uses instant/no-range queries
+for every user-impact stat and protects label, contract-ID and query-mode
+mutations. Focused operational/platform/reset tests pass39/39. The protected
+Grafana proxy check now executes the exact encoded `playback_start` selector.
+Combined focused CI/platform/reset tests pass62/62. The complete corrected
+candidate passes15/15 tasks with2 cached in81.29 seconds, including
+platform73/73, CI policy33/33, documentation, AI state, formatting, lint and a
+zero-finding secret scan. Protected exact-head acceptance remains.
+
 Rollback
 --------
 

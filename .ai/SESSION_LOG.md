@@ -36,6 +36,20 @@ Append new entries at the top. Keep entries factual and concise.
 - Corrected focused platform/reset tests pass39/39, CI policy passes33/33 and
   the complete candidate gate passes15/15 tasks in62.976 seconds with one
   cached task. No heavyweight proof was repeated after that unchanged source.
+- Published resource correction `e5f0df2`; superseded run `33316483464` was
+  cancelled instead of consuming more hosted capacity after its decisive
+  Local-platform failure.
+- Initial review discussions `3889614208` and `3889614213` found two real
+  user-impact defects: Playback selected unpublished SLI label
+  `playback_session`, and range stats could display a historical value after
+  the current ratio disappeared. The batched correction selects released
+  `playback_start`, derives the expected panel selectors from the SLO contract,
+  requires instant ratio queries and protects both boundaries with adverse
+  tests. Focused operational/platform/reset tests pass39/39.
+- Combined focused CI/platform/reset tests pass62/62. The corrected complete
+  candidate passes15/15 tasks with2 cached in81.29 seconds, including
+  platform73/73, CI policy33/33, documentation, AI state, formatting, lint and
+  security.
 
 ### Evidence
 
@@ -44,8 +58,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Commit and publish once for protected live provisioning, complete review and
-bounded confirmation.
+Publish the batched review correction once, then require protected live
+provisioning and one bounded confirmation.
 
 ## 2026-08-30 — Browser telemetry release and executable SLI/SLO candidate
 

@@ -24,8 +24,10 @@ Viewer role described by [ADR-0042](../adr/0042-bounded-local-operational-overvi
 
 Start with the four SLI ratio panels. They answer whether admitted supergraph,
 Catalog title-read, playable-session and progress-write attempts currently meet
-their good-event definitions. Check `SLI measured population` before treating a
-gap as failure. No traffic deliberately produces no ratio.
+their good-event definitions. Each ratio is an instant query of the current
+five-minute recording, so an older non-empty sample cannot mask current
+no-traffic. Check `SLI measured population` before treating a gap as failure. No
+traffic deliberately produces no ratio.
 
 ### Dependency health
 
