@@ -33,14 +33,15 @@ Implemented locally:
 
 Focused gates pass: runtime88/88, telemetry12/12, Playback38/38 and
 Discovery107/107. The affected candidate passes53/53 with19 cached in69.098
-seconds.
+seconds. Exact implementation `96e399b` has tree `d66004c`; evidence is under
+`evidence/phase-11/`.
 
 ## Exact next actions
 
-1. Commit the reviewed implementation checkpoint and record its exact source.
-2. Capture `evidence/phase-11/dependency-policies.txt` and retry timing evidence.
-3. Complete one hosted review, batch only blocking remediation, then confirmation.
-4. Publish the coherent candidate and require protected CI at its exact head.
+1. Commit the evidence checkpoint and publish the coherent candidate once.
+2. Require protected CI and one hosted review at the exact pull-request head.
+3. Batch only blocking remediation, then run one confirmation review.
+4. Record release evidence and merge only after exact-head gates pass.
 
 ## Evidence boundaries
 

@@ -1,0 +1,56 @@
+P11 dependency policy and safe-read candidate
+Date: 2026-08-29
+Status: verified locally; review and protected publication pending
+
+Source
+- Released base: eed82291c29e43d985cb6b0fa08d8c21be32c133.
+- Exact implementation commit: 96e399b11a28e7ea87c7d89d7a2c0df334965b84.
+- Git tree: d66004ce7a92be4e756314d03eadece833edd8a1.
+- Branch: feat/p11-dependency-policies.
+
+Environment
+- WSL2 Ubuntu-20.04; Linux 6.18.33.2-microsoft-standard-WSL2 x86_64.
+- 6 logical CPUs.
+- Node.js 24.19.0; pnpm 11.24.0.
+- CI=true, NODE_OPTIONS=--max-old-space-size=1536 and TURBO_CONCURRENCY=4
+  for the complete affected gate.
+
+Commands and raw results
+- pnpm --filter @aster/runtime exec node --test ./dist/test/safe-read.test.js
+  PASS: 8/8 in 116.271242 ms. This includes the registry verifier.
+- pnpm --filter @aster/telemetry test
+  PASS: 12/12 in 360.166293 ms.
+- pnpm check:changed
+  PASS: 53/53 tasks, 19 cached, Turbo wall time 69.098 seconds.
+- pnpm ai:check
+  PASS: 10 files, 53 queue items, 124 session entries, active/target P11-R01.
+- pnpm docs:check
+  PASS: 231 documents, 2,827 headings, 1,415 links, zero violations.
+- pnpm format:check and git diff --check
+  PASS.
+
+Workload and contract
+- The checked-in registry has exactly 19 current dependency-operation rows and
+  11 non-empty columns per row.
+- Every row records role/safety, deadline, attempts/backoff, breaker state,
+  bulkhead/queue, fallback, telemetry, user outcome and retry owner.
+- Router rows name no retry owner. Playback and Discovery name exactly their
+  purpose-separated Catalog clients. Reconnect, durable redelivery and explicit
+  user retry are distinguished from a hidden retry of one request.
+- The shared runtime supports at most three configured attempts; both concrete
+  owner policies configure exactly two.
+
+Interpretation
+The inventory is executable documentation: its row/column and retry-owner
+constraints fail the runtime test if removed or changed inconsistently. The
+affected source gate verifies strict TypeScript, lint, formatting, architecture,
+security, documentation, schema compatibility and all impacted workspace tests
+from the exact implementation commit.
+
+Limitations
+- This is local candidate evidence, not protected CI or release evidence.
+- Registry breaker entries explicitly say planned P11; no breaker is claimed.
+- No PostgreSQL, Redis, broker, media or browser behavior changed. Their
+  heavyweight fixtures were not repeated locally.
+- This records policy correctness, not production capacity, tail latency or a
+  hosted service-level objective.

@@ -1,0 +1,63 @@
+P11 deadline-bound safe-read timing and failure trace
+Date: 2026-08-29
+Status: verified locally at the exact implementation commit
+
+Source
+- Exact implementation commit: 96e399b11a28e7ea87c7d89d7a2c0df334965b84.
+- Git tree: d66004ce7a92be4e756314d03eadece833edd8a1.
+- Node.js 24.19.0 on WSL2 Linux
+  6.18.33.2-microsoft-standard-WSL2 x86_64.
+
+Exact commands
+- pnpm --filter @aster/runtime exec node --test ./dist/test/safe-read.test.js
+- pnpm --filter @aster/playback exec node --test ./dist/test/catalog-publication-client.test.js
+- pnpm --filter @aster/discovery exec node --test ./dist/test/catalog-snapshot-client.test.js
+
+Deterministic runtime trace
+- Policy: 1,000 ms overall, 300 ms per attempt, 50 ms response reserve,
+  max 2 attempts, 100 ms base and 200 ms cap.
+- Attempt 1: transient.
+- Equal-jitter sample 0.5 produces exactly 75 ms:
+  ceil(100 / 2 + (100 / 2 * 0.5)).
+- Observations: transient -> retry_scheduled(delayMs=75) -> completed.
+- Result: completed value 7 after exactly 2 attempts.
+- Pre-delay remaining budget 349 ms is below 50 + 300 + 50; result is
+  unavailable after 1 attempt and no delay.
+- A delayed scheduler that leaves 349 ms passes the original pre-delay check but
+  fails the second gate before attempt 2; result remains 1 attempt.
+- Attempt timeout and caller cancellation both start no retry. Cancellation in
+  backoff prevents attempt 2. Three configured transient attempts stop exactly
+  at the generic ceiling with delays 100 and 200 ms.
+- Runtime focused result: PASS 8/8 in 116.271242 ms. The individual retry,
+  permanent, budget, timeout, cancellation, policy and registry tests all pass.
+
+Real loopback HTTP trace
+- Playback 503 -> success: PASS, exactly 2 requests, 19.13012 ms test duration.
+- Playback ECONNRESET -> success: PASS, exactly 2 requests, 19.808216 ms.
+- Playback permanent/protocol scenarios: PASS, exactly 1 request each,
+  15.511011 ms combined test duration.
+- Playback unresponsive owner: PASS, transport closed by its 650 ms attempt
+  ceiling with no retry; 658.620275 ms test duration.
+- Playback focused file: PASS 6/6 in 863.677168 ms.
+- Discovery 503 -> success: PASS, exactly 2 requests, 18.33409 ms.
+- Discovery ECONNRESET -> success: PASS, exactly 2 requests, 20.000361 ms.
+- Discovery permanent/protocol scenarios: PASS, exactly 1 request each,
+  16.86762 ms combined test duration.
+- Discovery invalid/concurrent/cancelled work: PASS with no queue.
+- Discovery focused file: PASS 7/7 in 234.955705 ms.
+
+Interpretation
+Selected transient reads recover once while remaining inside one logical client
+permit. Permanent owner data/protocol failures, attempt timeout, cancellation and
+insufficient remaining budget never start another request. The fixed concrete
+25 ms ceiling yields a 13-25 ms equal-jitter delay; injected zero randomness in
+loopback tests exercises its 13 ms lower bound deterministically.
+
+Limitations
+- Individual test durations are observed runner times, not latency benchmarks or
+  SLOs. Deterministic delay assertions establish policy math independently of
+  scheduler noise.
+- The loopback fixture proves Node HTTP cleanup and classification on one local
+  environment. Protected CI remains required at the published exact head.
+- Router and Apollo Client retain one attempt; this candidate introduces no
+  mutation retry, circuit breaker or production failure-injection endpoint.

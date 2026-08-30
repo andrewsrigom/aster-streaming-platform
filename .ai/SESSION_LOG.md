@@ -51,6 +51,9 @@ Append new entries at the top. Keep entries factual and concise.
 - Runtime88/88, Playback38/38, Discovery107/107 and telemetry12/12 focused tests
   pass, including real HTTP 503/reset recovery and permanent non-retry. The
   affected candidate passes53/53 with19 cached in69.098 seconds.
+- Committed exact implementation `96e399b` with tree `d66004c`. Its focused
+  retry trace passes runtime8/8, Playback6/6 and Discovery7/7; dependency-policy
+  and retry-timing artifacts are recorded under `evidence/phase-11/`.
 
 ### Evidence
 
@@ -66,8 +69,8 @@ Append new entries at the top. Keep entries factual and concise.
 
 ### Next action
 
-Capture exact P11-R01 evidence, review and publish without adding retry layers at
-Router or Apollo Client.
+Publish exact P11-R01 evidence, then run protected CI and one review without
+adding retry layers at Router or Apollo Client.
 
 ## 2026-08-29 — Catalog release and Discovery candidate rebase
 

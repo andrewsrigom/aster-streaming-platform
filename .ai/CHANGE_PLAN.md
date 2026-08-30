@@ -140,9 +140,9 @@ Dependency policy registry, resilience architecture, affected client docs, Phase
 
 ## Completion checklist
 
-- [ ] Requirements satisfied in implementation and focused contracts
+- [x] Requirements satisfied in implementation and focused contracts
 - [x] Local candidate tests pass
-- [ ] Evidence captured
+- [x] Evidence captured
 - [x] Documentation current
 - [x] `.ai/` state updated
-- [ ] Remaining risks recorded
+- [x] Remaining risks recorded

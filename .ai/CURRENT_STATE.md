@@ -167,9 +167,10 @@ concrete Playback and Discovery policies use two attempts only for HTTP
 502/503/504, EAI_AGAIN, ECONNRESET or incomplete/aborted streams; timeout,
 malformed data, HTTP500, 4xx and local capacity do not retry. Both retain their
 existing concurrency permit. Per-attempt telemetry uses only `catalog`/`read`.
-Runtime88/88, Playback38/38, Discovery107/107 and telemetry12/12 pass. The
-affected candidate passes53/53 with19 cached in69.098 seconds. Evidence, review
-and protected publication remain.
+Runtime88/88, Playback38/38, Discovery107/107 and telemetry12/12 pass. Exact
+implementation `96e399b` has tree `d66004c`; the affected candidate passes53/53
+with19 cached in69.098 seconds. Dependency-policy and retry-timing evidence are
+captured under `evidence/phase-11/`. Review and protected publication remain.
 
 ## Historical Phase 09 corrections
 
@@ -217,14 +218,14 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 
 ## Not implemented
 
-P11-R01's evidence, review and protected publication remain. Later Phase11
-breakers, controlled injection, game days and runbooks remain planned. Hosted
+P11-R01's review and protected publication remain. Later Phase11 breakers,
+controlled injection, game days and runbooks remain planned. Hosted
 deployment remains Phase14.
 
 ## Next outcome
 
-Complete P11-R01: capture exact evidence for the passing deadline-bound
-safe-read candidate, review and publish.
+Complete P11-R01: review and publish the evidenced deadline-bound safe-read
+candidate.
 
 ## Runtime and recovery
 
