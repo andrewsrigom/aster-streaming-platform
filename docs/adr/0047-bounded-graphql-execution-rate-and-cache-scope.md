@@ -56,18 +56,22 @@ refill two requests per second and TTL 30 seconds. Profile selection uses
 seconds. Sign-in, sign-out and reads retain the global Router/service controls;
 sign-out is never blocked by the new limiter.
 
-The profile-command decorator restores the current owner session before rate
-admission and therefore partitions on Identity's authoritative account ID.
-Create/update/delete derive the admission marker from the already validated
-durable `mutationId` and canonical request digest; an exact retry therefore
-reuses the cross-replica Redis decision instead of spending another token,
-while conflicting payloads remain distinct attempts. Selection has no durable
-receipt and keeps an owner-generated marker. The decorator then invokes the existing
-profile application, which revalidates and locks the session before any write.
-Admission happens between completed PostgreSQL units of work and never inside a
-product transaction.
+Before rate admission, the profile-command decorator asks the Identity owner to
+validate the canonical create/update/delete input, authorize the current session
+and read the retained durable receipt. An exact retained receipt returns its
+original result without consulting the short-lived limiter; reuse of the same
+`mutationId` with a different canonical request digest conflicts. Only a missing
+receipt reaches account-partitioned admission. Its marker derives from the
+validated `mutationId` and request digest, so concurrent or unsaved exact attempts
+share the cross-replica decision. Selection has no durable receipt and keeps an
+owner-generated marker. After admission, the existing profile application
+revalidates and locks the session before any write. Admission happens between
+completed PostgreSQL units of work and never inside a product transaction.
 
-Redis uses one atomic versioned token bucket and a finite admission marker. Keys
+Redis uses one atomic versioned token bucket and a finite admission marker for
+new or not-yet-durable attempts. The marker is never the source of a completed
+mutation replay because its 30-second lifetime is shorter than the 86,400-second
+durable receipt. Keys
 contain a SHA-256 account pseudonym and admission digest, never the raw cookie,
 account/profile ID or request correlation ID. The shared decision runs first so
 an exact cross-replica retry remains replayable even when one process has a hot
@@ -98,9 +102,10 @@ local policy. PostgreSQL loss still removes readiness and new work admission.
 
 ### Negative
 
-- Session validation runs once for partition selection and again in the
-  authoritative command path. This is deliberate race-safe work within the
-  existing bounded database pool.
+- New mutations use one authorized read transaction to establish that no durable
+  receipt exists, then repeat authorization in the authoritative write path.
+  This is deliberate race-safe work within the existing bounded database pool;
+  completed exact retries stop after the first read.
 - Local fallback is per process, so aggregate degraded capacity can rise with
   replica count. Phase14 capacity/deployment policy must account for that finite
   multiplier.
@@ -145,15 +150,18 @@ without a current performance requirement.
 ## Validation
 
 Unit tests prove burst/refill, partition isolation, 1,024-partition and
-8,192-marker capacity, exact mutation replay and changed-payload separation,
-pseudonymous keys, fixed
+8,192-marker capacity, durable replay before rate admission, changed-payload
+separation, pseudonymous keys, fixed
 Redis policy, rejection, outage fallback, recovery, cancellation and closure.
-Application tests prove authorization precedes admission, rejection prevents
-the base mutation and reads bypass the limiter.
+Application tests prove authorization and durable receipt lookup precede
+admission, rejection prevents the base mutation and reads bypass the limiter.
 Composition tests require exact policy coverage, derived private scope and
 `no-store` on all hashes. Identity runtime tests prove Redis is absent from
 readiness while both dependencies remain owned for shutdown. Real Redis and
-PostgreSQL failure evidence is captured in Phase13 before release.
+PostgreSQL failure evidence is captured in Phase13 before release. The real
+subgraph proof exhausts the shared mutation bucket, removes the short-lived
+Redis marker and still returns the retained PostgreSQL result without recreating
+that marker.
 
 ## Migration and rollback
 

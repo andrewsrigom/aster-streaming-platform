@@ -14,8 +14,11 @@ Item66 (P13-R06/R11) is the sole `IN_PROGRESS` item on
 from exact main `8cd6c0b`. Initial source `a090285`, tree `98d3064`, passed its
 candidate gate; evidence head `59b7215`, tree `ee1c908`, opened PR56. Protected
 run `33432579598` failed and initial review found one blocker. Corrected source
-`8d2633d`, tree `d75aca0`, is committed and locally accepted. It is not pushed,
-confirmed or released yet.
+`8d2633d`, tree `d75aca0`, reached published head `82ba630`, passed protected run
+`33437257163` and resolved discussion `3897861197`. Confirmation discussion
+`3898385895` found the 30-second marker expires before the 86,400-second durable
+receipt. Second corrected source `bf14e2c`, tree `0084c67`, is committed and
+locally accepted. It is not pushed, confirmed or released yet.
 
 ## Implemented locally
 
@@ -32,9 +35,11 @@ confirmed or released yet.
   uses `profile_selection` (16 burst,4/s). A current session supplies the
   authoritative account partition, then the existing profile command repeats
   authorization before writing.
-- Create/update/delete bind admission to the validated durable mutation ID plus
-  canonical request digest. Exact retries share one decision; changed payloads
-  remain distinct. Selection uses a fresh admission identity.
+- Create/update/delete first validate and authorize the canonical request and
+  read its retained PostgreSQL receipt. Exact durable replay or changed-payload
+  conflict returns before admission. Missing receipts bind admission to the
+  validated mutation ID plus canonical request digest; selection uses a fresh
+  admission identity.
 - The limiter has at most1,024 local partitions and8,192 expiring local
   admission markers. Redis uses its existing atomic server-time bucket with
   30-second TTL and only SHA-256 account/admission pseudonyms. The shared
@@ -50,8 +55,11 @@ confirmed or released yet.
   assertion and Router startup because a static response-header YAML shape was
   unsupported. Its real fixture cleaned remaining0.
 - Initial review discussion `3897861197` found fresh admission could block
-  durable receipt replay. Corrected source is `8d2633d`, tree `d75aca0`.
-- Identity tests:159/159 pass.
+  durable receipt replay. Corrected protected head `82ba630` passed run
+  `33437257163`, and that thread is resolved. Confirmation discussion
+  `3898385895` found the marker/receipt lifetime mismatch.
+- Second corrected source is `bf14e2c`, tree `0084c67`.
+- Identity tests:162/162 pass.
 - Router tests:21/21 plus deterministic schema check pass.
 - Telemetry tests:19/19 pass.
 - Router source verifier:5/5 pass.
@@ -63,19 +71,21 @@ confirmed or released yet.
   SIGTERM/HTTP drain and cleanup remaining0.
 - Raw checkpoint:
   `evidence/phase-13/execution-rate-cache-controls.txt`.
-- Full `pnpm integration`: all11 scenarios passed in150.963 seconds on the
-  correction; exact project cleanup remaining0.
+- Full `pnpm integration`: all11 scenarios passed again in142.098 seconds on the
+  second correction; exact project cleanup remaining0. Exact committed source
+  repeated the real subgraph in18.137 seconds with bucket exhausted, marker
+  removed, durable replay passing, no marker recreation and cleanup remaining0.
 - Isolated `aster-p13-remediation` packaged Router proof passed accepted/adverse
   cache behavior and removed its owned resources.
-- Corrected affected candidate gate:57/57 tasks,37 cached,95.749 seconds on
-  exact source `8d2633d`/tree `d75aca0`.
+- Final second corrected affected candidate gate:57/57 tasks,46 cached,61.880
+  seconds on source `bf14e2c`/tree `0084c67` plus current evidence/documentation.
 
 ## Exact next actions
 
-1. Push the corrected evidence head once to existing PR56.
+1. Push the second corrected evidence head once to existing PR56.
 2. Require protected exact-head CI including the pinned Router `no-store`
-   proof. Answer/resolve discussion `3897861197`, then request one confirmation
-   review on the corrected exact head.
+   proof. Answer/resolve discussion `3898385895`, then request one
+   blocker-focused confirmation review on the second corrected exact head.
 3. Squash merge only after those gates. Verify candidate-tree identity and
    exact-main CI before publishing item67.
 

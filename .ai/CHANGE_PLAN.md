@@ -24,10 +24,10 @@ execution to three seconds and eight concurrent requests, owners have shorter
 outbound/subgraph deadlines, and every admitted GraphQL response is `no-store`.
 The pre-service oversized-body rejection contains no data, explicit freshness
 or validators. Apollo
-Server response/document caches are disabled. Engagement already proves an
-authorized-account Redis limiter with bounded local degradation, but Identity
-profile commands currently have only process-global admission and Identity
-incorrectly treats Redis readiness as critical.
+Server response/document caches are disabled. At item start, Engagement already
+proved an authorized-account Redis limiter with bounded local degradation, but
+Identity profile commands had only process-global admission and Identity
+incorrectly treated Redis readiness as critical.
 
 ## Proposed behavior
 
@@ -39,9 +39,12 @@ is classified public. Keep Router's three-second/eight-request boundary and
 prove its relation to owner deadlines.
 
 Decorate Identity profile mutations after authoritative session restoration
-with account-partitioned token buckets. Validated durable mutation IDs plus
-canonical request digests identify exact create/update/delete retries without
-deduplicating conflicting payloads; selection uses a fresh identity. One
+with account-partitioned token buckets. First use the owner transaction to
+validate the request, authorize the session and replay or conflict a retained
+durable receipt. Only a missing receipt proceeds to admission. Validated durable
+mutation IDs plus canonical request digests coordinate new or unsaved exact
+create/update/delete attempts without deduplicating conflicting payloads;
+selection uses a fresh identity. One
 versioned Redis script uses server time for cross-replica coordination. Its
 bounded decision precedes the outage-only local path so a retry is not hidden by
 one process's exhausted fallback bucket. Redis rejection rejects. Redis timeout
@@ -89,6 +92,7 @@ sole readiness-critical dependency.
 | Failure | Expected behavior | Telemetry |
 | --- | --- | --- |
 | Account exceeds profile command budget | Reject before mutation | finite operation/result/source |
+| Exact completed mutation is retried after a limiter marker expires | Return the retained durable result before rate admission | finite owner result; no limiter event |
 | Redis rejects | Reject consistently across replicas | `redis` plus `rejected` |
 | Redis times out or is unavailable | Use bounded local result; keep Identity ready | `local_fallback` plus finite cause |
 | Redis reply/key is malformed | Fail closed or bounded fallback; never authorize | finite dependency failure |
@@ -138,10 +142,12 @@ sole readiness-critical dependency.
 
 - Domain: deterministic token refill, burst, independent account partitions,
   capacity and clock/reply validation.
-- Application: authorization-before-admission, rejection blocks command,
-  revalidation stays in the base command, cancellation and telemetry.
+- Application: authorization/durable replay before admission, rejection blocks
+  new commands, revalidation stays in the base command, cancellation and
+  telemetry.
 - Integration: real Redis atomic decisions/outage recovery plus real PostgreSQL
-  readiness with Redis absent.
+  readiness with Redis absent; exhaust the shared bucket, remove the exact short
+  marker and prove retained PostgreSQL replay without marker recreation.
 - Contract: one runtime/cache classification per exact trusted hash; private
   operations cannot be public/cacheable; generated artifact staleness fails.
 - Browser: canonical sign-in/profile/browse/play journey remains valid; private
@@ -155,11 +161,13 @@ sole readiness-critical dependency.
 - Commands: focused Identity/Router tests during iteration; affected candidate
   gate before publication; protected CI for real packaged runtime.
 - Raw artifact path: `evidence/phase-13/execution-rate-cache-controls.txt`.
-- Acceptance result: corrected local candidate accepted at source `8d2633d`,
-  tree `d75aca0`; Identity159/159, Router21/21, focused verifiers, all11 real
-  integration scenarios, isolated packaged Router and affected gate57/57 pass.
-  Corrected protected CI, discussion resolution, confirmation and release are
-  pending.
+- Acceptance result: second corrected local candidate accepted at source
+  `bf14e2c`, tree `0084c67`; Identity162/162, Router21/21, focused verifiers,
+  all11 real integration scenarios, exact-source PostgreSQL/Redis subgraph,
+  isolated packaged Router and affected gate57/57 pass. Corrected protected run
+  `33437257163` passed and initial discussion `3897861197` is resolved;
+  confirmation discussion `3898385895` prompted this second correction. Its
+  protected CI, blocker-focused confirmation and release are pending.
 - Iteration gate: changed-package typecheck/lint plus focused unit/contract tests.
 - Candidate gate: repository affected-scope gate selected from exact diff,
   including Identity integration, Router generation and platform policy.

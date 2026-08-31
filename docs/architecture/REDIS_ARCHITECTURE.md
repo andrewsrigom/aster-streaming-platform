@@ -113,9 +113,12 @@ trade-offs are in [ADR-0039](../adr/0039-operation-admission-and-redis-degradati
 
 Identity uses the same bounded pattern under
 [ADR-0047](../adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), but
-generates a fresh admission digest for each profile command. Current session
-restoration supplies the account partition before admission; the existing owner
-command then revalidates the session before its transaction. Identity keys use
+first authorizes the current session and reads a retained durable mutation
+receipt. An exact completed retry returns from PostgreSQL before the limiter; a
+missing receipt supplies the account partition and canonical mutation admission
+digest. The existing owner command then revalidates the session before its write
+transaction. The 30-second Redis marker coordinates only new or unsaved attempts
+and cannot replace the 86,400-second receipt. Identity keys use
 `aster:{env}:identity:rate:v1:{operation}:{accountDigest}` and never store the
 raw account/profile/cookie. Redis connects on demand, command failure uses only
 the already-admitted 1,024-partition local shield, and Redis is not an Identity

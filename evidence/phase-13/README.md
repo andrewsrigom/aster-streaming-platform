@@ -78,13 +78,17 @@ profile-command admission and PostgreSQL-only readiness. Initial source
 PR56. Protected run `33432579598` found a real Identity assertion and invalid
 Router response-header YAML. Initial discussion `3897861197` found exact durable
 retries could spend a fresh rate admission before receipt replay. Corrected
-source `8d2633d`, tree `d75aca0`, binds admission to canonical durable mutation
-identity, orders distributed/local degradation safely and uses supported Rhai
-response handling. Identity159/159, Router21/21, telemetry19/19 and focused
-verifiers pass. Full real integration passed all11 scenarios in150.963 seconds
-with cleanup0; the isolated packaged Router proof passed. [Current evidence](execution-rate-cache-controls.txt)
-records the exact correction. The corrected gate passes57/57 with37 cached in
-95.749 seconds. Corrected protected CI, discussion resolution, confirmation and
+head `82ba630` passed protected run `33437257163` and the initial discussion is
+resolved. Confirmation discussion `3898385895` found the 30-second marker could
+expire before the 86,400-second receipt. Second corrected source `bf14e2c`, tree
+`0084c67`, authorizes and reads the retained PostgreSQL receipt before admission;
+only missing receipts reach the limiter. Identity162/162, Router21/21,
+telemetry19/19 and focused verifiers pass. Full real integration passed all11
+scenarios; the exact-source subgraph exhausted the Redis bucket, removed the
+marker, replayed the receipt and cleaned remaining0. The isolated packaged
+Router proof passed. [Current evidence](execution-rate-cache-controls.txt)
+records both corrections. The final second corrected gate passes57/57 with46
+cached in61.880 seconds. Second protected CI, blocker-focused confirmation and
 release remain.
 
 ## Requirement traceability
@@ -95,7 +99,7 @@ release remain.
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
-| P13-R06/R11 | Corrected source `8d2633d`, tree `d75aca0`, passes the affected candidate gate57/57 and all11 real integration scenarios; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record the implementation and initial protected/review findings; corrected protected/confirmation/release gates remain |
+| P13-R06/R11 | Second corrected source `bf14e2c`, tree `0084c67`, passes the affected candidate gate57/57, all11 real integration scenarios and an exact-source PostgreSQL/Redis expired-marker replay proof; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record the implementation and both review corrections; second protected/confirmation/release gates remain |
 | P13-R07–R09 | Planned in queue item67; no implementation or closeout claim |
 
 ## Current limitations

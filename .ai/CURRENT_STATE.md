@@ -54,8 +54,11 @@ one isolated TraceQL indexing timeout. Item65 is released. Full Phase00–14 goa
 stays active. Item66 is the sole `IN_PROGRESS` item on
 `feat/p13-execution-rate-cache-controls` from exact main `8cd6c0b`. PR56's
 published head `59b7215` failed protected run `33432579598` and initial review
-found one durable-retry blocker. Corrected source `8d2633d`, tree `d75aca0`,
-passes the complete local remediation gate; protected correction remains.
+found one durable-retry blocker. Corrected head `82ba630` passed protected run
+`33437257163` and resolved that thread; confirmation discussion `3898385895`
+found the shorter admission marker could expire before the durable receipt.
+Second corrected source `bf14e2c`, tree `0084c67`, passes the complete local
+remediation gate; second protected correction remains.
 
 ## Verified
 
@@ -224,9 +227,25 @@ Identity159/159, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
 verifier3/3 pass. The complete real integration passed all11 scenarios in
 150.963 seconds and cleaned remaining0. The isolated packaged Router proof
 passed accepted/adverse cache behavior and removed its project. The corrected
-affected gate passes57/57 with37 cached in95.749 seconds. This is an implemented
-corrected local candidate, not verified or released; protected exact-head CI,
-discussion resolution, one confirmation, merge and exact-main CI remain.
+affected gate passes57/57 with37 cached in95.749 seconds. Published head
+`82ba630` passed protected run `33437257163`; initial discussion `3897861197` is
+resolved. Confirmation discussion `3898385895` then found the 30-second
+Redis/local marker could expire before the 86,400-second durable receipt, again
+allowing an exact retry to be rate-rejected before replay.
+
+Second corrected source `bf14e2c2a403558122d2ae27b827a382368b671f`, tree
+`0084c671589711660e3a23aa87316d84f5b9bc41`, validates and authorizes the
+canonical mutation, reads its retained PostgreSQL receipt before admission and
+returns exact replay or changed-payload conflict immediately. Only a missing
+receipt reaches the bounded limiter; the existing write path repeats owner
+authorization. Identity162/162 pass. The second full all11 integration passed in
+142.098 seconds and cleaned remaining0; exact committed source repeated the real
+subgraph in18.137 seconds with an exhausted bucket, removed marker, retained
+receipt replay, no marker recreation and cleanup0. The accepted affected gate
+passes57/57 with46 cached in61.880 seconds after final evidence/documentation
+updates. This is an implemented second
+corrected local candidate, not verified or released; publication, protected
+exact-head CI, blocker-focused confirmation, merge and exact-main CI remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -779,18 +798,20 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
 shape/list/cost controls are released through tree-identical PR55 merge
 `8cd6c0b` and exact-main run `33425758870` attempt2. Execution/rate/cache
-controls are implemented locally in corrected item66; protected/release gates
-remain.
+controls are implemented locally in second corrected item66; protected/release
+gates remain.
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
 requirements are planned in item67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For P13-R06/P13-R11 item66, publish the corrected evidence head once, require
-protected exact-head CI including the packaged Router proof, resolve the
-corrected initial discussion and request one confirmation. Squash merge only
-after those gates, then verify exact-main CI before item67 publication.
+For P13-R06/P13-R11 item66, publish the second corrected evidence head once and
+require protected exact-head CI including the packaged Router proof. Reply to
+and resolve confirmation discussion `3898385895`, then request one
+blocker-focused confirmation because the durable replay/admission boundary
+changed. Squash merge only after those gates, then verify exact-main CI before
+item67 publication.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

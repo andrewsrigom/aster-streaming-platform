@@ -5,7 +5,7 @@ Branch: feat/p13-execution-rate-cache-controls
 Base main: 8cd6c0b25938f605ded95df736b2c53b4ecff150
 Base release tree: d034c033ec57e9b641fba04dae678ea082c944b7
 
-IMPLEMENTED CORRECTED CANDIDATE (NOT RELEASED)
+IMPLEMENTED SECOND CORRECTED CANDIDATE (NOT RELEASED)
 
 Initial source commit: a090285ccca972bd3c549f4d22ab72f2244e2961
 Initial source tree: 98d3064b23c07f2145c68f1eef5a1c4309759400
@@ -13,6 +13,8 @@ Published evidence head: 59b7215f848c3f6906cc36f0c0f1e8a4ad47ceda
 Published evidence tree: ee1c908e8a20e32262616638e076565ab8bedc9c
 Corrected source commit: 8d2633d052a44ad0d6f115be0641369f911c0820
 Corrected source tree: d75aca0b7097e47d5ef6beff6ce8222cae6d5b10
+Second corrected source commit: bf14e2c2a403558122d2ae27b827a382368b671f
+Second corrected source tree: 0084c671589711660e3a23aa87316d84f5b9bc41
 
 - ADR-0047 records the three-second/eight-request public execution boundary,
   account-partitioned Identity admission, Redis degradation and mandatory
@@ -25,8 +27,9 @@ Corrected source tree: d75aca0b7097e47d5ef6beff6ce8222cae6d5b10
   Cache-Control: no-store. The fixed pre-service oversized-body rejection
   contains no data, explicit freshness or cache validators.
 - Identity create/update/delete use profile_mutation (burst 8, refill 2/s);
-  selection uses profile_selection (burst 16, refill 4/s). Authorization runs
-  before admission and repeats in the existing owner command before a write.
+  selection uses profile_selection (burst 16, refill 4/s). Canonical input,
+  authorization and durable receipt lookup run before admission; missing
+  receipts proceed to the limiter and repeat authorization before a write.
 - Redis keys contain only SHA-256 account/admission pseudonyms, use finite TTL
   and atomic server-time token buckets, and never authorize durable state.
 - PostgreSQL is Identity's sole readiness-critical dependency. Redis connects
@@ -55,6 +58,20 @@ Initial review:
   durable receipt replay, so an exact retry could return LIMIT_EXCEEDED and a
   second replica could not reuse Redis admission deduplication.
 
+Corrected protected workflow:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33437257163
+Result:
+  PASS on exact published head
+  82ba630da7ccc64e4c82329701ff2c11f41d5508. Every required job passed,
+  including source quality and the packaged local platform. Discussion
+  3897861197 is resolved.
+
+Confirmation review:
+  Review 5071227472 on exact head 82ba630 found discussion 3898385895. The
+  Redis/local admission markers expire after 30 seconds while durable profile
+  receipts remain valid for 86,400 seconds. An exact retry after marker expiry
+  could therefore still be rate-rejected before receipt lookup.
+
 CORRECTED BEHAVIOR
 
 - Create/update/delete derive admission from the validated durable mutation ID
@@ -72,6 +89,18 @@ CORRECTED BEHAVIOR
   fact and separates the rate-exhaustion scenario from later authorization
   assertions. The CI failure diagnostic now includes bounded Router logs.
 
+SECOND CORRECTED BEHAVIOR
+
+- Create/update/delete now validate the canonical request, authorize the current
+  session and read the retained PostgreSQL receipt before rate admission.
+- An exact retained receipt returns its original result without consulting or
+  recreating the 30-second Redis/local marker. Reuse of the same mutation ID
+  with a changed payload conflicts before admission.
+- Only a missing receipt reaches the account-partitioned limiter. The existing
+  mutation path then repeats owner authorization and performs the durable write.
+- This preserves the limiter for new work while making the 86,400-second durable
+  receipt, rather than a shorter Redis marker, authoritative for replay.
+
 FOCUSED SOURCE EVIDENCE
 
 Command:
@@ -82,8 +111,10 @@ Result:
 Command:
   pnpm --filter @aster/identity test
 Result:
-  PASS — corrected suite 159/159 tests. Includes canonical durable retry
-  identity, changed-payload separation, distributed-before-local recovery,
+  PASS — second corrected suite 162/162 tests. Includes durable receipt lookup
+  before admission, replay with an exhausted limiter, changed-payload conflict,
+  read-only probe behavior, canonical durable retry identity,
+  distributed-before-local recovery,
   pseudonymous keys, burst/refill, on-demand Redis connection, outage fallback,
   recovery, cancellation, 1,024-partition/8,192-marker capacity,
   authorization/admission ordering, optional Redis readiness and deterministic
@@ -150,6 +181,26 @@ Result:
   broker and telemetry fixtures also passed. Cleanup removed the exact project
   with remaining 0 in 5,170 ms.
 
+Second correction command:
+  pnpm integration
+Result:
+  PASS — all 11 scenarios in 142,098 ms on the second-remediation working tree.
+  The real subgraph exhausted the mutation bucket, removed the exact Redis
+  admission marker, replayed the retained PostgreSQL result and did not recreate
+  the marker. The exact fixture cleaned remaining 0 in 4,807 ms. A subsequent
+  lint-only rewrite changed direct cancellation reads to an equivalent closure;
+  it did not affect the successful replay path. The exact committed source then
+  repeated the focused real subgraph proof below and passed its complete affected
+  gate.
+
+Exact-source command:
+  pnpm --filter @aster/identity integration:subgraph
+Result:
+  PASS — exact source bf14e2c ran the PostgreSQL/Redis subgraph scenario in
+  18,137 ms. `durableReplayAfterAdmissionMarker=passed`, `markerRemoved=true`,
+  natural exit passed and cleanup removed the exact project with remaining 0 in
+  1,096 ms.
+
 LOCAL PACKAGED ROUTER REMEDIATION PROOF
 
 Environment:
@@ -192,11 +243,24 @@ Corrected result:
   architecture, platform, documentation, repository-memory, security and CI
   policy checks.
 
+Second corrected result:
+  PASS — 57/57 tasks, 43 cached, in 53.509 seconds on exact source
+  bf14e2c2a403558122d2ae27b827a382368b671f. The first attempt reached 56/57
+  and reported only five strict unnecessary-condition lint findings; those were
+  corrected before this accepted run.
+
+Final evidence/documentation result:
+  PASS — 57/57 tasks, 46 cached, in 61.880 seconds with exact source bf14e2c and
+  the current evidence, ADR and repository-memory updates. This is the final
+  local candidate gate before the second correction publication.
+
 PENDING PROTECTED/RELEASE EVIDENCE
 
-- Push the corrected source/evidence head once and require protected exact-head
-  CI, including the pinned packaged Router proof.
-- Resolve the corrected initial discussion and complete one confirmation
-  review on the corrected exact head.
+- Push the second corrected source/evidence head once and require protected
+  exact-head CI, including the pinned packaged Router proof.
+- Reply to and resolve confirmation discussion 3898385895 after the published
+  evidence is green. Because this remediation changes the durable
+  replay/admission boundary, complete one blocker-focused confirmation on that
+  exact head.
 - Protected exact-head CI, tree-identical squash merge and exact-main CI remain
   required before this item is verified/released.

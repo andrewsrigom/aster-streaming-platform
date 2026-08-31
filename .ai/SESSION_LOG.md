@@ -4,6 +4,39 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Durable profile replay precedes short-lived admission
+
+### Completed
+
+- Corrected PR56 head `82ba630` passed protected run `33437257163`; initial
+  discussion `3897861197` is resolved. Confirmation review `5071227472` found
+  discussion `3898385895`: the 30-second Redis/local marker could expire before
+  the 86,400-second durable profile receipt.
+- Source `bf14e2c`, tree `0084c67`, now validates and authorizes the canonical
+  mutation and reads its retained PostgreSQL receipt before admission. Exact
+  replay or changed-payload conflict returns immediately; only missing receipts
+  reach the limiter, then the write path reauthorizes.
+- Identity162/162 pass. Full real integration passed all11 scenarios again in
+  142.098 seconds with cleanup0. Exact committed source repeated the real
+  subgraph in18.137 seconds: the shared bucket was exhausted, the exact marker
+  was removed, durable replay passed without marker recreation, and cleanup was
+  0.
+- The first affected gate reported only five strict lint findings. After the
+  equivalent cancellation-read cleanup, the source gate passed57/57 with43
+  cached in53.509 seconds; the final evidence/documentation gate passes57/57
+  with46 cached in61.880 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the confirmation
+  blocker, second correction, exact source and real PostgreSQL/Redis proof.
+
+### Next action
+
+- Publish the second corrected evidence head once, require protected exact-head
+  CI, resolve discussion `3898385895`, complete one blocker-focused
+  confirmation, then merge and verify exact-main CI before item67 publication.
+
 ## 2026-08-31 — GraphQL execution-control PR remediation accepted locally
 
 ### Completed

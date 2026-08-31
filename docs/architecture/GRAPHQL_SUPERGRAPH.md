@@ -209,8 +209,9 @@ The current hosted contract enforces:
 - controlled introspection.
 
 Identity profile writes now restore the authoritative session before an
-account-partitioned local-plus-Redis admission and then repeat authorization in
-the owner write path. Engagement progress/watchlist and Discovery search retain
+account-partitioned local-plus-Redis admission. A retained durable receipt
+replays before admission; only a missing receipt reaches the limiter, after
+which the owner write path repeats authorization. Engagement progress/watchlist and Discovery search retain
 their released operation-specific controls. Owner authorization,
 N+1/query-count and latency proof remain the closing slice rather than being
 inferred from a passing cost score.

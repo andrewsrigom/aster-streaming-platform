@@ -6,8 +6,10 @@ This ledger is a navigation aid. ADRs remain the authoritative decision records.
 extends every exact trusted-operation demand profile with derived
 public/account/profile scope, one finite rate class, the pinned three-second/
 eight-request execution boundary and mandatory `no-store`. Identity profile
-commands restore the authoritative session before a bounded account-partitioned
-local-plus-Redis admission, then repeat authorization in the owner write path.
+commands authorize and read a retained durable receipt before bounded
+account-partitioned local-plus-Redis admission. Exact completed retries bypass
+the shorter limiter marker; missing receipts proceed to admission and repeat
+authorization in the owner write path.
 Redis keys use only SHA-256 account/admission pseudonyms, outage falls back only
 to bounded local admission, cancellation/capacity fail closed, and PostgreSQL is
 Identity's sole readiness-critical dependency. Hosted JWT/provider decisions

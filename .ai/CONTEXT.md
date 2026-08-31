@@ -76,12 +76,15 @@ that exact main. ADR-0047, exact runtime/cache classification, authorized-accoun
 Identity admission and optional-Redis readiness are implemented locally.
 Initial source `a090285`, tree `98d3064`, passed gate54/54; PR56 head `59b7215`
 failed protected run `33432579598` and initial review found a durable-retry
-admission blocker. Corrected source `8d2633d`, tree `d75aca0`, passes
-Identity159/159, Router21/21, focused verifiers, all11 real integration scenarios
-with cleanup0, the isolated packaged Router proof and gate57/57 with37 cached in
-95.749 seconds. Corrected publication, protected CI, confirmation and release
-remain. No hosted deployment is claimed; Phase14 still owns provider and
-deployment decisions.
+admission blocker. Corrected head `82ba630` passed protected run `33437257163`
+and resolved that discussion; confirmation discussion `3898385895` found the
+30-second marker could expire before the 86,400-second durable receipt. Second
+corrected source `bf14e2c`, tree `0084c67`, probes the authorized receipt before
+admission. Identity162/162, exact-source real PostgreSQL/Redis subgraph, all11
+real integration scenarios, the isolated packaged Router proof and final
+gate57/57 with46 cached in61.880 seconds pass. Second correction publication, protected
+CI, blocker-focused confirmation and release remain. No hosted deployment is
+claimed; Phase14 still owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
