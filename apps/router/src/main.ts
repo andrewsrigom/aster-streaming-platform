@@ -40,7 +40,7 @@ async function run(): Promise<void> {
     131_072,
   );
   const retainedOperations = await readBoundedFile(
-    resolve(root, "infra/router/retained-operations.graphql"),
+    resolve(root, "infra/router/retained-operations.json"),
     131_072,
   );
   let baseline: string | undefined;

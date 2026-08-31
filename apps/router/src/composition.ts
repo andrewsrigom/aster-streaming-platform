@@ -44,6 +44,11 @@ type TrustedOperation = Readonly<{
   type: OperationDefinitionNode["operation"];
 }>;
 
+type RetainedOperation = Readonly<{
+  body: string;
+  definition: OperationDefinitionNode;
+}>;
+
 function trustedOperations(definitions: readonly OperationDefinitionNode[]): TrustedOperation[] {
   return definitions
     .map((entry) => {
@@ -96,21 +101,56 @@ function trustedOperations(definitions: readonly OperationDefinitionNode[]): Tru
     .sort((a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"));
 }
 
-function retainedTrustedOperations(
-  definitions: readonly OperationDefinitionNode[],
-  source: string,
-): TrustedOperation[] {
-  return definitions.map((entry) => {
-    if (!entry.loc) {
-      throw new Error("Retained operation is missing its exact source location.");
-    }
-    const body = source.slice(entry.loc.start, entry.loc.end);
+function retainedTrustedOperations(operations: readonly RetainedOperation[]): TrustedOperation[] {
+  return operations.map(({ body, definition: entry }) => {
     return {
       body,
       id: sha256(body),
       name: entry.name?.value ?? "",
       type: entry.operation,
     };
+  });
+}
+
+function parseRetainedOperations(source: string): RetainedOperation[] {
+  if (Buffer.byteLength(source, "utf8") > MAX_SOURCE_BYTES || source.trim().length === 0) {
+    throw new Error("Retained operations source exceeds its bound or is empty.");
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(source);
+  } catch {
+    throw new Error("Retained operations source must be valid JSON.");
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("Retained operations require version 1 and 0–32 exact bodies.");
+  }
+  const envelope = parsed as Record<string, unknown>;
+  if (
+    Object.keys(envelope).toSorted().join(",") !== "operations,version" ||
+    envelope["version"] !== 1 ||
+    !Array.isArray(envelope["operations"]) ||
+    envelope["operations"].length > 32
+  ) {
+    throw new Error("Retained operations require version 1 and 0–32 exact bodies.");
+  }
+  return (envelope["operations"] as unknown[]).map((value, index) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      throw new Error("Retained operation entries require exactly one string body.");
+    }
+    const entry = value as Record<string, unknown>;
+    if (Object.keys(entry).join(",") !== "body" || typeof entry["body"] !== "string") {
+      throw new Error("Retained operation entries require exactly one string body.");
+    }
+    const parsedBody = document(entry["body"], `Retained operation ${index + 1}`);
+    if (
+      parsedBody.definitions.length !== 1 ||
+      parsedBody.definitions[0]?.kind !== Kind.OPERATION_DEFINITION ||
+      !parsedBody.definitions[0].name
+    ) {
+      throw new Error("Each retained body requires exactly one named operation.");
+    }
+    return { body: entry["body"], definition: parsedBody.definitions[0] };
   });
 }
 
@@ -178,7 +218,7 @@ export function composeLocalSupergraph(
   knownOperations: string,
   baselineApi?: string,
   baselineOperations?: string,
-  retainedOperations = "",
+  retainedOperations = '{"operations":[],"version":1}',
 ): ArtifactSet {
   const names = Object.keys(SUBGRAPHS) as SubgraphName[];
   const subgraphs = names.map((name) => ({
@@ -209,30 +249,15 @@ export function composeLocalSupergraph(
   ) {
     throw new Error("Known operations require 1–32 named operations without external fragments.");
   }
-  const retainedSource = retainedOperations.replace(/^\s*#.*$/gmu, "").trim();
-  const retainedDocument = retainedSource
-    ? document(retainedOperations, "Retained operations")
-    : ({ kind: Kind.DOCUMENT, definitions: [] } as const);
-  const retainedDefinitions = retainedDocument.definitions.filter(
-    (entry): entry is OperationDefinitionNode => entry.kind === Kind.OPERATION_DEFINITION,
-  );
-  if (
-    retainedDefinitions.length > 32 ||
-    retainedDefinitions.some((entry) => !entry.name) ||
-    retainedDocument.definitions.some((entry) => entry.kind !== Kind.OPERATION_DEFINITION)
-  ) {
-    throw new Error(
-      "Retained operations require 0–32 named operations without external fragments.",
-    );
-  }
+  const retained = parseRetainedOperations(retainedOperations);
   const errors = validate(api, operations, undefined, { maxErrors: 20 });
   if (errors.length > 0) {
     throw new Error("Known operation incompatible: " + errors.map((e) => e.message).join("; "));
   }
-  for (const retained of retainedDefinitions) {
+  for (const { definition: retainedDefinition } of retained) {
     const retainedErrors = validate(
       api,
-      { kind: Kind.DOCUMENT, definitions: [retained] },
+      { kind: Kind.DOCUMENT, definitions: [retainedDefinition] },
       undefined,
       { maxErrors: 20 },
     );
@@ -277,10 +302,9 @@ export function composeLocalSupergraph(
   for (const subgraph of subgraphs) {
     artifacts[subgraph.name + ".graphql"] = print(subgraph.typeDefs) + "\n";
   }
-  const trusted = [
-    ...trustedOperations(definitions),
-    ...retainedTrustedOperations(retainedDefinitions, retainedOperations),
-  ].sort((a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"));
+  const trusted = [...trustedOperations(definitions), ...retainedTrustedOperations(retained)].sort(
+    (a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"),
+  );
   const operationVersions = Map.groupBy(trusted, ({ name }) => name);
   if (
     trusted.length > 64 ||

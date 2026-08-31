@@ -42,7 +42,7 @@ The exact order depends on compatibility. A common sequence:
 Trusted operations are published before clients that need them.
 
 For a document change, place the obsolete reviewed body in
-`infra/router/retained-operations.graphql`, regenerate and review the old/new
+`infra/router/retained-operations.json` as an exact JSON body string, regenerate and review the old/new
 union, and verify that its manifest preserves the retained wire body byte-for-byte.
 Deploy the Router image containing that set, then deploy the client. The generator
 allows at most two distinct wire bodies per operation name. Observe finite

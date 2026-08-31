@@ -51,11 +51,12 @@ proves `enforce` against the real Router.
 The Web build must keep sending documents represented by the generated manifest,
 and a test captures the actual `HttpLink` request body. Schema changes use
 add-first evolution. During a document transition,
-`infra/router/retained-operations.graphql` may retain one obsolete reviewed body
+`infra/router/retained-operations.json` may retain one obsolete reviewed body
 per name, so the generated matcher accepts at most two distinct hashes for that
 name. Retained operations are parsed and schema-validated, but their reviewed
-source slices are preserved and hashed byte-for-byte rather than reprinted by
-the current GraphQL/Apollo toolchain. Deploy the union and Router policy before
+explicit JSON body strings preserve every leading, internal and trailing byte
+and are hashed without reprinting by the current GraphQL/Apollo toolchain.
+Deploy the union and Router policy before
 the client, observe the overlap, then remove the obsolete body in a later
 reviewed release. Once the new client hash has served traffic, the union Router
 image becomes the rollback floor: a client rollback keeps that Router until

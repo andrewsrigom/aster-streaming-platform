@@ -195,7 +195,7 @@ Engagement's history/continue-watching connections resolve nullable Title metada
 
 1. add the new shape in backward-compatible owners;
 2. add the new client document while retaining the old reviewed body in
-   `infra/router/retained-operations.graphql` byte-for-byte (at most two hashes per name);
+   `infra/router/retained-operations.json` as an exact body string (at most two hashes per name);
 3. deploy the owner, complete manifest and Router policy before the client;
 4. deploy the client and observe finite operation outcomes;
 5. keep the union Router as the rollback floor while either browser bundle may

@@ -80,7 +80,8 @@ test("every first-party operation has one exact Apollo manifest entry and finite
 });
 
 test("a bounded retained wire version supports Router-first client rollout", () => {
-  const retained = "query Viewer{me{accountId}}";
+  const retainedBody = " \n# obsolete wire\nquery Viewer{me{accountId}}\n ";
+  const retained = JSON.stringify({ operations: [{ body: retainedBody }], version: 1 });
   const artifacts = composeLocalSupergraph(sources, operations, undefined, undefined, retained);
   const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
     operations: { body: string; id: string; name: string }[];
@@ -88,9 +89,9 @@ test("a bounded retained wire version supports Router-first client rollout", () 
   const viewers = persisted.operations.filter(({ name }) => name === "Viewer");
   assert.equal(viewers.length, 2);
   assert.equal(new Set(viewers.map(({ id }) => id)).size, 2);
-  const retainedEntry = viewers.find(({ body }) => body === retained);
+  const retainedEntry = viewers.find(({ body }) => body === retainedBody);
   assert.ok(retainedEntry);
-  assert.equal(retainedEntry.id, sha256(retained));
+  assert.equal(retainedEntry.id, sha256(retainedBody));
   const matcher = artifacts["trusted-operations.rhai"] ?? "";
   for (const entry of viewers) {
     assert.match(matcher, new RegExp(entry.id, "u"));
@@ -101,7 +102,16 @@ test("a bounded retained wire version supports Router-first client rollout", () 
   assert.doesNotMatch(newOnlyMatcher, new RegExp(retainedEntry.id, "u"));
   assert.throws(
     () =>
-      composeLocalSupergraph(sources, operations, undefined, undefined, retained + "\n" + retained),
+      composeLocalSupergraph(
+        sources,
+        operations,
+        undefined,
+        undefined,
+        JSON.stringify({
+          operations: [{ body: retainedBody }, { body: retainedBody }],
+          version: 1,
+        }),
+      ),
     /two distinct reviewed bodies/u,
   );
   assert.throws(
@@ -111,9 +121,16 @@ test("a bounded retained wire version supports Router-first client rollout", () 
         operations,
         undefined,
         undefined,
-        "query RetainedBroken { missingField }",
+        JSON.stringify({
+          operations: [{ body: "query RetainedBroken { missingField }" }],
+          version: 1,
+        }),
       ),
     /Retained operation incompatible/u,
+  );
+  assert.throws(
+    () => composeLocalSupergraph(sources, operations, undefined, undefined, '{"version":2}'),
+    /version 1 and 0–32 exact bodies/u,
   );
 });
 

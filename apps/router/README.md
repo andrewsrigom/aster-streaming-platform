@@ -34,9 +34,10 @@ current root fields, profile commands, Catalog metadata/attribution, bounded
 Discovery search, public/personalized home composition and mixed entity queries.
 They are build-time compatibility contracts and the current source for generated
 runtime trusted-operation artifacts. During a reviewed client transition,
-[retained operations](../../infra/router/retained-operations.graphql) can hold
+[retained operations](../../infra/router/retained-operations.json) can hold
 one obsolete byte-exact wire body per name. It is parsed and schema-validated but
-not reprinted by the current toolchain. Generation accepts at most two distinct
+stored as an explicit JSON string and not reprinted by the current toolchain.
+Generation accepts at most two distinct
 wire hashes for a name and zero retained bodies outside an overlap window. The
 union Router remains the rollback floor after new-hash traffic until both client
 populations drain. An ownership collision, invalid operation, stale output or
