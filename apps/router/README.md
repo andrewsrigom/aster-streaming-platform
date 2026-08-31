@@ -21,7 +21,9 @@ Both root schema commands first build Identity, Catalog, Playback, Engagement, D
 The generated set contains five subgraph SDLs, the public API SDL, Router-ready
 supergraph SDL, an Apollo persisted-query manifest, a generated finite Router
 matcher and a format-version-1 delivery manifest with exact tool versions, file
-hashes, field/entity ownership and the current 25 trusted-operation hashes.
+hashes, field/entity ownership and the current 25 trusted-operation hashes. The
+persisted manifest and matcher include the bounded current/retained rollout
+union, while the delivery manifest indexes exactly one current hash per name.
 Manifest bodies use the exact link-ready Apollo `HttpLink` representation.
 Routing URLs are internal service names, not public endpoints. Composition uses the existing
 approved Apollo 2.14.4 and GraphQL 16.14.2 pins; [ADR-0003](../../docs/adr/0003-federation.md)

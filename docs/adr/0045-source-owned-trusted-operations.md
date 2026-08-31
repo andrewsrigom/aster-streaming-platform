@@ -55,8 +55,12 @@ add-first evolution. During a document transition,
 per name, so the generated matcher accepts at most two distinct hashes for that
 name. Retained operations are parsed and schema-validated, but their reviewed
 explicit JSON body strings preserve every leading, internal and trailing byte
-and are hashed without reprinting by the current GraphQL/Apollo toolchain.
-Deploy the union and Router policy before
+and are hashed without reprinting by the current GraphQL/Apollo toolchain. The
+Apollo persisted-query manifest and Router matcher contain that bounded union.
+The delivery manifest's operation index contains only the unique current source
+hash for each name, so runtime acceptance proofs and client checks cannot
+mistake a retained rollback body for the current version. Deploy the union and
+Router policy before
 the client, observe the overlap, then remove the obsolete body in a later
 reviewed release. Once the new client hash has served traffic, the union Router
 image becomes the rollback floor: a client rollback keeps that Router until
@@ -114,8 +118,8 @@ queries. Audit mode makes that exception visible and impossible in hosted modes.
 ## Validation
 
 Composition tests prove deterministic current generation, byte-exact retained
-name/body/hash preservation, artifact bounds, the two-version ceiling, the union
-rollback floor and altered-hash rejection.
+name/body/hash preservation, a current-only delivery index, artifact bounds, the
+two-version ceiling, the union rollback floor and altered-hash rejection.
 Web tests capture actual Apollo `HttpLink` request bodies and compare them with
 the manifest. Source policy tests prove explicit environment/mode validation,
 artifact packaging, finite telemetry and absence of query/hash labels. The

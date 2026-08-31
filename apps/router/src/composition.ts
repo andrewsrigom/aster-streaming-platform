@@ -302,7 +302,10 @@ export function composeLocalSupergraph(
   for (const subgraph of subgraphs) {
     artifacts[subgraph.name + ".graphql"] = print(subgraph.typeDefs) + "\n";
   }
-  const trusted = [...trustedOperations(definitions), ...retainedTrustedOperations(retained)].sort(
+  const currentTrusted = trustedOperations(definitions).sort(
+    (a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"),
+  );
+  const trusted = [...currentTrusted, ...retainedTrustedOperations(retained)].sort(
     (a, b) => a.name.localeCompare(b.name, "en") || a.id.localeCompare(b.id, "en"),
   );
   const operationVersions = Map.groupBy(trusted, ({ name }) => name);
@@ -340,7 +343,7 @@ export function composeLocalSupergraph(
           routingUrl: subgraph.url,
           ownership: ownership(subgraph.typeDefs),
         })),
-        operations: trusted.map(({ id, name }) => ({ name, sha256: id })),
+        operations: currentTrusted.map(({ id, name }) => ({ name, sha256: id })),
       },
       null,
       2,

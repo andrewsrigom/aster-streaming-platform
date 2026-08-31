@@ -86,12 +86,21 @@ test("a bounded retained wire version supports Router-first client rollout", () 
   const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
     operations: { body: string; id: string; name: string }[];
   };
+  const schema = JSON.parse(artifacts["manifest.json"] ?? "null") as {
+    operations: { name: string; sha256: string }[];
+  };
   const viewers = persisted.operations.filter(({ name }) => name === "Viewer");
   assert.equal(viewers.length, 2);
   assert.equal(new Set(viewers.map(({ id }) => id)).size, 2);
   const retainedEntry = viewers.find(({ body }) => body === retainedBody);
   assert.ok(retainedEntry);
   assert.equal(retainedEntry.id, sha256(retainedBody));
+  const currentEntry = viewers.find(({ body }) => body !== retainedBody);
+  assert.ok(currentEntry);
+  assert.deepEqual(
+    schema.operations.filter(({ name }) => name === "Viewer"),
+    [{ name: "Viewer", sha256: currentEntry.id }],
+  );
   const matcher = artifacts["trusted-operations.rhai"] ?? "";
   for (const entry of viewers) {
     assert.match(matcher, new RegExp(entry.id, "u"));
