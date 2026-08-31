@@ -186,8 +186,10 @@ The same version-2 profile now derives and records `public`, `account` or
 `profile` authorization scope, the finite operation rate class, Router's
 three-second/eight-request execution boundary and mandatory `no-store`. Selected
 Identity/Engagement coordinates determine the minimum private scope, so a
-private field cannot be declared public. The policy name set must exactly match
-all current and retained operation names. Router also overwrites every admitted
+private field cannot be declared public. The policy name/hash identities must
+exactly match the bounded current and retained trusted union; packaged
+verification derives that union from the persisted manifest and permits at
+most two hashes per operation name. Router also overwrites every admitted
 GraphQL response with `Cache-Control: no-store`; its pre-service oversized-body
 rejection has no data, explicit freshness or validators. Owner Apollo
 document/response caches remain disabled.
@@ -211,7 +213,9 @@ The current hosted contract enforces:
 Identity profile writes now restore the authoritative session before an
 account-partitioned local-plus-Redis admission. A retained durable receipt
 replays before admission; only a missing receipt reaches the limiter, after
-which the owner write path repeats authorization. Engagement progress/watchlist and Discovery search retain
+which the owner write path repeats authorization. The degraded local marker set
+prunes expired entries before applying its finite capacity, including after
+healthy Redis decisions. Engagement progress/watchlist and Discovery search retain
 their released operation-specific controls. Owner authorization,
 N+1/query-count and latency proof remain the closing slice rather than being
 inferred from a passing cost score.

@@ -79,11 +79,13 @@ failed protected run `33432579598` and initial review found a durable-retry
 admission blocker. Corrected head `82ba630` passed protected run `33437257163`
 and resolved that discussion; confirmation discussion `3898385895` found the
 30-second marker could expire before the 86,400-second durable receipt. Second
-corrected source `bf14e2c`, tree `0084c67`, probes the authorized receipt before
-admission. Identity162/162, exact-source real PostgreSQL/Redis subgraph, all11
-real integration scenarios, the isolated packaged Router proof and final
-gate57/57 with46 cached in61.880 seconds pass. Second correction publication, protected
-CI, blocker-focused confirmation and release remain. No hosted deployment is
+corrected head `1e115fe` passed protected run `33442875698` and resolved that
+discussion. Blocker-focused review found a fixed-count retained-union verifier
+and missing expired-marker pruning. Third corrected source `af47c62`, tree
+`bb2d476`, derives the exact bounded union and prunes before local capacity.
+Identity163/163, Router verifier6/6 and gate57/57 with39 cached in66.529 seconds
+pass. Third correction publication, protected CI, final confirmation and release
+remain. No hosted deployment is
 claimed; Phase14 still owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.

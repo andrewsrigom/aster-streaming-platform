@@ -203,9 +203,13 @@ Published head `82ba630` passed protected run `33437257163`; initial discussion
 could expire before the retained durable receipt. Second source `bf14e2c`, tree
 `0084c67`, probes the authorized receipt before admission; Identity162/162,
 all11 real integration scenarios, exact-source exhausted-bucket/removed-marker
-subgraph proof and the final57/57 gate with46 cached in61.880 seconds pass. One second
-correction evidence-head push, protected exact-head CI, blocker-focused
-confirmation and release remain.
+subgraph proof and the final57/57 gate with46 cached in61.880 seconds pass.
+Published head `1e115fe` passed protected run `33442875698`. Blocker-focused
+review found a fixed-count retained-union verifier and missing expired-marker
+pruning. Third source `af47c62`, tree `bb2d476`, fixes both; Identity163/163,
+Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. One third
+correction evidence-head push, protected exact-head CI, final confirmation and
+release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

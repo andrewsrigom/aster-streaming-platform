@@ -5,7 +5,7 @@ Branch: feat/p13-execution-rate-cache-controls
 Base main: 8cd6c0b25938f605ded95df736b2c53b4ecff150
 Base release tree: d034c033ec57e9b641fba04dae678ea082c944b7
 
-IMPLEMENTED SECOND CORRECTED CANDIDATE (NOT RELEASED)
+IMPLEMENTED THIRD CORRECTED CANDIDATE (NOT RELEASED)
 
 Initial source commit: a090285ccca972bd3c549f4d22ab72f2244e2961
 Initial source tree: 98d3064b23c07f2145c68f1eef5a1c4309759400
@@ -15,6 +15,9 @@ Corrected source commit: 8d2633d052a44ad0d6f115be0641369f911c0820
 Corrected source tree: d75aca0b7097e47d5ef6beff6ce8222cae6d5b10
 Second corrected source commit: bf14e2c2a403558122d2ae27b827a382368b671f
 Second corrected source tree: 0084c671589711660e3a23aa87316d84f5b9bc41
+Second corrected published head: 1e115fe9d43fe21ede9d555bc34e074df1439326
+Third corrected source commit: af47c625bc937cb6e41325bcbd9b64914db7b3b2
+Third corrected source tree: bb2d47618032af388d5c3dfd8c698d39b83e6dda
 
 - ADR-0047 records the three-second/eight-request public execution boundary,
   account-partitioned Identity admission, Redis degradation and mandatory
@@ -72,6 +75,21 @@ Confirmation review:
   receipts remain valid for 86,400 seconds. An exact retry after marker expiry
   could therefore still be rate-rejected before receipt lookup.
 
+Second corrected protected workflow:
+  https://github.com/andrewsrigom/aster-streaming-platform/actions/runs/33442875698
+Result:
+  PASS on exact published head
+  1e115fe9d43fe21ede9d555bc34e074df1439326. Every required job passed,
+  including real owner integrations and the packaged Docker-only platform.
+  Discussion 3898385895 is resolved.
+
+Blocker-focused review:
+  Review on exact head 1e115fe found discussions 3898857100 and 3898857110.
+  The packaged verifier required exactly 25 demand profiles, rejecting a valid
+  current-plus-retained trusted overlap. Successful Redis admission also
+  accumulated expired local retry markers without pruning them before the
+  8,192-entry bound, so healthy lifetime traffic could exhaust later failover.
+
 CORRECTED BEHAVIOR
 
 - Create/update/delete derive admission from the validated durable mutation ID
@@ -101,6 +119,17 @@ SECOND CORRECTED BEHAVIOR
 - This preserves the limiter for new work while making the 86,400-second durable
   receipt, rather than a shorter Redis marker, authoritative for replay.
 
+THIRD CORRECTED BEHAVIOR
+
+- Packaged runtime verification derives the exact bounded name/hash union from
+  the persisted manifest. It accepts a current-plus-retained overlap, rejects
+  more than two hashes for one name and rejects any demand identity mismatch;
+  it no longer assumes a fixed operation count.
+- The Identity limiter amortizes expired local-marker pruning before capacity
+  on both successful Redis and degraded local decisions. A current marker is
+  refreshed or preserved at the bound, while expired lifetime traffic cannot
+  permanently prevent later retry deduplication.
+
 FOCUSED SOURCE EVIDENCE
 
 Command:
@@ -111,7 +140,7 @@ Result:
 Command:
   pnpm --filter @aster/identity test
 Result:
-  PASS — second corrected suite 162/162 tests. Includes durable receipt lookup
+  PASS — third corrected suite 163/163 tests. Includes durable receipt lookup
   before admission, replay with an exhausted limiter, changed-payload conflict,
   read-only probe behavior, canonical durable retry identity,
   distributed-before-local recovery,
@@ -137,8 +166,15 @@ Commands:
   node --test tools/verify-router-runtime.test.mjs
   node --test tools/verify-graphql-demand-controls.test.mjs
 Results:
-  PASS — 5/5 Router source/package policy tests and 3/3 bounded GraphQL
+  PASS — 6/6 Router source/package policy tests and 3/3 bounded GraphQL
   rejection/cache-control verifier tests.
+
+Third-correction focused results:
+  PASS — the Router verifier accepts one retained Viewer overlap, rejects a
+  third version and rejects a missing demand identity. Identity fills all 8,192
+  local markers through successful Redis admissions, expires them under a
+  deterministic clock, prunes before admitting a fresh marker and reuses that
+  marker when Redis then fails with the local bucket exhausted.
 
 REAL POSTGRESQL/REDIS FAILURE EVIDENCE
 
@@ -254,13 +290,29 @@ Final evidence/documentation result:
   the current evidence, ADR and repository-memory updates. This is the final
   local candidate gate before the second correction publication.
 
+Third corrected source result:
+  PASS — 57/57 tasks, 39 cached, in 66.529 seconds on exact source
+  af47c625bc937cb6e41325bcbd9b64914db7b3b2 and tree
+  bb2d47618032af388d5c3dfd8c698d39b83e6dda. The gate includes the complete
+  Identity163/163 suite, Router verifier6/6, affected builds, typechecks, lint,
+  formatting, unused-code, architecture, platform, documentation, repository
+  memory, security and CI policy checks.
+
+Third corrected evidence-head result:
+  PASS — 57/57 tasks, 46 cached, in 82.472 seconds on pre-publication head
+  2d4a9da1974769acba7eabda4ae4e768f8fc76f1 and tree
+  6b17b2bd4c5eddac11bf3fc7c9fffb37d597d73a. The subsequent amendment records
+  this result only; it changes no runtime, policy or test source. Final
+  formatting, documentation, repository-memory and staged security checks are
+  repeated on the amended publication head.
+
 PENDING PROTECTED/RELEASE EVIDENCE
 
-- Push the second corrected source/evidence head once and require protected
+- Push the third corrected source/evidence head once and require protected
   exact-head CI, including the pinned packaged Router proof.
-- Reply to and resolve confirmation discussion 3898385895 after the published
-  evidence is green. Because this remediation changes the durable
-  replay/admission boundary, complete one blocker-focused confirmation on that
-  exact head.
+- Reply to and resolve discussions 3898857100 and 3898857110 after the
+  published evidence is green. Because this remediation changes rollout and
+  availability boundaries, complete one final blocker-focused confirmation on
+  that exact head.
 - Protected exact-head CI, tree-identical squash merge and exact-main CI remain
   required before this item is verified/released.

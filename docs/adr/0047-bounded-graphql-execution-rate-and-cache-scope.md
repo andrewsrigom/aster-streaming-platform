@@ -44,11 +44,13 @@ for every current and retained operation hash. Each entry records:
 Generation traverses selected schema coordinates and derives the minimum
 authorization scope. Identity account/profile roots require account scope;
 Engagement roots and entity fields require profile scope. The declared policy
-must match that derived scope. The policy name set must exactly equal the active
-trusted-operation name set, including retained versions by name. Missing/stale
-entries, public classification of private selections, a different response
-cache policy, or drift from the pinned Router execution/concurrency limits fail
-composition.
+must match that derived scope. The policy identities must exactly equal the
+bounded active trusted-operation union, including retained versions by name and
+hash. The verifier derives this union from the packaged persisted manifest
+rather than assuming a fixed operation count. Missing/stale entries, more than
+two versions for one name, public classification of private selections, a
+different response cache policy, or drift from the pinned Router
+execution/concurrency limits fail composition.
 
 Identity profile create/update/delete share `profile_mutation`: capacity eight,
 refill two requests per second and TTL 30 seconds. Profile selection uses
@@ -79,9 +81,11 @@ local fallback bucket. The existing finite Redis adapter and GraphQL admission
 bound command pressure. Redis rejection rejects. During Redis timeout or
 unavailability, each process permits only its bounded local policy: at most
 1,024 monotonic account-operation buckets and 8,192 short-lived admission
-markers, including same-process retry deduplication. Cancellation never falls
-back to allow; exhausted local capacity rejects. Redis state expires and never
-authorizes a profile write.
+markers, including same-process retry deduplication. Expired markers are pruned
+before enforcing that capacity on successful Redis and degraded local paths, so
+healthy lifetime traffic cannot consume the failover bound permanently.
+Cancellation never falls back to allow; exhausted live local capacity rejects.
+Redis state expires and never authorizes a profile write.
 
 PostgreSQL becomes Identity's sole readiness-critical dependency. Redis remains
 owned and closed during shutdown, and limiter dependency telemetry exposes its
@@ -155,8 +159,12 @@ separation, pseudonymous keys, fixed
 Redis policy, rejection, outage fallback, recovery, cancellation and closure.
 Application tests prove authorization and durable receipt lookup precede
 admission, rejection prevents the base mutation and reads bypass the limiter.
-Composition tests require exact policy coverage, derived private scope and
-`no-store` on all hashes. Identity runtime tests prove Redis is absent from
+Composition tests require exact policy coverage of the bounded
+current-plus-retained name/hash union, derived private scope and `no-store` on
+all hashes. Limiter tests fill the local marker capacity, expire it under a
+deterministic clock, admit a fresh successful Redis decision and prove the
+retained marker remains reusable during a later outage. Identity runtime tests
+prove Redis is absent from
 readiness while both dependencies remain owned for shutdown. Real Redis and
 PostgreSQL failure evidence is captured in Phase13 before release. The real
 subgraph proof exhausts the shared mutation bucket, removes the short-lived

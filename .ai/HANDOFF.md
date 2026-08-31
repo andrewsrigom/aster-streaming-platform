@@ -17,8 +17,11 @@ run `33432579598` failed and initial review found one blocker. Corrected source
 `8d2633d`, tree `d75aca0`, reached published head `82ba630`, passed protected run
 `33437257163` and resolved discussion `3897861197`. Confirmation discussion
 `3898385895` found the 30-second marker expires before the 86,400-second durable
-receipt. Second corrected source `bf14e2c`, tree `0084c67`, is committed and
-locally accepted. It is not pushed, confirmed or released yet.
+receipt. Second corrected head `1e115fe` passed protected run `33442875698` and
+resolved that discussion. Blocker-focused discussions `3898857100` and
+`3898857110` found a fixed-count retained-union verifier and missing expired
+local-marker pruning. Third corrected source `af47c62`, tree `bb2d476`, is
+committed and locally accepted. It is not pushed, confirmed or released yet.
 
 ## Implemented locally
 
@@ -26,6 +29,9 @@ locally accepted. It is not pushed, confirmed or released yet.
 - Operation-demand manifest version2 classifies all25 current/retained exact
   hashes as public/account/profile, assigns finite rate classes, pins the Router
   3,000 ms/eight-request boundary and requires `no-store`.
+- Packaged verification derives the exact bounded current-plus-retained
+  name/hash union from the persisted manifest and permits at most two versions
+  per operation name; it does not assume a fixed operation count.
 - Composition derives minimum private scope from selected owner coordinates and
   fails missing/stale/weaker policy.
 - Router's GraphQL service overwrites admitted responses with
@@ -44,7 +50,8 @@ locally accepted. It is not pushed, confirmed or released yet.
   admission markers. Redis uses its existing atomic server-time bucket with
   30-second TTL and only SHA-256 account/admission pseudonyms. The shared
   decision runs before outage-only local admission; cancellation/capacity fail
-  closed.
+  closed. Expired markers are pruned before capacity on successful Redis and
+  degraded local paths.
 - PostgreSQL is Identity's sole readiness-critical dependency. Redis remains
   lifecycle-owned and closes cleanly.
 - Telemetry accepts finite `profile_mutation` and `profile_selection` labels.
@@ -58,11 +65,11 @@ locally accepted. It is not pushed, confirmed or released yet.
   durable receipt replay. Corrected protected head `82ba630` passed run
   `33437257163`, and that thread is resolved. Confirmation discussion
   `3898385895` found the marker/receipt lifetime mismatch.
-- Second corrected source is `bf14e2c`, tree `0084c67`.
-- Identity tests:162/162 pass.
+- Third corrected source is `af47c62`, tree `bb2d476`.
+- Identity tests:163/163 pass.
 - Router tests:21/21 plus deterministic schema check pass.
 - Telemetry tests:19/19 pass.
-- Router source verifier:5/5 pass.
+- Router source verifier:6/6 pass.
 - GraphQL rejection/cache verifier:3/3 pass.
 - Build:15/15 relevant dependency/package tasks pass.
 - `pnpm --filter @aster/identity integration:core` passed four disposable
@@ -77,15 +84,16 @@ locally accepted. It is not pushed, confirmed or released yet.
   removed, durable replay passing, no marker recreation and cleanup remaining0.
 - Isolated `aster-p13-remediation` packaged Router proof passed accepted/adverse
   cache behavior and removed its owned resources.
-- Final second corrected affected candidate gate:57/57 tasks,46 cached,61.880
-  seconds on source `bf14e2c`/tree `0084c67` plus current evidence/documentation.
+- Third corrected source gate:57/57 tasks,39 cached,66.529 seconds on source
+  `af47c62`/tree `bb2d476`; pre-publication evidence-head gate:57/57 tasks,46
+  cached,82.472 seconds on head `2d4a9da`/tree `6b17b2b`.
 
 ## Exact next actions
 
-1. Push the second corrected evidence head once to existing PR56.
+1. Push the third corrected evidence head once to existing PR56.
 2. Require protected exact-head CI including the pinned Router `no-store`
-   proof. Answer/resolve discussion `3898385895`, then request one
-   blocker-focused confirmation review on the second corrected exact head.
+   proof. Answer/resolve discussions `3898857100` and `3898857110`, then request
+   one final blocker-focused confirmation review on the third corrected head.
 3. Squash merge only after those gates. Verify candidate-tree identity and
    exact-main CI before publishing item67.
 

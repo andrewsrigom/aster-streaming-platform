@@ -4,6 +4,34 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Retained rollout and failover marker remediation
+
+### Completed
+
+- Second corrected PR56 head `1e115fe` passed protected run `33442875698` and
+  discussion `3898385895` is resolved. Blocker-focused review found discussions
+  `3898857100` and `3898857110`: packaged verification assumed exactly25 demand
+  profiles, while successful Redis traffic retained expired local markers up
+  to the8,192-entry failover bound.
+- Source `af47c62`, tree `bb2d476`, derives and validates the exact bounded
+  current-plus-retained name/hash union with at most two versions per name. The
+  limiter prunes expired markers before capacity on both distributed-success
+  and degraded local paths.
+- Identity163/163 and Router verifier6/6 pass. The complete affected source gate
+  passes57/57 with39 cached in66.529 seconds; the pre-publication evidence head
+  repeats57/57 with46 cached in82.472 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the exact review
+  blockers, third correction and local acceptance.
+
+### Next action
+
+- Publish the third corrected evidence head once, require protected exact-head
+  CI, resolve both discussions, complete one final blocker-focused confirmation,
+  then merge and verify exact-main CI before item67 publication.
+
 ## 2026-08-31 — Durable profile replay precedes short-lived admission
 
 ### Completed

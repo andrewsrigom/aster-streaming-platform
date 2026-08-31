@@ -29,6 +29,13 @@ proved an authorized-account Redis limiter with bounded local degradation, but
 Identity profile commands had only process-global admission and Identity
 incorrectly treated Redis readiness as critical.
 
+Protected run `33442875698` passes exact head `1e115fe`. The blocker-focused
+confirmation found two remaining acceptance gaps: the packaged runtime verifier
+hard-codes 25 demand profiles instead of accepting the bounded current-plus-
+retained trusted union, and healthy Redis admissions do not prune expired local
+failover markers before enforcing their 8,192-entry capacity. Both are blocking
+rollout/availability boundaries and are remediated together before release.
+
 ## Proposed behavior
 
 Generate one finite runtime policy beside the trusted-operation demand
@@ -93,12 +100,14 @@ sole readiness-critical dependency.
 | --- | --- | --- |
 | Account exceeds profile command budget | Reject before mutation | finite operation/result/source |
 | Exact completed mutation is retried after a limiter marker expires | Return the retained durable result before rate admission | finite owner result; no limiter event |
+| Healthy traffic fills local failover markers and their TTL elapses | Prune expired markers before capacity and preserve new retry markers | bounded local snapshot |
 | Redis rejects | Reject consistently across replicas | `redis` plus `rejected` |
 | Redis times out or is unavailable | Use bounded local result; keep Identity ready | `local_fallback` plus finite cause |
 | Redis reply/key is malformed | Fail closed or bounded fallback; never authorize | finite dependency failure |
 | Local partition map is full | Reject new partition | finite `capacity` outcome |
 | Request is cancelled | Reject/cancel without fallback allow | finite `cancelled` outcome |
 | Operation lacks runtime/cache policy | Composition fails | operation name plus finite rule |
+| A reviewed retained operation overlaps current client rollout | Runtime verification accepts the same bounded trusted/demand union | exact manifest identities |
 | Private operation is marked public/cacheable | Composition fails | finite scope rule |
 | Public concurrency or deadline is exceeded | Router returns sanitized bounded failure | existing finite server outcome |
 
@@ -149,7 +158,8 @@ sole readiness-critical dependency.
   readiness with Redis absent; exhaust the shared bucket, remove the exact short
   marker and prove retained PostgreSQL replay without marker recreation.
 - Contract: one runtime/cache classification per exact trusted hash; private
-  operations cannot be public/cacheable; generated artifact staleness fails.
+  operations cannot be public/cacheable; generated artifact staleness fails;
+  current-plus-retained manifest unions align exactly and remain bounded.
 - Browser: canonical sign-in/profile/browse/play journey remains valid; private
   Apollo state still resets on session/profile changes.
 - Performance/failure: deterministic eight-active/one-rejected concurrency
@@ -161,13 +171,15 @@ sole readiness-critical dependency.
 - Commands: focused Identity/Router tests during iteration; affected candidate
   gate before publication; protected CI for real packaged runtime.
 - Raw artifact path: `evidence/phase-13/execution-rate-cache-controls.txt`.
-- Acceptance result: second corrected local candidate accepted at source
-  `bf14e2c`, tree `0084c67`; Identity162/162, Router21/21, focused verifiers,
-  all11 real integration scenarios, exact-source PostgreSQL/Redis subgraph,
-  isolated packaged Router and affected gate57/57 pass. Corrected protected run
-  `33437257163` passed and initial discussion `3897861197` is resolved;
-  confirmation discussion `3898385895` prompted this second correction. Its
-  protected CI, blocker-focused confirmation and release are pending.
+- Acceptance result: third corrected local candidate accepted at source
+  `af47c62`, tree `bb2d476`; Identity163/163, Router21/21, Router verifier6/6,
+  all11 carried real integration scenarios, exact-source PostgreSQL/Redis
+  subgraph, isolated packaged Router and affected gate57/57 pass. Corrected
+  protected runs `33437257163` and `33442875698` passed; discussions
+  `3897861197` and `3898385895` are resolved. The blocker-focused review then
+  found retained-union verification (`3898857100`) and expired-marker pruning
+  (`3898857110`) gaps. Both are remediated locally; exact-head protected CI,
+  discussion resolution, final confirmation and release remain.
 - Iteration gate: changed-package typecheck/lint plus focused unit/contract tests.
 - Candidate gate: repository affected-scope gate selected from exact diff,
   including Identity integration, Router generation and platform policy.

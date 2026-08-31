@@ -73,7 +73,9 @@ responses to `no-store`. Identity profile commands partition rate admission by
 the account from a current owner session; only SHA-256 account/admission
 pseudonyms enter Redis. A retained durable receipt replays before the shorter
 limiter marker can reject it, while new writes repeat authorization in the base
-command. Router still rejects oversized or parser-hostile bodies, bounds execution
+command. Expired local retry markers are pruned before their finite capacity is
+enforced, so healthy Redis traffic cannot disable later bounded failover.
+Router still rejects oversized or parser-hostile bodies, bounds execution
 to three seconds/eight concurrent requests, overwrites response cache control,
 and disables batching and introspection. N+1/query-count and final
 owner-authorization abuse proof remain the closing Phase13 work; neither demand

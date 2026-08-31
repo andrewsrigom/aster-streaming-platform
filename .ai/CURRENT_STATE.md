@@ -57,8 +57,10 @@ published head `59b7215` failed protected run `33432579598` and initial review
 found one durable-retry blocker. Corrected head `82ba630` passed protected run
 `33437257163` and resolved that thread; confirmation discussion `3898385895`
 found the shorter admission marker could expire before the durable receipt.
-Second corrected source `bf14e2c`, tree `0084c67`, passes the complete local
-remediation gate; second protected correction remains.
+Second corrected head `1e115fe` passed protected run `33442875698`. The
+blocker-focused review found retained-union verification and expired-marker
+pruning gaps. Third corrected source `af47c62`, tree `bb2d476`, passes the
+complete local remediation gate; third protected correction remains.
 
 ## Verified
 
@@ -243,9 +245,20 @@ authorization. Identity162/162 pass. The second full all11 integration passed in
 subgraph in18.137 seconds with an exhausted bucket, removed marker, retained
 receipt replay, no marker recreation and cleanup0. The accepted affected gate
 passes57/57 with46 cached in61.880 seconds after final evidence/documentation
-updates. This is an implemented second
-corrected local candidate, not verified or released; publication, protected
-exact-head CI, blocker-focused confirmation, merge and exact-main CI remain.
+updates. Published head `1e115fe` passed protected run `33442875698` and
+discussion `3898385895` is resolved. Its blocker-focused review found that the
+packaged verifier hard-coded 25 demand profiles instead of the bounded
+current-plus-retained union (`3898857100`) and successful Redis decisions did
+not prune expired local markers before capacity (`3898857110`).
+
+Third corrected source `af47c625bc937cb6e41325bcbd9b64914db7b3b2`, tree
+`bb2d47618032af388d5c3dfd8c698d39b83e6dda`, derives and validates the exact
+persisted name/hash union with at most two versions per name. Identity prunes
+expired markers before capacity on successful Redis and degraded local paths.
+Identity163/163, Router verifier6/6 and the complete affected gate57/57 with39
+cached in66.529 seconds pass. This is an implemented third corrected local
+candidate, not verified or released; publication, protected exact-head CI,
+discussion resolution, final confirmation, merge and exact-main CI remain.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -798,7 +811,7 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
 shape/list/cost controls are released through tree-identical PR55 merge
 `8cd6c0b` and exact-main run `33425758870` attempt2. Execution/rate/cache
-controls are implemented locally in second corrected item66; protected/release
+controls are implemented locally in third corrected item66; protected/release
 gates remain.
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
 requirements are planned in item67. Phase14 capacity validation and hosted
@@ -806,10 +819,10 @@ deployment remain planned.
 
 ## Next outcome
 
-For P13-R06/P13-R11 item66, publish the second corrected evidence head once and
+For P13-R06/P13-R11 item66, publish the third corrected evidence head once and
 require protected exact-head CI including the packaged Router proof. Reply to
-and resolve confirmation discussion `3898385895`, then request one
-blocker-focused confirmation because the durable replay/admission boundary
+and resolve discussions `3898857100` and `3898857110`, then request one final
+blocker-focused confirmation because rollout and availability boundaries
 changed. Squash merge only after those gates, then verify exact-main CI before
 item67 publication.
 Inspect the exact historical interrupted Phase12 project only when that same
