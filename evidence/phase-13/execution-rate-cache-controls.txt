@@ -1,0 +1,90 @@
+Phase 13 — execution, identity rate and cache-scope controls
+Date: 2026-08-31
+Requirements: P13-R06, P13-R11
+Branch: feat/p13-execution-rate-cache-controls
+Base main: 8cd6c0b25938f605ded95df736b2c53b4ecff150
+Base release tree: d034c033ec57e9b641fba04dae678ea082c944b7
+
+IMPLEMENTED CANDIDATE (NOT RELEASED)
+
+- ADR-0047 records the three-second/eight-request public execution boundary,
+  account-partitioned Identity admission, Redis degradation and mandatory
+  GraphQL no-store policy.
+- Operation demand manifest format version 2 classifies every exact current or
+  retained operation as public/account/profile, assigns one finite rate class,
+  and records deadline, concurrency and no-store. Exact name coverage and
+  derived private scope fail composition.
+- Router inserts Cache-Control: no-store on every public response.
+- Identity create/update/delete use profile_mutation (burst 8, refill 2/s);
+  selection uses profile_selection (burst 16, refill 4/s). Authorization runs
+  before admission and repeats in the existing owner command before a write.
+- Redis keys contain only SHA-256 account/admission pseudonyms, use finite TTL
+  and atomic server-time token buckets, and never authorize durable state.
+- PostgreSQL is Identity's sole readiness-critical dependency. Redis connects
+  on demand, degrades to the bounded local shield and remains lifecycle-owned.
+
+FOCUSED SOURCE EVIDENCE
+
+Command:
+  pnpm exec turbo run build --filter=@aster/identity --filter=@aster/router --filter=@aster/telemetry --concurrency=3
+Result:
+  PASS — 15/15 build tasks; 13 cached.
+
+Command:
+  pnpm --filter @aster/identity test
+Result:
+  PASS — 156/156 tests. Includes pseudonymous keys, burst/refill, on-demand
+  Redis connection, outage fallback, recovery, cancellation, 1,024-partition
+  capacity, authorization/admission ordering, optional Redis readiness and
+  deterministic eight-active/deadline behavior.
+
+Command:
+  pnpm --filter @aster/router test
+Result:
+  PASS — 21/21 tests plus deterministic schema check. Generated artifact count
+  11; manifest SHA-256
+  d5dd5593c687ee9f00941c8be8e57d0fb126b0fb49ff6faeb048cef963222a7c.
+
+Command:
+  pnpm --filter @aster/telemetry test
+Result:
+  PASS — 19/19 tests; finite profile_mutation/profile_selection vocabulary is
+  accepted without unbounded labels.
+
+Commands:
+  node --test tools/verify-router-runtime.test.mjs
+  node --test tools/verify-graphql-demand-controls.test.mjs
+Results:
+  PASS — 5/5 Router source/package policy tests and 2/2 bounded GraphQL
+  rejection/cache-control verifier tests.
+
+REAL POSTGRESQL/REDIS FAILURE EVIDENCE
+
+Docker engine observed once before the owned fixture: server 26.0.0.
+
+Command:
+  pnpm --filter @aster/identity integration:core
+Result:
+  PASS — disposable project aster-integration-75daf7f13014474ebf7b0e5240a9e2a1.
+  Key observed events:
+  - protocol_probes: PostgreSQL completed, Redis completed;
+  - identity_rate_atomic_admission: passed across two limiter replicas;
+  - postgres_stop_recovery: passed;
+  - postgres_timeout_cancellation: passed, reservedSlots 0;
+  - redis_stop_recovery: passed after an allowed bounded local fallback;
+  - redis_cancellation_capacity_timeout: passed;
+  - identity_dependency_recovery: PostgreSQL passed;
+  - identity_optional_redis: readiness stayed ready during Redis stop/start;
+  - identity_signal_drain: passed in 55 ms;
+  - HTTP in-flight drain: passed in 64 ms;
+  - core integration: passed four scenarios in 58,870 ms;
+  - cleanup: remaining 0 in 1,789 ms.
+
+PENDING CANDIDATE/RELEASE EVIDENCE
+
+- Complete affected-scope candidate gate on the exact committed source.
+- Run the packaged pinned Apollo Router and prove accepted plus every adverse
+  response carries Cache-Control: no-store.
+- Complete one bounded initial review and one confirmation review.
+- Protected exact-head CI, tree-identical squash merge and exact-main CI remain
+  required before this item is verified/released.

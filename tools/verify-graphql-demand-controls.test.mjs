@@ -15,6 +15,7 @@ test("GraphQL demand rejection accepts only bounded responses without data or to
     assertSafeGraphqlRejection(
       {
         status: 400,
+        cacheControl: "no-store",
         text: '{"errors":[{"message":"GraphQL operation failed."}]}',
         body: { errors: [{}] },
       },
@@ -25,6 +26,7 @@ test("GraphQL demand rejection accepts only bounded responses without data or to
     assertSafeGraphqlRejection(
       {
         status: 200,
+        cacheControl: "no-store",
         text: '{"errors":[{"message":"GraphQL operation failed."}]}',
         body: { errors: [{}] },
       },
@@ -33,22 +35,51 @@ test("GraphQL demand rejection accepts only bounded responses without data or to
   );
   assert.throws(() =>
     assertSafeGraphqlRejection(
-      { status: 200, text: '{"data":{}}', body: { data: {}, errors: [] } },
-      "fixture",
-    ),
-  );
-  assert.throws(() =>
-    assertSafeGraphqlRejection({ status: 200, text: "not-json", body: undefined }, "fixture"),
-  );
-  assert.throws(() =>
-    assertSafeGraphqlRejection(
-      { status: 400, text: "postgres failed at node_modules/a.js:4", body: undefined },
+      {
+        status: 200,
+        cacheControl: "no-store",
+        text: '{"data":{}}',
+        body: { data: {}, errors: [] },
+      },
       "fixture",
     ),
   );
   assert.throws(() =>
     assertSafeGraphqlRejection(
-      { status: 400, text: '{"errors":[{"message":"unexpected f321"}]}', body: undefined },
+      { status: 200, cacheControl: "no-store", text: "not-json", body: undefined },
+      "fixture",
+    ),
+  );
+  assert.throws(() =>
+    assertSafeGraphqlRejection(
+      {
+        status: 400,
+        cacheControl: "no-store",
+        text: "postgres failed at node_modules/a.js:4",
+        body: undefined,
+      },
+      "fixture",
+    ),
+  );
+  assert.throws(() =>
+    assertSafeGraphqlRejection(
+      {
+        status: 400,
+        cacheControl: "no-store",
+        text: '{"errors":[{"message":"unexpected f321"}]}',
+        body: undefined,
+      },
+      "fixture",
+    ),
+  );
+  assert.throws(() =>
+    assertSafeGraphqlRejection(
+      {
+        status: 400,
+        cacheControl: "public, max-age=60",
+        text: '{"errors":[{}]}',
+        body: { errors: [{}] },
+      },
       "fixture",
     ),
   );

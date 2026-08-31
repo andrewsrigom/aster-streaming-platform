@@ -2,6 +2,17 @@
 
 This ledger is a navigation aid. ADRs remain the authoritative decision records.
 
+[ADR-0047](../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md)
+extends every exact trusted-operation demand profile with derived
+public/account/profile scope, one finite rate class, the pinned three-second/
+eight-request execution boundary and mandatory `no-store`. Identity profile
+commands restore the authoritative session before a bounded account-partitioned
+local-plus-Redis admission, then repeat authorization in the owner write path.
+Redis keys use only SHA-256 account/admission pseudonyms, outage falls back only
+to bounded local admission, cancellation/capacity fail closed, and PostgreSQL is
+Identity's sole readiness-critical dependency. Hosted JWT/provider decisions
+remain Phase14 work.
+
 [ADR-0046](../docs/adr/0046-source-owned-graphql-demand-budget.md) upgrades the
 five owner schemas to Federation v2.9 standard `@cost`/`@listSize` metadata and
 derives one finite demand profile for every exact admitted current or retained

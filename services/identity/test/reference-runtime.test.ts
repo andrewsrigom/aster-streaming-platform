@@ -129,8 +129,9 @@ test("starts once under one propagated deadline and drains work before ordered c
   assert.equal(runtime.start(), starting);
   assert.deepEqual(await starting, { status: "started", readiness: "ready" });
   assert.equal(events[0], "http.listen");
-  assert.equal(events.filter((event) => event.endsWith(".connect")).length, 2);
-  assert.equal(events.filter((event) => event.endsWith(".probe")).length, 2);
+  assert.equal(events.filter((event) => event.endsWith(".connect")).length, 1);
+  assert.equal(events.filter((event) => event.endsWith(".probe")).length, 1);
+  assert.equal(events.includes("redis.connect"), false);
   assert.equal(
     observedSignals.every((signal) => signal === observedSignals[0]),
     true,
@@ -157,7 +158,7 @@ test("starts once under one propagated deadline and drains work before ordered c
   assert.equal(runtime.health().reason, "stopped");
 });
 
-test("remains live on unavailable startup and recovers without lifecycle rollback", async () => {
+test("uses PostgreSQL as the sole readiness dependency while Redis remains optional", async () => {
   const { runtime, events, states, runRecoveryCycle } = harness();
   states.postgresql = "unavailable";
   assert.deepEqual(await runtime.start(), { status: "started", readiness: "not_ready" });
@@ -175,7 +176,9 @@ test("remains live on unavailable startup and recovers without lifecycle rollbac
   assert.equal(runtime.health().readiness, "ready");
   states.redis = "unavailable";
   await runRecoveryCycle();
-  assert.equal(runtime.health().reason, "dependency_unavailable");
+  assert.equal(runtime.health().readiness, "ready");
+  assert.equal(events.includes("redis.connect"), false);
+  assert.equal(events.includes("redis.probe"), false);
   states.redis = "ready";
   await runRecoveryCycle();
   assert.equal(runtime.health().phase, "ready");

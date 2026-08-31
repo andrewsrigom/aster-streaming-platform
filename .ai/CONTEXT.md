@@ -66,24 +66,18 @@ source `b646e496d0946262a688f34a118a896f6c40ebda`, tree
 `33348247619` passed every required job and releases Phase12. Item64 final head
 `de50b3e` passed protected run `33410126892` and clean confirmation; PR52 squash
 main `fb5cf014` retained candidate tree `a78f095`, and exact-main run
-`33412728404` passed. Item65 is the sole active item on
-`feat/p13-graphql-demand-controls`, rebased onto that release. Source `36b6af2`,
-tree `e8fc58b`, owns parser, shape, list, cost and environment controls and
-opened PR55. Initial run `33415238912` and review found a runtime-verifier status
-mismatch and an encoded-request boundary gap. Corrected source `96dc6ea`, tree
-`c708f9e`, passes Router19/19, verifier2/2 and the affected gate51/51. Corrected
-run `33416680451` then exposed only the verifier's guessed introspection error
-code/location; source `55875ce`, tree `9ac71a9`, now asserts pinned Router's
-exact sanitized `UNAVAILABLE` response and passes the repeated gate51/51. Exact
-head `0fd6c78` passed protected run `33417515807`; initial discussion
-`3896477418` is resolved. Confirmation discussion `3896804794` found implicit
-fallback could hide removed non-root entity field cost. Source `8395f79`, tree
-`0a026a6a`, now requires direct cost on every selected field of a cost-owned
-type; Router20/20 and gate51/51 with32 cached in88.328 seconds pass without
-changing calibrated profiles. Exact head `9f23640` passed protected run
-`33420810495` attempt2; both threads are resolved and confirmation comment
-`5482516972` found no major issue. Release remains. No hosted deployment is
-claimed; Phase14 still owns provider and deployment decisions.
+`33412728404` passed. Item65 final candidate head `94c17b9`, tree `d034c03`,
+passed protected run `33424006919`; all review threads were resolved. PR55
+squash main `8cd6c0b` retained that exact tree. Exact-main run `33425758870`
+passed on attempt2 after attempt1's isolated TraceQL indexing timeout; every
+source and product job was unchanged and cleanup was clean. Item65 is released.
+Item66 is the sole active item on `feat/p13-execution-rate-cache-controls` from
+that exact main. ADR-0047, exact runtime/cache classification, authorized-account
+Identity admission and optional-Redis readiness are implemented locally.
+Identity156/156, Router21/21, telemetry19/19 and the disposable real
+PostgreSQL/Redis core integration pass with exact cleanup. Candidate, packaged
+Router, review and release gates remain. No hosted deployment is claimed;
+Phase14 still owns provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

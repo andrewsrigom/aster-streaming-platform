@@ -1,6 +1,6 @@
 {
   "format": "aster-operation-demand-manifest",
-  "version": 1,
+  "version": 2,
   "policy": {
     "maximumAliases": 8,
     "maximumCost": 2048,
@@ -12,6 +12,7 @@
   "operations": [
     {
       "aliases": 0,
+      "authorizationScope": "public",
       "cost": 1089,
       "depth": 6,
       "id": "c66cdd7b06b64edd34beb183a69064c8736560fb2a90f44240f626a7e086b84d",
@@ -19,10 +20,15 @@
       "name": "Browse",
       "rootFields": 1,
       "selections": 46,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 194,
       "depth": 7,
       "id": "ec4a2b6690887c599231014217431296727d6ae1f9a7e5d1899b5f4b6d5582ca",
@@ -30,10 +36,15 @@
       "name": "ContinueWatching",
       "rootFields": 1,
       "selections": 26,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 28,
       "depth": 2,
       "id": "a19b569468f9bb370043a943d6806e6d46450c8fe8c3ac3a53069d4508caaa1c",
@@ -41,10 +52,15 @@
       "name": "CreateProfile",
       "rootFields": 1,
       "selections": 6,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "profile_mutation"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 28,
       "depth": 2,
       "id": "a377731af8d1d9dc8d4967fdda7c88dcc7c58973552921047f4d70147972dee3",
@@ -52,10 +68,15 @@
       "name": "DeleteProfile",
       "rootFields": 1,
       "selections": 6,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "profile_mutation"
     },
     {
       "aliases": 0,
+      "authorizationScope": "public",
       "cost": 23,
       "depth": 3,
       "id": "a3f9482d2ea504406f379bbaf6a2f0cacc97a10c5542e622b196712a3778f992",
@@ -63,10 +84,15 @@
       "name": "DemoSignIn",
       "rootFields": 1,
       "selections": 8,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 410,
       "depth": 7,
       "id": "f58a427bc182844a5f8fc7867e5990c133c6664aad3db292e75c1edb7ff33119",
@@ -74,10 +100,15 @@
       "name": "HomePersonalized",
       "rootFields": 2,
       "selections": 55,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "public",
       "cost": 606,
       "depth": 7,
       "id": "7b102783f4db0d8429367a48a8c13a64ebe2819534a0ff181e11f6c44c9d2951",
@@ -85,10 +116,15 @@
       "name": "HomePublic",
       "rootFields": 1,
       "selections": 95,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 12,
       "depth": 3,
       "id": "b82117e0bf3f104576021baa5243c4c2a25c88ec39b99593c5d8fc94fc060d64",
@@ -96,10 +132,15 @@
       "name": "PlayerProgress",
       "rootFields": 1,
       "selections": 15,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 8,
       "depth": 2,
       "id": "9bad3758056c2b032db5c12120d5daea3fafbd1369d2ae1d86cc5016e4f800ad",
@@ -107,10 +148,15 @@
       "name": "Profile",
       "rootFields": 2,
       "selections": 12,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 70,
       "depth": 3,
       "id": "70e7e070d0937da3b5366b6b576b9c7d35ef75f0831d29e95e751c4f1aceaba1",
@@ -118,10 +164,15 @@
       "name": "Profiles",
       "rootFields": 1,
       "selections": 11,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 18,
       "depth": 3,
       "id": "42933494e3c1999da476c2a904d6829efa6e20bd86bcc9408f5d717d5f8270b1",
@@ -129,10 +180,15 @@
       "name": "ProfileWithEngagement",
       "rootFields": 1,
       "selections": 10,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 194,
       "depth": 7,
       "id": "14285dc8b0a6a3630aa601201061b24549b46aefdf15845dee836d90ddd9459d",
@@ -140,10 +196,15 @@
       "name": "ProgressHistory",
       "rootFields": 1,
       "selections": 26,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 31,
       "depth": 3,
       "id": "984d75b437cd974bbadfdfeabc91790c76a1a940d9725b84f77d46d51e45d679",
@@ -151,10 +212,15 @@
       "name": "RecordProgress",
       "rootFields": 1,
       "selections": 17,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "engagement_progress"
     },
     {
       "aliases": 0,
+      "authorizationScope": "public",
       "cost": 176,
       "depth": 6,
       "id": "fd7ec0085bfeac2ec74c03704749d48fe60491974af0bc4102fa5edae9b6bd38",
@@ -162,10 +228,15 @@
       "name": "SearchTitles",
       "rootFields": 1,
       "selections": 24,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "discovery_search"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 26,
       "depth": 3,
       "id": "ae3dc8fab9d9e3f5344aacd434de6fe2c39b01eb96e44feda6fc233c5d2198e7",
@@ -173,10 +244,15 @@
       "name": "SelectProfile",
       "rootFields": 1,
       "selections": 8,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "profile_selection"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 29,
       "depth": 3,
       "id": "a9b6f51372acae08dc426e8094221e30a98b0095c69b2a7c0acd630ebfe569b0",
@@ -184,10 +260,15 @@
       "name": "SetWatchlist",
       "rootFields": 1,
       "selections": 13,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "engagement_watchlist"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 23,
       "depth": 3,
       "id": "3a007b7ea55a4748db8f6a9fb6f1ed115de78abdf744459fc2819dd6925aad6a",
@@ -195,10 +276,15 @@
       "name": "SignOut",
       "rootFields": 1,
       "selections": 7,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "public",
       "cost": 35,
       "depth": 3,
       "id": "8befbee8c1f9ccf96c4d822a0ac3489d2e309963a9a169c77a0ce98ff3d62aad",
@@ -206,10 +292,15 @@
       "name": "StartPlayback",
       "rootFields": 1,
       "selections": 10,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "public",
       "cost": 53,
       "depth": 4,
       "id": "55ea8a3055f89ce575b5d5fe738473cd304f2fc64a8a1c518b1a41aaa2cd5c26",
@@ -217,10 +308,15 @@
       "name": "TitleDetail",
       "rootFields": 1,
       "selections": 37,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 449,
       "depth": 5,
       "id": "83f48b16f1571c02f5e397dc513ef45c26b1769162f2590d2a7a639838b8e3c1",
@@ -228,10 +324,15 @@
       "name": "TitlesWithEngagement",
       "rootFields": 1,
       "selections": 20,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 28,
       "depth": 2,
       "id": "564bec6f67c64783bdec38f40587845ece674b9da02d6df1b547bb39a923bdfe",
@@ -239,10 +340,15 @@
       "name": "UpdateProfile",
       "rootFields": 1,
       "selections": 6,
-      "type": "mutation"
+      "type": "mutation",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "profile_mutation"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 4,
       "depth": 2,
       "id": "f3a53d21af443cce1ad90c30955b079f0e4bbdc38294b7d312a106839c0a26c1",
@@ -250,10 +356,15 @@
       "name": "Viewer",
       "rootFields": 1,
       "selections": 4,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "account",
       "cost": 11,
       "depth": 3,
       "id": "6fe0eeb3c42ccf8749c58f19ac7161917aed3d8156b0163beec7d66442a4ed02",
@@ -261,10 +372,15 @@
       "name": "ViewerAndTitle",
       "rootFields": 2,
       "selections": 9,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 194,
       "depth": 7,
       "id": "06817a4b6230260ef9970004294e6b7b96fbf10a776cec1fa55b4523a40b17c0",
@@ -272,10 +388,15 @@
       "name": "Watchlist",
       "rootFields": 1,
       "selections": 25,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     },
     {
       "aliases": 0,
+      "authorizationScope": "profile",
       "cost": 10,
       "depth": 2,
       "id": "ad19e17be54cc4ceab249831da5f139307cc83ee1ea14a806eff77e701a7e285",
@@ -283,7 +404,11 @@
       "name": "WatchlistMembership",
       "rootFields": 1,
       "selections": 4,
-      "type": "query"
+      "type": "query",
+      "cacheControl": "no-store",
+      "executionDeadlineMs": 3000,
+      "maximumConcurrentRequests": 8,
+      "rateClass": "global"
     }
   ]
 }

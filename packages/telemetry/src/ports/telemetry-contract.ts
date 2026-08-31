@@ -108,6 +108,8 @@ export const ASTER_LIMITED_OPERATIONS = Object.freeze([
   "record_progress",
   "set_watchlist",
   "search_titles",
+  "profile_mutation",
+  "profile_selection",
 ] as const);
 
 export const ASTER_OPERATION_LIMIT_OUTCOMES = Object.freeze([

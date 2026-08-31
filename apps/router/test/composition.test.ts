@@ -53,18 +53,23 @@ test("every exact trusted operation has one bounded demand profile", () => {
     policy: Record<string, number>;
     operations: {
       aliases: number;
+      authorizationScope: "public" | "account" | "profile";
+      cacheControl: string;
       cost: number;
       depth: number;
+      executionDeadlineMs: number;
       id: string;
       listExpansion: number;
+      maximumConcurrentRequests: number;
       name: string;
+      rateClass: string;
       rootFields: number;
       selections: number;
       type: string;
     }[];
   };
   assert.equal(demand.format, "aster-operation-demand-manifest");
-  assert.equal(demand.version, 1);
+  assert.equal(demand.version, 2);
   assert.equal(demand.operations.length, persisted.operations.length);
   assert.deepEqual(
     demand.operations.map(({ id, name, type }) => ({ id, name, type })),
@@ -77,7 +82,26 @@ test("every exact trusted operation has one bounded demand profile", () => {
     assert.ok(profile.rootFields <= (demand.policy["maximumRootFields"] ?? 0));
     assert.ok(profile.selections <= (demand.policy["maximumSelections"] ?? 0));
     assert.ok(profile.aliases <= (demand.policy["maximumAliases"] ?? 0));
+    assert.equal(profile.cacheControl, "no-store");
+    assert.equal(profile.executionDeadlineMs, 3_000);
+    assert.equal(profile.maximumConcurrentRequests, 8);
   }
+  assert.equal(
+    demand.operations.find(({ name }) => name === "Browse")?.authorizationScope,
+    "public",
+  );
+  assert.equal(
+    demand.operations.find(({ name }) => name === "Viewer")?.authorizationScope,
+    "account",
+  );
+  assert.equal(
+    demand.operations.find(({ name }) => name === "TitlesWithEngagement")?.authorizationScope,
+    "profile",
+  );
+  assert.equal(
+    demand.operations.find(({ name }) => name === "CreateProfile")?.rateClass,
+    "profile_mutation",
+  );
   assert.match(artifacts["manifest.json"] ?? "", /operation-demand-manifest\.json/u);
 });
 

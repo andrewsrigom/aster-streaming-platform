@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { setImmediate as nextTurn } from "node:timers/promises";
 
 import { createAsterPostgresAdapter } from "@aster/postgres";
@@ -6,6 +7,7 @@ import { createAsterRedisAdapter } from "@aster/redis";
 import { createAsterTelemetry } from "@aster/telemetry";
 
 import { createIdentityServiceWithFactories } from "../../src/create-service.js";
+import { createIdentityProfileOperationLimiter } from "../../src/infrastructure/profile-operation-limiter.js";
 import {
   createIdentityHttpServer,
   type IdentityHttpServer,
@@ -26,6 +28,7 @@ databaseUrl.username = "aster";
 databaseUrl.password = "aster-test-only";
 const connectionString = databaseUrl.toString();
 const redisUrl = `redis://127.0.0.1:${redisPort}/0`;
+const digest = (value: string) => createHash("sha256").update(value).digest("hex");
 
 function output(event: string, details: Record<string, unknown> = {}): void {
   process.stdout.write(`${JSON.stringify({ event, ...details })}\n`);
@@ -51,6 +54,16 @@ async function adapters(): Promise<void> {
     maxInFlightCommands: 1,
     operationTimeoutMs: 600,
   });
+  const firstLimiter = createIdentityProfileOperationLimiter({
+    environment: "test",
+    redis,
+    digest,
+  });
+  const secondLimiter = createIdentityProfileOperationLimiter({
+    environment: "test",
+    redis,
+    digest,
+  });
   try {
     assert.equal((await postgresql.connect()).status, "completed");
     assert.equal((await postgresql.probe()).status, "completed");
@@ -61,6 +74,28 @@ async function adapters(): Promise<void> {
     if (mode === "protocol") {
       return;
     }
+
+    const accountId = "00000000-0000-4000-8000-000000009901";
+    const admission = digest("real-redis-shared-admission");
+    assert.deepEqual(
+      await firstLimiter.admit(
+        "profile_mutation",
+        accountId,
+        admission,
+        AbortSignal.timeout(1_000),
+      ),
+      { status: "allowed" },
+    );
+    assert.deepEqual(
+      await secondLimiter.admit(
+        "profile_mutation",
+        accountId,
+        admission,
+        AbortSignal.timeout(1_000),
+      ),
+      { status: "allowed" },
+    );
+    output("identity_rate_atomic_admission", { outcome: "passed", replicas: 2 });
 
     // A stop after a successful query exercises idle-pool errors, not only refused startup sockets.
     await change("postgres", "stop");
@@ -101,6 +136,15 @@ async function adapters(): Promise<void> {
 
     await change("redis", "stop");
     assert.notEqual((await redis.probe()).status, "completed");
+    assert.deepEqual(
+      await firstLimiter.admit(
+        "profile_selection",
+        "00000000-0000-4000-8000-000000009902",
+        digest("redis-outage-fallback"),
+        AbortSignal.timeout(1_000),
+      ),
+      { status: "allowed" },
+    );
     assert.ok(redis.snapshot().reconnectAttempts <= 3);
     const unavailableRedis = createAsterRedisAdapter({
       url: redisUrl,
@@ -115,6 +159,15 @@ async function adapters(): Promise<void> {
     await change("redis", "start");
     await eventually("Redis reconnect", async () => (await redis.connect()).status === "completed");
     assert.equal((await redis.probe()).status, "completed");
+    assert.deepEqual(
+      await secondLimiter.admit(
+        "profile_selection",
+        "00000000-0000-4000-8000-000000009902",
+        digest("redis-recovered-admission"),
+        AbortSignal.timeout(1_000),
+      ),
+      { status: "allowed" },
+    );
     output("redis_stop_recovery", { outcome: "passed" });
 
     await change("redis", "pause");
@@ -136,6 +189,8 @@ async function adapters(): Promise<void> {
     assert.equal((await redis.probe()).status, "completed");
     output("redis_cancellation_capacity_timeout", { outcome: "passed" });
   } finally {
+    firstLimiter.close();
+    secondLimiter.close();
     assert.equal((await postgresql.close()).status, "completed");
     assert.equal((await postgresql.close()).status, "already_completed");
     assert.equal(postgresql.snapshot().totalConnections, 0);
@@ -178,19 +233,26 @@ async function identity(): Promise<void> {
   try {
     assert.deepEqual(await service.start(), { status: "started", readiness: "ready" });
     assert.equal(await health("ready"), 200);
-    for (const dependency of ["postgres", "redis"] as const) {
-      await change(dependency, "stop");
-      await eventually("Identity not ready", async () => (await health("ready")) === 503, 20_000);
-      assert.equal(await health("live"), 200);
-      assert.equal(service.tryBeginWork(), undefined);
-      await change(dependency, "start");
-      await eventually(
-        "Identity ready after recovery",
-        async () => (await health("ready")) === 200,
-        20_000,
-      );
-      output("identity_dependency_recovery", { dependency, outcome: "passed" });
-    }
+    await change("postgres", "stop");
+    await eventually("Identity not ready", async () => (await health("ready")) === 503, 20_000);
+    assert.equal(await health("live"), 200);
+    assert.equal(service.tryBeginWork(), undefined);
+    await change("postgres", "start");
+    await eventually(
+      "Identity ready after PostgreSQL recovery",
+      async () => (await health("ready")) === 200,
+      20_000,
+    );
+    output("identity_dependency_recovery", { dependency: "postgres", outcome: "passed" });
+
+    await change("redis", "stop");
+    assert.equal(await health("ready"), 200);
+    const redisOutageLease = service.tryBeginWork();
+    assert.ok(redisOutageLease);
+    redisOutageLease.complete();
+    await change("redis", "start");
+    assert.equal(await health("ready"), 200);
+    output("identity_optional_redis", { outcome: "passed", readiness: "ready" });
     const lease = service.tryBeginWork();
     assert.ok(lease);
     const shutdownStarted = performance.now();

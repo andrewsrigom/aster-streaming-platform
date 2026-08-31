@@ -38,6 +38,63 @@ export type DemandPolicy = Readonly<{
   maximumSelections: number;
 }>;
 
+export type OperationAuthorizationScope = "public" | "account" | "profile";
+export type OperationRateClass =
+  | "global"
+  | "discovery_search"
+  | "engagement_progress"
+  | "engagement_watchlist"
+  | "profile_mutation"
+  | "profile_selection";
+
+export type OperationRuntimePolicy = Readonly<{
+  authorizationScope: OperationAuthorizationScope;
+  cacheControl: "no-store";
+  executionDeadlineMs: 3_000;
+  maximumConcurrentRequests: 8;
+  rateClass: OperationRateClass;
+}>;
+
+const runtimePolicy = (
+  authorizationScope: OperationAuthorizationScope,
+  rateClass: OperationRateClass = "global",
+): OperationRuntimePolicy =>
+  Object.freeze({
+    authorizationScope,
+    cacheControl: "no-store",
+    executionDeadlineMs: 3_000,
+    maximumConcurrentRequests: 8,
+    rateClass,
+  });
+
+const GRAPHQL_OPERATION_RUNTIME_POLICIES = Object.freeze({
+  Browse: runtimePolicy("public"),
+  ContinueWatching: runtimePolicy("profile"),
+  CreateProfile: runtimePolicy("account", "profile_mutation"),
+  DeleteProfile: runtimePolicy("account", "profile_mutation"),
+  DemoSignIn: runtimePolicy("public"),
+  HomePersonalized: runtimePolicy("profile"),
+  HomePublic: runtimePolicy("public"),
+  PlayerProgress: runtimePolicy("profile"),
+  Profile: runtimePolicy("account"),
+  Profiles: runtimePolicy("account"),
+  ProfileWithEngagement: runtimePolicy("profile"),
+  ProgressHistory: runtimePolicy("profile"),
+  RecordProgress: runtimePolicy("profile", "engagement_progress"),
+  SearchTitles: runtimePolicy("public", "discovery_search"),
+  SelectProfile: runtimePolicy("account", "profile_selection"),
+  SetWatchlist: runtimePolicy("profile", "engagement_watchlist"),
+  SignOut: runtimePolicy("account"),
+  StartPlayback: runtimePolicy("public"),
+  TitleDetail: runtimePolicy("public"),
+  TitlesWithEngagement: runtimePolicy("profile"),
+  UpdateProfile: runtimePolicy("account", "profile_mutation"),
+  Viewer: runtimePolicy("account"),
+  ViewerAndTitle: runtimePolicy("account"),
+  Watchlist: runtimePolicy("profile"),
+  WatchlistMembership: runtimePolicy("profile"),
+}) satisfies Readonly<Record<string, OperationRuntimePolicy>>;
+
 export const GRAPHQL_DEMAND_POLICY: DemandPolicy = Object.freeze({
   maximumAliases: 8,
   maximumCost: 2_048,
@@ -50,8 +107,46 @@ export const GRAPHQL_DEMAND_POLICY: DemandPolicy = Object.freeze({
 const MAXIMUM_PARSER_TOKENS = 2_000;
 const MAXIMUM_REQUEST_BYTES = 32_768;
 
-export type OperationDemandProfile = Readonly<{
+const ACCOUNT_SCOPED_FIELDS = new Set([
+  "Mutation.createProfile",
+  "Mutation.deleteProfile",
+  "Mutation.selectProfile",
+  "Mutation.signOut",
+  "Mutation.updateProfile",
+  "Query.activeProfile",
+  "Query.me",
+  "Query.profile",
+  "Query.profiles",
+]);
+const PROFILE_SCOPED_FIELDS = new Set([
+  "Mutation.recordProgress",
+  "Mutation.setWatchlist",
+  "Profile.inWatchlist",
+  "Profile.progress",
+  "Query.continueWatching",
+  "Query.homeContinueWatching",
+  "Query.progressHistory",
+  "Query.watchlist",
+  "Title.inWatchlist",
+  "Title.progress",
+]);
+
+function authorizationScope(
+  current: OperationAuthorizationScope,
+  coordinate: string,
+): OperationAuthorizationScope {
+  if (PROFILE_SCOPED_FIELDS.has(coordinate)) {
+    return "profile";
+  }
+  if (current === "public" && ACCOUNT_SCOPED_FIELDS.has(coordinate)) {
+    return "account";
+  }
+  return current;
+}
+
+export type OperationDemandAnalysis = Readonly<{
   aliases: number;
+  authorizationScope: OperationAuthorizationScope;
   cost: number;
   depth: number;
   id: string;
@@ -62,15 +157,18 @@ export type OperationDemandProfile = Readonly<{
   type: OperationDefinitionNode["operation"];
 }>;
 
+type OperationDemandProfile = OperationDemandAnalysis & OperationRuntimePolicy;
+
 export type OperationDemandManifest = Readonly<{
   format: "aster-operation-demand-manifest";
-  version: 1;
+  version: 2;
   policy: DemandPolicy;
   operations: readonly OperationDemandProfile[];
 }>;
 
 type MutableMetrics = {
   aliases: number;
+  authorizationScope: OperationAuthorizationScope;
   depth: number;
   listExpansion: number;
   rootFields: number;
@@ -369,6 +467,10 @@ function selectionCost(
     if (!field) {
       reject(state.operationName, `${parent.name}.${selection.name.value} is unknown`);
     }
+    state.metrics.authorizationScope = authorizationScope(
+      state.metrics.authorizationScope,
+      `${parent.name}.${selection.name.value}`,
+    );
     const namedReturn = getNamedType(field.type);
     const returnsComposite = isCompositeType(namedReturn);
     const weight = fieldWeight(
@@ -434,7 +536,7 @@ export function analyzeOperationDemand(
   supergraph: GraphQLSchema,
   operation: DemandOperation,
   policy: DemandPolicy = GRAPHQL_DEMAND_POLICY,
-): OperationDemandProfile {
+): OperationDemandAnalysis {
   positivePolicy(policy);
   const encodedRequestBytes = Buffer.byteLength(
     JSON.stringify({
@@ -489,6 +591,7 @@ export function analyzeOperationDemand(
   }
   const metrics: MutableMetrics = {
     aliases: 0,
+    authorizationScope: "public",
     depth: 0,
     listExpansion: 1,
     rootFields: 0,
@@ -514,6 +617,7 @@ export function analyzeOperationDemand(
   }
   return Object.freeze({
     aliases: metrics.aliases,
+    authorizationScope: metrics.authorizationScope,
     cost,
     depth: metrics.depth,
     id: operation.id,
@@ -530,12 +634,61 @@ export function createOperationDemandManifest(
   supergraph: GraphQLSchema,
   operations: readonly DemandOperation[],
   policy: DemandPolicy = GRAPHQL_DEMAND_POLICY,
+  runtimePolicies: Readonly<
+    Record<string, OperationRuntimePolicy>
+  > = GRAPHQL_OPERATION_RUNTIME_POLICIES,
 ): OperationDemandManifest {
   if (operations.length < 1 || operations.length > 64) {
     throw new Error("GraphQL demand manifest requires 1–64 exact operations.");
   }
+  const operationNames = [...new Set(operations.map(({ name }) => name))].sort((left, right) =>
+    left.localeCompare(right, "en"),
+  );
+  const policyNames = Object.keys(runtimePolicies).sort((left, right) =>
+    left.localeCompare(right, "en"),
+  );
+  if (operationNames.join("\0") !== policyNames.join("\0")) {
+    throw new Error(
+      "GraphQL runtime policy requires every exact operation name and no stale entry.",
+    );
+  }
+  const expectedRateClass = (name: string): OperationRateClass => {
+    if (["CreateProfile", "DeleteProfile", "UpdateProfile"].includes(name)) {
+      return "profile_mutation";
+    }
+    if (name === "SelectProfile") {
+      return "profile_selection";
+    }
+    if (name === "RecordProgress") {
+      return "engagement_progress";
+    }
+    if (name === "SetWatchlist") {
+      return "engagement_watchlist";
+    }
+    if (name === "SearchTitles") {
+      return "discovery_search";
+    }
+    return "global";
+  };
   const profiles = operations
-    .map((operation) => analyzeOperationDemand(api, supergraph, operation, policy))
+    .map((operation) => {
+      const analysis = analyzeOperationDemand(api, supergraph, operation, policy);
+      const runtime = runtimePolicies[operation.name] as
+        (Partial<OperationRuntimePolicy> & Record<string, unknown>) | undefined;
+      if (
+        !runtime ||
+        runtime.authorizationScope !== analysis.authorizationScope ||
+        runtime.cacheControl !== "no-store" ||
+        runtime.executionDeadlineMs !== 3_000 ||
+        runtime.maximumConcurrentRequests !== 8 ||
+        runtime.rateClass !== expectedRateClass(operation.name) ||
+        Object.keys(runtime).toSorted().join(",") !==
+          "authorizationScope,cacheControl,executionDeadlineMs,maximumConcurrentRequests,rateClass"
+      ) {
+        return reject(operation.name, "runtime authorization, rate or cache scope is invalid");
+      }
+      return Object.freeze({ ...analysis, ...(runtime as OperationRuntimePolicy) });
+    })
     .sort(
       (left, right) =>
         left.name.localeCompare(right.name, "en") || left.id.localeCompare(right.id, "en"),
@@ -545,7 +698,7 @@ export function createOperationDemandManifest(
   }
   return Object.freeze({
     format: "aster-operation-demand-manifest",
-    version: 1,
+    version: 2,
     policy: Object.freeze({ ...policy }),
     operations: Object.freeze(profiles),
   });

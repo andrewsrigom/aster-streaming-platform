@@ -15,6 +15,7 @@ export function parserTokenFlood() {
 }
 
 export function assertSafeGraphqlRejection(response, label) {
+  assert.equal(response.cacheControl, "no-store", `${label} did not disable response caching.`);
   assert.ok(
     [200, 400, 413, 422, 429].includes(response.status),
     `${label} returned ${response.status}.`,
@@ -76,7 +77,12 @@ async function rawCall(encoded) {
           } catch {
             body = undefined;
           }
-          resolve({ status: message.statusCode, text, body });
+          resolve({
+            status: message.statusCode,
+            text,
+            body,
+            cacheControl: message.headers["cache-control"],
+          });
         });
       },
     );
@@ -102,6 +108,7 @@ async function main() {
     variables: { first: 1, locale: "en" },
   });
   assert.equal(accepted.status, 200);
+  assert.equal(accepted.cacheControl, "no-store");
   assert.equal(accepted.body?.errors, undefined);
   assert.ok(accepted.body?.data);
 

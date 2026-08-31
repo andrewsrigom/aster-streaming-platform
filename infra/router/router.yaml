@@ -69,6 +69,11 @@ headers:
         - insert:
             name: x-aster-csrf
             value: "1"
+    response:
+      operations:
+        - insert:
+            name: cache-control
+            value: no-store
   subgraphs:
     identity:
       request:

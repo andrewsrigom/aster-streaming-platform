@@ -157,8 +157,8 @@ Historical stashes are superseded.
 | 62 | Implement multi-window SLO burn-rate alerts linked to runbooks | P12-R07 | DONE |
 | 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
 | 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | DONE |
-| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | IN_PROGRESS |
-| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | READY |
+| 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | DONE |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | IN_PROGRESS |
 | 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | READY |
 
 Item64 final source `a353164`, evidence head `de50b3e`, passed protected run
@@ -180,7 +180,17 @@ field on a cost-owned type while preserving all calibrated profiles; Router20/20
 and gate51/51 with32 cached in88.328 seconds pass. Exact head `9f23640` passed
 protected run `33420810495` attempt2; discussion `3896804794` and both review
 threads are resolved, and clean confirmation comment `5482516972` found no major
-issue. Final evidence publication, merge and exact-main release remain.
+issue. Final candidate head `94c17b9`, tree `d034c03`, passed protected run
+`33424006919`. PR55 squash main `8cd6c0b` retained that exact tree. Exact-main
+run `33425758870` passed on attempt2 after attempt1's isolated TraceQL indexing
+timeout; every source and product job was unchanged and cleanup was clean.
+Item65 is released. Item66 is active on
+`feat/p13-execution-rate-cache-controls` from that exact main.
+ADR-0047, manifest-v2 runtime/cache classification, authorized-account Identity
+admission and optional-Redis readiness are implemented locally. Identity156/156,
+Router21/21, telemetry19/19 and the disposable real PostgreSQL/Redis core
+integration pass with cleanup remaining0. Candidate, packaged Router, review and
+release gates remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

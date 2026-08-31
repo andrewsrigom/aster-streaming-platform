@@ -2,172 +2,80 @@
 
 ## Resume point
 
-Phases00–12 are released. P12-R10 final source
-`b646e496d0946262a688f34a118a896f6c40ebda`, tree
-`789007d5f48d4a16c0a1b47b8e2554e1ee0e294a`, passed protected run
-`33346575787` attempt 2 and clean confirmation. PR51 squash main
-`2b77a32f43a87fcdfc5032faf856f369de183998` retained the tree; exact-main run
-`33348247619` passed every required job.
+Phases00–12 are released. Phase13 item64 is released through PR52/main
+`fb5cf014` and exact-main run `33412728404`. Item65 final candidate head
+`94c17b9`, tree `d034c03`, passed protected run `33424006919`; PR55 squash main
+`8cd6c0b25938f605ded95df736b2c53b4ecff150` retained that exact tree.
+Exact-main run `33425758870` passed on attempt2 after one isolated TraceQL
+indexing timeout. Item65 is released.
 
-Item64 (P13-R01/R02/R12) is released. Exact head `de50b3e` passed protected run
-`33410126892` and clean confirmation; all ten review threads are resolved. PR52
-squash main `fb5cf014` retained candidate tree `a78f095`; exact-main run
-`33412728404` passed every required job. Initial protected
-run `33350909056` failed
-and its complete initial review produced four blockers. Their correction passed
-protected run `33352310376`; confirmation then found one CI-classification gap.
-That correction passed run `33354040239`; blocker-focused confirmation found
-one same-name multi-version Web-test gap. Its correction passed run
-`33355546182`; follow-up confirmation found byte-preservation and rollback gaps.
-Source `5f4a315` corrected those gaps and protected run `33357231869` passed.
-Discussion `3891772219` then found AST source locations still omit ignored bytes
-at both wire boundaries.
-The explicit-body evidence head `66fcab71` passed protected run `33359022739`,
-and that discussion is resolved. Confirmation discussion `3891915868` then
-found Router generator-only changes could skip the packaged platform proof.
-Source `64fa64e`, tree `35817101`, corrected it. Protected run `33360643657`
-attempt2 passed after attempt1's transient TraceQL indexing timeout and the
-discussion is resolved. Blocker-focused discussion `3895588146` then found the
-runtime verifier could select a retained `Browse` body with current variables.
-Source `2286c7f`, tree `d253a5e`, corrects it; platform92/92 and gate49/49 pass.
-Final source `a353164`, tree `f6925778`, separates the unique current delivery
-index from the bounded current-plus-retained enforcement union.
+Item66 (P13-R06/R11) is the sole `IN_PROGRESS` item on
+`feat/p13-execution-rate-cache-controls`, worktree `/tmp/aster-p13-runtime`,
+from exact main `8cd6c0b`. The working tree contains one coherent implemented
+candidate but is not committed, published, reviewed or released yet.
 
-Item65 (P13-R03/R04/R05/R10) is the sole `IN_PROGRESS` item on
-`feat/p13-graphql-demand-controls`, rebased onto released main, with PR55 open.
-Initial run `33415238912` exposed an HTTP-status mismatch in the new runtime
-verifier; review discussion `3896477418` found the analyzer did not include the
-GraphQL envelope in the 32 KiB bound. Corrected source `96dc6ea`, tree `c708f9e`,
-passes Router19/19, verifier2/2 and the affected51/51 candidate gate. Its active
-protected run `33416680451` then exposed the verifier's guessed introspection
-error code/location; source `55875ce`, tree `9ac71a9`, now asserts the pinned
-Router's exact sanitized `UNAVAILABLE` response and passes the repeated51/51
-gate. Exact head `0fd6c78` passed protected run `33417515807`; discussion
-`3896477418` is resolved. Confirmation discussion `3896804794` found implicit
-non-root entity field cost. Source `8395f79`, tree `0a026a6a`, requires direct
-cost on selected fields of cost-owned types; Router20/20 and gate51/51 with32
-cached in88.328 seconds pass with unchanged profiles. Exact head `9f23640`, tree
-`7812620d`, passed protected run `33420810495` attempt2. Discussion `3896804794`
-and both review threads are resolved; confirmation comment `5482516972` found no
-major issue. Its active plan is `.ai/CHANGE_PLAN.md`; evidence is
-`evidence/phase-13/graphql-demand-controls.txt`. Final evidence publication,
-merge and exact-main release remain.
+## Implemented locally
 
-## Current behavior
+- ADR-0047 records bounded GraphQL execution, account admission and cache scope.
+- Operation-demand manifest version2 classifies all25 current/retained exact
+  hashes as public/account/profile, assigns finite rate classes, pins the Router
+  3,000 ms/eight-request boundary and requires `no-store`.
+- Composition derives minimum private scope from selected owner coordinates and
+  fails missing/stale/weaker policy.
+- Router overwrites all public responses with `Cache-Control: no-store`; the
+  packaged adverse verifier now checks that header.
+- Identity create/update/delete use `profile_mutation` (8 burst,2/s); selection
+  uses `profile_selection` (16 burst,4/s). A current session supplies the
+  authoritative account partition, then the existing profile command repeats
+  authorization before writing.
+- The limiter has at most1,024 local partitions. Redis uses its existing atomic
+  server-time bucket with30-second TTL and only SHA-256 account/admission
+  pseudonyms. It connects on demand; rejection rejects; outage uses only local
+  admission; cancellation/capacity fail closed.
+- PostgreSQL is Identity's sole readiness-critical dependency. Redis remains
+  lifecycle-owned and closes cleanly.
+- Telemetry accepts finite `profile_mutation` and `profile_selection` labels.
 
-- The 25 reviewed operations generate one deterministic Apollo manifest and one
-  finite Rhai matcher from the exact link-ready Apollo wire documents; the
-  Router image packages both.
-- `main.rhai` validates explicit environment/mode configuration and binds every
-  operation name to its exact link-ready wire-document SHA-256 before planning.
-- Local/integration audit remains explicit. Staging/production require enforce;
-  enforce rejects missing, unknown and altered documents with a sanitized error.
-- One explicit retained source permits at most two reviewed wire bodies per name
-  during Router-first client rollout.
-- Trust telemetry exposes only `matched`, `unknown` or `missing`; audit-mode SLI
-  diagnostics preserve only finite known operation labels. All 19 actual Web
-  `HttpLink` request bodies match the manifest.
-- Corrected source `0e4a4b3d5742f2458d082b59bac1efedf1651783`, tree
-  `61b325350149c9d5ba07b4ddc3c41cb324526984`, passes Router11/11, Web118/118,
-  focused policy36/36 and the affected gate49/49 with35 cached in72.599 seconds.
-  Protected run `33352310376` verifies the real pinned-Router proof, all owner
-  runtimes and the playable demo. Confirmation discussion `3891493400` found
-  that verifier-only changes could skip that lane. Source `b85230d`, tree
-  `05532b63`, adds the verifier to the finite platform classifier; classifier
-  12/12 and the affected gate49/49 with36 cached in50.442 seconds pass. Protected
-  run `33354040239` passes. Discussion `3891588767` then found that Web tests
-  retained only one hash per name. Source `effc7fd`, tree `0acdba2a`, indexes
-  every version per name; Web119/119 and gate49/49 with35 cached in54.987 pass.
-  Protected run `33355546182` passes. Discussions `3891672851`/`3891672854`
-  then found retained-body reprinting and unsafe pre-union rollback after client
-  exposure. Source `5f4a315`, tree `7c15d925`, preserves retained bytes and
-  defines/tests the union Router rollback floor; Router11/11 and gate49/49 with35
-  cached in53.095 seconds pass. Protected run `33357231869` passes. Discussion
-  `3891772219` then found AST locations omit ignored leading/trailing bytes.
-  Source `0bcdd68833c23f1ae61a1c07f5f93ac5d9d989e1`, tree
-  `7ad2f2d88d5c2848265f6bbf568ba4168aee3562`, stores each retained wire body as
-  one explicit versioned JSON string. Its regression proves leading whitespace,
-  a leading comment, trailing newline/whitespace and their exact SHA-256.
-  Router11/11 and the final gate49/49 with38 cached in45.499 seconds pass.
-  Evidence head `66fcab71` passed protected run `33359022739`, including the
-  packaged Router, integrations, diagnostics and playable demo; discussion
-  `3891772219` is resolved. Confirmation discussion `3891915868` found
-  `apps/router/` did not select platform CI. Source
-  `64fa64e7650e422e4b1a4405555521afc95921bd`, tree
-  `35817101dd1cb1126b2bddb2a2e9646938f760d0`, routes the complete Router package
-  through the platform proof. CI policy38/38 and gate49/49 with36 cached in
-  64.294 seconds pass. Run `33360643657` attempt2 passes every required job and
-  discussion `3891915868` is resolved. Discussion `3895588146` found selection
-  by name could choose the retained version. Source
-  `2286c7f71a82011c2eb083cdf52de07dc7301f51`, tree
-  `d253a5e8e69abf18c29e8dd432b3c4225958aa73`, joins the persisted entry to the
-  unique current schema-manifest hash and fails closed otherwise. Platform92/92
-  and gate49/49 with33 cached in98.949 seconds pass.
-- Item64 final source `a353164`, tree `f6925778`, keeps persisted/Rhai admission
-  as the bounded current-plus-retained union and `manifest.json` as the unique
-  current delivery index. Evidence head `de50b3e` passed protected run
-  `33410126892`, clean confirmation and tree-identical squash; exact-main run
-  `33412728404` passes.
-- Item65 initial source `36b6af2`, tree `e8fc58b`, adds Federation v2.9 owner cost/list
-  metadata and one deterministic profile for each of 25 admitted hashes.
-  Policy bounds aliases8, cost2048, depth12, list expansion512, roots4 and
-  selections256. Browse is the maximum cost/list profile at1089/320; HomePublic
-  is the largest shape at95 selections. Correction `96dc6ea`, tree `c708f9e`,
-  aligns structured HTTP 200 GraphQL rejection proof and the complete encoded
-  request limit. Source `55875ce`, tree `9ac71a9`, additionally matches the exact
-  pinned Router redaction contract observed in run `33416680451`. Protected run
-  `33417515807` proves that packaged boundary. Source `8395f79`, tree `0a026a6a`,
-  corrects confirmation discussion `3896804794` by requiring explicit cost on
-  selected fields of cost-owned entity types. Router20/20 and the affected
-  gate51/51 pass. Exact head `9f23640` passed protected run `33420810495`
-  attempt2 and clean confirmation `5482516972`; corrected packaged proof is
-  verified.
+## Current evidence
 
-## Accepted design and implementation
-
-- ADR-0045 records a source-owned Apollo manifest plus Apollo Router Core Rhai
-  enforcement; no GraphOS/plan-protected PQL feature is activated.
-- `persisted-query-manifest.json` and `trusted-operations.rhai` come from the
-  same parsed operations used by composition after the Apollo link transform.
-- Admission matches exact operation name plus SHA-256 of the received wire
-  query. Name and query are required.
-- `ASTER_ENV` and `ASTER_ROUTER_TRUSTED_OPERATIONS_MODE` are explicit.
-  `audit` is valid only in local/integration; staging/production require `enforce`.
-  Missing/invalid configuration fails Router startup.
-- Emit only finite `matched`, `unknown` or `missing` result labels; never emit query, hash or variables.
-- Local development stays in explicit audit mode; CI contains one disposable
-  enforce-mode real-Router proof.
-- Both generated artifacts are packaged; APQ remains disabled.
-- Item65 upgrades Federation links to v2.9 for standard `@cost` and `@listSize`,
-  calculates deterministic trusted-operation demand at build time, fails
-  excessive/missing metadata and emits one bounded calibration artifact. The
-  source candidate is implemented; protected early-Router rejection and release
-  remain pending.
+- Identity tests:156/156 pass.
+- Router tests:21/21 plus deterministic schema check pass.
+- Telemetry tests:19/19 pass.
+- Router source verifier:5/5 pass.
+- GraphQL rejection/cache verifier:2/2 pass.
+- Build:15/15 relevant dependency/package tasks pass.
+- `pnpm --filter @aster/identity integration:core` passed four disposable
+  scenarios in58.870s: real atomic two-replica Redis admission, Redis outage
+  fallback/recovery, PostgreSQL/optional-Redis readiness, cancellation/capacity,
+  SIGTERM/HTTP drain and cleanup remaining0.
+- Raw checkpoint:
+  `evidence/phase-13/execution-rate-cache-controls.txt`.
 
 ## Exact next actions
 
-1. Commit and publish the final item65 evidence checkpoint once.
-2. Require its proportional exact-head protected gate.
-3. Squash merge, verify tree identity and exact-main CI before item66.
+1. Run formatting/docs/lint checks once after the memory checkpoint.
+2. Review the complete diff, batch only blocking corrections and commit one
+   coherent source candidate.
+3. Run `node tools/run-quality-gate.ts --changed` with
+   `CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4`.
+4. Append the exact candidate gate and source/tree IDs to evidence/memory and
+   commit that checkpoint.
+5. Push once, open one PR, require protected exact-head CI including the pinned
+   Router `no-store` proof, collect one complete initial review and one
+   confirmation review, then squash merge only after blockers are resolved.
+6. Verify candidate-tree identity and exact-main CI before activating item67.
 
 ## Execution boundary
 
 Use WSL Git and Node.js24.19.0/pnpm11.24.0 from
-`/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Candidate gates use
-`CI=true NODE_OPTIONS=--max-old-space-size=1536 TURBO_CONCURRENCY=4`. Never use a
-`codex/` branch.
-
-## Runtime boundary
-
-The local Docker daemon was unavailable at the last bounded host check. Do not
-restart WSL/Docker or loop on host diagnostics. Focused source gates can run
-locally; protected CI owns the first required real Router/container proof if the
-daemon remains unavailable. Preserve retained media, databases and unrelated
-projects.
+`/mnt/c/Users/andre/.cache/aster-node-24.19.0`. Never create a `codex/` branch.
+Docker server26.0.0 was reachable at the one bounded check. Preserve retained
+media/databases and unrelated projects; all new integration resources use exact
+fixture ownership and were removed.
 
 ## Do not do yet
 
-Do not implement item66 rate/cache or item67 N+1/authorization concurrently.
-Do not add GraphOS credentials, a paid plan, APQ registration, a new proxy/service,
-hosted resources or client IDs presented as authorization. Phase14 owns hosted
-provider and deployment decisions.
+Do not start item67 before item66 becomes a coherent candidate or valid
+`WAITING_EXTERNAL`. Do not add GraphOS credentials, a paid plan, APQ, a proxy,
+hosted resources or forwarded client identity. Phase14 owns hosted provider and
+deployment decisions.

@@ -215,6 +215,7 @@ export async function readRouterSources(root) {
     "infra/router/router.yaml",
     "infra/router/main.rhai",
     "infra/router/generated/trusted-operations.rhai",
+    "infra/router/generated/operation-demand-manifest.json",
     "infra/docker/router.Dockerfile",
     "infra/docker/router-trust.Dockerfile",
     "infra/router/LICENSE-APOLLO-ROUTER",
@@ -266,6 +267,7 @@ export function validateRouterSources(sources) {
       "      capacity: 64\n      interval: 1s\n",
       "    timeout: 2s\n    deduplicate_query: false\n",
       "include_subgraph_errors:\n  all: false\n",
+      "    response:\n      operations:\n        - insert:\n            name: cache-control\n            value: no-store\n",
       "              named: cookie\n",
       "              value: ${file./run/aster-router/identity/identity.key}\n",
       "              value: ${file./run/aster-router/catalog/catalog.key}\n",
@@ -307,6 +309,13 @@ export function validateRouterSources(sources) {
       '"unknown"',
       '"other"',
     ],
+    "infra/router/generated/operation-demand-manifest.json": [
+      '"format": "aster-operation-demand-manifest"',
+      '"version": 2',
+      '"cacheControl": "no-store"',
+      '"executionDeadlineMs": 3000',
+      '"maximumConcurrentRequests": 8',
+    ],
     "infra/router/LICENSE-APOLLO-ROUTER": ["Elastic License 2.0", "Apollo"],
   };
   for (const [file, required] of Object.entries(contracts)) {
@@ -333,6 +342,17 @@ export function validateRouterSources(sources) {
   const config = sources["infra/router/router.yaml"] ?? "";
   const policy = sources["infra/router/main.rhai"] ?? "";
   const matcher = sources["infra/router/generated/trusted-operations.rhai"] ?? "";
+  let demandManifest;
+  try {
+    demandManifest = JSON.parse(
+      sources["infra/router/generated/operation-demand-manifest.json"] ?? "null",
+    );
+  } catch {
+    demandManifest = null;
+  }
+  const demandOperations = Array.isArray(demandManifest?.operations)
+    ? demandManifest.operations
+    : [];
   const trafficShaping =
     /(?:^|\n)traffic_shaping:\n(?<policy>[\s\S]*?)\ninclude_subgraph_errors:/u.exec(config)
       ?.groups?.["policy"] ?? "";
@@ -344,7 +364,18 @@ export function validateRouterSources(sources) {
     config.match(/named: cookie/g)?.length !== 2 ||
     /(?:catalog|playback):\n(?:(?! {4}[a-z]+:)[\s\S])*named: cookie/.test(config) ||
     /log_(?:info|warn|error|debug)\([^)]*(?:query|hash|variables)/u.test(policy) ||
-    /env::get|log_|request\.body|request\.context/u.test(matcher)
+    /env::get|log_|request\.body|request\.context/u.test(matcher) ||
+    demandManifest?.format !== "aster-operation-demand-manifest" ||
+    demandManifest?.version !== 2 ||
+    demandOperations.length !== 25 ||
+    demandOperations.some(
+      (entry) =>
+        !entry ||
+        !["public", "account", "profile"].includes(entry.authorizationScope) ||
+        entry.cacheControl !== "no-store" ||
+        entry.executionDeadlineMs !== 3_000 ||
+        entry.maximumConcurrentRequests !== 8,
+    )
   ) {
     violations.push({
       rule: "router-source",

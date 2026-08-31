@@ -7,15 +7,18 @@ import {
   loadLocalEngagementReadCredential,
 } from "@aster/http-express";
 import type { AsterPostgresAdapter } from "@aster/postgres";
+import type { AsterRedisAdapter } from "@aster/redis";
 import type { AsterClock, AsterIdentifierGenerator, AsterLogger } from "@aster/runtime";
-import type { AsterTraceContext } from "@aster/telemetry";
+import type { AsterOperationLimitMetricInput, AsterTraceContext } from "@aster/telemetry";
 
+import { createRateLimitedIdentityProfiles } from "./application/profile-operation-limit.js";
 import { createIdentityProfiles } from "./application/profiles.js";
 import { createIdentitySessions } from "./application/sessions.js";
 import { createProfilePolicy } from "./domain/profile.js";
 import { createLocalIdentityAdapter } from "./infrastructure/identity/local-identity.js";
 import { createPostgresProfiles } from "./infrastructure/persistence/postgres-profiles.js";
 import { createPostgresSessions } from "./infrastructure/persistence/postgres-sessions.js";
+import { createIdentityProfileOperationLimiter } from "./infrastructure/profile-operation-limiter.js";
 import { createIdentitySubgraph } from "./transport/identity-subgraph.js";
 
 export async function createLocalIdentityProduct(
@@ -25,6 +28,8 @@ export async function createLocalIdentityProduct(
   identifiers: AsterIdentifierGenerator,
   logger: AsterLogger,
   activeTraceContext: () => AsterTraceContext | undefined,
+  redis: Pick<AsterRedisAdapter, "connect" | "consumeTokenBucket" | "snapshot">,
+  recordOperationLimit: (input: AsterOperationLimitMetricInput) => unknown,
 ) {
   if (!configuration.localDemo) {
     throw new Error("Local Identity product mode is required.");
@@ -43,6 +48,21 @@ export async function createLocalIdentityProduct(
     nextId: () => identifiers.generate(),
     digest: (value: string) => createHash("sha256").update(value).digest("hex"),
   };
+  const sessions = createIdentitySessions({
+    ...shared,
+    transactions: createPostgresSessions(database),
+  });
+  const baseProfiles = createIdentityProfiles({
+    ...shared,
+    transactions: createPostgresProfiles(database),
+    policy: createProfilePolicy(),
+  });
+  const limiter = createIdentityProfileOperationLimiter({
+    environment: configuration.environment === "integration" ? "test" : configuration.environment,
+    redis,
+    digest: shared.digest,
+    recordMetric: recordOperationLimit,
+  });
   const graph = await createIdentitySubgraph({
     configuration: local,
     activeTraceContext,
@@ -59,14 +79,13 @@ export async function createLocalIdentityProduct(
       ? { routerTrust: await loadLocalRouterTrust("identity") }
       : {}),
     applications: {
-      sessions: createIdentitySessions({
-        ...shared,
-        transactions: createPostgresSessions(database),
-      }),
-      profiles: createIdentityProfiles({
-        ...shared,
-        transactions: createPostgresProfiles(database),
-        policy: createProfilePolicy(),
+      sessions,
+      profiles: createRateLimitedIdentityProfiles({
+        profiles: baseProfiles,
+        sessions,
+        limiter,
+        nextId: shared.nextId,
+        digest: shared.digest,
       }),
     },
     onOperation: (trace) => {
@@ -89,7 +108,10 @@ export async function createLocalIdentityProduct(
   });
   return Object.freeze({
     middleware: graph.middleware,
-    stop: () => graph.stop(),
+    async stop(): Promise<void> {
+      limiter.close();
+      await graph.stop();
+    },
     async probe(signal: AbortSignal): Promise<"ready" | "unavailable"> {
       const result = await database.transaction(async (tx) => {
         const role = await tx.query({

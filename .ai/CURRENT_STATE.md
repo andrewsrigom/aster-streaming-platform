@@ -47,8 +47,12 @@ the current delivery index from the current-plus-retained enforcement union.
 Evidence head `de50b3e` passed exact-head protected run `33410126892` and clean
 confirmation; all ten review threads are resolved. PR52 squash main `fb5cf014`
 retained candidate tree `a78f095`; exact-main run `33412728404` passed every
-required job. Item64 is released. Full Phase00–14 goal stays active. Item65 is
-the sole `IN_PROGRESS` item, rebased onto that release.
+required job. Item64 is released. Item65 final candidate head `94c17b9`, tree
+`d034c03`, passed protected run `33424006919`; PR55 squash main `8cd6c0b`
+retained that tree, and exact-main run `33425758870` passed on attempt2 after
+one isolated TraceQL indexing timeout. Item65 is released. Full Phase00–14 goal
+stays active. Item66 is the sole `IN_PROGRESS` item on
+`feat/p13-execution-rate-cache-controls` from exact main `8cd6c0b`.
 
 ## Verified
 
@@ -179,7 +183,34 @@ candidate head `9f23640a65df42c89dc4ecfc645a0c5cf543e3f7`, tree
 storage fixture assertion; the same unchanged integration and every later job
 passed on the bounded rerun. Discussion `3896804794` is resolved, both review
 threads are resolved and confirmation comment `5482516972` found no major
-issue. Release remains; this is not a released claim.
+issue. Final candidate head `94c17b95e49322bb9425423018cfd56d0b8df779`,
+tree `d034c033ec57e9b641fba04dae678ea082c944b7`, passed protected run
+`33424006919`. PR55 squash main
+`8cd6c0b25938f605ded95df736b2c53b4ecff150` retained that exact tree.
+Exact-main run `33425758870` passed on attempt2 after attempt1's isolated
+TraceQL indexing timeout; unchanged source/product jobs and cleanup were green.
+Item65 is released.
+
+P13-R06/R11 item66 is implemented locally on
+`feat/p13-execution-rate-cache-controls` from exact released main `8cd6c0b`.
+ADR-0047 and operation-demand manifest version2 give every exact trusted hash a
+derived public/account/profile scope, one finite rate class, the existing
+three-second/eight-request Router boundary and mandatory `no-store`. Router now
+overwrites public response cache control. Identity profile create/update/delete
+share an eight-token/two-per-second authorized-account limiter; selection uses
+sixteen/four-per-second. The local shield has at most1,024 partitions, Redis
+uses only SHA-256 account/admission pseudonyms and connects on demand, and the
+base owner command revalidates authorization before its write. PostgreSQL is now
+Identity's sole readiness-critical dependency; Redis outage keeps readiness and
+uses only bounded local admission.
+
+Identity156/156, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
+verifier2/2 pass. The disposable real PostgreSQL/Redis core integration passed
+atomic two-replica admission, outage fallback/recovery, optional Redis
+readiness, PostgreSQL readiness loss/recovery, cancellation/capacity, drain and
+exact cleanup in58.870 seconds. The affected candidate gate, packaged Router
+header proof, bounded review, protected exact-head CI and release remain; this
+is implemented, not verified or released.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -730,19 +761,19 @@ The earlier local supervisor exited1 on an incorrect SIGTERM assertion. Protecte
 ## Not implemented
 
 P13-R01/R02/R12 is released through exact-main run `33412728404`. GraphQL
-shape/list/cost controls have prior exact-head packaged proof in item65; the
-latest entity-field-cost correction has protected proof and clean confirmation;
-release remains.
-Execution/rate/cache controls,
+shape/list/cost controls are released through tree-identical PR55 merge
+`8cd6c0b` and exact-main run `33425758870` attempt2. Execution/rate/cache
+controls are implemented locally in item66; candidate/release gates remain.
 N+1/query-count proof, owner-authorization abuse tests and the remaining Phase13
-requirements are planned in items66–67. Phase14 capacity validation and hosted
+requirements are planned in item67. Phase14 capacity validation and hosted
 deployment remain planned.
 
 ## Next outcome
 
-For P13-R03 item65, commit and publish the final evidence checkpoint, require its
-proportional exact-head protected gate, then squash merge PR55, prove tree
-identity and verify exact-main CI. Activate item66 only after item65 is released.
+For P13-R06/P13-R11 item66, commit the coherent locally passing candidate, run
+the affected candidate gate, then perform the bounded initial/confirmation
+review and protected release process. The packaged Router must prove `no-store`
+on accepted and adverse responses before merge.
 Inspect the exact historical interrupted Phase12 project only when that same
 Docker engine becomes reachable.
 

@@ -4,6 +4,36 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — GraphQL execution, account rate and cache-scope candidate
+
+### Completed
+
+- Released item65: final head `94c17b9`, tree `d034c03`, passed protected run
+  `33424006919`; PR55 squash main `8cd6c0b` retained that tree and exact-main
+  run `33425758870` passed on attempt2 after one isolated TraceQL indexing
+  timeout.
+- Activated item66 on `feat/p13-execution-rate-cache-controls` from exact main.
+  ADR-0047 and demand-manifest version2 give every exact operation derived
+  public/account/profile scope, finite rate class, three-second/eight-request
+  execution policy and mandatory `no-store`; Router inserts that header.
+- Added authorized-account Identity admission for profile mutations/selections,
+  bounded local-plus-Redis degradation, SHA-256-only keys, on-demand Redis
+  connection and PostgreSQL-only readiness.
+- Identity156/156, Router21/21, telemetry19/19, Router verifier5/5 and GraphQL
+  cache verifier2/2 pass. Real PostgreSQL/Redis core integration passed atomic
+  two-replica admission, outage/recovery, optional Redis readiness, cancellation,
+  drain and cleanup remaining0 in58.870 seconds.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records the local source
+  and disposable runtime checkpoint. Candidate/protected release remains.
+
+### Next action
+
+- Complete the final local review/lint checkpoint, commit the coherent candidate
+  and run the affected candidate gate before publication.
+
 ## 2026-08-31 — GraphQL entity field cost confirmation correction
 
 ### Completed

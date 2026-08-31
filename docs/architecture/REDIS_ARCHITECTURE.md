@@ -94,10 +94,12 @@ Progress mutation invalidates or version-bumps the cache. Cache loss causes reco
 
 ## Rate limiting
 
-The implemented representative policy limits Engagement viewer writes only:
+Implemented viewer-write policies include:
 
 - `record_progress`: twelve tokens, four tokens/second;
-- `set_watchlist`: four tokens, one token/second.
+- `set_watchlist`: four tokens, one token/second;
+- `profile_mutation`: eight tokens, two tokens/second;
+- `profile_selection`: sixteen tokens, four tokens/second.
 
 Both use a thirty-second state TTL. Admission follows current Identity account
 authorization and exact idempotency replay. The Redis key contains only the
@@ -108,6 +110,16 @@ metadata. A 1,024-partition local shield applies first; its rejection avoids a
 Redis command, while Redis outage can use only a locally admitted decision.
 Redis never authorizes or acknowledges the durable mutation. Exact behavior and
 trade-offs are in [ADR-0039](../adr/0039-operation-admission-and-redis-degradation.md).
+
+Identity uses the same bounded pattern under
+[ADR-0047](../adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), but
+generates a fresh admission digest for each profile command. Current session
+restoration supplies the account partition before admission; the existing owner
+command then revalidates the session before its transaction. Identity keys use
+`aster:{env}:identity:rate:v1:{operation}:{accountDigest}` and never store the
+raw account/profile/cookie. Redis connects on demand, command failure uses only
+the already-admitted 1,024-partition local shield, and Redis is not an Identity
+readiness dependency. PostgreSQL remains the sole durable/readiness authority.
 
 Future phases may select distinct policies for:
 
@@ -123,7 +135,8 @@ Fail-open or fail-closed remains an operation-owned choice:
 
 - public catalog browse may fail open with local emergency bounds;
 - operator mutations fail closed;
-- current Engagement viewer writes use the documented bounded local fallback;
+- current Engagement and Identity viewer writes use their documented bounded
+  local fallback;
 - playback-session policy remains future work;
 - GraphQL cost and concurrency limits still apply regardless of Redis.
 

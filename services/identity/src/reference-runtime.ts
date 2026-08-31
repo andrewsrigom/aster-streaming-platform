@@ -131,7 +131,8 @@ export function createAsterIdentityRuntimeWithMonitor(
 
   const startupController = new AbortController();
   const isStopping = (): boolean => startupController.signal.aborted;
-  const dependencies = [options.postgresql, options.redis] as const;
+  const criticalDependencies = [options.postgresql] as const;
+  const ownedDependencies = [options.postgresql, options.redis] as const;
   let startup: Promise<AsterIdentityStartupResult> | undefined;
   let signalBinding: AsterProcessSignalBinding | undefined;
   let signalCleanupAttached = false;
@@ -152,7 +153,7 @@ export function createAsterIdentityRuntimeWithMonitor(
     closeDependencies: async (signal): Promise<void> => {
       await options.events?.close(signal);
       const closed = await Promise.allSettled(
-        dependencies.map(async (dependency) => dependency.close(signal)),
+        ownedDependencies.map(async (dependency) => dependency.close(signal)),
       );
       let telemetryFailed = false;
       try {
@@ -174,7 +175,7 @@ export function createAsterIdentityRuntimeWithMonitor(
       options.forceClose();
     },
   });
-  const readiness = createAsterReadinessController({ criticalDependencyCount: 2, lifecycle });
+  const readiness = createAsterReadinessController({ criticalDependencyCount: 1, lifecycle });
   let lastReadiness = readiness.health();
   const reportReadiness = (): void => {
     const current = readiness.health();
@@ -198,7 +199,9 @@ export function createAsterIdentityRuntimeWithMonitor(
   const monitor = createMonitor({
     intervalMs: READINESS_INTERVAL_MS,
     probeTimeoutMs: READINESS_CYCLE_TIMEOUT_MS,
-    probes: dependencies.map((dependency) => (signal) => checkDependency(dependency, signal)),
+    probes: criticalDependencies.map(
+      (dependency) => (signal) => checkDependency(dependency, signal),
+    ),
     readiness: {
       setCriticalDependencyState(index, state) {
         const result = readiness.setCriticalDependencyState(index, state);
@@ -239,7 +242,7 @@ export function createAsterIdentityRuntimeWithMonitor(
       }
 
       const outcomes = await Promise.all(
-        dependencies.map((dependency) => checkDependency(dependency, deadline.signal)),
+        criticalDependencies.map((dependency) => checkDependency(dependency, deadline.signal)),
       );
       if (isStopping() || lifecycle.health().phase !== "starting") {
         return STOPPED_STARTUP;
@@ -255,7 +258,7 @@ export function createAsterIdentityRuntimeWithMonitor(
         // A monitor failure cannot advertise an unmonitored dependency as ready.
       }
       if (!monitorStarted) {
-        dependencies.forEach((_dependency, index) => {
+        criticalDependencies.forEach((_dependency, index) => {
           readiness.setCriticalDependencyState(index, "unavailable");
         });
       }

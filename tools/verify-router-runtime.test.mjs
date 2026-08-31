@@ -174,6 +174,12 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
     ["infra/router/router.yaml", "/playback/playback.key", "/catalog/catalog.key"],
     ["infra/router/router.yaml", "max_queue_size: 128", "max_queue_size: 12800"],
     ["infra/router/router.yaml", "named: cookie", "matching: .*"],
+    ["infra/router/router.yaml", "value: no-store", "value: public"],
+    [
+      "infra/router/generated/operation-demand-manifest.json",
+      '"cacheControl": "no-store"',
+      '"cacheControl": "public"',
+    ],
     [
       "infra/router/router.yaml",
       "allowed_attribute_keys: [aster.operation, aster.outcome, aster.trusted_operation]",
