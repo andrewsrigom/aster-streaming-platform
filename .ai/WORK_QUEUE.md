@@ -158,7 +158,7 @@ Historical stashes are superseded.
 | 63 | Diagnose three injected failures from telemetry and close Phase 12 | P12-R10 | DONE |
 | 64 | Generate trusted operations, enforce the environment rollout and document safe schema delivery (also P13-R02/R12) | P13-R01 | DONE |
 | 65 | Enforce GraphQL parser, shape, list, cost and introspection controls (also P13-R04/R05/R10) | P13-R03 | DONE |
-| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | WAITING_EXTERNAL |
+| 66 | Enforce execution, concurrency, identity-rate and cache-scope controls (also P13-R11) | P13-R06 | DONE |
 | 67 | Prove N+1/query counts and owner authorization; close Phase 13 (also P13-R08/R09) | P13-R07 | IN_PROGRESS |
 
 Item64 final source `a353164`, evidence head `de50b3e`, passed protected run
@@ -184,7 +184,7 @@ issue. Final candidate head `94c17b9`, tree `d034c03`, passed protected run
 `33424006919`. PR55 squash main `8cd6c0b` retained that exact tree. Exact-main
 run `33425758870` passed on attempt2 after attempt1's isolated TraceQL indexing
 timeout; every source and product job was unchanged and cleanup was clean.
-Item65 is released. Item66 is active on
+Item65 is released. Item66 was implemented on
 `feat/p13-execution-rate-cache-controls` from that exact main.
 ADR-0047, manifest-v2 runtime/cache classification, authorized-account Identity
 admission and optional-Redis readiness are implemented locally. Initial source
@@ -207,24 +207,22 @@ subgraph proof and the final57/57 gate with46 cached in61.880 seconds pass.
 Published head `1e115fe` passed protected run `33442875698`. Blocker-focused
 review found a fixed-count retained-union verifier and missing expired-marker
 pruning. Third source `af47c62`, tree `bb2d476`, fixes both; Identity163/163,
-Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. One third
-correction evidence head `e6134ae` is published; protected exact-head CI,
-resolution of discussions `3898857100`/`3898857110`, final confirmation and
-release remain.
+Router verifier6/6 and gate57/57 with39 cached in66.529 seconds pass. Evidence
+head `e6134ae` passed protected run `33447062908`; both discussions are resolved
+and final confirmation `5485910820` found no major issue. PR56 squash main
+`98deb52` retained candidate tree `897c44c`; exact-main run `33448911764` passed.
+Item66 is released.
 
-Item66 third corrected evidence head `e6134ae` is frozen on PR56. Protected
-source/platform jobs and confirmation remain.
-Item67 is the one permitted dependent `IN_PROGRESS` item on
-`feat/p13-n-plus-one-authorization`, rebased exactly on that frozen head. It may
-verify locally but must not publish or merge before item66 releases. Source
-`40b7db8`, tree `3e5c0a3`, implements the exact 12-list/10-entity-return/
+Item67 is the sole `IN_PROGRESS` item on
+`feat/p13-n-plus-one-authorization`, rebased exactly on released main `98deb52`.
+Source `573e8c7`, tree `3e5c0a3`, implements the exact 12-list/10-entity-return/
 5-contributor audit, real query-count observations 1/3/5/1 for title/search/home/
 continue-watching and a 12-case five-owner authorization matrix. Router 25/25,
-five-owner 19/19 tasks and the latest post-rebase affected gate57/57 with41
-cached in69.406 seconds pass. All disposable PostgreSQL fixtures passed with
+five-owner 19/19 tasks and the latest post-squash-main affected gate57/57 with49
+cached in16.401 seconds pass. All disposable PostgreSQL fixtures passed with
 cleanup0; an exact diff proves their measured and audited paths did not change
-in the third predecessor rebase. Evidence is current; publication waits for
-item66 release.
+in the released-main rebase. Evidence is current; publish the candidate once
+and complete its protected closeout gates.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head

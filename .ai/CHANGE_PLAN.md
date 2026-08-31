@@ -18,29 +18,19 @@ closes Phase 13 without changing the public schema.
 
 ## Current behavior
 
-Item66 is frozen on PR56 at third corrected exact head `e6134ae`, based on
-released item65 main `8cd6c0b`. Its source `af47c62`, tree `bb2d476`, fixes the
-bounded retained-operation verifier and expired local-marker pruning after
-protected run `33442875698` exposed those review gaps. Exact-head protected CI,
-discussion resolution, final confirmation and release remain external.
-Rebased item67 source `40b7db8`, tree `3e5c0a3`, exactly audits 12 public lists,
+Item66 is released. Exact head `e6134ae` passed protected run `33447062908`,
+both blocker discussions are resolved and final confirmation `5485910820`
+found no major issue. PR56 squash main `98deb52` retained candidate tree
+`897c44c`; exact-main run `33448911764` passed every required job.
+Rebased item67 source `573e8c7`, tree `3e5c0a3`, exactly audits 12 public lists,
 10 entity returns and 5 contributors. Router 25/25, the five-owner 19/19 task
-gate and the latest post-rebase affected gate57/57 with41 cached in69.406
-seconds pass. Disposable PostgreSQL fixtures
+gate and the post-squash-main affected gate57/57 with49 cached in16.401 seconds
+pass. Disposable PostgreSQL fixtures
 record TitleDetail 1 query, SearchTitles 3, HomePublic 5 and ContinueWatching 1
 with exact cleanup. The 12-case matrix covers all five owners and all three
-required abuse categories. An exact old/new source diff proves that the audit,
-matrix and three measured owner paths did not change during rebase, so their
-heavyweight PostgreSQL evidence remains applicable after the third predecessor
-correction.
-
-Protected run `33442875698` passes exact head `1e115fe`. The blocker-focused
-confirmation found two remaining acceptance gaps: the packaged runtime verifier
-hard-codes 25 demand profiles instead of accepting the bounded current-plus-
-retained trusted union, and healthy Redis admissions do not prune expired local
-failover markers before enforcing their 8,192-entry capacity. Both are blocking
-rollout/availability boundaries and are remediated in published head `e6134ae`
-before release.
+required abuse categories. Exact pre/post-rebase tree comparison proves the
+audit, matrix and measured owner paths did not change, so their heavyweight
+PostgreSQL evidence remains applicable.
 
 ## Proposed behavior
 
@@ -130,8 +120,8 @@ executable identifier/role/profile matrix.
 4. Complete the owner authorization matrix with focused negative tests.
 5. Run focused, disposable integration and affected candidate gates; capture raw
    evidence and close Phase13 documentation.
-6. Rebase on released item66 if its reviewed tree changes; publish item67 only
-   after item66 merges and exact-main CI passes.
+6. Publish item67 once from released item66 main and complete protected review,
+   merge and exact-main gates.
 
 ## Tests
 
@@ -153,11 +143,11 @@ executable identifier/role/profile matrix.
   PostgreSQL fixtures; affected candidate gate; protected CI.
 - Raw artifact path: `evidence/phase-13/query-count-authorization.txt` plus
   `evidence/phase-13/query-count-measurements.jsonl`.
-- Acceptance result: source `40b7db8`, tree `3e5c0a3`, passes Router25/25,
-  five-owner19/19 and affected57/57. The exact source diff keeps every measured
-  path unchanged, so the four real PostgreSQL observations carry forward;
-  predecessor release, publication, protected review, merge and exact-main
-  gates remain.
+- Acceptance result: source `573e8c7`, tree `3e5c0a3`, passes Router25/25,
+  five-owner19/19 and affected57/57 after released-main rebase. The exact source
+  diff keeps every measured path unchanged, so the four real PostgreSQL
+  observations carry forward; publication, protected review, merge and
+  exact-main gates remain.
 - Iteration gate: Router/affected-owner builds and focused contract/security
   tests.
 - Candidate gate: repository affected-scope gate selected from the exact diff.
@@ -171,8 +161,8 @@ executable identifier/role/profile matrix.
 ## Rollback or recovery
 
 Revert the audit, fixture instrumentation and documentation as one item. No
-schema, database, event, cache or media migration exists. If PR56 changes, do not
-publish stale evidence: rebase, rerun affected contracts and only the heavyweight
+schema, database, event, cache or media migration exists. If main changes before
+publication, rebase, rerun affected contracts and only the heavyweight
 measurements whose path changed.
 
 ## Documentation updates

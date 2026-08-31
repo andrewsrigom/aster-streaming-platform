@@ -92,11 +92,13 @@ found a fixed-count packaged verifier and missing expired-marker pruning. Third
 corrected source `af47c62`, tree `bb2d476`, derives the bounded persisted union
 and prunes before local capacity. Identity163/163, Router verifier6/6 and
 gate57/57 with39 cached in66.529 seconds pass. [Current evidence](execution-rate-cache-controls.txt)
-records all three corrections. Third protected CI, final confirmation and
-release remain.
+records all three corrections. Exact head `e6134ae` passed protected run
+`33447062908`; both blocker discussions are resolved and final confirmation
+`5485910820` found no major issue. PR56 squash main `98deb52` retained candidate
+tree `897c44c`; exact-main run `33448911764` passed. Item66 is released.
 
-Item67 is the one dependent P13-R07/R08/R09 candidate on third corrected item66
-head `e6134ae`. Rebased source `40b7db8`, tree `3e5c0a3`, encodes an exact audit
+Item67 is the active P13-R07/R08/R09 candidate on released item66 main
+`98deb52`. Rebased source `573e8c7`, tree `3e5c0a3`, encodes an exact audit
 of 12 public list paths, 10 entity-return paths and 5 federated contributors, with owner,
 authorization scope, list/parent/batch bounds and owner-query budget. Four real
 PostgreSQL observations record TitleDetail 1 query/52.727 ms, SearchTitles 3/
@@ -107,11 +109,11 @@ commands, query-plan interpretation and limitations. Catalog and Discovery
 fixtures passed on their first changed-path execution. Engagement's first run
 exposed a later wall-clock-sensitive test; the deterministic-clock correction
 then passed the whole fixture, and both attempts cleaned their exact container.
-Router25/25, the five-owner19/19 task gate and post-rebase affected gate57/57
-with41 cached in69.406 seconds pass. An exact source diff proves the audit,
+Router25/25, the five-owner19/19 task gate and post-squash-main affected gate57/57
+with49 cached in16.401 seconds pass. An exact source diff proves the audit,
 matrix and measured owner paths are unchanged from their fixture execution, so
 the heavyweight PostgreSQL results carry forward. Publication and the protected/
-review/release gates correctly wait for item66 release.
+review/release gates remain.
 
 ## Requirement traceability
 
@@ -121,19 +123,18 @@ review/release gates correctly wait for item66 release.
 | P13-R02 | Explicit local/integration audit, hosted enforce policy and passed disposable real-Router proof in [trusted-operation evidence](trusted-operations.txt) |
 | P13-R12 | [ADR-0045](../../docs/adr/0045-source-owned-trusted-operations.md), GraphQL architecture and release sequence |
 | P13-R03/R04/R05/R10 | Released through [ADR-0046](../../docs/adr/0046-source-owned-graphql-demand-budget.md), [generated profiles](../../infra/router/generated/operation-demand-manifest.json), [demand-control evidence](graphql-demand-controls.txt), PR55 tree-identical main `8cd6c0b` and exact-main run `33425758870` attempt2 |
-| P13-R06/R11 | Third corrected source `af47c62`, tree `bb2d476`, passes the affected candidate gate57/57 after the all11 real integration scenarios and exact-source PostgreSQL/Redis replay proof; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections; third protected/confirmation/release gates remain |
-| P13-R07–R09 | Rebased dependent source `40b7db8`, tree `3e5c0a3`, passes Router25/25, owner19/19 and affected57/57 but is not published or released: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and exact source audit |
+| P13-R06/R11 | Released through third corrected source `af47c62`, protected head `e6134ae`, PR56 squash main `98deb52` and exact-main run `33448911764`; [ADR-0047](../../docs/adr/0047-bounded-graphql-execution-rate-and-cache-scope.md), manifest-v2 runtime/cache profiles and [execution/rate/cache evidence](execution-rate-cache-controls.txt) record exact-union verification, expired-marker pruning and all review corrections |
+| P13-R07–R09 | Rebased source `573e8c7`, tree `3e5c0a3`, passes Router25/25, owner19/19 and affected57/57 but is not published or released: [execution/query report](query-count-authorization.txt), [raw measurements](query-count-measurements.jsonl), [authorization matrix](authorization-matrix.json) and exact source audit |
 
 ## Current limitations
 
 - Docker server26.0.0 was reachable for item66's owned full integration and
   isolated packaged Router proof; all owned resources were removed. Protected
-  packaged acceptance passed on `1e115fe`; third corrected head `e6134ae` awaits
-  its exact protected run.
+  and exact-main packaged acceptance passed through run `33448911764`.
 - Audit mode intentionally accepts ad hoc local/integration documents and is not
   a public-deployment security control.
 - A trusted document is not user authority. Owner authorization remains required.
-- Shape/list/cost controls are released. Identity-aware rate/cache scope and the
-  dependent N+1/query-count/authorization closeout are accepted local
-  candidates, but neither is released.
+- Shape/list/cost and Identity-aware rate/cache controls are released. The
+  N+1/query-count/authorization closeout is an accepted local candidate but is
+  not released.
 - Hosted providers, credentials, deployment and capacity remain Phase 14.

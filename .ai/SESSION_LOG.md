@@ -4,6 +4,32 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — Execution controls released; closeout rebased on main
+
+### Completed
+
+- Item66 exact head `e6134ae` passed protected run `33447062908`; replies
+  `3899151404`/`3899151588` recorded the fixes, both discussions are resolved
+  and final confirmation `5485910820` found no major issue.
+- PR56 squash-merged as main `98deb52`; candidate and main retain identical tree
+  `897c44c`. Exact-main run `33448911764` passed every required job, including
+  owner integrations, Docker-only playable demo and telemetry diagnostics.
+- Rebased item67 onto released main. Source `573e8c7`, tree `3e5c0a3`, is
+  identical to its accepted pre-squash source tree. The affected gate passes
+  57/57 with49 cached in16.401 seconds; unchanged PostgreSQL evidence carries
+  forward.
+
+### Evidence
+
+- `evidence/phase-13/execution-rate-cache-controls.txt` records item66 release.
+- `evidence/phase-13/query-count-authorization.txt` and its JSONL record the
+  tree-identical rebase and exact-main predecessor gate.
+
+### Next action
+
+- Commit and publish item67 once, then complete protected CI, the bounded review
+  round, squash merge and exact-main CI before closing Phase13.
+
 ## 2026-08-31 — Query audit accepted on third execution-control predecessor
 
 ### Completed

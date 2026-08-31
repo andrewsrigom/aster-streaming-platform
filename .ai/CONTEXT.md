@@ -71,9 +71,9 @@ passed protected run `33424006919`; all review threads were resolved. PR55
 squash main `8cd6c0b` retained that exact tree. Exact-main run `33425758870`
 passed on attempt2 after attempt1's isolated TraceQL indexing timeout; every
 source and product job was unchanged and cleanup was clean. Item65 is released.
-Item66 is frozen on PR56 from
-that exact main. ADR-0047, exact runtime/cache classification, authorized-account
-Identity admission and optional-Redis readiness are implemented locally.
+Item66 is released through PR56. ADR-0047, exact runtime/cache classification,
+authorized-account Identity admission and optional-Redis readiness are
+implemented.
 Initial source `a090285`, tree `98d3064`, passed gate54/54; PR56 head `59b7215`
 failed protected run `33432579598` and initial review found a durable-retry
 admission blocker. Corrected head `82ba630` passed protected run `33437257163`
@@ -84,19 +84,21 @@ discussion. Blocker-focused review found a fixed-count retained-union verifier
 and missing expired-marker pruning. Third corrected source `af47c62`, tree
 `bb2d476`, derives the exact bounded union and prunes before local capacity.
 Identity163/163, Router verifier6/6 and gate57/57 with39 cached in66.529 seconds
-pass. Third corrected evidence head `e6134ae` is published on PR56; protected CI,
-discussion resolution, final confirmation and release remain. No hosted
-deployment is claimed; Phase14 still owns provider and deployment decisions.
+pass. Third corrected evidence head `e6134ae` passed protected run
+`33447062908`; both blocker discussions are resolved and final confirmation
+`5485910820` found no major issue. PR56 squash main `98deb52` retained candidate
+tree `897c44c`, and exact-main run `33448911764` passed every required job. No
+hosted deployment is claimed; Phase14 still owns provider and deployment
+decisions.
 
-Item67 is the one permitted dependent active item on
-`feat/p13-n-plus-one-authorization` from third corrected exact item66 head
-`e6134ae`. Rebased source `40b7db8`, tree `3e5c0a3`, implements the exact
+Item67 is the active item on `feat/p13-n-plus-one-authorization` from released
+item66 main `98deb52`. Rebased source `573e8c7`, tree `3e5c0a3`, implements the exact
 12-list/10-entity-return/5-contributor audit, four real PostgreSQL query-count
 observations and the 12-case owner matrix. Router25/25, five-owner19/19 tasks and
-the post-rebase affected gate57/57 with41 cached in69.406 seconds pass. Exact
+the post-squash-main affected gate57/57 with49 cached in16.401 seconds pass. Exact
 source comparison proves the measured/audited paths unchanged, so all clean
 PostgreSQL evidence carries forward. Evidence is under `evidence/phase-13/`.
-Item67 cannot publish before PR56 releases.
+Item67 is ready for one publication and its protected closeout gates.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 
