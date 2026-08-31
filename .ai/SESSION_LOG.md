@@ -4,6 +4,31 @@ Append new entries at the top. Keep entries factual and concise. The immutable
 full snapshot through the archival checkpoint remains in
 `.ai/SESSION_LOG_ARCHIVE.txt`; this working log retains the latest 25 entries.
 
+## 2026-08-31 — GraphQL demand initial protected findings corrected
+
+### Completed
+
+- Opened item65 as PR55. Initial protected run `33415238912` reached the pinned
+  packaged Router and exposed that disabled introspection returns sanitized
+  GraphQL errors with HTTP 200; the verifier incorrectly required a transport
+  error status.
+- Initial review discussion `3896477418` found generation bounded raw query
+  bytes instead of the complete encoded request against Router's 32 KiB limit.
+- Correction `96dc6ea`, tree `c708f9e`, accepts only structured error-only HTTP
+  200 rejections and measures the canonical GraphQL envelope. Router19/19,
+  verifier2/2 and the corrected affected gate51/51 with38 cached in110.103
+  seconds pass.
+
+### Evidence
+
+- `evidence/phase-13/graphql-demand-controls.txt` records the exact initial run,
+  discussion, corrected source, focused tests and accepted candidate gate.
+
+### Next action
+
+- Push the corrected PR55 head once, require exact-head protected runtime, answer
+  and resolve discussion `3896477418`, request one confirmation, then release.
+
 ## 2026-08-31 — Trusted operations released; demand candidate rebased
 
 ### Completed

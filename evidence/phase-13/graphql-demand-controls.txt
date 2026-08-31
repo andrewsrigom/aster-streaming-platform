@@ -1,12 +1,14 @@
 P13-R03/R04/R05/R10 GraphQL demand-control candidate evidence
 Date: 2026-08-31
-Status: rebased source and affected gate pass; packaged runtime and release pending
+Status: initial protected findings corrected locally; corrected runtime and release pending
 
 Environment
-- Branch: feat/p13-graphql-demand-controls (rebased; not yet published)
+- Branch: feat/p13-graphql-demand-controls; PR55
 - Released base main: fb5cf0147a3a306f4186b1717fee53ed787bd3a6
-- Source commit: 36b6af2cb114aa4dad2afddc39142ad5e5878c28
-- Source tree: e8fc58bbcbe3899b7b420adcdedfbd867173de0b
+- Initial source commit: 36b6af2cb114aa4dad2afddc39142ad5e5878c28
+- Initial source tree: e8fc58bbcbe3899b7b420adcdedfbd867173de0b
+- Corrected source commit: 96dc6eab7b7deacea14a1661b6491c991d0d7a0c
+- Corrected source tree: c708f9e226e3f45959afc75cd96aff4d0c776cb8
 - Node.js: 24.19.0
 - pnpm: 11.24.0
 - Runtime target: Apollo Router Core 2.17.0
@@ -77,8 +79,8 @@ Observed maxima and margin
 - Selections: 95/256 (HomePublic).
 
 Focused and candidate results
-- Router build/typecheck and tests: pass; 18/18 after explicit mutation,
-  fragment-cycle and repeated-metadata coverage.
+- Router build/typecheck and tests: pass; 19/19 after explicit mutation,
+  fragment-cycle, repeated-metadata and full encoded-request-bound coverage.
 - Runtime-demand verifier unit tests: pass; 2/2.
 - CI policy suite: pass; 38/38 within the candidate gate.
 - First complete candidate attempt ran every selected task and passed 53/54;
@@ -91,8 +93,27 @@ Focused and candidate results
   check:changed` passes51/51 tasks,38 cached, in75.853 seconds. The gate includes
   format, lint, strict typecheck, owner/Router tests, architecture, documentation,
   AI-memory, CI policy, staged/commit policy and secret scanning.
+- After initial protected findings, the same candidate gate passes51/51 tasks,
+  38 cached, in110.103 seconds on corrected source `96dc6ea`.
 - `git diff --check`: pass before commit.
 - Commit hook: staged secret scan zero findings; lockfile policy and format pass.
+
+Initial protected run and review
+- PR55 initial exact head `a6774b29ec010bc4319d95137c4f28ba02065ff4`
+  ran protected workflow `33415238912`. The real packaged Router returned its
+  disabled-introspection validation error as sanitized GraphQL errors with HTTP
+  200; the verifier incorrectly accepted only transport-error statuses, so the
+  Local platform job failed before the later trusted-operation checks.
+- The verifier correction accepts HTTP 200 only when the response is structured,
+  contains one to four errors and contains no data. Unparseable HTTP 200 and any
+  data response still fail. Focused verifier tests pass2/2.
+- Initial review discussion `3896477418` found that generation allowed a query
+  body below its old 128 KiB source ceiling even when the canonical JSON
+  operation envelope exceeded Router's exact 32 KiB request limit.
+- Corrected generation measures UTF-8 bytes for operation name, exact query and
+  an empty variables object in the canonical GraphQL envelope. A regression
+  proves a query below 32 KiB still fails when its encoded envelope crosses the
+  Router limit. No runtime limit was raised.
 
 Dependency security re-review
 - `pnpm audit --json` on the exact tree reports zero high/critical and one
@@ -110,6 +131,8 @@ Adverse coverage
 - Build tests reject missing root cost, missing/invalid list metadata, owner-list
   literal overflow, aliases, depth, roots, selections, list expansion, static
   cost, parser-token amplification, fragment cycles and numeric overflow.
+- Build tests reject an encoded operation envelope above 32 KiB even when raw
+  query bytes alone remain below that limit.
 - Cardinality tests require one finite profile for every exact admitted hash,
   including a retained overlap while keeping one current delivery entry.
 - Runtime proof sends one sub-32-KiB document above the 2,000-token ceiling, one
@@ -118,11 +141,11 @@ Adverse coverage
   canary, topology, stack or internal dependency leakage.
 
 Pending acceptance
-- Protected CI must prove the new packaged adverse verifier against the pinned
-  real Router and retain the Docker playable journey. Local source results do
-  not claim that runtime proof.
-- One initial review and one confirmation remain before squash merge and
-  exact-main verification for item65.
+- Corrected protected CI must prove the packaged adverse verifier against the
+  pinned real Router and retain the Docker playable journey. The failed initial
+  run is diagnostic evidence, not a passing runtime claim.
+- Answer and resolve initial discussion `3896477418`, then obtain the single
+  confirmation before squash merge and exact-main verification for item65.
 
 Interpretation and limitations
 The source and gate evidence prove deterministic pre-publication demand analysis,

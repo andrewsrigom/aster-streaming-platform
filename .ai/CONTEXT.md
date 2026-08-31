@@ -69,8 +69,11 @@ main `fb5cf014` retained candidate tree `a78f095`, and exact-main run
 `33412728404` passed. Item65 is the sole active item on
 `feat/p13-graphql-demand-controls`, rebased onto that release. Source `36b6af2`,
 tree `e8fc58b`, owns parser, shape, list, cost and environment controls and
-passes the affected gate51/51. No hosted deployment is claimed; Phase14 still
-owns provider and deployment decisions.
+opened PR55. Initial run `33415238912` and review found a runtime-verifier status
+mismatch and an encoded-request boundary gap. Corrected source `96dc6ea`, tree
+`c708f9e`, passes Router19/19, verifier2/2 and the affected gate51/51. Corrected
+protected proof remains. No hosted deployment is claimed; Phase14 still owns
+provider and deployment decisions.
 
 Read `.ai/CURRENT_STATE.md` and `.ai/WORK_QUEUE.md` for the exact next action.
 

@@ -140,16 +140,24 @@ PostgreSQL/data ownership, owner authorization, public GraphQL fields, Redis,
 events and media remain unchanged.
 
 P13-R03/R04/R05/R10 item65 is the sole active item on
-`feat/p13-graphql-demand-controls`. Local source
+`feat/p13-graphql-demand-controls`; PR55 is open. Initial source
 `36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
 `e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, upgrades owner metadata to
 Federation v2.9, analyzes every exact current/retained trusted operation for
 aliases, depth, roots, selections, nested list expansion and static owner cost,
 and emits one bounded 25-operation demand artifact. Missing/invalid metadata,
 overflow, parser amplification and every policy boundary fail closed. Router
-18/18, verifier2/2 and the exact rebased affected candidate gate51/51 pass; the
-calibration and limitations are recorded in Phase13 evidence. Packaged protected
-runtime, review and release remain; this is not a verified/released claim.
+18/18, verifier2/2 and the exact rebased affected candidate gate51/51 pass.
+Initial protected run `33415238912` reached the real packaged Router but its
+demand verifier rejected the valid HTTP 200 status used for a sanitized GraphQL
+introspection error. Initial review discussion `3896477418` found the analyzer
+bounded raw query bytes instead of the complete encoded request. Correction
+`96dc6eab7b7deacea14a1661b6491c991d0d7a0c`, tree
+`c708f9e226e3f45959afc75cd96aff4d0c776cb8`, requires structured error-only
+HTTP 200 responses and bounds the canonical operation envelope at the Router's
+32 KiB limit. Router19/19, verifier2/2 and the corrected affected gate51/51 with
+38 cached in110.103 seconds pass. Corrected protected runtime, confirmation and
+release remain; this is not a verified/released claim.
 
 P12-R01 is released from source `03abe8a`, tree `b1474c7`. The
 repository-owned adapter creates finite privacy-safe server, dependency and
@@ -708,12 +716,13 @@ deployment remain planned.
 
 ## Next outcome
 
-For P13-R03 item65, publish rebased source `36b6af2` once, obtain the protected
-packaged Router adverse proof and one initial/confirmation review round, treat
-only requirement/security/availability/public-contract blockers, then squash
-merge and verify exact-main CI. Do not start item66 before item65 is a coherent
-waiting or released candidate. Inspect the exact historical interrupted Phase12
-project only when that same Docker engine becomes reachable.
+For P13-R03 item65, commit the evidence checkpoint, push the corrected PR55 head
+once, obtain the protected packaged Router adverse proof, answer/resolve initial
+discussion `3896477418` and request one confirmation. Treat only requirement,
+security, availability or public-contract blockers, then squash merge and verify
+exact-main CI. Do not start item66 before item65 is a coherent waiting or
+released candidate. Inspect the exact historical interrupted Phase12 project
+only when that same Docker engine becomes reachable.
 
 ## Runtime and recovery
 
@@ -731,8 +740,8 @@ Retained project aster-p04-development: Web3000/Router4000/origin9001, Catalog00
   compatibility precursor now verified by exact-main CI33244657936.
 - ADR-0026 permits only exact stopped/expired disposable scratch cleanup. Hosted lifecycle/fencing/storage budgets remain P14-R11.
 - Shared-host timings are laboratory observations, not field SLOs. No host investigation is required.
-- Phase13 re-review on source `36b6af2` reports zero high/critical and one known
-  moderate UUID advisory. Exact installed Apollo callers use argument-free
+- Phase13 dependency re-review on the unchanged pinned graph reports zero
+  high/critical and one known moderate UUID advisory. Exact installed Apollo callers use argument-free
   `v1()`/`v4()`, not the advisory's v3/v5/v6 buffer paths. Keep it visible and
   re-review upstream remediation before hosted release; no unsupported
   transitive-major override.

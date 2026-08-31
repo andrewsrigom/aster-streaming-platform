@@ -30,14 +30,21 @@ The Router already enforces 32 KiB bodies, 2,000 parser tokens, recursion32,
 512 recursive selections, three-second execution, concurrency8 and a finite
 global burst. Introspection, APQ, sandbox, homepage, batching and subgraph error
 detail are disabled. Exact trusted-operation admission prevents arbitrary
-hosted shapes. Owners enforce finite page/input bounds. Source
+hosted shapes. Owners enforce finite page/input bounds. Initial source
 `36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
-`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, now calculates depth, aliases,
+`e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, calculates depth, aliases,
 roots, selections, list expansion and backend-weighted cost for every exact
 reviewed operation, fails excessive or incomplete metadata, and emits a bounded
-25-operation calibration artifact. Router18/18 and the rebased affected
-candidate gate51/51 pass; the packaged protected runtime proof and release
-remain pending.
+25-operation calibration artifact. PR55 run `33415238912` reached the packaged
+runtime and exposed a verifier mismatch: Apollo Router correctly returned a
+sanitized GraphQL validation error with HTTP 200 for disabled introspection.
+Initial review discussion `3896477418` also found that the analyzer bounded the
+query body instead of the complete encoded GraphQL request. Correction
+`96dc6eab7b7deacea14a1661b6491c991d0d7a0c`, tree
+`c708f9e226e3f45959afc75cd96aff4d0c776cb8`, accepts only structured error-only
+HTTP 200 rejections and includes the operation envelope in the exact 32 KiB
+Router limit. Router19/19, verifier2/2 and the corrected affected candidate
+gate51/51 pass. Corrected protected runtime proof and release remain pending.
 
 ## Proposed behavior
 
@@ -152,8 +159,9 @@ and retains the playable journey.
 
 - Raw artifact: `evidence/phase-13/graphql-demand-controls.txt` and generated
   demand manifest.
-- Acceptance: rebased source/candidate evidence passes; packaged runtime, review
-  and release remain pending.
+- Acceptance: the corrected source/candidate evidence passes. Initial protected
+  runtime and review findings are corrected; corrected protected runtime,
+  confirmation and release remain pending.
 - Iteration gate: Router analyzer/composition tests, affected owner schema tests,
   format/lint and `git diff --check`.
 - Candidate gate: `CI=true NODE_OPTIONS=--max-old-space-size=1536

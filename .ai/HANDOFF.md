@@ -34,11 +34,14 @@ Final source `a353164`, tree `f6925778`, separates the unique current delivery
 index from the bounded current-plus-retained enforcement union.
 
 Item65 (P13-R03/R04/R05/R10) is the sole `IN_PROGRESS` item on
-`feat/p13-graphql-demand-controls`, rebased onto released main. Source `36b6af2`,
-tree `e8fc58b`, implements ADR-0046 and passes Router18/18, verifier2/2 and the
-affected51/51 candidate gate. Its active plan is `.ai/CHANGE_PLAN.md`; local
-evidence is `evidence/phase-13/graphql-demand-controls.txt`. Publication,
-protected packaged proof, review and release remain.
+`feat/p13-graphql-demand-controls`, rebased onto released main, with PR55 open.
+Initial run `33415238912` exposed an HTTP-status mismatch in the new runtime
+verifier; review discussion `3896477418` found the analyzer did not include the
+GraphQL envelope in the 32 KiB bound. Corrected source `96dc6ea`, tree `c708f9e`,
+passes Router19/19, verifier2/2 and the affected51/51 candidate gate. Its active
+plan is `.ai/CHANGE_PLAN.md`; local evidence is
+`evidence/phase-13/graphql-demand-controls.txt`. Corrected protected packaged
+proof, confirmation and release remain.
 
 ## Current behavior
 
@@ -95,13 +98,14 @@ protected packaged proof, review and release remain.
   current delivery index. Evidence head `de50b3e` passed protected run
   `33410126892`, clean confirmation and tree-identical squash; exact-main run
   `33412728404` passes.
-- Item65 source `36b6af2`, tree `e8fc58b`, adds Federation v2.9 owner cost/list
+- Item65 initial source `36b6af2`, tree `e8fc58b`, adds Federation v2.9 owner cost/list
   metadata and one deterministic profile for each of 25 admitted hashes.
   Policy bounds aliases8, cost2048, depth12, list expansion512, roots4 and
   selections256. Browse is the maximum cost/list profile at1089/320; HomePublic
-  is the largest shape at95 selections. Router18/18, verifier2/2 and the
-  affected rebased gate51/51 pass. The real packaged adverse proof remains
-  pending.
+  is the largest shape at95 selections. Correction `96dc6ea`, tree `c708f9e`,
+  aligns structured HTTP 200 GraphQL rejection proof and the complete encoded
+  request limit. Router19/19, verifier2/2 and the corrected affected gate51/51
+  pass. The corrected packaged adverse proof remains pending.
 
 ## Accepted design and implementation
 
@@ -126,9 +130,9 @@ protected packaged proof, review and release remain.
 
 ## Exact next actions
 
-1. Publish item65 once and require its protected packaged demand/trusted proof.
-2. Complete one initial review and one blocker-focused confirmation, treating
-   only requirement/security/availability/public-contract findings.
+1. Commit the item65 evidence checkpoint and push the corrected PR55 head once.
+2. Require protected packaged demand/trusted proof, resolve initial discussion
+   `3896477418` and request one confirmation, treating only blocking findings.
 3. Squash merge, verify tree identity and exact-main CI before item66.
 
 ## Execution boundary

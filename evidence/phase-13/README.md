@@ -45,14 +45,17 @@ Protected run `33410126892` and clean exact-head confirmation pass. PR52
 squash-merged as tree-identical main `fb5cf014`; exact-main run `33412728404`
 passes every required job. Item64 is released.
 
-Item65 rebased source `36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
+Item65 initial source `36b6af2cb114aa4dad2afddc39142ad5e5878c28`, tree
 `e8fc58bbcbe3899b7b420adcdedfbd867173de0b`, implements the local
 P13-R03/R04/R05/R10 candidate. Federation v2.9 owner metadata and deterministic
 trusted-operation analysis now bound aliases, depth, roots, selections, list
 expansion and cost. The 25-operation calibration, adverse source coverage and
 pre-rebase 54/54 gate and exact rebased 51/51 affected candidate gate pass.
-Packaged protected runtime, review and release remain; no verified runtime claim
-is made.
+PR55 run `33415238912` exposed an HTTP-status mismatch in the runtime verifier;
+initial review discussion `3896477418` found the 32 KiB bound omitted the JSON
+operation envelope. Corrected source `96dc6ea`, tree `c708f9e`, passes
+Router19/19, verifier2/2 and the corrected 51/51 gate. Corrected packaged
+runtime, confirmation and release remain; no verified runtime claim is made.
 
 ## Requirement traceability
 

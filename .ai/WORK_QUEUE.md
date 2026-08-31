@@ -164,11 +164,13 @@ Historical stashes are superseded.
 Item64 final source `a353164`, evidence head `de50b3e`, passed protected run
 `33410126892`, clean confirmation and all resolved threads. PR52 squash main
 `fb5cf014` retained candidate tree `a78f095`; exact-main run `33412728404`
-passed, so item64 is released. Item65 rebased source `36b6af2`, tree `e8fc58b`,
+passed, so item64 is released. Item65 initial source `36b6af2`, tree `e8fc58b`,
 implements ADR-0046, Federation v2.9 owner cost/list metadata, deterministic
-profiles for all 25 admitted hashes and packaged adverse-proof policy.
-Router18/18, verifier2/2 and the rebased affected gate51/51 pass. Publication,
-protected packaged proof and review remain.
+profiles for all 25 admitted hashes and packaged adverse-proof policy. PR55 run
+`33415238912` and review exposed an HTTP-status verifier mismatch plus a missing
+encoded-envelope request bound. Corrected source `96dc6ea`, tree `c708f9e`,
+passes Router19/19, verifier2/2 and the affected gate51/51. Corrected protected
+packaged proof, confirmation and release remain.
 
 P12-R01 corrected source `03abe8a`, tree `b1474c7`, implements the trace/export
 slice. Protected run `33298943743` passed every job at previous exact head
@@ -371,8 +373,8 @@ the Apollo manifest and Router matcher retain both reviewed versions.
 Router11/11, verifier2/2, docs and gate49/49 with36 cached in99.305 seconds pass.
 Exact-head run `33410126892`, clean confirmation, PR52 tree-identical squash main
 `fb5cf014` and exact-main run `33412728404` complete item64. Item65 is rebased
-onto that released main; source `36b6af2`, tree `e8fc58b`, and its affected
-gate51/51 pass.
+onto that released main. Initial source `36b6af2`, tree `e8fc58b`, opened PR55;
+corrected source `96dc6ea`, tree `c708f9e`, and its affected gate51/51 pass.
 
 P02-R09 is complete: [release evidence](../evidence/phase-02/release.txt). P03-R01 has [domain evidence](../evidence/phase-03/catalog-domain.txt); P03-R02 has [persistence evidence and its completed plan](../evidence/phase-03/catalog-persistence.txt). Phase 03 publication is PR 20; its technical fixture did not approve an actual film. The separate first-film approval belongs to Phase 06.
 
