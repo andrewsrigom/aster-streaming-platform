@@ -81,6 +81,23 @@ test("every exact trusted operation has one bounded demand profile", () => {
   assert.match(artifacts["manifest.json"] ?? "", /operation-demand-manifest\.json/u);
 });
 
+test("selected fields on cost-owned entity types require explicit field cost", () => {
+  assert.throws(
+    () =>
+      composeLocalSupergraph(
+        {
+          ...sources,
+          engagement: sources.engagement.replace(
+            "progress(profileId: ID!): Progress @cost(weight: 8)",
+            "progress(profileId: ID!): Progress",
+          ),
+        },
+        operations,
+      ),
+    /Title\.progress requires @cost/u,
+  );
+});
+
 test("every first-party operation has one exact Apollo manifest entry and finite Router matcher", () => {
   const artifacts = composeLocalSupergraph(sources, operations);
   const persisted = JSON.parse(artifacts["persisted-query-manifest.json"] ?? "null") as {
@@ -234,7 +251,7 @@ test("a breaking field removal cannot be hidden by removing the corresponding op
       composeLocalSupergraph(
         {
           ...sources,
-          identity: sources.identity.replace("  avatarRef: String\n", ""),
+          identity: sources.identity.replace("  avatarRef: String @cost(weight: 0)\n", ""),
         },
         "query Viewer { me { accountId } }",
         before["api.graphql"],
@@ -267,7 +284,7 @@ test("baseline operations remain protected even when current fixtures are rewrit
       composeLocalSupergraph(
         {
           ...sources,
-          identity: sources.identity.replace("  avatarRef: String\n", ""),
+          identity: sources.identity.replace("  avatarRef: String @cost(weight: 0)\n", ""),
         },
         "query Viewer { me { accountId } }",
         undefined,

@@ -342,14 +342,14 @@ type PlaybackSessionPayload @join__type(graph: PLAYBACK) {
 }
 
 type Profile @join__type(graph: ENGAGEMENT, key: "id") @join__type(graph: IDENTITY, key: "id") @cost(weight: 4) {
-  id: ID!
+  id: ID! @cost(weight: 0)
   progress(titleId: ID!): Progress @join__field(graph: ENGAGEMENT) @cost(weight: 8)
   inWatchlist(titleId: ID!): Boolean @join__field(graph: ENGAGEMENT) @cost(weight: 6)
-  displayName: String! @join__field(graph: IDENTITY)
-  locale: String! @join__field(graph: IDENTITY)
-  maturity: ProfileMaturity! @join__field(graph: IDENTITY)
-  avatarRef: String @join__field(graph: IDENTITY)
-  version: Int! @join__field(graph: IDENTITY)
+  displayName: String! @join__field(graph: IDENTITY) @cost(weight: 0)
+  locale: String! @join__field(graph: IDENTITY) @cost(weight: 0)
+  maturity: ProfileMaturity! @join__field(graph: IDENTITY) @cost(weight: 0)
+  avatarRef: String @join__field(graph: IDENTITY) @cost(weight: 0)
+  version: Int! @join__field(graph: IDENTITY) @cost(weight: 0)
 }
 
 enum ProfileMaturity @join__type(graph: IDENTITY) {
@@ -486,17 +486,17 @@ input SetWatchlistInput @join__type(graph: ENGAGEMENT) {
 }
 
 type Title @join__type(graph: CATALOG, key: "id") @join__type(graph: DISCOVERY, key: "id") @join__type(graph: ENGAGEMENT, key: "id") @cost(weight: 6) {
-  id: ID!
-  localized(locale: String! = "en"): LocalizedTitle! @join__field(graph: CATALOG)
-  releaseYear: Int @join__field(graph: CATALOG)
-  runtimeSeconds: Int @join__field(graph: CATALOG)
+  id: ID! @cost(weight: 0)
+  localized(locale: String! = "en"): LocalizedTitle! @join__field(graph: CATALOG) @cost(weight: 1)
+  releaseYear: Int @join__field(graph: CATALOG) @cost(weight: 0)
+  runtimeSeconds: Int @join__field(graph: CATALOG) @cost(weight: 0)
   genres: [String!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 8)
   languages: [String!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 8)
   accessibility: [CatalogAccessibility!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 3)
   editorialLabels: [String!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 8)
-  credits: [CatalogCredit!]! @join__field(graph: CATALOG) @listSize(assumedSize: 16)
-  artwork: CatalogArtwork @join__field(graph: CATALOG)
-  attribution: CatalogAttribution! @join__field(graph: CATALOG)
+  credits: [CatalogCredit!]! @join__field(graph: CATALOG) @cost(weight: 1) @listSize(assumedSize: 16)
+  artwork: CatalogArtwork @join__field(graph: CATALOG) @cost(weight: 1)
+  attribution: CatalogAttribution! @join__field(graph: CATALOG) @cost(weight: 1)
   progress(profileId: ID!): Progress @join__field(graph: ENGAGEMENT) @cost(weight: 8)
   inWatchlist(profileId: ID!): Boolean @join__field(graph: ENGAGEMENT) @cost(weight: 6)
 }

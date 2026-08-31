@@ -30,17 +30,17 @@ export const CATALOG_TYPE_DEFS = parse(`
   type CatalogCredit { name: String! role: String! }
   type LocalizedTitle { locale: String! title: String! synopsis: String! }
   type Title @key(fields: "id") @cost(weight: 6) {
-    id: ID!
-    localized(locale: String! = "en"): LocalizedTitle!
-    releaseYear: Int
-    runtimeSeconds: Int
+    id: ID! @cost(weight: 0)
+    localized(locale: String! = "en"): LocalizedTitle! @cost(weight: 1)
+    releaseYear: Int @cost(weight: 0)
+    runtimeSeconds: Int @cost(weight: 0)
     genres: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
     languages: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
     accessibility: [CatalogAccessibility!]! @cost(weight: 1) @listSize(assumedSize: 3)
     editorialLabels: [String!]! @cost(weight: 1) @listSize(assumedSize: 8)
-    credits: [CatalogCredit!]! @listSize(assumedSize: 16)
-    artwork: CatalogArtwork
-    attribution: CatalogAttribution!
+    credits: [CatalogCredit!]! @cost(weight: 1) @listSize(assumedSize: 16)
+    artwork: CatalogArtwork @cost(weight: 1)
+    attribution: CatalogAttribution! @cost(weight: 1)
   }
   type CatalogTitleEdge { cursor: String! node: Title! }
   type CatalogPageInfo { endCursor: String hasNextPage: Boolean! }

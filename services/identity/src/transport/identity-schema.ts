@@ -19,12 +19,12 @@ export const IDENTITY_TYPE_DEFS = parse(`
   }
   enum ProfileMaturity { GENERAL TEEN MATURE }
   type Profile @key(fields: "id") @cost(weight: 4) {
-    id: ID!
-    displayName: String!
-    locale: String!
-    maturity: ProfileMaturity!
-    avatarRef: String
-    version: Int!
+    id: ID! @cost(weight: 0)
+    displayName: String! @cost(weight: 0)
+    locale: String! @cost(weight: 0)
+    maturity: ProfileMaturity! @cost(weight: 0)
+    avatarRef: String @cost(weight: 0)
+    version: Int! @cost(weight: 0)
   }
   type Viewer { accountId: ID! expiresAt: String! }
   type EngagementProfileAuthority @inaccessible {

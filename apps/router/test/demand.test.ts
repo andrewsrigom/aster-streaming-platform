@@ -25,7 +25,7 @@ const schemaSource = `
   }
   type Mutation { addBook: Book! @cost(weight: 7) }
   type Book @cost(weight: 2) {
-    author: Author!
+    author: Author! @cost(weight: 1)
     tags: [String!]! @cost(weight: 1) @listSize(assumedSize: 3)
   }
   type Author { name: String! }
@@ -81,7 +81,7 @@ test("variables use the owner maximum while bounded literals lower the exact est
   assert.equal(literalProfile.aliases, 0);
 });
 
-test("missing root cost, list maximum and excessive literal fail closed", () => {
+test("missing root, owner field cost, list maximum and excessive literal fail closed", () => {
   const operation = demandOperation(`query Books { books(first: 2) { author { name } } }`);
   assert.throws(
     () =>
@@ -91,6 +91,15 @@ test("missing root cost, list maximum and excessive literal fail closed", () => 
         operation,
       ),
     /Query\.books requires @cost/u,
+  );
+  assert.throws(
+    () =>
+      analyzeOperationDemand(
+        buildSchema(schemaSource.replace("author: Author! @cost(weight: 1)", "author: Author!")),
+        buildSchema(schemaSource.replace("author: Author! @cost(weight: 1)", "author: Author!")),
+        operation,
+      ),
+    /Book\.author requires @cost/u,
   );
   assert.throws(
     () =>

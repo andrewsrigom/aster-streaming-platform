@@ -189,6 +189,10 @@ function fieldWeight(
   if (root && weight === undefined) {
     return reject(state.operationName, `${parentName}.${fieldName} requires @cost`);
   }
+  const parentWeight = explicitTypeWeight(state.supergraph, parentName, state.operationName);
+  if (!root && parentWeight !== undefined && weight === undefined) {
+    return reject(state.operationName, `${parentName}.${fieldName} requires @cost`);
+  }
   return (
     weight ??
     explicitTypeWeight(state.supergraph, returnTypeName, state.operationName) ??
