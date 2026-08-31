@@ -57,7 +57,48 @@ test("uses a pseudonymous account partition and the fixed profile policy", async
   assert.equal(metrics.at(-1)?.outcome, "allowed");
 });
 
-test("local profile buckets reject hot accounts, refill and stay independent", async () => {
+test("consults shared admission before a degraded local hot-account rejection", async () => {
+  let distributed = false;
+  let calls = 0;
+  const limiter = createIdentityProfileOperationLimiter({
+    environment: "test",
+    digest,
+    monotonicNow: () => 0,
+    redis: {
+      consumeTokenBucket: () => {
+        calls++;
+        return Promise.resolve(
+          distributed
+            ? {
+                status: "completed" as const,
+                allowed: true,
+                remaining: 0,
+                retryAfterMs: 0,
+                resetAfterMs: 500,
+                recovered: false,
+                deduplicated: true,
+              }
+            : { status: "unavailable" as const },
+        );
+      },
+    },
+  });
+  const signal = new AbortController().signal;
+  for (let index = 0; index < 8; index++) {
+    assert.equal(
+      (await limiter.admit("profile_mutation", accountId, digest(`local-${index}`), signal)).status,
+      "allowed",
+    );
+  }
+  distributed = true;
+  assert.deepEqual(
+    await limiter.admit("profile_mutation", accountId, digest("durable-retry"), signal),
+    { status: "allowed" },
+  );
+  assert.equal(calls, 9);
+});
+
+test("degraded local profile buckets reject hot accounts, refill and stay independent", async () => {
   let clock = 0;
   let redisCalls = 0;
   const limiter = createIdentityProfileOperationLimiter({
@@ -83,7 +124,7 @@ test("local profile buckets reject hot accounts, refill and stay independent", a
     await limiter.admit("profile_mutation", accountId, digest("mutation-rejected"), signal),
     { status: "rejected", retryAfterMs: 500 },
   );
-  assert.equal(redisCalls, 8);
+  assert.equal(redisCalls, 9);
   assert.equal(
     (await limiter.admit("profile_selection", accountId, digest("selection"), signal)).status,
     "allowed",
@@ -176,6 +217,8 @@ test("bounds local partitions and rejects malformed identity or clock state", as
     closed: false,
     partitions: 1_024,
     maximumPartitions: 1_024,
+    localAdmissions: 1_024,
+    maximumLocalAdmissions: 8_192,
   });
   assert.deepEqual(
     await limiter.admit("profile_mutation", "raw-account", digest("invalid"), signal),

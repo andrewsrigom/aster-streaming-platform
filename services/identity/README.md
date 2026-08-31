@@ -50,10 +50,14 @@ Mutation payloads return `code` and `correlationId`, plus safe result metadata. 
 - Eight executing requests, no waiting queue, one process-local token bucket (64 burst, eight/second); 429 includes Retry-After. Three-second request deadline propagates cancellation. Work ignoring cancellation retains its admission slot until it settles; late cookies are refused.
 - After current session restoration, create/update/delete share an eight-token,
   two/second authorized-account limiter; selection has sixteen tokens and
-  four/second. At most 1,024 process partitions combine with one atomic
-  thirty-second Redis bucket. Keys contain only account/admission SHA-256
-  pseudonyms. Redis rejection rejects; outage uses only a locally admitted
-  result; cancellation and local-capacity exhaustion fail closed.
+  four/second. Validated durable mutation IDs plus canonical request digests
+  make exact retries reuse the shared admission decision while conflicting
+  payloads stay distinct; selection uses a fresh identity. One atomic
+  thirty-second Redis bucket combines with an outage-only local bound of 1,024
+  partitions and 8,192 short-lived admission markers. Keys contain only
+  account/admission SHA-256 pseudonyms. Redis rejection rejects; outage uses
+  only bounded local admission; cancellation and local-capacity exhaustion fail
+  closed.
 - Five profiles by default, eight sessions/account. Owner-side SQL, locks, optimistic versions, deletion, receipt/audit retention and 128-event outbox backpressure are specified in [the migration guide](migrations/README.md).
 - Restart invalidates previous ephemeral signatures, not accounts/profiles. Sign in again. Redis is not session authority or a readiness dependency; it connects on demand and is still closed by lifecycle ownership. PostgreSQL readiness rejects administrative credentials or missing product tables; migrations run separately.
 - Structured operation records contain generated correlation/trace IDs, fixed outcome labels and measured duration. They are not exported distributed traces or an SLO. Apollo usage/schema reporting and inline trace output are disabled. Phase 04/12 own routing and distributed telemetry.

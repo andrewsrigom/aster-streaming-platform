@@ -7,9 +7,15 @@ import {
   type RateLimitedIdentityProfilesOptions,
 } from "../src/application/profile-operation-limit.js";
 import type { ProfileRequest } from "../src/application/profile-ports.js";
+import { createProfilePolicy } from "../src/domain/profile.js";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
 const accountId = "00000000-0000-4000-8000-000000000001";
+const mutationId = "00000000-0000-4000-8000-000000000031";
+const createInput = {
+  mutationId,
+  profile: { displayName: "Viewer", locale: "en-US", maturity: "GENERAL" },
+};
 const request = (): ProfileRequest => ({
   credential: "signed-cookie",
   signal: new AbortController().signal,
@@ -20,7 +26,11 @@ const request = (): ProfileRequest => ({
   },
 });
 
-function applications(events: string[], admission: "allowed" | "rejected" | "unavailable") {
+function applications(
+  events: string[],
+  admission: "allowed" | "rejected" | "unavailable",
+  admissionIds: string[] = [],
+) {
   const profile = {
     id: "00000000-0000-4000-8000-000000000021",
     accountId,
@@ -68,6 +78,7 @@ function applications(events: string[], admission: "allowed" | "rejected" | "una
     limiter: {
       admit: (operation, receivedAccount, admissionId) => {
         events.push(`limiter.${operation}`);
+        admissionIds.push(admissionId);
         assert.equal(receivedAccount, accountId);
         assert.match(admissionId, /^[a-f0-9]{64}$/u);
         return Promise.resolve(
@@ -79,13 +90,14 @@ function applications(events: string[], admission: "allowed" | "rejected" | "una
     },
     nextId: () => `00000000-0000-4000-8000-${String(++generated).padStart(12, "0")}`,
     digest,
+    policy: createProfilePolicy(),
   });
 }
 
 test("authorizes, admits outside the base transaction and then re-enters owner validation", async () => {
   const events: string[] = [];
   const profiles = applications(events, "allowed");
-  assert.equal((await profiles.create(request(), {})).status, "completed");
+  assert.equal((await profiles.create(request(), createInput)).status, "completed");
   assert.equal((await profiles.select(request(), "profile")).status, "completed");
   assert.deepEqual(events, [
     "sessions.restore",
@@ -104,9 +116,39 @@ test("a rejected or unavailable admission never reaches the profile write", asyn
   ] as const) {
     const events: string[] = [];
     const profiles = applications(events, admission);
-    assert.equal((await profiles.create(request(), {})).status, expected);
+    assert.equal((await profiles.create(request(), createInput)).status, expected);
     assert.deepEqual(events, ["sessions.restore", "limiter.profile_mutation"]);
   }
+});
+
+test("reuses the canonical durable mutation request across exact retries", async () => {
+  const events: string[] = [];
+  const admissions: string[] = [];
+  const profiles = applications(events, "allowed", admissions);
+  assert.equal((await profiles.create(request(), createInput)).status, "completed");
+  assert.equal((await profiles.create(request(), createInput)).status, "completed");
+  assert.equal(
+    (
+      await profiles.create(request(), {
+        ...createInput,
+        profile: { ...createInput.profile, displayName: "Changed" },
+      })
+    ).status,
+    "completed",
+  );
+  assert.equal(admissions.length, 3);
+  assert.equal(admissions[0], admissions[1]);
+  assert.notEqual(admissions[1], admissions[2]);
+});
+
+test("rejects malformed mutation identity before rate admission", async () => {
+  const events: string[] = [];
+  const profiles = applications(events, "allowed");
+  assert.equal(
+    (await profiles.create(request(), { mutationId: "raw", profile: {} })).status,
+    "invalid_input",
+  );
+  assert.deepEqual(events, ["sessions.restore"]);
 });
 
 test("read-only profile paths bypass mutation admission", async () => {

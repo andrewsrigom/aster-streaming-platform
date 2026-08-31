@@ -391,7 +391,7 @@ export function validateWorkflowPolicy(
       "operational overview acceptance must have a bounded protected step",
     ],
     [
-      /- name: Report bounded optional-profile startup failure\s+if: failure\(\)\s+timeout-minutes: 1\s+run: \|[\s\S]*?--profile full logs --no-color --tail 120 grafana prometheus/u,
+      /- name: Report bounded optional-profile startup failure\s+if: failure\(\)\s+timeout-minutes: 1\s+run: \|[\s\S]*?--profile full logs --no-color --tail 120 grafana prometheus router/u,
       "optional-profile startup failure must preserve bounded Grafana and Prometheus diagnostics",
     ],
     [

@@ -59,10 +59,8 @@ fn guard(request) {
 }
 
 fn no_store(response) {
-    if response.is_primary() {
-        response.headers["cache-control"] = "no-store";
-        response.headers["x-content-type-options"] = "nosniff";
-    }
+    response.headers["cache-control"] = "no-store";
+    response.headers["x-content-type-options"] = "nosniff";
 }
 
 fn router_service(service) {

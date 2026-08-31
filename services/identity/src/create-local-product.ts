@@ -52,10 +52,11 @@ export async function createLocalIdentityProduct(
     ...shared,
     transactions: createPostgresSessions(database),
   });
+  const profilePolicy = createProfilePolicy();
   const baseProfiles = createIdentityProfiles({
     ...shared,
     transactions: createPostgresProfiles(database),
-    policy: createProfilePolicy(),
+    policy: profilePolicy,
   });
   const limiter = createIdentityProfileOperationLimiter({
     environment: configuration.environment === "integration" ? "test" : configuration.environment,
@@ -86,6 +87,7 @@ export async function createLocalIdentityProduct(
         limiter,
         nextId: shared.nextId,
         digest: shared.digest,
+        policy: profilePolicy,
       }),
     },
     onOperation: (trace) => {

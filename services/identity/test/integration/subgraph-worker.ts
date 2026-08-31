@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { once } from "node:events";
 import { createServer } from "node:net";
+import { setTimeout as delay } from "node:timers/promises";
 
 import { loadReferenceRuntimeConfig } from "@aster/config";
 import { createAsterLogger } from "@aster/runtime";
@@ -160,7 +161,24 @@ try {
 
   const elevated = await start(environment);
   assert.deepEqual(elevated.started, { status: "started", readiness: "not_ready" });
-  assert.equal((await send(signInQuery)).status, 503);
+  const unavailable = await send(signInQuery);
+  assert.deepEqual(
+    {
+      health: elevated.service.health(),
+      status: unavailable.status,
+      code: unavailable.json.errors?.[0]?.extensions.code,
+    },
+    {
+      health: {
+        liveness: "live",
+        phase: "ready",
+        readiness: "not_ready",
+        reason: "dependency_unavailable",
+      },
+      status: 503,
+      code: "UNAVAILABLE",
+    },
+  );
   assert.equal((await elevated.service.shutdown()).outcome, "completed");
   const first = await start();
   assert.deepEqual(first.started, { status: "started", readiness: "ready" });
@@ -214,6 +232,7 @@ try {
     rejected: 4,
     profiles: 5,
   });
+  await delay(1_250, undefined, { signal: signal() });
 
   const foreignAccount = randomUUID();
   const foreignProfile = randomUUID();
@@ -277,6 +296,7 @@ try {
     payload(await send(listQuery, {}, cookie), "profiles")["activeProfileId"],
     profileId,
   );
+  await delay(2_750, undefined, { signal: signal() });
 
   const updateInput = {
     mutationId: randomUUID(),

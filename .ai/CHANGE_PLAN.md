@@ -21,7 +21,9 @@ cache.
 Item65 is released through tree-identical PR55 squash main `8cd6c0b` and
 exact-main run `33425758870` attempt2. Apollo Router already bounds public
 execution to three seconds and eight concurrent requests, owners have shorter
-outbound/subgraph deadlines, and every public response is `no-store`. Apollo
+outbound/subgraph deadlines, and every admitted GraphQL response is `no-store`.
+The pre-service oversized-body rejection contains no data, explicit freshness
+or validators. Apollo
 Server response/document caches are disabled. Engagement already proves an
 authorized-account Redis limiter with bounded local degradation, but Identity
 profile commands currently have only process-global admission and Identity
@@ -37,11 +39,15 @@ is classified public. Keep Router's three-second/eight-request boundary and
 prove its relation to owner deadlines.
 
 Decorate Identity profile mutations after authoritative session restoration
-with account-partitioned token buckets. A bounded local shield limits hot bursts;
-one versioned Redis script uses server time and owner-generated admission IDs
-for cross-replica coordination. Redis rejection rejects. Redis timeout or outage
-uses only the bounded local result. Cancellation never falls back to allow.
-PostgreSQL remains Identity's sole readiness-critical dependency.
+with account-partitioned token buckets. Validated durable mutation IDs plus
+canonical request digests identify exact create/update/delete retries without
+deduplicating conflicting payloads; selection uses a fresh identity. One
+versioned Redis script uses server time for cross-replica coordination. Its
+bounded decision precedes the outage-only local path so a retry is not hidden by
+one process's exhausted fallback bucket. Redis rejection rejects. Redis timeout
+or outage uses only 1,024 local partitions and 8,192 short-lived admission
+markers. Cancellation never falls back to allow. PostgreSQL remains Identity's
+sole readiness-critical dependency.
 
 ## Boundaries
 
@@ -67,13 +73,14 @@ PostgreSQL remains Identity's sole readiness-critical dependency.
   keys, public errors, logs or metric labels.
 - Limiter work runs outside PostgreSQL transactions and cannot authorize a
   profile mutation.
-- Bounded local partitions and Redis TTLs prevent unbounded state.
+- Bounded local partitions/admission markers and Redis TTLs prevent unbounded state.
 - Redis failure cannot make durable identity state incorrect or Identity
   readiness fail.
 - Cancellation, local capacity exhaustion and malformed dependency replies fail
   closed.
-- All exact admitted operations have one runtime/cache policy; all responses are
-  `no-store`; private data never enters shared response caching.
+- All exact admitted operations have one runtime/cache policy; their responses
+  are `no-store`. The pre-service body rejection has no reusable cache metadata;
+  private data never enters shared response caching.
 - Router execution/concurrency bounds supplement owner deadlines and do not
   replace authorization, pagination or dependency bounds.
 

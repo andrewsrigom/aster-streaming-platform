@@ -174,7 +174,16 @@ test("Router packaging and config reject unsafe limits, notices and propagation"
     ["infra/router/router.yaml", "/playback/playback.key", "/catalog/catalog.key"],
     ["infra/router/router.yaml", "max_queue_size: 128", "max_queue_size: 12800"],
     ["infra/router/router.yaml", "named: cookie", "matching: .*"],
-    ["infra/router/router.yaml", "value: no-store", "value: public"],
+    [
+      "infra/router/main.rhai",
+      'response.headers["cache-control"] = "no-store"',
+      'response.headers["cache-control"] = "public"',
+    ],
+    [
+      "infra/router/main.rhai",
+      'fn no_store(response) {\n    response.headers["cache-control"] = "no-store";',
+      'fn no_store(response) {\n    if response.is_primary() {\n        response.headers["cache-control"] = "no-store";',
+    ],
     [
       "infra/router/generated/operation-demand-manifest.json",
       '"cacheControl": "no-store"',

@@ -18,12 +18,13 @@ local account from an untrusted cookie or forwarding header. Router JWT claim
 validation is relevant to a hosted trust boundary, but activation requires the
 Phase14 identity/provider and GraphOS decisions.
 
-All current Router responses are `no-store`; Apollo Server document, APQ and
-response caches are disabled. Catalog and Discovery cache only public owner
-projections. Private DataLoader and Apollo Client state are request/session
-scoped. These facts were implemented separately and lacked one exact-operation
-contract that prevents a future private operation from being treated as public
-or shared-cacheable.
+All responses admitted to the Router's GraphQL service are `no-store`; Apollo
+Server document, APQ and response caches are disabled. The fixed pre-service
+oversized-body rejection contains no data, explicit freshness or cache
+validators. Catalog and Discovery cache only public owner projections. Private
+DataLoader and Apollo Client state are request/session scoped. These facts were
+implemented separately and lacked one exact-operation contract that prevents a
+future private operation from being treated as public or shared-cacheable.
 
 Identity also treated Redis readiness as critical even though PostgreSQL and
 current signed sessions are its only durable authorities. That contradicts the
@@ -56,18 +57,27 @@ seconds. Sign-in, sign-out and reads retain the global Router/service controls;
 sign-out is never blocked by the new limiter.
 
 The profile-command decorator restores the current owner session before rate
-admission and therefore partitions on Identity's authoritative account ID. It
-then invokes the existing profile application, which revalidates and locks the
-session before any write. Admission happens between completed PostgreSQL units
-of work and never inside a product transaction.
+admission and therefore partitions on Identity's authoritative account ID.
+Create/update/delete derive the admission marker from the already validated
+durable `mutationId` and canonical request digest; an exact retry therefore
+reuses the cross-replica Redis decision instead of spending another token,
+while conflicting payloads remain distinct attempts. Selection has no durable
+receipt and keeps an owner-generated marker. The decorator then invokes the existing
+profile application, which revalidates and locks the session before any write.
+Admission happens between completed PostgreSQL units of work and never inside a
+product transaction.
 
-Each process keeps at most 1,024 monotonic local partitions. Redis uses one
-atomic versioned token bucket and a finite admission marker. Keys contain a
-SHA-256 account pseudonym and an owner-generated admission digest, never the raw
-cookie, account/profile ID or request correlation ID. Redis rejection rejects.
-Redis timeout/unavailability permits only a previously allowed local result.
-Cancellation never falls back to allow; exhausted local capacity rejects when
-Redis cannot decide. Redis state expires and never authorizes a profile write.
+Redis uses one atomic versioned token bucket and a finite admission marker. Keys
+contain a SHA-256 account pseudonym and admission digest, never the raw cookie,
+account/profile ID or request correlation ID. The shared decision runs first so
+an exact cross-replica retry remains replayable even when one process has a hot
+local fallback bucket. The existing finite Redis adapter and GraphQL admission
+bound command pressure. Redis rejection rejects. During Redis timeout or
+unavailability, each process permits only its bounded local policy: at most
+1,024 monotonic account-operation buckets and 8,192 short-lived admission
+markers, including same-process retry deduplication. Cancellation never falls
+back to allow; exhausted local capacity rejects. Redis state expires and never
+authorizes a profile write.
 
 PostgreSQL becomes Identity's sole readiness-critical dependency. Redis remains
 owned and closed during shutdown, and limiter dependency telemetry exposes its
@@ -94,8 +104,10 @@ local policy. PostgreSQL loss still removes readiness and new work admission.
 - Local fallback is per process, so aggregate degraded capacity can rise with
   replica count. Phase14 capacity/deployment policy must account for that finite
   multiplier.
-- All GraphQL responses remain non-cacheable; public response caching requires a
-  future measured design with explicit variation and invalidation semantics.
+- Admitted GraphQL responses remain `no-store`; the pre-service body-limit
+  rejection remains data-free and carries no freshness or validators. Public
+  response caching requires a future measured design with explicit variation
+  and invalidation semantics.
 
 ### Security and privacy
 
@@ -132,10 +144,12 @@ without a current performance requirement.
 
 ## Validation
 
-Unit tests prove burst/refill, partition isolation, 1,024-partition capacity,
-pseudonymous keys, fixed Redis policy, rejection, outage fallback, recovery,
-cancellation and closure. Application tests prove authorization precedes
-admission, rejection prevents the base mutation and reads bypass the limiter.
+Unit tests prove burst/refill, partition isolation, 1,024-partition and
+8,192-marker capacity, exact mutation replay and changed-payload separation,
+pseudonymous keys, fixed
+Redis policy, rejection, outage fallback, recovery, cancellation and closure.
+Application tests prove authorization precedes admission, rejection prevents
+the base mutation and reads bypass the limiter.
 Composition tests require exact policy coverage, derived private scope and
 `no-store` on all hashes. Identity runtime tests prove Redis is absent from
 readiness while both dependencies remain owned for shutdown. Real Redis and

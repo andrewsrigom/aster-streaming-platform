@@ -13,6 +13,7 @@ import type {
 import { profileIdentifier } from "../domain/profile.js";
 
 const MAXIMUM_PARTITIONS = 1_024;
+const MAXIMUM_LOCAL_ADMISSIONS = 8_192;
 const MILLI_TOKENS = 1_000;
 const FALLBACK_RETRY_MS = 1_000;
 
@@ -71,6 +72,7 @@ export function createIdentityProfileOperationLimiter(
 ) {
   const now = options.monotonicNow ?? (() => performance.now());
   const partitions = new Map<string, LocalBucket>();
+  const localAdmissions = new Map<string, number>();
   let closed = false;
 
   const record = (
@@ -92,6 +94,7 @@ export function createIdentityProfileOperationLimiter(
 
   const localAdmission = (
     partition: string,
+    admission: string,
     policy: AsterRedisTokenBucketPolicy,
     timestamp: number,
   ): LocalAdmission => {
@@ -99,6 +102,17 @@ export function createIdentityProfileOperationLimiter(
       if (timestamp >= bucket.expiresAt) {
         partitions.delete(key);
       }
+    }
+    for (const [key, expiresAt] of localAdmissions) {
+      if (timestamp >= expiresAt) {
+        localAdmissions.delete(key);
+      }
+    }
+    if (localAdmissions.has(admission)) {
+      return { status: "allowed" };
+    }
+    if (localAdmissions.size >= MAXIMUM_LOCAL_ADMISSIONS) {
+      return { status: "capacity" };
     }
     const previous = partitions.get(partition);
     if (!previous && partitions.size >= MAXIMUM_PARTITIONS) {
@@ -123,6 +137,9 @@ export function createIdentityProfileOperationLimiter(
       updatedAt: timestamp,
       expiresAt: timestamp + policy.ttlMs,
     });
+    if (allowed) {
+      localAdmissions.set(admission, timestamp + policy.ttlMs);
+    }
     return allowed
       ? { status: "allowed" }
       : {
@@ -177,20 +194,14 @@ export function createIdentityProfileOperationLimiter(
         record(operation, "cancelled", startedAt);
         return { status: "cancelled" };
       }
+      if (!Number.isFinite(startedAt) || startedAt < 0) {
+        record(operation, "closed", startedAt);
+        return { status: "unavailable" };
+      }
       const accountDigest = profileIdentifier(accountId) ? options.digest(accountId) : "";
       if (!/^[a-f0-9]{64}$/u.test(accountDigest) || !/^[a-f0-9]{64}$/u.test(admissionId)) {
         record(operation, "closed", startedAt);
         return { status: "unavailable" };
-      }
-      const timestamp = now();
-      if (!Number.isFinite(timestamp) || timestamp < 0) {
-        record(operation, "closed", startedAt);
-        return { status: "unavailable" };
-      }
-      const local = localAdmission(`${operation}:${accountDigest}`, POLICIES[operation], timestamp);
-      if (local.status === "rejected") {
-        record(operation, "rejected", startedAt);
-        return local;
       }
       const distributed = await distributedAdmission(operation, accountDigest, admissionId, signal);
       if (cancelled(signal) || distributed?.status === "aborted") {
@@ -198,6 +209,15 @@ export function createIdentityProfileOperationLimiter(
         return { status: "cancelled" };
       }
       if (distributed?.status === "completed") {
+        if (distributed.allowed && localAdmissions.size < MAXIMUM_LOCAL_ADMISSIONS) {
+          const timestamp = now();
+          if (Number.isFinite(timestamp) && timestamp >= 0) {
+            localAdmissions.set(
+              `${operation}:${accountDigest}:${admissionId}`,
+              timestamp + POLICIES[operation].ttlMs,
+            );
+          }
+        }
         record(
           operation,
           distributed.recovered ? "recovered" : distributed.allowed ? "allowed" : "rejected",
@@ -207,6 +227,21 @@ export function createIdentityProfileOperationLimiter(
           ? { status: "allowed" }
           : { status: "rejected", retryAfterMs: distributed.retryAfterMs };
       }
+      const timestamp = now();
+      if (!Number.isFinite(timestamp) || timestamp < 0) {
+        record(operation, "closed", startedAt);
+        return { status: "unavailable" };
+      }
+      const local = localAdmission(
+        `${operation}:${accountDigest}`,
+        `${operation}:${accountDigest}:${admissionId}`,
+        POLICIES[operation],
+        timestamp,
+      );
+      if (local.status === "rejected") {
+        record(operation, "rejected", startedAt);
+        return local;
+      }
       if (local.status === "capacity") {
         record(operation, "rejected", startedAt);
         return { status: "rejected", retryAfterMs: FALLBACK_RETRY_MS };
@@ -215,10 +250,17 @@ export function createIdentityProfileOperationLimiter(
       return { status: "allowed" };
     },
     snapshot: () =>
-      Object.freeze({ closed, partitions: partitions.size, maximumPartitions: MAXIMUM_PARTITIONS }),
+      Object.freeze({
+        closed,
+        partitions: partitions.size,
+        maximumPartitions: MAXIMUM_PARTITIONS,
+        localAdmissions: localAdmissions.size,
+        maximumLocalAdmissions: MAXIMUM_LOCAL_ADMISSIONS,
+      }),
     close(): void {
       closed = true;
       partitions.clear();
+      localAdmissions.clear();
     },
   });
 }

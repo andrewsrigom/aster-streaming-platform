@@ -187,9 +187,11 @@ The same version-2 profile now derives and records `public`, `account` or
 three-second/eight-request execution boundary and mandatory `no-store`. Selected
 Identity/Engagement coordinates determine the minimum private scope, so a
 private field cannot be declared public. The policy name set must exactly match
-all current and retained operation names. Router also overwrites every public
-response with `Cache-Control: no-store`; owner Apollo document/response caches
-remain disabled. [ADR-0047](../adr/0047-bounded-graphql-execution-rate-and-cache-scope.md)
+all current and retained operation names. Router also overwrites every admitted
+GraphQL response with `Cache-Control: no-store`; its pre-service oversized-body
+rejection has no data, explicit freshness or validators. Owner Apollo
+document/response caches remain disabled.
+[ADR-0047](../adr/0047-bounded-graphql-execution-rate-and-cache-scope.md)
 defines the account limiter and cache boundary.
 
 The current hosted contract enforces:

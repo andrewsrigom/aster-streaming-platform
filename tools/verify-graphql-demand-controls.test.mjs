@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { assertSafeGraphqlRejection, parserTokenFlood } from "./verify-graphql-demand-controls.mjs";
+import {
+  assertSafeGraphqlRejection,
+  assertSafeTransportRejection,
+  parserTokenFlood,
+} from "./verify-graphql-demand-controls.mjs";
 
 test("parser flood exceeds the token limit without reaching the body limit", () => {
   const source = parserTokenFlood();
@@ -8,6 +12,23 @@ test("parser flood exceeds the token limit without reaching the body limit", () 
   assert.ok(Buffer.byteLength(source, "utf8") < 32_768);
   assert.ok(tokens.length > 2_000 && tokens.length < 3_000);
   assert.equal(source.match(/\$v\d+:Int/gu)?.length, 600);
+});
+
+test("pre-service body rejection permits only an absent or no-store cache policy", () => {
+  const response = {
+    status: 413,
+    cacheControl: undefined,
+    cacheValidators: [],
+    text: '{"errors":[{"message":"request body too large"}]}',
+    body: { errors: [{}] },
+  };
+  assert.doesNotThrow(() => assertSafeTransportRejection(response, "fixture"));
+  assert.throws(() =>
+    assertSafeTransportRejection({ ...response, cacheControl: "public, max-age=60" }, "fixture"),
+  );
+  assert.throws(() =>
+    assertSafeTransportRejection({ ...response, cacheValidators: ['"shared"'] }, "fixture"),
+  );
 });
 
 test("GraphQL demand rejection accepts only bounded responses without data or topology", () => {
